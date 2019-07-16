@@ -1,0 +1,3 @@
+# Components loading in this order
+COMPONENTS = Cli,WebServer,AlphabetSoup,IoHandler
+WEBSERVER_HTTP_PORT=8000

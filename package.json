@@ -1,0 +1,24 @@
+{
+  "name": "vasistas",
+  "version": "1.0.0",
+  "description": "What is that ? A structure proposal & guidelines for bootstrapping a Node.js project that implements observer design pattern with Inversion of Control (IoC) and Dependency-Injection (DI)",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "start-debug": "DEBUG=* node app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.4",
+    "debug": "^4.1.1",
+    "dotenv": "^8.0.0",
+    "eventemitter3": "^4.0.0",
+    "express": "^4.17.1",
+    "express-session": "^1.16.2",
+    "ora": "^3.4.0",
+    "socket.io": "^2.2.0",
+    "vorpal": "^1.12.0"
+  }
+}
