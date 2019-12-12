@@ -29,7 +29,7 @@ class Component extends EventEmitter {
                 let itemPath = path.join(controllersDir, item)
                 let stat = await fsPromises.lstat(itemPath)
                 if (stat.isDirectory()) {
-                    this.loadEventControllers(itemPath)
+                    await this.loadEventControllers(itemPath)
                 } else if (item.toLocaleLowerCase().indexOf('.js')) {
                     let controller = require(itemPath)
                     if (typeof controller === "function") controller.call(this)
