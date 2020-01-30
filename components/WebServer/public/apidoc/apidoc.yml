@@ -1,0 +1,15 @@
+swagger: '2.0'
+info:
+  version: '1.0.0'
+  title: 'Conversation manager API client'
+  description: 'Blah blah'
+  termsOfService: https://doc.linto.ai/#/?id=gnu-affero-general-public-licence-v3
+  contact:
+    name: LINAGORA
+    url: http://linto.ai
+    email: contact@linto.ai
+paths: {}
+host: localhost:8000
+basePath: /api
+schemes:
+ - https
