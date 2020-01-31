@@ -1,15 +1,16 @@
 {
-  "name": "vasistas",
+  "name": "linto-platform-conversation-manager",
   "version": "1.0.0",
-  "description": "What is that ? A structure proposal & guidelines for bootstrapping a Node.js project that implements observer design pattern with Inversion of Control (IoC) and Dependency-Injection (DI)",
+  "description": "bits of AI inside",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
-    "start-debug": "DEBUG=* node app.js"
+    "start": "NODE_ENV=production node app.js",
+    "start-debug": "NODE_ENV=development DEBUG=app/* node app.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.19.2",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.4",
     "debug": "^4.1.1",
