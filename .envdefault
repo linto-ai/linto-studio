@@ -1,5 +1,5 @@
 # Components loading in this order
 COMPONENTS = WebServer,AlphabetSoup,IoHandler
 WEBSERVER_HTTP_PORT=8000
-DB_TYPE=json
-DB_SERVER=localhost:5000
+DB_DRIVER=json
+DB_HOST=http://localhost:3000

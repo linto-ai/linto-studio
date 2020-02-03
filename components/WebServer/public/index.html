@@ -20,6 +20,9 @@
         socket.on("letter", (letter) => {
             document.getElementById("soupe").innerHTML += letter
         });
+        socket.on("notlogged", () => {
+            alert("Please login first")
+        })
         function startSoup() {
             socket.emit("alphabetSoupStart");
         }

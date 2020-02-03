@@ -18,6 +18,10 @@ function configureDefaults() {
         const envdefault = dotenv.parse(fs.readFileSync('.envdefault')) // default usable values
         process.env.COMPONENTS = ifHas(process.env.COMPONENTS, envdefault.COMPONENTS)
         process.env.WEBSERVER_HTTP_PORT = ifHas(process.env.WEBSERVER_HTTP_PORT, envdefault.WEBSERVER_HTTP_PORT)
+        process.env.DB_DRIVER = ifHas(process.env.DB_DRIVER, envdefault.DB_DRIVER)
+        process.env.DB_HOST = ifHas(process.env.DB_HOST, envdefault.DB_HOST)
+        process.env.DB_USER = ifHas(process.env.DB_USER, envdefault.DB_USER)
+        process.env.DB_PASS = ifHas(process.env.DB_PASS, envdefault.DB_PASS)
         //process.env.COMPONENTS = ifHasNotThrow(process.env.COMPONENTS, Error("No COMPONENTS envvar specified"))
     } catch (e) {
         console.error(debug.namespace, e)

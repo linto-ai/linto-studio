@@ -1,8 +1,8 @@
 {
     "users": [{
         "id": 0,
-        "userName": "test",
-        "pass": "test"
+        "username": "test",
+        "password": "test"
     }],
     "conversations": [{
         "scribe": "Authot",

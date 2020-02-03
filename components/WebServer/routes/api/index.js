@@ -1,12 +1,11 @@
-const debug = require('debug')('app:router:test')
+const debug = require('debug')('app:router:api')
 const model = require(`${process.cwd()}/models`)
-
 
 module.exports = (webserver) => {
     return [{
-        path: '/',
+        path: '/conversations',
         method: 'get',
-        requireAuth: true,
+        requireAuth: false,
         controller: async (req, res, next) => {
             res.json({
                 status: "success"
