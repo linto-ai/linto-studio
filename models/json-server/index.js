@@ -14,6 +14,7 @@ class modelJsonServer {
                     'Content-Type': 'application/json'
                 }
             })
+            debug(users.data)
             return users.data
         } catch (error) {
             console.error(error)
@@ -35,7 +36,7 @@ class modelJsonServer {
         }
     }
 
-
+   
     async getConversations() {
         try {
             const conversations = await axios(`${this.host}/conversations`, {
@@ -52,6 +53,18 @@ class modelJsonServer {
     }
 
     async getConversation(id) {
+        try {
+            const conversations = await axios(`${this.host}/conversations`, {
+                method: 'get', 
+                headers: {
+                    'Accept': 'application/json', 
+                    'Content-Type': 'application/json'
+                }
+            })
+            return conversations.data.filter(convo => convo['_id'] == id)
+        } catch (error) {
+            console.error(error)
+        }
 
     }
 }

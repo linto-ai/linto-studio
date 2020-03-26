@@ -22,7 +22,10 @@ function configureDefaults() {
         process.env.DB_HOST = ifHas(process.env.DB_HOST, envdefault.DB_HOST)
         process.env.DB_USER = ifHas(process.env.DB_USER, envdefault.DB_USER)
         process.env.DB_PASS = ifHas(process.env.DB_PASS, envdefault.DB_PASS)
-        //process.env.COMPONENTS = ifHasNotThrow(process.env.COMPONENTS, Error("No COMPONENTS envvar specified"))
+        process.env.DB_PORT = ifHas(process.env.DB_PORT, envdefault.DB_PORT)
+        process.env.DB_NAME = ifHas(process.env.DB_NAME, envdefault.DB_NAME)
+        process.env.DB_REQUIRE_LOGIN = ifHas(process.env.DB_REQUIRE_LOGIN, envdefault.DB_REQUIRE_LOGIN)
+        process.env.COMPONENTS = ifHasNotThrow(process.env.COMPONENTS, Error("No COMPONENTS envvar specified"))
     } catch (e) {
         console.error(debug.namespace, e)
         process.exit(1)

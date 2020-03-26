@@ -4,7 +4,7 @@
   "description": "bits of AI inside",
   "main": "app.js",
   "scripts": {
-    "start": "NODE_ENV=production node app.js",
+    "start": "DEBUG=app/* NODE_ENV=production node app.js",
     "start-debug": "NODE_ENV=development DEBUG=app/* node app.js"
   },
   "author": "",
@@ -18,7 +18,10 @@
     "eventemitter3": "^4.0.0",
     "express": "^4.17.1",
     "express-session": "^1.16.2",
+    "mongodb": "^3.5.2",
     "ora": "^3.4.0",
+    "randomstring": "^1.1.5",
+    "sha1": "^1.1.1",
     "socket.io": "^2.2.0",
     "swagger-ui-dist": "^3.25.0"
   }

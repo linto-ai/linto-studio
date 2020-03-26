@@ -3,16 +3,6 @@
         "id": 0,
         "username": "test",
         "password": "test"
-    }, 
-    {
-        "id": 1, 
-        "username": "blah", 
-        "password":  "blah"
-    }, 
-    {
-        "id": 2, 
-        "username": "derp", 
-        "password":  "derp"
     }],
     "conversations": [{
         "scribe": "Authot",

@@ -23,7 +23,8 @@ function checkAuth(req, res, next) {
 					res.redirect('/')
 				} else if (req.session.logged == 'on' && req.url != '/login') {
 					//Pass !
-					next()
+                    //next()
+                    res.redirect('/api')
 				} else if (req.session.logged != 'on' && req.url != '/login') {
 					//Not logged, redirect to login page
 					res.redirect('/login')
