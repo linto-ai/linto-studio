@@ -2,41 +2,40 @@ openapi: '3.0.0'
 info:
   version: '1.0.0'
   title: 'Conversation manager API client'
-  description: 'Blah blah'
+  description: 'a tool for listening to, reading, editing and annotating a conversation transcript'
   termsOfService: https://doc.linto.ai/#/?id=gnu-affero-general-public-licence-v3
   contact:
     name: LINAGORA
     url: http://linto.ai
     email: contact@linto.ai
-# paths: {}
+#servers:
 host: localhost:8000
-basePath: /api
+basePath: /
 schemes:
  - https
 paths:
-  /:
-    get:
-      security:
-        - cookieAuth: []
-      description: sdfasdaf
-      responses: 
-        '200':
-          description: OK
-        '401':
-          description: Not authenticated
-        '404':
-          description: Page not found 
-
-  /login:
+  # /:
+  #   get:
+  #     security:
+  #       - cookieAuth: []
+  #     description: sdfasdaf
+  #     responses: 
+  #       '200':
+  #         description: OK
+  #       '401':
+  #         description: Not authenticated
+  #       '404':
+  #         description: Page not found 
+  /login: 
     post:
-      summary: Logs in and returns the authentication  cookie
+      tags:
+        - "users"
+      summary: Logs in a user and returns the authentication cookie
       requestBody:
         required: true
-        description: A JSON object containing the login and password.
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
+        description: A JSON object containing the username and password.
+        content:    
+              $ref: '#/components/schemas/UserLogin'
       # security: []    # no authentication
       responses:
         '200':
@@ -48,6 +47,179 @@ paths:
               schema: 
                 type: string
                 example: JSESSIONID=abcde12345; Path=/; HttpOnly
+        '400':
+          description: 
+        '404':
+          description:
+        default:
+          description:
+  /user: 
+    post:
+      tags:
+        - "users"
+      operationId: createUser
+      summary: creates a user
+      parameters:
+        - in: path
+          name: userName
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: password 
+          required: true
+          schema:
+            type: string 
+      responses:
+        '200':
+          description: user is successfully created
+          schema:
+            $ref: '#/components/schemas/User'
+        '400':
+          description: bad request error
+          schema:
+            $ref: '#components/schema/Error'
+  /user/{userid}:
+    get: 
+      tags:
+        - "users"
+      operationId: getUser
+      summary: Gets a user by id
+      description: gets a single user
+      parameters:
+        - in: path
+          name: userid
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: json document 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: bad request error
+          schema:
+            $ref: '#components/schema/Error'
+    put:
+      tags:
+        - "users"
+      summary: updates a user password
+      description: Adds conversation(s) id to a user's accessedMeetings
+      requestBody:
+        required: true 
+        description: A JSON object containing the user id and conversation id(s).
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                accessedMeetings:
+                  type: array
+                  items:
+                    type: integer 
+      responses:
+        '200':
+          description: Successfully updated.
+        '400': 
+          description: Invalid id supplied 
+        '404':
+          description: User not found 
+    delete:
+      tags:
+        - "users"
+      summary: deletes a user
+  /user/{userid}/addaccess/{conversationid}:
+    patch:
+      tags:
+        - "users"
+      summary: gives a user access to conversation(s)
+  /user/{userid}/removeaccess/{conversationid}: 
+    patch:
+      tags:
+        - "users"
+      summary: removes access to conversation(s) from a user
+
+  /users: 
+    get:
+      tags:
+        - "users"
+      summary: gets all users 
+    
+  /conversations: 
+    get:
+      tags:
+        - "conversations"
+      summary: gets all conversations
+      responses:
+        '200':
+          description: returns a list of conversations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Conversation'
+  /conversation:
+    post:
+      tags: 
+        - "conversations"
+      summary: creates a new conversation
+  /conversation/{conversationid}:
+    get: 
+      tags:
+        - "conversations"
+      summary: gets a conversation by id
+    delete: 
+      tags:
+        - "conversations"
+      summary: deletes conversation
+
+  /conversation/{conversationid}/agenda:
+    put:
+      tags:
+        - "conversations"
+      summary: replaces (empty) agenda 
+    patch:
+      tags:
+        - "conversations"
+      summary: modifies conversation agenda
+
+  /conversation/{conversationid}/summary:
+    put:
+      tags:
+        - "conversations"
+      summary: replaces (empty) summary 
+    patch:
+      tags:
+        - "conversations"
+      summary: modifies conversation summary 
+  
+  /conversation/{conversationid}/speakers:
+    get:
+      tags:
+        - "conversation/speakers"
+      summary: gets all speaker in a conversation
+  
+  /conversation/{conversationid}/speakers/{speakerid}:
+    get:
+      tags:
+        - "conversation/speakers"
+      summary: gets speaker name by speakerid
+    patch:
+      tags:
+        - "conversation/speakers"
+      summary: modifies (empty) speaker name
+    delete:
+      tags:
+        - "conversation/speakers"
+      summary: deletes speaker from conversation
+
+  /conversation/{conversationid}/editmode:
 
 
 components:
@@ -56,15 +228,126 @@ components:
       type: apiKey
       in: cookie
       name: JSESSIONID
+
+  # parameters:
+  # requestBodies:
+  # responses:
+  # headers:
+  # examples:
+  # links:
+  # callbacks:
+
   schemas:
-    User:
+    Error:
       type: object
       properties:
-        id:
-          type: integer
-        username:
+        status:
+          type: string
+    UserLogin:
+      type: object
+      properties:
+        userName:
           type: string 
         password:
           type: string
+          format: password 
+          writeOnly: true
+      required:
+        - userName
+        - password
+    User:
+      type: object
+      properties:
+        userid:
+          type: string
+          readOnly: true
+        userName:
+          type: string 
+        convoAccess:
+          type: array
+          items:
+            type: string
+        required:
+          - userid
+          - userName
+          - convoAcess 
+    Conversation:
+      type: object
+      properties:
+        id:
+          type: string
+        lastUpdated:
+          type: string
+          format: date-time
+        startDatetime: 
+          type: string
+          format: date-time
+        endDatetime:
+          type: string
+        location:
+          type: string
+        audio:
+          type: string
+          format: url
+        rawTranscript:
+          type: string
+        locked:
+          type: boolean
+        agenda:
+          type: array
+          items:
+            type: string 
+        participants:
+          type: object 
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+          required:
+            - id
+        keywords:
+          type: array
+          items:
+            type: string
+        annotations:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            comment:
+              type: string
+        summary:
+          type: string
+        processedTranscript:
+          type: array 
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              speakerId:
+                $ref '#components/schema/Conversation/participants/id'
+              timeStamp:
+                type: string
+              text:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    word:
+                      type: string
+                    timeStamp:
+                      type: string
+            required:
+              - id
+      required:
+        - id
+        - rawTranscript
+        - audio
 security:
   - cookieAuth: []
