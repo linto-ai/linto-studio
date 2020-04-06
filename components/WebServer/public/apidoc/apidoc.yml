@@ -59,17 +59,25 @@ paths:
         - "users"
       operationId: createUser
       summary: creates a user
-      parameters:
-        - in: path
-          name: userName
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: password 
-          required: true
-          schema:
-            type: string 
+      requestBody:
+        required: true
+        description: A JSON object containing the username and password.
+        content:   
+          application/json:
+            schema: 
+              type: object
+              properties:
+                userName: 
+                  type: string
+                password:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                convoAccess:
+                  type: array
+                  items:
+                    type: string 
       responses:
         '200':
           description: user is successfully created
@@ -78,7 +86,7 @@ paths:
         '400':
           description: bad request error
           schema:
-            $ref: '#components/schema/Error'
+            $ref: '#components/schemas/Error'
   /user/{userid}:
     get: 
       tags:
@@ -102,7 +110,7 @@ paths:
         '400':
           description: bad request error
           schema:
-            $ref: '#components/schema/Error'
+            $ref: '#components/schemas/Error'
     put:
       tags:
         - "users"
@@ -132,7 +140,20 @@ paths:
     delete:
       tags:
         - "users"
-      summary: deletes a user
+      summary: deletes a user by id
+      parameters:
+        - in: path
+          name: userid
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: json document 
+        '400':
+          description: bad request error
+          schema:
+            $ref: '#components/schemas/Error'
   /user/{userid}/addaccess/{conversationid}:
     patch:
       tags:
@@ -149,7 +170,18 @@ paths:
       tags:
         - "users"
       summary: gets all users 
-    
+      # requestBody:
+      #   description:
+      responses:
+        '200':
+          description: returns a list of users 
+          content:
+            application/json:
+              schema:
+                type: array 
+                items:
+                  $ref: '#/components/schemas/User'
+
   /conversations: 
     get:
       tags:
@@ -164,16 +196,23 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Conversation'
+
+  /conversations/{conversationidlist}:
+    get:
+      tags:
+        - "conversations"
+      summary: gets all conversations by ids in list of ids
+
   /conversation:
     post:
       tags: 
         - "conversations"
       summary: creates a new conversation
-  /conversation/{conversationid}:
+  /conversation/{conversationid}: 
     get: 
       tags:
         - "conversations"
-      summary: gets a conversation by id
+      summary: gets a conversation by id 
     delete: 
       tags:
         - "conversations"
@@ -263,6 +302,9 @@ components:
           readOnly: true
         userName:
           type: string 
+        email:
+          type: string
+          format: email
         convoAccess:
           type: array
           items:
