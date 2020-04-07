@@ -14,9 +14,9 @@ class UsersModel extends MongoModel {
             const query = {
                 _id: this.getObjectId(id) 
             }
-            console.log(query)
             const projection = {
-                userName : 1
+                userName : 1, 
+                convoAccess: 1
             }
             return await this.mongoRequest(query, projection)
         } catch (error) {
@@ -45,9 +45,9 @@ class UsersModel extends MongoModel {
         }
     }
 
-    // get all user ids
+    // get all users [ids only]
     async getAllUserIds() {
-        try {
+        try{
             const query = {}
             const projection = { _id: 1}
             return await this.mongoRequest(query, projection)
@@ -56,6 +56,19 @@ class UsersModel extends MongoModel {
             return error 
         }
     }
+
+    // get all users
+    async getAllUsers() {
+        try{
+            const query = {}
+            const projection = {pswdHash: 0, salt: 0} 
+            return await this.mongoRequest(query, projection)
+        } catch (error) {
+            console.error(error)
+            return error 
+        }
+    }
+
 
     // update a user conversation access
     async updateUserConvo(payload) {
@@ -106,7 +119,7 @@ class UsersModel extends MongoModel {
                 pswdHash: passwordHash, 
                 salt, 
                 role: "administrator", 
-                convoAccess : []
+                convoAccess : payload.accessArray
             }
             return await this.mongoInsert(userPayload)
         } catch (error) {

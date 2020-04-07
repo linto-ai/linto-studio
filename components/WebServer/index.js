@@ -38,6 +38,7 @@ class WebServer extends Component {
         })
 
         require('./routes/router.js')(this) // Loads all defined routes
+        //crequire('./routecontrollers')(this) // Loads all defined routes
         
         this.express.use('/', express.static(path.resolve(__dirname, './public'))) // Attaches ./public folder to / route
         this.express.use('/swagger-ui/', express.static(pathToSwaggerUi)) // Attaches swagger-ui JS file to /swagger-ui route

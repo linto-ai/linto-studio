@@ -1,9 +1,13 @@
 const debug = require('debug')('app:router:login')
-const model = require(`${process.cwd()}//models/mongodb/models/users`)
+const model = require(`${process.cwd()}/models/mongodb/models/users`)
 const sha1 = require('sha1')
+// const {
+// 	test,
+// 	checkauth
+// } = require(`${process.cwd()}/routecontrollers/login/index.js`)
 
 
-module.exports = (webServer) => {
+module.exports = webServer => {
 	return [{
 			path: '/',
 			method: 'get',
@@ -11,7 +15,7 @@ module.exports = (webServer) => {
 			controller: async (req, res, next) => {
 				try {
 					const getUsers = await model.getAllUserIds()
-					// Check if an user exist
+					// Check if users
 					if (!!getUsers && getUsers.length > 0) {
 						res.setHeader("Content-Type", "text/html")
 						res.sendFile(process.cwd() + '/components/WebServer/public/login.html')
@@ -25,6 +29,12 @@ module.exports = (webServer) => {
 				}
 			}
 		},
+		// {
+		// 	path: '/test',
+		// 	method: 'get',
+		// 	requireAuth: true,
+		// 	controller: [checkauth, test]
+		// },
 		{
 			path: '/',
 			method: 'post',
@@ -49,22 +59,24 @@ module.exports = (webServer) => {
 										throw "Error on saving session"
 									} else {
 										//Valid password
-										res.json({
-											"status": "success",
-											"msg": "valid"
-										})
+										// res.json({
+										// 	"status": "success",
+										// 	"msg": "valid"
+                                        // })
+                                        res.redirect('/api')
 									}
-								})
+                                })
 							} else {
 								// Invalid password
 								throw "Invalid password"
 							}
 						}
 					} catch (error) {
-						res.json({
-							status: "error",
-							msg: error
-						})
+						// res.json({
+						// 	status: "error",
+                        //     msg: error,
+                        // })
+                        res.sendFile(process.cwd() + '/components/WebServer/public/login.html') 
 					}
 				} else {
 					res.json({

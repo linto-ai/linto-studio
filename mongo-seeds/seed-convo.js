@@ -1,6 +1,6 @@
 db.conversations.insert(
     {
-        "_id": "001",
+        "_id": "55153a8014829a865bbf700f",
         "name": "Linagora A",
         "mtype": "decision",
         "locked": "0",

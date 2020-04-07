@@ -197,7 +197,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/Conversation'
 
-  /conversations/{conversationidlist}:
+  /conversations/{conversationids}:
     get:
       tags:
         - "conversations"
@@ -258,7 +258,15 @@ paths:
         - "conversation/speakers"
       summary: deletes speaker from conversation
 
+  /conversation/{conversationid}/speakers/{speakerids}:
+     put:
+      tags: 
+        - "conversation/speakers"
+      summary: replaces speaker ids
+
   /conversation/{conversationid}/editmode:
+
+  /conversation/{conversationid}/annotate:
 
 
 components:
@@ -316,7 +324,7 @@ components:
     Conversation:
       type: object
       properties:
-        id:
+        conversationid:
           type: string
         lastUpdated:
           type: string
@@ -339,15 +347,18 @@ components:
           type: array
           items:
             type: string 
-        participants:
+        speakers:
           type: object 
           properties:
-            id:
-              type: integer
-            name:
+            speakerid:
               type: string
+            speakername:
+              type: string
+            audiosample:
+              type: string
+              format: mp3??
           required:
-            - id
+            - speakerid
         keywords:
           type: array
           items:
@@ -368,10 +379,10 @@ components:
           items:
             type: object
             properties:
-              id:
-                type: integer
-              speakerId:
-                $ref '#components/schema/Conversation/participants/id'
+              turnid:
+                type: string
+              speakerid:
+                type: string
               timeStamp:
                 type: string
               text:
@@ -379,16 +390,20 @@ components:
                 items:
                   type: object
                   properties:
-                    id:
-                      type: integer
+                    wordid:
+                      type: string
                     word:
                       type: string
                     timeStamp:
                       type: string
+                  required:
+                    - wordid
+                    - word
             required:
-              - id
+              - turnid
+              - speakerid
       required:
-        - id
+        - conversationid
         - rawTranscript
         - audio
 security:

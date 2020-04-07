@@ -20,11 +20,10 @@ function checkAuth(req, res, next) {
 							console.error('Err:', err)
 						}
 					})
-					res.redirect('/')
+					res.redirect('/api')
 				} else if (req.session.logged == 'on' && req.url != '/login') {
 					//Pass !
-                    //next()
-                    res.redirect('/api')
+                    next()
 				} else if (req.session.logged != 'on' && req.url != '/login') {
 					//Not logged, redirect to login page
 					res.redirect('/login')
