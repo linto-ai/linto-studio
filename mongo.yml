@@ -7,7 +7,7 @@ services:
     image: mongo
     volumes:
       #- ./mongo-seeds:/docker-entrypoint-initdb.d
-      - .~/.dbdata:/data/db
+      - ./database:/data/db
     restart: always
     ports:
       - 27017:27017

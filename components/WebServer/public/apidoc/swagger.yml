@@ -10,7 +10,7 @@ info:
     email: contact@linto.ai
 #servers:
 host: localhost:8000
-basePath: /
+basePath: /api
 schemes:
  - https
 paths:
