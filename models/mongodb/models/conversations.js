@@ -10,18 +10,18 @@ class ConvoModel extends MongoModel {
     async createConvoBase(payload) {
         try {
             const newConvo = {
-                _id: this.getObjectId(), 
+                _id: this.getObjectId(),
                 //startTime: asdf, 
                 //endTime: asdf, 
-                location: payload.loc, 
+                location: payload.loc,
                 name: payload.name,
-                type: payload.type, 
+                type: payload.type,
                 //lastUpdated: asdfds,
                 locked: 0
             }
             return await this.mongoInsert(newConvo)
         } catch (error) {
-            console.log(error)
+            console.error(error)
             return error
         }
     }

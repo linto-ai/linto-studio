@@ -12,10 +12,11 @@ class UsersModel extends MongoModel {
     async getUserbyId(id) {
         try {
             const query = {
-                _id: this.getObjectId(id) 
+                _id: this.getObjectId(id)
             }
             const projection = {
-                userName : 1, 
+                userName: 1,
+                email: 1,
                 convoAccess: 1
             }
             return await this.mongoRequest(query, projection)
@@ -26,46 +27,64 @@ class UsersModel extends MongoModel {
     }
 
     // get a user by name
-    async getUserByName(userName) {
+    async getUserByName(username) {
         try {
             const query = {
-                userName: userName
+                username: username
             }
             const projection = {
-                _id : 1, 
-                userName : 1, 
-                salt: 1,
-                pswdHash: 1,
+                _id: 1,
+                username: 1,
+                email: 1,
                 convoAccess: 1
             }
             return await this.mongoRequest(query, projection)
         } catch (error) {
             console.error(error)
-            return error 
+            return error
+        }
+    }
+
+    // Get a user by email
+    async getUserByEmail(email) {
+        try {
+            const query = {
+                email: email
+            }
+            const projection = {
+                _id: 1,
+                username: 1,
+                email: 1,
+                convoAccess: 1
+            }
+            return await this.mongoRequest(query, projection)
+        } catch (error) {
+            console.error(error)
+            return error
         }
     }
 
     // get all users [ids only]
     async getAllUserIds() {
-        try{
+        try {
             const query = {}
-            const projection = { _id: 1}
+            const projection = { _id: 1 }
             return await this.mongoRequest(query, projection)
         } catch (error) {
             console.error(error)
-            return error 
+            return error
         }
     }
 
     // get all users
     async getAllUsers() {
-        try{
+        try {
             const query = {}
-            const projection = {pswdHash: 0, salt: 0} 
+            const projection = { pswdHash: 0, salt: 0 }
             return await this.mongoRequest(query, projection)
         } catch (error) {
             console.error(error)
-            return error 
+            return error
         }
     }
 
@@ -114,12 +133,11 @@ class UsersModel extends MongoModel {
             const salt = randomstring.generate(12)
             const passwordHash = sha1(payload.password + salt)
             const userPayload = {
-                userName: payload.name, 
-                email: payload.email, 
-                pswdHash: passwordHash, 
-                salt, 
-                role: "administrator", 
-                convoAccess : payload.accessArray
+                username: payload.username,
+                email: payload.email,
+                passwordHash,
+                salt,
+                convoAccess: []
             }
             return await this.mongoInsert(userPayload)
         } catch (error) {

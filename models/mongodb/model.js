@@ -19,7 +19,7 @@ class MongoModel {
                         reject(error)
                     }
                     resolve(result)
-                }) 
+                })
 
             } catch (error) {
                 console.error(error.toString())
@@ -28,7 +28,7 @@ class MongoModel {
 
         })
     }
-    
+
 
     // Insert/Create ONE
     async mongoInsert(payload) {
@@ -38,7 +38,7 @@ class MongoModel {
                     if (error) {
                         reject(error)
                     }
-                    resolve(result)
+                    resolve('success')
                 })
             } catch (error) {
                 console.error(error)
@@ -86,8 +86,8 @@ class MongoModel {
             }
         })
 
-    } 
-   
+    }
+
 }
 
 module.exports = MongoModel
