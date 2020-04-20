@@ -1,17 +1,5 @@
 const model = require(`${process.cwd()}/models/mongodb/models/users`)
 
-async function getUsers(req, res, next) {
-    try {
-        let lol = await model.getAllUsers()
-        res.json({
-            status: lol
-        })
-    } catch (error) {
-        console.error(error)
-    }
-
-}
-
 async function getUserbyId(req, res, next) {
     // get user id input then return user
     try {
@@ -129,7 +117,6 @@ async function addUserConvoAccess(req, res, next) {
         // const useradd = payload.userId
         // const rights = payload.rights
         //console.log(payload)
-        console.log(payload)
         const addConvo = await model.updateUserConvo(payload)
         if (addConvo === 'success') {
             res.json({
@@ -161,7 +148,6 @@ async function removeUserConvoAccess(req, res, next) {
 }
 
 module.exports = {
-    getUsers,
     getUserbyId,
     getUserByEmail,
     getUserByName,

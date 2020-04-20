@@ -1,5 +1,5 @@
-const debug = require('debug')('app:router:api:user')
-const {createUser, getUserbyId, getUserByName, deleteUser, addUserConvoAccess} = require(`${process.cwd()}/components/WebServer/routecontrollers/users/index.js`)
+const debug = require('debug')('app:router:api:user:user')
+const {createUser, getUserbyId, getUserByName, deleteUser, addUserConvoAccess} = require(`${process.cwd()}/components/WebServer/routecontrollers/user/user.js`)
 const {isOwner} = require(`${process.cwd()}/components/WebServer/middlewares`)
 
 
