@@ -113,17 +113,14 @@ async function deleteUser(req, res, next) {
 async function addUserConvoAccess(req, res, next) {
     try {
         const payload = req.body
-        // const convoid = payload.convoId
-        // const useradd = payload.userId
-        // const rights = payload.rights
-        //console.log(payload)
-        const addConvo = await model.updateUserConvo(payload)
+        const addConvo = await model.updateUserAccess(payload)
         if (addConvo === 'success') {
             res.json({
                 status: 'success',
                 msg: 'convo has been added to user'
             })
-            //!! now need to add user to convo with rights
+            //!! now need to add user to convo with rights??
+
         } else {
             res.json({
                 status: "error",
@@ -141,9 +138,26 @@ async function addUserConvoAccess(req, res, next) {
 /// WIP
 async function removeUserConvoAccess(req, res, next) {
     try {
-
+        const payload = req.body
+        const removeConvo = await model.removeUserAccess(payload)
+        if (removeConvo === 'success') {
+            res.json({
+                status: 'success',
+                msg: 'convo has been added to user'
+            })
+            //!! now need to remove user from convo?
+            
+        } else {
+            res.json({
+                status: "error",
+                msg: error
+            })
+        }
     } catch(error) {
-
+        res.json({
+            status: "error",
+            msg: error
+        })
     }
 }
 
@@ -153,5 +167,6 @@ module.exports = {
     getUserByName,
     deleteUser,
     createUser, 
-    addUserConvoAccess
+    addUserConvoAccess, 
+    removeUserConvoAccess
 }

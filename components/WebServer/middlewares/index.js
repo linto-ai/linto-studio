@@ -14,13 +14,9 @@ async function isOwner(req, res, next) {
     if (isProduction()) {
         if (req && req.session){
             const userid = req.session.userid
-            console.log("userid", userid)
             try{
                 const user = await userModel.getUserbyId(userid)
-                console.log(user)
-                //[0] //check user convo access
                 const convos = user[0].convoAccess[req.body.convoId]
-                console.log(convos)
                 if (convos === 'owner') {
                     //Pass!
                     next()

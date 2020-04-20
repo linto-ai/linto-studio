@@ -1,5 +1,11 @@
 const debug = require('debug')('app:router:api:user:user')
-const {createUser, getUserbyId, getUserByName, deleteUser, addUserConvoAccess} = require(`${process.cwd()}/components/WebServer/routecontrollers/user/user.js`)
+const {
+    createUser, 
+    getUserbyId, 
+    getUserByName, 
+    deleteUser, 
+    addUserConvoAccess, 
+    removeUserConvoAccess} = require(`${process.cwd()}/components/WebServer/routecontrollers/user/user.js`)
 const {isOwner} = require(`${process.cwd()}/components/WebServer/middlewares`)
 
 
@@ -32,6 +38,12 @@ module.exports = (webserver) => {
             method: 'patch', 
             requireAuth: false, 
             controller: [isOwner, addUserConvoAccess] 
+        }, 
+        {
+            path: '/:userid/removeaccess/:conversationid', 
+            method: 'patch', 
+            requireAuth: false, 
+            controller: [isOwner, removeUserConvoAccess]
         }
     ]
 }

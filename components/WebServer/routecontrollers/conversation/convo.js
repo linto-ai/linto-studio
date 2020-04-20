@@ -21,7 +21,7 @@ async function createConvoBase(req, res, next) {
                     convoId: createBase,
                     userRights: 'owner'
                 }
-                const userUpdate = await userModel.updateUserConvo(newPayload)
+                const userUpdate = await userModel.updateUserAccess(newPayload)
                 if (userUpdate != undefined) {
                     console.log({
                         status: 'success', 

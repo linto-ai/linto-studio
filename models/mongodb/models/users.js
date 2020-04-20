@@ -103,7 +103,7 @@ class UsersModel extends MongoModel {
 
 
     // update a user conversation access
-    async updateUserConvo(payload) {
+    async updateUserAccess(payload) {
         try {
             const operator = "$set"
             const query = {
@@ -111,8 +111,6 @@ class UsersModel extends MongoModel {
             }
             let mutableElements = {}
             mutableElements[`convoAccess.${payload.convoId}`] = payload.userRights
-            //mutableElements = {"convoAccess.convoId" : "rights"}
-            //delete mutableElements.userId
             return await this.mongoUpdate(query, operator, mutableElements)
         } catch (error) {
             console.error(error)
@@ -123,15 +121,12 @@ class UsersModel extends MongoModel {
     // removes conversations by id from user convoAccess list !!NOT WORKING YET
     async removeUserAccess(payload) {
         try {
-            const operator = "$pull"
+            const operator = "$unset"
             const query = {
-                _id: this.getObjectId(payload.id)
+                _id: this.getObjectId(payload.userId)
             }
-            let mutableElements = payload
-            delete mutableElements._id
-            console.log(query)
-            console.log(operator)
-            console.log(mutableElements)
+            let mutableElements = {}
+            mutableElements[`convoAccess.${payload.convoId}`] = payload.userRights
             return await this.mongoUpdate(query, operator, mutableElements)
 
         } catch (error) {

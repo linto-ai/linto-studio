@@ -192,8 +192,27 @@ paths:
     patch:
       tags:
         - "users"
+      operationId: removeUserAccess
       summary: removes access to conversation(s) from a user
-
+      requestBody:
+        required: true
+        description: A JSON object containing the conversationid and user rights
+        content:   
+          application/json:
+            schema: 
+              type: object
+              properties:
+                userId:
+                  type: string
+                convoId: 
+                  type: string
+      responses:
+        '200':
+          description: successfully removed
+        '403':
+          description: not authorized
+        '404':
+          description: not found
   /api/users: 
     get:
       tags:
