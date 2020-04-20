@@ -31,7 +31,7 @@ module.exports = (webserver) => {
             path: '/:userid/addaccess/:conversationid', 
             method: 'patch', 
             requireAuth: false, 
-            controller: isOwner, addUserConvoAccess //!! isn't passing from one function to another
+            controller: [isOwner, addUserConvoAccess] 
         }
     ]
 }

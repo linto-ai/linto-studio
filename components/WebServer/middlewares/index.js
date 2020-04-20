@@ -23,7 +23,7 @@ async function isOwner(req, res, next) {
                 console.log(convos)
                 if (convos === 'owner') {
                     //Pass!
-                    res.next()
+                    next()
                 } else {
                     throw ({
                         status: 'error',

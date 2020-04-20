@@ -110,7 +110,7 @@ class UsersModel extends MongoModel {
                 _id: this.getObjectId(payload.userId)
             }
             let mutableElements = {}
-            mutableElements[`convoAccess.${payload.convoId}`] = payload.rights
+            mutableElements[`convoAccess.${payload.convoId}`] = payload.userRights
             //mutableElements = {"convoAccess.convoId" : "rights"}
             //delete mutableElements.userId
             return await this.mongoUpdate(query, operator, mutableElements)

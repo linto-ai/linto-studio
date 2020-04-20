@@ -182,7 +182,7 @@ paths:
                 userRights:
                   type: string 
       responses:
-        '201':
+        '200':
           description: successfully updated 
         '403':
           description: not authorized

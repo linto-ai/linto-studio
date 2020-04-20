@@ -136,6 +136,7 @@ async function addUserConvoAccess(req, res, next) {
                 status: 'success',
                 msg: 'convo has been added to user'
             })
+            //!! now need to add user to convo with rights
         } else {
             res.json({
                 status: "error",
