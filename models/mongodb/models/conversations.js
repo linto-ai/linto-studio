@@ -7,17 +7,20 @@ class ConvoModel extends MongoModel {
     }
 
     //create conversation
+    // WIP -- verify user id -- update user 
     async createConvoBase(payload) {
         try {
+            const creationDate = new Date()
             const newConvo = {
-                _id: this.getObjectId(),
                 //startTime: asdf, 
                 //endTime: asdf, 
-                location: payload.loc,
+                //location: payload.loc,
                 name: payload.name,
-                type: payload.type,
+                //type: payload.type,
                 //lastUpdated: asdfds,
-                locked: 0
+                created: creationDate,
+                locked: 0,
+                owner: payload.ownerId 
             }
             return await this.mongoInsert(newConvo)
         } catch (error) {
@@ -29,6 +32,18 @@ class ConvoModel extends MongoModel {
     //update conversation
 
     //get a conversation by id
+
+    // get all conversations
+    async getAllConvos() {
+        try {
+            const query = {}
+            const projection = { _id: 1, name: 1}
+            return await this.mongoRequest(query, projection)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
 
 }
 

@@ -58,42 +58,44 @@ async function getUserByEmail(req, res, next) {
 }
 
 async function createUser(req, res, next) {
+    // WIP -- ADD PASSWORD REQUIREMENTS 
+    // WIP -- ADD name and email form requirements
     try {
         const payload = req.body
-        const username = payload.username
+        const username = payload.userName
         const email = payload.email
-        const password = payload.password
+        //const password = payload.password
 
-        // check if user doesn't exist
+        // check user parameters ==> should we use the getUserbyName controller function here instead?
         const getUserName = await model.getUserByName(username)
         if (getUserName.length > 0) {
             throw ({
                 status: 'error',
-                msg: 'User name is already used',
+                msg: 'User name already exists',
                 code: 'UsernameAlreadyUsed'
             })
-        }
-
-        const getUserEmail = await model.getUserByEmail(email)
-        if (getUserEmail.length > 0) {
-            throw ({
-                status: 'error',
-                msg: 'Email address is already used',
-                code: 'EmailAlreadyUsed'
-            })
-        }
-
-        const createUser = await model.createUser({
-            username,
-            email,
-            password
-        })
-
-        if (createUser === 'success') {
-            res.json({
-                status: 'success',
-                msg: 'User has been created'
-            })
+        } else {
+            const getUserEmail = await model.getUserByEmail(email)
+            if (getUserEmail.length > 0) {
+                throw ({
+                    status: 'error',
+                    msg: 'Email address already exists',
+                    code: 'EmailAlreadyUsed'
+                })
+            } else {
+                const createUser = await model.createUser(payload)
+                if (createUser === 'success') {
+                    res.json({
+                        status: 'success',
+                        msg: 'User has been created'
+                    })
+                } else {
+                    res.json({
+                        status: "error",
+                        msg: error
+                    })
+                }
+            }
         }
     } catch (error) {
         console.error(error)
@@ -120,11 +122,49 @@ async function deleteUser(req, res, next) {
     }
 }
 
+async function addUserConvoAccess(req, res, next) {
+    try {
+        const payload = req.body
+        // const convoid = payload.convoId
+        // const useradd = payload.userId
+        // const rights = payload.rights
+        //console.log(payload)
+        console.log(payload)
+        const addConvo = await model.updateUserConvo(payload)
+        if (addConvo === 'success') {
+            res.json({
+                status: 'success',
+                msg: 'convo has been added to user'
+            })
+        } else {
+            res.json({
+                status: "error",
+                msg: error
+            })
+        }
+    } catch(error) {
+        res.json({
+            status: "error",
+            msg: error
+        })
+    }
+}
+
+/// WIP
+async function removeUserConvoAccess(req, res, next) {
+    try {
+
+    } catch(error) {
+
+    }
+}
+
 module.exports = {
     getUsers,
     getUserbyId,
     getUserByEmail,
     getUserByName,
     deleteUser,
-    createUser
+    createUser, 
+    addUserConvoAccess
 }

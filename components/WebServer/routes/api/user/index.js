@@ -1,6 +1,6 @@
 const debug = require('debug')('app:router:api:user')
-const { createUser, getUserbyId, getUserByEmail, getUserByName, deleteUser } = require(`${process.cwd()}/components/WebServer/routecontrollers/users/index.js`)
-
+const {createUser, getUserbyId, getUserByName, deleteUser, addUserConvoAccess} = require(`${process.cwd()}/components/WebServer/routecontrollers/users/index.js`)
+const {isOwner} = require(`${process.cwd()}/components/WebServer/middlewares`)
 
 
 module.exports = (webserver) => {
@@ -9,7 +9,6 @@ module.exports = (webserver) => {
             method: 'post',
             requireAuth: false,
             controller: createUser
-
         },
         {
             path: '/:userid',
@@ -23,16 +22,16 @@ module.exports = (webserver) => {
             controller: getUserByName
         },
         {
-            path: '/email/:email',
-            method: 'get',
-            requireAuth: false,
-            controller: getUserByEmail
-        },
-        {
             path: '/:userid',
             method: 'delete',
             requireAuth: false,
             controller: deleteUser
+        }, 
+        {
+            path: '/:userid/addaccess/:conversationid', 
+            method: 'patch', 
+            requireAuth: false, 
+            controller: isOwner, addUserConvoAccess //!! isn't passing from one function to another
         }
     ]
 }

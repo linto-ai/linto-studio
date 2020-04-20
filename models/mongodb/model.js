@@ -38,7 +38,8 @@ class MongoModel {
                     if (error) {
                         reject(error)
                     }
-                    resolve('success')
+                    //resolve('success')
+                    resolve(result.insertedId)
                 })
             } catch (error) {
                 console.error(error)

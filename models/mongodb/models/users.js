@@ -26,16 +26,29 @@ class UsersModel extends MongoModel {
         }
     }
 
+    // check user login information by user name
+    async getUserLoginInfo(username) {
+        try {
+            const query = {
+                userName: username
+            }
+            const projection = {}
+            return await this.mongoRequest(query, projection)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
     // get a user by name
     async getUserByName(username) {
         try {
             const query = {
-                username: username
+                userName: username
             }
             const projection = {
                 _id: 1,
-                username: 1,
-                email: 1,
+                userName: 1,
                 convoAccess: 1
             }
             return await this.mongoRequest(query, projection)
@@ -53,7 +66,7 @@ class UsersModel extends MongoModel {
             }
             const projection = {
                 _id: 1,
-                username: 1,
+                userName: 1,
                 email: 1,
                 convoAccess: 1
             }
@@ -92,12 +105,14 @@ class UsersModel extends MongoModel {
     // update a user conversation access
     async updateUserConvo(payload) {
         try {
-            const operator = "$addToSet"
+            const operator = "$set"
             const query = {
-                _id: this.getObjectId(payload._id)
+                _id: this.getObjectId(payload.userId)
             }
-            let mutableElements = payload
-            delete mutableElements._id
+            let mutableElements = {}
+            mutableElements[`convoAccess.${payload.convoId}`] = payload.rights
+            //mutableElements = {"convoAccess.convoId" : "rights"}
+            //delete mutableElements.userId
             return await this.mongoUpdate(query, operator, mutableElements)
         } catch (error) {
             console.error(error)
@@ -133,11 +148,10 @@ class UsersModel extends MongoModel {
             const salt = randomstring.generate(12)
             const passwordHash = sha1(payload.password + salt)
             const userPayload = {
-                username: payload.username,
+                userName: payload.userName,
                 email: payload.email,
                 passwordHash,
-                salt,
-                convoAccess: []
+                salt
             }
             return await this.mongoInsert(userPayload)
         } catch (error) {

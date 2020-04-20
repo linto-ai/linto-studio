@@ -10,7 +10,7 @@ info:
     email: contact@linto.ai
 #servers:
 host: localhost:8000
-basePath: /api
+basePath: /
 schemes:
  - https
 paths:
@@ -34,7 +34,9 @@ paths:
       requestBody:
         required: true
         description: A JSON object containing the username and password.
-        content:    
+        content:
+          application/json:
+            schema:
               $ref: '#/components/schemas/UserLogin'
       # security: []    # no authentication
       responses:
@@ -53,7 +55,7 @@ paths:
           description:
         default:
           description:
-  /user: 
+  /api/user: 
     post:
       tags:
         - "users"
@@ -74,12 +76,17 @@ paths:
                 email:
                   type: string
                   format: email
-                convoAccess:
-                  type: array
-                  items:
-                    type: string 
+                # convoAccess:
+                #   type: array
+                #   items: 
+                #     type: object 
+                #     properties:
+                #       conversationid:
+                #         type: string 
+                #       accessType:
+                #         type: string
       responses:
-        '200':
+        '201':
           description: user is successfully created
           schema:
             $ref: '#/components/schemas/User'
@@ -87,7 +94,7 @@ paths:
           description: bad request error
           schema:
             $ref: '#components/schemas/Error'
-  /user/{userid}:
+  /api/user/{userid}:
     get: 
       tags:
         - "users"
@@ -154,18 +161,40 @@ paths:
           description: bad request error
           schema:
             $ref: '#components/schemas/Error'
-  /user/{userid}/addaccess/{conversationid}:
+  /api/user/{userid}/addaccess/{conversationid}:
     patch:
       tags:
         - "users"
+      operationId: updateUserAccess
       summary: gives a user access to conversation(s)
-  /user/{userid}/removeaccess/{conversationid}: 
+      requestBody:
+        required: true
+        description: A JSON object containing the conversationid and user rights
+        content:   
+          application/json:
+            schema: 
+              type: object
+              properties:
+                userId:
+                  type: string
+                convoId: 
+                  type: string
+                userRights:
+                  type: string 
+      responses:
+        '201':
+          description: successfully updated 
+        '403':
+          description: not authorized
+        '404':
+          description: not found
+  /api/user/{userid}/removeaccess/{conversationid}: 
     patch:
       tags:
         - "users"
       summary: removes access to conversation(s) from a user
 
-  /users: 
+  /api/users: 
     get:
       tags:
         - "users"
@@ -182,7 +211,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/User'
 
-  /conversations: 
+  /api/conversations: 
     get:
       tags:
         - "conversations"
@@ -197,18 +226,45 @@ paths:
                 items:
                   $ref: '#/components/schemas/Conversation'
 
-  /conversations/{conversationids}:
+  /api/conversations/{conversationids}:
     get:
       tags:
         - "conversations"
       summary: gets all conversations by ids in list of ids
 
-  /conversation:
+  /api/conversation:
     post:
       tags: 
         - "conversations"
-      summary: creates a new conversation
-  /conversation/{conversationid}: 
+      summary: creates a new conversation base
+      requestBody:
+        required: true
+        description: A JSON object containing the owner id and conversation name.
+        content:   
+          application/json:
+            schema: 
+              type: object
+              properties:
+                name: 
+                  type: string
+      responses:
+        '201':
+          description: conversation is successfully created 
+          schema:
+            $ref: '#/components/schemas/Conversation'
+        links:
+          updateUserConvoAccess:
+            operationId: updateUserAccess
+            parameters: 
+              conversationid: ''
+            # description: > 
+            #   The conversation id value can be used to update 
+        '400':
+          description: bad request error
+          schema:
+            $ref: '#components/schemas/Error'
+
+  /api/conversation/{conversationid}: 
     get: 
       tags:
         - "conversations"
@@ -218,7 +274,7 @@ paths:
         - "conversations"
       summary: deletes conversation
 
-  /conversation/{conversationid}/agenda:
+  /api/conversation/{conversationid}/agenda:
     put:
       tags:
         - "conversations"
@@ -228,7 +284,7 @@ paths:
         - "conversations"
       summary: modifies conversation agenda
 
-  /conversation/{conversationid}/summary:
+  /api/conversation/{conversationid}/summary:
     put:
       tags:
         - "conversations"
@@ -238,13 +294,13 @@ paths:
         - "conversations"
       summary: modifies conversation summary 
   
-  /conversation/{conversationid}/speakers:
+  /api/conversation/{conversationid}/speakers:
     get:
       tags:
         - "conversation/speakers"
       summary: gets all speaker in a conversation
   
-  /conversation/{conversationid}/speakers/{speakerid}:
+  /api/conversation/{conversationid}/speakers/{speakerid}:
     get:
       tags:
         - "conversation/speakers"
@@ -258,15 +314,15 @@ paths:
         - "conversation/speakers"
       summary: deletes speaker from conversation
 
-  /conversation/{conversationid}/speakers/{speakerids}:
+  /api/conversation/{conversationid}/speakers/{speakerids}:
      put:
       tags: 
         - "conversation/speakers"
       summary: replaces speaker ids
 
-  /conversation/{conversationid}/editmode:
+  /api/conversation/{conversationid}/editmode:
 
-  /conversation/{conversationid}/annotate:
+  /api/conversation/{conversationid}/annotate:
 
 
 components:
@@ -315,8 +371,13 @@ components:
           format: email
         convoAccess:
           type: array
-          items:
-            type: string
+          items: 
+            type: object 
+            properties:
+              conversationid:
+                type: string 
+              accessType:
+                type: string
         required:
           - userid
           - userName
@@ -343,6 +404,15 @@ components:
           type: string
         locked:
           type: boolean
+        users:
+          type: array
+          items:
+            type: object
+            properties:
+              userid:
+                type: string 
+              accessType:
+                type: string
         agenda:
           type: array
           items:
