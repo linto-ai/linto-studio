@@ -1,6 +1,5 @@
 const debug = require('debug')('app:router:login')
 const model = require(`${process.cwd()}/models/mongodb/models/users`)
-const sha1 = require('sha1')
 const {userLogin} = require(`${process.cwd()}/components/WebServer/routecontrollers/login/index.js`)
     // const {
     // 	test,

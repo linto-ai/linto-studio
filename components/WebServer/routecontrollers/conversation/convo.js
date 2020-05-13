@@ -2,48 +2,41 @@ const convoModel = require(`${process.cwd()}/models/mongodb/models/conversations
 const userModel = require(`${process.cwd()}/models/mongodb/models/users`)
 
 
-// create a conversation base after checking user id etc.
+// create a conversation base 
+// TODO: check user id
 async function createConvoBase(req, res, next) {
     try{
-        if (req.session.userid != undefined){
-            const payload = req.body
-            // const name = payload.name
-            payload.ownerId = req.session.userid
-            const createBase = await convoModel.createConvoBase(payload)
-            if (createBase != undefined) {
-                res.json({
-                    status: 'success',
-                    msg: 'convo has been created'
+        const payload = req.body
+        // const name = payload.name
+        //payload.ownerId = req.session.userid
+        const createBase = await convoModel.createConvoBase(payload)
+        if (createBase != undefined) {
+            res.json({
+                status: 'success',
+                msg: 'convo has been created'
+            })
+            //update the user as the convo owner w createBase convo id
+            newPayload = {
+                userId: payload.ownerId,
+                convoId: createBase,
+                userRights: 'owner'
+            }
+            const userUpdate = await userModel.updateUserAccess(newPayload)
+            if (userUpdate != undefined) {
+                console.error({ //debug!!!
+                    status: 'success', 
+                    msg: 'convo added to user'
                 })
-                //update the user as the convo owner w createBase convo id
-                newPayload = {
-                    userId: req.session.userid, 
-                    convoId: createBase,
-                    userRights: 'owner'
-                }
-                const userUpdate = await userModel.updateUserAccess(newPayload)
-                if (userUpdate != undefined) {
-                    console.log({
-                        status: 'success', 
-                        msg: 'convo added to user'
-                    })
-                } else {
-                    throw ({
-                        status: 'error',
-                        msg: 'convo not added to user',
-                    })
-                }
             } else {
-                res.json({
+                throw ({
                     status: 'error',
-                    msg: 'error'
+                    msg: 'convo not added to user',
                 })
             }
         } else {
-            throw ({
+            res.json({
                 status: 'error',
-                msg: 'user needs to login',
-                code: 'notLoggedIn'
+                msg: 'error'
             })
         }
     } catch (error) {

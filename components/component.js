@@ -4,6 +4,7 @@ const EventEmitter = require('eventemitter3')
 const { componentMissingError } = require(`${process.cwd()}/lib/customErrors.js`)
 
 class Component extends EventEmitter {
+    
     constructor(app, ...requiredComponents) {
         super()
         let missingComponents = []

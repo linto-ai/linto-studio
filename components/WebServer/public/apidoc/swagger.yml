@@ -14,23 +14,11 @@ basePath: /
 schemes:
  - https
 paths:
-  # /:
-  #   get:
-  #     security:
-  #       - cookieAuth: []
-  #     description: sdfasdaf
-  #     responses: 
-  #       '200':
-  #         description: OK
-  #       '401':
-  #         description: Not authenticated
-  #       '404':
-  #         description: Page not found 
   /login: 
     post:
       tags:
         - "users"
-      summary: Logs in a user and returns the authentication cookie
+      summary: Logs in a user and returns the json web token 
       requestBody:
         required: true
         description: A JSON object containing the username and password.
@@ -42,13 +30,8 @@ paths:
       responses:
         '200':
           description: 
-            Successfully authenticated.
-            The session ID is returned in a cookie named `JSESSIONID`. You need to include this cookie in subsequent requests.
-          headers: 
-            Set-Cookie:
-              schema: 
-                type: string
-                example: JSESSIONID=abcde12345; Path=/; HttpOnly
+            Successfully authenticated and token is returned to user.
+            You need to include token in subsequent requests.
         '400':
           description: 
         '404':
@@ -93,7 +76,9 @@ paths:
         '400':
           description: bad request error
           schema:
-            $ref: '#components/schemas/Error'
+            $ref: '#/components/schemas/Error'
+        '401':
+          $ref: "#/components/responses/UnauthorizedError"
   /api/user/{userid}:
     get: 
       tags:
@@ -104,9 +89,12 @@ paths:
       parameters:
         - in: path
           name: userid
-          schema:
-            type: string
+          type: string
           required: true
+        # - in: header
+        #   name: access-token
+        #   type: string
+        #   required: true
       responses:
         '200':
           description: json document 
@@ -118,6 +106,8 @@ paths:
           description: bad request error
           schema:
             $ref: '#components/schemas/Error'
+          '401':
+            $ref: "#/components/responses/UnauthorizedError"
     put:
       tags:
         - "users"
@@ -144,6 +134,8 @@ paths:
           description: Invalid id supplied 
         '404':
           description: User not found 
+        '401':
+          $ref: "#/components/responses/UnauthorizedError"
     delete:
       tags:
         - "users"
@@ -161,6 +153,8 @@ paths:
           description: bad request error
           schema:
             $ref: '#components/schemas/Error'
+        '401':
+          $ref: "#/components/responses/UnauthorizedError"
   /api/user/{userid}/addaccess/{conversationid}:
     patch:
       tags:
@@ -175,6 +169,8 @@ paths:
             schema: 
               type: object
               properties:
+                ownerId:
+                  type: string 
                 userId:
                   type: string
                 convoId: 
@@ -188,6 +184,8 @@ paths:
           description: not authorized
         '404':
           description: not found
+        '401':
+          $ref: "#/components/responses/UnauthorizedError"
   /api/user/{userid}/removeaccess/{conversationid}: 
     patch:
       tags:
@@ -213,6 +211,8 @@ paths:
           description: not authorized
         '404':
           description: not found
+        '401':
+          $ref: "#/components/responses/UnauthorizedError"
   /api/users: 
     get:
       tags:
@@ -229,6 +229,8 @@ paths:
                 type: array 
                 items:
                   $ref: '#/components/schemas/User'
+        '401':
+          $ref: "#/components/responses/UnauthorizedError"
 
   /api/conversations: 
     get:
@@ -244,6 +246,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Conversation'
+        '401':
+          $ref: "#/components/responses/UnauthorizedError"
 
   /api/conversations/{conversationids}:
     get:
@@ -264,7 +268,9 @@ paths:
             schema: 
               type: object
               properties:
-                name: 
+                convoName: 
+                  type: string
+                ownerId:
                   type: string
       responses:
         '201':
@@ -281,7 +287,9 @@ paths:
         '400':
           description: bad request error
           schema:
-            $ref: '#components/schemas/Error'
+            $ref: '#/components/schemas/Error'
+        '401':
+          $ref: "#/components/responses/UnauthorizedError"
 
   /api/conversation/{conversationid}: 
     get: 
@@ -346,10 +354,13 @@ paths:
 
 components:
   securitySchemes:
-    cookieAuth:
-      type: apiKey
-      in: cookie
-      name: JSESSIONID
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid 
 
   # parameters:
   # requestBodies:
@@ -496,4 +507,4 @@ components:
         - rawTranscript
         - audio
 security:
-  - cookieAuth: []
+  - bearerAuth: []

@@ -1,57 +1,50 @@
 const model = require(`${process.cwd()}/models/mongodb/models/users`)
 const sha1 = require('sha1')
-
+const jwt = require('jsonwebtoken')
 
 async function userLogin (req, res, next ){
     try {
-        if (req.body.userName != "undefined" && req.body.password != "undefined") { // get post datas
+        if (req.body.userName != "undefined" && req.body.password != "undefined") { 
             const postUserName = req.body.userName
             const postPassword = req.body.password
             try {
                 let user = await model.getUserLoginInfo(postUserName)
                 user = user[0] // is there a better way to take the first element?
                 if (!user) { // User not found
-                    throw 'User not found'
+                    res.json({msg: "please check username"})
                 } else { // User found
                     // Compare password with database
-                    // Shall be like sha1(password + salt) == userPswdHash
                     pswdHash = sha1(postPassword + user.salt)
                     if (pswdHash == user.passwordHash) {
-                        req.session.logged = 'on'
-                        req.session.user = postUserName
-                        req.session.userid = user._id
-                        req.session.save((err) => {
-                            if (err) {
-                                throw "Error on saving session"
-                            } else {
-                                //Valid password
-                                res.json({
-                                    "status": "success",
-                                    "msg": "valid login"
-                                })
-                                //res.redirect('/api')
-                            }
+                        // req.session.logged = 'on'
+                        // req.session.user = postUserName
+                        // req.session.userid = user._id
+                        // req.session.save((err) => {
+                        //     if (err) {
+                        //         throw "Error on saving session"
+                        //     } else {
+                        //Valid password
+                        //create jwt
+                        const token = jwt.sign({_id: user._id}, process.env.JWT_SECRET, {expiresIn: 180})
+                        console.log(token)
+                        res.json({
+                            msg: "valid login/authentication done", 
+                            token: token
                         })
                     } else {
                         // Invalid password
-                        throw "Invalid password"
+                        res.json({msg: "please check your password"})
                     }
                 }
             } catch (error) {
                 res.json({
                     status: "error",
-                    msg: error,
+                    msg: "couldn't validate user",
                 })
-                //res.sendFile(process.cwd() + '/components/WebServer/public/login.html')
             }
         } else {
-            res.json({
-                status: "error",
-                msg: "An error has occured when trying to connect to database"
-            })
+            res.status(400) // bad request
         }
-    
-
     } catch (error) {
         console.error(error)
         res.json({
@@ -59,9 +52,8 @@ async function userLogin (req, res, next ){
             msg: error
         })
     }
-
 }
-   
+
 module.exports = {
     userLogin
 }

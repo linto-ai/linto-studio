@@ -15,7 +15,7 @@ class ConvoModel extends MongoModel {
                 //startTime: asdf, 
                 //endTime: asdf, 
                 //location: payload.loc,
-                name: payload.name,
+                name: payload.convoName,
                 //type: payload.type,
                 //lastUpdated: asdfds,
                 created: creationDate,

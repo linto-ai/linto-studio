@@ -26,6 +26,7 @@ function configureDefaults() {
         process.env.DB_NAME = ifHas(process.env.DB_NAME, envdefault.DB_NAME)
         process.env.DB_REQUIRE_LOGIN = ifHas(process.env.DB_REQUIRE_LOGIN, envdefault.DB_REQUIRE_LOGIN)
         process.env.COMPONENTS = ifHasNotThrow(process.env.COMPONENTS, Error("No COMPONENTS envvar specified"))
+        process.env.JWT_SECRET = ifHas(process.env.JWT_SECRET, envdefault.JWT_SECRET)
     } catch (e) {
         console.error(debug.namespace, e)
         process.exit(1)

@@ -1,6 +1,13 @@
 const mongoDb = require('mongodb')
 let urlMongo = 'mongodb://'
 
+// if (process.env.LINTO_STACK_MONGO_USE_LOGIN === 'true')
+//     urlMongo += process.env.LINTO_STACK_MONGODB_USER + ':' + process.env.LINTO_STACK_MONGODB_PASSWORD + '@'
+// urlMongo += process.env.LINTO_STACK_MONGODB_SERVICE + ':' + process.env.LINTO_STACK_MONGODB_PORT + '/' + process.env.LINTO_STACK_MONGODB_DBNAME
+
+// if (process.env.LINTO_STACK_MONGO_USE_LOGIN === 'true')
+//     urlMongo += '?authSource=' + process.env.LINTO_STACK_MONGODB_DBNAME
+
 //user access
 if (process.env.DB_REQUIRE_LOGIN) {
     urlMongo += process.env.DB_USER + ':' + process.env.DB_PASS + '@'
@@ -14,8 +21,6 @@ urlMongo += process.env.DB_HOST + ':' + process.env.DB_PORT + '/'
 if (process.env.DB_REQUIRE_LOGIN) {
     urlMongo += '?authSource=' + process.env.DB_NAME
 }
-
-console.log("url mongo ", urlMongo)
 
 // Create an instance of a MongoDb client. Handle connection/close connection/reconnect/error
 class MongoDriver {

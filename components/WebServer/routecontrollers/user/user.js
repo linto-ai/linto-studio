@@ -3,11 +3,21 @@ const model = require(`${process.cwd()}/models/mongodb/models/users`)
 async function getUserbyId(req, res, next) {
     // get user id input then return user
     try {
-        const postUserId = req.params.userid
-        let response = await model.getUserbyId(postUserId)
-        res.json({
-            status: response[0]
-        })
+        if (req.params.userid != "undefined") {
+            const postUserId = req.params.userid
+            let response = await model.getUserbyId(postUserId)
+            if (response && response.length) {
+                res.json({
+                    status: response[0]
+                })
+            } else {
+                res.json({
+                    msg: "user id doesn't exist"
+                })
+            }
+        } else {
+            res.status(400) // bad request
+        } 
     } catch (error) {
         res.json({
             status: "error",

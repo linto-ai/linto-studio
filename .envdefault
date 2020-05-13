@@ -8,7 +8,7 @@ DB_PASS=example
 DB_PORT=27017
 DB_NAME=conversations
 DB_REQUIRE_LOGIN=true
-
+JWT_SECRET=supersecret
 
 # Mongodb settings
 # url: mongodb+srv://application:<password>@cluster0-npyz0.mongodb.net/test?retryWrites=true&w=majority
