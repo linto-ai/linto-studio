@@ -106,7 +106,8 @@ paths:
           description: bad request error
           schema:
             $ref: '#components/schemas/Error'
-          '401':
+        '401':
+          schema:
             $ref: "#/components/responses/UnauthorizedError"
     put:
       tags:
@@ -325,27 +326,66 @@ paths:
     get:
       tags:
         - "conversation/speakers"
-      summary: gets all speaker in a conversation
-  
+      summary: gets all speakers in a conversation
+      operationId: getSpeakers
+      description: gets all speaker ids, names and audio times for voice example
+      parameters:
+        - in: path
+          name: conversationid
+          type: string
+          required: true
+      responses:
+        '200':
+          description: json document 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Speakers'
+        '400':
+          description: bad request error
+          schema:
+            $ref: '#components/schemas/Error'
+        '401':
+          description: unauthorized error 
+          schema:
+            $ref: "#/components/responses/UnauthorizedError"
+        '404':
+          description: not found error
   /api/conversation/{conversationid}/speakers/{speakerid}:
     get:
       tags:
         - "conversation/speakers"
       summary: gets speaker name by speakerid
+
     patch:
       tags:
         - "conversation/speakers"
-      summary: modifies (empty) speaker name
+      summary: modifies speaker name
+      operationId: identifySpeaker
+      description: replaces speaker name for a given conversationid /speaker id
+      requestBody:
+        required: true
+        description: A JSON object containing the conversationid, speakerid and new speaker name
+        content:   
+          application/json:
+            schema: 
+              type: object
+              properties:
+                userid:
+                  type: string
+                convoid: 
+                  type: string
+                speakername:
+                  type: string
     delete:
       tags:
         - "conversation/speakers"
       summary: deletes speaker from conversation
 
-  /api/conversation/{conversationid}/speakers/{speakerids}:
-     put:
+    put:
       tags: 
         - "conversation/speakers"
-      summary: replaces speaker ids
+      summary: replaces speaker id
 
   /api/conversation/{conversationid}/editmode:
 
@@ -412,6 +452,19 @@ components:
           - userid
           - userName
           - convoAcess 
+    Speakers:
+      type: array 
+      items:
+        type: object
+        properties:
+          speakerid:
+            type: string
+          speakername:
+            type: string
+          stime:
+            type: string
+          etime:
+            type: string
     Conversation:
       type: object
       properties:

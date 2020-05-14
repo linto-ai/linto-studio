@@ -44,6 +44,49 @@ async function createConvoBase(req, res, next) {
     }
 }
 
+async function getSpeakers(req, res, next){ //WIP
+    try {
+        if (req.params.conversationid != "undefined") {
+            const convoId = req.params.conversationid
+            let response = await convoModel.getConvoSpeakers(convoId)
+            if (response && response.length) {
+                res.json({
+                    status: response[0]
+                })
+            } else {
+                res.json({
+                    msg: "convo id doesn't exist"
+                })
+            }
+        } else {
+            res.status(400) // bad request
+        } 
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+async function identifySpeaker(req, res, next){ //WIP
+    try{
+        const payload = req.body
+        const createBase = await convoModel.createConvoBase(payload)
+
+    } catch (error) {
+
+    }
+}
+
+async function combineSpeakerIds(req, res, next){
+    try{
+
+    } catch (error) {
+        
+    }
+}
+
 module.exports = {
-    createConvoBase
+    createConvoBase, 
+    getSpeakers, 
+    identifySpeaker, 
+    combineSpeakerIds
 }

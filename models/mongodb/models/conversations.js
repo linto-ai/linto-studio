@@ -45,6 +45,20 @@ class ConvoModel extends MongoModel {
         }
     }
 
+    // get all speakers in a conversation
+    async getConvoSpeakers(id) {
+        try {
+            const query = {
+                _id: this.getObjectId(id)
+            }
+            const projection = {speakers: 1}
+            return await this.mongoRequest(query, projection)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
 }
 
 module.exports = new ConvoModel()
