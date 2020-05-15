@@ -52,7 +52,7 @@ class MongoModel {
     async mongoUpdate(query, operator, values) {
         if (values._id) {
             delete values._id
-        } // do this so we dount double the _id?
+        } // do this so we dont double the _id?
         let payload = {}
         payload[operator] = values
         return new Promise((resolve, reject) => {

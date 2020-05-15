@@ -59,6 +59,23 @@ class ConvoModel extends MongoModel {
         }
     }
 
+    //update speaker name 
+    async updateSpeakerName(payload) {
+        try {
+            const operator = "$set"
+            const query = {
+                _id: this.getObjectId(payload.convoid), 
+                "speakers.speaker_id": payload.speakerid
+            }
+            let mutableElements = {
+                "speakers.$.speaker_name": payload.speakername
+            }
+            return await this.mongoUpdate(query, operator, mutableElements)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
 }
 
 module.exports = new ConvoModel()

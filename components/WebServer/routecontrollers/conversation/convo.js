@@ -69,10 +69,20 @@ async function getSpeakers(req, res, next){ //WIP
 async function identifySpeaker(req, res, next){ //WIP
     try{
         const payload = req.body
-        const createBase = await convoModel.createConvoBase(payload)
-
+        let response = await convoModel.updateSpeakerName(payload)
+        if (response.result['ok'] === 1) {
+            res.json({
+                status: "200", 
+                msg: "success!"
+            })
+        } else {
+            res.json({
+                status: 'error',
+                msg: 'error'
+            })
+        }
     } catch (error) {
-
+        console.error(error)
     }
 }
 

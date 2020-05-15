@@ -371,12 +371,27 @@ paths:
             schema: 
               type: object
               properties:
-                userid:
+                speakerid:
                   type: string
                 convoid: 
                   type: string
                 speakername:
-                  type: string
+                  type: string  
+      responses:
+        '200':
+          description: speaker successfully updated
+          schema:
+            $ref: '#components/schemas/Speakers'
+        '400':
+          description: bad request error
+          schema:
+            $ref: '#components/schemas/Error'
+        '401':
+          description: unauthorized error 
+          schema:
+            $ref: "#/components/responses/UnauthorizedError"
+        '404':
+          description: not found error        
     delete:
       tags:
         - "conversation/speakers"
