@@ -1,4 +1,5 @@
 const MongoModel = require(`${process.cwd()}/models/mongodb/model`)
+const { v4: uuidv4 } = require('uuid');
 
 class ConvoModel extends MongoModel {
 
@@ -57,6 +58,68 @@ class ConvoModel extends MongoModel {
             console.error(error)
             return error
         }
+    }
+
+     // create a new speaker in a conversation
+    async createSpeaker(payload) {
+         //need to make sure it's not the same as a current speaker name -- is this back 
+         //or front end function?
+         //what about automatically updating speaker audio sample?
+         //what about automatically warning if speaker doesn't speak?
+         
+        try {
+            const operator = "$addToSet"
+            const speakerid = uuidv4()
+            const query = {
+                _id: this.getObjectId(payload.convoid)
+            }
+            let mutableElements = {
+                "speakers": {
+                speaker_id: speakerid,
+                speaker_name: payload.speakername,
+                etime: "", 
+                stime: ""
+                }
+            }
+            return await this.mongoUpdate(query, operator, mutableElements)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
+    //check transcript for speaker id
+    async checkSpeakerId(payload){
+        try{
+            const query = {
+                _id: this.getObjectId(payload.convoid), 
+                "text.speaker_id": payload.speakerid
+            }
+            const projection = {_id: 0, "text.$": 1}
+            return await this.mongoRequest(query, projection)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
+    //deletes a speaker from speakermap 
+    async deleteSpeaker(payload){
+        try{
+            const operator = "$pull"
+            const query = {
+                _id: this.getObjectId(payload.convoid)
+            }
+            let mutableElements = {
+                "speakers": {
+                    speaker_id: payload.speakerid
+                }
+            }
+            return await this.mongoUpdate(query, operator, mutableElements)
+        } catch (error) {
+            console.error(error)
+            return error
+        } 
     }
 
     //update speaker name 

@@ -86,6 +86,52 @@ async function identifySpeaker(req, res, next){ //WIP
     }
 }
 
+async function createNewSpeaker(req, res, next){
+    try{
+        const payload = req.body
+        let response = await convoModel.createSpeaker(payload)
+        if (response.result['ok'] === 1) {
+            res.json({
+                status: "200", 
+                msg: "success!"
+            })
+        } else {
+            res.json({
+                msg: "update unsuccessful"
+            })
+        }
+    } catch (error) {
+        console.error(error)   
+    }
+}
+
+async function deleteSpeaker(req, res, next){
+    //checks that a speaker id is not used in any turn before
+    //deleting speaker from speakers
+    // how to force a 428 status?
+    try{
+        const payload = req.body
+        let check = await convoModel.checkSpeakerId(payload)
+        console.log(check)
+        if(check.length > 0){
+            const turn = check[0]['text'][0]['turn_id']
+            console.log(`speaker found in turn ${turn}`)
+            res.json({
+                turn_number: turn,
+                status: '428',
+                msg: `speaker found in ${turn}`
+            })
+        } else {
+            let response = await convoModel.deleteSpeaker(payload)
+            res.json({
+                status: response
+            })
+        }
+    } catch (error) {
+        console.error(error)
+    }
+}
+
 async function combineSpeakerIds(req, res, next){
     try{
 
@@ -98,5 +144,7 @@ module.exports = {
     createConvoBase, 
     getSpeakers, 
     identifySpeaker, 
+    createNewSpeaker,
+    deleteSpeaker,
     combineSpeakerIds
 }

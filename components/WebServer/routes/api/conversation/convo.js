@@ -1,5 +1,5 @@
 const debug = require('debug')('app:router:api:conversation:convo')
-const { createConvoBase, getSpeakers, identifySpeaker} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/convo.js`)
+const { createConvoBase, getSpeakers, createNewSpeaker, identifySpeaker, deleteSpeaker} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/convo.js`)
 
 module.exports = (webserver) => {
     return [{
@@ -15,10 +15,22 @@ module.exports = (webserver) => {
             controller: getSpeakers
             },
             {
+            path: '/:conversationid/speakers',
+            method: 'patch',
+            requireAuth: false,
+            controller: createNewSpeaker
+            },
+            {
             path: '/:conversationid/speakers/:speakerid',
             method: 'patch',
             requireAuth: false,
             controller: identifySpeaker
+            },
+            {
+            path: '/:conversationid/speakers/:speakerid',
+            method: 'delete',
+            requireAuth: false,
+            controller: deleteSpeaker
             }
         ]
 }

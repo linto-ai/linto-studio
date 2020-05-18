@@ -351,11 +351,47 @@ paths:
             $ref: "#/components/responses/UnauthorizedError"
         '404':
           description: not found error
-  /api/conversation/{conversationid}/speakers/{speakerid}:
-    get:
+    patch:
       tags:
         - "conversation/speakers"
-      summary: gets speaker name by speakerid
+      summary: creates a new speaker in a conversation
+      operationId: createSpeaker
+      description: creates a new speaker id with name but without voice example
+      requestBody:
+        required: true
+        description: a json object with conversationid and new speaker name
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                convoid:
+                  type: string
+                speakername:
+                  type: string 
+      responses:
+        '200':
+          description: json document
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Speakers"
+        '400':
+          description: bad request error
+          schema:
+            $ref: '#components/schemas/Error'
+        '401':
+          description: unauthorized error 
+          schema:
+            $ref: "#/components/responses/UnauthorizedError"
+        '404':
+          description: not found error
+            
+  /api/conversation/{conversationid}/speakers/{speakerid}:
+    # get:
+    #   tags:
+    #     - "conversation/speakers"
+    #   summary: gets speaker name by speakerid
 
     patch:
       tags:
@@ -396,11 +432,42 @@ paths:
       tags:
         - "conversation/speakers"
       summary: deletes speaker from conversation
+      operationId: deleteSpeaker
+      description: removed speaker by id if id not in transcript
+      requestBody:
+        required: true
+        description: A json object containing conversationid and speakerid
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                speakerid:
+                  type: string
+                convoid:
+                  type: string
+      responses:
+        '200':
+          description: speaker successfully deleted
+          schema:
+            $ref: '#components/schemas/Speakers'
+        '428': 
+          description: precondition required
+        '400':
+          description: bad request error
+          schema:
+            $ref: '#components/schemas/Error'
+        '401':
+          description: unauthorized error 
+          schema:
+            $ref: "#/components/responses/UnauthorizedError"
+        '404':
+          description: not found error        
 
-    put:
-      tags: 
-        - "conversation/speakers"
-      summary: replaces speaker id
+    # put:
+    #   tags: 
+    #     - "conversation/speakers"
+    #   summary: replaces speaker id
 
   /api/conversation/{conversationid}/editmode:
 
