@@ -81,7 +81,7 @@ class ConvoModel extends MongoModel {
                 stime: ""
                 }
             }
-            return await this.mongoUpdate(query, operator, mutableElements)
+            return await this.mongoUpdateOne(query, operator, mutableElements)
         } catch (error) {
             console.error(error)
             return error
@@ -103,6 +103,26 @@ class ConvoModel extends MongoModel {
         }
     }
 
+    //change all instances of a speaker id in transcript
+    async changeSpeakerIds(payload){
+        try{
+            const operator = "$set"
+            const query = {
+                _id: this.getObjectId(payload.convoid)
+            }
+            let mutableElements = {
+                "text.$[elem].speaker_id": payload.newspeakerid
+            }
+            let arrayFilters = {
+                "arrayFilters" : [{"elem.speaker_id": payload.speakerid}]
+            }
+            return await this.mongoUpdateOne(query, operator, mutableElements, arrayFilters)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
     //deletes a speaker from speakermap 
     async deleteSpeaker(payload){
         try{
@@ -115,7 +135,7 @@ class ConvoModel extends MongoModel {
                     speaker_id: payload.speakerid
                 }
             }
-            return await this.mongoUpdate(query, operator, mutableElements)
+            return await this.mongoUpdateOne(query, operator, mutableElements)
         } catch (error) {
             console.error(error)
             return error
@@ -133,7 +153,7 @@ class ConvoModel extends MongoModel {
             let mutableElements = {
                 "speakers.$.speaker_name": payload.speakername
             }
-            return await this.mongoUpdate(query, operator, mutableElements)
+            return await this.mongoUpdateOne(query, operator, mutableElements)
         } catch (error) {
             console.error(error)
             return error

@@ -433,7 +433,7 @@ paths:
         - "conversation/speakers"
       summary: deletes speaker from conversation
       operationId: deleteSpeaker
-      description: removed speaker by id if id not in transcript
+      description: removes speaker by id if id not in transcript
       requestBody:
         required: true
         description: A json object containing conversationid and speakerid
@@ -463,11 +463,41 @@ paths:
             $ref: "#/components/responses/UnauthorizedError"
         '404':
           description: not found error        
-
-    # put:
-    #   tags: 
-    #     - "conversation/speakers"
-    #   summary: replaces speaker id
+    put:
+      tags: 
+        - "conversation/speakers"
+      summary: replaces speaker ids in transcript turns with another speaker id
+      operationId: combineSpeakerIds
+      description: replaces ids in transcript then deletes old id in speakers
+      requestBody:
+        required: true
+        description: A json object containing conversationid and speakerid and newspeakerid
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                speakerid:
+                  type: string
+                convoid:
+                  type: string
+                newspeakerid:
+                  type: string
+      responses:
+        '200':
+          description: speakers successfully combined
+          schema:
+            $ref: '#components/schemas/Speakers'
+        '400':
+          description: bad request error
+          schema:
+            $ref: '#components/schemas/Error'
+        '401':
+          description: unauthorized error 
+          schema:
+            $ref: "#/components/responses/UnauthorizedError"
+        '404':
+          description: not found error        
 
   /api/conversation/{conversationid}/editmode:
 

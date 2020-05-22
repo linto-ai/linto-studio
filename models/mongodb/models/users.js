@@ -111,7 +111,7 @@ class UsersModel extends MongoModel {
             }
             let mutableElements = {}
             mutableElements[`convoAccess.${payload.convoId}`] = payload.userRights
-            return await this.mongoUpdate(query, operator, mutableElements)
+            return await this.mongoUpdateOne(query, operator, mutableElements)
         } catch (error) {
             console.error(error)
             return error
@@ -127,7 +127,7 @@ class UsersModel extends MongoModel {
             }
             let mutableElements = {}
             mutableElements[`convoAccess.${payload.convoId}`] = payload.userRights
-            return await this.mongoUpdate(query, operator, mutableElements)
+            return await this.mongoUpdateOne(query, operator, mutableElements)
 
         } catch (error) {
             console.error(error)

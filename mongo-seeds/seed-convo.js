@@ -27,14 +27,13 @@ db.conversations.insert(
             },
             {
                 "speaker_id": "7fcfad18e8a2401482ae1e0dc2673266", 
-                "speaker_name": "spk2", 
+                "speaker_name": "spk3", 
                 "stime": 17.46, 
                 "etime": 19.53
             }
         ],
         "text": [{
             "speaker_id": "aa50ec3c815948edb3b909a376ddbffe",
-            "speaker": "spk1",
             "turn_id": "586f291240414844b04ab777d82b0ec5",
             "turn_number": 1,
             "words": [
@@ -148,8 +147,7 @@ db.conversations.insert(
                 }
             ]
         }, {
-            "speakerid": "5cad207db79f49d0821632163b3b3bda",
-            "speaker": "spk2",
+            "speaker_id": "5cad207db79f49d0821632163b3b3bda",
             "turn_id": "3abfa2f1f574493cb9880ee2427c2c64",
             "turn_number": 2,
             "words": [
@@ -269,7 +267,6 @@ db.conversations.insert(
             ]
         }, {
             "speaker_id": "7fcfad18e8a2401482ae1e0dc2673266",
-            "speaker": "spk3",
             "turn_id": "8b045ac09641435cb3c9576c873f93c4",
             "turn_number": 3,
             "words": [

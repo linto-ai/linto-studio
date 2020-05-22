@@ -112,7 +112,6 @@ async function deleteSpeaker(req, res, next){
     try{
         const payload = req.body
         let check = await convoModel.checkSpeakerId(payload)
-        console.log(check)
         if(check.length > 0){
             const turn = check[0]['text'][0]['turn_id']
             console.log(`speaker found in turn ${turn}`)
@@ -134,9 +133,25 @@ async function deleteSpeaker(req, res, next){
 
 async function combineSpeakerIds(req, res, next){
     try{
+        const payload = req.body
+        console.log(payload)
+        let response = await convoModel.changeSpeakerIds(payload)
+        if (response.result['ok'] === 1) {
+            console.log(response.result)
+            //delete speaker from speakers
+            let deletespeaker = await convoModel.deleteSpeaker(payload)
+            res.json({
+                status: deletespeaker
+            })
+            //need to update startime and endtime on new speaker
+        } else {
+            res.json({
+                msg: "update unsuccessful"
+            })
+        }
 
     } catch (error) {
-        
+        console.error(error)
     }
 }
 

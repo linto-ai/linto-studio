@@ -49,7 +49,7 @@ class MongoModel {
     }
 
     // Update ONE, define update operator param
-    async mongoUpdate(query, operator, values) {
+    async mongoUpdateOne(query, operator, values, filters) {
         if (values._id) {
             delete values._id
         } // do this so we dont double the _id?
@@ -57,7 +57,7 @@ class MongoModel {
         payload[operator] = values
         return new Promise((resolve, reject) => {
             try {
-                MongoDriver.constructor.db.collection(this.collection).updateOne(query, payload, (error, result) => {
+                MongoDriver.constructor.db.collection(this.collection).updateOne(query, payload, filters, (error, result) => {
                     if (error) {
                         reject(error)
                     }
@@ -69,6 +69,28 @@ class MongoModel {
             }
         })
     }
+    
+    // // Update ONE, define update operator param
+    // async mongoUpdate(query, operator, values, filters) {
+    //     if (values._id) {
+    //         delete values._id
+    //     } // do this so we dont double the _id?
+    //     let payload = {}
+    //     payload[operator] = values
+    //     return new Promise((resolve, reject) => {
+    //         try {
+    //             MongoDriver.constructor.db.collection(this.collection).update(query, payload, filters, (error, result) => {
+    //                 if (error) {
+    //                     reject(error)
+    //                 }
+    //                 resolve(result)
+    //             })
+    //         } catch (error) {
+    //             console.error(error)
+    //             reject(error)
+    //         }
+    //     })
+    // }
 
     // Delete ONE
     async mongoDelete(query) {
