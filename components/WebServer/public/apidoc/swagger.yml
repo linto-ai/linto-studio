@@ -497,7 +497,75 @@ paths:
           schema:
             $ref: "#/components/responses/UnauthorizedError"
         '404':
-          description: not found error        
+          description: not found error      
+
+  /api/conversation/{conversationid}/turns/{speakerid}:
+    patch:
+      tags:
+        - "conversation/turns"
+      summary: identifies speaker in turn with a newly created speaker
+      operationId: createNewTurnSpeaker
+      description: creates a new speaker then updates the turn id using the new speaker id
+      requestBody:
+        required: true
+        description: A JSON object containing the conversationid, turnid and new speaker name
+        content:   
+          application/json:
+            schema: 
+              type: object
+              properties:
+                turnid:
+                  type: string
+                convoid: 
+                  type: string
+                speakername:
+                  type: string  
+      responses:
+      '200':
+        description: speaker successfully created
+      '400':
+        description: bad request error
+        schema:
+          $ref: '#components/schemas/Error'
+      '401':
+        description: unauthorized error 
+        schema:
+          $ref: "#/components/responses/UnauthorizedError"
+      '404':
+        description: not found error  
+    put:
+      tags: 
+        - "conversation/turns"
+      summary: replaces speaker id in transcript turn with another speaker id
+      operationId: updateSpeakerId
+      description: replaces speaker id in a single transcript turn
+      requestBody:
+        required: true
+        description: A json object containing conversationid and speakerid and turnid
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                speakerid:
+                  type: string
+                convoid:
+                  type: string
+                turnid:
+                  type: string
+      responses:
+        '200':
+          description: turn speaker id successfully updated
+        '400':
+          description: bad request error
+          schema:
+            $ref: '#components/schemas/Error'
+        '401':
+          description: unauthorized error 
+          schema:
+            $ref: "#/components/responses/UnauthorizedError"
+        '404':
+          description: not found error      
 
   /api/conversation/{conversationid}/editmode:
 

@@ -1,5 +1,4 @@
 const MongoModel = require(`${process.cwd()}/models/mongodb/model`)
-const { v4: uuidv4 } = require('uuid');
 
 class ConvoModel extends MongoModel {
 
@@ -69,13 +68,12 @@ class ConvoModel extends MongoModel {
          
         try {
             const operator = "$addToSet"
-            const speakerid = uuidv4()
             const query = {
                 _id: this.getObjectId(payload.convoid)
             }
             let mutableElements = {
                 "speakers": {
-                speaker_id: speakerid,
+                speaker_id: payload.speakerid,
                 speaker_name: payload.speakername,
                 etime: "", 
                 stime: ""
@@ -144,6 +142,44 @@ class ConvoModel extends MongoModel {
 
     //update speaker name 
     async updateSpeakerName(payload) {
+        try {
+            const operator = "$set"
+            const query = {
+                _id: this.getObjectId(payload.convoid), 
+                "speakers.speaker_id": payload.speakerid
+            }
+            let mutableElements = {
+                "speakers.$.speaker_name": payload.speakername
+            }
+            return await this.mongoUpdateOne(query, operator, mutableElements)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
+    //update speaker id for a particular turn
+    async updateTurnSpeakerId(payload) {
+        try {
+            const operator = "$set"
+            const query = {
+                _id: this.getObjectId(payload.convoid), 
+            }
+            let mutableElements = {
+                "text.$[elem].speaker_id": payload.speakerid
+            }
+            let arrayFilters = {
+                "arrayFilters" : [{"elem.turn_id": payload.turnid}]
+            }
+            return await this.mongoUpdateOne(query, operator, mutableElements, arrayFilters)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
+    //give name to unidentified speaker for a particular turn
+    async updateTurnSpeakerName(payload) {
         try {
             const operator = "$set"
             const query = {

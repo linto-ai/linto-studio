@@ -1,6 +1,6 @@
 const convoModel = require(`${process.cwd()}/models/mongodb/models/conversations`)
 const userModel = require(`${process.cwd()}/models/mongodb/models/users`)
-
+const { v4: uuidv4 } = require('uuid')
 
 // create a conversation base 
 // TODO: check user id
@@ -86,9 +86,31 @@ async function identifySpeaker(req, res, next){ //WIP
     }
 }
 
+async function identifyTurnSpeaker(req, res, next){ //WIP
+    try{
+        const payload = req.body
+        let response = await convoModel.updateTurnSpeakerId(payload)
+        if (response.result['ok'] === 1) {
+            res.json({
+                status: "200", 
+                msg: "success!"
+            })
+        } else {
+            res.json({
+                status: 'error',
+                msg: 'error'
+            })
+        }
+    } catch (error) {
+        console.error(error)
+    }
+}
+
 async function createNewSpeaker(req, res, next){
     try{
         const payload = req.body
+        const speakerid = uuidv4()
+        payload.speakerid = speakerid
         let response = await convoModel.createSpeaker(payload)
         if (response.result['ok'] === 1) {
             res.json({
@@ -98,6 +120,36 @@ async function createNewSpeaker(req, res, next){
         } else {
             res.json({
                 msg: "update unsuccessful"
+            })
+        }
+    } catch (error) {
+        console.error(error)   
+    }
+}
+
+async function createNewTurnSpeaker(req, res, next){ 
+    try{
+        const payload = req.body
+        const speakerid = uuidv4()
+        payload.speakerid = speakerid
+        let response = await convoModel.createSpeaker(payload)
+        if (response.result['ok'] === 1) {
+            let response = await convoModel.updateTurnSpeakerId(payload)
+            if (response.result['ok'] === 1) {
+                res.json({
+                    status: '200', 
+                    msg: 'success!'
+                })
+            } else {
+                res.json({
+                    status: 'error',
+                    msg: 'update unsuccessful'
+                })
+            }
+        } else {
+            res.json({
+                status: 'error', 
+                msg: "speaker creation unsuccessful"
             })
         }
     } catch (error) {
@@ -159,7 +211,9 @@ module.exports = {
     createConvoBase, 
     getSpeakers, 
     identifySpeaker, 
+    identifyTurnSpeaker,
     createNewSpeaker,
+    createNewTurnSpeaker,
     deleteSpeaker,
     combineSpeakerIds
 }
