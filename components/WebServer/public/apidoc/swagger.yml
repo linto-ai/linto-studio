@@ -259,7 +259,7 @@ paths:
   /api/conversation:
     post:
       tags: 
-        - "conversations"
+        - "conversation"
       summary: creates a new conversation base
       requestBody:
         required: true
@@ -295,31 +295,31 @@ paths:
   /api/conversation/{conversationid}: 
     get: 
       tags:
-        - "conversations"
+        - "conversation"
       summary: gets a conversation by id 
     delete: 
       tags:
-        - "conversations"
+        - "conversation"
       summary: deletes conversation
 
   /api/conversation/{conversationid}/agenda:
     put:
       tags:
-        - "conversations"
+        - "conversation/metadata"
       summary: replaces (empty) agenda 
     patch:
       tags:
-        - "conversations"
+        - "conversation/metadata"
       summary: modifies conversation agenda
 
   /api/conversation/{conversationid}/summary:
     put:
       tags:
-        - "conversations"
+        - "conversation/summary"
       summary: replaces (empty) summary 
     patch:
       tags:
-        - "conversations"
+        - "conversation/summary"
       summary: modifies conversation summary 
   
   /api/conversation/{conversationid}/speakers:
@@ -351,7 +351,7 @@ paths:
             $ref: "#/components/responses/UnauthorizedError"
         '404':
           description: not found error
-    patch:
+    post:
       tags:
         - "conversation/speakers"
       summary: creates a new speaker in a conversation
@@ -463,10 +463,12 @@ paths:
             $ref: "#/components/responses/UnauthorizedError"
         '404':
           description: not found error        
+
+  /api/conversation/{conversationid}/turns/{speakerid}:
     put:
       tags: 
         - "conversation/speakers"
-      summary: replaces speaker ids in transcript turns with another speaker id
+      summary: replaces all turns with speaker id = X with new speaker id = Y
       operationId: combineSpeakerIds
       description: replaces ids in transcript then deletes old id in speakers
       requestBody:
@@ -497,13 +499,12 @@ paths:
           schema:
             $ref: "#/components/responses/UnauthorizedError"
         '404':
-          description: not found error      
-
-  /api/conversation/{conversationid}/turns/{speakerid}:
-    patch:
+          description: not found error
+  /api/conversation/{conversationid}/turn/{speakerid}:      
+    post:
       tags:
-        - "conversation/turns"
-      summary: identifies speaker in turn with a newly created speaker
+        - "conversation/speakers"
+      summary: replaces speaker in a single turn with a newly created speaker
       operationId: createNewTurnSpeaker
       description: creates a new speaker then updates the turn id using the new speaker id
       requestBody:
@@ -535,8 +536,8 @@ paths:
         description: not found error  
     put:
       tags: 
-        - "conversation/turns"
-      summary: replaces speaker id in transcript turn with another speaker id
+        - "conversation/speakers"
+      summary: replaces speaker id in a single turn with another speaker id
       operationId: updateSpeakerId
       description: replaces speaker id in a single transcript turn
       requestBody:
@@ -566,6 +567,16 @@ paths:
             $ref: "#/components/responses/UnauthorizedError"
         '404':
           description: not found error      
+
+  /api/conversation/{conversationid}/turns:
+    post:
+      tags:
+        - "conversation/turns"
+      summary: creates a new turn 
+      operationId: createNewTurn
+      description: creates a new turn then updates turn order in text
+      requestBody:
+
 
   /api/conversation/{conversationid}/editmode:
 

@@ -19,7 +19,7 @@ module.exports = (webserver) => {
             },
             {
             path: '/:conversationid/speakers',
-            method: 'patch',
+            method: 'post',
             requireAuth: false,
             controller: createNewSpeaker
             },
@@ -36,20 +36,20 @@ module.exports = (webserver) => {
             controller: deleteSpeaker
             },
             {
-            path: '/:conversationid/speakers/:speakerid',
+            path: '/:conversationid/turns/:speakerid',
             method: 'put',
             requireAuth: false,
             controller:  combineSpeakerIds
             },
             {
-            path: '/:conversationid/turns/:speakerid',
+            path: '/:conversationid/turn/:speakerid',
             method: 'put',
             requireAuth: false,
             controller: identifyTurnSpeaker
             },
             {
-            path: '/:conversationid/turns/:speakerid',
-            method: 'patch',
+            path: '/:conversationid/turn/:speakerid',
+            method: 'post',
             requireAuth: false,
             controller:  createNewTurnSpeaker
             }
