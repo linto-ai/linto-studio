@@ -39,7 +39,7 @@ async function createConvoBase(req, res, next) {
                 msg: 'error'
             })
         }
-    } catch (error) {
+    } catch(error) {
         console.error(error)
     }
 }
@@ -61,7 +61,7 @@ async function getSpeakers(req, res, next){ //WIP
         } else {
             res.status(400) // bad request
         } 
-    } catch (error) {
+    } catch(error) {
         console.error(error)
     }
 }
@@ -81,7 +81,7 @@ async function identifySpeaker(req, res, next){ //WIP
                 msg: 'error'
             })
         }
-    } catch (error) {
+    } catch(error) {
         console.error(error)
     }
 }
@@ -101,7 +101,7 @@ async function identifyTurnSpeaker(req, res, next){ //WIP
                 msg: 'error'
             })
         }
-    } catch (error) {
+    } catch(error) {
         console.error(error)
     }
 }
@@ -122,7 +122,7 @@ async function createNewSpeaker(req, res, next){
                 msg: "update unsuccessful"
             })
         }
-    } catch (error) {
+    } catch(error) {
         console.error(error)   
     }
 }
@@ -152,7 +152,7 @@ async function createNewTurnSpeaker(req, res, next){
                 msg: "speaker creation unsuccessful"
             })
         }
-    } catch (error) {
+    } catch(error) {
         console.error(error)   
     }
 }
@@ -178,7 +178,7 @@ async function deleteSpeaker(req, res, next){
                 status: response
             })
         }
-    } catch (error) {
+    } catch(error) {
         console.error(error)
     }
 }
@@ -186,7 +186,6 @@ async function deleteSpeaker(req, res, next){
 async function combineSpeakerIds(req, res, next){
     try{
         const payload = req.body
-        console.log(payload)
         let response = await convoModel.changeSpeakerIds(payload)
         if (response.result['ok'] === 1) {
             console.log(response.result)
@@ -202,7 +201,64 @@ async function combineSpeakerIds(req, res, next){
             })
         }
 
-    } catch (error) {
+    } catch(error) {
+        console.error(error)
+    }
+}
+
+async function createTurn(req, res, next){
+    try{
+        const payload = req.body
+        const turnid = uuidv4()
+        payload.turnid = turnid
+        let response = await convoModel.createTurn(payload)
+        if (response.result['ok'] === 1) {
+            console.log(response.result)
+            res.json({
+                status: '200', 
+                msg: 'success!'
+            })
+        } else {
+            res.json({
+                msg: "turn creation unsuccessful"
+            })
+        }
+    } catch(error) {
+        console.error(error)
+    }
+}
+
+
+async function deleteTurns(req, res, next){
+    try{
+        const payload = req.body
+        let response = await convoModel.deleteTurns(payload)
+        if (response.result['ok'] === 1) {
+            console.log(response.result)
+            res.json({
+                status: '200', 
+                msg: 'success!'
+            })
+        } else {
+            res.json({
+                msg: "turn deletion unsuccessful"
+            })
+        }
+    } catch(error) {
+        console.error(error)
+    }
+}
+
+async function mergeTurns(req, res, next){ //WIP
+    //takes a list of turn ids
+    //check that all speaker ids are the same
+    //order by pos then concat all text from later turns to turn in first position
+    //appendTurnText
+    //re-index word pos
+    //delete later turns deleteTurns
+    try{
+        //const payload = req.body
+    } catch(error){
         console.error(error)
     }
 }
@@ -215,5 +271,8 @@ module.exports = {
     createNewSpeaker,
     createNewTurnSpeaker,
     deleteSpeaker,
-    combineSpeakerIds
+    combineSpeakerIds, 
+    createTurn, 
+    deleteTurns, 
+    mergeTurns
 }

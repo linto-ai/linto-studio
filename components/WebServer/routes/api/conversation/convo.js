@@ -2,7 +2,8 @@ const debug = require('debug')('app:router:api:conversation:convo')
 const { createConvoBase, getSpeakers, 
     createNewSpeaker, identifySpeaker, 
     deleteSpeaker,  combineSpeakerIds, 
-    identifyTurnSpeaker, createNewTurnSpeaker} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/convo.js`)
+    identifyTurnSpeaker, createNewTurnSpeaker, 
+    createTurn, deleteTurns, mergeTurns} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/convo.js`)
 
 module.exports = (webserver) => {
     return [{
@@ -52,6 +53,24 @@ module.exports = (webserver) => {
             method: 'post',
             requireAuth: false,
             controller:  createNewTurnSpeaker
+            },
+            {
+            path: '/:conversationid/turn',
+            method: 'post',
+            requireAuth: false,
+            controller:  createTurn
+            },
+            {
+            path: '/:conversationid/turn/:turnids',
+            method: 'delete',
+            requireAuth: false,
+            controller:  deleteTurns
+            },
+            {
+            path: '/:conversationid/turn/:turnids',
+            method: 'patch',
+            requireAuth: false,
+            controller:  mergeTurns
             }
         ]
 }

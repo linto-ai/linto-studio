@@ -568,7 +568,7 @@ paths:
         '404':
           description: not found error      
 
-  /api/conversation/{conversationid}/turns:
+  /api/conversation/{conversationid}/turn:
     post:
       tags:
         - "conversation/turns"
@@ -576,7 +576,99 @@ paths:
       operationId: createNewTurn
       description: creates a new turn then updates turn order in text
       requestBody:
-
+        required: true
+        description: A json object containing conversationid, speakerid, position
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                speakerid:
+                  type: string
+                convoid:
+                  type: string
+                position:
+                  type: integer
+        responses:
+          '200':
+            description: turn successfully created 
+          '400':
+            description: bad request error
+          schema:
+            $ref: '#components/schemas/Error'
+          '401':
+            description: unauthorized error 
+            schema:
+              $ref: "#/components/responses/UnauthorizedError"
+          '404':
+            description: not found error   
+  /api/conversation/{conversationid}/turn/{turnids}:   
+    delete:
+      tags:
+        - "conversation/turns"
+      summary: deletes a turn or turns 
+      operationId: deleteTurn
+      description: deletes a turn 
+      requestBody:
+        required: true
+        description: A json object containing conversationid, list of turnids
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                turnids:
+                  type: array 
+                  items:
+                    type: string
+                convoid:
+                  type: string
+        responses:
+          '200':
+            description: turns successfully deleted
+          '400':
+            description: bad request error
+          schema:
+            $ref: '#components/schemas/Error'
+          '401':
+            description: unauthorized error 
+            schema:
+              $ref: "#/components/responses/UnauthorizedError"
+          '404':
+            description: not found error      
+    patch:
+      tags:
+        - "conversation/turns"
+      summary: merges a set of turns 
+      operationId: mergeTurns
+      description: combines text from all turns into first turn, deletes remaining turns
+      requestBody:
+        required: true
+        description: A json object containing conversationid and an array of turn ids
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                turnids:
+                  type: array
+                  items:
+                    type: string
+                convoid:
+                  type: string
+        responses:
+          '200':
+            description: turns successfully merged
+          '400':
+            description: bad request error
+          schema:
+            $ref: '#components/schemas/Error'
+          '401':
+            description: unauthorized error 
+            schema:
+              $ref: "#/components/responses/UnauthorizedError"
+          '404':
+            description: not found error  
 
   /api/conversation/{conversationid}/editmode:
 

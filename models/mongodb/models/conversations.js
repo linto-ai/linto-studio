@@ -59,7 +59,7 @@ class ConvoModel extends MongoModel {
         }
     }
 
-     // create a new speaker in a conversation
+    // create a new speaker in a conversation
     async createSpeaker(payload) {
          //need to make sure it's not the same as a current speaker name -- is this back 
          //or front end function?
@@ -195,6 +195,78 @@ class ConvoModel extends MongoModel {
             return error
         }
     }
+
+    // create a new turn in a conversation
+    async createTurn(payload) {
+        //takes a convo id and a speaker_id and a position
+        
+       try {
+           const operator = "$addToSet"
+           const query = {
+               _id: this.getObjectId(payload.convoid)
+           }
+           let mutableElements = {
+               "text": {
+               speaker_id: payload.speakerid,
+               turn_id: payload.turnid,
+               pos: payload.position, 
+               words: []
+               }
+           }
+           return await this.mongoUpdateOne(query, operator, mutableElements)
+       } catch (error) {
+           console.error(error)
+           return error
+       }
+   }
+   
+   //delete turn in a conversation
+   async deleteTurns(payload) {
+    //takes a convo id and list of turn_ids
+        try{
+            const operator = "$pull"
+            const query = {
+                _id: this.getObjectId(payload.convoid)
+            }
+            let mutableElements = {
+                "text": {
+                    turn_id: {"$in": payload.turnids}
+                }
+            }
+            return await this.mongoUpdateOne(query, operator, mutableElements)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
+    //updates turn text after merging with other turns
+    async appendTurnText(payload){
+        //takes a convo and an array of word objects
+        try{
+            const operator = "$push"
+            const query = {
+                _id: this.getObjectId(payload.convoid)
+            }
+            let mutableElements = {
+                "text.words": { 
+                    "$each" : payload.words
+                }
+            }
+            return await this.mongoUpdateOne(query, operator, mutableElements)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
+    async returnOrderedText(payload){ //WIP
+        //takes a list of turn ids
+        //checks that they are all the same speaker
+        //...
+
+    }
+
 }
 
 module.exports = new ConvoModel()

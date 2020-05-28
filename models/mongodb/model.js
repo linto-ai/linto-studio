@@ -73,6 +73,7 @@ class MongoModel {
     // Delete ONE
     async mongoDelete(query) {
         return new Promise((resolve, reject) => {
+            console.log(query)
             try {
                 MongoDriver.constructor.db.collection(this.collection).deleteOne(query, (error, result) => {
                     if (error) {
