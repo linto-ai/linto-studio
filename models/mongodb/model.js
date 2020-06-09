@@ -73,7 +73,6 @@ class MongoModel {
     // Delete ONE
     async mongoDelete(query) {
         return new Promise((resolve, reject) => {
-            console.log(query)
             try {
                 MongoDriver.constructor.db.collection(this.collection).deleteOne(query, (error, result) => {
                     if (error) {
@@ -88,6 +87,24 @@ class MongoModel {
             }
         })
 
+    }
+
+    // Aggregate
+    async mongoAggregate(query) {
+        return new Promise((resolve, reject) => {
+            try{
+                MongoDriver.constructor.db.collection(this.collection).aggregate(query).toArray((error, result) => {
+                    if (error) {
+                        reject(error)
+                    }
+                    resolve(result)
+                })
+
+            } catch(error) {
+                console.error(error)
+                reject(error)
+            }
+        })
     }
 
 }

@@ -218,11 +218,11 @@ class ConvoModel extends MongoModel {
            console.error(error)
            return error
        }
-   }
+    }
    
    //delete turn in a conversation
    async deleteTurns(payload) {
-    //takes a convo id and list of turn_ids
+    //takes a convo id and a *list* of turn_ids
         try{
             const operator = "$pull"
             const query = {
@@ -241,30 +241,65 @@ class ConvoModel extends MongoModel {
     }
 
     //updates turn text after merging with other turns
-    async appendTurnText(payload){
-        //takes a convo and an array of word objects
+    async replaceTurnText(payload){
+        //takes a convoid and a turn id and an array of word objects
         try{
-            const operator = "$push"
+            const operator = "$set"
             const query = {
                 _id: this.getObjectId(payload.convoid)
             }
             let mutableElements = {
-                "text.words": { 
-                    "$each" : payload.words
-                }
+                "text.$[elem].words": payload.text
             }
-            return await this.mongoUpdateOne(query, operator, mutableElements)
+            let arrayFilters = {
+                "arrayFilters" : [{"elem.turn_id": payload.turnid}]
+            }
+            return await this.mongoUpdateOne(query, operator, mutableElements, arrayFilters)
         } catch (error) {
             console.error(error)
             return error
         }
     }
 
-    async returnOrderedText(payload){ //WIP
-        //takes a list of turn ids
-        //checks that they are all the same speaker
-        //...
+    async getTurns(payload){ 
+        //returns list of turns from a single conversation with turn ids specified in payload
+        try{
+            const project = {"$project": {
+                "text": {
+                    "$filter": {
+                        input: "$text", 
+                        as: "turn", 
+                        cond: {"$in": ["$$turn.turn_id", payload.turnids]}
+                    }
+                }
+            }}
+            const match = {"$match": {_id: this.getObjectId(payload.convoid)}}
+            const query = [match, project]
+            return await this.mongoAggregate(query)
+        }catch (error){
+            console.error(error)
+            return error
+        }
+    }
 
+    async renumberTurns(payload){//WIP
+        //pull full text array for a convoid
+        //order by position and then renumber positions to ensure consecutive numbers
+        try{
+            // change all instances of a speaker id
+            const operator = "$set"
+            const query = {
+                _id: this.getObjectId(payload.convoid)
+            }
+            let mutableElements = {
+                "text.$[elem].pos": payload.newspeakerid
+            }
+            let arrayFilters = {
+                "arrayFilters" : [{"elem.speaker_id": payload.speakerid}]
+            }
+        } catch(error) {
+            console.error(error)
+        }
     }
 
 }
