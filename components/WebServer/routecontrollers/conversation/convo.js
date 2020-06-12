@@ -183,6 +183,26 @@ async function deleteSpeaker(req, res, next){
     }
 }
 
+async function updateSpeakerAudio(req, res, next){
+    try{
+        const payload = req.body
+        let response = await convoModel.updateSpeakerAudio(payload)
+        if (response.result['ok'] === 1) {
+            res.json({
+                status: "200", 
+                msg: "success!"
+            })
+        } else {
+            res.json({
+                status: 'error',
+                msg: 'error'
+            })
+        }
+    } catch(error) {
+        console.error(error)
+    }
+}
+
 async function combineSpeakerIds(req, res, next){
     try{
         const payload = req.body
@@ -211,6 +231,7 @@ async function createTurn(req, res, next){
         const payload = req.body
         const turnid = uuidv4()
         payload.turnid = turnid
+        console.log(payload)
         let response = await convoModel.createTurn(payload)
         if (response.result['ok'] === 1) {
             console.log(response.result)
@@ -250,16 +271,17 @@ async function deleteTurns(req, res, next){
 }
 
 async function mergeTurns(req, res, next){ 
-    //takes a convo id and list of turn ids
+    //takes a convo id and list of turn ids and optionally a speaker id
     try{
         const payload = req.body
+        console.log(payload)
         let response = await convoModel.getTurns(payload)
         if (response !== "undefined") {
-            //check all turns are same speaker and consecutive
             turns = response[0]["text"].sort((a,b) => a.pos - b.pos)
+            //check all turns are same speaker or speaker id given and turns consecutive
             const samespeaker = arr => arr.every(v => v['speaker_id'] === arr[0]['speaker_id'])
             const consecutive = arr => arr.every((elem, i) => i === arr.length -1 || elem.pos < arr[i+1].pos)
-            if (samespeaker(turns) && consecutive(turns)) {
+            if ((samespeaker(turns)|| payload.hasOwnProperty('speakerid')) && consecutive(turns)) {
                 //concat all words under all turns
                 new_words = []
                 position = 0
@@ -280,6 +302,16 @@ async function mergeTurns(req, res, next){
                 try{
                     let response = await convoModel.replaceTurnText(new_payload)
                     if (response.result['ok'] === 1) {
+                        //if speakerid defined, then replace speaker id
+                        if (payload.hasOwnProperty('speakerid')){
+                            new_payload.speakerid = payload.speakerid
+                            let response = await convoModel.updateTurnSpeakerId(new_payload)
+                            if (response.result['ok'] !== 1) {
+                                console.error("couldn't replace speaker name")
+                                //then the speaker of the merged turn would just be the 
+                                //speaker of the first turn
+                            } 
+                        } 
                         //delete remaining turns
                         turns.shift()
                         turn_list = turns.map(elem => elem.turn_id)
@@ -321,12 +353,83 @@ async function mergeTurns(req, res, next){
 }
 
 async function splitTurns(req, res, next){ //WIP
-    // takes a pair ((turn_id_1, word_id_1), (turn_id_2, word_id_2)) and a speaker id
+    // takes a pair of turn ids and a pair of word ids and a speaker id
     try{
-        //first check if turn_id_1 === turn_id_2
-        //then check how many different turns are implicated
-        //if n > 2 then...
+        const payload = req.body
+        let response = await convoModel.getTurns(payload)
+        if (response !== "undefined") {
+            turns = response[0].text.sort((a,b) => a.pos - b.pos)
+            start_turn_pos = turns[0].pos
+            end_turn_pos = turns[1].pos
+            start_words = turns[0].words
+            end_words = turns[1].words
+            last_pos = end_words[end_words.length-1].pos
+            //get starting word position
+            let start_word = start_words.filter(obj => {
+                return obj.wid === payload.wordids[0]
+              })
+            //and ending word position
+            let end_word = end_words.filter(obj => {
+                return obj.wid === payload.wordids[1]
+              })
 
+            const start_pos = start_word[0].pos
+            const end_pos = end_word[0].pos
+            
+            console.log(start_pos)
+            console.log(end_pos)
+            console.log(last_pos)
+
+            //case 1: start_pos == 0 and end_pos == last_pos
+            //case 2: start_pos != 0 and end_pos != last_pos
+            //case 3: start_pos == 0 and end_pos != last_pos
+            //case 4: start_pos != 0 and end_pos == last_pos
+
+            if (start_pos === 0 && end_pos === last_pos){
+                if (payload.turnids[0] === payload.turnids[1]){
+                    res.json({
+                        msg: "turn already exists"
+                    })
+                } else {
+                    //get all turn ids and merge the turns
+                    //change speaker id
+        
+                    //if just two turns
+                    if (start_turn_pos == end_turn_pos-1){
+                        //merge them with a speaker
+                        new_payload = {
+                            convoid: payload.convoid,
+                            speakerid: payload.speakerid, 
+                            turnids: [turns[0].turn_id, turns[1].turn_id]
+                        }
+                        let response = await convoModel.mergeTurns(payload)
+                        if (response.result['ok'] === 1) {
+                        } else {
+                            
+                        }
+
+                    } else {
+                        //get all intervening turns
+                        //merge them --> with a single speaker
+                        //**!! add option of giving speaker to merge turns */
+                    }
+                }
+            } else if (start_pos !== 0 && end_pos !== last_pos){
+                //you will have three new turns
+                to_delete = []
+                // if same turn
+                // if two consecutive turns
+                // if > 2 consec turns
+
+            } else {
+                // you will have two new turns
+                to_delete = []
+            }
+        } else {
+            res.json({
+                msg: "couldn't get turns"
+            })
+        }
     } catch(error) {
         console.error(error)
     }
@@ -340,6 +443,7 @@ module.exports = {
     createNewSpeaker,
     createNewTurnSpeaker,
     deleteSpeaker,
+    updateSpeakerAudio,
     combineSpeakerIds, 
     createTurn, 
     deleteTurns, 

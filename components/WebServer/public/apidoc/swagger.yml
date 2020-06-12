@@ -463,6 +463,42 @@ paths:
             $ref: "#/components/responses/UnauthorizedError"
         '404':
           description: not found error        
+        description: not found error  
+    put:
+      tags: 
+        - "conversation/speakers"
+      summary: replaces audio in speaker map for a single speaker
+      operationId: updateSpeakerAudio
+      description: replaces speaker audio sample for a single speaker
+      requestBody:
+        required: true
+        description: A json object containing conversationid and speakerid and turnid
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                speakerid:
+                  type: string
+                convoid:
+                  type: string
+                stime:
+                  type: number
+                etime:
+                  type: number
+      responses:
+        '200':
+          description: turn speaker id successfully updated
+        '400':
+          description: bad request error
+          schema:
+            $ref: '#components/schemas/Error'
+        '401':
+          description: unauthorized error 
+          schema:
+            $ref: "#/components/responses/UnauthorizedError"
+        '404':
+          description: not found error      
 
   /api/conversation/{conversationid}/turns/{speakerid}:
     put:
@@ -580,28 +616,31 @@ paths:
         description: A json object containing conversationid, speakerid, position
         content:
           application/json:
-            schema:
+             schema:
               type: object
               properties:
-                speakerid:
-                  type: string
                 convoid:
                   type: string
-                position:
-                  type: integer
-        responses:
-          '200':
-            description: turn successfully created 
-          '400':
-            description: bad request error
+                speakerid:
+                  type: string
+                pos:
+                  type: number 
+                words:
+                  $ref: '#/components/schemas/Words'
+      responses:
+        '200':
+          description: turn successfully created 
+        '400':
+          description: bad request error
+        schema:
+          $ref: '#components/schemas/Error'
+        '401':
+          description: unauthorized error 
           schema:
-            $ref: '#components/schemas/Error'
-          '401':
-            description: unauthorized error 
-            schema:
-              $ref: "#/components/responses/UnauthorizedError"
-          '404':
-            description: not found error   
+            $ref: "#/components/responses/UnauthorizedError"
+        '404':
+          description: not found error   
+
   /api/conversation/{conversationid}/turn/{turnids}:   
     delete:
       tags:
@@ -623,19 +662,19 @@ paths:
                     type: string
                 convoid:
                   type: string
-        responses:
-          '200':
-            description: turns successfully deleted
-          '400':
-            description: bad request error
+      responses:
+        '200':
+          description: turns successfully deleted
+        '400':
+          description: bad request error
+        schema:
+          $ref: '#components/schemas/Error'
+        '401':
+          description: unauthorized error 
           schema:
-            $ref: '#components/schemas/Error'
-          '401':
-            description: unauthorized error 
-            schema:
-              $ref: "#/components/responses/UnauthorizedError"
-          '404':
-            description: not found error      
+            $ref: "#/components/responses/UnauthorizedError"
+        '404':
+          description: not found error      
     patch:
       tags:
         - "conversation/turns"
@@ -656,19 +695,59 @@ paths:
                     type: string
                 convoid:
                   type: string
-        responses:
-          '200':
-            description: turns successfully merged
-          '400':
-            description: bad request error
+                speakerid:
+                  type: string
+      responses:
+        '200':
+          description: turns successfully merged
+        '400':
+          description: bad request error
+        schema:
+          $ref: '#components/schemas/Error'
+        '401':
+          description: unauthorized error 
           schema:
-            $ref: '#components/schemas/Error'
-          '401':
-            description: unauthorized error 
+            $ref: "#/components/responses/UnauthorizedError"
+        '404':
+
+  /api/conversation/{conversationid}/turn/split/{turnids}:  
+    put:
+      tags:
+        - "conversation/turns"
+      summary: splits a turn or turns 
+      operationId: splitTurns
+      description: creates new turn from user-selected text  
+      requestBody:
+        required: true
+        description: A json object containing an array of turn ids and an array of word ids
+        content:
+          application/json:
             schema:
-              $ref: "#/components/responses/UnauthorizedError"
-          '404':
-            description: not found error  
+              type: object
+              properties:
+                convoid:
+                  type: string
+                turnids:
+                  type: array
+                  items: 
+                    type: string
+                wordids:
+                  type: array
+                  items: 
+                    type: string
+      responses:
+        '200':
+          description: turns successfully split
+        '400':
+          description: bad request error
+        schema:
+          $ref: '#components/schemas/Error'
+        '401':
+          description: unauthorized error 
+          schema:
+            $ref: "#/components/responses/UnauthorizedError"
+        '404':
+  
 
   /api/conversation/{conversationid}/editmode:
 
@@ -745,102 +824,34 @@ components:
           speakername:
             type: string
           stime:
+            type: number
+          etime:
+            type: number
+    Turn:
+      type: object
+      properties:
+        turn_id:
+          type: string
+        speaker_id:
+          type: string
+        pos:
+          type: number
+        words:
+          $ref: '#/components/schemas/Words'
+    Words:
+      type: array 
+      items:
+        type: object
+        properties:
+          wid: 
             type: string
           etime:
             type: string
-    Conversation:
-      type: object
-      properties:
-        conversationid:
-          type: string
-        lastUpdated:
-          type: string
-          format: date-time
-        startDatetime: 
-          type: string
-          format: date-time
-        endDatetime:
-          type: string
-        location:
-          type: string
-        audio:
-          type: string
-          format: url
-        rawTranscript:
-          type: string
-        locked:
-          type: boolean
-        users:
-          type: array
-          items:
-            type: object
-            properties:
-              userid:
-                type: string 
-              accessType:
-                type: string
-        agenda:
-          type: array
-          items:
-            type: string 
-        speakers:
-          type: object 
-          properties:
-            speakerid:
-              type: string
-            speakername:
-              type: string
-            audiosample:
-              type: string
-              format: mp3??
-          required:
-            - speakerid
-        keywords:
-          type: array
-          items:
+          stime:
             type: string
-        annotations:
-          type: object
-          properties:
-            id:
-              type: integer
-            name:
-              type: string
-            comment:
-              type: string
-        summary:
-          type: string
-        processedTranscript:
-          type: array 
-          items:
-            type: object
-            properties:
-              turnid:
-                type: string
-              speakerid:
-                type: string
-              timeStamp:
-                type: string
-              text:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    wordid:
-                      type: string
-                    word:
-                      type: string
-                    timeStamp:
-                      type: string
-                  required:
-                    - wordid
-                    - word
-            required:
-              - turnid
-              - speakerid
-      required:
-        - conversationid
-        - rawTranscript
-        - audio
+          word:
+            type: string
+          pos:
+            type: number
 security:
   - bearerAuth: []

@@ -1,9 +1,10 @@
 const debug = require('debug')('app:router:api:conversation:convo')
 const { createConvoBase, getSpeakers, 
     createNewSpeaker, identifySpeaker, 
-    deleteSpeaker,  combineSpeakerIds, 
+    deleteSpeaker,  updateSpeakerAudio, combineSpeakerIds, 
     identifyTurnSpeaker, createNewTurnSpeaker, 
-    createTurn, deleteTurns, mergeTurns} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/convo.js`)
+    createTurn, deleteTurns, mergeTurns, 
+    splitTurns} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/convo.js`)
 
 module.exports = (webserver) => {
     return [{
@@ -37,10 +38,16 @@ module.exports = (webserver) => {
             controller: deleteSpeaker
             },
             {
+            path: '/:conversationid/speakers/:speakerid',
+            method: 'put',
+            requireAuth: false,
+            controller: updateSpeakerAudio
+            },
+            {
             path: '/:conversationid/turns/:speakerid',
             method: 'put',
             requireAuth: false,
-            controller:  combineSpeakerIds
+            controller: combineSpeakerIds
             },
             {
             path: '/:conversationid/turn/:speakerid',
@@ -52,25 +59,31 @@ module.exports = (webserver) => {
             path: '/:conversationid/turn/:speakerid',
             method: 'post',
             requireAuth: false,
-            controller:  createNewTurnSpeaker
+            controller: createNewTurnSpeaker
             },
             {
             path: '/:conversationid/turn',
             method: 'post',
             requireAuth: false,
-            controller:  createTurn
+            controller: createTurn
             },
             {
             path: '/:conversationid/turn/:turnids',
             method: 'delete',
             requireAuth: false,
-            controller:  deleteTurns
+            controller: deleteTurns
             },
             {
             path: '/:conversationid/turn/:turnids',
             method: 'patch',
             requireAuth: false,
-            controller:  mergeTurns
+            controller: mergeTurns
+            },
+            {
+            path: '/:conversationid/turn/split/:turnids',
+            method: 'put',
+            requireAuth: false,
+            controller: splitTurns
             }
         ]
 }

@@ -158,6 +158,25 @@ class ConvoModel extends MongoModel {
         }
     }
 
+    //update speaker audio
+    async updateSpeakerAudio(payload) {
+        try {
+            const operator = "$set"
+            const query = {
+                _id: this.getObjectId(payload.convoid), 
+                "speakers.speaker_id": payload.speakerid
+            }
+            let mutableElements = {
+                "speakers.$.etime": payload.etime, 
+                "speakers.$.stime": payload.stime
+            }
+            return await this.mongoUpdateOne(query, operator, mutableElements)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
     //update speaker id for a particular turn
     async updateTurnSpeakerId(payload) {
         try {
@@ -198,7 +217,7 @@ class ConvoModel extends MongoModel {
 
     // create a new turn in a conversation
     async createTurn(payload) {
-        //takes a convo id and a speaker_id and a position
+        //takes a convo id and a speaker_id and a position and text (optionally)
         
        try {
            const operator = "$addToSet"
@@ -209,8 +228,8 @@ class ConvoModel extends MongoModel {
                "text": {
                speaker_id: payload.speakerid,
                turn_id: payload.turnid,
-               pos: payload.position, 
-               words: []
+               pos: payload.pos, 
+               words: payload.words
                }
            }
            return await this.mongoUpdateOne(query, operator, mutableElements)
@@ -280,6 +299,14 @@ class ConvoModel extends MongoModel {
             console.error(error)
             return error
         }
+    }
+
+    async pullInterveningTurns(payload){ //WIP
+        //given two turn ids, return an array of these and all intervening turns
+        //
+
+
+
     }
 
     async renumberTurns(payload){//WIP
