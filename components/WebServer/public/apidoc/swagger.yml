@@ -727,10 +727,12 @@ paths:
               properties:
                 convoid:
                   type: string
-                turnids:
+                speakerid:
+                  type: string
+                positions:
                   type: array
                   items: 
-                    type: string
+                    type: number
                 wordids:
                   type: array
                   items: 

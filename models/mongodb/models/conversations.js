@@ -281,14 +281,17 @@ class ConvoModel extends MongoModel {
     }
 
     async getTurns(payload){ 
-        //returns list of turns from a single conversation with turn ids specified in payload
+        //returns list of turns from a single conversation with either turn ids or turn positions specified in payload
         try{
+            console.log(payload)
             const project = {"$project": {
                 "text": {
                     "$filter": {
                         input: "$text", 
                         as: "turn", 
-                        cond: {"$in": ["$$turn.turn_id", payload.turnids]}
+                        cond: payload.hasOwnProperty('turnids') 
+                        ? {"$in": ["$$turn.turn_id", payload.turnids]} 
+                        : {"$in": ["$$turn.pos", payload.positions]}
                     }
                 }
             }}
