@@ -298,35 +298,47 @@ class ConvoModel extends MongoModel {
             const match = {"$match": {_id: this.getObjectId(payload.convoid)}}
             const query = [match, project]
             return await this.mongoAggregate(query)
-        }catch (error){
+        } catch (error){
             console.error(error)
             return error
         }
     }
 
-    async pullInterveningTurns(payload){ //WIP
-        //given two turn ids, return an array of these and all intervening turns
-        //
-
-
-
+    async getAllTurns(convoid){
+        try {
+            const query = {
+                _id: this.getObjectId(convoid)
+            }
+            const projection = {
+                text: 1
+            }
+            return await this.mongoRequest(query, projection)
+        } catch(error) {
+            console.error(error)
+            return error
+        }
     }
 
-    async renumberTurns(payload){//WIP
+    async renumberTurns(convoid){//WIP
         //pull full text array for a convoid
-        //order by position and then renumber positions to ensure consecutive numbers
+        //order by position and then renumber positions to ensure consecutive whole numbers
         try{
             // change all instances of a speaker id
+            response = getAllTurns(convoid)
+            turns = response[0].sort((a,b) => a.pos - b.pos)
+            position = 0
+            turns.forEach((elem => {
+                elem.pos = position
+                position ++
+            }))
             const operator = "$set"
             const query = {
-                _id: this.getObjectId(payload.convoid)
+                _id: this.getObjectId(convoid)
             }
             let mutableElements = {
-                "text.$[elem].pos": payload.newspeakerid
+                "text": turns
             }
-            let arrayFilters = {
-                "arrayFilters" : [{"elem.speaker_id": payload.speakerid}]
-            }
+            return await this.mongoUpdateOne(query, operator, mutableElements)
         } catch(error) {
             console.error(error)
         }

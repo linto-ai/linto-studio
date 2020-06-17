@@ -1,6 +1,7 @@
 const convoModel = require(`${process.cwd()}/models/mongodb/models/conversations`)
 const userModel = require(`${process.cwd()}/models/mongodb/models/users`)
 const { v4: uuidv4 } = require('uuid')
+const clone = require('rfdc')()
 
 // create a conversation base 
 // TODO: check user id
@@ -308,7 +309,7 @@ async function mergeTurns(req, res, next){
                             let response = await convoModel.updateTurnSpeakerId(new_payload)
                             if (response.result['ok'] !== 1) {
                                 console.error("couldn't replace speaker name")
-                                //then the speaker of the merged turn would just be the 
+                                //in this case speaker of the merged turn will just be the 
                                 //speaker of the first turn
                             } 
                         } 
@@ -353,157 +354,195 @@ async function mergeTurns(req, res, next){
 }
 
 async function splitTurns(req, res, next){ //WIP
-    //TODO: change structure to relfect responses
-    // takes a pair of turn positions and a pair of word ids and a speaker id
+    // takes 1 or 2 turn positions, a pair of word ids and a speaker id
     try{
         const payload = req.body
-        //!!!!check how many turns and then expand payload 
-        // get all turns implicated in one request
+        //check how many turns and then expand payload positions if needed
+        words = payload.wordids
+        nums = payload.positions
+        if(nums.length > 1){
+            payload.positions = [...Array(nums[1] + 1).keys()].slice(nums[0])
+        }
+        // get all turns
         let response = await convoModel.getTurns(payload)
         if (response !== "undefined") {
             turns = response[0].text.sort((a,b) => a.pos - b.pos)
             start_words = turns[0].words.sort((a,b) => a.pos - b.pos)
-            end_words = turns[turns.length -1].words.sort((a,b) => a.pos - b.pos)
+            if(nums.length == 1){
+                end_words = start_words
+            } else {
+                end_words = turns[turns.length -1].words.sort((a,b) => a.pos - b.pos)
+            }
+            
             last_pos = end_words[end_words.length-1].pos
 
             //get starting word position
-            let start_word = start_words.filter(obj => {
+            start_word = start_words.filter(obj => {
                 return obj.wid === payload.wordids[0]
               })
             const start_pos = start_word[0].pos
 
-            //and ending word position
-            let end_word = end_words.filter(obj => {
-                return obj.wid === payload.wordids[1]
-              })
+            //get ending word position
+            if (words.length > 1){
+                end_word = end_words.filter(obj => {
+                    return obj.wid === payload.wordids[1]
+                })
+            } else {
+               end_word = start_word   
+            }
+
             const end_pos = end_word[0].pos
             
-            console.log(start_pos)
-            console.log(end_pos)
-            console.log(last_pos)
-
+            //case 1: check that user selection is not coextensive with just one turn
+            if (start_pos === 0 && end_pos === last_pos && nums.length == 1){
+                res.json({
+                    msg: "selected turn already exists"
+                })
             //case 1: start_pos == 0 and end_pos == last_pos
             //case 2: start_pos != 0 and end_pos != last_pos
             //case 3: start_pos == 0 and end_pos != last_pos
             //case 4: start_pos != 0 and end_pos == last_pos
-            
-            //case 1
-            if (start_pos === 0 && end_pos === last_pos){
-                if (turns.length == 1){
-                    res.json({
-                        msg: "turn already exists"
-                    })
-                } else {
-                    //this is just a simple merge of 2 or more turns
-                    let response = await convoModel.mergeTurns(payload)
-                    if (response.result['ok'] === 1) {
-                        res.json({
-                            msg: "turns merged"
-                        })
-                    } else {
-                        res.json({
-                            msg: "couldn't merge turns"
-                        })
-                    }
-                }
-            //cases 2/3/4
             } else {
-                const until_word = (arr, pos) => arr.every((elem) => elem.pos < pos)
-                const from_word = (arr, pos) => arr.every((elem) => elem.pos >= pos)
-                if (start_pos !== 0){
+                const until_word = (arr, pos) => arr.filter((elem) => elem.pos <= pos)
+                const from_word = (arr, pos) => arr.filter((elem) => elem.pos >= pos)
+                const extract_words = (arr, start, end) => arr.filter((elem) => elem.pos >= start && elem.pos <= end)
+                if (start_pos !== 0){ // handle first turn cases 2 or 4
                     let turnid = uuidv4()
                     new_payload = {
                         convoid: payload.convoid, 
                         speakerid: turns[0].speaker_id, 
                         turnid: turnid, 
                         pos: turns[0].pos, 
-                        words: until_word(start_words, start_pos)
+                        words: until_word(start_words, start_pos-1)
                     }
                     let response = await convoModel.createTurn(new_payload)
                     if (response.result['ok'] === 1) {
-                        //then do middle turn
-                        new_words = []
-                        position = 0
-                        for (w in from_word(start_words, start_pos)){
-                            w.pos == position 
+                        console.log("turn creation successful")
+                    } else {
+                        res.json({
+                            status: '400',
+                            msg: "turn creation unsuccessful"
+                        })
+                    }
+                }
+                if (end_pos != last_pos){ // handle last turn case 2 or 3
+                    new_end_words = clone(end_words)
+                    end_turn_words = from_word(new_end_words, end_pos + 1)
+                    position = 0
+                    end_turn_words.forEach(elem => {
+                        elem.pos = position
+                        position ++
+                    })
+                    let turnid = uuidv4()
+                    new_payload = {
+                        convoid: payload.convoid, 
+                        speakerid: turns[turns.length-1].speaker_id, 
+                        turnid: turnid, 
+                        pos: turns[turns.length -1].pos + .75, 
+                        words: end_turn_words
+                    }
+                    let response = await convoModel.createTurn(new_payload)
+                    if (response.result['ok'] === 1) {
+                        console.log("turn creation successful")
+                    } else {
+                        res.json({
+                            status: '400',
+                            msg: "turn creation unsuccessful"
+                        })
+                    }
+                }
+                //handle selected text for turn
+                new_words = []
+                position = 0
+
+                if(nums.length == 1){ //for single turn selections
+                    extract_words(start_words, start_pos, end_pos).forEach(elem => {
+                        elem.pos = position
+                        new_words.push(elem)
+                        position ++
+                    })
+
+                } else { 
+                    // handle start
+                    if (start_pos != 0){ //case 2 or 4
+                        from_word(start_words, start_pos).forEach((elem => {
+                            elem.pos = position
+                            new_words.push(elem)
+                            position ++
+                        }))
+                    } else { // case 1 or 3
+                        start_words.forEach(elem => {
+                            elem.pos = position
+                            new_words.push(elem)
+                            position ++
+                        })
+                    }    
+
+                    //handle "middle turns" if any     
+                    middle_turns = turns.slice(1,-1)
+              
+                    middle_turns.forEach(turn => {
+                        words = turn.words.sort((a,b) => a.pos - b.pos)
+                        words.forEach(w => {
+                            w.pos = position
                             new_words.push(w)
                             position ++
-                        }
-                        //then concat until pentultimate word 
-                        middle_turns = turns.slice(1,-1)
-                        if (middle_turns.length > 0){
-                            for (let t of _middle_turns){
-                                words = t.words.sort((a,b) => a.pos - b.pos)
-                                for(let w of words){
-                                    w.pos = position
-                                    new_words.push(w)
-                                    position ++
-                                }
-                            }
-                        } else {
-                            //then check last word status 
-                            if (end_pos !== last_pos){
-                                //add just the words up to last word
-                                for (w in until_word(end_words, end_pos)){
-                                    w.pos = position
-                                    new_words.push(w)
-                                    position ++
-                                }
-                                // deal with last turn!
-                                let turnid = uuidv4()
-                                new_payload = {
-                                    convoid: payload.convoid, 
-                                    speakerid: turns[turns.length-1].speaker_id, 
-                                    turnid: turnid, 
-                                    pos: turns[turns.length -1].pos, 
-                                    words: from_word(end_words, end_pos)
-                                }
-                                let response = await convoModel.createTurn(new_payload)
-                                if (response.result['ok'] === 1) {
-                                    console.log("turn creation successful")
-                                } else {
-                                    console.error("nope")
-                                }
+                        } )
+                    })
 
-                            } else {
-                                //selection goes all the way to the end 
-                                for (w in end_words){
-                                    w.pos = position
-                                    new_words.push(w)
-                                    position ++
-                                }
-                            }
-                        }
-                        //create middle turn
-                        let turnid = uuidv4()
-                        new_payload = {
-                            convoid: payload.convoid, 
-                            speakerid: payload.speaker_id, 
-                            turnid: turnid, 
-                            pos: turns[0].pos + .5, 
-                            words: new_words
-                        }
-                        let response = await convoModel.createTurn(new_payload)
-                        if (response.result['ok'] === 1) {
-                            console.log("turn creation successful")
-                        } else {
-                            console.error("nope")
-                        }
-                           
-                    } else {
-                        console.error("nope")
+                    // handle end 
+                    if (end_pos !== last_pos){ // case 2 or 3
+                        until_word(end_words, end_pos).forEach(elem => {
+                            elem.pos = position
+                            new_words.push(elem)
+                            position ++
+                        })
+                    } else { // case 1 or 4
+                        end_words.forEach(elem => {
+                            elem.pos = position
+                            new_words.push(elem)
+                            position ++
+                        })
                     }
-
-                } else {
-                    //start pos does equal 0 so pull all turns until end pos
-                    //for every turn in the list except the last add to a new words field
+                }    
+                // create new selected turn     
+                let turnid = uuidv4()
+                new_payload = {
+                    convoid: payload.convoid, 
+                    speakerid: payload.speakerid, 
+                    turnid: turnid, 
+                    pos: turns[0].pos + .5, //until reordered
+                    words: new_words
                 }
-                //don't forget to delete all turns!
+                let response = await convoModel.createTurn(new_payload)
+                if (response.result['ok'] === 1) {
+                    //now delete original turns
+                    delete_payload = {
+                        convoid: payload.convoid, 
+                        turnids: turns.map(a => a.turn_id)
+                    }
+                    let response = await convoModel.deleteTurns(delete_payload)
+                    if (response.result['ok'] === 1){
+                        res.json({
+                            status: '200', 
+                            msg: 'success!'
+                        })
+                    } else {
+                        res.json({
+                            status: '400',
+                            msg: "turn deletion unsuccessful"
+                        })
+                    }
+                } else {
+                    res.json({
+                        status: '400', 
+                        msg: 'could not make turn'
+                    })
+                }
             }
-            
         } else {
             res.json({
-                msg: "couldn't get turns"
+                msg: "couldn't retrieve turns"
             })
         }
     } catch(error) {
