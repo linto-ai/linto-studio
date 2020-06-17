@@ -280,6 +280,25 @@ class ConvoModel extends MongoModel {
         }
     }
 
+
+    //updates all text turns
+    async replaceText(payload){
+        //takes a convoid and an entire text object 
+        try{
+            const operator = "$set"
+            const query = {
+                _id: this.getObjectId(payload.convoid)
+            }
+            let mutableElements = {
+                "text": payload.turns
+            }
+            return await this.mongoUpdateOne(query, operator, mutableElements)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
     async getTurns(payload){ 
         //returns list of turns from a single conversation with either turn ids or turn positions specified in payload
         try{
@@ -318,32 +337,6 @@ class ConvoModel extends MongoModel {
             return error
         }
     }
-
-    async renumberTurns(convoid){//WIP
-        //pull full text array for a convoid
-        //order by position and then renumber positions to ensure consecutive whole numbers
-        try{
-            // change all instances of a speaker id
-            response = getAllTurns(convoid)
-            turns = response[0].sort((a,b) => a.pos - b.pos)
-            position = 0
-            turns.forEach((elem => {
-                elem.pos = position
-                position ++
-            }))
-            const operator = "$set"
-            const query = {
-                _id: this.getObjectId(convoid)
-            }
-            let mutableElements = {
-                "text": turns
-            }
-            return await this.mongoUpdateOne(query, operator, mutableElements)
-        } catch(error) {
-            console.error(error)
-        }
-    }
-
 }
 
 module.exports = new ConvoModel()

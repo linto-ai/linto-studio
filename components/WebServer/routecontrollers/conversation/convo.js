@@ -3,9 +3,8 @@ const userModel = require(`${process.cwd()}/models/mongodb/models/users`)
 const { v4: uuidv4 } = require('uuid')
 const clone = require('rfdc')()
 
-// create a conversation base 
-// TODO: check user id
-async function createConvoBase(req, res, next) {
+
+async function createConvoBase(req, res, next) {//WIP TODO check userid
     try{
         const payload = req.body
         // const name = payload.name
@@ -227,19 +226,51 @@ async function combineSpeakerIds(req, res, next){
     }
 }
 
+async function renumberTurns(req, res, next){
+    try{
+        const payload = req.body
+        let response = await convoModel.getAllTurns(payload.convoid)
+        if (response.length > 0){
+            const turns = response[0].text.sort((a,b) => a.pos - b.pos)
+            position = 0
+            turns.forEach((elem => {
+                elem.pos = position
+                position ++
+            }))
+            new_payload = {
+                convoid: payload.convoid, 
+                turns: turns
+            }
+            let newtext = await convoModel.replaceText(new_payload)
+            if (newtext.result['ok'] === 1){
+                res.json({
+                    status: '200', 
+                    msg: 'success!'
+                })
+            } else {
+                res.json({
+                    msg: "couldn't replace turns"
+                })
+            }
+        } else {
+            res.json({
+                msg: "couldn't retrieve turns"
+            })
+        }
+    } catch(error) {
+        console.error(error)
+    }
+}
+
 async function createTurn(req, res, next){
     try{
         const payload = req.body
         const turnid = uuidv4()
         payload.turnid = turnid
-        console.log(payload)
         let response = await convoModel.createTurn(payload)
         if (response.result['ok'] === 1) {
-            console.log(response.result)
-            res.json({
-                status: '200', 
-                msg: 'success!'
-            })
+            console.log("turn creation success")
+            next() //re-order turns
         } else {
             res.json({
                 msg: "turn creation unsuccessful"
@@ -256,11 +287,8 @@ async function deleteTurns(req, res, next){
         const payload = req.body
         let response = await convoModel.deleteTurns(payload)
         if (response.result['ok'] === 1) {
-            console.log(response.result)
-            res.json({
-                status: '200', 
-                msg: 'success!'
-            })
+            console.log("turn deletion success")
+            next() //reorder turns
         } else {
             res.json({
                 msg: "turn deletion unsuccessful"
@@ -275,7 +303,6 @@ async function mergeTurns(req, res, next){
     //takes a convo id and list of turn ids and optionally a speaker id
     try{
         const payload = req.body
-        console.log(payload)
         let response = await convoModel.getTurns(payload)
         if (response !== "undefined") {
             turns = response[0]["text"].sort((a,b) => a.pos - b.pos)
@@ -286,58 +313,55 @@ async function mergeTurns(req, res, next){
                 //concat all words under all turns
                 new_words = []
                 position = 0
-                for (let t of turns){
-                    words = t.words.sort((a,b) => a.pos - b.pos)
-                    for(let w of words){
+                turns.forEach(turn => {
+                    words = turn.words.sort((a,b) => a.pos - b.pos)
+                    words.forEach(w => {
                         w.pos = position
                         new_words.push(w)
                         position ++
-                    }
-                }
+                    } )
+                })
                 //replace first turn's words with concat set
                 first_turn = turns[0].turn_id
-                new_payload = {}
-                new_payload.convoid = payload.convoid
-                new_payload.turnid = first_turn
-                new_payload.text = new_words
-                try{
-                    let response = await convoModel.replaceTurnText(new_payload)
-                    if (response.result['ok'] === 1) {
-                        //if speakerid defined, then replace speaker id
-                        if (payload.hasOwnProperty('speakerid')){
-                            new_payload.speakerid = payload.speakerid
-                            let response = await convoModel.updateTurnSpeakerId(new_payload)
-                            if (response.result['ok'] !== 1) {
-                                console.error("couldn't replace speaker name")
-                                //in this case speaker of the merged turn will just be the 
-                                //speaker of the first turn
-                            } 
+                new_payload = {
+                    convoid: payload.convoid, 
+                    turnid: first_turn, 
+                    text: new_words
+                }
+                
+                let response = await convoModel.replaceTurnText(new_payload)
+                if (response.result['ok'] === 1) {
+                    //if speakerid defined, then replace speaker id
+                    if (payload.hasOwnProperty('speakerid')){
+                        new_payload.speakerid = payload.speakerid
+                        let response = await convoModel.updateTurnSpeakerId(new_payload)
+                        if (response.result['ok'] !== 1) {
+                            console.error("couldn't replace speaker name")
+                            //in this case speaker of the merged turn will just be the 
+                            //speaker of the first turn
                         } 
-                        //delete remaining turns
-                        turns.shift()
-                        turn_list = turns.map(elem => elem.turn_id)
-                        delete_payload = {}
-                        delete_payload.convoid = payload.convoid
-                        delete_payload.turnids = turn_list
-                        let response = await convoModel.deleteTurns(delete_payload)
-                        if (response.result['ok'] === 1){
-                            res.json({
-                                status: '200', 
-                                msg: 'success!'
-                            })
-                        } else {
-                            res.json({
-                                msg: "turn deletion unsuccessful"
-                            })
-                        }
+                    } 
+                    //delete remaining turns
+                    turns.shift()
+                    turn_list = turns.map(elem => elem.turn_id)
+                    delete_payload = {}
+                    delete_payload.convoid = payload.convoid
+                    delete_payload.turnids = turn_list
+                    let response = await convoModel.deleteTurns(delete_payload)
+                    if (response.result['ok'] === 1){
+                        console.log("merge success")
+                        next() //re-order text 
                     } else {
                         res.json({
-                            msg: "replace turn text unsuccessful"
+                            msg: "turn deletion unsuccessful"
                         })
                     }
-                } catch(error) {
-                    console.error(error)
+                } else {
+                    res.json({
+                        msg: "replace turn text unsuccessful"
+                    })
                 }
+                
             } else {
                 res.json({
                     msg: "speakers not same or turns not consecutive"
@@ -523,10 +547,8 @@ async function splitTurns(req, res, next){ //WIP
                     }
                     let response = await convoModel.deleteTurns(delete_payload)
                     if (response.result['ok'] === 1){
-                        res.json({
-                            status: '200', 
-                            msg: 'success!'
-                        })
+                        console.log("turn split success")
+                        next() //reorder turns
                     } else {
                         res.json({
                             status: '400',
@@ -563,5 +585,6 @@ module.exports = {
     createTurn, 
     deleteTurns, 
     mergeTurns, 
-    splitTurns
+    splitTurns, 
+    renumberTurns
 }
