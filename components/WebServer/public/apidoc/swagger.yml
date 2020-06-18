@@ -751,7 +751,121 @@ paths:
         '404':
   
 
-  /api/conversation/{conversationid}/editmode:
+  /api/conversation/{conversationid}/textedit:
+    delete:
+      tags:
+        - "conversation/textedit"
+      summary: deletes a word or words
+      operationId: deleteWord
+      description: deletes a word or words
+      requestBody:
+        required: true
+        description: A json object containing conversationid, turnid, list of wordids
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                wordids:
+                  type: array 
+                  items:
+                    type: string
+                convoid:
+                  type: string
+                turnid:
+                  type: string
+      responses:
+        '200':
+          description: words successfully deleted
+        '400':
+          description: bad request error
+        schema:
+          $ref: '#components/schemas/Error'
+        '401':
+          description: unauthorized error 
+          schema:
+            $ref: "#/components/responses/UnauthorizedError"
+        '404':
+          description: not found error     
+    post:
+      tags:
+        - "conversation/textedit"
+      summary: creates a new word object or set of objects
+      operationId: createNewWord
+      description: creates a new word object or set of objects
+      requestBody:
+        required: true
+        description: A json object containing conversationid, turnid, word and position
+        content:
+          application/json:
+             schema:
+              type: object
+              properties:
+                convoid:
+                  type: string
+                turnid:
+                  type: string
+                pos:
+                  type: number 
+                words:
+                  $ref: '#/components/schemas/Words'
+      responses:
+        '200':
+          description: words successfully created 
+        '400':
+          description: bad request error
+        schema:
+          $ref: '#components/schemas/Error'
+        '401':
+          description: unauthorized error 
+          schema:
+            $ref: "#/components/responses/UnauthorizedError"
+        '404':
+          description: not found error    
+    put:
+      tags:
+        - "conversation/textedit"
+      summary: replaces word in a word object
+      operationId: updateWordText
+      description: updates word property on word object in a turn
+      requestBody:
+        required: true
+        description: A json object containing convoid, turnid, wordid and new word text
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                convoid:
+                  type: string
+                turnid:
+                  type: string
+                changes:
+                  type: array
+                  items:
+                    type: array
+                    minItems: 2
+                    maxItems: 2
+                    items:
+                      type: string
+                      # wid:
+                      #   type: string
+                      # word:
+                      #   type: string
+         
+      responses:
+        '200':
+          description: word successfully updated
+        '400':
+          description: bad request error
+        schema:
+          $ref: '#components/schemas/Error'
+        '401':
+          description: unauthorized error 
+          schema:
+            $ref: "#/components/responses/UnauthorizedError"
+        '404':
+          description: not found error    
 
   /api/conversation/{conversationid}/annotate:
 

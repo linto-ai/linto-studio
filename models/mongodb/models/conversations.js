@@ -337,6 +337,71 @@ class ConvoModel extends MongoModel {
             return error
         }
     }
+
+    //delete words in a conversation
+    async deleteWords(payload) { //WIP!!!
+    //takes a convo id, turnid and a *list* of word ids
+        try{
+            const operator = "$pull"
+            const query = {
+                _id: this.getObjectId(payload.convoid)
+            }
+            let mutableElements = {
+                "text": {
+                    wid: {"$in": payload.wordids}
+                }
+            }
+            return await this.mongoUpdateOne(query, operator, mutableElements)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
+    // create a new word in a turn
+    async createWord(payload) { //WIP!!!
+        //takes a convo id and a speaker_id and a position and text (optionally)
+        
+       try {
+           const operator = "$addToSet"
+           const query = {
+               _id: this.getObjectId(payload.convoid)
+           }
+           let mutableElements = {
+               "text": {
+               speaker_id: payload.speakerid,
+               turn_id: payload.turnid,
+               pos: payload.pos, 
+               words: payload.words
+               }
+           }
+           return await this.mongoUpdateOne(query, operator, mutableElements)
+       } catch (error) {
+           console.error(error)
+           return error
+       }
+    }
+
+    //update word text for a particular word object
+    async updateWordText(payload) {
+        try {
+            const operator = "$set"
+            const query = {
+                _id: this.getObjectId(payload.convoid), 
+            }
+            let mutableElements = {
+                "text.$[turnelem].words.$[wordelem].word": payload.word
+            }
+            let arrayFilters = {
+                "arrayFilters" : [{"turnelem.turn_id": payload.turnid}, {"wordelem.wid": payload.wid}]
+            }
+            return await this.mongoUpdateOne(query, operator, mutableElements, arrayFilters)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
 }
 
 module.exports = new ConvoModel()

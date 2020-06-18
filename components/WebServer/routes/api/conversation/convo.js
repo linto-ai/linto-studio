@@ -4,7 +4,7 @@ const { createConvoBase, getSpeakers,
     deleteSpeaker,  updateSpeakerAudio, combineSpeakerIds, 
     identifyTurnSpeaker, createNewTurnSpeaker, 
     createTurn, deleteTurns, mergeTurns, 
-    splitTurns, renumberTurns} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/convo.js`)
+    splitTurns, renumberTurns, updateWordText} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/convo.js`)
 
 module.exports = (webserver) => {
     return [{
@@ -84,6 +84,12 @@ module.exports = (webserver) => {
             method: 'put',
             requireAuth: false,
             controller: [splitTurns, renumberTurns]
+            }, 
+            {
+            path: '/:conversationid/textedit',
+            method: 'put',
+            requireAuth: false,
+            controller: updateWordText
             }
         ]
 }
