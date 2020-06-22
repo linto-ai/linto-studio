@@ -575,38 +575,45 @@ async function splitTurns(req, res, next){
 async function updateWordText(req, res, next){ //WIP
     // need to wait for forEach to finish before returning the success array
     try{
-        async function allWords(payload){
-            success = []
-            new_payload = {
-                convoid: payload.convoid, 
-                turnid: payload.turnid, 
+        const payload = req.body
+        new_payload = {
+            convoid: payload.convoid, 
+            turnid: payload.turnid, 
+        }
+        
+        async function asyncForEach(array, callback) {//move this to some sort of UTIL folder
+            for (let index = 0; index < array.length; index++) {
+              await callback(array[index], index, array);
             }
-            await payload.changes.forEach(async elem => {
+        }
+
+        const update = async() => {
+            success = []
+            await asyncForEach(payload.changes, async(elem) => {
                 new_payload.wid = elem[0]
                 new_payload.word = elem[1]
                 let response = await convoModel.updateWordText(new_payload)
-                console.log(response.result.nModified)
                 if(response.result.nModified != 1){
                     success.push(elem)
                 }
             })
             return success
-        } 
-        
-        let updates = await allWords(req.body)
-        console.log(updates)
+        }
+      
+        const final = await update() 
 
-        if (updates.length < 1) {
+        if (final.length < 1) {
             res.json({
                 status: "200", 
                 msg: "success!"
             })
         } else {
             res.json({
-                status: 'error',
+                status: 'warning',
                 msg: `${success} Not updated`
             })
         }
+
     } catch(error) {
         console.error(error)
     }

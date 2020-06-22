@@ -239,8 +239,8 @@ class ConvoModel extends MongoModel {
        }
     }
    
-   //delete turn in a conversation
-   async deleteTurns(payload) {
+    //delete turn in a conversation
+    async deleteTurns(payload) {
     //takes a convo id and a *list* of turn_ids
         try{
             const operator = "$pull"
@@ -362,7 +362,7 @@ class ConvoModel extends MongoModel {
     async createWord(payload) { //WIP!!!
         //takes a convo id and a speaker_id and a position and text (optionally)
         
-       try {
+        try {
            const operator = "$addToSet"
            const query = {
                _id: this.getObjectId(payload.convoid)
@@ -376,12 +376,12 @@ class ConvoModel extends MongoModel {
                }
            }
            return await this.mongoUpdateOne(query, operator, mutableElements)
-       } catch (error) {
+        } catch (error) {
            console.error(error)
            return error
-       }
+        }
     }
-
+    
     //update word text for a particular word object
     async updateWordText(payload) {
         try {
