@@ -830,7 +830,7 @@ paths:
       description: updates word property on word object in a turn
       requestBody:
         required: true
-        description: A json object containing convoid, turnid, wordid and new word text
+        description: A json object containing convoid, turnid, and "changes" array that contains wordids array and new words array
         content:
           application/json:
             schema:
@@ -842,10 +842,10 @@ paths:
                   type: string
                 changes:
                   type: array
+                  minItems: 2
+                  maxItems: 2
                   items:
                     type: array
-                    minItems: 2
-                    maxItems: 2
                     items:
                       type: string
                       # wid:

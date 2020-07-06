@@ -299,6 +299,27 @@ class ConvoModel extends MongoModel {
         }
     }
 
+    //updates all words for a turn
+    async replaceWords(payload){
+        //takes a convoid, turnid and an entire words object 
+        try{
+            const operator = "$set"
+            const query = {
+                _id: this.getObjectId(payload.convoid)
+            }
+            let mutableElements = {
+                "text.$[turnelem].words": payload.words
+            }
+            let arrayFilters = {
+                "arrayFilters": [{"turnelem.turn_id": payload.turnid}]
+            }
+            return await this.mongoUpdateOne(query, operator, mutableElements, arrayFilters)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
     async getTurns(payload){ 
         //returns list of turns from a single conversation with either turn ids or turn positions specified in payload
         try{
@@ -338,20 +359,37 @@ class ConvoModel extends MongoModel {
         }
     }
 
+    async getAllWords(payload){ //WIP
+        try {
+            const query = {
+                _id: this.getObjectId(payload.convoid), 
+                "text.turn_id": payload.turnid
+            }
+            const projection = {_id: 0, "text.$.words": 1}
+            return await this.mongoRequest(query, projection)
+        } catch(error) {
+            console.error(error)
+            return error
+        }
+    }
+
     //delete words in a conversation
     async deleteWords(payload) { //WIP!!!
-    //takes a convo id, turnid and a *list* of word ids
+    //takes a convo id, turnid and an array of word ids
         try{
             const operator = "$pull"
             const query = {
                 _id: this.getObjectId(payload.convoid)
             }
             let mutableElements = {
-                "text": {
+                "text.$[turnelem].words": {
                     wid: {"$in": payload.wordids}
                 }
             }
-            return await this.mongoUpdateOne(query, operator, mutableElements)
+            let arrayFilters = {
+                "arrayFilters" : [{"turnelem.turn_id": payload.turnid}]
+            }
+            return await this.mongoUpdateOne(query, operator, mutableElements, arrayFilters)
         } catch (error) {
             console.error(error)
             return error
