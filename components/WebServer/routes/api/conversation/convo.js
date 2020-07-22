@@ -4,7 +4,10 @@ const { createConvoBase, getSpeakers,
     deleteSpeaker,  updateSpeakerAudio, combineSpeakerIds, 
     identifyTurnSpeaker, createNewTurnSpeaker, 
     createTurn, deleteTurns, mergeTurns, 
-    splitTurns, renumberTurns, updateWordText, deleteWordText, renumberWords} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/convo.js`)
+    splitTurns, renumberTurns} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/convo.js`)
+const { updateWordText, deleteWordText, 
+        renumberWords, insertWords} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/textedit.js`)
+    
 
 module.exports = (webserver) => {
     return [{
@@ -80,22 +83,28 @@ module.exports = (webserver) => {
             controller: [mergeTurns, renumberTurns]
             },
             {
-            path: '/:conversationid/turn/split/:turnids',
+            path: '/:conversationid/turnsplit/:turnids',
             method: 'put',
             requireAuth: false,
             controller: [splitTurns, renumberTurns]
-            }, 
+            },
             {
-            path: '/:conversationid/textedit',
+            path: '/:conversationid/word',
             method: 'put',
             requireAuth: false,
             controller: updateWordText
             }, 
             {
-            path: '/:conversationid/textedit', 
+            path: '/:conversationid/word', 
             method: 'delete', 
             requireAuth: false, 
             controller: [deleteWordText, renumberWords]
+            }, 
+            {
+            path: '/:conversationid/word', 
+            method: 'post', 
+            requireAuth: false, 
+            controller: [insertWords, renumberWords]
             }
         ]
 }

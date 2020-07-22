@@ -323,7 +323,6 @@ class ConvoModel extends MongoModel {
     async getTurns(payload){ 
         //returns list of turns from a single conversation with either turn ids or turn positions specified in payload
         try{
-            console.log(payload)
             const project = {"$project": {
                 "text": {
                     "$filter": {
@@ -357,6 +356,40 @@ class ConvoModel extends MongoModel {
             console.error(error)
             return error
         }
+    }
+
+    async getWords(payload) { //WIP
+        // //returns list of words from a single conversation/turn/array of wordids
+        // try{
+        //     const project = {"$project": {
+        //         "words": {
+        //             "$filter": {
+        //                 input: "$words", 
+        //                 as: "word", 
+        //                 cond: {"$and": [
+        //                     {"$eq": ["$$turn.turn_id", payload.turnid]}, 
+        //                     {"$in": ["$$turn.words.wid", payload.wordids]}
+        //                 ]}
+        //             }
+        //         }
+        //     }}
+        //     const match = {
+        //         "$match": {_id: this.getObjectId(payload.convoid)}, 
+        //     }
+        //     const unwind= {
+        //         "$unwind": {"$convo.text"}
+        //     }
+
+        //     { $unwind: '$list'},
+        //     { $match: {'list.a': {$gt: 3}}},
+        //     { $group: {_id: '$_id', list: {$push: '$list.a'}}}
+        //     const query = [match, project]
+        //     console.log(query)
+        //     return await this.mongoAggregate(query)
+        // } catch (error){
+        //     console.error(error)
+        //     return error
+        // }
     }
 
     async getAllWords(payload){ //WIP
@@ -397,23 +430,20 @@ class ConvoModel extends MongoModel {
     }
 
     // create a new word in a turn
-    async createWord(payload) { //WIP!!!
-        //takes a convo id and a speaker_id and a position and text (optionally)
-        
+    async createWords(payload) { //WIP!!!
+        //takes a convo id, turn id and an array of word objects
         try {
            const operator = "$addToSet"
            const query = {
                _id: this.getObjectId(payload.convoid)
            }
            let mutableElements = {
-               "text": {
-               speaker_id: payload.speakerid,
-               turn_id: payload.turnid,
-               pos: payload.pos, 
-               words: payload.words
-               }
+               "text.$[turnelem].words": payload.words
            }
-           return await this.mongoUpdateOne(query, operator, mutableElements)
+           let arrayFilters = {
+               "arrayFilters" : [{"turnelem.turn_id": payload.turnid}]
+           }
+           return await this.mongoUpdateOne(query, operator, mutableElements, arrayFilters)
         } catch (error) {
            console.error(error)
            return error

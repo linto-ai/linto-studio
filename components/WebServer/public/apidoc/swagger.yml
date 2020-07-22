@@ -14,31 +14,48 @@ basePath: /
 schemes:
  - https
 paths:
-  /login: 
-    post:
+  # /login: 
+  #   post:
+  #     tags:
+  #       - "users"
+  #     summary: Logs in a user and returns the json web token 
+  #     requestBody:
+  #       required: true
+  #       description: A JSON object containing the username and password.
+  #       content:
+  #         application/json:
+  #           schema:
+  #             $ref: '#/components/schemas/UserLogin'
+  #     # security: []    # no authentication
+  #     responses:
+  #       '200':
+  #         description: 
+  #           Successfully authenticated and token is returned to user.
+  #           You need to include token in subsequent requests.
+  #       '400':
+  #         description: 
+  #       '404':
+  #         description:
+  #       default:
+  #         description:
+  /api/users: 
+    get:
       tags:
         - "users"
-      summary: Logs in a user and returns the json web token 
-      requestBody:
-        required: true
-        description: A JSON object containing the username and password.
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserLogin'
-      # security: []    # no authentication
+      summary: gets all users 
+      # requestBody:
+      #   description:
       responses:
         '200':
-          description: 
-            Successfully authenticated and token is returned to user.
-            You need to include token in subsequent requests.
-        '400':
-          description: 
-        '404':
-          description:
-        default:
-          description:
-  /api/user: 
+          description: returns a list of users 
+          content:
+            application/json:
+              schema:
+                type: array 
+                items:
+                  $ref: '#/components/schemas/User'
+        '401':
+          $ref: "#/components/responses/UnauthorizedError"
     post:
       tags:
         - "users"
@@ -79,7 +96,7 @@ paths:
             $ref: '#/components/schemas/Error'
         '401':
           $ref: "#/components/responses/UnauthorizedError"
-  /api/user/{userid}:
+  /api/users/{userid}:
     get: 
       tags:
         - "users"
@@ -156,7 +173,7 @@ paths:
             $ref: '#components/schemas/Error'
         '401':
           $ref: "#/components/responses/UnauthorizedError"
-  /api/user/{userid}/addaccess/{conversationid}:
+  /api/users/{userid}/addaccess/{conversationid}:
     patch:
       tags:
         - "users"
@@ -187,7 +204,7 @@ paths:
           description: not found
         '401':
           $ref: "#/components/responses/UnauthorizedError"
-  /api/user/{userid}/removeaccess/{conversationid}: 
+  /api/users/{userid}/removeaccess/{conversationid}: 
     patch:
       tags:
         - "users"
@@ -212,24 +229,6 @@ paths:
           description: not authorized
         '404':
           description: not found
-        '401':
-          $ref: "#/components/responses/UnauthorizedError"
-  /api/users: 
-    get:
-      tags:
-        - "users"
-      summary: gets all users 
-      # requestBody:
-      #   description:
-      responses:
-        '200':
-          description: returns a list of users 
-          content:
-            application/json:
-              schema:
-                type: array 
-                items:
-                  $ref: '#/components/schemas/User'
         '401':
           $ref: "#/components/responses/UnauthorizedError"
 
@@ -296,31 +295,31 @@ paths:
     get: 
       tags:
         - "conversation"
-      summary: gets a conversation by id 
+      summary: gets a conversation by id -- WIP
     delete: 
       tags:
         - "conversation"
-      summary: deletes conversation
+      summary: deletes conversation -- WIP
 
   /api/conversation/{conversationid}/agenda:
     put:
       tags:
         - "conversation/metadata"
-      summary: replaces (empty) agenda 
+      summary: replaces (empty) agenda -- WIP
     patch:
       tags:
         - "conversation/metadata"
-      summary: modifies conversation agenda
+      summary: modifies conversation agenda -- WIP
 
   /api/conversation/{conversationid}/summary:
     put:
       tags:
         - "conversation/summary"
-      summary: replaces (empty) summary 
+      summary: replaces (empty) summary  --WIP
     patch:
       tags:
         - "conversation/summary"
-      summary: modifies conversation summary 
+      summary: modifies conversation summary  -- WIP
   
   /api/conversation/{conversationid}/speakers:
     get:
@@ -710,13 +709,13 @@ paths:
             $ref: "#/components/responses/UnauthorizedError"
         '404':
 
-  /api/conversation/{conversationid}/turn/split/{turnids}:  
+  /api/conversation/{conversationid}/turnsplit/{turnids}:  
     put:
       tags:
         - "conversation/turns"
-      summary: splits a turn or turns 
+      summary: splits a turn 
       operationId: splitTurns
-      description: creates new turn from user-selected text  
+      description: creates two or three turns from one turn depending on which inner-turn text user selects for 
       requestBody:
         required: true
         description: A json object containing an array of turn ids and an array of word ids
@@ -751,7 +750,7 @@ paths:
         '404':
   
 
-  /api/conversation/{conversationid}/textedit:
+  /api/conversation/{conversationid}/word:
     delete:
       tags:
         - "conversation/textedit"
@@ -795,7 +794,7 @@ paths:
       description: creates a new word object or set of objects
       requestBody:
         required: true
-        description: A json object containing conversationid, turnid, word and position
+        description: A json object containing conversationid, turnid, array of start/end word ids and an array of words to be inserted
         content:
           application/json:
              schema:
@@ -805,10 +804,14 @@ paths:
                   type: string
                 turnid:
                   type: string
-                pos:
-                  type: number 
+                wordids:
+                  type: array
+                  items:
+                    type: string
                 words:
-                  $ref: '#/components/schemas/Words'
+                  type: array 
+                  items:
+                    type: string
       responses:
         '200':
           description: words successfully created 
@@ -825,7 +828,7 @@ paths:
     put:
       tags:
         - "conversation/textedit"
-      summary: replaces word in a word object
+      summary: replaces word or words in word object or objects
       operationId: updateWordText
       description: updates word property on word object in a turn
       requestBody:
@@ -848,11 +851,12 @@ paths:
                     type: array
                     items:
                       type: string
-                      # wid:
-                      #   type: string
-                      # word:
-                      #   type: string
-         
+                positions:
+                  type: array
+                  minItems: 1
+                  maxItems: 2
+                  items:
+                    type : integer
       responses:
         '200':
           description: word successfully updated
