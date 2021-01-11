@@ -305,11 +305,13 @@ async function mergeTurns(req, res, next){
         const payload = req.body
         let response = await convoModel.getTurns(payload)
         if (response !== "undefined") {
+            console.log(response[0]["text"])
+            //sort turns in ascending order
             turns = response[0]["text"].sort((a,b) => a.pos - b.pos)
             //check all turns are same speaker or speaker id given and turns consecutive
             const samespeaker = arr => arr.every(v => v['speaker_id'] === arr[0]['speaker_id'])
-            const consecutive = arr => arr.every((elem, i) => i === arr.length -1 || elem.pos < arr[i+1].pos)
-            if ((samespeaker(turns)|| payload.hasOwnProperty('speakerid')) && consecutive(turns)) {
+            const consecutive = arr => arr.every((elem, i) => i === arr.length -1 || elem.pos === arr[i+1].pos -1)
+            if ((payload.hasOwnProperty('speakerid') || samespeaker(turns)) && consecutive(turns)) {
                 //concat all words under all turns
                 new_words = []
                 position = 0
@@ -319,7 +321,7 @@ async function mergeTurns(req, res, next){
                         w.pos = position
                         new_words.push(w)
                         position ++
-                    } )
+                    })
                 })
                 //replace first turn's words with concat set
                 first_turn = turns[0].turn_id
