@@ -92,7 +92,7 @@ class MongoModel {
     // Aggregate
     async mongoAggregate(query) {
         return new Promise((resolve, reject) => {
-            try{
+            try {
                 MongoDriver.constructor.db.collection(this.collection).aggregate(query).toArray((error, result) => {
                     if (error) {
                         reject(error)
@@ -100,7 +100,7 @@ class MongoModel {
                     resolve(result)
                 })
 
-            } catch(error) {
+            } catch (error) {
                 console.error(error)
                 reject(error)
             }
