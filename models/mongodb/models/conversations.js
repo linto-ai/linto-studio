@@ -20,7 +20,7 @@ class ConvoModel extends MongoModel {
                 //lastUpdated: asdfds,
                 created: creationDate,
                 locked: 0,
-                owner: payload.ownerId
+                owner: payload.ownerId 
             }
             return await this.mongoInsert(newConvo)
         } catch (error) {
@@ -37,16 +37,8 @@ class ConvoModel extends MongoModel {
     async getAllConvos() {
         try {
             const query = {}
-
-            /* --- modif romlop --- */
-
-            //const projection = {_id: 1, name: 1}
-            const projection = {}
-
-            /* --- END --- */
-
+            const projection = { _id: 1, name: 1}
             return await this.mongoRequest(query, projection)
-
         } catch (error) {
             console.error(error)
             return error
@@ -59,7 +51,7 @@ class ConvoModel extends MongoModel {
             const query = {
                 _id: this.getObjectId(id)
             }
-            const projection = { speakers: 1 }
+            const projection = {speakers: 1}
             return await this.mongoRequest(query, projection)
         } catch (error) {
             console.error(error)
@@ -69,11 +61,11 @@ class ConvoModel extends MongoModel {
 
     // create a new speaker in a conversation
     async createSpeaker(payload) {
-        //need to make sure it's not the same as a current speaker name -- is this back 
-        //or front end function?
-        //what about automatically updating speaker audio sample?
-        //what about automatically warning if speaker doesn't speak?
-
+         //need to make sure it's not the same as a current speaker name -- is this back 
+         //or front end function?
+         //what about automatically updating speaker audio sample?
+         //what about automatically warning if speaker doesn't speak?
+         
         try {
             const operator = "$addToSet"
             const query = {
@@ -81,10 +73,10 @@ class ConvoModel extends MongoModel {
             }
             let mutableElements = {
                 "speakers": {
-                    speaker_id: payload.speakerid,
-                    speaker_name: payload.speakername,
-                    etime: "",
-                    stime: ""
+                speaker_id: payload.speakerid,
+                speaker_name: payload.speakername,
+                etime: "", 
+                stime: ""
                 }
             }
             return await this.mongoUpdateOne(query, operator, mutableElements)
@@ -95,13 +87,13 @@ class ConvoModel extends MongoModel {
     }
 
     //check transcript for speaker id
-    async checkSpeakerId(payload) {
-        try {
+    async checkSpeakerId(payload){
+        try{
             const query = {
-                _id: this.getObjectId(payload.convoid),
+                _id: this.getObjectId(payload.convoid), 
                 "text.speaker_id": payload.speakerid
             }
-            const projection = { _id: 0, "text.$": 1 }
+            const projection = {_id: 0, "text.$": 1}
             return await this.mongoRequest(query, projection)
         } catch (error) {
             console.error(error)
@@ -110,8 +102,8 @@ class ConvoModel extends MongoModel {
     }
 
     //change all instances of a speaker id in transcript
-    async changeSpeakerIds(payload) {
-        try {
+    async changeSpeakerIds(payload){
+        try{
             const operator = "$set"
             const query = {
                 _id: this.getObjectId(payload.convoid)
@@ -120,7 +112,7 @@ class ConvoModel extends MongoModel {
                 "text.$[elem].speaker_id": payload.newspeakerid
             }
             let arrayFilters = {
-                "arrayFilters": [{ "elem.speaker_id": payload.speakerid }]
+                "arrayFilters" : [{"elem.speaker_id": payload.speakerid}]
             }
             return await this.mongoUpdateOne(query, operator, mutableElements, arrayFilters)
         } catch (error) {
@@ -130,8 +122,8 @@ class ConvoModel extends MongoModel {
     }
 
     //deletes a speaker from speakermap 
-    async deleteSpeaker(payload) {
-        try {
+    async deleteSpeaker(payload){
+        try{
             const operator = "$pull"
             const query = {
                 _id: this.getObjectId(payload.convoid)
@@ -145,7 +137,7 @@ class ConvoModel extends MongoModel {
         } catch (error) {
             console.error(error)
             return error
-        }
+        } 
     }
 
     //update speaker name 
@@ -153,7 +145,7 @@ class ConvoModel extends MongoModel {
         try {
             const operator = "$set"
             const query = {
-                _id: this.getObjectId(payload.convoid),
+                _id: this.getObjectId(payload.convoid), 
                 "speakers.speaker_id": payload.speakerid
             }
             let mutableElements = {
@@ -171,11 +163,11 @@ class ConvoModel extends MongoModel {
         try {
             const operator = "$set"
             const query = {
-                _id: this.getObjectId(payload.convoid),
+                _id: this.getObjectId(payload.convoid), 
                 "speakers.speaker_id": payload.speakerid
             }
             let mutableElements = {
-                "speakers.$.etime": payload.etime,
+                "speakers.$.etime": payload.etime, 
                 "speakers.$.stime": payload.stime
             }
             return await this.mongoUpdateOne(query, operator, mutableElements)
@@ -190,13 +182,13 @@ class ConvoModel extends MongoModel {
         try {
             const operator = "$set"
             const query = {
-                _id: this.getObjectId(payload.convoid),
+                _id: this.getObjectId(payload.convoid), 
             }
             let mutableElements = {
                 "text.$[elem].speaker_id": payload.speakerid
             }
             let arrayFilters = {
-                "arrayFilters": [{ "elem.turn_id": payload.turnid }]
+                "arrayFilters" : [{"elem.turn_id": payload.turnid}]
             }
             return await this.mongoUpdateOne(query, operator, mutableElements, arrayFilters)
         } catch (error) {
@@ -210,7 +202,7 @@ class ConvoModel extends MongoModel {
         try {
             const operator = "$set"
             const query = {
-                _id: this.getObjectId(payload.convoid),
+                _id: this.getObjectId(payload.convoid), 
                 "speakers.speaker_id": payload.speakerid
             }
             let mutableElements = {
@@ -226,38 +218,38 @@ class ConvoModel extends MongoModel {
     // create a new turn in a conversation
     async createTurn(payload) {
         //takes a convo id and a speaker_id and a position and text (optionally)
-
-        try {
-            const operator = "$addToSet"
-            const query = {
-                _id: this.getObjectId(payload.convoid)
-            }
-            let mutableElements = {
-                "text": {
-                    speaker_id: payload.speakerid,
-                    turn_id: payload.turnid,
-                    pos: payload.pos,
-                    words: payload.words
-                }
-            }
-            return await this.mongoUpdateOne(query, operator, mutableElements)
-        } catch (error) {
-            console.error(error)
-            return error
-        }
+        
+       try {
+           const operator = "$addToSet"
+           const query = {
+               _id: this.getObjectId(payload.convoid)
+           }
+           let mutableElements = {
+               "text": {
+               speaker_id: payload.speakerid,
+               turn_id: payload.turnid,
+               pos: payload.pos, 
+               words: payload.words
+               }
+           }
+           return await this.mongoUpdateOne(query, operator, mutableElements)
+       } catch (error) {
+           console.error(error)
+           return error
+       }
     }
-
+   
     //delete turn in a conversation
     async deleteTurns(payload) {
-        //takes a convo id and a *list* of turn_ids
-        try {
+    //takes a convo id and a *list* of turn_ids
+        try{
             const operator = "$pull"
             const query = {
                 _id: this.getObjectId(payload.convoid)
             }
             let mutableElements = {
                 "text": {
-                    turn_id: { "$in": payload.turnids }
+                    turn_id: {"$in": payload.turnids}
                 }
             }
             return await this.mongoUpdateOne(query, operator, mutableElements)
@@ -268,9 +260,9 @@ class ConvoModel extends MongoModel {
     }
 
     //updates turn text after merging with other turns
-    async replaceTurnText(payload) {
+    async replaceTurnText(payload){
         //takes a convoid and a turn id and an array of word objects
-        try {
+        try{
             const operator = "$set"
             const query = {
                 _id: this.getObjectId(payload.convoid)
@@ -279,7 +271,7 @@ class ConvoModel extends MongoModel {
                 "text.$[elem].words": payload.text
             }
             let arrayFilters = {
-                "arrayFilters": [{ "elem.turn_id": payload.turnid }]
+                "arrayFilters" : [{"elem.turn_id": payload.turnid}]
             }
             return await this.mongoUpdateOne(query, operator, mutableElements, arrayFilters)
         } catch (error) {
@@ -290,9 +282,9 @@ class ConvoModel extends MongoModel {
 
 
     //updates all text turns
-    async replaceText(payload) {
+    async replaceText(payload){
         //takes a convoid and an entire text object 
-        try {
+        try{
             const operator = "$set"
             const query = {
                 _id: this.getObjectId(payload.convoid)
@@ -308,9 +300,9 @@ class ConvoModel extends MongoModel {
     }
 
     //updates all words for a turn
-    async replaceWords(payload) {
+    async replaceWords(payload){
         //takes a convoid, turnid and an entire words object 
-        try {
+        try{
             const operator = "$set"
             const query = {
                 _id: this.getObjectId(payload.convoid)
@@ -319,7 +311,7 @@ class ConvoModel extends MongoModel {
                 "text.$[turnelem].words": payload.words
             }
             let arrayFilters = {
-                "arrayFilters": [{ "turnelem.turn_id": payload.turnid }]
+                "arrayFilters": [{"turnelem.turn_id": payload.turnid}]
             }
             return await this.mongoUpdateOne(query, operator, mutableElements, arrayFilters)
         } catch (error) {
@@ -328,30 +320,30 @@ class ConvoModel extends MongoModel {
         }
     }
 
-    async getTurns(payload) {
+    async getTurns(payload){ 
         //returns list of turns from a single conversation with either turn ids or turn positions specified in payload
-        try {
-            const project = {
-                "$project": {
-                    "text": {
-                        "$filter": {
-                            input: "$text",
-                            as: "turn",
-                            cond: payload.hasOwnProperty('turnids') ? { "$in": ["$$turn.turn_id", payload.turnids] } : { "$in": ["$$turn.pos", payload.positions] }
-                        }
+        try{
+            const project = {"$project": {
+                "text": {
+                    "$filter": {
+                        input: "$text", 
+                        as: "turn", 
+                        cond: payload.hasOwnProperty('turnids') 
+                        ? {"$in": ["$$turn.turn_id", payload.turnids]} 
+                        : {"$in": ["$$turn.pos", payload.positions]}
                     }
                 }
-            }
-            const match = { "$match": { _id: this.getObjectId(payload.convoid) } }
+            }}
+            const match = {"$match": {_id: this.getObjectId(payload.convoid)}}
             const query = [match, project]
             return await this.mongoAggregate(query)
-        } catch (error) {
+        } catch (error){
             console.error(error)
             return error
         }
     }
 
-    async getAllTurns(convoid) {
+    async getAllTurns(convoid){
         try {
             const query = {
                 _id: this.getObjectId(convoid)
@@ -360,7 +352,7 @@ class ConvoModel extends MongoModel {
                 text: 1
             }
             return await this.mongoRequest(query, projection)
-        } catch (error) {
+        } catch(error) {
             console.error(error)
             return error
         }
@@ -400,15 +392,15 @@ class ConvoModel extends MongoModel {
         // }
     }
 
-    async getAllWords(payload) { //WIP
+    async getAllWords(payload){ //WIP
         try {
             const query = {
-                _id: this.getObjectId(payload.convoid),
+                _id: this.getObjectId(payload.convoid), 
                 "text.turn_id": payload.turnid
             }
-            const projection = { _id: 0, "text.$.words": 1 }
+            const projection = {_id: 0, "text.$.words": 1}
             return await this.mongoRequest(query, projection)
-        } catch (error) {
+        } catch(error) {
             console.error(error)
             return error
         }
@@ -416,19 +408,19 @@ class ConvoModel extends MongoModel {
 
     //delete words in a conversation
     async deleteWords(payload) { //WIP!!!
-        //takes a convo id, turnid and an array of word ids
-        try {
+    //takes a convo id, turnid and an array of word ids
+        try{
             const operator = "$pull"
             const query = {
                 _id: this.getObjectId(payload.convoid)
             }
             let mutableElements = {
                 "text.$[turnelem].words": {
-                    wid: { "$in": payload.wordids }
+                    wid: {"$in": payload.wordids}
                 }
             }
             let arrayFilters = {
-                "arrayFilters": [{ "turnelem.turn_id": payload.turnid }]
+                "arrayFilters" : [{"turnelem.turn_id": payload.turnid}]
             }
             return await this.mongoUpdateOne(query, operator, mutableElements, arrayFilters)
         } catch (error) {
@@ -441,35 +433,35 @@ class ConvoModel extends MongoModel {
     async createWords(payload) { //WIP!!!
         //takes a convo id, turn id and an array of word objects
         try {
-            const operator = "$addToSet"
-            const query = {
-                _id: this.getObjectId(payload.convoid)
-            }
-            let mutableElements = {
-                "text.$[turnelem].words": payload.words
-            }
-            let arrayFilters = {
-                "arrayFilters": [{ "turnelem.turn_id": payload.turnid }]
-            }
-            return await this.mongoUpdateOne(query, operator, mutableElements, arrayFilters)
+           const operator = "$addToSet"
+           const query = {
+               _id: this.getObjectId(payload.convoid)
+           }
+           let mutableElements = {
+               "text.$[turnelem].words": payload.words
+           }
+           let arrayFilters = {
+               "arrayFilters" : [{"turnelem.turn_id": payload.turnid}]
+           }
+           return await this.mongoUpdateOne(query, operator, mutableElements, arrayFilters)
         } catch (error) {
-            console.error(error)
-            return error
+           console.error(error)
+           return error
         }
     }
-
+    
     //update word text for a particular word object
     async updateWordText(payload) {
         try {
             const operator = "$set"
             const query = {
-                _id: this.getObjectId(payload.convoid),
+                _id: this.getObjectId(payload.convoid), 
             }
             let mutableElements = {
                 "text.$[turnelem].words.$[wordelem].word": payload.word
             }
             let arrayFilters = {
-                "arrayFilters": [{ "turnelem.turn_id": payload.turnid }, { "wordelem.wid": payload.wid }]
+                "arrayFilters" : [{"turnelem.turn_id": payload.turnid}, {"wordelem.wid": payload.wid}]
             }
             return await this.mongoUpdateOne(query, operator, mutableElements, arrayFilters)
         } catch (error) {

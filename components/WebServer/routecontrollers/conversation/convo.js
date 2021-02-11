@@ -411,7 +411,7 @@ async function mergeTurns(req, res, next) {
 }
 
 async function splitTurns(req, res, next) {
-    // takes 1 or 2 turn positions, a pair of word ids and a speaker id
+    // takes 1 or 2 turn positions, one or two word ids and a speaker id
     try {
         const payload = req.body
             //check how many turns and then expand payload positions if needed
@@ -423,31 +423,37 @@ async function splitTurns(req, res, next) {
         // get all turns
         let response = await convoModel.getTurns(payload)
         if (response !== "undefined") {
+            // take first turn and sort words in that turn and put in start_words variable
             turns = response[0].text.sort((a, b) => a.pos - b.pos)
             start_words = turns[0].words.sort((a, b) => a.pos - b.pos)
             if (nums.length == 1) {
                 end_words = start_words
+                //if only one turn position was given, then make start words same as end words
             } else {
                 end_words = turns[turns.length - 1].words.sort((a, b) => a.pos - b.pos)
+                //else the end words are the sorted words of the last turn
             }
 
             last_pos = end_words[end_words.length - 1].pos
+            //keep last word of last turn in last_pos variable
 
-            //get starting word position
+            //get starting word position from start word id
             start_word = start_words.filter(obj => {
                 return obj.wid === payload.wordids[0]
             })
             const start_pos = start_word[0].pos
 
-            //get ending word position
+            //get ending word id
             if (words.length > 1) {
+                //if more than one word id was provided
                 end_word = end_words.filter(obj => {
                     return obj.wid === payload.wordids[1]
                 })
             } else {
                 end_word = start_word
             }
-
+            
+            //get end word position
             const end_pos = end_word[0].pos
 
             //case 1: check that user selection is not coextensive with just one turn
@@ -531,7 +537,6 @@ async function splitTurns(req, res, next) {
                         start_words.forEach(elem => {
                             elem.pos = position
                             new_words.push(elem)
-                            position++
                         })
                     }
 
@@ -605,7 +610,63 @@ async function splitTurns(req, res, next) {
     }
 }
 
+//{"convoid":"5e9d6376c8ffff536c0a2b8d","turnids": ["586f291240414844b04ab777d82b0ec5"],"words":[{"word":"your","pos":0},{"word":"mama","pos":1},{"word":"so","pos":2},{"word":"fat","pos":3}]}
 
+async function replaceTurnText(req, res, next) {
+    // takes a text field, ie. a list of word objects with text and position numbers
+    try {
+        const payload = req.body
+        num_words = payload.words.length
+        const {convoid, turnids} = payload
+        const newPayload = {convoid, turnids}
+        let response = await convoModel.getTurns(newPayload)
+        let testresponse = response[0].text[0] //why didn't this work like above??
+    
+        if (response !== "undefined") {
+            //sort words in turn take first word stime
+            words = testresponse.words.sort((a, b) => a.pos - b.pos)
+            //words = response[0].text[0].words.sort((a, b) => a.pos - b.pos)
+            stime = words[0].stime 
+            etime = words[words.length-1].etime
+            whole = etime - stime
+            summand = whole/num_words
+            //for word in list payload.words
+            //stime == sttime, new_etime == stime + summand, [insert times, generate id] stime == new_etime
+            new_words = payload.words.sort((a,b) => a.pos - b.pos)
+            new_words.forEach((elem => {
+                elem.wid = uuidv4()
+                elem.stime = stime
+                new_etime = stime + summand
+                elem.etime = new_etime
+                stime = new_etime
+            }))
+            //once done, substitute last new_etime with etime (to prevent numerical drag?)
+            new_words[new_words.length - 1].etime = etime
+            //update turn
+            let finalpayload = {words: new_words, convoid: payload.convoid, turnid: payload.turnids[0]}
+            console.log(finalpayload)
+            let response = await convoModel.replaceWords(finalpayload)
+            if (response.result['ok'] === 1) {
+                // RESPONSE 
+                res.json({
+                    status: "200",
+                    msg: "success!"
+                })
+            } else {
+                res.json({
+                    status: '400',
+                    msg: 'could not update turn words'
+                })
+            }
+        } else {
+            res.json({
+                msg: "couldn't retrieve turn"
+            })
+        } 
+    } catch (error) {
+        console.error(error)
+    }
+}
 
 module.exports = {
     createConvoBase,
@@ -621,5 +682,6 @@ module.exports = {
     deleteTurns,
     mergeTurns,
     splitTurns,
-    renumberTurns
+    renumberTurns, 
+    replaceTurnText
 }

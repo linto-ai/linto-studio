@@ -38,7 +38,7 @@ class WebServer extends Component {
             extended: false
         }))
         this.express.use(cookieParser())
-        this.express.use(CORS(corsOptions))
+        //this.express.use(CORS(corsOptions))
         let sessionConfig = {
             resave: false,
             saveUninitialized: true,

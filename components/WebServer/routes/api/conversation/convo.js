@@ -13,7 +13,8 @@ const {
     deleteTurns,
     mergeTurns,
     splitTurns,
-    renumberTurns
+    renumberTurns, 
+    replaceTurnText
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/convo.js`)
 const {
     updateWordText,
@@ -101,6 +102,12 @@ module.exports = (webserver) => {
             method: 'put',
             requireAuth: false,
             controller: [splitTurns, renumberTurns]
+        },
+        {
+            path: '/:conversationid/replaceturn/:turnid', 
+            method: 'patch', 
+            requireAuth: false, 
+            controller: replaceTurnText
         },
         {
             path: '/:conversationid/word',
