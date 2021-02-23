@@ -31,18 +31,46 @@ async function createNewSpeaker(req, res, next) { // OK
                 speakername: req.body.speakername,
                 speakerid: uuidv4()
             }
-            let createSpeaker = await convoModel.createSpeaker(payload)
+            const getSpeakers = await convoModel.getConvoSpeakers(payload.convoid)
+            console.log('getSpeakers', getSpeakers)
 
-            // Success
-            if (createSpeaker === 'success') {
-                // Response 
-                res.status(200).send({
-                    txtStatus: 'success',
-                    msg: 'A speaker has been added to the conversation'
-                })
-            } else {
-                throw createSpeaker
+            if (!!getSpeakers[0].speakers && getSpeakers[0].speakers.length > 0) {
+                // check if speaker_name already exists
+                let speakerExist = getSpeakers[0].speakers.filter(spk => spk.speaker_name === payload.speakername)
+                if (speakerExist.length > 0) {
+                    res.status(202).send({
+                        txtStatus: 'warning',
+                        msg: 'Speaker already exists'
+                    })
+                } else {
+                    let createSpeaker = await convoModel.createSpeaker(payload)
+
+                    // Success
+                    if (createSpeaker === 'success') {
+                        // Response 
+                        res.status(200).send({
+                            txtStatus: 'success',
+                            msg: 'A speaker has been added to the conversation'
+                        })
+                    } else {
+                        throw createSpeaker
+                    }
+                }
+            } else { // if no speaker exists
+                let createSpeaker = await convoModel.createSpeaker(payload)
+
+                // Success
+                if (createSpeaker === 'success') {
+                    // Response 
+                    res.status(200).send({
+                        txtStatus: 'success',
+                        msg: 'A speaker has been added to the conversation'
+                    })
+                } else {
+                    throw createSpeaker
+                }
             }
+
         } else {
             throw { message: 'Missing information in the payload object' }
         }
@@ -137,12 +165,15 @@ async function deleteSpeaker(req, res, next) {
 
 async function combineSpeakerIds(req, res, next) {
     try {
+        console.log('par la ', req.body, !!req.body.newspeakerid)
         if (!!req.body.newspeakerid) {
+
             const payload = {
                 convoid: req.params.conversationid,
                 speakerid: req.params.speakerid,
                 newspeakerid: req.body.newspeakerid
             }
+            console.log('>', payload)
 
             // Update speaker turns
             let updateSpeakers = await convoModel.changeSpeakerIds(payload)
