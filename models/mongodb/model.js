@@ -38,7 +38,7 @@ class MongoModel {
                     if (error) {
                         reject(error)
                     }
-                    //resolve('success')
+                    //console.log('mongoInsert', result)
                     resolve(result.insertedId)
                 })
             } catch (error) {
@@ -61,10 +61,28 @@ class MongoModel {
                     if (error) {
                         reject(error)
                     }
-                    resolve(result)
+                    //console.log('MongoUpateOne', result)
+                    if (!!result.result && result.result.hasOwnProperty('ok'), result.result.hasOwnProperty('nModified')) {
+
+                        if (result.result.nModified > 0) {
+                            if (result.result.ok === 1) {
+                                resolve('success')
+                            }
+                        } else {
+                            reject({
+                                error: 'no_match',
+                                message: 'no match found.'
+                            })
+                        }
+                    } else {
+                        reject({
+                            error: 'error_getting_result',
+                            message: 'Cannot acces request result'
+                        })
+                    }
+
                 })
             } catch (error) {
-                console.error(error)
                 reject(error)
             }
         })
@@ -78,6 +96,7 @@ class MongoModel {
                     if (error) {
                         reject(error)
                     }
+                    console.log('mongoDelete', result)
                     resolve(result)
                 })
 

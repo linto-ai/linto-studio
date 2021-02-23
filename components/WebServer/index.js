@@ -13,7 +13,6 @@ let corsOptions = {}
 
 if (process.env.API_WHITELIST.length > 0) {
     whitelistDomains = process.env.API_WHITELIST.split(',')
-    console.log(whitelistDomains)
     corsOptions = {
         origin: function(origin, callback) {
             if (!origin || whitelistDomains.indexOf(origin) !== -1 || origin === 'undefined') {
@@ -38,7 +37,7 @@ class WebServer extends Component {
             extended: false
         }))
         this.express.use(cookieParser())
-        //this.express.use(CORS(corsOptions))
+        this.express.use(CORS(corsOptions))
         let sessionConfig = {
             resave: false,
             saveUninitialized: true,
