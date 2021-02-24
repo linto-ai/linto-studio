@@ -165,15 +165,12 @@ async function deleteSpeaker(req, res, next) {
 
 async function combineSpeakerIds(req, res, next) {
     try {
-        console.log('par la ', req.body, !!req.body.newspeakerid)
         if (!!req.body.newspeakerid) {
-
             const payload = {
                 convoid: req.params.conversationid,
                 speakerid: req.params.speakerid,
                 newspeakerid: req.body.newspeakerid
             }
-            console.log('>', payload)
 
             // Update speaker turns
             let updateSpeakers = await convoModel.changeSpeakerIds(payload)
