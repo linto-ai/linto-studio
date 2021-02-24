@@ -27,6 +27,9 @@ function configureDefaults() {
         process.env.DB_REQUIRE_LOGIN = ifHas(process.env.DB_REQUIRE_LOGIN, envdefault.DB_REQUIRE_LOGIN)
         process.env.COMPONENTS = ifHasNotThrow(process.env.COMPONENTS, Error("No COMPONENTS envvar specified"))
         process.env.JWT_SECRET = ifHas(process.env.JWT_SECRET, envdefault.JWT_SECRET)
+
+        process.env.CORS_ENABLED = ifHas(process.env.CORS_ENABLED, envdefault.CORS_ENABLED)
+        process.env.CORS_API_WHITELIST = ifHas(process.env.CORS_API_WHITELIST, envdefault.CORS_API_WHITELIST)
     } catch (e) {
         console.error(debug.namespace, e)
         process.exit(1)

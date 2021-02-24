@@ -7,7 +7,7 @@ const {
     deleteSpeaker,
     identifySpeaker,
     getSpeakers
-} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/convo/speakers.js`)
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/speakers.js`)
 
 // Turns
 const {
@@ -18,7 +18,7 @@ const {
     mergeTurns,
     renumberTurns,
     splitTurns,
-} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/convo/turns.js`)
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/turns.js`)
 
 const {
     createConvoBase,

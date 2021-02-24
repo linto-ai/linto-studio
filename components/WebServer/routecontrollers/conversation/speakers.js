@@ -1,5 +1,23 @@
 const convoModel = require(`${process.cwd()}/models/mongodb/models/conversations`)
 const { v4: uuidv4 } = require('uuid')
+    /*
+    async function demo (req,res,next) {
+      try {
+        if (!!req.body.NEEDED_VALUE) { 
+
+        } else {
+          throw { message: 'Missing information in the payload object' }
+
+        }
+      } catch (error) {
+        console.error(error)
+        res.status(400).send({
+            txtStatus: 'error',
+            msg: !!error.message ? error.message : 'error on creating speaker'
+        })
+
+      }
+    }*/
 
 async function getSpeakers(req, res, next) { //WIP
     try {
@@ -32,7 +50,6 @@ async function createNewSpeaker(req, res, next) { // OK
                 speakerid: uuidv4()
             }
             const getSpeakers = await convoModel.getConvoSpeakers(payload.convoid)
-            console.log('getSpeakers', getSpeakers)
 
             if (!!getSpeakers[0].speakers && getSpeakers[0].speakers.length > 0) {
                 // check if speaker_name already exists
@@ -83,6 +100,7 @@ async function createNewSpeaker(req, res, next) { // OK
         })
     }
 }
+
 
 async function identifySpeaker(req, res, next) { //WIP
     try {

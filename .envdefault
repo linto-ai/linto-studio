@@ -1,5 +1,5 @@
 # Components loading in this order
-COMPONENTS = WebServer,AlphabetSoup,IoHandler
+COMPONENTS = WebServer
 WEBSERVER_HTTP_PORT=8001
 DB_DRIVER=mongo
 DB_HOST=localhost
@@ -10,7 +10,6 @@ DB_NAME=conversations
 DB_REQUIRE_LOGIN=true
 JWT_SECRET=supersecret
 
-# Mongodb settings
-# url: mongodb+srv://application:<password>@cluster0-npyz0.mongodb.net/test?retryWrites=true&w=majority
-
-
+# Cross domain accessibility
+CORS_ENABLED=false
+CORS_API_WHITELIST=

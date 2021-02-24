@@ -230,7 +230,6 @@ async function renumberTurns(req, res, next) {
                 msg: !!error.message ? error.message : 'error on identifying speaker for this turn'
             })
         }
-
     }
 }
 /*async function createNewTurnSpeaker(req, res, next) {

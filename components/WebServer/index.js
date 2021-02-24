@@ -11,8 +11,8 @@ const pathToSwaggerUi = require('swagger-ui-dist').absolutePath()
 const CORS = require('cors')
 let corsOptions = {}
 
-if (process.env.API_WHITELIST.length > 0) {
-    whitelistDomains = process.env.API_WHITELIST.split(',')
+if (process.env.CORS_ENABLED && process.env.CORS_API_WHITELIST.length > 0) {
+    whitelistDomains = process.env.CORS_API_WHITELIST.split(',')
     corsOptions = {
         origin: function(origin, callback) {
             if (!origin || whitelistDomains.indexOf(origin) !== -1 || origin === 'undefined') {
@@ -37,7 +37,12 @@ class WebServer extends Component {
             extended: false
         }))
         this.express.use(cookieParser())
-        this.express.use(CORS(corsOptions))
+
+        // Cross domain whitelist
+        if (process.env.CORS_ENABLED) {
+            this.express.use(CORS(corsOptions))
+        }
+
         let sessionConfig = {
             resave: false,
             saveUninitialized: true,

@@ -63,7 +63,6 @@ class MongoModel {
                     }
                     //console.log('MongoUpateOne', result)
                     if (!!result.result && result.result.hasOwnProperty('ok'), result.result.hasOwnProperty('nModified')) {
-
                         if (result.result.nModified > 0) {
                             if (result.result.ok === 1) {
                                 resolve('success')
@@ -71,7 +70,7 @@ class MongoModel {
                         } else {
                             reject({
                                 error: 'no_match',
-                                message: 'no match found.'
+                                message: 'no match found'
                             })
                         }
                     } else {
