@@ -454,25 +454,33 @@ class ConvoModel extends MongoModel {
         }
     }
 
-    //update word text for a particular word object
-    async updateWordText(payload) {
+    async updateAllText(payload) {
         try {
+            console.log('conversation FOUND')
             const operator = "$set"
             const query = {
-                _id: this.getObjectId(payload.convoid),
+                _id: this.getObjectId(payload.convoid)
             }
+            let newText = payload.text
+            newText.map(turn => {
+                if (turn.words.length > 0) {
+                    turn.words.map(word => {
+                        if (word.wid === 'todefine') {
+                            word.wid = this.createObjectId()
+                        }
+                    })
+                }
+            })
             let mutableElements = {
-                "text.$[turnelem].words.$[wordelem].word": payload.word
+                "text": newText
             }
-            let arrayFilters = {
-                "arrayFilters": [{ "turnelem.turn_id": payload.turnid }, { "wordelem.wid": payload.wid }]
-            }
-            return await this.mongoUpdateOne(query, operator, mutableElements, arrayFilters)
+            return await this.mongoUpdateOne(query, operator, mutableElements)
         } catch (error) {
             console.error(error)
             return error
         }
     }
+
 
 }
 

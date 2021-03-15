@@ -10,6 +10,10 @@ class MongoModel {
         return MongoDriver.constructor.mongoDb.ObjectId(id)
     }
 
+    createObjectId(id) {
+        return MongoDriver.constructor.mongoDb.ObjectId()
+    }
+
     // Request function for Mongodb. Makes a request on the collection, filtered by the query.
     async mongoRequest(query, projection) {
         return new Promise((resolve, reject) => {
@@ -55,6 +59,8 @@ class MongoModel {
         } // do this so we dont double the _id?
         let payload = {}
         payload[operator] = values
+
+        //console.log('Mongo', payload)
         return new Promise((resolve, reject) => {
             try {
                 MongoDriver.constructor.db.collection(this.collection).updateOne(query, payload, filters, (error, result) => {

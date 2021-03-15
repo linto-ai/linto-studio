@@ -14,1006 +14,603 @@ basePath: /
 schemes:
  - https
 paths:
-  # /login: 
-  #   post:
-  #     tags:
-  #       - "users"
-  #     summary: Logs in a user and returns the json web token 
-  #     requestBody:
-  #       required: true
-  #       description: A JSON object containing the username and password.
-  #       content:
-  #         application/json:
-  #           schema:
-  #             $ref: '#/components/schemas/UserLogin'
-  #     # security: []    # no authentication
-  #     responses:
-  #       '200':
-  #         description: 
-  #           Successfully authenticated and token is returned to user.
-  #           You need to include token in subsequent requests.
-  #       '400':
-  #         description: 
-  #       '404':
-  #         description:
-  #       default:
-  #         description:
-  /api/users: 
+## CONVERSATIONS
+  /api/conversations:
     get:
-      tags:
-        - "users"
-      summary: gets all users 
-      # requestBody:
-      #   description:
-      responses:
-        '200':
-          description: returns a list of users 
-          content:
-            application/json:
-              schema:
-                type: array 
-                items:
-                  $ref: '#/components/schemas/User'
-        '401':
-          $ref: "#/components/responses/UnauthorizedError"
-    post:
-      tags:
-        - "users"
-      operationId: createUser
-      summary: creates a user
-      requestBody:
-        required: true
-        description: A JSON object containing the username and password.
-        content:   
-          application/json:
-            schema: 
-              type: object
-              properties:
-                userName: 
-                  type: string
-                password:
-                  type: string
-                email:
-                  type: string
-                  format: email
-                # convoAccess:
-                #   type: array
-                #   items: 
-                #     type: object 
-                #     properties:
-                #       conversationid:
-                #         type: string 
-                #       accessType:
-                #         type: string
-      responses:
-        '201':
-          description: user is successfully created
-          schema:
-            $ref: '#/components/schemas/User'
-        '400':
-          description: bad request error
-          schema:
-            $ref: '#/components/schemas/Error'
-        '401':
-          $ref: "#/components/responses/UnauthorizedError"
-  /api/users/{userid}:
-    get: 
-      tags:
-        - "users"
-      operationId: getUser
-      summary: Gets a user by id
-      description: gets a single user
-      parameters:
-        - in: path
-          name: userid
-          type: string
-          required: true
-        # - in: header
-        #   name: access-token
-        #   type: string
-        #   required: true
-      responses:
-        '200':
-          description: json document 
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-        '400':
-          description: bad request error
-          schema:
-            $ref: '#components/schemas/Error'
-        '401':
-          schema:
-            $ref: "#/components/responses/UnauthorizedError"
-    put:
-      tags:
-        - "users"
-      summary: updates a user password
-      description: Adds conversation(s) id to a user's accessedMeetings
-      requestBody:
-        required: true 
-        description: A JSON object containing the user id and conversation id(s).
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                id:
-                  type: integer
-                accessedMeetings:
-                  type: array
-                  items:
-                    type: integer 
-      responses:
-        '200':
-          description: Successfully updated.
-        '400': 
-          description: Invalid id supplied 
-        '404':
-          description: User not found 
-        '401':
-          $ref: "#/components/responses/UnauthorizedError"
-    delete:
-      tags:
-        - "users"
-      summary: deletes a user by id
-      parameters:
-        - in: path
-          name: userid
-          schema:
-            type: string
-          required: true
-      responses:
-        '200':
-          description: json document 
-        '400':
-          description: bad request error
-          schema:
-            $ref: '#components/schemas/Error'
-        '401':
-          $ref: "#/components/responses/UnauthorizedError"
-  /api/users/{userid}/addaccess/{conversationid}:
-    patch:
-      tags:
-        - "users"
-      operationId: updateUserAccess
-      summary: gives a user access to conversation(s)
-      requestBody:
-        required: true
-        description: A JSON object containing the conversationid and user rights
-        content:   
-          application/json:
-            schema: 
-              type: object
-              properties:
-                ownerId:
-                  type: string 
-                userId:
-                  type: string
-                convoId: 
-                  type: string
-                userRights:
-                  type: string 
-      responses:
-        '200':
-          description: successfully updated 
-        '403':
-          description: not authorized
-        '404':
-          description: not found
-        '401':
-          $ref: "#/components/responses/UnauthorizedError"
-  /api/users/{userid}/removeaccess/{conversationid}: 
-    patch:
-      tags:
-        - "users"
-      operationId: removeUserAccess
-      summary: removes access to conversation(s) from a user
-      requestBody:
-        required: true
-        description: A JSON object containing the conversationid and user rights
-        content:   
-          application/json:
-            schema: 
-              type: object
-              properties:
-                userId:
-                  type: string
-                convoId: 
-                  type: string
-      responses:
-        '200':
-          description: successfully removed
-        '403':
-          description: not authorized
-        '404':
-          description: not found
-        '401':
-          $ref: "#/components/responses/UnauthorizedError"
-
-  /api/conversations: 
-    get:
-      tags:
-        - "conversations"
-      summary: gets all conversations
-      responses:
-        '200':
-          description: returns a list of conversations
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Conversation'
-        '401':
-          $ref: "#/components/responses/UnauthorizedError"
-
-  /api/conversations/{conversationids}:
-    get:
-      tags:
-        - "conversations"
-      summary: gets all conversations by ids in list of ids
-
-  /api/conversation:
-    post:
       tags: 
-        - "conversation"
-      summary: creates a new conversation base
-      requestBody:
-        required: true
-        description: A JSON object containing the owner id and conversation name.
-        content:   
-          application/json:
-            schema: 
-              type: object
-              properties:
-                convoName: 
-                  type: string
-                ownerId:
-                  type: string
+        - "conversations"
+      summary: Get all conversations
+      operationId: GetAllConversations,
       responses:
-        '201':
-          description: conversation is successfully created 
-          schema:
-            $ref: '#/components/schemas/Conversation'
-        links:
-          updateUserConvoAccess:
-            operationId: updateUserAccess
-            parameters: 
-              conversationid: ''
-            # description: > 
-            #   The conversation id value can be used to update 
+        '200':
+          description: request success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/conversations'
         '400':
           description: bad request error
-          schema:
-            $ref: '#/components/schemas/Error'
-        '401':
-          $ref: "#/components/responses/UnauthorizedError"
-
-  /api/conversation/{conversationid}: 
-    get: 
-      tags:
-        - "conversation"
-      summary: gets a conversation by id -- WIP
-    delete: 
-      tags:
-        - "conversation"
-      summary: deletes conversation -- WIP
-
-  /api/conversation/{conversationid}/agenda:
-    put:
-      tags:
-        - "conversation/metadata"
-      summary: replaces (empty) agenda -- WIP
-    patch:
-      tags:
-        - "conversation/metadata"
-      summary: modifies conversation agenda -- WIP
-
-  /api/conversation/{conversationid}/summary:
-    put:
-      tags:
-        - "conversation/summary"
-      summary: replaces (empty) summary  --WIP
-    patch:
-      tags:
-        - "conversation/summary"
-      summary: modifies conversation summary  -- WIP
-  
-  /api/conversation/{conversationid}/speakers:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customError'
+## CONVERSATION / SPEAKER
+  /api/conversation/:conversationid/speakers:
     get:
       tags:
-        - "conversation/speakers"
-      summary: gets all speakers in a conversation
-      operationId: getSpeakers
-      description: gets all speaker ids, names and audio times for voice example
-      parameters:
+        - "speakers"
+      summary: get speakers for a conversation
+      operationId: "GetConversationSpeakers"
+      parameters: 
         - in: path
           name: conversationid
           type: string
+          format: uuid
           required: true
       responses:
         '200':
-          description: json document 
+          description: request success
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Speakers'
+                $ref: '#/components/schemas/speakers'
         '400':
           description: bad request error
-          schema:
-            $ref: '#components/schemas/Error'
-        '401':
-          description: unauthorized error 
-          schema:
-            $ref: "#/components/responses/UnauthorizedError"
-        '404':
-          description: not found error
-    post:
-      tags:
-        - "conversation/speakers"
-      summary: creates a new speaker in a conversation
-      operationId: createSpeaker
-      description: creates a new speaker id with name but without voice example
-      requestBody:
-        required: true
-        description: a json object with conversationid and new speaker name
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                convoid:
-                  type: string
-                speakername:
-                  type: string 
-      responses:
-        '200':
-          description: json document
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Speakers"
-        '400':
-          description: bad request error
-          schema:
-            $ref: '#components/schemas/Error'
-        '401':
-          description: unauthorized error 
-          schema:
-            $ref: "#/components/responses/UnauthorizedError"
-        '404':
-          description: not found error
-            
-  /api/conversation/{conversationid}/speakers/{speakerid}:
-    # get:
-    #   tags:
-    #     - "conversation/speakers"
-    #   summary: gets speaker name by speakerid
-
-    patch:
-      tags:
-        - "conversation/speakers"
-      summary: modifies speaker name
-      operationId: identifySpeaker
-      description: replaces speaker name for a given conversationid /speaker id
-      requestBody:
-        required: true
-        description: A JSON object containing the conversationid, speakerid and new speaker name
-        content:   
-          application/json:
-            schema: 
-              type: object
-              properties:
-                speakerid:
-                  type: string
-                convoid: 
-                  type: string
-                speakername:
-                  type: string  
-      responses:
-        '200':
-          description: speaker successfully updated
-          schema:
-            $ref: '#components/schemas/Speakers'
-        '400':
-          description: bad request error
-          schema:
-            $ref: '#components/schemas/Error'
-        '401':
-          description: unauthorized error 
-          schema:
-            $ref: "#/components/responses/UnauthorizedError"
-        '404':
-          description: not found error        
-    delete:
-      tags:
-        - "conversation/speakers"
-      summary: deletes speaker from conversation
-      operationId: deleteSpeaker
-      description: removes speaker by id if id not in transcript
-      requestBody:
-        required: true
-        description: A json object containing conversationid and speakerid
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                speakerid:
-                  type: string
-                convoid:
-                  type: string
-      responses:
-        '200':
-          description: speaker successfully deleted
-          schema:
-            $ref: '#components/schemas/Speakers'
-        '428': 
-          description: precondition required
-        '400':
-          description: bad request error
-          schema:
-            $ref: '#components/schemas/Error'
-        '401':
-          description: unauthorized error 
-          schema:
-            $ref: "#/components/responses/UnauthorizedError"
-        '404':
-          description: not found error        
-        description: not found error  
-    put:
-      tags: 
-        - "conversation/speakers"
-      summary: replaces audio in speaker map for a single speaker
-      operationId: updateSpeakerAudio
-      description: replaces speaker audio sample for a single speaker
-      requestBody:
-        required: true
-        description: A json object containing conversationid and speakerid and turnid
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                speakerid:
-                  type: string
-                convoid:
-                  type: string
-                stime:
-                  type: number
-                etime:
-                  type: number
-      responses:
-        '200':
-          description: turn speaker id successfully updated
-        '400':
-          description: bad request error
-          schema:
-            $ref: '#components/schemas/Error'
-        '401':
-          description: unauthorized error 
-          schema:
-            $ref: "#/components/responses/UnauthorizedError"
-        '404':
-          description: not found error      
-
-  /api/conversation/{conversationid}/turns/{speakerid}:
-    put:
-      tags: 
-        - "conversation/speakers"
-      summary: replaces all turns with speaker id = X with new speaker id = Y
-      operationId: combineSpeakerIds
-      description: replaces ids in transcript then deletes old id in speakers
-      requestBody:
-        required: true
-        description: A json object containing conversationid and speakerid and newspeakerid
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                speakerid:
-                  type: string
-                convoid:
-                  type: string
-                newspeakerid:
-                  type: string
-      responses:
-        '200':
-          description: speakers successfully combined
-          schema:
-            $ref: '#components/schemas/Speakers'
-        '400':
-          description: bad request error
-          schema:
-            $ref: '#components/schemas/Error'
-        '401':
-          description: unauthorized error 
-          schema:
-            $ref: "#/components/responses/UnauthorizedError"
-        '404':
-          description: not found error
-  /api/conversation/{conversationid}/turn/{speakerid}:      
+                $ref: '#/components/schemas/customError'
     post:
       tags:
-        - "conversation/speakers"
-      summary: replaces speaker in a single turn with a newly created speaker
-      operationId: createNewTurnSpeaker
-      description: creates a new speaker then updates the turn id using the new speaker id
-      requestBody:
-        required: true
-        description: A JSON object containing the conversationid, turnid and new speaker name
-        content:   
-          application/json:
-            schema: 
-              type: object
-              properties:
-                turnid:
-                  type: string
-                convoid: 
-                  type: string
-                speakername:
-                  type: string  
-      responses:
-      '200':
-        description: speaker successfully created
-      '400':
-        description: bad request error
-        schema:
-          $ref: '#components/schemas/Error'
-      '401':
-        description: unauthorized error 
-        schema:
-          $ref: "#/components/responses/UnauthorizedError"
-      '404':
-        description: not found error  
-    put:
-      tags: 
-        - "conversation/speakers"
-      summary: replaces speaker id in a single turn with another speaker id
-      operationId: updateSpeakerId
-      description: replaces speaker id in a single transcript turn
-      requestBody:
-        required: true
-        description: A json object containing conversationid and speakerid and turnid
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                speakerid:
-                  type: string
-                convoid:
-                  type: string
-                turnid:
-                  type: string
+        - "speakers"
+      summary: create a speaker for a conversation
+      operationId: "AddConversationSpeakers"
+      parameters: 
+        - in: path
+          name: conversationid
+          type: string
+          format: uuid
+          required: true
       responses:
         '200':
-          description: turn speaker id successfully updated
+          description: request success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customSuccess'
         '400':
           description: bad request error
-          schema:
-            $ref: '#components/schemas/Error'
-        '401':
-          description: unauthorized error 
-          schema:
-            $ref: "#/components/responses/UnauthorizedError"
-        '404':
-          description: not found error      
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customError'
 
-  /api/conversation/{conversationid}/turn:
+  /api/conversation/:conversationid/speakers/:speakerid:
+    patch: 
+      tags:
+        - "speakers"
+      summary: Update a speaker name in a conversation
+      operationId: "identifySpeaker"
+      parameters: 
+        - in: path
+          name: conversationid
+          type: string
+          format: uuid
+          required: true
+        - in: path
+          name: speakerid
+          type: string
+          format: uuid
+          required: true
+        - in: requestBody
+          name: newname
+          type: string
+          required: true
+      responses:
+        '200':
+          description: request success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customSuccess'
+        '400':
+          description: bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customError'
+    delete: 
+      tags:
+        - "speakers"
+      summary: Delete a speaker from a conversation
+      operationId: "deleteSpeaker"
+      parameters: 
+        - in: path
+          name: conversationid
+          type: string
+          format: uuid
+          required: true
+        - in: path
+          name: speakerid
+          type: string
+          format: uuid
+          required: true
+      responses:
+        '200':
+          description: request success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customSuccess'
+        '400':
+          description: bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customError'
+        '428':
+          description: speaker can't be deleted 
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  turn_number:
+                    type: string
+                  msg:
+                    type: string
+  
+## CONVERSATION / TURNS
+  /api/conversation/:conversationid/turn/:turnid:
+    put:
+      tags:
+        - "turns"
+      summary: Identify a speaker for a turn in a conversation
+      operationId: "UpdateTurnSpeaker"
+      parameters: 
+        - in: path
+          name: conversationid
+          type: string
+          format: uuid
+          required: true
+        - in: path
+          name: turnid
+          type: string
+          format: uuid
+          required: true
+      responses:
+        '200':
+          description: request success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customSuccess'
+        '400':
+          description: bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customError'
+
+  /api/conversation/:conversationid/turn:
     post:
       tags:
-        - "conversation/turns"
-      summary: creates a new turn 
-      operationId: createNewTurn
-      description: creates a new turn then updates turn order in text
-      requestBody:
-        required: true
-        description: A json object containing conversationid, speakerid, position
-        content:
-          application/json:
-             schema:
-              type: object
-              properties:
-                convoid:
-                  type: string
-                speakerid:
-                  type: string
-                pos:
-                  type: number 
-                words:
-                  $ref: '#/components/schemas/Words'
+        - "turns"
+      summary: Create a turn in a conversation
+      operationId: "CreateTurn"
+      parameters: 
+        - in: path
+          name: conversationid
+          type: string
+          format: uuid
+          required: true
+        - in: requestBody
+          name: speakerid
+          type: string
+          format: uuid
+          required: true
       responses:
         '200':
-          description: turn successfully created 
+          description: request success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customSuccess'
         '400':
           description: bad request error
-        schema:
-          $ref: '#components/schemas/Error'
-        '401':
-          description: unauthorized error 
-          schema:
-            $ref: "#/components/responses/UnauthorizedError"
-        '404':
-          description: not found error   
-
-  /api/conversation/{conversationid}/turn/{turnids}:   
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customError'
     delete:
       tags:
-        - "conversation/turns"
-      summary: deletes a turn or turns 
-      operationId: deleteTurn
-      description: deletes a turn 
-      requestBody:
-        required: true
-        description: A json object containing conversationid, list of turnids
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                turnids:
-                  type: array 
-                  items:
-                    type: string
-                convoid:
-                  type: string
-      responses:
-        '200':
-          description: turns successfully deleted
-        '400':
-          description: bad request error
-        schema:
-          $ref: '#components/schemas/Error'
-        '401':
-          description: unauthorized error 
-          schema:
-            $ref: "#/components/responses/UnauthorizedError"
-        '404':
-          description: not found error      
-    patch:
-      tags:
-        - "conversation/turns"
-      summary: merges a set of turns 
-      operationId: mergeTurns
-      description: combines text from all turns into first turn, deletes remaining turns
-      requestBody:
-        required: true
-        description: A json object containing conversationid and an array of turn ids
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                turnids:
-                  type: array
-                  items:
-                    type: string
-                convoid:
-                  type: string
-                speakerid:
-                  type: string
-      responses:
-        '200':
-          description: turns successfully merged
-        '400':
-          description: bad request error
-        schema:
-          $ref: '#components/schemas/Error'
-        '401':
-          description: unauthorized error 
-          schema:
-            $ref: "#/components/responses/UnauthorizedError"
-        '404':
-
-  /api/conversation/{conversationid}/turnsplit/{turnids}:  
-    put:
-      tags:
-        - "conversation/turns"
-      summary: splits a turn 
-      operationId: splitTurns
-      description: creates two or three turns from one turn depending on which inner-turn text user selects for 
-      requestBody:
-        required: true
-        description: A json object containing an array of turn ids and an array of word ids
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                convoid:
-                  type: string
-                speakerid:
-                  type: string
-                positions:
-                  type: array
-                  items: 
-                    type: number
-                wordids:
-                  type: array
-                  items: 
-                    type: string
-      responses:
-        '200':
-          description: turns successfully split
-        '400':
-          description: bad request error
-        schema:
-          $ref: '#components/schemas/Error'
-        '401':
-          description: unauthorized error 
-          schema:
-            $ref: "#/components/responses/UnauthorizedError"
-        '404':
-
-  /api/conversation/{conversationid}/replaceturn/{turnid}:  
-    patch:
-      tags: 
-        - "conversation/turns"
-      summary: replaces the text field of a turn 
-      operationId: replaceTurnText
-      description: takes a list of word objects containing text and position numbers, computes new e/s times and generates new wids 
-      requestBody:
-        required: true
-        description: a json object containing a list of word objects
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                convoid:
-                  type: string
-                turnids:
-                  type: array
-                  items: 
-                    type: string
-                words:
-                  type: array
-                  items: 
-                    type: object 
-                    properties:
-                      word:
-                        type: string
-                      pos:
-                        type: number
-      responses:
-        '200':
-          description: words field successfully replaced
-        '400':
-          description: bad request error
-          schema:
-            $ref: '#components/schemas/Error'
-        '401':
-          description: unauthorized error 
-          schema:
-            $ref: "#/components/responses/UnauthorizedError"
-        '404':
-
-  # /api/conversation/{conversationid}/word:
-  #   delete:
-  #     tags:
-  #       - "conversation/textedit"
-  #     summary: deletes a word or words
-  #     operationId: deleteWord
-  #     description: deletes a word or words
-  #     requestBody:
-  #       required: true
-  #       description: A json object containing conversationid, turnid, list of wordids
-  #       content:
-  #         application/json:
-  #           schema:
-  #             type: object
-  #             properties:
-  #               wordids:
-  #                 type: array 
-  #                 items:
-  #                   type: string
-  #               convoid:
-  #                 type: string
-  #               turnid:
-  #                 type: string
-  #     responses:
-  #       '200':
-  #         description: words successfully deleted
-  #       '400':
-  #         description: bad request error
-  #       schema:
-  #         $ref: '#components/schemas/Error'
-  #       '401':
-  #         description: unauthorized error 
-  #         schema:
-  #           $ref: "#/components/responses/UnauthorizedError"
-  #       '404':
-  #         description: not found error     
-  #   post:
-  #     tags:
-  #       - "conversation/textedit"
-  #     summary: creates a new word object or set of objects
-  #     operationId: createNewWord
-  #     description: creates a new word object or set of objects
-  #     requestBody:
-  #       required: true
-  #       description: A json object containing conversationid, turnid, array of start/end word ids and an array of words to be inserted
-  #       content:
-  #         application/json:
-  #            schema:
-  #             type: object
-  #             properties:
-  #               convoid:
-  #                 type: string
-  #               turnid:
-  #                 type: string
-  #               wordids:
-  #                 type: array
-  #                 items:
-  #                   type: string
-  #               words:
-  #                 type: array 
-  #                 items:
-  #                   type: string
-  #     responses:
-  #       '200':
-  #         description: words successfully created 
-  #       '400':
-  #         description: bad request error
-  #       schema:
-  #         $ref: '#components/schemas/Error'
-  #       '401':
-  #         description: unauthorized error 
-  #         schema:
-  #           $ref: "#/components/responses/UnauthorizedError"
-  #       '404':
-  #         description: not found error    
-  #   put:
-  #     tags:
-  #       - "conversation/textedit"
-  #     summary: replaces word or words in word object or objects
-  #     operationId: updateWordText
-  #     description: updates word property on word object in a turn
-  #     requestBody:
-  #       required: true
-  #       description: A json object containing convoid, turnid, and "changes" array that contains wordids array and new words array
-  #       content:
-  #         application/json:
-  #           schema:
-  #             type: object
-  #             properties:
-  #               convoid:
-  #                 type: string
-  #               turnid:
-  #                 type: string
-  #               changes:
-  #                 type: array
-  #                 minItems: 2
-  #                 maxItems: 2
-  #                 items:
-  #                   type: array
-  #                   items:
-  #                     type: string
-  #               positions:
-  #                 type: array
-  #                 minItems: 1
-  #                 maxItems: 2
-  #                 items:
-  #                   type : integer
-  #     responses:
-  #       '200':
-  #         description: word successfully updated
-  #       '400':
-  #         description: bad request error
-  #       schema:
-  #         $ref: '#components/schemas/Error'
-  #       '401':
-  #         description: unauthorized error 
-  #         schema:
-  #           $ref: "#/components/responses/UnauthorizedError"
-  #       '404':
-  #         description: not found error    
-
-  /api/conversation/{conversationid}/annotate:
-
-
-components:
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-  responses:
-    UnauthorizedError:
-      description: Access token is missing or invalid 
-
-  # parameters:
-  # requestBodies:
-  # responses:
-  # headers:
-  # examples:
-  # links:
-  # callbacks:
-
-  schemas:
-    Error:
-      type: object
-      properties:
-        status:
+        - "turns"
+      summary: Delete a set of turns in a conversation
+      operationId: "DeleteTurns"
+      parameters: 
+        - in: path
+          name: conversationid
           type: string
-    UserLogin:
-      type: object
-      properties:
-        userName:
-          type: string 
-        password:
-          type: string
-          format: password 
-          writeOnly: true
-      required:
-        - userName
-        - password
-    User:
-      type: object
-      properties:
-        userid:
-          type: string
-          readOnly: true
-        userName:
-          type: string 
-        email:
-          type: string
-          format: email
-        convoAccess:
+          format: uuid
+          required: true
+        - in: requestBody
+          name: turnids
           type: array
-          items: 
+          items:
+            type: string
+            format: uuid
+          required: true
+          description: array of turn_id(s)
+      responses:
+        '200':
+          description: request success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customSuccess'
+        '400':
+          description: bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customError'
+  /api/conversation/:conversationid/turns/merge:
+    patch: 
+      tags:
+        - "turns"
+      summary: Merge a set of turns
+      operationId: "MergeTurns"
+      parameters: 
+        - in: path
+          name: conversationid
+          type: string
+          format: uuid
+          required: true
+        - in: requestBody
+          name: turnids
+          type: array
+          items:
+            type: string
+            format: uuid
+          required: true
+          description: array of turn_id(s)
+        - in: requestBody
+          name: speakerid
+          type: string
+          format: uuid
+          required: true
+      responses:
+        '200':
+          description: request success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customSuccess'
+        '400':
+          description: bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customError'
+  /api/conversation/:conversationid/turns/split:
+    put: 
+      tags:
+        - "turns"
+      summary: Split a set of turns and associate speakerid
+      operationId: "SplitTurns"
+      parameters: 
+        - in: path
+          name: conversationid
+          type: string
+          format: uuid
+          required: true
+        - in: requestBody
+          name: turnids
+          type: array
+          items:
+            type: string
+            format: uuid
+          required: true
+          description: array of turn_id(s)
+        - in: requestBody
+          name: wordids
+          type: array
+          items:
+            type: string
+            format: uuid
+          required: true
+          description: array of word_id(s)
+        - in: requestBody
+          name: positions
+          type: array
+          items:
+            type: string
+            format: uuid
+          required: true
+          description: array of turn_position(s)
+        - in: requestBody
+          name: speakerid
+          type: string
+          format: uuid
+          required: true
+      responses:
+        '200':
+          description: request success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customSuccess'
+        '400':
+          description: bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customError'
+  /api/conversation/:conversationid/turns/:speakerid:
+    put:
+      tags:
+        - "turns"
+      summary: Replace a speaker by an existing speaker (associate turns)
+      operationId: "CombineSpeakerIds"
+      parameters: 
+        - in: path
+          name: conversationid
+          type: string
+          format: uuid
+          required: true
+        - in: path
+          name: speakerid
+          type: string
+          format: uuid
+          required: true
+        - in: requestBody
+          name: newspeakerid
+          type: string
+          format: uuid
+          required: true
+      responses:
+        '200':
+          description: request success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customSuccess'
+        '400':
+          description: bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customError'
+  /api/conversation/:conversationid/text:
+    put: 
+      tags:
+        - "textedit"
+      summary: Replace all the text object in a conversation
+      operationId: "replaceAllText"
+      parameters: 
+        - in: path
+          name: conversationid
+          type: string
+          format: uuid
+          required: true
+        - in: requestBody
+          name: text
+          description: array of "words"
+          type: array
+          items:
+            type: object
+            properties:
+              speaker_id:
+                type: string
+                format: uuid
+              turn_id:
+                type: string
+                format: uuid
+              pos: 
+                type: integer
+              words:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    wid:
+                      type: string
+                      format: uuid
+                    etime:
+                      type: number
+                    stime:
+                      type: number
+                    word:
+                      type: string
+                    pos:
+                      type: integer
+                    highlights:
+                      type: array
+                      items:
+                        type: string
+                        format: uuid
+                    keywords:
+                      type: array
+                      items:
+                        type: string
+                        format: uuid
+      responses:
+        '200':
+          description: request success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customSuccess'
+        '400':
+          description: bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customError'
+components: 
+  schemas:
+    customError:
+      type: object
+      properties:
+        txtStatus: 
+          type: string
+        msg:
+          type: string
+    customSuccess:
+      type: object
+      properties:
+        txtStatus: 
+          type: string
+        msg:
+          type: string
+    conversation:
+      type: object 
+      properties: 
+        _id: 
+          type: string
+          format: uuid
+        created:
+          type: string
+          format: date-time
+        owner:
+          type: array
+          items:
+            type: object
+            properties:
+              user_id:
+                type: string
+                format: uuid
+              name:
+                type: string
+              img:
+                type: string
+                format: uri
+        description:
+          type: string
+        audio:
+          type: string
+          format: uri
+        name: 
+          type: string
+        mtype:
+          type: string
+        locked:
+          type: integer
+        mdate:
+          type: string
+          format: date-time
+        mtime:
+          format: string
+        duration:
+          format: string
+        agenda:
+          type: string
+        abstract:
+          type: string
+        sharedWith:
+          type: array
+          items:
             type: object 
             properties:
-              conversationid:
-                type: string 
-              accessType:
+              user_id:
                 type: string
-        required:
-          - userid
-          - userName
-          - convoAcess 
-    Speakers:
-      type: array 
+                format: uuid
+              name:
+                type: string
+              img:
+                type: string
+                format: uri
+        highlihgts:
+          type: array
+          items:
+            type: object 
+            properties:
+              _id:
+                type: string
+                format: uuid
+              label: 
+                type: string
+              color:
+                type: string
+                format: uri
+        keywords:
+          type: array
+          items:
+            type: object 
+            properties:
+              _id:
+                type: string
+                format: uuid
+              label: 
+                type: string
+        speakers:
+          type: array
+          items:
+            type: object 
+            properties:
+              speaker_id:
+                type: string
+                format: uuid
+              speaker_name:
+                type: string
+              stime:
+                type: number
+              etime:
+                type: number
+        text:
+          type: array
+          items:
+            type: object 
+            properties:
+              speaker_id:
+                type: string
+                format: uuid
+              turn_id:
+                type: string
+                format: uuid
+              pos: 
+                type: integer
+              words:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    wid:
+                      type: string
+                      format: uuid
+                    etime:
+                      type: number
+                    stime:
+                      type: number
+                    word:
+                      type: string
+                    pos:
+                      type: integer
+                    highlights:
+                      type: array
+                      items:
+                        type: string
+                        format: uuid
+                    keywords:
+                      type: array
+                      items:
+                        type: string
+                        format: uuid
+    conversations:
+      type: array
       items:
-        type: object
+        $ref: '#/components/schemas/conversation'
+    speakers:
+      type: array
+      items:
+        type: object 
         properties:
-          speakerid:
+          speaker_id:
             type: string
-          speakername:
+            format: uuid
+          speaker_name:
             type: string
           stime:
             type: number
           etime:
             type: number
-    Turn:
-      type: object
-      properties:
-        turn_id:
-          type: string
-        speaker_id:
-          type: string
-        pos:
-          type: number
-        words:
-          $ref: '#/components/schemas/Words'
-    Words:
-      type: array 
-      items:
-        type: object
-        properties:
-          wid: 
-            type: string
-          etime:
-            type: string
-          stime:
-            type: string
-          word:
-            type: string
-          pos:
-            type: number
-security:
-  - bearerAuth: []
