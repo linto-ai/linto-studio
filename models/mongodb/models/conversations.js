@@ -327,20 +327,26 @@ class ConvoModel extends MongoModel {
     async getTurns(payload) {
         //returns list of turns from a single conversation with either turn ids or turn positions specified in payload
         try {
-            const project = {
-                "$project": {
-                    "text": {
-                        "$filter": {
-                            input: "$text",
-                            as: "turn",
-                            cond: payload.hasOwnProperty('turnids') ? { "$in": ["$$turn.turn_id", payload.turnids] } : { "$in": ["$$turn.pos", payload.positions] }
+            const query = {
+                _id: this.getObjectId(payload.convoid)
+            }
+
+            const filter = {
+                "text": {
+                    "$filter": {
+                        "input": "$text",
+                        "as": "turn",
+                        "cond": {
+                            "$and": [
+                                { "$gte": ["$$turn.pos", parseInt(payload.positions[0])] },
+                                { "$lte": ["$$turn.pos", parseInt(payload.positions[1])] }
+                            ]
                         }
                     }
                 }
             }
-            const match = { "$match": { _id: this.getObjectId(payload.convoid) } }
-            const query = [match, project]
-            return await this.mongoAggregate(query)
+
+            return await this.mongoRequest(query, filter)
         } catch (error) {
             console.error(error)
             return error

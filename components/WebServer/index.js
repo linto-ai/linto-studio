@@ -32,9 +32,14 @@ class WebServer extends Component {
         this.express = express()
         this.express.set('etag', false)
         this.express.set('trust proxy', true)
-        this.express.use(bodyParser.json())
+
+        this.express.use(bodyParser.json({
+            limit: '50mb',
+            extended: true
+        }))
         this.express.use(bodyParser.urlencoded({
-            extended: false
+            limit: '50mb',
+            extended: true
         }))
         this.express.use(cookieParser())
 

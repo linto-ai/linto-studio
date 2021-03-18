@@ -101,9 +101,12 @@ async function mergeTurns(req, res, next) {
             const payload = {
                 convoid: req.params.conversationid,
                 turnids: req.body.turnids,
-                speakerid: req.body.speakerid
+                speakerid: req.body.speakerid,
+                positions: req.body.positions
             }
+            console.log(payload)
             let getTurns = await convoModel.getTurns(payload)
+            console.log('allo?', getTurns)
             if (getTurns !== "undefined") {
                 //console.log(response[0]["text"])
                 //sort turns in ascending order
@@ -266,11 +269,14 @@ async function splitTurns(req, res, next) {
             }
             let words = payload.wordids
             let nums = payload.positions
-            if (nums.length > 1) {
-                payload.positions = [...Array(nums[1] + 1).keys()].slice(nums[0])
-            }
+                /*if (nums.length > 1) {
+                    payload.positions = [...Array(nums[1] + 1).keys()].slice(nums[0])
+                }*/
+
             // get all turns
             let getTurns = await convoModel.getTurns(payload)
+
+
             if (getTurns !== "undefined") {
                 // take first turn and sort words in that turn and put in start_words variable
                 let turns = getTurns[0].text.sort((a, b) => a.pos - b.pos)
