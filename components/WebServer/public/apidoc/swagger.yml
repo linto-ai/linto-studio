@@ -161,67 +161,7 @@ paths:
                     type: string
   
 ## CONVERSATION / TURNS
-  /api/conversation/:conversationid/turn/:turnid:
-    put:
-      tags:
-        - "turns"
-      summary: Identify a speaker for a turn in a conversation
-      operationId: "UpdateTurnSpeaker"
-      parameters: 
-        - in: path
-          name: conversationid
-          type: string
-          format: uuid
-          required: true
-        - in: path
-          name: turnid
-          type: string
-          format: uuid
-          required: true
-      responses:
-        '200':
-          description: request success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customSuccess'
-        '400':
-          description: bad request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customError'
-
-  /api/conversation/:conversationid/turns:
-    post:
-      tags:
-        - "turns"
-      summary: Create a turn in a conversation
-      operationId: "CreateTurn"
-      parameters: 
-        - in: path
-          name: conversationid
-          type: string
-          format: uuid
-          required: true
-        - in: requestBody
-          name: speakerid
-          type: string
-          format: uuid
-          required: true
-      responses:
-        '200':
-          description: request success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customSuccess'
-        '400':
-          description: bad request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customError'
+  /api/conversation/{conversationid}/turn:
     delete:
       tags:
         - "turns"
@@ -230,17 +170,22 @@ paths:
       parameters: 
         - in: path
           name: conversationid
-          type: string
-          format: uuid
-          required: true
-        - in: body
-          name: turnids
-          type: array
-          items:
-            type: string
-            format: uuid
-          required: true
-          description: array of turn_id(s)
+          type: string 
+          format: uuid 
+          required: true 
+          description: id of conversation object
+      requestBody:
+        required: true
+        description: An array of one or more turnids 
+        content:
+          application/json:
+            schema:
+              type: array 
+              items:
+                type: string
+                format: uuid 
+            example:
+              ['3fa85f645717456443fc2c963f66afa6', '3fa66f645717456443fc2c963f66ay9d']
       responses:
         '200':
           description: request success
@@ -254,7 +199,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/customError'
-  /api/conversation/:conversationid/turns/merge:
+  /api/conversation/:conversationid/turn/merge:
     patch: 
       tags:
         - "turns"
@@ -292,7 +237,37 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/customError'
-  /api/conversation/:conversationid/turns/split:
+  /api/conversation/{conversationid}/turn/{turnid}:
+    put:
+      tags:
+        - "turns"
+      summary: Identify a speaker for a turn in a conversation
+      operationId: "UpdateTurnSpeaker"
+      parameters: 
+        - in: path
+          name: conversationid
+          type: string
+          format: uuid
+          required: true
+        - in: path
+          name: turnid
+          type: string
+          format: uuid
+          required: true
+      responses:
+        '200':
+          description: request success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customSuccess'
+        '400':
+          description: bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customError'
+  /api/conversation/:conversationid/turn/split:
     put: 
       tags:
         - "turns"
@@ -346,7 +321,46 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/customError'
-  /api/conversation/:conversationid/turns/:speakerid:
+  /api/conversation/{conversationid}/turn/{speakerid}:
+    post:
+      tags:
+        - "turns"
+      summary: Create a turn in a conversation
+      operationId: "CreateTurn"
+      parameters: 
+        - in: path
+          name: conversationid
+          type: string
+          format: uuid
+          required: true
+        - in: path
+          name: speakerid
+          type: string
+          format: uuid
+          required: true 
+      # requestBody:
+      #   required: true
+      #   description: a uuid string speaker id 
+      #   content:
+      #     application/json:
+      #       schema:
+      #         type: string
+      #         format: uuid 
+      #         example:
+      #           '3fa85f6457174562b3fc2c963f66afa6'
+      responses:
+        '200':
+          description: request success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customSuccess'
+        '400':
+          description: bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customError'
     put:
       tags:
         - "turns"

@@ -5,14 +5,17 @@ const clone = require('rfdc')()
 
 async function createTurn(req, res, next) {
     try {
-        if (!!req.body.speakerid) {
+        console.log(req.params)
+        if (!!req.params.speakerid) { ///made speaker id a param string-KT
+            console.log('we are here')
             let payload = {
                 convoid: req.params.conversationid,
-                speakerid: req.body.speakerid,
+                speakerid: req.params.speakerid,
                 turnid: uuidv4(),
                 pos: 0,
                 words: []
             }
+            console.log(payload)
             let addTurn = await convoModel.createTurn(payload)
             if (addTurn === 'success') {
                 console.log("turn creation success")
@@ -34,13 +37,11 @@ async function createTurn(req, res, next) {
 }
 
 async function deleteTurns(req, res, next) {
-    console.log(req.body)
-    console.log(req.params)
     try {
-        if (!!req.body.turnids) {
+        if (!!req.body.length > 0) { ///can't add a name to the req body so for now just check for array-KT
             const payload = {
                 convoid: req.params.conversationid,
-                turnids: req.body.turnids
+                turnids: req.body
             }
             let deleteTurns = await convoModel.deleteTurns(payload)
             if (deleteTurns === 'success') {
@@ -214,7 +215,7 @@ async function renumberTurns(req, res, next) {
                 // Response 
                 res.status(200).send({
                     txtStatus: 'success',
-                    msg: 'Turns positions have been updated'
+                    msg: 'Turn positions have been updated'
                 })
             } else {
                 throw newtext

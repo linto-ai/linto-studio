@@ -82,7 +82,7 @@ class MongoModel {
                     } else {
                         reject({
                             error: 'error_getting_result',
-                            message: 'Cannot acces request result'
+                            message: 'Cannot access request result'
                         })
                     }
 

@@ -81,31 +81,31 @@ module.exports = (webserver) => {
             controller: createNewTurnSpeaker
         },*/
         {
-            path: '/:conversationid/turn',
+            path: '/:conversationid/turn/:speakerid',
             method: 'post',
             requireAuth: false,
             controller: [createTurn, renumberTurns]
         },
         {
-            path: '/:conversationid/turns',
+            path: '/:conversationid/turn',
             method: 'delete',
             requireAuth: false,
-            controller: [deleteTurns, renumberTurns]
+            controller: [deleteTurns, renumberTurns] //^^Kcheck
         },
         {
-            path: '/:conversationid/turns/merge',
+            path: '/:conversationid/turn/merge',
             method: 'patch',
             requireAuth: false,
             controller: [mergeTurns, renumberTurns]
         },
         {
-            path: '/:conversationid/turns/split',
+            path: '/:conversationid/turn/split',
             method: 'put',
             requireAuth: false,
             controller: [splitTurns, renumberTurns]
         },
         {
-            path: '/:conversationid/turns/:speakerid',
+            path: '/:conversationid/turn/:speakerid',
             method: 'put',
             requireAuth: false,
             controller: combineSpeakerIds
