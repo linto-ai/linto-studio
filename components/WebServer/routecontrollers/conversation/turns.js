@@ -28,12 +28,14 @@ async function createTurn(req, res, next) {
         // Error
         res.status(400).send({
             status: 'error',
-            msg: !!error.message ? error.message : 'error on creating a new turn'
+            msg: !!error.message ? error.message : 'error creating a new turn'
         })
     }
 }
 
 async function deleteTurns(req, res, next) {
+    console.log(req.body)
+    console.log(req.params)
     try {
         if (!!req.body.turnids) {
             const payload = {
@@ -54,7 +56,7 @@ async function deleteTurns(req, res, next) {
         // Error
         res.status(400).send({
             status: 'error',
-            msg: !!error.message ? error.message : 'error on deleting turns'
+            msg: !!error.message ? error.message : 'error deleting turns'
         })
     }
 }

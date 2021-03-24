@@ -192,7 +192,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/customError'
 
-  /api/conversation/:conversationid/turn:
+  /api/conversation/:conversationid/turns:
     post:
       tags:
         - "turns"
@@ -233,7 +233,7 @@ paths:
           type: string
           format: uuid
           required: true
-        - in: requestBody
+        - in: body
           name: turnids
           type: array
           items:
