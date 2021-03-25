@@ -271,7 +271,7 @@ paths:
     put: 
       tags:
         - "turns"
-      summary: Split a set of turns and associate speakerid
+      summary: Split a set of turns and associate speakerid to new turn 
       operationId: "SplitTurns"
       parameters: 
         - in: path
@@ -279,35 +279,32 @@ paths:
           type: string
           format: uuid
           required: true
-        - in: requestBody
-          name: turnids
-          type: array
-          items:
-            type: string
-            format: uuid
-          required: true
-          description: array of turn_id(s)
-        - in: requestBody
-          name: wordids
-          type: array
-          items:
-            type: string
-            format: uuid
-          required: true
-          description: array of word_id(s)
-        - in: requestBody
-          name: positions
-          type: array
-          items:
-            type: string
-            format: uuid
-          required: true
-          description: array of turn_position(s)
-        - in: requestBody
-          name: speakerid
-          type: string
-          format: uuid
-          required: true
+      requestBody:
+        required: true
+        description: An object containing a turnid, wordid, positions arrays plus a speaker id  
+        content:
+          application/json:
+            schema:
+              type: object 
+              properties:
+                turnids: 
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                wordids:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                positions:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                speakerid:
+                  type: string
+                  format: uuid 
       responses:
         '200':
           description: request success
@@ -534,7 +531,7 @@ components:
               img:
                 type: string
                 format: uri
-        highlihgts:
+        highlights:
           type: array
           items:
             type: object 

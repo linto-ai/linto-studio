@@ -12,7 +12,7 @@ async function createTurn(req, res, next) {
                 convoid: req.params.conversationid,
                 speakerid: req.params.speakerid,
                 turnid: uuidv4(),
-                pos: 0,
+                pos: 0.5, //default to first position (taken care of in renumber turns)
                 words: []
             }
             console.log(payload)
