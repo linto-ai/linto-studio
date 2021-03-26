@@ -219,7 +219,8 @@ class ConvoModel extends MongoModel {
 
     // create a new turn in a conversation
     async createTurn(payload) {
-        //Romlop: We don't use the "position", shouldn't we ?
+        //Romlop: We don't use the "position", shouldn't we ? 
+        //The position is given by the function that calls createTurn (eg.splitTurn), it is never called by itself--KT
 
         //takes a convo id and a speaker_id and a position and text (optionally)
         try {
@@ -324,7 +325,7 @@ class ConvoModel extends MongoModel {
         }
     }
 
-    async getTurns(payload) {
+    async getTurnsRomain(payload) {
         //returns list of turns from a single conversation with either turn ids or turn positions specified in payload
         try {
             const query = {
@@ -348,6 +349,31 @@ class ConvoModel extends MongoModel {
 
             return await this.mongoRequest(query, filter)
         } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
+    async getTurns(payload){ 
+        //returns list of turns from a single conversation with either turn ids or turn positions specified in payload
+        try{
+            const project = {"$project": {
+                "text": {
+                    "$filter": {
+                        input: "$text", 
+                        as: "turn", 
+                        cond: payload.hasOwnProperty('turnids') 
+                        ? {"$in": ["$$turn.turn_id", payload.turnids]} 
+                        : {"$in": ["$$turn.pos", payload.positions]}
+                    }
+                }
+            }}
+            console.log('------')
+            console.log(project)
+            const match = {"$match": {_id: this.getObjectId(payload.convoid)}}
+            const query = [match, project]
+            return await this.mongoAggregate(query)
+        } catch (error){
             console.error(error)
             return error
         }

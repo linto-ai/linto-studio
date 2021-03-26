@@ -199,7 +199,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/customError'
-  /api/conversation/:conversationid/turn/merge:
+  /api/conversation/{conversationid}/turn/merge:
     patch: 
       tags:
         - "turns"
@@ -211,19 +211,22 @@ paths:
           type: string
           format: uuid
           required: true
-        - in: requestBody
-          name: turnids
-          type: array
-          items:
-            type: string
-            format: uuid
-          required: true
-          description: array of turn_id(s)
-        - in: requestBody
-          name: speakerid
-          type: string
-          format: uuid
-          required: true
+      requestBody:
+        required: true
+        description: An object containing an array of turn ids and a speaker name 
+        content:
+          application/json:
+            schema:
+              type: object 
+              properties:
+                turnids: 
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                speakerid:
+                  type: string
+                  format: uuid 
       responses:
         '200':
           description: request success
@@ -237,7 +240,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/customError'
-  /api/conversation/{conversationid}/turn/{turnid}:
+  /api/conversation/{conversationid}/turnspeaker/{turnid}/:
     put:
       tags:
         - "turns"
@@ -267,7 +270,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/customError'
-  /api/conversation/:conversationid/turn/split:
+  /api/conversation/{conversationid}/turn/split:
     put: 
       tags:
         - "turns"
@@ -287,11 +290,11 @@ paths:
             schema:
               type: object 
               properties:
-                turnids: 
-                  type: array
-                  items:
-                    type: string
-                    format: uuid
+                # turnids: 
+                #   type: array
+                #   items:
+                #     type: string
+                #     format: uuid
                 wordids:
                   type: array
                   items:
@@ -300,8 +303,7 @@ paths:
                 positions:
                   type: array
                   items:
-                    type: string
-                    format: uuid
+                    type: number
                 speakerid:
                   type: string
                   format: uuid 

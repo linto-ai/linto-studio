@@ -69,7 +69,7 @@ module.exports = (webserver) => {
         },
 
         {
-            path: '/:conversationid/turn/:turnid', // modif romlop
+            path: '/:conversationid/turnspeaker/:turnid', // modif romlop
             method: 'put',
             requireAuth: false,
             controller: identifyTurnSpeaker
