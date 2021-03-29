@@ -4,10 +4,11 @@ const { v4: uuidv4 } = require('uuid')
 const clone = require('rfdc')()
 
 async function createTurn(req, res, next) {
+    //so far this function is not used by the user... 
+    //but convoModel.createTurn is used by other routecontroller functions.
     try {
         console.log(req.params)
         if (!!req.params.speakerid) { ///made speaker id a param string-KT
-            console.log('we are here')
             let payload = {
                 convoid: req.params.conversationid,
                 speakerid: req.params.speakerid,
@@ -282,8 +283,10 @@ async function splitTurns(req, res, next) {
             if (getTurns !== "undefined") {
                 // take first turn and sort words in that turn and put in start_words variable
                 let turns = getTurns[0].text.sort((a, b) => a.pos - b.pos)
+
                 let start_words = turns[0].words.sort((a, b) => a.pos - b.pos)
                 let end_words = null
+
                 if (nums.length == 1) {
                     //if only one turn position was given, then make start words same as end words
                     end_words = start_words
@@ -291,7 +294,7 @@ async function splitTurns(req, res, next) {
                     //else the end words are the sorted words of the last turn
                     end_words = turns[turns.length - 1].words.sort((a, b) => a.pos - b.pos)
                 }
-
+                
                 //keep last word of last turn in last_pos variable
                 let last_pos = end_words[end_words.length - 1].pos
 

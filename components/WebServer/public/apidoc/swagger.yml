@@ -240,11 +240,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/customError'
-  /api/conversation/{conversationid}/turnspeaker/{turnid}/:
+  /api/conversation/{conversationid}/turnspeaker/{turnid}:
     put:
       tags:
         - "turns"
-      summary: Identify a speaker for a turn in a conversation
+      summary: Replace a speaker by an existing speaker
       operationId: "UpdateTurnSpeaker"
       parameters: 
         - in: path
@@ -257,6 +257,18 @@ paths:
           type: string
           format: uuid
           required: true
+      requestBody:
+        required: true
+        description: An object containing a speaker id
+        content:
+          application/json:
+            schema:
+              type: object 
+              properties:
+                speakerid: 
+                  type: string
+                  format: uuid
+              
       responses:
         '200':
           description: request success
@@ -360,40 +372,40 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/customError'
-    put:
-      tags:
-        - "turns"
-      summary: Replace a speaker by an existing speaker (associate turns)
-      operationId: "CombineSpeakerIds"
-      parameters: 
-        - in: path
-          name: conversationid
-          type: string
-          format: uuid
-          required: true
-        - in: path
-          name: speakerid
-          type: string
-          format: uuid
-          required: true
-        - in: requestBody
-          name: newspeakerid
-          type: string
-          format: uuid
-          required: true
-      responses:
-        '200':
-          description: request success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customSuccess'
-        '400':
-          description: bad request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customError'
+    # put:
+    #   tags:
+    #     - "turns"
+    #   summary: Replace a speaker by an existing speaker (associate turns)
+    #   operationId: "CombineSpeakerIds"
+    #   parameters: 
+    #     - in: path
+    #       name: conversationid
+    #       type: string
+    #       format: uuid
+    #       required: true
+    #     - in: path
+    #       name: speakerid
+    #       type: string
+    #       format: uuid
+    #       required: true
+    #     - in: requestBody
+    #       name: newspeakerid
+    #       type: string
+    #       format: uuid
+    #       required: true
+    #   responses:
+    #     '200':
+    #       description: request success
+    #       content:
+    #         application/json:
+    #           schema:
+    #             $ref: '#/components/schemas/customSuccess'
+    #     '400':
+    #       description: bad request error
+    #       content:
+    #         application/json:
+    #           schema:
+    #             $ref: '#/components/schemas/customError'
   /api/conversation/:conversationid/text:
     put: 
       tags:
