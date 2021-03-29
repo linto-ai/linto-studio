@@ -268,14 +268,14 @@ async function splitTurns(req, res, next) {
                 wordids: req.body.wordids,
                 positions: req.body.positions,
                 convoid: req.params.conversationid
+                //splitype: 'youmom'
             }
             let words = payload.wordids
             let nums = payload.positions
                 if (nums.length > 1) {
                     payload.positions = [...Array(nums[1] + 1).keys()].slice(nums[0])
                 }
-            
-            console.log(payload)
+                
             // get all turns
             let getTurns = await convoModel.getTurns(payload)
 
@@ -320,21 +320,22 @@ async function splitTurns(req, res, next) {
                 console.log("start word pos", start_pos)
                 console.log("end word pos", end_pos)
 
-                //case 1: check that user selection is not coextensive with just one turn
+                //case 1: start_pos == 0 and end_pos == last_pos
+                //case 2: start_pos != 0 and end_pos != last_pos
+                //case 3: start_pos == 0 and end_pos != last_pos
+                //case 4: start_pos != 0 and end_pos == last_pos
+                //case 5: start_pos == last pos **
+
+                //case 1: check that user selection is not coextensive with just one Did you mean: c'estturn
                 if (start_pos === 0 && end_pos === last_pos && nums.length == 1) {
                     throw ({
                         message: "selected turn already exists"
                     })
-
-                    //case 1: start_pos == 0 and end_pos == last_pos
-                    //case 2: start_pos != 0 and end_pos != last_pos
-                    //case 3: start_pos == 0 and end_pos != last_pos
-                    //case 4: start_pos != 0 and end_pos == last_pos
-                    //case 5: start_pos == last pos **
                 } else {
                     const until_word = (arr, pos) => arr.filter((elem) => elem.pos <= pos)
                     const from_word = (arr, pos) => arr.filter((elem) => elem.pos >= pos)
                     const extract_words = (arr, start, end) => arr.filter((elem) => elem.pos >= start && elem.pos <= end)
+                    
                     if (start_pos === end_pos){ //case 5
                         //create first turn 
                         //convention: user selects word they want to split *infront of*

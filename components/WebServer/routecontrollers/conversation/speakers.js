@@ -19,7 +19,7 @@ const { v4: uuidv4 } = require('uuid')
       }
     }*/
 
-async function getSpeakers(req, res, next) { //WIP
+async function getSpeakers(req, res, next) { //pulls speaker map for a conversation
     try {
         const convoId = req.params.conversationid
         let speakers = await convoModel.getConvoSpeakers(convoId)
@@ -43,7 +43,7 @@ async function getSpeakers(req, res, next) { //WIP
 async function createNewSpeaker(req, res, next) { // OK
     try {
         // We build the payload by getting req.params (parameters in the url) and req.body (data in the body)
-        if (!!req.body.speakername) { // check payload informations
+        if (!!req.body.speakername) { // check payload information
             const payload = {
                 convoid: req.params.conversationid,
                 speakername: req.body.speakername,

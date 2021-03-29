@@ -35,7 +35,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/customError'
 ## CONVERSATION / SPEAKER
-  /api/conversation/:conversationid/speakers:
+  /api/conversation/{conversationid}/speakers:
     get:
       tags:
         - "speakers"
@@ -71,6 +71,16 @@ paths:
           type: string
           format: uuid
           required: true
+      requestBody:
+        required: true
+        description: An object containing a speaker name
+        content:
+          application/json:
+            schema:
+              type: object 
+              properties:
+                speakername: 
+                  type: string
       responses:
         '200':
           description: request success
@@ -85,7 +95,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/customError'
 
-  /api/conversation/:conversationid/speakers/:speakerid:
+  /api/conversation/{conversationid}/speakers/{speakerid}:
     patch: 
       tags:
         - "speakers"
@@ -102,10 +112,16 @@ paths:
           type: string
           format: uuid
           required: true
-        - in: requestBody
-          name: newname
-          type: string
-          required: true
+      requestBody:
+        required: true
+        description: An object containing a new speakername
+        content:
+          application/json:
+            schema:
+              type: object 
+              properties:
+                newspeakername: 
+                  type: string
       responses:
         '200':
           description: request success
@@ -268,7 +284,6 @@ paths:
                 speakerid: 
                   type: string
                   format: uuid
-              
       responses:
         '200':
           description: request success
