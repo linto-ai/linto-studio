@@ -311,7 +311,7 @@ paths:
           required: true
       requestBody:
         required: true
-        description: An object containing a turnid, wordid, positions arrays plus a speaker id  
+        description: An object containing a turnid, wordid, positions arrays, a speaker id and a split type
         content:
           application/json:
             schema:
@@ -334,6 +334,11 @@ paths:
                 speakerid:
                   type: string
                   format: uuid 
+                splitype: 
+                  type: number
+                  minimum: 0
+                  maximum: 2
+                
       responses:
         '200':
           description: request success
