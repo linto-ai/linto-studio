@@ -1,15 +1,14 @@
 {
     "name": "linto-platform-conversation-manager",
-    "version": "1.0.0",
-    "description": "bits of AI inside",
+    "version": "0.1.0",
+    "description": "Transcription, summarization, annotation interface for recorded audio files ",
     "main": "app.js",
     "scripts": {
         "start": "DEBUG=app/* NODE_ENV=production node app.js",
         "start-debug": "NODE_ENV=development DEBUG=app/* node app.js",
         "start-dev": "NODE_ENV=development DEBUG=app/* nodemon app.js"
     },
-    "author": "",
-    "license": "ISC",
+    "license": "GNU GPLv",
     "dependencies": {
         "axios": "^0.19.2",
         "body-parser": "^1.19.0",
