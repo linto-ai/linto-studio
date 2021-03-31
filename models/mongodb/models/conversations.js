@@ -158,7 +158,7 @@ class ConvoModel extends MongoModel {
     }
 
     //update speaker audio
-    async updateSpeakerAudio(payload) {
+    async updateSpeakerAudio(payload) { //WIP
         try {
             const operator = "$set"
             const query = {
@@ -285,7 +285,6 @@ class ConvoModel extends MongoModel {
         }
     }
 
-
     //updates all text turns
     async replaceText(payload) {
         //takes a convoid and an entire text object 
@@ -325,34 +324,82 @@ class ConvoModel extends MongoModel {
         }
     }
 
-    async getTurnsRomain(payload) {
-        //returns list of turns from a single conversation with either turn ids or turn positions specified in payload
-        try {
-            const query = {
-                _id: this.getObjectId(payload.convoid)
-            }
+    // async getTurnsRomain(payload) {
+    //     //returns list of turns from a single conversation with either turn ids or turn positions specified in payload
+    //     //-this doesn't take turn ids --KT
+    //     try {
+    //         const query = {
+    //             _id: this.getObjectId(payload.convoid)
+    //         }
 
-            const filter = {
-                "text": {
-                    "$filter": {
-                        "input": "$text",
-                        "as": "turn",
-                        "cond": {
-                            "$and": [
-                                { "$gte": ["$$turn.pos", parseInt(payload.positions[0])] },
-                                { "$lte": ["$$turn.pos", parseInt(payload.positions[1])] }
-                            ]
-                        }
-                    }
-                }
-            }
+    //         const filter = {
+    //             "text": {
+    //                 "$filter": {
+    //                     "input": "$text",
+    //                     "as": "turn",
+    //                     "cond": {
+    //                         "$and": [
+    //                             { "$gte": ["$$turn.pos", parseInt(payload.positions[0])] },
+    //                             { "$lte": ["$$turn.pos", parseInt(payload.positions[1])] }
+    //                         ]
+    //                     }
+    //                 }
+    //             }
+    //         }
 
-            return await this.mongoRequest(query, filter)
-        } catch (error) {
-            console.error(error)
-            return error
-        }
-    }
+    //         return await this.mongoRequest(query, filter)
+    //     } catch (error) {
+    //         console.error(error)
+    //         return error
+    //     }
+    // }
+
+    // async getTurnAudioTime(payload){ // WIP!! kt
+    //     //returns the absolute start and end time for a single turn
+    //     try{
+    //         //pull start and end time from turn
+    //         //try a straight query and projection
+    //         //where return 
+    //         // const query = {
+    //         //     _id: this.getObjectId(payload.convoid),
+    //         //     "text.turn_id": payload.turnid
+    //         // }
+    //         // const projection = { _id: 0, "text.$.words": 1 }
+    //         // return await this.mongoRequest(query, projection)
+    //         //
+
+    //         const project = {"$project": {
+    //             "text": {
+    //                 "$filter": {
+    //                     input: "$text", 
+    //                     as: "turn", 
+    //                     cond: {"$$turn.turn_id": {"$eq": payload.turnid}}
+    //                 }
+    //             }
+    //         }}
+
+    //         const project2 = { "$project": {
+    //             "words": {
+    //                 "$filter": {
+    //                     input: "$words", 
+    //                     as: "word"
+
+    //                 }
+    //             }
+    //         }}
+    //         [{$project: {
+    //             X: {$max: "$X.B"}
+    //           }}]
+    //         const unwind = {"$unwind": "$words"}
+    //         const match = {"$match": {_id: this.getObjectId(payload.convoid)}}
+    //         const query = [match, project, project2]
+
+    //         return await this.mongoAggregate(query)
+    //     } catch (error) {
+    //         console.error(error)
+    //         return error 
+    //     }
+    // }
 
     async getTurns(payload){ 
         //returns list of turns from a single conversation with either turn ids or turn positions specified in payload

@@ -40,19 +40,34 @@ async function getSpeakers(req, res, next) { //pulls speaker map for a conversat
     }
 }
 
-async function createNewSpeaker(req, res, next) { // OK
+async function createNewSpeaker(req, res, next) { 
     try {
-        // We build the payload by getting req.params (parameters in the url) and req.body (data in the body)
         if (!!req.body.speakername) { // check payload information
             const payload = {
                 convoid: req.params.conversationid,
                 speakername: req.body.speakername,
-                speakerid: uuidv4()
+                speakerid: uuidv4(),
+                etime: null,
+                stime: null 
             }
+
+            //if turn id given, get turn times and includ in payload //**WIP
+            // if (!!req.body.turnid){
+            //     let audiotime = await convoModel.getTurnAudioTime(payload)
+            //     if(audiotime){
+            //         //make sure it's not too long
+
+            //     }
+
+
+            // }
+
+
+            //check if speaker_name already exists
             const getSpeakers = await convoModel.getConvoSpeakers(payload.convoid)
 
             if (!!getSpeakers[0].speakers && getSpeakers[0].speakers.length > 0) {
-                // check if speaker_name already exists
+              
                 let speakerExist = getSpeakers[0].speakers.filter(spk => spk.speaker_name === payload.speakername)
                 if (speakerExist.length > 0) {
                     res.status(202).send({
@@ -101,15 +116,14 @@ async function createNewSpeaker(req, res, next) { // OK
     }
 }
 
-
-async function identifySpeaker(req, res, next) { //WIP
+async function identifySpeaker(req, res, next) { 
     try {
-        // We build the payload by getting req.params (parameters in the url) and req.body (data in the body)
-        if (!!req.body.newname) { // check payload informations
+        if (!!req.body.newspeakername) { 
+            console.log(req.body)
             const payload = {
                 convoid: req.params.conversationid,
                 speakerid: req.params.speakerid,
-                speakername: req.body.newname
+                speakername: req.body.newspeakername
             }
             let updateSpeaker = await convoModel.updateSpeakerName(payload)
 
@@ -136,7 +150,6 @@ async function identifySpeaker(req, res, next) { //WIP
         })
     }
 }
-
 
 async function deleteSpeaker(req, res, next) {
     try {

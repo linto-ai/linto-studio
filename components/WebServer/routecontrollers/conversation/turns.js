@@ -415,6 +415,11 @@ async function splitTurns(req, res, next) {
                             throw createTurn
                         }
                     } else { // cases 2,3,4
+                        if (start_pos === end_pos && (start_pos === 0 || end_pos === last_pos)) {
+                            throw ({
+                                message: "if splitting on first or last word of turn, choose before or after"
+                            })
+                        }
                         if (start_pos !== 0) { // handle first turn cases 2 or 4
                             let turnid = uuidv4()
                             let new_payload = {

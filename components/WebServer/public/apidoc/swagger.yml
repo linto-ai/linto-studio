@@ -73,7 +73,7 @@ paths:
           required: true
       requestBody:
         required: true
-        description: An object containing a speaker name
+        description: An object containing a speaker name and turnid if speaker is created wrt a specific turn
         content:
           application/json:
             schema:
@@ -81,6 +81,9 @@ paths:
               properties:
                 speakername: 
                   type: string
+                turnid:
+                  type: string
+                  format: uuid
       responses:
         '200':
           description: request success
@@ -335,6 +338,7 @@ paths:
                   type: string
                   format: uuid 
                 splitype: 
+                  description: 0 for split out, 1 for split before, 2 for split after word
                   type: number
                   minimum: 0
                   maximum: 2
