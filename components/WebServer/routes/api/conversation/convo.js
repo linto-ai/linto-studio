@@ -30,97 +30,107 @@ const {
     updateAllText
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/textedit.js`)
 
+const { // Create conversation based on file
+    audioUpload
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/file.js`)
+
+
 module.exports = (webserver) => {
     return [{
-            path: '/',
-            method: 'post',
-            requireAuth: false,
-            controller: createConvoBase
-        },
-        {
-            path: '/:conversationid/speakers',
-            method: 'get',
-            requireAuth: false,
-            controller: getSpeakers
-        },
-        {
-            path: '/:conversationid/speakers',
-            method: 'post',
-            requireAuth: false,
-            controller: createNewSpeaker
-        },
-        {
-            path: '/:conversationid/speakers/:speakerid',
-            method: 'patch',
-            requireAuth: false,
-            controller: identifySpeaker
-        },
-        {
-            path: '/:conversationid/speakers/:speakerid',
-            method: 'delete',
-            requireAuth: false,
-            controller: deleteSpeaker
-        },
-        {
-            path: '/:conversationid/speakers/:speakerid',
-            method: 'put',
-            requireAuth: false,
-            controller: updateSpeakerAudio
-        },
+        path: '/audio',    //TODO: Need to be renamed
+        method: 'post',
+        requireAuth: false,
+        controller: audioUpload
+    }, {
+        path: '/',
+        method: 'post',
+        requireAuth: false,
+        controller: createConvoBase
+    },
+    {
+        path: '/:conversationid/speakers',
+        method: 'get',
+        requireAuth: false,
+        controller: getSpeakers
+    },
+    {
+        path: '/:conversationid/speakers',
+        method: 'post',
+        requireAuth: false,
+        controller: createNewSpeaker
+    },
+    {
+        path: '/:conversationid/speakers/:speakerid',
+        method: 'patch',
+        requireAuth: false,
+        controller: identifySpeaker
+    },
+    {
+        path: '/:conversationid/speakers/:speakerid',
+        method: 'delete',
+        requireAuth: false,
+        controller: deleteSpeaker
+    },
+    {
+        path: '/:conversationid/speakers/:speakerid',
+        method: 'put',
+        requireAuth: false,
+        controller: updateSpeakerAudio
+    },
 
-        {
-            path: '/:conversationid/turnspeaker/:turnid', // modif romlop
-            method: 'put',
-            requireAuth: false,
-            controller: identifyTurnSpeaker
-        },
-        /*{ // modif romlop
-            path: '/:conversationid/turn/:speakerid',
-            method: 'post',
-            requireAuth: false,
-            controller: createNewTurnSpeaker
-        },*/
-        {
-            path: '/:conversationid/turn/:speakerid',
-            method: 'post',
-            requireAuth: false,
-            controller: [createTurn, renumberTurns]
-        },
-        {
-            path: '/:conversationid/turn',
-            method: 'delete',
-            requireAuth: false,
-            controller: [deleteTurns, renumberTurns] //^^Kcheck
-        },
-        {
-            path: '/:conversationid/turn/merge',
-            method: 'patch',
-            requireAuth: false,
-            controller: [mergeTurns, renumberTurns]
-        },
-        {
-            path: '/:conversationid/turn/split',
-            method: 'put',
-            requireAuth: false,
-            controller: [splitTurns, renumberTurns]
-        },
-        {
-            path: '/:conversationid/turn/:speakerid',
-            method: 'put',
-            requireAuth: false,
-            controller: combineSpeakerIds
-        },
-        {
-            path: '/:conversationid/replaceturn/:turnid',
-            method: 'patch',
-            requireAuth: false,
-            controller: replaceTurnText
-        },
-        {
-            path: '/:conversationid/text',
-            method: 'put',
-            requireAuth: false,
-            controller: updateAllText
-        }
+    {
+        path: '/:conversationid/turnspeaker/:turnid', // modif romlop
+        method: 'put',
+        requireAuth: false,
+        controller: identifyTurnSpeaker
+    },
+    /*{ // modif romlop
+        path: '/:conversationid/turn/:speakerid',
+        method: 'post',
+        requireAuth: false,
+        controller: createNewTurnSpeaker
+    },*/
+    {
+        path: '/:conversationid/turn/:speakerid',
+        method: 'post',
+        requireAuth: false,
+        controller: [createTurn, renumberTurns]
+    },
+    {
+        path: '/:conversationid/turn',
+        method: 'delete',
+        requireAuth: false,
+        controller: [deleteTurns, renumberTurns] //^^Kcheck
+    },
+    {
+        path: '/:conversationid/turn/merge',
+        method: 'patch',
+        requireAuth: false,
+        controller: [mergeTurns, renumberTurns]
+    },
+    {
+        path: '/:conversationid/turn/split',
+        method: 'put',
+        requireAuth: false,
+        controller: [splitTurns, renumberTurns]
+    },
+    {
+        path: '/:conversationid/turn/:speakerid',
+        method: 'put',
+        requireAuth: false,
+        controller: combineSpeakerIds
+    },
+    {
+        path: '/:conversationid/replaceturn/:turnid',
+        method: 'patch',
+        requireAuth: false,
+        controller: replaceTurnText
+    },
+    {
+        path: '/:conversationid/text',
+        method: 'put',
+        requireAuth: false,
+        controller: updateAllText
+    }
     ]
 }

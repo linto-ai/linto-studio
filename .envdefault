@@ -13,3 +13,10 @@ JWT_SECRET=supersecret
 # Cross domain accessibility
 CORS_ENABLED=false
 CORS_API_WHITELIST=
+
+# Express settings
+EXPRESS_SIZE_FILE_MAX=500mb
+EXPRESS_TIMEOUT=1000000
+
+# Storage folder of audio volume
+VOLUME_AUDIO_LOCATION=./audios/

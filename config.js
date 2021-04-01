@@ -30,6 +30,11 @@ function configureDefaults() {
 
         process.env.CORS_ENABLED = ifHas(process.env.CORS_ENABLED, envdefault.CORS_ENABLED)
         process.env.CORS_API_WHITELIST = ifHas(process.env.CORS_API_WHITELIST, envdefault.CORS_API_WHITELIST)
+
+        process.env.EXPRESS_SIZE_FILE_MAX = ifHas(process.env.EXPRESS_SIZE_FILE_MAX, envdefault.EXPRESS_SIZE_FILE_MAX)
+        process.env.EXPRESS_TIMEOUT = ifHas(process.env.EXPRESS_TIMEOUT, envdefault.EXPRESS_TIMEOUT)
+        
+        process.env.VOLUME_AUDIO_LOCATION = ifHas(process.env.VOLUME_AUDIO_LOCATION, envdefault.VOLUME_AUDIO_LOCATION)
     } catch (e) {
         console.error(debug.namespace, e)
         process.exit(1)

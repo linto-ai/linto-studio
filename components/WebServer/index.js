@@ -3,6 +3,8 @@ const path = require("path")
 const debug = require('debug')(`app:webserver`)
 const express = require('express')
 const Session = require('express-session')
+const fileUpload = require('express-fileupload');
+
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
     //const passport = require('passport')
@@ -32,9 +34,10 @@ class WebServer extends Component {
         this.express = express()
         this.express.set('etag', false)
         this.express.set('trust proxy', true)
+        this.express.use(fileUpload())
 
         this.express.use(bodyParser.json({
-            limit: '50mb',
+            limit: process.env.EXPRESS_SIZE_FILE_MAX,
             extended: true
         }))
         this.express.use(bodyParser.urlencoded({
@@ -63,6 +66,8 @@ class WebServer extends Component {
             debug(` WebServer listening on : ${process.env.WEBSERVER_HTTP_PORT}`)
             if (err) throw (err)
         })
+        this.httpServer.setTimeout(process.env.EXPRESS_TIMEOUT)
+
 
         require('./routes/router.js')(this) // Loads all defined routes
             //require('./routecontrollers')(this) // Loads all defined routes

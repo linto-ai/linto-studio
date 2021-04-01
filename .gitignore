@@ -2,3 +2,5 @@
 ./database
 **/.env
 **/package-lock.json
+**/test-sample
+**/audios
