@@ -1,8 +1,10 @@
 const debug = require('debug')('linto:components:WebServer:controller:request')
+
 const { v4: uuidv4 } = require('uuid');
 const mm = require('music-metadata')
 const dateFormat = require('dateformat')
 
+//Parse the stt transcription to for conversation mongodb model
 function sttToConversation(transcript, metadata) {
   const date = dateFormat(new Date(), "yyyy-mm-dd")
   const time = dateFormat(new Date(), "HH:MM:ss")
@@ -75,11 +77,12 @@ function sttToConversation(transcript, metadata) {
   }
 }
 
+// Add file metadata to the conversation object
 async function addFileMetadataToConversation(conversation, file) {
   const file_metadata = await mm.parseBuffer(file.data, { mimeType: file.mimetype })
   conversation.audio = {
     size: file.size,
-    name: file.name
+    filename: file.name
   }
   conversation.mtype = file.mimetype
   conversation.duration = file_metadata.format.duration

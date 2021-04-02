@@ -3,12 +3,18 @@ COMPONENTS = WebServer
 WEBSERVER_HTTP_PORT=8001
 DB_DRIVER=mongo
 DB_HOST=localhost
+DB_REQUIRE_LOGIN=true
 DB_USER=root
 DB_PASS=example
 DB_PORT=27017
 DB_NAME=conversations
-DB_REQUIRE_LOGIN=true
 JWT_SECRET=supersecret
+
+# STT Config
+STT_REQUIRE_AUTH=true
+STT_USER=root
+STT_PASSWORD=example
+STT_HOST=https://host/stt/my_service/transcribe
 
 # Cross domain accessibility
 CORS_ENABLED=false
