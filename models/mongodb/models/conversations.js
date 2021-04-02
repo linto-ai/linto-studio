@@ -6,6 +6,16 @@ class ConvoModel extends MongoModel {
         super('conversations')
     }
 
+    // Create conversation
+    async createConversation(conversation) {
+        try {
+            return await this.mongoInsert(conversation)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
     //create conversation
     // WIP -- verify user id -- update user 
     async createConvoBase(payload) {
@@ -401,26 +411,28 @@ class ConvoModel extends MongoModel {
     //     }
     // }
 
-    async getTurns(payload){ 
+    async getTurns(payload) {
         //returns list of turns from a single conversation with either turn ids or turn positions specified in payload
-        try{
-            const project = {"$project": {
-                "text": {
-                    "$filter": {
-                        input: "$text", 
-                        as: "turn", 
-                        cond: payload.hasOwnProperty('turnids') 
-                        ? {"$in": ["$$turn.turn_id", payload.turnids]} 
-                        : {"$in": ["$$turn.pos", payload.positions]}
+        try {
+            const project = {
+                "$project": {
+                    "text": {
+                        "$filter": {
+                            input: "$text",
+                            as: "turn",
+                            cond: payload.hasOwnProperty('turnids')
+                                ? { "$in": ["$$turn.turn_id", payload.turnids] }
+                                : { "$in": ["$$turn.pos", payload.positions] }
+                        }
                     }
                 }
-            }}
+            }
             console.log('------')
             console.log(project)
-            const match = {"$match": {_id: this.getObjectId(payload.convoid)}}
+            const match = { "$match": { _id: this.getObjectId(payload.convoid) } }
             const query = [match, project]
             return await this.mongoAggregate(query)
-        } catch (error){
+        } catch (error) {
             console.error(error)
             return error
         }

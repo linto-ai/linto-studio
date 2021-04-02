@@ -1,4 +1,4 @@
-const debug = require('debug')(`app:webserver:router`)
+const debug = require('debug')(`linto:conversation-manager:components:WebServer:routes:router`)
 const path = require('path')
 const middlewares = require(path.join(__dirname, "../middlewares"))
 const ifHasElse = (condition, ifHas, otherwise) => {
