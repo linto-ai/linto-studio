@@ -1,0 +1,24 @@
+version: '3.7'
+
+services:
+  conversation-manager:
+    build: .
+    image: lintoai/linto-platform-conversation-manager
+    container_name: conversation-manager
+    deploy:
+      mode: replicated
+      replicas: 1
+    env_file: .env
+    environment: 
+      - WEBSERVER_HTTP_PORT=80 #Match the expose Dockerfile, but docker-compose will use the WEBSERVER_HTTP_PORT .env settings
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./${VOLUME_AUDIO_LOCATION}:/usr/src/app/conversation-manager/${VOLUME_AUDIO_LOCATION}
+    ports:
+      - "${WEBSERVER_HTTP_PORT}:80"
+    networks:
+      - linto-net
+
+networks:
+  linto-net:
+    external: true

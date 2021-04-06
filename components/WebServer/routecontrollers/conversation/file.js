@@ -22,19 +22,18 @@ async function audioUpload(req, res, next) {
         // Block STT request
         const options = prepareRequest(file)
         const transcribe = await request.post(process.env.STT_HOST, options)
-            // End block STT request
+        // End block STT request
 
         // Block STT wrapper
         let conversation = SttWrapper.sttToConversation(transcribe, payload)
         await SttWrapper.addFileMetadataToConversation(conversation, file)
-            // End block STT wrapper
+        // End block STT wrapper
 
         // Store file on disk
         conversation.audio.filepath = await StoreFile.storeFile(file)
-            // End store file on disk
+        // End store file on disk
 
         // Storing conversation to DB
-        console.log('Before create convo in BDD', conversation)
         const createConvo = await convoModel.createConversation(conversation)
         if (createConvo.status === 'success') {
             res.status(200).send({
@@ -45,9 +44,6 @@ async function audioUpload(req, res, next) {
             throw createConvo
         }
         // End storing conversation to DB 
-
-        //WIP : Call controller transcribe to conversationData
-
     } catch (error) {
         // Error
         console.error(error)
