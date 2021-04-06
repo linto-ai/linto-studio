@@ -43,7 +43,10 @@ class MongoModel {
                         reject(error)
                     }
                     //console.log('mongoInsert', result)
-                    resolve(result.insertedId)
+                    resolve({
+                        status: 'success',
+                        insertedId: result.insertedId
+                    })
                 })
             } catch (error) {
                 console.error(error)

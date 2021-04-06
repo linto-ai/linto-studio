@@ -9,67 +9,79 @@ const StoreFile = require(`${process.cwd()}/components/WebServer/controllers/fil
 const convoModel = require(`${process.cwd()}/models/mongodb/models/conversations`)
 
 async function audioUpload(req, res, next) {
-  if (!req.files || Object.keys(req.files).length === 0)
-    return res.status(400).send('No files were uploaded.')
+    if (!req.files || Object.keys(req.files).length === 0)
+        return res.status(400).send('No files were uploaded.')
 
-  if (!req.body || Object.keys(req.body).length === 0)
-    return res.status(400).send('No metadata was provided.')
+    if (!req.body.payload || Object.keys(req.body).length === 0)
+        return res.status(400).send('No metadata was provided.')
 
-  try {
-    /* Block STT request*/
-    const options = prepareRequest(req.files.file)
-    const transcribe = await request.post(process.env.STT_HOST, options)
-    /* End block STT request*/
+    try {
+        const file = req.files.file
+        const payload = JSON.parse(req.body.payload)
 
-    /* Block STT wrapper*/
-    let conversation = SttWrapper.sttToConversation(transcribe, req.body)
-    await SttWrapper.addFileMetadataToConversation(conversation, req.files.file)
-    /* End block STT wrapper*/
+        // Block STT request
+        const options = prepareRequest(file)
+        const transcribe = await request.post(process.env.STT_HOST, options)
+            // End block STT request
 
-    /* Store file on disk*/
-    conversation.audio.filePath = await StoreFile.storeFile(req.files.file)
-    /*End store file on disk*/
+        // Block STT wrapper
+        let conversation = SttWrapper.sttToConversation(transcribe, payload)
+        await SttWrapper.addFileMetadataToConversation(conversation, file)
+            // End block STT wrapper
 
-    /* Storing conversation to DB */
-    await convoModel.createConversation(conversation)
-    /*End storing conversation to DB */
+        // Store file on disk
+        conversation.audio.filepath = await StoreFile.storeFile(file)
+            // End store file on disk
 
-    //WIP : Call controller transcribe to conversationData
-    res.json(conversation)
-  } catch (error) {
-    // Error
-    console.error(error)
-    res.status(400).send({
-      txtStatus: 'error',
-      msg: !!error.message ? error.message : 'error on uploading audio file'
-    })
-  }
+        // Storing conversation to DB
+        console.log('Before create convo in BDD', conversation)
+        const createConvo = await convoModel.createConversation(conversation)
+        if (createConvo.status === 'success') {
+            res.status(200).send({
+                txtStatus: 'success',
+                msg: 'A new conversation has been created'
+            })
+        } else {
+            throw createConvo
+        }
+        // End storing conversation to DB 
+
+        //WIP : Call controller transcribe to conversationData
+
+    } catch (error) {
+        // Error
+        console.error(error)
+        res.status(400).send({
+            txtStatus: 'error',
+            msg: !!error.message ? error.message : 'error on uploading audio file'
+        })
+    }
 }
 
 module.exports = {
-  audioUpload
+    audioUpload
 }
 
 function prepareRequest(file) {
-  let options = {
-    headers: {
-      accept: 'application/json'
-    },
-    formData: {
-      file: {
-        value: file.data,
-        options: {
-          filename: file.name,
-          type: 'audio/wav',
-          contentType: 'audio/wav'
-        }
-      },
-      speaker: 'no'
-    },
-    encoding: null
-  }
+    let options = {
+        headers: {
+            accept: 'application/json'
+        },
+        formData: {
+            file: {
+                value: file.data,
+                options: {
+                    filename: file.name,
+                    type: 'audio/wav',
+                    contentType: 'audio/wav'
+                }
+            },
+            speaker: 'no'
+        },
+        encoding: null
+    }
 
-  if (process.env.STT_REQUIRE_AUTH === 'true')
-    options.headers.Authorization = 'Basic ' + Buffer.from(process.env.STT_USER + ':' + process.env.STT_PASSWORD).toString('base64');
-  return options
+    if (process.env.STT_REQUIRE_AUTH === 'true')
+        options.headers.Authorization = 'Basic ' + Buffer.from(process.env.STT_USER + ':' + process.env.STT_PASSWORD).toString('base64');
+    return options
 }
