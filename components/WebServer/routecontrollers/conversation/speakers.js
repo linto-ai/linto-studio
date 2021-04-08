@@ -43,6 +43,7 @@ async function getSpeakers(req, res, next) { //pulls speaker map for a conversat
 async function createNewSpeaker(req, res, next) { 
     try {
         if (!!req.body.speakername) { // check payload information
+
             const payload = {
                 convoid: req.params.conversationid,
                 speakername: req.body.speakername,
@@ -51,58 +52,64 @@ async function createNewSpeaker(req, res, next) {
                 stime: null 
             }
 
-            //if turn id given, get turn times and includ in payload //**WIP
-            // if (!!req.body.turnid){
-            //     let audiotime = await convoModel.getTurnAudioTime(payload)
-            //     if(audiotime){
-            //         //make sure it's not too long
-
-            //     }
-
-
-            // }
-
-
-            //check if speaker_name already exists
             const getSpeakers = await convoModel.getConvoSpeakers(payload.convoid)
 
+            //first check that speaker name unique
             if (!!getSpeakers[0].speakers && getSpeakers[0].speakers.length > 0) {
-              
                 let speakerExist = getSpeakers[0].speakers.filter(spk => spk.speaker_name === payload.speakername)
                 if (speakerExist.length > 0) {
-                    res.status(202).send({
-                        txtStatus: 'warning',
-                        msg: 'Speaker already exists'
-                    })
-                } else {
-                    let createSpeaker = await convoModel.createSpeaker(payload)
-
-                    // Success
-                    if (createSpeaker === 'success') {
-                        // Response 
-                        res.status(200).send({
-                            txtStatus: 'success',
-                            msg: 'A speaker has been added to the conversation'
-                        })
-                    } else {
-                        throw createSpeaker
-                    }
+                    throw { message: 'Speaker name already exists' }
+                } 
+            } else {
+                res.status(202).send({
+                    txtStatus: 'warning',
+                    msg: 'couldn\'t pull speakers'
+                })  
+            }
+            
+            //if in a turn 
+            if (!!req.body.turnid) {
+                const new_payload = {
+                    turnid: req.body.turnid, 
+                    convoid: req.params.conversationid
                 }
-            } else { // if no speaker exists
-                let createSpeaker = await convoModel.createSpeaker(payload)
+                let audiotime = await convoModel.getTurnAudioTime(new_payload)
+                if(!!audiotime){
+                    let startime = audiotime[0].min
+                    let endtime = audiotime[0].max
+                    //make sure it's not too long // WIP!!
 
-                // Success
-                if (createSpeaker === 'success') {
-                    // Response 
-                    res.status(200).send({
-                        txtStatus: 'success',
-                        msg: 'A speaker has been added to the conversation'
-                    })
-                } else {
-                    throw createSpeaker
-                }
+                    payload.stime = startime 
+                    payload.etime = endtime 
+                }  
             }
 
+            //create the speaker (will show up in speaker map)
+
+            let createSpeaker = await convoModel.createSpeaker(payload)
+
+            // Success
+            if (createSpeaker === 'success') {
+                // Response 
+                res.status(200).send({
+                    txtStatus: 'success',
+                    msg: 'A speaker has been added to the conversation'
+                })
+                //if speaker created, change speaker name in turn 
+                if (!!req.body.turnid){
+                    const new_payload = {
+                        turnid: req.body.turnid, 
+                        convoid: req.params.conversationid, 
+                        speakerid: payload.speakerid 
+                    }
+                    let updateTurn = await convoModel.updateTurnSpeakerId(new_payload)
+                    if (updateTurn !== 'success') {
+                        throw updateTurn
+                    }
+                }
+            } else {
+                throw createSpeaker
+            }   
         } else {
             throw { message: 'Missing information in the payload object' }
         }
