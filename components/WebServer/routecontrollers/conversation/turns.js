@@ -370,7 +370,7 @@ async function splitTurns(req, res, next) {
                         let firstturnid = uuidv4()
                         let first_turn_payload = {
                             convoid: payload.convoid,
-                            speakerid: turns[0].speaker_id,
+                            speakerid: split === 1 ? turns[0].speaker_id : req.body.speakerid,
                             turnid: firstturnid,
                             pos: turns[0].pos,
                             words: first_turn_words
@@ -391,7 +391,7 @@ async function splitTurns(req, res, next) {
                         let secondturnid = uuidv4()
                         let second_turn_payload = {
                             convoid: payload.convoid,
-                            speakerid: turns[turns.length - 1].speaker_id,
+                            speakerid: split === 1 ? req.body.speakerid : turns[0].speaker_id,
                             turnid: secondturnid,
                             pos: turns[turns.length - 1].pos + .75,
                             words: second_turn_words
