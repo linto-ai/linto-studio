@@ -26,3 +26,7 @@ EXPRESS_TIMEOUT=1000000
 
 # Storage folder of audio volume
 VOLUME_AUDIO_LOCATION=./audios/
+
+# JWT SECRET
+LINTO_STACK_CM_JWT_SECRET=jwt_secret
+LINTO_STACK_CM_REFRESH_SECRET=jwt_refresh_secret

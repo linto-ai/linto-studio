@@ -1,3 +1,4 @@
+const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:user')
 const model = require(`${process.cwd()}/models/mongodb/models/users`)
 
 async function getUsers(req, res, next) {
@@ -28,7 +29,7 @@ async function getUserbyId(req, res, next) {
             }
         } else {
             res.status(400) // bad request
-        } 
+        }
     } catch (error) {
         res.json({
             status: "error",
@@ -148,7 +149,7 @@ async function addUserConvoAccess(req, res, next) {
                 msg: error
             })
         }
-    } catch(error) {
+    } catch (error) {
         res.json({
             status: "error",
             msg: error
@@ -167,14 +168,14 @@ async function removeUserConvoAccess(req, res, next) {
                 msg: 'convo has been added to user'
             })
             //!! now need to remove user from convo?
-            
+
         } else {
             res.json({
                 status: "error",
                 msg: error
             })
         }
-    } catch(error) {
+    } catch (error) {
         res.json({
             status: "error",
             msg: error
@@ -182,13 +183,33 @@ async function removeUserConvoAccess(req, res, next) {
     }
 }
 
+async function logout(req, res, next) {
+    try {
+        let userId = model.getObjectId(req.payload.data.userId)
+        model.update({
+            _id: userId,
+            keyToken: ''
+        }).then(user => {
+            if (user) res.json({ status: 'success', msg: 'User has been disconnected' })
+            else res.json({ status: "error", msg: "Unable to disconnect the user" })
+        })
+    } catch (error) {
+        res.json({
+            status: "error",
+            msg: error
+        })
+    }
+}
+
+
 module.exports = {
     getUsers,
     getUserbyId,
     getUserByEmail,
     getUserByName,
     deleteUser,
-    createUser, 
-    addUserConvoAccess, 
-    removeUserConvoAccess
+    createUser,
+    addUserConvoAccess,
+    removeUserConvoAccess,
+    logout
 }

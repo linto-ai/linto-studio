@@ -1,5 +1,7 @@
+const debug = require('debug')('linto:conversation-manager:models:mongodb:models:user')
+
 const MongoModel = require(`${process.cwd()}/models/mongodb/model`)
-const sha1 = require('sha1')
+const crypto = require('crypto')
 const randomstring = require('randomstring')
 
 class UsersModel extends MongoModel {
@@ -19,20 +21,6 @@ class UsersModel extends MongoModel {
                 email: 1,
                 convoAccess: 1
             }
-            return await this.mongoRequest(query, projection)
-        } catch (error) {
-            console.error(error)
-            return error
-        }
-    }
-
-    // check user login information by user name
-    async getUserLoginInfo(username) {
-        try {
-            const query = {
-                userName: username
-            }
-            const projection = {}
             return await this.mongoRequest(query, projection)
         } catch (error) {
             console.error(error)
@@ -68,20 +56,11 @@ class UsersModel extends MongoModel {
                 _id: 1,
                 userName: 1,
                 email: 1,
-                convoAccess: 1
+                convoAccess: 1,
+                salt: 1,
+                passwordHash: 1,
+                keyToken: 1
             }
-            return await this.mongoRequest(query, projection)
-        } catch (error) {
-            console.error(error)
-            return error
-        }
-    }
-
-    // get all users [ids only]
-    async getAllUserIds() {
-        try {
-            const query = {}
-            const projection = { _id: 1 }
             return await this.mongoRequest(query, projection)
         } catch (error) {
             console.error(error)
@@ -101,6 +80,15 @@ class UsersModel extends MongoModel {
         }
     }
 
+    // update a user conversation
+    async update(payload) {
+        const query = {
+            _id: payload._id
+        }
+        delete payload._id
+        let mutableElements = payload
+        return await this.mongoUpdate(query, mutableElements)
+    }
 
     // update a user conversation access
     async updateUserAccess(payload) {
@@ -133,15 +121,13 @@ class UsersModel extends MongoModel {
             console.error(error)
             return error
         }
-
     }
-
 
     // create a user
     async createUser(payload) {
         try {
             const salt = randomstring.generate(12)
-            const passwordHash = sha1(payload.password + salt)
+            const passwordHash = crypto.pbkdf2Sync(payload.password, salt, 10000, 512, 'sha512').toString('hex')
             const userPayload = {
                 userName: payload.userName,
                 email: payload.email,
@@ -167,10 +153,7 @@ class UsersModel extends MongoModel {
             console.error(error)
             return error
         }
-
     }
-
-
 }
 
 module.exports = new UsersModel()

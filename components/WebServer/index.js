@@ -3,12 +3,15 @@ const path = require("path")
 const debug = require('debug')(`app:webserver`)
 const express = require('express')
 const Session = require('express-session')
-const fileUpload = require('express-fileupload');
+const fileUpload = require('express-fileupload')
+const passport = require('passport')
+
 
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
     //const passport = require('passport')
 const pathToSwaggerUi = require('swagger-ui-dist').absolutePath()
+const WebServerErrorHandler = require('./error/handler')
 
 const CORS = require('cors')
 let corsOptions = {}
@@ -65,6 +68,12 @@ class WebServer extends Component {
         }
         this.session = Session(sessionConfig)
         this.express.use(this.session)
+
+        this.express.use(passport.initialize())
+        this.express.use(passport.session())
+
+        WebServerErrorHandler.initByAuthType(this)
+
         this.httpServer = this.express.listen(process.env.WEBSERVER_HTTP_PORT, "0.0.0.0", (err) => {
             debug(` WebServer listening on : ${process.env.WEBSERVER_HTTP_PORT}`)
             if (err) throw (err)

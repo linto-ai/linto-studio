@@ -40,6 +40,9 @@ function configureDefaults() {
         process.env.EXPRESS_TIMEOUT = ifHas(process.env.EXPRESS_TIMEOUT, envdefault.EXPRESS_TIMEOUT)
 
         process.env.VOLUME_AUDIO_LOCATION = ifHas(process.env.VOLUME_AUDIO_LOCATION, envdefault.VOLUME_AUDIO_LOCATION)
+
+        process.env.LINTO_STACK_CM_JWT_SECRET = ifHas(process.env.LINTO_STACK_CM_JWT_SECRET, envdefault.LINTO_STACK_CM_JWT_SECRET)
+        process.env.LINTO_STACK_CM_REFRESH_SECRET = ifHas(process.env.LINTO_STACK_CM_REFRESH_SECRET, envdefault.LINTO_STACK_CM_REFRESH_SECRET)
     } catch (e) {
         console.error(debug.namespace, e)
         process.exit(1)
