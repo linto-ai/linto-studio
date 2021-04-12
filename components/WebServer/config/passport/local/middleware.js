@@ -45,12 +45,12 @@ function getTokenFromHeaders(req, res, next) {
 
 function generateSecretFromHeaders(req, payload, done) {
   if (!payload || !payload.data) {
-    done(new MalformedToken())
+    return done(new MalformedToken())
   } else {
     const { headers: { authorization } } = req
     if (authorization.split(' ')[1] === 'Bearer') {
       UsersModel.getUserByEmail(payload.data.email).then(users => {
-          if (users.length === 1) done(null, users[0].keyToken + process.env.LINTO_STACK_CM_JWT_SECRET)
+          if (users.length === 1) return done(null, users[0].keyToken + process.env.LINTO_STACK_CM_JWT_SECRET)
           else throw MultipleUserFound
         })
     }

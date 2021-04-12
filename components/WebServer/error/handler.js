@@ -1,36 +1,32 @@
-/*
- * Copyright (c) 2018 Linagora.
- *
- * This file is part of Business-Logic-Server
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
-const AuthsException = require('./exception/auth')
-let customException = ['UnauthorizedError'] // Default JWT exception
+const debug = require('debug')('linto:conversation-manager:components:WebServer:error:handler')
 
-let initByAuthType = function (webserver) {
+const AuthsException = require('./exception/auth')
+const ServerException = require('./exception/server')
+
+const JWT_DEFAULT_EXCEPTION = 'UnauthorizedError'// Default JWT exception
+
+let init = function (webserver) {
+  //Handle controller exception has API output
+  let customException = [JWT_DEFAULT_EXCEPTION]
   Object.keys(AuthsException).forEach(key => customException.push(key))
+  Object.keys(ServerException).forEach(key => customException.push(key))
+
   webserver.express.use(function (err, req, res, next) {
+    if (err) console.error(err)
+
     if (customException.indexOf(err.name) > -1) {
       res.status(err.status).send({ message: err.message })
-      console.error(err)
+      return
+    } else if (err) { // Handle unsupported exception
+      res.status(500).send({ message: err.message })
       return
     }
+
     next()
   })
+
 }
 
 module.exports = {
-  initByAuthType
+  init
 }

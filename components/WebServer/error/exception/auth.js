@@ -42,7 +42,7 @@ class MultipleUserFound extends Error {
     this.type = 'auth'
     this.status = '401'
     if (message) this.message = message
-    else this.message = 'Multiple user have been found'
+    else this.message = 'Multiple user have been found, please check with an administrator'
   }
 }
 
