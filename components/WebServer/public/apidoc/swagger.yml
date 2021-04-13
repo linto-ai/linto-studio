@@ -20,7 +20,6 @@ paths:
       tags: 
         - "conversations"
       summary: Get all conversations
-      operationId: GetAllConversations,
       responses:
         '200':
           description: request success
@@ -39,14 +38,14 @@ paths:
     get:
       tags:
         - "speakers"
-      summary: get speakers for a conversation
-      operationId: "GetConversationSpeakers"
+      summary: Returns all speaker objects for a conversation
       parameters: 
         - in: path
           name: conversationid
           type: string
           format: uuid
           required: true
+          description: uuid string identifier for a conversation
       responses:
         '200':
           description: request success
@@ -63,14 +62,14 @@ paths:
     post:
       tags:
         - "speakers"
-      summary: create a speaker for a conversation
-      operationId: "AddConversationSpeakers"
+      summary: Creates a new speaker object for a conversation
       parameters: 
         - in: path
           name: conversationid
           type: string
           format: uuid
           required: true
+          description: uuid string identifier for a conversation
       requestBody:
         required: true
         description: An object containing a speaker name and turnid if speaker is created wrt a specific turn
@@ -97,24 +96,65 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/customError'
-
-  /api/conversation/{conversationid}/speakers/{speakerid}:
+  /api/conversation/{conversationid}/mergespeakers/{speakerid}:
     patch: 
       tags:
         - "speakers"
-      summary: Update a speaker name in a conversation
-      operationId: "identifySpeaker"
+      summary: Merges two speaker ids and deletes the id that is replaced
       parameters: 
         - in: path
           name: conversationid
           type: string
           format: uuid
           required: true
+          description: uuid string identifier for a conversation
         - in: path
           name: speakerid
           type: string
           format: uuid
           required: true
+          description: uuid string identifier for a speaker
+      requestBody:
+        required: true
+        description: An object containing speaker id to replace id in params
+        content:
+          application/json:
+            schema:
+              type: object 
+              properties:
+                newspeakerid:
+                  type: string
+      responses:
+        '200':
+          description: request success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customSuccess'
+        '400':
+          description: bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customError'              
+  /api/conversation/{conversationid}/speakers/{speakerid}:
+    patch: 
+      tags:
+        - "speakers"
+      summary: Update the name (string) associated with a speaker id 
+      parameters: 
+        - in: path
+          name: conversationid
+          type: string
+          format: uuid
+          required: true
+          description: uuid string identifier for a conversation
+        - in: path
+          name: speakerid
+          type: string
+          format: uuid
+          required: true
+          description: uuid string identifier for a speaker
       requestBody:
         required: true
         description: An object containing a new speakername
@@ -141,19 +181,20 @@ paths:
     delete: 
       tags:
         - "speakers"
-      summary: Delete a speaker from a conversation
-      operationId: "deleteSpeaker"
+      summary: Deletes a speaker from a conversation
       parameters: 
         - in: path
           name: conversationid
           type: string
           format: uuid
           required: true
+          description: uuid string identifier for a conversation
         - in: path
           name: speakerid
           type: string
           format: uuid
           required: true
+          description: uuid string identifier for a speaker
       responses:
         '200':
           description: request success
@@ -184,15 +225,14 @@ paths:
     delete:
       tags:
         - "turns"
-      summary: Delete a set of turns in a conversation
-      operationId: "DeleteTurns"
+      summary: Deletes a set of turns in a conversation
       parameters: 
         - in: path
           name: conversationid
           type: string 
           format: uuid 
           required: true 
-          description: id of conversation object
+          description: uuid string identifier for a conversation
       requestBody:
         required: true
         description: An array of one or more turnids 
@@ -222,14 +262,14 @@ paths:
     patch: 
       tags:
         - "turns"
-      summary: Merge a set of turns
-      operationId: "MergeTurns"
+      summary: Merges a set of turns
       parameters: 
         - in: path
           name: conversationid
           type: string
           format: uuid
           required: true
+          description: uuid string identifier for a conversation
       requestBody:
         required: true
         description: An object containing an array of turn ids and a speaker name 
@@ -263,19 +303,20 @@ paths:
     put:
       tags:
         - "turns"
-      summary: Replace a speaker by an existing speaker
-      operationId: "UpdateTurnSpeaker"
+      summary: Replaces a speaker by an existing speaker in a single turn
       parameters: 
         - in: path
           name: conversationid
           type: string
           format: uuid
           required: true
+          description: uuid string identifier for a conversation
         - in: path
           name: turnid
           type: string
           format: uuid
           required: true
+          description: uuid string identifier for a turn
       requestBody:
         required: true
         description: An object containing a speaker id
@@ -304,14 +345,14 @@ paths:
     put: 
       tags:
         - "turns"
-      summary: Split a set of turns and associate speakerid to new turn 
-      operationId: "SplitTurns"
+      summary: Splits a set of turns and associate speakerid to new turn 
       parameters: 
         - in: path
           name: conversationid
           type: string
           format: uuid
           required: true
+          description: uuid string identifier for a conversation
       requestBody:
         required: true
         description: An object containing a turnid, wordid, positions arrays, a speaker id and a split type
@@ -360,19 +401,20 @@ paths:
     post:
       tags:
         - "turns"
-      summary: Create a turn in a conversation
-      operationId: "CreateTurn"
+      summary: Creates a turn in a conversation
       parameters: 
         - in: path
           name: conversationid
           type: string
           format: uuid
           required: true
+          description: uuid string identifier for a conversation
         - in: path
           name: speakerid
           type: string
           format: uuid
           required: true 
+          description: uuid string identifier for a speaker
       # requestBody:
       #   required: true
       #   description: a uuid string speaker id 
@@ -435,13 +477,13 @@ paths:
       tags:
         - "textedit"
       summary: Replace all the text object in a conversation
-      operationId: "replaceAllText"
       parameters: 
         - in: path
           name: conversationid
           type: string
           format: uuid
           required: true
+          description: uuid string identifier for a conversation
         - in: requestBody
           name: text
           description: array of "words"
@@ -496,6 +538,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/customError'
+tags:
+  - name: speakers
+    description: operations primarily manipulating speaker data
+  - name: turns 
+    description: operations primarily manipulating turn data
+
 components: 
   schemas:
     customError:

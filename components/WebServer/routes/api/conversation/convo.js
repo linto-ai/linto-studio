@@ -57,68 +57,55 @@ module.exports = (webserver) => {
             path: '/:conversationid/speakers',
             method: 'post',
             requireAuth: false,
-            controller: createNewSpeaker
+            controller: createNewSpeaker 
         },
         {
-            path: '/:conversationid/speakers/:speakerid',
+            path: '/:conversationid/speakers/:speakerid', 
             method: 'patch',
             requireAuth: false,
             controller: identifySpeaker
         },
         {
-            path: '/:conversationid/speakers/:speakerid',
+            path: '/:conversationid/speakers/:speakerid', 
             method: 'delete',
             requireAuth: false,
             controller: deleteSpeaker
         },
         {
-            path: '/:conversationid/speakers/:speakerid',
-            method: 'put',
+            path: '/:conversationid/mergespeakers/:speakerid', 
+            method: 'patch',
             requireAuth: false,
-            controller: updateSpeakerAudio
+            controller: [combineSpeakerIds, deleteSpeaker]
         },
-
         {
-            path: '/:conversationid/turnspeaker/:turnid', // modif romlop
+            path: '/:conversationid/turnspeaker/:turnid', 
             method: 'put',
             requireAuth: false,
             controller: identifyTurnSpeaker
         },
-        /*{ // modif romlop
-            path: '/:conversationid/turn/:speakerid',
-            method: 'post',
-            requireAuth: false,
-            controller: createNewTurnSpeaker
-        },*/
         {
-            path: '/:conversationid/turn/:speakerid',
+            path: '/:conversationid/turn/:speakerid', 
             method: 'post',
             requireAuth: false,
             controller: [createTurn, renumberTurns]
         },
         {
-            path: '/:conversationid/turn',
+            path: '/:conversationid/turn', 
             method: 'delete',
             requireAuth: false,
-            controller: [deleteTurns, renumberTurns] //^^Kcheck
+            controller: [deleteTurns, renumberTurns] 
         },
         {
-            path: '/:conversationid/turn/merge',
+            path: '/:conversationid/turn/merge', 
             method: 'patch',
             requireAuth: false,
             controller: [mergeTurns, renumberTurns]
         },
         {
-            path: '/:conversationid/turn/split',
+            path: '/:conversationid/turn/split', 
             method: 'put',
             requireAuth: false,
             controller: [splitTurns, renumberTurns]
-        },
-        {
-            path: '/:conversationid/turn/:speakerid',
-            method: 'put',
-            requireAuth: false,
-            controller: combineSpeakerIds
         },
         {
             path: '/:conversationid/replaceturn/:turnid',
@@ -127,7 +114,7 @@ module.exports = (webserver) => {
             controller: replaceTurnText
         },
         {
-            path: '/:conversationid/text',
+            path: '/:conversationid/text', 
             method: 'put',
             requireAuth: false,
             controller: updateAllText

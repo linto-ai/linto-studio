@@ -73,6 +73,7 @@ async function identifyTurnSpeaker(req, res, next) { //WIP
                 turnid: req.params.turnid
             }
 
+            console.log(payload)
             // Todo : Check if speaker exists first ? 
 
             let updateTurn = await convoModel.updateTurnSpeakerId(payload)
@@ -124,8 +125,9 @@ async function mergeTurns(req, res, next) {
                     turns.forEach(turn => {
                         words = turn.words.sort((a, b) => a.pos - b.pos)
                         words.forEach(w => {
-                            w.pos = position
-                            new_words.push(w)
+                            let new_word = w
+                            new_word.pos = position
+                            new_words.push(new_word)
                             position++
                         })
                     })

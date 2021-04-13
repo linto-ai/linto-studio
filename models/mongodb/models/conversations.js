@@ -118,7 +118,7 @@ class ConvoModel extends MongoModel {
                 _id: this.getObjectId(payload.convoid)
             }
             let mutableElements = {
-                "text.$[elem].speaker_id": payload.newspeakerid
+                "text.$[elem].speaker_id": payload.replaceby
             }
             let arrayFilters = {
                 "arrayFilters": [{ "elem.speaker_id": payload.speakerid }]
@@ -180,7 +180,6 @@ class ConvoModel extends MongoModel {
                 "identifyTurnSpeakerspeakers.$.stime": payload.stime
             }
             const test = await this.mongoUpdateOne(query, operator, mutableElements)
-            console.log('>', test)
             return test
         } catch (error) {
             console.error(error)
@@ -363,7 +362,7 @@ class ConvoModel extends MongoModel {
     //     }
     // }
 
-    async getTurnAudioTime(payload){ // WIP!! kt
+    async getTurnAudioTime(payload){
         //returns the absolute start and end time for a single turn
         try{
 
@@ -381,30 +380,6 @@ class ConvoModel extends MongoModel {
                     "$min": "$text.words.stime"
                 }
             }}
-            // const project = {"$project": {
-            //     "text": {
-            //         "$filter": {
-            //             input: "$text", 
-            //             as: "turn", 
-            //             cond: {"$eq": ["$$turn.turn_id", payload.turnid]}
-            //         }
-            //     },
-            //     words: "$text.words",
-            // }}
-
-            // const unwind = {"$unwind": "$words"}
-
-            // const project2 = { "$project": {
-            //     max_etime: {
-            //         "$max": "$words.etime"
-            //     }, 
-            //     min_stime: {
-            //         "$min": "$words.stime"
-            //     }, 
-            //     _id: 0
-            // }}
-            
-            // const query = [match, project, unwind, project2]
 
             const query = [match1, unwind1, unwind2, match2, group]
 
@@ -431,8 +406,6 @@ class ConvoModel extends MongoModel {
                     }
                 }
             }
-            console.log('------')
-            console.log(project)
             const match = { "$match": { _id: this.getObjectId(payload.convoid) } }
             const query = [match, project]
             return await this.mongoAggregate(query)
@@ -551,7 +524,6 @@ class ConvoModel extends MongoModel {
 
     async updateAllText(payload) {
         try {
-            console.log('conversation FOUND')
             const operator = "$set"
             const query = {
                 _id: this.getObjectId(payload.convoid)

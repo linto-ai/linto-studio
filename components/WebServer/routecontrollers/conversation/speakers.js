@@ -126,12 +126,27 @@ async function createNewSpeaker(req, res, next) {
 async function identifySpeaker(req, res, next) { 
     try {
         if (!!req.body.newspeakername) { 
-            console.log(req.body)
             const payload = {
                 convoid: req.params.conversationid,
                 speakerid: req.params.speakerid,
                 speakername: req.body.newspeakername
             }
+
+            const getSpeakers = await convoModel.getConvoSpeakers(payload.convoid)
+
+            //first check that speaker name unique
+            if (!!getSpeakers[0].speakers && getSpeakers[0].speakers.length > 0) {
+                let speakerExist = getSpeakers[0].speakers.filter(spk => spk.speaker_name === payload.speakername)
+                if (speakerExist.length > 0) {
+                    throw { message: 'Speaker name already exists' }
+                } 
+            } else {
+                res.status(202).send({
+                    txtStatus: 'warning',
+                    msg: 'couldn\'t pull speakers'
+                })  
+            }
+
             let updateSpeaker = await convoModel.updateSpeakerName(payload)
 
             // Success
@@ -203,20 +218,17 @@ async function deleteSpeaker(req, res, next) {
 
 async function combineSpeakerIds(req, res, next) {
     try {
-        if (!!req.body.newspeakerid) {
+        if (!!req.params.speakerid && !!req.body.newspeakerid) {
             const payload = {
                 convoid: req.params.conversationid,
                 speakerid: req.params.speakerid,
-                newspeakerid: req.body.newspeakerid
+                replaceby: req.body.newspeakerid
             }
-
             // Update speaker turns
             let updateSpeakers = await convoModel.changeSpeakerIds(payload)
             if (updateSpeakers === 'success') {
-                res.status(200).send({
-                    txtStatus: 'success',
-                    msg: 'Speaker turns updated'
-                })
+                console.log("Success: speaker updates made")
+                next()
             } else {
                 throw updateSpeakers
             }
