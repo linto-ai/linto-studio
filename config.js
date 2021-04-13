@@ -16,6 +16,11 @@ function configureDefaults() {
     try {
         dotenv.config() // loads process.env from .env file (if not specified by the system)
         const envdefault = dotenv.parse(fs.readFileSync('.envdefault')) // default usable values
+
+        // Dev variable
+        process.env.DEV_DISABLE_AUTH = ifHas(process.env.DEV_DISABLE_AUTH, envdefault.DEV_DISABLE_AUTH)
+
+        // Env variable
         process.env.COMPONENTS = ifHas(process.env.COMPONENTS, envdefault.COMPONENTS)
         process.env.WEBSERVER_HTTP_PORT = ifHas(process.env.WEBSERVER_HTTP_PORT, envdefault.WEBSERVER_HTTP_PORT)
         process.env.DB_DRIVER = ifHas(process.env.DB_DRIVER, envdefault.DB_DRIVER)
@@ -40,6 +45,7 @@ function configureDefaults() {
         process.env.EXPRESS_TIMEOUT = ifHas(process.env.EXPRESS_TIMEOUT, envdefault.EXPRESS_TIMEOUT)
 
         process.env.VOLUME_AUDIO_LOCATION = ifHas(process.env.VOLUME_AUDIO_LOCATION, envdefault.VOLUME_AUDIO_LOCATION)
+        process.env.VOLUME_PROFILE_PICTURE_LOCATION = ifHas(process.env.VOLUME_PROFILE_PICTURE_LOCATION, envdefault.VOLUME_PROFILE_PICTURE_LOCATION)
 
         process.env.LINTO_STACK_CM_JWT_SECRET = ifHas(process.env.LINTO_STACK_CM_JWT_SECRET, envdefault.LINTO_STACK_CM_JWT_SECRET)
         process.env.LINTO_STACK_CM_REFRESH_SECRET = ifHas(process.env.LINTO_STACK_CM_REFRESH_SECRET, envdefault.LINTO_STACK_CM_REFRESH_SECRET)

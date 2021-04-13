@@ -4,11 +4,18 @@ const { v4: uuidv4 } = require('uuid');
 const fs = require('fs')
 const path = require('path')
 
-async function storeFile(file) {
-    let filePath = `${process.env.VOLUME_AUDIO_LOCATION}/${uuidv4() + '' + path.extname(file.name)}`
+async function storeFile(file, type = 'audio') {
+    let filePath = ''
+
+    if (type === 'audio') filePath = `${process.env.VOLUME_AUDIO_LOCATION}/${uuidv4() + '' + path.extname(file.name)}`
+    else if (type === 'picture') filePath = `${process.env.VOLUME_PROFILE_PICTURE_LOCATION}/${uuidv4() + '' + path.extname(file.name)}`
 
     fs.writeFileSync(filePath, file.data)
     return filePath
 }
 
-module.exports = { storeFile }
+function defaultPicture() {
+   return `${process.env.VOLUME_PROFILE_PICTURE_LOCATION}/default.jpg`
+}
+
+module.exports = { storeFile, defaultPicture }

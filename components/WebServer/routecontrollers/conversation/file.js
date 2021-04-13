@@ -1,19 +1,21 @@
 const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:conversation:file`)
 
 const request = require(`${process.cwd()}/components/utility/request`)
-const path = require('path')
 
 const SttWrapper = require(`${process.cwd()}/components/WebServer/controllers/conversationGenerator`)
 const StoreFile = require(`${process.cwd()}/components/WebServer/controllers/file`)
 
 const convoModel = require(`${process.cwd()}/models/mongodb/models/conversations`)
 
+const { ConversationNoFileUploaded, ConversationMetadataRequire } =require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
+
+
 async function audioUpload(req, res, next) {
     if (!req.files || Object.keys(req.files).length === 0)
-        return res.status(400).send('No files were uploaded.')
+        next(new ConversationNoFileUploaded())
 
     if (!req.body.payload || Object.keys(req.body).length === 0)
-        return res.status(400).send('No metadata was provided.')
+        next(new ConversationMetadataRequire())
 
     try {
         const file = req.files.file
@@ -30,7 +32,7 @@ async function audioUpload(req, res, next) {
         // End block STT wrapper
 
         // Store file on disk
-        conversation.audio.filepath = await StoreFile.storeFile(file)
+        conversation.audio.filepath = await StoreFile.storeFile(file, 'audio')
         // End store file on disk
 
         // Storing conversation to DB

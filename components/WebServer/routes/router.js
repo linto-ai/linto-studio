@@ -16,6 +16,9 @@ class Router {
             for (let path in routes[level]) {
                 const route = routes[level][path]
                 const method = route.method
+
+                if (process.env.DEV_DISABLE_AUTH === 'true') route.requireAuth = false
+
                 if (route.requireAuth) {
                     debug('Create route : ' + route.method + ' - ' + level + route.path)
                     webServer.express[method](

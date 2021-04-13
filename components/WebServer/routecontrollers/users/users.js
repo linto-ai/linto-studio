@@ -1,15 +1,15 @@
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:user')
 const model = require(`${process.cwd()}/models/mongodb/models/users`)
 
+const StoreFile = require(`${process.cwd()}/components/WebServer/controllers/file`)
 const { UserEmailAlreadyUsed, UserParameterMissing, UserCreationError,
     UserLogoutError } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
 
-
 async function getUsers(req, res, next) {
     try {
-        let lol = await model.getAllUsers()
+        let users = await model.getAllUsers()
         res.json({
-            status: lol
+            status: users
         })
     } catch (error) {
         console.error(error)
@@ -77,14 +77,14 @@ async function createUser(req, res, next) {
         const email = payload.email
         if (!payload.email || !payload.firstname || !payload.lastname || !payload.password) next(new UserParameterMissing())
 
-        //TODO: Manage file path
+        if (req.files && Object.keys(req.files).length !== 0 && req.files.img)
+            payload.img = await StoreFile.storeFile(req.files.img, 'picture')
+        else payload.img = StoreFile.defaultPicture()
 
         const userEmail = await model.getUserByEmail(email)
         if (userEmail.length > 0) next(new UserEmailAlreadyUsed())
         else {
-            debug('CREATE ON')
             const createUser = await model.createUser(payload)
-            debug(createUser)
             if (createUser.status === 'success') {
                 res.json({
                     status: 'success',
@@ -169,14 +169,14 @@ async function removeUserConvoAccess(req, res, next) {
 
 async function logout(req, res, next) {
     try {
-        if(!req.payload.data && !req.payload.data.userId) next(next (new UserParameterMissing()))
+        if (!req.payload.data && !req.payload.data.userId) next(next(new UserParameterMissing()))
         let userId = model.getObjectId(req.payload.data.userId)
         model.update({
             _id: userId,
             keyToken: ''
         }).then(user => {
             if (user) res.json({ status: 'success', msg: 'User has been disconnected' })
-            else next (new UserLogoutError())
+            else next(new UserLogoutError())
         })
     } catch (error) {
         next(error)

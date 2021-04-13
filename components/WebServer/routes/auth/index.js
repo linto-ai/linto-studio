@@ -20,11 +20,6 @@ module.exports = (webServer, auth_middleware) => {
         method: 'get',
         requireAuth: true,
         controller: logout
-
-        /*async (req, res, next) => {
-            debug(req.payload.data)
-            debug('Logout process')
-        }*/
     }, {
         path: '/isAuth',
         method: 'get',

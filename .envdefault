@@ -1,3 +1,6 @@
+# Dev env
+DISABLE_AUTH=false
+
 # Components loading in this order
 COMPONENTS = WebServer
 WEBSERVER_HTTP_PORT=8001
@@ -26,6 +29,7 @@ EXPRESS_TIMEOUT=1000000
 
 # Storage folder of audio volume
 VOLUME_AUDIO_LOCATION=./audios/
+VOLUME_PROFILE_PICTURE_LOCATION=./picture/
 
 # JWT SECRET
 LINTO_STACK_CM_JWT_SECRET=jwt_secret

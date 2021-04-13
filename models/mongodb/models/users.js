@@ -133,6 +133,7 @@ class UsersModel extends MongoModel {
                 email: payload.email,
                 firstname: payload.firstname,
                 lastname: payload.lastname,
+                img : payload.img,
                 passwordHash,
                 salt
             }
