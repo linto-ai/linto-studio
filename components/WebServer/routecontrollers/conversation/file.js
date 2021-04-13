@@ -40,9 +40,7 @@ async function audioUpload(req, res, next) {
                 txtStatus: 'success',
                 msg: 'A new conversation has been created'
             })
-        } else {
-            throw createConvo
-        }
+        } else throw createConvo
         // End storing conversation to DB 
     } catch (error) {
         // Error

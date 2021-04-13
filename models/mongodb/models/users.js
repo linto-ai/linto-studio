@@ -131,6 +131,8 @@ class UsersModel extends MongoModel {
             const userPayload = {
                 userName: payload.userName,
                 email: payload.email,
+                firstname: payload.firstname,
+                lastname: payload.lastname,
                 passwordHash,
                 salt
             }

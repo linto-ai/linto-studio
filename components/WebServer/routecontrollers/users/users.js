@@ -1,6 +1,10 @@
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:user')
 const model = require(`${process.cwd()}/models/mongodb/models/users`)
 
+const { UserEmailAlreadyUsed, UserParameterMissing, UserCreationError,
+    UserLogoutError } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
+
+
 async function getUsers(req, res, next) {
     try {
         let lol = await model.getAllUsers()
@@ -68,48 +72,28 @@ async function getUserByEmail(req, res, next) {
 }
 
 async function createUser(req, res, next) {
-    // WIP -- ADD PASSWORD REQUIREMENTS 
-    // WIP -- ADD name and email form requirements
     try {
         const payload = req.body
-        const username = payload.userName
         const email = payload.email
-        //const password = payload.password
+        if (!payload.email || !payload.firstname || !payload.lastname || !payload.password) next(new UserParameterMissing())
 
-        // check user parameters ==> should we use the getUserbyName controller function here instead?
-        const getUserName = await model.getUserByName(username)
-        if (getUserName.length > 0) {
-            throw ({
-                status: 'error',
-                msg: 'User name already exists',
-                code: 'UsernameAlreadyUsed'
-            })
-        } else {
-            const getUserEmail = await model.getUserByEmail(email)
-            if (getUserEmail.length > 0) {
-                throw ({
-                    status: 'error',
-                    msg: 'Email address already exists',
-                    code: 'EmailAlreadyUsed'
+        //TODO: Manage file path
+
+        const userEmail = await model.getUserByEmail(email)
+        if (userEmail.length > 0) next(new UserEmailAlreadyUsed())
+        else {
+            debug('CREATE ON')
+            const createUser = await model.createUser(payload)
+            debug(createUser)
+            if (createUser.status === 'success') {
+                res.json({
+                    status: 'success',
+                    msg: 'User has been created'
                 })
-            } else {
-                const createUser = await model.createUser(payload)
-                if (createUser === 'success') {
-                    res.json({
-                        status: 'success',
-                        msg: 'User has been created'
-                    })
-                } else {
-                    res.json({
-                        status: "error",
-                        msg: error
-                    })
-                }
-            }
+            } else next(new UserCreationError())
         }
     } catch (error) {
-        console.error(error)
-        res.json(error)
+        next(error)
     }
 }
 
@@ -185,22 +169,19 @@ async function removeUserConvoAccess(req, res, next) {
 
 async function logout(req, res, next) {
     try {
+        if(!req.payload.data && !req.payload.data.userId) next(next (new UserParameterMissing()))
         let userId = model.getObjectId(req.payload.data.userId)
         model.update({
             _id: userId,
             keyToken: ''
         }).then(user => {
             if (user) res.json({ status: 'success', msg: 'User has been disconnected' })
-            else res.json({ status: "error", msg: "Unable to disconnect the user" })
+            else next (new UserLogoutError())
         })
     } catch (error) {
-        res.json({
-            status: "error",
-            msg: error
-        })
+        next(error)
     }
 }
-
 
 module.exports = {
     getUsers,
