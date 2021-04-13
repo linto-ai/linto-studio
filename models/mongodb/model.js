@@ -1,3 +1,5 @@
+const debug = require('debug')('linto:conversation-manager:models:mongodb:models')
+
 const MongoDriver = require(`${process.cwd()}/models/mongodb/driver`)
 
 class MongoModel {
@@ -47,6 +49,34 @@ class MongoModel {
                         status: 'success',
                         insertedId: result.insertedId
                     })
+                })
+            } catch (error) {
+                console.error(error)
+                reject(error)
+            }
+        })
+    }
+
+    /**
+     * Update function for mongoDB. This function will update an entry based on the "collection", the "query" and the "values" passed in parmaters.
+     * @param {Object} query
+     * @param {Object} values
+     * @returns {Pomise}
+     */
+    async mongoUpdate(query, values) {
+        if (values._id) {
+            delete values._id
+        }
+
+        return new Promise((resolve, reject) => {
+            try {
+                MongoDriver.constructor.db.collection(this.collection).updateOne(query, {
+                    $set: values
+                }, function (error, result) {
+                    if (error) {
+                        reject(error)
+                    }
+                    resolve('success')
                 })
             } catch (error) {
                 console.error(error)
