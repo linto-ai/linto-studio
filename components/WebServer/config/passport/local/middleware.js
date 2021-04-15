@@ -5,8 +5,12 @@ const passport = require('passport')
 const jwt = require('express-jwt')
 
 const UsersModel = require(`${process.cwd()}/models/mongodb/models/users`)
+const ConversationModel = require(`${process.cwd()}/models/mongodb/models/conversations`)
+
 
 const { MalformedToken, MultipleUserFound } = require(`${process.cwd()}/components/WebServer/error/exception/auth`)
+const { ConversationNotOwner } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
+
 const refreshToken = require('./token/refresh')
 
 module.exports = {
@@ -20,6 +24,14 @@ module.exports = {
     }),
     (req, res, next) => {
       next()
+    }
+  ],
+  isConversationOwner: [
+    (req, res, next) => {
+      ConversationModel.getConvoOwner(req.body.conversationId).then(conversation => {
+        if (conversation.length === 1 && conversation[0].owner === req.payload.data.userId) next()
+        else next(new ConversationNotOwner())
+      })
     }
   ],
   refresh_token: [
@@ -50,9 +62,9 @@ function generateSecretFromHeaders(req, payload, done) {
     const { headers: { authorization } } = req
     if (authorization.split(' ')[1] === 'Bearer') {
       UsersModel.getUserByEmail(payload.data.email).then(users => {
-          if (users.length === 1) return done(null, users[0].keyToken + process.env.LINTO_STACK_CM_JWT_SECRET)
-          else throw MultipleUserFound
-        })
+        if (users.length === 1) return done(null, users[0].keyToken + process.env.LINTO_STACK_CM_JWT_SECRET)
+        else throw MultipleUserFound
+      })
     }
   }
 }
@@ -64,9 +76,9 @@ function generateRefreshSecretFromHeaders(req, payload, done) {
     const { headers: { authorization } } = req
     if (authorization.split(' ')[1] === 'Bearer') {
       UsersModel.getUserByEmail(payload.data.email).then(users => {
-          if (users.length === 1) done(null, users[0].keyToken + process.env.LINTO_STACK_OVERWATCH_REFRESH_SECRET)
-          else throw MultipleUserFound
-        })
+        if (users.length === 1) done(null, users[0].keyToken + process.env.LINTO_STACK_OVERWATCH_REFRESH_SECRET)
+        else throw MultipleUserFound
+      })
     }
   }
 }

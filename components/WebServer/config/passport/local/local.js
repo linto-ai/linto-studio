@@ -20,7 +20,7 @@ passport.use('local', STRATEGY)
 function generateUserToken(email, password, done) {
   UsersModel.getUserByEmail(email).then(users => {
     if (users.length === 1) user = users[0]
-    else if(users.length > 1) throw new MultipleUserFound()
+    else if (users.length > 1) throw new MultipleUserFound()
     else throw new UserNotFound()
 
     if (!user || !validatePassword(password, user)) return done(new InvalidCredential())

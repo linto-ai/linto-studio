@@ -7,7 +7,7 @@ const StoreFile = require(`${process.cwd()}/components/WebServer/controllers/fil
 
 const convoModel = require(`${process.cwd()}/models/mongodb/models/conversations`)
 
-const { ConversationNoFileUploaded, ConversationMetadataRequire } =require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
+const { ConversationNoFileUploaded, ConversationMetadataRequire } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
 
 async function audioUpload(req, res, next) {
@@ -19,7 +19,7 @@ async function audioUpload(req, res, next) {
 
     try {
         const file = req.files.file
-        const payload = JSON.parse(req.body.payload)
+        const payload = { ...JSON.parse(req.body.payload), owner: req.payload.data.userId }
 
         // Block STT request
         const options = prepareRequest(file)

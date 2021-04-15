@@ -37,9 +37,9 @@ const { // Create conversation based on file
 
 module.exports = (webserver) => {
     return [{
-            path: '/create', //TODO: Need to be renamed
+            path: '/create',
             method: 'post',
-            requireAuth: false,
+            requireAuth: true,
             controller: audioUpload
         }, {
             path: '/',
