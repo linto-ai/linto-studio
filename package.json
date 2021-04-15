@@ -6,7 +6,9 @@
     "scripts": {
         "start": "DEBUG=app/* NODE_ENV=production node app.js",
         "start-debug": "NODE_ENV=development DEBUG=app/* node app.js",
-        "start-dev": "NODE_ENV=development DEBUG=app/* nodemon app.js"
+        "start-dev": "NODE_ENV=development DEBUG=app/* nodemon app.js",
+        "build-dev": "npm --prefix ./components/vue_app run build-dev",
+        "build-prod": "npm --prefix ./components/vue_app run build-app"
     },
     "license": "GNU GPLv3",
     "dependencies": {

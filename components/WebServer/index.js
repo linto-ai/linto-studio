@@ -8,7 +8,7 @@ const passport = require('passport')
 
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
-//const passport = require('passport')
+    //const passport = require('passport')
 const pathToSwaggerUi = require('swagger-ui-dist').absolutePath()
 const WebServerErrorHandler = require('./error/handler')
 
@@ -18,7 +18,7 @@ let corsOptions = {}
 if (process.env.CORS_ENABLED && process.env.CORS_API_WHITELIST.length > 0) {
     whitelistDomains = process.env.CORS_API_WHITELIST.split(',')
     corsOptions = {
-        origin: function (origin, callback) {
+        origin: function(origin, callback) {
             if (!origin || whitelistDomains.indexOf(origin) !== -1 || origin === 'undefined') {
                 callback(null, true)
             } else {
@@ -49,7 +49,7 @@ class WebServer extends Component {
         this.express.use(cookieParser())
 
         // Public path
-        this.express.use('/assets/audios', express.static(`${process.cwd()}/${process.env.VOLUME_AUDIO_LOCATION}`)) // Attaches ./public folder to / route
+        this.express.use('/assets', express.static(`${process.cwd()}/dist`)) // Attaches ./public folder to / route
 
         // Cross domain whitelist
         if (process.env.CORS_ENABLED) this.express.use(CORS(corsOptions))

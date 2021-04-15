@@ -1,0 +1,116 @@
+.edit-frame {
+    padding: 10px;
+    background: #fcfcfc;
+    @include boxShadow(0, 2px, 2px, 0, rgba(0, 0, 0, 0.2));
+    @include borderRadius(1px);
+    z-index: 10;
+    position: absolute;
+    top: 0;
+    left: 40px;
+    min-width: 280px;
+    border: 2px solid $greenChart;
+    &>div {
+        .btn.btn--edit-speaker {
+            border: none;
+            background-color: transparent;
+            font-size: 16px;
+            padding: 5px 0;
+            color: $greenChart;
+            &:hover {
+                color: $blueChart;
+            }
+        }
+    }
+}
+
+.edit-frame--header {
+    h3 {
+        display: inline-block;
+        font-size: 14px;
+        font-weight: 700;
+        text-transform: uppercase;
+        text-align: center;
+        color: #aaa;
+    }
+}
+
+.edit-frame--body {}
+
+.edit-frame-action {
+    .edit-frame-action--btn {
+        display: inline-block;
+        padding: 5px 20px 5px 35px;
+        line-height: 30px;
+        font-size: 15px;
+        position: relative;
+        text-align: left;
+        vertical-align: top;
+        background-color: $greenChart;
+        color: #fff;
+        &:before {
+            content: "";
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background-color: $greenChart;
+        }
+        &.edit-speaker {
+            &:before {
+                @include maskImage('../img/speakers.svg');
+                background-color: #fff;
+            }
+        }
+    }
+}
+
+.edit-frame-options {
+    @include transition(all 0.3s ease);
+    overflow: hidden;
+    min-height: 180px;
+    padding: 10px 10px 0 10px;
+    border: 1px solid #ccc;
+    .edit-frame-options--item {
+        margin-bottom: 10px;
+        .edit-frame-option--label {
+            display: inline-block;
+            font-size: 15px;
+            vertical-align: top;
+            padding: 5px;
+            font-weight: 700;
+        }
+        .edit-frame-option--radio-label {
+            display: inline-block;
+            font-size: 15px;
+            vertical-align: top;
+        }
+        .edit-frame-option--radio {
+            vertical-align: top;
+            margin: 0 10px 0 0;
+        }
+    }
+    .edit-frame--btns {
+        margin-top: 10px;
+        justify-content: flex-start;
+    }
+}
+
+input[type="text"].input--search-edit {
+    display: inline-block;
+    height: 30px;
+    line-height: 30px;
+    font-size: 16px;
+    border: none;
+    border-bottom: 1px solid #ccc;
+    padding: 0 5px 0 30px;
+    @include cancelBoxShadow();
+    color: #555;
+    margin: 0 5px 10px 0;
+    background-color: #FEFEFE;
+    background-image: url('../img/user.svg');
+    background-size: 30px 30px;
+    background-position: 0 0;
+    background-repeat: no-repeat;
+}

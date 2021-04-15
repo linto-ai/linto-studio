@@ -1,0 +1,348 @@
+.transcritpion-container {
+    padding: 40px;
+}
+
+#transcription {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 0;
+    max-height: 700px;
+    min-height: 300px;
+    overflow: auto;
+    scroll-behavior: smooth;
+}
+
+.table--transcription {
+    margin: 0;
+    tr {
+        border-bottom: 1px solid #ececec;
+        &.active {
+            background-color: $greenLight;
+        }
+    }
+    td {
+        vertical-align: top;
+        padding: 20px 10px;
+        .transcription--turn {
+            font-size: 14px;
+            line-height: 20px;
+            color: $greyLight;
+            padding: 0 10px 0 20px;
+        }
+        .transcription--turn,
+        .transcription--speaker {
+            line-height: 26px;
+            @include noTextSelection();
+        }
+        &.transcription-speaker-sentence {
+            cursor: pointer;
+            &:hover {
+                background-color: $blueLight;
+            }
+        }
+        &.transcription--speaker-td {
+            text-align: right;
+        }
+        &.editing {
+            background-color: $greenLight;
+            border: 1px solid $greenChart;
+            &:hover {
+                background-color: #fff;
+                cursor: text;
+            }
+            &:focus {
+                background-color: #fff;
+            }
+        }
+    }
+}
+
+.transcription--word {
+    display: inline;
+    line-height: 26px;
+    &.isplaying {
+        @include noTextSelection();
+        background: yellow;
+    }
+    &.highlighted {
+        padding: 3px 0;
+    }
+    &.keyword {
+        text-decoration: underline;
+        font-weight: 700;
+        color: $blueChart;
+    }
+}
+
+.text-selected {
+    @include noTextSelection();
+    background-color: $blueChart;
+    color: #fff;
+}
+
+#selected-text-toolbox {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #efefef;
+    border: 1px solid #ccc;
+    z-index: 20;
+    padding: 5px;
+    @include borderRadius(3px);
+    @include blockShadow();
+    .selected-text-toolbox--btn {
+        display: inline-block;
+        height: 25px;
+        line-height: 25px;
+        padding: 0 5px;
+        margin: 0 5px;
+        position: relative;
+        vertical-align: top;
+        @include transition(all 0.3s ease);
+        @include borderRadius(3px);
+        color: $blueChart;
+        font-weight: 600;
+        &:hover {
+            color: #fff;
+            background-color: $blueChart;
+        }
+        &.close {
+            height: 25px;
+            width: 25px;
+            padding: 0;
+            background-color: transparent;
+            &:after {
+                content: "";
+                display: inline-block;
+                width: 25px;
+                height: 25px;
+                position: absolute;
+                top: 0;
+                left: 0;
+                @include maskImage('../img/close.svg');
+                background-color: $redChart;
+            }
+            &:hover {
+                background-color: $redChart;
+                &:after {
+                    background-color: #fff;
+                }
+            }
+        }
+    }
+}
+
+.transcription-edition--textarea {
+    display: inline-block;
+    min-height: 60px;
+    padding: 5px;
+    font-size: 16px;
+    font-family: $comfortaa;
+    line-height: 20px;
+    border: 1px solid #ccc;
+    background-color: transparent;
+    width: 100%;
+}
+
+.transcription-options {
+    margin: 10px 0;
+}
+
+.transcription-options--item {
+    margin: 7px 0;
+    .transcription-options--item-checkbox {
+        display: inline-block;
+        width: 19px;
+        height: 19px;
+        border: 1px solid #fff;
+        margin: 0 10px;
+        background-color: #fff;
+        position: relative;
+        @include borderRadius(3px);
+        @include boxShadow(0, 1px, 2px, 0, rgba(0, 0, 0, 0.2));
+        &:hover {
+            border-color: $greenChart;
+        }
+        &:after {
+            display: none;
+        }
+        &.selected {
+            border-color: $greenChart;
+            &:after {
+                display: inline-block;
+                content: '';
+                width: 30px;
+                height: 30px;
+                position: absolute;
+                top: -8px;
+                left: -3px;
+                @include maskImage('../img/apply.svg');
+                background-color: $greenChart;
+            }
+        }
+    }
+}
+
+input[type="color"] {
+    &.transcription-options--item-color {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        margin: 0 10px;
+        @include borderRadius(15px);
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        border: 1px solid $blueChart;
+        padding: 0;
+        overflow: hidden;
+    }
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+input[type="color"]::-webkit-color-swatch {
+    border: none;
+}
+
+.edition__btns {
+    margin-bottom: 20px;
+    justify-content: flex-end;
+    .btn--icon {
+        margin: 0 5px;
+    }
+    .edition__btns-label {
+        display: inline-block;
+        height: 30px;
+        line-height: 30px;
+        vertical-align: top;
+        font-size: 16px;
+        color: $greenChart;
+        text-transform: uppercase;
+    }
+    .edition__btn-toggle {
+        background: #fff;
+        vertical-align: top;
+        margin: 2px 5px;
+        display: inline-block;
+        width: 40px;
+        height: 20px;
+        @include borderRadius(20px);
+        @include transition(all 0.3s ease);
+        border: 1px solid;
+        position: relative;
+        &.enabled {
+            border-color: $greenChart;
+        }
+        &.disabled {
+            border-color: $redLight;
+        }
+        .edition__btn-toggle-circle {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            position: absolute;
+            top: 1px;
+            background: red;
+            @include borderRadius(10px);
+            @include transition(all 0.3s ease);
+            &.disabled {
+                left: 2px;
+                background-color: $redLight;
+            }
+            &.enabled {
+                left: 100%;
+                margin-left: -18px;
+                background-color: $greenChart;
+            }
+        }
+        &:hover {
+            &.disabled {
+                border-color: $redChart;
+            }
+            .edition__btn-toggle-circle {
+                &.disabled {
+                    background-color: $redChart;
+                }
+            }
+        }
+    }
+    .btn--icon__cancel-edition:hover {
+        &:after {
+            content: 'Cancel changes';
+            display: inline-block;
+            width: 120px;
+            padding: 5px;
+            @include borderRadius(3px);
+            background-color: #656565;
+            color: #fff;
+            position: absolute;
+            top: -35px;
+            left: -60px;
+            font-size: 14px;
+            text-align: center;
+        }
+    }
+    .btn--icon__apply-edition:hover {
+        &:after {
+            content: 'Apply changes';
+            display: inline-block;
+            width: 120px;
+            padding: 5px;
+            @include borderRadius(3px);
+            background-color: $greenChart;
+            color: #fff;
+            position: absolute;
+            top: -35px;
+            left: -60px;
+            font-size: 14px;
+            text-align: center;
+        }
+    }
+}
+
+
+/* FILTER */
+
+.transcription-filters {
+    padding: 10px 0;
+    background-color: rgba(199, 214, 255, 0.3);
+    align-items: center;
+    @include boxShadow(0, 2px, 4px, 0, rgba(0, 0, 0, 0.3));
+    &>div {
+        margin: 0 10px 0 0;
+        padding-right: 40px;
+        position: relative;
+    }
+    .transcription-filters-label {
+        display: inline-block;
+        text-transform: uppercase;
+        color: $blueLight;
+        padding: 0 40px 0 20px;
+    }
+}
+
+.transcription-filters__select-label {
+    display: inline-block;
+    font-size: 14px;
+    line-height: 16px;
+    padding: 2px 0;
+    color: $blueLight;
+}
+
+.transcription-filters__select {
+    display: inline-block;
+}
+
+.cancel-filter-btn {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    @include maskImage('../img/close.svg');
+    background-color: $redLight;
+    &:hover {
+        background-color: $redChart;
+    }
+}
