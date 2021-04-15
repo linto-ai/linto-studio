@@ -20,13 +20,13 @@ module.exports = (webServer, auth_middleware) => {
         method: 'get',
         requireAuth: true,
         controller: logout
-    }, {
+    },
+    {
         path: '/isAuth',
         method: 'get',
         requireAuth: true,
         controller: async (req, res, next) => {
             res.status(200).send('Ok')
         }
-    }
-    ]
+    }]
 }

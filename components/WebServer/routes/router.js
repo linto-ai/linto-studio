@@ -21,10 +21,13 @@ class Router {
 
                 if (route.requireAuth) {
                     debug('Create route : ' + route.method + ' - ' + level + route.path)
+                    let middlewaresLoaded = [auth_middlewares.isAuthenticate]
+                    if (route.requireConversationOwner) middlewaresLoaded.push(auth_middlewares.isConversationOwner)
+
                     webServer.express[method](
                         level + route.path,
                         middlewares.logger,
-                        auth_middlewares.isAuthenticate,
+                        middlewaresLoaded,
                         ifHasElse(
                             Array.isArray(route.controller),
                             () => Object.values(route.controller),

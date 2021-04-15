@@ -36,9 +36,33 @@ class ConversationMetadataRequire extends Error {
   }
 }
 
+class ConversationNotOwner extends Error {
+  constructor(message) {
+    super()
+    this.name = 'ConversationNotOwner'
+    this.type = ExceptionType
+    this.status = '403'
+    if (message) this.message = message
+    else this.message = 'User is not the owner of the conversation'
+  }
+}
+
+class ConversationNoRight extends Error {
+  constructor(message) {
+    super()
+    this.name = 'ConversationNoRight'
+    this.type = ExceptionType
+    this.status = '403'
+    if (message) this.message = message
+    else this.message = `User don't have right to the conversation`
+  }
+}
+
 module.exports = {
   //Conversation Exception
   ConversationNotAddedToUser,
   ConversationNoFileUploaded,
-  ConversationMetadataRequire
+  ConversationMetadataRequire,
+  ConversationNotOwner,
+  ConversationNoRight
 }
