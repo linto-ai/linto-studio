@@ -16,15 +16,13 @@ class Router {
             for (let path in routes[level]) {
                 const route = routes[level][path]
                 const method = route.method
-
                 if (process.env.DEV_DISABLE_AUTH === 'true') route.requireAuth = false
-
                 if (route.requireAuth) {
                     debug('Create route : ' + route.method + ' - ' + level + route.path)
                     webServer.express[method](
                         level + route.path,
                         middlewares.logger,
-                        auth_middlewares.isAuthenticate,
+                        level.indexOf('/interface') >= 0 || level === '/login' ? middlewares.isConnected : auth_middlewares.isAuthenticate,
                         ifHasElse(
                             Array.isArray(route.controller),
                             () => Object.values(route.controller),

@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import App from './App.vue'
-import router from './router.js'
+import router from './routers/app-router.js'
 import store from './store.js'
 export const bus = new Vue()
 

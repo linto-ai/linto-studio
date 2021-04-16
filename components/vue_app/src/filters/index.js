@@ -1,6 +1,19 @@
 import Vue from 'vue'
 import store from '../store.js'
 
+Vue.filter('testFieldEmpty', function(obj) {
+    obj.error = null
+    obj.valid = false
+    if (obj.value.length === 0) {
+        obj.error = 'This field is required'
+        obj.valid = false
+    } else  {
+        obj.valid = true
+    }
+    return obj
+})
+
+
 // DISPATCH STORE
 Vue.filter('dispatchStore', async function(label) {
     try {

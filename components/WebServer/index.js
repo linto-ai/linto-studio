@@ -2,6 +2,8 @@ const Component = require(`../component.js`)
 const path = require("path")
 const debug = require('debug')(`app:webserver`)
 const express = require('express')
+const Session = require('express-session')
+
 const fileUpload = require('express-fileupload')
 const passport = require('passport')
 
@@ -47,6 +49,18 @@ class WebServer extends Component {
             extended: true
         }))
         this.express.use(cookieParser())
+
+        // SESSION
+        let sessionConfig = {
+            resave: false,
+            saveUninitialized: false,
+            secret: 'mysercret',
+            cookie: {
+                maxAge: 30240000000 // 1 year
+            }
+        }
+
+        this.express.use(Session(sessionConfig))
 
         // Public path
         this.express.use('/assets', express.static(`${process.cwd()}/dist`)) // Attaches ./public folder to / route
