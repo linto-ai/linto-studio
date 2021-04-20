@@ -5,12 +5,11 @@ module.exports = (webServer) => {
     return [{
         path: '/',
         method: 'get',
-        requireAuth: true,
+        requireAuth: false, // we use an other middleware for the interface
         controller: [
             (req, res, next) => {
-                res.setHeader("Content-Type", "text/html")
-                res.sendFile(process.cwd() + '/dist/index.html')
+                res.redirect('/login')
             }
-        ] 
+        ]
     }]
 }

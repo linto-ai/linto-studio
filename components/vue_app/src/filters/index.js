@@ -53,13 +53,11 @@ Vue.filter('testSelectField', function(obj) {
 
 // TEST NAME
 Vue.filter('testName', function(obj) {
-    const regex = /^[0-9A-Za-z\s\-\_\.]+$/
+    const regex = /^[a-zA-ZÀ-ÿ]+(([' -][a-zA-ZÀ-ÿ ])?[a-zA-ZÀ-ÿ]*)*$/g
     obj.valid = false
     obj.error = null
     if (obj.value.length === 0) {
         obj.error = 'This field is required'
-    } else if (obj.value.length < 6) {
-        obj.error = 'This field must contain at least 6 characters'
     } else if (obj.value.match(regex)) {
         obj.valid = true
     } else {
@@ -82,9 +80,24 @@ Vue.filter('testPassword', function(obj) {
     }
 })
 
+Vue.filter('testPasswordConfirm', function(obj, password) {
+    obj.valid = false
+    obj.error = null
+    if (obj.value.length === 0) {
+        obj.error = 'This field is required'
+    } else {
+        if (obj.value !== password.value) {
+            obj.error = 'Passwords must be the same'
+        } else  {
+            obj.valid = true
+        }
+    }
+})
+
 Vue.filter('testEmail', function(obj) {
     obj.valid = false
     obj.error = null
+    obj.value = obj.value.toLowerCase()
     const regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
     if (obj.value.match(regex)) {
         obj.valid = true
@@ -92,4 +105,20 @@ Vue.filter('testEmail', function(obj) {
         obj.error = 'Invalid email'
     }
 
+})
+
+Vue.filter('getCookie', function(cname) {
+    let name = cname + "="
+    let decodedCookie = decodeURIComponent(document.cookie)
+    let ca = decodedCookie.split(';')
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i]
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1)
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length)
+        }
+    }
+    return ""
 })

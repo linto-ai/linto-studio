@@ -10,7 +10,7 @@ class InvalidCredential extends Error {
         this.type = ExceptionType
         this.status = 401
         if (message) this.message = message
-        else this.message = 'Wrong user credential'
+        else this.message = 'Invalid credentials'
     }
 }
 
@@ -32,7 +32,7 @@ class UserNotFound extends Error {
         this.type = ExceptionType
         this.status = 401
         if (message) this.message = message
-        else this.message = 'User not found'
+        else this.message = 'Invalid credentials'
     }
 }
 

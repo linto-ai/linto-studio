@@ -16,14 +16,7 @@ module.exports = {
             template: 'public/index.html',
             filename: 'index.html',
             title: 'index'
-        },
-        login: {
-            entry: 'src/login.js',
-            template: 'public/index.html',
-            filename: 'login.html',
-            title: 'login'
         }
-
     },
     pluginOptions: {
         'style-resources-loader': {

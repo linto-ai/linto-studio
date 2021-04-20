@@ -8,6 +8,7 @@
         "build-app": "npm run build:css && vue-cli-service build --mode production",
         "build-dev": "npm run build:css && vue-cli-service build --mode development",
         "build:css": "./node_modules/node-sass/bin/node-sass ./public/sass/styles.scss ./public/css/styles.css --output-style compressed",
+        "build:css-watch": "./node_modules/node-sass/bin/node-sass ./public/sass/styles.scss ./public/css/styles.css --output-style compressed --watch ./public/css/styles.css",
         "serve": "vue-cli-service serve",
         "build": "vue-cli-service build"
     },

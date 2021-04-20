@@ -20,6 +20,10 @@ module.exports = {
                 })
             } else {
                 if (!!user && !!user.token) {
+                    res.cookie('authToken', user.token.auth_token, {
+                        expires: new Date(Date.now() + 900000)
+                    })
+
                     req.session.token = user.token
                     req.session.logged = 1
                     req.session.save((err) => {

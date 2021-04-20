@@ -4,26 +4,62 @@ import axios from 'axios'
 
 Vue.use(Vuex)
 
+
+let getCookie = function(cname) {
+    let name = cname + "="
+    let decodedCookie = decodeURIComponent(document.cookie)
+    let ca = decodedCookie.split(';')
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i]
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1)
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length)
+        }
+    }
+    return null
+}
+
 export default new Vuex.Store({
     strict: false,
     state: {
         conversations: '',
+        auth_token: ''
     },
     mutations: {
         SET_CONVERSATIONS: (state, data) => {
             state.conversations = data
+        },
+        SET_AUTH_TOKEN: (state, data) => {
+            state.auth_token = data
         }
     },
     actions: {
         getConversations: async({ commit, state }) => {
             try {
-                const getConvos = await axios.get(`${process.env.VUE_APP_CONVO_API}/conversations`)
+                const token = getCookie('authToken')
+                const getConvos = await axios(`${process.env.VUE_APP_CONVO_API}/conversations`, {
+                    method: 'get',
+                    headers: {
+                        'Authorization': `${token} Bearer`
+                    }
+                })
                 commit('SET_CONVERSATIONS', getConvos.data)
                 return state.conversations
             } catch (error) {
                 return ({
                     error: 'Error on getting conversations'
                 })
+            }
+        },
+        getAuthToken: ({ commit, state }) =>  {
+            try {
+                const token = getCookie('authToken')
+                commit('SET_AUTH_TOKEN', token)
+                return state.auth_token
+            } catch (error) {
+                console.error('store', error)
             }
         }
     },

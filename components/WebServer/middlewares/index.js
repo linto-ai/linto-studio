@@ -39,7 +39,6 @@ async function isConnected(req, res, next) {
         if (req.url === '/login') {
             next()
         } else {
-            console.log('catch2')
             res.redirect('/login')
         }
     }

@@ -22,7 +22,7 @@ class Router {
                     webServer.express[method](
                         level + route.path,
                         middlewares.logger,
-                        level.indexOf('/interface') >= 0 || level === '/login' ? middlewares.isConnected : auth_middlewares.isAuthenticate,
+                        level.indexOf('/interface') >= 0 || level === '/login' || level === '/create-account' ? middlewares.isConnected : auth_middlewares.isAuthenticate,
                         ifHasElse(
                             Array.isArray(route.controller),
                             () => Object.values(route.controller),

@@ -56,7 +56,9 @@
 </template>
 <script>
 export default {
+  props: ['authToken'],
   data () {
+    
     return {
       convosLoaded: false,
       sortBy: 'date',
@@ -132,13 +134,12 @@ export default {
     sortByKey (key) {
       if (this.sortBy === key) {
         this.sortDirection === 'down' ? this.sortDirection = 'up' : this.sortDirection = 'down'
-
       } else {
         this.sortBy = key
         this.sortDirection = 'down'
       }
-      
     },
+    
     async dispatchConversations () {
       this.convosLoaded = await this.$options.filters.dispatchStore('getConversations')
     },
