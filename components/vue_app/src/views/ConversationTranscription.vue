@@ -232,7 +232,7 @@ export default {
       return this.$store.getters.conversationById(this.convoId)
     },
     audioPath() {
-      return `${process.env.VUE_APP_API_ASSETS}/${this.convo.audio.filepath}`
+      return `${process.env.VUE_APP_URL}/${this.convo.audio.filepath}`
     },
     speakersArray () {
       let speakersArray = [] 

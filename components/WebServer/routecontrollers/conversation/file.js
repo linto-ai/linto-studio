@@ -7,7 +7,7 @@ const StoreFile = require(`${process.cwd()}/components/WebServer/controllers/fil
 
 const convoModel = require(`${process.cwd()}/models/mongodb/models/conversations`)
 
-const { ConversationNoFileUploaded, ConversationMetadataRequire } =require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
+const { ConversationNoFileUploaded, ConversationMetadataRequire } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
 
 async function audioUpload(req, res, next) {
@@ -24,16 +24,16 @@ async function audioUpload(req, res, next) {
         // Block STT request
         const options = prepareRequest(file)
         const transcribe = await request.post(process.env.STT_HOST, options)
-        // End block STT request
+            // End block STT request
 
         // Block STT wrapper
         let conversation = SttWrapper.sttToConversation(transcribe, payload)
         await SttWrapper.addFileMetadataToConversation(conversation, file)
-        // End block STT wrapper
+            // End block STT wrapper
 
         // Store file on disk
         conversation.audio.filepath = await StoreFile.storeFile(file, 'audio')
-        // End store file on disk
+            // End store file on disk
 
         // Storing conversation to DB
         const createConvo = await convoModel.createConversation(conversation)
@@ -43,7 +43,7 @@ async function audioUpload(req, res, next) {
                 msg: 'A new conversation has been created'
             })
         } else throw createConvo
-        // End storing conversation to DB 
+            // End storing conversation to DB 
     } catch (error) {
         // Error
         console.error(error)

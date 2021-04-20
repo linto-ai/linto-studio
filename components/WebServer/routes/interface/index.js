@@ -8,7 +8,7 @@ module.exports = (webServer) => {
             requireAuth: false, // we use an other middleware for the interface
             controller: [
                 (req, res, next) => {
-                    res.redirect('/interface/converastions')
+                    res.redirect('/interface/conversations')
                 }
             ]
         },

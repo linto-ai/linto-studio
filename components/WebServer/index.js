@@ -63,7 +63,9 @@ class WebServer extends Component {
         this.express.use(Session(sessionConfig))
 
         // Public path
-        this.express.use('/assets', express.static(`${process.cwd()}/dist`)) // Attaches ./public folder to / route
+        this.express.use('/assets', express.static(`${process.cwd()}/dist`))
+        this.express.use('/audios', express.static(`${process.cwd()}/uploads/audios`))
+        this.express.use('/pictures', express.static(`${process.cwd()}/uploads/pictures`))
 
         // Cross domain whitelist
         if (process.env.CORS_ENABLED) this.express.use(CORS(corsOptions))

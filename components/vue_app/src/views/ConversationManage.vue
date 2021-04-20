@@ -415,7 +415,7 @@ export default {
     playSample (event, start, end) {
       const target = event.target
       const audio = this.convo.audio
-      this.audioPlayer.src = `${process.env.VUE_APP_API_ASSETS}/${audio.filepath}`
+      this.audioPlayer.src = `${process.env.VUE_APP_URL}/${audio.filepath}`
       this.audioPlayer.currentTime = start
       this.audioPlayer.play()
       target.classList.add('active')
