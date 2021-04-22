@@ -114,7 +114,9 @@ export default {
         this.playFrom(data.time)
       })
       bus.$on('audio_player_pause', (data) => {
-        this.pause()
+        if(this.audioIsPlaying) {
+          this.pause()
+        }
       })
       bus.$on('audio_player_play', (data) => {
         this.play()

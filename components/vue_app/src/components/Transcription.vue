@@ -7,6 +7,7 @@
         :data-stime="turn.words.length > 0 ? turn.words[0].stime : '-1' "  
         :data-etime="turn.words.length > 0 ? turn.words[turn.words.length - 1].etime : '-1'"
         :data-turn="turn.pos"
+        
         :class="!editionMode && currentTurn === turn.pos ? 'active active--speaker' : ''"
         class="table-speaker--turn"
         :id="`turn-${turn.pos}`"
@@ -34,11 +35,12 @@
             v-for="word in turn.words" 
             :key="word.wid" 
             :data-word-id="word.wid" 
+            :data-turn-id="turn.turn_id"
             :data-stime="word.hasOwnProperty('stime') ? word.stime : ''" 
             :data-etime="!!word.hasOwnProperty('etime') ? word.etime : ''" 
             :data-pos="word.pos"
             class="transcription--word" 
-            :class="(!!word.stime && !!word.etime && parseFloat(word.stime) <= parseFloat(currentTime)) && (parseFloat(word.etime) >= parseFloat(currentTime)) ? 'isplaying' : ''"
+            :class="[(!!word.stime && !!word.etime && parseFloat(word.stime) <= parseFloat(currentTime)) && (parseFloat(word.etime) >= parseFloat(currentTime)) ? 'isplaying' : '', highlightsActive.indexOf(word.wid) >= 0 ? 'highlighted' : '', keywordsActive.indexOf(word.wid) >= 0 ? 'keyword' : '']"
             @dblclick="playFromWord(word.stime)"
           >{{ word.word }}&nbsp;</span>
         </td>
@@ -49,7 +51,7 @@
 <script>
 import { bus } from '../main.js'
 export default {
-  props: ['convoText', 'editionMode', 'currentTime', 'currentTurn', 'speakersArray', 'convoSpeakers', 'convoId', 'convoIsFiltered'],
+  props: ['convoText', 'editionMode', 'currentTime', 'currentTurn', 'speakersArray', 'convoSpeakers', 'convoId', 'convoIsFiltered','highlightsOptions'],
   data () {
     return {
       refresh: 1,
@@ -60,12 +62,11 @@ export default {
         split: true,
         speakerEdit: false
       },
+      highlightsActive: [],
+      keywordsActive: []
     }
   },
   mounted () {
-    bus.$on('close_selected_text_toolbox', () => {
-      this.cancelTextSelection()
-    })
     bus.$on('close_selected_toolbox', () => {
       this.cancelTextSelection()
     })
@@ -76,6 +77,13 @@ export default {
     bus.$on('scroll_to_current', () => {
       this.scrollToCurrentTurn(this.currentTurn)
     })
+    bus.$on('transcription_update_highlights', (data) => {
+      this.setHighlights(data.highlightsOptions)
+    })
+    bus.$on('transcription_update_keywords', (data) => {
+      this.setKeywords(data.keywordsOptions)
+    })
+
     this.initTextSelection()
   },
   watch: {
@@ -83,10 +91,45 @@ export default {
       // on playing : smooth scroll to current turn 
       const transcription = document.getElementById('transcription')
       this.scrollToCurrentTurn(data)
-    }
+    },
+    
   },
   methods: {
-      scrollToCurrentTurn (pos) {
+    setHighlights (data) {
+      this.highlightsActive = []
+      const allWords = document.getElementsByClassName('transcription--word')
+      for(let word of allWords) {
+          word.setAttribute('style','')
+      }
+      for (let hl of data) {
+        if(hl.selected) {
+          if(hl.words.length > 0) {
+            for(let word of hl.words) {
+              this.highlightsActive.push(word)
+              let wordSpan = document.querySelectorAll(`.transcription--word[data-word-id="${word}"]`)
+              if(wordSpan.length > 0) {
+                wordSpan[0].setAttribute('style', `background-color: ${hl.color}`)
+              }
+            }
+          }
+        }
+      }
+    },
+    setKeywords (data) {
+      this.keywordsActive = []
+      const allWords = document.getElementsByClassName('transcription--word')
+      for (let kw of data) {
+        if(kw.selected) {
+          
+          if(kw.words.length > 0) {
+            for(let word of kw.words) {
+              this.keywordsActive.push(word)
+            }
+          }
+        }
+      }
+    },
+    scrollToCurrentTurn (pos) {
         const targetTurn = document.getElementById(`turn-${pos}`)
           transcription.scrollTo({top: targetTurn.offsetTop - 200, behavior: 'smooth' })
       },
@@ -114,7 +157,7 @@ export default {
       }
       const transcription = document.getElementById('transcription')
       // text selection event in "transcription" block
-      transcription.addEventListener('selectstart', () => {
+      transcription.addEventListener('selectstart', (e) => {
         if(!this.editionMode && !this.convoIsFiltered) {
           let startClick = new Date()
           transcription.onmouseup = (e) => {
@@ -129,8 +172,10 @@ export default {
             const startWord = !selection.baseNode ? selection.anchorNode.parentNode : selection.baseNode.parentNode 
             const startWordId = startWord.getAttribute('data-word-id')
             const startWordPosition = startWord.getAttribute('data-pos')
-            const startTurn = startWord.offsetParent
-            const startTurnId = startTurn.getAttribute('data-turn-id')
+            const startTurnId = startWord.getAttribute('data-turn-id')
+
+    
+            const startTurn = document.querySelectorAll(`.transcription-speaker-sentence[data-turn-id="${startTurnId}"]`)[0]
             const startTurnPosition = startTurn.getAttribute('data-pos')
             const startTurnSpeakerId = startTurn.getAttribute('data-speaker')
             // > Selection: last element
@@ -139,8 +184,8 @@ export default {
             const endWord = !selection.extentNode ? selection.focusNode.parentNode : selection.extentNode.parentNode
             const endWordId = endWord.getAttribute('data-word-id')
             const endWordPosition = endWord.getAttribute('data-pos')
-            const endTurn = endWord.offsetParent
-            const endTurnId = endTurn.getAttribute('data-turn-id')
+            const endTurnId = endWord.getAttribute('data-turn-id')
+            const endTurn = document.querySelectorAll(`.transcription-speaker-sentence[data-turn-id="${endTurnId}"]`)[0]
             const endTurnPosition = endTurn.getAttribute('data-pos')
             const endTurnSpeakerId = endTurn.getAttribute('data-speaker')
             this.selectionObj = {
@@ -159,6 +204,7 @@ export default {
               endTurnPosition,
               endTurnSpeakerId
             }
+            console.log('SelecitonObj', this.selectionObj)
             if(!startTurn.classList.contains('transcription-speaker-sentence') || !endTurn.classList.contains('transcription-speaker-sentence')) {
               return false 
             } else {
@@ -174,6 +220,7 @@ export default {
     },
     setTextSelection (selectionObj) {
       this.cancelTextSelection()
+      this.playerPause()
       setTimeout(() => {
         let allParents = document.getElementsByClassName('transcription-speaker-sentence')
         const startTurnPosition = parseInt(selectionObj.startTurnPosition)
@@ -291,6 +338,9 @@ export default {
         }
       }
     },
+    playerPause() {
+      bus.$emit('audio_player_pause',{})
+    }
   }
 }
 </script>

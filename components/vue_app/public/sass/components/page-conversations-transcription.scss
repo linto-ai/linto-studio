@@ -60,12 +60,27 @@
 .transcription--word {
     display: inline;
     line-height: 26px;
+    position: relative;
+    z-index: 2;
+    &:after {
+        content: '';
+        display: inline-block;
+        width: 0px;
+        height: 3px;
+        background: $greenChart;
+        position: absolute;
+        top: 18px;
+        left: 0;
+        z-index: 3;
+    }
     &.isplaying {
-        @include noTextSelection();
-        background: yellow;
+        &:after {
+            @include underlineAnim();
+        }
     }
     &.highlighted {
         padding: 3px 0;
+        background: yellow;
     }
     &.keyword {
         text-decoration: underline;

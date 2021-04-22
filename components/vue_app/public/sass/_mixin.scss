@@ -219,7 +219,30 @@
     animation: rotating 2s linear infinite;
 }
 
-@mixin fontdef-woff($FontPath, $FontName, $FontVersion:"1.0.0", $FontType:"Regular") {
-    src: url('#{$FontPath}/#{$FontType}/#{$FontName}-#{$FontType}.woff2?v=#{$FontVersion}') format('woff2'),
-    url('#{$FontPath}/#{$FontType}/#{$FontName}-#{$FontType}.woff?v=#{$FontVersion}') format('woff');
+@-webkit-keyframes underlining {
+    0% {
+        width: 0;
+        left: 0;
+    }
+    100% {
+        width: 98%;
+    }
+}
+
+@keyframes underlining {
+    0% {
+        width: 0;
+        left: 0;
+    }
+    100% {
+        width: 98%;
+    }
+}
+
+@mixin underlineAnim {
+    -webkit-animation: underlining 0.5s ease forwards;
+    -moz-animation: underlining 0.5s ease forwards;
+    -ms-animation: underlining 0.5s ease forwards;
+    -o-animation: underlining 0.5s ease forwards;
+    animation: underlining 0.5s ease forwards;
 }

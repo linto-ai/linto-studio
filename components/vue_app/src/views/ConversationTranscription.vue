@@ -19,7 +19,7 @@
                   <button 
                     class="transcription-options--item-checkbox"
                     :class="kw.selected ? 'selected' : ''"
-                    @click="updateKeyword(kw)"
+                    @click="updateKeywords(kw)"
                   ></button>
               </div>
             </div>
@@ -35,7 +35,7 @@
             </div>
           </div>
 
-          <div class="flex col transcription-options" v-if="!!highlightsOptions && highlightsOptions.length > 0">
+          <div class="flex col transcription-options" v-if="highlightsOptions.length > 0">
             <div class="flex row transcription-options--item" v-for="hl in highlightsOptions" :key="hl._id">
               <span class="transcription-options--item-label flex1">{{ hl.label }}</span>
               <input 
@@ -46,7 +46,7 @@
               >
               <button 
                 class="transcription-options--item-checkbox"
-                :class="hl.selected ? 'selected' : ''"
+                :class="hl.selected === true ? 'selected' : ''"
                 @click="updateHighlight(hl)"
               ></button>
             </div>
@@ -63,7 +63,7 @@
           <span class="icon icon__backto"></span>
         </a>
       </div>
-      <h1>{{ convo.name }}</h1>
+      <h1>{{ convo.name }}</h1>
       <div class="flex row edition__btns">
         <span class="edition__btns-label">Edition mode : </span>
       <button 
@@ -125,9 +125,6 @@
           </div>
         </div>
       </div>
-
-
-
       <!-- TRANSCRIPTION -->
       <Transcription 
         :currentTurn="currentTurn" 
@@ -139,6 +136,8 @@
         :speakersArray="speakersArray"
         :key="refreshConversation"
         :convoIsFiltered="convoIsFiltered"
+        :highlightsOptions="highlightsOptions"
+        :keywordsOptions="keywordsOptions"
         v-if="!!convo.text && convo.text.length > 0 && speakersArray.length > 0"
       ></Transcription>
        <div> 
@@ -181,7 +180,7 @@ import Transcription from '@/components/Transcription.vue'
 import TranscriptionKeyupHandler from '@/components/TranscriptionKeyupHandler.vue'
 import KeyboardCommandsFrame from '@/components/KeyboardCommandsFrame.vue'
 import axios from 'axios'
-import { bus } from '../main.js'
+import { bus } from '../main.js'
 export default {
   data () {
     return {
@@ -195,7 +194,6 @@ export default {
       editionObj: [],
       clickTime: 0,
       selectionObj: null,
-      highlightsOptions: [],
       keywordsOptions: [],
       refreshConversation: 1,
       editConvoTmp: [],
@@ -204,15 +202,17 @@ export default {
         speaker: '',
         highlights:'',
         keywords:''
-      }
+      },
+      highlightsOptions: []
     }
   },
   async mounted () {
     
     this.convoId = this.$route.params.convoId
+    await this.dispatchStore('getConversations')
 
     bus.$emit('vertical_nav_close', {})
-    await this.dispatchStore('getConversations')
+      
     
     bus.$on('update_speaker', async (data) => {
       await this.dispatchStore('getConversations')
@@ -222,15 +222,16 @@ export default {
       await this.dispatchStore('getConversations')
     })
 
-    bus.$on('audio_player_currenttime', (data) => {
+    bus.$on('audio_player_currenttime', (data) => {
       this.currentTime = data.time
     })
-    
+
   },
   computed: {
     convo () {
       return this.$store.getters.conversationById(this.convoId)
     },
+
     audioPath() {
       return `${process.env.VUE_APP_URL}/${this.convo.audio.filepath}`
     },
@@ -255,7 +256,7 @@ export default {
             i !== this.convo.text.length - 1 && 
             !!this.currentTime && 
             this.convo.text[i].words.length > 0 && 
-            this.convo.text[i+1].words.length > 0) {
+            this.convo.text[i+1].words.length > 0) {
             if (
               !!this.convo.text[i].words[0].stime && 
               !!this.convo.text[i+1].words[0].stime && 
@@ -315,40 +316,74 @@ export default {
     }
   },
   watch: {
-    'convo.highlights' (data) {
-      if (data.length > 0) {
-        data.map(hl => {
-          if (this.highlightsOptions.findIndex(hlo => hlo._id === hl._id) >= 0) {
-            this.highlightsOptions[this.highlightsOptions.findIndex(hlo => hlo._id === hl._id)].label = hl.label
-            this.highlightsOptions[this.highlightsOptions.findIndex(hlo => hlo._id === hl._id)].color = hl.color
-
-          } else {
-            this.highlightsOptions.push({...hl, selected: false})
-          }
-        })
-      }
-    },
     'convo.keywords' (data) {
       if (data.length > 0) {
         data.map(kw => {
           if (this.keywordsOptions.findIndex(kwo => kwo._id === kw._id) >= 0) {
-            
             this.keywordsOptions[this.keywordsOptions.findIndex(kwo => kwo._id === kw._id)].label = kw.label
           } else {
-            this.keywordsOptions.push({...kw, selected: false})
+            this.keywordsOptions.push({...kw, selected: false, words: []})
           }
         })
+        let convo = this.convo.text
+        if (convo.length > 0) { 
+          for (let turn of convo) {
+            if (!!turn.words && turn.words.length > 0) {
+              for (let word of turn.words) {
+                if (word.keywords.length > 0) {
+                  for (let kw of word.keywords) {
+                    this.keywordsOptions.find(allKW => allKW._id === kw).words.push(word.wid)
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
+    'convo.highlights' (data) {
+      if (data.length > 0) {
+        data.map(hl => {
+          if (this.highlightsOptions.findIndex(allhl => allhl._id === hl._id) >= 0) {
+            
+            this.highlightsOptions[this.highlightsOptions.findIndex(allhl => allhl._id === hl._id)].label = hl.label
+          } else {
+            this.highlightsOptions.push({...hl, selected: false, words: []})
+          }
+        })
+        let convo = this.convo.text
+        if (convo.length > 0) { 
+          for (let turn of convo) {
+            if (!!turn.words && turn.words.length > 0) {
+              for (let word of turn.words) {
+                if (word.highlights.length > 0) {
+                  for (let hl of word.highlights) {
+                    this.highlightsOptions.find(allHL => allHL._id === hl).words.push(word.wid)
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   },
   methods: {
     /* KEYWORDS */
+
+    updateKeywords (kw) {
+      let kwItemIndex = this.keywordsOptions.findIndex(kwo => kwo._id === kw._id)
+      if (kwItemIndex >= 0) {
+        this.keywordsOptions[kwItemIndex].selected = !this.keywordsOptions[kwItemIndex].selected
+      }
+      bus.$emit('transcription_update_keywords', {keywordsOptions: this.keywordsOptions})
+    },
     updateKeyword (kw) {
       let isVisible = false
       let kwItemIndex = this.keywordsOptions.findIndex(kwo => kwo._id === kw._id)
       if (kwItemIndex >= 0) {
-        this.keywordsOptions[kwItemIndex].selected = !this.keywordsOptions[kwItemIndex].selected
-        isVisible = this.keywordsOptions[kwItemIndex].selected
+        this.keywordsOptions[kwItemIndex].active = !this.keywordsOptions[kwItemIndex].active
+        isVisible = this.keywordsOptions[kwItemIndex].active
       }
       // Get words that are in selected highlight
       let wordsInKeywords = []
@@ -366,7 +401,7 @@ export default {
       }
       if (isVisible) {
         this.setKeyword(wordsInKeywords)
-      } else {
+      } else {
         this.unsetKeyword(wordsInKeywords)
       }
     },
@@ -396,87 +431,20 @@ export default {
       let hlOptionIndex = this.highlightsOptions.findIndex(hlo => hlo._id === hl._id)
       if(hlOptionIndex >= 0) {
         this.highlightsOptions[hlOptionIndex].color = color
+
+        // Todo : update model > hl color
         if(this.highlightsOptions[hlOptionIndex].selected) {
-          this.resetHighlights(hl)
+          bus.$emit('transcription_update_highlights', {highlightsOptions: this.highlightsOptions})
         }
       }
     },
     updateHighlight (hl) {
-      let isVisible = false
       let hlItemIndex = this.highlightsOptions.findIndex(hlo => hlo._id === hl._id)
       if (hlItemIndex >= 0) {
         this.highlightsOptions[hlItemIndex].selected = !this.highlightsOptions[hlItemIndex].selected
-        isVisible = this.highlightsOptions[hlItemIndex].selected
       }
-      // Get words that are in selected highlight
-      let wordsInHighlight = []
-      if (this.convo.text.length > 0) {
-        this.convo.text.map(turn => {
-          if(turn.words.length > 0) {
-            let wordInHl = turn.words.filter(word => word.highlights.indexOf(hl._id) >= 0)
-            if (wordInHl.length > 0) {
-              wordInHl.map(winhl => {
-                wordsInHighlight.push(winhl.wid)
-              })
-            }
-          }
-        })
-      }
-      if (isVisible) {
-        this.setHighlight(wordsInHighlight, hl.color)
-      } else {
-        
-        this.unsetHighlight(wordsInHighlight)
-      }
+      bus.$emit('transcription_update_highlights', {highlightsOptions: this.highlightsOptions})
     },
-    setHighlight (wordsInHighlight, color) {
-      let allWords = document.getElementsByClassName('transcription--word')
-      // Set highlights
-      for(let span of allWords) {
-        let wordId = span.getAttribute('data-word-id')
-        if(wordsInHighlight.indexOf(wordId) >= 0) {
-          span.classList.add("highlighted")
-          span.setAttribute('style',`background-color:${color};`)
-        }
-      }
-    },
-    unsetHighlight (wordsInHighlight) {
-      let allWords = document.getElementsByClassName('transcription--word')
-
-      // Remove highlights
-      for(let span of allWords) {
-        let wordId = span.getAttribute('data-word-id')
-        if(wordsInHighlight.indexOf(wordId) >= 0) {
-          span.classList.remove("highlighted")
-          span.setAttribute('style', '')
-        }
-      }
-
-      // Reset visible highlights
-      let activeHighlights = this.highlightsOptions.filter(hl => hl.selected === true)
-      if(activeHighlights.length > 0) {
-        for(let hl of activeHighlights) {
-          this.resetHighlights(hl)
-        }
-      }
-    },
-    resetHighlights (hl) {
-      let wordsInHighlight = []
-      if (this.convo.text.length > 0) {
-        this.convo.text.map(turn => {
-          if(turn.words.length > 0) {
-            let wordInHl = turn.words.filter(word => word.highlights.indexOf(hl._id) >= 0)
-            if (wordInHl.length > 0) {
-              wordInHl.map(winhl => {
-                wordsInHighlight.push(winhl.wid)
-              })
-            }
-          }
-        })
-      }
-      this.setHighlight(wordsInHighlight, hl.color)
-    },
-
     /* EDITION MODE */
     cancelEditionMode () {
       this.dispatchStore('getConversations')
@@ -599,7 +567,7 @@ export default {
       }
     }
   },
-  components: {
+  components: {
     EditSpeakerTranscriptionFrame,
     AudioPlayer,
     SelectedTextToolbox,
