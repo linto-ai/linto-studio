@@ -264,11 +264,11 @@ async function renumberTurns(req, res, next) {
 async function splitTurns(req, res, next) {
     // takes 1 or 2 turn positions, one or two word ids and a speaker id
     try {
-        if (!!req.body.speakerid && !!req.body.wordids && !!req.body.positions) {
+        if (!!req.body.speakerid && !!req.body.wordids && !!req.body.turnpositions) {
             const payload = {
                 speakerid: req.body.speakerid,
                 wordids: req.body.wordids,
-                positions: req.body.positions,
+                positions: req.body.turnpositions,
                 convoid: req.params.conversationid,
                 splitype: req.body.splitype
             }
@@ -283,6 +283,7 @@ async function splitTurns(req, res, next) {
 
 
             if (getTurns !== "undefined") {
+
                 // take first turn and sort words in that turn and put in start_words variable
                 let turns = getTurns[0].text.sort((a, b) => a.pos - b.pos)
 
@@ -304,6 +305,7 @@ async function splitTurns(req, res, next) {
                 let start_word = start_words.filter(obj => {
                     return obj.wid === payload.wordids[0]
                 })
+             
                 const start_pos = start_word[0].pos
 
                 //get ending word id
@@ -315,15 +317,12 @@ async function splitTurns(req, res, next) {
                 } else {
                     end_word = start_word
                 }
-
+             
                 //get end word position
                 const end_pos = end_word[0].pos
                 
                 //if just one word selected, also need the kind of split
                 const split = payload.splitype
-
-                console.log("start word pos", start_pos)
-                console.log("end word pos", end_pos)
 
                 //case 1: start_pos == 0 and end_pos == last_pos
                 //case 2: start_pos != 0 and end_pos != last_pos

@@ -355,23 +355,18 @@ paths:
           description: uuid string identifier for a conversation
       requestBody:
         required: true
-        description: An object containing a turnid, wordid, positions arrays, a speaker id and a split type
+        description: An object containing wordid array, turn position array, a speaker id and a split type
         content:
           application/json:
             schema:
               type: object 
               properties:
-                # turnids: 
-                #   type: array
-                #   items:
-                #     type: string
-                #     format: uuid
                 wordids:
                   type: array
                   items:
                     type: string
                     format: uuid
-                positions:
+                turnpositions:
                   type: array
                   items:
                     type: number
@@ -472,7 +467,7 @@ paths:
     #         application/json:
     #           schema:
     #             $ref: '#/components/schemas/customError'
-  /api/conversation/:conversationid/text:
+  /api/conversation/{conversationid}/text:
     put: 
       tags:
         - "textedit"
@@ -484,47 +479,41 @@ paths:
           format: uuid
           required: true
           description: uuid string identifier for a conversation
-        - in: requestBody
-          name: text
-          description: array of "words"
-          type: array
-          items:
-            type: object
-            properties:
-              speaker_id:
-                type: string
-                format: uuid
-              turn_id:
-                type: string
-                format: uuid
-              pos: 
-                type: integer
-              words:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    wid:
-                      type: string
-                      format: uuid
-                    etime:
-                      type: number
-                    stime:
-                      type: number
-                    word:
-                      type: string
-                    pos:
-                      type: integer
-                    highlights:
-                      type: array
-                      items:
+      requestBody:
+        required: true
+        description: takes an object with turn id, and a list of word objects 
+        content:
+          application/json:
+            schema:
+              type: object 
+              properties:
+                turnid:
+                  type: string
+                  format: uuid
+                words:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      wid:
                         type: string
                         format: uuid
-                    keywords:
-                      type: array
-                      items:
+                      etime:
+                        type: number
+                      stime: 
+                        type: number 
+                      pos:
+                        type: number
+                      word:
                         type: string
-                        format: uuid
+                      highlights:
+                        type: array
+                        items:
+                          type: string
+                      keywords:
+                        type: array
+                        items:
+                          type: string
       responses:
         '200':
           description: request success
