@@ -1,25 +1,47 @@
 <template>
-  <div id="selected-text-toolbox" :class="show ? 'visible' : 'hidden'" :style="`top: ${parseInt(offsetY)- 45}px; left: ${parseInt(offsetX) - 100}px;`">
-    <button 
-      class="selected-text-toolbox--btn highlight" 
-      v-if="!!options.keywords && options.keywords === true">Keyword</button>
-    <button 
-      class="selected-text-toolbox--btn highlight" 
-      v-if="!!options.highlight && options.highlight === true"
-      @click="openHighlightModal()">Highlight</button>
-    <button 
-      class="selected-text-toolbox--btn comment"
-      v-if="!!options.comment && options.comment === true">Comment</button>
-    <button 
-      class="selected-text-toolbox--btn comment"
-      v-if="!!options.split && options.split === true" 
-      @click="openSplitModal()">Split turns</button>
-      <button 
-      class="selected-text-toolbox--btn comment"
-      v-if="!!options.split && options.merge === true" 
-      @click="openMergeModal()">Merge turns</button>
+  <div 
+    id="selected-text-toolbox" 
+    class="flex col" 
+    :class="show ? 'visible' : 'hidden'" 
+    :style="`top: ${parseInt(offsetY) + 25}px; left: ${parseInt(offsetX) - 170}px;`">
     
     <button class="selected-text-toolbox--btn close" @click="closeToolbox()"></button>
+    
+
+    <button 
+      class="selected-text-toolbox--btn" 
+      v-if="!!options.keywords && options.keywords === true">
+      <span class="icon keywords"></span>
+      <span class="label">Keyword</span>
+    </button>
+    <button 
+      class="selected-text-toolbox--btn" 
+      v-if="!!options.highlight && options.highlight === true"
+      @click="openHighlightModal()">
+      <span class="icon highlights"></span>
+      <span class="label">highlights</span>
+    </button>
+    <button 
+      class="selected-text-toolbox--btn"
+      v-if="!!options.comment && options.comment === true">
+        <span class="icon comment"></span>
+        <span class="label">Comment</span>
+      </button>
+    <button 
+      class="selected-text-toolbox--btn"
+      v-if="!!options.split && options.split === true" 
+      @click="openSplitModal()">
+        <span class="icon split"></span>
+        <span class="label">Split turns</span>
+      </button>
+      <button 
+      class="selected-text-toolbox--btn"
+      v-if="!!options.split && options.merge === true" 
+      @click="openMergeModal()">
+        <span class="icon merge"></span>
+        <span class="label">Merge turns</span>
+      </button>
+    
   </div>
 </template>
 <script>

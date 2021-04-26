@@ -316,6 +316,11 @@ export default {
     }
   },
   watch: {
+    editionMode (data) {
+      if(data) {
+        bus.$on('close_selected_toolbox', {})
+      }
+    },
     'convo.keywords' (data) {
       if (data.length > 0) {
         data.map(kw => {
@@ -370,7 +375,6 @@ export default {
   },
   methods: {
     /* KEYWORDS */
-
     updateKeywords (kw) {
       let kwItemIndex = this.keywordsOptions.findIndex(kwo => kwo._id === kw._id)
       if (kwItemIndex >= 0) {

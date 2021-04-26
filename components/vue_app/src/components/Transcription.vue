@@ -56,7 +56,7 @@ export default {
     return {
       refresh: 1,
        toolBoxOption: {
-        comment: true,
+        comment: false,
         highlight: true,
         keywords: true,
         split: true,

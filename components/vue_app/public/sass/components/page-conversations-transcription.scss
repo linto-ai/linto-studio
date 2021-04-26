@@ -95,58 +95,6 @@
     color: #fff;
 }
 
-#selected-text-toolbox {
-    position: absolute;
-    top: 0;
-    left: 0;
-    background: #efefef;
-    border: 1px solid #ccc;
-    z-index: 20;
-    padding: 5px;
-    @include borderRadius(3px);
-    @include blockShadow();
-    .selected-text-toolbox--btn {
-        display: inline-block;
-        height: 25px;
-        line-height: 25px;
-        padding: 0 5px;
-        margin: 0 5px;
-        position: relative;
-        vertical-align: top;
-        @include transition(all 0.3s ease);
-        @include borderRadius(3px);
-        color: $blueChart;
-        font-weight: 600;
-        &:hover {
-            color: #fff;
-            background-color: $blueChart;
-        }
-        &.close {
-            height: 25px;
-            width: 25px;
-            padding: 0;
-            background-color: transparent;
-            &:after {
-                content: "";
-                display: inline-block;
-                width: 25px;
-                height: 25px;
-                position: absolute;
-                top: 0;
-                left: 0;
-                @include maskImage('../img/close.svg');
-                background-color: $redChart;
-            }
-            &:hover {
-                background-color: $redChart;
-                &:after {
-                    background-color: #fff;
-                }
-            }
-        }
-    }
-}
-
 .transcription-edition--textarea {
     display: inline-block;
     min-height: 60px;
