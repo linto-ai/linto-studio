@@ -44,79 +44,79 @@ module.exports = (webserver) => {
         }, {
             path: '/',
             method: 'post',
-            requireAuth: false,
+            requireAuth: true,
             controller: createConvoBase
         },
         {
             path: '/:conversationid/speakers',
             method: 'get',
-            requireAuth: false,
+            requireAuth: true,
             controller: getSpeakers
         },
         {
             path: '/:conversationid/speakers',
             method: 'post',
-            requireAuth: false,
-            controller: createNewSpeaker 
+            requireAuth: true,
+            controller: createNewSpeaker
         },
         {
-            path: '/:conversationid/speakers/:speakerid', 
+            path: '/:conversationid/speakers/:speakerid',
             method: 'patch',
-            requireAuth: false,
+            requireAuth: true,
             controller: identifySpeaker
         },
         {
-            path: '/:conversationid/speakers/:speakerid', 
+            path: '/:conversationid/speakers/:speakerid',
             method: 'delete',
-            requireAuth: false,
+            requireAuth: true,
             controller: deleteSpeaker
         },
         {
-            path: '/:conversationid/mergespeakers/:speakerid', 
+            path: '/:conversationid/mergespeakers/:speakerid',
             method: 'patch',
-            requireAuth: false,
+            requireAuth: true,
             controller: [combineSpeakerIds, deleteSpeaker]
         },
         {
-            path: '/:conversationid/turnspeaker/:turnid', 
+            path: '/:conversationid/turnspeaker/:turnid',
             method: 'put',
-            requireAuth: false,
+            requireAuth: true,
             controller: identifyTurnSpeaker
         },
         {
-            path: '/:conversationid/turn/:speakerid', 
+            path: '/:conversationid/turn/:speakerid',
             method: 'post',
-            requireAuth: false,
+            requireAuth: true,
             controller: [createTurn, renumberTurns]
         },
         {
-            path: '/:conversationid/turn', 
+            path: '/:conversationid/turn',
             method: 'delete',
-            requireAuth: false,
-            controller: [deleteTurns, renumberTurns] 
+            requireAuth: true,
+            controller: [deleteTurns, renumberTurns]
         },
         {
-            path: '/:conversationid/turn/merge', 
+            path: '/:conversationid/turn/merge',
             method: 'patch',
-            requireAuth: false,
+            requireAuth: true,
             controller: [mergeTurns, renumberTurns]
         },
         {
-            path: '/:conversationid/turn/split', 
+            path: '/:conversationid/turn/split',
             method: 'put',
-            requireAuth: false,
+            requireAuth: true,
             controller: [splitTurns, renumberTurns]
         },
         {
             path: '/:conversationid/replaceturn/:turnid',
             method: 'patch',
-            requireAuth: false,
+            requireAuth: true,
             controller: replaceTurnText
         },
         {
-            path: '/:conversationid/text', 
+            path: '/:conversationid/text',
             method: 'put',
-            requireAuth: false,
+            requireAuth: true,
             controller: updateAllText
         }
     ]

@@ -1,0 +1,64 @@
+#app-header {
+    height: 40px;
+    justify-content: flex-end;
+    background: transparent;
+    border-bottom: 1px solid #fff;
+    padding: 20px 40px;
+}
+
+
+/* User Menu */
+
+.user-menu {
+    .user-menu--name {
+        display: inline-block;
+        height: 40px;
+        line-height: 40px;
+        font-size: 14px;
+        font-weight: 700;
+        vertical-align: top;
+        padding-right: 10px;
+    }
+    .user-menu-btn {
+        display: inline-block;
+        height: 40px;
+        @include borderRadius(20px);
+        background-color: #fff;
+        vertical-align: top;
+        @include buttonShadow();
+        @include transition(all 0.3s ease);
+        .user-menu-btn--img {
+            display: inline-block;
+            height: 36px;
+            width: 36px;
+            @include borderRadius(20px);
+            border: 2px solid #fff;
+            vertical-align: top;
+        }
+        .user-menu-btn--arrow {
+            display: inline-block;
+            height: 20px;
+            width: 20px;
+            vertical-align: top;
+            margin: 10px 5px 0 10px;
+            @include maskImage('../img/triangle.svg');
+            background-color: $greenChart;
+            @include transition(all 0.3s ease);
+        }
+        &:hover {
+            @include buttonShadowHover();
+            background-color: #fcfcfc;
+            .user-menu-btn--arrow {
+                background-color: $blueChart;
+            }
+        }
+    }
+    .user-menu-links {
+        &.user-menu-links__opened {
+            display: inline-block;
+        }
+        &.user-menu-links__closed {
+            display: none;
+        }
+    }
+}

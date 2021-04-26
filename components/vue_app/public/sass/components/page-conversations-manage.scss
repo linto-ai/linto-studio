@@ -1,0 +1,211 @@
+.conversation-infos-container {
+    background: rgba(199, 214, 255, 0.3);
+    z-index: 5;
+    @include boxShadow(0, 0, 4px, 0, rgba(0, 0, 0, 0.3));
+    padding: 20px 40px;
+    max-width: 240px;
+    width: auto;
+    overflow: auto;
+    h2 {
+        font-size: 24px;
+        font-weight: 600;
+        color: $blueChart;
+        display: inline-block;
+        width: 100%;
+        text-align: center;
+    }
+}
+
+
+/*** Conversation informations (left part) ***/
+
+.conversation-infos-items {
+    margin: 0;
+    padding: 0;
+    .conversation-infos-item {
+        margin: 20px 0;
+        .conversation-infos-item--label {
+            padding-bottom: 10px;
+            height: 30px;
+            .conversation-infos-item--icon {
+                display: inline-block;
+                width: 30px;
+                height: 30px;
+                margin-right: 5px;
+                vertical-align: top;
+                background-color: $blueLight;
+                &.conversation-infos-item--icon__date {
+                    @include maskImage('../img/date.svg');
+                }
+                &.conversation-infos-item--icon__duration {
+                    @include maskImage('../img/duration.svg');
+                }
+                &.conversation-infos-item--icon__lastupdate {
+                    @include maskImage('../img/lastupdate.svg');
+                }
+                &.conversation-infos-item--icon__owner {
+                    @include maskImage('../img/owner.svg');
+                }
+                &.conversation-infos-item--icon__sharedwith {
+                    @include maskImage('../img/sharedwith.svg');
+                }
+                &.conversation-infos-item--icon__documents {
+                    @include maskImage('../img/documents.svg');
+                }
+                &.conversation-infos-item--icon__keywords {
+                    @include maskImage('../img/keywords.svg');
+                }
+                &.conversation-infos-item--icon__highlights {
+                    @include maskImage('../img/marker.svg');
+                }
+                &.conversation-infos-item--icon__colors {
+                    @include maskImage('../img/colors.svg');
+                }
+                &.conversation-infos-item--icon__visible {
+                    @include maskImage('../img/visible.svg');
+                }
+            }
+            .conversation-infos-item--title {
+                display: inline-block;
+                color: $blueLight;
+                line-height: 35px;
+                font-weight: 600;
+                font-size: 18px;
+                vertical-align: top;
+            }
+        }
+        .conversation-infos-item--list {
+            padding: 0;
+            margin: 5px 0;
+            list-style-type: none;
+            li {
+                padding: 5px 0;
+            }
+        }
+        .conversation-infos-item--value {
+            font-size: 16px;
+            color: #333;
+        }
+    }
+}
+
+
+/*** END Conversation informations (left part) ***/
+
+
+/*** Conversation settings (right part) ***/
+
+.conversation-settings {
+    padding: 40px;
+    overflow: auto;
+}
+
+.conversation-settings-item {
+    margin-bottom: 20px;
+    .conversation-settings-item--title {
+        font-size: 30px;
+        font-weight: 700;
+        color: $blueChart;
+        padding-right: 10px;
+    }
+    .conversation-settings-item--description {
+        padding-right: 10px;
+        color: #555;
+        font-style: italic;
+    }
+    .conversation-settings-item--label {
+        padding-bottom: 10px;
+        .conversation-settings-item--icon {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+            background-color: $blueLight;
+            vertical-align: top;
+            &.abstract {
+                @include maskImage('../img/abstract.svg')
+            }
+            &.agenda {
+                @include maskImage('../img/agenda.svg')
+            }
+            &.speakers {
+                @include maskImage('../img/speakers.svg')
+            }
+            &.keywords {
+                @include maskImage('../img/keywords.svg')
+            }
+        }
+        .conversation-settings-item--title {
+            font-size: 18px;
+            line-height: 35px;
+            font-weight: 700;
+            vertical-align: top;
+            color: $blueLight;
+        }
+        .conversation-settings-item--toggle-btn {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-color: $blueLight;
+            vertical-align: top;
+            margin: 5px;
+            @include maskImage('../img/triangle.svg');
+            @include transition(all 0.3s ease);
+            &.closed {
+                @include transform(rotate(-90deg));
+            }
+            &:hover {
+                background: $blueChart;
+            }
+        }
+    }
+    .conversation-settings-item--content {
+        font-size: 16px;
+        color: #333;
+        line-height: 22px;
+        &.hidden {
+            height: 0;
+            overflow: hidden;
+        }
+    }
+}
+
+.textarea--btns {
+    justify-content: flex-end;
+}
+
+.table-speakers {
+    td {
+        padding: 5px;
+    }
+}
+
+.table-speaker--edit {
+    position: relative;
+}
+
+.speaker-time-prct-container {
+    position: relative;
+    height: 14px;
+    width: 60px;
+    margin: 8px 0;
+    @include borderRadius(3px);
+    background-color: #E3EEFF;
+    overflow: hidden;
+    span {
+        display: inline-block;
+        height: 20px;
+        background: $blueLight;
+    }
+}
+
+#keywords-content {
+    span {
+        display: inline-block;
+        padding: 5px 0;
+        width: 100%;
+    }
+}
+
+
+/*** END Conversation settings (right part) ***/

@@ -2,13 +2,15 @@ const Component = require(`../component.js`)
 const path = require("path")
 const debug = require('debug')(`app:webserver`)
 const express = require('express')
+const Session = require('express-session')
+
 const fileUpload = require('express-fileupload')
 const passport = require('passport')
 
 
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
-//const passport = require('passport')
+    //const passport = require('passport')
 const pathToSwaggerUi = require('swagger-ui-dist').absolutePath()
 const WebServerErrorHandler = require('./error/handler')
 
@@ -18,7 +20,7 @@ let corsOptions = {}
 if (process.env.CORS_ENABLED && process.env.CORS_API_WHITELIST.length > 0) {
     whitelistDomains = process.env.CORS_API_WHITELIST.split(',')
     corsOptions = {
-        origin: function (origin, callback) {
+        origin: function(origin, callback) {
             if (!origin || whitelistDomains.indexOf(origin) !== -1 || origin === 'undefined') {
                 callback(null, true)
             } else {
@@ -48,8 +50,22 @@ class WebServer extends Component {
         }))
         this.express.use(cookieParser())
 
+        // SESSION
+        let sessionConfig = {
+            resave: false,
+            saveUninitialized: false,
+            secret: 'mysercret',
+            cookie: {
+                maxAge: 30240000000 // 1 year
+            }
+        }
+
+        this.express.use(Session(sessionConfig))
+
         // Public path
-        this.express.use('/assets/audios', express.static(`${process.cwd()}/${process.env.VOLUME_AUDIO_LOCATION}`)) // Attaches ./public folder to / route
+        this.express.use('/assets', express.static(`${process.cwd()}/dist`))
+        this.express.use('/audios', express.static(`${process.cwd()}/uploads/audios`))
+        this.express.use('/pictures', express.static(`${process.cwd()}/uploads/pictures`))
 
         // Cross domain whitelist
         if (process.env.CORS_ENABLED) this.express.use(CORS(corsOptions))

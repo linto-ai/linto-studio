@@ -1,0 +1,52 @@
+.login-container {
+    max-width: 960px;
+    width: 100%;
+    margin: 0 auto;
+    align-items: center;
+    h2 {
+        text-align: center;
+    }
+    .login-logo {
+        display: inline-block;
+        height: 100px;
+        width: auto;
+        margin: 40px 0 20px 0;
+    }
+    .toggle-login-link {
+        color: $blueChart;
+        font-weight: 600;
+        display: inline-block;
+        &:hover {
+            color: $greenChart;
+        }
+    }
+}
+
+#app-login {
+    width: 100%;
+    max-width: 320px;
+    padding: 20px;
+    background-color: #fff;
+    margin: 20px 0;
+    @include borderRadius(3px);
+    @include blockShadow();
+    align-items: center;
+    .form-field {
+        width: 100%;
+        margin-bottom: 10px;
+        .form-label {
+            color: $blueChart;
+        }
+        input[type="text"] {
+            background-color: #edf8ff;
+        }
+    }
+    .form-error {
+        display: inline-block;
+        padding: 10px 0;
+        width: 100%;
+        color: $redChart;
+        font-style: italic;
+        text-align: center;
+    }
+}

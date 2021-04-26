@@ -1,0 +1,474 @@
+<template>
+  <div class="flex row no-padding-left" v-if="convoLoaded">
+    <!-- LEFT PART -->
+    <div class="flex col conversation-infos-container">
+      <h2>Conversation informations</h2>
+      <div class="conversation-infos-items">
+        <!-- Date -->
+        <div class="conversation-infos-item">
+          <div class="conversation-infos-item--label">
+            <span class="conversation-infos-item--icon conversation-infos-item--icon__date"></span>
+            <span class="conversation-infos-item--title">Date</span>
+          </div>
+          <span class="conversation-infos-item--value">{{ convo.mdate }}</span>
+        </div>
+        <!-- Duration -->
+        <div class="conversation-infos-item">
+          <div class="conversation-infos-item--label">
+            <span class="conversation-infos-item--icon conversation-infos-item--icon__duration"></span>
+            <span class="conversation-infos-item--title">Duration</span>
+          </div>
+          <span class="conversation-infos-item--value">{{ convo.mtime }}</span>
+        </div>
+        <!-- Last update -->
+        <div class="conversation-infos-item">
+          <div class="conversation-infos-item--label">
+            <span class="conversation-infos-item--icon conversation-infos-item--icon__lastupdate"></span>
+            <span class="conversation-infos-item--title">Last update</span>
+          </div>
+          <span class="conversation-infos-item--value">{{ convo.last_update }}</span>
+        </div>
+        <!-- Owner -->
+        <div class="conversation-infos-item">
+          <div class="conversation-infos-item--label">
+            <span class="conversation-infos-item--icon conversation-infos-item--icon__owner"></span>
+            <span class="conversation-infos-item--title">Owner</span>
+          </div>
+          <span class="conversation-infos-item--value">{{ convo.owner.name }}</span>
+        </div>
+        <!-- Shared with -->
+        <div class="conversation-infos-item">
+          <div class="conversation-infos-item--label">
+            <span class="conversation-infos-item--icon conversation-infos-item--icon__sharedwith"></span>
+            <span class="conversation-infos-item--title">Shared with</span>
+          </div>
+          <ul class="conversation-infos-item--list">
+            <li v-for="user in convo.sharedWith" :key="user.name">
+              <span class="conversation-infos-item--value" >{{ user.name }}</span>
+            </li>
+          </ul>
+        </div>
+        <!-- Documents -->
+        <div class="conversation-infos-item">
+          <div class="conversation-infos-item--label">
+            <span class="conversation-infos-item--icon conversation-infos-item--icon__documents"></span>
+            <span class="conversation-infos-item--title">Documents</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- END LEFT PART -->
+    <!-- RIGHT PART -->
+    <div class="flex1 flex col conversation-settings">
+      <!-- Title -->
+      <div class="conversation-settings-item flex row">
+        <span v-if="!titleEdit" class="conversation-settings-item--title">{{ convo.name.base }}</span>
+        <div v-else class="conversation-settings-item--title__edit flex col flex1">
+            <textarea v-model="convo.name.edit" class="textarea flex1"></textarea>
+            <div class="textarea--btns flex row">
+              <button class="btn btn--txt btn--txt__cancel" @click="cancelEditTitle()"><span class="label">Cancel</span></button>
+              <button class="btn btn--txt btn--txt__save" @click="update('name')"><span class="label">Save</span></button>
+            </div>
+        </div>
+        <button class="btn--icon" :class="titleEdit ? 'active': ''" @click="editTitle()">
+          <span class="icon icon--edit"></span>
+        </button>
+      </div>
+
+
+      <!-- Description -->
+      <div class="conversation-settings-item flex row">
+        <span v-if="!descriptionEdit" class="conversation-settings-item--description">{{ convo.description.base }}</span>
+        <div v-else class="conversation-settings-item--title__edit flex col flex1">
+            <textarea v-model="convo.description.edit" class="textarea flex1"></textarea>
+            <div class="textarea--btns flex row">
+              <button class="btn btn--txt btn--txt__cancel" @click="cancelEditDescription()"><span class="label">Cancel</span></button>
+              <button class="btn btn--txt btn--txt__save" @click="update('description')"><span class="label">Save</span></button>
+            </div>
+        </div>
+        <button class="btn--icon" :class="descriptionEdit ? 'active': ''" @click="editDescription()">
+          <span class="icon icon--edit"></span>
+        </button>
+      </div>
+
+      <!-- Agenda -->
+      <div class="conversation-settings-item">
+        <div class="conversation-settings-item--label">
+          <span class="conversation-settings-item--icon agenda"></span>
+          <span class="conversation-settings-item--title">Agenda</span>
+          <button class="conversation-settings-item--toggle-btn" @click="toggleContent($event, 'agenda-content')"></button>
+          <button class="btn--icon" :class="agendaEdit ? 'active': ''" @click="editAgenda()">
+            <span class="icon icon--edit"></span>
+          </button>
+        </div>
+          <div v-if="!agendaEdit" class="conversation-settings-item--content" id="agenda-content">{{ convo.agenda.base }}</div>
+          <div v-else class="flex col flex1">
+            <textarea v-model="convo.agenda.edit" class="textarea flex1"></textarea>
+            <div class="textarea--btns flex row">
+              <button class="btn btn--txt btn--txt__cancel" @click="cancelEditAgenda()"><span class="label">Cancel</span></button>
+              <button class="btn btn--txt btn--txt__save" @click="update('agenda')"><span class="label">Save</span></button>
+            </div>
+          </div>
+      </div>
+      <!-- Abstract -->
+      <div class="conversation-settings-item">
+        <div class="conversation-settings-item--label">
+          <span class="conversation-settings-item--icon abstract"></span>
+          <span class="conversation-settings-item--title">Abstract</span>
+          <button class="conversation-settings-item--toggle-btn" @click="toggleContent($event, 'abstract-content')"></button>
+          <button class="btn--icon" :class="abstractEdit ? 'active': ''" @click="editAbstract()">
+            <span class="icon icon--edit"></span>
+          </button>
+        </div>
+        <div v-if="!abstractEdit" class="conversation-settings-item--content" id="abstract-content">{{ convo.abstract.base }}</div>
+        <div v-else class="flex col flex1">
+          <textarea v-model="convo.abstract.edit" class="textarea flex1"></textarea>
+          <div class="textarea--btns flex row">
+            <button class="btn btn--txt btn--txt__cancel" @click="cancelEditAbstract()"><span class="label">Cancel</span></button>
+            <button class="btn btn--txt btn--txt__save" @click="update('abstract')"><span class="label">Save</span></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex row">
+      <!-- Speakers -->
+        <div class="conversation-settings-item flex1">
+          <div class="conversation-settings-item--label">
+            <span class="conversation-settings-item--icon speakers"></span>
+            <span class="conversation-settings-item--title">Speakers</span>
+            <button class="conversation-settings-item--toggle-btn" @click="toggleContent($event, 'speakers-content')"></button>
+          </div>
+          <div class="conversation-settings-item--content" id="speakers-content">
+            <table class="table-speakers">
+              <tbody v-if="convo.speakers.length > 0">
+                <tr v-for="speaker in convo.speakers" :key="speaker.speaker_id">
+                  <td>{{ speaker.speaker_name }}</td>
+                  <td>
+                    <button 
+                      v-if='(!!speaker.stime && !!speaker.stime > 0) && (!!speaker.etime && !!speaker.etime > 0)'
+                      class="btn--icon" 
+                      @click="playSample($event, speaker.stime, speaker.etime)"
+                    >
+                      <span class="icon icon--play"></span>
+                    </button>
+                  <td>
+                    <div class="table-speaker--edit">
+                      <button class="btn--icon editspeaker" @click="editSpeaker($event, speaker)" >
+                        <span class="icon icon--edit"></span>
+                      </button>
+                     
+                    </div>
+                  </td>
+                  <td>
+                    <div v-if="!!speakTime[speaker.speaker_id].time" class="speaker-time-prct-container">
+                      <span class="speaker-time-prct" :style="'width:'+ parseInt(parseFloat(speakTime[speaker.speaker_id].time) * 100 / parseFloat(convo.audio.duration))+'%'">
+                      </span>
+                    </div>
+                  </td> 
+                  <td>
+                    <button 
+                    class="btn--icon btn--icon__no-bg editspeaker" 
+                    @click="deleteSpeaker(speaker.speaker_id)" 
+                    v-if="convo.speakers.length > 1"
+                  >
+                      <span class="icon icon--remove"></span>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <button class="btn btn--txt-icon green" @click="addSpeaker()">
+              <span class="label">New speaker</span>
+              <span class="icon icon__plus"></span>
+            </button>
+          </div>
+        </div>
+        <!-- Keywords -->
+        <div class="conversation-settings-item flex1">
+          <div class="conversation-settings-item--label">
+            <span class="conversation-settings-item--icon keywords"></span>
+            <span class="conversation-settings-item--title">Keywords</span>
+            <button class="conversation-settings-item--toggle-btn" @click="toggleContent($event, 'keywords-content')"></button>
+            <button class="btn--icon" :class="keywordsEdit ? ' active' :''" @click="editKeywords()">
+               <span class="icon icon--edit"></span>
+            </button>
+          </div>
+          <div v-if="!keywordsEdit" class="conversation-settings-item--content" id="keywords-content">
+            <span v-for="kw in convo.keywords.base" :key="kw.label">{{ kw.label }}</span>
+          </div>
+          <div v-else class="flex col flex1">
+            <textarea v-model="convo.keywords.edit" class="textarea flex1"></textarea>
+            <div class="textarea--btns flex row">
+              <button class="btn btn--txt btn--txt__cancel" @click="cancelEditKeywords()"><span class="label">Cancel</span></button>
+              <button class="btn btn--txt btn--txt__save" @click="update('keywords')"><span class="label">Save</span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flex row">
+        <a :href="`/interface/conversation/${convoId}/transcription`" class="btn btn--txt-icon blue"> 
+          <span class="label">Transcription</span>
+          <span class="icon icon__transcription"></span>
+        </a>
+      </div>
+    </div>
+    <ModalMergeSpeakersWithTarget :convoId="convoId"></ModalMergeSpeakersWithTarget>
+    <ModalDeleteSpeaker  :convoId="convoId"></ModalDeleteSpeaker>
+    <EditSpeakerFrame></EditSpeakerFrame>
+  </div>
+  <div v-else>Loading</div>
+</template>
+<script>
+import EditSpeakerFrame from '@/components/EditSpeakerFrame.vue'
+import ModalMergeSpeakersWithTarget from '@/components/ModalMergeSpeakersWithTarget.vue'
+import ModalDeleteSpeaker from '@/components/ModalDeleteSpeaker.vue'
+import axios from 'axios'
+import { bus } from '../main.js'
+export default {
+  data () {
+    return {
+      convo: '',
+      convoId: '',
+      titleEdit: false,
+      descriptionEdit: false,
+      agendaEdit: false,
+      abstractEdit: false,
+      keywordsEdit: false,
+      convoLoaded: false,
+      speakerEdit: false,
+      audioPlayer: null
+    }
+  },
+  async mounted () {
+    bus.$emit('vertical_nav_close', {})
+    this.convoId = this.$route.params.convoId
+
+    await this.dispatchStore('getConversations')
+    this.audioPlayer = new Audio()
+
+    bus.$on('update_speaker', async (data) => {
+      this.updateSpeaker(data)
+      this.speakerEdit = false
+      await this.dispatchStore('getConversations')
+    })
+
+  },
+  computed: {
+    conversation () {
+      return this.$store.getters.conversationById(this.convoId)
+    },
+    speakTime () {
+      let res = {total: 0}
+      this.convo.speakers.map(spk => {
+        if (!res[spk.speaker_id]) {
+          res[spk.speaker_id] = { time: 0.1 }
+        }
+      })
+      this.convo.text.map(txt => {
+        txt.words.map(word => {
+            if(!!res[txt.speaker_id]) {
+              let time = parseFloat(parseFloat(word.etime).toFixed(2) - parseFloat(word.stime).toFixed(2)).toFixed(2)
+              res[txt.speaker_id].time += parseFloat(time)
+              res.total = parseFloat(Number(parseFloat(res.total) + parseFloat(time)).toFixed(2))
+            }
+        })
+      })
+      return res
+    }
+  },
+  watch: {
+    conversation (data) {
+      this.convo = data
+      const titleVal = data.name
+      this.convo.name = {
+        base: titleVal,
+        edit: titleVal
+      }
+
+      const descVal = data.description
+      this.convo.description = {
+        base: descVal,
+        edit: descVal
+      }
+
+      const agendaVal = data.agenda
+      this.convo.agenda = {
+        base: agendaVal,
+        edit: agendaVal
+      }
+
+      const abstractVal = data.abstract
+      this.convo.abstract = {
+        base: abstractVal,
+        edit: abstractVal
+      }
+
+      const keyWordsVal = data.keywords
+      this.convo.keywords = {
+        base: keyWordsVal,
+        edit: keyWordsVal
+      }
+    }
+  },
+  methods: {
+    toggleContent (elem, id) {
+      const target = document.getElementById(id)
+      if (target.classList.contains('hidden')) {
+        target.classList.remove('hidden')
+        elem.srcElement.classList.remove('closed')
+      } else {
+        target.classList.add('hidden')
+        elem.srcElement.classList.add('closed')
+      }
+    },
+    editTitle () {
+      this.titleEdit = true
+    },
+    cancelEditTitle () {
+      this.titleEdit = false
+      this.convo.name.edit = this.convo.name.base
+    },
+    editDescription () {
+      this.descriptionEdit = true
+    },
+    cancelEditDescription () {
+      this.descriptionEdit = false
+      this.convo.description.edit = this.convo.description.base
+    },
+    editAgenda () {
+      this.agendaEdit = true
+    },
+    cancelEditAgenda () {
+      this.agendaEdit = false
+      this.convo.agenda.edit = this.convo.agenda.base
+    },
+    editAbstract () {
+      this.abstractEdit = true
+    },
+    cancelEditAbstract () {
+      this.abstractEdit = false
+      this.convo.abstract.edit = this.convo.abstract.base
+    },
+    editKeywords () {
+      this.keywordsEdit = true
+    },
+    cancelEditKeywords () {
+      this.keywordsEdit = false
+      this.convo.keywords.edit = this.convo.keywords.base
+    },
+    editSpeaker (event, speaker) {
+      const btn = event.target
+      const bounce = btn.getBoundingClientRect()
+      const editSpeakerFrame = document.getElementById('edit-speaker-frame')
+      editSpeakerFrame.setAttribute('style',`top: ${bounce.y}px; left: ${bounce.x - 60}px`)
+      
+      if (!this.speakerEdit) {
+        const target = event.target
+        target.classList.add('active')
+        bus.$emit(`edit_speaker`, {speaker, speakers: this.convo.speakers, conversationId: this.convoId})
+        this.speakerEdit = true
+      }
+    },
+    update (key) {
+      this.conversation[key].base = this.conversation[key].edit
+      if (key === 'name') {
+        this.titleEdit = false
+        // REQUEST UPDATE title
+
+      }
+      if (key === 'description') {
+        this.descriptionEdit = false
+        // REQUEST UPDATE title
+      }
+      if (key === 'agenda') {
+        this.agendaEdit = false
+        // REQUEST UPDATE AGENDA
+      }
+      if (key === 'abstract') {
+        this.abstractEdit = false
+        // REQUEST UPDATE ABSTRACT
+      }
+      if (key === 'keywords') {
+        this.keywordsEdit = false
+        // REQUEST UPDATE keywords
+      }
+    },
+    async updateSpeaker (payload) {
+      const targetBtn = document.getElementsByClassName('editspeaker')
+      for(let btn of targetBtn) {
+        if(btn.classList.contains('active')) {
+          btn.classList.remove('active')
+        }
+      }
+      await this.dispatchStore('getConversations')
+    },
+    async dispatchStore (topic) {
+      try {
+        const resp = await this.$options.filters.dispatchStore(topic)
+        if (resp.status === 'success') {
+          this.convoLoaded = true
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    playSample (event, start, end) {
+      const target = event.target
+      const audio = this.convo.audio
+      this.audioPlayer.src = `${process.env.VUE_APP_URL}/${audio.filepath}`
+      this.audioPlayer.currentTime = start
+      this.audioPlayer.play()
+      target.classList.add('active')
+      const time = end - start
+
+      setTimeout(()=> {
+        this.audioPlayer.pause()
+        target.classList.remove('active')
+      }, time * 1000)
+    },
+    async defineNewSpeakerName (spkCount) {
+        let newSpeakerName = `spk${parseInt(spkCount) + 1}`
+        let speakerExist = this.conversation.speakers.filter(spk => spk.speaker_name === newSpeakerName)
+        if(speakerExist.length > 0) {
+          return this.defineNewSpeakerName(spkCount+1)
+        } else {
+          return newSpeakerName
+        }
+    },
+    async addSpeaker () {
+      try {
+        let newSpeakerName = await this.defineNewSpeakerName(this.conversation.speakers.length)
+        const addSpeaker = await axios(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/speakers`, {
+          method: 'post', 
+          data: {
+            convoid: this.convoId,
+            speakername: newSpeakerName
+          }
+        })
+        if (addSpeaker.status === 200) {
+          await this.dispatchStore('getConversations')
+        } else {
+          throw addSpeaker
+        }
+      } catch (error) {
+        bus.$emit('app_notif', {
+          status: 'error',
+          message: !!error.data && !!error.data.msg ? error.data.msg : 'Error on deleting speaker',
+          timeout: null
+        })
+      }
+    },
+    deleteSpeaker (speakerId) {
+      bus.$emit('modal_delete_speaker', {
+        convoId: this.convoId,
+        speakerId
+      })
+    }
+  },
+  components: {
+    EditSpeakerFrame,
+    ModalMergeSpeakersWithTarget,
+    ModalDeleteSpeaker
+  }
+}
+</script>

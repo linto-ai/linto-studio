@@ -44,8 +44,10 @@ function configureDefaults() {
         process.env.EXPRESS_SIZE_FILE_MAX = ifHas(process.env.EXPRESS_SIZE_FILE_MAX, envdefault.EXPRESS_SIZE_FILE_MAX)
         process.env.EXPRESS_TIMEOUT = ifHas(process.env.EXPRESS_TIMEOUT, envdefault.EXPRESS_TIMEOUT)
 
-        process.env.VOLUME_AUDIO_LOCATION = ifHas(process.env.VOLUME_AUDIO_LOCATION, envdefault.VOLUME_AUDIO_LOCATION)
-        process.env.VOLUME_PROFILE_PICTURE_LOCATION = ifHas(process.env.VOLUME_PROFILE_PICTURE_LOCATION, envdefault.VOLUME_PROFILE_PICTURE_LOCATION)
+        process.env.VOLUME_AUDIO_UPLOAD_PATH = ifHas(process.env.VOLUME_AUDIO_UPLOAD_PATH, envdefault.VOLUME_AUDIO_UPLOAD_PATH)
+        process.env.VOLUME_AUDIO_PUBLIC_PATH = ifHas(process.env.VOLUME_AUDIO_PUBLIC_PATH, envdefault.VOLUME_AUDIO_PUBLIC_PATH)
+        process.env.VOLUME_PROFILE_PICTURE_UPLOAD_PATH = ifHas(process.env.VOLUME_PROFILE_PICTURE_UPLOAD_PATH, envdefault.VOLUME_PROFILE_PICTURE_UPLOAD_PATH)
+        process.env.VOLUME_PROFILE_PICTURE_PUBLIC_PATH = ifHas(process.env.VOLUME_PROFILE_PICTURE_PUBLIC_PATH, envdefault.VOLUME_PROFILE_PICTURE_PUBLIC_PATH)
 
         process.env.LINTO_STACK_CM_JWT_SECRET = ifHas(process.env.LINTO_STACK_CM_JWT_SECRET, envdefault.LINTO_STACK_CM_JWT_SECRET)
         process.env.LINTO_STACK_CM_REFRESH_SECRET = ifHas(process.env.LINTO_STACK_CM_REFRESH_SECRET, envdefault.LINTO_STACK_CM_REFRESH_SECRET)

@@ -1,23 +1,55 @@
 const debug = require('debug')('app:webserver:middlewares')
 const userModel = require(`${process.cwd()}/models/mongodb/models/users`)
 const jwt = require('jsonwebtoken')
+const auth_middlewares = require(`../config/passport/local/middleware`)
 
 function isProduction() {
-	return process.env.NODE_ENV === 'production'
+    return process.env.NODE_ENV === 'production'
 }
 
 function logger(req, res, next) {
-	debug(`[${Date.now()}] new user entry on ${req.url}`)
-	next()
+    debug(`[${Date.now()}] new user entry on ${req.url}`)
+    debug('session :', req.session)
+    next()
+}
+
+async function isConnected(req, res, next) {
+    try {
+        if (!!req.session) {
+            if (!!req.session.logged && !!req.session.token) {
+                // Already logged  
+                if (req.session.logged === 1) {
+                    if (req.url === '/login') {
+                        res.redirect('/interface/conversations')
+                    } else {
+                        next()
+                    }
+                } else {
+                    throw 'Session not found '
+                }
+            } else {
+                throw 'Session token not found'
+            }
+        } else {
+            throw 'Session not found'
+        }
+    } catch (error) {
+        console.error(error)
+        if (req.url === '/login') {
+            next()
+        } else {
+            res.redirect('/login')
+        }
+    }
 }
 
 async function isOwner(req, res, next) {
     // isOwner will alway require ownerid as input 
     // (rather than getting it from session)
     if (isProduction()) {
-        if (req && req.session){
+        if (req && req.session) {
             const userid = req.session.userid
-            try{
+            try {
                 const user = await userModel.getUserbyId(userid)
                 const convos = user[0].convoAccess[req.body.convoId]
                 if (convos === 'owner') {
@@ -28,13 +60,13 @@ async function isOwner(req, res, next) {
                         status: 'error',
                         msg: 'User does not have right to add users',
                         code: 'NotConvoOwner'
-                    }) 
+                    })
                 }
-            } catch(error){
+            } catch (error) {
                 res.json({
                     status: "error",
                     msg: error
-                }) 
+                })
             }
         } else {
             res.redirect('/sessionNotFound')
@@ -45,6 +77,7 @@ async function isOwner(req, res, next) {
 }
 
 module.exports = {
-    logger, 
+    logger,
+    isConnected,
     isOwner
 }
