@@ -1,3 +1,5 @@
+const { patch } = require('request')
+
 const debug = require('debug')('app:router:api:conversation:convo')
 
 // Speakers
@@ -23,11 +25,10 @@ const {
 const {
     createConvoBase,
     updateSpeakerAudio,
-    replaceTurnText
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/convo.js`)
 
 const {
-    updateAllText
+    replaceTurnText
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/textedit.js`)
 
 const { // Create conversation based on file
@@ -108,16 +109,16 @@ module.exports = (webserver) => {
             controller: [splitTurns, renumberTurns]
         },
         {
-            path: '/:conversationid/replaceturn/:turnid',
-            method: 'patch',
-            requireAuth: true,
+            path: '/:conversationid/text', 
+            method: 'put', 
+            requireAuth: false, 
             controller: replaceTurnText
-        },
-        {
-            path: '/:conversationid/text',
-            method: 'put',
-            requireAuth: true,
-            controller: updateAllText
         }
+        // {
+        //     path: '/:conversationid/text', 
+        //     method: 'put',
+        //     requireAuth: false,
+        //     controller: updateAllText
+        // }
     ]
 }

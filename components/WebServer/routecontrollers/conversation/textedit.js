@@ -2,31 +2,159 @@ const convoModel = require(`${process.cwd()}/models/mongodb/models/conversations
 const { v4: uuidv4 } = require('uuid')
     //const clone = require('rfdc')()
 
-async function updateAllText(req, res, next) {
+// async function updateAllText(req, res, next) {
+//     try {
+//         if (!!req.body.text) {
+//             const payload = {
+//                 convoid: req.params.conversationid,
+//                 text: req.body.text
+//             }
+//             const updateText = await convoModel.updateAllText(payload)
+//             console.log('updateText', updateText)
+//             if (updateText === 'success') {
+//                 res.json({
+//                     txtStatus: 'success',
+//                     msg: "Text has been updated"
+//                 })
+//             } else  {
+//                 throw updateText
+//             }
+//         } else {
+//             throw { message: 'Missing information in the payload object' }
+//         }
+//     } catch (error) {
+//         // Error
+//         res.status(400).send({
+//             status: 'error',
+//             msg: !!error.message ? error.message : 'error on splitting turns'
+//         })
+//     }
+// }
+
+async function replaceTurnText(req, res, next) {
     try {
-        if (!!req.body.text) {
-            const payload = {
-                convoid: req.params.conversationid,
-                text: req.body.text
+        //console.log(req.params)
+        if(!!req.body.words && !!req.body.turnid){
+            //takes a text field (a list of word objects) and adds word ids and calculates times for new words
+            let payload = req.body
+            const words = payload.words.sort((a, b) => a.pos - b.pos)
+            let newwords = [] //this will be the final list used to update the turn
+            let sublist = []
+        
+            let abs_etime = null //initialize abs time variables
+            let abs_stime = null
+
+            const new_payload = {
+                turnid: req.body.turnid, 
+                convoid: req.params.conversationid
             }
-            const updateText = await convoModel.updateAllText(payload)
-            console.log('updateText', updateText)
-            if (updateText === 'success') {
+
+            let audiotime = await convoModel.getTurnAudioTime(new_payload)
+            if(!!audiotime){
+                abs_stime = audiotime[0].min
+                abs_etime = audiotime[0].max
+            } else {
+                throw  { message: 'Problem with turn object -- might be empty' }
+            }
+            
+            let starttime =  abs_stime
+
+            words.forEach((elem => {
+                if(elem.wid === "todefine"){ //if elem is new word object
+
+                    sublist.push(elem)
+
+                } else if(sublist.length > 0) { //if not a new word && immediately preceding word(s) are new
+
+                    let endtime = elem.stime //starttime of this elem is the endtime of the sublist 
+                    //NB: the starttime of the sublist is the endtime of the last non-new word
+                
+                    let num_words = sublist.length
+                    let whole = endtime - starttime 
+
+                    if (num_words === 1){  //!!if just one subelem, add with starttime and endtime
+                        let subelem = sublist[0]
+                        subelem.wid = uuidv4()
+                        subelem.stime = starttime
+                        subelem.etime = endtime
+                        newwords.push(subelem)
+
+                    } else {
+                        let summand = whole/num_words  //divide time evenly over sublist words
+                        //let div = whole/num_words
+                        //let summand = Math.round((div + Number.EPSILON) * 100) / 100
+                        sublist.forEach((subelem) => {
+                            subelem.wid = uuidv4()
+                            let raw_etime = starttime + summand
+                            new_etime = Math.round((raw_etime + Number.EPSILON) * 100) / 100
+                            subelem.etime = new_etime
+                            subelem.stime = Math.round((starttime + Number.EPSILON) * 100) / 100
+                            newwords.push(subelem) //add word to final list
+                            starttime = raw_etime
+                        })
+                    }
+                    
+                    sublist = []
+                    starttime = elem.etime 
+                    newwords.push(elem) //endtime of current element becomes new startime 
+
+                } else { //if not a new word and none of immediately preceding word(s) are new
+
+                    starttime = elem.etime
+                    newwords.push(elem)
+                }
+            }))
+            
+            if(sublist.length > 0){//if every word in the turn has been checked && sublist is not empty
+                endtime = abs_etime 
+                let num_words = sublist.length
+
+                if (num_words === 1){
+                    //!!if just one subelem, add with starttime and endtime
+                    let subelem = sublist[0]
+                    subelem.wid = uuidv4()
+                    subelem.stime = starttime
+                    subelem.etime = endtime
+                    newwords.push(subelem)
+                } else {
+                    let whole = endtime - starttime 
+                    let summand = whole/num_words  //divide time evenly over sublist words
+                    // let div = whole/num_words
+                    // let summand = Math.round((div + Number.EPSILON) * 100) / 100
+                    sublist.forEach((subelem) => {
+                        subelem.wid = uuidv4()
+                        let raw_etime = starttime + summand
+                        new_etime = Math.round((raw_etime + Number.EPSILON) * 100) / 100
+                        subelem.etime = new_etime
+                        subelem.stime = Math.round((starttime + Number.EPSILON) * 100) / 100
+                        newwords.push(subelem) //add word to final list
+                        starttime = raw_etime
+                    })
+                }
+            }
+
+            //replace words in payload and update turn 
+            payload.words = newwords
+            payload.convoid = req.params.conversationid
+
+            const replaceWords = await convoModel.replaceWords(payload)
+
+            if (replaceWords === 'success') {
                 res.json({
                     txtStatus: 'success',
-                    msg: "Text have been updated"
+                    msg: "Text has been updated"
                 })
             } else  {
-                throw updateText
+                throw replaceWords
             }
+
         } else {
-            throw { message: 'Missing information in the payload object' }
+            throw {message: 'Missing information in payload object'}
         }
     } catch (error) {
-        // Error
         res.status(400).send({
-            status: 'error',
-            msg: !!error.message ? error.message : 'error on splitting turns'
+            status: 'error', 
+            msg: !!error.message ? error.message: 'error on replacing turn text'
         })
     }
 }
@@ -240,5 +368,5 @@ async function insertWords(req, res, next) { //WIP
 }
 */
 module.exports = {
-    updateAllText
+    replaceTurnText
 }

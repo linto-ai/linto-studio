@@ -307,7 +307,7 @@ class ConvoModel extends MongoModel {
         }
     }
 
-    //updates all text turns
+    //updates all text turns in a conversation -- used in renumberTurns
     async replaceText(payload) {
         //takes a convoid and an entire text object 
         try {
@@ -536,31 +536,31 @@ class ConvoModel extends MongoModel {
         }
     }
 
-    async updateAllText(payload) {
-        try {
-            const operator = "$set"
-            const query = {
-                _id: this.getObjectId(payload.convoid)
-            }
-            let newText = payload.text
-            newText.map(turn => {
-                if (turn.words.length > 0) {
-                    turn.words.map(word => {
-                        if (word.wid === 'todefine') {
-                            word.wid = this.createObjectId()
-                        }
-                    })
-                }
-            })
-            let mutableElements = {
-                "text": newText
-            }
-            return await this.mongoUpdateOne(query, operator, mutableElements)
-        } catch (error) {
-            console.error(error)
-            return error
-        }
-    }
+    // async updateAllText(payload) {
+    //     try {
+    //         const operator = "$set"
+    //         const query = {
+    //             _id: this.getObjectId(payload.convoid)
+    //         }
+    //         let newText = payload.text
+    //         newText.map(turn => {
+    //             if (turn.words.length > 0) {
+    //                 turn.words.map(word => {
+    //                     if (word.wid === 'todefine') {
+    //                         word.wid = this.createObjectId()
+    //                     }
+    //                 })
+    //             }
+    //         })
+    //         let mutableElements = {
+    //             "text": newText
+    //         }
+    //         return await this.mongoUpdateOne(query, operator, mutableElements)
+    //     } catch (error) {
+    //         console.error(error)
+    //         return error
+    //     }
+    // }
 
 
 }
