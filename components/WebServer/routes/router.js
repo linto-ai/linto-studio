@@ -20,12 +20,15 @@ class Router {
                 if (route.requireAuth) {
                     debug('Create route : ' + route.method + ' - ' + level + route.path)
                     let middlewaresLoaded = [auth_middlewares.isAuthenticate]
-                    if (route.requireConversationOwner) middlewaresLoaded.push(auth_middlewares.isConversationOwner)
+                    if (route.requireOwnerAccess) middlewaresLoaded.push(auth_middlewares.asOwnerAccess)
+                    if (route.requireReadAccess) middlewaresLoaded.push(auth_middlewares.asReadAccess)
+                    if (route.requireWriteAccess) middlewaresLoaded.push(auth_middlewares.asWriteAccess)
 
                     webServer.express[method](
                         level + route.path,
                         middlewares.logger,
-                        level.indexOf('/interface') >= 0 || level === '/login' || level === '/create-account' ? middlewares.isConnected : auth_middlewares.isAuthenticate,
+                        level.indexOf('/interface') >= 0 || level === '/login' || level === '/create-account' ?
+                            middlewares.isConnected : middlewaresLoaded,
                         ifHasElse(
                             Array.isArray(route.controller),
                             () => Object.values(route.controller),

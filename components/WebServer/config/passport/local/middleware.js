@@ -7,11 +7,12 @@ const jwt = require('express-jwt')
 const UsersModel = require(`${process.cwd()}/models/mongodb/models/users`)
 const ConversationModel = require(`${process.cwd()}/models/mongodb/models/conversations`)
 
-
 const { MalformedToken, MultipleUserFound } = require(`${process.cwd()}/components/WebServer/error/exception/auth`)
-const { ConversationNotOwner } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
+const { ConversationOwnerAccessDenied, ConversationReadAccessDenied, ConversationWriteAccessDenied,
+    ConversationNotShared, ConversationIdRequire } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
 const refreshToken = require('./token/refresh')
+const RIGHTS = require(`${process.cwd()}/components/WebServer/controllers/rights`)
 
 module.exports = {
     authType: 'local',
@@ -37,7 +38,8 @@ module.exports = {
                         res.json({
                             status: 200,
                             msg: 'login success',
-                            code: 'ok'
+                            code: 'ok',
+                            token: user.token.auth_token
                         })
                     })
                 } else {
@@ -67,13 +69,27 @@ module.exports = {
             next()
         }
     ],
+    asOwnerAccess: [
+        (req, res, next) => {
+            ConversationModel.getConvoOwner(req.body.conversationId).then(conversation => {
+                if (conversation.length === 1 && conversation[0].owner === req.payload.data.userId) next()
+                else next(new ConversationOwnerAccessDenied())
+            })
+        },
+    ],
+    asReadAccess: [(req, res, next) => {
+        checkConvSharedRight(next, req.body.conversationId, req.payload.data.userId, RIGHTS.READ, ConversationReadAccessDenied)
+    }],
+    asWriteAccess: [(req, res, next) => {
+        checkConvSharedRight(next, req.body.conversationId, req.payload.data.userId, RIGHTS.WRITE, ConversationWriteAccessDenied)
+    }],
     refresh_token: [
         jwt({
             secret: generateRefreshSecretFromHeaders,
             userProperty: 'payload',
             getToken: getTokenFromHeaders,
         }),
-        async(req, res, next) => {
+        async (req, res, next) => {
             const { headers: { authorization } } = req
             let token = await refreshToken(authorization)
             res.local = token
@@ -114,4 +130,28 @@ function generateRefreshSecretFromHeaders(req, payload, done) {
             })
         }
     }
+}
+
+function checkConvSharedRight(next, conversationId, userId, right, rightException) {
+    if(!conversationId)  {
+        next(new ConversationIdRequire())
+        return
+    }
+    ConversationModel.getConvoShared(conversationId).then(conversation => {
+        if (conversation.length === 1 && conversation[0].sharedWith && conversation[0].sharedWith.length !== 0) {
+            if (conversation.length === 1 && conversation[0].owner === userId) next()
+            else {
+                let userFound = false
+                conversation[0].sharedWith.map(conversationUsers => {
+                    if (conversationUsers.user_id === userId)
+                        if (RIGHTS.asRightAccess(conversationUsers.rights, right)) {
+                            userFound = true
+                            next()
+                        }
+                        else next(new rightException())
+                })
+                if (!userFound) next(new ConversationNotShared())
+            }
+        } else next(new ConversationNotShared())
+    })
 }
