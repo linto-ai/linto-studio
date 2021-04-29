@@ -1,5 +1,5 @@
 /****************
-*****Users*******
+**Conversation***
 *****************/
 
 const ExceptionType = 'conversation'
@@ -36,33 +36,67 @@ class ConversationMetadataRequire extends Error {
   }
 }
 
-class ConversationNotOwner extends Error {
+class ConversationOwnerAccessDenied extends Error {
   constructor(message) {
     super()
-    this.name = 'ConversationNotOwner'
+    this.name = 'ConversationOwnerAccessDenied'
     this.type = ExceptionType
-    this.status = '403'
+    this.status = '401'
     if (message) this.message = message
     else this.message = 'User is not the owner of the conversation'
   }
 }
 
-class ConversationNoRight extends Error {
+class ConversationWriteAccessDenied extends Error {
   constructor(message) {
     super()
-    this.name = 'ConversationNoRight'
+    this.name = 'ConversationWriteAccessDenied'
     this.type = ExceptionType
-    this.status = '403'
+    this.status = '401'
     if (message) this.message = message
-    else this.message = `User don't have right to the conversation`
+    else this.message = `User don't have write access to the conversation`
   }
 }
 
+class ConversationReadAccessDenied extends Error {
+  constructor(message) {
+    super()
+    this.name = 'ConversationReadAccessDenied'
+    this.type = ExceptionType
+    this.status = '401'
+    if (message) this.message = message
+    else this.message = `User don't have read access to the conversation`
+  }
+}
+class ConversationNotShared extends Error {
+  constructor(message) {
+    super()
+    this.name = 'ConversationNotShared'
+    this.type = ExceptionType
+    this.status = '401'
+    if (message) this.message = message
+    else this.message = `User don't have access to the conversation`
+  }
+}
+
+class ConversationIdRequire extends Error {
+  constructor(message) {
+    super()
+    this.name = 'ConversationIdRequire'
+    this.type = ExceptionType
+    this.status = '403'
+    if (message) this.message = message
+    else this.message = `Conversation id param is require`
+  }
+}
 module.exports = {
   //Conversation Exception
   ConversationNotAddedToUser,
   ConversationNoFileUploaded,
   ConversationMetadataRequire,
-  ConversationNotOwner,
-  ConversationNoRight
+  ConversationOwnerAccessDenied,
+  ConversationReadAccessDenied,
+  ConversationWriteAccessDenied,
+  ConversationNotShared,
+  ConversationIdRequire
 }

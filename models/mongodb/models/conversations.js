@@ -56,12 +56,25 @@ class ConvoModel extends MongoModel {
     }
 
     // get all speakers in a conversation
-    async getConvoOwner(id) {
+    async getConvoOwner(idConvo) {
         try {
             const query = {
-                _id: this.getObjectId(id)
+                _id: this.getObjectId(idConvo)
             }
             const projection = { owner: 1 }
+            return await this.mongoRequest(query, projection)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
+    async getConvoShared(idConvo) {
+        try {
+            const query = {
+                _id: this.getObjectId(idConvo)
+            }
+            const projection = { owner: 1, sharedWith: 1 }
             return await this.mongoRequest(query, projection)
         } catch (error) {
             console.error(error)
