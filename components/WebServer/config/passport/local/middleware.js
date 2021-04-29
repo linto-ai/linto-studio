@@ -100,7 +100,7 @@ module.exports = {
 
 function getTokenFromHeaders(req, res, next) {
     const { headers: { authorization } } = req
-    if (authorization && authorization.split(' ')[1] === 'Bearer') return authorization.split(' ')[0]
+    if (authorization && authorization.split(' ')[0] === 'Bearer') return authorization.split(' ')[1]
     else return null
 }
 
@@ -109,7 +109,7 @@ function generateSecretFromHeaders(req, payload, done) {
         return done(new MalformedToken())
     } else {
         const { headers: { authorization } } = req
-        if (authorization.split(' ')[1] === 'Bearer') {
+        if (authorization.split(' ')[0] === 'Bearer') {
             UsersModel.getUserByEmail(payload.data.email).then(users => {
                 if (users.length === 1) return done(null, users[0].keyToken + process.env.LINTO_STACK_CM_JWT_SECRET)
                 else throw MultipleUserFound
@@ -123,7 +123,7 @@ function generateRefreshSecretFromHeaders(req, payload, done) {
         done(new MalformedToken())
     } else {
         const { headers: { authorization } } = req
-        if (authorization.split(' ')[1] === 'Bearer') {
+        if (authorization.split(' ')[0] === 'Bearer') {
             UsersModel.getUserByEmail(payload.data.email).then(users => {
                 if (users.length === 1) done(null, users[0].keyToken + process.env.LINTO_STACK_OVERWATCH_REFRESH_SECRET)
                 else throw MultipleUserFound
