@@ -134,8 +134,10 @@ class MongoModel {
                     if (error) {
                         reject(error)
                     }
-                    console.log('mongoDelete', result)
-                    resolve(result)
+                    resolve({
+                        status: 'success',
+                        deletedCount: result.deletedCount
+                    })
                 })
 
             } catch (error) {
