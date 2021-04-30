@@ -3,7 +3,6 @@ const debug = require('debug')('linto:components:WebServer:controller:file')
 const { v4: uuidv4 } = require('uuid');
 const fs = require('fs')
 const path = require('path');
-const { cpuUsage } = require('process');
 
 async function storeFile(file, type = 'audio') {
     let filePath = ''
@@ -22,7 +21,7 @@ async function storeFile(file, type = 'audio') {
 }
 
 function defaultPicture() {
-    return `${process.env.VOLUME_PROFILE_PICTURE_UPLOAD_PATH}/default.jpg`
+    return `${process.env.VOLUME_PROFILE_PICTURE_PUBLIC_PATH}/default.jpg`
 }
 
 module.exports = { storeFile, defaultPicture }

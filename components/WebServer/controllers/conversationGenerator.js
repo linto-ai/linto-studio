@@ -2,7 +2,6 @@ const debug = require('debug')('linto:components:WebServer:controller:request')
 
 const { v4: uuidv4 } = require('uuid');
 const mm = require('music-metadata')
-const dateFormat = require('dateformat')
 const moment = require('moment')
 
 //Parse the stt transcription to for conversation mongodb model

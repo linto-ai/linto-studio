@@ -124,6 +124,12 @@
               <button v-if="convoFilter.keywords !== ''" @click="convoFilter.keywords = ''" class="cancel-filter-btn"></button>
           </div>
         </div>
+        <div class="transcription-export-btn-container flex row">
+          <button @click="exportTranscription()" class="btn btn--txt-icon blue">
+            <span class="label">Export</span>
+            <span class="icon icon__transcription"></span>
+          </button>
+        </div>
       </div>
       <!-- TRANSCRIPTION -->
       <Transcription 
@@ -157,7 +163,7 @@
     <HighlightModal :conversationId="convoId"></HighlightModal>
     <EditSpeakerTranscriptionFrame></EditSpeakerTranscriptionFrame>
 
-    <SelectedTextToolbox :conversationId="convoId" :content="selectedText" :editionMode="editionMode"></SelectedTextToolbox>
+    <SelectedTextToolbox :conversationId="convoId" :editionMode="editionMode"></SelectedTextToolbox>
 
     <TranscriptionKeyupHandler
       :editionMode="editionMode"
@@ -186,7 +192,6 @@ export default {
     return {
       convoLoaded: false,
       currentTime: 0,
-      selectedText: [],
       cursorX: 0,
       cursorY: 0,
       showSelectToolbox: false,
@@ -374,6 +379,50 @@ export default {
     }
   },
   methods: {
+    downloadBlob(blob, name = 'transcription.txt') {
+      // Convert your blob into a Blob URL (a special url that points to an object in the browser's memory)
+      const blobUrl = URL.createObjectURL(blob);
+
+      // Create a link element
+      const link = document.createElement("a");
+
+      // Set link's href to point to the Blob URL
+      link.href = blobUrl;
+      link.download = name;
+
+      // Append link to the body
+      document.body.appendChild(link);
+
+      // Dispatch click event on the link
+      // This is necessary as link.click() does not work on the latest firefox
+      link.dispatchEvent(
+        new MouseEvent('click', { 
+          bubbles: true, 
+          cancelable: true, 
+          view: window 
+        })
+      );
+
+      // Remove link from body
+      document.body.removeChild(link);
+    },
+    async exportTranscription () {
+      try {
+        let payload = {
+          speakers: this.convo.speakers,
+          highlights: this.convo.highlights,
+          keywords: this.convo.keywords,
+          name: this.convo.name,
+          created: this.convo.created,
+          text: this.convoText
+        }
+        let transcriptionText = this.$options.filters.generateTranscriptionText(payload, this.convoFilter)
+        const blob = new Blob([transcriptionText], { type: "text/plain;charset=utf-8"})
+        this.downloadBlob(blob)
+      } catch (error) {
+        console.error(error)
+      }
+    },
     /* KEYWORDS */
     updateKeywords (kw) {
       let kwItemIndex = this.keywordsOptions.findIndex(kwo => kwo._id === kw._id)

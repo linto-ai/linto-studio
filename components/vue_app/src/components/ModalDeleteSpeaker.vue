@@ -99,47 +99,56 @@ export default {
     },
     async deleteSpeaker () {
       try {
-        const deleteSpeaker = await axios(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/speakers/${this.speakerId}`, {
-          method: 'delete'
-        })
-        if (deleteSpeaker.status === 200 && !!deleteSpeaker.data.msg ) {
+        const payload =  {}
+        const req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/speakers/${this.speakerId}`, 'delete', payload)
+
+        if(req.status === 200 && !!req.data.msg) {
           bus.$emit('app_notif', {
             status: 'success',
-            message: deleteSpeaker.data.msg,
+            message: req.data.msg,
             timeout: 3000
           })
+          bus.$emit(`update_speaker`, {})
           this.closeModal()
+        } else {
+          throw req
         }
       } catch (error) {
+        if(process.env.VUE_APP_DEBUG === 'true') {
+          console.error(error)
+        }
         bus.$emit('app_notif', {
           status: 'error',
-          message: !!error.data && !!error.data.msg ? error.data.msg : 'Error on deleting speaker',
+          message: !!error.msg ? error.msg : 'Error on updating speaker',
           timeout: null
         })
       }
     },
     async mergeSpeakers () {
       try {
-        const updateSpeaker = await axios(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/mergespeakers/${this.speakerId}`, {
-          method: 'patch',
-          data: {
-            newspeakerid: this.newSpeaker.value
-          }
-        })
-        if (updateSpeaker.status === 200 && !!updateSpeaker.data.msg) {
-          this.closeModal()
+        const payload =  {
+          newspeakerid: this.newSpeaker.value
+        }
+        const req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/mergespeakers/${this.speakerId}`, 'patch', payload)
+
+        if(req.status === 200 && !!req.data.msg) {
           bus.$emit('app_notif', {
             status: 'success',
-            message: updateSpeaker.data.msg,
-            timeout: null
+            message: req.data.msg,
+            timeout: 3000
           })
+          bus.$emit(`update_speaker`, {})
+          this.closeModal()
         } else {
-          throw updateSpeaker
-        }  
+          throw req
+        }
       } catch (error) {
+        if(process.env.VUE_APP_DEBUG === 'true') {
+          console.error(error)
+        }
         bus.$emit('app_notif', {
           status: 'error',
-          message: !!error.data && !!error.data.msg ? error.data.msg : 'Error on deleting speaker',
+          message: !!error.msg ? error.msg : 'Error on updating speaker',
           timeout: null
         })
       }

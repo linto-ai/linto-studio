@@ -81,7 +81,14 @@ export default {
   computed: {
     formValid () {
       return this.conversationName.valid && this.audioFile.valid
+    },
+    authToken () {
+      return this.$store.state.auth_token
     }
+  },
+  async mounted () {
+      await this.$options.filters.dispatchStore('getAuthToken')
+
   },
   methods: {
     
@@ -113,11 +120,6 @@ export default {
         const payload = {
           name: this.conversationName.value,
           description:  this.conversationDesc.value,
-          owner: {
-            user_id: "todefine1",
-            name: "Romain Lopez",
-            img: "/assets/img/users/user1.jpg"
-          },
           sharedWith: []
           // TODO : ConversationType
         }
@@ -125,12 +127,13 @@ export default {
         let formData = new FormData()
         formData.append('file', this.audioFile.value)
         formData.append('payload', JSON.stringify(payload))
-        
+
         const createConvo = await axios(`${process.env.VUE_APP_CONVO_API}/conversation/create`, {
           method: 'post',
           headers: {
             'charset': 'utf-8',
-            'Content-Type': 'multipart/form-data'
+            'Content-Type': 'multipart/form-data',
+            'Authorization': this.authToken + ' Bearer'
           },
           data: formData
         })
@@ -154,84 +157,6 @@ export default {
         this.conversationName.valid = true
       }
     }
-    /*
-    async instalLocalSkill (event) {
-     this.handleFileUpload()
-     try {
-      if (this.audioFile.valid && !this.processing) {
-        this.processing = true
-        this.setBtnLoading(event)
-        
-        let formData = new FormData()
-        formData.append('files', this.audioFile.value)
-        const installSkill = await axios.post(`${process.env.VUE_APP_NODERED_RED}/node/file`,
-          formData, 
-          {
-            headers: {
-              'charset': 'utf-8',
-              'Content-Type': 'multipart/form-data'
-            }
-          }
-        )
-        if (installSkill.status === 202) { // module already installed
-          bus.$emit('app_notif', {
-            status: 'error',
-            msg: 'this module is already installed',
-            timeout: 3000,
-            redirect: false
-          })
-          this.processing = false
-          this.unsetBtnLoading()
-
-        } else if (installSkill.status === 200) { // success
-          let payload = {
-            name: installSkill.data.name,
-            version: installSkill.data.version
-          }
-          const updateLocalSkills = await axios(`${process.env.VUE_APP_URL}/api/localskills`, {
-            method:'post',
-            data: payload
-          })
-          if(updateLocalSkills.data.status === 'success') {
-             bus.$emit('app_notif', {
-              status: 'success',
-              msg: updateLocalSkills.data.msg,
-              timeout: 3000,
-              redirect: false
-            })
-            await this.dispatchStore('getLocalSkills')
-            this.unsetBtnLoading()
-            this.processing = false
-
-          } else {
-            throw installNode
-          }
-        } else {
-          throw installSkill
-        }
-      }
-    } catch (error) {
-        console.error(error)
-        if (!!error.data) {
-          bus.$emit('app_notif', {
-            status: 'error',
-            msg: error.data.msg,
-            timeout: 3000,
-            redirect: false
-          })
-        } else {
-          bus.$emit('app_notif', {
-            status: 'error',
-            msg: `error on installing local skill`,
-            timeout: 3000,
-            redirect: false
-          })
-        }
-        await this.dispatchStore('getLocalSkills')
-        this.unsetBtnLoading()
-        this.processing = false
-      }
-    }*/
   } 
 }
 </script>

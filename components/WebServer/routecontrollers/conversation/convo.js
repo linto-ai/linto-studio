@@ -1,7 +1,8 @@
 const convoModel = require(`${process.cwd()}/models/mongodb/models/conversations`)
 const userModel = require(`${process.cwd()}/models/mongodb/models/users`)
 const { v4: uuidv4 } = require('uuid')
-const clone = require('rfdc')()
+const fs = require('fs')
+const Blob = require('cross-blob')
 
 
 async function createConvoBase(req, res, next) { //WIP TODO check userid
@@ -34,13 +35,14 @@ async function createConvoBase(req, res, next) { //WIP TODO check userid
                 })
             }
         } else {
-            res.json({
+            throw ({
                 status: 'error',
                 msg: 'error'
             })
         }
     } catch (error) {
         console.error(error)
+        res.json({ error })
     }
 }
 
@@ -54,13 +56,14 @@ async function updateSpeakerAudio(req, res, next) {
                 msg: "success!"
             })
         } else {
-            res.json({
+            throw ({
                 status: 'error',
                 msg: 'error'
             })
         }
     } catch (error) {
         console.error(error)
+        res.json({ error })
     }
 }
 

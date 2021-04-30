@@ -40,7 +40,7 @@ async function getSpeakers(req, res, next) { //pulls speaker map for a conversat
     }
 }
 
-async function createNewSpeaker(req, res, next) { 
+async function createNewSpeaker(req, res, next) {
     try {
         if (!!req.body.speakername) { // check payload information
 
@@ -49,7 +49,7 @@ async function createNewSpeaker(req, res, next) {
                 speakername: req.body.speakername,
                 speakerid: uuidv4(),
                 etime: null,
-                stime: null 
+                stime: null
             }
 
             const getSpeakers = await convoModel.getConvoSpeakers(payload.convoid)
@@ -59,29 +59,29 @@ async function createNewSpeaker(req, res, next) {
                 let speakerExist = getSpeakers[0].speakers.filter(spk => spk.speaker_name === payload.speakername)
                 if (speakerExist.length > 0) {
                     throw { message: 'Speaker name already exists' }
-                } 
+                }
             } else {
                 res.status(202).send({
                     txtStatus: 'warning',
                     msg: 'couldn\'t pull speakers'
-                })  
+                })
             }
-            
+
             //if in a turn 
             if (!!req.body.turnid) {
                 const new_payload = {
-                    turnid: req.body.turnid, 
+                    turnid: req.body.turnid,
                     convoid: req.params.conversationid
                 }
                 let audiotime = await convoModel.getTurnAudioTime(new_payload)
-                if(!!audiotime){
+                if (!!audiotime) {
                     let startime = audiotime[0].min
                     let endtime = audiotime[0].max
-                    //make sure it's not too long // WIP!!
+                        //make sure it's not too long // WIP!!
 
-                    payload.stime = startime 
-                    payload.etime = endtime 
-                }  
+                    payload.stime = startime
+                    payload.etime = endtime
+                }
             }
 
             //create the speaker (will show up in speaker map)
@@ -92,15 +92,15 @@ async function createNewSpeaker(req, res, next) {
             if (createSpeaker === 'success') {
                 // Response 
                 res.status(200).send({
-                    txtStatus: 'success',
-                    msg: 'A speaker has been added to the conversation'
-                })
-                //if speaker created, change speaker name in turn 
-                if (!!req.body.turnid){
+                        txtStatus: 'success',
+                        msg: 'A speaker has been added to the conversation'
+                    })
+                    //if speaker created, change speaker name in turn 
+                if (!!req.body.turnid) {
                     const new_payload = {
-                        turnid: req.body.turnid, 
-                        convoid: req.params.conversationid, 
-                        speakerid: payload.speakerid 
+                        turnid: req.body.turnid,
+                        convoid: req.params.conversationid,
+                        speakerid: payload.speakerid
                     }
                     let updateTurn = await convoModel.updateTurnSpeakerId(new_payload)
                     if (updateTurn !== 'success') {
@@ -109,7 +109,7 @@ async function createNewSpeaker(req, res, next) {
                 }
             } else {
                 throw createSpeaker
-            }   
+            }
         } else {
             throw { message: 'Missing information in the payload object' }
         }
@@ -123,9 +123,9 @@ async function createNewSpeaker(req, res, next) {
     }
 }
 
-async function identifySpeaker(req, res, next) { 
+async function identifySpeaker(req, res, next) {
     try {
-        if (!!req.body.newspeakername) { 
+        if (!!req.body.newspeakername) {
             const payload = {
                 convoid: req.params.conversationid,
                 speakerid: req.params.speakerid,
@@ -139,12 +139,12 @@ async function identifySpeaker(req, res, next) {
                 let speakerExist = getSpeakers[0].speakers.filter(spk => spk.speaker_name === payload.speakername)
                 if (speakerExist.length > 0) {
                     throw { message: 'Speaker name already exists' }
-                } 
+                }
             } else {
                 res.status(202).send({
                     txtStatus: 'warning',
                     msg: 'couldn\'t pull speakers'
-                })  
+                })
             }
 
             let updateSpeaker = await convoModel.updateSpeakerName(payload)
@@ -165,7 +165,6 @@ async function identifySpeaker(req, res, next) {
 
     } catch (error) {
         // Error
-        console.error(error)
         res.status(400).send({
             status: 'error',
             msg: !!error.message ? error.message : 'error on identifying speaker'
@@ -218,16 +217,18 @@ async function deleteSpeaker(req, res, next) {
 
 async function combineSpeakerIds(req, res, next) {
     try {
-        if (!!req.params.speakerid && !!req.body.newspeakerid) {
+        if (!!req.body.newspeakerid) {
             const payload = {
-                convoid: req.params.conversationid,
-                speakerid: req.params.speakerid,
-                replaceby: req.body.newspeakerid
-            }
-            // Update speaker turns
+                    convoid: req.params.conversationid,
+                    speakerid: req.params.speakerid,
+                    replaceby: req.body.newspeakerid
+                }
+                // Update speaker turns
             let updateSpeakers = await convoModel.changeSpeakerIds(payload)
             if (updateSpeakers === 'success') {
                 console.log("Success: speaker updates made")
+                next()
+            } else if (!!updateSpeakers.error && updateSpeakers.error === 'no_match') {
                 next()
             } else {
                 throw updateSpeakers

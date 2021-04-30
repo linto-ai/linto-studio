@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
-import cookieParser from 'cookie-parser'
 
 Vue.use(Vuex)
 
@@ -26,45 +25,84 @@ export default new Vuex.Store({
     strict: false,
     state: {
         conversations: '',
-        auth_token: ''
+        userInfo: ''
     },
     mutations: {
         SET_CONVERSATIONS: (state, data) => {
             state.conversations = data
         },
-        SET_AUTH_TOKEN: (state, data) => {
-            state.auth_token = data
+        SET_USER_INFOS: (state, data) => {
+            state.userInfo = data
         }
     },
     actions: {
         getConversations: async({ commit, state }) => {
             try {
-                const token = getCookie('authToken')
-                const getConvos = await axios(`${process.env.VUE_APP_CONVO_API}/conversations`, {
-                    method: 'get',
+                let token = ''
+                if (!!state.userInfo.token) {
+                    token = state.userInfo.token
+                } else {
+                    token = getCookie('authToken')
+                }
+                const getConvos = await axios.get(`${process.env.VUE_APP_CONVO_API}/conversations`, {
                     headers: {
-                        'Authorization': `${token} Bearer`
+                        'Authorization': `Bearer ${token}`
                     }
                 })
                 commit('SET_CONVERSATIONS', getConvos.data)
                 return state.conversations
             } catch (error) {
+                console.error(error)
                 return ({
                     error: 'Error on getting conversations'
                 })
             }
         },
-        getAuthToken: ({ commit, state }) =>  {
+        getuserInfo: async({ commit, state }) =>  {
             try {
                 const token = getCookie('authToken')
-                commit('SET_AUTH_TOKEN', token)
-                return state.auth_token
+                const userId = getCookie('userId')
+
+                const getInfo = await axios.get(`${process.env.VUE_APP_CONVO_API}/users/${userId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                commit('SET_USER_INFOS', { token, ...getInfo.data })
+                return state.userInfo
             } catch (error) {
                 console.error('store', error)
             }
         }
     },
     getters: {
+        conversationsByUserId: (state) => (userId) => {
+            try {
+                const conversations = state.conversations
+                if (conversations.length > 0) {
+                    let userConvos = []
+                    for (let convo of conversations) {
+                        // is owner
+                        if (convo.owner === userId) {
+                            userConvos.push(convo)
+                        }
+                        // is shared with 
+                        if (convo.sharedWith.length > 0) {
+                            for (let share of convo.sharedWith) {
+                                if (share.user_id === userId) {
+                                    userConvos.push(convo)
+                                }
+                            }
+                        }
+                    }
+                    return userConvos
+                } else {
+                    throw 'conversations not found'
+                }
+            } catch (error) {
+
+            }
+        },
         conversationById: (state) => (convoId) => {
             try {
                 const conversation = state.conversations.filter(f => f._id === convoId)
@@ -103,6 +141,7 @@ export default new Vuex.Store({
                 const conversation = state.conversations.filter(c => c._id === convoId)
                 return conversation[0].highlights
             } catch (error) {
+                conversation
                 return error.toString()
             }
         },
@@ -140,6 +179,38 @@ export default new Vuex.Store({
             } catch (error) {
                 return error.toString()
             }
+        },
+        wordsToTextBetweenWordIds: (state) => (convoId, payload) => {
+            try {
+                if (payload.startTurnPosition === payload.endTurnPosition) {
+                    const conversation = state.conversations.filter(c => c._id === convoId)
+                    if (conversation.length > 0) {
+                        const text = conversation[0].text
+                        const starWordPos = payload.startWordPosition
+                        const endWordPos = payload.endWordPosition
+                        const turn = text.find(t => t.turn_id === payload.startTurnId)
+                        let txt = ''
+                        if (!!turn.words && turn.words.length > 0) {
+                            for (let word of turn.words) {
+                                if (word.pos >= starWordPos && word.pos <= endWordPos) {
+                                    txt += word.word + ' '
+                                }
+                            }
+                            return txt
+                        } else {
+                            throw 'Turn not found'
+                        }
+                    } else {
+                        throw 'conversation not found'
+                    }
+                } else {
+                    throw 'Can\'t highlight on two turns'
+                }
+            } catch (error) {
+                return error.toString()
+
+            }
         }
+
     }
 })

@@ -22,7 +22,6 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
 import { bus } from '../main.js'
 export default {
   data () {
@@ -49,6 +48,7 @@ export default {
     })
   } ,
   methods: {
+    
     addSpeaker() {
       const speaker = this.speakerName
       if (speaker.length === 0) {
@@ -58,35 +58,50 @@ export default {
       }
     },
     async updateSpeaker (name) {
-      // check if selected speaker is already in speakers list
-      const speakerExist = this.speakers.filter(sp => sp.speaker_name === name)
-      if(speakerExist.length > 0) { 
+      try {
+        // check if selected speaker is already in speakers list
+        const speakerExist = this.speakers.filter(sp => sp.speaker_name === name)
+        
         // Replace a speaker by another one (in the list) > Merge
-        bus.$emit('modal_merge_speaker_by_target', {
-          speaker: this.speaker,
-          targetSpeaker: speakerExist[0]
-        })
-        this.showFrame = false
+        if(speakerExist.length > 0) { 
+          bus.$emit('modal_merge_speaker_by_target', {
+            speaker: this.speaker,
+            targetSpeaker: speakerExist[0]
+          })
+          this.showFrame = false
 
-      } else {
+        } 
         // Replace speaker name by a speaker that has NO TURN in this transcription
-        const updateSpeakerName = await axios(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/speakers/${this.speaker.speaker_id}`, {
-          method: 'patch', 
-          data: {
+        else {
+          const payload =  {
             newspeakername: name
           }
-        })
-        if (updateSpeakerName.status === 200) {
-          console.log('update user : success')
-          // todo > notification
-        } else {
-          console.log('update user : error')
-          // todo > notification
+          const req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/speakers/${this.speaker.speaker_id}`, 'patch',payload )
+
+          if(req.status === 200 && !!req.data.msg) {
+            bus.$emit('app_notif', {
+              status: 'success',
+              message: req.data.msg,
+              timeout: 3000
+            })
+
+            bus.$emit(`update_speaker`, {})
+            this.showFrame = false
+            this.speakerName = ''
+          } else {
+            throw req
+          }
         }
-        
-        bus.$emit(`update_speaker`, {})
-        this.showFrame = false
-        this.speakerName = ''
+      } catch (error) {
+        if(process.env.VUE_APP_DEBUG === 'true') {
+          console.error(error)
+        }
+        console.log('Err>', !!error.msg ? error.msg : 'Error on updating speaker')
+        bus.$emit('app_notif', {
+          status: 'error',
+          message: !!error.msg ? error.msg : 'Error on updating speaker',
+          timeout: null
+        })
       }
     },
     closeFrame () {

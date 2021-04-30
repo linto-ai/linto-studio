@@ -37,7 +37,8 @@
         .form-label {
             color: $blueChart;
         }
-        input[type="text"] {
+        input[type="text"],
+        input[type="password"] {
             background-color: #edf8ff;
         }
     }

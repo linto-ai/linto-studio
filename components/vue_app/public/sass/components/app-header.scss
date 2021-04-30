@@ -10,15 +10,7 @@
 /* User Menu */
 
 .user-menu {
-    .user-menu--name {
-        display: inline-block;
-        height: 40px;
-        line-height: 40px;
-        font-size: 14px;
-        font-weight: 700;
-        vertical-align: top;
-        padding-right: 10px;
-    }
+    position: relative;
     .user-menu-btn {
         display: inline-block;
         height: 40px;
@@ -29,11 +21,21 @@
         @include transition(all 0.3s ease);
         .user-menu-btn--img {
             display: inline-block;
-            height: 36px;
-            width: 36px;
+            height: 32px;
+            width: 32px;
             @include borderRadius(20px);
             border: 2px solid #fff;
             vertical-align: top;
+            margin: 2px;
+        }
+        .user-menu--name {
+            display: inline-block;
+            height: 40px;
+            line-height: 40px;
+            font-size: 14px;
+            font-weight: 700;
+            vertical-align: top;
+            padding-left: 10px;
         }
         .user-menu-btn--arrow {
             display: inline-block;
@@ -52,13 +54,56 @@
                 background-color: $blueChart;
             }
         }
+        &.opened {
+            @include borderRadiusMulti(20px, 20px, 0, 0);
+        }
     }
     .user-menu-links {
-        &.user-menu-links__opened {
+        &.opened {
+            @include buttonShadow();
             display: inline-block;
+            width: 100%;
+            position: absolute;
+            top: 39px;
+            left: 0;
+            background-color: #fff;
+            padding: 10px 0;
+            @include borderRadiusMulti(0, 0, 20px, 20px);
         }
-        &.user-menu-links__closed {
+        &.closed {
             display: none;
+        }
+        .user-menu-links--item {
+            padding: 5px 10px;
+            margin: 0 10px;
+            height: 20px;
+            text-decoration: none;
+            .label {
+                font-size: 14px;
+                font-weight: 600;
+                margin-left: 5px;
+                height: 20px;
+                line-height: 20px;
+                vertical-align: top;
+                color: $blueChart;
+            }
+            .icon {
+                display: inline-block;
+                height: 20px;
+                width: 20px;
+                vertical-align: top;
+                @include maskImage('../img/logout.svg');
+                background-color: $blueChart;
+            }
+            &:hover {
+                background-color: $blueChart;
+                .label {
+                    color: #fff;
+                }
+                .icon {
+                    background-color: #fff;
+                }
+            }
         }
     }
 }

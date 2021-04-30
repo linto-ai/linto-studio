@@ -475,6 +475,7 @@ a {
 
 textarea,
 input[type="text"],
+input[type="password"],
 select {
     font-family: $comfortaa;
     color: #333333;
@@ -502,8 +503,9 @@ textarea {
 }
 
 input[type="text"],
+input[type="password"],
 select {
-    max-width: 320px;
+    max-width: 280px;
 }
 
 .error-field {

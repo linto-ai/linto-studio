@@ -1,5 +1,3 @@
-const { patch } = require('request')
-
 const debug = require('debug')('app:router:api:conversation:convo')
 
 // Speakers
@@ -58,24 +56,28 @@ module.exports = (webserver) => {
             path: '/:conversationid/speakers',
             method: 'post',
             requireAuth: true,
+            requireWriteAccess: true,
             controller: createNewSpeaker
         },
         {
             path: '/:conversationid/speakers/:speakerid',
             method: 'patch',
             requireAuth: true,
+            requireWriteAccess: true,
             controller: identifySpeaker
         },
         {
             path: '/:conversationid/speakers/:speakerid',
             method: 'delete',
             requireAuth: true,
+            requireWriteAccess: true,
             controller: deleteSpeaker
         },
         {
             path: '/:conversationid/mergespeakers/:speakerid',
             method: 'patch',
             requireAuth: true,
+            requireWriteAccess: true,
             controller: [combineSpeakerIds, deleteSpeaker]
         },
         {
@@ -109,9 +111,9 @@ module.exports = (webserver) => {
             controller: [splitTurns, renumberTurns]
         },
         {
-            path: '/:conversationid/text', 
-            method: 'put', 
-            requireAuth: false, 
+            path: '/:conversationid/text',
+            method: 'put',
+            requireAuth: false,
             controller: replaceTurnText
         }
         // {

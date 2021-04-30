@@ -56,9 +56,8 @@
 </template>
 <script>
 export default {
-  props: ['authToken'],
+  props: ['userInfo'],
   data () {
-    
     return {
       convosLoaded: false,
       sortBy: 'date',
@@ -100,34 +99,42 @@ export default {
   },
   computed: {
     sortedConversations () {
-      let sortedArray = this.conversations
-      if(sortedArray.length > 0) {
-        const key = this.sortBy
-        if (this.sortDirection === 'down') {
-          return sortedArray.sort(function (a, b) {
-            if (a[key] > b[key]) {
-              return 1
-            }
-            if (a[key] < b[key]) {
-              return -1
-            }
-            return 0
-          })
-        } else {
-          return sortedArray.sort(function (a, b) {
-            if (a[key] < b[key]) {
-              return 1
-            }
-            if (a[key] > b[key]) {
-              return -1
-            }
-            return 0
-          })
+      if(!!this.conversations) {
+        let sortedArray = this.conversations
+        if(sortedArray.length > 0) {
+          const key = this.sortBy
+          if (this.sortDirection === 'down') {
+            return sortedArray.sort(function (a, b) {
+              if (a[key] > b[key]) {
+                return 1
+              }
+              if (a[key] < b[key]) {
+                return -1
+              }
+              return 0
+            })
+          } else {
+            return sortedArray.sort(function (a, b) {
+              if (a[key] < b[key]) {
+                return 1
+              }
+              if (a[key] > b[key]) {
+                return -1
+              }
+              return 0
+            })
+          }
         }
+      } else {
+        return []
       }
+      
     },
     conversations () {
-      return this.$store.state.conversations
+      if(!!this.userInfo) {
+        return this.$store.getters.conversationsByUserId(this.userInfo._id)
+      }
+      return []
     }
   },
   methods: {
@@ -145,9 +152,9 @@ export default {
     },
      secToHMS (time) {
       const totalSeconds = parseInt(time)
-      const hour = Math.floor(time / (60 * 60))
-      const min = Math.floor(time / 60)
-      const sec =  Math.floor(time % 60)
+      const hour = Math.floor(totalSeconds / (60 * 60))
+      const min = Math.floor(totalSeconds / 60)
+      const sec =  Math.floor(totalSeconds % 60)
       return `${hour < 10  ? '0' + hour : hour}:${min < 10 ? '0' + min : min}:${sec < 10 ? '0' + sec : sec }`
     },
     redirectConversationPage (convoId) {

@@ -47,7 +47,7 @@
 <script>
 import { bus } from '../main.js'
 export default {
-  props: ['content', 'selection', 'conversationId'],
+  props: ['editionMode', 'conversationId'],
   data () {
     return {
       show: false,
@@ -66,13 +66,10 @@ export default {
   watch: {
     show (data) {
       if (data === true) {
-        if (this.content.length === 1) {
-          this.showKeywordOption = true
           const audioPlayer = document.getElementById('audio-player')
           if(audioPlayer.classList.contains('isPlaying')){
             bus.$emit('audio_player_pause', {})
           }
-        }
       }
     }
   },
@@ -92,19 +89,21 @@ export default {
       bus.$emit('close_selected_toolbox', {})
     },
     openHighlightModal () {
+      console.log(this.selectionObj.startTurnId, this.selectionObj.endTurnId)
+      if(this.selectionObj.startTurnId === this.selectionObj.endTurnId) {
+        bus.$emit('highlight_modal_open', {
+          selectionObj: this.selectionObj,
+          conversationId: this.conversationId
+        })
+      }
       this.closeToolbox()
-      bus.$emit('highlight_modal_open', {
-        content: this.content,
-        selectionObj: this.selectionObj,
-        conversationId: this.conversationId
-      })
     },
     openSplitModal () {
-      this.closeToolbox()
       bus.$emit('split_modal_open', {
         selectionObj: this.selectionObj,
         convoId: this.convoId
       })
+      this.closeToolbox()
     },
     openMergeModal() {
       console.log({

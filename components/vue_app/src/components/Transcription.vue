@@ -204,7 +204,7 @@ export default {
               endTurnPosition,
               endTurnSpeakerId
             }
-            console.log('SelecitonObj', this.selectionObj)
+            console.log('selectionObj', this.selectionObj)
             if(!startTurn.classList.contains('transcription-speaker-sentence') || !endTurn.classList.contains('transcription-speaker-sentence')) {
               return false 
             } else {

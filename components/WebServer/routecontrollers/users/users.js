@@ -28,7 +28,7 @@ async function getUserbyId(req, res, next) {
             let response = await model.getUserbyId(postUserId)
             if (response && response.length) {
                 res.json({
-                    status: response[0]
+                    ...response[0]
                 })
             } else {
                 res.json({
@@ -46,20 +46,6 @@ async function getUserbyId(req, res, next) {
     }
 }
 
-async function getUserByName(req, res, next) {
-    // get user id input then return user
-    try {
-        const username = req.params.username
-        let response = await model.getUserByName(username)
-        res.json(response)
-    } catch (error) {
-        console.error(error)
-        res.json({
-            status: "error",
-            msg: error
-        })
-    }
-}
 
 async function getUserByEmail(req, res, next) {
     try {
@@ -120,70 +106,28 @@ async function deleteUser(req, res, next) {
     }
 }
 
-async function addUserConvoAccess(req, res, next) {
-    try {
-        const payload = req.body
-        const addConvo = await model.updateUserAccess(payload)
-        if (addConvo === 'success') {
-            res.json({
-                    status: 'success',
-                    msg: 'convo has been added to user'
-                })
-                //!! now need to add user to convo with rights??
-
-        } else {
-            res.json({
-                status: "error",
-                msg: error
-            })
-        }
-    } catch (error) {
-        res.json({
-            status: "error",
-            msg: error
-        })
-    }
-}
-
-/// WIP
-async function removeUserConvoAccess(req, res, next) {
-    try {
-        const payload = req.body
-        const removeConvo = await model.removeUserAccess(payload)
-        if (removeConvo === 'success') {
-            res.json({
-                    status: 'success',
-                    msg: 'convo has been added to user'
-                })
-                //!! now need to remove user from convo?
-
-        } else {
-            res.json({
-                status: "error",
-                msg: error
-            })
-        }
-    } catch (error) {
-        res.json({
-            status: "error",
-            msg: error
-        })
-    }
-}
-
 async function logout(req, res, next) {
     try {
-        if (!req.payload.data && !req.payload.data.userId) next(next(new UserParameterMissing()))
-        let userId = model.getObjectId(req.payload.data.userId)
-        model.update({
-            _id: userId,
-            keyToken: ''
-        }).then(user => {
-            if (user) res.json({ status: 'success', msg: 'User has been disconnected' })
-            else next(new UserLogoutError())
-        })
+        if (!!req.session.userId) {
+            let userId = req.session.userId
+            model.update({
+                _id: userId,
+                keyToken: ''
+            }).then(user => {
+                req.session.destroy(function(err) {
+                    // cannot access session here
+                    if (err) {
+                        throw 'Error on deleting session'
+                    }
+                    res.redirect('/login')
+                })
+            })
+        } else {
+            throw 'Session not found'
+        }
     } catch (error) {
-        next(error)
+        console.error(error)
+        res.redirect('/login')
     }
 }
 
@@ -191,10 +135,7 @@ module.exports = {
     getUsers,
     getUserbyId,
     getUserByEmail,
-    getUserByName,
     deleteUser,
     createUser,
-    addUserConvoAccess,
-    removeUserConvoAccess,
     logout
 }

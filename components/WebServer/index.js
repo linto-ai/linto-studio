@@ -10,13 +10,11 @@ const passport = require('passport')
 
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
-    //const passport = require('passport')
 const pathToSwaggerUi = require('swagger-ui-dist').absolutePath()
 const WebServerErrorHandler = require('./error/handler')
 
 const CORS = require('cors')
 let corsOptions = {}
-
 if (process.env.CORS_ENABLED && process.env.CORS_API_WHITELIST.length > 0) {
     whitelistDomains = process.env.CORS_API_WHITELIST.split(',')
     corsOptions = {

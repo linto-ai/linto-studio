@@ -222,7 +222,6 @@
 import EditSpeakerFrame from '@/components/EditSpeakerFrame.vue'
 import ModalMergeSpeakersWithTarget from '@/components/ModalMergeSpeakersWithTarget.vue'
 import ModalDeleteSpeaker from '@/components/ModalDeleteSpeaker.vue'
-import axios from 'axios'
 import { bus } from '../main.js'
 export default {
   data () {
@@ -426,7 +425,7 @@ export default {
         target.classList.remove('active')
       }, time * 1000)
     },
-    async defineNewSpeakerName (spkCount) {
+    defineNewSpeakerName (spkCount) {
         let newSpeakerName = `spk${parseInt(spkCount) + 1}`
         let speakerExist = this.conversation.speakers.filter(spk => spk.speaker_name === newSpeakerName)
         if(speakerExist.length > 0) {
@@ -437,23 +436,30 @@ export default {
     },
     async addSpeaker () {
       try {
-        let newSpeakerName = await this.defineNewSpeakerName(this.conversation.speakers.length)
-        const addSpeaker = await axios(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/speakers`, {
-          method: 'post', 
-          data: {
-            convoid: this.convoId,
-            speakername: newSpeakerName
-          }
-        })
-        if (addSpeaker.status === 200) {
+        let newSpeakerName = this.defineNewSpeakerName(this.conversation.speakers.length)
+        const payload =  {
+          convoid: this.convoId,
+          speakername: newSpeakerName
+        }
+        const req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/speakers`, 'post', payload)
+
+        if(req.status === 200 && !!req.data.msg) {
+          bus.$emit('app_notif', {
+            status: 'success',
+            message: req.data.msg,
+            timeout: 3000
+          })
           await this.dispatchStore('getConversations')
         } else {
-          throw addSpeaker
+          throw req
         }
       } catch (error) {
+        if(process.env.VUE_APP_DEBUG === 'true') {
+          console.error(error)
+        }
         bus.$emit('app_notif', {
           status: 'error',
-          message: !!error.data && !!error.data.msg ? error.data.msg : 'Error on deleting speaker',
+          message: !!error.msg ? error.msg : 'Error on adding speaker',
           timeout: null
         })
       }

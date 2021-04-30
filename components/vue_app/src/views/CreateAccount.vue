@@ -34,7 +34,7 @@
           <div class="form-field flex col">
             <span class="form-label">Password :</span>
             <input 
-              type="text" 
+              type="password" 
               v-model="password.value"
               :class="password.error !== null ? 'error' : ''"
               @change="testPassword(password)">
@@ -43,7 +43,7 @@
           <div class="form-field flex col">
             <span class="form-label">Password :</span>
             <input 
-              type="text" 
+              type="password" 
               v-model="passwordConfirm.value"
               :class="passwordConfirm.error !== null ? 'error' : ''"
               @change="testPasswordConfirm(passwordConfirm, password)">
