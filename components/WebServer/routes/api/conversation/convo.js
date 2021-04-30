@@ -25,6 +25,7 @@ const {
 const {
     createConvoBase,
     updateSpeakerAudio,
+    deleteConvo
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/convo.js`)
 
 const {
@@ -47,6 +48,12 @@ module.exports = (webserver) => {
             method: 'post',
             requireAuth: true,
             controller: createConvoBase
+        },{
+            path: '/',
+            method: 'delete',
+            requireAuth: true,
+            requireOwnerAccess: true,
+            controller: deleteConvo
         },
         {
             path: '/:conversationid/speakers',

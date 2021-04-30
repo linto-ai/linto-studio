@@ -1,4 +1,6 @@
 const MongoModel = require(`${process.cwd()}/models/mongodb/model`)
+const debug = require('debug')('linto:conversation-manager:models:mongodb:models:conversations')
+
 
 class ConvoModel extends MongoModel {
 
@@ -389,31 +391,33 @@ class ConvoModel extends MongoModel {
     //     }
     // }
 
-    async getTurnAudioTime(payload){
+    async getTurnAudioTime(payload) {
         //returns the absolute start and end time for a single turn
-        try{
+        try {
 
-            const match1 = {"$match": {_id: this.getObjectId(payload.convoid)}}
+            const match1 = { "$match": { _id: this.getObjectId(payload.convoid) } }
 
-            const unwind1 = {"$unwind": "$text"}
-            const unwind2 = {"$unwind": "$text.words"}
-            const match2 = {"$match": {"text.turn_id": payload.turnid}}
-            const group = {"$group": {
-                _id: null, 
-                max: {
-                    "$max": "$text.words.etime"
-                }, 
-                min: {
-                    "$min": "$text.words.stime"
+            const unwind1 = { "$unwind": "$text" }
+            const unwind2 = { "$unwind": "$text.words" }
+            const match2 = { "$match": { "text.turn_id": payload.turnid } }
+            const group = {
+                "$group": {
+                    _id: null,
+                    max: {
+                        "$max": "$text.words.etime"
+                    },
+                    min: {
+                        "$min": "$text.words.stime"
+                    }
                 }
-            }}
+            }
 
             const query = [match1, unwind1, unwind2, match2, group]
 
             return await this.mongoAggregate(query)
         } catch (error) {
             console.error(error)
-            return error 
+            return error
         }
     }
 
@@ -576,6 +580,19 @@ class ConvoModel extends MongoModel {
     // }
 
 
+    // delete a user
+    async deleteConversationById(id) {
+        try {
+            const query = {
+                _id: this.getObjectId(id)
+            }
+            return await this.mongoDelete(query)
+
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
 }
 
 module.exports = new ConvoModel()
