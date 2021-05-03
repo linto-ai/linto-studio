@@ -50,6 +50,7 @@ module.exports = (webserver) => {
             path: '/:conversationid/speakers',
             method: 'get',
             requireAuth: true,
+            requireReadAccess: true,
             controller: getSpeakers
         },
         {
@@ -84,12 +85,14 @@ module.exports = (webserver) => {
             path: '/:conversationid/turnspeaker/:turnid',
             method: 'put',
             requireAuth: true,
+            requireWriteAccess: true,
             controller: identifyTurnSpeaker
         },
         {
             path: '/:conversationid/turn/:speakerid',
             method: 'post',
             requireAuth: true,
+            requireWriteAccess: true,
             controller: [createTurn, renumberTurns]
         },
         {
@@ -113,14 +116,8 @@ module.exports = (webserver) => {
         {
             path: '/:conversationid/text',
             method: 'put',
-            requireAuth: false,
+            requireAuth: true,
             controller: replaceTurnText
         }
-        // {
-        //     path: '/:conversationid/text', 
-        //     method: 'put',
-        //     requireAuth: false,
-        //     controller: updateAllText
-        // }
     ]
 }

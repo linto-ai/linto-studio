@@ -512,6 +512,24 @@ export default {
 
         const newObject = this.buildTextObject()
         console.log('buildTextObject', newObject)
+
+
+        for(let turn of newObject) {
+          let payload = {
+            turnid: turn.turn_id,
+            words: turn.words
+          }
+          console.log(turn)
+          const req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/text`, 'put', payload)
+
+          console.log(req)
+
+          if(req.status !== 200) {
+            throw req
+          }
+        }
+
+        /*
         const updateText = await axios(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/text`, {
           method: 'put', 
           data: {
@@ -524,7 +542,7 @@ export default {
             setTimeout(()=>{
               this.refreshConversation++
             }, 300)
-          }
+          }*/
       } catch (error) {
         console.error(error)
       }

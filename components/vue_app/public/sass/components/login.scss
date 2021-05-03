@@ -36,6 +36,11 @@
         margin-bottom: 10px;
         .form-label {
             color: $blueChart;
+            strong {
+                font-weight: 500;
+                font-size: 18px;
+                color: $redChart;
+            }
         }
         input[type="text"],
         input[type="password"] {

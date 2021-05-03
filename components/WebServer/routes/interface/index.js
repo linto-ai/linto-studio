@@ -38,7 +38,7 @@ module.exports = (webServer) => {
             ]
         },
         {
-            // Conversation overview
+            // Conversation transcription
             path: '/conversation/:convoId/transcription',
             method: 'get',
             requireSession: true,

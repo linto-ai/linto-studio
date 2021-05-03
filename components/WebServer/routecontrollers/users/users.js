@@ -63,12 +63,13 @@ async function getUserByEmail(req, res, next) {
 
 async function createUser(req, res, next) {
     try {
-        const payload = req.body
-        const email = payload.email
+        const payload = JSON.parse(req.body.payload)
         if (!payload.email || !payload.firstname || !payload.lastname || !payload.password) throw (new UserParameterMissing())
 
-        if (req.files && Object.keys(req.files).length !== 0 && req.files.img)
-            payload.img = await StoreFile.storeFile(req.files.img, 'picture')
+        const email = payload.email
+        console.log(req.files)
+        if (req.files && Object.keys(req.files).length !== 0 && req.files.file)
+            payload.img = await StoreFile.storeFile(req.files.file, 'picture')
         else payload.img = StoreFile.defaultPicture()
 
         const userEmail = await model.getUserByEmail(email)
