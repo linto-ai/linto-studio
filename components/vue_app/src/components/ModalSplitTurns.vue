@@ -215,7 +215,6 @@
 </template>
 <script>
 import { bus } from '../main.js'
-import axios from 'axios'
 export default {
   data () {
     return {
@@ -306,104 +305,109 @@ export default {
         this.newSpeaker.valid = true
       }
     },
-    async addSpeaker (speakerName) {
+    async addSpeaker (speakername) {
       try {
-        const addSpeaker = await axios(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/speakers`, {
-          method: 'post', 
-          data: {
-            speakername: speakerName
-          }
-        })
-        if (addSpeaker.status === 200 || addSpeaker.status === 202) {
+        const payload =  { speakername }
+        const req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/speakers`, 'post', payload)
+        console.log('ADD SPK:', req)
+        if((req.status === 200 || req.status === 200) && !!req.data.msg) {
+          bus.$emit('app_notif', {
+            status: 'success',
+            message: req.data.msg,
+            timeout: 3000
+          })
           await this.dispatchStore('getConversations')
-          return true
         } else {
-          throw addSpeaker
+          throw req
         }  
       } catch (error) {
-        return false
+        if(process.env.VUE_APP_DEBUG === 'true') {
+          console.error(error)
+        }
+        bus.$emit('app_notif', {
+          status: 'error',
+          message: !!error.msg ? error.msg : 'Error on updating speaker',
+          timeout: null
+        })
       }
     },
     
     async splitTurn () {
       try {
         this.checkForm()
+
+        // create a new speaker
         if (this.newSpeaker.valid === true) {
-          // create a new speaker
           if (!this.selectSpeakerList) {
-            const createSpeaker = await this.addSpeaker(this.newSpeaker.value)
-            if (!createSpeaker) {
-              throw createSpeaker
-            } else {
-              await this.dispatchStore('getConversations')
-              
-              let newSpk = this.conversation.speakers.find(spk => spk.speaker_name === this.newSpeaker.value)
-              
-              if (!!newSpk.speaker_id && !!newSpk.speaker_name) {
-                this.selectSpeakerList = true
-                this.newSpeaker = {
-                  value: newSpk.speaker_id,
-                  valid: true,
-                  error: null
-                }
+            await this.addSpeaker(this.newSpeaker.value)
+            await this.dispatchStore('getConversations')
+            let newSpk = this.conversation.speakers.find(spk => spk.speaker_name === this.newSpeaker.value)
+            if (!!newSpk.speaker_id && !!newSpk.speaker_name) {
+              this.selectSpeakerList = true
+              this.newSpeaker = {
+                value: newSpk.speaker_id,
+                valid: true,
+                error: null
               }
             }
-          } 
-          let payload = {}
-          
-          // group of words selected
-          if (!this.oneWordSelected) {
-            payload = {
-              convoid: this.convoId,
-              speakerid: this.newSpeaker.value,
-              positions: parseInt(this.selectionObj.startTurnId) === parseInt(this.selectionObj.endTurnId) ? [parseInt(this.selectionObj.startTurnPosition)] : [parseInt(this.selectionObj.startTurnPosition), parseInt(this.selectionObj.endTurnPosition)],
-              wordids: [this.selectionObj.startWordId, this.selectionObj.endWordId],
-              splitype: 0
-            }
-          } 
-              
-          // 1 word selected
-          else {
-            let splitVal = 0
-            if (this.splitType === 'before'|| this.oneWordLastPosition) {
-              splitVal = 1
-            } else if (this.splitType === 'after' || this.oneWordFirstPosition) {
-              splitVal = 2
-            }
-            payload = {
-              convoid: this.convoId,
-              speakerid: this.newSpeaker.value,
-              positions: [parseInt(this.selectionObj.startTurnPosition)],
-              turnids: [this.selectionObj.startTurnId],
-              wordids: [this.selectionObj.startWordId], 
-              splitype: splitVal
-            }
           }
-          const splitTurns = await axios(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/turn/split`, {
-            method: 'put',
-            data: payload 
-          })
-          if((splitTurns.status === 200|| splitTurns.status === 202) && !!splitTurns.data.msg) {
-            this.closeModal()
-            this.dispatchStore('getConversations')
-            bus.$emit('app_notif', {
-              status: 'success',
-              message: splitTurns.data.msg,
-              timeout: 3000
-            })
-          } else {
-            throw splitTurns
+        } 
+        
+        let payload = {}
+        
+        // group of words selected
+        if (!this.oneWordSelected) {
+          payload = {
+            convoid: this.convoId,
+            speakerid: this.newSpeaker.value,
+            turnpositions: parseInt(this.selectionObj.startTurnId) === parseInt(this.selectionObj.endTurnId) ? [parseInt(this.selectionObj.startTurnPosition)] : [parseInt(this.selectionObj.startTurnPosition), parseInt(this.selectionObj.endTurnPosition)],
+            wordids: [this.selectionObj.startWordId, this.selectionObj.endWordId],
+            splitype: 0
+          }
+        } 
+            
+        // 1 word selected
+        else {
+          let splitVal = 0
+          if (this.splitType === 'before'|| this.oneWordLastPosition) {
+            splitVal = 1
+          } else if (this.splitType === 'after' || this.oneWordFirstPosition) {
+            splitVal = 2
+          }
+          payload = {
+            convoid: this.convoId,
+            speakerid: this.newSpeaker.value,
+            turnpositions: [parseInt(this.selectionObj.startTurnPosition)],
+            turnids: [this.selectionObj.startTurnId],
+            wordids: [this.selectionObj.startWordId], 
+            splitype: splitVal
           }
         }
+        
+        // Request 
+        const req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/turn/split`, 'put', payload)
+
+        if((req.status === 200 || req.status === 202) && !!req.data.msg) {
+          bus.$emit('app_notif', {
+            status: 'success',
+            message: req.data.msg,
+            timeout: 3000
+          })
+          this.closeModal()
+          await this.dispatchStore('getConversations')
+        } else {
+          throw req
+        }
       } catch (error) {
-        console.error(error)
+        if(process.env.VUE_APP_DEBUG === 'true') {
+          console.error(error)
+        }
         bus.$emit('app_notif', {
           status: 'error',
-          message: !!error.data && !!error.data.msg ? error.data.msg : 'Error on spliting turns',
+          message: !!error.msg ? error.msg : 'Error on updating speaker',
           timeout: null
         })
       }
-      
     },
     closeModal () {
       this.modalShow = false

@@ -10,7 +10,7 @@
         <!-- BODY : merge with a target speaker -->
         <div class="modal--body" >
           <p>You're about to identify a speaker as an onther existing speaker in the conversation. If you apply this modifications, both speakers will be merged as one.<br/>
-          Are you sure you want to replace speaker "{{speaker.speaker_name }}" by "{{ targetSpeaker.speaker_name }}" ?</p>
+          <strong>Are you sure you want to replace speaker "{{speaker.speaker_name }}" by "{{ targetSpeaker.speaker_name }}" ?</strong></p>
         </div>
         <div class="modal--footer flex row">
           <button class="btn btn--txt-icon grey" @click="closeModal()">
@@ -27,7 +27,6 @@
 </template>
 <script>
 import { bus } from '../main.js'
-import axios from 'axios'
 export default {
   props: ['convoId'],
   data () {

@@ -141,13 +141,12 @@
           }  
         } catch (error) {
           if(!!error.data.error.message) {
-              
-              if(error.data.error.name === 'UserEmailAlreadyUsed'){
-                this.email.valid = false
-                this.email.error = error.data.error.message
-               } else {
-                 this.formError = error.data.error.message
-               }
+            if(error.data.error.name === 'UserEmailAlreadyUsed'){
+              this.email.valid = false
+              this.email.error = error.data.error.message
+              } else {
+                this.formError = error.data.error.message
+              }
           } else {
             this.formError = 'An error has occured, please try again later'
           }
