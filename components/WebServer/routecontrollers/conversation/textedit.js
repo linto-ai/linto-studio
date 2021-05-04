@@ -137,6 +137,14 @@ async function replaceTurnText(req, res, next) {
             payload.words = newwords
             payload.convoid = req.params.conversationid
 
+            //verify that times are floats
+            if (payload.words.length > 0) {
+                for (let word of payload.words) {
+                    word.etime = parseFloat(word.etime)
+                    word.stime = parseFloat(word.stime)
+                }
+            }
+
             const replaceWords = await convoModel.replaceWords(payload)
 
             if (replaceWords === 'success') {
