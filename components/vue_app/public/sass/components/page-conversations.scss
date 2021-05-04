@@ -78,7 +78,7 @@
                     }
                 }
                 .table-user-img {
-                    height: 30px;
+                    height: 40px;
                     position: relative;
                     .table-user-img__span {
                         width: 40px;
@@ -110,6 +110,7 @@
                                 background-color: $blueChart;
                                 color: #fff;
                                 z-index: 5;
+                                white-space: nowrap;
                             }
                         }
                     }

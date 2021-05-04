@@ -1,7 +1,7 @@
 .modal-wrapper {
     position: absolute;
     top: 0;
-    height: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
@@ -42,6 +42,10 @@
         }
     }
     border-bottom: 1px solid #ececec;
+    input,
+    select {
+        width: 220px;
+    }
 }
 
 .modal--footer {
@@ -160,4 +164,10 @@
             }
         }
     }
+}
+
+.modal-words-selected {
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    background-color: #f2f2f2;
 }

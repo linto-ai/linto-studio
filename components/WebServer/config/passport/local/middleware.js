@@ -8,8 +8,13 @@ const UsersModel = require(`${process.cwd()}/models/mongodb/models/users`)
 const ConversationModel = require(`${process.cwd()}/models/mongodb/models/conversations`)
 
 const { MalformedToken, MultipleUserFound } = require(`${process.cwd()}/components/WebServer/error/exception/auth`)
-const { ConversationOwnerAccessDenied, ConversationReadAccessDenied, ConversationWriteAccessDenied,
-    ConversationNotShared, ConversationIdRequire } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
+const {
+    ConversationOwnerAccessDenied,
+    ConversationReadAccessDenied,
+    ConversationWriteAccessDenied,
+    ConversationNotShared,
+    ConversationIdRequire
+} = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
 const refreshToken = require('./token/refresh')
 const RIGHTS = require(`${process.cwd()}/components/WebServer/controllers/rights`)
@@ -29,7 +34,11 @@ module.exports = {
                         expires: new Date(Date.now() + 900000)
                     })
 
+                    res.cookie('userId', user.token.session_id.toString(), {
+                        expires: new Date(Date.now() + 900000)
+                    })
                     req.session.token = user.token
+                    req.session.userId = user.token.session_id
                     req.session.logged = 1
                     req.session.save((err) => {
                         if (err) {
@@ -45,6 +54,7 @@ module.exports = {
                 } else {
                     req.session.token = ''
                     req.session.logged = 0
+                    req.session.userId = ''
                     req.session.save((err) => {
                         if (err) {
                             throw "Error on saving session"
@@ -71,17 +81,17 @@ module.exports = {
     ],
     asOwnerAccess: [
         (req, res, next) => {
-            ConversationModel.getConvoOwner(req.body.conversationId).then(conversation => {
+            ConversationModel.getConvoOwner(req.params.conversationid).then(conversation => {
                 if (conversation.length === 1 && conversation[0].owner === req.payload.data.userId) next()
                 else next(new ConversationOwnerAccessDenied())
             })
         },
     ],
     asReadAccess: [(req, res, next) => {
-        checkConvSharedRight(next, req.body.conversationId, req.payload.data.userId, RIGHTS.READ, ConversationReadAccessDenied)
+        checkConvSharedRight(next, req.params.conversationid, req.payload.data.userId, RIGHTS.READ, ConversationReadAccessDenied)
     }],
     asWriteAccess: [(req, res, next) => {
-        checkConvSharedRight(next, req.body.conversationId, req.payload.data.userId, RIGHTS.WRITE, ConversationWriteAccessDenied)
+        checkConvSharedRight(next, req.params.conversationid, req.payload.data.userId, RIGHTS.WRITE, ConversationWriteAccessDenied)
     }],
     refresh_token: [
         jwt({
@@ -89,7 +99,7 @@ module.exports = {
             userProperty: 'payload',
             getToken: getTokenFromHeaders,
         }),
-        async (req, res, next) => {
+        async(req, res, next) => {
             const { headers: { authorization } } = req
             let token = await refreshToken(authorization)
             res.local = token
@@ -133,7 +143,7 @@ function generateRefreshSecretFromHeaders(req, payload, done) {
 }
 
 function checkConvSharedRight(next, conversationId, userId, right, rightException) {
-    if(!conversationId)  {
+    if (!conversationId) {
         next(new ConversationIdRequire())
         return
     }
@@ -147,8 +157,7 @@ function checkConvSharedRight(next, conversationId, userId, right, rightExceptio
                         if (RIGHTS.asRightAccess(conversationUsers.rights, right)) {
                             userFound = true
                             next()
-                        }
-                        else next(new rightException())
+                        } else next(new rightException())
                 })
                 if (!userFound) next(new ConversationNotShared())
             }

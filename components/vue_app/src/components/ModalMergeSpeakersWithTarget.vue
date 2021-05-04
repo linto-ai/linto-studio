@@ -8,9 +8,9 @@
           </button>
         </div>
         <!-- BODY : merge with a target speaker -->
-        <div class="modal--body" v-if="modalMode === 'mergeWithSpeakerList'">
+        <div class="modal--body" >
           <p>You're about to identify a speaker as an onther existing speaker in the conversation. If you apply this modifications, both speakers will be merged as one.<br/>
-          Are you sure you want to replace speaker "{{speaker.speaker_name }}" by "{{ targetSpeaker.speaker_name }}" ?</p>
+          <strong>Are you sure you want to replace speaker "{{speaker.speaker_name }}" by "{{ targetSpeaker.speaker_name }}" ?</strong></p>
         </div>
         <div class="modal--footer flex row">
           <button class="btn btn--txt-icon grey" @click="closeModal()">
@@ -27,13 +27,11 @@
 </template>
 <script>
 import { bus } from '../main.js'
-import axios from 'axios'
 export default {
   props: ['convoId'],
   data () {
     return {
       modalShow: false,
-      modalMode: '',
       speaker: null,
       targetSpeaker: null
     }
@@ -55,33 +53,32 @@ export default {
     },
     async mergeSpeakers () {
       try {
-        const updateSpeaker = await axios(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/turns/${this.speakerId}`, {
-          method: 'put',
-          data: {
-            convoid: this.convoId,
-            newspeakerid: this.targetSpeaker.speaker_id,
-            speakerid: this.speaker.speaker_id
-          }
-        })
-        if (updateSpeaker.status === 200 && !!updateSpeaker.data.msg) {
-          this.closeModal()
+        const payload =  {
+          newspeakerid: this.targetSpeaker.speaker_id
+        }
+        const req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/mergespeakers/${this.speaker.speaker_id}`, 'patch', payload)
+
+        if(req.status === 200 && !!req.data.msg) {
           bus.$emit('app_notif', {
             status: 'success',
-            message: updateSpeaker.data.msg,
-            timeout: null
+            message: req.data.msg,
+            timeout: 3000
           })
-          // todo > notification
+          bus.$emit(`update_speaker`, {})
+          this.closeModal()
         } else {
-         throw updateSpeaker
-        }  
+          throw req
+        }
       } catch (error) {
+        if(process.env.VUE_APP_DEBUG === 'true') {
+          console.error(error)
+        }
         bus.$emit('app_notif', {
           status: 'error',
-          message: !!updateSpeaker.data.msg ? updateSpeaker.data.msg : 'Error on merging speakers sentences',
+          message: !!error.msg ? error.msg : 'Error on updating speaker',
           timeout: null
         })
       }
-      
     }
   }
 }

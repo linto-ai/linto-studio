@@ -46,7 +46,6 @@
 </template>
 <script>
 import { bus } from '../main.js'
-import axios from 'axios'
 export default {
   data () {
     return {
@@ -163,27 +162,26 @@ export default {
             positions: this.positions,
             speakerid: this.selectedSpeaker.value.speaker_id
           }
-          const mergeTurns = await axios(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/turn/merge`, {
-            method: 'patch',
-            data: payload
-          })
-          if(mergeTurns.status === 200 && !!mergeTurns.data.msg) {
-            await this.dispatchStore('getConversations')
-            this.closeModal()
-             bus.$emit('app_notif', {
+          const req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/turn/merge`, 'patch', payload)
+          if((req.status === 200 || req.status === 202) && !!req.data.msg) {
+            bus.$emit('app_notif', {
               status: 'success',
-              message: mergeTurns.data.msg,
+              message: req.data.msg,
               timeout: 3000
             })
+            this.closeModal()
+            await this.dispatchStore('getConversations')
           } else {
-            throw request
+            throw req
           }
         }
       } catch (error) {
-        console.error(error)
-         bus.$emit('app_notif', {
+        if(process.env.VUE_APP_DEBUG === 'true') {
+          console.error(error)
+        }
+        bus.$emit('app_notif', {
           status: 'error',
-          message: !!error.data && !!error.data.msg ? error.data.msg : 'Error on merging turns',
+          message: !!error.msg ? error.msg : 'Error on updating speaker',
           timeout: null
         })
       }

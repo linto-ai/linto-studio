@@ -1,22 +1,19 @@
 const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:conversation:convo`)
 const convoModel = require(`${process.cwd()}/models/mongodb/models/conversations`)
 const userModel = require(`${process.cwd()}/models/mongodb/models/users`)
-const { v4: uuidv4 } = require('uuid')
-const clone = require('rfdc')()
-
 
 async function createConvoBase(req, res, next) { //WIP TODO check userid
     try {
         const payload = req.body
-        // const name = payload.name
-        //payload.ownerId = req.session.userid
+            // const name = payload.name
+            //payload.ownerId = req.session.userid
         const createBase = await convoModel.createConvoBase(payload)
         if (createBase != undefined) {
             res.json({
-                status: 'success',
-                msg: 'convo has been created'
-            })
-            //update the user as the convo owner w createBase convo id
+                    status: 'success',
+                    msg: 'convo has been created'
+                })
+                //update the user as the convo owner w createBase convo id
             newPayload = {
                 userId: payload.ownerId,
                 convoId: createBase,
@@ -35,13 +32,14 @@ async function createConvoBase(req, res, next) { //WIP TODO check userid
                 })
             }
         } else {
-            res.json({
+            throw ({
                 status: 'error',
                 msg: 'error'
             })
         }
     } catch (error) {
         console.error(error)
+        res.json({ error })
     }
 }
 
@@ -55,13 +53,14 @@ async function updateSpeakerAudio(req, res, next) {
                 msg: "success!"
             })
         } else {
-            res.json({
+            throw ({
                 status: 'error',
                 msg: 'error'
             })
         }
     } catch (error) {
         console.error(error)
+        res.json({ error })
     }
 }
 

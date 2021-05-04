@@ -57,6 +57,23 @@ class ConvoModel extends MongoModel {
         }
     }
 
+
+    async getConvoById(convoId) {
+        try {
+            const query = {
+                _id: this.getObjectId(convoId)
+            }
+            const projection = {}
+            return await this.mongoRequest(query, projection)
+
+        } catch (error) {
+            console.error(error)
+
+            return error
+        }
+    }
+
+
     // get all speakers in a conversation
     async getConvoOwner(idConvo) {
         try {
@@ -430,9 +447,7 @@ class ConvoModel extends MongoModel {
                         "$filter": {
                             input: "$text",
                             as: "turn",
-                            cond: payload.hasOwnProperty('turnids')
-                                ? { "$in": ["$$turn.turn_id", payload.turnids] }
-                                : { "$in": ["$$turn.pos", payload.positions] }
+                            cond: payload.hasOwnProperty('turnids') ? { "$in": ["$$turn.turn_id", payload.turnids] } : { "$in": ["$$turn.pos", payload.positions] }
                         }
                     }
                 }

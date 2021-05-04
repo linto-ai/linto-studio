@@ -1,62 +1,101 @@
 <template>
-    <div class="flex col">
+  <div class="flex col">
+    <div class="flex col create-form-container">
+      <div class="form-field flex col">
+        <!-- Conversation Name -->
+        <span class="form-label">Conversation name <i>*</i> :</span>
+        <input 
+          type="text" 
+          v-model="conversationName.value"
+          :class="conversationName.error !== null ? 'error' : ''"
+          @change="testConversationName()">
+        <span class="error-field" v-if="conversationName.error !== null">{{ conversationName.error }}</span>
+      </div>
+
+      <!-- Description -->
+      <div class="form-field flex col">
+        <span class="form-label">Description :</span>
+        <textarea 
+          v-model="conversationDesc.value"
+        ></textarea>
+        <span class="error-field" v-if="conversationDesc.error !== null">{{ conversationDesc.error }}</span>
+      </div>
+
+      <!-- TODO : Conversation Type Selectbox -->
       
-      <div class="flex col create-form-container">
-        <div class="form-field flex col">
-          <span class="form-label">Conversation name <i>*</i> :</span>
+      <!-- Audio File -->
+      <div class="form-field flex col">
+        <span class="form-label">Audio file (.wav, .mp3) :</span>
+        <div class="input-file-container flex col">
           <input 
-            type="text" 
-            v-model="conversationName.value"
-            :class="conversationName.error !== null ? 'error' : ''"
-            @change="testConversationName()">
-          <span class="error-field" v-if="conversationName.error !== null">{{ conversationName.error }}</span>
+            type="file" 
+            id="file" 
+            ref="file"
+            class="input__file" 
+            v-on:change="handleFileUpload()"
+            
+            accept=".mp3, .wav"
+          />
+          <label 
+            for="file" 
+            class="input__file-label-btn" 
+            :class="[audioFile.error !== null ? 'error' : '', audioFile.valid ? 'valid' : '']"
+          >
+            <span class="input__file-icon"></span>
+            <span class="input__file-label">{{ audioFileUploadLabel }}</span>
+          </label>
         </div>
-        <div class="form-field flex col">
-          <span class="form-label">Description :</span>
-          <textarea 
-            v-model="conversationDesc.value"
-          ></textarea>
-          <span class="error-field" v-if="conversationDesc.error !== null">{{ conversationDesc.error }}</span>
-        </div>
+        <span class="error-field" v-if="audioFile.error !== null">{{ audioFile.error }}</span>
+      </div>
 
-        <!-- TODO : Conversation Type Selectbox -->
+      <!-- Share with -->
+      <div class="form-field flex col">
+        <span class="form-label">Share with users :</span>
 
-        <div class="form-field flex col">
-          <span class="form-label">Audio file (.wav, .mp3) :</span>
-          <div class="input-file-container flex col">
-            <input 
-              type="file" 
-              id="file" 
-              ref="file"
-              class="input__file" 
-              v-on:change="handleFileUpload()"
-              
-              accept=".mp3, .wav"
-            />
-            <label 
-              for="file" 
-              class="input__file-label-btn" 
-              :class="[audioFile.error !== null ? 'error' : '', audioFile.valid ? 'valid' : '']"
-            >
-              <span class="input__file-icon"></span>
-              <span class="input__file-label">{{ audioFileUploadLabel }}</span>
-            </label>
-          </div>
-          <span class="error-field" v-if="audioFile.error !== null">{{ audioFile.error }}</span>
-        </div>
-        <div class="form-field flex row" style="margin-top: 20px;">
-          <button
-            @click="handleForm()" 
-            class="btn btn--txt-icon blue">
-            <span class="label">Create conversation</span>
-            <span class="icon icon__apply"></span></button>
+        <table class="share-with-list" v-if="sharedWith.length > 0">
+          <thead>
+            <tr>
+              <th colspan="2">User</th>
+              <th>Edition rights</th>
+              <th>Remove</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="user in sharedWith" :key="user._id">
+              <td class="img"><img class="share-with-list-img" :src="imgPath(user.img)"></td>
+              <td>{{ user.firstname }} {{ user.lastname }}</td>
+              <td>{{ user.writeAccess === 1 ? 'Reader' : 'Editer' }}</td>
+              <td>
+                <button class="btn--icon" @click="removeFromList(user)">
+                  <span class="icon icon--remove"></span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="flex row" style="margin-top: 10px;">
+          <button class="btn btn--txt-icon blue" @click="shareWith()">
+            <span class="label">Share</span>
+            <span class="icon icon__share"></span>
+          </button>
         </div>
       </div>
+
+      <!-- Submit -->
+      <div class="form-field flex row" style="margin-top: 20px;">
+        <button
+          @click="handleForm()" 
+          class="btn btn--txt-icon green">
+          <span class="label">Create conversation</span>
+          <span class="icon icon__apply"></span></button>
+      </div>
     </div>
+    <ModalShareWith></ModalShareWith>
+  </div>
 </template>
 <script>
 import { bus } from '../main.js'
-import axios from 'axios'
+import ModalShareWith from '@/components/ModalShareWith.vue'
 export default {
   data () {
     return {
@@ -75,16 +114,37 @@ export default {
         error: null,
         valid: false
       },
+      sharedWith: [],
       audioFileUploadLabel: 'Choose a file...'
     }
   },
   computed: {
     formValid () {
       return this.conversationName.valid && this.audioFile.valid
+    },
+    authToken () {
+      return this.$store.state.auth_token
     }
   },
+  async mounted () {
+      await this.$options.filters.dispatchStore('getuserInfo')
+
+      bus.$on('update_share_with', (data) => {
+        this.sharedWith = data.sharedWith
+      })
+  },
   methods: {
-    
+    shareWith() {
+      bus.$emit('modal_share_with', {})
+    },
+    removeFromList (user) {
+      let newList = this.sharedWith.filter(usr => usr._id !== user._id)
+      this.sharedWith = newList
+      bus.$emit('modal_share_with_remove_user', { user })
+    },
+    imgPath(url) {
+      return `${process.env.VUE_APP_URL}/${url}`
+    },
     handleFileUpload() {
       this.audioFile.value = this.$refs.file.files[0]
       const acceptedTypes = ['audio/mpeg', 'audio/wav']
@@ -107,42 +167,43 @@ export default {
       }
     },
     async handleForm () {
-      this.handleFileUpload()
-      this.testConversationName() 
-      if(this.formValid) {
-        const payload = {
-          name: this.conversationName.value,
-          description:  this.conversationDesc.value,
-          owner: {
-            user_id: "todefine1",
-            name: "Romain Lopez",
-            img: "/assets/img/users/user1.jpg"
-          },
-          sharedWith: []
-          // TODO : ConversationType
-        }
-        
-        let formData = new FormData()
-        formData.append('file', this.audioFile.value)
-        formData.append('payload', JSON.stringify(payload))
-        
-        const createConvo = await axios(`${process.env.VUE_APP_CONVO_API}/conversation/create`, {
-          method: 'post',
-          headers: {
-            'charset': 'utf-8',
-            'Content-Type': 'multipart/form-data'
-          },
-          data: formData
-        })
-        if(createConvo.status === 200) {
-            bus.$emit('app_notif', {
-              status: 'success',
-              message: createConvo.data.msg,
-              timeout: 3000,
-              redirect: '/interface/conversations'
-            })
-        }
+      try {
+        this.handleFileUpload()
+        this.testConversationName() 
+        if(this.formValid) {
+          let sharedWith = []
+          if(this.sharedWith.length > 0) {
+            for(let sw of this.sharedWith) {
+              sharedWith.push({user_id: sw._id, rights: sw.writeAccess})
+            }
+          }
+          const payload = {
+            name: this.conversationName.value,
+            description:  this.conversationDesc.value,
+            sharedWith 
+            // TODO : ConversationType
+          }
+          
+          let formData = new FormData()
+          formData.append('file', this.audioFile.value)
+          formData.append('payload', JSON.stringify(payload))
+
+
+          let req = await this.$options.filters.sendMultipartFormData(`${process.env.VUE_APP_CONVO_API}/conversation/create`, 'post', formData)
+
+          if(req.status === 200) {
+              bus.$emit('app_notif', {
+                status: 'success',
+                message: req.data.msg,
+                timeout: 3000,
+                redirect: '/interface/conversations'
+              })
+          }
+        }  
+      } catch (error) {
+        console.error(error)
       }
+      
     },
     testConversationName () {
       this.conversationName.valid = false
@@ -154,84 +215,9 @@ export default {
         this.conversationName.valid = true
       }
     }
-    /*
-    async instalLocalSkill (event) {
-     this.handleFileUpload()
-     try {
-      if (this.audioFile.valid && !this.processing) {
-        this.processing = true
-        this.setBtnLoading(event)
-        
-        let formData = new FormData()
-        formData.append('files', this.audioFile.value)
-        const installSkill = await axios.post(`${process.env.VUE_APP_NODERED_RED}/node/file`,
-          formData, 
-          {
-            headers: {
-              'charset': 'utf-8',
-              'Content-Type': 'multipart/form-data'
-            }
-          }
-        )
-        if (installSkill.status === 202) { // module already installed
-          bus.$emit('app_notif', {
-            status: 'error',
-            msg: 'this module is already installed',
-            timeout: 3000,
-            redirect: false
-          })
-          this.processing = false
-          this.unsetBtnLoading()
-
-        } else if (installSkill.status === 200) { // success
-          let payload = {
-            name: installSkill.data.name,
-            version: installSkill.data.version
-          }
-          const updateLocalSkills = await axios(`${process.env.VUE_APP_URL}/api/localskills`, {
-            method:'post',
-            data: payload
-          })
-          if(updateLocalSkills.data.status === 'success') {
-             bus.$emit('app_notif', {
-              status: 'success',
-              msg: updateLocalSkills.data.msg,
-              timeout: 3000,
-              redirect: false
-            })
-            await this.dispatchStore('getLocalSkills')
-            this.unsetBtnLoading()
-            this.processing = false
-
-          } else {
-            throw installNode
-          }
-        } else {
-          throw installSkill
-        }
-      }
-    } catch (error) {
-        console.error(error)
-        if (!!error.data) {
-          bus.$emit('app_notif', {
-            status: 'error',
-            msg: error.data.msg,
-            timeout: 3000,
-            redirect: false
-          })
-        } else {
-          bus.$emit('app_notif', {
-            status: 'error',
-            msg: `error on installing local skill`,
-            timeout: 3000,
-            redirect: false
-          })
-        }
-        await this.dispatchStore('getLocalSkills')
-        this.unsetBtnLoading()
-        this.processing = false
-      }
-    }*/
-  } 
+  },
+  components: {
+    ModalShareWith
+  }
 }
 </script>

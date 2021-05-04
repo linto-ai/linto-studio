@@ -18,7 +18,7 @@ module.exports = (webServer, auth_middleware) => {
         {
             path: '/logout',
             method: 'get',
-            requireAuth: true,
+            requireAuth: false,
             controller: logout
         }, {
             path: '/isAuth',

@@ -1,5 +1,3 @@
-const { patch } = require('request')
-
 const debug = require('debug')('app:router:api:conversation:convo')
 
 // Speakers
@@ -66,42 +64,49 @@ module.exports = (webserver) => {
             path: '/:conversationid/speakers',
             method: 'get',
             requireAuth: true,
+            requireReadAccess: true,
             controller: getSpeakers
         },
         {
             path: '/:conversationid/speakers',
             method: 'post',
             requireAuth: true,
+            requireWriteAccess: true,
             controller: createNewSpeaker
         },
         {
             path: '/:conversationid/speakers/:speakerid',
             method: 'patch',
             requireAuth: true,
+            requireWriteAccess: true,
             controller: identifySpeaker
         },
         {
             path: '/:conversationid/speakers/:speakerid',
             method: 'delete',
             requireAuth: true,
+            requireWriteAccess: true,
             controller: deleteSpeaker
         },
         {
             path: '/:conversationid/mergespeakers/:speakerid',
             method: 'patch',
             requireAuth: true,
+            requireWriteAccess: true,
             controller: [combineSpeakerIds, deleteSpeaker]
         },
         {
             path: '/:conversationid/turnspeaker/:turnid',
             method: 'put',
             requireAuth: true,
+            requireWriteAccess: true,
             controller: identifyTurnSpeaker
         },
         {
             path: '/:conversationid/turn/:speakerid',
             method: 'post',
             requireAuth: true,
+            requireWriteAccess: true,
             controller: [createTurn, renumberTurns]
         },
         {
@@ -123,9 +128,9 @@ module.exports = (webserver) => {
             controller: [splitTurns, renumberTurns]
         },
         {
-            path: '/:conversationid/text', 
-            method: 'put', 
-            requireAuth: false, 
+            path: '/:conversationid/text',
+            method: 'put',
+            requireAuth: true,
             controller: replaceTurnText
         }, 
         {
@@ -152,11 +157,5 @@ module.exports = (webserver) => {
             requireAuth: false, 
             controller: updatehighlightwords //adds or removes hid from word objects
         }
-        // {
-        //     path: '/:conversationid/text', 
-        //     method: 'put',
-        //     requireAuth: false,
-        //     controller: updateAllText
-        // }
     ]
 }

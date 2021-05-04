@@ -15,7 +15,7 @@
         <div class="form-field flex col">
           <span class="form-label">Password :</span>
           <input 
-            type="text" 
+            type="password" 
             v-model="password.value"
             :class="password.error !== null ? 'error' : ''"
             @change="testPasswordEmpty()">
@@ -39,12 +39,12 @@
     data () {
       return {
         email: {
-          value: '',
+          value: 'rlopez@linagora.com',
           error: null,
           valid: false
         },
         password: {
-          value: '',
+          value: 'azeaze',
           error: null,
           valid: false
         },
@@ -75,7 +75,7 @@
             if(!!login.data.error) {
                 throw login
             } else {
-              window.location.href = '/interface/conversations'   
+              window.location.href = '/interface/conversations'
             }
           }
         }

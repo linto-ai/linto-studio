@@ -19,7 +19,7 @@ async function audioUpload(req, res, next) {
 
     try {
         const file = req.files.file
-        const payload = { ...JSON.parse(req.body.payload), owner: req.payload.data.userId }
+        const payload = {...JSON.parse(req.body.payload), owner: req.payload.data.userId }
 
         // Block STT request
         const options = prepareRequest(file)

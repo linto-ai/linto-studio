@@ -133,6 +133,9 @@ a {
                 &.icon__backto {
                     @include maskImage('../img/backto.svg');
                 }
+                &.icon__share {
+                    @include maskImage('../img/hand-shake.svg');
+                }
             }
             &:hover {
                 background-color: #fff;
@@ -475,6 +478,7 @@ a {
 
 textarea,
 input[type="text"],
+input[type="password"],
 select {
     font-family: $comfortaa;
     color: #333333;
@@ -502,8 +506,9 @@ textarea {
 }
 
 input[type="text"],
+input[type="password"],
 select {
-    max-width: 320px;
+    max-width: 280px;
 }
 
 .error-field {
@@ -512,4 +517,122 @@ select {
     height: 20px;
     line-height: 20px;
     color: $redChart;
+}
+
+.custom-checkbox {
+    display: inline-block;
+    width: 19px;
+    height: 19px;
+    border: 1px solid #fff;
+    margin: 0 10px;
+    background-color: #fff;
+    position: relative;
+    @include borderRadius(3px);
+    @include boxShadow(0,
+    1px,
+    2px,
+    0,
+    rgba(0, 0, 0, 0.2));
+    &:hover {
+        border-color: $greenChart;
+    }
+    &:after {
+        display: none;
+    }
+    &.selected {
+        border-color: $greenChart;
+        &:after {
+            display: inline-block;
+            content: '';
+            width: 30px;
+            height: 30px;
+            position: absolute;
+            top: -8px;
+            left: -3px;
+            @include maskImage('../img/apply.svg');
+            background-color: $greenChart;
+        }
+    }
+}
+
+.btn-toggle {
+    background: #fff;
+    vertical-align: top;
+    margin: 2px 5px;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+    @include borderRadius(20px);
+    @include transition(all 0.3s ease);
+    border: 1px solid;
+    position: relative;
+    &.enabled {
+        border-color: $greenChart;
+    }
+    &.disabled {
+        border-color: $redLight;
+    }
+    .btn-toggle-circle {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        position: absolute;
+        top: 1px;
+        background: red;
+        @include borderRadius(10px);
+        @include transition(all 0.3s ease);
+        &.disabled {
+            left: 2px;
+            background-color: $redLight;
+        }
+        &.enabled {
+            left: 100%;
+            margin-left: -18px;
+            background-color: $greenChart;
+        }
+    }
+    &:hover {
+        &.disabled {
+            border-color: $redChart;
+        }
+        .btn-toggle-circle {
+            &.disabled {
+                background-color: $redChart;
+            }
+        }
+    }
+}
+
+
+/* SHARE WITH LIST */
+
+.share-with-list {
+    border-collapse: collapse;
+    margin: 10px 0;
+    thead {
+        tr {
+            th {
+                text-align: left;
+            }
+        }
+    }
+    tbody {
+        tr {
+            background-color: $blueXLight;
+            td {
+                padding: 10px;
+                &.img {
+                    width: 30px;
+                }
+            }
+            border-bottom: 1px solid #ccc;
+        }
+    }
+    .share-with-list-img {
+        display: inline-block;
+        height: 30px;
+        width: 30px;
+        @include borderRadius(15px);
+        overflow: hidden;
+    }
 }

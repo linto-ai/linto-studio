@@ -5,7 +5,7 @@ module.exports = (webServer) => {
     return [{
         path: '/',
         method: 'get',
-        requireAuth: true,
+        requireSession: true,
         controller: [
             (req, res, next) => {
                 res.setHeader("Content-Type", "text/html")

@@ -3,7 +3,7 @@ const path = require('path')
 const middlewares = require(path.join(__dirname, "../middlewares"))
 
 const auth_middlewares = require(`../config/passport/local/middleware`)
-
+const nav_middlewares = require(`${process.cwd()}/components/WebServer/middlewares/index.js`)
 const ifHasElse = (condition, ifHas, otherwise) => {
     return !condition ? otherwise() : ifHas()
 }
@@ -17,35 +17,32 @@ class Router {
                 const route = routes[level][path]
                 const method = route.method
                 if (process.env.DEV_DISABLE_AUTH === 'true') route.requireAuth = false
-                if (route.requireAuth) {
-                    debug('Create route : ' + route.method + ' - ' + level + route.path)
-                    let middlewaresLoaded = [auth_middlewares.isAuthenticate]
-                    if (route.requireOwnerAccess) middlewaresLoaded.push(auth_middlewares.asOwnerAccess)
-                    if (route.requireReadAccess) middlewaresLoaded.push(auth_middlewares.asReadAccess)
-                    if (route.requireWriteAccess) middlewaresLoaded.push(auth_middlewares.asWriteAccess)
+                debug('Create route : ' + route.method + ' - ' + level + route.path)
+                let middlewaresLoaded = []
+                    // require passport auth (headers)
+                if (route.requireAuth) middlewaresLoaded.push(auth_middlewares.isAuthenticate)
+                    // require user session (authenticated)
+                if (route.requireSession) middlewaresLoaded.push(nav_middlewares.isConnected)
+                    // require owner access
+                if (route.requireOwnerAccess) middlewaresLoaded.push(auth_middlewares.asOwnerAccess)
+                    // require read access
+                if (route.requireReadAccess) middlewaresLoaded.push(auth_middlewares.asReadAccess)
+                    // require wirte access
+                if (route.requireWriteAccess) middlewaresLoaded.push(auth_middlewares.asWriteAccess)
 
-                    webServer.express[method](
-                        level + route.path,
-                        middlewares.logger,
-                        level.indexOf('/interface') >= 0 || level === '/login' || level === '/create-account' ?
-                            middlewares.isConnected : middlewaresLoaded,
-                        ifHasElse(
-                            Array.isArray(route.controller),
-                            () => Object.values(route.controller),
-                            () => route.controller
-                        )
+                if (route.requireFrontReadAccess) middlewaresLoaded.push(nav_middlewares.hasReadAccess)
+
+
+                webServer.express[method](
+                    level + route.path,
+                    middlewares.logger,
+                    middlewaresLoaded,
+                    ifHasElse(
+                        Array.isArray(route.controller),
+                        () => Object.values(route.controller),
+                        () => route.controller
                     )
-                } else {
-                    webServer.express[method](
-                        level + route.path,
-                        middlewares.logger,
-                        ifHasElse(
-                            Array.isArray(route.controller),
-                            () => Object.values(route.controller),
-                            () => route.controller
-                        )
-                    )
-                }
+                )
             }
         }
     }

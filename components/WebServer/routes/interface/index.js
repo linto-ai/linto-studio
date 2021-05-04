@@ -5,7 +5,7 @@ module.exports = (webServer) => {
     return [{
             path: '/',
             method: 'get',
-            requireAuth: false, // we use an other middleware for the interface
+            requireSession: true,
             controller: [
                 (req, res, next) => {
                     res.redirect('/interface/conversations')
@@ -13,9 +13,47 @@ module.exports = (webServer) => {
             ]
         },
         {
+            // Conversation create
+            path: '/conversation/create',
+            method: 'get',
+            requireSession: true,
+            controller: [
+                (req, res, next) => {
+                    res.setHeader("Content-Type", "text/html")
+                    res.sendFile(process.cwd() + '/dist/index.html')
+                }
+            ]
+        },
+        {
+            // Conversation overview
+            path: '/conversation/:convoId',
+            method: 'get',
+            requireSession: true,
+            requireFrontReadAccess: true,
+            controller: [
+                (req, res, next) => {
+                    res.setHeader("Content-Type", "text/html")
+                    res.sendFile(process.cwd() + '/dist/index.html')
+                }
+            ]
+        },
+        {
+            // Conversation transcription
+            path: '/conversation/:convoId/transcription',
+            method: 'get',
+            requireSession: true,
+            requireFrontReadAccess: true,
+            controller: [
+                (req, res, next) => {
+                    res.setHeader("Content-Type", "text/html")
+                    res.sendFile(process.cwd() + '/dist/index.html')
+                }
+            ]
+        },
+        {
             path: '/*',
             method: 'get',
-            requireAuth: false, // we use an other middleware for the interface
+            requireSession: true,
             controller: [
                 (req, res, next) => {
                     res.setHeader("Content-Type", "text/html")
