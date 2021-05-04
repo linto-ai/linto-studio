@@ -118,7 +118,6 @@ class MongoModel {
                             message: 'Cannot access request result'
                         })
                     }
-
                 })
             } catch (error) {
                 reject(error)

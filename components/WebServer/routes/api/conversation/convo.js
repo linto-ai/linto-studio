@@ -31,6 +31,13 @@ const {
     replaceTurnText
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/textedit.js`)
 
+const {
+    updatehighlightwords,
+    updatehighlighttype, 
+    createhighlight, 
+    deletehighlight
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/annotations.js`)
+
 const { // Create conversation based on file
     audioUpload
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/file.js`)
@@ -113,6 +120,30 @@ module.exports = (webserver) => {
             method: 'put', 
             requireAuth: false, 
             controller: replaceTurnText
+        }, 
+        {
+            path: '/:conversationid/highlight', 
+            method: 'post',
+            requireAuth: false, 
+            controller: createhighlight //creates highlight object, add to words
+        },
+        {
+            path: '/:conversationid/highlight/:hid', 
+            method: 'delete',
+            requireAuth: false, 
+            controller: deletehighlight //deletes entire highlight object/references
+        },
+        {
+            path: '/:conversationid/highlight/:hid', 
+            method: 'patch',
+            requireAuth: false, 
+            controller: updatehighlighttype //changes color or label associated with an hid
+        },
+        {
+            path: '/:conversationid/highlight/:hid', 
+            method: 'put',
+            requireAuth: false, 
+            controller: updatehighlightwords //adds or removes hid from word objects
         }
         // {
         //     path: '/:conversationid/text', 
