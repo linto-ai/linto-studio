@@ -527,6 +527,168 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/customError'
+  /api/conversation/{conversationid}/highlight:
+    post: 
+      tags:
+        - "annotations"
+      summary: Creates a new highlight type for a  set of wordids
+      parameters: 
+        - in: path
+          name: conversationid
+          type: string
+          format: uuid
+          required: true
+          description: uuid string identifier for a conversation
+      requestBody:
+        required: true
+        description: takes an object with highlight label, color, and a list of word ids
+        content:
+          application/json:
+            schema:
+              type: object 
+              properties:
+                label:
+                    type: string
+                color:
+                    type: string 
+                wordids:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '200':
+          description: request success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customSuccess'
+        '400':
+          description: bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customError'
+  /api/conversation/{conversationid}/highlight/{hid}:
+    delete:
+      tags:
+        - "annotations"
+      summary: Deletes highlight type
+      parameters: 
+        - in: path
+          name: conversationid
+          type: string 
+          format: uuid 
+          required: true 
+          description: uuid string identifier for a conversation
+        - in: path
+          name: hid
+          type: string
+          format: uuid
+          required: true
+          description: uuid string identifier for highlight type 
+      responses:
+        '200':
+          description: request success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customSuccess'
+        '400':
+          description: bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customError'
+    put:
+      tags:
+        - "annotations"
+      summary: updates highlight type by adding or removing hid from wids
+      parameters: 
+        - in: path
+          name: conversationid
+          type: string 
+          format: uuid 
+          required: true 
+          description: uuid string identifier for a conversation
+        - in: path
+          name: hid
+          type: string
+          format: uuid
+          required: true
+          description: uuid string identifier for highlight type 
+      requestBody:
+        required: true
+        description: takes an object with a list of word ids and an operation variable "add"/"remove"
+        content:
+          application/json:
+            schema:
+              type: object 
+              properties:
+                operator:
+                    type: string 
+                    example:
+                      "add"
+                wordids:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '200':
+          description: request success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customSuccess'
+        '400':
+          description: bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customError'
+    patch:
+      tags:
+        - "annotations"
+      summary: updates highlight lable and/or color
+      parameters: 
+        - in: path
+          name: conversationid
+          type: string 
+          format: uuid 
+          required: true 
+          description: uuid string identifier for a conversation
+        - in: path
+          name: hid
+          type: string
+          format: uuid
+          required: true
+          description: uuid string identifier for highlight type 
+      requestBody:
+        required: true
+        description: takes an object with highlight label and/or color
+        content:
+          application/json:
+            schema:
+              type: object 
+              properties:
+                label:
+                    type: string
+                color:
+                    type: string 
+      responses:
+        '200':
+          description: request success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customSuccess'
+        '400':
+          description: bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customError'
 tags:
   - name: speakers
     description: operations primarily manipulating speaker data

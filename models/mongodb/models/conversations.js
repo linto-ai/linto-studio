@@ -461,7 +461,7 @@ class ConvoModel extends MongoModel {
         }
     }
 
-    async getWords(payload) { //WIP
+    // async getWords(payload) { //WIP
         // //returns list of words from a single conversation/turn/array of wordids
         // try{
         //     const project = {"$project": {
@@ -493,65 +493,225 @@ class ConvoModel extends MongoModel {
         //     console.error(error)
         //     return error
         // }
-    }
+    //}
 
-    async getAllWords(payload) { //WIP
-        try {
-            const query = {
-                _id: this.getObjectId(payload.convoid),
-                "text.turn_id": payload.turnid
-            }
-            const projection = { _id: 0, "text.$.words": 1 }
-            return await this.mongoRequest(query, projection)
-        } catch (error) {
+    // async getAllWords(payload) { //WIP
+    //     try {
+    //         const query = {
+    //             _id: this.getObjectId(payload.convoid),
+    //             "text.turn_id": payload.turnid
+    //         }
+    //         const projection = { _id: 0, "text.$.words": 1 }
+    //         return await this.mongoRequest(query, projection)
+    //     } catch (error) {
+    //         console.error(error)
+    //         return error
+    //     }
+    // }
+
+    // //delete words in a conversation
+    // async deleteWords(payload) { //WIP!!!
+    //     //takes a convo id, turnid and an array of word ids
+    //     try {
+    //         const operator = "$pull"
+    //         const query = {
+    //             _id: this.getObjectId(payload.convoid)
+    //         }
+    //         let mutableElements = {
+    //             "text.$[turnelem].words": {
+    //                 wid: { "$in": payload.wordids }
+    //             }
+    //         }
+    //         let arrayFilters = {
+    //             "arrayFilters": [{ "turnelem.turn_id": payload.turnid }]
+    //         }
+    //         return await this.mongoUpdateOne(query, operator, mutableElements, arrayFilters)
+    //     } catch (error) {
+    //         console.error(error)
+    //         return error
+    //     }
+    // }
+
+    // // create a new word in a turn
+    // async createWords(payload) { //WIP!!!
+    //     //takes a convo id, turn id and an array of word objects
+    //     try {
+    //         const operator = "$addToSet"
+    //         const query = {
+    //             _id: this.getObjectId(payload.convoid)
+    //         }
+    //         let mutableElements = {
+    //             "text.$[turnelem].words": payload.words
+    //         }
+    //         let arrayFilters = {
+    //             "arrayFilters": [{ "turnelem.turn_id": payload.turnid }]
+    //         }
+    //         return await this.mongoUpdateOne(query, operator, mutableElements, arrayFilters)
+    //     } catch (error) {
+    //         console.error(error)
+    //         return error
+    //     }
+    // }
+
+    async getHighlightWordids(payload){
+        //returns a list of wordids associated with a highlight id
+        try{
+
+            const match1 = {"$match": {_id: this.getObjectId(payload.convoid)}}
+
+            const unwind1 = {"$unwind": "$text"}
+            const unwind2 = {"$unwind": "$text.words"}
+
+            const match2 = {"$match": {"text.words.highlights": payload.hid}}
+            const group = {"$group": {
+                _id: null, 
+                wids: {
+                    "$push": "$text.words.wid"
+                }
+            }}
+
+            const query = [match1, unwind1, unwind2, match2, group]
+
+            return await this.mongoAggregate(query)
+
+        } catch (error){
             console.error(error)
             return error
         }
     }
 
-    //delete words in a conversation
-    async deleteWords(payload) { //WIP!!!
-        //takes a convo id, turnid and an array of word ids
+    async highlightWords(payload) { 
+        //takes a convo id, highlight id, an array of wids, push/pull keyword
+        //adds/removes highlight id to each word 
         try {
-            const operator = "$pull"
+            let operator = null 
+            if(payload.operator === "add"){
+                operator = "$push"
+            } else {
+                operator = "$pull"
+            }
+
             const query = {
                 _id: this.getObjectId(payload.convoid)
             }
             let mutableElements = {
-                "text.$[turnelem].words": {
-                    wid: { "$in": payload.wordids }
-                }
+                "text.$[].words.$[wordelem].highlights": payload.hid
             }
-            let arrayFilters = {
-                "arrayFilters": [{ "turnelem.turn_id": payload.turnid }]
-            }
+
+            let arrayFilters = {}
+            let identifiers = []
+            payload.wordids.forEach(elem => {
+                identifiers.push({"wordelem.wid": elem})
+            })
+            let innerfilter = {}
+            innerfilter["$or"] = identifiers
+            arrayFilters["arrayFilters"] = [innerfilter]
+
+            console.log(query, operator, mutableElements, arrayFilters)
+
             return await this.mongoUpdateOne(query, operator, mutableElements, arrayFilters)
+
         } catch (error) {
             console.error(error)
             return error
         }
     }
 
-    // create a new word in a turn
-    async createWords(payload) { //WIP!!!
-        //takes a convo id, turn id and an array of word objects
+    async getHighlightTypes(payload) {
+        //takes convo id and returns information from the Highlights field
+
+        try{
+            const query = {
+                _id: this.getObjectId(payload.convoid)
+            }
+            const projection = { highlights: 1 }
+            return await this.mongoRequest(query, projection)
+
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
+    async addHighlightType(payload) {
+        //takes convo id and adds a new highlight to the Highlights field 
         try {
             const operator = "$addToSet"
             const query = {
                 _id: this.getObjectId(payload.convoid)
             }
             let mutableElements = {
-                "text.$[turnelem].words": payload.words
+                "highlights": {
+                    hid: payload.hid,
+                    label: payload.label,
+                    color: payload.color
+                }
             }
-            let arrayFilters = {
-                "arrayFilters": [{ "turnelem.turn_id": payload.turnid }]
+            return await this.mongoUpdateOne(query, operator, mutableElements)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+
+    }
+
+    async modifyHighlightType(payload) {
+        //takes convo id and hid and changes label and/or color associated with the hid
+        try {
+            const operator = "$set"
+            const query = {
+                _id: this.getObjectId(payload.convoid),
+                "highlights.hid": payload.hid
             }
-            return await this.mongoUpdateOne(query, operator, mutableElements, arrayFilters)
+            let mutableElements = {}
+            if(!!payload.label){
+                mutableElements["highlights.$.label"] = payload.label
+            }
+            if(!!payload.color){
+                mutableElements["highlights.$.color"] = payload.color
+            }
+            return await this.mongoUpdateOne(query, operator, mutableElements)
+
         } catch (error) {
             console.error(error)
             return error
         }
     }
+
+    async deleteHighlightField(payload) {
+        try {
+            const operator = "$pull"
+            const query = {
+                _id: this.getObjectId(payload.convoid)
+            }
+            let mutableElements = {
+                "highlights": {
+                    hid: payload.hid
+                }
+            }
+            return await this.mongoUpdateOne(query, operator, mutableElements)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
+    // async deleteHighlightWords(payload) { //WIP
+    //     try {
+    //         const operator = "$pull"
+    //         const query = {
+    //             _id: this.getObjectId(payload.convoid)
+    //         }
+    //         let mutableElements = {
+    //             "text.$[].words.$[wordelem].highlights": payload.hid
+    //         }
+    //         return await this.mongoUpdateOne(query, operator, mutableElements)
+    //     } catch (error) {
+    //         console.error(error)
+    //         return error
+    //     }
+    // }
+
 
     // async updateAllText(payload) {
     //     try {
