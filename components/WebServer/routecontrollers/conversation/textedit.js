@@ -50,9 +50,10 @@ async function replaceTurnText(req, res, next) {
             }
 
             let audiotime = await convoModel.getTurnAudioTime(new_payload)
+
             if (!!audiotime) {
-                abs_stime = audiotime[0].min
-                abs_etime = audiotime[0].max
+                abs_stime = parseFloat(audiotime[0].min)
+                abs_etime = parseFloat(audiotime[0].max)
             } else {
                 throw { message: 'Problem with turn object -- might be empty' }
             }
@@ -75,6 +76,8 @@ async function replaceTurnText(req, res, next) {
                         subelem.wid = uuidv4()
                         subelem.stime = starttime
                         subelem.etime = endtime
+
+
                         newwords.push(subelem)
 
                     } else {
@@ -97,8 +100,7 @@ async function replaceTurnText(req, res, next) {
                     newwords.push(elem) //endtime of current element becomes new startime 
 
                 } else { //if not a new word and none of immediately preceding word(s) are new
-
-                    starttime = elem.etime
+                    starttime = parseFloat(elem.etime)
                     newwords.push(elem)
                 }
             }))
@@ -134,6 +136,15 @@ async function replaceTurnText(req, res, next) {
             //replace words in payload and update turn 
             payload.words = newwords
             payload.convoid = req.params.conversationid
+
+            if (payload.words.length > 0) {
+                for (let word of payload.words) {
+                    word.etime = parseFloat(word.etime)
+                    word.stime = parseFloat(word.stime)
+                }
+            }
+
+            console.log('payload before updating', payload)
 
             const replaceWords = await convoModel.replaceWords(payload)
             console.log('replaceWords', replaceWords)

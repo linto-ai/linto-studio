@@ -515,3 +515,87 @@ select {
     line-height: 20px;
     color: $redChart;
 }
+
+.custom-checkbox {
+    display: inline-block;
+    width: 19px;
+    height: 19px;
+    border: 1px solid #fff;
+    margin: 0 10px;
+    background-color: #fff;
+    position: relative;
+    @include borderRadius(3px);
+    @include boxShadow(0,
+    1px,
+    2px,
+    0,
+    rgba(0, 0, 0, 0.2));
+    &:hover {
+        border-color: $greenChart;
+    }
+    &:after {
+        display: none;
+    }
+    &.selected {
+        border-color: $greenChart;
+        &:after {
+            display: inline-block;
+            content: '';
+            width: 30px;
+            height: 30px;
+            position: absolute;
+            top: -8px;
+            left: -3px;
+            @include maskImage('../img/apply.svg');
+            background-color: $greenChart;
+        }
+    }
+}
+
+.btn-toggle {
+    background: #fff;
+    vertical-align: top;
+    margin: 2px 5px;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+    @include borderRadius(20px);
+    @include transition(all 0.3s ease);
+    border: 1px solid;
+    position: relative;
+    &.enabled {
+        border-color: $greenChart;
+    }
+    &.disabled {
+        border-color: $redLight;
+    }
+    .btn-toggle-circle {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        position: absolute;
+        top: 1px;
+        background: red;
+        @include borderRadius(10px);
+        @include transition(all 0.3s ease);
+        &.disabled {
+            left: 2px;
+            background-color: $redLight;
+        }
+        &.enabled {
+            left: 100%;
+            margin-left: -18px;
+            background-color: $greenChart;
+        }
+    }
+    &:hover {
+        &.disabled {
+            border-color: $redChart;
+        }
+        .btn-toggle-circle {
+            &.disabled {
+                background-color: $redChart;
+            }
+        }
+    }
+}

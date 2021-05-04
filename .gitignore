@@ -5,3 +5,6 @@
 **/test-sample
 **/audios
 **/dist
+**/uploads/audios/*
+**/uploads/pictures/*
+!/uploads/pictures/default.jpg

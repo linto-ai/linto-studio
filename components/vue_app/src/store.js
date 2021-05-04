@@ -25,11 +25,15 @@ export default new Vuex.Store({
     strict: false,
     state: {
         conversations: '',
+        users: '',
         userInfo: ''
     },
     mutations: {
         SET_CONVERSATIONS: (state, data) => {
             state.conversations = data
+        },
+        SET_USERS: (state, data) => {
+            state.users = data
         },
         SET_USER_INFOS: (state, data) => {
             state.userInfo = data
@@ -53,9 +57,27 @@ export default new Vuex.Store({
                 return state.conversations
             } catch (error) {
                 console.error(error)
-                return ({
-                    error: 'Error on getting conversations'
+                return { error }
+            }
+        },
+        getUsers: async({ commit, state }) => {
+            try {
+                let token = ''
+                if (!!state.userInfo.token) {
+                    token = state.userInfo.token
+                } else {
+                    token = getCookie('authToken')
+                }
+                const getUsers = await axios.get(`${process.env.VUE_APP_CONVO_API}/users`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
                 })
+                commit('SET_USERS', getUsers.data)
+                return state.users
+
+            } catch (error) {
+                return error.toString()
             }
         },
         getuserInfo: async({ commit, state }) =>  {
@@ -71,7 +93,7 @@ export default new Vuex.Store({
                 commit('SET_USER_INFOS', { token, ...getInfo.data })
                 return state.userInfo
             } catch (error) {
-                console.error('store', error)
+                return error.toString()
             }
         }
     },
@@ -96,11 +118,10 @@ export default new Vuex.Store({
                         }
                     }
                     return userConvos
-                } else {
-                    throw 'conversations not found'
                 }
+                return []
             } catch (error) {
-
+                return error.toString()
             }
         },
         conversationById: (state) => (convoId) => {
@@ -209,6 +230,48 @@ export default new Vuex.Store({
             } catch (error) {
                 return error.toString()
 
+            }
+        },
+        allUsersInfos: (state) => () => {
+            try {
+                const allUsers = state.users
+                if (allUsers.length > 0) {
+                    let usersArray = []
+                    for (let user of allUsers) {
+                        console.log('store1/', user)
+                        usersArray.push({
+                            _id: user._id,
+                            img: user.img,
+                            firstname: user.firstname,
+                            lastname: user.lastname,
+                            email: user.email
+                        })
+                    }
+                    console.log('store', usersArray)
+                    return usersArray
+                }
+                return []
+            } catch (error) {
+                return error.toString()
+
+            }
+        },
+        allUsers: (state) => () => {
+            try {
+                let userId = getCookie('userId')
+                if (userId.length > 0) {
+                    console.log('store userid', userId)
+                    let users = state.users.filter(user => user._id !== userId)
+                    console.log('store users', users)
+                    if (users.length > 0) {
+                        return users
+                    }
+                    return []
+                } else {
+                    throw 'User Id not found'
+                }
+            } catch (error) {
+                return error.toString()
             }
         }
 

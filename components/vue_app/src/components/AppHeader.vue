@@ -38,9 +38,7 @@ export default {
 
   methods: {
     CapitalizeFirstLetter(string) {
-      if(string.length> 0){
-        return string.charAt(0).toUpperCase() + string.slice(1);
-      } return ''
+      return this.$options.filters.CapitalizeFirstLetter(string)
     },
     toggleUserMenu() {
       this.userMenuOpened = !this.userMenuOpened

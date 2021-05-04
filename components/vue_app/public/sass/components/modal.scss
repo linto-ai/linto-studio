@@ -1,7 +1,7 @@
 .modal-wrapper {
     position: absolute;
     top: 0;
-    height: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
@@ -170,4 +170,27 @@
     padding: 10px 20px;
     margin-bottom: 20px;
     background-color: #f2f2f2;
+}
+
+
+/* SHARE WITH */
+
+#share-with-list {
+    border-collapse: collapse;
+    tbody {
+        tr {
+            background-color: $blueXLight;
+            td {
+                padding: 10px;
+            }
+            border-bottom: 1px solid #ccc;
+        }
+    }
+    .share-with-list-img {
+        display: inline-block;
+        height: 30px;
+        width: 30px;
+        @include borderRadius(15px);
+        overflow: hidden;
+    }
 }

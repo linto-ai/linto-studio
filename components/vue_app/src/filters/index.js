@@ -42,6 +42,39 @@ Vue.filter('sendRequest', async function(url, method, data) {
     }
 })
 
+
+Vue.filter('sendMultipartFormData', async function(url, method, data) {
+    const userToken = getCookie('authToken')
+    try {
+        let req = await axios(url, {
+            method,
+            data,
+            headers: {
+                'charset': 'utf-8',
+                'Content-Type': 'multipart/form-data',
+                'Authorization': `Bearer ${userToken}`
+            }
+        })
+        if (req.status === 200) {
+            return req
+        } else {
+            throw req
+        }
+    } catch (error) {
+        if (!!error.response && !!error.response.data) {
+            return error.response.data
+        }
+        return error
+    }
+})
+
+Vue.filter('CapitalizeFirstLetter', function(string) {
+    if (string.length > 0) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+    return ''
+})
+
 Vue.filter('testFieldEmpty', function(obj) {
     obj.error = null
     obj.valid = false

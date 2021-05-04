@@ -10,7 +10,7 @@ module.exports = (webserver) => {
     return [{
             path: '/',
             method: 'get',
-            requireAuth: false,
+            requireAuth: true,
             controller: getUsers
         },
         {

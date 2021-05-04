@@ -12,9 +12,7 @@ const {
 async function getUsers(req, res, next) {
     try {
         let users = await model.getAllUsers()
-        res.json({
-            status: users
-        })
+        res.json(users)
     } catch (error) {
         console.error(error)
     }
