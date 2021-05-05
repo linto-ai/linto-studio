@@ -3,11 +3,11 @@ const { v4: uuidv4 } = require('uuid')
 
 
 async function createhighlight(req, res, next) {
-    try{
+    try {
         if (!!req.body.wordids && !!req.body.label && !!req.body.color) {
 
             let payload = {
-                convoid: req.params.conversationid, 
+                convoid: req.params.conversationid,
             }
 
             let getHighlights = await convoModel.getHighlightTypes(payload)
@@ -19,9 +19,9 @@ async function createhighlight(req, res, next) {
                     res.status(202).send({
                         txtStatus: 'warning',
                         msg: 'Highlight label already exists'
-                    })  
-                } 
-            } 
+                    })
+                }
+            }
 
             //if name is unique, create hid add new highlight to highlight field 
 
@@ -37,7 +37,7 @@ async function createhighlight(req, res, next) {
             }
 
             //add new highlight id to each word
-            
+
             payload["wordids"] = req.body.wordids
             payload["operator"] = "add"
 
@@ -53,9 +53,9 @@ async function createhighlight(req, res, next) {
         } else  {
             throw { message: 'Missing information in the payload object' }
         }
-    }catch(error){
+    } catch (error) {
         console.error(error)
-        // Error
+            // Error
         res.status(400).send({
             status: 'error',
             msg: !!error.message ? error.message : 'error creating highlight'
@@ -63,30 +63,29 @@ async function createhighlight(req, res, next) {
     }
 }
 
-async function deletehighlight(req, res, next) { 
-    try{
-        if(!!req.params.conversationid && !!req.params.hid){
+async function deletehighlight(req, res, next) {
+    try {
+        if (!!req.params.conversationid && !!req.params.hid) {
 
             let payload = {
-                convoid: req.params.conversationid, 
+                convoid: req.params.conversationid,
                 hid: req.params.hid
             }
-            
+
             //remove highlight from Highlights field
             let deleteHighlight = await convoModel.deleteHighlightField(payload)
             if (deleteHighlight !== 'success') {
                 throw deleteHighlight
             }
-            
+
             //find words with hid
             let wordids = await convoModel.getHighlightWordids(payload)
 
-            if(!!wordids[0].wids && wordids[0].wids.length > 0){
+            if (!!wordids[0].wids && wordids[0].wids.length > 0) {
                 payload["wordids"] = wordids[0].wids
-                payload["operator"] = "remove"  
-            }
-            else {
-                throw wordids 
+                payload["operator"] = "remove"
+            } else {
+                throw wordids
             }
 
             //remove words with hid 
@@ -101,10 +100,10 @@ async function deletehighlight(req, res, next) {
                 throw highlightWords
             }
 
-        }else{
+        } else {
             throw { message: 'Missing information in the payload object' }
         }
-    }catch (error){
+    } catch (error) {
         // Error
         res.status(400).send({
             status: 'error',
@@ -114,11 +113,11 @@ async function deletehighlight(req, res, next) {
 }
 
 async function updatehighlightwords(req, res, next) {
-    try{
-        if(!!req.body.wordids){
+    try {
+        if (!!req.body.wordids) {
 
             let payload = {
-                convoid: req.params.conversationid, 
+                convoid: req.params.conversationid,
                 hid: req.params.hid,
                 wordids: req.body.wordids,
                 operator: req.body.operator
@@ -132,15 +131,16 @@ async function updatehighlightwords(req, res, next) {
                     msg: 'highlight updated'
                 })
             } else {
-                throw "highlightWords"
+                throw highlightWords
             }
 
-        }else{
+        } else {
             throw { message: 'Missing information in the payload object' }
         }
     } catch (error) {
-         // Error
-         res.status(400).send({
+        console.error(error)
+            // Error
+        res.status(400).send({
             status: 'error',
             msg: !!error.message ? error.message : 'error updating highlight'
         })
@@ -148,16 +148,16 @@ async function updatehighlightwords(req, res, next) {
 }
 
 async function updatehighlighttype(req, res, next) {
-    try{
-        if (!!req.body.label || !!req.body.color) { 
+    try {
+        if (!!req.body.label || !!req.body.color) {
             const payload = {
                 convoid: req.params.conversationid,
                 hid: req.params.hid,
-            } 
-            if(!!req.body.label){
+            }
+            if (!!req.body.label) {
                 payload["label"] = req.body.label
             }
-            if(!!req.body.color){
+            if (!!req.body.color) {
                 payload["color"] = req.body.color
             }
 
@@ -176,7 +176,7 @@ async function updatehighlighttype(req, res, next) {
         } else {
             throw { message: 'Missing information in the payload object' }
         }
-    }catch (error) {
+    } catch (error) {
         // Error
         res.status(400).send({
             status: 'error',
@@ -188,7 +188,7 @@ async function updatehighlighttype(req, res, next) {
 
 module.exports = {
     createhighlight,
-    deletehighlight, 
-    updatehighlighttype, 
+    deletehighlight,
+    updatehighlighttype,
     updatehighlightwords
 }

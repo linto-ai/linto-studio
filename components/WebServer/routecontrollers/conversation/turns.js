@@ -7,7 +7,6 @@ async function createTurn(req, res, next) {
     //so far this function is not used by the user... 
     //but convoModel.createTurn is used by other routecontroller functions.
     try {
-        console.log(req.params)
         if (!!req.params.speakerid) { ///made speaker id a param string-KT
             let payload = {
                 convoid: req.params.conversationid,
@@ -74,7 +73,7 @@ async function identifyTurnSpeaker(req, res, next) { //WIP
             }
 
             console.log(payload)
-            // Todo : Check if speaker exists first ? 
+                // Todo : Check if speaker exists first ? 
 
             let updateTurn = await convoModel.updateTurnSpeakerId(payload)
             if (updateTurn === 'success') {
@@ -109,7 +108,7 @@ async function mergeTurns(req, res, next) {
                 speakerid: req.body.speakerid,
             }
             let getTurns = await convoModel.getTurns(payload)
-          
+
             if (getTurns !== "undefined") {
                 //console.log(response[0]["text"])
                 //sort turns in ascending order
@@ -229,8 +228,8 @@ async function renumberTurns(req, res, next) {
         if (!!error.error && error.error === 'no_match') { // if no match
             res.status(200).send({
                 txtStatus: 'success',
-                msg: 'Turns already up to date' 
-                //NB: if you merge all turns in a conversation and then reorder you get this error--KT
+                msg: 'Turns already up to date'
+                    //NB: if you merge all turns in a conversation and then reorder you get this error--KT
             })
         } else {
             res.status(400).send({
@@ -274,9 +273,9 @@ async function splitTurns(req, res, next) {
             }
             let words = payload.wordids
             let nums = payload.positions
-                if (nums.length > 1) {
-                    payload.positions = [...Array(nums[1] + 1).keys()].slice(nums[0])
-                }
+            if (nums.length > 1) {
+                payload.positions = [...Array(nums[1] + 1).keys()].slice(nums[0])
+            }
 
             // get all turns
             let getTurns = await convoModel.getTurns(payload)
@@ -297,7 +296,7 @@ async function splitTurns(req, res, next) {
                     //else the end words are the sorted words of the last turn
                     end_words = turns[turns.length - 1].words.sort((a, b) => a.pos - b.pos)
                 }
-                
+
                 //keep last word of last turn in last_pos variable
                 let last_pos = end_words[end_words.length - 1].pos
 
@@ -305,7 +304,7 @@ async function splitTurns(req, res, next) {
                 let start_word = start_words.filter(obj => {
                     return obj.wid === payload.wordids[0]
                 })
-             
+
                 const start_pos = start_word[0].pos
 
                 //get ending word id
@@ -317,10 +316,10 @@ async function splitTurns(req, res, next) {
                 } else {
                     end_word = start_word
                 }
-             
+
                 //get end word position
                 const end_pos = end_word[0].pos
-                
+
                 //if just one word selected, also need the kind of split
                 const split = payload.splitype
 
@@ -339,34 +338,34 @@ async function splitTurns(req, res, next) {
                     const until_word = (arr, pos) => arr.filter((elem) => elem.pos <= pos)
                     const from_word = (arr, pos) => arr.filter((elem) => elem.pos >= pos)
                     const extract_words = (arr, start, end) => arr.filter((elem) => elem.pos >= start && elem.pos <= end)
-                    
-                    if (start_pos === end_pos && split > 0){ //case 5
+
+                    if (start_pos === end_pos && split > 0) { //case 5
                         //if split==='before' then split turn before the selected word.
                         //if split==='after' then split turn after the selected word
                         let first_turn_words = null
-                        let second_turn_words = null 
+                        let second_turn_words = null
                         let new_end_words = clone(end_words)
-                      
-                        if (split === 1){ // 1 is "before"
+
+                        if (split === 1) { // 1 is "before"
                             first_turn_words = until_word(start_words, start_pos - 1)
                             second_turn_words = from_word(new_end_words, end_pos)
-                            // have to throw an error if user tries to split before first word
-                            if (start_pos === 0){
+                                // have to throw an error if user tries to split before first word
+                            if (start_pos === 0) {
                                 throw ({
                                     message: "cannot split before first word in turn"
                                 })
-                            } 
+                            }
                         } else { // split comes after
                             first_turn_words = until_word(start_words, start_pos)
-                            second_turn_words = from_word(new_end_words, end_pos+1)
-                            // have to throw and error if user tried to split after last word
-                            if (end_pos === last_pos){
+                            second_turn_words = from_word(new_end_words, end_pos + 1)
+                                // have to throw and error if user tried to split after last word
+                            if (end_pos === last_pos) {
                                 throw ({
                                     message: "cannot split after last word in turn"
                                 })
-                            } 
+                            }
                         }
-                
+
                         //create first turn 
                         let firstturnid = uuidv4()
                         let first_turn_payload = {
@@ -400,7 +399,7 @@ async function splitTurns(req, res, next) {
                         let createSecondTurn = await convoModel.createTurn(second_turn_payload)
                         if (createSecondTurn === 'success') {
                             console.log("turn creation successful--now deleting old turns")
-                            //now delete original turns
+                                //now delete original turns
                             delete_payload = {
                                 convoid: payload.convoid,
                                 turnids: turns.map(a => a.turn_id)
@@ -436,7 +435,7 @@ async function splitTurns(req, res, next) {
                             } else {
                                 throw createTurn
                             }
-                        } 
+                        }
                         if (end_pos != last_pos) { // handle last turn case 2 or 3
                             let new_end_words = clone(end_words)
                             let end_turn_words = from_word(new_end_words, end_pos + 1)

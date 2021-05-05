@@ -70,13 +70,13 @@ export default {
     bus.$on('close_selected_toolbox', () => {
       this.cancelTextSelection()
     })
-      
     bus.$on('update_speaker', async (data) => {
       this.speakerEdit = false
     })
     bus.$on('scroll_to_current', () => {
       this.scrollToCurrentTurn(this.currentTurn)
     })
+    
     bus.$on('transcription_update_highlights', (data) => {
       this.setHighlights(data.highlightsOptions)
     })

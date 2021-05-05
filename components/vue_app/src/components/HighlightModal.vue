@@ -9,14 +9,14 @@
       </div>
       <div class="modal--body words-highlights">
           <div class="modal-words-selected">
-            <p>Your selection: "<strong>{{selectionTxt}}</strong>"</p>
+            <p>Your selection: "<strong>{{selectionTxt.txt}}</strong>"</p>
           </div>
 
           <div class="form-field flex col">
             <span class="form-label">Choose a highlight : </span>
             <div class="flex row">
               <select v-model="highlight.value">
-                <option v-for="hl in convo.highlights" :key="hl._id" :value="hl._id">{{hl.label}}</option>
+                <option v-for="hl in convo.highlights" :key="hl.hid" :value="hl.hid">{{hl.label}}</option>
               </select>
 
               <button @click="handleHighlight()" class="btn btn--txt-icon green" style="margin-left: 10px;">
@@ -31,6 +31,13 @@
             <span class="form-label">Or create a new highlight : </span>
             <div class="flex row">
               <input type="text" v-model="newHighlight.value">
+
+               <input 
+                type="color" 
+                v-model="newHighlightColor" 
+                class="transcription-options--item-color"
+              >
+
               <button style="margin-left: 10px;" @click="handleNewHighlight()" class="btn btn--txt-icon green">
                 <span class="label">Create Highlight</span>
                 <span class="icon icon__apply"></span>
@@ -67,7 +74,8 @@ export default {
         value: '',
         error: null,
         valid: false
-      }
+      },
+      newHighlightColor: '#B4D455',
     }
   },
   computed: {
@@ -89,6 +97,7 @@ export default {
   mounted () {
     bus.$on('highlight_modal_open', (data) => {
       this.selectionObj = data.selectionObj
+      this.convoId = data.conversationId
       this.showModal = true
     })
   },
@@ -99,19 +108,76 @@ export default {
     async dispatchConversations () {
       this.convosLoaded = await this.$options.filters.dispatchStore('getConversations')
     },
-    handleHighlight() {
-      this.$options.filters.testSelectField(this.highlight)
-      if(this.highlight.valid)  {
-        console.log('form valid')
+    async handleHighlight() {
+      try {
+        this.$options.filters.testSelectField(this.highlight)
+        if(this.highlight.valid)  {
+          const payload =  {
+            hid: this.highlight.value,
+            wordids: this.selectionTxt.wordids,
+            operator: 'add'
+          }
+          const req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/highlight/${this.highlight.value}`, 'put', payload)
+
+          if(req.status === 200 && !!req.data.msg) {
+            bus.$emit('app_notif', {
+              status: 'success',
+              message: req.data.msg,
+              timeout: 3000
+            })
+            this.closeModal()
+            bus.$emit('refresh_conversation', {})
+
+          } else {
+            throw req
+          }
+        }
+      } catch (error) {
+         if(process.env.VUE_APP_DEBUG === 'true') {
+          console.error(error)
+        }
+        bus.$emit('app_notif', {
+          status: 'error',
+          message: !!error.msg ? error.msg : 'Error on updating speaker',
+          timeout: null
+        })
       }
     },
-    handleNewHighlight () {
-      this.testNewHighlight()
-      if(this.newHighlight.valid) {
-        console.log('Form Valid')
-        // todo > send request create highlight
-        // todo > add highlights to selected words
-      } 
+    async handleNewHighlight () {
+      try {
+        this.testNewHighlight()
+        if(this.newHighlight.valid) {
+          const payload =  {
+            label: this.newHighlight.value,
+            wordids: this.selectionTxt.wordids,
+            color: this.newHighlightColor,
+          }
+
+          const req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/highlight`, 'post', payload)
+
+          if(req.status === 200 && !!req.data.msg) {
+            bus.$emit('app_notif', {
+              status: 'success',
+              message: req.data.msg,
+              timeout: 3000
+            })
+            this.closeModal()
+            bus.$emit('refresh_conversation', {})
+
+          } else {
+            throw req
+          }
+        } 
+      } catch (error) {
+        if(process.env.VUE_APP_DEBUG === 'true') {
+          console.error(error)
+        }
+        bus.$emit('app_notif', {
+          status: 'error',
+          message: !!error.msg ? error.msg : 'Error on updating speaker',
+          timeout: null
+        })
+      }
     },
     testNewHighlight () {
       this.$options.filters.testName(this.newHighlight)

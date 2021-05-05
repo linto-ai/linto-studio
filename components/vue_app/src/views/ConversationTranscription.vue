@@ -36,7 +36,7 @@
           </div>
 
           <div class="flex col transcription-options" v-if="highlightsOptions.length > 0">
-            <div class="flex row transcription-options--item" v-for="hl in highlightsOptions" :key="hl._id">
+            <div class="flex row transcription-options--item" v-for="hl in highlightsOptions" :key="hl.hid">
               <span class="transcription-options--item-label flex1">{{ hl.label }}</span>
               <input 
                 type="color" 
@@ -107,7 +107,7 @@
             <span class="transcription-filters__select-label">Highlights:</span>
             <div class="flex row">
               <select id="filter-highlights" class="transcription-filters__select flex1" v-model="convoFilter.highlights">
-                <option v-for="hl in convo.highlights" :key="hl._id" :value="hl._id">{{ hl.label }}</option>
+                <option v-for="hl in convo.highlights" :key="hl.hid" :value="hl.hid">{{ hl.label }}</option>
                 <option value="">None</option>
               </select>
               <button v-if="convoFilter.highlights !== ''" @click="convoFilter.highlights = ''" class="cancel-filter-btn"></button>
@@ -185,7 +185,6 @@ import ModalSplitTurns from '@/components/ModalSplitTurns.vue'
 import Transcription from '@/components/Transcription.vue'
 import TranscriptionKeyupHandler from '@/components/TranscriptionKeyupHandler.vue'
 import KeyboardCommandsFrame from '@/components/KeyboardCommandsFrame.vue'
-import axios from 'axios'
 import { bus } from '../main.js'
 export default {
   data () {
@@ -225,8 +224,9 @@ export default {
 
     bus.$on('refresh_conversation', async () => {
       await this.dispatchStore('getConversations')
+      this.refreshHighlights()
     })
-
+    
     bus.$on('audio_player_currenttime', (data) => {
       this.currentTime = data.time
     })
@@ -354,9 +354,9 @@ export default {
     'convo.highlights' (data) {
       if (data.length > 0) {
         data.map(hl => {
-          if (this.highlightsOptions.findIndex(allhl => allhl._id === hl._id) >= 0) {
+          if (this.highlightsOptions.findIndex(allhl => allhl.hid === hl.hid) >= 0) {
             
-            this.highlightsOptions[this.highlightsOptions.findIndex(allhl => allhl._id === hl._id)].label = hl.label
+            this.highlightsOptions[this.highlightsOptions.findIndex(allhl => allhl.hid === hl.hid)].label = hl.label
           } else {
             this.highlightsOptions.push({...hl, selected: false, words: []})
           }
@@ -368,7 +368,7 @@ export default {
               for (let word of turn.words) {
                 if (word.highlights.length > 0) {
                   for (let hl of word.highlights) {
-                    this.highlightsOptions.find(allHL => allHL._id === hl).words.push(word.wid)
+                    this.highlightsOptions.find(allHL => allHL.hid === hl).words.push(word.wid)
                   }
                 }
               }
@@ -479,24 +479,46 @@ export default {
       }
     },
     /* HIGHLIGHTS */
-    updateHighlightColor (event, hl) {
-      const color = event.srcElement.value
-      let hlOptionIndex = this.highlightsOptions.findIndex(hlo => hlo._id === hl._id)
-      if(hlOptionIndex >= 0) {
-        this.highlightsOptions[hlOptionIndex].color = color
+    refreshHighlights () {
+      bus.$emit('transcription_update_highlights', {highlightsOptions: this.highlightsOptions})
+    },
+    async updateHighlightColor (event, hl) {
+      try {
+        const color = event.srcElement.value
+        const payload =  { color }
+        const req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/highlight/${hl.hid}`, 'patch', payload)
 
-        // Todo : update model > hl color
-        if(this.highlightsOptions[hlOptionIndex].selected) {
-          bus.$emit('transcription_update_highlights', {highlightsOptions: this.highlightsOptions})
+        if(req.status === 200 && !!req.data.msg) {
+          bus.$emit('app_notif', {
+            status: 'success',
+            message: req.data.msg,
+            timeout: 3000
+          })
+          let hlOptionIndex = this.highlightsOptions.findIndex(hlo => hlo.hid === hl.hid)
+          if(hlOptionIndex >= 0) {
+            this.highlightsOptions[hlOptionIndex].color = color
+          }
+          bus.$emit('refresh_conversation', {})
+        } else {
+          throw req
         }
+      } catch (error) {
+        if(process.env.VUE_APP_DEBUG === 'true') {
+          console.error(error)
+        }
+        bus.$emit('app_notif', {
+          status: 'error',
+          message: !!error.msg ? error.msg : 'Error on updating speaker',
+          timeout: null
+        })
       }
     },
     updateHighlight (hl) {
-      let hlItemIndex = this.highlightsOptions.findIndex(hlo => hlo._id === hl._id)
+      let hlItemIndex = this.highlightsOptions.findIndex(hlo => hlo.hid === hl.hid)
       if (hlItemIndex >= 0) {
         this.highlightsOptions[hlItemIndex].selected = !this.highlightsOptions[hlItemIndex].selected
       }
-      bus.$emit('transcription_update_highlights', {highlightsOptions: this.highlightsOptions})
+      this.refreshHighlights()
     },
     /* EDITION MODE */
     cancelEditionMode () {

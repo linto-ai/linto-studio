@@ -130,7 +130,6 @@ export default {
       if (index >=0) {
         this.userListOptions[index].selected = !this.userListOptions[index].selected
       }
-      console.log(this.userListOptions[index])
     },
     updateUserWriteAccess (user) {
       let index = this.userListOptions.findIndex(usr => usr._id === user._id)

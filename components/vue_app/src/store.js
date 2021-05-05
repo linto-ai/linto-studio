@@ -157,15 +157,6 @@ export default new Vuex.Store({
 
             }
         },
-        highlightsByConversationId: (state) => (convoId) => {
-            try {
-                const conversation = state.conversations.filter(c => c._id === convoId)
-                return conversation[0].highlights
-            } catch (error) {
-                conversation
-                return error.toString()
-            }
-        },
         turnIdsBetweenTwo: (state) => (convoId, payload) => {
             try {
                 // One turn selected
@@ -210,14 +201,16 @@ export default new Vuex.Store({
                         const starWordPos = payload.startWordPosition
                         const endWordPos = payload.endWordPosition
                         const turn = text.find(t => t.turn_id === payload.startTurnId)
+                        let wordids = []
                         let txt = ''
                         if (!!turn.words && turn.words.length > 0) {
                             for (let word of turn.words) {
                                 if (word.pos >= starWordPos && word.pos <= endWordPos) {
+                                    wordids.push(word.wid)
                                     txt += word.word + ' '
                                 }
                             }
-                            return txt
+                            return { wordids, txt }
                         } else {
                             throw 'Turn not found'
                         }

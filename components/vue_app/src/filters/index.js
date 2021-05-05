@@ -27,7 +27,6 @@ Vue.filter('timeToHMS', function(time) {
 
 Vue.filter('dateToJMY', function(date) {
     let splitDate = date.split('T')
-    console.log(splitDate)
     return splitDate[0]
 })
 
@@ -45,9 +44,7 @@ Vue.filter('sendRequest', async function(url, method, data) {
             method,
             data,
             headers: {
-                'Authorization': `
-            Bearer $ { userToken }
-            `
+                'Authorization': `Bearer ${ userToken }`
             }
         })
         if (req.status === 200) {
@@ -73,9 +70,7 @@ Vue.filter('sendMultipartFormData', async function(url, method, data) {
             headers: {
                 'charset': 'utf-8',
                 'Content-Type': 'multipart/form-data',
-                'Authorization': `
-            Bearer $ { userToken }
-            `
+                'Authorization': `Bearer ${ userToken }`
             }
         })
         if (req.status === 200) {
@@ -136,8 +131,8 @@ Vue.filter('dispatchStore', async function(label) {
 
 Vue.filter('generateTranscriptionText', function(convo, filters) {
     let speakers = convo.speakers
-    let content = ` === === === === === === === === === === === === === === === === === === === === === === === \nConversation: $ { convo.name } - $ { convo.created }\
-            n === === === === === === === === === === === === === === === === === === === === === === === \n\ n `
+    let content = `=====================================================================\nConversation: $ { convo.name } - $ { convo.created }\
+            n=====================================================================\n\ n `
 
     let filtersLabel = ''
 
@@ -151,7 +146,7 @@ Vue.filter('generateTranscriptionText', function(convo, filters) {
     }
     if (filters.highlights !== '') {
         let hlId = filters.highlights
-        let highlights = convo.highlights.filter(hl => hl._id === hlId)
+        let highlights = convo.highlights.filter(hl => hl.hid === hlId)
         if (highlights.length > 0) {
             filtersLabel += ` - highlights: $ { highlights[0].label }\
             n `
