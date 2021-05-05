@@ -4,7 +4,9 @@
     
     <div class="flex row" v-if="dataLoaded">
       <div class="conversation-filter-container flex1">
-        <button class="conversation-filter--btn conversation-filter--btn__active" >All</button> | <button class="conversation-filter--btn" >Owned by me</button> | <button class="conversation-filter--btn" >Shared with me</button> 
+        <button class="conversation-filter--btn" :class="filterActive === 'all' ? 'active' : ''"  @click="filterActive = 'all'">All</button> | 
+        <button class="conversation-filter--btn" :class="filterActive === 'ownedByMe' ? 'active' : ''" @click="filterActive = 'ownedByMe'">Owned by me</button> | 
+        <button class="conversation-filter--btn" :class="filterActive === 'sharedWithMe' ? 'active' : ''" @click="filterActive = 'sharedWithMe'">Shared with me</button> 
       </div>
       <div class="flex1 flex col flex-end">
         <a href="/interface/conversation/create" class="btn btn--txt-icon green">
@@ -29,7 +31,7 @@
         <tbody>
           <tr>
           </tr>
-          <tr v-for="convo in sortedConversations" :key="convo._id" @click="redirectConversationPage(convo._id)">
+          <tr v-for="convo in filteredConversations" :key="convo._id" @click="redirectConversationPage(convo._id)">
             <td class="title">{{ convo.name }}</td>
             <td>{{ convo.description }}</td>
             <td>{{ dateToJMY(convo.created) }}</td>
@@ -62,11 +64,12 @@ export default {
     return {
       convosLoaded: false,
       usersLoaded: false,
+      filterActive: 'all',
       sortBy: 'date',
       sortDirection: 'down',
       conversationsKeys: [
         {
-          key: 'title',
+          key: 'name',
           text: 'Title'
         },
         {
@@ -74,11 +77,11 @@ export default {
           text: 'Description'
         },
         {
-          key: 'date',
+          key: 'created',
           text: 'Date'
         },
         {
-          key: 'duration',
+          key: 'audio',
           text: 'Duration'
         },
         {
@@ -90,7 +93,7 @@ export default {
           text: 'Shared With'
         },
         {
-          key: 'status',
+          key: 'locked',
           text: 'Status'
         }
       ]
@@ -113,10 +116,23 @@ export default {
     allUsersInfos () {
       return this.$store.getters.allUsersInfos()
     },
+    filteredConversations () {
+      if(!!this.sortedConversations){
+        let sorted = this.sortedConversations
+        if(this.filterActive === 'all') {
+          return sorted
+        } else if (this.filterActive === 'ownedByMe') {
+          return sorted.filter(convo => convo.owner === this.userInfo._id)
+        } else if (this.filterActive === 'sharedWithMe') {
+          return sorted.filter(convo => convo.owner !== this.userInfo._id)
+        }
+      }
+      return []
+    },
     sortedConversations () {
       if(!!this.conversations && this.conversations.length > 0) {
         let sortedArray = this.conversations
-        const key = this.sortBy
+        let key = this.sortBy
         if (this.sortDirection === 'down') {
           return sortedArray.sort(function (a, b) {
             if (a[key] > b[key]) {
@@ -155,8 +171,6 @@ export default {
         this.sortDirection = 'down'
       }
     },
-    
-    
      secToHMS (time) {
       const totalSeconds = parseInt(time)
       const hour = Math.floor(totalSeconds / (60 * 60))
