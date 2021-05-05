@@ -18,6 +18,25 @@ let getCookie = function(cname) {
     return null
 }
 
+Vue.filter('timeToHMS', function(time) {
+    const hour = Math.floor(time / (60 * 60))
+    const min = Math.floor(time / 60)
+    const sec = Math.floor(time % 60)
+    return `${hour < 10  ? '0' + hour : hour}:${min < 10 ? '0' + min : min}:${sec < 10 ? '0' + sec : sec }`
+})
+
+Vue.filter('dateToJMY', function(date) {
+    let splitDate = date.split('T')
+    console.log(splitDate)
+    return splitDate[0]
+})
+
+Vue.filter('dateToJMYHMS', function(date) {
+    let splitDate = date.split('T')
+    let fullTime = splitDate[1]
+    let splitTime = fullTime.split('+')
+    return `${splitDate[0]} - ${splitTime[0]}`
+})
 
 Vue.filter('sendRequest', async function(url, method, data) {
     const userToken = getCookie('authToken')
@@ -26,7 +45,9 @@ Vue.filter('sendRequest', async function(url, method, data) {
             method,
             data,
             headers: {
-                'Authorization': `Bearer ${userToken}`
+                'Authorization': `
+            Bearer $ { userToken }
+            `
             }
         })
         if (req.status === 200) {
@@ -52,7 +73,9 @@ Vue.filter('sendMultipartFormData', async function(url, method, data) {
             headers: {
                 'charset': 'utf-8',
                 'Content-Type': 'multipart/form-data',
-                'Authorization': `Bearer ${userToken}`
+                'Authorization': `
+            Bearer $ { userToken }
+            `
             }
         })
         if (req.status === 200) {
@@ -113,7 +136,8 @@ Vue.filter('dispatchStore', async function(label) {
 
 Vue.filter('generateTranscriptionText', function(convo, filters) {
     let speakers = convo.speakers
-    let content = `===================================================================== \nConversation: ${convo.name} - ${convo.created}\n=====================================================================\n\n`
+    let content = ` === === === === === === === === === === === === === === === === === === === === === === === \nConversation: $ { convo.name } - $ { convo.created }\
+            n === === === === === === === === === === === === === === === === === === === === === === === \n\ n `
 
     let filtersLabel = ''
 
@@ -121,26 +145,31 @@ Vue.filter('generateTranscriptionText', function(convo, filters) {
         let spkId = filters.speaker
         let speaker = convo.speakers.filter(spk => spk.speaker_id === spkId)
         if (speaker.length > 0) {
-            filtersLabel += `- speaker : ${speaker[0].speaker_name}\n`
+            filtersLabel += ` - speaker: $ { speaker[0].speaker_name }\
+            n `
         }
     }
     if (filters.highlights !== '') {
         let hlId = filters.highlights
         let highlights = convo.highlights.filter(hl => hl._id === hlId)
         if (highlights.length > 0) {
-            filtersLabel += `- highlights : ${highlights[0].label}\n`
+            filtersLabel += ` - highlights: $ { highlights[0].label }\
+            n `
         }
     }
     if (filters.keywords !== '') {
         let kwId = filters.keywords
         let keywords = convo.keywords.filter(kw => kw._id === kwId)
         if (keywords.length > 0) {
-            filtersLabel += `- keywords : ${keywords[0].label}\n`
+            filtersLabel += ` - keywords: $ { keywords[0].label }\
+            n `
         }
     }
 
     if (filtersLabel.length > 0) {
-        content += `Filtered by :\n${filtersLabel} \n\n`
+        content += `
+            Filtered by: \n$ { filtersLabel }\
+            n\ n `
     }
 
     if (convo.text.length > 0) {
@@ -162,14 +191,18 @@ Vue.filter('generateTranscriptionText', function(convo, filters) {
                         endTime = word.etime
                     }
                     // words
-                    spkText += `${word.word} `
+                    spkText += `
+            $ { word.word }
+            `
                 }
             }
             if (speaker.length > 0) {
                 // Spk name
-                spkName = `${speaker[0].speaker_name}: `
+                spkName = `
+            $ { speaker[0].speaker_name }: `
             }
-            content += `[${startTime} - ${endTime}] ${spkName}: ${spkText} \n\n`
+            content += ` [$ { startTime } - $ { endTime }] $ { spkName }: $ { spkText }\
+            n\ n `
         }
     }
     return content

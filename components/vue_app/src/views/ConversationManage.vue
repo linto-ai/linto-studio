@@ -1,5 +1,5 @@
 <template>
-  <div class="flex row no-padding-left" v-if="convoLoaded">
+  <div class="flex row no-padding-left" v-if="dataLoaded">
     <!-- LEFT PART -->
     <div class="flex col conversation-infos-container">
       <h2>Conversation informations</h2>
@@ -10,7 +10,7 @@
             <span class="conversation-infos-item--icon conversation-infos-item--icon__date"></span>
             <span class="conversation-infos-item--title">Date</span>
           </div>
-          <span class="conversation-infos-item--value">{{ convo.mdate }}</span>
+          <span class="conversation-infos-item--value">{{ dateToJMY(convo.created) }}</span>
         </div>
         <!-- Duration -->
         <div class="conversation-infos-item">
@@ -18,7 +18,7 @@
             <span class="conversation-infos-item--icon conversation-infos-item--icon__duration"></span>
             <span class="conversation-infos-item--title">Duration</span>
           </div>
-          <span class="conversation-infos-item--value">{{ convo.mtime }}</span>
+          <span class="conversation-infos-item--value">{{ timeToHMS(convo.audio.duration) }}</span>
         </div>
         <!-- Last update -->
         <div class="conversation-infos-item">
@@ -26,15 +26,16 @@
             <span class="conversation-infos-item--icon conversation-infos-item--icon__lastupdate"></span>
             <span class="conversation-infos-item--title">Last update</span>
           </div>
-          <span class="conversation-infos-item--value">{{ convo.last_update }}</span>
+          <span class="conversation-infos-item--value">{{ dateToJMYHMS(convo.last_update) }}</span>
         </div>
         <!-- Owner -->
+        
         <div class="conversation-infos-item">
           <div class="conversation-infos-item--label">
             <span class="conversation-infos-item--icon conversation-infos-item--icon__owner"></span>
             <span class="conversation-infos-item--title">Owner</span>
           </div>
-          <span class="conversation-infos-item--value">{{ convo.owner.name }}</span>
+          <span class="conversation-infos-item--value" v-if="!!allUsers && allUsers.length> 0">{{ `${CapitalizeFirstLetter(allUsers[allUsers.findIndex(usr => usr._id === convo.owner)].firstname)} ${CapitalizeFirstLetter(allUsers[allUsers.findIndex(usr => usr._id === convo.owner)].lastname)}` }}</span>
         </div>
         <!-- Shared with -->
         <div class="conversation-infos-item">
@@ -42,9 +43,9 @@
             <span class="conversation-infos-item--icon conversation-infos-item--icon__sharedwith"></span>
             <span class="conversation-infos-item--title">Shared with</span>
           </div>
-          <ul class="conversation-infos-item--list">
+          <ul class="conversation-infos-item--list" v-if="!!allUsers && allUsers.length> 0">
             <li v-for="user in convo.sharedWith" :key="user.name">
-              <span class="conversation-infos-item--value" >{{ user.name }}</span>
+              <span class="conversation-infos-item--value" >{{ `${CapitalizeFirstLetter(allUsers[allUsers.findIndex(usr => usr._id === user.user_id)].firstname)} ${CapitalizeFirstLetter(allUsers[allUsers.findIndex(usr => usr._id === user.user_id)].lastname)}` }}</span>
             </li>
           </ul>
         </div>
@@ -234,6 +235,7 @@ export default {
       abstractEdit: false,
       keywordsEdit: false,
       convoLoaded: false,
+      usersLoaded: false,
       speakerEdit: false,
       audioPlayer: null
     }
@@ -242,17 +244,24 @@ export default {
     bus.$emit('vertical_nav_close', {})
     this.convoId = this.$route.params.convoId
 
-    await this.dispatchStore('getConversations')
+    await this.dispatchConversations()
+    await this.dispatchUsersInfo()
     this.audioPlayer = new Audio()
 
     bus.$on('update_speaker', async (data) => {
       this.updateSpeaker(data)
       this.speakerEdit = false
-      await this.dispatchStore('getConversations')
+      await this.dispatchConversations()
     })
 
   },
   computed: {
+    dataLoaded () {
+      return this.usersLoaded && this.convoLoaded
+    },
+    allUsers () {
+      return this.$store.getters.allUsersInfos()
+    },
     conversation () {
       return this.$store.getters.conversationById(this.convoId)
     },
@@ -399,17 +408,7 @@ export default {
           btn.classList.remove('active')
         }
       }
-      await this.dispatchStore('getConversations')
-    },
-    async dispatchStore (topic) {
-      try {
-        const resp = await this.$options.filters.dispatchStore(topic)
-        if (resp.status === 'success') {
-          this.convoLoaded = true
-        }
-      } catch (error) {
-        console.error(error)
-      }
+      await this.dispatchConversations()
     },
     playSample (event, start, end) {
       const target = event.target
@@ -434,6 +433,12 @@ export default {
           return newSpeakerName
         }
     },
+    deleteSpeaker (speakerId) {
+      bus.$emit('modal_delete_speaker', {
+        convoId: this.convoId,
+        speakerId
+      })
+    },
     async addSpeaker () {
       try {
         let newSpeakerName = this.defineNewSpeakerName(this.conversation.speakers.length)
@@ -449,7 +454,7 @@ export default {
             message: req.data.msg,
             timeout: 3000
           })
-          await this.dispatchStore('getConversations')
+          await this.dispatchConversations()
         } else {
           throw req
         }
@@ -464,11 +469,37 @@ export default {
         })
       }
     },
-    deleteSpeaker (speakerId) {
-      bus.$emit('modal_delete_speaker', {
-        convoId: this.convoId,
-        speakerId
-      })
+    timeToHMS (time) {
+      return this.$options.filters.timeToHMS(time) 
+    },
+    dateToJMY (date) {
+      return this.$options.filters.dateToJMY(date) 
+    },
+    dateToJMYHMS (date) {
+      return this.$options.filters.dateToJMYHMS(date) 
+    },
+    CapitalizeFirstLetter (string) {
+      return this.$options.filters.CapitalizeFirstLetter(string)
+    },
+    async dispatchConversations () {
+      try {
+        let getConvos = await this.$options.filters.dispatchStore('getConversations')
+        if(getConvos.status === 'success') {
+          this.convoLoaded = true
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async dispatchUsersInfo () {
+      try {
+        let getUsers = await this.$options.filters.dispatchStore('getUsers')
+        if(getUsers.status === 'success') {
+          this.usersLoaded = true
+        }
+      } catch (error) {
+        console.error(error)
+      }
     }
   },
   components: {

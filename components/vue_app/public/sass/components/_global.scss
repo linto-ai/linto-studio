@@ -609,16 +609,21 @@ select {
 .share-with-list {
     border-collapse: collapse;
     margin: 10px 0;
+    max-width: 620px;
     thead {
         tr {
             th {
                 text-align: left;
+                padding: 5px 0;
             }
         }
     }
     tbody {
         tr {
-            background-color: $blueXLight;
+            background-color: #fafafa;
+            &.selected {
+                background-color: $greenLight;
+            }
             td {
                 padding: 10px;
                 &.img {

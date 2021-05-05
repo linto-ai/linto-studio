@@ -32,18 +32,18 @@
           <tr v-for="convo in sortedConversations" :key="convo._id" @click="redirectConversationPage(convo._id)">
             <td class="title">{{ convo.name }}</td>
             <td>{{ convo.description }}</td>
-            <td>{{ convo.mdate }}</td>
+            <td>{{ dateToJMY(convo.created) }}</td>
             <td>{{ secToHMS(convo.audio.duration) }}</td>
             <td>
               <div class="table-user-img flex row" v-if="!!allUsersInfos && allUsersInfos.length > 0">
-                <span class="table-user-img__span" :data-name="`${allUsersInfos[allUsersInfos.findIndex(usr => usr._id === convo.owner)].firstname} ${allUsersInfos[allUsersInfos.findIndex(usr => usr._id === convo.owner)].lastname}`">
+                <span class="table-user-img__span" :data-name="`${CapitalizeFirstLetter(allUsersInfos[allUsersInfos.findIndex(usr => usr._id === convo.owner)].firstname)} ${CapitalizeFirstLetter(allUsersInfos[allUsersInfos.findIndex(usr => usr._id === convo.owner)].lastname)}`">
                   <img :src="imgPath(allUsersInfos[allUsersInfos.findIndex(usr => usr._id === convo.owner)].img)" class="table-user-img__img" >
                 </span>
               </div>
             </td>
             <td>
               <div class="table-user-img flex row" v-if="!!allUsersInfos && allUsersInfos.length > 0">
-                <span class="table-user-img__span" v-for="user in convo.sharedWith" :key="user.user_id" :data-name="`${allUsersInfos[allUsersInfos.findIndex(usr => usr._id === user.user_id)].firstname} ${allUsersInfos[allUsersInfos.findIndex(usr => usr._id === user.user_id)].lastname}`">
+                <span class="table-user-img__span" v-for="user in convo.sharedWith" :key="user.user_id" :data-name="`${CapitalizeFirstLetter(allUsersInfos[allUsersInfos.findIndex(usr => usr._id === user.user_id)].firstname)} ${CapitalizeFirstLetter(allUsersInfos[allUsersInfos.findIndex(usr => usr._id === user.user_id)].lastname)}`">
                   <img :src="imgPath(allUsersInfos[allUsersInfos.findIndex(usr => usr._id === user.user_id)].img)" class="table-user-img__img" >
                 </span>
               </div>
@@ -166,6 +166,15 @@ export default {
     },
     redirectConversationPage (convoId) {
       document.location.href = `/interface/conversation/${convoId}`
+    },
+    dateToJMY (date) {
+      return this.$options.filters.dateToJMY(date) 
+    },
+    dateToJMYHMS (date) {
+      return this.$options.filters.dateToJMYHMS(date) 
+    },
+    CapitalizeFirstLetter (string) {
+      return this.$options.filters.CapitalizeFirstLetter(string)
     },
     async dispatchConversations () {
       this.convosLoaded = await this.$options.filters.dispatchStore('getConversations')

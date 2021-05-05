@@ -9,39 +9,44 @@
       </div>
       <div class="modal--body">
         <p>You can share a conversation with other users, and give them access to the conversation overview and the transcription. Select one or mutliple users in the following list and manage them edition rights.</p>
-        <table class="share-with-list" v-if="!!userListOptions && userListOptions.length > 0">
-          <thead>
-            <tr>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th>Edition</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr 
-              v-for="user in userListOptions" 
-              :key="user._id"
-              :class="user.selected ? 'selected' : ''"
-            >
-              <td>
-                <button class="custom-checkbox" :class="user.selected ? 'selected' :''" @click="updateUserSelected(user)"></button>
-              </td>
-              <td><img :src="imgPath(user.img)" class="share-with-list-img"></td>
-              <td>{{CapitalizeFirstLetter(user.firstname)}} {{CapitalizeFirstLetter(user.lastname)}}</td>
-              <td>
-                <button class="btn-toggle" :class="user.writeAccess === 3 ? 'enabled' : 'disabled'" @click="updateUserWriteAccess(user)"><span class="btn-toggle-circle" :class="user.writeAccess === 3 ? 'enabled' : 'disabled'" ></span>{{user.writeAccess}}</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div v-else>No user found</div>
-        <button @click="updateShareWith()">Apply</button>
+        <div class="flex col">
+          <table class="share-with-list" v-if="!!userListOptions && userListOptions.length > 0">
+            <thead>
+              <tr>
+                <th>Select</th>
+                <th colspan="2">User</th>
+                <th>Can write</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr 
+                v-for="user in userListOptions" 
+                :key="user._id"
+                :class="user.selected ? 'selected' : ''"
+              >
+                <td>
+                  <button class="custom-checkbox" :class="user.selected ? 'selected' :''" @click="updateUserSelected(user)"></button>
+                </td>
+                <td class="img"><img :src="imgPath(user.img)" class="share-with-list-img"></td>
+                <td>{{CapitalizeFirstLetter(user.firstname)}} {{CapitalizeFirstLetter(user.lastname)}}</td>
+                <td>
+                  <button class="btn-toggle" :class="user.writeAccess === 3 ? 'enabled' : 'disabled'" @click="updateUserWriteAccess(user)"><span class="btn-toggle-circle" :class="user.writeAccess === 3 ? 'enabled' : 'disabled'" ></span></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div v-else>No user found</div>
+        </div>
       </div>
       <div class="modal--footer">
         <button class="btn btn--txt-icon grey" @click="closeModal()">
           <span class="label">Cancel</span>
           <span class="icon icon__cancel"></span>
+        </button>
+
+        <button class="btn btn--txt-icon green" @click="updateShareWith()">
+          <span class="label">Apply</span>
+          <span class="icon icon__apply"></span>
         </button>
       </div>
     </div>
@@ -60,7 +65,6 @@ export default {
   },
   async mounted () {
     await this.dispatchUsers()
-    
     bus.$on('modal_share_with', async (data) => {
       this.showModal()
     })
@@ -71,7 +75,6 @@ export default {
         this.userListOptions[index].selected = false
       }
     })
-    
   },
   computed: {
    dataLoaded () {
@@ -96,7 +99,6 @@ export default {
             this.userListOptions.push({...user, selected: false, writeAccess: 1})
           }
         }
-        
       }
     }
   },
