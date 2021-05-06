@@ -2,16 +2,18 @@
 DISABLE_AUTH=false
 
 # Components loading in this order
-COMPONENTS = WebServer
+COMPONENTS=WebServer
 WEBSERVER_HTTP_PORT=8001
+JWT_SECRET=supersecret
+
+# Mongo
 DB_DRIVER=mongo
-DB_HOST=localhost
+DB_HOST=conversation-manager-mongo
+DB_PORT=27017
 DB_REQUIRE_LOGIN=true
 DB_USER=root
 DB_PASS=example
-DB_PORT=27017
 DB_NAME=conversations
-JWT_SECRET=supersecret
 
 # STT Config
 STT_REQUIRE_AUTH=true
@@ -28,10 +30,12 @@ EXPRESS_SIZE_FILE_MAX=500mb
 EXPRESS_TIMEOUT=1000000
 
 # Storage folder of audio volume
-VOLUME_AUDIO_UPLOAD_PATH=uploads/audios
+VOLUME_AUDIO_UPLOAD_PATH=storages/audios
 VOLUME_AUDIO_PUBLIC_PATH=audios
-VOLUME_PROFILE_PICTURE_UPLOAD_PATH=uploads/pictures
+VOLUME_PROFILE_PICTURE_UPLOAD_PATH=storages/pictures
 VOLUME_PROFILE_PICTURE_PUBLIC_PATH=pictures
+
+VOLUME_DATABASE_FOLDER=storages/database
 
 # JWT SECRET
 LINTO_STACK_CM_JWT_SECRET=jwt_secret

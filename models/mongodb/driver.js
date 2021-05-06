@@ -1,33 +1,21 @@
 const mongoDb = require('mongodb')
 let urlMongo = 'mongodb://'
 
-// if (process.env.LINTO_STACK_MONGO_USE_LOGIN === 'true')
-//     urlMongo += process.env.LINTO_STACK_MONGODB_USER + ':' + process.env.LINTO_STACK_MONGODB_PASSWORD + '@'
-// urlMongo += process.env.LINTO_STACK_MONGODB_SERVICE + ':' + process.env.LINTO_STACK_MONGODB_PORT + '/' + process.env.LINTO_STACK_MONGODB_DBNAME
-
-// if (process.env.LINTO_STACK_MONGO_USE_LOGIN === 'true')
-//     urlMongo += '?authSource=' + process.env.LINTO_STACK_MONGODB_DBNAME
-
 //user access
-if (process.env.DB_REQUIRE_LOGIN) {
+if (process.env.DB_REQUIRE_LOGIN === "true")
     urlMongo += process.env.DB_USER + ':' + process.env.DB_PASS + '@'
-}
 
-//host + port
-urlMongo += process.env.DB_HOST + ':' + process.env.DB_PORT + '/' 
+urlMongo += process.env.DB_HOST + ':' + process.env.DB_PORT + '/'
 
-
-//database
-if (process.env.DB_REQUIRE_LOGIN) {
+if (process.env.DB_REQUIRE_LOGIN === "true")
     urlMongo += '?authSource=' + process.env.DB_NAME
-}
 
 // Create an instance of a MongoDb client. Handle connection/close connection/reconnect/error
 class MongoDriver {
     static mongoDb = mongoDb
     static urlMongo = urlMongo
     static client = mongoDb.MongoClient
-    static db = null 
+    static db = null
 
     // Check mongo db connection status
     static checkConnection() {
@@ -43,13 +31,13 @@ class MongoDriver {
         }
     }
 
-    constructor(){
+    constructor() {
         this.poolOptions = {
-            numberOfRetries: 5, 
-            auto_reconnect: true, 
-            poolSize: 40, 
-            connectTimeoutMS: 5000, 
-            userNewUrlParser: true, 
+            numberOfRetries: 5,
+            auto_reconnect: true,
+            poolSize: 40,
+            connectTimeoutMS: 5000,
+            userNewUrlParser: true,
             useUnifiedTopology: true // ?? this is now false??
         }
         //if connection exists
@@ -58,7 +46,7 @@ class MongoDriver {
         }
 
         //??what happens if there is no connection
-        MongoDriver.client.connect(MongoDriver.urlMongo, MongoDriver.poolOptions, (err,client) => {
+        MongoDriver.client.connect(MongoDriver.urlMongo, MongoDriver.poolOptions, (err, client) => {
             if (err) {
                 console.error('> MongoDB ERROR unable to connect:', err.toString())
             } else {
@@ -120,4 +108,4 @@ class MongoDriver {
 
 }
 
-module.exports = new MongoDriver() 
+module.exports = new MongoDriver()

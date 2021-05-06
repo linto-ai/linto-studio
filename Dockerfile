@@ -9,4 +9,8 @@ RUN npm install
 HEALTHCHECK CMD node docker-healthcheck.js || exit 1
 EXPOSE 80
 
-CMD ["node", "app.js"]
+COPY ./wait-for-it.sh /
+COPY ./docker-entrypoint.sh /
+ENTRYPOINT ["/docker-entrypoint.sh"]
+
+#CMD ["node", "app.js"]
