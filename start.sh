@@ -3,9 +3,11 @@ set -uea
 SUDO=''
 . .env # Source all env
 
-sudo rm -r ./storages/database
-mkdir storages/database
+mkdir -p storages/database
 
-rm -f ./mongo-seeds/init.js 
+# Regenerate mono init.js file 
+rm -f ./mongo-seeds/init.js
 envsubst < ./mongo-seeds/init-template.js > ./mongo-seeds/init.js
+
+# Start docker (build if image not found)
 docker-compose up
