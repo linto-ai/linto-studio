@@ -136,6 +136,19 @@ export default new Vuex.Store({
                 return error.toString()
             }
         },
+        conversationHighlights: (state) => (convoId) => {
+            try {
+                const conversation = state.conversations.filter(f => f._id === convoId)
+                if (conversation.length > 0) {
+                    return conversation[0].highlights
+                } else {
+                    throw 'Conversation not found'
+                }
+            } catch (error) {
+                return error.toString()
+
+            }
+        },
         speakersByConversationId: (state) => (convoId) => {
             try {
                 const conversation = state.conversations.filter(f => f._id === convoId)
@@ -202,15 +215,17 @@ export default new Vuex.Store({
                         const endWordPos = payload.endWordPosition
                         const turn = text.find(t => t.turn_id === payload.startTurnId)
                         let wordids = []
+                        let words = []
                         let txt = ''
                         if (!!turn.words && turn.words.length > 0) {
                             for (let word of turn.words) {
                                 if (word.pos >= starWordPos && word.pos <= endWordPos) {
+                                    words.push(word)
                                     wordids.push(word.wid)
                                     txt += word.word + ' '
                                 }
                             }
-                            return { wordids, txt }
+                            return { words, wordids, txt }
                         } else {
                             throw 'Turn not found'
                         }

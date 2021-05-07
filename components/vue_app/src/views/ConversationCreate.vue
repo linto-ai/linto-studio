@@ -87,7 +87,8 @@
           @click="handleForm()" 
           class="btn btn--txt-icon green">
           <span class="label">Create conversation</span>
-          <span class="icon icon__apply"></span></button>
+          <span class="icon" :class="isSending ? 'icon__loading' : ' icon__apply'"></span>
+        </button>
       </div>
     </div>
     <ModalShareWith></ModalShareWith>
@@ -115,7 +116,8 @@ export default {
         valid: false
       },
       sharedWith: [],
-      audioFileUploadLabel: 'Choose a file...'
+      audioFileUploadLabel: 'Choose a file...',
+      isSending: false
     }
   },
   computed: {
@@ -168,40 +170,46 @@ export default {
     },
     async handleForm () {
       try {
-        this.handleFileUpload()
-        this.testConversationName() 
-        if(this.formValid) {
-          let sharedWith = []
-          if(this.sharedWith.length > 0) {
-            for(let sw of this.sharedWith) {
-              sharedWith.push({user_id: sw._id, rights: sw.writeAccess})
+        if(!this.isSending){
+          this.handleFileUpload()
+          this.testConversationName() 
+          if(this.formValid) {
+            this.isSending = true
+            let sharedWith = []
+            if(this.sharedWith.length > 0) {
+              for(let sw of this.sharedWith) {
+                sharedWith.push({user_id: sw._id, rights: sw.writeAccess})
+              }
+            }
+            const payload = {
+              name: this.conversationName.value,
+              description:  this.conversationDesc.value,
+              sharedWith 
+              // TODO : ConversationType
+            }
+            
+            let formData = new FormData()
+            formData.append('file', this.audioFile.value)
+            formData.append('payload', JSON.stringify(payload))
+
+            let req = await this.$options.filters.sendMultipartFormData(`${process.env.VUE_APP_CONVO_API}/conversation/create`, 'post', formData)
+
+            
+
+            if(req.status === 200) {
+                bus.$emit('app_notif', {
+                  status: 'success',
+                  message: req.data.msg,
+                  timeout: 3000,
+                  redirect: '/interface/conversations'
+                })
+                this.isSending = false
             }
           }
-          const payload = {
-            name: this.conversationName.value,
-            description:  this.conversationDesc.value,
-            sharedWith 
-            // TODO : ConversationType
-          }
-          
-          let formData = new FormData()
-          formData.append('file', this.audioFile.value)
-          formData.append('payload', JSON.stringify(payload))
-
-
-          let req = await this.$options.filters.sendMultipartFormData(`${process.env.VUE_APP_CONVO_API}/conversation/create`, 'post', formData)
-
-          if(req.status === 200) {
-              bus.$emit('app_notif', {
-                status: 'success',
-                message: req.data.msg,
-                timeout: 3000,
-                redirect: '/interface/conversations'
-              })
-          }
-        }  
+        }
       } catch (error) {
         console.error(error)
+        this.isSending = false
       }
       
     },

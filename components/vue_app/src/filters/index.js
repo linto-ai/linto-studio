@@ -130,9 +130,7 @@ Vue.filter('dispatchStore', async function(label) {
 })
 
 Vue.filter('generateTranscriptionText', function(convo, filters) {
-    let speakers = convo.speakers
-    let content = `=====================================================================\nConversation: $ { convo.name } - $ { convo.created }\
-            n=====================================================================\n\ n `
+    let content = `=====================================================================\nConversation: ${ convo.name } - ${ convo.created }\n=====================================================================\n\n `
 
     let filtersLabel = ''
 
@@ -140,31 +138,26 @@ Vue.filter('generateTranscriptionText', function(convo, filters) {
         let spkId = filters.speaker
         let speaker = convo.speakers.filter(spk => spk.speaker_id === spkId)
         if (speaker.length > 0) {
-            filtersLabel += ` - speaker: $ { speaker[0].speaker_name }\
-            n `
+            filtersLabel += `  - speaker: ${ speaker[0].speaker_name }\n `
         }
     }
     if (filters.highlights !== '') {
         let hlId = filters.highlights
         let highlights = convo.highlights.filter(hl => hl.hid === hlId)
         if (highlights.length > 0) {
-            filtersLabel += ` - highlights: $ { highlights[0].label }\
-            n `
+            filtersLabel += `-  highlights: ${ highlights[0].label } \n `
         }
     }
     if (filters.keywords !== '') {
         let kwId = filters.keywords
         let keywords = convo.keywords.filter(kw => kw._id === kwId)
         if (keywords.length > 0) {
-            filtersLabel += ` - keywords: $ { keywords[0].label }\
-            n `
+            filtersLabel += `  - keywords: ${ keywords[0].label }\n `
         }
     }
 
     if (filtersLabel.length > 0) {
-        content += `
-            Filtered by: \n$ { filtersLabel }\
-            n\ n `
+        content += `Filtered by: \n${ filtersLabel }\n\n `
     }
 
     if (convo.text.length > 0) {
@@ -186,18 +179,14 @@ Vue.filter('generateTranscriptionText', function(convo, filters) {
                         endTime = word.etime
                     }
                     // words
-                    spkText += `
-            $ { word.word }
-            `
+                    spkText += `${ word.word } `
                 }
             }
             if (speaker.length > 0) {
                 // Spk name
-                spkName = `
-            $ { speaker[0].speaker_name }: `
+                spkName = `${ speaker[0].speaker_name }: `
             }
-            content += ` [$ { startTime } - $ { endTime }] $ { spkName }: $ { spkText }\
-            n\ n `
+            content += `[${ startTime } - ${ endTime }] ${ spkName }: ${ spkText } \n\n `
         }
     }
     return content

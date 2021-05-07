@@ -1,4 +1,4 @@
-const debug = require('debug')('app:router:api:conversation:convo')
+const debug = require('debug')('app:router:api/conversation')
 
 // Speakers
 const {
@@ -20,11 +20,12 @@ const {
     splitTurns
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/turns.js`)
 
+/*
 const {
     createConvoBase,
-    updateSpeakerAudio,
     deleteConvo
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/convo.js`)
+*/
 
 const {
     replaceTurnText
@@ -32,8 +33,8 @@ const {
 
 const {
     updatehighlightwords,
-    updatehighlighttype, 
-    createhighlight, 
+    updatehighlighttype,
+    createhighlight,
     deletehighlight
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/annotations.js`)
 
@@ -44,23 +45,26 @@ const { // Create conversation based on file
 
 module.exports = (webserver) => {
     return [{
+            // Create a conversation (upload 1 file)
             path: '/create',
             method: 'post',
             requireAuth: true,
             controller: audioUpload
-        }, {
+        },
+        /*{
             path: '/',
             method: 'post',
             requireAuth: true,
             controller: createConvoBase
-        },{
+        }, {
             path: '/',
             method: 'delete',
             requireAuth: true,
             requireOwnerAccess: true,
             controller: deleteConvo
-        },
+        },*/
         {
+            // Get speakers for a conversation
             path: '/:conversationid/speakers',
             method: 'get',
             requireAuth: true,
@@ -68,6 +72,7 @@ module.exports = (webserver) => {
             controller: getSpeakers
         },
         {
+            // Create a speaker for a conversation
             path: '/:conversationid/speakers',
             method: 'post',
             requireAuth: true,
@@ -75,6 +80,7 @@ module.exports = (webserver) => {
             controller: createNewSpeaker
         },
         {
+            // Rename a speaker in a conversation
             path: '/:conversationid/speakers/:speakerid',
             method: 'patch',
             requireAuth: true,
@@ -82,6 +88,7 @@ module.exports = (webserver) => {
             controller: identifySpeaker
         },
         {
+            // Remove a speaker from a conversation
             path: '/:conversationid/speakers/:speakerid',
             method: 'delete',
             requireAuth: true,
@@ -89,6 +96,7 @@ module.exports = (webserver) => {
             controller: deleteSpeaker
         },
         {
+            // Merge two speakers in a converation
             path: '/:conversationid/mergespeakers/:speakerid',
             method: 'patch',
             requireAuth: true,
@@ -96,6 +104,7 @@ module.exports = (webserver) => {
             controller: [combineSpeakerIds, deleteSpeaker]
         },
         {
+            // Update a speaker for a turn in a conversation
             path: '/:conversationid/turnspeaker/:turnid',
             method: 'put',
             requireAuth: true,
@@ -103,6 +112,7 @@ module.exports = (webserver) => {
             controller: identifyTurnSpeaker
         },
         {
+            // Create a new turn for a speaker in a conversation
             path: '/:conversationid/turn/:speakerid',
             method: 'post',
             requireAuth: true,
@@ -110,52 +120,68 @@ module.exports = (webserver) => {
             controller: [createTurn, renumberTurns]
         },
         {
+            // Remove a turn in a converation
             path: '/:conversationid/turn',
             method: 'delete',
             requireAuth: true,
+            requireWriteAccess: true,
             controller: [deleteTurns, renumberTurns]
         },
         {
+            // Merge two or more consecutive turns in a conversation
             path: '/:conversationid/turn/merge',
             method: 'patch',
             requireAuth: true,
+            requireWriteAccess: true,
             controller: [mergeTurns, renumberTurns]
         },
         {
+            // Split a turn in a conversation
             path: '/:conversationid/turn/split',
             method: 'put',
             requireAuth: true,
+            requireWriteAccess: true,
             controller: [splitTurns, renumberTurns]
         },
         {
+            // Update text object in a conversation
             path: '/:conversationid/text',
             method: 'put',
             requireAuth: true,
+            requireWriteAccess: true,
             controller: replaceTurnText
-        }, 
+        },
         {
-            path: '/:conversationid/highlight', 
+            // Creates highlight object + add to words in a conversation
+            path: '/:conversationid/highlight',
             method: 'post',
-            requireAuth: false, 
-            controller: createhighlight //creates highlight object, add to words
+            requireAuth: false,
+            requireWriteAccess: true,
+            controller: createhighlight
         },
         {
-            path: '/:conversationid/highlight/:hid', 
+            // Deletes entire highlight object/references in a conversation
+            path: '/:conversationid/highlight/:hid',
             method: 'delete',
-            requireAuth: false, 
-            controller: deletehighlight //deletes entire highlight object/references
+            requireAuth: false,
+            requireWriteAccess: true,
+            controller: deletehighlight
         },
         {
-            path: '/:conversationid/highlight/:hid', 
+            // Update an highlight in a conversation (color and/or label)
+            path: '/:conversationid/highlight/:hid',
             method: 'patch',
-            requireAuth: false, 
-            controller: updatehighlighttype //changes color or label associated with an hid
+            requireAuth: false,
+            requireWriteAccess: true,
+            controller: updatehighlighttype
         },
         {
-            path: '/:conversationid/highlight/:hid', 
+            // Adds or removes highlight on word(s) in a conversations
+            path: '/:conversationid/highlight/:hid',
             method: 'put',
-            requireAuth: false, 
-            controller: updatehighlightwords //adds or removes hid from word objects
+            requireAuth: false,
+            requireWriteAccess: true,
+            controller: updatehighlightwords
         }
     ]
 }

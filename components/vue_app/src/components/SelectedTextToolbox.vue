@@ -1,6 +1,7 @@
 <template>
   <div 
-    id="selected-text-toolbox" 
+    v-if="convoLoaded"
+    id="selected-text-toolbox"   
     class="flex col" 
     :class="show ? 'visible' : 'hidden'" 
     :style="`top: ${parseInt(offsetY) + 25}px; left: ${parseInt(offsetX) - 170}px;`">
@@ -14,6 +15,7 @@
       <span class="icon keywords"></span>
       <span class="label">Keyword</span>
     </button>
+    
     <button 
       class="selected-text-toolbox--btn" 
       v-if="!!options.highlight && options.highlight === true"
@@ -21,6 +23,28 @@
       <span class="icon highlights"></span>
       <span class="label">highlights</span>
     </button>
+    
+    
+    <div class="selected-text-toolbox--parent flex col" v-if="unHighlightLinks && options.wordsHighlights.length > 0">
+      <button class="selected-text-toolbox--btn" @click="unhighlightLinkVisible = !unhighlightLinkVisible">
+        <span class="icon unhighlight"></span>
+        <span class="label">unhighlight</span>
+      </button>
+      <div class="selected-text-toolbox--child flex col" :class="unhighlightLinkVisible ? 'visible' : 'hidden'">
+        <button 
+          v-for="hl in options.wordsHighlights" 
+          :key="hl" 
+          @click="removeHighlightFromWords(hl)"
+          class="selected-text-toolbox--btn"
+        >
+        <span class="icon remove"></span>
+        <span class="label">remove "{{convoHighlights[convoHighlights.findIndex(convoHl => convoHl.hid === hl)].label }}"</span>
+      </button>
+          
+      </div>
+
+    </div>
+
     <button 
       class="selected-text-toolbox--btn"
       v-if="!!options.comment && options.comment === true">
@@ -51,39 +75,91 @@ export default {
   data () {
     return {
       show: false,
+      convoLoaded: false,
       selectionObj: null,
       offsetX: 0,
       offsetY: 0,
       options: {
         comment: false,
         highlight: false,
+        unhighlight: false,
         keywords: false,
         split: false,
         merge: false
-      }
+      },
+      unhighlightLinkVisible: false
+    }
+  },
+  computed: {
+    unHighlightLinks () {
+        return (!!this.options.unhighlight && this.options.unhighlight === true && 
+        !!this.options.wordsHighlights)
+    },
+    convoHighlights () {
+      if(this.convoLoaded) {
+        return this.$store.getters.conversationHighlights(this.conversationId)
+      } 
+      return []
     }
   },
   watch: {
     show (data) {
       if (data === true) {
-          const audioPlayer = document.getElementById('audio-player')
-          if(audioPlayer.classList.contains('isPlaying')){
-            bus.$emit('audio_player_pause', {})
-          }
+        const audioPlayer = document.getElementById('audio-player')
+        if(audioPlayer.classList.contains('isPlaying')){
+          bus.$emit('audio_player_pause', {})
+        }
       }
     }
   },
-  mounted () {
-    bus.$on('show_selected_toolbox', (data) => {
+  async mounted () {
+    bus.$on('show_selected_toolbox', async (data) => {
+      await this.dispatchConversations()
       this.show = true
       this.selectionObj = data.selectionObj
       this.offsetX = data.offsetX
       this.offsetY = data.offsetY
       this.convoId = data.convoId
       this.options = data.toolBoxOption
+      this.unhighlightLinkVisible = false
     })
   },
   methods: {
+    async removeHighlightFromWords(hl) {
+      try {
+        if(!!this.selectionObj.words && this.selectionObj.words !== []){
+          const payload =  {
+            hid: hl,
+            wordids: this.selectionObj.words.wordids,
+            operator: 'remove'
+          }
+          const req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/highlight/${hl}`, 'put', payload)
+
+          if(req.status === 200 && !!req.data.msg) {
+            bus.$emit('app_notif', {
+              status: 'success',
+              message: req.data.msg,
+              timeout: 3000
+            })
+            this.options.wordsHighlights = this.options.wordsHighlights.filter(wordsHl => wordsHl !== hl)
+            
+            bus.$emit('refresh_conversation', {refresh : await this.dispatchConversations() })
+
+          } else {
+            throw req
+          }
+        }
+      } catch (error) {
+         if(process.env.VUE_APP_DEBUG === 'true') {
+          console.error(error)
+        }
+        bus.$emit('app_notif', {
+          status: 'error',
+          message: !!error.msg ? error.msg : 'Error on updating speaker',
+          timeout: null
+        })
+      }
+    },
     closeToolbox() {
       this.show = false
       bus.$emit('close_selected_toolbox', {})
@@ -105,17 +181,15 @@ export default {
       this.closeToolbox()
     },
     openMergeModal() {
-      console.log({
-          turnids: [this.selectionObj.startTurnId, this.selectionObj.endTurnId],
-          positions: [this.selectionObj.startTurnPosition, this.selectionObj.endTurnPosition],
-          convoid: this.convoId
-        })
       bus.$emit('merge_sentences_modal', {
-          turnids: [this.selectionObj.startTurnId, this.selectionObj.endTurnId],
-          positions: [parseInt(this.selectionObj.startTurnPosition), parseInt(this.selectionObj.endTurnPosition)],
-          selectionObj: this.selectionObj,
-          convoid: this.convoId
-        })
+        turnids: [this.selectionObj.startTurnId, this.selectionObj.endTurnId],
+        positions: [parseInt(this.selectionObj.startTurnPosition), parseInt(this.selectionObj.endTurnPosition)],
+        selectionObj: this.selectionObj,
+        convoid: this.convoId
+      })
+    },
+    async dispatchConversations () {
+      this.convoLoaded = await this.$options.filters.dispatchStore('getConversations')
     }
   }
 }

@@ -174,7 +174,7 @@
             }
             formData.append('payload', JSON.stringify(payload))
             
-            const createUser = await axios(`${process.env.VUE_APP_CONVO_API}/users`, {
+         const createUser = await axios(`${process.env.VUE_APP_CONVO_API}/users`, {
               method: 'post',
               headers: {
               'charset': 'utf-8',
@@ -194,7 +194,7 @@
                 })
             }
           }  
-        } catch (error) {
+        } catch (error   ) {
           if(process.env.VUE_APP_DEBUG === 'true') {
             console.error(error)
           }

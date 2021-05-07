@@ -96,6 +96,7 @@ export default {
   },
   methods: {
     setHighlights (data) {
+      console.log('1/', data)
       this.highlightsActive = []
       const allWords = document.getElementsByClassName('transcription--word')
       for(let word of allWords) {
@@ -203,8 +204,10 @@ export default {
               endTurnId,
               endTurnPosition,
               endTurnSpeakerId
+              
             }
-            console.log('selectionObj', this.selectionObj)
+            this.selectionObj.words = startTurnId === endTurnId ? this.$store.getters.wordsToTextBetweenWordIds(this.convoId, this.selectionObj) : []
+
             if(!startTurn.classList.contains('transcription-speaker-sentence') || !endTurn.classList.contains('transcription-speaker-sentence')) {
               return false 
             } else {
@@ -220,6 +223,7 @@ export default {
     },
     setTextSelection (selectionObj) {
       this.cancelTextSelection()
+      console.log(selectionObj)
       this.playerPause()
       setTimeout(() => {
         let allParents = document.getElementsByClassName('transcription-speaker-sentence')
@@ -231,9 +235,31 @@ export default {
           this.toolBoxOption = {
             comment: true,
             highlight: true,
+            unhighlight: false,
             keywords: true,
             split: true
           }
+          
+          // Check if selected words got highlights
+          let highlights = []
+          if(!!selectionObj.words && selectionObj.words.words !== []) {
+            for(let word of selectionObj.words.words){
+              if(word.highlights.length > 0) {
+                for(let hl of word.highlights) {
+                  if(highlights.findIndex(allHl => allHl === hl) < 0) {
+                    highlights.push(hl)
+                  }
+                }
+              }
+
+            }
+          }
+          if(highlights.length > 0) {
+            this.toolBoxOption.unhighlight = true
+            this.toolBoxOption.wordsHighlights = highlights
+          }
+
+          // Set text-selected class
           for(let parent of allParents) {
             const turnId = parent.getAttribute('data-turn-id')
             if(turnId === selectionObj.startTurnId) {
@@ -251,6 +277,7 @@ export default {
           this.toolBoxOption = {
             comment: false,
             highlight: false,
+            uuhighlight: false,
             keywords: false,
             split: true,
             merge: true

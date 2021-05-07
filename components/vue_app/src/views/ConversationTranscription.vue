@@ -14,15 +14,15 @@
             </div>
           </div>
           <div class="flex col transcription-options" v-if="!!keywordsOptions && keywordsOptions.length > 0">
-              <div class="flex row transcription-options--item" v-for="kw in keywordsOptions" :key="kw._id">
-                  <span class="transcription-options--item-label flex1">{{ kw.label }}</span>
-                  <button 
-                    class="transcription-options--item-checkbox"
-                    :class="kw.selected ? 'selected' : ''"
-                    @click="updateKeywords(kw)"
-                  ></button>
-              </div>
+            <div class="flex row transcription-options--item" v-for="kw in keywordsOptions" :key="kw.kid">
+              <span class="transcription-options--item-label flex1">{{ kw.label }}</span>
+              <button 
+                class="transcription-options--item-checkbox"
+                :class="kw.selected ? 'selected' : ''"
+                @click="updateKeywords(kw)"
+              ></button>
             </div>
+          </div>
         </div>
           <!-- Highlights -->
         <div class="conversation-infos-item">
@@ -59,7 +59,7 @@
     <div class="flex1 flex col transcritpion-container">
       <div class="flex row" style="margin-bottom: 20px;">
          <a :href="`/interface/conversation/${convoId}`" class="btn btn--txt-icon blue"> 
-          <span class="label">Back to conversation</span>
+          <span class="label">Back to conversation landing</span>
           <span class="icon icon__backto"></span>
         </a>
       </div>
@@ -118,7 +118,7 @@
             <span class="transcription-filters__select-label">Keywords:</span>
             <div class="flex row">
               <select id="filter-highlights" class="transcription-filters__select flex1" v-model="convoFilter.keywords">
-                <option v-for="kw in convo.keywords" :key="kw._id" :value="kw._id">{{ kw.label }}</option>
+                <option v-for="kw in convo.keywords" :key="kw.kid" :value="kw.kid">{{ kw.label }}</option>
                 <option value="">None</option>
               </select>
               <button v-if="convoFilter.keywords !== ''" @click="convoFilter.keywords = ''" class="cancel-filter-btn"></button>
@@ -225,6 +225,7 @@ export default {
     bus.$on('refresh_conversation', async () => {
       await this.dispatchStore('getConversations')
       this.refreshHighlights()
+      console.log('PASSE LA')
     })
     
     bus.$on('audio_player_currenttime', (data) => {
@@ -329,8 +330,8 @@ export default {
     'convo.keywords' (data) {
       if (data.length > 0) {
         data.map(kw => {
-          if (this.keywordsOptions.findIndex(kwo => kwo._id === kw._id) >= 0) {
-            this.keywordsOptions[this.keywordsOptions.findIndex(kwo => kwo._id === kw._id)].label = kw.label
+          if (this.keywordsOptions.findIndex(kwo => kwo.kid === kw.kid) >= 0) {
+            this.keywordsOptions[this.keywordsOptions.findIndex(kwo => kwo.kid === kw.kid)].label = kw.label
           } else {
             this.keywordsOptions.push({...kw, selected: false, words: []})
           }
@@ -342,7 +343,7 @@ export default {
               for (let word of turn.words) {
                 if (word.keywords.length > 0) {
                   for (let kw of word.keywords) {
-                    this.keywordsOptions.find(allKW => allKW._id === kw).words.push(word.wid)
+                    this.keywordsOptions.find(allKW => allKW.kid === kw).words.push(word.wid)
                   }
                 }
               }
@@ -352,14 +353,15 @@ export default {
       }
     },
     'convo.highlights' (data) {
+      console.log('watcher ',data)
       if (data.length > 0) {
         data.map(hl => {
           if (this.highlightsOptions.findIndex(allhl => allhl.hid === hl.hid) >= 0) {
-            
             this.highlightsOptions[this.highlightsOptions.findIndex(allhl => allhl.hid === hl.hid)].label = hl.label
           } else {
             this.highlightsOptions.push({...hl, selected: false, words: []})
           }
+          this.highlightsOptions[this.highlightsOptions.findIndex(allhl => allhl.hid === hl.hid)].words = []
         })
         let convo = this.convo.text
         if (convo.length > 0) { 
@@ -375,6 +377,8 @@ export default {
             }
           }
         }
+
+        console.log('hl options ', this.highlightsOptions)
       }
     }
   },
@@ -425,7 +429,7 @@ export default {
     },
     /* KEYWORDS */
     updateKeywords (kw) {
-      let kwItemIndex = this.keywordsOptions.findIndex(kwo => kwo._id === kw._id)
+      let kwItemIndex = this.keywordsOptions.findIndex(kwo => kwo.kid === kw.kid)
       if (kwItemIndex >= 0) {
         this.keywordsOptions[kwItemIndex].selected = !this.keywordsOptions[kwItemIndex].selected
       }
@@ -433,7 +437,7 @@ export default {
     },
     updateKeyword (kw) {
       let isVisible = false
-      let kwItemIndex = this.keywordsOptions.findIndex(kwo => kwo._id === kw._id)
+      let kwItemIndex = this.keywordsOptions.findIndex(kwo => kwo.kid === kw.kid)
       if (kwItemIndex >= 0) {
         this.keywordsOptions[kwItemIndex].active = !this.keywordsOptions[kwItemIndex].active
         isVisible = this.keywordsOptions[kwItemIndex].active
@@ -443,7 +447,7 @@ export default {
       if (this.convo.text.length > 0) {
         this.convo.text.map(turn => {
           if(turn.words.length > 0) {
-            let wordInKw = turn.words.filter(word => word.keywords.indexOf(kw._id) >= 0)
+            let wordInKw = turn.words.filter(word => word.keywords.indexOf(kw.kid) >= 0)
             if (wordInKw.length > 0) {
               wordInKw.map(winhl => {
                 wordsInKeywords.push(winhl.wid)
@@ -543,28 +547,11 @@ export default {
           }
           console.log(turn)
           const req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/text`, 'put', payload)
-
-          console.log(req)
-
+          bus.$emit('refresh_conversation', {})
           if(req.status !== 200) {
             throw req
           }
         }
-
-        /*
-        const updateText = await axios(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/text`, {
-          method: 'put', 
-          data: {
-            convoid: this.convoId,
-            text: newObject
-            }
-          })
-          if(updateText.status === 200) {
-            this.dispatchStore('getConversations')
-            setTimeout(()=>{
-              this.refreshConversation++
-            }, 300)
-          }*/
       } catch (error) {
         console.error(error)
       }

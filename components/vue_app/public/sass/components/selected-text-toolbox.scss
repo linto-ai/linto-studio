@@ -9,85 +9,116 @@
     @include borderRadius(3px);
     @include blockShadow();
     align-items: flex-start;
-    .selected-text-toolbox--btn {
+}
+
+.selected-text-toolbox--btn {
+    display: inline-block;
+    height: 25px;
+    padding: 0 10px;
+    margin: 3px 0;
+    position: relative;
+    @include transition(all 0.3s ease);
+    @include borderRadius(3px);
+    min-width: 120px;
+    width: 100%;
+    white-space: nowrap;
+    text-align: left;
+    .icon {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        background: $blueChart;
+        margin: 2px 2px 0 0;
+        vertical-align: top;
+        @include transition(all 0.3s ease);
+        &.keywords {
+            @include maskImage('../img/keywords.svg');
+        }
+        &.highlights {
+            @include maskImage('../img/marker.svg');
+        }
+        &.unhighlight {
+            @include maskImage('../img/unhighlight.svg');
+        }
+        &.split {
+            @include maskImage('../img/split.svg');
+        }
+        &.merge {
+            @include maskImage('../img/merge.svg');
+        }
+        &.comment {
+            @include maskImage('../img/comment.svg');
+        }
+        &.remove {
+            @include maskImage('../img/trash.svg');
+        }
+    }
+    .label {
         display: inline-block;
         height: 25px;
-        padding: 0 5px;
-        margin: 3px 0;
-        position: relative;
+        line-height: 25px;
+        color: $blueChart;
+        font-weight: 600;
+        font-size: 14px;
         @include transition(all 0.3s ease);
-        @include borderRadius(3px);
-        min-width: 120px;
-        white-space: nowrap;
+        vertical-align: top;
+    }
+    &:hover {
+        background-color: $blueChart;
         .icon {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            background: $blueChart;
-            margin: 2px 2px 0 0;
-            vertical-align: top;
-            @include transition(all 0.3s ease);
-            &.keywords {
-                @include maskImage('../img/keywords.svg');
-            }
-            &.highlights {
-                @include maskImage('../img/marker.svg');
-            }
-            &.split {
-                @include maskImage('../img/split.svg');
-            }
-            &.merge {
-                @include maskImage('../img/merge.svg');
-            }
-            &.comment {
-                @include maskImage('../img/comment.svg');
-            }
+            background-color: #fff;
         }
         .label {
+            color: #fff;
+        }
+    }
+    &.close {
+        position: absolute;
+        top: 0;
+        left: 100%;
+        height: 25px;
+        width: 25px;
+        min-width: 25px;
+        padding: 0;
+        background-color: transparent;
+        margin: 0 0 0 -25px;
+        &:after {
+            content: "";
             display: inline-block;
+            width: 25px;
             height: 25px;
-            line-height: 25px;
-            color: $blueChart;
-            font-weight: 600;
-            font-size: 14px;
-            @include transition(all 0.3s ease);
-            vertical-align: top;
+            position: absolute;
+            top: 0;
+            left: 0;
+            @include maskImage('../img/close.svg');
+            background-color: $redChart;
         }
         &:hover {
-            background-color: $blueChart;
-            .icon {
+            background-color: $redChart;
+            &:after {
                 background-color: #fff;
             }
+        }
+    }
+}
+
+.selected-text-toolbox--child {
+    padding: 0 20px;
+    .selected-text-toolbox--btn {
+        border: $redChart;
+        .label {
+            color: $redChart;
+        }
+        .icon {
+            background-color: $redChart;
+        }
+        &:hover {
+            background-color: $redChart;
             .label {
                 color: #fff;
             }
-        }
-        &.close {
-            position: absolute;
-            top: 0;
-            left: 100%;
-            height: 25px;
-            width: 25px;
-            min-width: 25px;
-            padding: 0;
-            background-color: transparent;
-            margin: 0 0 0 -25px;
-            &:after {
-                content: "";
-                display: inline-block;
-                width: 25px;
-                height: 25px;
-                position: absolute;
-                top: 0;
-                left: 0;
-                @include maskImage('../img/close.svg');
-                background-color: $redChart;
-            }
-            &:hover {
-                background-color: $redChart;
-                &:after {
-                    background-color: #fff;
-                }
+            .icon {
+                background-color: #fff;
             }
         }
     }

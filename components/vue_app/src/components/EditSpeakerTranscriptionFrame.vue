@@ -1,6 +1,11 @@
 <template>
   <div class="edit-frame flex col" :class="showFrame ? 'visible' : 'hidden'" id="edit-speaker-frame">
     <div v-if="dataLoaded">
+      <div class="edit-frame--preheader">
+        <button class="btn btn--inline" @click="closeFrame()">
+          <span class="label">close</span>
+        </button>
+        </div>
       <div class="edit-frame--header">
         <h3 class="edit-frame--title">Editing speaker - {{speaker.speaker_name}}</h3>
       </div>
@@ -112,7 +117,6 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
 import { bus } from '../main.js'
 export default {
   
@@ -229,33 +233,31 @@ export default {
       try {
         this.testSelectedSpeaker(targetSpeaker)
         if(targetSpeaker.valid === true) {
-          let updateSpeakerName = null
-          // update speaker for a turn
-          if(this.editSpeakerMode === 'turn') {
-            updateSpeakerName = await axios(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/turnspeaker/${this.turnId}`, {
-              method: 'put', 
-              data: {
-                speakerid: targetSpeaker.value.speaker_id
-              }
-            })
-            if(updateSpeakerName.status === 200) {
-              this.closeFrame()
-              bus.$emit(`refresh_conversation`, {})
+          let req = null
+          if (this.editSpeakerMode === 'turn') {
+            // update speaker for a turn
+            let payload =  {
+              speakerid: targetSpeaker.value.speaker_id
             }
-          } 
+            req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/turnspeaker/${this.turnId}`, 'put', payload)
+          }
           // Update speaker for all transcription
           else if (this.editSpeakerMode === 'transcription') {
-            const payload = {
-                newspeakerid: targetSpeaker.value.speaker_id
-              }
-            updateSpeakerName = await axios(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/mergespeakers/${this.speaker.speaker_id}`, {
-              method: 'patch', 
-              data: payload
-            })
-            if(updateSpeakerName.status === 200) {
-              this.closeFrame()
-              bus.$emit(`refresh_conversation`, {})
+            let payload = {
+              newspeakerid: targetSpeaker.value.speaker_id
             }
+            req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/mergespeakers/${this.speaker.speaker_id}`, 'patch', payload)
+          }
+          if(req.status === 200 && !!req.data.msg) {
+            bus.$emit('app_notif', {
+              status: 'success',
+              message: req.data.msg,
+              timeout: 3000
+            })
+            this.closeFrame()
+            bus.$emit(`refresh_conversation`, {})
+          } else {
+            throw req
           }
         }
       } catch (error) {
@@ -310,22 +312,21 @@ export default {
     },
     async createSpeaker (speakername) {
       try {
-        const addSpeaker = await axios(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/speakers`, {
-          method: 'post', 
-          data: {
-            convoid: this.convoId,
-            speakername
-          }
-        })
-        if (addSpeaker.status === 200) {
+        let payload =  {
+          convoid: this.convoId,
+          speakername
+        }
+        let req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/speakers`, 'post', payload)
+
+        if(req.status === 200 && !!req.data.msg) {
           await this.dispatchStore('getConversations')
           return { status: 'success'}
         } else {
-          // todo error
-          return { status: 'error'}
-        }  
+          throw req
+        }
       } catch (error) {
         console.error(error)
+        return { status: 'error'}
       }
     },
     /* END SPEAKERS */
