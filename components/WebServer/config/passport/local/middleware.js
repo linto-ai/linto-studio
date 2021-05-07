@@ -148,7 +148,8 @@ function checkConvSharedRight(next, conversationId, userId, right, rightExceptio
         return
     }
     ConversationModel.getConvoShared(conversationId).then(conversation => {
-        if (conversation.length === 1 && conversation[0].sharedWith && conversation[0].sharedWith.length !== 0) {
+        if (conversation.length === 1 && conversation[0].sharedWith) {
+            console.log(conversation, conversation[0].owner === userId)
             if (conversation.length === 1 && conversation[0].owner === userId) next()
             else {
                 let userFound = false

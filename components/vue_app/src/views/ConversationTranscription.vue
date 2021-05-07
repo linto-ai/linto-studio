@@ -225,7 +225,6 @@ export default {
     bus.$on('refresh_conversation', async () => {
       await this.dispatchStore('getConversations')
       this.refreshHighlights()
-      console.log('PASSE LA')
     })
     
     bus.$on('audio_player_currenttime', (data) => {
@@ -353,7 +352,6 @@ export default {
       }
     },
     'convo.highlights' (data) {
-      console.log('watcher ',data)
       if (data.length > 0) {
         data.map(hl => {
           if (this.highlightsOptions.findIndex(allhl => allhl.hid === hl.hid) >= 0) {
@@ -377,8 +375,6 @@ export default {
             }
           }
         }
-
-        console.log('hl options ', this.highlightsOptions)
       }
     }
   },
@@ -545,7 +541,6 @@ export default {
             turnid: turn.turn_id,
             words: turn.words
           }
-          console.log(turn)
           const req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/text`, 'put', payload)
           bus.$emit('refresh_conversation', {})
           if(req.status !== 200) {

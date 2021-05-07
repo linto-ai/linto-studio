@@ -65,7 +65,6 @@ async function createUser(req, res, next) {
         if (!payload.email || !payload.firstname || !payload.lastname || !payload.password) throw (new UserParameterMissing())
 
         const email = payload.email
-        console.log(req.files)
         if (req.files && Object.keys(req.files).length !== 0 && req.files.file)
             payload.img = await StoreFile.storeFile(req.files.file, 'picture')
         else payload.img = StoreFile.defaultPicture()
@@ -113,6 +112,8 @@ async function logout(req, res, next) {
                 _id: userId,
                 keyToken: ''
             }).then(user => {
+                res.cookie('authToken', '')
+                res.cookie('userId', '')
                 req.session.destroy(function(err) {
                     // cannot access session here
                     if (err) {

@@ -96,7 +96,6 @@ export default {
   },
   methods: {
     setHighlights (data) {
-      console.log('1/', data)
       this.highlightsActive = []
       const allWords = document.getElementsByClassName('transcription--word')
       for(let word of allWords) {

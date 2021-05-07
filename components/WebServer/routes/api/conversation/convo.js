@@ -155,7 +155,7 @@ module.exports = (webserver) => {
             // Creates highlight object + add to words in a conversation
             path: '/:conversationid/highlight',
             method: 'post',
-            requireAuth: false,
+            requireAuth: true,
             requireWriteAccess: true,
             controller: createhighlight
         },
@@ -163,7 +163,7 @@ module.exports = (webserver) => {
             // Deletes entire highlight object/references in a conversation
             path: '/:conversationid/highlight/:hid',
             method: 'delete',
-            requireAuth: false,
+            requireAuth: true,
             requireWriteAccess: true,
             controller: deletehighlight
         },
@@ -171,7 +171,7 @@ module.exports = (webserver) => {
             // Update an highlight in a conversation (color and/or label)
             path: '/:conversationid/highlight/:hid',
             method: 'patch',
-            requireAuth: false,
+            requireAuth: true,
             requireWriteAccess: true,
             controller: updatehighlighttype
         },
@@ -179,7 +179,7 @@ module.exports = (webserver) => {
             // Adds or removes highlight on word(s) in a conversations
             path: '/:conversationid/highlight/:hid',
             method: 'put',
-            requireAuth: false,
+            requireAuth: true,
             requireWriteAccess: true,
             controller: updatehighlightwords
         }
