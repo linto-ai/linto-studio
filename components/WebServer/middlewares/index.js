@@ -16,7 +16,6 @@ async function isConnected(req, res, next) {
     try {
         if (!!req.session) {
             if (!!req.session.logged && !!req.session.token) {
-
                 // Already logged  
                 if (req.session.logged === 1) {
                     if (req.url === '/login') {
@@ -37,8 +36,10 @@ async function isConnected(req, res, next) {
     } catch (error) {
         console.error(error)
         if (req.url === '/login') {
+            console.log('/1')
             next()
         } else {
+            console.log('/21')
             res.redirect('/login')
         }
     }

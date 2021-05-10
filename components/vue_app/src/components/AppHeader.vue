@@ -1,6 +1,12 @@
 <template>
   <div id="app-header" class="flex row">
     <div class="user-menu flex row">
+       <select v-model="$i18n.locale">
+        <option v-for="(lang, i) in appLanguages" :key="`Lang${i}`" :value="lang">
+          {{ lang }}
+        </option>
+      </select>
+
       <button class="user-menu-btn" @click="toggleUserMenu()" :class="userMenuOpened ? 'opened' : 'closed'" v-if="!!user">
         <img class="user-menu-btn--img" :src="imgUrl">
         <span class="user-menu--name">{{CapitalizeFirstLetter(user.firstname)}} {{CapitalizeFirstLetter(user.lastname)}}</span>
@@ -21,7 +27,8 @@ export default {
   props: ['userInfo'],
   data () {
     return {
-      userMenuOpened: false
+      userMenuOpened: false,
+      appLanguages: ['fr', 'en']
     }
   },
   computed: {

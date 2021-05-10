@@ -43,7 +43,6 @@
           <span class="label">Cancel</span>
           <span class="icon icon__cancel"></span>
         </button>
-
         <button class="btn btn--txt-icon green" @click="updateShareWith()">
           <span class="label">Apply</span>
           <span class="icon icon__apply"></span>
