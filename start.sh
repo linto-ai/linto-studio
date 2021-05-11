@@ -3,7 +3,8 @@ set -uea
 SUDO=''
 . .env # Source all env
 
-mkdir -p storages/database
+mkdir -p ${VOLUME_DATABASE_FOLDER}
+sudo chown -R ${USER} ${VOLUME_DATABASE_FOLDER}
 
 # Regenerate mono init.js file 
 rm -f ./mongo-seeds/init.js

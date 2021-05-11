@@ -9,7 +9,7 @@ COPY . /usr/src/app/conversation-manager
 
 # Frontend components/vue_app
 WORKDIR /usr/src/app/conversation-manager/components/vue_app
-RUN npm install && npm install -s node-sass
+RUN npm install && npm install --save-dev node-sass
 
 # Backend install 
 WORKDIR /usr/src/app/conversation-manager
