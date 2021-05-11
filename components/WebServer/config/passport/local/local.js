@@ -33,7 +33,7 @@ function generateUserToken(email, password, done) {
         UsersModel.update({ _id: user._id, keyToken: tokenData.salt })
             .then(user => {
                 if (!user) return done(new UnableToGenerateKeyToken())
-            })
+            }).catch(done)
         return done(null, {
             token: TokenGenerator(tokenData).token,
         })

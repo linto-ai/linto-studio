@@ -5,6 +5,8 @@
 **/test-sample
 **/audios
 **/dist
-**/uploads/audios/*
-**/uploads/pictures/*
+**/storages/audios/*
+**/storages/pictures/*
+**/storages/database/*
+**/mongo-seeds/init.js
 !/uploads/pictures/default.jpg

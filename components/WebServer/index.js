@@ -15,7 +15,7 @@ const WebServerErrorHandler = require('./error/handler')
 
 const CORS = require('cors')
 let corsOptions = {}
-if (process.env.CORS_ENABLED && process.env.CORS_API_WHITELIST.length > 0) {
+if (process.env.CORS_ENABLED === 'true' && process.env.CORS_API_WHITELIST.length > 0) {
     whitelistDomains = process.env.CORS_API_WHITELIST.split(',')
     corsOptions = {
         origin: function(origin, callback) {
@@ -62,11 +62,11 @@ class WebServer extends Component {
 
         // Public path
         this.express.use('/assets', express.static(`${process.cwd()}/dist`))
-        this.express.use('/audios', express.static(`${process.cwd()}/uploads/audios`))
-        this.express.use('/pictures', express.static(`${process.cwd()}/uploads/pictures`))
+        this.express.use('/' + process.env.VOLUME_AUDIO_UPLOAD_PATH, express.static(`${process.cwd()}/uploads/audios`))
+        this.express.use('/' + process.env.VOLUME_PROFILE_PICTURE_UPLOAD_PATH, express.static(`${process.cwd()}/uploads/pictures`))
 
         // Cross domain whitelist
-        if (process.env.CORS_ENABLED) this.express.use(CORS(corsOptions))
+        if (process.env.CORS_ENABLED === 'true') this.express.use(CORS(corsOptions))
 
         this.express.use(passport.initialize())
         this.express.use(passport.session())
