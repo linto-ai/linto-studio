@@ -4,5 +4,28 @@
     },
     "nav": {
         "conversations_overview": "Mes conversations"
+    },
+    "h1": {
+        "conversations_overview": "Mes conversations"
+    },
+    "filters": {
+        "all": "Voir tout",
+        "owned_by_me": "Mes conversations",
+        "shared_with_me": "Partagée(s) avec moi"
+    },
+    "array_labels": {
+        "name": "Titre",
+        "description": "Description",
+        "date": "Date",
+        "created": "Date",
+        "audio": "Durée",
+        "duration": "Durée",
+        "owner": "Créateur",
+        "sharedWith": "Partagé avec",
+        "status": "Statut",
+        "loked": "Statut"
+    },
+    "buttons": {
+        "new_conversation": "Nouvelle conversation"
     }
 }
