@@ -1,7 +1,7 @@
 #!/bin/bash
 set -uea
 SUDO=''
-. .env # Source all env
+. .dockerenv # Source all env
 
 EXTRA_COMMAND_DOCKER=--skip
 
