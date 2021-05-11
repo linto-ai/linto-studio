@@ -1,7 +1,7 @@
 #!/bin/bash
 set -uea
 SUDO=''
-. .env # Source all env
+. .dockerenv # Source all env
 
 mkdir -p ${VOLUME_DATABASE_FOLDER}
 sudo chown -R ${USER} ${VOLUME_DATABASE_FOLDER}
