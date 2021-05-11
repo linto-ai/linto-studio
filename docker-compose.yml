@@ -12,7 +12,8 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ./${VOLUME_AUDIO_UPLOAD_PATH}:/usr/src/app/conversation-manager/${VOLUME_AUDIO_UPLOAD_PATH}
     command:
-      - --rebuild-vue-app
+      # - --rebuild-vue-app
+      - ${EXTRA_COMMAND_DOCKER}
       - --run-cmd=node app.js
     ports:
       - "${WEBSERVER_HTTP_PORT}:80"
