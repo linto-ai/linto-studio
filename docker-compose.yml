@@ -12,6 +12,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ./${VOLUME_AUDIO_UPLOAD_PATH}:/usr/src/app/conversation-manager/${VOLUME_AUDIO_UPLOAD_PATH}
     command:
+      - --rebuild-vue-app
       - --run-cmd=node app.js
     ports:
       - "${WEBSERVER_HTTP_PORT}:80"
@@ -23,7 +24,7 @@ services:
     image: mongo:latest
     env_file: .env
     volumes:
-      - ./${VOLUME_DATABASE_FOLDER}/:/data/db
+      - ${VOLUME_DATABASE_FOLDER}/:/data/db
       - ./mongo-seeds/init.js:/docker-entrypoint-initdb.d/init.js
     ports:
       - 27017:27017

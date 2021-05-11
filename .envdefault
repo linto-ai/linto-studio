@@ -3,7 +3,7 @@ DISABLE_AUTH=false
 
 # Components loading in this order
 COMPONENTS=WebServer
-WEBSERVER_HTTP_PORT=8001
+WEBSERVER_HTTP_PORT=80
 JWT_SECRET=supersecret
 
 # Mongo
@@ -40,3 +40,6 @@ VOLUME_DATABASE_FOLDER=storages/database
 # JWT SECRET
 LINTO_STACK_CM_JWT_SECRET=jwt_secret
 LINTO_STACK_CM_REFRESH_SECRET=jwt_refresh_secret
+
+# Docker config
+LINTO_CONVERSATION_MANAGER_HOST=dev.linto.local
