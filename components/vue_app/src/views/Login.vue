@@ -1,36 +1,38 @@
 <template>
-  <div class="login-container flex col">
-    <img src="/assets/img/conversation-manager-logo.svg" class="login-logo"/>
-    <h2 class="login-title">Sign into your account</h2>
-      <div id="app-login" class="flex col">
-        <div class="form-field flex col">
-          <span class="form-label">Email :</span>
-          <input 
-              type="text" 
-              v-model="email.value"
-              :class="email.error !== null ? 'error' : ''"
-              @change="testEmail()">
-            <span class="error-field" v-if="email.error !== null">{{ email.error }}</span>
+  <div>
+    <div class="login-form-container flex col">
+      <img src="/assets/img/conversation-manager-logo.svg" class="login-logo"/>
+      <h2 class="login-title">Sign into your account</h2>
+        <div id="app-login" class="flex col">
+          <div class="form-field flex col">
+            <span class="form-label">Email :</span>
+            <input 
+                type="text" 
+                v-model="email.value"
+                :class="email.error !== null ? 'error' : ''"
+                @change="testEmail()">
+              <span class="error-field" v-if="email.error !== null">{{ email.error }}</span>
+          </div>
+          <div class="form-field flex col">
+            <span class="form-label">Password :</span>
+            <input 
+              type="password" 
+              v-model="password.value"
+              :class="password.error !== null ? 'error' : ''"
+              @change="testPasswordEmpty()">
+            <span class="error-field" v-if="password.error !== null">{{ password.error }}</span>
+          </div>
+          <div class="form-field flex row" style="margin: 10px 0; justify-content: center;">
+            <button
+              @click="handleForm()" 
+              class="btn btn--txt-icon blue">
+              <span class="label">login</span>
+              <span class="icon icon__apply"></span></button>
+          </div>
+              <div class="form-field" v-if="formError !== null"><span class="form-error">{{ formError }}</span></div>
         </div>
-        <div class="form-field flex col">
-          <span class="form-label">Password :</span>
-          <input 
-            type="password" 
-            v-model="password.value"
-            :class="password.error !== null ? 'error' : ''"
-            @change="testPasswordEmpty()">
-          <span class="error-field" v-if="password.error !== null">{{ password.error }}</span>
-        </div>
-        <div class="form-field flex row" style="margin-top: 10px; justify-content: center;">
-          <button
-            @click="handleForm()" 
-            class="btn btn--txt-icon blue">
-            <span class="label">login</span>
-            <span class="icon icon__apply"></span></button>
-        </div>
-            <div class="form-field" v-if="formError !== null"><span class="form-error">{{ formError }}</span></div>
-      </div>
-      <a href="/create-account" class="toggle-login-link">Create an account</a>
+        <a href="/create-account" class="toggle-login-link">Create an account</a>
+    </div>
   </div>
 </template>
 <script>

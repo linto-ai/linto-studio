@@ -2,6 +2,12 @@
   <div class="flex row no-padding-left" v-if="dataLoaded">
     <!-- LEFT PART -->
     <div class="flex col conversation-infos-container">
+      <div class="flex row" style="margin-bottom: 20px;">
+         <a :href="`/interface/conversation/${convoId}`" class="btn btn--txt-icon blue"> 
+          <span class="label">Conversation landing</span>
+          <span class="icon icon__backto"></span>
+        </a>
+      </div>
       <h2>Transcription display options</h2>
       <div class="conversation-infos-items">
           <!-- Keywords -->
@@ -57,36 +63,33 @@
     <!-- END LEFT PART -->
     <!-- RIGHT PART -->
     <div class="flex1 flex col transcritpion-container">
-      <div class="flex row" style="margin-bottom: 20px;">
-         <a :href="`/interface/conversation/${convoId}`" class="btn btn--txt-icon blue"> 
-          <span class="label">Back to conversation landing</span>
-          <span class="icon icon__backto"></span>
-        </a>
-      </div>
-      <h1>{{ convo.name }}</h1>
-      <div class="flex row edition__btns">
-        <span class="edition__btns-label">Edition mode : </span>
-      <button 
-        @click="editionMode = true"
-        :class="editionMode ? 'enabled' : 'disabled'"
-        class="edition__btn-toggle"
-      >
-        <span class="edition__btn-toggle-circle" :class="editionMode ? 'enabled' : 'disabled'"></span>
-      </button>
+      
+      <div class="flex row">
+        <h1 style="padding: 0;" class="flex row flex1">{{ convo.name }}</h1>
+        <div class="flex row flex1 edition__btns">
+          <span class="edition__btns-label">Edition mode : </span>
         <button 
-          v-if="editionMode" 
-          @click="cancelEditionMode()" 
-          class="btn--icon btn--icon__cancel-edition grey"
+          @click="editionMode = true"
+          :class="editionMode ? 'enabled' : 'disabled'"
+          class="edition__btn-toggle"
         >
-          <span class="icon icon--cancel"></span>
+          <span class="edition__btn-toggle-circle" :class="editionMode ? 'enabled' : 'disabled'"></span>
         </button>
-        <button 
-          v-if="editionMode" 
-          @click="validateEdition()" 
-          class="btn--icon btn--icon__apply-edition"
-        >
-          <span class="icon icon--apply"></span>
-        </button>
+          <button 
+            v-if="editionMode" 
+            @click="cancelEditionMode()" 
+            class="btn--icon btn--icon__cancel-edition grey"
+          >
+            <span class="icon icon--cancel"></span>
+          </button>
+          <button 
+            v-if="editionMode" 
+            @click="validateEdition()" 
+            class="btn--icon btn--icon__apply-edition"
+          >
+            <span class="icon icon--apply"></span>
+          </button>
+        </div>
       </div>
        <!-- FILTERS -->
       <div class="transcription-filters flex row">
@@ -132,7 +135,7 @@
         </div>
       </div>
       <!-- TRANSCRIPTION -->
-      <Transcription 
+      <Transcription class="flex1"
         :currentTurn="currentTurn" 
         :currentTime="currentTime" 
         :convoText="convoText"

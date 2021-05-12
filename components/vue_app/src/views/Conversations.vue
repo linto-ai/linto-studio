@@ -8,7 +8,7 @@
         <button class="conversation-filter--btn" :class="filterActive === 'ownedByMe' ? 'active' : ''" @click="filterActive = 'ownedByMe'">{{ $t('filters.owned_by_me') }}</button> | 
         <button class="conversation-filter--btn" :class="filterActive === 'sharedWithMe' ? 'active' : ''" @click="filterActive = 'sharedWithMe'">{{ $t('filters.shared_with_me') }}</button> 
       </div>
-      <div class="flex1 flex col flex-end">
+      <div class="flex col flex-end">
         <a href="/interface/conversation/create" class="btn btn--txt-icon green">
           <span class="label">{{ $t('buttons.new_conversation') }}</span>
           <span class="icon icon__plus"></span>
@@ -31,7 +31,7 @@
         <tbody>
           <tr>
           </tr>
-          <tr v-for="convo in filteredConversations" :key="convo._id" @click="redirectConversationPage(convo._id)">
+          <tr v-for="convo in filteredConversations" :key="convo._id" @click="redirectConversationPage(convo._id)" class="clickable">
             <td class="title">{{ convo.name }}</td>
             <td>{{ convo.description }}</td>
             <td>{{ dateToJMY(convo.created) }}</td>

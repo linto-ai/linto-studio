@@ -21,7 +21,6 @@ async function isConnected(req, res, next) {
                     if (req.url === '/login') {
                         res.redirect('/interface/conversations')
                     } else {
-
                         next()
                     }
                 } else {
@@ -36,10 +35,8 @@ async function isConnected(req, res, next) {
     } catch (error) {
         console.error(error)
         if (req.url === '/login') {
-            console.log('/1')
             next()
         } else {
-            console.log('/21')
             res.redirect('/login')
         }
     }

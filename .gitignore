@@ -9,4 +9,4 @@
 **/storages/pictures/*
 **/storages/database/*
 **/mongo-seeds/init.js
-!/uploads/pictures/default.jpg
+!/storages/pictures/default.jpg

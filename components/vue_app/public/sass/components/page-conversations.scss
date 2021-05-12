@@ -6,16 +6,17 @@
         font-weight: 500;
         color: $greyLight;
         position: relative;
-        padding: 0 3px;
+        padding: 5px 3px;
         text-transform: uppercase;
         @include transition(all 0.3s ease);
+        white-space: nowrap;
         &:after {
             content: "";
             display: inline-block;
             height: 1px;
             width: 0px;
             position: absolute;
-            top: 22px;
+            top: 25px;
             left: 0;
             background-color: $greenChart;
             @include transition(all 0.3s ease);
@@ -34,86 +35,6 @@
                 &:after {
                     background-color: $blueChart;
                     width: 100%;
-                }
-            }
-        }
-    }
-}
-
-.table {
-    tbody {
-        tr {
-            td {
-                &.status {
-                    .label {
-                        font-weight: 600;
-                        font-size: 14px;
-                        position: relative;
-                        padding-left: 20px;
-                        &:after {
-                            content: "";
-                            position: absolute;
-                            left: 0;
-                            top: 0;
-                            height: 12px;
-                            width: 12px;
-                            @include borderRadius(10px);
-                        }
-                    }
-                    &.open {
-                        .label {
-                            color: $greenChart;
-                            &:after {
-                                background-color: $greenChart;
-                            }
-                        }
-                    }
-                    &.locked {
-                        .label {
-                            color: $redChart;
-                            &:after {
-                                background-color: $redChart;
-                            }
-                        }
-                    }
-                }
-                .table-user-img {
-                    height: 40px;
-                    position: relative;
-                    .table-user-img__span {
-                        width: 40px;
-                        height: 40px;
-                        border: 2px solid $blueLight;
-                        margin-right: -15px;
-                        position: relative;
-                        @include borderRadius(25px);
-                        @include boxShadow(0, 1px, 2px, 0, rgba(0, 0, 0, 0.3));
-                        .table-user-img__img {
-                            width: 40px;
-                            height: 40px;
-                            display: inline-block;
-                            @include borderRadius(25px);
-                            position: relative;
-                            top: 0;
-                            left: 0;
-                        }
-                        &:hover {
-                            &:after {
-                                content: attr(data-name);
-                                display: inline-block;
-                                padding: 10px;
-                                font-size: 14px;
-                                @include borderRadius(3px);
-                                position: absolute;
-                                top: 45px;
-                                left: 0;
-                                background-color: $blueChart;
-                                color: #fff;
-                                z-index: 5;
-                                white-space: nowrap;
-                            }
-                        }
-                    }
                 }
             }
         }

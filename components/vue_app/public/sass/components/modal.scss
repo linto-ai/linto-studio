@@ -25,23 +25,25 @@
         font-size: 22px;
         font-weight: 600;
         color: $blueChart;
-        border-bottom: 1px solid #ececec;
         padding-bottom: 20px;
     }
 }
 
 .modal--body {
     padding: 20px 0;
+    border-top: 1px solid #ececec;
+    border-bottom: 1px solid #ececec;
     p {
         font-size: 16px;
         line-height: 22px;
+        margin: 10px 0;
         strong {
             font-size: 18px;
             font-weight: 600;
             color: $redChart;
+            line-height: 22px;
         }
     }
-    border-bottom: 1px solid #ececec;
     input,
     select {
         width: 220px;

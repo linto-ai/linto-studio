@@ -174,14 +174,15 @@
     justify-content: flex-end;
 }
 
-.table-speakers {
-    td {
-        padding: 5px;
+.table {
+    margin: 0 0 20px;
+    &.table-speakers {
+        width: auto;
+        td {
+            padding: 10px;
+            color: $blueChart;
+        }
     }
-}
-
-.table-speaker--edit {
-    position: relative;
 }
 
 .speaker-time-prct-container {

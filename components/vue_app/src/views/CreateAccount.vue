@@ -1,6 +1,6 @@
 <template>
-  <div id="app">
-    <div class="login-container flex col">
+  <div>
+    <div class="login-form-container flex col">
       <img src="/assets/img/conversation-manager-logo.svg" class="login-logo"/>
       <h2 class="login-title">Create an account</h2>
         <div id="app-login" class="flex col">
@@ -77,7 +77,7 @@
               @change="testPasswordConfirm(passwordConfirm, password)">
             <span class="error-field" v-if="passwordConfirm.error !== null">{{ passwordConfirm.error }}</span>
           </div>
-          <div class="form-field flex row" style="margin-top: 10px; justify-content: center;">
+          <div class="form-field flex row" style="margin: 10px; justify-content: center;">
             <button
               @click="handleForm()" 
               class="btn btn--txt-icon blue">

@@ -140,7 +140,7 @@
             <button class="conversation-settings-item--toggle-btn" @click="toggleContent($event, 'speakers-content')"></button>
           </div>
           <div class="conversation-settings-item--content" id="speakers-content">
-            <table class="table-speakers">
+            <table class="table table-speakers">
               <tbody v-if="convo.speakers.length > 0">
                 <tr v-for="speaker in convo.speakers" :key="speaker.speaker_id">
                   <td>{{ speaker.speaker_name }}</td>
