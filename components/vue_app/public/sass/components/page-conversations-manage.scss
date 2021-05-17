@@ -27,6 +27,7 @@
         .conversation-infos-item--label {
             padding-bottom: 10px;
             height: 30px;
+            white-space: nowrap;
             .conversation-infos-item--icon {
                 display: inline-block;
                 width: 30px;
@@ -159,6 +160,9 @@
             }
         }
     }
+    textarea {
+        max-width: 100%;
+    }
     .conversation-settings-item--content {
         font-size: 16px;
         color: #333;
@@ -175,7 +179,6 @@
 }
 
 .table {
-    margin: 0 0 20px;
     &.table-speakers {
         width: auto;
         td {

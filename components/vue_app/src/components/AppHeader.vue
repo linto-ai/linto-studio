@@ -1,10 +1,18 @@
 <template>
   <div id="app-header" class="flex row">
-  <select v-model="$i18n.locale">
-    <option v-for="(lang, i) in appLanguages" :key="`Lang${i}`" :value="lang">
-      {{ lang }}
-    </option>
-    </select>
+    <div class="header-lang-btn-container flex row">
+      <button 
+        @click="setAppLanguage('fr')" 
+        class="header-lang-btn fr"
+        :class="$i18n.locale === 'fr' ? 'active' : ''"
+      ></button>
+      <span> | </span>
+      <button 
+        @click="setAppLanguage('en')" 
+        class="header-lang-btn en"
+        :class="$i18n.locale === 'en' ? 'active' : ''"
+      ></button>
+    </div>
     <div class="user-menu flex row">
       <button class="user-menu-btn" @click="toggleUserMenu()" :class="userMenuOpened ? 'opened' : 'closed'" v-if="!!user">
         <img class="user-menu-btn--img" :src="imgUrl">
@@ -43,6 +51,9 @@ export default {
   },
 
   methods: {
+    setAppLanguage (lang) {
+      this.$i18n.locale = lang
+    },
     CapitalizeFirstLetter(string) {
       return this.$options.filters.CapitalizeFirstLetter(string)
     },

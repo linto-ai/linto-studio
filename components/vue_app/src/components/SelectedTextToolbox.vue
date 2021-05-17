@@ -123,6 +123,10 @@ export default {
       this.options = data.toolBoxOption
       this.unhighlightLinkVisible = false
     })
+
+    bus.$on('close_selected_toolbox', () => {
+      this.closeToolbox()
+    })
   },
   methods: {
     async removeHighlightFromWords(hl) {
@@ -162,7 +166,7 @@ export default {
     },
     closeToolbox() {
       this.show = false
-      bus.$emit('close_selected_toolbox', {})
+      bus.$emit('clear_text_selection', {})
     },
     openHighlightModal () {
       if(this.selectionObj.startTurnId === this.selectionObj.endTurnId) {

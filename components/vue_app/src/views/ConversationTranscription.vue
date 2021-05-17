@@ -4,18 +4,18 @@
     <div class="flex col conversation-infos-container">
       <div class="flex row" style="margin-bottom: 20px;">
          <a :href="`/interface/conversation/${convoId}`" class="btn btn--txt-icon blue"> 
-          <span class="label">Conversation landing</span>
+          <span class="label">{{ $t('buttons.conversation_landing') }}</span>
           <span class="icon icon__backto"></span>
         </a>
       </div>
-      <h2>Transcription display options</h2>
+      <h2>{{ $t('page.conversation_transcription.h2') }}</h2>
       <div class="conversation-infos-items">
           <!-- Keywords -->
         <div class="conversation-infos-item">
           <div class="conversation-infos-item--label">
             <div class="flex row">
               <span class="conversation-infos-item--icon conversation-infos-item--icon__keywords"></span>
-              <span class="conversation-infos-item--title flex1">Keywords</span>
+              <span class="conversation-infos-item--title flex1">{{ $t('array_labels.keywords') }}</span>
               <span class="conversation-infos-item--icon conversation-infos-item--icon__visible"></span>
             </div>
           </div>
@@ -35,7 +35,7 @@
           <div class="conversation-infos-item--label">
             <div class="flex row">
               <span class="conversation-infos-item--icon conversation-infos-item--icon__highlights"></span>
-              <span class="conversation-infos-item--title flex1">Highlights</span>
+              <span class="conversation-infos-item--title flex1">{{ $t('array_labels.highlights') }}</span>
               <span class="conversation-infos-item--icon conversation-infos-item--icon__colors"></span>
               <span class="conversation-infos-item--icon conversation-infos-item--icon__visible"></span>
             </div>
@@ -67,7 +67,7 @@
       <div class="flex row">
         <h1 style="padding: 0;" class="flex row flex1">{{ convo.name }}</h1>
         <div class="flex row flex1 edition__btns">
-          <span class="edition__btns-label">Edition mode : </span>
+          <span class="edition__btns-label">{{ $t('page.conversation_transcription.edition_mode') }} : </span>
         <button 
           @click="editionMode = true"
           :class="editionMode ? 'enabled' : 'disabled'"
@@ -94,42 +94,42 @@
        <!-- FILTERS -->
       <div class="transcription-filters flex row">
           <!-- by speaker -->
-          <span class="transcription-filters-label">Filters :</span>
+          <span class="transcription-filters-label">{{ $t('filters.filters') }}:</span>
           <div class="flex col flex1">
-            <span class="transcription-filters__select-label">Speakers:</span>
+            <span class="transcription-filters__select-label">{{ $t('array_labels.speakers')}}:</span>
             <div class="flex row">
               <select id="filter-speaker" class="transcription-filters__select flex1" v-model="convoFilter.speaker">
                 <option v-for="spk in convo.speakers" :key="spk.speaker_id" :value="spk.speaker_id">{{ spk.speaker_name }}</option>
-                <option value="">None</option>
+                <option value="">{{ $t('array_labels.none') }}</option>
               </select>
               <button v-if="convoFilter.speaker !== ''" @click="convoFilter.speaker = ''" class="cancel-filter-btn"></button>
             </div>
           </div>
           <!-- by highlights -->
           <div class="flex col flex1">
-            <span class="transcription-filters__select-label">Highlights:</span>
+            <span class="transcription-filters__select-label">{{ $t('array_labels.highlights') }}:</span>
             <div class="flex row">
               <select id="filter-highlights" class="transcription-filters__select flex1" v-model="convoFilter.highlights">
                 <option v-for="hl in convo.highlights" :key="hl.hid" :value="hl.hid">{{ hl.label }}</option>
-                <option value="">None</option>
+                <option value="">{{ $t('array_labels.none') }}</option>
               </select>
               <button v-if="convoFilter.highlights !== ''" @click="convoFilter.highlights = ''" class="cancel-filter-btn"></button>
             </div>
           </div>
           <!-- by keywords -->
           <div class="flex col flex1">
-            <span class="transcription-filters__select-label">Keywords:</span>
+            <span class="transcription-filters__select-label">{{ $t('array_labels.keywords') }}:</span>
             <div class="flex row">
               <select id="filter-highlights" class="transcription-filters__select flex1" v-model="convoFilter.keywords">
                 <option v-for="kw in convo.keywords" :key="kw.kid" :value="kw.kid">{{ kw.label }}</option>
-                <option value="">None</option>
+                <option value="">{{ $t('array_labels.none') }}</option>
               </select>
               <button v-if="convoFilter.keywords !== ''" @click="convoFilter.keywords = ''" class="cancel-filter-btn"></button>
           </div>
         </div>
         <div class="transcription-export-btn-container flex row">
           <button @click="exportTranscription()" class="btn btn--txt-icon blue">
-            <span class="label">Export</span>
+            <span class="label">{{ $t('buttons.export') }}</span>
             <span class="icon icon__transcription"></span>
           </button>
         </div>
@@ -218,9 +218,8 @@ export default {
     this.convoId = this.$route.params.convoId
     await this.dispatchStore('getConversations')
 
-    bus.$emit('vertical_nav_close', {})
+    bus.$emit('vertical_nav_close', {}) 
       
-    
     bus.$on('update_speaker', async (data) => {
       await this.dispatchStore('getConversations')
     })
@@ -239,26 +238,15 @@ export default {
     convo () {
       return this.$store.getters.conversationById(this.convoId)
     },
-
-    audioPath() {
+    audioPath () {
       return `${process.env.VUE_APP_URL}/${this.convo.audio.filepath}`
     },
     speakersArray () {
-      let speakersArray = [] 
-      if(!!this.convo && !!this.convo.speakers && this.convo.speakers.length > 0) {
-        this.convo.speakers.map(speaker => {
-          speakersArray.push({
-            speaker_id: speaker.speaker_id,
-            speaker_name: speaker.speaker_name
-          })
-        })
-      }
-      return speakersArray
+      return this.$store.getters.speakersByConversationId(this.convoId)
     },
     currentTurn () {
       let currentTurn = 0
       if(!!this.convo && !!this.convo.text && this.convo.text.length > 0) {
-        
         for(let i = 0; i < this.convo.text.length; i++) {
           if (
             i !== this.convo.text.length - 1 && 
@@ -282,12 +270,10 @@ export default {
     },
     convoText () {
       let convoText = this.convo.text
-
       // Filter by speaker
       if (this.convoFilter.speaker !== '') {
         convoText = convoText.filter(turn => turn.speaker_id === this.convoFilter.speaker)
       }
-      
       // Filter by highlights
       if(this.convoFilter.highlights !== '') {
         let convoTextHl = []
@@ -302,7 +288,6 @@ export default {
         })
         convoText = convoTextHl
       }
-
       // Filter by keywords
       if(this.convoFilter.keywords !== '') {
         let convoTextKw = []
@@ -326,7 +311,7 @@ export default {
   watch: {
     editionMode (data) {
       if(data) {
-        bus.$on('close_selected_toolbox', {})
+        bus.$emit('close_selected_toolbox', {})
       }
     },
     'convo.keywords' (data) {
@@ -382,33 +367,25 @@ export default {
     }
   },
   methods: {
-    downloadBlob(blob, name = 'transcription.txt') {
-      // Convert your blob into a Blob URL (a special url that points to an object in the browser's memory)
-      const blobUrl = URL.createObjectURL(blob);
-
-      // Create a link element
-      const link = document.createElement("a");
-
-      // Set link's href to point to the Blob URL
-      link.href = blobUrl;
-      link.download = name;
-
-      // Append link to the body
+    /*** DOWNLOAD TRANSCRIPTION ***/
+    // Create a download link from a generated blob
+    downloadTranscription (blob, name = 'transcription.txt') {
+      const blobUrl = URL.createObjectURL(blob)
+      const link = document.createElement("a")
+      link.href = blobUrl
+      link.download = name
       document.body.appendChild(link);
-
-      // Dispatch click event on the link
-      // This is necessary as link.click() does not work on the latest firefox
       link.dispatchEvent(
         new MouseEvent('click', { 
-          bubbles: true, 
-          cancelable: true, 
-          view: window 
+          bubbles: true,
+          cancelable: true,
+          view: window
         })
-      );
-
+      )
       // Remove link from body
       document.body.removeChild(link);
     },
+    // Generate a txt file blob from transcription text (filtered or not)
     async exportTranscription () {
       try {
         let payload = {
@@ -421,12 +398,13 @@ export default {
         }
         let transcriptionText = this.$options.filters.generateTranscriptionText(payload, this.convoFilter)
         const blob = new Blob([transcriptionText], { type: "text/plain;charset=utf-8"})
-        this.downloadBlob(blob)
+        this.downloadTranscription(blob) // Trigger download
       } catch (error) {
         console.error(error)
       }
     },
-    /* KEYWORDS */
+    /*** KEYWORDS ***/
+    // Set/Unset transcription keywords
     updateKeywords (kw) {
       let kwItemIndex = this.keywordsOptions.findIndex(kwo => kwo.kid === kw.kid)
       if (kwItemIndex >= 0) {
@@ -434,56 +412,17 @@ export default {
       }
       bus.$emit('transcription_update_keywords', {keywordsOptions: this.keywordsOptions})
     },
-    updateKeyword (kw) {
-      let isVisible = false
-      let kwItemIndex = this.keywordsOptions.findIndex(kwo => kwo.kid === kw.kid)
-      if (kwItemIndex >= 0) {
-        this.keywordsOptions[kwItemIndex].active = !this.keywordsOptions[kwItemIndex].active
-        isVisible = this.keywordsOptions[kwItemIndex].active
-      }
-      // Get words that are in selected highlight
-      let wordsInKeywords = []
-      if (this.convo.text.length > 0) {
-        this.convo.text.map(turn => {
-          if(turn.words.length > 0) {
-            let wordInKw = turn.words.filter(word => word.keywords.indexOf(kw.kid) >= 0)
-            if (wordInKw.length > 0) {
-              wordInKw.map(winhl => {
-                wordsInKeywords.push(winhl.wid)
-              })
-            }
-          }
-        })
-      }
-      if (isVisible) {
-        this.setKeyword(wordsInKeywords)
-      } else {
-        this.unsetKeyword(wordsInKeywords)
-      }
-    },
-    setKeyword (wordsInKeywords) {
-      let allWords = document.getElementsByClassName('transcription--word')
-      // Set highlights
-      for(let span of allWords) {
-        let wordId = span.getAttribute('data-word-id')
-        if(wordsInKeywords.indexOf(wordId) >= 0) {
-          span.classList.add("keyword")
-        }
-      }
-    },
-    unsetKeyword (wordsInKeywords) {
-      let allWords = document.getElementsByClassName('transcription--word')
-      // Set highlights
-      for(let span of allWords) {
-        let wordId = span.getAttribute('data-word-id')
-        if(wordsInKeywords.indexOf(wordId) >= 0) {
-          span.classList.remove("keyword")
-        }
-      }
-    },
-    /* HIGHLIGHTS */
+    /*** HIGHLIGHTS ***/
     refreshHighlights () {
       bus.$emit('transcription_update_highlights', {highlightsOptions: this.highlightsOptions})
+    },
+    // Set/Unset transcription highlight
+    updateHighlight (hl) {
+      let hlItemIndex = this.highlightsOptions.findIndex(hlo => hlo.hid === hl.hid)
+      if (hlItemIndex >= 0) {
+        this.highlightsOptions[hlItemIndex].selected = !this.highlightsOptions[hlItemIndex].selected
+      }
+      this.refreshHighlights()
     },
     async updateHighlightColor (event, hl) {
       try {
@@ -516,14 +455,7 @@ export default {
         })
       }
     },
-    updateHighlight (hl) {
-      let hlItemIndex = this.highlightsOptions.findIndex(hlo => hlo.hid === hl.hid)
-      if (hlItemIndex >= 0) {
-        this.highlightsOptions[hlItemIndex].selected = !this.highlightsOptions[hlItemIndex].selected
-      }
-      this.refreshHighlights()
-    },
-    /* EDITION MODE */
+    /*** EDITION MODE ***/
     cancelEditionMode () {
       this.dispatchStore('getConversations')
       this.refreshConversation++
@@ -534,11 +466,8 @@ export default {
       try {
         this.editionMode = false
         this.editConvoTmp = this.convo
-
         const newObject = this.buildTextObject()
         console.log('buildTextObject', newObject)
-
-
         for(let turn of newObject) {
           let payload = {
             turnid: turn.turn_id,
@@ -571,13 +500,11 @@ export default {
           const wordSplit = wordVal.split(' ')
           if (wordSplit[0] === "") {
             // If words have been deleted
-            console.log('word deleted ?')
+            // console.log('word deleted ?')
             i++
           }
           if (wordSplit.length > 1) { // If words have been added
-            
-            console.log('word added ?')
-            
+            // console.log('word added ?')
             for (let j = 0; j < wordSplit.length; j++) {
               let wordObj = {}
               const wordId = words[i].getAttribute('data-word-id')
@@ -592,11 +519,9 @@ export default {
                 keywords: wordOptions.keywords
                 
               }
-
               turnPayload.words.push(wordObj)
               realPos++
             }
-            // todo
           } else if(wordSplit.length === 1 && wordSplit[0] !== "") {
             const wordId = words[i].getAttribute('data-word-id')
             const wordOptions = this.getHlAndKwByWordId(wordId)
@@ -621,7 +546,6 @@ export default {
       let options = {
         highlights: [],
         keywords: []
-        
       }
       this.convo.text.map(turn => {
         turn.words.map(word => {
@@ -631,9 +555,9 @@ export default {
           }
         })
       })
-
       return options
     },
+    /*** DISPATCH STORE ***/
     async dispatchStore (topic) {
       try {
         const resp = await this.$options.filters.dispatchStore(topic)

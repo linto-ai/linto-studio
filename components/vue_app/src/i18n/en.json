@@ -5,27 +5,53 @@
     "nav": {
         "conversations_overview": "My conversations"
     },
-    "h1": {
-        "conversations_overview": "My conversations"
+    "page": {
+        "conversations": {
+            "h1": "My conversations"
+        },
+        "conversation_manage": {
+            "h2": "Conversation information"
+        },
+        "conversation_transcription": {
+            "h2": "Transcription display options",
+            "edition_mode": "Edition mode"
+
+        }
     },
     "filters": {
-        "all": "all",
+        "filters": "Filters",
+        "all": "All",
         "owned_by_me": "Owned by me",
         "shared_with_me": "Shared with me"
     },
     "array_labels": {
-        "name": "Title",
-        "description": "Description",
-        "date": "Date",
-        "created": "Date",
+        "abstract": "Abstract",
+        "agenda": "Agenda",
         "audio": "Duration",
+        "created": "Date",
+        "date": "Date",
+        "description": "Description",
+        "documents": "Documents",
         "duration": "Duration",
+        "highlights": "Highlights",
+        "keywords": "Keywords",
+        "last_update": "Last update",
+        "locked": "Status",
         "owner": "Owner",
+        "name": "Title",
+        "none": "None",
         "sharedWith": "Shared with",
-        "status": "Status",
-        "locked": "Status"
+        "speakers": "Speakers",
+        "status": "Status"
     },
     "buttons": {
-        "new_conversation": "New conversation"
+        "apply": "Apply",
+        "cancel": "Cancel",
+        "conversation_landing": "Vue d'ensemble",
+        "export": "Export",
+        "new_conversation": "New conversation",
+        "new_speaker": "New Speaker",
+        "save": "Save",
+        "transcription": "Transcription"
     }
 }

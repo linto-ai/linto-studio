@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>{{$t('h1.conversations_overview')}}</h1>
+    <h1>{{$t('page.conversations.h1')}}</h1>
     
     <div class="flex row" v-if="dataLoaded">
       <div class="conversation-filter-container flex1">
@@ -76,7 +76,7 @@ export default {
   },
   computed: {
     dataLoaded () {
-      return this.convosLoaded && this.usersLoaded && this.allUsersInfos
+      return this.convosLoaded && this.usersLoaded
     },
     conversations () {
       if(!!this.userInfo) {
