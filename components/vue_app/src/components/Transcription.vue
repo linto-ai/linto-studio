@@ -285,7 +285,6 @@ export default {
       }, 100)
     },
     cancelTextSelection () {
-      console.log('ALO?')
       this.closeToolBox()
       this.selectedText = []
       let selected = document.getElementsByClassName('text-selected')
@@ -306,7 +305,6 @@ export default {
         target.classList.add('active')
         bus.$emit(`edit_speaker_transcription`, {
           speaker, 
-          speakers: this.convoSpeakers, 
           conversationId: this.convoId, 
           turnId
         })

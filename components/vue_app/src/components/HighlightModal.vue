@@ -31,7 +31,6 @@
             <span class="form-label">Or create a new highlight : </span>
             <div class="flex row">
               <input type="text" v-model="newHighlight.value">
-
                <input 
                 type="color" 
                 v-model="newHighlightColor" 

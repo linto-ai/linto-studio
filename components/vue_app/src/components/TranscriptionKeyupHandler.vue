@@ -10,24 +10,30 @@ export default {
   },
   mounted(){
     this.initKeyupHandler()
+    window.keyupEnabled = true
+    bus.$on('keyup_handler_disable', () => {
+      window.keyupEnabled = false
+    })
+    bus.$on('keyup_handler_enable', () => {
+      window.keyupEnabled = true
+    })
   },
-    methods: {
-    initKeyupHandler(editionMode) {
+  methods: {
+    initKeyupHandler() {
       document.addEventListener("keydown", function(event) {
         //console.log(event)
         // Space > play / pause
+        console.log(window.keyupEnabled)
         if(event.code === 'Space' || event.keyCode === 32) {
-          bus.$emit('audio_player_play_pause', {})
+          if(window.keyupEnabled) bus.$emit('audio_player_play_pause', {})
         }
-
         // Ctrl + arrow right > play next turn
         if(event.ctrlKey && event.key === "ArrowRight") {
-          bus.$emit('audio_player_next_turn', {})
+          if(window.keyupEnabled) bus.$emit('audio_player_next_turn', {})
         }
-
         // Ctrl + arrow left > play previous turn
         if(event.ctrlKey && event.key === "ArrowLeft") {
-          bus.$emit('audio_player_prev_turn', {})
+          if(window.keyupEnabled) bus.$emit('audio_player_prev_turn', {})
         }
       })
     }

@@ -175,6 +175,8 @@
     <!-- Modals -->
     <ModalMergeSentences></ModalMergeSentences>
     <ModalSplitTurns></ModalSplitTurns>
+    <ModalMergeSpeakersWithTarget :convoId="convoId"></ModalMergeSpeakersWithTarget>
+
   </div>
   <div v-else>Loading</div>
 </template>
@@ -188,6 +190,7 @@ import ModalSplitTurns from '@/components/ModalSplitTurns.vue'
 import Transcription from '@/components/Transcription.vue'
 import TranscriptionKeyupHandler from '@/components/TranscriptionKeyupHandler.vue'
 import KeyboardCommandsFrame from '@/components/KeyboardCommandsFrame.vue'
+import ModalMergeSpeakersWithTarget from '@/components/ModalMergeSpeakersWithTarget.vue'
 import { bus } from '../main.js'
 export default {
   data () {
@@ -578,7 +581,8 @@ export default {
     ModalSplitTurns,
     Transcription,
     TranscriptionKeyupHandler,
-    KeyboardCommandsFrame
+    KeyboardCommandsFrame,
+    ModalMergeSpeakersWithTarget
   }
 }
 </script>
