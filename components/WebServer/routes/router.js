@@ -16,7 +16,14 @@ class Router {
             for (let path in routes[level]) {
                 const route = routes[level][path]
                 const method = route.method
-                if (process.env.DEV_DISABLE_AUTH === 'true') route.requireAuth = false
+                if (process.env.DEV_DISABLE_AUTH === 'true') {
+                    route.requireAuth = false
+                    route.requireSession = false
+                    route.requireOwnerAccess = false
+                    route.requireReadAccess = false
+                    route.requireWriteAccess = false
+                    route.requireFrontReadAccess = false
+                }
                 debug('Create route : ' + route.method + ' - ' + level + route.path)
                 let middlewaresLoaded = []
                     // require passport auth (headers)
@@ -31,8 +38,6 @@ class Router {
                 if (route.requireWriteAccess) middlewaresLoaded.push(auth_middlewares.asWriteAccess)
 
                 if (route.requireFrontReadAccess) middlewaresLoaded.push(nav_middlewares.hasReadAccess)
-
-
                 webServer.express[method](
                     level + route.path,
                     middlewares.logger,

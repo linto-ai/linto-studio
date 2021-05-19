@@ -52,7 +52,7 @@ class WebServer extends Component {
         let sessionConfig = {
             resave: false,
             saveUninitialized: false,
-            secret: 'mysercret',
+            secret: process.env.SESSION_SECRET,
             cookie: {
                 maxAge: 30240000000 // 1 year
             }
