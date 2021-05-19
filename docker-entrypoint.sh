@@ -38,6 +38,9 @@ while [ "$1" != "" ]; do
     --run-cmd=) # Handle the case of an empty --run-cmd=
         die 'ERROR: "--run-cmd" requires a non-empty option argument.'
         ;;
+    --skip)
+        echo 'Skip starup param'
+    ;;
     *)
         echo "ERROR: Bad argument provided \"$1\""
         exit 1
