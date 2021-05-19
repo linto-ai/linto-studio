@@ -12,7 +12,7 @@
             <p>Your selection: "<strong>{{selectionTxt.txt}}</strong>"</p>
           </div>
 
-          <div class="form-field flex col">
+          <div class="form-field flex col" v-if="convo.highlights.length > 0">
             <span class="form-label">Choose a highlight : </span>
             <div class="flex row">
               <select v-model="highlight.value">
@@ -31,7 +31,6 @@
             <span class="form-label">Or create a new highlight : </span>
             <div class="flex row">
               <input type="text" v-model="newHighlight.value">
-
                <input 
                 type="color" 
                 v-model="newHighlightColor" 

@@ -4,7 +4,7 @@ DISABLE_AUTH=false
 # Components loading in this order
 COMPONENTS=WebServer
 WEBSERVER_HTTP_PORT=80
-JWT_SECRET=supersecret
+SESSION_SECRET=mysecret
 
 # Mongo
 DB_DRIVER=mongo
@@ -34,7 +34,6 @@ VOLUME_AUDIO_UPLOAD_PATH=storages/audios
 VOLUME_AUDIO_PUBLIC_PATH=audios
 VOLUME_PROFILE_PICTURE_UPLOAD_PATH=storages/pictures
 VOLUME_PROFILE_PICTURE_PUBLIC_PATH=pictures
-
 VOLUME_DATABASE_FOLDER=storages/database
 
 # JWT SECRET

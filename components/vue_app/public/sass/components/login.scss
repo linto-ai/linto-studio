@@ -1,4 +1,9 @@
-.login-container {
+.login-form-wrapper {
+    overflow: auto;
+    padding: 40px;
+}
+
+.login-form-container {
     max-width: 960px;
     width: 100%;
     margin: 0 auto;
@@ -10,7 +15,7 @@
         display: inline-block;
         height: 100px;
         width: auto;
-        margin: 40px 0 20px 0;
+        margin: 0 0 20px 0;
     }
     .toggle-login-link {
         color: $blueChart;
@@ -32,27 +37,9 @@
     @include blockShadow();
     align-items: center;
     .form-field {
-        width: 100%;
-        margin-bottom: 10px;
-        .form-label {
-            color: $blueChart;
-            strong {
-                font-weight: 500;
-                font-size: 18px;
-                color: $redChart;
-            }
-        }
         input[type="text"],
         input[type="password"] {
             background-color: #edf8ff;
         }
-    }
-    .form-error {
-        display: inline-block;
-        padding: 10px 0;
-        width: 100%;
-        color: $redChart;
-        font-style: italic;
-        text-align: center;
     }
 }

@@ -10,7 +10,7 @@
     </div>
   </div>
   <div id="app" v-else>
-      <router-view class="flex1"></router-view>
+      <router-view class="login-form-wrapper flex col flex1"></router-view>
   </div>
 </template>
 <script>

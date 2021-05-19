@@ -1,16 +1,16 @@
 <template>
   <div>
-    <h1>My conversations</h1>
+    <h1>{{$t('page.conversations.h1')}}</h1>
     
     <div class="flex row" v-if="dataLoaded">
       <div class="conversation-filter-container flex1">
-        <button class="conversation-filter--btn" :class="filterActive === 'all' ? 'active' : ''"  @click="filterActive = 'all'">All</button> | 
-        <button class="conversation-filter--btn" :class="filterActive === 'ownedByMe' ? 'active' : ''" @click="filterActive = 'ownedByMe'">Owned by me</button> | 
-        <button class="conversation-filter--btn" :class="filterActive === 'sharedWithMe' ? 'active' : ''" @click="filterActive = 'sharedWithMe'">Shared with me</button> 
+        <button class="conversation-filter--btn" :class="filterActive === 'all' ? 'active' : ''"  @click="filterActive = 'all'">{{ $t('filters.all') }}</button> | 
+        <button class="conversation-filter--btn" :class="filterActive === 'ownedByMe' ? 'active' : ''" @click="filterActive = 'ownedByMe'">{{ $t('filters.owned_by_me') }}</button> | 
+        <button class="conversation-filter--btn" :class="filterActive === 'sharedWithMe' ? 'active' : ''" @click="filterActive = 'sharedWithMe'">{{ $t('filters.shared_with_me') }}</button> 
       </div>
-      <div class="flex1 flex col flex-end">
+      <div class="flex col flex-end">
         <a href="/interface/conversation/create" class="btn btn--txt-icon green">
-          <span class="label">New conversation</span>
+          <span class="label">{{ $t('buttons.new_conversation') }}</span>
           <span class="icon icon__plus"></span>
         </a>
       </div>
@@ -19,19 +19,19 @@
       <table class="table">
         <thead>
           <tr>
-            <th v-for="convoKey in conversationsKeys" :key="convoKey.key">
+            <th v-for="(convoKey, i) in conversationsKeys" :key="i">
               <button
                 class="table-th-filter"
-                @click="sortByKey(convoKey.key)"
-                :class="sortBy === convoKey.key ? `selected ${sortDirection}` : ''"
-              >{{ convoKey.text }}</button>
+                @click="sortByKey(convoKey)"
+                :class="sortBy === convoKey ? `selected ${sortDirection}` : ''"
+              >{{ $t(`array_labels.${convoKey}`) }}</button>
             </th>
           </tr>
         </thead>
         <tbody>
           <tr>
           </tr>
-          <tr v-for="convo in filteredConversations" :key="convo._id" @click="redirectConversationPage(convo._id)">
+          <tr v-for="convo in filteredConversations" :key="convo._id" @click="redirectConversationPage(convo._id)" class="clickable">
             <td class="title">{{ convo.name }}</td>
             <td>{{ convo.description }}</td>
             <td>{{ dateToJMY(convo.created) }}</td>
@@ -67,36 +67,7 @@ export default {
       filterActive: 'all',
       sortBy: 'date',
       sortDirection: 'down',
-      conversationsKeys: [
-        {
-          key: 'name',
-          text: 'Title'
-        },
-        {
-          key: 'description',
-          text: 'Description'
-        },
-        {
-          key: 'created',
-          text: 'Date'
-        },
-        {
-          key: 'audio',
-          text: 'Duration'
-        },
-        {
-          key: 'owner',
-          text: 'Owner'
-        },
-        {
-          key: 'sharedWith',
-          text: 'Shared With'
-        },
-        {
-          key: 'locked',
-          text: 'Status'
-        }
-      ]
+      conversationsKeys: ['name','description','created','audio','owner','sharedWith','locked']
     }
   },
   async mounted () {
@@ -105,7 +76,7 @@ export default {
   },
   computed: {
     dataLoaded () {
-      return this.convosLoaded && this.usersLoaded && this.allUsersInfos
+      return this.convosLoaded && this.usersLoaded
     },
     conversations () {
       if(!!this.userInfo) {

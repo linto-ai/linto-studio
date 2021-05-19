@@ -1,0 +1,57 @@
+{
+    "message": {
+        "hello": "Hello world"
+    },
+    "nav": {
+        "conversations_overview": "My conversations"
+    },
+    "page": {
+        "conversations": {
+            "h1": "My conversations"
+        },
+        "conversation_manage": {
+            "h2": "Conversation information"
+        },
+        "conversation_transcription": {
+            "h2": "Transcription display options",
+            "edition_mode": "Edition mode"
+
+        }
+    },
+    "filters": {
+        "filters": "Filters",
+        "all": "All",
+        "owned_by_me": "Owned by me",
+        "shared_with_me": "Shared with me"
+    },
+    "array_labels": {
+        "abstract": "Abstract",
+        "agenda": "Agenda",
+        "audio": "Duration",
+        "created": "Date",
+        "date": "Date",
+        "description": "Description",
+        "documents": "Documents",
+        "duration": "Duration",
+        "highlights": "Highlights",
+        "keywords": "Keywords",
+        "last_update": "Last update",
+        "locked": "Status",
+        "owner": "Owner",
+        "name": "Title",
+        "none": "None",
+        "sharedWith": "Shared with",
+        "speakers": "Speakers",
+        "status": "Status"
+    },
+    "buttons": {
+        "apply": "Apply",
+        "cancel": "Cancel",
+        "conversation_landing": "Vue d'ensemble",
+        "export": "Export",
+        "new_conversation": "New conversation",
+        "new_speaker": "New Speaker",
+        "save": "Save",
+        "transcription": "Transcription"
+    }
+}

@@ -2,23 +2,32 @@
   <div class="modal-wrapper flex col" :class="modalShow ? 'visible' : 'hidden'">
     <div class="modal">
         <div class="modal--header flex row">
-          <span class="title flex1">Delete speaker</span>
+          <span class="title flex1">Delete speaker "{{ speakerName }}"</span>
           <button class="btn--icon btn--icon__no-bg editspeaker" @click="closeModal()">
             <span class="icon icon--close"></span>
           </button>
         </div>
-        <div class="modal--body">
+        <div class="modal--body flex col">
           <div v-if="speakerTxt.length === 0">
-            <p>Are you sure you want to <strong>delete</strong> this speaker:  <strong>{{ speakerName }}</strong> ?</p><br/>
+            <p>Are you sure you want to <strong>delete</strong> this speaker: <strong>{{ speakerName }}</strong> ?</p>
           </div>
           <div v-else>
-            Sentences are attached to this speaker. If you want to delete it, you will have to select a speaker to replace this one.
-            <select v-model="newSpeaker.value">
-              <option  v-for="spk in speakersList" :key="spk.speaker_id" :value="spk.speaker_id">{{ spk.speaker_name}}</option>
-            </select>
+            <p>Some turns are still attributed to this speaker.<br/>
+            Please <strong>re-assign these turns to a different speaker</strong> in order to delete speaker <strong>"{{ speakerName }}"</strong>.</p>
+            <div class="form-field flex col">
+              <span class="form-label">Re-assign turns to:<strong>*</strong> :</span>
+              <select 
+                v-model="newSpeaker.value" @change="testSpeaker()"
+                :class="newSpeaker.error !== null ? 'error' : ''"
+              >
+                <option  v-for="spk in speakersList" :key="spk.speaker_id" :value="spk.speaker_id">{{ spk.speaker_name }}</option>
+                
+              </select>
+              <span class="error-field" v-if="newSpeaker.error !== null">{{ newSpeaker.error }}</span>
+            </div>
           </div>
         </div>
-        <div class="modal--footer">
+        <div class="modal--footer flex row">
           <button class="btn btn--txt-icon grey" @click="closeModal()">
             <span class="label">Cancel</span>
             <span class="icon icon__cancel"></span>
@@ -56,13 +65,6 @@ export default {
     bus.$on('modal_delete_speaker', async (data) => {
         this.showModal()
         this.speakerId = data.speakerId
-        setTimeout(() => {
-          if (this.speakersList.length > 0) {
-            this.newSpeaker.value = this.speakersList[0].speaker_id
-            this.newSpeaker.valid = true
-            this.newSpeaker.error = null
-          }
-        }, 200)
     })
     
   },
@@ -123,23 +125,30 @@ export default {
         })
       }
     },
+    testSpeaker () {
+      // Test selected speaker
+      return this.$options.filters.testSelectField(this.newSpeaker)
+    },
     async mergeSpeakers () {
       try {
-        const payload =  {
-          newspeakerid: this.newSpeaker.value
-        }
-        const req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/mergespeakers/${this.speakerId}`, 'patch', payload)
+        this.testSpeaker()
+        if(this.newSpeaker.valid) {
+          const payload =  {
+            newspeakerid: this.newSpeaker.value
+          }
+          const req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/mergespeakers/${this.speakerId}`, 'patch', payload)
 
-        if(req.status === 200 && !!req.data.msg) {
-          bus.$emit('app_notif', {
-            status: 'success',
-            message: req.data.msg,
-            timeout: 3000
-          })
-          bus.$emit(`update_speaker`, {})
-          this.closeModal()
-        } else {
-          throw req
+          if(req.status === 200 && !!req.data.msg) {
+            bus.$emit('app_notif', {
+              status: 'success',
+              message: req.data.msg,
+              timeout: 3000
+            })
+            bus.$emit(`update_speaker`, {})
+            this.closeModal()
+          } else {
+            throw req
+          }
         }
       } catch (error) {
         if(process.env.VUE_APP_DEBUG === 'true') {

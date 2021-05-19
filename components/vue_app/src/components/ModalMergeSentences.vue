@@ -7,13 +7,13 @@
             <span class="icon icon--close"></span>
           </button>
         </div>
-        <div class="modal--body" v-if="convoLoaded">
+        <div class="modal--body flex col" v-if="convoLoaded">
           <p><strong>You are about to merge the following turns : </strong></p>
           
           <div class="modal-merge-content flex col" v-html="contentFromSelection">
           </div>
           <div class="flex row">
-            <span class="form--label">Select the speaker for those turns:</span><br/>
+            <span>Select the speaker for those turns:</span><br/>
             <select 
               v-model="selectedSpeaker.value"
               :class="selectedSpeaker.error !== null ? 'error' :''"
@@ -25,7 +25,7 @@
             <span class="error-field" v-if="selectedSpeaker.error !== null">{{ selectedSpeaker.error }}</span>
           </div>
       </div>
-      <div class="modal--footer">
+      <div class="modal--footer flex row">
         <div class="modal--footer-btn-splitted">
           <button 
             class="btn btn--txt-icon grey"

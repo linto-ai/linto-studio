@@ -13,7 +13,7 @@
     
     <div class="app-nav">
       <div>
-        <a href="/interface/conversations" class="app-nav-link">My conversations</a>
+        <a href="/interface/conversations" class="app-nav-link">{{ $t('nav.conversations_overview')}}</a>
       </div>
     </div>
   </div>

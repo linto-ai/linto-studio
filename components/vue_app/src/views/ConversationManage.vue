@@ -2,13 +2,13 @@
   <div class="flex row no-padding-left" v-if="dataLoaded">
     <!-- LEFT PART -->
     <div class="flex col conversation-infos-container">
-      <h2>Conversation informations</h2>
+      <h2>{{$t('page.conversation_manage.h2')}}</h2>
       <div class="conversation-infos-items">
         <!-- Date -->
         <div class="conversation-infos-item">
           <div class="conversation-infos-item--label">
             <span class="conversation-infos-item--icon conversation-infos-item--icon__date"></span>
-            <span class="conversation-infos-item--title">Date</span>
+            <span class="conversation-infos-item--title">{{ $t('array_labels.date') }}</span>
           </div>
           <span class="conversation-infos-item--value">{{ dateToJMY(convo.created) }}</span>
         </div>
@@ -16,7 +16,7 @@
         <div class="conversation-infos-item">
           <div class="conversation-infos-item--label">
             <span class="conversation-infos-item--icon conversation-infos-item--icon__duration"></span>
-            <span class="conversation-infos-item--title">Duration</span>
+            <span class="conversation-infos-item--title">{{ $t('array_labels.duration') }}</span>
           </div>
           <span class="conversation-infos-item--value">{{ timeToHMS(convo.audio.duration) }}</span>
         </div>
@@ -24,16 +24,15 @@
         <div class="conversation-infos-item">
           <div class="conversation-infos-item--label">
             <span class="conversation-infos-item--icon conversation-infos-item--icon__lastupdate"></span>
-            <span class="conversation-infos-item--title">Last update</span>
+            <span class="conversation-infos-item--title">{{ $t('array_labels.last_update') }}</span>
           </div>
           <span class="conversation-infos-item--value">{{ dateToJMYHMS(convo.last_update) }}</span>
         </div>
         <!-- Owner -->
-        
         <div class="conversation-infos-item">
           <div class="conversation-infos-item--label">
             <span class="conversation-infos-item--icon conversation-infos-item--icon__owner"></span>
-            <span class="conversation-infos-item--title">Owner</span>
+            <span class="conversation-infos-item--title">{{ $t('array_labels.owner') }}</span>
           </div>
           <span class="conversation-infos-item--value" v-if="!!allUsers && allUsers.length> 0">{{ `${CapitalizeFirstLetter(allUsers[allUsers.findIndex(usr => usr._id === convo.owner)].firstname)} ${CapitalizeFirstLetter(allUsers[allUsers.findIndex(usr => usr._id === convo.owner)].lastname)}` }}</span>
         </div>
@@ -41,7 +40,7 @@
         <div class="conversation-infos-item">
           <div class="conversation-infos-item--label">
             <span class="conversation-infos-item--icon conversation-infos-item--icon__sharedwith"></span>
-            <span class="conversation-infos-item--title">Shared with</span>
+            <span class="conversation-infos-item--title">{{ $t('array_labels.sharedWith') }}</span>
           </div>
           <ul class="conversation-infos-item--list" v-if="!!allUsers && allUsers.length> 0">
             <li v-for="user in convo.sharedWith" :key="user.name">
@@ -53,7 +52,7 @@
         <div class="conversation-infos-item">
           <div class="conversation-infos-item--label">
             <span class="conversation-infos-item--icon conversation-infos-item--icon__documents"></span>
-            <span class="conversation-infos-item--title">Documents</span>
+            <span class="conversation-infos-item--title">{{ $t('array_labels.documents') }}</span>
           </div>
         </div>
       </div>
@@ -67,8 +66,8 @@
         <div v-else class="conversation-settings-item--title__edit flex col flex1">
             <textarea v-model="convo.name.edit" class="textarea flex1"></textarea>
             <div class="textarea--btns flex row">
-              <button class="btn btn--txt btn--txt__cancel" @click="cancelEditTitle()"><span class="label">Cancel</span></button>
-              <button class="btn btn--txt btn--txt__save" @click="update('name')"><span class="label">Save</span></button>
+              <button class="btn btn--txt btn--txt__cancel" @click="cancelEditTitle()"><span class="label">{{ $t('buttons.cancel') }}</span></button>
+              <button class="btn btn--txt btn--txt__save" @click="update('name')"><span class="label">{{ $t('buttons.save') }}</span></button>
             </div>
         </div>
         <button class="btn--icon" :class="titleEdit ? 'active': ''" @click="editTitle()">
@@ -83,8 +82,8 @@
         <div v-else class="conversation-settings-item--title__edit flex col flex1">
             <textarea v-model="convo.description.edit" class="textarea flex1"></textarea>
             <div class="textarea--btns flex row">
-              <button class="btn btn--txt btn--txt__cancel" @click="cancelEditDescription()"><span class="label">Cancel</span></button>
-              <button class="btn btn--txt btn--txt__save" @click="update('description')"><span class="label">Save</span></button>
+              <button class="btn btn--txt btn--txt__cancel" @click="cancelEditDescription()"><span class="label">{{ $t('buttons.cancel') }}</span></button>
+              <button class="btn btn--txt btn--txt__save" @click="update('description')"><span class="label">{{ $t('buttons.save') }}</span></button>
             </div>
         </div>
         <button class="btn--icon" :class="descriptionEdit ? 'active': ''" @click="editDescription()">
@@ -96,7 +95,7 @@
       <div class="conversation-settings-item">
         <div class="conversation-settings-item--label">
           <span class="conversation-settings-item--icon agenda"></span>
-          <span class="conversation-settings-item--title">Agenda</span>
+          <span class="conversation-settings-item--title">{{ $t('array_labels.agenda') }}</span>
           <button class="conversation-settings-item--toggle-btn" @click="toggleContent($event, 'agenda-content')"></button>
           <button class="btn--icon" :class="agendaEdit ? 'active': ''" @click="editAgenda()">
             <span class="icon icon--edit"></span>
@@ -106,8 +105,8 @@
           <div v-else class="flex col flex1">
             <textarea v-model="convo.agenda.edit" class="textarea flex1"></textarea>
             <div class="textarea--btns flex row">
-              <button class="btn btn--txt btn--txt__cancel" @click="cancelEditAgenda()"><span class="label">Cancel</span></button>
-              <button class="btn btn--txt btn--txt__save" @click="update('agenda')"><span class="label">Save</span></button>
+              <button class="btn btn--txt btn--txt__cancel" @click="cancelEditAgenda()"><span class="label">{{ $t('buttons.cancel') }}</span></button>
+              <button class="btn btn--txt btn--txt__save" @click="update('agenda')"><span class="label">{{ $t('buttons.save') }}</span></button>
             </div>
           </div>
       </div>
@@ -115,7 +114,7 @@
       <div class="conversation-settings-item">
         <div class="conversation-settings-item--label">
           <span class="conversation-settings-item--icon abstract"></span>
-          <span class="conversation-settings-item--title">Abstract</span>
+          <span class="conversation-settings-item--title">{{ $t('array_labels.abstract') }}</span>
           <button class="conversation-settings-item--toggle-btn" @click="toggleContent($event, 'abstract-content')"></button>
           <button class="btn--icon" :class="abstractEdit ? 'active': ''" @click="editAbstract()">
             <span class="icon icon--edit"></span>
@@ -125,8 +124,8 @@
         <div v-else class="flex col flex1">
           <textarea v-model="convo.abstract.edit" class="textarea flex1"></textarea>
           <div class="textarea--btns flex row">
-            <button class="btn btn--txt btn--txt__cancel" @click="cancelEditAbstract()"><span class="label">Cancel</span></button>
-            <button class="btn btn--txt btn--txt__save" @click="update('abstract')"><span class="label">Save</span></button>
+            <button class="btn btn--txt btn--txt__cancel" @click="cancelEditAbstract()"><span class="label">{{ $t('buttons.cancel') }}</span></button>
+            <button class="btn btn--txt btn--txt__save" @click="update('abstract')"><span class="label">{{ $t('buttons.save') }}</span></button>
           </div>
         </div>
       </div>
@@ -136,11 +135,11 @@
         <div class="conversation-settings-item flex1">
           <div class="conversation-settings-item--label">
             <span class="conversation-settings-item--icon speakers"></span>
-            <span class="conversation-settings-item--title">Speakers</span>
+            <span class="conversation-settings-item--title">{{ $t('array_labels.speakers') }}</span>
             <button class="conversation-settings-item--toggle-btn" @click="toggleContent($event, 'speakers-content')"></button>
           </div>
           <div class="conversation-settings-item--content" id="speakers-content">
-            <table class="table-speakers">
+            <table class="table table-speakers">
               <tbody v-if="convo.speakers.length > 0">
                 <tr v-for="speaker in convo.speakers" :key="speaker.speaker_id">
                   <td>{{ speaker.speaker_name }}</td>
@@ -179,7 +178,7 @@
               </tbody>
             </table>
             <button class="btn btn--txt-icon green" @click="addSpeaker()">
-              <span class="label">New speaker</span>
+              <span class="label">{{ $t('buttons.new_speaker') }}</span>
               <span class="icon icon__plus"></span>
             </button>
           </div>
@@ -188,7 +187,7 @@
         <div class="conversation-settings-item flex1">
           <div class="conversation-settings-item--label">
             <span class="conversation-settings-item--icon keywords"></span>
-            <span class="conversation-settings-item--title">Keywords</span>
+            <span class="conversation-settings-item--title">{{ $t('array_labels.keywords') }}</span>
             <button class="conversation-settings-item--toggle-btn" @click="toggleContent($event, 'keywords-content')"></button>
             <button class="btn--icon" :class="keywordsEdit ? ' active' :''" @click="editKeywords()">
                <span class="icon icon--edit"></span>
@@ -200,15 +199,15 @@
           <div v-else class="flex col flex1">
             <textarea v-model="convo.keywords.edit" class="textarea flex1"></textarea>
             <div class="textarea--btns flex row">
-              <button class="btn btn--txt btn--txt__cancel" @click="cancelEditKeywords()"><span class="label">Cancel</span></button>
-              <button class="btn btn--txt btn--txt__save" @click="update('keywords')"><span class="label">Save</span></button>
+              <button class="btn btn--txt btn--txt__cancel" @click="cancelEditKeywords()"><span class="label">{{ $t('buttons.cancel') }}</span></button>
+              <button class="btn btn--txt btn--txt__save" @click="update('keywords')"><span class="label">{{ $t('buttons.save') }}</span></button>
             </div>
           </div>
         </div>
       </div>
       <div class="flex row">
         <a :href="`/interface/conversation/${convoId}/transcription`" class="btn btn--txt-icon blue"> 
-          <span class="label">Transcription</span>
+          <span class="label">{{ $t('buttons.transcription')}}</span>
           <span class="icon icon__transcription"></span>
         </a>
       </div>

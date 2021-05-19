@@ -1,0 +1,56 @@
+{
+    "message": {
+        "hello": "Bonjour Monde"
+    },
+    "nav": {
+        "conversations_overview": "Mes conversations"
+    },
+    "page": {
+        "conversations": {
+            "h1": "Mes conversations"
+        },
+        "conversation_manage": {
+            "h2": "Informations"
+        },
+        "conversation_transcription": {
+            "h2": "Options d'affichage",
+            "edition_mode": "Mode édition"
+        }
+    },
+    "filters": {
+        "filters": "Filtres",
+        "all": "Voir tout",
+        "owned_by_me": "Mes conversations",
+        "shared_with_me": "Partagée(s) avec moi"
+    },
+    "array_labels": {
+        "abstract": "Résumé",
+        "agenda": "Agenda",
+        "audio": "Durée",
+        "created": "Date",
+        "date": "Date",
+        "documents": "Documents",
+        "description": "Description",
+        "duration": "Durée",
+        "highlights": "Étiquettes",
+        "keywords": "Mots-clés",
+        "last_update": "Dernière modification",
+        "loked": "Statut",
+        "name": "Titre",
+        "none": "Aucun",
+        "owner": "Créateur",
+        "sharedWith": "Partagé avec",
+        "speakers": "Locuteurs",
+        "status": "Statut"
+    },
+    "buttons": {
+        "apply": "Valider",
+        "cancel": "Annuler",
+        "conversation_landing": "Conversation landing",
+        "export": "Exporter",
+        "new_conversation": "Nouvelle conversation",
+        "new_speaker": "Nouveau locuteur",
+        "save": "Enregistrer",
+        "transcription": "Transcription"
+    }
+}

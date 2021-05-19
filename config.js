@@ -23,6 +23,7 @@ function configureDefaults() {
         // Env variable
         process.env.COMPONENTS = ifHas(process.env.COMPONENTS, envdefault.COMPONENTS)
         process.env.WEBSERVER_HTTP_PORT = ifHas(process.env.WEBSERVER_HTTP_PORT, envdefault.WEBSERVER_HTTP_PORT)
+        process.env.SESSION_SECRET = ifHas(process.env.SESSION_SECRET, envdefault.SESSION_SECRET)
         process.env.DB_DRIVER = ifHas(process.env.DB_DRIVER, envdefault.DB_DRIVER)
         process.env.DB_HOST = ifHas(process.env.DB_HOST, envdefault.DB_HOST)
         process.env.DB_USER = ifHas(process.env.DB_USER, envdefault.DB_USER)
@@ -31,7 +32,6 @@ function configureDefaults() {
         process.env.DB_NAME = ifHas(process.env.DB_NAME, envdefault.DB_NAME)
         process.env.DB_REQUIRE_LOGIN = ifHas(process.env.DB_REQUIRE_LOGIN, envdefault.DB_REQUIRE_LOGIN)
         process.env.COMPONENTS = ifHasNotThrow(process.env.COMPONENTS, Error("No COMPONENTS envvar specified"))
-        process.env.JWT_SECRET = ifHas(process.env.JWT_SECRET, envdefault.JWT_SECRET)
 
         process.env.CORS_ENABLED = ifHas(process.env.CORS_ENABLED, envdefault.CORS_ENABLED)
         process.env.CORS_API_WHITELIST = ifHas(process.env.CORS_API_WHITELIST, envdefault.CORS_API_WHITELIST)

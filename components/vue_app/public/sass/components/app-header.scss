@@ -6,6 +6,40 @@
     padding: 20px 40px;
 }
 
+.header-lang-btn-container {
+    margin: 0 20px;
+    align-items: center;
+    span {
+        display: inline-block;
+        font-size: 14px;
+        color: #333;
+        vertical-align: top;
+        padding: 0 3px;
+    }
+    .header-lang-btn {
+        display: inline-block;
+        width: 23px;
+        height: 15px;
+        background-repeat: no-repeat;
+        background-size: 23px 15px;
+        vertical-align: top;
+        &.fr {
+            &.active,
+            &:hover {
+                background-image: url('../img/flags/fr.svg');
+            }
+            background-image: url('../img/flags/fr-30.svg');
+        }
+        &.en {
+            &.active,
+            &:hover {
+                background-image: url('../img/flags/en.svg');
+            }
+            background-image: url('../img/flags/en-30.svg');
+        }
+    }
+}
+
 
 /* User Menu */
 
@@ -55,7 +89,10 @@
             }
         }
         &.opened {
-            @include borderRadiusMulti(20px, 20px, 0, 0);
+            @include borderRadiusMulti(20px,
+            20px,
+            0,
+            0);
         }
     }
     .user-menu-links {
@@ -68,7 +105,10 @@
             left: 0;
             background-color: #fff;
             padding: 10px 0;
-            @include borderRadiusMulti(0, 0, 20px, 20px);
+            @include borderRadiusMulti(0,
+            0,
+            20px,
+            20px);
         }
         &.closed {
             display: none;

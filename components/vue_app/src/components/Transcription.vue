@@ -12,7 +12,6 @@
         class="table-speaker--turn"
         :id="`turn-${turn.pos}`"
       >
-      
         <td><span class="transcription--turn">{{ turn.pos }}</span></td>
         <td class="transcription--speaker-td">
           <div class="table-speaker--edit">
@@ -67,7 +66,7 @@ export default {
     }
   },
   mounted () {
-    bus.$on('close_selected_toolbox', () => {
+    bus.$on('clear_text_selection', () => {
       this.cancelTextSelection()
     })
     bus.$on('update_speaker', async (data) => {
@@ -91,10 +90,10 @@ export default {
       // on playing : smooth scroll to current turn 
       const transcription = document.getElementById('transcription')
       this.scrollToCurrentTurn(data)
-    },
-    
+    }
   },
   methods: {
+    /*** Show/Hide Highligts & Keywords ***/
     setHighlights (data) {
       this.highlightsActive = []
       const allWords = document.getElementsByClassName('transcription--word')
@@ -129,28 +128,8 @@ export default {
         }
       }
     },
-    scrollToCurrentTurn (pos) {
-        const targetTurn = document.getElementById(`turn-${pos}`)
-          transcription.scrollTo({top: targetTurn.offsetTop - 200, behavior: 'smooth' })
-      },
-     editSpeaker (event, speaker, turnId) {
-      if (!this.speakerEdit) {
-        const btn = event.target
-        const bounce = btn.getBoundingClientRect()
-        const EditSpeakerTranscriptionFrame = document.getElementById('edit-speaker-frame')
-        EditSpeakerTranscriptionFrame.setAttribute('style',`top: ${bounce.y}px; left: ${bounce.x - 60}px`)
-        const target = event.target
-        target.classList.add('active')
-        bus.$emit(`edit_speaker_transcription`, {
-          speaker, 
-          speakers: this.convoSpeakers, 
-          conversationId: this.convoId, 
-          turnId
-        })
-        this.speakerEdit = true
-      }
-    },
-    /* TEXT SELECTION */
+    
+    /*** Text Selection ***/
     initTextSelection () {
       if (window.Event) {
         document.captureEvents(Event.MOUSEMOVE)
@@ -173,8 +152,6 @@ export default {
             const startWordId = startWord.getAttribute('data-word-id')
             const startWordPosition = startWord.getAttribute('data-pos')
             const startTurnId = startWord.getAttribute('data-turn-id')
-
-    
             const startTurn = document.querySelectorAll(`.transcription-speaker-sentence[data-turn-id="${startTurnId}"]`)[0]
             const startTurnPosition = startTurn.getAttribute('data-pos')
             const startTurnSpeakerId = startTurn.getAttribute('data-speaker')
@@ -203,10 +180,8 @@ export default {
               endTurnId,
               endTurnPosition,
               endTurnSpeakerId
-              
             }
             this.selectionObj.words = startTurnId === endTurnId ? this.$store.getters.wordsToTextBetweenWordIds(this.convoId, this.selectionObj) : []
-
             if(!startTurn.classList.contains('transcription-speaker-sentence') || !endTurn.classList.contains('transcription-speaker-sentence')) {
               return false 
             } else {
@@ -238,7 +213,6 @@ export default {
             keywords: true,
             split: true
           }
-          
           // Check if selected words got highlights
           let highlights = []
           if(!!selectionObj.words && selectionObj.words.words !== []) {
@@ -257,7 +231,6 @@ export default {
             this.toolBoxOption.unhighlight = true
             this.toolBoxOption.wordsHighlights = highlights
           }
-
           // Set text-selected class
           for(let parent of allParents) {
             const turnId = parent.getAttribute('data-turn-id')
@@ -312,7 +285,6 @@ export default {
       }, 100)
     },
     cancelTextSelection () {
-      this.showSelectToolbox = false
       this.closeToolBox()
       this.selectedText = []
       let selected = document.getElementsByClassName('text-selected')
@@ -322,6 +294,28 @@ export default {
         })
       }
     },
+    /*** Edit Speake Fram ***/
+    editSpeaker (event, speaker, turnId) {
+      if (!this.speakerEdit) {
+        const btn = event.target
+        const bounce = btn.getBoundingClientRect()
+        const EditSpeakerTranscriptionFrame = document.getElementById('edit-speaker-frame')
+        EditSpeakerTranscriptionFrame.setAttribute('style',`top: ${bounce.y - 100}px; left: ${bounce.x - 60}px`)
+        const target = event.target
+        target.classList.add('active')
+        bus.$emit(`edit_speaker_transcription`, {
+          speaker, 
+          conversationId: this.convoId, 
+          turnId
+        })
+        this.speakerEdit = true
+      }
+    },
+    scrollToCurrentTurn (pos) {
+      const targetTurn = document.getElementById(`turn-${pos}`)
+      transcription.scrollTo({top: targetTurn.offsetTop - 200, behavior: 'smooth' })
+    },
+    /*** ToolBox ***/
     showToolBox (selectionObj) {
       const bounce = selectionObj.endWord.getBoundingClientRect()
       const offsetX = bounce.x
@@ -333,7 +327,6 @@ export default {
         offsetY,
         convoId: this.convoId,
         toolBoxOption: this.toolBoxOption
-
       })
       // cancel "onmouseup" event bind
       const transcription = document.getElementById('transcription')
@@ -356,9 +349,10 @@ export default {
       this.cursorX = (window.Event) ? e.pageX : event.clientX + (document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft);
       this.cursorY = (window.Event) ? e.pageY : event.clientY + (document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop);
     },
-    /* Audio player */
+    /*** Audio player ***/
     playFromWord (stime) {
       if(!this.editionMode) {
+        this.closeToolBox()
         if(stime !== '' && this.clickTime <= 150){
           bus.$emit('audio_player_playfrom', {time: stime})
         }

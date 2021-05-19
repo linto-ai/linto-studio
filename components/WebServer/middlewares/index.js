@@ -16,13 +16,11 @@ async function isConnected(req, res, next) {
     try {
         if (!!req.session) {
             if (!!req.session.logged && !!req.session.token) {
-
                 // Already logged  
                 if (req.session.logged === 1) {
                     if (req.url === '/login') {
                         res.redirect('/interface/conversations')
                     } else {
-
                         next()
                     }
                 } else {

@@ -52,7 +52,7 @@ class WebServer extends Component {
         let sessionConfig = {
             resave: false,
             saveUninitialized: false,
-            secret: 'mysercret',
+            secret: process.env.SESSION_SECRET,
             cookie: {
                 maxAge: 30240000000 // 1 year
             }
@@ -62,8 +62,8 @@ class WebServer extends Component {
 
         // Public path
         this.express.use('/assets', express.static(`${process.cwd()}/dist`))
-        this.express.use('/' + process.env.VOLUME_AUDIO_UPLOAD_PATH, express.static(`${process.cwd()}/uploads/audios`))
-        this.express.use('/' + process.env.VOLUME_PROFILE_PICTURE_UPLOAD_PATH, express.static(`${process.cwd()}/uploads/pictures`))
+        this.express.use('/audios', express.static(`${process.env.VOLUME_AUDIO_UPLOAD_PATH}`))
+        this.express.use('/pictures', express.static(`${process.env.VOLUME_PROFILE_PICTURE_UPLOAD_PATH}`))
 
         // Cross domain whitelist
         if (process.env.CORS_ENABLED === 'true') this.express.use(CORS(corsOptions))
