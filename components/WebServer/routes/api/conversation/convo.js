@@ -42,6 +42,12 @@ const { // Create conversation based on file
     audioUpload
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/file.js`)
 
+const { // update conversation metadata
+    updateTitle, 
+    updateDescription, 
+    updateAgenda, 
+    updateConvoType
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/convo.js`)
 
 module.exports = (webserver) => {
     return [{
@@ -182,6 +188,38 @@ module.exports = (webserver) => {
             requireAuth: true,
             requireWriteAccess: true,
             controller: updatehighlightwords
+        },
+        {
+            // updates conversation metatdata
+            path: '/:conversationid/title',
+            method: 'put',
+            requireAuth: true,
+            requireWriteAccess: true,
+            controller: updateTitle
+        },
+        {
+            // updates conversation metatdata
+            path: '/:conversationid/description',
+            method: 'put',
+            requireAuth: true,
+            requireWriteAccess: true,
+            controller: updateDescription
+        },
+        {
+            // updates conversation metatdata
+            path: '/:conversationid/agenda',
+            method: 'put',
+            requireAuth: true,
+            requireWriteAccess: true,
+            controller: updateAgenda
+        },
+        {
+            // updates conversation metatdata
+            path: '/:conversationid/convotype',
+            method: 'put',
+            requireAuth: true,
+            requireWriteAccess: true,
+            controller: updateConvoType
         }
     ]
 }

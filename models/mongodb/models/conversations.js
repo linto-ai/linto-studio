@@ -41,7 +41,7 @@ class ConvoModel extends MongoModel {
         }
     }
 
-    //update conversation
+    //update conversation 
 
     //get a conversation by id
 
@@ -73,6 +73,30 @@ class ConvoModel extends MongoModel {
         }
     }
 
+    //update conversation metadata -- title, description, metadata
+    async updateMetadata(payload) {
+        try {
+            const operator = "$set"
+            const query = {
+                _id: this.getObjectId(payload.convoid),
+            }
+            let mutableElements = {}
+            if (!!payload.title) {
+               mutableElements["name"] = payload.title
+            } else if(!!payload.agenda){
+                mutableElements["agenda"] = payload.agenda
+            } else if (!!payload.description) {
+                mutableElements["description"] = payload.description
+            } else {
+                mutableElements["conversationType"] = payload.convoType
+            }
+
+            return await this.mongoUpdateOne(query, operator, mutableElements)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
 
     // get all speakers in a conversation
     async getConvoOwner(idConvo) {

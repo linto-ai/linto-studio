@@ -33,6 +33,143 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/customError'
+## CONVERSATION METADATA
+  /api/conversations/{conversationid}/title:
+    put:
+      tags: 
+        - "metadata"
+      summary: updates conversation title
+      parameters:
+        - in: path
+          name: conversationid
+          type: string 
+          format: uuid 
+          required: true 
+          description: uuid string identifier for a conversation
+      requestBody:
+        required: true
+        description: takes an object with fields for title
+        content:
+          application/json:
+            schema:
+              properties:
+                title:
+                  type: string
+      responses:
+        '200':
+          description: request success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customSuccess'
+        '400':
+          description: bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customError'
+  /api/conversations/{conversationid}/description:
+    put:
+      tags: 
+        - "metadata"
+      summary: updates conversation description 
+      parameters:
+        - in: path
+          name: conversationid
+          type: string 
+          format: uuid 
+          required: true 
+          description: uuid string identifier for a conversation
+      requestBody:
+        required: true
+        description: takes an object with fields for title
+        content:
+          application/json:
+            schema:
+              properties:
+                description:
+                  type: string
+      responses:
+        '200':
+          description: request success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customSuccess'
+        '400':
+          description: bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customError'
+  api/conversations/{conversationid}/agenda:
+    put:
+      tags: 
+        - "metadata"
+      summary: updates conversation agenda
+      parameters:
+        - in: path
+          name: conversationid
+          type: string 
+          format: uuid 
+          required: true 
+          description: uuid string identifier for a conversation
+      requestBody:
+        required: true
+        description: takes an object with fields for title
+        content:
+          application/json:
+            schema:
+              properties:
+                agenda:
+                  type: string
+      responses:
+        '200':
+          description: request success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customSuccess'
+        '400':
+          description: bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customError'
+  api/conversations/{conversationid}/convotype:
+    put:
+      tags: 
+        - "metadata"
+      summary: updates conversation type
+      parameters:
+        - in: path
+          name: conversationid
+          type: string 
+          format: uuid 
+          required: true 
+          description: uuid string identifier for a conversation
+      requestBody:
+        required: true
+        description: takes an object with fields for title
+        content:
+          application/json:
+            schema:
+              properties:
+                convoType:
+                  type: string
+      responses:
+        '200':
+          description: request success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customSuccess'
+        '400':
+          description: bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customError'
 ## CONVERSATION / SPEAKER
   /api/conversation/{conversationid}/speakers:
     get:
@@ -530,7 +667,7 @@ paths:
   /api/conversation/{conversationid}/highlight:
     post: 
       tags:
-        - "annotations"
+        - "highlights"
       summary: Creates a new highlight type for a  set of wordids
       parameters: 
         - in: path
@@ -572,7 +709,7 @@ paths:
   /api/conversation/{conversationid}/highlight/{hid}:
     delete:
       tags:
-        - "annotations"
+        - "highlights"
       summary: Deletes highlight type
       parameters: 
         - in: path
@@ -602,7 +739,7 @@ paths:
                 $ref: '#/components/schemas/customError'
     put:
       tags:
-        - "annotations"
+        - "highlights"
       summary: updates highlight type by adding or removing hid from wids
       parameters: 
         - in: path
@@ -649,7 +786,7 @@ paths:
                 $ref: '#/components/schemas/customError'
     patch:
       tags:
-        - "annotations"
+        - "highlights"
       summary: updates highlight lable and/or color
       parameters: 
         - in: path
@@ -690,10 +827,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/customError'
 tags:
+  - name: conversations
+    description: "-"
+  - name: metadata
+    description: operations on conversation metadata
   - name: speakers
-    description: operations primarily manipulating speaker data
+    description: operations on speaker data
   - name: turns 
-    description: operations primarily manipulating turn data
+    description: operations on turn data
+  - name: textedit
+    description: operations for text editing
+  - name: highlights
+    description: operations on conversation highlights
+  
 
 components: 
   schemas:
