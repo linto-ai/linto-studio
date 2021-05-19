@@ -23,7 +23,7 @@
             >
             <label 
               class="edit-frame-option--radio-label"  for="edit-speaker-turn"
-            >For this turn</label>
+            >This turn only</label>
           </div>
           <div class="flex row edit-frame-options--item">
             <input 
@@ -36,7 +36,7 @@
             >
             <label 
             class="edit-frame-option--radio-label" 
-            for="edit-speaker-transcription">For all transcription</label>
+            for="edit-speaker-transcription">Everywhere</label>
           </div>
         </div>
         <div class="flex col">
@@ -89,11 +89,8 @@ export default {
         this.convoId = data.conversationId
         this.speaker = data.speaker
         this.turnId = data.turnId
-
-        console.log('data', data)
         await this.dispatchStore('getConversations')
     })
-    
   },
   computed: {
     dataLoaded () {
