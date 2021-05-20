@@ -1,6 +1,7 @@
 #audio-player {
     background-color: $greenChart;
     padding: 20px;
+    z-index: 10;
     .control {
         align-items: center;
     }

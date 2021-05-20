@@ -75,7 +75,6 @@
         </button>
       </div>
 
-
       <!-- Description -->
       <div class="conversation-settings-item flex row">
         <span v-if="!descriptionEdit" class="conversation-settings-item--description">{{ convo.description.base }}</span>
@@ -167,7 +166,7 @@
                   </td> 
                   <td>
                     <button 
-                    class="btn--icon btn--icon__no-bg editspeaker" 
+                    class="btn--icon btn--icon__no-bg" 
                     @click="deleteSpeaker(speaker.speaker_id)" 
                     v-if="convo.speakers.length > 1"
                   >
@@ -248,9 +247,9 @@ export default {
     this.audioPlayer = new Audio()
 
     bus.$on('update_speaker', async (data) => {
-      this.updateSpeaker(data)
-      this.speakerEdit = false
       await this.dispatchConversations()
+      this.speakerEdit = false
+      bus.$emit('close_edit_speaker_frame', {})
     })
 
   },
@@ -363,19 +362,6 @@ export default {
       this.keywordsEdit = false
       this.convo.keywords.edit = this.convo.keywords.base
     },
-    editSpeaker (event, speaker) {
-      const btn = event.target
-      const bounce = btn.getBoundingClientRect()
-      const editSpeakerFrame = document.getElementById('edit-speaker-frame')
-      editSpeakerFrame.setAttribute('style',`top: ${bounce.y}px; left: ${bounce.x - 60}px`)
-      
-      if (!this.speakerEdit) {
-        const target = event.target
-        target.classList.add('active')
-        bus.$emit(`edit_speaker`, {speaker, speakers: this.convo.speakers, conversationId: this.convoId})
-        this.speakerEdit = true
-      }
-    },
     update (key) {
       this.conversation[key].base = this.conversation[key].edit
       if (key === 'name') {
@@ -400,15 +386,6 @@ export default {
         // REQUEST UPDATE keywords
       }
     },
-    async updateSpeaker (payload) {
-      const targetBtn = document.getElementsByClassName('editspeaker')
-      for(let btn of targetBtn) {
-        if(btn.classList.contains('active')) {
-          btn.classList.remove('active')
-        }
-      }
-      await this.dispatchConversations()
-    },
     playSample (event, start, end) {
       const target = event.target
       const audio = this.convo.audio
@@ -422,6 +399,23 @@ export default {
         this.audioPlayer.pause()
         target.classList.remove('active')
       }, time * 1000)
+    },
+
+    /*** EDIT SPEAKERS ***/
+    editSpeaker (event, speaker) {
+      
+      const btn = event.target
+      const bounce = btn.getBoundingClientRect()
+      const editSpeakerFrame = document.getElementById('edit-speaker-frame')
+      editSpeakerFrame.setAttribute('style',`top: ${bounce.y}px; left: ${bounce.x - 60}px`)
+      if (!this.speakerEdit) {
+        bus.$emit('edit_speaker_frame', {
+          speaker, 
+          speakers: this.convo.speakers, 
+          conversationId: this.convoId
+        })
+        this.speakerEdit = true
+      }
     },
     defineNewSpeakerName (spkCount) {
         let newSpeakerName = `spk${parseInt(spkCount) + 1}`

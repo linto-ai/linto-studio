@@ -1,5 +1,5 @@
 <template>
-  <div id="transcription">
+  <div id="transcription" :class="editionMode ? 'editing' : ''">
     <table class="table table--transcription">
       <tr 
         v-for="turn in convoText" 
@@ -7,8 +7,7 @@
         :data-stime="turn.words.length > 0 ? turn.words[0].stime : '-1' "  
         :data-etime="turn.words.length > 0 ? turn.words[turn.words.length - 1].etime : '-1'"
         :data-turn="turn.pos"
-        
-        :class="!editionMode && currentTurn === turn.pos ? 'active active--speaker' : ''"
+        :class="[!editionMode && currentTurn === turn.pos ? 'active active--speaker' : '', editionMode ? 'editing':'']"
         class="table-speaker--turn"
         :id="`turn-${turn.pos}`"
       >
@@ -294,7 +293,7 @@ export default {
         })
       }
     },
-    /*** Edit Speake Fram ***/
+    /*** Edit Speaker Frame ***/
     editSpeaker (event, speaker, turnId) {
       if (!this.speakerEdit) {
         const btn = event.target

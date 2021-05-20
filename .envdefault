@@ -1,5 +1,5 @@
 # Dev env
-DISABLE_AUTH=false
+DEV_DISABLE_AUTH=false
 
 # Components loading in this order
 COMPONENTS=WebServer

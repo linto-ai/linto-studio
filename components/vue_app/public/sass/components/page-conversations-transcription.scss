@@ -1,33 +1,42 @@
+#transcription-wrapper {
+    overflow: hidden;
+}
+
 .transcritpion-container {
     padding: 40px;
 }
 
 #transcription {
-    background-color: #fff;
-    border: 1px solid #ccc;
+    border: 2px solid rgba(255, 255, 255, 0);
+    background-color: rgba(255, 255, 255, 0);
     padding: 0;
-    max-height: 700px;
-    min-height: 300px;
     overflow: auto;
     scroll-behavior: smooth;
+    @include borderRadius(5px);
+    &.editing {
+        border-color: $greenChart;
+        background-color: #fff;
+    }
 }
 
 .table--transcription {
     margin: 0;
     tr {
-        border-bottom: 1px solid #ececec;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         &.active {
-            background-color: $greenLight;
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+        &.editing {
+            border-color: #e2e2e2;
         }
     }
     td {
         vertical-align: top;
-        padding: 20px 10px;
+        padding: 20px;
         .transcription--turn {
             font-size: 14px;
             line-height: 20px;
             color: $greyLight;
-            padding: 0 10px 0 20px;
         }
         .transcription--turn,
         .transcription--speaker {
@@ -40,19 +49,16 @@
                 background-color: $blueLight;
             }
         }
+        &.editing {
+            cursor: text !important;
+            background-color: $greenLight;
+            &:focus {
+                background-color: $blueXLight;
+                outline: 1px solid $blueLight;
+            }
+        }
         &.transcription--speaker-td {
             text-align: right;
-        }
-        &.editing {
-            background-color: $greenLight;
-            border: 1px solid $greenChart;
-            &:hover {
-                background-color: #fff;
-                cursor: text;
-            }
-            &:focus {
-                background-color: #fff;
-            }
         }
     }
 }
@@ -271,9 +277,8 @@ input[type="color"]::-webkit-color-swatch {
 
 .transcription-filters {
     padding: 10px 0;
-    background-color: rgba(199, 214, 255, 0.3);
     align-items: center;
-    @include boxShadow(0, 2px, 4px, 0, rgba(0, 0, 0, 0.3));
+    margin-bottom: 20px;
     &>div {
         margin: 0 10px 0 0;
         padding-right: 40px;

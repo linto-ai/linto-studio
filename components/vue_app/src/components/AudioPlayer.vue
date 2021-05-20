@@ -1,5 +1,5 @@
 <template>
-  <div id="audio-player" class="flex row" :class="audioIsPlaying ? 'isPlaying' : ''">
+  <div id="audio-player" class="flex1 flex row" :class="audioIsPlaying ? 'isPlaying' : ''">
     <div class="flex col control">
       <button 
         @click="playPrevSpeaker()"
