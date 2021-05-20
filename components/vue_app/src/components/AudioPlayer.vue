@@ -1,26 +1,39 @@
 <template>
   <div id="audio-player" class="flex1 flex row" :class="audioIsPlaying ? 'isPlaying' : ''">
     <div class="flex col control">
-      <button 
-        @click="playPrevSpeaker()"
-        class="audio-player--control audio-player--btn__prevspeaker"
-      ></button>
+      <button @click="playPrevSpeaker()" class="audio-player--control" >
+        <span class="icon prevspeaker"></span>
+      </button>
       <span class="audio-player--control__label">Prev. speaker</span>
     </div>
-    
-    <button 
-      @click="audioIsPlaying ? pause() : play()"
-      :class="audioIsPlaying ? 'audio-player--btn__pause' : 'audio-player--btn__play'"
-      class="audio-player--control"
-    ></button> 
     <div class="flex col control">
-      <button 
-        @click="playNextSpeaker()"
-        class="audio-player--control audio-player--btn__nextspeaker"
-      ></button>
+      <button @click="audioIsPlaying ? pause() : play()" class="audio-player--control">
+        <span class="icon" :class="audioIsPlaying ? 'pause' : 'play'"></span>
+      </button>
+    </div>
+    <div class="flex col control">
+      <button @click="playNextSpeaker()" class="audio-player--control">
+        <span class="icon nextspeaker"></span>
+      </button>
       <span class="audio-player--control__label">Next speaker</span>
     </div>
-
+    <div class="flex col control">
+     <button class="audio-player--control" @click="toggleAudioSpeedOptions()">
+        <span class="icon speed"></span>
+        <span class="icon speed-label">x{{ audioSpeed }}</span>
+      </button>
+      <span class="audio-player--control__label">Speed</span>
+      <div class="audio-player-speed-options flex col" :class="showAudioSpeed ? 'visible' : 'hidden'">
+        <button 
+          v-for="(range, i) in audioSpeedRange" 
+          :key="i" 
+          :class="range === audioSpeed ? 'active' : ''"
+          class="audio-player-speed-item"
+          @click="setAudioSpeed(range)"
+        >{{ range }}</button>
+      </div>
+    </div>
+    
     <div class="audio-player--timeline flex1">
       <input 
         type="range" 
@@ -33,7 +46,6 @@
       <span class="audio-player--timeline__bg"></span>
     </div>
     <span class="audio-player--timeline__time"> {{ currentTimeHMS }} / {{ durationHMS }}</span>
-    
     <button class="keyboard-commands-btn" @click="showKeyboardCommands()"></button>
   </div>
 </template>
@@ -45,6 +57,9 @@ export default {
     return {
       currentTime: 0,
       prctTimelineSelected: 0,
+      showAudioSpeed: false,
+      audioSpeed: 1,
+      audioSpeedRange: [0.5, 0.75, 1, 1.25, 1.5, 2],
       audioIsPlaying: false,
       audioPlayer: null,
       playSegments: []
@@ -54,6 +69,7 @@ export default {
     this.initAudioPlayer()
   },
   computed : {
+    
     prctTimeline () {
       return this.currentTime * 100 / this.duration
     },
@@ -76,7 +92,6 @@ export default {
     convoText (data) {
       this.pause()
       if (this.convoIsFiltered) {
-
         this.playSegments = []
         if(data.length > 0) {
           data.map(turn => {
@@ -92,6 +107,9 @@ export default {
       if(this.playSegments.length > 0) {
         this.audioPlayer.currentTime = this.playSegments[0].stime
       }
+    },
+    audioSpeed (data) {
+      this.audioPlayer.playbackRate = data
     }
   },
   methods : {
@@ -101,7 +119,6 @@ export default {
       this.audioPlayer.ontimeupdate = () => {
         this.updateTime()
       }
-      
       this.audioPlayer.addEventListener('playing', () => {
         this.audioIsPlaying = true
       })
@@ -165,6 +182,13 @@ export default {
     },
     pause () {
       this.audioPlayer.pause()
+    },
+    toggleAudioSpeedOptions () {
+      this.showAudioSpeed = !this.showAudioSpeed
+    },
+    setAudioSpeed (speed) {
+      this.audioSpeed = speed
+      this.showAudioSpeed = false
     },
     timeToHMS (time) {
       return this.$options.filters.timeToHMS(time) 

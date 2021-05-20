@@ -11,11 +11,11 @@
         class="table-speaker--turn"
         :id="`turn-${turn.pos}`"
       >
-        <td><span class="transcription--turn">{{ turn.pos }}</span></td>
-        <td class="transcription--speaker-td">
+        <td class="transcription--turn"><span class="label">{{ turn.pos }}</span></td>
+        <td class="transcription--speaker">
           <div class="table-speaker--edit">
             <button class="btn--inline btn--inline-transcription-speaker" @click="editSpeaker($event, speakersArray[speakersArray.findIndex(sp => sp.speaker_id === turn.speaker_id)], turn.turn_id)">
-              <span class="label transcription--speaker">{{ speakersArray[speakersArray.findIndex(sp => sp.speaker_id === turn.speaker_id)].speaker_name }}</span>
+              <span class="label">{{ speakersArray[speakersArray.findIndex(sp => sp.speaker_id === turn.speaker_id)].speaker_name }}</span>
             </button>
           </div>
         </td>

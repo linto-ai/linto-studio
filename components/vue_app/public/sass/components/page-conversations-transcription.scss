@@ -33,15 +33,22 @@
     td {
         vertical-align: top;
         padding: 20px;
-        .transcription--turn {
-            font-size: 14px;
-            line-height: 20px;
-            color: $greyLight;
+        &.transcription--turn {
+            max-width: 80px;
+            .label {
+                font-size: 14px;
+                color: $greyLight;
+            }
         }
-        .transcription--turn,
-        .transcription--speaker {
-            line-height: 26px;
-            @include noTextSelection();
+        &.transcription--speaker {
+            text-align: right;
+        }
+        &.transcription--turn,
+        &.transcription--speaker {
+            .label {
+                line-height: 26px;
+                @include noTextSelection();
+            }
         }
         &.transcription-speaker-sentence {
             cursor: pointer;
@@ -56,9 +63,6 @@
                 background-color: $blueXLight;
                 outline: 1px solid $blueLight;
             }
-        }
-        &.transcription--speaker-td {
-            text-align: right;
         }
     }
 }
