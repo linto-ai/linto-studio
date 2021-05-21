@@ -1,22 +1,37 @@
 <template>
-  <div class="edit-frame flex col" :class="showFrame ? 'visible' : 'hidden'" id="edit-speaker-frame">
-    <div v-if="this.speaker !== null">
-      <h3 class="edit-frame--title">Editing speaker - {{ speaker.speaker_name }}</h3>
-      <div class="flex1 flex row speaker-search">
-        <input class="input input--search-edit flex1" type="text" placeholder="Type a name" v-model="speakerName">
-        <button class="btn--icon" @click="addSpeaker()">
-          <span class="icon icon--apply"></span>
-        </button>
-      </div>
-      <div v-if="speakers !== null && speakers.length > 0">
-        <div class="flex1" v-for="spk in speakers" :key="spk.speaker_id">
-          <button class="btn btn--edit-speaker" @click="updateSpeaker(spk.speaker_name)">{{ spk.speaker_name }}</button>
-        </div>
-        <div> 
-          <button class="btn btn--txt btn--txt__cancel" @click="closeFrame()">
-            <span class="label">Cancel</span>
+  <div class="edit-frame flex col" :class="showFrame && dataLoaded ? 'visible' : 'hidden'" id="edit-speaker-frame">
+    <div class="edit-frame--head flex row">
+      <span class="icon user"></span>
+      <span class="label flex1">Edit speaker</span>
+      <button class="btn--icon" @click="closeFrame()">
+        <span class="icon icon--close"></span>
+      </button>
+    </div>
+    <div class="edit-frame--body flex col">
+      <div class="form-field flex col">
+        <span class="form-label">Rename speaker :</span>
+        <div class="flex row">
+          <input 
+            type="text" 
+            v-model="speakerName.value"
+            class="flex1"
+            :class="speakerName.error !== null ? 'error' : ''"
+          >
+          <button class="btn--icon"
+          @click="renameSpeaker()">
+            <span class="icon icon--apply"></span>
           </button>
         </div>
+        <span class="error-field" v-if="speakerName.error !== null">{{ speakerName.error }}</span>
+      </div>
+      <div class="form-field flex col">
+        <span class="form-label">Replace speaker by :</span>
+        <ul class="speakers-list">
+          <li class="speakers-list-item" v-for="spk in convoSpeakers" :key="spk.speaker_id">
+            <button @click="replaceSpeaker(spk)">{{ spk.speaker_name }}
+            </button>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
@@ -27,85 +42,106 @@ export default {
   data () {
     return {
       showFrame: false,
-      speakerName: '',
-      convoId: '',
       convoLoaded: false,
+      convoId: '',
+      speakerName: {
+        value: '',
+        error: null,
+        valid: false
+      },
       speaker: null,
       speakers: null
     }
   },
   async mounted () {
-    bus.$on(`edit_speaker`, async (data) => {
+    bus.$on('edit_speaker_frame', async (data) => {
         this.showFrame = true
         this.convoId = data.conversationId
         this.speaker = data.speaker
-        this.speakerName = data.speaker.speaker_name
-        if (!!data.speakers && data.speakers.length > 0) {
-          this.speakers = data.speakers.filter(spk => spk.speaker_name !== this.speaker.speaker_name)
-        } else {
-          this.speakers = data.speakers
-        }
+        this.speakerName.value = data.speaker.speaker_name
+        await this.dispatchConversations()
     })
-  } ,
-  methods: {
-    
-    addSpeaker() {
-      const speaker = this.speakerName
-      if (speaker.length === 0) {
-        // TODO Errror
-      } else {
-        this.updateSpeaker(speaker)
+    bus.$on('close_edit_speaker_frame', () => {
+      if(this.showFrame) {
+        this.closeFrame()
       }
+    })
+  },
+  computed: {
+    dataLoaded () {
+      return this.convoLoaded
     },
-    async updateSpeaker (name) {
+    conversation () {
+      return this.$store.getters.conversationById(this.convoId)
+    },
+    convoSpeakers () {
+      if(!!this.conversation.speakers) {
+        return this.conversation.speakers.filter(spk => spk.speaker_id !== this.speaker.speaker_id)
+      } 
+      return []
+    }
+  },
+  methods: {
+    async renameSpeaker () {
       try {
-        // check if selected speaker is already in speakers list
-        const speakerExist = this.speakers.filter(sp => sp.speaker_name === name)
-        
-        // Replace a speaker by another one (in the list) > Merge
-        if(speakerExist.length > 0) { 
-          bus.$emit('modal_merge_speaker_by_target', {
-            speaker: this.speaker,
-            targetSpeaker: speakerExist[0]
-          })
-          this.showFrame = false
+        if (this.speakerName.value.length === 0) {
+          this.speakerName.error = 'This field is required'
+          this.speakerName.valid = false
+        } else {
+          let speakerExist = this.conversation.speakers.filter(spk => spk.speaker_name.toLowerCase() === this.speakerName.value.toLowerCase())
 
-        } 
-        // Replace speaker name by a speaker that has NO TURN in this transcription
-        else {
-          const payload =  {
-            newspeakername: name
+          if(speakerExist.length > 0) {
+            this.speakerName.error = 'This speaker name is already used'
+            this.speakerName.valid = false
           }
-          const req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/speakers/${this.speaker.speaker_id}`, 'patch',payload )
-
-          if(req.status === 200 && !!req.data.msg) {
-            bus.$emit('app_notif', {
-              status: 'success',
-              message: req.data.msg,
-              timeout: 3000
-            })
-
-            bus.$emit(`update_speaker`, {})
-            this.showFrame = false
-            this.speakerName = ''
-          } else {
-            throw req
+          else {
+            let payload =  {
+              newspeakername: this.speakerName.value
+            }
+            let req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/speakers/${this.speaker.speaker_id}`, 'patch', payload)
+            if(req.status === 200 && !!req.data.msg) {
+              bus.$emit('app_notif', {
+                status: 'success',
+                message: req.data.msg,
+                timeout: 3000
+              })
+              this.closeFrame()
+            } else {
+              throw req
+            }
           }
         }
       } catch (error) {
         if(process.env.VUE_APP_DEBUG === 'true') {
           console.error(error)
         }
-        bus.$emit('app_notif', {
-          status: 'error',
-          message: !!error.msg ? error.msg : 'Error on updating speaker',
-          timeout: null
+      }
+    },
+    async replaceSpeaker (targetSpeaker) {
+      try {
+         bus.$emit('modal_merge_speaker_by_target', {
+          speaker: this.speaker,
+          targetSpeaker
         })
+      } catch (error) {
+        if(process.env.VUE_APP_DEBUG === 'true') {
+          console.error(error)
+        }
       }
     },
     closeFrame () {
-      this.showFrame = false;
-      bus.$emit(`update_speaker`, {})
+      this.showFrame = false
+      bus.$emit('update_speaker', {})
+    },
+    async dispatchConversations () {
+      try {
+        const resp = await this.$options.filters.dispatchStore('getConversations')
+        if (resp.status === 'success') {
+          this.convoLoaded = true
+        }
+      } catch (error) {
+        console.error(error)
+      }
     }
   }
 }

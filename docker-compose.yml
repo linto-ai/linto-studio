@@ -23,5 +23,5 @@ services:
     image: mongo:latest
     env_file: .dockerenv
     volumes:
-      - ${VOLUME_DATABASE_FOLDER}/:/data/db
+      - ./${VOLUME_DATABASE_FOLDER}/:/data/db
       - ./mongo-seeds/init.js:/docker-entrypoint-initdb.d/init.js
