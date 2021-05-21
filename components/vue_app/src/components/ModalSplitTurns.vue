@@ -418,7 +418,6 @@ export default {
       }
     },
     async setContent () {
-      console.log('selection :', this.selectionObj)
       this.splitContentArray = []
       this.splitContentArray.before_split = null
       this.splitContentArray.split = null
