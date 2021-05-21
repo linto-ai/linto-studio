@@ -15,7 +15,6 @@ async function createTurn(req, res, next) {
                 pos: 0.5, //default to first position (taken care of in renumber turns)
                 words: []
             }
-            console.log(payload)
             let addTurn = await convoModel.createTurn(payload)
             if (addTurn === 'success') {
                 console.log("turn creation success")
@@ -72,9 +71,7 @@ async function identifyTurnSpeaker(req, res, next) { //WIP
                 turnid: req.params.turnid
             }
 
-            console.log(payload)
-                // Todo : Check if speaker exists first ? 
-
+            // Todo : Check if speaker exists first ? 
             let updateTurn = await convoModel.updateTurnSpeakerId(payload)
             if (updateTurn === 'success') {
                 // Response 

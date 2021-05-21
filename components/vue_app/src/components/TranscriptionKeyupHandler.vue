@@ -22,20 +22,17 @@ export default {
     initKeyupHandler() {
       document.addEventListener("keydown", function(event) {
         //console.log(event)
+        //console.log(window.keyupEnabled)
         // Space > play / pause
-        console.log(window.keyupEnabled)
         if(event.code === 'Space' || event.keyCode === 32) {
-          event.preventDefault()
           if(window.keyupEnabled) bus.$emit('audio_player_play_pause', {})
         }
         // Ctrl + arrow right > play next turn
         if(event.ctrlKey && event.key === "ArrowRight") {
-          event.preventDefault()
           if(window.keyupEnabled) bus.$emit('audio_player_next_turn', {})
         }
         // Ctrl + arrow left > play previous turn
         if(event.ctrlKey && event.key === "ArrowLeft") {
-          event.preventDefault()
           if(window.keyupEnabled) bus.$emit('audio_player_prev_turn', {})
         }
       })
