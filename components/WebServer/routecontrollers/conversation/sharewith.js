@@ -62,11 +62,11 @@ async function updateShareWith(req, res, next) { //pulls speaker map for a conve
     try {
         const convoid = req.params.conversationid
         const userid = req.params.userid
-        if (!!req.body.userrights) { // check payload information
+        if (!!req.body.rights) { // check payload information
             let payload = {
                 convoid,
                 userid,
-                userrights: req.body.userrights
+                rights: req.body.rights
             }
             let updateSW = await convoModel.updateShareWith(payload)
             if (updateSW === 'success') {

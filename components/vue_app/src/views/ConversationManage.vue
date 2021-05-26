@@ -51,11 +51,10 @@
             <tbody>
               <tr v-for="(user,i) in sharedWithEditers" :key="i"
               >
-                <td class="user-name">{{ `${CapitalizeFirstLetter(allUsers[allUsers.findIndex(usr => usr._id === user.user_id)].firstname)} ${CapitalizeFirstLetter(allUsers[allUsers.findIndex(usr => usr._id === user.user_id)].lastname)}` }}</td>
+                <td class="user-name">{{ `${CapitalizeFirstLetter(allUsers[allUsers.findIndex(usr => usr._id === user.user_id)].firstname)} ${CapitalizeFirstLetter(allUsers[allUsers.findIndex(usr => usr._id === user.user_id)].lastname)}` }}
+                </td>
                 <td>
-                  <button class="btn--icon editspeaker">
-                    <span class="icon icon--edit"></span>
-                  </button>
+                  <button class="btn-toggle" :class="user.rights === 3 ? 'enabled' : 'disabled'" @click="updateUserWriteAccess(user)"><span class="btn-toggle-circle" :class="user.rights === 3 ? 'enabled' : 'disabled'" ></span></button>
                 </td>
                 <td> 
                   <button 
@@ -77,11 +76,10 @@
             <tbody>
               <tr v-for="(user,i) in sharedWithReaders" :key="i"
               >
-                <td class="user-name">{{ `${CapitalizeFirstLetter(allUsers[allUsers.findIndex(usr => usr._id === user.user_id)].firstname)} ${CapitalizeFirstLetter(allUsers[allUsers.findIndex(usr => usr._id === user.user_id)].lastname)}` }}</td>
+                <td class="user-name">{{ `${CapitalizeFirstLetter(allUsers[allUsers.findIndex(usr => usr._id === user.user_id)].firstname)} ${CapitalizeFirstLetter(allUsers[allUsers.findIndex(usr => usr._id === user.user_id)].lastname)}` }}
+                </td>
                 <td>
-                  <button class="btn--icon editspeaker">
-                    <span class="icon icon--edit"></span>
-                  </button>
+                  <button class="btn-toggle" :class="user.rights === 3 ? 'enabled' : 'disabled'" @click="updateUserWriteAccess(user)"><span class="btn-toggle-circle" :class="user.rights === 3 ? 'enabled' : 'disabled'" ></span></button>
                 </td>
                 <td> 
                   <button 
@@ -394,6 +392,30 @@ export default {
     }
   },
   methods: {
+    async updateUserWriteAccess (user) {
+      try {
+        let req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/sharewith/${user.user_id}`, 'patch', {rights: user.rights === 1 ? 3 : 1})
+        if(req.status === 200 && !!req.data.msg) {
+          bus.$emit('app_notif', {
+            status: 'success',
+            message: req.data.msg,
+            timeout: 3000
+          })
+          bus.$emit('refresh_conversation', {})
+        } else {
+          throw req
+        }
+      } catch (error) {
+        if(process.env.VUE_APP_DEBUG === 'true') {
+          console.error(error)
+        }
+        bus.$emit('app_notif', {
+          status: 'error',
+          message: !!error.msg ? error.msg : 'Error on updating speaker',
+          timeout: null
+        })
+      }
+    },
     shareWith () {
       bus.$emit('modal_share_conversation_with', {})
     },

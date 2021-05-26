@@ -772,7 +772,6 @@ class ConvoModel extends MongoModel {
     // SHARE WITH (conversation)
     async addShareWith(payload) {
         try {
-            console.log(payload)
             const operator = "$addToSet"
             const query = {
                 _id: this.getObjectId(payload.convoid)
@@ -791,7 +790,6 @@ class ConvoModel extends MongoModel {
 
     async removeShareWith(payload) {
         try {
-            console.log(payload)
             const operator = "$pull"
             const query = {
                 _id: this.getObjectId(payload.convoid)
@@ -809,7 +807,6 @@ class ConvoModel extends MongoModel {
     }
     async updateShareWith(payload) {
         try {
-            console.log(payload)
             const operator = "$set"
             const query = {
                 _id: this.getObjectId(payload.convoid)
@@ -817,7 +814,7 @@ class ConvoModel extends MongoModel {
             let mutableElements = {
                 "sharedWith.$[elem]": {
                     user_id: payload.userid,
-                    rights: payload.userrights
+                    rights: payload.rights
                 }
             }
             let arrayFilters = {
