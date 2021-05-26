@@ -80,7 +80,7 @@ export default {
      return this.usersLoaded
    },
    appUsers () {
-     return this.$store.getters.allUsersToShareWith()
+     return this.$store.getters.allUsers()
    }
   },
   watch: {

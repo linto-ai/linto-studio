@@ -91,12 +91,12 @@
         </button>
       </div>
     </div>
-    <ModalShareWith></ModalShareWith>
+    <ModalCreateConvoShareWith></ModalCreateConvoShareWith>
   </div>
 </template>
 <script>
 import { bus } from '../main.js'
-import ModalShareWith from '@/components/ModalShareWith.vue'
+import ModalCreateConvoShareWith from '@/components/ModalCreateConvoShareWith.vue'
 export default {
   data () {
     return {
@@ -225,7 +225,7 @@ export default {
     }
   },
   components: {
-    ModalShareWith
+    ModalCreateConvoShareWith
   }
 }
 </script>

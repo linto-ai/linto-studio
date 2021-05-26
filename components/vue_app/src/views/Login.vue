@@ -82,7 +82,6 @@
           }
         }
         catch (error) {
-          console.log(error)
           if(!!error.data.error.message) {
               this.formError = error.data.error.message
           } else {

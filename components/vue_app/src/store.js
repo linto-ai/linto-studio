@@ -262,7 +262,15 @@ export default new Vuex.Store({
 
             }
         },
-        allUsersToShareWith: (state) => () => {
+        getUserByid: (state) => (userId) => {
+            try {
+                const allUsers = state.users
+                return allUsers.filter(usr => usr._id === userId)[0]
+            } catch (error) {
+                return error.toString()
+            }
+        },
+        allUsers: (state) => () => {
             try {
                 let userId = getCookie('userId')
                 if (userId.length > 0) {
@@ -277,7 +285,62 @@ export default new Vuex.Store({
             } catch (error) {
                 return error.toString()
             }
+        },
+        usersToShareWith: (state) => (convoId) => {
+            try {
+                let allUsers = state.users
+                let conversation = state.conversations.filter(c => c._id === convoId)
+                if (conversation.length > 0) {
+                    let convo = conversation[0]
+                    let sharedWithIds = []
+                    let sharedWith = convo.sharedWith
+                    if (sharedWith.length > 0) {
+                        sharedWith.map(sw => {
+                            sharedWithIds.push(sw.user_id)
+                        })
+                    }
+                    return allUsers.filter(user =>
+                        user._id !== convo.owner && sharedWithIds.indexOf(user._id) < 0)
+                } else {
+                    throw 'Conversation not found'
+                }
+            } catch (error) {
+                return error.toString()
+            }
+        },
+        getUserRightsByConversation: (state) => (convoId) => {
+            try {
+                let conversation = state.conversations.filter(convo => convo._id === convoId)
+                if (conversation.length > 0) {
+                    let userId = state.userInfo._id
+                    let access =   {
+                        isOwner: false,
+                        canEdit: false,
+                        readOnly: false
+                    }
+                    if (conversation[0].owner === userId) {
+                        access.isOwner = true
+                        access.canEdit = true
+                    } else {
+                        if (conversation[0].sharedWith.length > 0) {
+                            for (let user of conversation[0].sharedWith) {
+                                if (user.user_id === userId) {
+                                    if (user.rights === 3) {
+                                        access.canEdit = true
+                                    } else if (user.rights === 1) {
+                                        access.readOnly = true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    return access
+                } else {
+                    throw 'Conversation not found'
+                }
+            } catch (error) {
+                return error.toString()
+            }
         }
-
     }
 })

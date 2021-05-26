@@ -271,8 +271,8 @@ a {
     }
     &.btn--icon {
         display: inline-block;
-        height: 30px;
-        width: 30px;
+        width: 24px;
+        height: 24px;
         background-color: #fff;
         @include borderRadius(3px);
         @include buttonShadow();
@@ -281,8 +281,8 @@ a {
         z-index: 1;
         .icon {
             display: inline-block;
-            width: 30px;
-            height: 30px;
+            width: 24px;
+            height: 24px;
             background-color: $greenChart;
             @include transition(background-color 0.3s ease);
             &.icon--edit {

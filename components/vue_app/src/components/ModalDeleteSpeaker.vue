@@ -66,7 +66,6 @@ export default {
         this.showModal()
         this.speakerId = data.speakerId
     })
-    
   },
   computed: {
     speakerTxt () {

@@ -42,11 +42,64 @@
             <span class="conversation-infos-item--icon conversation-infos-item--icon__sharedwith"></span>
             <span class="conversation-infos-item--title">{{ $t('array_labels.sharedWith') }}</span>
           </div>
-          <ul class="conversation-infos-item--list" v-if="!!allUsers && allUsers.length> 0">
-            <li v-for="user in convo.sharedWith" :key="user.name">
-              <span class="conversation-infos-item--value" >{{ `${CapitalizeFirstLetter(allUsers[allUsers.findIndex(usr => usr._id === user.user_id)].firstname)} ${CapitalizeFirstLetter(allUsers[allUsers.findIndex(usr => usr._id === user.user_id)].lastname)}` }}</span>
-            </li>
-          </ul>
+          <table class="conversation-infos--shared-with" v-if="userAccess.isOwner && sharedWithEditers.length > 0">
+            <thead>
+              <tr>
+                <th colspan="3">Editers</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(user,i) in sharedWithEditers" :key="i"
+              >
+                <td class="user-name">{{ `${CapitalizeFirstLetter(allUsers[allUsers.findIndex(usr => usr._id === user.user_id)].firstname)} ${CapitalizeFirstLetter(allUsers[allUsers.findIndex(usr => usr._id === user.user_id)].lastname)}` }}</td>
+                <td>
+                  <button class="btn--icon editspeaker">
+                    <span class="icon icon--edit"></span>
+                  </button>
+                </td>
+                <td> 
+                  <button 
+                    class="btn--icon btn--icon__no-bg" 
+                    @click="removeShareWith(user)"
+                  >
+                    <span class="icon icon--remove"></span>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <table class="conversation-infos--shared-with" v-if="userAccess.isOwner && sharedWithReaders.length > 0">
+            <thead>
+              <tr>
+                <th colspan="3">Readers</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(user,i) in sharedWithReaders" :key="i"
+              >
+                <td class="user-name">{{ `${CapitalizeFirstLetter(allUsers[allUsers.findIndex(usr => usr._id === user.user_id)].firstname)} ${CapitalizeFirstLetter(allUsers[allUsers.findIndex(usr => usr._id === user.user_id)].lastname)}` }}</td>
+                <td>
+                  <button class="btn--icon editspeaker">
+                    <span class="icon icon--edit"></span>
+                  </button>
+                </td>
+                <td> 
+                  <button 
+                    class="btn--icon btn--icon__no-bg" 
+                    @click="removeShareWith(user)"
+                  >
+                    <span class="icon icon--remove"></span>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="flex row">
+            <button class="btn btn--txt-icon blue" @click="shareWith()">
+              <span class="label">Share</span>
+              <span class="icon icon__share"></span>
+            </button>
+          </div>
         </div>
         <!-- Documents -->
         <div class="conversation-infos-item">
@@ -70,7 +123,7 @@
               <button class="btn btn--txt btn--txt__save" @click="update('name')"><span class="label">{{ $t('buttons.save') }}</span></button>
             </div>
         </div>
-        <button class="btn--icon" :class="titleEdit ? 'active': ''" @click="editTitle()">
+        <button class="btn--icon" :class="titleEdit ? 'active': ''" @click="editTitle()" v-if="userAccess.canEdit">
           <span class="icon icon--edit"></span>
         </button>
       </div>
@@ -85,7 +138,7 @@
               <button class="btn btn--txt btn--txt__save" @click="update('description')"><span class="label">{{ $t('buttons.save') }}</span></button>
             </div>
         </div>
-        <button class="btn--icon" :class="descriptionEdit ? 'active': ''" @click="editDescription()">
+        <button class="btn--icon" :class="descriptionEdit ? 'active': ''" @click="editDescription()"  v-if="userAccess.canEdit">
           <span class="icon icon--edit"></span>
         </button>
       </div>
@@ -96,14 +149,14 @@
           <span class="conversation-settings-item--icon agenda"></span>
           <span class="conversation-settings-item--title">{{ $t('array_labels.agenda') }}</span>
           <button class="conversation-settings-item--toggle-btn" @click="toggleContent($event, 'agenda-content')"></button>
-          <button class="btn--icon" :class="agendaEdit ? 'active': ''" @click="editAgenda()">
+          <button class="btn--icon" :class="agendaEdit ? 'active': ''" @click="editAgenda()" v-if="userAccess.canEdit">
             <span class="icon icon--edit"></span>
           </button>
         </div>
           <div v-if="!agendaEdit" class="conversation-settings-item--content" id="agenda-content">{{ convo.agenda.base }}</div>
           <div v-else class="flex col flex1">
             <textarea v-model="convo.agenda.edit" class="textarea flex1"></textarea>
-            <div class="textarea--btns flex row">
+            <div class="textarea--btns flex row" v-if="userAccess.canEdit">
               <button class="btn btn--txt btn--txt__cancel" @click="cancelEditAgenda()"><span class="label">{{ $t('buttons.cancel') }}</span></button>
               <button class="btn btn--txt btn--txt__save" @click="update('agenda')"><span class="label">{{ $t('buttons.save') }}</span></button>
             </div>
@@ -115,7 +168,7 @@
           <span class="conversation-settings-item--icon abstract"></span>
           <span class="conversation-settings-item--title">{{ $t('array_labels.abstract') }}</span>
           <button class="conversation-settings-item--toggle-btn" @click="toggleContent($event, 'abstract-content')"></button>
-          <button class="btn--icon" :class="abstractEdit ? 'active': ''" @click="editAbstract()">
+          <button class="btn--icon" :class="abstractEdit ? 'active': ''" @click="editAbstract()" v-if="userAccess.canEdit">
             <span class="icon icon--edit"></span>
           </button>
         </div>
@@ -152,14 +205,14 @@
                     </button>
                   <td>
                     <div class="table-speaker--edit">
-                      <button class="btn--icon editspeaker" @click="editSpeaker($event, speaker)" >
+                      <button class="btn--icon editspeaker" @click="editSpeaker($event, speaker)" v-if="userAccess.canEdit">
                         <span class="icon icon--edit"></span>
                       </button>
                      
                     </div>
                   </td>
                   <td>
-                    <div v-if="!!speakTime[speaker.speaker_id].time" class="speaker-time-prct-container">
+                    <div v-if="userAccess.canEdit && !!speakTime[speaker.speaker_id].time" class="speaker-time-prct-container">
                       <span class="speaker-time-prct" :style="'width:'+ parseInt(parseFloat(speakTime[speaker.speaker_id].time) * 100 / parseFloat(convo.audio.duration))+'%'">
                       </span>
                     </div>
@@ -168,7 +221,7 @@
                     <button 
                     class="btn--icon btn--icon__no-bg" 
                     @click="deleteSpeaker(speaker.speaker_id)" 
-                    v-if="convo.speakers.length > 1"
+                    v-if="userAccess.canEdit && convo.speakers.length > 1"
                   >
                       <span class="icon icon--remove"></span>
                     </button>
@@ -176,7 +229,7 @@
                 </tr>
               </tbody>
             </table>
-            <button class="btn btn--txt-icon green" @click="addSpeaker()">
+            <button class="btn btn--txt-icon green" @click="addSpeaker()" v-if="userAccess.canEdit">
               <span class="label">{{ $t('buttons.new_speaker') }}</span>
               <span class="icon icon__plus"></span>
             </button>
@@ -188,7 +241,7 @@
             <span class="conversation-settings-item--icon keywords"></span>
             <span class="conversation-settings-item--title">{{ $t('array_labels.keywords') }}</span>
             <button class="conversation-settings-item--toggle-btn" @click="toggleContent($event, 'keywords-content')"></button>
-            <button class="btn--icon" :class="keywordsEdit ? ' active' :''" @click="editKeywords()">
+            <button class="btn--icon" :class="keywordsEdit ? ' active' :''" @click="editKeywords()"  v-if="userAccess.canEdit">
                <span class="icon icon--edit"></span>
             </button>
           </div>
@@ -211,9 +264,12 @@
         </a>
       </div>
     </div>
+    <ModalRemoveShareWith :convoId="convoId"></ModalRemoveShareWith>
     <ModalMergeSpeakersWithTarget :convoId="convoId"></ModalMergeSpeakersWithTarget>
-    <ModalDeleteSpeaker  :convoId="convoId"></ModalDeleteSpeaker>
+    <ModalDeleteSpeaker :convoId="convoId"></ModalDeleteSpeaker>
     <EditSpeakerFrame></EditSpeakerFrame>
+
+    <ModalConversationShareWith :convoId="convoId"></ModalConversationShareWith>
   </div>
   <div v-else>Loading</div>
 </template>
@@ -221,8 +277,11 @@
 import EditSpeakerFrame from '@/components/EditSpeakerFrame.vue'
 import ModalMergeSpeakersWithTarget from '@/components/ModalMergeSpeakersWithTarget.vue'
 import ModalDeleteSpeaker from '@/components/ModalDeleteSpeaker.vue'
+import ModalRemoveShareWith from '@/components/ModalRemoveShareWith.vue'
+import ModalConversationShareWith from '@/components/ModalConversationShareWith.vue'
 import { bus } from '../main.js'
 export default {
+  props: ['userInfo'],
   data () {
     return {
       convo: '',
@@ -241,21 +300,24 @@ export default {
   async mounted () {
     bus.$emit('vertical_nav_close', {})
     this.convoId = this.$route.params.convoId
-
+  
     await this.dispatchConversations()
     await this.dispatchUsersInfo()
     this.audioPlayer = new Audio()
+
+    bus.$on('refresh_conversation', async (data) => {
+      await this.dispatchConversations()
+    })
 
     bus.$on('update_speaker', async (data) => {
       await this.dispatchConversations()
       this.speakerEdit = false
       bus.$emit('close_edit_speaker_frame', {})
     })
-
   },
   computed: {
     dataLoaded () {
-      return this.usersLoaded && this.convoLoaded
+      return this.usersLoaded && this.convoLoaded && !!this.userAccess
     },
     allUsers () {
       return this.$store.getters.allUsersInfos()
@@ -280,6 +342,21 @@ export default {
         })
       })
       return res
+    },
+    sharedWithEditers () {
+      if(!!this.convo.sharedWith) {
+        return this.convo.sharedWith.filter(usr => usr.rights === 3)
+      }
+      return []
+    }, 
+    sharedWithReaders () {
+        if(!!this.convo.sharedWith) {
+        return this.convo.sharedWith.filter(usr => usr.rights === 1)
+      }
+      return []
+    },
+    userAccess () {
+      return this.$store.getters.getUserRightsByConversation(this.convoId)
     }
   },
   watch: {
@@ -317,6 +394,15 @@ export default {
     }
   },
   methods: {
+    shareWith () {
+      bus.$emit('modal_share_conversation_with', {})
+    },
+    removeShareWith (user) {
+      bus.$emit('modal_unshare_user', {
+        userId: user.user_id,
+        conversation_name: this.conversation.name.base
+      })
+    },
     toggleContent (elem, id) {
       const target = document.getElementById(id)
       if (target.classList.contains('hidden')) {
@@ -498,7 +584,9 @@ export default {
   components: {
     EditSpeakerFrame,
     ModalMergeSpeakersWithTarget,
-    ModalDeleteSpeaker
+    ModalDeleteSpeaker,
+    ModalRemoveShareWith,
+    ModalConversationShareWith
   }
 }
 </script>

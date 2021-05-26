@@ -9,7 +9,15 @@ const {
     getSpeakers
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/speakers.js`)
 
+// Share With 
+const {
+    addShareWith,
+    removeShareWith,
+    updateShareWith
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/sharewith.js`)
+
 // Turns
+
 const {
     //createNewTurnSpeaker,
     createTurn,
@@ -182,6 +190,32 @@ module.exports = (webserver) => {
             requireAuth: true,
             requireWriteAccess: true,
             controller: updatehighlightwords
-        }
+        },
+        {
+            // Add a "shared with" user to a conversation
+            path: '/:conversationid/sharewith',
+            method: 'put',
+            requireAuth: true,
+            requireWriteAccess: true,
+            controller: addShareWith
+        },
+        {
+            // Update a "shared with" user to a conversation
+            path: '/:conversationid/sharewith/:userid',
+            method: 'patch',
+            requireAuth: false,
+            requireWriteAccess: false,
+            controller: updateShareWith
+        },
+        {
+            // Remove a "shared with" user from a conversation
+            path: '/:conversationid/sharewith/:userid',
+            method: 'delete',
+            requireAuth: true,
+            requireWriteAccess: true,
+            controller: removeShareWith
+        },
+
+
     ]
 }

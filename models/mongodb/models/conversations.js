@@ -768,6 +768,67 @@ class ConvoModel extends MongoModel {
             return error
         }
     }
+
+    // SHARE WITH (conversation)
+    async addShareWith(payload) {
+        try {
+            console.log(payload)
+            const operator = "$addToSet"
+            const query = {
+                _id: this.getObjectId(payload.convoid)
+            }
+            let mutableElements = {
+                "sharedWith": {
+                    "$each": payload.sharewith
+                }
+            }
+            return await this.mongoUpdateOne(query, operator, mutableElements)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
+    async removeShareWith(payload) {
+        try {
+            console.log(payload)
+            const operator = "$pull"
+            const query = {
+                _id: this.getObjectId(payload.convoid)
+            }
+            let mutableElements = {
+                "sharedWith": {
+                    user_id: payload.userid
+                }
+            }
+            return await this.mongoUpdateOne(query, operator, mutableElements)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+    async updateShareWith(payload) {
+        try {
+            console.log(payload)
+            const operator = "$set"
+            const query = {
+                _id: this.getObjectId(payload.convoid)
+            }
+            let mutableElements = {
+                "sharedWith.$[elem]": {
+                    user_id: payload.userid,
+                    rights: payload.userrights
+                }
+            }
+            let arrayFilters = {
+                "arrayFilters": [{ "elem.user_id": payload.userid }]
+            }
+            return await this.mongoUpdateOne(query, operator, mutableElements, arrayFilters)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
 }
 
 module.exports = new ConvoModel()

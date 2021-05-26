@@ -37,6 +37,7 @@
     methods: {
       async getuserInfo () {
         try {
+          
           await this.$options.filters.dispatchStore('getuserInfo')
         } catch (error) {
           console.error('err: ', error)

@@ -144,7 +144,6 @@ export default {
     },
     // Update speaker turn (on click)
     async updateSpeakerTurn (targetSpeaker, turnId) {
-      console.log(targetSpeaker, turnId)
       try{
         let payload =  {
           speakerid: targetSpeaker.speaker_id

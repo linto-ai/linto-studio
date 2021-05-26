@@ -72,7 +72,7 @@ class MongoModel {
             try {
                 MongoDriver.constructor.db.collection(this.collection).updateOne(query, {
                     $set: values
-                }, function (error, result) {
+                }, function(error, result) {
                     if (error) {
                         reject(error)
                     }
