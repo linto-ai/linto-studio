@@ -50,13 +50,11 @@ async function hasReadAccess(req, res, next) {
             let convo = await convosModel.getConvoById(conversationId)
             if (convo.length > 0) {
                 if (convo[0].owner === userId) {
-                    console.log('hasReadAccess: isOwner')
                     next()
                 } else if (convo[0].sharedWith.length > 0) {
                     let shared = false
                     for (let shareUser of convo[0].sharedWith) {
                         if (shareUser.user_id === userId) {
-                            console.log('hasReadAccess: shared')
                             shared = true
                         }
                     }

@@ -22,8 +22,8 @@ export default {
     initKeyupHandler() {
       document.addEventListener("keydown", function(event) {
         //console.log(event)
+        //console.log(window.keyupEnabled)
         // Space > play / pause
-        console.log(window.keyupEnabled)
         if(event.code === 'Space' || event.keyCode === 32) {
           if(window.keyupEnabled) bus.$emit('audio_player_play_pause', {})
         }

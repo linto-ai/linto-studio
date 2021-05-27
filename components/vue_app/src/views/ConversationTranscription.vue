@@ -1,182 +1,182 @@
 <template>
-  <div class="flex row no-padding-left" v-if="dataLoaded">
-    <!-- LEFT PART -->
-    <div class="flex col conversation-infos-container">
-      <div class="flex row" style="margin-bottom: 20px;">
-         <a :href="`/interface/conversation/${convoId}`" class="btn btn--txt-icon blue"> 
-          <span class="label">{{ $t('buttons.conversation_landing') }}</span>
-          <span class="icon icon__backto"></span>
-        </a>
-      </div>
-      <h2>{{ $t('page.conversation_transcription.h2') }}</h2>
-      <div class="conversation-infos-items">
-          <!-- Keywords -->
-        <div class="conversation-infos-item">
-          <div class="conversation-infos-item--label">
-            <div class="flex row">
-              <span class="conversation-infos-item--icon conversation-infos-item--icon__keywords"></span>
-              <span class="conversation-infos-item--title flex1">{{ $t('array_labels.keywords') }}</span>
-              <span class="conversation-infos-item--icon conversation-infos-item--icon__visible"></span>
-            </div>
-          </div>
-          <div class="flex col transcription-options" v-if="!!keywordsOptions && keywordsOptions.length > 0">
-            <div class="flex row transcription-options--item" v-for="kw in keywordsOptions" :key="kw.kid">
-              <span class="transcription-options--item-label flex1">{{ kw.label }}</span>
-              <button 
-                class="transcription-options--item-checkbox"
-                :class="kw.selected ? 'selected' : ''"
-                @click="updateKeywords(kw)"
-              ></button>
-            </div>
-          </div>
+  <div class="flex col no-padding-left" v-if="dataLoaded">
+    <div class="flex1 flex row" id="transcription-wrapper">
+      <!-- LEFT PART -->
+      <div class="flex col conversation-infos-container">
+        <div class="flex row" style="margin-bottom: 20px;">
+          <a :href="`/interface/conversation/${convoId}`" class="btn btn--txt-icon blue"> 
+            <span class="label">{{ $t('buttons.conversation_landing') }}</span>
+            <span class="icon icon__backto"></span>
+          </a>
         </div>
-          <!-- Highlights -->
-        <div class="conversation-infos-item">
-          <div class="conversation-infos-item--label">
-            <div class="flex row">
-              <span class="conversation-infos-item--icon conversation-infos-item--icon__highlights"></span>
-              <span class="conversation-infos-item--title flex1">{{ $t('array_labels.highlights') }}</span>
-              <span class="conversation-infos-item--icon conversation-infos-item--icon__colors"></span>
-              <span class="conversation-infos-item--icon conversation-infos-item--icon__visible"></span>
+        <h2>{{ $t('page.conversation_transcription.h2') }}</h2>
+        <div class="conversation-infos-items">
+            <!-- Keywords -->
+          <div class="conversation-infos-item">
+            <div class="conversation-infos-item--label">
+              <div class="flex row">
+                <span class="conversation-infos-item--icon conversation-infos-item--icon__keywords"></span>
+                <span class="conversation-infos-item--title flex1">{{ $t('array_labels.keywords') }}</span>
+                <span class="conversation-infos-item--icon conversation-infos-item--icon__visible"></span>
+              </div>
+            </div>
+            <div class="flex col transcription-options" v-if="!!keywordsOptions && keywordsOptions.length > 0">
+              <div class="flex row transcription-options--item" v-for="kw in keywordsOptions" :key="kw.kid">
+                <span class="transcription-options--item-label flex1">{{ kw.label }}</span>
+                <button 
+                  class="transcription-options--item-checkbox"
+                  :class="kw.selected ? 'selected' : ''"
+                  @click="updateKeywords(kw)"
+                ></button>
+              </div>
             </div>
           </div>
+            <!-- Highlights -->
+          <div class="conversation-infos-item">
+            <div class="conversation-infos-item--label">
+              <div class="flex row">
+                <span class="conversation-infos-item--icon conversation-infos-item--icon__highlights"></span>
+                <span class="conversation-infos-item--title flex1">{{ $t('array_labels.highlights') }}</span>
+                <span class="conversation-infos-item--icon conversation-infos-item--icon__colors"></span>
+                <span class="conversation-infos-item--icon conversation-infos-item--icon__visible"></span>
+              </div>
+            </div>
 
-          <div class="flex col transcription-options" v-if="highlightsOptions.length > 0">
-            <div class="flex row transcription-options--item" v-for="hl in highlightsOptions" :key="hl.hid">
-              <span class="transcription-options--item-label flex1">{{ hl.label }}</span>
-              <input 
-                type="color" 
-                :value="hl.color" 
-                class="transcription-options--item-color"
-                @change="updateHighlightColor($event, hl)"
-              >
-              <button 
-                class="transcription-options--item-checkbox"
-                :class="hl.selected === true ? 'selected' : ''"
-                @click="updateHighlight(hl)"
-              ></button>
+            <div class="flex col transcription-options" v-if="highlightsOptions.length > 0">
+              <div class="flex row transcription-options--item" v-for="hl in highlightsOptions" :key="hl.hid">
+                <span class="transcription-options--item-label flex1">{{ hl.label }}</span>
+                <input 
+                  type="color" 
+                  :value="hl.color" 
+                  class="transcription-options--item-color"
+                  @change="updateHighlightColor($event, hl)"
+                >
+                <button 
+                  class="transcription-options--item-checkbox"
+                  :class="hl.selected === true ? 'selected' : ''"
+                  @click="updateHighlight(hl)"
+                ></button>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <!-- END LEFT PART -->
-    <!-- RIGHT PART -->
-    <div class="flex1 flex col transcritpion-container">
-      
-      <div class="flex row">
-        <h1 style="padding: 0;" class="flex row flex1">{{ convo.name }}</h1>
-        <div class="flex row flex1 edition__btns">
-          <span class="edition__btns-label">{{ $t('page.conversation_transcription.edition_mode') }} : </span>
-        <button 
-          @click="editionMode = true"
-          :class="editionMode ? 'enabled' : 'disabled'"
-          class="edition__btn-toggle"
-        >
-          <span class="edition__btn-toggle-circle" :class="editionMode ? 'enabled' : 'disabled'"></span>
-        </button>
+      <!-- END LEFT PART -->
+      <!-- RIGHT PART -->
+      <div class="flex1 flex col transcritpion-container">
+        
+        <div class="flex row">
+          <h1 style="padding: 0;" class="flex row flex1">{{ convo.name }}</h1>
+          <div class="flex row flex1 edition__btns">
+            <span class="edition__btns-label">{{ $t('page.conversation_transcription.edition_mode') }} : </span>
           <button 
-            v-if="editionMode" 
-            @click="cancelEditionMode()" 
-            class="btn--icon btn--icon__cancel-edition grey"
+            @click="editionMode = true"
+            :class="editionMode ? 'enabled' : 'disabled'"
+            class="edition__btn-toggle"
           >
-            <span class="icon icon--cancel"></span>
+            <span class="edition__btn-toggle-circle" :class="editionMode ? 'enabled' : 'disabled'"></span>
           </button>
-          <button 
-            v-if="editionMode" 
-            @click="validateEdition()" 
-            class="btn--icon btn--icon__apply-edition"
-          >
-            <span class="icon icon--apply"></span>
-          </button>
+            <button 
+              v-if="editionMode" 
+              @click="cancelEditionMode()" 
+              class="btn--icon btn--icon__cancel-edition grey"
+            >
+              <span class="icon icon--cancel"></span>
+            </button>
+            <button 
+              v-if="editionMode" 
+              @click="validateEdition()" 
+              class="btn--icon btn--icon__apply-edition"
+            >
+              <span class="icon icon--apply"></span>
+            </button>
+          </div>
         </div>
-      </div>
-       <!-- FILTERS -->
-      <div class="transcription-filters flex row">
-          <!-- by speaker -->
-          <span class="transcription-filters-label">{{ $t('filters.filters') }}:</span>
-          <div class="flex col flex1">
-            <span class="transcription-filters__select-label">{{ $t('array_labels.speakers')}}:</span>
-            <div class="flex row">
-              <select id="filter-speaker" class="transcription-filters__select flex1" v-model="convoFilter.speaker">
-                <option v-for="spk in convo.speakers" :key="spk.speaker_id" :value="spk.speaker_id">{{ spk.speaker_name }}</option>
-                <option value="">{{ $t('array_labels.none') }}</option>
-              </select>
-              <button v-if="convoFilter.speaker !== ''" @click="convoFilter.speaker = ''" class="cancel-filter-btn"></button>
+        <!-- FILTERS -->
+        <div class="transcription-filters flex row">
+            <!-- by speaker -->
+            <div class="flex col flex1">
+              <span class="transcription-filters__select-label">{{ $t('array_labels.speakers')}}:</span>
+              <div class="flex row">
+                <select id="filter-speaker" class="transcription-filters__select flex1" v-model="convoFilter.speaker">
+                  <option v-for="spk in convo.speakers" :key="spk.speaker_id" :value="spk.speaker_id">{{ spk.speaker_name }}</option>
+                  <option value="">{{ $t('array_labels.none') }}</option>
+                </select>
+                <button v-if="convoFilter.speaker !== ''" @click="convoFilter.speaker = ''" class="cancel-filter-btn"></button>
+              </div>
+            </div>
+            <!-- by highlights -->
+            <div class="flex col flex1">
+              <span class="transcription-filters__select-label">{{ $t('array_labels.highlights') }}:</span>
+              <div class="flex row">
+                <select id="filter-highlights" class="transcription-filters__select flex1" v-model="convoFilter.highlights">
+                  <option v-for="hl in convo.highlights" :key="hl.hid" :value="hl.hid">{{ hl.label }}</option>
+                  <option value="">{{ $t('array_labels.none') }}</option>
+                </select>
+                <button v-if="convoFilter.highlights !== ''" @click="convoFilter.highlights = ''" class="cancel-filter-btn"></button>
+              </div>
+            </div>
+            <!-- by keywords -->
+            <div class="flex col flex1">
+              <span class="transcription-filters__select-label">{{ $t('array_labels.keywords') }}:</span>
+              <div class="flex row">
+                <select id="filter-highlights" class="transcription-filters__select flex1" v-model="convoFilter.keywords">
+                  <option v-for="kw in convo.keywords" :key="kw.kid" :value="kw.kid">{{ kw.label }}</option>
+                  <option value="">{{ $t('array_labels.none') }}</option>
+                </select>
+                <button v-if="convoFilter.keywords !== ''" @click="convoFilter.keywords = ''" class="cancel-filter-btn"></button>
             </div>
           </div>
-          <!-- by highlights -->
-          <div class="flex col flex1">
-            <span class="transcription-filters__select-label">{{ $t('array_labels.highlights') }}:</span>
-            <div class="flex row">
-              <select id="filter-highlights" class="transcription-filters__select flex1" v-model="convoFilter.highlights">
-                <option v-for="hl in convo.highlights" :key="hl.hid" :value="hl.hid">{{ hl.label }}</option>
-                <option value="">{{ $t('array_labels.none') }}</option>
-              </select>
-              <button v-if="convoFilter.highlights !== ''" @click="convoFilter.highlights = ''" class="cancel-filter-btn"></button>
-            </div>
-          </div>
-          <!-- by keywords -->
-          <div class="flex col flex1">
-            <span class="transcription-filters__select-label">{{ $t('array_labels.keywords') }}:</span>
-            <div class="flex row">
-              <select id="filter-highlights" class="transcription-filters__select flex1" v-model="convoFilter.keywords">
-                <option v-for="kw in convo.keywords" :key="kw.kid" :value="kw.kid">{{ kw.label }}</option>
-                <option value="">{{ $t('array_labels.none') }}</option>
-              </select>
-              <button v-if="convoFilter.keywords !== ''" @click="convoFilter.keywords = ''" class="cancel-filter-btn"></button>
+          <div class="transcription-export-btn-container flex row">
+            <button @click="exportTranscription()" class="btn btn--txt-icon blue">
+              <span class="label">{{ $t('buttons.export') }}</span>
+              <span class="icon icon__transcription"></span>
+            </button>
           </div>
         </div>
-        <div class="transcription-export-btn-container flex row">
-          <button @click="exportTranscription()" class="btn btn--txt-icon blue">
-            <span class="label">{{ $t('buttons.export') }}</span>
-            <span class="icon icon__transcription"></span>
-          </button>
-        </div>
-      </div>
-      <!-- TRANSCRIPTION -->
-      <Transcription class="flex1"
-        :currentTurn="currentTurn" 
-        :currentTime="currentTime" 
-        :convoText="convoText"
-        :convoId="convo._id"
-        :convoSpeakers="convo.speakers"
-        :editionMode="editionMode" 
-        :speakersArray="speakersArray"
-        :key="refreshConversation"
-        :convoIsFiltered="convoIsFiltered"
-        :highlightsOptions="highlightsOptions"
-        :keywordsOptions="keywordsOptions"
-        v-if="!!convo.text && convo.text.length > 0 && speakersArray.length > 0"
-      ></Transcription>
-       <div> 
-         <!-- AUDIO PLAYER -->
-        <AudioPlayer 
-          :audioPath="audioPath" 
-          :duration="convo.audio.duration" 
-          :editionMode="editionMode" 
-          :nbTurns="convo.text.length" 
+        <!-- TRANSCRIPTION -->
+        <Transcription
           :currentTurn="currentTurn" 
-          :convoIsFiltered="convoIsFiltered"
+          :currentTime="currentTime" 
           :convoText="convoText"
-
-        ></AudioPlayer>
+          :convoId="convo._id"
+          :convoSpeakers="convo.speakers"
+          :editionMode="editionMode" 
+          :speakersArray="speakersArray"
+          :key="refreshConversation"
+          :convoIsFiltered="convoIsFiltered"
+          :highlightsOptions="highlightsOptions"
+          :keywordsOptions="keywordsOptions"
+          v-if="!!convo.text && convo.text.length > 0 && speakersArray.length > 0"
+        ></Transcription>
       </div>
+      <HighlightModal :conversationId="convoId"></HighlightModal>
+      <EditSpeakerTranscriptionFrame></EditSpeakerTranscriptionFrame>
+
+      <SelectedTextToolbox :conversationId="convoId" :editionMode="editionMode"></SelectedTextToolbox>
+
+      <TranscriptionKeyupHandler
+        :editionMode="editionMode"
+      ></TranscriptionKeyupHandler>
+      <KeyboardCommandsFrame></KeyboardCommandsFrame>
+      <!-- Modals -->
+      <ModalMergeSentences></ModalMergeSentences>
+      <ModalSplitTurns></ModalSplitTurns>
+      <ModalMergeSpeakersWithTarget :convoId="convoId"></ModalMergeSpeakersWithTarget>
+
     </div>
-    <HighlightModal :conversationId="convoId"></HighlightModal>
-    <EditSpeakerTranscriptionFrame></EditSpeakerTranscriptionFrame>
-
-    <SelectedTextToolbox :conversationId="convoId" :editionMode="editionMode"></SelectedTextToolbox>
-
-    <TranscriptionKeyupHandler
-      :editionMode="editionMode"
-    ></TranscriptionKeyupHandler>
-    <KeyboardCommandsFrame></KeyboardCommandsFrame>
-    <!-- Modals -->
-    <ModalMergeSentences></ModalMergeSentences>
-    <ModalSplitTurns></ModalSplitTurns>
-    <ModalMergeSpeakersWithTarget :convoId="convoId"></ModalMergeSpeakersWithTarget>
-
+    <div class="flex row">
+       <!-- AUDIO PLAYER -->
+          <AudioPlayer 
+            :audioPath="audioPath" 
+            :duration="convo.audio.duration" 
+            :editionMode="editionMode" 
+            :nbTurns="convo.text.length" 
+            :currentTurn="currentTurn" 
+            :convoIsFiltered="convoIsFiltered"
+            :convoText="convoText"
+          ></AudioPlayer>
+    </div>
   </div>
   <div v-else>Loading</div>
 </template>

@@ -51,6 +51,9 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+mkdir -p ${VOLUME_DATABASE_FOLDER}
+sudo chown -R ${USER} ${VOLUME_DATABASE_FOLDER}
+
 if [ "$IMAGE_BUILD" = true ]; then
   echo -e '\e[31mForce rebuild image\e[0m'
   docker-compose build
@@ -60,10 +63,6 @@ if [ "$IMAGE_VUE_REBUILD" = true ]; then
   echo -e '\e[31mForce rebuild vue-app\e[0m'
   EXTRA_COMMAND_DOCKER=--rebuild-vue-app
 fi
-
-
-mkdir -p ${VOLUME_DATABASE_FOLDER}
-sudo chown -R ${USER} ${VOLUME_DATABASE_FOLDER}
 
 # Regenerate mono init.js file 
 rm -f ./mongo-seeds/init.js

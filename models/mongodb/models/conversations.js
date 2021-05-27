@@ -501,37 +501,37 @@ class ConvoModel extends MongoModel {
     }
 
     // async getWords(payload) { //WIP
-        // //returns list of words from a single conversation/turn/array of wordids
-        // try{
-        //     const project = {"$project": {
-        //         "words": {
-        //             "$filter": {
-        //                 input: "$words", 
-        //                 as: "word", 
-        //                 cond: {"$and": [
-        //                     {"$eq": ["$$turn.turn_id", payload.turnid]}, 
-        //                     {"$in": ["$$turn.words.wid", payload.wordids]}
-        //                 ]}
-        //             }
-        //         }
-        //     }}
-        //     const match = {
-        //         "$match": {_id: this.getObjectId(payload.convoid)}, 
-        //     }
-        //     const unwind= {
-        //         "$unwind": {"$convo.text"}
-        //     }
+    // //returns list of words from a single conversation/turn/array of wordids
+    // try{
+    //     const project = {"$project": {
+    //         "words": {
+    //             "$filter": {
+    //                 input: "$words", 
+    //                 as: "word", 
+    //                 cond: {"$and": [
+    //                     {"$eq": ["$$turn.turn_id", payload.turnid]}, 
+    //                     {"$in": ["$$turn.words.wid", payload.wordids]}
+    //                 ]}
+    //             }
+    //         }
+    //     }}
+    //     const match = {
+    //         "$match": {_id: this.getObjectId(payload.convoid)}, 
+    //     }
+    //     const unwind= {
+    //         "$unwind": {"$convo.text"}
+    //     }
 
-        //     { $unwind: '$list'},
-        //     { $match: {'list.a': {$gt: 3}}},
-        //     { $group: {_id: '$_id', list: {$push: '$list.a'}}}
-        //     const query = [match, project]
-        //     console.log(query)
-        //     return await this.mongoAggregate(query)
-        // } catch (error){
-        //     console.error(error)
-        //     return error
-        // }
+    //     { $unwind: '$list'},
+    //     { $match: {'list.a': {$gt: 3}}},
+    //     { $group: {_id: '$_id', list: {$push: '$list.a'}}}
+    //     const query = [match, project]
+    //     console.log(query)
+    //     return await this.mongoAggregate(query)
+    // } catch (error){
+    //     console.error(error)
+    //     return error
+    // }
     //}
 
     // async getAllWords(payload) { //WIP
@@ -592,39 +592,41 @@ class ConvoModel extends MongoModel {
     //     }
     // }
 
-    async getHighlightWordids(payload){
+    async getHighlightWordids(payload) {
         //returns a list of wordids associated with a highlight id
-        try{
+        try {
 
-            const match1 = {"$match": {_id: this.getObjectId(payload.convoid)}}
+            const match1 = { "$match": { _id: this.getObjectId(payload.convoid) } }
 
-            const unwind1 = {"$unwind": "$text"}
-            const unwind2 = {"$unwind": "$text.words"}
+            const unwind1 = { "$unwind": "$text" }
+            const unwind2 = { "$unwind": "$text.words" }
 
-            const match2 = {"$match": {"text.words.highlights": payload.hid}}
-            const group = {"$group": {
-                _id: null, 
-                wids: {
-                    "$push": "$text.words.wid"
+            const match2 = { "$match": { "text.words.highlights": payload.hid } }
+            const group = {
+                "$group": {
+                    _id: null,
+                    wids: {
+                        "$push": "$text.words.wid"
+                    }
                 }
-            }}
+            }
 
             const query = [match1, unwind1, unwind2, match2, group]
 
             return await this.mongoAggregate(query)
 
-        } catch (error){
+        } catch (error) {
             console.error(error)
             return error
         }
     }
 
-    async highlightWords(payload) { 
+    async highlightWords(payload) {
         //takes a convo id, highlight id, an array of wids, push/pull keyword
         //adds/removes highlight id to each word 
         try {
-            let operator = null 
-            if(payload.operator === "add"){
+            let operator = null
+            if (payload.operator === "add") {
                 operator = "$push"
             } else {
                 operator = "$pull"
@@ -640,13 +642,11 @@ class ConvoModel extends MongoModel {
             let arrayFilters = {}
             let identifiers = []
             payload.wordids.forEach(elem => {
-                identifiers.push({"wordelem.wid": elem})
+                identifiers.push({ "wordelem.wid": elem })
             })
             let innerfilter = {}
             innerfilter["$or"] = identifiers
             arrayFilters["arrayFilters"] = [innerfilter]
-
-            console.log(query, operator, mutableElements, arrayFilters)
 
             return await this.mongoUpdateOne(query, operator, mutableElements, arrayFilters)
 
@@ -659,7 +659,7 @@ class ConvoModel extends MongoModel {
     async getHighlightTypes(payload) {
         //takes convo id and returns information from the Highlights field
 
-        try{
+        try {
             const query = {
                 _id: this.getObjectId(payload.convoid)
             }
@@ -703,10 +703,10 @@ class ConvoModel extends MongoModel {
                 "highlights.hid": payload.hid
             }
             let mutableElements = {}
-            if(!!payload.label){
+            if (!!payload.label) {
                 mutableElements["highlights.$.label"] = payload.label
             }
-            if(!!payload.color){
+            if (!!payload.color) {
                 mutableElements["highlights.$.color"] = payload.color
             }
             return await this.mongoUpdateOne(query, operator, mutableElements)

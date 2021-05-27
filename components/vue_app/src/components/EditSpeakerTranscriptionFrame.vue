@@ -3,7 +3,7 @@
     <div v-if="dataLoaded">
       <div class="edit-frame--head flex row">
         <span class="icon user"></span>
-        <span class="label flex1">Edit speaker name</span>
+        <span class="label flex1">Edit speaker</span>
         <button class="btn--icon" @click="closeFrame()">
             <span class="icon icon--close"></span>
           </button>
@@ -83,13 +83,18 @@ export default {
     }
   },
   async mounted () {
-    bus.$on(`edit_speaker_transcription`, async (data) => {
+    bus.$on('edit_speaker_transcription', async (data) => {
       bus.$emit('keyup_handler_disable', {})
         this.showFrame = true
         this.convoId = data.conversationId
         this.speaker = data.speaker
         this.turnId = data.turnId
         await this.dispatchStore('getConversations')
+    })
+    bus.$on('close_edit_speaker_frame', () => {
+      if(this.showFrame) {
+        this.closeFrame()
+      }
     })
   },
   computed: {
@@ -123,8 +128,9 @@ export default {
       this.showEditSpkOptions = false
       this.showMergeTurnsOptions = false
       bus.$emit('keyup_handler_enable', {})
-      bus.$emit(`refresh_conversation`, {})
-      bus.$emit(`update_speaker`, {})
+      bus.$emit('refresh_conversation', {})
+      bus.$emit('update_speaker', {})
+      bus.$emit('close_edit_speaker_frame', {})
     },
     async updateSpeaker (targetSpeaker) {
       if(this.editSpeakerMode === 'turn') {
@@ -138,7 +144,6 @@ export default {
     },
     // Update speaker turn (on click)
     async updateSpeakerTurn (targetSpeaker, turnId) {
-      console.log(targetSpeaker, turnId)
       try{
         let payload =  {
           speakerid: targetSpeaker.speaker_id
