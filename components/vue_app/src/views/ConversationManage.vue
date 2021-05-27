@@ -42,7 +42,7 @@
             <span class="conversation-infos-item--icon conversation-infos-item--icon__sharedwith"></span>
             <span class="conversation-infos-item--title">{{ $t('array_labels.sharedWith') }}</span>
           </div>
-          <table class="conversation-infos--shared-with" v-if="userAccess.isOwner && sharedWithEditers.length > 0">
+          <table class="conversation-infos--shared-with" v-if="sharedWithEditers.length > 0">
             <thead>
               <tr>
                 <th colspan="3">Editers</th>
@@ -54,12 +54,15 @@
                 <td class="user-name">{{ `${CapitalizeFirstLetter(allUsers[allUsers.findIndex(usr => usr._id === user.user_id)].firstname)} ${CapitalizeFirstLetter(allUsers[allUsers.findIndex(usr => usr._id === user.user_id)].lastname)}` }}
                 </td>
                 <td>
-                  <button class="btn-toggle" :class="user.rights === 3 ? 'enabled' : 'disabled'" @click="updateUserWriteAccess(user)"><span class="btn-toggle-circle" :class="user.rights === 3 ? 'enabled' : 'disabled'" ></span></button>
+                  <button class="btn-toggle" :class="user.rights === 3 ? 'enabled' : 'disabled'" @click="updateUserWriteAccess(user)" v-if="userAccess.isOwner">
+                    <span class="btn-toggle-circle" :class="user.rights === 3 ? 'enabled' : 'disabled'" ></span>
+                  </button>
                 </td>
                 <td> 
                   <button 
                     class="btn--icon btn--icon__no-bg" 
                     @click="removeShareWith(user)"
+                    v-if="userAccess.isOwner"
                   >
                     <span class="icon icon--remove"></span>
                   </button>
@@ -67,7 +70,7 @@
               </tr>
             </tbody>
           </table>
-          <table class="conversation-infos--shared-with" v-if="userAccess.isOwner && sharedWithReaders.length > 0">
+          <table class="conversation-infos--shared-with" v-if="sharedWithReaders.length > 0">
             <thead>
               <tr>
                 <th colspan="3">Readers</th>
@@ -79,12 +82,15 @@
                 <td class="user-name">{{ `${CapitalizeFirstLetter(allUsers[allUsers.findIndex(usr => usr._id === user.user_id)].firstname)} ${CapitalizeFirstLetter(allUsers[allUsers.findIndex(usr => usr._id === user.user_id)].lastname)}` }}
                 </td>
                 <td>
-                  <button class="btn-toggle" :class="user.rights === 3 ? 'enabled' : 'disabled'" @click="updateUserWriteAccess(user)"><span class="btn-toggle-circle" :class="user.rights === 3 ? 'enabled' : 'disabled'" ></span></button>
+                  <button class="btn-toggle" :class="user.rights === 3 ? 'enabled' : 'disabled'" @click="updateUserWriteAccess(user)" v-if="userAccess.isOwner">
+                    <span class="btn-toggle-circle" :class="user.rights === 3 ? 'enabled' : 'disabled'" ></span>
+                  </button>
                 </td>
                 <td> 
                   <button 
                     class="btn--icon btn--icon__no-bg" 
                     @click="removeShareWith(user)"
+                    v-if="userAccess.isOwner"
                   >
                     <span class="icon icon--remove"></span>
                   </button>
@@ -93,7 +99,7 @@
             </tbody>
           </table>
           <div class="flex row">
-            <button class="btn btn--txt-icon blue" @click="shareWith()">
+            <button class="btn btn--txt-icon blue" @click="shareWith()" v-if="userAccess.isOwner">
               <span class="label">Share</span>
               <span class="icon icon__share"></span>
             </button>

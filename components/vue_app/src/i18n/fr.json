@@ -52,5 +52,12 @@
         "new_speaker": "Nouveau locuteur",
         "save": "Enregistrer",
         "transcription": "Transcription"
+    },
+    "modals": {
+        "delete_speaker": {
+            "title": "Supprimer locuteur",
+            "content": "Certains tours de parole sont attribué à ce locuteur. Veuillez re-attribuer ces tours de paroles pour pouvoir supprimer le locuteur {spk}"
+
+        }
     }
 }

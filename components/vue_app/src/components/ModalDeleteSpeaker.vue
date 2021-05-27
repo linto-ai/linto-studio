@@ -2,7 +2,7 @@
   <div class="modal-wrapper flex col" :class="modalShow ? 'visible' : 'hidden'">
     <div class="modal">
         <div class="modal--header flex row">
-          <span class="title flex1">Delete speaker "{{ speakerName }}"</span>
+          <span class="title flex1">{{ $t('modals.delete_speaker.title' )}} "{{ speakerName }}"</span>
           <button class="btn--icon btn--icon__no-bg editspeaker" @click="closeModal()">
             <span class="icon icon--close"></span>
           </button>
@@ -12,8 +12,7 @@
             <p>Are you sure you want to <strong>delete</strong> this speaker: <strong>{{ speakerName }}</strong> ?</p>
           </div>
           <div v-else>
-            <p>Some turns are still attributed to this speaker.<br/>
-            Please <strong>re-assign these turns to a different speaker</strong> in order to delete speaker <strong>"{{ speakerName }}"</strong>.</p>
+            <p>{{$tc('modals.delete_speaker.content', {'spk': speakerName}) }}.</p>
             <div class="form-field flex col">
               <span class="form-label">Re-assign turns to:<strong>*</strong> :</span>
               <select 

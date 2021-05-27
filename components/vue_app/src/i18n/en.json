@@ -53,5 +53,11 @@
         "new_speaker": "New Speaker",
         "save": "Save",
         "transcription": "Transcription"
+    },
+    "modals": {
+        "delete_speaker": {
+            "title": "Delete speaker",
+            "content": "Some turns are still attributed to this speaker. Please re-assign these turns to a different speaker in order to delete speaker {spk}"
+        }
     }
 }
