@@ -34,7 +34,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/customError'
 ## CONVERSATION METADATA
-  /api/conversations/{conversationid}/title:
+  /api/conversation/{conversationid}/title:
     put:
       tags: 
         - "metadata"
@@ -68,7 +68,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/customError'
-  /api/conversations/{conversationid}/description:
+  /api/conversation/{conversationid}/description:
     put:
       tags: 
         - "metadata"
@@ -102,7 +102,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/customError'
-  api/conversations/{conversationid}/agenda:
+  /api/conversation/{conversationid}/agenda:
     put:
       tags: 
         - "metadata"
@@ -136,7 +136,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/customError'
-  api/conversations/{conversationid}/convotype:
+  /api/conversation/{conversationid}/convotype:
     put:
       tags: 
         - "metadata"

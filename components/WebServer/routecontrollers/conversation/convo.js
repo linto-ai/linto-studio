@@ -91,7 +91,7 @@ async function updateTitle(req, res, next) {
 
             let payload = {
                 convoid: req.params.conversationid,
-                title: req.body.title
+                name: req.body.title
             }
 
             let updateTitle = await convoModel.updateMetaData(payload)

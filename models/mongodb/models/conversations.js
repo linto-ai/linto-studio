@@ -74,7 +74,7 @@ class ConvoModel extends MongoModel {
     }
 
     //update conversation metadata -- title, description, metadata
-    async updateMetadata(payload) {
+    async updateMetaData(payload) {
         try {
             const operator = "$set"
             const query = {
