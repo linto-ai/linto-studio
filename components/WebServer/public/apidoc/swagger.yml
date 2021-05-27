@@ -120,9 +120,9 @@ paths:
         content:
           application/json:
             schema:
-              properties:
-                agenda:
-                  type: string
+              type: array 
+              items:
+                type: string
       responses:
         '200':
           description: request success
