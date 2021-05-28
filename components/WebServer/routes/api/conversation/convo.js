@@ -202,15 +202,15 @@ module.exports = (webserver) => {
             path: '/:conversationid/sharewith',
             method: 'put',
             requireAuth: true,
-            requireWriteAccess: true,
+            requireOwnerAccess: true,
             controller: addShareWith
         },
         {
             // Update a "shared with" user to a conversation
             path: '/:conversationid/sharewith/:userid',
             method: 'patch',
-            requireAuth: false,
-            requireWriteAccess: false,
+            requireAuth: true,
+            requireOwnerAccess: true,
             controller: updateShareWith
         },
         {
@@ -218,15 +218,15 @@ module.exports = (webserver) => {
             path: '/:conversationid/sharewith/:userid',
             method: 'delete',
             requireAuth: true,
-            requireWriteAccess: true,
+            requireOwnerAccess: true,
             controller: removeShareWith
         },
         {
             // updates conversation metatdata
             path: '/:conversationid/title',
             method: 'put',
-            requireAuth: true,
-            requireWriteAccess: true,
+            requireAuth: false,
+            requireWriteAccess: false,
             controller: updateTitle
         },
         {

@@ -81,15 +81,16 @@ class ConvoModel extends MongoModel {
                 _id: this.getObjectId(payload.convoid),
             }
             let mutableElements = {}
-            if (!!payload.title) {
-               mutableElements["name"] = payload.title
-            } else if(!!payload.agenda){
+            if (!!payload.name) {
+                mutableElements["name"] = payload.name
+            } else if (!!payload.agenda) {
                 mutableElements["agenda"] = payload.agenda
             } else if (!!payload.description) {
                 mutableElements["description"] = payload.description
             } else {
                 mutableElements["conversationType"] = payload.convoType
             }
+            console.log(mutableElements)
 
             return await this.mongoUpdateOne(query, operator, mutableElements)
         } catch (error) {

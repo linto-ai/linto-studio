@@ -157,14 +157,30 @@
             <span class="icon icon--edit"></span>
           </button>
         </div>
-          <div v-if="!agendaEdit" class="conversation-settings-item--content" id="agenda-content">{{ convo.agenda.base }}</div>
-          <div v-else class="flex col flex1">
-            <textarea v-model="convo.agenda.edit" class="textarea flex1"></textarea>
-            <div class="textarea--btns flex row" v-if="userAccess.canEdit">
-              <button class="btn btn--txt btn--txt__cancel" @click="cancelEditAgenda()"><span class="label">{{ $t('buttons.cancel') }}</span></button>
-              <button class="btn btn--txt btn--txt__save" @click="update('agenda')"><span class="label">{{ $t('buttons.save') }}</span></button>
-            </div>
+        <!-- Agenda String --->
+        <div v-if="!agendaEdit && typeOfAgenda === 'string'" class="conversation-settings-item--content" id="agenda-content">{{ convo.agenda.base }}</div>
+        <div v-if="agendaEdit && typeOfAgenda === 'string'" class="flex col flex1">
+          <textarea 
+            v-model="convo.agenda.edit" class="textarea flex1"
+          ></textarea>
+        </div>
+        <!-- Agenda Object -->
+        <div v-if="!agendaEdit && typeOfAgenda === 'object'" class="conversation-settings-item--content" id="agenda-content">
+          <ul>
+            <li class="agenda-content-item" v-for="(agenda,i) in convo.agenda.edit" :key="i">{{ agenda }}</li>
+          </ul>
+        </div>
+        <div v-if="agendaEdit && typeOfAgenda === 'object'">
+          <div class="form-field" v-for="(agenda,i) in convo.agenda.edit" :key="i">
+            <input type="text" v-model="convo.agenda.edit[i]" />
+            <button @click="removeAgendaField(i)">Moins</button>
           </div>
+          <button @click="addAgendaField()">Plus</button>
+        </div>
+        <div class="textarea--btns flex row" v-if="userAccess.canEdit && agendaEdit">
+          <button class="btn btn--txt btn--txt__cancel" @click="cancelEditAgenda()"><span class="label">{{ $t('buttons.cancel') }}</span></button>
+          <button class="btn btn--txt btn--txt__save" @click="update('agenda')"><span class="label">{{ $t('buttons.save') }}</span></button>
+        </div>
       </div>
       <!-- Abstract -->
       <div class="conversation-settings-item">
@@ -310,6 +326,7 @@ export default {
     this.audioPlayer = new Audio()
 
     bus.$on('refresh_conversation', async (data) => {
+      console.log('BUS Refresh')<
       await this.dispatchConversations()
     })
 
@@ -322,6 +339,9 @@ export default {
   computed: {
     dataLoaded () {
       return this.usersLoaded && this.convoLoaded && !!this.userAccess
+    },
+    typeOfAgenda () {
+      return typeof this.convo.agenda.edit
     },
     allUsers () {
       return this.$store.getters.allUsersInfos()
@@ -365,29 +385,28 @@ export default {
   },
   watch: {
     conversation (data) {
+      console.log('watch')
       this.convo = data
       const titleVal = data.name
       this.convo.name = {
         base: titleVal,
         edit: titleVal
       }
-
       const descVal = data.description
       this.convo.description = {
         base: descVal,
         edit: descVal
       }
-
       const agendaVal = data.agenda
       this.convo.agenda = {
         base: agendaVal,
         edit: agendaVal
       }
-
       const abstractVal = data.abstract
+      console.log('la', abstractVal)
       this.convo.abstract = {
-        base: abstractVal,
-        edit: abstractVal
+        base: !!data.abstract.base ? data.abstract.base : abstractVal,
+        edit: !!data.abstract.edit ? data.abstract.edit : abstractVal
       }
 
       const keyWordsVal = data.keywords
@@ -458,16 +477,17 @@ export default {
     editAgenda () {
       this.agendaEdit = true
     },
-    cancelEditAgenda () {
+    async cancelEditAgenda () {
       this.agendaEdit = false
       this.convo.agenda.edit = this.convo.agenda.base
+      await this.dispatchConversations()
     },
     editAbstract () {
       this.abstractEdit = true
     },
     cancelEditAbstract () {
       this.abstractEdit = false
-      this.convo.abstract.edit = this.convo.abstract.base
+      this.convo.abstract.edit = this.convo.keywords.base
     },
     editKeywords () {
       this.keywordsEdit = true
@@ -476,28 +496,73 @@ export default {
       this.keywordsEdit = false
       this.convo.keywords.edit = this.convo.keywords.base
     },
-    update (key) {
-      this.conversation[key].base = this.conversation[key].edit
-      if (key === 'name') {
-        this.titleEdit = false
-        // REQUEST UPDATE title
+    addAgendaField () {
+      this.convo.agenda.edit.push('')
+    },
+    removeAgendaField (index) {
+      console.log(index)
+      this.convo.agenda.edit.splice(index, 1)
+      
+    },
+    async update (key) {
+      try {
+        this.conversation[key].base = this.conversation[key].edit
+        let payload = {}
+        let uriKey = ''
+        if (key === 'name') {
+          this.titleEdit = false
+          // REQUEST UPDATE title
+          payload.title = this.conversation[key].edit
+          uriKey = 'title'
+        }
+        if (key === 'description') {
+          this.descriptionEdit = false
+          payload.description = this.conversation[key].edit
+          uriKey = 'description'
+          // REQUEST UPDATE title
+        }
+        if (key === 'agenda') {
+          // REQUEST UPDATE AGENDA
+          this.agendaEdit = false
+          console.log('1/', this.conversation[key].edit)
+          let agenda = this.conversation[key].edit.filter(ag => ag !== "")
 
-      }
-      if (key === 'description') {
-        this.descriptionEdit = false
-        // REQUEST UPDATE title
-      }
-      if (key === 'agenda') {
-        this.agendaEdit = false
-        // REQUEST UPDATE AGENDA
-      }
-      if (key === 'abstract') {
-        this.abstractEdit = false
-        // REQUEST UPDATE ABSTRACT
-      }
-      if (key === 'keywords') {
-        this.keywordsEdit = false
-        // REQUEST UPDATE keywords
+          payload.agenda = agenda
+          console.log('payload.agenda',payload.agenda)
+          uriKey = 'agenda'
+        }
+        if (key === 'abstract') {
+          // REQUEST UPDATE ABSTRACT
+          this.abstractEdit = false
+        }
+        if (key === 'keywords') {
+          this.keywordsEdit = false
+          // REQUEST UPDATE keywords
+        }  
+
+        let req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/${uriKey}`, 'put', payload)
+        if(req.status === 200 && !!req.data.msg) {
+          bus.$emit('app_notif', {
+            status: 'success',
+            message: req.data.msg,
+            timeout: 3000
+          })
+          bus.$emit('refresh_conversation', {})
+        } else {
+          throw req
+        }
+      } catch (error) {
+        if(process.env.VUE_APP_DEBUG === 'true') {
+          console.error(error)
+        }
+        if(error.msg !== 'no match found') {
+          bus.$emit('app_notif', {
+            status: 'error',
+            message: !!error.msg ? error.msg : 'Error on updating conversation',
+            timeout: null
+          })
+        }
+        bus.$emit('refresh_conversation', {})
       }
     },
     playSample (event, start, end) {

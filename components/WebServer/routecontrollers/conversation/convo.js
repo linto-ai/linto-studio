@@ -88,7 +88,6 @@ async function deleteConvo(req, res, next) {
 async function updateTitle(req, res, next) {
     try {
         if (!!req.body.title) {
-
             let payload = {
                 convoid: req.params.conversationid,
                 name: req.body.title
@@ -126,7 +125,7 @@ async function updateAgenda(req, res, next) {
                 convoid: req.params.conversationid,
                 agenda: req.body.agenda
             }
-            
+
             let updateAgenda = await convoModel.updateMetaData(payload)
 
             if (updateAgenda === 'success') {
@@ -159,7 +158,7 @@ async function updateDescription(req, res, next) {
                 convoid: req.params.conversationid,
                 description: req.body.description
             }
-            
+
             let updateDescription = await convoModel.updateMetaData(payload)
 
             if (updateDescription === 'success') {
@@ -192,7 +191,7 @@ async function updateConvoType(req, res, next) {
                 convoid: req.params.conversationid,
                 convoType: req.body.convoType
             }
-            
+
             let updateConvoType = await convoModel.updateMetaData(payload)
 
             if (updateConvoType === 'success') {
@@ -220,9 +219,9 @@ async function updateConvoType(req, res, next) {
 module.exports = {
     createConvoBase,
     updateSpeakerAudio,
-    deleteConvo, 
-    updateTitle, 
-    updateDescription, 
-    updateAgenda, 
+    deleteConvo,
+    updateTitle,
+    updateDescription,
+    updateAgenda,
     updateConvoType
 }
