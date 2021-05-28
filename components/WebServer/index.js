@@ -7,6 +7,7 @@ const Session = require('express-session')
 const fileUpload = require('express-fileupload')
 const passport = require('passport')
 
+const redisClient = require(`${process.cwd()}/components/redis`)
 
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
@@ -48,6 +49,9 @@ class WebServer extends Component {
         }))
         this.express.use(cookieParser())
 
+        // REDIS
+        this.express.redis = new redisClient()
+
         // SESSION
         let sessionConfig = {
             resave: false,
@@ -55,9 +59,9 @@ class WebServer extends Component {
             secret: process.env.SESSION_SECRET,
             cookie: {
                 maxAge: 30240000000 // 1 year
-            }
+            },
+            store: this.express.redis.redisStore
         }
-
         this.express.use(Session(sessionConfig))
 
         // Public path

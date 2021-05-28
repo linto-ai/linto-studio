@@ -121,7 +121,7 @@ function generateSecretFromHeaders(req, payload, done) {
         const { headers: { authorization } } = req
         if (authorization.split(' ')[0] === 'Bearer') {
             UsersModel.getUserByEmail(payload.data.email).then(users => {
-                if (users.length === 1) return done(null, users[0].keyToken + process.env.LINTO_STACK_CM_JWT_SECRET)
+                if (users.length === 1) return done(null, users[0].keyToken + process.env.CM_JWT_SECRET)
                 else throw MultipleUserFound
             })
         }

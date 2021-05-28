@@ -10,14 +10,14 @@ while [ "$1" != "" ]; do
         cd /usr/src/app/conversation-manager/components/vue_app
         echo "REBUILDING VUE APP"
         if [[ "$LINTO_STACK_USE_SSL" == true ]]; then
-            echo "VUE_APP_URL=http://$LINTO_CONVERSATION_MANAGER_HOST
-            VUE_APP_CONVO_API=http://$LINTO_CONVERSATION_MANAGER_HOST/api
-            VUE_APP_CONVO_AUTH=http://$LINTO_CONVERSATION_MANAGER_HOST/auth
+            echo "VUE_APP_URL=http://$CONVERSATION_MANAGER_HOST
+            VUE_APP_CONVO_API=http://$CONVERSATION_MANAGER_HOST/api
+            VUE_APP_CONVO_AUTH=http://$CONVERSATION_MANAGER_HOST/auth
             VUE_APP_DEBUG=false" >.env.production
         else
-            echo "VUE_APP_URL=http://$LINTO_CONVERSATION_MANAGER_HOST
-            VUE_APP_CONVO_API=http://$LINTO_CONVERSATION_MANAGER_HOST/api
-            VUE_APP_CONVO_AUTH=http://$LINTO_CONVERSATION_MANAGER_HOST/auth
+            echo "VUE_APP_URL=http://$CONVERSATION_MANAGER_HOST
+            VUE_APP_CONVO_API=http://$CONVERSATION_MANAGER_HOST/api
+            VUE_APP_CONVO_AUTH=http://$CONVERSATION_MANAGER_HOST/auth
             VUE_APP_DEBUG=false" >.env.production
         fi
             npm run build-app

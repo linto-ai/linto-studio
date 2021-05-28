@@ -326,7 +326,6 @@ export default {
     this.audioPlayer = new Audio()
 
     bus.$on('refresh_conversation', async (data) => {
-      console.log('BUS Refresh')<
       await this.dispatchConversations()
     })
 
@@ -385,7 +384,6 @@ export default {
   },
   watch: {
     conversation (data) {
-      console.log('watch')
       this.convo = data
       const titleVal = data.name
       this.convo.name = {
@@ -403,7 +401,6 @@ export default {
         edit: agendaVal
       }
       const abstractVal = data.abstract
-      console.log('la', abstractVal)
       this.convo.abstract = {
         base: !!data.abstract.base ? data.abstract.base : abstractVal,
         edit: !!data.abstract.edit ? data.abstract.edit : abstractVal
@@ -500,9 +497,7 @@ export default {
       this.convo.agenda.edit.push('')
     },
     removeAgendaField (index) {
-      console.log(index)
       this.convo.agenda.edit.splice(index, 1)
-      
     },
     async update (key) {
       try {
@@ -524,11 +519,9 @@ export default {
         if (key === 'agenda') {
           // REQUEST UPDATE AGENDA
           this.agendaEdit = false
-          console.log('1/', this.conversation[key].edit)
           let agenda = this.conversation[key].edit.filter(ag => ag !== "")
 
           payload.agenda = agenda
-          console.log('payload.agenda',payload.agenda)
           uriKey = 'agenda'
         }
         if (key === 'abstract') {

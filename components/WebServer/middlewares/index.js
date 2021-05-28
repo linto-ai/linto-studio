@@ -15,6 +15,7 @@ function logger(req, res, next) {
 async function isConnected(req, res, next) {
     try {
         if (!!req.session) {
+            console.log(req.session)
             if (!!req.session.logged && !!req.session.token) {
                 // Already logged  
                 if (req.session.logged === 1) {
