@@ -359,7 +359,7 @@ export default {
           payload = {
             convoid: this.convoId,
             speakerid: this.newSpeaker.value,
-            turnpositions: parseInt(this.selectionObj.startTurnId) === parseInt(this.selectionObj.endTurnId) ? [parseInt(this.selectionObj.startTurnPosition)] : [parseInt(this.selectionObj.startTurnPosition), parseInt(this.selectionObj.endTurnPosition)],
+            turnpositions: this.selectionObj.startTurnId === this.selectionObj.endTurnId ? [parseInt(this.selectionObj.startTurnPosition)] : [parseInt(this.selectionObj.startTurnPosition), parseInt(this.selectionObj.endTurnPosition)],
             wordids: [this.selectionObj.startWordId, this.selectionObj.endWordId],
             splitype: 0
           }
@@ -382,7 +382,7 @@ export default {
             splitype: splitVal
           }
         }
-        
+        console.log('Split payload', payload)
         // Request 
         const req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/turn/split`, 'put', payload)
 

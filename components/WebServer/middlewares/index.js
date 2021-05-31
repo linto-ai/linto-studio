@@ -19,12 +19,22 @@ async function isConnected(req, res, next) {
             if (!!req.session.logged && !!req.session.token) {
                 // Already logged  
                 if (req.session.logged === 1) {
+                    res.cookie('authToken', req.session.token.auth_token, {
+                        expires: new Date(Date.now() + 900000)
+                    })
+
+                    res.cookie('userId', req.session.userId.toString(), {
+                        expires: new Date(Date.now() + 900000)
+                    })
                     if (req.url === '/login') {
                         res.redirect('/interface/conversations')
                     } else {
+
                         next()
                     }
                 } else {
+                    res.cookie('authToken', { expires: Date.now() })
+                    res.cookie('userId', { expires: Date.now() })
                     throw 'Session not found '
                 }
             } else {
@@ -62,10 +72,10 @@ async function hasReadAccess(req, res, next) {
                     if (shared) {
                         next()
                     } else {
-                        throw 'Access denied'
+                        throw { msg: 'Access denied' }
                     }
                 } else {
-                    throw 'Access denied'
+                    throw { msg: 'Access denied' }
                 }
             } else {
                 throw { msg: 'Conversation not found' }

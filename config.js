@@ -24,6 +24,7 @@ function configureDefaults() {
         process.env.COMPONENTS = ifHas(process.env.COMPONENTS, envdefault.COMPONENTS)
         process.env.WEBSERVER_HTTP_PORT = ifHas(process.env.WEBSERVER_HTTP_PORT, envdefault.WEBSERVER_HTTP_PORT)
         process.env.SESSION_SECRET = ifHas(process.env.SESSION_SECRET, envdefault.SESSION_SECRET)
+        process.env.USE_SSL = ifHas(process.env.USE_SSL, envdefault.USE_SSL)
 
         // Mongo
         process.env.DB_DRIVER = ifHas(process.env.DB_DRIVER, envdefault.DB_DRIVER)
@@ -46,7 +47,6 @@ function configureDefaults() {
         process.env.REDIS_SESSION_SERVICE = ifHas(process.env.REDIS_SESSION_SERVICE, envdefault.REDIS_SESSION_SERVICE)
         process.env.REDIS_SESSION_SERVICE_PORT = ifHas(process.env.REDIS_SESSION_SERVICE_PORT, envdefault.REDIS_SESSION_SERVICE_PORT)
 
-
         process.env.STT_USER = ifHas(process.env.STT_USER, envdefault.STT_USER)
         process.env.STT_PASSWORD = ifHas(process.env.STT_PASSWORD, envdefault.STT_PASSWORD)
         process.env.STT_HOST = ifHas(process.env.STT_HOST, envdefault.STT_HOST)
@@ -57,10 +57,15 @@ function configureDefaults() {
         process.env.VOLUME_AUDIO_PUBLIC_PATH = ifHas(process.env.VOLUME_AUDIO_PUBLIC_PATH, envdefault.VOLUME_AUDIO_PUBLIC_PATH)
         process.env.VOLUME_PROFILE_PICTURE_UPLOAD_PATH = ifHas(process.env.VOLUME_PROFILE_PICTURE_UPLOAD_PATH, envdefault.VOLUME_PROFILE_PICTURE_UPLOAD_PATH)
         process.env.VOLUME_PROFILE_PICTURE_PUBLIC_PATH = ifHas(process.env.VOLUME_PROFILE_PICTURE_PUBLIC_PATH, envdefault.VOLUME_PROFILE_PICTURE_PUBLIC_PATH)
-        process.env.VOLUME_DATABASE_FOLDER = ifHas(process.env.VOLUME_DATABASE_FOLDER, envdefault.VOLUME_DATABASE_FOLDER)
 
+        // Share Volumes
+        process.env.VOLUME_DATABASE_FOLDER = ifHas(process.env.VOLUME_DATABASE_FOLDER, envdefault.VOLUME_DATABASE_FOLDER)
+        process.env.VOLUME_REDIS_FOLDER = ifHas(process.env.VOLUME_REDIS_FOLDER, envdefault.VOLUME_REDIS_FOLDER)
+
+        // Passeport settings
         process.env.CM_JWT_SECRET = ifHas(process.env.CM_JWT_SECRET, envdefault.CM_JWT_SECRET)
         process.env.CM_REFRESH_SECRET = ifHas(process.env.CM_REFRESH_SECRET, envdefault.CM_REFRESH_SECRET)
+
     } catch (e) {
         console.error(debug.namespace, e)
         process.exit(1)

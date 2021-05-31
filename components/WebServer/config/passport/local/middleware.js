@@ -115,31 +115,42 @@ function getTokenFromHeaders(req, res, next) {
 }
 
 function generateSecretFromHeaders(req, payload, done) {
-    if (!payload || !payload.data) {
-        return done(new MalformedToken())
-    } else {
-        const { headers: { authorization } } = req
-        if (authorization.split(' ')[0] === 'Bearer') {
-            UsersModel.getUserByEmail(payload.data.email).then(users => {
-                if (users.length === 1) return done(null, users[0].keyToken + process.env.CM_JWT_SECRET)
-                else throw MultipleUserFound
-            })
+    try {
+        if (!payload || !payload.data) {
+            return new MalformedToken()
+        } else {
+            const { headers: { authorization } } = req
+            if (authorization.split(' ')[0] === 'Bearer') {
+                UsersModel.getUserByEmail(payload.data.email).then(users => {
+                    if (users.length === 1) return done(null, users[0].keyToken + process.env.CM_JWT_SECRET)
+                    else throw MultipleUserFound
+                })
+            }
         }
+    } catch (error) {
+        console.error('generateSecretFromHeaders ERR:', error)
+        return error
     }
 }
 
 function generateRefreshSecretFromHeaders(req, payload, done) {
-    if (!payload || !payload.data) {
-        done(new MalformedToken())
-    } else {
-        const { headers: { authorization } } = req
-        if (authorization.split(' ')[0] === 'Bearer') {
-            UsersModel.getUserByEmail(payload.data.email).then(users => {
-                if (users.length === 1) done(null, users[0].keyToken + process.env.LINTO_STACK_OVERWATCH_REFRESH_SECRET)
-                else throw MultipleUserFound
-            })
+    try {
+        if (!payload || !payload.data) {
+            throw new MalformedToken()
+        } else {
+            const { headers: { authorization } } = req
+            if (authorization.split(' ')[0] === 'Bearer') {
+                UsersModel.getUserByEmail(payload.data.email).then(users => {
+                    if (users.length === 1) done(null, users[0].keyToken + process.env.CM_REFRESH_SECRET)
+                    else throw MultipleUserFound
+                })
+            }
         }
+    } catch (error) {
+        console.error('generateRefreshSecretFromHeaders ERR:', error)
+        return error
     }
+
 }
 
 function checkConvSharedRight(next, conversationId, userId, right, rightException) {

@@ -5,12 +5,14 @@ const redisStore = require('connect-redis')(Session)
 class redisClient {
     constructor() {
         this.settings = {
-            host: process.env.LINTO_STACK_REDIS_SESSION_SERVICE,
-            port: process.env.LINTO_STACK_REDIS_SESSION_SERVICE_PORT,
+            host: process.env.REDIS_SESSION_SERVICE,
+            port: process.env.REDIS_SESSION_SERVICE_PORT,
         }
+        console.log('REDIS SETTINGS : ', this.settings)
         this.maxAttempt = 5
         this.client = null
         this.redisStore = null
+
         this.init()
     }
 
@@ -42,8 +44,8 @@ class redisClient {
         })
 
         this.redisStore = new redisStore({
-            host: process.env.LINTO_STACK_REDIS_SESSION_SERVICE,
-            port: process.env.LINTO_STACK_REDIS_SESSION_SERVICE_PORT,
+            host: process.env.REDIS_SESSION_SERVICE,
+            port: process.env.REDIS_SESSION_SERVICE_PORT,
             client: this.client
         })
 

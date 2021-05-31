@@ -274,15 +274,14 @@ async function splitTurns(req, res, next) {
                 payload.positions = [...Array(nums[1] + 1).keys()].slice(nums[0])
             }
 
+            console.log(payload.positions)
+
             // get all turns
             let getTurns = await convoModel.getTurns(payload)
 
-
             if (getTurns !== "undefined") {
-
                 // take first turn and sort words in that turn and put in start_words variable
                 let turns = getTurns[0].text.sort((a, b) => a.pos - b.pos)
-
                 let start_words = turns[0].words.sort((a, b) => a.pos - b.pos)
                 let end_words = null
 

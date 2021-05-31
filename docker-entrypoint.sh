@@ -9,10 +9,10 @@ while [ "$1" != "" ]; do
     --rebuild-vue-app)
         cd /usr/src/app/conversation-manager/components/vue_app
         echo "REBUILDING VUE APP"
-        if [[ "$LINTO_STACK_USE_SSL" == true ]]; then
-            echo "VUE_APP_URL=http://$CONVERSATION_MANAGER_HOST
-            VUE_APP_CONVO_API=http://$CONVERSATION_MANAGER_HOST/api
-            VUE_APP_CONVO_AUTH=http://$CONVERSATION_MANAGER_HOST/auth
+        if [[ "$USE_SSL" == true ]]; then
+            echo "VUE_APP_URL=https://$CONVERSATION_MANAGER_HOST
+            VUE_APP_CONVO_API=https://$CONVERSATION_MANAGER_HOST/api
+            VUE_APP_CONVO_AUTH=https://$CONVERSATION_MANAGER_HOST/auth
             VUE_APP_DEBUG=false" >.env.production
         else
             echo "VUE_APP_URL=http://$CONVERSATION_MANAGER_HOST
