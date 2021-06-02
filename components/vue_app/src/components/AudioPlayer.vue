@@ -62,14 +62,14 @@ export default {
       audioSpeedRange: [0.5, 0.75, 1, 1.25, 1.5, 2],
       audioIsPlaying: false,
       audioPlayer: null,
-      playSegments: []
+      playSegments: [],
+      currentSegment: -1
     }
   },
   mounted () {
     this.initAudioPlayer()
   },
   computed : {
-    
     prctTimeline () {
       return this.currentTime * 100 / this.duration
     },
@@ -84,12 +84,7 @@ export default {
     prctTimeline (data) {
       this.prctTimelineSelected = data
     },
-    audioIsPlaying (data) {
-      if(data) {
-        bus.$emit('scroll_to_current', {})
-      }
-    },
-    convoText (data) {
+    convoText (data) { // If conversation is filtered, set playSegments (playlist)
       this.pause()
       if (this.convoIsFiltered) {
         this.playSegments = []
@@ -104,8 +99,13 @@ export default {
           })
         }
       }
+      else {
+        this.playSegments = []
+        this.currentSegment = -1
+      }
       if(this.playSegments.length > 0) {
-        this.audioPlayer.currentTime = this.playSegments[0].stime
+        this.currentSegment = 0
+        this.audioPlayer.currentTime = this.playSegments[this.currentSegment].stime
       }
     },
     audioSpeed (data) {
@@ -122,11 +122,11 @@ export default {
       this.audioPlayer.addEventListener('playing', () => {
         this.audioIsPlaying = true
       })
-      
       this.audioPlayer.addEventListener('pause', () => {
         this.audioIsPlaying = false
       })
-
+        
+      // BUS events listeners
       bus.$on('audio_player_playfrom', (data) => {
         this.playFrom(data.time)
       })
@@ -138,7 +138,6 @@ export default {
       bus.$on('audio_player_play', (data) => {
         this.play()
       })
-
       bus.$on('audio_player_play_pause', (data) => {
         if(!this.editionMode) {
           if(this.audioIsPlaying) {
@@ -148,54 +147,86 @@ export default {
           }
         }
       })
-
       bus.$on('audio_player_next_turn', () => {
         if(!this.editionMode) {
           this.playNextSpeaker()
+          // Todo > if conversation is filtered (segments)
         }
       })
-
       bus.$on('audio_player_prev_turn', () => {
         if(!this.editionMode) {
           this.playPrevSpeaker()
+          // Todo > if conversation is filtered (segments)
         }
       })
     },
+    // Play from a given time
     playFrom(time) {
       this.pause()
       this.audioPlayer.currentTime = time
+      if(this.convoIsFiltered && this.playSegments.length > 0){
+        this.currentSegment = this.playSegments.findIndex(s => s.stime >= time && s.etime <= s.etime)
+      }
       setTimeout(()=>{
         this.play()
       }, 100)
     },
+    // Play from Timeline
     playFromTimeLine (e) {
       const val = e.srcElement.value
       const targetTime = parseInt(val * this.duration / 100)
       this.playFrom(targetTime)
     },
+    // Update current Time + play segments if conversation is filtered
     updateTime () {
       this.currentTime = this.audioPlayer.currentTime
       bus.$emit('audio_player_currenttime', {time : this.currentTime })
+
+      // If conversation is filtered, play segments
+      if(this.audioIsPlaying && this.currentSegment >= 0 && this.playSegments.length > 0) {
+        if(this.currentTime >= this.playSegments[this.currentSegment].etime) {
+          this.pause()
+          // play next segment
+          if(this.currentSegment < this.playSegments.length -1) {
+            this.currentSegment++
+            this.playFrom(this.playSegments[this.currentSegment].stime)
+          } else {
+          // reset segment
+            this.pause()
+            this.currentSegment = 0
+            this.audioPlayer.currentTime  = this.playSegments[this.currentSegment].stime
+            this.currentTime = this.audioPlayer.currentTime
+          }
+        }
+      }
     },
+    // Audio play
     play () {
       this.audioPlayer.play()
+      bus.$emit('scroll_to_current', {})
     },
+    // Audio pause
     pause () {
       this.audioPlayer.pause()
     },
+    // Show/hide audio speed options
     toggleAudioSpeedOptions () {
       this.showAudioSpeed = !this.showAudioSpeed
     },
+    // Set audio speed
     setAudioSpeed (speed) {
       this.audioSpeed = speed
       this.showAudioSpeed = false
     },
+    // Convert time to hh:mm:ss
     timeToHMS (time) {
       return this.$options.filters.timeToHMS(time) 
     },
+    // Update time line percentage
     updateTimeline (e) {
       this.prctTimelineSelected = e.srcElement.value
     },
+    // Audio play previous speaker
     playPrevSpeaker () {
       const tr = document.getElementsByClassName('active--speaker')
       if (tr.length === 0) {
@@ -216,6 +247,7 @@ export default {
         }
       }
     },
+    // Audio play next speaker
     playNextSpeaker () {
       const tr = document.getElementsByClassName('active--speaker')
       if (tr.length === 0) {
@@ -236,6 +268,7 @@ export default {
         }
       }
     },
+    // Show keyboard commands
     showKeyboardCommands () {
       bus.$emit('show_player_commands', {})
     }

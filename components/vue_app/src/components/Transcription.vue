@@ -53,7 +53,7 @@ export default {
   data () {
     return {
       refresh: 1,
-       toolBoxOption: {
+      toolBoxOption: {
         comment: false,
         highlight: true,
         keywords: true,
@@ -65,6 +65,10 @@ export default {
     }
   },
   mounted () {
+    // Enable transcription text selection
+    this.bindTextSelection()
+
+    // BUS listeners
     bus.$on('clear_text_selection', () => {
       this.cancelTextSelection()
     })
@@ -74,25 +78,30 @@ export default {
     bus.$on('scroll_to_current', () => {
       this.scrollToCurrentTurn(this.currentTurn)
     })
-    
     bus.$on('transcription_update_highlights', (data) => {
       this.setHighlights(data.highlightsOptions)
     })
     bus.$on('transcription_update_keywords', (data) => {
       this.setKeywords(data.keywordsOptions)
     })
-
-    this.initTextSelection()
+    bus.$on('enable_text_selection', () => {
+      this.bindTextSelection()
+    })
+    bus.$on('disable_text_selection', () => {
+      this.unbindTextSelection()
+    })
   },
   watch: {
     currentTurn (data) {
-      // on playing : smooth scroll to current turn 
-      const transcription = document.getElementById('transcription')
+      // if audio is playing: smooth scroll to current turn 
       this.scrollToCurrentTurn(data)
     }
   },
   methods: {
-    /*** Show/Hide Highligts & Keywords ***/
+
+    /*** HIGHLIGHTS ***/
+
+    // Hihglihts show/hide
     setHighlights (data) {
       this.highlightsActive = []
       const allWords = document.getElementsByClassName('transcription--word')
@@ -113,6 +122,10 @@ export default {
         }
       }
     },
+
+    /*** KEYWORDS ***/
+
+    // Keywords show/hide 
     setKeywords (data) {
       this.keywordsActive = []
       const allWords = document.getElementsByClassName('transcription--word')
@@ -127,76 +140,85 @@ export default {
         }
       }
     },
-    
-    /*** Text Selection ***/
+
+    /*** TEXT SELECTION ***/
+
+    // Enable text selection
+    bindTextSelection () {
+      const transcription = document.getElementById('transcription')
+      transcription.addEventListener('selectstart', this.initTextSelection)
+    },
+    // Disable text selection
+    unbindTextSelection () {
+      const transcription = document.getElementById('transcription')
+      transcription.removeEventListener('selectstart', this.initTextSelection)
+    },
+    // Text selection event
     initTextSelection () {
       if (window.Event) {
         document.captureEvents(Event.MOUSEMOVE)
       }
       const transcription = document.getElementById('transcription')
-      // text selection event in "transcription" block
-      transcription.addEventListener('selectstart', (e) => {
-        if(!this.editionMode && !this.convoIsFiltered) {
-          let startClick = new Date()
-          transcription.onmouseup = (e) => {
-            const stopClick = new Date()
-            this.clickTime = stopClick - startClick
-            const selection = window.getSelection()
-            this.selectedText = []
-            
-            // > Selection: first element
-            // chrome = selection.baseNode
-            // firefox = selection.anchorNode
-            const startWord = !selection.baseNode ? selection.anchorNode.parentNode : selection.baseNode.parentNode 
-            const startWordId = startWord.getAttribute('data-word-id')
-            const startWordPosition = startWord.getAttribute('data-pos')
-            const startTurnId = startWord.getAttribute('data-turn-id')
-            const startTurn = document.querySelectorAll(`.transcription-speaker-sentence[data-turn-id="${startTurnId}"]`)[0]
-            const startTurnPosition = startTurn.getAttribute('data-pos')
-            const startTurnSpeakerId = startTurn.getAttribute('data-speaker')
-            // > Selection: last element
-            // chrome = selection.extendNode
-            // firefox = selection.focusNode
-            const endWord = !selection.extentNode ? selection.focusNode.parentNode : selection.extentNode.parentNode
-            const endWordId = endWord.getAttribute('data-word-id')
-            const endWordPosition = endWord.getAttribute('data-pos')
-            const endTurnId = endWord.getAttribute('data-turn-id')
-            const endTurn = document.querySelectorAll(`.transcription-speaker-sentence[data-turn-id="${endTurnId}"]`)[0]
-            const endTurnPosition = endTurn.getAttribute('data-pos')
-            const endTurnSpeakerId = endTurn.getAttribute('data-speaker')
-            this.selectionObj = {
-              startWord,
-              startWordId,
-              startWordPosition,
-              startTurn,
-              startTurnId,
-              startTurnPosition,
-              startTurnSpeakerId,
-              endWord,
-              endWordId,
-              endWordPosition,
-              endTurn,
-              endTurnId,
-              endTurnPosition,
-              endTurnSpeakerId
-            }
-            this.selectionObj.words = startTurnId === endTurnId ? this.$store.getters.wordsToTextBetweenWordIds(this.convoId, this.selectionObj) : []
-            if(!startTurn.classList.contains('transcription-speaker-sentence') || !endTurn.classList.contains('transcription-speaker-sentence')) {
-              return false 
+      if(!this.editionMode && !this.convoIsFiltered) {
+        let startClick = new Date()
+        transcription.onmouseup = (e) => {
+          const stopClick = new Date()
+          this.clickTime = stopClick - startClick
+          const selection = window.getSelection()
+          this.selectedText = []
+          
+          // > Selection: first element
+          // chrome = selection.baseNode
+          // firefox = selection.anchorNode
+          const startWord = !selection.baseNode ? selection.anchorNode.parentNode : selection.baseNode.parentNode 
+          const startWordId = startWord.getAttribute('data-word-id')
+          const startWordPosition = startWord.getAttribute('data-pos')
+          const startTurnId = startWord.getAttribute('data-turn-id')
+          const startTurn = document.querySelectorAll(`.transcription-speaker-sentence[data-turn-id="${startTurnId}"]`)[0]
+          const startTurnPosition = startTurn.getAttribute('data-pos')
+          const startTurnSpeakerId = startTurn.getAttribute('data-speaker')
+          // > Selection: last element
+          // chrome = selection.extendNode
+          // firefox = selection.focusNode
+          const endWord = !selection.extentNode ? selection.focusNode.parentNode : selection.extentNode.parentNode
+          const endWordId = endWord.getAttribute('data-word-id')
+          const endWordPosition = endWord.getAttribute('data-pos')
+          const endTurnId = endWord.getAttribute('data-turn-id')
+          const endTurn = document.querySelectorAll(`.transcription-speaker-sentence[data-turn-id="${endTurnId}"]`)[0]
+          const endTurnPosition = endTurn.getAttribute('data-pos')
+          const endTurnSpeakerId = endTurn.getAttribute('data-speaker')
+          this.selectionObj = {
+            startWord,
+            startWordId,
+            startWordPosition,
+            startTurn,
+            startTurnId,
+            startTurnPosition,
+            startTurnSpeakerId,
+            endWord,
+            endWordId,
+            endWordPosition,
+            endTurn,
+            endTurnId,
+            endTurnPosition,
+            endTurnSpeakerId
+          }
+          this.selectionObj.words = startTurnId === endTurnId ? this.$store.getters.wordsToTextBetweenWordIds(this.convoId, this.selectionObj) : []
+          if(!startTurn.classList.contains('transcription-speaker-sentence') || !endTurn.classList.contains('transcription-speaker-sentence')) {
+            return false 
+          } else {
+            if (this.clickTime > 150) {
+              this.setTextSelection(this.selectionObj)
             } else {
-              if (this.clickTime > 150) {
-                this.setTextSelection(this.selectionObj)
-              } else {
-                this.selectionObj = null
-              }
+              this.selectionObj = null
             }
           }
         }
-      })
+      }
     },
+    // Render text selection and open Toolbox
     setTextSelection (selectionObj) {
       this.cancelTextSelection()
-      console.log(selectionObj)
       this.playerPause()
       setTimeout(() => {
         let allParents = document.getElementsByClassName('transcription-speaker-sentence')
@@ -283,6 +305,7 @@ export default {
         }
       }, 100)
     },
+    // Cancel text selection
     cancelTextSelection () {
       this.closeToolBox()
       this.selectedText = []
@@ -293,28 +316,7 @@ export default {
         })
       }
     },
-    /*** Edit Speaker Frame ***/
-    editSpeaker (event, speaker, turnId) {
-      if (!this.speakerEdit) {
-        const btn = event.target
-        const bounce = btn.getBoundingClientRect()
-        const EditSpeakerTranscriptionFrame = document.getElementById('edit-speaker-frame')
-        EditSpeakerTranscriptionFrame.setAttribute('style',`top: ${bounce.y - 100}px; left: ${bounce.x - 60}px`)
-        const target = event.target
-        target.classList.add('active')
-        bus.$emit(`edit_speaker_transcription`, {
-          speaker, 
-          conversationId: this.convoId, 
-          turnId
-        })
-        this.speakerEdit = true
-      }
-    },
-    scrollToCurrentTurn (pos) {
-      const targetTurn = document.getElementById(`turn-${pos}`)
-      transcription.scrollTo({top: targetTurn.offsetTop - 200, behavior: 'smooth' })
-    },
-    /*** ToolBox ***/
+    // Show Toolbox
     showToolBox (selectionObj) {
       const bounce = selectionObj.endWord.getBoundingClientRect()
       const offsetX = bounce.x
@@ -333,6 +335,7 @@ export default {
         e.preventDefault()
       }
     },
+    // Close Toolbox
     closeToolBox () {
       if (window.getSelection) {
         if (window.getSelection().empty) {  // Chrome
@@ -344,19 +347,55 @@ export default {
         document.selection.empty();
       }
     },
+
+    /*** SPEAKER EDIT ***/
+    
+    // Edit Speaker
+    editSpeaker (event, speaker, turnId) {
+      if (!this.speakerEdit) {
+        const btn = event.target
+        const bounce = btn.getBoundingClientRect()
+        const EditSpeakerTranscriptionFrame = document.getElementById('edit-speaker-frame')
+        EditSpeakerTranscriptionFrame.setAttribute('style',`top: ${bounce.y > 500 ? 500 : bounce.y -100}px; left: ${bounce.x - 60}px`)
+        const target = event.target
+        target.classList.add('active')
+        bus.$emit(`edit_speaker_transcription`, {
+          speaker, 
+          conversationId: this.convoId, 
+          turnId
+        })
+        this.speakerEdit = true
+      }
+    },
+    
+    /*** SCROLL TO ***/
+    // Scroll to current turn
+    scrollToCurrentTurn (pos) {
+      const targetTurn = document.getElementById(`turn-${pos}`)
+      if(!!targetTurn.offsetTop && pos > 0) {
+        transcription.scrollTo({top: targetTurn.offsetTop - 200, behavior: 'smooth' })
+      }
+    },
+    
+    /*** CURSOR POSITION ***/
+    // Get cursor position
     getCursorXY(e) {
       this.cursorX = (window.Event) ? e.pageX : event.clientX + (document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft);
       this.cursorY = (window.Event) ? e.pageY : event.clientY + (document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop);
     },
-    /*** Audio player ***/
+
+    /*** AUDIO PLAYER EVENTS ***/
+    
+    // Audio player: play from a word
     playFromWord (stime) {
       if(!this.editionMode) {
         this.closeToolBox()
-        if(stime !== '' && this.clickTime <= 150){
+        if(stime !== ''){
           bus.$emit('audio_player_playfrom', {time: stime})
         }
       }
     },
+    // Audio player pause
     playerPause() {
       bus.$emit('audio_player_pause',{})
     }

@@ -177,6 +177,8 @@
             :convoText="convoText"
           ></AudioPlayer>
     </div>
+
+    Current turn : {{ currentTurn }}
   </div>
   <div v-else>Loading</div>
 </template>
@@ -217,12 +219,16 @@ export default {
     }
   },
   async mounted () {
-    
+    // Set conversation Id
     this.convoId = this.$route.params.convoId
+    
+    // Get conversation
     await this.dispatchStore('getConversations')
 
+    // Close navigation menu
     bus.$emit('vertical_nav_close', {}) 
       
+    // BUS listeners
     bus.$on('update_speaker', async (data) => {
       await this.dispatchStore('getConversations')
     })
@@ -238,6 +244,9 @@ export default {
 
   },
   computed: {
+    dataLoaded () {
+      return this.convoLoaded && this.speakersArray.length > 0 
+    },
     convo () {
       return this.$store.getters.conversationById(this.convoId)
     },
@@ -248,30 +257,15 @@ export default {
       return this.$store.getters.speakersByConversationId(this.convoId)
     },
     currentTurn () {
-      let currentTurn = 0
       if(!!this.convo && !!this.convo.text && this.convo.text.length > 0) {
-        for(let i = 0; i < this.convo.text.length; i++) {
-          if (
-            i !== this.convo.text.length - 1 && 
-            !!this.currentTime && 
-            this.convo.text[i].words.length > 0 && 
-            this.convo.text[i+1].words.length > 0) {
-            if (
-              !!this.convo.text[i].words[0].stime && 
-              !!this.convo.text[i+1].words[0].stime && 
-              this.currentTime >= this.convo.text[i].words[0].stime && 
-              this.currentTime < this.convo.text[i+1].words[0].stime) {
-              currentTurn = this.convo.text[i].pos
-            }
-          }
+        let turn = this.convo.text.filter(txt => txt.words[0].stime <= this.currentTime && txt.words[txt.words.length -1].etime >= this.currentTime)
+        if(turn.length > 0){
+          return turn[0].pos
         }
-      } 
-      return currentTurn
+      }
+      return 0
     },
-    dataLoaded () {
-      return this.convoLoaded && this.speakersArray.length > 0 
-    },
-    convoText () {
+    convoText () { // Return conversation text filtered by speakers, highlights and keywords
       let convoText = this.convo.text
       // Filter by speaker
       if (this.convoFilter.speaker !== '') {
@@ -315,9 +309,12 @@ export default {
     editionMode (data) {
       if(data) {
         bus.$emit('close_selected_toolbox', {})
+        bus.$emit('disable_text_selection', {})
+      } else {
+        bus.$emit('enable_text_selection', {})
       }
     },
-    'convo.keywords' (data) {
+    'convo.keywords' (data) { // Build keywordsOptions object
       if (data.length > 0) {
         data.map(kw => {
           if (this.keywordsOptions.findIndex(kwo => kwo.kid === kw.kid) >= 0) {
@@ -342,7 +339,7 @@ export default {
         }
       }
     },
-    'convo.highlights' (data) {
+    'convo.highlights' (data) { // Build highlightsOptions object
       if (data.length > 0) {
         data.map(hl => {
           if (this.highlightsOptions.findIndex(allhl => allhl.hid === hl.hid) >= 0) {
@@ -370,14 +367,16 @@ export default {
     }
   },
   methods: {
+
     /*** DOWNLOAD TRANSCRIPTION ***/
+
     // Create a download link from a generated blob
     downloadTranscription (blob, name = 'transcription.txt') {
       const blobUrl = URL.createObjectURL(blob)
-      const link = document.createElement("a")
+      const link = document.createElement('a')
       link.href = blobUrl
       link.download = name
-      document.body.appendChild(link);
+      document.body.appendChild(link)
       link.dispatchEvent(
         new MouseEvent('click', { 
           bubbles: true,
@@ -406,7 +405,9 @@ export default {
         console.error(error)
       }
     },
+
     /*** KEYWORDS ***/
+
     // Set/Unset transcription keywords
     updateKeywords (kw) {
       let kwItemIndex = this.keywordsOptions.findIndex(kwo => kwo.kid === kw.kid)
@@ -415,7 +416,9 @@ export default {
       }
       bus.$emit('transcription_update_keywords', {keywordsOptions: this.keywordsOptions})
     },
+
     /*** HIGHLIGHTS ***/
+
     refreshHighlights () {
       bus.$emit('transcription_update_highlights', {highlightsOptions: this.highlightsOptions})
     },
@@ -427,6 +430,7 @@ export default {
       }
       this.refreshHighlights()
     },
+    // Update Highlight color
     async updateHighlightColor (event, hl) {
       try {
         const color = event.srcElement.value
@@ -458,13 +462,18 @@ export default {
         })
       }
     },
+
     /*** EDITION MODE ***/
+
+    // Cancel edition mode
     cancelEditionMode () {
       this.dispatchStore('getConversations')
       this.refreshConversation++
       this.editionMode = false
 
     },
+
+    // Update transcription text
     async validateEdition() {
       try {
         this.editionMode = false
@@ -486,6 +495,7 @@ export default {
         console.error(error)
       }
     },
+    // build text object for transcription update
     buildTextObject () {
       const allTurns = document.getElementsByClassName('transcription-speaker-sentence')
       let textPayload = []
@@ -545,6 +555,7 @@ export default {
       }
       return textPayload
     },
+    // Get Highlights and Keywords by id
     getHlAndKwByWordId (wordId) {
       let options = {
         highlights: [],
@@ -560,7 +571,9 @@ export default {
       })
       return options
     },
+
     /*** DISPATCH STORE ***/
+    
     async dispatchStore (topic) {
       try {
         const resp = await this.$options.filters.dispatchStore(topic)
