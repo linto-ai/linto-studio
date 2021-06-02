@@ -170,7 +170,17 @@ export default {
           // > Selection: first element
           // chrome = selection.baseNode
           // firefox = selection.anchorNode
-          const startWord = !selection.baseNode ? selection.anchorNode.parentNode : selection.baseNode.parentNode 
+          let startWord = !selection.baseNode ? selection.anchorNode.parentNode : selection.baseNode.parentNode 
+          let endWord = !selection.extentNode ? selection.focusNode.parentNode : selection.extentNode.parentNode
+          
+          // check if startWordPos > endWordPos (selection from left to right)
+          let startWordPos = startWord.getAttribute('data-pos')
+          let endWordPos = endWord.getAttribute('data-pos')
+          if(startWordPos > endWordPos) {
+            const tmp = endWord
+            endWord = startWord
+            startWord = tmp
+          }
           const startWordId = startWord.getAttribute('data-word-id')
           const startWordPosition = startWord.getAttribute('data-pos')
           const startTurnId = startWord.getAttribute('data-turn-id')
@@ -180,7 +190,7 @@ export default {
           // > Selection: last element
           // chrome = selection.extendNode
           // firefox = selection.focusNode
-          const endWord = !selection.extentNode ? selection.focusNode.parentNode : selection.extentNode.parentNode
+          
           const endWordId = endWord.getAttribute('data-word-id')
           const endWordPosition = endWord.getAttribute('data-pos')
           const endTurnId = endWord.getAttribute('data-turn-id')

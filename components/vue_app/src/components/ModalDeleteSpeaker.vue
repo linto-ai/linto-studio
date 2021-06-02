@@ -9,12 +9,13 @@
         </div>
         <div class="modal--body flex col">
           <div v-if="speakerTxt.length === 0">
-            <p>Are you sure you want to <strong>delete</strong> this speaker: <strong>{{ speakerName }}</strong> ?</p>
+            <p v-html="$t('modals.delete_speaker.content_delete_html', {spk: speakerName})"></p>
           </div>
           <div v-else>
-            <p>{{$tc('modals.delete_speaker.content', {'spk': speakerName}) }}.</p>
+            <p v-html="$t('modals.delete_speaker.content_reassing_html', {spk: speakerName})"></p>
+
             <div class="form-field flex col">
-              <span class="form-label">Re-assign turns to:<strong>*</strong> :</span>
+              <span class="form-label">{{ $t('modals.delete_speaker.form_label')}}:<strong>*</strong> :</span>
               <select 
                 v-model="newSpeaker.value" @change="testSpeaker()"
                 :class="newSpeaker.error !== null ? 'error' : ''"
@@ -28,17 +29,17 @@
         </div>
         <div class="modal--footer flex row">
           <button class="btn btn--txt-icon grey" @click="closeModal()">
-            <span class="label">Cancel</span>
+            <span class="label">{{ $t('buttons.cancel') }}</span>
             <span class="icon icon__cancel"></span>
           </button>
           
           <button v-if="speakerTxt.length === 0" class="btn btn--txt-icon red" @click="deleteSpeaker()">
-            <span class="label">Delete</span>
+            <span class="label">{{ $t('buttons.delete') }}</span>
             <span class="icon icon__trash"></span>
           </button>
 
           <button v-else class="btn btn--txt-icon green" @click="mergeSpeakers()">
-            <span class="label">Merge</span>
+            <span class="label">{{ $t('buttons.merge') }}</span>
             <span class="icon icon__apply"></span>
           </button>
         </div>

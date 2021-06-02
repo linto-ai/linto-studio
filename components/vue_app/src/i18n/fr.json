@@ -46,17 +46,23 @@
     "buttons": {
         "apply": "Valider",
         "cancel": "Annuler",
-        "conversation_landing": "Conversation landing",
+        "conversation_landing": "Vue d'ensemble",
+        "delete": "Supprimer",
         "export": "Exporter",
+        "merge": "Fusionner",
         "new_conversation": "Nouvelle conversation",
         "new_speaker": "Nouveau locuteur",
+        "remove": "Supprimer",
         "save": "Enregistrer",
+        "share": "Partager",
         "transcription": "Transcription"
     },
     "modals": {
         "delete_speaker": {
             "title": "Supprimer locuteur",
-            "content": "Certains tours de parole sont attribué à ce locuteur. Veuillez re-attribuer ces tours de paroles pour pouvoir supprimer le locuteur {spk}"
+            "content_delete_html": "Êtes-vous sûr de vouloir <strong>supprimer</strong> ce locuteur: <strong>{spk}</strong> ?",
+            "content_reassing_html": "Certains tours de parole sont attribué à ce locuteur: {spk}.<br/> Veuillez <strong>re-attribuer ces tours de paroles</strong> pour pouvoir <strong>supprimer le locuteur \"{spk}</strong>\"",
+            "form_label": "Réassigner les tours à:"
 
         }
     }

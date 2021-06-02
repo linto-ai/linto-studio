@@ -15,7 +15,7 @@ function sttToConversation(transcript, metadata) {
         audio: '',
         file_metadata: {},
         locked: 0,
-        agenda: '',
+        agenda: [],
         abstract: '',
         owner: metadata.owner,
         sharedWith: metadata.sharedWith,
@@ -36,14 +36,14 @@ function sttToConversation(transcript, metadata) {
             const spkFound = conversation.speakers.find(spk_conversation => spk_conversation.speaker_name === spk_trans.speaker_id)
             if (spkFound === undefined) {
                 conversation.speakers.push({
-                    speaker_id: spk_trans.speaker_id,
+                    speaker_id: uuidv4(),
                     speaker_name: spk_trans.speaker_id,
                     stime: spk_trans.start,
                     etime: spk_trans.end
                 })
             }
             let spk_text = {
-                speaker_id: spk_trans.speaker_id,
+                speaker_id: conversation.speakers[conversation.speakers.findIndex(spk => spk.speaker_name === spk_trans.speaker_id)].speaker_id,
                 pos: spk_pos++,
                 turn_id: uuidv4(),
                 words: []

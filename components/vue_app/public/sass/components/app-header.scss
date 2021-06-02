@@ -132,7 +132,7 @@
                 height: 20px;
                 width: 20px;
                 vertical-align: top;
-                @include maskImage('../img/logout.svg');
+                @include maskImage('../img/edit.svg');
                 background-color: $blueChart;
             }
             &:hover {
@@ -143,6 +143,35 @@
                 .icon {
                     background-color: #fff;
                 }
+            }
+        }
+    }
+}
+
+.header-logout {
+    margin-left: 20px;
+    #logout {
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        @include borderRadius(20px);
+        background-color: transparent;
+        @include cancelBoxShadow();
+        @include transition(all 0.3s ease);
+        .icon {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            margin: 5px;
+            @include maskImage('../img/logout.svg');
+            background-color: $redChart;
+            @include transition(all 0.3s ease);
+        }
+        &:hover {
+            @include buttonShadow();
+            background-color: $redChart;
+            .icon {
+                background-color: #fff;
             }
         }
     }

@@ -100,7 +100,7 @@
           </table>
           <div class="flex row">
             <button class="btn btn--txt-icon blue" @click="shareWith()" v-if="userAccess.isOwner">
-              <span class="label">Share</span>
+              <span class="label">{{ $t('buttons.share') }}</span>
               <span class="icon icon__share"></span>
             </button>
           </div>
@@ -243,7 +243,7 @@
                     @click="deleteSpeaker(speaker.speaker_id)" 
                     v-if="userAccess.canEdit && convo.speakers.length > 1"
                   >
-                      <span class="icon icon--remove"></span>
+                      <span class="icon" :class="!!speakTime[speaker.speaker_id] && speakTime[speaker.speaker_id].time > 0 ? 'icon--merge' : 'icon--remove'"></span>
                     </button>
                   </td>
                 </tr>
@@ -352,7 +352,7 @@ export default {
       let res = {total: 0}
       this.convo.speakers.map(spk => {
         if (!res[spk.speaker_id]) {
-          res[spk.speaker_id] = { time: 0.1 }
+          res[spk.speaker_id] = { time: 0.0 }
         }
       })
       this.convo.text.map(txt => {
@@ -364,6 +364,7 @@ export default {
             }
         })
       })
+      console.log(res)
       return res
     },
     sharedWithEditers () {

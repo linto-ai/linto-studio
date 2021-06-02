@@ -308,6 +308,10 @@ a {
                 background-color: rgba(254, 52, 110, 0.5);
                 @include maskImage('../img/close.svg');
             }
+            &.icon--merge {
+                background-color: rgba(254, 52, 110, 0.5);
+                @include maskImage('../img/merge.svg');
+            }
             &.icon--list {
                 @include maskImage('../img/agenda.svg');
             }
@@ -324,6 +328,7 @@ a {
             .icon {
                 background-color: #fff;
                 &.icon--remove,
+                &.icon--merge,
                 &.icon--close {
                     background-color: $redChart;
                 }

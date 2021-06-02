@@ -20,13 +20,15 @@
         <span class="user-menu-btn--arrow flex col" :class="userMenuOpened ? 'user-menu-btn--arrow__opened' : 'user-menu-btn--arrow__closed'"></span>
       </button>
       <div class="user-menu-links flex col" :class="userMenuOpened ? 'opened' : 'closed'">
-          <a class="user-menu-links--item flex" href="/auth/logout">
+          <a class="user-menu-links--item flex" href="#">
             <span class="icon logout"></span>
-            <span class="label">Logout</span>
+            <span class="label">My account</span>
           </a>
         </div>
     </div>
-    
+    <div class="header-logout">
+      <a href="/auth/logout" id="logout"><span class="icon"></span></a>
+    </div>
   </div>
 </template>
 <script>

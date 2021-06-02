@@ -47,17 +47,23 @@
     "buttons": {
         "apply": "Apply",
         "cancel": "Cancel",
-        "conversation_landing": "Vue d'ensemble",
+        "conversation_landing": "Conversation landing",
+        "delete": "Delete",
         "export": "Export",
+        "merge": "Merge",
         "new_conversation": "New conversation",
         "new_speaker": "New Speaker",
+        "remove": "Remove",
         "save": "Save",
+        "share": "Share",
         "transcription": "Transcription"
     },
     "modals": {
         "delete_speaker": {
             "title": "Delete speaker",
-            "content": "Some turns are still attributed to this speaker. Please re-assign these turns to a different speaker in order to delete speaker {spk}"
+            "content_delete_html": "Are you sure you want to <strong>delete</strong> this speaker: <strong>{spk}</strong> ?",
+            "content_reassing_html": "Some turns are still attributed to this speaker: {spk}.<br/>Please <strong>re-assign these turns</strong> to a different speaker in order to <stong>delete speaker \"{spk}</strong>\"",
+            "form_label": "Reassign turns to:"
         }
     }
 }
