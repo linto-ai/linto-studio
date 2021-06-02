@@ -166,16 +166,17 @@
         </div>
         <!-- Agenda Object -->
         <div v-if="!agendaEdit && typeOfAgenda === 'object'" class="conversation-settings-item--content" id="agenda-content">
-          <ul>
+          <ul v-if="convo.agenda.edit.length > 0 && convo.agenda.edit[0] !== ''" class="agenda-list">
             <li class="agenda-content-item" v-for="(agenda,i) in convo.agenda.edit" :key="i">{{ agenda }}</li>
           </ul>
         </div>
         <div v-if="agendaEdit && typeOfAgenda === 'object'">
           <div class="form-field" v-for="(agenda,i) in convo.agenda.edit" :key="i">
             <input type="text" v-model="convo.agenda.edit[i]" />
-            <button @click="removeAgendaField(i)">Moins</button>
+            <button class="list-btn-small minus" @click="removeAgendaField(i)" v-if="i !== 0"></button>
+            <button class="list-btn-small plus" @click="addAgendaField()" v-if="i === convo.agenda.edit.length - 1"></button>
           </div>
-          <button @click="addAgendaField()">Plus</button>
+          
         </div>
         <div class="textarea--btns flex row" v-if="userAccess.canEdit && agendaEdit">
           <button class="btn btn--txt btn--txt__cancel" @click="cancelEditAgenda()"><span class="label">{{ $t('buttons.cancel') }}</span></button>
@@ -521,6 +522,9 @@ export default {
           // REQUEST UPDATE AGENDA
           this.agendaEdit = false
           let agenda = this.conversation[key].edit.filter(ag => ag !== "")
+          if(agenda.length === 0) {
+            agenda = [""]
+          }
 
           payload.agenda = agenda
           uriKey = 'agenda'

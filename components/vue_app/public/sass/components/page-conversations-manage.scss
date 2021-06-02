@@ -219,5 +219,27 @@
     }
 }
 
+.agenda-list {
+    margin: 0;
+    li {
+        display: inline-block;
+        width: 100%;
+        padding: 3px 0 3px 20px;
+        font-size: 16px;
+        position: relative;
+        &:before {
+            content: "";
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            @include maskImage('../img/play.svg');
+            background-color: $blueLight;
+            position: absolute;
+            top: 7px;
+            left: 0;
+        }
+    }
+}
+
 
 /*** END Conversation settings (right part) ***/

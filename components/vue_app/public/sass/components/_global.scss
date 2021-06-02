@@ -408,6 +408,28 @@ a {
     }
 }
 
+.list-btn-small {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    margin: 0 2px;
+    vertical-align: top;
+    &.plus {
+        @include maskImage('../img/plus.svg');
+        background-color: $greenMedium;
+        &:hover {
+            background-color: $greenChart;
+        }
+    }
+    &.minus {
+        @include maskImage('../img/minus.svg');
+        background-color: $redLight;
+        &:hover {
+            background-color: $redChart;
+        }
+    }
+}
+
 
 /*** TABLE ***/
 

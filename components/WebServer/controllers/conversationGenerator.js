@@ -15,7 +15,7 @@ function sttToConversation(transcript, metadata) {
         audio: '',
         file_metadata: {},
         locked: 0,
-        agenda: [],
+        agenda: [""],
         abstract: '',
         owner: metadata.owner,
         sharedWith: metadata.sharedWith,
