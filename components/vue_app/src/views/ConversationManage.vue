@@ -45,7 +45,7 @@
           <table class="conversation-infos--shared-with" v-if="sharedWithEditers.length > 0">
             <thead>
               <tr>
-                <th colspan="3">Editers</th>
+                <th colspan="3">{{ $t('array_labels.editers') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -73,7 +73,7 @@
           <table class="conversation-infos--shared-with" v-if="sharedWithReaders.length > 0">
             <thead>
               <tr>
-                <th colspan="3">Readers</th>
+                <th colspan="3">{{ $t('array_labels.readers') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -365,7 +365,6 @@ export default {
             }
         })
       })
-      console.log(res)
       return res
     },
     sharedWithEditers () {

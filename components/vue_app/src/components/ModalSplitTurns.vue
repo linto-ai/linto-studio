@@ -2,13 +2,13 @@
   <div class="modal-wrapper flex col" :class="modalShow ? 'visible' : 'hidden'">
     <div class="modal">
       <div class="modal--header flex row">
-        <span class="title flex1">Split turns</span>
+        <span class="title flex1">{{ $t('modals.split_turns.title') }}</span>
         <button class="btn--icon btn--icon__no-bg editspeaker" @click="closeModal()">
           <span class="icon icon--close"></span>
         </button>
       </div>
       <div class="modal--body flex col" v-if="dataLoaded">
-        <p><strong>You are about to split the following turns : </strong></p>
+        <p v-html="$t('modals.split_turns.content_html')"></p>
         <div class="flex row split-type-buttons" v-if="oneWordSelected && !oneWordFirstPosition && !oneWordLastPosition">
           <button 
             :class="splitType === 'before' ? 'active' : ''"
@@ -16,28 +16,24 @@
             @click="setSplitType('before')"
           >
             <span class="split-type-btn__icon"></span>
-            <span class="split-type-btn__label">Split before</span>
+            <span class="split-type-btn__label">{{ $t('modals.split_turns.split_before') }}</span>
           </button>
-          
           <button 
             @click="setSplitType('out')"
             class="split-type-btn on"
             :class="splitType === 'out' ? 'active' : ''"
-            
           >
             <span class="split-type-btn__icon"></span>
-            <span class="split-type-btn__label">Split out</span>
+            <span class="split-type-btn__label">{{ $t('modals.split_turns.split_out') }}</span>
           </button>
-          
           <button 
             @click="setSplitType('after')"
             class="split-type-btn after"
             :class="splitType === 'after' ? 'active' : ''"
           >
             <span class="split-type-btn__icon"></span>
-            <span class="split-type-btn__label">Split after</span>
+            <span class="split-type-btn__label">{{ $t('modals.split_turns.split_after') }}</span>
           </button>
-
         </div>
         <div class="flex col modal-edit-turns">
           <!-- BEFORE SPLIT -->
@@ -51,16 +47,15 @@
                 <button 
                   class="btn--icon modal-edit-turn__speaker-btn" 
                   @click="newSpeakerMode()" 
-                  :data-desc="selectSpeakerList ? 'Create a new speaker' : 'Select a speaker' "
+                  :data-desc="selectSpeakerList ? $t('modals.split_turns.speaker_create') : $t('modals.split_turns.speaker_select')"
                 >
                   <span class="icon"
                   :class="selectSpeakerList ? 'icon--add' : 'icon--list'"></span>
                 </button>
               </div>
-
               <!-- Speaker select/input -->
               <div class="flex col">
-                <span class="modal-edit-turn__field-label">{{ selectSpeakerList ? 'Select a speaker' : 'Add a speaker'}}</span>
+                <span class="modal-edit-turn__field-label">{{ selectSpeakerList ? $t('modals.split_turns.speaker_select') : $t('modals.split_turns.speaker_add')}}</span>
                 <select 
                   v-if="selectSpeakerList"
                   v-model="newSpeaker.value"
@@ -105,16 +100,15 @@
                 <button 
                   class="btn--icon modal-edit-turn__speaker-btn" 
                   @click="newSpeakerMode()" 
-                  :data-desc="selectSpeakerList ? 'Create a new speaker' : 'Select a speaker' "
+                  :data-desc="selectSpeakerList ? $t('modals.split_turns.speaker_create') : $t('modals.split_turns.speaker_select')"
                 >
                   <span class="icon"
                   :class="selectSpeakerList ? 'icon--add' : 'icon--list'"></span>
                 </button>
               </div>
-
               <!-- Speaker select/input -->
               <div class="flex col">
-                <span class="modal-edit-turn__field-label">{{ selectSpeakerList ? 'Select a speaker' : 'Add a speaker'}}</span>
+                <span class="modal-edit-turn__field-label">{{ selectSpeakerList ? $t('modals.split_turns.speaker_select') : $t('modals.split_turns.speaker_add')}}</span>
                 <select 
                   v-if="selectSpeakerList"
                   v-model="newSpeaker.value"
@@ -152,16 +146,15 @@
                 <button 
                   class="btn--icon modal-edit-turn__speaker-btn" 
                   @click="newSpeakerMode()" 
-                  :data-desc="selectSpeakerList ? 'Create a new speaker' : 'Select a speaker' "
+                  :data-desc="selectSpeakerList ? $t('modals.split_turns.speaker_create') : $t('modals.split_turns.speaker_select')"
                 >
                   <span class="icon"
                   :class="selectSpeakerList ? 'icon--add' : 'icon--list'"></span>
                 </button>
               </div>
-
               <!-- Speaker select/input -->
               <div class="flex col">
-                <span class="modal-edit-turn__field-label">{{ selectSpeakerList ? 'Select a speaker' : 'Add a speaker'}}</span>
+                <span class="modal-edit-turn__field-label">{{ selectSpeakerList ? $t('modals.split_turns.speaker_select') : $t('modals.split_turns.speaker_add')}}</span>
                 <select 
                   v-if="selectSpeakerList"
                   v-model="newSpeaker.value"
@@ -195,18 +188,15 @@
 
           </div>
           <!-- END AFTER SPLIT -->
-
-         
         </div>
       </div>
-      <div class="modal--footer">
+      <div class="modal--footer flex row">
         <button class="btn btn--txt-icon grey" @click="closeModal()">
-          <span class="label">Cancel</span>
+          <span class="label">{{ $t('buttons.cancel') }}</span>
           <span class="icon icon__cancel"></span>
         </button>
-
         <button class="btn btn--txt-icon green" @click="splitTurn()">
-          <span class="label">Split</span>
+          <span class="label">{{ $t('buttons.split') }}</span>
           <span class="icon icon__apply"></span>
         </button>
       </div>
@@ -242,6 +232,11 @@ export default {
     bus.$on('split_modal_open', async (data) => {
       await this.dispatchStore('getConversations')
       this.modalShow = true
+      this.newSpeaker = {
+        value: '',
+        error: null,
+        valid: false
+      }
       this.selectionObj = data.selectionObj
       this.convoId = data.convoId
       this.splitType = 'out'
@@ -393,7 +388,8 @@ export default {
             timeout: 3000
           })
           this.closeModal()
-          await this.dispatchStore('getConversations')
+          bus.$emit('refresh_conversation', {closeToolBox: true})
+
         } else {
           throw req
         }

@@ -2,21 +2,21 @@
   <div class="modal-wrapper flex col" :class="modalShow ? 'visible' : 'hidden'">
     <div class="modal" v-if="dataLoaded">
       <div class="modal--header flex row">
-        <span class="title flex1">Unshare conversation</span>
+        <span class="title flex1">{{ $t('modals.unshare_with.title') }}</span>
         <button class="btn--icon btn--icon__no-bg editspeaker" @click="closeModal()">
           <span class="icon icon--close"></span>
         </button>
       </div>
       <div class="modal--body flex col">
-        <p>Are you sure you want to remove the user the <strong>"{{CapitalizeFirstLetter(user.firstname)}} {{CapitalizeFirstLetter(user.lastname)}}</strong> from the conversation <strong>"{{conversationName}}"</strong> ?</p>
+        <p v-html="$t('modals.unshare_with.content_html', { firstname: CapitalizeFirstLetter(user.firstname), lastname: CapitalizeFirstLetter(user.lastname), conversationname: conversationName})"></p>
       </div>
       <div class="modal--footer flex row">
         <button class="btn btn--txt-icon grey" @click="closeModal()">
-          <span class="label">Cancel</span>
+          <span class="label">{{ $t('buttons.cancel') }}</span>
           <span class="icon icon__cancel"></span>
         </button>
         <button class="btn btn--txt-icon red" @click="unshare(userId)">
-          <span class="label">Unshare</span>
+          <span class="label">{{ $t('buttons.unshare') }}</span>
           <span class="icon icon__trash"></span>
         </button>
       </div>

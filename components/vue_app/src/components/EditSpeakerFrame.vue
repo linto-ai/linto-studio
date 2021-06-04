@@ -2,14 +2,14 @@
   <div class="edit-frame flex col" :class="showFrame && dataLoaded ? 'visible' : 'hidden'" id="edit-speaker-frame">
     <div class="edit-frame--head flex row">
       <span class="icon user"></span>
-      <span class="label flex1">Edit speaker</span>
+      <span class="label flex1">{{ $t("modals.edit_speaker.edit") }}:</span>
       <button class="btn--icon" @click="closeFrame()">
         <span class="icon icon--close"></span>
       </button>
     </div>
     <div class="edit-frame--body flex col">
       <div class="form-field flex col">
-        <span class="form-label">Rename speaker :</span>
+        <span class="form-label">{{ $t("modals.edit_speaker.rename") }}:</span>
         <div class="flex row">
           <input 
             type="text" 
@@ -25,7 +25,7 @@
         <span class="error-field" v-if="speakerName.error !== null">{{ speakerName.error }}</span>
       </div>
       <div class="form-field flex col">
-        <span class="form-label">Replace speaker by :</span>
+        <span class="form-label">{{ $t("modals.edit_speaker.replaceby") }}:</span>
         <ul class="speakers-list">
           <li class="speakers-list-item" v-for="spk in convoSpeakers" :key="spk.speaker_id">
             <button @click="replaceSpeaker(spk)">{{ spk.speaker_name }}

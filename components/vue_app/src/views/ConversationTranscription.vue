@@ -177,8 +177,6 @@
             :convoText="convoText"
           ></AudioPlayer>
     </div>
-
-    Current turn : {{ currentTurn }}
   </div>
   <div v-else>Loading</div>
 </template>
@@ -233,7 +231,10 @@ export default {
       await this.dispatchStore('getConversations')
     })
 
-    bus.$on('refresh_conversation', async () => {
+    bus.$on('refresh_conversation', async (data) => {
+      if(!!data.closeToolBox && data.closeToolBox) {
+        bus.$emit('close_selected_toolbox', {})
+      }
       await this.dispatchStore('getConversations')
       this.refreshHighlights()
     })

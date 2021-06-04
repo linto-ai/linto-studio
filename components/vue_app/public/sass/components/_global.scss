@@ -799,6 +799,7 @@ textarea {
     tbody {
         tr {
             background-color: #fafafa;
+            border: 1px solid #dedede;
             &.selected {
                 background-color: $greenLight;
             }
@@ -808,7 +809,6 @@ textarea {
                     width: 30px;
                 }
             }
-            border-bottom: 1px solid #ccc;
         }
     }
     .share-with-list-img {

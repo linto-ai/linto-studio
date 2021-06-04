@@ -2,20 +2,20 @@
   <div class="modal-wrapper flex col" :class="modalShow ? 'visible' : 'hidden'">
     <div class="modal" v-if="dataLoaded">
       <div class="modal--header flex row">
-        <span class="title flex1">Share conversation</span>
+        <span class="title flex1">{{ $t('modals.share_with.title') }}</span>
         <button class="btn--icon btn--icon__no-bg editspeaker" @click="closeModal()">
           <span class="icon icon--close"></span>
         </button>
       </div>
       <div class="modal--body flex col">
-         <p>You can share a conversation with other users, and give them access to the conversation overview and the transcription. Select one or mutliple users in the following list and manage them edition rights.</p>
+        <p v-html="$t('modals.share_with.content_html')"></p>
         <div class="flex col">
           <table class="share-with-list" v-if="!!shareList && shareList.length > 0">
             <thead>
               <tr>
-                <th>Select</th>
-                <th colspan="2">User</th>
-                <th>Editer</th>
+                <th>{{ $t('array_labels.select') }}</th>
+                <th colspan="2">{{ $t('array_labels.user') }}</th>
+                <th>{{ $t('array_labels.editer') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -35,17 +35,17 @@
               </tr>
             </tbody>
           </table>
-          <div v-else>No user found</div>
+          <div v-else>{{ $t('modals.no_user') }}</div>
           <span class="error-field" v-if="formError !== null">{{formError}}</span>
         </div>
       </div>
       <div class="modal--footer flex row">
         <button class="btn btn--txt-icon grey" @click="closeModal()">
-          <span class="label">Cancel</span>
+          <span class="label">{{ $t('buttons.cancel') }}</span>
           <span class="icon icon__cancel"></span>
         </button>
         <button class="btn btn--txt-icon green" @click="shareWithUsers()">
-          <span class="label">Apply</span>
+          <span class="label">{{ $t('buttons.apply') }}</span>
           <span class="icon icon__apply"></span>
         </button>
       </div>

@@ -2,22 +2,20 @@
   <div class="modal-wrapper flex col" :class="modalShow ? 'visible' : 'hidden'">
     <div class="modal">
         <div class="modal--header flex row">
-          <span class="title flex1">Merge turns</span>
+          <span class="title flex1">{{ $t('modals.merge_turns.title') }}</span>
           <button class="btn--icon btn--icon__no-bg editspeaker" @click="closeModal()">
             <span class="icon icon--close"></span>
           </button>
         </div>
         <div class="modal--body flex col" v-if="convoLoaded">
-          <p><strong>You are about to merge the following turns : </strong></p>
-          
+          <p v-html="$t('modals.merge_turns.content_html')"></p>
           <div class="modal-merge-content flex col" v-html="contentFromSelection">
           </div>
-          <div class="flex row">
-            <span>Select the speaker for those turns:</span><br/>
+          <div class="form-field flex col">
+            <span class="form-label">{{ $t('modals.merge_turns.select_speaker') }}:</span>
             <select 
               v-model="selectedSpeaker.value"
               :class="selectedSpeaker.error !== null ? 'error' :''"
-              style="margin-left: 10px;"
               @change="checkSelectedSpeaker()"
             >
               <option v-for="spk in speakers" :key="spk.speaker_id" :value="spk">{{ spk.speaker_name }}</option>
@@ -31,13 +29,13 @@
             class="btn btn--txt-icon grey"
             @click="closeModal()"
           >
-            <span class="label">Cancel</span>
+            <span class="label">{{ $t('buttons.cancel') }}</span>
           </button>
           <button 
             class="btn btn--txt-icon green"
             @click="mergeTurns()"
           >
-            <span class="label">Merge turns</span>
+            <span class="label">{{ $t('buttons.merge') }}</span>
           </button>
         </div>
       </div>
@@ -68,7 +66,11 @@ export default {
       this.convoId = data.convoid
       this.positions = data.positions
       this.selectionObj = data.selectionObj
-      
+      this.selectedSpeaker = {
+        value: '',
+        error: null,
+        valid: false
+      }
       await this.dispatchStore('getConversations')
       this.modalShow = true
     })
@@ -118,7 +120,6 @@ export default {
           const speakerName = this.speakersArray[this.speakersArray.findIndex(spk => spk.speaker_id === turn.speaker_id)].speaker_name
           contentHTML += `
           <div class="modal-edit-turn__item flex row"><div class="flex row modal-edit-turn__speaker"><div class="flex col"><span class="modal-edit-turn__speaker-name">${speakerName} :</span></div></div><div class="flex row flex1 modal-edit-turn__content"><span class="modal-edit-turn__content-txt">`
-        
           if (turn.words.length > 0) {
             turn.words.map( word => {
               contentHTML += word.word + ' '
@@ -170,7 +171,8 @@ export default {
               timeout: 3000
             })
             this.closeModal()
-            await this.dispatchStore('getConversations')
+            bus.$emit('refresh_conversation', {closeToolBox: true})
+            
           } else {
             throw req
           }

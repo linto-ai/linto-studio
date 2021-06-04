@@ -37,7 +37,7 @@
           <!-- Profil picture -->
           <div class="form-field flex col">
             <span class="form-label">Image (.png, .jpg) :</span>
-            <div class="input-file-container flex col">
+            <div class="input-file-container flex row">
               <input 
                 type="file" 
                 id="file" 

@@ -3,14 +3,14 @@
     <div v-if="dataLoaded">
       <div class="edit-frame--head flex row">
         <span class="icon user"></span>
-        <span class="label flex1">Edit speaker</span>
+        <span class="label flex1">{{ $t("modals.edit_speaker.edit") }}</span>
         <button class="btn--icon" @click="closeFrame()">
             <span class="icon icon--close"></span>
           </button>
       </div>
       <div class="edit-frame--body flex col">
         <div class="form-field edit-frame-options flex col">
-        <span class="form-label">Update speaker :</span>
+        <span class="form-label">{{ $t("modals.edit_speaker.update") }}:</span>
           <div class="flex row edit-frame-options--item">
             <input 
               type="radio" 
@@ -23,7 +23,7 @@
             >
             <label 
               class="edit-frame-option--radio-label"  for="edit-speaker-turn"
-            >This turn only</label>
+            >{{ $t("modals.edit_speaker.turn_only") }}</label>
           </div>
           <div class="flex row edit-frame-options--item">
             <input 
@@ -36,7 +36,7 @@
             >
             <label 
             class="edit-frame-option--radio-label" 
-            for="edit-speaker-transcription">Everywhere</label>
+            for="edit-speaker-transcription">{{ $t("modals.edit_speaker.everywhere") }}</label>
           </div>
         </div>
         <div class="flex col">
@@ -45,7 +45,7 @@
           </ul>
         </div>
         <div class="form-field flex col">
-          <span class="form-label">Type a speaker name :</span>
+          <span class="form-label">{{ $t("modals.edit_speaker.type_speakername") }}:</span>
           <div class="flex row">
             <input 
               type="text" 

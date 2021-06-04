@@ -34,6 +34,7 @@
             :key="word.wid" 
             :data-word-id="word.wid" 
             :data-turn-id="turn.turn_id"
+            :data-turn-pos="turn.pos"
             :data-stime="word.hasOwnProperty('stime') ? word.stime : ''" 
             :data-etime="!!word.hasOwnProperty('etime') ? word.etime : ''" 
             :data-pos="word.pos"
@@ -173,10 +174,14 @@ export default {
           let startWord = !selection.baseNode ? selection.anchorNode.parentNode : selection.baseNode.parentNode 
           let endWord = !selection.extentNode ? selection.focusNode.parentNode : selection.extentNode.parentNode
           
-          // check if startWordPos > endWordPos (selection from left to right)
-          let startWordPos = startWord.getAttribute('data-pos')
-          let endWordPos = endWord.getAttribute('data-pos')
-          if(startWordPos > endWordPos) {
+
+
+          // check if: selection from left to right)
+          let startWordPos = parseInt(startWord.getAttribute('data-pos'))
+          let startTurnPos = parseInt(startWord.getAttribute('data-turn-pos'))
+          let endWordPos = parseInt(endWord.getAttribute('data-pos'))
+          let endTurnPos = parseInt(endWord.getAttribute('data-turn-pos'))
+          if (startTurnPos > endTurnPos || (startTurnPos === endTurnPos && startWordPos > endWordPos)) {
             const tmp = endWord
             endWord = startWord
             startWord = tmp
@@ -228,6 +233,7 @@ export default {
     },
     // Render text selection and open Toolbox
     setTextSelection (selectionObj) {
+      console.log(selectionObj)
       this.cancelTextSelection()
       this.playerPause()
       setTimeout(() => {
@@ -236,7 +242,7 @@ export default {
         const endTurnPosition= parseInt(selectionObj.endTurnPosition)
         const startWordPosition = parseInt(selectionObj.startWordPosition)
         const endWordPosition = parseInt(selectionObj.endWordPosition)
-        if(selectionObj.startTurnId === selectionObj.endTurnId) { // 1 turn selection
+        if (selectionObj.startTurnId === selectionObj.endTurnId) { // 1 turn selection
           this.toolBoxOption = {
             comment: true,
             highlight: true,

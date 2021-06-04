@@ -13,7 +13,7 @@
       class="selected-text-toolbox--btn" 
       v-if="!!options.keywords && options.keywords === true">
       <span class="icon keywords"></span>
-      <span class="label">Keyword</span>
+      <span class="label">{{ $t("toolbox.keywords") }}</span>
     </button>
     
     <button 
@@ -21,14 +21,13 @@
       v-if="!!options.highlight && options.highlight === true"
       @click="openHighlightModal()">
       <span class="icon highlights"></span>
-      <span class="label">highlights</span>
+      <span class="label">{{ $t("toolbox.highlights") }}</span>
     </button>
-    
     
     <div class="selected-text-toolbox--parent flex col" v-if="unHighlightLinks && options.wordsHighlights.length > 0">
       <button class="selected-text-toolbox--btn" @click="unhighlightLinkVisible = !unhighlightLinkVisible">
         <span class="icon unhighlight"></span>
-        <span class="label">unhighlight</span>
+        <span class="label">{{ $t("toolbox.unhighlight") }}</span>
       </button>
       <div class="selected-text-toolbox--child flex col" :class="unhighlightLinkVisible ? 'visible' : 'hidden'">
         <button 
@@ -38,32 +37,29 @@
           class="selected-text-toolbox--btn"
         >
         <span class="icon remove"></span>
-        <span class="label">remove "{{convoHighlights[convoHighlights.findIndex(convoHl => convoHl.hid === hl)].label }}"</span>
+        <span class="label">{{ $t("toolbox.remove") }} "{{convoHighlights[convoHighlights.findIndex(convoHl => convoHl.hid === hl)].label }}"</span>
       </button>
-          
       </div>
-
     </div>
-
     <button 
       class="selected-text-toolbox--btn"
       v-if="!!options.comment && options.comment === true">
         <span class="icon comment"></span>
-        <span class="label">Comment</span>
+        <span class="label">{{ $t("toolbox.comment") }}</span>
       </button>
     <button 
       class="selected-text-toolbox--btn"
       v-if="!!options.split && options.split === true" 
       @click="openSplitModal()">
         <span class="icon split"></span>
-        <span class="label">Split turns</span>
+        <span class="label">{{ $t("toolbox.split_turns") }}</span>
       </button>
       <button 
       class="selected-text-toolbox--btn"
       v-if="!!options.split && options.merge === true" 
       @click="openMergeModal()">
         <span class="icon merge"></span>
-        <span class="label">Merge turns</span>
+        <span class="label">{{ $t("toolbox.merge") }}</span>
       </button>
     
   </div>

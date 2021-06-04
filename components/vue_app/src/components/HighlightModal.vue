@@ -2,25 +2,24 @@
   <div class="modal-wrapper flex col" :class="showModal ? 'visible': 'hidden'" >
     <div class="modal">
       <div class="modal--header flex row">
-        <span class="title flex1">Highlight words</span>
+        <span class="title flex1">{{ $t('modals.highlights.title') }}</span>
           <button class="btn--icon btn--icon__no-bg editspeaker" @click="closeModal()">
             <span class="icon icon--close"></span>
           </button>
       </div>
       <div class="modal--body words-highlights">
           <div class="modal-words-selected">
-            <p>Your selection: "<strong>{{selectionTxt.txt}}</strong>"</p>
+            <p>{{ $t('modals.highlights.selection') }}: "<strong>{{selectionTxt.txt}}</strong>"</p>
           </div>
-
           <div class="form-field flex col" v-if="convo.highlights.length > 0">
-            <span class="form-label">Choose a highlight : </span>
+            <span class="form-label">{{ $t('modals.highlights.choose_highlight') }}: </span>
             <div class="flex row">
               <select v-model="highlight.value">
                 <option v-for="hl in convo.highlights" :key="hl.hid" :value="hl.hid">{{hl.label}}</option>
               </select>
 
               <button @click="handleHighlight()" class="btn btn--txt-icon green" style="margin-left: 10px;">
-                <span class="label">Set Highlight</span>
+                <span class="label">{{ $t('modals.highlights.set_highlight') }}</span>
                 <span class="icon icon__apply"></span>
               </button>
             </div>
@@ -28,7 +27,7 @@
           </div>
 
            <div class="form-field flex col">
-            <span class="form-label">Or create a new highlight : </span>
+            <span class="form-label">{{ $t('modals.highlights.new_highlight') }}: </span>
             <div class="flex row">
               <input type="text" v-model="newHighlight.value">
                <input 
@@ -36,9 +35,8 @@
                 v-model="newHighlightColor" 
                 class="transcription-options--item-color"
               >
-
               <button style="margin-left: 10px;" @click="handleNewHighlight()" class="btn btn--txt-icon green">
-                <span class="label">Create Highlight</span>
+                <span class="label">{{ $t('buttons.create_highlight') }}</span>
                 <span class="icon icon__apply"></span>
               </button>
             </div>
@@ -47,7 +45,7 @@
       </div>
       <div class="modal--footer">
         <button class="btn btn--txt-icon grey" @click="closeModal()">
-          <span class="label">Cancel</span>
+          <span class="label">{{ $t('buttons.cancel') }}</span>
           <span class="icon icon__cancel"></span>
         </button>
       </div>
