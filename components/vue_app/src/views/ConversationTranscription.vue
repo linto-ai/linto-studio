@@ -471,9 +471,7 @@ export default {
       this.dispatchStore('getConversations')
       this.refreshConversation++
       this.editionMode = false
-
     },
-
     // Update transcription text
     async validateEdition() {
       try {
@@ -486,11 +484,17 @@ export default {
             turnid: turn.turn_id,
             words: turn.words
           }
-          const req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/text`, 'put', payload)
-          bus.$emit('refresh_conversation', {})
-          if(req.status !== 200) {
-            throw req
+          let req = null
+          if(payload.turnid === 'todefine') {
+              payload.pos = turn.pos - 0.5
+             req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/turn/${turn.speaker_id}`, 'post', payload)
+          } else {
+            req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/text`, 'put', payload)
           }
+          bus.$emit('refresh_conversation', {})
+            if(req.status !== 200) {
+              throw req
+            }
         }
       } catch (error) {
         console.error(error)
@@ -512,11 +516,12 @@ export default {
         for (let i = 0; i < words.length; i++) {
           const wordVal = words[i].innerHTML.replace('&nbsp;', ' ').trim()
           const wordSplit = wordVal.split(' ')
-          if (wordSplit[0] === "") {
-            // If words have been deleted
+
+          if (wordSplit[0] === "") { // If words have been deleted
             // console.log('word deleted ?')
             i++
           }
+
           if (wordSplit.length > 1) { // If words have been added
             // console.log('word added ?')
             for (let j = 0; j < wordSplit.length; j++) {
@@ -554,6 +559,7 @@ export default {
         }
         textPayload.push(turnPayload)
       }
+      
       return textPayload
     },
     // Get Highlights and Keywords by id

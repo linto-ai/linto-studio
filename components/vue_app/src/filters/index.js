@@ -18,6 +18,13 @@ let getCookie = function(cname) {
     return null
 }
 
+let setCookie = function(cname, cvalue, exdays) {
+    let d = new Date()
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000))
+    let expires = "expires=" + d.toUTCString()
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/"
+}
+
 Vue.filter('timeToHMS', function(time) {
     const hour = Math.floor(time / (60 * 60))
     const min = Math.floor(time / 60)
@@ -263,18 +270,9 @@ Vue.filter('testEmail', function(obj) {
 
 })
 
+Vue.filter('setCookie', function(cname, value, days) {
+    return setCookie(cname, value, days)
+})
 Vue.filter('getCookie', function(cname) {
-    let name = cname + "="
-    let decodedCookie = decodeURIComponent(document.cookie)
-    let ca = decodedCookie.split(';')
-    for (var i = 0; i < ca.length; i++) {
-        var c = ca[i]
-        while (c.charAt(0) == ' ') {
-            c = c.substring(1)
-        }
-        if (c.indexOf(name) == 0) {
-            return c.substring(name.length, c.length)
-        }
-    }
-    return ""
+    return getCookie(cname)
 })

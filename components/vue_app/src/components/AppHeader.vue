@@ -22,7 +22,7 @@
       <div class="user-menu-links flex col" :class="userMenuOpened ? 'opened' : 'closed'">
           <a class="user-menu-links--item flex" href="#">
             <span class="icon logout"></span>
-            <span class="label">My account</span>
+            <span class="label">{{ $t('nav.my_account') }}</span>
           </a>
         </div>
     </div>
@@ -40,6 +40,9 @@ export default {
       appLanguages: ['fr', 'en']
     }
   },
+  mounted () {
+    this.checkLangCookie()
+  },
   computed: {
     user () {
       return this.$store.state.userInfo
@@ -53,14 +56,32 @@ export default {
   },
 
   methods: {
+    checkLangCookie () {
+      let cookieLang = this.getCookie('cm_lang')
+      console.log('cookieLang', cookieLang)
+      if(cookieLang !== null) {
+        this.$i18n.locale = cookieLang
+      }
+    },
     setAppLanguage (lang) {
       this.$i18n.locale = lang
+      this.setCookie('cm_lang', lang, 30)
     },
     CapitalizeFirstLetter(string) {
       return this.$options.filters.CapitalizeFirstLetter(string)
     },
     toggleUserMenu() {
       this.userMenuOpened = !this.userMenuOpened
+    },
+    updateLangCookie() {
+      let cookie = 
+      console.log('cookie', cookie)
+    },
+    getCookie (name) {
+      return this.$options.filters.getCookie(name)
+    },
+    setCookie(name, value, days) {
+      return this.$options.filters.setCookie(name, value, days)
     },
     async getUserInfo () {
         await this.$options.filters.dispatchStore('getuserInfo')

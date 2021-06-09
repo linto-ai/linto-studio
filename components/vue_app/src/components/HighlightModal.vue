@@ -28,7 +28,7 @@
 
            <div class="form-field flex col">
             <span class="form-label">{{ $t('modals.highlights.new_highlight') }}: </span>
-            <div class="flex row">
+            <div class="flex row" style="align-items:center;">
               <input type="text" v-model="newHighlight.value">
                <input 
                 type="color" 

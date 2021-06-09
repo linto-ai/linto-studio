@@ -35,7 +35,7 @@
               </tr>
             </tbody>
           </table>
-          <div v-else>{{ $t('modals.no_user') }}</div>
+          <div v-else>{{ $t('modals.share_with.no_user') }}</div>
           <span class="error-field" v-if="formError !== null">{{formError}}</span>
         </div>
       </div>

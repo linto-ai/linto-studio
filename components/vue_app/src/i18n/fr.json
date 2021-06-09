@@ -3,7 +3,8 @@
         "hello": "Bonjour Monde"
     },
     "nav": {
-        "conversations_overview": "Mes conversations"
+        "conversations_overview": "Mes conversations",
+        "my_account": "Mon compte"
     },
     "page": {
         "conversations": {
@@ -15,6 +16,12 @@
         "conversation_transcription": {
             "h2": "Options d'affichage",
             "edition_mode": "Mode édition"
+        },
+        "conversations_create": {
+            "conversation_name": "Titre",
+            "description": "Description",
+            "audio_file": "Fichier audio",
+            "share_with": "Partager"
         }
     },
     "filters": {
@@ -54,6 +61,7 @@
         "cancel": "Annuler",
         "conversation_landing": "Vue d'ensemble",
         "create_highlight": "Créer étiquette",
+        "create_conversation": "Créer conversation",
         "delete": "Supprimer",
         "export": "Exporter",
         "merge": "Fusionner",

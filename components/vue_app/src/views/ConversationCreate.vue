@@ -3,7 +3,7 @@
     <div class="flex col create-form-container">
       <div class="form-field flex col">
         <!-- Conversation Name -->
-        <span class="form-label">Conversation name <i>*</i> :</span>
+        <span class="form-label">{{ $t('page.conversations_create.conversation_name') }}<i>*</i>:</span>
         <input 
           type="text" 
           v-model="conversationName.value"
@@ -14,7 +14,7 @@
 
       <!-- Description -->
       <div class="form-field flex col">
-        <span class="form-label">Description :</span>
+        <span class="form-label">{{ $t('page.conversations_create.description') }}:</span>
         <textarea 
           v-model="conversationDesc.value"
         ></textarea>
@@ -25,15 +25,14 @@
       
       <!-- Audio File -->
       <div class="form-field flex col">
-        <span class="form-label">Audio file (.wav, .mp3) :</span>
-        <div class="input-file-container flex col">
+        <span class="form-label">{{ $t('page.conversations_create.audio_file') }}<i>*</i> (.wav, .mp3):</span>
+        <div class="input-file-container flex row">
           <input 
             type="file" 
             id="file" 
             ref="file"
             class="input__file" 
             v-on:change="handleFileUpload()"
-            
             accept=".mp3, .wav"
           />
           <label 
@@ -50,14 +49,14 @@
 
       <!-- Share with -->
       <div class="form-field flex col">
-        <span class="form-label">Share with users :</span>
+        <span class="form-label">{{ $t('page.conversations_create.share_with') }}:</span>
 
         <table class="share-with-list" v-if="sharedWith.length > 0">
           <thead>
             <tr>
-              <th colspan="2">User</th>
-              <th>Edition rights</th>
-              <th>Remove</th>
+              <th colspan="2">{{ $t('array_labels.user') }}</th>
+              <th>{{ $t('array_labels.editer') }}</th>
+              <th>{{ $t('buttons.remove') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -75,7 +74,7 @@
         </table>
         <div class="flex row" style="margin-top: 10px;">
           <button class="btn btn--txt-icon blue" @click="shareWith()">
-            <span class="label">Share</span>
+            <span class="label">{{ $t('buttons.share') }}</span>
             <span class="icon icon__share"></span>
           </button>
         </div>
@@ -86,7 +85,7 @@
         <button
           @click="handleForm()" 
           class="btn btn--txt-icon green">
-          <span class="label">Create conversation</span>
+          <span class="label">{{ $t('buttons.create_conversation') }}</span>
           <span class="icon" :class="isSending ? 'icon__loading' : ' icon__apply'"></span>
         </button>
       </div>

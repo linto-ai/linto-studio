@@ -12,9 +12,11 @@ export default {
     this.initKeyupHandler()
     window.keyupEnabled = true
     bus.$on('keyup_handler_disable', () => {
+      console.log('disable keyeup handler')
       window.keyupEnabled = false
     })
     bus.$on('keyup_handler_enable', () => {
+      console.log('enable keyeup handler')
       window.keyupEnabled = true
     })
   },
@@ -24,6 +26,9 @@ export default {
         //console.log(event)
         //console.log(window.keyupEnabled)
         // Space > play / pause
+        if(event.code === 'Enter' || event.keyCode === 13) {
+          if(window.keyupEnabled) bus.$emit('transcription_bind_enter', {})
+        }
         if(event.code === 'Space' || event.keyCode === 32) {
           if(window.keyupEnabled) bus.$emit('audio_player_play_pause', {})
         }

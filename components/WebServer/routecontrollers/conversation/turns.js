@@ -8,12 +8,20 @@ async function createTurn(req, res, next) {
     //but convoModel.createTurn is used by other routecontroller functions.
     try {
         if (!!req.params.speakerid) { ///made speaker id a param string-KT
+            let words = []
+            let pos = 0.5
+            if (!!req.body.words) {
+                words = req.body.words
+            }
+            if (!!req.body.pos)  {
+                pos = req.body.pos
+            }
             let payload = {
                 convoid: req.params.conversationid,
                 speakerid: req.params.speakerid,
                 turnid: uuidv4(),
-                pos: 0.5, //default to first position (taken care of in renumber turns)
-                words: []
+                pos,
+                words
             }
             let addTurn = await convoModel.createTurn(payload)
             if (addTurn === 'success') {

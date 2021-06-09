@@ -41,14 +41,14 @@
     data () {
       return {
         email: {
-          value: 'rlopez@linagora.com',
+          value: '',
           error: null,
-          valid: true
+          valid: false
         },
         password: {
-          value: 'azeaze',
+          value: '',
           error: null,
-          valid: true
+          valid: false
         },
         formError: null
       }

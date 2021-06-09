@@ -2,8 +2,8 @@
   <div id="transcription" :class="editionMode ? 'editing' : ''">
     <table class="table table--transcription">
       <tr 
-        v-for="turn in convoText" 
-        :key="turn.turn_id" 
+        v-for="(turn,i) in convoTextCustom" 
+        :key="i" 
         :data-stime="turn.words.length > 0 ? turn.words[0].stime : '-1' "  
         :data-etime="turn.words.length > 0 ? turn.words[turn.words.length - 1].etime : '-1'"
         :data-turn="turn.pos"
@@ -30,8 +30,8 @@
           :contenteditable="editionMode"
         >
           <span 
-            v-for="word in turn.words" 
-            :key="word.wid" 
+            v-for="(word, j) in turn.words" 
+            :key="j" 
             :data-word-id="word.wid" 
             :data-turn-id="turn.turn_id"
             :data-turn-pos="turn.pos"
@@ -62,7 +62,8 @@ export default {
         speakerEdit: false
       },
       highlightsActive: [],
-      keywordsActive: []
+      keywordsActive: [],
+      convoTextCustom: []
     }
   },
   mounted () {
@@ -91,6 +92,13 @@ export default {
     bus.$on('disable_text_selection', () => {
       this.unbindTextSelection()
     })
+
+    bus.$on('transcription_bind_enter', () => {
+      if(this.editionMode) {
+        setTimeout(()=>{this.createTurn()}, 500)
+      }
+    })
+    this.convoTextCustom = this.convoText
   },
   watch: {
     currentTurn (data) {
@@ -99,9 +107,176 @@ export default {
     }
   },
   methods: {
+    createTurn() {
+      console.log('createTurn', document.activeElement)
+      if(document.activeElement.classList.contains('transcription-speaker-sentence')) {
+        const turns = document.getElementsByClassName('transcription-speaker-sentence')
+        let textPayload = []
+        let turnIndex = 0
+        for(let i = 0; i < turns.length; i++) { // TURNS
+          let turn = turns[i]
+          let words = turn.childNodes
+          let realWordPos = 0
+          let turnPayload = {
+            speaker_id: turn.getAttribute('data-speaker'),
+            turn_id: turn.getAttribute('data-turn-id'),
+            pos: turnIndex,
+            words: []
+          }
+
+          for(let j = 0; j < words.length; j++) { // WORDS
+            let word = words[j]
+            let wordVal = word.innerHTML.replace(/&nbsp;/g,"",' ').trim()
+
+            // Create new Turn
+            if(wordVal.indexOf('<br>') >= 0) {
+              let splitBr = wordVal.split('<br>')
+              console.log('/1', wordVal)
+              console.log(splitBr)
+              // word = '<br>'
+              /*if(splitBr.length === 1 && splitBr[0] === '<br>') {
+                console.log('/2 word = "<br>"')
+                // <br> LAST POSITION > TODO : trim()
+                // <br> FIRST POSITION > TODO : trim()
+                // <br> is between two words
+                textPayload[turnIndex] = turnPayload
+                turnIndex++
+                realWordPos = 0
+                turnPayload = {
+                  speaker_id: turn.getAttribute('data-speaker'),
+                  turn_id: turn.getAttribute('data-turn-id'),
+                  pos: turnIndex,
+                  words: []
+                }
+                j++
+              } */
+              
+              // word = '<br>word' || 'word<br>'
+              if (splitBr.length === 2) {
+                console.log('2/')
+                let wordValue = ""
+                const wordId = word.getAttribute('data-word-id')
+                const wordOptions = this.getHlAndKwByWordId(wordId)
+                
+                //'word<br>'
+                if(splitBr[0] !== "" && splitBr[1] === '') {
+                  console.log('3/ word<br>')
+                  wordValue = splitBr[0].trim()
+                  
+                  let wordObj = {
+                    wid: wordId,
+                    etime: word.getAttribute('data-etime'),
+                    stime: word.getAttribute('data-stime'),
+                    pos: realWordPos,
+                    word: wordValue,
+                    highlights: wordOptions.highlights,
+                    keywords: wordOptions.keywords
+                  }
+                  turnPayload.words.push(wordObj)
+                  textPayload[turnIndex] = turnPayload
+                  turnIndex++
+                  realWordPos = 0
+                  turnPayload = {
+                    speaker_id: turn.getAttribute('data-speaker'),
+                    turn_id: "todefine",
+                    pos: turnIndex,
+                    words: []
+                  }
+                  word.innerHTML = wordValue + '&nbsp;'
+                } 
+                //'<br>word'
+                else if (splitBr[0] === "" && splitBr[1] !== '') {
+                  console.log('3/ <br>word')
+                  wordValue = splitBr[1].trim()
+                  textPayload[turnIndex] = turnPayload
+                  turnIndex++
+                  realWordPos = 0
+                  turnPayload = {
+                    speaker_id: turn.getAttribute('data-speaker'),
+                    turn_id: "todefine",
+                    pos: turnIndex,
+                    words: [{
+                      wid: wordId,
+                      etime: word.getAttribute('data-etime'),
+                      stime: word.getAttribute('data-stime'),
+                      pos: realWordPos,
+                      word: wordValue,
+                      highlights: wordOptions.highlights,
+                      keywords: wordOptions.keywords
+                    }]
+                  }
+                }
+              }
+              // word = 'wo<br>rd'
+              else if (splitBr.length === 3) {
+              }
+            } 
+            else {
+              let wordSplit = wordVal.split(' ')
+              if (wordSplit.length > 1) { // If words have been added
+                // console.log('word added ?')
+                for (let k = 0; k < wordSplit.length; k++) {
+                  let wordObj = {}
+                  const wordId = word.getAttribute('data-word-id')
+                  const wordOptions = this.getHlAndKwByWordId(wordId)
+                  wordObj = {
+                    wid: 'todefine',
+                    etime: word.getAttribute('data-etime') ? word.getAttribute('data-etime') : -1,
+                    stime: word.getAttribute('data-stime') ? word.getAttribute('data-stime') : -1,
+                    pos: realWordPos,
+                    word: wordSplit[k],
+                    highlights: wordOptions.highlights,
+                    keywords: wordOptions.keywords
+                    
+                  }
+                  turnPayload.words.push(wordObj)
+                  realWordPos++
+                }
+              } else if(wordSplit.length === 1 && wordSplit[0] !== "") {
+                const wordId = word.getAttribute('data-word-id')
+                const wordOptions = this.getHlAndKwByWordId(wordId)
+                let wordObj = {
+                  wid: wordId,
+                  etime: word.getAttribute('data-etime'),
+                  stime: word.getAttribute('data-stime'),
+                  pos: realWordPos,
+                  word: wordVal,
+                  highlights: wordOptions.highlights,
+                  keywords: wordOptions.keywords
+                }
+                turnPayload.words.push(wordObj)
+                realWordPos++
+              }
+            }
+          }
+          textPayload[turnIndex] = turnPayload
+          turnIndex++
+        }
+        console.log(textPayload)
+        this.convoTextCustom = textPayload
+      }
+      return 
+    },
+
+    // Get Highlights and Keywords by id
+    getHlAndKwByWordId (wordId) {
+      let options = {
+        highlights: [],
+        keywords: []
+      }
+      this.convoText.map(turn => {
+        turn.words.map(word => {
+          if (word.wid === wordId) {
+            options.keywords = word.keywords
+            options.highlights = word.highlights
+          }
+        })
+      })
+      return options
+    },
+
 
     /*** HIGHLIGHTS ***/
-
     // Hihglihts show/hide
     setHighlights (data) {
       this.highlightsActive = []

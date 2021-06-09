@@ -3,7 +3,8 @@
         "hello": "Hello world"
     },
     "nav": {
-        "conversations_overview": "My conversations"
+        "conversations_overview": "My conversations",
+        "my_account": "My account"
     },
     "page": {
         "conversations": {
@@ -15,6 +16,12 @@
         "conversation_transcription": {
             "h2": "Transcription display options",
             "edition_mode": "Edition mode"
+        },
+        "conversations_create": {
+            "conversation_name": "Conversation name",
+            "description": "Description",
+            "audio_file": "Audio file",
+            "share_with": "Share with users"
         }
     },
     "filters": {
@@ -54,6 +61,7 @@
         "cancel": "Cancel",
         "conversation_landing": "Conversation landing",
         "create_highlight": "Create Highlight",
+        "create_conversation": "Create conversation",
         "delete": "Delete",
         "export": "Export",
         "merge": "Merge",
