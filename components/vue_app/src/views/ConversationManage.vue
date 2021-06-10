@@ -218,7 +218,7 @@
                   <td>{{ speaker.speaker_name }}</td>
                   <td>
                     <button 
-                      v-if='(!!speaker.stime && !!speaker.stime > 0) && (!!speaker.etime && !!speaker.etime > 0)'
+                      v-if="(!!speaker.stime && parseFloat(speaker.stime) > 0) && (!!speaker.etime && parseFloat(speaker.etime) > 0)"
                       class="btn--icon" 
                       @click="playSample($event, speaker.stime, speaker.etime)"
                     >

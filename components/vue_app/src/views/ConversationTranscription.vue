@@ -41,7 +41,6 @@
                 <span class="conversation-infos-item--icon conversation-infos-item--icon__visible"></span>
               </div>
             </div>
-
             <div class="flex col transcription-options" v-if="highlightsOptions.length > 0">
               <div class="flex row transcription-options--item" v-for="hl in highlightsOptions" :key="hl.hid">
                 <span class="transcription-options--item-label flex1">{{ hl.label }}</span>
@@ -64,18 +63,17 @@
       <!-- END LEFT PART -->
       <!-- RIGHT PART -->
       <div class="flex1 flex col transcritpion-container">
-        
         <div class="flex row">
           <h1 style="padding: 0;" class="flex row flex1">{{ convo.name }}</h1>
-          <div class="flex row flex1 edition__btns">
+          <div class="flex row flex1 edition__btns" v-if="!userAccess.readOnly">
             <span class="edition__btns-label">{{ $t('page.conversation_transcription.edition_mode') }} : </span>
-          <button 
-            @click="editionMode = true"
-            :class="editionMode ? 'enabled' : 'disabled'"
-            class="edition__btn-toggle"
-          >
-            <span class="edition__btn-toggle-circle" :class="editionMode ? 'enabled' : 'disabled'"></span>
-          </button>
+            <button 
+              @click="editionMode = true"
+              :class="editionMode ? 'enabled' : 'disabled'"
+              class="edition__btn-toggle"
+            >
+              <span class="edition__btn-toggle-circle" :class="editionMode ? 'enabled' : 'disabled'"></span>
+            </button>
             <button 
               v-if="editionMode" 
               @click="cancelEditionMode()" 
@@ -109,22 +107,22 @@
             <div class="flex col flex1">
               <span class="transcription-filters__select-label">{{ $t('array_labels.highlights') }}:</span>
               <div class="flex row">
-                <select id="filter-highlights" class="transcription-filters__select flex1" v-model="convoFilter.highlights">
+                <select id="filter-highlights" class="transcription-filters__select flex1" v-model="convoFilter.highlights" :disabled="editionMode ? true: false">
                   <option v-for="hl in convo.highlights" :key="hl.hid" :value="hl.hid">{{ hl.label }}</option>
                   <option value="">{{ $t('array_labels.none') }}</option>
                 </select>
-                <button v-if="convoFilter.highlights !== ''" @click="convoFilter.highlights = ''" class="cancel-filter-btn"></button>
+                <button v-if="convoFilter.highlights !== '' && !editionMode" @click="convoFilter.highlights = ''" class="cancel-filter-btn"></button>
               </div>
             </div>
             <!-- by keywords -->
             <div class="flex col flex1">
               <span class="transcription-filters__select-label">{{ $t('array_labels.keywords') }}:</span>
               <div class="flex row">
-                <select id="filter-highlights" class="transcription-filters__select flex1" v-model="convoFilter.keywords">
+                <select id="filter-highlights" class="transcription-filters__select flex1" v-model="convoFilter.keywords" :disabled="editionMode ? true: false">
                   <option v-for="kw in convo.keywords" :key="kw.kid" :value="kw.kid">{{ kw.label }}</option>
                   <option value="">{{ $t('array_labels.none') }}</option>
                 </select>
-                <button v-if="convoFilter.keywords !== ''" @click="convoFilter.keywords = ''" class="cancel-filter-btn"></button>
+                <button v-if="convoFilter.keywords !== '' && !editionMode" @click="convoFilter.keywords = ''" class="cancel-filter-btn"></button>
             </div>
           </div>
           <div class="transcription-export-btn-container flex row">
@@ -147,6 +145,7 @@
           :convoIsFiltered="convoIsFiltered"
           :highlightsOptions="highlightsOptions"
           :keywordsOptions="keywordsOptions"
+          :userAccess="userAccess"
           v-if="!!convo.text && convo.text.length > 0 && speakersArray.length > 0"
         ></Transcription>
       </div>
@@ -166,16 +165,16 @@
 
     </div>
     <div class="flex row">
-       <!-- AUDIO PLAYER -->
-          <AudioPlayer 
-            :audioPath="audioPath" 
-            :duration="convo.audio.duration" 
-            :editionMode="editionMode" 
-            :nbTurns="convo.text.length" 
-            :currentTurn="currentTurn" 
-            :convoIsFiltered="convoIsFiltered"
-            :convoText="convoText"
-          ></AudioPlayer>
+      <!-- AUDIO PLAYER -->
+      <AudioPlayer 
+        :audioPath="audioPath" 
+        :duration="convo.audio.duration" 
+        :editionMode="editionMode" 
+        :nbTurns="convo.text.length" 
+        :currentTurn="currentTurn" 
+        :convoIsFiltered="convoIsFiltered"
+        :convoText="convoText"
+      ></AudioPlayer>
     </div>
   </div>
   <div v-else>Loading</div>
@@ -196,6 +195,7 @@ export default {
   data () {
     return {
       convoLoaded: false,
+      usersLoaded: false,
       currentTime: 0,
       cursorX: 0,
       cursorY: 0,
@@ -221,32 +221,32 @@ export default {
     this.convoId = this.$route.params.convoId
     
     // Get conversation
-    await this.dispatchStore('getConversations')
+    await this.dispatchConversations()
+    await this.dispatchUsersInfo()
 
     // Close navigation menu
     bus.$emit('vertical_nav_close', {}) 
       
     // BUS listeners
     bus.$on('update_speaker', async (data) => {
-      await this.dispatchStore('getConversations')
+      await this.dispatchConversations()
     })
 
     bus.$on('refresh_conversation', async (data) => {
       if(!!data.closeToolBox && data.closeToolBox) {
         bus.$emit('close_selected_toolbox', {})
       }
-      await this.dispatchStore('getConversations')
+      await this.dispatchConversations()
       this.refreshHighlights()
     })
     
     bus.$on('audio_player_currenttime', (data) => {
       this.currentTime = data.time
     })
-
   },
   computed: {
     dataLoaded () {
-      return this.convoLoaded && this.speakersArray.length > 0 
+      return this.convoLoaded && this.speakersArray.length > 0 && !!this.userAccess
     },
     convo () {
       return this.$store.getters.conversationById(this.convoId)
@@ -304,6 +304,9 @@ export default {
     },
     convoIsFiltered () {
       return (this.convoFilter.speaker !== '' || this.convoFilter.highlights !== '' || this.convoFilter.keywords !== '' )
+    },
+    userAccess () {
+      return this.$store.getters.getUserRightsByConversation(this.convoId)
     }
   },
   watch: {
@@ -380,7 +383,6 @@ export default {
     }
   },
   methods: {
-
     /*** DOWNLOAD TRANSCRIPTION ***/
 
     // Create a download link from a generated blob
@@ -479,8 +481,8 @@ export default {
     /*** EDITION MODE ***/
 
     // Cancel edition mode
-    cancelEditionMode () {
-      this.dispatchStore('getConversations')
+    async cancelEditionMode () {
+      await this.dispatchConversations()
       this.refreshConversation++
       this.editionMode = false
     },
@@ -592,12 +594,21 @@ export default {
     },
 
     /*** DISPATCH STORE ***/
-    
-    async dispatchStore (topic) {
+    async dispatchConversations () {
       try {
-        const resp = await this.$options.filters.dispatchStore(topic)
-        if (resp.status === 'success') {
+        let getConvos = await this.$options.filters.dispatchStore('getConversations')
+        if(getConvos.status === 'success') {
           this.convoLoaded = true
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async dispatchUsersInfo () {
+      try {
+        let getUsers = await this.$options.filters.dispatchStore('getUsers')
+        if(getUsers.status === 'success') {
+          this.usersLoaded = true
         }
       } catch (error) {
         console.error(error)

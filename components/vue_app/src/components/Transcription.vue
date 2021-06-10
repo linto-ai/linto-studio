@@ -50,7 +50,7 @@
 <script>
 import { bus } from '../main.js'
 export default {
-  props: ['convoText', 'editionMode', 'currentTime', 'currentTurn', 'speakersArray', 'convoSpeakers', 'convoId', 'convoIsFiltered','highlightsOptions'],
+  props: ['convoText', 'editionMode', 'currentTime', 'currentTurn', 'speakersArray', 'convoSpeakers', 'convoId', 'convoIsFiltered','highlightsOptions', 'userAccess'],
   data () {
     return {
       refresh: 1,
@@ -63,17 +63,14 @@ export default {
       },
       highlightsActive: [],
       keywordsActive: [],
-      convoTextCustom: [],
-      convoFilter: {
-        speaker: '',
-        highlights:'',
-        keywords:''
-      }
+      convoTextCustom: []
     }
   },
   mounted () {
     // Enable transcription text selection
-    this.bindTextSelection()
+    if(this.userAccess.canEdit) {
+      this.bindTextSelection()
+    }
 
     // BUS listeners
     bus.$on('clear_text_selection', () => {
@@ -110,10 +107,6 @@ export default {
     this.convoTextCustom = this.convoText
   },
   watch: {
-    convoFilter (data) {
-      // Filter by speaker
-     
-    },
     currentTurn (data) {
       // if audio is playing: smooth scroll to current turn 
       this.scrollToCurrentTurn(data)
@@ -123,8 +116,8 @@ export default {
     updateConvoFilters () {
       this.convoTextCustom = this.convoText
     },
+    // On press "enter" when editing text
     createTurn() {
-      console.log('createTurn', document.activeElement)
       if(document.activeElement.classList.contains('transcription-speaker-sentence')) {
         const turns = document.getElementsByClassName('transcription-speaker-sentence')
         let textPayload = []
@@ -143,7 +136,7 @@ export default {
           for(let j = 0; j < words.length; j++) { // WORDS
             let word = words[j]
             let wordVal = word.innerHTML.replace(/&nbsp;/g,"",' ').trim()
-
+  
             // Create new Turn
             if(wordVal.indexOf('<br>') >= 0) {
               let splitBr = wordVal.split('<br>')
@@ -202,7 +195,8 @@ export default {
                 // word = 'wo<br>rd'
                 else if (splitBr[0] !== "" && splitBr[1] !== '') { 
                   // Finish current turn
-                  let wordCurrentTurn = wordValue = splitBr[0].trim()
+                  let wordCurrentTurn = splitBr[0].trim()
+                  let wordNextTurn = splitBr[1].trim()
                   let wordCurrentObj = {
                     wid: wordId,
                     etime: word.getAttribute('data-etime'),
@@ -214,11 +208,13 @@ export default {
                   }
                   turnPayload.words.push(wordCurrentObj)
                   textPayload[turnIndex] = turnPayload
+                  word.innerHTML = wordCurrentTurn + '&nbsp;'
+
                   turnIndex++
                   realWordPos = 0
 
                   // Start next turn
-                  let wordNextTurn = wordValue = splitBr[1].trim()
+                  
                   turnPayload = {
                     speaker_id: turn.getAttribute('data-speaker'),
                     turn_id: "todefine",
@@ -299,7 +295,6 @@ export default {
       return options
     },
 
-
     /*** HIGHLIGHTS ***/
     // Hihglihts show/hide
     setHighlights (data) {
@@ -372,8 +367,6 @@ export default {
           // firefox = selection.anchorNode
           let startWord = !selection.baseNode ? selection.anchorNode.parentNode : selection.baseNode.parentNode 
           let endWord = !selection.extentNode ? selection.focusNode.parentNode : selection.extentNode.parentNode
-          
-
 
           // check if: selection from left to right)
           let startWordPos = parseInt(startWord.getAttribute('data-pos'))
@@ -460,7 +453,6 @@ export default {
                   }
                 }
               }
-
             }
           }
           if(highlights.length > 0) {
