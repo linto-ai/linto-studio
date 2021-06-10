@@ -98,11 +98,11 @@
             <div class="flex col flex1">
               <span class="transcription-filters__select-label">{{ $t('array_labels.speakers')}}:</span>
               <div class="flex row">
-                <select id="filter-speaker" class="transcription-filters__select flex1" v-model="convoFilter.speaker">
+                <select id="filter-speaker" class="transcription-filters__select flex1" v-model="convoFilter.speaker" :disabled="editionMode ? true: false">
                   <option v-for="spk in convo.speakers" :key="spk.speaker_id" :value="spk.speaker_id">{{ spk.speaker_name }}</option>
                   <option value="">{{ $t('array_labels.none') }}</option>
                 </select>
-                <button v-if="convoFilter.speaker !== ''" @click="convoFilter.speaker = ''" class="cancel-filter-btn"></button>
+                <button v-if="convoFilter.speaker !== '' && !editionMode" @click="convoFilter.speaker = ''" class="cancel-filter-btn"></button>
               </div>
             </div>
             <!-- by highlights -->
@@ -307,6 +307,18 @@ export default {
     }
   },
   watch: {
+    convoIsFiltered (data) {
+      bus.$emit('filter_update', {convoText: this.convoText})
+    },
+    'convoFilter.speaker' (data) {
+      bus.$emit('filter_update', {convoText: this.convoText})
+    },
+    'convoFilter.highlights' (data) {
+      bus.$emit('filter_update', {convoText: this.convoText})
+    },
+    'convoFilter.keywords' (data) {
+      bus.$emit('filter_update', {convoText: this.convoText})
+    },
     editionMode (data) {
       if(data) {
         bus.$emit('close_selected_toolbox', {})

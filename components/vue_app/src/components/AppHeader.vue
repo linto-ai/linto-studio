@@ -58,7 +58,6 @@ export default {
   methods: {
     checkLangCookie () {
       let cookieLang = this.getCookie('cm_lang')
-      console.log('cookieLang', cookieLang)
       if(cookieLang !== null) {
         this.$i18n.locale = cookieLang
       }
@@ -72,10 +71,6 @@ export default {
     },
     toggleUserMenu() {
       this.userMenuOpened = !this.userMenuOpened
-    },
-    updateLangCookie() {
-      let cookie = 
-      console.log('cookie', cookie)
     },
     getCookie (name) {
       return this.$options.filters.getCookie(name)

@@ -63,7 +63,12 @@ export default {
       },
       highlightsActive: [],
       keywordsActive: [],
-      convoTextCustom: []
+      convoTextCustom: [],
+      convoFilter: {
+        speaker: '',
+        highlights:'',
+        keywords:''
+      }
     }
   },
   mounted () {
@@ -98,15 +103,26 @@ export default {
         setTimeout(()=>{this.createTurn()}, 500)
       }
     })
+    bus.$on('filter_update', (data) => {
+      this.convoTextCustom = data.convoText
+    })
+
     this.convoTextCustom = this.convoText
   },
   watch: {
+    convoFilter (data) {
+      // Filter by speaker
+     
+    },
     currentTurn (data) {
       // if audio is playing: smooth scroll to current turn 
       this.scrollToCurrentTurn(data)
     }
   },
   methods: {
+    updateConvoFilters () {
+      this.convoTextCustom = this.convoText
+    },
     createTurn() {
       console.log('createTurn', document.activeElement)
       if(document.activeElement.classList.contains('transcription-speaker-sentence')) {
@@ -131,38 +147,15 @@ export default {
             // Create new Turn
             if(wordVal.indexOf('<br>') >= 0) {
               let splitBr = wordVal.split('<br>')
-              console.log('/1', wordVal)
-              console.log(splitBr)
-              // word = '<br>'
-              /*if(splitBr.length === 1 && splitBr[0] === '<br>') {
-                console.log('/2 word = "<br>"')
-                // <br> LAST POSITION > TODO : trim()
-                // <br> FIRST POSITION > TODO : trim()
-                // <br> is between two words
-                textPayload[turnIndex] = turnPayload
-                turnIndex++
-                realWordPos = 0
-                turnPayload = {
-                  speaker_id: turn.getAttribute('data-speaker'),
-                  turn_id: turn.getAttribute('data-turn-id'),
-                  pos: turnIndex,
-                  words: []
-                }
-                j++
-              } */
+              let wordValue = ""
               
-              // word = '<br>word' || 'word<br>'
+              // word = '<br>word' || 'word<br>' || 'wo<br>rd'
               if (splitBr.length === 2) {
-                console.log('2/')
-                let wordValue = ""
                 const wordId = word.getAttribute('data-word-id')
                 const wordOptions = this.getHlAndKwByWordId(wordId)
-                
                 //'word<br>'
                 if(splitBr[0] !== "" && splitBr[1] === '') {
-                  console.log('3/ word<br>')
                   wordValue = splitBr[0].trim()
-                  
                   let wordObj = {
                     wid: wordId,
                     etime: word.getAttribute('data-etime'),
@@ -186,7 +179,6 @@ export default {
                 } 
                 //'<br>word'
                 else if (splitBr[0] === "" && splitBr[1] !== '') {
-                  console.log('3/ <br>word')
                   wordValue = splitBr[1].trim()
                   textPayload[turnIndex] = turnPayload
                   turnIndex++
@@ -205,12 +197,45 @@ export default {
                       keywords: wordOptions.keywords
                     }]
                   }
+                  word.innerHTML = wordValue + '&nbsp;'
+                }
+                // word = 'wo<br>rd'
+                else if (splitBr[0] !== "" && splitBr[1] !== '') { 
+                  // Finish current turn
+                  let wordCurrentTurn = wordValue = splitBr[0].trim()
+                  let wordCurrentObj = {
+                    wid: wordId,
+                    etime: word.getAttribute('data-etime'),
+                    stime: word.getAttribute('data-stime'),
+                    pos: realWordPos,
+                    word: wordCurrentTurn,
+                    highlights: wordOptions.highlights,
+                    keywords: wordOptions.keywords
+                  }
+                  turnPayload.words.push(wordCurrentObj)
+                  textPayload[turnIndex] = turnPayload
+                  turnIndex++
+                  realWordPos = 0
+
+                  // Start next turn
+                  let wordNextTurn = wordValue = splitBr[1].trim()
+                  turnPayload = {
+                    speaker_id: turn.getAttribute('data-speaker'),
+                    turn_id: "todefine",
+                    pos: turnIndex,
+                    words: [{
+                      wid: "todefine",
+                      etime: word.getAttribute('data-etime'),
+                      stime: word.getAttribute('data-stime'),
+                      pos: realWordPos,
+                      word: wordNextTurn,
+                      highlights: wordOptions.highlights,
+                      keywords: wordOptions.keywords
+                    }]
+                  }
                 }
               }
-              // word = 'wo<br>rd'
-              else if (splitBr.length === 3) {
-              }
-            } 
+            }
             else {
               let wordSplit = wordVal.split(' ')
               if (wordSplit.length > 1) { // If words have been added
@@ -252,12 +277,11 @@ export default {
           textPayload[turnIndex] = turnPayload
           turnIndex++
         }
-        console.log(textPayload)
         this.convoTextCustom = textPayload
       }
       return 
     },
-
+    
     // Get Highlights and Keywords by id
     getHlAndKwByWordId (wordId) {
       let options = {

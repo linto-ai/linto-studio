@@ -12,11 +12,9 @@ export default {
     this.initKeyupHandler()
     window.keyupEnabled = true
     bus.$on('keyup_handler_disable', () => {
-      console.log('disable keyeup handler')
       window.keyupEnabled = false
     })
     bus.$on('keyup_handler_enable', () => {
-      console.log('enable keyeup handler')
       window.keyupEnabled = true
     })
   },
