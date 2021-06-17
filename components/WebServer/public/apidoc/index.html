@@ -1,60 +1,92 @@
 <!-- HTML for static distribution bundle build -->
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8">
     <title>Swagger UI</title>
-    <link rel="stylesheet" type="text/css" href="/swagger-ui/swagger-ui.css" >
+    <link rel="stylesheet" type="text/css" href="/swagger-ui/swagger-ui.css">
     <link rel="icon" type="image/png" href="/swagger-ui/favicon-32x32.png" sizes="32x32" />
     <link rel="icon" type="image/png" href="/swagger-ui/favicon-16x16.png" sizes="16x16" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
     <style>
-      html
-      {
-        box-sizing: border-box;
-        overflow: -moz-scrollbars-vertical;
-        overflow-y: scroll;
-      }
-
-      *,
-      *:before,
-      *:after
-      {
-        box-sizing: inherit;
-      }
-
-      body
-      {
-        margin:0;
-        background: #fafafa;
-      }
+        html {
+            box-sizing: border-box;
+            overflow: -moz-scrollbars-vertical;
+            overflow-y: scroll;
+        }
+        
+        *,
+        *:before,
+        *:after {
+            box-sizing: inherit;
+        }
+        
+        body {
+            margin: 0;
+            background: #fafafa;
+        }
     </style>
-  </head>
+</head>
 
-  <body>
+<body>
     <div id="swagger-ui"></div>
 
-    <script src="/swagger-ui/swagger-ui-bundle.js"> </script>
-    <script src="/swagger-ui/swagger-ui-standalone-preset.js"> </script>
+    <script src="/swagger-ui/swagger-ui-bundle.js">
+    </script>
+    <script src="/swagger-ui/swagger-ui-standalone-preset.js">
+    </script>
     <script>
-    window.onload = function() {
-      // Begin Swagger UI call region
-      const ui = SwaggerUIBundle({
-        url: "swagger.yml",
-        dom_id: '#swagger-ui',
-        deepLinking: true,
-        presets: [
-          SwaggerUIBundle.presets.apis,
-          SwaggerUIStandalonePreset
-        ],
-        plugins: [
-          SwaggerUIBundle.plugins.DownloadUrl
-        ],
-        layout: "StandaloneLayout"
-      })
-      // End Swagger UI call region
+        window.onload = function() {
 
-      window.ui = ui
-    }
-  </script>
-  </body>
+            let getCookie = function(cname) {
+                let name = cname + "="
+                let decodedCookie = decodeURIComponent(document.cookie)
+                let ca = decodedCookie.split(';')
+                for (var i = 0; i < ca.length; i++) {
+                    var c = ca[i]
+                    while (c.charAt(0) == ' ') {
+                        c = c.substring(1)
+                    }
+                    if (c.indexOf(name) == 0) {
+                        return c.substring(name.length, c.length)
+                    }
+                }
+                return null
+            }
+
+            let authToken = getCookie('authToken')
+
+
+            // If user not connected > Redirect login
+            if (authToken === '') {
+                window.location.href = "/login"
+            }
+            // Begin Swagger UI call region
+            else {
+                const ui = SwaggerUIBundle({
+                        url: "swagger.yml",
+                        dom_id: '#swagger-ui',
+                        deepLinking: true,
+                        presets: [
+                            SwaggerUIBundle.presets.apis,
+                            SwaggerUIStandalonePreset
+                        ],
+                        plugins: [
+                            SwaggerUIBundle.plugins.DownloadUrl
+                        ],
+                        layout: "StandaloneLayout",
+                        requestInterceptor: (req) => {
+                            req.headers.authorization = `Bearer ${authToken}`
+                            return req
+                        }
+                    })
+                    // End Swagger UI call region
+
+                window.ui = ui
+            }
+        }
+    </script>
+</body>
+
 </html>

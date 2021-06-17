@@ -3,12 +3,9 @@ const path = require("path")
 const debug = require('debug')(`app:webserver`)
 const express = require('express')
 const Session = require('express-session')
-
 const fileUpload = require('express-fileupload')
 const passport = require('passport')
-
 const redisClient = require(`${process.cwd()}/components/redis`)
-
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const pathToSwaggerUi = require('swagger-ui-dist').absolutePath()

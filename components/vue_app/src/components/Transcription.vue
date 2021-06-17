@@ -68,9 +68,11 @@ export default {
   },
   mounted () {
     // Enable transcription text selection
-    if(this.userAccess.canEdit) {
+    setTimeout(()=>{
+      if(this.userAccess.canEdit) {
       this.bindTextSelection()
-    }
+      }
+    },500)
 
     // BUS listeners
     bus.$on('clear_text_selection', () => {
@@ -340,6 +342,7 @@ export default {
 
     // Enable text selection
     bindTextSelection () {
+      console.log('bind text selection')
       const transcription = document.getElementById('transcription')
       transcription.addEventListener('selectstart', this.initTextSelection)
     },

@@ -230,11 +230,14 @@ export default {
     // BUS listeners
     bus.$on('update_speaker', async (data) => {
       await this.dispatchConversations()
+        this.refreshConversation++
     })
 
     bus.$on('refresh_conversation', async (data) => {
       if(!!data.closeToolBox && data.closeToolBox) {
         bus.$emit('close_selected_toolbox', {})
+        await this.dispatchConversations()
+        this.refreshConversation++
       }
       await this.dispatchConversations()
       this.refreshHighlights()

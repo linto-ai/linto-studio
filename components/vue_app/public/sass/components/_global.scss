@@ -347,6 +347,7 @@ a {
     }
     &.btn--inline {
         border: none;
+        white-space: nowrap;
         @include cancelBoxShadow();
         @include borderRadius(0px);
         .label {

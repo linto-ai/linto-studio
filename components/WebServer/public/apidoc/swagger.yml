@@ -9,7 +9,7 @@ info:
     url: http://linto.ai
     email: contact@linto.ai
 #servers:
-host: localhost:8000
+host: localhost:8001
 basePath: /
 schemes:
  - https
@@ -828,7 +828,7 @@ paths:
                 $ref: '#/components/schemas/customError'
 tags:
   - name: conversations
-    description: "-"
+    description: All conversations
   - name: metadata
     description: operations on conversation metadata
   - name: speakers
