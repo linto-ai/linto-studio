@@ -14,7 +14,6 @@ async function getAllConversations(req, res, next) {
     }
 }
 
-
 module.exports = {
     getAllConversations
 }

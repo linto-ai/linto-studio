@@ -320,10 +320,10 @@ export default {
   },
   async mounted () {
     bus.$emit('vertical_nav_close', {})
-    this.convoId = this.$route.params.convoId
-  
     await this.dispatchConversations()
     await this.dispatchUsersInfo()
+    
+    this.convoId = this.$route.params.convoId
     this.audioPlayer = new Audio()
 
     bus.$on('refresh_conversation', async (data) => {

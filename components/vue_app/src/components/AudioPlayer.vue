@@ -139,25 +139,17 @@ export default {
         this.play()
       })
       bus.$on('audio_player_play_pause', (data) => {
-        if(!this.editionMode) {
           if(this.audioIsPlaying) {
            this.pause()
           } else {
             this.play()
-          }
         }
       })
       bus.$on('audio_player_next_turn', () => {
-        if(!this.editionMode) {
           this.playNextSpeaker()
-          // Todo > if conversation is filtered (segments)
-        }
       })
       bus.$on('audio_player_prev_turn', () => {
-        if(!this.editionMode) {
           this.playPrevSpeaker()
-          // Todo > if conversation is filtered (segments)
-        }
       })
     },
     // Play from a given time

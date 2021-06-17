@@ -10,33 +10,38 @@ export default {
   },
   mounted(){
     this.initKeyupHandler()
-    window.keyupEnabled = true
-    bus.$on('keyup_handler_disable', () => {
-      window.keyupEnabled = false
-    })
-    bus.$on('keyup_handler_enable', () => {
-      window.keyupEnabled = true
-    })
   },
   methods: {
     initKeyupHandler() {
       document.addEventListener("keydown", function(event) {
-        //console.log(event)
+        const activeElement = document.activeElement.tagName
         //console.log(window.keyupEnabled)
-        // Space > play / pause
+        
+        // Enter
         if(event.code === 'Enter' || event.keyCode === 13) {
-          if(window.keyupEnabled) bus.$emit('transcription_bind_enter', {})
+          // Press enter on edition mode > create turn
+          if(window.editionMode === true && activeElement === 'TD') {
+            bus.$emit('transcription_bind_enter', {})
+          } 
         }
+        
+        // Space > play / pause
         if(event.code === 'Space' || event.keyCode === 32) {
-          if(window.keyupEnabled) bus.$emit('audio_player_play_pause', {})
+          if(window.editionMode === false) {
+            if(activeElement !== 'INPUT') {
+              event.preventDefault()
+              bus.$emit('audio_player_play_pause', {})
+            }
+          }
         }
+
         // Ctrl + arrow right > play next turn
-        if(event.ctrlKey && event.key === "ArrowRight") {
-          if(window.keyupEnabled) bus.$emit('audio_player_next_turn', {})
+        if(event.ctrlKey && event.key === "ArrowRight" && activeElement !== 'TD' && activeElement !== 'INPUT') {
+          bus.$emit('audio_player_next_turn', {})
         }
         // Ctrl + arrow left > play previous turn
-        if(event.ctrlKey && event.key === "ArrowLeft") {
-          if(window.keyupEnabled) bus.$emit('audio_player_prev_turn', {})
+        if(event.ctrlKey && event.key === "ArrowLeft" && activeElement !== 'TD' && activeElement !== 'INPUT') {
+          bus.$emit('audio_player_prev_turn', {})
         }
       })
     }

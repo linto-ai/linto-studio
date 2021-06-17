@@ -96,9 +96,8 @@ export default {
     bus.$on('disable_text_selection', () => {
       this.unbindTextSelection()
     })
-
     bus.$on('transcription_bind_enter', () => {
-      if(this.editionMode) {
+      if(window.editionMode === true) {
         setTimeout(()=>{this.createTurn()}, 500)
       }
     })
@@ -216,7 +215,6 @@ export default {
                   realWordPos = 0
 
                   // Start next turn
-                  
                   turnPayload = {
                     speaker_id: turn.getAttribute('data-speaker'),
                     turn_id: "todefine",
@@ -305,6 +303,7 @@ export default {
       for(let word of allWords) {
           word.setAttribute('style','')
       }
+
       for (let hl of data) {
         if(hl.selected) {
           if(hl.words.length > 0) {
@@ -342,7 +341,6 @@ export default {
 
     // Enable text selection
     bindTextSelection () {
-      console.log('bind text selection')
       const transcription = document.getElementById('transcription')
       transcription.addEventListener('selectstart', this.initTextSelection)
     },
@@ -353,13 +351,13 @@ export default {
     },
     // Text selection event
     initTextSelection () {
+      let startClick = new Date()
       if (window.Event) {
         document.captureEvents(Event.MOUSEMOVE)
       }
       const transcription = document.getElementById('transcription')
-      if(!this.editionMode && !this.convoIsFiltered) {
-        let startClick = new Date()
-        transcription.onmouseup = (e) => {
+      transcription.onmouseup = (e) => {
+        if(window.editionMode === false && !this.convoIsFiltered) {
           const stopClick = new Date()
           this.clickTime = stopClick - startClick
           const selection = window.getSelection()
@@ -510,7 +508,7 @@ export default {
             }
           }
         }
-        if(!this.editionMode) {
+        if(window.editionMode === false) {
           this.showToolBox(selectionObj)
         }
       }, 100)
@@ -598,7 +596,7 @@ export default {
     
     // Audio player: play from a word
     playFromWord (stime) {
-      if(!this.editionMode) {
+      if(window.editionMode === false) {
         this.closeToolBox()
         if(stime !== ''){
           bus.$emit('audio_player_playfrom', {time: stime})

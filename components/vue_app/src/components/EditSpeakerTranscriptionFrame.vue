@@ -84,7 +84,6 @@ export default {
   },
   async mounted () {
     bus.$on('edit_speaker_transcription', async (data) => {
-      bus.$emit('keyup_handler_disable', {})
         this.showFrame = true
         this.convoId = data.conversationId
         this.speaker = data.speaker
@@ -127,7 +126,6 @@ export default {
       }
       this.showEditSpkOptions = false
       this.showMergeTurnsOptions = false
-      bus.$emit('keyup_handler_enable', {})
       bus.$emit('refresh_conversation', {})
       bus.$emit('update_speaker', {})
       bus.$emit('close_edit_speaker_frame', {})

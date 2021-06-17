@@ -1,8 +1,12 @@
 #!/bin/bash
 set -e
 
-echo "Waiting MQTT and mongo..."
+echo "Waiting mongo..."
 /wait-for-it.sh $DB_HOST:$DB_PORT --timeout=20 --strict -- echo " $DB_HOST:$DB_PORT is up"
+
+echo "Waiting REDIS..."
+/wait-for-it.sh $REDIS_SESSION_SERVICE:$REDIS_SESSION_SERVICE_PORT --timeout=20 --strict -- echo " $REDIS_SESSION_SERVICE:$REDIS_SESSION_SERVICE_PORT is up"
+
 
 while [ "$1" != "" ]; do
     case $1 in

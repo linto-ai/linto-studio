@@ -230,22 +230,26 @@ export default {
     // BUS listeners
     bus.$on('update_speaker', async (data) => {
       await this.dispatchConversations()
-        this.refreshConversation++
+      this.refreshConversation++
+      this.refreshHighlights()
     })
 
     bus.$on('refresh_conversation', async (data) => {
       if(!!data.closeToolBox && data.closeToolBox) {
         bus.$emit('close_selected_toolbox', {})
         await this.dispatchConversations()
-        this.refreshConversation++
       }
       await this.dispatchConversations()
+      this.refreshConversation++
       this.refreshHighlights()
+      
     })
     
     bus.$on('audio_player_currenttime', (data) => {
       this.currentTime = data.time
     })
+
+    window.editionMode = this.editionMode
   },
   computed: {
     dataLoaded () {
@@ -314,6 +318,7 @@ export default {
   },
   watch: {
     convoIsFiltered (data) {
+      window.convoIsFiltered = data
       bus.$emit('filter_update', {convoText: this.convoText})
     },
     'convoFilter.speaker' (data) {
@@ -321,11 +326,13 @@ export default {
     },
     'convoFilter.highlights' (data) {
       bus.$emit('filter_update', {convoText: this.convoText})
+      this.refreshHighlights()
     },
     'convoFilter.keywords' (data) {
       bus.$emit('filter_update', {convoText: this.convoText})
     },
     editionMode (data) {
+      window.editionMode = data
       if(data) {
         bus.$emit('close_selected_toolbox', {})
         bus.$emit('disable_text_selection', {})
@@ -438,7 +445,7 @@ export default {
     /*** HIGHLIGHTS ***/
 
     refreshHighlights () {
-      bus.$emit('transcription_update_highlights', {highlightsOptions: this.highlightsOptions})
+      setTimeout(() => {bus.$emit('transcription_update_highlights', {highlightsOptions: this.highlightsOptions})}, 100)
     },
     // Set/Unset transcription highlight
     updateHighlight (hl) {
