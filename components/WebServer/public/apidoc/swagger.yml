@@ -15,24 +15,26 @@ schemes:
  - https
 paths:
 ## CONVERSATIONS
-  /api/conversations:
-    get:
-      tags: 
-        - "conversations"
-      summary: Get all conversations
-      responses:
-        '200':
-          description: request success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/conversations'
-        '400':
-          description: bad request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customError'
+##  /api/conversations:
+##    get:
+##      tags: 
+##        - "conversations"
+##      summary: Get all conversations
+##      responses:
+##        '200':
+##          description: request success
+##          content:
+##            application/json:
+##              schema:
+##                type: array
+##                items:
+##                  type: object
+##        '400':
+##          description: bad request error
+##          content:
+##            application/json:
+##              schema:
+##                $ref: '#/components/schemas/customError'
 ## CONVERSATION METADATA
   /api/conversation/{conversationid}/title:
     put:
