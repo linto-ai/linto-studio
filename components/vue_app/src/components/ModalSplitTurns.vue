@@ -346,7 +346,6 @@ export default {
             }
           }
         } 
-        
         let payload = {}
         
         // group of words selected

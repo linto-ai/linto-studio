@@ -338,7 +338,7 @@ export default {
   },
   computed: {
     dataLoaded () {
-      return this.usersLoaded && this.convoLoaded && !!this.userAccess
+      return this.usersLoaded && this.convoLoaded && !!this.userAccess && this.convo !== ''
     },
     typeOfAgenda () {
       return typeof this.convo.agenda.edit
@@ -385,32 +385,33 @@ export default {
   },
   watch: {
     conversation (data) {
-      this.convo = data
-      const titleVal = data.name
-      this.convo.name = {
-        base: titleVal,
-        edit: titleVal
-      }
-      const descVal = data.description
-      this.convo.description = {
-        base: descVal,
-        edit: descVal
-      }
-      const agendaVal = data.agenda
-      this.convo.agenda = {
-        base: agendaVal,
-        edit: agendaVal
-      }
-      const abstractVal = data.abstract
-      this.convo.abstract = {
-        base: !!data.abstract.base ? data.abstract.base : abstractVal,
-        edit: !!data.abstract.edit ? data.abstract.edit : abstractVal
-      }
-
-      const keyWordsVal = data.keywords
-      this.convo.keywords = {
-        base: keyWordsVal,
-        edit: keyWordsVal
+      if(typeof(data) === 'object' ){
+        this.convo = data
+        const titleVal = data.name
+        this.convo.name = {
+          base: titleVal,
+          edit: titleVal
+        }
+        const descVal = data.description
+        this.convo.description = {
+          base: descVal,
+          edit: descVal
+        }
+        const agendaVal = data.agenda
+        this.convo.agenda = {
+          base: agendaVal,
+          edit: agendaVal
+        }
+        const abstractVal = data.abstract
+        this.convo.abstract = {
+          base: !!data.abstract.base ? data.abstract.base : abstractVal,
+          edit: !!data.abstract.edit ? data.abstract.edit : abstractVal
+        }
+        const keyWordsVal = data.keywords
+        this.convo.keywords = {
+          base: keyWordsVal,
+          edit: keyWordsVal
+        }
       }
     }
   },

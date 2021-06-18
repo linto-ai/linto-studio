@@ -118,8 +118,8 @@ export default {
       this.convoId = data.convoId
       this.options = data.toolBoxOption
       this.unhighlightLinkVisible = false
+      bus.$emit('close_edit_speaker_frame', {})
     })
-
     bus.$on('close_selected_toolbox', () => {
       this.closeToolbox()
     })

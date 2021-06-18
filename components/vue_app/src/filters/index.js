@@ -35,6 +35,7 @@ Vue.filter('timeToHMS', function(time) {
 Vue.filter('dateToJMY', function(date) {
     let splitDate = date.split('T')
     return splitDate[0]
+
 })
 
 Vue.filter('dateToJMYHMS', function(date) {

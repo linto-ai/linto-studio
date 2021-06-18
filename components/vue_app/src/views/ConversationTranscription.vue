@@ -237,7 +237,6 @@ export default {
     bus.$on('refresh_conversation', async (data) => {
       if(!!data.closeToolBox && data.closeToolBox) {
         bus.$emit('close_selected_toolbox', {})
-        await this.dispatchConversations()
       }
       await this.dispatchConversations()
       this.refreshConversation++

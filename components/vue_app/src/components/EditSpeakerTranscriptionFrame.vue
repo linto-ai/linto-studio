@@ -89,6 +89,7 @@ export default {
         this.speaker = data.speaker
         this.turnId = data.turnId
         await this.dispatchStore('getConversations')
+        bus.$emit('close_selected_toolbox', {})
     })
     bus.$on('close_edit_speaker_frame', () => {
       if(this.showFrame) {
@@ -127,8 +128,6 @@ export default {
       this.showEditSpkOptions = false
       this.showMergeTurnsOptions = false
       bus.$emit('refresh_conversation', {})
-      bus.$emit('update_speaker', {})
-      bus.$emit('close_edit_speaker_frame', {})
     },
     async updateSpeaker (targetSpeaker) {
       if(this.editSpeakerMode === 'turn') {
@@ -153,6 +152,7 @@ export default {
             message: req.data.msg,
             timeout: 3000
           })
+          bus.$emit('refresh_conversation', {})
           this.closeFrame()
         } else {
           throw req
@@ -202,9 +202,7 @@ export default {
           speakername
         }
         let req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/speakers`, 'post', payload)
-
         if(req.status === 200 && !!req.data.msg) {
-          await this.dispatchStore('getConversations')
           return { status: 'success'}
         } else {
           throw req
