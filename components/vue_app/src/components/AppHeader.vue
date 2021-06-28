@@ -20,7 +20,7 @@
         <span class="user-menu-btn--arrow flex col" :class="userMenuOpened ? 'user-menu-btn--arrow__opened' : 'user-menu-btn--arrow__closed'"></span>
       </button>
       <div class="user-menu-links flex col" :class="userMenuOpened ? 'opened' : 'closed'">
-          <a class="user-menu-links--item flex" href="#">
+          <a class="user-menu-links--item flex" :href="`/interface/user/profile/${user._id}`">
             <span class="icon logout"></span>
             <span class="label">{{ $t('nav.my_account') }}</span>
           </a>
@@ -37,11 +37,16 @@ export default {
   data () {
     return {
       userMenuOpened: false,
-      appLanguages: ['fr', 'en']
+      appLanguages: ['fr', 'en'],
+      userId: ''
     }
   },
   mounted () {
     this.checkLangCookie()
+    setTimeout(() => {
+      console.log(this.user)
+    }, 600)
+
   },
   computed: {
     user () {

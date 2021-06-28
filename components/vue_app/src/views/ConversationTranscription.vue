@@ -190,6 +190,8 @@ import Transcription from '@/components/Transcription.vue'
 import TranscriptionKeyupHandler from '@/components/TranscriptionKeyupHandler.vue'
 import KeyboardCommandsFrame from '@/components/KeyboardCommandsFrame.vue'
 import ModalMergeSpeakersWithTarget from '@/components/ModalMergeSpeakersWithTarget.vue'
+
+import _ from 'lodash'
 import { bus } from '../main.js'
 export default {
   data () {
@@ -496,29 +498,47 @@ export default {
       this.editionMode = false
     },
     // Update transcription text
+    objectsEqual (o1, o2) {
+      console.log(o1, o2)
+      if(o1.length !== o2.length) {
+        return false
+      } else {
+        for (let i = 0; i < o1.length; i++) {
+          return parseFloat(o1[i].etime) === parseFloat(o2[i].etime) && parseFloat(o1[i].stime) === parseFloat(o2[i].stime) && o1[i].wid === o2[i].wid && o1[i].word === o2[i].word
+        }
+      }
+    },
+
     async validateEdition() {
       try {
         this.editionMode = false
         this.editConvoTmp = this.convo
         const newObject = this.buildTextObject()
         console.log('buildTextObject', newObject)
-        for(let turn of newObject) {
-          let payload = {
-            turnid: turn.turn_id,
-            words: turn.words
-          }
-          let req = null
-          if(payload.turnid === 'todefine') {
-              payload.pos = turn.pos - 0.5
-             req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/turn/${turn.speaker_id}`, 'post', payload)
-          } else {
-            req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/text`, 'put', payload)
-          }
-          bus.$emit('refresh_conversation', {})
+        setTimeout(async () => {
+          for(let turn of newObject) {
+            let payload = {
+              turnid: turn.turn_id,
+              words: turn.words
+            }
+            let payloadWords = payload.words
+            let turnWords = this.convo.text.filter(c => c.turn_id === payload.turnid)[0].words
+
+            console.log(this.objectsEqual(payloadWords, turnWords))
+
+            let req = null
+            if(payload.turnid === 'todefine') {
+                payload.pos = turn.pos - 0.5
+              req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/turn/${turn.speaker_id}`, 'post', payload)
+            } else {
+              req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/text`, 'put', payload)
+            }
+            bus.$emit('refresh_conversation', {})
             if(req.status !== 200) {
               throw req
             }
-        }
+          }
+        }, 150)
       } catch (error) {
         console.error(error)
       }

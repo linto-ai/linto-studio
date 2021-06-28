@@ -49,12 +49,13 @@ class UsersModel extends MongoModel {
 
     // update a user conversation
     async update(payload) {
+        const operator = "$set"
         const query = {
-            _id: payload._id
+            _id: this.getObjectId(payload._id)
         }
         delete payload._id
         let mutableElements = payload
-        return await this.mongoUpdate(query, mutableElements)
+        return await this.mongoUpdateOne(query, operator, mutableElements)
     }
 
     // create a user

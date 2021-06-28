@@ -2,12 +2,13 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 // Views
-import Index from '../views/HelloWorld.vue'
+
 import Conversations from '../views/Conversations.vue'
 import ConversationsCreate from '../views/ConversationCreate.vue'
 import ConversationManage from '../views/ConversationManage.vue'
 import ConversationTranscription from '../views/ConversationTranscription.vue'
 import Login from '../views/Login.vue'
+import UserProfile from '../views/UserProfile.vue'
 import CreateAccount from '../views/CreateAccount.vue'
 Vue.use(Router)
 
@@ -39,7 +40,7 @@ const router = new Router({
             name: 'create-account',
             component: CreateAccount
         },
-        {
+        /*{
             path: '/interface',
             name: 'index',
             component: Index,
@@ -54,8 +55,10 @@ const router = new Router({
                     content: 'noindex, nofollow'
                   }
                 ]
-              */
-        }, {
+              
+        }, 
+        */
+        {
             path: '/interface/conversations',
             name: 'conversations',
             component: Conversations
@@ -73,13 +76,13 @@ const router = new Router({
             path: '/interface/conversation/:convoId/transcription',
             name: 'conversations transcription',
             component: ConversationTranscription
+        },
+        {
+            path: '/interface/user/profile/:userId',
+            name: 'User profile settings',
+            component: UserProfile
         }
 
-        /*      {
-                  path: '/interface/conversations/transcript',
-                  name: 'conversation transcription',
-                  component: ConversationTranscription
-              } */
     ]
 })
 

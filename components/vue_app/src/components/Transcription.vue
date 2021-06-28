@@ -71,7 +71,7 @@ export default {
     // Enable transcription text selection
     setTimeout(()=>{
       if(this.userAccess.canEdit) {
-      this.bindTextSelection()
+        this.bindTextSelection()
       }
     },500)
 
@@ -118,10 +118,20 @@ export default {
     updateConvoFilters () {
       this.convoTextCustom = this.convoText
     },
+    // On press "enter" when editing text
+    createTurn() {
+      if(document.activeElement.classList.contains('transcription-speaker-sentence')) {
+        this.formatBeforeCreateTurn()
+        setTimeout(()=>{
+          this.createTurnProcess()
+        }, 1000)
+      }
+      return 
+    },
+    // Format content before creating a new turn (replace <div></div>)
     formatBeforeCreateTurn() {
       const turns = document.getElementsByClassName('transcription-speaker-sentence')
       let turnWordsDiv = []
-      
       for(let turn of turns) {
         let formatHTML = ''
         let childs = turn.childNodes
@@ -164,16 +174,15 @@ export default {
             pos: turnIndex,
             words: []
           }
-          // Treatment
           for(let j = 0; j < words.length; j++) { // WORDS
             let word = words[j]
             let wordVal = word.innerHTML.replace(/&nbsp;/g,"",' ').trim()
-
-            // Create new Turn
+            // Turn have to be splited (line return) 
+            // Create new Turn 
             if(wordVal.indexOf('<br>') >= 0) {
               let splitBr = wordVal.split('<br>')
               let wordValue = ""
-              // word = '<br>word' || 'word<br>' || 'wo<br>rd'
+              // word = '<br>word' || 'word<br>' || 'wo<br>rd' || <span><br></span>
               if (splitBr.length === 2) {
                 const wordId = word.getAttribute('data-word-id')
                 const wordOptions = this.getHlAndKwByWordId(wordId)
@@ -273,6 +282,7 @@ export default {
                 }
               }
             }
+            // Build text object
             else {
               let wordSplit = wordVal.split(' ')
               if (wordSplit.length > 1) { // If words have been added
@@ -314,23 +324,9 @@ export default {
           textPayload[turnIndex] = turnPayload
           turnIndex++
         }
-        //console.log(textPayload)
         this.convoTextCustom = textPayload
         this.refreshTest++
     },
-    // On press "enter" when editing text
-    createTurn() {
-      if(document.activeElement.classList.contains('transcription-speaker-sentence')) {
-        
-        this.formatBeforeCreateTurn()
-        setTimeout(()=>{
-          this.createTurnProcess()
-        }, 1000)
-       
-      }
-      return 
-    },
-    
     // Get Highlights and Keywords by id
     getHlAndKwByWordId (wordId) {
       let options = {
@@ -356,7 +352,6 @@ export default {
       for(let word of allWords) {
           word.setAttribute('style','')
       }
-
       for (let hl of data) {
         if(hl.selected) {
           if(hl.words.length > 0) {
@@ -420,7 +415,6 @@ export default {
           // chrome = selection.baseNode
           // firefox = selection.anchorNode
           let startWord = !selection.baseNode ? selection.getRangeAt(0).startContainer.parentElement : selection.baseNode.parentNode 
-
           let endWord = !selection.extentNode ? selection.focusNode.parentNode : selection.extentNode.parentNode
 
           // check if: selection from left to right)
