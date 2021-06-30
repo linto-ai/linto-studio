@@ -36,7 +36,8 @@ const {
 */
 
 const {
-    replaceTurnText
+    replaceTurnText,
+    replaceFullText
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/textedit.js`)
 
 const {
@@ -156,6 +157,14 @@ module.exports = (webserver) => {
             requireAuth: true,
             requireWriteAccess: true,
             controller: [splitTurns, renumberTurns]
+        },
+        {
+            // Update text object in a conversation
+            path: '/:conversationid/fulltext',
+            method: 'put',
+            requireAuth: true,
+            requireWriteAccess: true,
+            controller: replaceFullText
         },
         {
             // Update text object in a conversation

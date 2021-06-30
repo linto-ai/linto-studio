@@ -84,7 +84,6 @@ export default new Vuex.Store({
             try {
                 const token = getCookie('authToken')
                 const userId = getCookie('userId')
-
                 const getInfo = await axios.get(`${process.env.VUE_APP_CONVO_API}/users/${userId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -262,7 +261,7 @@ export default new Vuex.Store({
 
             }
         },
-        getUserByid: (state) => (userId) => {
+        getUserById: (state) => (userId) => {
             try {
                 const allUsers = state.users
                 return allUsers.filter(usr => usr._id === userId)[0]

@@ -22,7 +22,7 @@ class UsersModel extends MongoModel {
     }
 
     // get a user by id 
-    async getUserbyId(id) {
+    async getUserById(id) {
         try {
             const query = {
                 _id: this.getObjectId(id)
@@ -72,6 +72,28 @@ class UsersModel extends MongoModel {
                 salt
             }
             return await this.mongoInsert(userPayload)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
+    async updatePassword(payload) {
+        try {
+            const salt = randomstring.generate(12)
+            const passwordHash = crypto.pbkdf2Sync(payload.newPswd, salt, 10000, 512, 'sha512').toString('hex')
+            let userPayload = {
+                salt,
+                passwordHash,
+                _id: payload._id
+            }
+            const operator = "$set"
+            const query = {
+                _id: this.getObjectId(userPayload._id)
+            }
+            delete userPayload._id
+            let mutableElements = userPayload
+            return await this.mongoUpdateOne(query, operator, mutableElements)
         } catch (error) {
             console.error(error)
             return error

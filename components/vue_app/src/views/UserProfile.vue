@@ -1,75 +1,81 @@
 <template>
   <div>
     <h1>Your profile</h1>
-  <div class="flex row">
-    <div class="flex col flex1 form-container">
-      <h2>Personnal informations</h2>
-      <!-- Firstname -->
-      <div class="form-field flex col">
-        <span class="form-label">Firstname<i>*</i>:</span>
-        <input 
-          type="text" 
-          v-model="firstname.value"
-          :class="firstname.error !== null ? 'error' : ''"
-        >
-        <span class="error-field" v-if="firstname.error !== null">{{ firstname.error }}</span>
+    <div class="flex row">
+      <div class="flex col flex1 form-container">
+        <h2>Personnal informations</h2>
+        <!-- Firstname -->
+        <div class="form-field flex col">
+          <span class="form-label">Firstname<i>*</i>:</span>
+          <input 
+            type="text" 
+            v-model="firstname.value"
+            :class="firstname.error !== null ? 'error' : ''"
+          >
+          <span class="error-field" v-if="firstname.error !== null">{{ firstname.error }}</span>
+        </div>
+
+        <!-- Lastname -->
+        <div class="form-field flex col">
+          <span class="form-label">Lastname<i>*</i>:</span>
+          <input 
+            type="text" 
+            v-model="lastname.value"
+            :class="lastname.error !== null ? 'error' : ''"
+          >
+          <span class="error-field" v-if="lastname.error !== null">{{ lastname.error }}</span>
+        </div>
+        
+        <!-- Email -->
+        <div class="form-field flex col">
+          <span class="form-label">Email<i>*</i>:</span>
+          <input 
+            type="text" 
+            v-model="email.value"
+            :class="email.error !== null ? 'error' : ''"
+          >
+          <span class="error-field" v-if="email.error !== null">{{ email.error }}</span>
+        </div>
+
+        <div class="form-field flex row">
+          <button class="btn btn--txt-icon green" @click="sendInfoForm()" style="margin-top: 10px;">
+            <span class="label">Update</span>
+            <span class="icon icon__apply"></span>
+          </button>
+        </div>
       </div>
 
-      <!-- Lastname -->
-      <div class="form-field flex col">
-        <span class="form-label">Lastname<i>*</i>:</span>
-        <input 
-          type="text" 
-          v-model="lastname.value"
-          :class="lastname.error !== null ? 'error' : ''"
-        >
-        <span class="error-field" v-if="lastname.error !== null">{{ lastname.error }}</span>
+      <div class="flex col flex1 form-container">
+        <h2>Reset password</h2>
+        
+        <!-- New password -->
+        <div class="form-field flex col">
+          <span class="form-label">New password<i>*</i>:</span>
+          <input 
+            type="text" 
+            v-model="newPassword.value"
+            :class="newPassword.error !== null ? 'error' : ''"
+          >
+          <span class="error-field" v-if="newPassword.error !== null">{{ newPassword.error }}</span>
+        </div>
+        
+        <!-- New password confirm -->
+        <div class="form-field flex col">
+          <span class="form-label">New password confirmation<i>*</i>:</span>
+          <input 
+            type="text" 
+            v-model="newPasswordConfirm.value"
+            :class="newPasswordConfirm.error !== null ? 'error' : ''"
+          >
+          <span class="error-field" v-if="newPasswordConfirm.error !== null">{{ newPasswordConfirm.error }}</span>
+        </div>
+        <div class="form-field flex row" style="margin-top: 10px;">
+          <button class="btn btn--txt-icon green" @click="sendPassword()">
+            <span class="label">Update</span>
+            <span class="icon icon__apply"></span>
+          </button>
+        </div>
       </div>
-      
-      <!-- Email -->
-      <div class="form-field flex col">
-        <span class="form-label">Email<i>*</i>:</span>
-        <input 
-          type="text" 
-          v-model="email.value"
-          :class="email.error !== null ? 'error' : ''"
-        >
-        <span class="error-field" v-if="email.error !== null">{{ email.error }}</span>
-      </div>
-
-      <div class="form-field flex row">
-        <button class="btn btn--txt-icon green" @click="sendInfoForm()">
-          <span class="label">Update</span>
-          <span class="icon icon__plus"></span>
-        </button>
-      </div>
-    </div>
-
-    <div class="flex col flex1 form-container">
-      <h2>Reset password</h2>
-      
-      <!-- New password -->
-      <div class="form-field flex col">
-        <span class="form-label">New password<i>*</i>:</span>
-        <input 
-          type="text" 
-          v-model="newPassword.value"
-          :class="newPassword.error !== null ? 'error' : ''"
-        >
-        <span class="error-field" v-if="newPassword.error !== null">{{ newPassword.error }}</span>
-      </div>
-      
-      <!-- New password confirm -->
-      <div class="form-field flex col">
-        <span class="form-label">New password confirmation<i>*</i>:</span>
-        <input 
-          type="text" 
-          v-model="newPasswordConfirm.value"
-          :class="newPasswordConfirm.error !== null ? 'error' : ''"
-        >
-        <span class="error-field" v-if="newPasswordConfirm.error !== null">{{ newPasswordConfirm.error }}</span>
-      </div>
-    </div>
     </div>
   </div>
 </template>
@@ -111,6 +117,9 @@ export default {
   computed: { 
     infoFormValid () {
       return this.firstname.valid && this.lastname.valid && this.email.valid
+    },
+    pswdFormValid () {
+      return this.newPassword.valid && this.newPasswordConfirm.valid
     }
   },
   watch: {
@@ -149,7 +158,8 @@ export default {
           if(Object.keys(payload).length > 0) {
             const req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/users/${this.userInfo._id}/infos`, 'put', {payload})
             if(req.status === 200 && !!req.data.msg) {
-              await this.$options.filters.dispatchStore('getuserInfo')
+              //await this.$options.filters.dispatchStore('getuserInfo')
+              bus.$emit('refresh_user', {})
               bus.$emit('app_notif', {
                 status: 'success',
                 message: req.data.msg,
@@ -172,11 +182,42 @@ export default {
         })
       }
     },
+    handlePasswordForm () {
+      this.testPassword(this.newPassword)
+      this.testPasswordConfirm(this.newPasswordConfirm, this.newPassword)
+    },
+    async sendPassword () {
+      this.handlePasswordForm()
+      if(this.pswdFormValid) {
+        let payload = {
+          newPassword: this.newPassword.value
+        }
+        const req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/users/${this.userInfo._id}/pswd`, 'put', payload)
+        if(req.status === 200 && !!req.data.msg) {
+          //await this.$options.filters.dispatchStore('getuserInfo')
+          bus.$emit('refresh_user', {})
+          bus.$emit('app_notif', {
+            status: 'success',
+            message: req.data.msg,
+            timeout: 3000
+          })
+        } else {
+          throw req
+        }
+      } 
+    },
     testName (obj) {
       return this.$options.filters.testName(obj)
     },
     testEmail (obj) {
       return this.$options.filters.testEmail(obj)
+    },
+    testPassword (obj) {
+      return this.$options.filters.testPassword(obj)
+    },
+    testPasswordConfirm (pswdConfirm, pswd) {
+      return this.$options.filters.testPasswordConfirm(pswdConfirm, pswd)
+
     }
   }
 }

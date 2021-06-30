@@ -211,7 +211,7 @@ async function renumberTurns(req, res, next) {
                 elem.pos = position
                 position++
             }))
-            new_payload = {
+            let new_payload = {
                 convoid: convoid,
                 turns: turns
             }
@@ -281,8 +281,6 @@ async function splitTurns(req, res, next) {
             if (nums.length > 1) {
                 payload.positions = [...Array(nums[1] + 1).keys()].slice(nums[0])
             }
-
-            console.log(payload.positions)
 
             // get all turns
             let getTurns = await convoModel.getTurns(payload)

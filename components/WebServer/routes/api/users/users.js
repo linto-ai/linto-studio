@@ -2,7 +2,9 @@ const debug = require('debug')('app:router:api:user:user')
 const {
     getUsers,
     createUser,
-    getUserbyId,
+    getUserById,
+    updateUserInfos,
+    updateUserPassword,
     deleteUser,
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/users/users.js`)
 
@@ -23,7 +25,19 @@ module.exports = (webserver) => {
             path: '/:userid',
             method: 'get',
             requireAuth: true,
-            controller: getUserbyId
+            controller: getUserById
+        },
+        {
+            path: '/:userid/infos',
+            method: 'put',
+            requireAuth: true,
+            controller: updateUserInfos
+        },
+        {
+            path: '/:userid/pswd',
+            method: 'put',
+            requireAuth: true,
+            controller: updateUserPassword
         },
         {
             path: '/:userid',

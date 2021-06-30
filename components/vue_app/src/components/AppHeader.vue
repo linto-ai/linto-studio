@@ -32,6 +32,7 @@
   </div>
 </template>
 <script>
+import { bus } from '../main.js'
 export default {
   props: ['userInfo'],
   data () {
@@ -41,12 +42,13 @@ export default {
       userId: ''
     }
   },
-  mounted () {
+  async   mounted () {
     this.checkLangCookie()
-    setTimeout(() => {
-      console.log(this.user)
-    }, 600)
+    await this.getUserInfo()
 
+    bus.$on('refresh_user', async () => {
+      await this.getUserInfo()
+    })
   },
   computed: {
     user () {

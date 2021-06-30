@@ -18,12 +18,12 @@ async function getUsers(req, res, next) {
     }
 }
 
-async function getUserbyId(req, res, next) {
+async function getUserById(req, res, next) {
     // get user id input then return user
     try {
         if (req.params.userid != "undefined") {
             const postUserId = req.params.userid
-            let response = await model.getUserbyId(postUserId)
+            let response = await model.getUserById(postUserId)
             if (response && response.length) {
                 res.json({
                     ...response[0]
@@ -104,6 +104,66 @@ async function deleteUser(req, res, next) {
     }
 }
 
+async function updateUserInfos(req, res, next) {
+    try {
+        if (!req.body.payload || Object.keys(req.body.payload).length === 0) {
+            throw 'Missing required informations'
+        } else {
+            let userId = req.params.userid
+            let payload = req.body.payload
+            payload._id = userId
+            let getUser = await model.getUserById(userId)
+            if (getUser.length > 0) {
+                let updateUser = await model.update(payload)
+                if (updateUser === 'success') {
+                    res.json({
+                        status: 'success',
+                        msg: 'User information have been updated'
+                    })
+                } else {
+                    throw updateUser
+                }
+            } else {
+                throw 'User not found'
+            }
+        }
+    } catch (error) {
+        console.error(error)
+        res.json({ error })
+    }
+}
+
+async function updateUserPassword(req, res, next) {
+    try {
+        if (!req.body.newPassword || Object.keys(req.body).length === 0) {
+            throw 'Missing required informations'
+        } else {
+            let userId = req.params.userid
+            let payload = {
+                newPswd: req.body.newPassword,
+                _id: userId
+            }
+            let getUser = await model.getUserById(userId)
+            if (getUser.length > 0) {
+                let updateUserPswd = await model.updatePassword(payload)
+                if (updateUserPswd === 'success') {
+                    res.json({
+                        status: 'success',
+                        msg: 'User information have been updated'
+                    })
+                } else {
+                    throw updateUserPswd
+                }
+            } else {
+                throw 'User not found'
+            }
+        }
+    } catch (error) {
+        console.error(error)
+        res.json({ error })
+    }
+}
+
 async function logout(req, res, next) {
     try {
         if (!!req.session.userId) {
@@ -133,9 +193,11 @@ async function logout(req, res, next) {
 
 module.exports = {
     getUsers,
-    getUserbyId,
+    getUserById,
     getUserByEmail,
     deleteUser,
     createUser,
-    logout
+    logout,
+    updateUserInfos,
+    updateUserPassword
 }

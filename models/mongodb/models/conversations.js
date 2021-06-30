@@ -90,8 +90,6 @@ class ConvoModel extends MongoModel {
             } else {
                 mutableElements["conversationType"] = payload.convoType
             }
-            console.log(mutableElements)
-
             return await this.mongoUpdateOne(query, operator, mutableElements)
         } catch (error) {
             console.error(error)
@@ -302,6 +300,7 @@ class ConvoModel extends MongoModel {
         //The position is given by the function that calls createTurn (eg.splitTurn), it is never called by itself--KT
 
         //takes a convo id and a speaker_id and a position and text (optionally)
+        console.log('Create Turn model', payload)
         try {
             const operator = "$addToSet"
             const query = {
@@ -309,8 +308,8 @@ class ConvoModel extends MongoModel {
             }
             let mutableElements = {
                 "text": {
-                    speaker_id: payload.speakerid,
-                    turn_id: payload.turnid,
+                    speaker_id: payload.speaker_id,
+                    turn_id: payload.turn_id,
                     pos: payload.pos,
                     words: payload.words
                 }
@@ -846,6 +845,30 @@ class ConvoModel extends MongoModel {
                 "arrayFilters": [{ "elem.user_id": payload.userid }]
             }
             return await this.mongoUpdateOne(query, operator, mutableElements, arrayFilters)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
+    async renumberTurns(convoid) {
+        try {
+            let allTurns = await this.getAllTurns(convoid)
+            if (allTurns.length > 0) {
+                const turns = allTurns[0].text.sort((a, b) => a.pos - b.pos)
+                let position = 0
+                turns.forEach((elem => {
+                    elem.pos = position
+                    position++
+                }))
+                let new_payload = {
+                    convoid: convoid,
+                    turns: turns
+                }
+                return await this.replaceText(new_payload)
+            } else {
+                throw { message: 'couldn\'t retrieve turns' }
+            }
         } catch (error) {
             console.error(error)
             return error

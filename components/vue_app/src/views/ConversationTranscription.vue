@@ -498,7 +498,7 @@ export default {
       this.editionMode = false
     },
     // Update transcription text
-    objectsEqual (o1, o2) {
+/*    objectsEqual (o1, o2) {
       console.log(o1, o2)
       if(o1.length !== o2.length) {
         return false
@@ -507,15 +507,18 @@ export default {
           return parseFloat(o1[i].etime) === parseFloat(o2[i].etime) && parseFloat(o1[i].stime) === parseFloat(o2[i].stime) && o1[i].wid === o2[i].wid && o1[i].word === o2[i].word
         }
       }
-    },
-
+    },*/
     async validateEdition() {
       try {
         this.editionMode = false
         this.editConvoTmp = this.convo
         const newObject = this.buildTextObject()
-        console.log('buildTextObject', newObject)
-        setTimeout(async () => {
+        console.log('newObject', newObject)
+        let req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/fulltext`, 'put', {text: newObject})
+
+        console.log('>>>', req)
+        
+        /*setTimeout(async () => {
           for(let turn of newObject) {
             let payload = {
               turnid: turn.turn_id,
@@ -538,7 +541,7 @@ export default {
               throw req
             }
           }
-        }, 150)
+        }, 150)*/
       } catch (error) {
         console.error(error)
       }
