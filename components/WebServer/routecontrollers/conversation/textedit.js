@@ -1,5 +1,6 @@
 const convoModel = require(`${process.cwd()}/models/mongodb/models/conversations`)
 const { v4: uuidv4 } = require('uuid')
+const { createTurn } = require('../../../../models/mongodb/models/conversations')
     //const clone = require('rfdc')()
 
 // async function updateAllText(req, res, next) {
@@ -167,7 +168,8 @@ async function replaceFullText(req, res, next) {
                     let createTurnPayload = turn
                     createTurnPayload.pos -= 0.5
                     createTurnPayload.convoid = convoid
-                    createTurnPayload.turn_id = uuidv4()
+                    createTurnPayload.turnid = uuidv4()
+                    createTurnPayload.speakerid = turn.speaker_id
                     await convoModel.createTurn(createTurnPayload)
                 }
             }
