@@ -300,7 +300,6 @@ class ConvoModel extends MongoModel {
         //The position is given by the function that calls createTurn (eg.splitTurn), it is never called by itself--KT
 
         //takes a convo id and a speaker_id and a position and text (optionally)
-        console.log('Create Turn model', payload)
         try {
             const operator = "$addToSet"
             const query = {
@@ -308,8 +307,8 @@ class ConvoModel extends MongoModel {
             }
             let mutableElements = {
                 "text": {
-                    speaker_id: payload.speaker_id,
-                    turn_id: payload.turn_id,
+                    speaker_id: payload.speakerid,
+                    turn_id: payload.turnid,
                     pos: payload.pos,
                     words: payload.words
                 }
