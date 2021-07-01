@@ -77,9 +77,54 @@
         </div>
       </div>
     </div>
+    <div class="flex row">
+      <div class="flex col flex1 form-container">
+        <h2>Profile picture</h2>
+        <div class="flex row">
+          <div class="flex col flex1">
+            <img :src="'/' + userInfo.img" class="user-profil-picture">
+          </div>
+          <div class="flex col flex1">
+            <!-- Profil picture -->
+            <div class="form-field flex col">
+              <span class="form-label">Image (.png, .jpg) :</span>
+              <div class="input-file-container flex row">
+                <input 
+                  type="file" 
+                  id="file" 
+                  ref="file"
+                  class="input__file" 
+                  v-on:change="handleFileUpload()"
+                  accept=".png, .jpg, .jpeg"
+                />
+                <label 
+                  for="file" 
+                  class="input__file-label-btn" 
+                  :class="[picture.error !== null ? 'error' : '', picture.valid ? 'valid' : '']"
+                >
+                  <span class="input__file-icon"></span>
+                  <span class="input__file-label">{{ pictureUploadLabel }}</span>
+                </label>
+              </div>
+              <span class="error-field" v-if="picture.error !== null">{{ picture.error }}</span>
+            </div>
+            <div class="form-field flex row" style="margin-top: 10px;">
+              <button
+                @click="handlePictureForm()" 
+                class="btn btn--txt-icon green">
+              <span class="label">Update picture</span>
+              <span class="icon icon__apply"></span>
+            </button>
+          </div>
+          </div>
+        </div>
+      </div>
+      <div class="flex col flex1 form-container no-border"></div>
+    </div>
   </div>
 </template>
 <script>
+import axios from 'axios'
 import { bus } from '../main.js'
 export default {
   props: ['userInfo'],
@@ -109,7 +154,13 @@ export default {
         value: '',
         error: null,
         valid: false
-      }
+      },
+      picture: {
+        value: '',
+        error: null,
+        valid: false
+      },
+      pictureUploadLabel: 'Choose a file...'
     }
   },
   mounted () {
@@ -120,6 +171,9 @@ export default {
     },
     pswdFormValid () {
       return this.newPassword.valid && this.newPasswordConfirm.valid
+    },
+    pictureSelected () {
+      return this.picture.value !== ''
     }
   },
   watch: {
@@ -205,6 +259,59 @@ export default {
           throw req
         }
       } 
+    },
+    handleFileUpload() {
+      this.picture.value = this.$refs.file.files[0]
+      const acceptedTypes = ['image/png', 'image/jpeg']
+      if (typeof(this.picture.value) !== 'undefined' && this.picture.value !==  null && !!this.picture.value.type) {
+        const type = this.picture.value.type
+        if (acceptedTypes.indexOf(type) >= 0) {
+          this.picture.valid = true
+          this.picture.error = null
+          this.pictureUploadLabel = '1 file selected'
+        } else {
+          this.picture.valid = false
+          this.picture.error = 'Invalid file type (accept .png, .jpg, .jpeg)'
+          this.pictureUploadLabel = 'Choose a file...'
+        }
+      } else {
+          this.picture.valid = false
+          this.picture.error = 'This field is required'
+          this.pictureUploadLabel = 'Choose a file...'
+      }
+    },
+    async handlePictureForm () {
+      this.handleFileUpload()
+      if(this.picture.valid) {
+        try {
+          let formData = new FormData()
+          formData.append('file', this.picture.value)
+          const req = await axios(`${process.env.VUE_APP_CONVO_API}/users/${this.userInfo._id}/picture`, {
+            method: 'put',
+            headers: {
+            'charset': 'utf-8',
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${this.userInfo.token}`
+            },
+            data: formData
+          })
+          if(req.status === 200 && !!req.data.msg) {
+            //await this.$options.filters.dispatchStore('getuserInfo')
+            bus.$emit('refresh_user', {})
+            bus.$emit('app_notif', {
+              status: 'success',
+              message: req.data.msg,
+              timeout: 3000
+            })
+          } else {
+            throw req
+          }
+        } catch (error) {
+          console.error(error)
+        }
+      } else {
+        this.picture.error = 'Field required'
+      }
     },
     testName (obj) {
       return this.$options.filters.testName(obj)

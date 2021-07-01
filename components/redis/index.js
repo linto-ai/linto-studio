@@ -8,11 +8,9 @@ class redisClient {
             host: process.env.REDIS_SESSION_SERVICE,
             port: process.env.REDIS_SESSION_SERVICE_PORT,
         }
-        console.log('REDIS SETTINGS : ', this.settings)
         this.maxAttempt = 5
         this.client = null
         this.redisStore = null
-
         this.init()
     }
 

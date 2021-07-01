@@ -5,6 +5,7 @@ const {
     getUserById,
     updateUserInfos,
     updateUserPassword,
+    updateUserPicture,
     deleteUser,
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/users/users.js`)
 
@@ -38,6 +39,12 @@ module.exports = (webserver) => {
             method: 'put',
             requireAuth: true,
             controller: updateUserPassword
+        },
+        {
+            path: '/:userid/picture',
+            method: 'put',
+            requireAuth: true,
+            controller: updateUserPicture
         },
         {
             path: '/:userid',

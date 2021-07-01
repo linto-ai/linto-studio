@@ -285,6 +285,8 @@ async function splitTurns(req, res, next) {
             // get all turns
             let getTurns = await convoModel.getTurns(payload)
 
+            console.log(getTurns)
+
             if (getTurns !== "undefined") {
                 // take first turn and sort words in that turn and put in start_words variable
                 let turns = getTurns[0].text.sort((a, b) => a.pos - b.pos)
@@ -514,7 +516,7 @@ async function splitTurns(req, res, next) {
                                 })
                             }
                         }
-                        // create new selected turn     
+                        // create new selected turn
                         let turnid = uuidv4()
                         let new_payload = {
                             convoid: payload.convoid,

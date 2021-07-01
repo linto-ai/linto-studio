@@ -85,6 +85,37 @@ async function createUser(req, res, next) {
     }
 }
 
+async function updateUserPicture(req, res, next) {
+    try {
+        if (req.files && Object.keys(req.files).length !== 0 && req.files.file) {
+            let userId = req.params.userid
+            let img = await StoreFile.storeFile(req.files.file, 'picture')
+            let payload = {
+                _id: userId,
+                img
+            }
+            let getUser = await model.getUserById(userId)
+            if (getUser.length > 0) {
+                let updateUserPswd = await model.update(payload)
+                if (updateUserPswd === 'success') {
+                    res.json({
+                        status: 'success',
+                        msg: 'User information have been updated'
+                    })
+                } else {
+                    throw updateUserPswd
+                }
+            } else {
+                throw 'User not found'
+            }
+        } else  {
+            throw 'No file found'
+        }
+    } catch (error) {
+        res.json({ error })
+    }
+}
+
 async function deleteUser(req, res, next) {
     if (req.params.userid != "") {
         const postUserId = req.params.userid
@@ -199,5 +230,6 @@ module.exports = {
     createUser,
     logout,
     updateUserInfos,
-    updateUserPassword
+    updateUserPassword,
+    updateUserPicture
 }
