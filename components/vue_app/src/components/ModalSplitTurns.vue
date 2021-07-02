@@ -376,7 +376,6 @@ export default {
             splitype: splitVal
           }
         }
-        console.log('Split payload', payload)
         // Request 
         const req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/turn/split`, 'put', payload)
 

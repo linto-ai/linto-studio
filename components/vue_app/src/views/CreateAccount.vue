@@ -178,7 +178,7 @@
               method: 'post',
               headers: {
               'charset': 'utf-8',
-              'Content-Type': 'multipart/form-data',
+              'Content-Type': 'multipart/form-data'
               },
               data: formData
             })

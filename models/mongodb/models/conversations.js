@@ -90,14 +90,13 @@ class ConvoModel extends MongoModel {
             } else {
                 mutableElements["conversationType"] = payload.convoType
             }
-
             return await this.mongoUpdateOne(query, operator, mutableElements)
         } catch (error) {
             console.error(error)
             return error
         }
     }
-    
+
     //update conversation speakermap
     async updateSpeakerMap(payload) {
         try {
@@ -107,7 +106,7 @@ class ConvoModel extends MongoModel {
             }
             let mutableElements = {}
             mutableElements["speakers"] = payload.newspeakermap
-            
+
             console.log(mutableElements)
             return await this.mongoUpdateOne(query, operator, mutableElements)
         } catch (error) {
@@ -420,36 +419,6 @@ class ConvoModel extends MongoModel {
         }
     }
 
-    // async getTurnsRomain(payload) {
-    //     //returns list of turns from a single conversation with either turn ids or turn positions specified in payload
-    //     //-this doesn't take turn ids --KT
-    //     try {
-    //         const query = {
-    //             _id: this.getObjectId(payload.convoid)
-    //         }
-
-    //         const filter = {
-    //             "text": {
-    //                 "$filter": {
-    //                     "input": "$text",
-    //                     "as": "turn",
-    //                     "cond": {
-    //                         "$and": [
-    //                             { "$gte": ["$$turn.pos", parseInt(payload.positions[0])] },
-    //                             { "$lte": ["$$turn.pos", parseInt(payload.positions[1])] }
-    //                         ]
-    //                     }
-    //                 }
-    //             }
-    //         }
-
-    //         return await this.mongoRequest(query, filter)
-    //     } catch (error) {
-    //         console.error(error)
-    //         return error
-    //     }
-    // }
-
     async getTurnAudioTime(payload) {
         //returns the absolute start and end time for a single turn
         try {
@@ -489,7 +458,7 @@ class ConvoModel extends MongoModel {
             const group = {
                 "$group": {
                     _id: "$text.speaker_id",
-                    turn: {"$min": "$text.pos"},
+                    turn: { "$min": "$text.pos" },
                     stimes: {
                         "$min": "$text.words.stime"
                     },
@@ -498,19 +467,19 @@ class ConvoModel extends MongoModel {
                     }
                 }
             }
-            const project =  {
+            const project = {
                 "$project": {
-                    _id: 1, 
-                    turn: 1, 
-                    stime: {"$min": "$stimes"}, 
-                    etime: {"$max": "$etimes"}
+                    _id: 1,
+                    turn: 1,
+                    stime: { "$min": "$stimes" },
+                    etime: { "$max": "$etimes" }
                 }
             }
             const query = [match, unwind, group, project]
             return await this.mongoAggregate(query)
         } catch (error) {
             console.error(error)
-            return error 
+            return error
         }
     }
 
@@ -897,6 +866,30 @@ class ConvoModel extends MongoModel {
                 "arrayFilters": [{ "elem.user_id": payload.userid }]
             }
             return await this.mongoUpdateOne(query, operator, mutableElements, arrayFilters)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
+    async renumberTurns(convoid) {
+        try {
+            let allTurns = await this.getAllTurns(convoid)
+            if (allTurns.length > 0) {
+                const turns = allTurns[0].text.sort((a, b) => a.pos - b.pos)
+                let position = 0
+                turns.forEach((elem => {
+                    elem.pos = position
+                    position++
+                }))
+                let new_payload = {
+                    convoid: convoid,
+                    turns: turns
+                }
+                return await this.replaceText(new_payload)
+            } else {
+                throw { message: 'couldn\'t retrieve turns' }
+            }
         } catch (error) {
             console.error(error)
             return error

@@ -1,6 +1,6 @@
 <template>
   <div id="transcription" :class="editionMode ? 'editing' : ''">
-    <table class="table table--transcription">
+    <table class="table table--transcription" :key="refreshTest">
       <tr 
         v-for="(turn,i) in convoTextCustom" 
         :key="i" 
@@ -54,6 +54,7 @@ export default {
   data () {
     return {
       refresh: 1,
+      refreshTest: 1,
       toolBoxOption: {
         comment: false,
         highlight: true,
@@ -70,7 +71,7 @@ export default {
     // Enable transcription text selection
     setTimeout(()=>{
       if(this.userAccess.canEdit) {
-      this.bindTextSelection()
+        this.bindTextSelection()
       }
     },500)
 
@@ -120,8 +121,48 @@ export default {
     // On press "enter" when editing text
     createTurn() {
       if(document.activeElement.classList.contains('transcription-speaker-sentence')) {
-        const turns = document.getElementsByClassName('transcription-speaker-sentence')
-        let textPayload = []
+        this.formatBeforeCreateTurn()
+        setTimeout(()=>{
+          this.createTurnProcess()
+        }, 1000)
+      }
+      return 
+    },
+    // Format content before creating a new turn (replace <div></div>)
+    formatBeforeCreateTurn() {
+      const turns = document.getElementsByClassName('transcription-speaker-sentence')
+      let turnWordsDiv = []
+      for(let turn of turns) {
+        let formatHTML = ''
+        let childs = turn.childNodes
+        let needFormat = false
+        for(let word of childs) {
+          if(word.tagName === 'DIV') {
+            needFormat = true
+            turnWordsDiv.push(word.innerHTML)
+          }
+        }
+        if(needFormat){
+          for(let i = 0; i < turnWordsDiv.length; i++) {
+            let content = ""
+            if(i === 0) {
+              if(turnWordsDiv[i].indexOf('<br>') < 0) {
+                content = turnWordsDiv[i] + '<span><br></span>'
+              } else {
+                content = turnWordsDiv[i]
+              }
+            } else {
+              content = turnWordsDiv[i]
+            }
+            formatHTML += content
+          }
+          turn.innerHTML = formatHTML
+        }
+      }
+    },
+    createTurnProcess() {
+      const turns = document.getElementsByClassName('transcription-speaker-sentence')
+       let textPayload = []
         let turnIndex = 0
         for(let i = 0; i < turns.length; i++) { // TURNS
           let turn = turns[i]
@@ -133,17 +174,15 @@ export default {
             pos: turnIndex,
             words: []
           }
-
           for(let j = 0; j < words.length; j++) { // WORDS
             let word = words[j]
             let wordVal = word.innerHTML.replace(/&nbsp;/g,"",' ').trim()
-  
-            // Create new Turn
+            // Turn have to be splited (line return) 
+            // Create new Turn 
             if(wordVal.indexOf('<br>') >= 0) {
               let splitBr = wordVal.split('<br>')
               let wordValue = ""
-              
-              // word = '<br>word' || 'word<br>' || 'wo<br>rd'
+              // word = '<br>word' || 'word<br>' || 'wo<br>rd' || <span><br></span>
               if (splitBr.length === 2) {
                 const wordId = word.getAttribute('data-word-id')
                 const wordOptions = this.getHlAndKwByWordId(wordId)
@@ -210,7 +249,6 @@ export default {
                   turnPayload.words.push(wordCurrentObj)
                   textPayload[turnIndex] = turnPayload
                   word.innerHTML = wordCurrentTurn + '&nbsp;'
-
                   turnIndex++
                   realWordPos = 0
 
@@ -229,9 +267,22 @@ export default {
                       keywords: wordOptions.keywords
                     }]
                   }
+                } 
+                // <span><br></span>
+                else if (splitBr[0] === '' && splitBr[1] === '') {
+                  textPayload[turnIndex] = turnPayload
+                  turnIndex++
+                  realWordPos = 0
+                  turnPayload = {
+                    speaker_id: turn.getAttribute('data-speaker'),
+                    turn_id: "todefine",
+                    pos: turnIndex,
+                    words: []
+                  }
                 }
               }
             }
+            // Build text object
             else {
               let wordSplit = wordVal.split(' ')
               if (wordSplit.length > 1) { // If words have been added
@@ -274,10 +325,8 @@ export default {
           turnIndex++
         }
         this.convoTextCustom = textPayload
-      }
-      return 
+        this.refreshTest++
     },
-    
     // Get Highlights and Keywords by id
     getHlAndKwByWordId (wordId) {
       let options = {
@@ -303,7 +352,6 @@ export default {
       for(let word of allWords) {
           word.setAttribute('style','')
       }
-
       for (let hl of data) {
         if(hl.selected) {
           if(hl.words.length > 0) {
@@ -366,7 +414,7 @@ export default {
           // > Selection: first element
           // chrome = selection.baseNode
           // firefox = selection.anchorNode
-          let startWord = !selection.baseNode ? selection.anchorNode.parentNode : selection.baseNode.parentNode 
+          let startWord = !selection.baseNode ? selection.getRangeAt(0).startContainer.parentElement : selection.baseNode.parentNode 
           let endWord = !selection.extentNode ? selection.focusNode.parentNode : selection.extentNode.parentNode
 
           // check if: selection from left to right)
@@ -374,6 +422,7 @@ export default {
           let startTurnPos = parseInt(startWord.getAttribute('data-turn-pos'))
           let endWordPos = parseInt(endWord.getAttribute('data-pos'))
           let endTurnPos = parseInt(endWord.getAttribute('data-turn-pos'))
+
           if (startTurnPos > endTurnPos || (startTurnPos === endTurnPos && startWordPos > endWordPos)) {
             const tmp = endWord
             endWord = startWord

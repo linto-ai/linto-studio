@@ -586,6 +586,15 @@ a {
 
 /*** FORMS / INPUTS ***/
 
+.form-container {
+    border: 1px solid $blueLight;
+    margin: 20px;
+    padding: 20px;
+    &.no-border {
+        border: none;
+    }
+}
+
 .form-field {
     width: 100%;
     margin-bottom: 10px;

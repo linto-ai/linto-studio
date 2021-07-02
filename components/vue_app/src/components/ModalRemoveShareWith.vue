@@ -48,7 +48,7 @@ export default {
      return this.usersLoaded
    },
    user () {
-     return this.$store.getters.getUserByid(this.userId)
+     return this.$store.getters.getUserById(this.userId)
    }
   },
   methods: {

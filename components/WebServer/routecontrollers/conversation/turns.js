@@ -211,7 +211,7 @@ async function renumberTurns(req, res, next) {
                 elem.pos = position
                 position++
             }))
-            new_payload = {
+            let new_payload = {
                 convoid: convoid,
                 turns: turns
             }
@@ -282,10 +282,10 @@ async function splitTurns(req, res, next) {
                 payload.positions = [...Array(nums[1] + 1).keys()].slice(nums[0])
             }
 
-            console.log(payload.positions)
-
             // get all turns
             let getTurns = await convoModel.getTurns(payload)
+
+            console.log(getTurns)
 
             if (getTurns !== "undefined") {
                 // take first turn and sort words in that turn and put in start_words variable
@@ -516,7 +516,7 @@ async function splitTurns(req, res, next) {
                                 })
                             }
                         }
-                        // create new selected turn     
+                        // create new selected turn
                         let turnid = uuidv4()
                         let new_payload = {
                             convoid: payload.convoid,
