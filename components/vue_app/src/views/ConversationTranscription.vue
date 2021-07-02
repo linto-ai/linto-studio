@@ -515,9 +515,11 @@ export default {
         const newObject = this.buildTextObject()
         console.log('newObject', newObject)
         let req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/fulltext`, 'put', {text: newObject})
-
-        console.log('>>>', req)
-        
+        console.log(req)
+        if(req.status !== 200) {
+            throw req
+        }
+        bus.$emit('refresh_conversation', {})
         /*setTimeout(async () => {
           for(let turn of newObject) {
             let payload = {
