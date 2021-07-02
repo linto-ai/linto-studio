@@ -358,7 +358,31 @@ paths:
                     type: string
                   msg:
                     type: string
-  
+  /api/conversation/{conversationid}/speakermap:
+    put:
+      tags:
+        - "speakers"
+      summary: updates audio for all speakers in map 
+      parameters: 
+        - in: path
+          name: conversationid
+          type: string
+          format: uuid
+          required: true
+          description: uuid string identifier for a conversation
+      responses:
+        '200':
+          description: request success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/speakers'
+        '400':
+          description: bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customError'
 ## CONVERSATION / TURNS
   /api/conversation/{conversationid}/turn:
     delete:

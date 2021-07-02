@@ -92,7 +92,6 @@ class MongoModel {
         } // do this so we dont double the _id?
         let payload = {}
         payload[operator] = values
-
         //console.log('Mongo', payload)
         return new Promise((resolve, reject) => {
             try {
@@ -101,15 +100,16 @@ class MongoModel {
                         reject(error)
                     }
                     //console.log('MongoUpateOne', result)
+                    
                     if (!!result.result && result.result.hasOwnProperty('ok'), result.result.hasOwnProperty('nModified')) {
                         if (result.result.nModified > 0) {
                             if (result.result.ok === 1) {
                                 resolve('success')
-                            }
+                            }      
                         } else {
                             reject({
-                                error: 'no_match',
-                                message: 'no match found'
+                                error: 'no_modification',
+                                message: 'no modification made'
                             })
                         }
                     } else {

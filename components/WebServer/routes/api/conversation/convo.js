@@ -6,7 +6,8 @@ const {
     createNewSpeaker,
     deleteSpeaker,
     identifySpeaker,
-    getSpeakers
+    getSpeakers, 
+    updateSpeakerMap
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/speakers.js`)
 
 // Share With 
@@ -252,6 +253,14 @@ module.exports = (webserver) => {
             requireAuth: true,
             requireWriteAccess: true,
             controller: updateConvoType
+        },
+        {
+            // updates conversation metatdata
+            path: '/:conversationid/speakermap',
+            method: 'put',
+            requireAuth: true,
+            requireWriteAccess: true,
+            controller: updateSpeakerMap
         }
     ]
 }

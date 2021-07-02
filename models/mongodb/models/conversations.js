@@ -90,8 +90,25 @@ class ConvoModel extends MongoModel {
             } else {
                 mutableElements["conversationType"] = payload.convoType
             }
-            console.log(mutableElements)
 
+            return await this.mongoUpdateOne(query, operator, mutableElements)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+    
+    //update conversation speakermap
+    async updateSpeakerMap(payload) {
+        try {
+            const operator = "$set"
+            const query = {
+                _id: this.getObjectId(payload.convoid),
+            }
+            let mutableElements = {}
+            mutableElements["speakers"] = payload.newspeakermap
+            
+            console.log(mutableElements)
             return await this.mongoUpdateOne(query, operator, mutableElements)
         } catch (error) {
             console.error(error)
@@ -460,6 +477,40 @@ class ConvoModel extends MongoModel {
         } catch (error) {
             console.error(error)
             return error
+        }
+    }
+
+    async getSpeakerAudio(payload) {
+        //takes a conversation id and returns each speaker id and the audio times from that 
+        //speaker's first turn 
+        try {
+            const match = { "$match": { _id: this.getObjectId(payload) } }
+            const unwind = { "$unwind": "$text" }
+            const group = {
+                "$group": {
+                    _id: "$text.speaker_id",
+                    turn: {"$min": "$text.pos"},
+                    stimes: {
+                        "$min": "$text.words.stime"
+                    },
+                    etimes: {
+                        "$min": "$text.words.etime"
+                    }
+                }
+            }
+            const project =  {
+                "$project": {
+                    _id: 1, 
+                    turn: 1, 
+                    stime: {"$min": "$stimes"}, 
+                    etime: {"$max": "$etimes"}
+                }
+            }
+            const query = [match, unwind, group, project]
+            return await this.mongoAggregate(query)
+        } catch (error) {
+            console.error(error)
+            return error 
         }
     }
 

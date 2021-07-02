@@ -245,10 +245,65 @@ async function combineSpeakerIds(req, res, next) {
     }
 }
 
+async function updateSpeakerMap(req, res, next) {
+    try {
+        if (!!req.params.conversationid) {
+ 
+            const convoid = req.params.conversationid
+            let speakers = await convoModel.getSpeakerAudio(convoid)
+            if (speakers && speakers.length) {
+                
+                let speakermap = await convoModel.getConvoSpeakers(convoid)
+
+                if (speakermap && speakermap.length) {
+                    let newspeakermap = speakermap[0].speakers 
+
+                    newspeakermap.forEach((elem => {
+                        elem.stime = speakers.find(x => x._id === elem.speaker_id).stime
+                        elem.etime = speakers.find(x => x._id === elem.speaker_id).etime
+                    }))
+
+                    const payload = {
+                        convoid: convoid,
+                        newspeakermap: newspeakermap
+                    }
+
+                    console.log(payload)
+
+                    let updateMap = await convoModel.updateSpeakerMap(payload)
+
+                    if (updateMap === 'success') {
+                        res.status(200).send({
+                            txtStatus: 'success',
+                            msg: 'speaker map updated'
+                        })
+                    } else {
+                        throw updateMap
+                    }
+
+                } else {
+                    throw speakermap
+                }
+            } else {
+                throw speakers
+            }
+        }
+
+    } catch (error) {
+        console.error(error)
+        // Error
+        res.status(400).send({
+            status: 'error',
+            msg: !!error.message ? error.message : 'error on updating speaker turns'
+        })
+    }
+}
+
 module.exports = {
     combineSpeakerIds,
     createNewSpeaker,
     deleteSpeaker,
     identifySpeaker,
-    getSpeakers
+    getSpeakers, 
+    updateSpeakerMap
 }
