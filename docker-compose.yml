@@ -24,8 +24,7 @@ services:
       - internal
 
   conversation-manager-api:
-    build: .
-    image: lintoai/linto-platform-conversation-manager
+    image: lintoai/linto-platform-conversation-manager:$LINTO_STACK_IMAGE_TAG
     container_name: conversation-manager
     env_file: .dockerenv
     environment: 
@@ -41,8 +40,6 @@ services:
       - "${WEBSERVER_HTTP_PORT}:80"
     networks:
       - internal
-
-
 
 networks:
   internal:
