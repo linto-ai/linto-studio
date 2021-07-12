@@ -45,7 +45,8 @@ async function createhighlight(req, res, next) {
             if (highlightWords === 'success') {
                 res.status(200).send({
                     txtStatus: 'success',
-                    msg: 'highlight created'
+                    msg: 'highlight created',
+                    hid
                 })
             } else {
                 throw highlightWords

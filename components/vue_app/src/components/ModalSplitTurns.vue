@@ -325,7 +325,6 @@ export default {
         })
       }
     },
-    
     async splitTurn () {
       try {
         bus.$emit('loading_conversation', {})

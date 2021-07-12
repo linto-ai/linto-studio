@@ -230,20 +230,29 @@ export default {
     await this.dispatchConversations()
     await this.dispatchUsersInfo()
 
+    // BUS listeners
+    
     // Close navigation menu
     bus.$emit('vertical_nav_close', {}) 
-      
-    // BUS listeners
+    
     bus.$on('update_speaker', async (data) => {
       await this.dispatchConversations()
       this.refreshConversation++
       this.refreshHighlights()
     })
     
+    bus.$on('show_highlight', (data) => {
+        let hid = data.hid
+        let targetHl = this.highlightsOptions.find(hl => hl.hid === hid)
+        this.updateHighlight(targetHl)
+    })
+
+    // Show Loader on transcription
     bus.$on('loading_conversation', (data) => {
       this.refreshing = true
     })
 
+    // Reload the conversation with updated data
     bus.$on('refresh_conversation', async (data) => {
       console.log('>>> Refresh conversation', data)
       if(!!data.closeToolBox && data.closeToolBox) {
@@ -258,12 +267,10 @@ export default {
         } else {
           bus.$emit('scroll_to_turn', {})
         }
-        
         this.refreshing = false
       }, 500)
       
     })
-    
     bus.$on('audio_player_currenttime', (data) => {
       this.currentTime = data.time
     })

@@ -126,6 +126,7 @@ export default {
               timeout: 3000
             })
             this.closeModal()
+            bus.$emit('show_highlight', {hid: payload.hid})
             bus.$emit('refresh_conversation', {turnPos})
           } else {
             throw req
@@ -161,8 +162,15 @@ export default {
               message: req.data.msg,
               timeout: 3000
             })
+            
             this.closeModal()
             bus.$emit('refresh_conversation', {turnPos})
+            if(!!req.data.hid) {
+              setTimeout(()=>{
+                bus.$emit('show_highlight', {hid: req.data.hid})
+              }, 600)
+              
+            }
 
           } else {
             throw req
