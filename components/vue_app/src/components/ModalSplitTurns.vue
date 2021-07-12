@@ -328,8 +328,8 @@ export default {
     
     async splitTurn () {
       try {
+        bus.$emit('loading_conversation', {})
         this.checkForm()
-
         // create a new speaker
         if (this.newSpeaker.valid === true) {
           if (!this.selectSpeakerList) {
@@ -386,7 +386,7 @@ export default {
             timeout: 3000
           })
           this.closeModal()
-          bus.$emit('refresh_conversation', {closeToolBox: true})
+          bus.$emit('refresh_conversation', {closeToolBox: true, turnPos: this.selectionObj.startTurnPosition})
 
         } else {
           throw req

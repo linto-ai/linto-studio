@@ -106,7 +106,9 @@ export default {
       this.convosLoaded = await this.$options.filters.dispatchStore('getConversations')
     },
     async handleHighlight() {
+      // Add an existing highlights to a set of words
       try {
+        bus.$emit('loading_conversation', {})
         this.$options.filters.testSelectField(this.highlight)
         if(this.highlight.valid)  {
           const payload =  {
@@ -114,6 +116,7 @@ export default {
             wordids: this.selectionTxt.wordids,
             operator: 'add'
           }
+          let turnPos = this.selectionObj.startTurnPosition
           const req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/highlight/${this.highlight.value}`, 'put', payload)
 
           if(req.status === 200 && !!req.data.msg) {
@@ -123,8 +126,7 @@ export default {
               timeout: 3000
             })
             this.closeModal()
-            bus.$emit('refresh_conversation', {})
-
+            bus.$emit('refresh_conversation', {turnPos})
           } else {
             throw req
           }
@@ -142,6 +144,7 @@ export default {
     },
     async handleNewHighlight () {
       try {
+        bus.$emit('loading_conversation', {})
         this.testNewHighlight()
         if(this.newHighlight.valid) {
           const payload =  {
@@ -149,7 +152,7 @@ export default {
             wordids: this.selectionTxt.wordids,
             color: this.newHighlightColor,
           }
-
+          let turnPos = this.selectionObj.startTurnPosition
           const req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/highlight`, 'post', payload)
 
           if(req.status === 200 && !!req.data.msg) {
@@ -159,7 +162,7 @@ export default {
               timeout: 3000
             })
             this.closeModal()
-            bus.$emit('refresh_conversation', {})
+            bus.$emit('refresh_conversation', {turnPos})
 
           } else {
             throw req

@@ -63,6 +63,9 @@
       <!-- END LEFT PART -->
       <!-- RIGHT PART -->
       <div class="flex1 flex col transcritpion-container">
+        <div id="transcription-loader" class="flex col" :class="refreshing === true ? 'visible': 'hidden'">
+            <span class="icon loader"></span>
+        </div>
         <div class="flex row">
           <h1 style="padding: 0;" class="flex row flex1">{{ convo.name }}</h1>
           <div class="flex row flex1 edition__btns" v-if="!userAccess.readOnly">
@@ -215,7 +218,8 @@ export default {
         highlights:'',
         keywords:''
       },
-      highlightsOptions: []
+      highlightsOptions: [],
+      refreshing: false
     }
   },
   async mounted () {
@@ -235,14 +239,28 @@ export default {
       this.refreshConversation++
       this.refreshHighlights()
     })
+    
+    bus.$on('loading_conversation', (data) => {
+      this.refreshing = true
+    })
 
     bus.$on('refresh_conversation', async (data) => {
+      console.log('>>> Refresh conversation', data)
       if(!!data.closeToolBox && data.closeToolBox) {
         bus.$emit('close_selected_toolbox', {})
       }
       await this.dispatchConversations()
       this.refreshConversation++
-      this.refreshHighlights()
+      setTimeout(()=>{
+        this.refreshHighlights()
+        if(!!data.turnPos) {
+          bus.$emit('scroll_to_turn', {turnPos: data.turnPos})
+        } else {
+          bus.$emit('scroll_to_turn', {})
+        }
+        
+        this.refreshing = false
+      }, 500)
       
     })
     
@@ -497,53 +515,18 @@ export default {
       this.refreshConversation++
       this.editionMode = false
     },
-    // Update transcription text
-/*    objectsEqual (o1, o2) {
-      console.log(o1, o2)
-      if(o1.length !== o2.length) {
-        return false
-      } else {
-        for (let i = 0; i < o1.length; i++) {
-          return parseFloat(o1[i].etime) === parseFloat(o2[i].etime) && parseFloat(o1[i].stime) === parseFloat(o2[i].stime) && o1[i].wid === o2[i].wid && o1[i].word === o2[i].word
-        }
-      }
-    },*/
     async validateEdition() {
       try {
+        this.refreshing = true
         this.editionMode = false
-        this.editConvoTmp = this.convo
         const newObject = this.buildTextObject()
         console.log('newObject', newObject)
         let req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/fulltext`, 'put', {text: newObject})
-        console.log(req)
         if(req.status !== 200) {
             throw req
+        } else {
+          bus.$emit('refresh_conversation', {})
         }
-        bus.$emit('refresh_conversation', {})
-        /*setTimeout(async () => {
-          for(let turn of newObject) {
-            let payload = {
-              turnid: turn.turn_id,
-              words: turn.words
-            }
-            let payloadWords = payload.words
-            let turnWords = this.convo.text.filter(c => c.turn_id === payload.turnid)[0].words
-
-            console.log(this.objectsEqual(payloadWords, turnWords))
-
-            let req = null
-            if(payload.turnid === 'todefine') {
-                payload.pos = turn.pos - 0.5
-              req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/turn/${turn.speaker_id}`, 'post', payload)
-            } else {
-              req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/text`, 'put', payload)
-            }
-            bus.$emit('refresh_conversation', {})
-            if(req.status !== 200) {
-              throw req
-            }
-          }
-        }, 150)*/
       } catch (error) {
         console.error(error)
       }

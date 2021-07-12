@@ -4,6 +4,7 @@
 
 .transcritpion-container {
     padding: 40px;
+    position: relative;
 }
 
 #transcription {
@@ -13,6 +14,7 @@
     overflow: auto;
     scroll-behavior: smooth;
     @include borderRadius(5px);
+    position: relative;
     &.editing {
         border-color: $greenChart;
         background-color: #fff;
@@ -316,5 +318,25 @@ input[type="color"]::-webkit-color-swatch {
     background-color: $redLight;
     &:hover {
         background-color: $redChart;
+    }
+}
+
+#transcription-loader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.75);
+    z-index: 10;
+    align-items: center;
+    justify-content: center;
+    .icon.loader {
+        display: inline-block;
+        width: 60px;
+        height: 60px;
+        @include maskImage('../img/loading.svg');
+        @include rotating();
+        background-color: $blueChart;
     }
 }

@@ -127,12 +127,14 @@ export default {
   methods: {
     async removeHighlightFromWords(hl) {
       try {
+        bus.$emit('loading_conversation', {})
         if(!!this.selectionObj.words && this.selectionObj.words !== []){
           const payload =  {
             hid: hl,
             wordids: this.selectionObj.words.wordids,
             operator: 'remove'
           }
+          let turnPos = this.selectionObj.startTurnPosition
           const req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversation/${this.convoId}/highlight/${hl}`, 'put', payload)
 
           if(req.status === 200 && !!req.data.msg) {
@@ -142,8 +144,7 @@ export default {
               timeout: 3000
             })
             this.options.wordsHighlights = this.options.wordsHighlights.filter(wordsHl => wordsHl !== hl)
-            
-            bus.$emit('refresh_conversation', {refresh : await this.dispatchConversations() })
+            bus.$emit('refresh_conversation', {turnPos})
 
           } else {
             throw req

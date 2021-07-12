@@ -1,6 +1,6 @@
 <template>
   <div id="transcription" :class="editionMode ? 'editing' : ''">
-    <table class="table table--transcription" :key="refreshTest">
+    <table class="table table--transcription" :key="refresh">
       <tr 
         v-for="(turn,i) in convoTextCustom" 
         :key="i" 
@@ -54,7 +54,6 @@ export default {
   data () {
     return {
       refresh: 1,
-      refreshTest: 1,
       toolBoxOption: {
         comment: false,
         highlight: true,
@@ -82,8 +81,14 @@ export default {
     bus.$on('update_speaker', async (data) => {
       this.speakerEdit = false
     })
-    bus.$on('scroll_to_current', () => {
-      this.scrollToCurrentTurn(this.currentTurn)
+    bus.$on('scroll_to_turn', (data) => {
+      if(!!data.turnPos) {
+        console.log('Scroll To Turn:', data.turnPos)
+        this.scrollToTurn(data.turnPos)
+      } else {
+        console.log('Scroll To Turn:', this.currentTurn)
+        this.scrollToTurn(this.currentTurn)
+      }
     })
     bus.$on('transcription_update_highlights', (data) => {
       this.setHighlights(data.highlightsOptions)
@@ -111,7 +116,7 @@ export default {
   watch: {
     currentTurn (data) {
       // if audio is playing: smooth scroll to current turn 
-      this.scrollToCurrentTurn(data)
+      this.scrollToTurn(data)
     }
   },
   methods: {
@@ -325,7 +330,7 @@ export default {
           turnIndex++
         }
         this.convoTextCustom = textPayload
-        this.refreshTest++
+        this.refresh++
     },
     // Get Highlights and Keywords by id
     getHlAndKwByWordId (wordId) {
@@ -627,7 +632,7 @@ export default {
     
     /*** SCROLL TO ***/
     // Scroll to current turn
-    scrollToCurrentTurn (pos) {
+    scrollToTurn (pos) {
       const targetTurn = document.getElementById(`turn-${pos}`)
       if(!!targetTurn.offsetTop && pos > 0) {
         transcription.scrollTo({top: targetTurn.offsetTop - 200, behavior: 'smooth' })

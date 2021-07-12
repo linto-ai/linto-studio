@@ -156,6 +156,7 @@ export default {
     },
     async mergeTurns () {
       try {
+        bus.$emit('loading_conversation', {})
         this.checkSelectedSpeaker()
         if(this.selectedSpeaker.valid === true) {
           const payload = {
@@ -171,7 +172,7 @@ export default {
               timeout: 3000
             })
             this.closeModal()
-            bus.$emit('refresh_conversation', {closeToolBox: true})
+            bus.$emit('refresh_conversation', {closeToolBox: true, turnPos: this.positions[0] })
             
           } else {
             throw req

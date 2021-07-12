@@ -29,7 +29,6 @@ async function isConnected(req, res, next) {
                     if (req.url === '/login') {
                         res.redirect('/interface/conversations')
                     } else {
-
                         next()
                     }
                 } else {

@@ -195,7 +195,7 @@ export default {
     // Audio play
     play () {
       this.audioPlayer.play()
-      bus.$emit('scroll_to_current', {})
+      bus.$emit('scroll_to_turn', {})
     },
     // Audio pause
     pause () {

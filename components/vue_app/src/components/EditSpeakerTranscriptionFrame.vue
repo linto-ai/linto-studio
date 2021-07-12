@@ -127,7 +127,6 @@ export default {
       }
       this.showEditSpkOptions = false
       this.showMergeTurnsOptions = false
-      bus.$emit('refresh_conversation', {})
     },
     async updateSpeaker (targetSpeaker) {
       if(this.editSpeakerMode === 'turn') {
@@ -142,6 +141,7 @@ export default {
     // Update speaker turn (on click)
     async updateSpeakerTurn (targetSpeaker, turnId) {
       try{
+        bus.$emit('loading_conversation', {})
         let payload =  {
           speakerid: targetSpeaker.speaker_id
         }
@@ -152,7 +152,7 @@ export default {
             message: req.data.msg,
             timeout: 3000
           })
-          bus.$emit('refresh_conversation', {})
+          bus.$emit('refresh_conversation', {turnPos: this.turn.pos})
           this.closeFrame()
         } else {
           throw req
