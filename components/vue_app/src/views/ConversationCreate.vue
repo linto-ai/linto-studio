@@ -44,13 +44,12 @@
             <span class="input__file-label">{{ audioFileUploadLabel }}</span>
           </label>
         </div>
+        <span class="input__file-name" v-if="!!audioFile.value['name'] && audioFile.value['name'] !== ''">{{ audioFile.value.name }}</span>
         <span class="error-field" v-if="audioFile.error !== null">{{ audioFile.error }}</span>
       </div>
 
       <!-- Share with -->
       <div class="form-field flex col">
-        <span class="form-label">{{ $t('page.conversations_create.share_with') }}:</span>
-
         <table class="share-with-list" v-if="sharedWith.length > 0">
           <thead>
             <tr>

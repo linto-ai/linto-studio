@@ -54,7 +54,9 @@
                 <span class="input__file-icon"></span>
                 <span class="input__file-label">{{ pictureUploadLabel }}</span>
               </label>
+              
             </div>
+            <span class="input__file-name" v-if="!!picture.value['name'] && picture.value['name'] !== ''">{{  picture.value.name }}</span>
             <span class="error-field" v-if="picture.error !== null">{{ picture.error }}</span>
           </div>
           <!-- Password -->
@@ -225,6 +227,7 @@
             this.pictureUploadLabel = 'Choose a file...'
           }
         } else {
+            this.picture.value = ''
             this.picture.valid = false
             this.picture.error = null
             this.pictureUploadLabel = 'Choose a file...'
