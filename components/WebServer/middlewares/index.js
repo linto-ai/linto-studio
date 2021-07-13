@@ -8,7 +8,8 @@ function isProduction() {
 
 function logger(req, res, next) {
     debug(`[${Date.now()}] new user entry on ${req.url}`)
-    debug('session :', req.session)
+    debug('body:', req.body)
+        //debug('session :', req.session)
     next()
 }
 

@@ -24,7 +24,10 @@ class Router {
                     route.requireWriteAccess = false
                     route.requireFrontReadAccess = false
                 }
-                debug('Create route : ' + route.method + ' - ' + level + route.path)
+                if (process.env.LOGGER_ENABLED === true) {
+                    middlewaresLoaded.push(nav_middlewares.logger)
+                }
+                //debug('Create route : ' + route.method + ' - ' + level + route.path)
                 let middlewaresLoaded = []
                     // require passport auth (headers)
                 if (route.requireAuth) middlewaresLoaded.push(auth_middlewares.isAuthenticate)

@@ -213,3 +213,25 @@
         background-color: #fff;
     }
 }
+
+#timeline-hover {
+    display: inline-block;
+    width: 50px;
+    height: 20px;
+    background: red;
+    position: absolute;
+    top: -10px;
+    left: 0;
+}
+
+#timeline-sub {
+    position: absolute;
+    display: inline-block;
+    margin-top: 16px;
+    height: 8px;
+    width: 0px;
+    z-index: 4;
+    top: 0;
+    left: 0;
+    background: yellow;
+}
