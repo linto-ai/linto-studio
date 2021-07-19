@@ -45,8 +45,8 @@
       />
       <span class="audio-player--timeline__played" :style="`width: ${prctTimelineSelected}%`"></span>
       <span class="audio-player--timeline__bg" ></span>
-      <span id="timeline-sub" :style="`width: ${timeHoverPrct}%;`"></span>
-      <span id="timeline-hover" :style="`left: ${timeHoverPrct}%;`">{{ timeHover.toFixed(2) }} </span>
+      <span id="timeline-sub" :style="`width: ${timeHoverPrct}%;`" v-if="showTimeHover"></span>
+      <span id="timeline-hover" :style="`left: ${timeHoverPrct}%;`" v-if="showTimeHover">{{timeToHMS(timeHover.toFixed(2)) }} </span>
     </div>
     <span class="audio-player--timeline__time"> {{ currentTimeHMS }} / {{ durationHMS }}</span>
     <button class="keyboard-commands-btn" @click="showKeyboardCommands()"></button>
@@ -69,7 +69,8 @@ export default {
       currentSegment: -1,
       timeHover: 0,
       timeHoverX: 0,
-      timeHoverPrct: 0
+      timeHoverPrct: 0,
+      showTimeHover: false
     }
   },
   mounted () {
@@ -121,43 +122,22 @@ export default {
     }
   },
   methods : {
-    /*bindTimelineMouseover () {
-      const timeline = document.getElementById('audio-timeline')
-      timeline.addEventListener('mousemove', this.initShowTimeHoverTimeline)
-    },*/
     initShowTimeHoverTimeline() {
       const timeline = document.getElementById('audio-timeline')
-      timeline.onmouseover = (e) => {
         timeline.onmousemove = (el) => {
-          console.log('mousemove', el)
+          this.showTimeHover = true
           const val = el.srcElement.value
           let TLWidth = el.srcElement.clientWidth
           let posX = el.layerX
           let prctPos = posX * 100 / TLWidth
           const targetTime = this.duration * (prctPos / 100)
-          console.log('TARGET', targetTime)
           this.timeHover = targetTime
           this.timeHoverX = posX
           this.timeHoverPrct = prctPos
+          timeline.onmouseleave = () => {
+            this.showTimeHover = false
+          }
         }
-      }
-      
-          
-        /*const val = e.srcElement.value
-        let TLWidth = e.srcElement.clientWidth
-        let posX = e.layerX
-
-        let prctPos = posX * 100 / TLWidth
-        const targetTime = this.duration * (prctPos / 100)*/
-
-
-    },
-    showTimeHover (e) {
-      /*console.log(e)
-      console.log(val)
-      console.log('>target Time : ', targetTime)*/
-      //this.playFrom(targetTime)
-
     },
     initAudioPlayer() {
       this.audioPlayer = new Audio()
@@ -211,7 +191,6 @@ export default {
     },
     // Play from Timeline
     playFromTimeLine (e) {
-      console.log('click', e)
       const val = e.srcElement.value
       const targetTime = parseInt(val * this.duration / 100)
       this.playFrom(targetTime)
@@ -313,4 +292,4 @@ export default {
     }
   }
 }
-</script>
+</script> 

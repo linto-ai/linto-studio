@@ -216,12 +216,13 @@
 
 #timeline-hover {
     display: inline-block;
-    width: 50px;
     height: 20px;
-    background: red;
+    background: #fff;
+    padding: 5px 10px;
     position: absolute;
-    top: -10px;
+    top: -20px;
     left: 0;
+    @include borderRadius(3px);
 }
 
 #timeline-sub {
@@ -233,5 +234,5 @@
     z-index: 4;
     top: 0;
     left: 0;
-    background: yellow;
+    background: rgba(255, 255, 255, 0.5);
 }
