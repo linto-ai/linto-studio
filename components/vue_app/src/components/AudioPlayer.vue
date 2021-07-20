@@ -88,8 +88,7 @@ export default {
       return this.timeToHMS(this.duration)
     }
   },
-  watch:  {
-    
+  watch: {
     prctTimeline (data) {
       this.prctTimelineSelected = data
     },

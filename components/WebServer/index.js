@@ -73,10 +73,10 @@ class WebServer extends Component {
         this.express.use(passport.session())
 
         this.httpServer = this.express.listen(process.env.WEBSERVER_HTTP_PORT, "0.0.0.0", (err) => {
-            debug(` WebServer listening on : ${process.env.WEBSERVER_HTTP_PORT}`)
-            if (err) throw (err)
-        })
-        this.httpServer.setTimeout(parseInt(process.env.EXPRESS_TIMEOUT, 10)) //TODO: Set timeout for only required route (upload mainly)
+                debug(` WebServer listening on : ${process.env.WEBSERVER_HTTP_PORT}`)
+                if (err) throw (err)
+            })
+            //this.httpServer.setTimeout(parseInt(process.env.EXPRESS_TIMEOUT, 10)) //TODO: Set timeout for only required route (upload mainly)
 
         require('./routes/router.js')(this) // Loads all defined routes
         WebServerErrorHandler.init(this)

@@ -25,6 +25,7 @@ let setCookie = function(cname, cvalue, exdays) {
     document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/"
 }
 
+// Convert time: seconds > hh:mm:ss
 Vue.filter('timeToHMS', function(time) {
     const hour = Math.floor(time / (60 * 60))
     const min = Math.floor(time / 60)
@@ -32,11 +33,13 @@ Vue.filter('timeToHMS', function(time) {
     return `${hour < 10  ? '0' + hour : hour}:${min < 10 ? '0' + min : min}:${sec < 10 ? '0' + sec : sec }`
 })
 
+// Convert: date > JJ/MM/YYYY
 Vue.filter('dateToJMY', function(date) {
     let splitDate = date.split('T')
     return splitDate[0]
 })
 
+// Convert: date > JJ/MM/YYYY - hh:mm:ss
 Vue.filter('dateToJMYHMS', function(date) {
     let splitDate = date.split('T')
     let fullTime = splitDate[1]
@@ -44,7 +47,9 @@ Vue.filter('dateToJMYHMS', function(date) {
     return `${splitDate[0]} - ${splitTime[0]}`
 })
 
+// Send request 
 Vue.filter('sendRequest', async function(url, method, data) {
+    // Get authorization token  
     const userToken = getCookie('authToken')
     try {
         let req = await axios(url, {
@@ -67,7 +72,7 @@ Vue.filter('sendRequest', async function(url, method, data) {
     }
 })
 
-
+// Send request multipart formData
 Vue.filter('sendMultipartFormData', async function(url, method, data) {
     const userToken = getCookie('authToken')
     try {
@@ -100,6 +105,7 @@ Vue.filter('CapitalizeFirstLetter', function(string) {
     return ''
 })
 
+// Test if required filed is empty
 Vue.filter('testFieldEmpty', function(obj) {
     obj.error = null
     obj.valid = false
@@ -136,11 +142,11 @@ Vue.filter('dispatchStore', async function(label) {
     }
 })
 
+// Generate transcirption .txt format
 Vue.filter('generateTranscriptionText', function(convo, filters) {
     let content = `=====================================================================\nConversation: ${ convo.name } - ${ convo.created }\n=====================================================================\n\n `
 
     let filtersLabel = ''
-
     if (filters.speaker !== '') {
         let spkId = filters.speaker
         let speaker = convo.speakers.filter(spk => spk.speaker_id === spkId)
@@ -200,7 +206,7 @@ Vue.filter('generateTranscriptionText', function(convo, filters) {
 })
 
 
-// TEST SELECT FIELD
+// Test select field
 Vue.filter('testSelectField', function(obj) {
     obj.error = null
     obj.valid = false
@@ -214,7 +220,7 @@ Vue.filter('testSelectField', function(obj) {
     }
 })
 
-// TEST NAME
+// Test name field
 Vue.filter('testName', function(obj) {
     const regex = /^[a-zA-ZÀ-ÿ]+(([' -][a-zA-ZÀ-ÿ ])?[a-zA-ZÀ-ÿ]*)*$/g
     obj.valid = false
@@ -228,6 +234,7 @@ Vue.filter('testName', function(obj) {
     }
 })
 
+// Test password field
 Vue.filter('testPassword', function(obj) {
     obj.valid = false
     obj.error = null
@@ -243,6 +250,7 @@ Vue.filter('testPassword', function(obj) {
     }
 })
 
+// Test confirmation password field
 Vue.filter('testPasswordConfirm', function(obj, password) {
     obj.valid = false
     obj.error = null
@@ -257,6 +265,7 @@ Vue.filter('testPasswordConfirm', function(obj, password) {
     }
 })
 
+// Test email field
 Vue.filter('testEmail', function(obj) {
     obj.valid = false
     obj.error = null
@@ -270,9 +279,12 @@ Vue.filter('testEmail', function(obj) {
 
 })
 
+// Set cookie
 Vue.filter('setCookie', function(cname, value, days) {
     return setCookie(cname, value, days)
 })
+
+// Get cookie
 Vue.filter('getCookie', function(cname) {
     return getCookie(cname)
 })

@@ -224,8 +224,7 @@ export default {
         valid: false
       },
       selectSpeakerList: true,
-      splitType: 'out',
-      
+      splitType: 'out'
     }
   },
   async mounted () {

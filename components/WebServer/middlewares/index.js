@@ -1,7 +1,6 @@
 const debug = require('debug')('app:webserver:middlewares')
 const convosModel = require(`${process.cwd()}/models/mongodb/models/conversations`)
 
-
 const getDurationInMilliseconds = (start) => {
     const NS_PER_SEC = 1e9
     const NS_TO_MS = 1e6
@@ -9,20 +8,23 @@ const getDurationInMilliseconds = (start) => {
     return (diff[0] * NS_PER_SEC + diff[1]) / NS_TO_MS
 }
 
-
 function isProduction() {
     return process.env.NODE_ENV === 'production'
 }
 
+// Logs requests url, method and execution time
 function logger(req, res, next) {
+    // On request start
     debug(`${req.method} ${req.originalUrl} [STARTED]`, req.body)
     const start = process.hrtime()
 
+    // On request finish
     res.on('finish', () => {
         const durationInMilliseconds = getDurationInMilliseconds(start)
         debug(`${req.method} ${req.originalUrl} [FINISHED] ${durationInMilliseconds.toLocaleString()} ms`)
     })
 
+    // On request close
     res.on('close', () => {
         const durationInMilliseconds = getDurationInMilliseconds(start)
         debug(`${req.method} ${req.originalUrl} [CLOSED] ${durationInMilliseconds.toLocaleString()} ms`)
@@ -30,10 +32,10 @@ function logger(req, res, next) {
     next()
 }
 
+// Check if user is connected
 async function isConnected(req, res, next) {
     try {
         if (!!req.session) {
-            //console.log(req.session)
             if (!!req.session.logged && !!req.session.token) {
                 // Already logged  
                 if (req.session.logged === 1) {
@@ -70,6 +72,7 @@ async function isConnected(req, res, next) {
     }
 }
 
+// Check if user can read the targeted content
 async function hasReadAccess(req, res, next) {
     try {
         if (!!req.params.convoId && !!req.session.userId) {
@@ -104,11 +107,11 @@ async function hasReadAccess(req, res, next) {
         console.error(error)
         res.json({ error })
     }
-
 }
 
 module.exports = {
     logger,
     isConnected,
+    isProduction,
     hasReadAccess
 }

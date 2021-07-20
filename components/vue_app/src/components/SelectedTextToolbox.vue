@@ -1,14 +1,13 @@
 <template>
   <div 
     v-if="convoLoaded"
-    id="selected-text-toolbox"   
+    id="selected-text-toolbox" 
     class="flex col" 
     :class="show ? 'visible' : 'hidden'" 
     :style="`top: ${parseInt(offsetY) + 25}px; left: ${parseInt(offsetX) - 170}px;`">
     
     <button class="selected-text-toolbox--btn close" @click="closeToolbox()"></button>
     
-
     <button 
       class="selected-text-toolbox--btn" 
       v-if="!!options.keywords && options.keywords === true">

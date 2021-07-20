@@ -83,10 +83,8 @@ export default {
     })
     bus.$on('scroll_to_turn', (data) => {
       if(!!data.turnPos) {
-        console.log('Scroll To Turn:', data.turnPos)
         this.scrollToTurn(data.turnPos)
       } else {
-        console.log('Scroll To Turn:', this.currentTurn)
         this.scrollToTurn(this.currentTurn)
       }
     })

@@ -42,10 +42,8 @@ export default {
       userId: ''
     }
   },
-  async   mounted () {
+  async mounted () {
     this.checkLangCookie()
-    await this.getUserInfo()
-
     bus.$on('refresh_user', async () => {
       await this.getUserInfo()
     })
@@ -61,7 +59,6 @@ export default {
       return ''
     }
   },
-
   methods: {
     checkLangCookie () {
       let cookieLang = this.getCookie('cm_lang')
@@ -87,8 +84,7 @@ export default {
     },
     async getUserInfo () {
         await this.$options.filters.dispatchStore('getuserInfo')
-    },
-
+    }
   }
 }
 </script>

@@ -43,7 +43,6 @@ class Router {
                 if (route.requireFrontReadAccess) middlewaresLoaded.push(nav_middlewares.hasReadAccess)
                 webServer.express[method](
                     level + route.path,
-                    middlewares.logger,
                     middlewaresLoaded,
                     ifHasElse(
                         Array.isArray(route.controller),
