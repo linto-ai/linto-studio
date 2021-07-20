@@ -1,5 +1,5 @@
 <template>
-  <div class="flex col">
+  <div class="flex col scrollable">
     <div class="flex col create-form-container">
       <div class="form-field flex col">
         <!-- Conversation Name -->
@@ -163,6 +163,7 @@ export default {
       } else {
           this.audioFile.valid = false
           this.audioFile.error = 'This field is required'
+          this.audioFile.value = ''
           this.audioFileUploadLabel = 'Choose a file...'
       }
     },

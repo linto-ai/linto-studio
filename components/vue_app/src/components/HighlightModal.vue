@@ -169,9 +169,7 @@ export default {
               setTimeout(()=>{
                 bus.$emit('show_highlight', {hid: req.data.hid})
               }, 600)
-              
             }
-
           } else {
             throw req
           }

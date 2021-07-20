@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="flex col scrollable">
     <h1>Your profile</h1>
     <div class="flex row">
       <div class="flex col flex1 form-container">
@@ -106,7 +106,7 @@
                   <span class="input__file-label">{{ pictureUploadLabel }}</span>
                 </label>
               </div>
-              <span class="input__file-name" v-if="!!picture.value['name'] && picture.value['name'] !== ''">{{  picture.value.name }}</span>
+              <span class="input__file-name" v-if="picture.value !== '' && picture.value['name'] !== ''">{{ picture.value.name }}</span>
               <span class="error-field" v-if="picture.error !== null">{{ picture.error }}</span>
             </div>
             <div class="form-field flex row" style="margin-top: 10px;">
@@ -172,9 +172,6 @@ export default {
     },
     pswdFormValid () {
       return this.newPassword.valid && this.newPasswordConfirm.valid
-    },
-    pictureSelected () {
-      return this.picture.value !== ''
     }
   },
   watch: {
@@ -278,6 +275,7 @@ export default {
       } else {
           this.picture.valid = false
           this.picture.error = 'This field is required'
+          this.picture.value = ''
           this.pictureUploadLabel = 'Choose a file...'
       }
     },

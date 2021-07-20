@@ -26,5 +26,8 @@
         &.no-padding-left {
             padding: 0;
         }
+        &.scrollable {
+            overflow: auto;
+        }
     }
 }

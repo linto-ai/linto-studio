@@ -244,7 +244,9 @@ export default {
     bus.$on('show_highlight', (data) => {
         let hid = data.hid
         let targetHl = this.highlightsOptions.find(hl => hl.hid === hid)
-        this.updateHighlight(targetHl)
+        if(!targetHl.selected) {
+          this.updateHighlight(targetHl)
+        }
     })
 
     // Show Loader on transcription
@@ -254,7 +256,6 @@ export default {
 
     // Reload the conversation with updated data
     bus.$on('refresh_conversation', async (data) => {
-      console.log('>>> Refresh conversation', data)
       if(!!data.closeToolBox && data.closeToolBox) {
         bus.$emit('close_selected_toolbox', {})
       }
@@ -471,7 +472,9 @@ export default {
     /*** HIGHLIGHTS ***/
 
     refreshHighlights () {
-      setTimeout(() => {bus.$emit('transcription_update_highlights', {highlightsOptions: this.highlightsOptions})}, 100)
+      setTimeout(() => {
+        bus.$emit('transcription_update_highlights', {highlightsOptions: this.highlightsOptions})
+      }, 100)
     },
     // Set/Unset transcription highlight
     updateHighlight (hl) {

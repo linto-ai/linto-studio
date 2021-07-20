@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="flex col scrollable">
     <h1>{{$t('page.conversations.h1')}}</h1>
     
     <div class="flex row" v-if="dataLoaded">
