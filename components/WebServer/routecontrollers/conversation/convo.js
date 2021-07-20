@@ -1,4 +1,6 @@
-const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:conversation:convo`)
+const middleware = require(`${process.cwd()}/components/WebServer/middlewares/index.js`)
+
+const debug = require('debug')(`app:conversation-manager:components:WebServer:routeControllers`)
 const convoModel = require(`${process.cwd()}/models/mongodb/models/conversations`)
 const userModel = require(`${process.cwd()}/models/mongodb/models/users`)
 
@@ -92,9 +94,7 @@ async function updateTitle(req, res, next) {
                 convoid: req.params.conversationid,
                 name: req.body.title
             }
-
             let updateTitle = await convoModel.updateMetaData(payload)
-
             if (updateTitle === 'success') {
                 res.status(200).send({
                     txtStatus: 'success',
@@ -103,13 +103,12 @@ async function updateTitle(req, res, next) {
             } else {
                 throw updateTitle
             }
-
         } else {
             throw { message: 'Missing information in the payload object' }
         }
     } catch (error) {
+        // Error
         console.error(error)
-            // Error
         res.status(400).send({
             status: 'error',
             msg: !!error.message ? error.message : 'error updating title'

@@ -1,9 +1,8 @@
-const debug = require('debug')(`linto:conversation-manager:components:WebServer:routes:router`)
 const path = require('path')
 const middlewares = require(path.join(__dirname, "../middlewares"))
-
 const auth_middlewares = require(`../config/passport/local/middleware`)
 const nav_middlewares = require(`${process.cwd()}/components/WebServer/middlewares/index.js`)
+
 const ifHasElse = (condition, ifHas, otherwise) => {
     return !condition ? otherwise() : ifHas()
 }
@@ -24,9 +23,7 @@ class Router {
                     route.requireWriteAccess = false
                     route.requireFrontReadAccess = false
                 }
-                if (process.env.LOGGER_ENABLED === true) {
-                    middlewaresLoaded.push(nav_middlewares.logger)
-                }
+
                 //debug('Create route : ' + route.method + ' - ' + level + route.path)
                 let middlewaresLoaded = []
                     // require passport auth (headers)
@@ -40,6 +37,9 @@ class Router {
                     // require wirte access
                 if (route.requireWriteAccess) middlewaresLoaded.push(auth_middlewares.asWriteAccess)
 
+                if (process.env.LOGGER_ENABLED === "true") {
+                    middlewaresLoaded.push(nav_middlewares.logger)
+                }
                 if (route.requireFrontReadAccess) middlewaresLoaded.push(nav_middlewares.hasReadAccess)
                 webServer.express[method](
                     level + route.path,

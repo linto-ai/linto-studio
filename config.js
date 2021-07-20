@@ -19,6 +19,7 @@ function configureDefaults() {
 
         // Dev variable
         process.env.DEV_DISABLE_AUTH = ifHas(process.env.DEV_DISABLE_AUTH, envdefault.DEV_DISABLE_AUTH)
+        process.env.LOGGER_ENABLED = ifHas(process.env.LOGGER_ENABLED, envdefault.LOGGER_ENABLED)
 
         // Webserver Settings
         process.env.COMPONENTS = ifHas(process.env.COMPONENTS, envdefault.COMPONENTS)
