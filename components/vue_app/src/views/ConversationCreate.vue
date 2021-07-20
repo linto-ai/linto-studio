@@ -147,7 +147,8 @@ export default {
     },
     handleFileUpload() {
       this.audioFile.value = this.$refs.file.files[0]
-      const acceptedTypes = ['audio/mpeg', 'audio/wav']
+      const acceptedTypes = ['audio/mpeg', 'audio/wav', 'audio/x-wav']
+      console.log(this.audioFile.value)
       if (typeof(this.audioFile.value) !== 'undefined' && this.audioFile.value !==  null && !!this.audioFile.value.type) {
         
         const type = this.audioFile.value.type
@@ -192,8 +193,6 @@ export default {
             formData.append('payload', JSON.stringify(payload))
 
             let req = await this.$options.filters.sendMultipartFormData(`${process.env.VUE_APP_CONVO_API}/conversation/create`, 'post', formData)
-
-            
 
             if(req.status === 200) {
                 bus.$emit('app_notif', {
