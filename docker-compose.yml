@@ -29,6 +29,7 @@ services:
     env_file: .dockerenv
     environment: 
       - WEBSERVER_HTTP_PORT=80 #Match the expose Dockerfile, but docker-compose will use the WEBSERVER_HTTP_PORT .env settings
+      - DEBUG=${DEBUG}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./${VOLUME_AUDIO_UPLOAD_PATH}:/usr/src/app/conversation-manager/${VOLUME_AUDIO_UPLOAD_PATH}
