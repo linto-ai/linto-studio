@@ -71,7 +71,7 @@
           <div class="flex row flex1 edition__btns" v-if="!userAccess.readOnly">
             <span class="edition__btns-label">{{ $t('page.conversation_transcription.edition_mode') }} : </span>
             <button 
-              @click="editionMode = true"
+              @click="editionMode === true ? cancelEditionMode() : editionMode = true"
               :class="editionMode ? 'enabled' : 'disabled'"
               class="edition__btn-toggle"
             >
@@ -144,7 +144,6 @@
           :convoSpeakers="convo.speakers"
           :editionMode="editionMode" 
           :speakersArray="speakersArray"
-          :key="refreshConversation"
           :convoIsFiltered="convoIsFiltered"
           :highlightsOptions="highlightsOptions"
           :keywordsOptions="keywordsOptions"
@@ -210,7 +209,6 @@ export default {
       clickTime: 0,
       selectionObj: null,
       keywordsOptions: [],
-      refreshConversation: 1,
       editConvoTmp: [],
       filterSpeaker: '',
       convoFilter: {
@@ -237,7 +235,6 @@ export default {
     
     bus.$on('update_speaker', async (data) => {
       await this.dispatchConversations()
-      this.refreshConversation++
       this.refreshHighlights()
     })
     
@@ -260,7 +257,8 @@ export default {
         bus.$emit('close_selected_toolbox', {})
       }
       await this.dispatchConversations()
-      this.refreshConversation++
+      bus.$emit('filter_update', {convoText: this.convoText}) // Update transcription component
+      
       setTimeout(()=>{
         this.refreshHighlights()
         if(!!data.turnPos) {
@@ -269,9 +267,10 @@ export default {
           bus.$emit('scroll_to_turn', {})
         }
         this.refreshing = false
-      }, 500)
-      
+      }, 300)
     })
+
+    // Update audio current time
     bus.$on('audio_player_currenttime', (data) => {
       this.currentTime = data.time
     })
@@ -522,7 +521,7 @@ export default {
     // Cancel edition mode
     async cancelEditionMode () {
       await this.dispatchConversations()
-      this.refreshConversation++
+      bus.$emit('refresh_conversation', {})
       this.editionMode = false
     },
     async validateEdition() {

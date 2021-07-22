@@ -248,15 +248,15 @@ async function combineSpeakerIds(req, res, next) {
 async function updateSpeakerMap(req, res, next) {
     try {
         if (!!req.params.conversationid) {
- 
+
             const convoid = req.params.conversationid
             let speakers = await convoModel.getSpeakerAudio(convoid)
             if (speakers && speakers.length) {
-                
+
                 let speakermap = await convoModel.getConvoSpeakers(convoid)
 
                 if (speakermap && speakermap.length) {
-                    let newspeakermap = speakermap[0].speakers 
+                    let newspeakermap = speakermap[0].speakers
 
                     newspeakermap.forEach((elem => {
                         elem.stime = speakers.find(x => x._id === elem.speaker_id).stime
@@ -288,10 +288,9 @@ async function updateSpeakerMap(req, res, next) {
                 throw speakers
             }
         }
-
     } catch (error) {
         console.error(error)
-        // Error
+            // Error
         res.status(400).send({
             status: 'error',
             msg: !!error.message ? error.message : 'error on updating speaker turns'
@@ -304,6 +303,6 @@ module.exports = {
     createNewSpeaker,
     deleteSpeaker,
     identifySpeaker,
-    getSpeakers, 
+    getSpeakers,
     updateSpeakerMap
 }

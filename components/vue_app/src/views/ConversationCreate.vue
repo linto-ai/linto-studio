@@ -47,7 +47,6 @@
         <span class="input__file-name" v-if="!!audioFile.value['name'] && audioFile.value['name'] !== ''">{{ audioFile.value.name }}</span>
         <span class="error-field" v-if="audioFile.error !== null">{{ audioFile.error }}</span>
       </div>
-
       <!-- Share with -->
       <div class="form-field flex col">
         <table class="share-with-list" v-if="sharedWith.length > 0">
@@ -71,7 +70,7 @@
             </tr>
           </tbody>
         </table>
-        <div class="flex row" style="margin-top: 10px;">
+        <div class="flex row" style="margin-top: 10px;" v-if="isSharable">
           <button class="btn btn--txt-icon blue" @click="shareWith()">
             <span class="label">{{ $t('buttons.share') }}</span>
             <span class="icon icon__share"></span>
@@ -115,7 +114,8 @@ export default {
       },
       sharedWith: [],
       audioFileUploadLabel: 'Choose a file...',
-      isSending: false
+      isSending: false,
+      usersLoaded: false
     }
   },
   computed: {
@@ -124,18 +124,23 @@ export default {
     },
     authToken () {
       return this.$store.state.auth_token
+    },
+    users () {
+      return this.$store.state.users
+    },
+    isSharable () {
+      return this.sharedWith.length === this.users.length - 1 ? false : true
     }
   },
   async mounted () {
-      await this.$options.filters.dispatchStore('getuserInfo')
-
+      await this.dispatchUsersInfo()
       bus.$on('update_share_with', (data) => {
         this.sharedWith = data.sharedWith
       })
   },
   methods: {
     shareWith() {
-      bus.$emit('modal_share_with', {})
+      bus.$emit('modal_share_with', {sharedWith:this.sharedWith})
     },
     removeFromList (user) {
       let newList = this.sharedWith.filter(usr => usr._id !== user._id)
@@ -148,7 +153,6 @@ export default {
     handleFileUpload() {
       this.audioFile.value = this.$refs.file.files[0]
       const acceptedTypes = ['audio/mpeg', 'audio/wav', 'audio/x-wav']
-      console.log(this.audioFile.value)
       if (typeof(this.audioFile.value) !== 'undefined' && this.audioFile.value !==  null && !!this.audioFile.value.type) {
         
         const type = this.audioFile.value.type
@@ -219,6 +223,16 @@ export default {
         this.conversationName.error = 'This field is required'
       } else {
         this.conversationName.valid = true
+      }
+    },
+    async dispatchUsersInfo () {
+      try {
+        let getUsers = await this.$options.filters.dispatchStore('getUsers')
+        if(getUsers.status === 'success') {
+          this.usersLoaded = true
+        }
+      } catch (error) {
+        console.error(error)
       }
     }
   },

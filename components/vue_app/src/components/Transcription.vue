@@ -1,6 +1,6 @@
 <template>
   <div id="transcription" :class="editionMode ? 'editing' : ''">
-    <table class="table table--transcription" :key="refresh">
+    <table class="table table--transcription">
       <tr 
         v-for="(turn,i) in convoTextCustom" 
         :key="i" 
@@ -74,6 +74,8 @@ export default {
       }
     },500)
 
+    this.convoTextCustom = this.convoText
+
     // BUS listeners
     bus.$on('clear_text_selection', () => {
       this.cancelTextSelection()
@@ -102,14 +104,13 @@ export default {
     })
     bus.$on('transcription_bind_enter', () => {
       if(window.editionMode === true) {
-        setTimeout(()=>{this.createTurn()}, 500)
+        setTimeout(()=>{this.createTurn()}, 300)
       }
     })
     bus.$on('filter_update', (data) => {
       this.convoTextCustom = data.convoText
     })
 
-    this.convoTextCustom = this.convoText
   },
   watch: {
     currentTurn (data) {
@@ -289,7 +290,6 @@ export default {
             else {
               let wordSplit = wordVal.split(' ')
               if (wordSplit.length > 1) { // If words have been added
-                // console.log('word added ?')
                 for (let k = 0; k < wordSplit.length; k++) {
                   let wordObj = {}
                   const wordId = word.getAttribute('data-word-id')
@@ -328,7 +328,6 @@ export default {
           turnIndex++
         }
         this.convoTextCustom = textPayload
-        this.refresh++
     },
     // Get Highlights and Keywords by id
     getHlAndKwByWordId (wordId) {
@@ -478,7 +477,7 @@ export default {
     },
     // Render text selection and open Toolbox
     setTextSelection (selectionObj) {
-      console.log(selectionObj)
+      //console.log(selectionObj)
       this.cancelTextSelection()
       this.playerPause()
       setTimeout(() => {

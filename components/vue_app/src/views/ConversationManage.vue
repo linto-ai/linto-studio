@@ -99,7 +99,7 @@
             </tbody>
           </table>
           <div class="flex row">
-            <button class="btn btn--txt-icon blue" @click="shareWith()" v-if="userAccess.isOwner">
+            <button class="btn btn--txt-icon blue" @click="shareWith()" v-if="userAccess.isOwner && isSharable">
               <span class="label">{{ $t('buttons.share') }}</span>
               <span class="icon icon__share"></span>
             </button>
@@ -121,11 +121,11 @@
       <div class="conversation-settings-item flex row">
         <span v-if="!titleEdit" class="conversation-settings-item--title">{{ convo.name.base }}</span>
         <div v-else class="conversation-settings-item--title__edit flex col flex1">
-            <textarea v-model="convo.name.edit" class="textarea flex1"></textarea>
-            <div class="textarea--btns flex row">
-              <button class="btn btn--txt btn--txt__cancel" @click="cancelEditTitle()"><span class="label">{{ $t('buttons.cancel') }}</span></button>
-              <button class="btn btn--txt btn--txt__save" @click="update('name')"><span class="label">{{ $t('buttons.save') }}</span></button>
-            </div>
+          <textarea v-model="convo.name.edit" class="textarea flex1"></textarea>
+          <div class="textarea--btns flex row">
+            <button class="btn btn--txt btn--txt__cancel" @click="cancelEditTitle()"><span class="label">{{ $t('buttons.cancel') }}</span></button>
+            <button class="btn btn--txt btn--txt__save" @click="update('name')"><span class="label">{{ $t('buttons.save') }}</span></button>
+          </div>
         </div>
         <button class="btn--icon" :class="titleEdit ? 'active': ''" @click="editTitle()" v-if="userAccess.canEdit">
           <span class="icon icon--edit"></span>
@@ -250,6 +250,7 @@
                 </tr>
               </tbody>
             </table>
+            
             <button class="btn btn--txt-icon green" @click="addSpeaker()" v-if="userAccess.canEdit">
               <span class="label">{{ $t('buttons.new_speaker') }}</span>
               <span class="icon icon__plus"></span>
@@ -378,6 +379,13 @@ export default {
         return this.convo.sharedWith.filter(usr => usr.rights === 1)
       }
       return []
+    },
+    isSharable () {
+      // Check if number of available users (to share with) > 0
+      let nbUsers = this.allUsers.length
+      let nbSharedWith = this.sharedWithEditers.length + this.sharedWithReaders.length
+      let nbAvailableUsers = nbUsers - nbSharedWith - 1
+      return nbAvailableUsers > 0 ? true : false
     },
     userAccess () {
       return this.$store.getters.getUserRightsByConversation(this.convoId)

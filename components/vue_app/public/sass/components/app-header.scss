@@ -46,8 +46,8 @@
 .user-menu {
     position: relative;
     .user-menu-btn {
-        display: inline-block;
         height: 40px;
+        min-width: 160px;
         @include borderRadius(20px);
         background-color: #fff;
         vertical-align: top;
@@ -70,6 +70,8 @@
             font-weight: 700;
             vertical-align: top;
             padding-left: 10px;
+            max-width: 300px;
+            overflow: hidden;
         }
         .user-menu-btn--arrow {
             display: inline-block;
@@ -118,6 +120,7 @@
             margin: 0 10px;
             height: 20px;
             text-decoration: none;
+            white-space: nowrap;
             .label {
                 font-size: 14px;
                 font-weight: 600;

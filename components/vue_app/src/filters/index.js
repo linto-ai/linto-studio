@@ -225,6 +225,7 @@ Vue.filter('testName', function(obj) {
     const regex = /^[a-zA-ZÀ-ÿ]+(([' -][a-zA-ZÀ-ÿ ])?[a-zA-ZÀ-ÿ]*)*$/g
     obj.valid = false
     obj.error = null
+    obj.value = obj.value.trim()
     if (obj.value.length === 0) {
         obj.error = 'This field is required'
     } else if (obj.value.match(regex)) {
@@ -238,6 +239,7 @@ Vue.filter('testName', function(obj) {
 Vue.filter('testPassword', function(obj) {
     obj.valid = false
     obj.error = null
+    obj.value = obj.value.trim()
     const regex = /^[0-9A-Za-z\!\@\#\$\%\-\_\s]{4,}$/ // alphanumeric + special chars "!","@","#","$","%","-","_"
     if (obj.value.length === 0) {
         obj.error = 'This field is required'
@@ -254,6 +256,7 @@ Vue.filter('testPassword', function(obj) {
 Vue.filter('testPasswordConfirm', function(obj, password) {
     obj.valid = false
     obj.error = null
+    obj.value = obj.value.trim()
     if (obj.value.length === 0) {
         obj.error = 'This field is required'
     } else {
@@ -269,7 +272,7 @@ Vue.filter('testPasswordConfirm', function(obj, password) {
 Vue.filter('testEmail', function(obj) {
     obj.valid = false
     obj.error = null
-    obj.value = obj.value.toLowerCase()
+    obj.value = obj.value.toLowerCase().trim()
     const regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
     if (obj.value.match(regex)) {
         obj.valid = true

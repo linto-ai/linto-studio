@@ -10,7 +10,7 @@
       <div class="modal--body">
         <p v-html="$t('modals.share_with.content_html')"></p>
         <div class="flex col">
-          <table class="share-with-list" v-if="!!userListOptions && userListOptions.length > 0">
+          <table class="share-with-list" v-if="userListOptions.length > 0">
             <thead>
               <tr>
                 <th>Select</th>
@@ -25,7 +25,7 @@
                 :class="user.selected ? 'selected' : ''"
               >
                 <td>
-                  <button class="custom-checkbox" :class="user.selected ? 'selected' :''" @click="updateUserSelected(user)"></button>
+                  <button class="custom-checkbox" :class="user.selected === true ? 'selected' : ''" @click="updateUserSelected(user)"></button>
                 </td>
                 <td class="img"><img :src="imgPath(user.img)" class="share-with-list-img"></td>
                 <td>{{CapitalizeFirstLetter(user.firstname)}} {{CapitalizeFirstLetter(user.lastname)}}</td>
@@ -54,17 +54,21 @@
 <script>
 import { bus } from '../main.js'
 export default {
-  props: ['convoId'],
   data () {
     return {
       modalShow: false,
       usersLoaded: false,
-      userListOptions: []
+      userInfosLoaded: false,
+      userListOptions: [],
+      sharedWith: []
     }
   },
   async mounted () {
     await this.dispatchUsers()
+    await this.dispatchUserInfos()
+    this.setUserListOptions()
     bus.$on('modal_share_with', async (data) => {
+      this.sharedWith = data.sharedWith
       this.showModal()
     })
 
@@ -76,15 +80,22 @@ export default {
     })
   },
   computed: {
-   dataLoaded () {
-     return this.usersLoaded
-   },
-   appUsers () {
-     return this.$store.getters.allUsers()
-   }
+    dataLoaded () {
+      return this.usersLoaded
+    },
+    appUsers () {
+      return this.$store.getters.allUsers()
+    },
+    currentUser () {
+      return this.$store.state.userInfo
+    },
+    usersToShareWith () {
+      return this.appUsers.filter(user => this.currentUser._id !== user._id)
+    }
   },
-  watch: {
-    appUsers (data) {
+  methods: {
+    setUserListOptions () {
+      let data = this.usersToShareWith
       if (data.length > 0) {
         for(let user of data) {
           if(this.userListOptions.findIndex(usr => usr.email === user.email) >= 0) {
@@ -99,9 +110,7 @@ export default {
           }
         }
       }
-    }
-  },
-  methods: {
+    },
     async showModal () {
       this.modalShow = true
     },
@@ -124,9 +133,8 @@ export default {
       }
     },
     updateUserSelected (user) {
-      
       let index = this.userListOptions.findIndex(usr => usr._id === user._id)
-      if (index >=0) {
+      if (index >= 0) {
         this.userListOptions[index].selected = !this.userListOptions[index].selected
       }
     },
@@ -145,6 +153,17 @@ export default {
       } catch (error) {
         console.error(error)
         this.usersLoaded = false
+      }
+    },
+    async dispatchUserInfos () {
+      try {
+        const resp = await this.$options.filters.dispatchStore('getuserInfo')
+        if (resp.status === 'success') {
+          this.userInfosLoaded = true
+        }
+      } catch (error) {
+        console.error(error)
+        this.userInfosLoaded = false
       }
     },
     imgPath(url) {
