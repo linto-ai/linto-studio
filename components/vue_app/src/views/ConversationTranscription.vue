@@ -267,7 +267,7 @@ export default {
           bus.$emit('scroll_to_turn', {})
         }
         this.refreshing = false
-      }, 300)
+      }, 500)
     })
 
     // Update audio current time

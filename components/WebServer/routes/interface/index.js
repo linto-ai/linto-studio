@@ -19,7 +19,6 @@ module.exports = (webServer) => {
             requireSession: true,
             controller: [
                 (req, res, next) => {
-                    console.log('Passe Par create ? ')
                     res.setHeader("Content-Type", "text/html")
                     res.sendFile(process.cwd() + '/dist/index.html')
                 }

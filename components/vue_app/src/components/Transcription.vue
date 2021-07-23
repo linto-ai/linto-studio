@@ -1,6 +1,6 @@
 <template>
   <div id="transcription" :class="editionMode ? 'editing' : ''">
-    <table class="table table--transcription">
+    <table class="table table--transcription" :key="refresh">
       <tr 
         v-for="(turn,i) in convoTextCustom" 
         :key="i" 
@@ -104,7 +104,7 @@ export default {
     })
     bus.$on('transcription_bind_enter', () => {
       if(window.editionMode === true) {
-        setTimeout(()=>{this.createTurn()}, 300)
+        setTimeout(()=>{this.createTurn()}, 500)
       }
     })
     bus.$on('filter_update', (data) => {
@@ -126,9 +126,9 @@ export default {
     createTurn() {
       if(document.activeElement.classList.contains('transcription-speaker-sentence')) {
         this.formatBeforeCreateTurn()
-        setTimeout(()=>{
+        setTimeout(() => {
           this.createTurnProcess()
-        }, 1000)
+        }, 500)
       }
       return 
     },
@@ -328,6 +328,7 @@ export default {
           turnIndex++
         }
         this.convoTextCustom = textPayload
+        this.refresh++
     },
     // Get Highlights and Keywords by id
     getHlAndKwByWordId (wordId) {

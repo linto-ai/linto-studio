@@ -32,8 +32,8 @@
           <tr>
           </tr>
           <tr v-for="convo in filteredConversations" :key="convo._id" @click="redirectConversationPage(convo._id)" class="clickable">
-            <td class="title">{{ convo.name }}</td>
-            <td>{{ convo.description }}</td>
+            <td class="title">{{ convo.name.length > 40 ? convo.name.substring(0, 40) + '...' : convo.name }}</td>
+            <td>{{ convo.description.length > 60 ? convo.description.substring(0, 60) + '...' : convo.description }}</td>
             <td>{{ dateToJMY(convo.created) }}</td>
             <td>{{ secToHMS(convo.audio.duration) }}</td>
             <td>

@@ -1,3 +1,4 @@
+      
 <template>
   <div class="flex row no-padding-left" v-if="dataLoaded">
     <!-- LEFT PART -->
@@ -517,12 +518,12 @@ export default {
         if (key === 'name') {
           this.titleEdit = false
           // REQUEST UPDATE title
-          payload.title = this.conversation[key].edit
+          payload.title = this.conversation[key].edit.trim()
           uriKey = 'title'
         }
         if (key === 'description') {
           this.descriptionEdit = false
-          payload.description = this.conversation[key].edit
+          payload.description = this.conversation[key].edit.trim()
           uriKey = 'description'
           // REQUEST UPDATE title
         }
@@ -579,7 +580,6 @@ export default {
       this.audioPlayer.play()
       target.classList.add('active')
       const time = end - start
-
       setTimeout(()=> {
         this.audioPlayer.pause()
         target.classList.remove('active')
@@ -588,7 +588,6 @@ export default {
 
     /*** EDIT SPEAKERS ***/
     editSpeaker (event, speaker) {
-      
       const btn = event.target
       const bounce = btn.getBoundingClientRect()
       const editSpeakerFrame = document.getElementById('edit-speaker-frame')

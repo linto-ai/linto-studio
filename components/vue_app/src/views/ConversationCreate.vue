@@ -216,14 +216,7 @@ export default {
       
     },
     testConversationName () {
-      this.conversationName.valid = false
-      this.conversationName.error = null
-        
-      if (this.conversationName.value === '') {
-        this.conversationName.error = 'This field is required'
-      } else {
-        this.conversationName.valid = true
-      }
+      return this.$options.filters.testName(this.conversationName)
     },
     async dispatchUsersInfo () {
       try {
