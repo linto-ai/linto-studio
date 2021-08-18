@@ -111,6 +111,9 @@ export default {
       this.convoTextCustom = data.convoText
     })
 
+    bus.$on('convotext_update', (data) => {
+      this.convoTextCustom = data.convoText
+    })
   },
   watch: {
     currentTurn (data) {

@@ -59,6 +59,7 @@
     "buttons": {
         "apply": "Apply",
         "cancel": "Cancel",
+        "close": "Close",
         "conversation_landing": "Conversation landing",
         "create_highlight": "Create Highlight",
         "create_conversation": "Create conversation",

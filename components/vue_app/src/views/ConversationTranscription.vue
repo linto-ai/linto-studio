@@ -71,7 +71,7 @@
           <div class="flex row flex1 edition__btns" v-if="!userAccess.readOnly">
             <span class="edition__btns-label">{{ $t('page.conversation_transcription.edition_mode') }} : </span>
             <button 
-              @click="editionMode === true ? cancelEditionMode() : editionMode = true"
+              @click="editionMode === true ? cancelEditionText() : editionMode = true"
               :class="editionMode ? 'enabled' : 'disabled'"
               class="edition__btn-toggle"
             >
@@ -79,14 +79,14 @@
             </button>
             <button 
               v-if="editionMode" 
-              @click="cancelEditionMode()" 
+              @click="cancelEditionModal()" 
               class="btn--icon btn--icon__cancel-edition grey"
             >
               <span class="icon icon--cancel"></span>
             </button>
             <button 
               v-if="editionMode" 
-              @click="validateEdition()" 
+              @click="applyEditionModal()" 
               class="btn--icon btn--icon__apply-edition"
             >
               <span class="icon icon--apply"></span>
@@ -164,7 +164,7 @@
       <ModalMergeSentences></ModalMergeSentences>
       <ModalSplitTurns></ModalSplitTurns>
       <ModalMergeSpeakersWithTarget :convoId="convoId"></ModalMergeSpeakersWithTarget>
-
+      <ModalEditConversationText></ModalEditConversationText>
     </div>
     <div class="flex row">
       <!-- AUDIO PLAYER -->
@@ -192,6 +192,7 @@ import Transcription from '@/components/Transcription.vue'
 import TranscriptionKeyupHandler from '@/components/TranscriptionKeyupHandler.vue'
 import KeyboardCommandsFrame from '@/components/KeyboardCommandsFrame.vue'
 import ModalMergeSpeakersWithTarget from '@/components/ModalMergeSpeakersWithTarget.vue'
+import ModalEditConversationText from '@/components/ModalEditConversationText.vue'
 
 import _ from 'lodash'
 import { bus } from '../main.js'
@@ -274,6 +275,14 @@ export default {
     bus.$on('audio_player_currenttime', (data) => {
       this.currentTime = data.time
     })
+  
+  
+    bus.$on('edit_conversation_apply_changes', (data) => {
+      this.applyEditionText()
+    })
+    bus.$on('edit_conversation_cancel_changes', (data) => {
+      this.cancelEditionText()
+    })
 
     window.editionMode = this.editionMode
   },
@@ -300,40 +309,7 @@ export default {
       return 0
     },
     convoText () { // Return conversation text filtered by speakers, highlights and keywords
-      let convoText = this.convo.text
-      // Filter by speaker
-      if (this.convoFilter.speaker !== '') {
-        convoText = convoText.filter(turn => turn.speaker_id === this.convoFilter.speaker)
-      }
-      // Filter by highlights
-      if(this.convoFilter.highlights !== '') {
-        let convoTextHl = []
-        convoText.map(turn => {
-          if(!!turn.words && turn.words.length > 0) {
-            turn.words.map(word => {
-              if (word.highlights.indexOf(this.convoFilter.highlights) >= 0 && convoTextHl.indexOf(turn) < 0) {
-                convoTextHl.push(turn)
-              }
-            })
-          }
-        })
-        convoText = convoTextHl
-      }
-      // Filter by keywords
-      if(this.convoFilter.keywords !== '') {
-        let convoTextKw = []
-        convoText.map(turn => {
-          if(!!turn.words && turn.words.length > 0) {
-            turn.words.map(word => {
-              if (word.keywords.indexOf(this.convoFilter.keywords) >= 0 && convoTextKw.indexOf(turn) < 0) {
-                convoTextKw.push(turn)
-              }
-            })
-          }
-        })
-        convoText = convoTextKw
-      }
-      return convoText
+      return this.buildConvoTextObject()
     },
     convoIsFiltered () {
       return (this.convoFilter.speaker !== '' || this.convoFilter.highlights !== '' || this.convoFilter.keywords !== '' )
@@ -517,14 +493,24 @@ export default {
     },
 
     /*** EDITION MODE ***/
-
-    // Cancel edition mode
-    async cancelEditionMode () {
-      await this.dispatchConversations()
-      bus.$emit('refresh_conversation', {})
-      this.editionMode = false
+    
+    // Cancel edition modal
+    cancelEditionModal () {
+      bus.$emit('edit_conversation_modal', {status: 'cancel_changes'})
     },
-    async validateEdition() {
+    // Apply edition modal
+    applyEditionModal () {
+      bus.$emit('edit_conversation_modal', {status: 'valid_changes'})
+    },
+    // Cancel edition text
+    async cancelEditionText () {
+      this.refreshing = true
+      this.editionMode = false
+      bus.$emit('refresh_conversation', {})
+      bus.$emit('convotext_update', {})
+    },
+    // Apply edition text
+    async applyEditionText() {
       try {
         this.refreshing = true
         this.editionMode = false
@@ -602,6 +588,43 @@ export default {
       
       return textPayload
     },
+    buildConvoTextObject () {
+      let convo = this.convo
+      let convoText = convo.text
+      // Filter by speaker
+      if (this.convoFilter.speaker !== '') {
+        convoText = convoText.filter(turn => turn.speaker_id === this.convoFilter.speaker)
+      }
+      // Filter by highlights
+      if(this.convoFilter.highlights !== '') {
+        let convoTextHl = []
+        convoText.map(turn => {
+          if(!!turn.words && turn.words.length > 0) {
+            turn.words.map(word => {
+              if (word.highlights.indexOf(this.convoFilter.highlights) >= 0 && convoTextHl.indexOf(turn) < 0) {
+                convoTextHl.push(turn)
+              }
+            })
+          }
+        })
+        convoText = convoTextHl
+      }
+      // Filter by keywords
+      if(this.convoFilter.keywords !== '') {
+        let convoTextKw = []
+        convoText.map(turn => {
+          if(!!turn.words && turn.words.length > 0) {
+            turn.words.map(word => {
+              if (word.keywords.indexOf(this.convoFilter.keywords) >= 0 && convoTextKw.indexOf(turn) < 0) {
+                convoTextKw.push(turn)
+              }
+            })
+          }
+        })
+        convoText = convoTextKw
+      }
+      return convoText
+    },
     // Get Highlights and Keywords by id
     getHlAndKwByWordId (wordId) {
       let options = {
@@ -651,7 +674,8 @@ export default {
     Transcription,
     TranscriptionKeyupHandler,
     KeyboardCommandsFrame,
-    ModalMergeSpeakersWithTarget
+    ModalMergeSpeakersWithTarget,
+    ModalEditConversationText
   }
 }
 </script>

@@ -59,6 +59,7 @@
     "buttons": {
         "apply": "Valider",
         "cancel": "Annuler",
+        "close": "Fermer",
         "conversation_landing": "Vue d'ensemble",
         "create_highlight": "Créer étiquette",
         "create_conversation": "Créer conversation",
