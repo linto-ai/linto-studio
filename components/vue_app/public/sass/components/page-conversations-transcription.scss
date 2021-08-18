@@ -46,6 +46,10 @@
         &.transcription--speaker {
             text-align: right;
         }
+        &.transcription--play-turn {
+            width: 20px;
+            text-align: center;
+        }
         &.transcription--turn,
         &.transcription--speaker {
             .label {
@@ -99,6 +103,25 @@
         text-decoration: underline;
         font-weight: 700;
         color: $blueChart;
+    }
+}
+
+.transcription--play-turn {
+    padding: 20px 10;
+    .play-turn-btn {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        @include maskImage('../img/play.svg');
+        background-color: $blueLight;
+        @include noTextSelection();
+        &:hover {
+            @include maskImage('../img/play-hover.svg');
+        }
+        &:active {
+            @include maskImage('../img/play-hover.svg');
+            background: $blueChart;
+        }
     }
 }
 

@@ -18,11 +18,11 @@
         </button>
         <button v-if="status === 'valid_changes'" class="btn btn--txt-icon green" @click="applyChanges()">
           <span class="label">Apply changes</span>
-          <span class="icon icon__cancel"></span>
+          <span class="icon icon__apply"></span>
         </button>
         <button v-if="status === 'cancel_changes'" class="btn btn--txt-icon red" @click="cancelChanges()">
           <span class="label">Cancel changes</span>
-          <span class="icon icon__cancel"></span>
+          <span class="icon icon__undo"></span>
         </button>
       </div>
     </div>

@@ -20,11 +20,17 @@
     display: inline-block;
     border: none;
     @include cancelBoxShadow;
+    min-width: 30px;
+    min-height: 30px;
     margin: 0 10px;
+    &:before {
+        display: none !important;
+    }
     .icon {
         display: inline-block;
         background-color: rgba(255, 255, 255, 0.8);
         vertical-align: top;
+        margin: 0;
         &.prevspeaker {
             width: 30px;
             height: 30px;
@@ -54,12 +60,13 @@
             width: 40px;
             height: 40px;
             @include maskImage('../img/pause.svg');
+            margin-top: -5px;
         }
         &.play {
             width: 40px;
             height: 40px;
             @include maskImage('../img/play.svg');
-            margin-top: -10px;
+            margin-top: -5px;
         }
     }
     &:hover {

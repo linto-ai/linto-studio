@@ -12,6 +12,7 @@
         :id="`turn-${turn.pos}`"
       >
         <td class="transcription--turn"><span class="label">{{ turn.pos }}</span></td>
+        <td class="transcription--play-turn"><button class="play-turn-btn" @click="playFromTurnStart(turn)"></button></td>
         <td class="transcription--speaker">
           <div class="table-speaker--edit">
             <button class="btn--inline btn--inline-transcription-speaker" @click="editSpeaker($event, speakersArray[speakersArray.findIndex(sp => sp.speaker_id === turn.speaker_id)], turn.turn_id)">
@@ -80,9 +81,10 @@ export default {
     bus.$on('clear_text_selection', () => {
       this.cancelTextSelection()
     })
-    bus.$on('update_speaker', async (data) => {
+    /*bus.$on('update_speaker', async (data) => {
       this.speakerEdit = false
-    })
+    })*/
+    
     bus.$on('scroll_to_turn', (data) => {
       if(!!data.turnPos) {
         this.scrollToTurn(data.turnPos)
@@ -122,6 +124,7 @@ export default {
     }
   },
   methods: {
+  
     updateConvoFilters () {
       this.convoTextCustom = this.convoText
     },
@@ -615,20 +618,17 @@ export default {
     
     // Edit Speaker
     editSpeaker (event, speaker, turnId) {
-      if (!this.speakerEdit) {
-        const btn = event.target
-        const bounce = btn.getBoundingClientRect()
-        const EditSpeakerTranscriptionFrame = document.getElementById('edit-speaker-frame')
-        EditSpeakerTranscriptionFrame.setAttribute('style',`top: ${bounce.y > 500 ? 500 : bounce.y -100}px; left: ${bounce.x - 60}px`)
-        const target = event.target
-        target.classList.add('active')
-        bus.$emit(`edit_speaker_transcription`, {
-          speaker, 
-          conversationId: this.convoId, 
-          turnId
-        })
-        this.speakerEdit = true
-      }
+      const btn = event.target
+      const bounce = btn.getBoundingClientRect()
+      const EditSpeakerTranscriptionFrame = document.getElementById('edit-speaker-frame')
+      EditSpeakerTranscriptionFrame.setAttribute('style',`top: ${bounce.y > 500 ? 500 : bounce.y -100}px; left: ${bounce.x - 60}px`)
+      const target = event.target
+      target.classList.add('active')
+      bus.$emit(`edit_speaker_transcription`, {
+        speaker, 
+        conversationId: this.convoId, 
+        turnId
+      })
     },
     
     /*** SCROLL TO ***/
@@ -648,7 +648,11 @@ export default {
     },
 
     /*** AUDIO PLAYER EVENTS ***/
-    
+    // Audio player: play a turn from start
+    playFromTurnStart (turn) {
+      let stime = turn.words[0].stime
+      bus.$emit('audio_player_playfrom', {time: stime})
+    },
     // Audio player: play from a word
     playFromWord (stime) {
       if(window.editionMode === false) {

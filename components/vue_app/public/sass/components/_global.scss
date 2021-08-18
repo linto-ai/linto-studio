@@ -139,6 +139,9 @@ a {
                 &.icon__share {
                     @include maskImage('../img/hand-shake.svg');
                 }
+                &.icon__undo {
+                    @include maskImage('../img/lastupdate.svg');
+                }
                 &.icon__loading {
                     @include maskImage('../img/loading.svg');
                     @include rotate();

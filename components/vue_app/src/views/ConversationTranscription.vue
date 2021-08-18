@@ -71,7 +71,7 @@
           <div class="flex row flex1 edition__btns" v-if="!userAccess.readOnly">
             <span class="edition__btns-label">{{ $t('page.conversation_transcription.edition_mode') }} : </span>
             <button 
-              @click="editionMode === true ? cancelEditionText() : editionMode = true"
+              @click="editionMode === true ? cancelEditionModal() : editionMode = true"
               :class="editionMode ? 'enabled' : 'disabled'"
               class="edition__btn-toggle"
             >
@@ -233,12 +233,14 @@ export default {
     
     // Close navigation menu
     bus.$emit('vertical_nav_close', {}) 
-    
+
+    // Update Speaker
     bus.$on('update_speaker', async (data) => {
       await this.dispatchConversations()
       this.refreshHighlights()
     })
-    
+
+  // Show highlights
     bus.$on('show_highlight', (data) => {
         let hid = data.hid
         let targetHl = this.highlightsOptions.find(hl => hl.hid === hid)
@@ -276,10 +278,12 @@ export default {
       this.currentTime = data.time
     })
   
-  
+    // Apply text edition changes 
     bus.$on('edit_conversation_apply_changes', (data) => {
       this.applyEditionText()
     })
+
+    // Cancel text edition changes 
     bus.$on('edit_conversation_cancel_changes', (data) => {
       this.cancelEditionText()
     })
@@ -342,7 +346,8 @@ export default {
         bus.$emit('enable_text_selection', {})
       }
     },
-    'convo.keywords' (data) { // Build keywordsOptions object
+    // Build keywordsOptions object
+    'convo.keywords' (data) { 
       if (data.length > 0) {
         data.map(kw => {
           if (this.keywordsOptions.findIndex(kwo => kwo.kid === kw.kid) >= 0) {
@@ -367,7 +372,8 @@ export default {
         }
       }
     },
-    'convo.highlights' (data) { // Build highlightsOptions object
+    // Build highlightsOptions object
+    'convo.highlights' (data) { 
       if (data.length > 0) {
         data.map(hl => {
           if (this.highlightsOptions.findIndex(allhl => allhl.hid === hl.hid) >= 0) {
