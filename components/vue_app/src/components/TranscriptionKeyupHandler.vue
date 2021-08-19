@@ -15,7 +15,17 @@ export default {
     initKeyupHandler() {
       document.addEventListener("keydown", function(event) {
         const activeElement = document.activeElement.tagName
-        //console.log(window.keyupEnabled)
+        //console.log(event)
+
+
+        // Backspace
+        if(event.code === 'Backspace' || event.keyCode === 8) {
+          // Press backspace on first word of a turn on edition mode > merge with previous turn
+          if(window.editionMode === true && activeElement === 'TD') {
+            console.log('BACKSPACE')
+            bus.$emit('transcription_bind_backspace', {})
+          } 
+        }
         
         // Enter
         if(event.code === 'Enter' || event.keyCode === 13) {

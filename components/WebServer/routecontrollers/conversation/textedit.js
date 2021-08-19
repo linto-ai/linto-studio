@@ -127,11 +127,12 @@ async function replaceFullText(req, res, next) {
             throw 'Missing informations'
         }
         const convoid = req.params.conversationid
-        let text = req.body.text
-            // text = fullObject [{turn}, {turn}...]
+        let text = req.body.text // fullObject [{turn}, {turn}...]
+        console.log(text)
         if (text.length > 0) {
             for (let turn of text) {
-                // Create turn if turn(s) have been added
+                let index = 0
+                    // Create turn if turn(s) have been added
                 if (turn.turn_id === 'todefine') {
                     let createTurnPayload = turn
                     createTurnPayload.pos -= 0.5
@@ -140,14 +141,25 @@ async function replaceFullText(req, res, next) {
                     createTurnPayload.speakerid = turn.speaker_id
                     await convoModel.createTurn(createTurnPayload)
                 }
+                if (turn.pos === -1) {
+                    console.log('to splice', turn)
+                    let deleteturn = await convoModel.deleteTurns({
+                        convoid,
+                        turnids: [turn.turn_id]
+                    })
+                    console.log('deleteturn', deleteturn)
+                }
+                index++
+
             }
+
             // Renumber turns
             await convoModel.renumberTurns(convoid)
 
             // Get current object in database
             let currentObj = await convoModel.getConvoById(convoid)
-
-            // get "turn_id" by "pos" for each turns
+            console.log('CurrentOBj >', currentObj[0].text)
+                // get "turn_id" by "pos" for each turns
             let turnPosId = []
             if (currentObj.length > 0) {
                 currentObj[0].text.map(t => {

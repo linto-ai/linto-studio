@@ -7,9 +7,10 @@
         :data-stime="turn.words.length > 0 ? turn.words[0].stime : '-1' "  
         :data-etime="turn.words.length > 0 ? turn.words[turn.words.length - 1].etime : '-1'"
         :data-turn="turn.pos"
-        :class="[!editionMode && currentTurn === turn.pos ? 'active active--speaker' : '', editionMode ? 'editing':'']"
+        :class="[!editionMode && currentTurn === turn.pos ? 'active active--speaker' : '', editionMode ? 'editing':'', turn.pos === -1 ? 'hidden': '']"
         class="table-speaker--turn"
         :id="`turn-${turn.pos}`"
+        :data-turn-id="turn.turn_id"
       >
         <td class="transcription--turn"><span class="label">{{ turn.pos }}</span></td>
         <td class="transcription--play-turn"><button class="play-turn-btn" @click="playFromTurnStart(turn)"></button></td>
@@ -22,7 +23,7 @@
         </td>
         <td 
           class="transcription-speaker-sentence" 
-          v-if="!!turn.words && turn.words.length > 0" 
+          v-if="!!turn.words && turn.words.length > 0"  
           :data-key="turn.turn_id" 
           :data-turn-id="turn.turn_id"
           :data-pos="turn.pos"
@@ -109,6 +110,11 @@ export default {
         setTimeout(()=>{this.createTurn()}, 500)
       }
     })
+    bus.$on('transcription_bind_backspace', () => {
+      if(window.editionMode === true) {
+          this.mergeTurnsBackspace()
+      }
+    })
     bus.$on('filter_update', (data) => {
       this.convoTextCustom = data.convoText
     })
@@ -124,7 +130,75 @@ export default {
     }
   },
   methods: {
-  
+    mergeTurnsBackspace () {
+      if(document.activeElement.classList.contains('transcription-speaker-sentence')) {
+        const selection = document.getSelection()
+        let element = selection.focusNode.parentElement.parentElement // turn
+        let turnpos = element.getAttribute('data-pos')
+        let doc = element.ownerDocument || element.document;
+        let win = doc.defaultView || doc.parentWindow;
+        let sel
+        let caretOffset = 0
+        if (typeof win.getSelection != "undefined") {
+          sel = win.getSelection()
+          if (sel.rangeCount > 0) {
+            let range = sel.getRangeAt(0)
+            let preCaretRange = range.cloneRange()
+            preCaretRange.selectNodeContents(element)
+            preCaretRange.setEnd(range.endContainer, range.endOffset)
+            caretOffset = preCaretRange.toString().length
+            if(caretOffset === 0 && parseInt(turnpos) !== 0) {
+              this.mergePreviousTurn(turnpos)
+            }
+
+          }
+        }
+        
+        /* else if ( (sel = doc.selection) && sel.type != "Control") {
+            var textRange = sel.createRange();
+            var preCaretTextRange = doc.body.createTextRange();
+            preCaretTextRange.moveToElementText(element);
+            preCaretTextRange.setEndPoint("EndToEnd", textRange);
+            caretOffset = preCaretTextRange.text.length;
+        }*/
+      }
+    },
+    mergePreviousTurn (turnpos) {
+      console.log('turnpos', turnpos)
+      
+      let textObj = this.convoTextCustom
+      let newTextObj = []      
+      for(let turn of textObj) {
+        // Turns before merging
+        if(parseInt(turn.pos) < parseInt(turnpos) - 1) {
+          newTextObj.push(turn)
+        }
+        // Current turn to be merged
+        else if(parseInt(turn.pos) === parseInt(turnpos) - 1 ){
+          let currentTurn = textObj[parseInt(turnpos) - 1]
+          console.log(currentTurn)
+          let targetTurn = textObj[turnpos]
+          let lastWordPos = currentTurn.words.length - 1
+          for(let i = 0; i < targetTurn.words.length; i++){
+            targetTurn.words[i].pos = lastWordPos + 1
+            currentTurn.words.push(targetTurn.words[i])
+            lastWordPos++
+          }
+          newTextObj.push(currentTurn)
+        } 
+        else if(parseInt(turn.pos) === parseInt(turnpos)) {
+          console.log('toremove', turn)
+          turn.pos = -1
+          newTextObj.push(turn)
+        }
+        else if(parseInt(turn.pos) > parseInt(turnpos)) {
+         turn.pos-- 
+          newTextObj.push(turn)
+        }
+      }
+      console.log(newTextObj)
+      this.convoTextCustom = newTextObj
+    },
     updateConvoFilters () {
       this.convoTextCustom = this.convoText
     },

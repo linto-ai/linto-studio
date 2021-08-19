@@ -535,6 +535,7 @@ export default {
     // build text object for transcription update
     buildTextObject () {
       const allTurns = document.getElementsByClassName('transcription-speaker-sentence')
+      console.log('allturns', allTurns)
       let textPayload = []
       for(let turn of allTurns) {
         let turnPayload = {
@@ -591,7 +592,7 @@ export default {
         }
         textPayload.push(turnPayload)
       }
-      
+      console.log('Sended object', textPayload)
       return textPayload
     },
     buildConvoTextObject () {

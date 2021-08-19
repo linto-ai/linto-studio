@@ -268,7 +268,7 @@ async function updateSpeakerMap(req, res, next) {
                         newspeakermap: newspeakermap
                     }
 
-                    console.log(payload)
+                    //console.log(payload)
 
                     let updateMap = await convoModel.updateSpeakerMap(payload)
 

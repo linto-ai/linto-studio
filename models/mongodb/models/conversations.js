@@ -341,6 +341,7 @@ class ConvoModel extends MongoModel {
     //delete turn in a conversation
     async deleteTurns(payload) {
         //takes a convo id and a *list* of turn_ids
+        console.log('Delete model', payload)
         try {
             const operator = "$pull"
             const query = {
