@@ -39,8 +39,7 @@
         type="range" 
         class="audio-player--timeline__input" 
         id="audio-timeline"
-        @click="playFromTimeLine($event)" 
-        @change="playFromTimeLine($event)" 
+        @click="playFromTimeLine($event, 'click')" 
         @input="updateTimeline($event)"
       />
       <span class="audio-player--timeline__played" :style="`width: ${prctTimelineSelected}%`"></span>
@@ -125,7 +124,6 @@ export default {
       const timeline = document.getElementById('audio-timeline')
         timeline.onmousemove = (el) => {
           this.showTimeHover = true
-          const val = el.srcElement.value
           let TLWidth = el.srcElement.clientWidth
           let posX = el.layerX
           let prctPos = posX * 100 / TLWidth
@@ -189,10 +187,13 @@ export default {
       }, 100)
     },
     // Play from Timeline
-    playFromTimeLine (e) {
-      const val = e.srcElement.value
-      const targetTime = parseInt(val * this.duration / 100)
-      this.playFrom(targetTime)
+    playFromTimeLine (el) {
+        let TLWidth = el.srcElement.clientWidth
+        let posX = el.layerX
+        let prctPos = posX * 100 / TLWidth
+        const targetTime = this.duration * (prctPos / 100)
+        this.timeHover = targetTime
+        this.playFrom(targetTime)
     },
     // Update current Time + play segments if conversation is filtered
     updateTime () {
