@@ -150,33 +150,21 @@ export default {
             if(caretOffset === 0 && parseInt(turnpos) !== 0) {
               this.mergePreviousTurn(turnpos)
             }
-
           }
         }
-        
-        /* else if ( (sel = doc.selection) && sel.type != "Control") {
-            var textRange = sel.createRange();
-            var preCaretTextRange = doc.body.createTextRange();
-            preCaretTextRange.moveToElementText(element);
-            preCaretTextRange.setEndPoint("EndToEnd", textRange);
-            caretOffset = preCaretTextRange.text.length;
-        }*/
       }
     },
     mergePreviousTurn (turnpos) {
-      console.log('turnpos', turnpos)
-      
       let textObj = this.convoTextCustom
-      let newTextObj = []      
+      let newTextObj = []
       for(let turn of textObj) {
         // Turns before merging
-        if(parseInt(turn.pos) < parseInt(turnpos) - 1) {
+        if(parseInt(turn.pos) >= 0 && parseInt(turn.pos) < parseInt(turnpos) - 1) {
           newTextObj.push(turn)
         }
         // Current turn to be merged
-        else if(parseInt(turn.pos) === parseInt(turnpos) - 1 ){
+        else if(parseInt(turn.pos) >= 0 && parseInt(turn.pos) === parseInt(turnpos) - 1 ){
           let currentTurn = textObj[parseInt(turnpos) - 1]
-          console.log(currentTurn)
           let targetTurn = textObj[turnpos]
           let lastWordPos = currentTurn.words.length - 1
           for(let i = 0; i < targetTurn.words.length; i++){
@@ -186,17 +174,17 @@ export default {
           }
           newTextObj.push(currentTurn)
         } 
-        else if(parseInt(turn.pos) === parseInt(turnpos)) {
-          console.log('toremove', turn)
+        else if(parseInt(turn.pos) >= 0 && parseInt(turn.pos) === parseInt(turnpos)) {
           turn.pos = -1
           newTextObj.push(turn)
         }
-        else if(parseInt(turn.pos) > parseInt(turnpos)) {
-         turn.pos-- 
+        else if(parseInt(turn.pos) >= parseInt(turnpos)) {
+          turn.pos-- 
+          newTextObj.push(turn)
+        } else {
           newTextObj.push(turn)
         }
       }
-      console.log(newTextObj)
       this.convoTextCustom = newTextObj
     },
     updateConvoFilters () {
@@ -246,26 +234,55 @@ export default {
     },
     createTurnProcess() {
       const turns = document.getElementsByClassName('transcription-speaker-sentence')
-       let textPayload = []
-        let turnIndex = 0
-        for(let i = 0; i < turns.length; i++) { // TURNS
-          let turn = turns[i]
-          let words = turn.childNodes
-          let realWordPos = 0
-          let turnPayload = {
-            speaker_id: turn.getAttribute('data-speaker'),
-            turn_id: turn.getAttribute('data-turn-id'),
-            pos: turnIndex,
-            words: []
-          }
-          for(let j = 0; j < words.length; j++) { // WORDS
-            let word = words[j]
-            let wordVal = word.innerHTML.replace(/&nbsp;/g,"",' ').trim()
-            // Turn have to be splited (line return) 
-            // Create new Turn 
-            if(wordVal.indexOf('<br>') >= 0) {
-              let splitBr = wordVal.split('<br>')
-              let wordValue = ""
+      let textPayload = []
+      let turnIndex = 0
+      for(let i = 0; i < turns.length; i++) { // TURNS
+        let turn = turns[i]
+        let words = turn.childNodes
+        let nbWords = words.length
+        let realWordPos = 0
+        let turnPayload = {
+          speaker_id: turn.getAttribute('data-speaker'),
+          turn_id: turn.getAttribute('data-turn-id'),
+          pos: turnIndex,
+          words: []
+        }
+        for(let j = 0; j < words.length; j++) { // WORDS
+          let word = words[j]
+          let wordVal = word.innerHTML.replace(/&nbsp;/g,"",' ').trim()
+          
+          // Turn have to be splited (line return) 
+          // Create new Turn 
+          if(wordVal.indexOf('<br>') >= 0) {
+            let splitBr = wordVal.split('<br>')
+            let wordValue = ""
+
+            // Last word of the turn
+            if(parseInt(nbWords) === parseInt(word.getAttribute('data-pos')) + 1) {
+              // Replace <br> par ''
+              for(let splitIndex of splitBr) {
+                if(splitIndex.length > 0) {
+                  wordValue = splitIndex.trim()
+                }
+              }
+              if(splitBr[0] !== "" && splitBr[1] === '') {
+                const wordId = word.getAttribute('data-word-id')
+                const wordOptions = this.getHlAndKwByWordId(wordId)
+                //'word<br>'
+              
+                let wordObj = {
+                  wid: wordId,
+                  etime: word.getAttribute('data-etime'),
+                  stime: word.getAttribute('data-stime'),
+                  pos: realWordPos,
+                  word: wordValue,
+                  highlights: wordOptions.highlights,
+                  keywords: wordOptions.keywords
+                }
+                turnPayload.words.push(wordObj)
+              }
+            }
+
               // word = '<br>word' || 'word<br>' || 'wo<br>rd' || <span><br></span>
               if (splitBr.length === 2) {
                 const wordId = word.getAttribute('data-word-id')
@@ -729,11 +746,9 @@ export default {
     },
     // Audio player: play from a word
     playFromWord (stime) {
-      if(window.editionMode === false) {
         this.closeToolBox()
         if(stime !== ''){
           bus.$emit('audio_player_playfrom', {time: stime})
-        }
       }
     },
     // Audio player pause

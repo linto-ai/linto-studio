@@ -22,7 +22,6 @@ export default {
         if(event.code === 'Backspace' || event.keyCode === 8) {
           // Press backspace on first word of a turn on edition mode > merge with previous turn
           if(window.editionMode === true && activeElement === 'TD') {
-            console.log('BACKSPACE')
             bus.$emit('transcription_bind_backspace', {})
           } 
         }

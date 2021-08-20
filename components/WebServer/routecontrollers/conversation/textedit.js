@@ -128,11 +128,11 @@ async function replaceFullText(req, res, next) {
         }
         const convoid = req.params.conversationid
         let text = req.body.text // fullObject [{turn}, {turn}...]
-        console.log(text)
+        let tosplice = []
         if (text.length > 0) {
+            let index = 0
             for (let turn of text) {
-                let index = 0
-                    // Create turn if turn(s) have been added
+                // Create turn if turn(s) have been added
                 if (turn.turn_id === 'todefine') {
                     let createTurnPayload = turn
                     createTurnPayload.pos -= 0.5
@@ -140,26 +140,24 @@ async function replaceFullText(req, res, next) {
                     createTurnPayload.turnid = uuidv4()
                     createTurnPayload.speakerid = turn.speaker_id
                     await convoModel.createTurn(createTurnPayload)
-                }
-                if (turn.pos === -1) {
-                    console.log('to splice', turn)
+                } else if (turn.pos === -1) {
                     let deleteturn = await convoModel.deleteTurns({
                         convoid,
                         turnids: [turn.turn_id]
                     })
-                    console.log('deleteturn', deleteturn)
+                    tosplice.push(index)
                 }
                 index++
-
             }
+            newText = text.filter(turntxt => turntxt.pos !== -1)
 
             // Renumber turns
             await convoModel.renumberTurns(convoid)
 
             // Get current object in database
             let currentObj = await convoModel.getConvoById(convoid)
-            console.log('CurrentOBj >', currentObj[0].text)
-                // get "turn_id" by "pos" for each turns
+
+            // get "turn_id" by "pos" for each turns
             let turnPosId = []
             if (currentObj.length > 0) {
                 currentObj[0].text.map(t => {
@@ -169,7 +167,7 @@ async function replaceFullText(req, res, next) {
 
             // Replace turn text for each turns
             let position = 0
-            for (let turn of text) {
+            for (let turn of newText) {
                 let turnPayload = turn
                 turnPayload.turn_id = turnPosId[position]
                 let update = await replaceTurn(convoid, turnPayload)
