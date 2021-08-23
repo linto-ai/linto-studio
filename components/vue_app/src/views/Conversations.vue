@@ -31,8 +31,8 @@
         <tbody>
           <tr>
           </tr>
-          <tr v-for="convo in filteredConversations" :key="convo._id" @click="redirectConversationPage(convo._id)" class="clickable">
-            <td class="title">{{ convo.name.length > 40 ? convo.name.substring(0, 40) + '...' : convo.name }}</td>
+          <tr v-for="convo in filteredConversations" :key="convo._id"  class="clickable"> 
+            <td class="title" @click="redirectConversationPage(convo._id)">{{ convo.name.length > 40 ? convo.name.substring(0, 40) + '...' : convo.name }}</td>
             <td>{{ convo.description.length > 60 ? convo.description.substring(0, 60) + '...' : convo.description }}</td>
             <td>{{ dateToJMY(convo.created) }}</td>
             <td>{{ secToHMS(convo.audio.duration) }}</td>
@@ -51,13 +51,21 @@
               </div>
             </td>
             <td class="status" :class="convo.locked === 0 ? 'open' : 'locked'"><span class="label">{{ convo.locked === 0 ? 'open' : 'locked' }}</span></td>
+            <td class="remove">
+              <button class="btn--icon red" @click="removeConversationModal(convo)">
+                <span class="icon icon--remove"></span>
+                </button>
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
+    <ModalRemoveConversation></ModalRemoveConversation>
   </div>
 </template>
 <script>
+import { bus } from '../main.js'
+import ModalRemoveConversation from '@/components/ModalRemoveConversation.vue'
 export default {
   props: ['userInfo'],
   data () {
@@ -67,12 +75,17 @@ export default {
       filterActive: 'all',
       sortBy: 'date',
       sortDirection: 'down',
-      conversationsKeys: ['name','description','created','audio','owner','sharedWith','locked']
+      conversationsKeys: ['name','description','created','audio','owner','sharedWith','locked','delete']
     }
   },
   async mounted () {
     await this.dispatchConversations()
     await this.dispatchUsersInfo()
+
+    bus.$on('refresh_conversations', async (data) => {
+      await this.dispatchConversations()
+      await this.dispatchUsersInfo()
+    })
   },
   computed: {
     dataLoaded () {
@@ -131,6 +144,9 @@ export default {
     }
   },
   methods: {
+    removeConversationModal (convo) {
+      bus.$emit('modal_remove_conversation', {convo})
+    },
     imgPath(url) {
       return `${process.env.VUE_APP_URL}/${url}`
     },
@@ -167,6 +183,9 @@ export default {
     async dispatchUsersInfo () {
       this.usersLoaded = await this.$options.filters.dispatchStore('getUsers')
     }
+  },
+  components: {
+    ModalRemoveConversation
   }
 }
 </script>

@@ -10,18 +10,17 @@
       <div class="modal--body flex col">
         <p v-html="modalContent"></p>
       </div>
-
       <div class="modal--footer flex row">
         <button class="btn btn--txt-icon grey" @click="closeModal()">
           <span class="label">{{ $t('buttons.close') }}</span>
           <span class="icon icon__cancel"></span>
         </button>
         <button v-if="status === 'valid_changes'" class="btn btn--txt-icon green" @click="applyChanges()">
-          <span class="label">Apply changes</span>
+          <span class="label">{{ $t('buttons.apply') }}</span>
           <span class="icon icon__apply"></span>
         </button>
         <button v-if="status === 'cancel_changes'" class="btn btn--txt-icon red" @click="cancelChanges()">
-          <span class="label">Cancel changes</span>
+          <span class="label">{{ $t('buttons.close') }}</span>
           <span class="icon icon__undo"></span>
         </button>
       </div>
@@ -66,6 +65,5 @@ export default { 
 
     }
   }
-
 }
 </script>

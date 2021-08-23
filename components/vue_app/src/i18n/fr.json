@@ -36,6 +36,7 @@
         "audio": "Durée",
         "created": "Date",
         "date": "Date",
+        "delete": "Supprimer",
         "documents": "Documents",
         "description": "Description",
         "duration": "Durée",
@@ -103,6 +104,10 @@
         "merge_speakers": {
             "title": "Fusionner les locuteurs",
             "content_html": "Vous êtes sur le point de <strong>fusionner un locuteur avec un locuteur existant</strong> dans la conversation. Si vous appliquer les modifications, les deux locuteurs seront fusionné en un.<br/>Êtes-vous sûr de vouloir <strong>remplacer \"{speakername}\" par \"{targetspeaker}\"?"
+        },
+        "delete_conversation": {
+            "title": "Supprimer la conversation",
+            "content_html": "Êtes-vous sur de vouloir supprimer la conversation <strong>\"{convoTitle}\"</strong>?"
         },
         "highlights": {
             "title": "Ajouter un étiquette",

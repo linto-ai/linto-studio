@@ -324,6 +324,11 @@ a {
                 background-color: #656565;
             }
         }
+        &.red {
+            .icon {
+                background-color: $redChart;
+            }
+        }
         &:hover,
         &.active {
             background-color: $greenChart;
@@ -334,6 +339,12 @@ a {
                 &.icon--merge,
                 &.icon--close {
                     background-color: $redChart;
+                }
+            }
+            &.red {
+                background-color: $redChart;
+                .icon {
+                    background-color: #fff;
                 }
             }
             &.grey {
@@ -491,6 +502,13 @@ a {
                 &.title {
                     font-weight: 600;
                     color: $greenChart;
+                    &:hover {
+                        color: $blueChart;
+                        text-decoration: underline;
+                    }
+                }
+                &.remove {
+                    text-align: center;
                 }
                 &.status {
                     .label {
@@ -577,9 +595,6 @@ a {
                     0,
                     rgba(0, 0, 0, 0.2));
                     cursor: pointer;
-                }
-                td.title {
-                    color: $blueChart;
                 }
             }
         }

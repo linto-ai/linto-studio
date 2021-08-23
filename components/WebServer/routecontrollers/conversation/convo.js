@@ -1,5 +1,5 @@
 const middleware = require(`${process.cwd()}/components/WebServer/middlewares/index.js`)
-
+const fs = require('fs')
 const debug = require('debug')(`app:conversation-manager:components:WebServer:routeControllers`)
 const convoModel = require(`${process.cwd()}/models/mongodb/models/conversations`)
 const userModel = require(`${process.cwd()}/models/mongodb/models/users`)
@@ -214,9 +214,45 @@ async function updateConvoType(req, res, next) {
         })
     }
 }
+async function deleteConversation(req, res, next) {
+    try {
+        let convoid = req.params.conversationid
+        let getConvo = await convoModel.getConvoById(convoid)
+
+
+        if (getConvo.length > 0) {
+            let convo = getConvo[0]
+            let audiofile = convo.audio.filepath
+            let filePath = `${process.cwd()}/storages/${audiofile}`
+            let deleteConvo = await convoModel.deleteConversationById(convoid)
+
+            if (deleteConvo.status === 'success') {
+                fs.unlink(filePath, async(err) => {
+                    if (err) {
+                        res.json({ status: 'error', mgs: 'Error on deleting audiofile', error: err })
+                    } else  {
+                        res.json({ status: 'success', msg: 'The conversation has been deleted' })
+                    }
+                })
+            } else {
+                throw 'Error on deleting conversation'
+            }
+        } else {
+            throw 'Conversation not found'
+        }
+    } catch (error) {
+        console.error(error)
+            // Error
+        res.status(400).send({
+            status: 'error',
+            msg: !!error.message ? error.message : 'error deleting conversation'
+        })
+    }
+}
 
 module.exports = {
     createConvoBase,
+    deleteConversation,
     updateSpeakerAudio,
     deleteConvo,
     updateTitle,

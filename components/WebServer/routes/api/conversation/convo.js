@@ -6,7 +6,7 @@ const {
     createNewSpeaker,
     deleteSpeaker,
     identifySpeaker,
-    getSpeakers, 
+    getSpeakers,
     updateSpeakerMap
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/speakers.js`)
 
@@ -56,7 +56,8 @@ const { // update conversation metadata
     updateTitle,
     updateDescription,
     updateAgenda,
-    updateConvoType
+    updateConvoType,
+    deleteConversation
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/convo.js`)
 
 module.exports = (webserver) => {
@@ -270,6 +271,15 @@ module.exports = (webserver) => {
             requireAuth: true,
             requireWriteAccess: true,
             controller: updateSpeakerMap
+        },
+        {
+            // Delete a conversation by convoid
+            // updates conversation metatdata
+            path: '/:conversationid',
+            method: 'delete',
+            requireAuth: true,
+            requireWriteAccess: true,
+            controller: deleteConversation
         }
     ]
 }

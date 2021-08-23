@@ -36,6 +36,7 @@
         "audio": "Duration",
         "created": "Date",
         "date": "Date",
+        "delete": "Delete",
         "description": "Description",
         "documents": "Documents",
         "duration": "Duration",
@@ -103,6 +104,10 @@
         "merge_speakers": {
             "title": "Merge speakers",
             "content_html": "You're about to identify a speaker as an other existing speaker in the conversation. If you apply those modifications, both speakers will be merged as one.<br/>Are you sure you want to <strong>replace \"{speakername}\" by \"{targetspeaker}\"?"
+        },
+        "delete_conversation": {
+            "title": "Delete conversation",
+            "content_html": "Are you sure you want to remove the conversation <strong>\"{convoTitle}\"</strong>?"
         },
         "highlights": {
             "title": "Highlight words",
