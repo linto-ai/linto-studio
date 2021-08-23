@@ -1,22 +1,31 @@
+# Dev env
+DEBUG=/none
+DEV_DISABLE_AUTH=false
+LINTO_STACK_IMAGE_TAG=latest-unstable
+LOGGER_ENABLED=false
+
 # Components loading in this order
-COMPONENTS = WebServer
+COMPONENTS=WebServer
 WEBSERVER_HTTP_PORT=8001
+SESSION_SECRET=mysecret
+USE_SSL=false
+
+# Mongo
 DB_DRIVER=mongo
 DB_HOST=localhost
+DB_PORT=27017
 DB_REQUIRE_LOGIN=true
 DB_USER=root
 DB_PASS=example
-DB_PORT=27017
 DB_NAME=conversations
-JWT_SECRET=supersecret
 
 # STT Config
 STT_REQUIRE_AUTH=true
-STT_USER=root
-STT_PASSWORD=example
-STT_HOST=https://host/stt/my_service/transcribe
+STT_USER=stt_auth
+STT_PASSWORD=stt_password
+STT_HOST=stt_host
 
-# Cross domain accessibility
+# Cross domain accessibility
 CORS_ENABLED=false
 CORS_API_WHITELIST=
 
@@ -24,5 +33,22 @@ CORS_API_WHITELIST=
 EXPRESS_SIZE_FILE_MAX=500mb
 EXPRESS_TIMEOUT=1000000
 
+# Redis
+REDIS_SESSION_SERVICE=localhost
+REDIS_SESSION_SERVICE_PORT=6379
+
 # Storage folder of audio volume
-VOLUME_AUDIO_LOCATION=./audios/
+VOLUME_AUDIO_UPLOAD_PATH=storages/audios
+VOLUME_AUDIO_PUBLIC_PATH=audios
+VOLUME_PROFILE_PICTURE_UPLOAD_PATH=storages/pictures
+VOLUME_PROFILE_PICTURE_PUBLIC_PATH=pictures
+VOLUME_DATABASE_FOLDER=test/database
+VOLUME_REDIS_FOLDER=test/redis_data
+
+# JWT SECRET
+CM_JWT_SECRET=jwt_secret
+CM_REFRESH_SECRET=jwt_refresh_secret
+
+# Docker config
+CONVERSATION_MANAGER_HOST=localhost
+
