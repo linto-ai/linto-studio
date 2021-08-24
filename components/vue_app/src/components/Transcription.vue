@@ -742,7 +742,9 @@ export default {
     // Audio player: play a turn from start
     playFromTurnStart (turn) {
       let stime = turn.words[0].stime
-      bus.$emit('audio_player_playfrom', {time: stime})
+      let etime = turn.words[turn.words.length-1].etime
+      bus.$emit('audio_player_playfromto', {stime, etime})
+
     },
     // Audio player: play from a word
     playFromWord (stime) {

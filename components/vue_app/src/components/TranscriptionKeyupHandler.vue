@@ -15,8 +15,6 @@ export default {
     initKeyupHandler() {
       document.addEventListener("keydown", function(event) {
         const activeElement = document.activeElement.tagName
-        //console.log(event)
-
 
         // Backspace
         if(event.code === 'Backspace' || event.keyCode === 8) {
@@ -27,7 +25,7 @@ export default {
         }
         
         // Enter
-        if(event.code === 'Enter' || event.keyCode === 13) {
+        if( event.code === 'Enter' || event.keyCode === 13) {
           // Press enter on edition mode > create turn
           if(window.editionMode === true && activeElement === 'TD') {
             bus.$emit('transcription_bind_enter', {})
@@ -35,12 +33,10 @@ export default {
         }
         
         // Space > play / pause
-        if(event.code === 'Space' || event.keyCode === 32) {
+        if(event.ctrlKey && event.code === 'Space' ||  event.ctrlKey && event.keyCode === 32) {
           if(window.editionMode === false) {
-            if(activeElement !== 'INPUT') {
               event.preventDefault()
               bus.$emit('audio_player_play_pause', {})
-            }
           }
         }
 

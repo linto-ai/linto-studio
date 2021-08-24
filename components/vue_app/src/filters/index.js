@@ -222,7 +222,7 @@ Vue.filter('testSelectField', function(obj) {
 
 // Test name field
 Vue.filter('testName', function(obj) {
-    const regex = /^[a-zA-ZÀ-ÿ]+(([' -][a-zA-ZÀ-ÿ ])?[a-zA-ZÀ-ÿ]*)*$/g
+    const regex = /^[a-zA-ZÀ-ÿ0-9]+(([' -\_][a-zA-ZÀ-ÿ0-9 ])?[a-zA-ZÀ-ÿ0-9]*)*$/g
     obj.valid = false
     obj.error = null
     obj.value = obj.value.trim()

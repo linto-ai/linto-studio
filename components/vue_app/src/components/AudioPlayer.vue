@@ -69,7 +69,8 @@ export default {
       timeHover: 0,
       timeHoverX: 0,
       timeHoverPrct: 0,
-      showTimeHover: false
+      showTimeHover: false,
+      playFromTo: false
     }
   },
   mounted () {
@@ -88,6 +89,15 @@ export default {
     }
   },
   watch: {
+    currentTime (data) {
+      // If play from To
+      if(this.playFromTo !== false) {
+        if(data >= this.playFromTo.etime) {
+          this.pause()
+          this.playFromTo = false
+        }
+      }
+    },
     prctTimeline (data) {
       this.prctTimelineSelected = data
     },
@@ -153,6 +163,17 @@ export default {
       bus.$on('audio_player_playfrom', (data) => {
         this.playFrom(data.time)
       })
+
+      bus.$on('audio_player_playfromto', (data) => {
+        if(this.playFromTo !== false) {
+          this.pause()
+          this.playFromTo = false
+        } else {
+          this.playFrom(data.stime)
+          this.playFromTo = data
+        }
+      })
+
       bus.$on('audio_player_pause', (data) => {
         if(this.audioIsPlaying) {
           this.pause()
