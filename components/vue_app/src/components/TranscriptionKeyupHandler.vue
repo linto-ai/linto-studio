@@ -32,12 +32,10 @@ export default {
           } 
         }
         
-        // Space > play / pause
+        // Ctrl + Space > play / pause
         if(event.ctrlKey && event.code === 'Space' ||  event.ctrlKey && event.keyCode === 32) {
-          if(window.editionMode === false) {
-              event.preventDefault()
-              bus.$emit('audio_player_play_pause', {})
-          }
+            event.preventDefault()
+            bus.$emit('audio_player_play_pause', {})
         }
 
         // Ctrl + arrow right > play next turn

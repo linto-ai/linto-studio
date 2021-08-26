@@ -54,7 +54,7 @@
 <script>
 import { bus } from '../main.js'
 export default {
-  props: ['audioPath', 'duration', 'nbTurns', 'currentTurn', 'editionMode', 'convoIsFiltered', 'convoText'],
+  props: ['audioPath', 'duration', 'nbTurns', 'currentTurn', 'convoIsFiltered', 'convoText'],
   data () {
     return {
       currentTime: 0,

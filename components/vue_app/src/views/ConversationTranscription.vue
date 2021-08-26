@@ -171,7 +171,6 @@
       <AudioPlayer 
         :audioPath="audioPath" 
         :duration="convo.audio.duration" 
-        :editionMode="editionMode" 
         :nbTurns="convo.text.length" 
         :currentTurn="currentTurn" 
         :convoIsFiltered="convoIsFiltered"

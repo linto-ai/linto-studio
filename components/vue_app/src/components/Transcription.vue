@@ -157,6 +157,7 @@ export default {
     mergePreviousTurn (turnpos) {
       let textObj = this.convoTextCustom
       let newTextObj = []
+      let toRemove = []
       for(let turn of textObj) {
         // Turns before merging
         if(parseInt(turn.pos) >= 0 && parseInt(turn.pos) < parseInt(turnpos) - 1) {
@@ -176,7 +177,7 @@ export default {
         } 
         else if(parseInt(turn.pos) >= 0 && parseInt(turn.pos) === parseInt(turnpos)) {
           turn.pos = -1
-          newTextObj.push(turn)
+          toRemove.push(turn)
         }
         else if(parseInt(turn.pos) >= parseInt(turnpos)) {
           turn.pos-- 
@@ -185,6 +186,7 @@ export default {
           newTextObj.push(turn)
         }
       }
+      newTextObj.push(...toRemove)
       this.convoTextCustom = newTextObj
     },
     updateConvoFilters () {
