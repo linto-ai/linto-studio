@@ -2,12 +2,11 @@ const debug = require('debug')('linto:components:utility:request')
 const request = require('request')
 
 class Request {
-  async get(url, token) {
+  async get(url, option) {
     let options = {
-      url
+      url,
+      ...option
     }
-    token ? options.headers = { authorization: token } : null
-
     return new Promise((resolve, reject) => {
       try {
         request.get(options, function (error, response, body) {
@@ -25,13 +24,11 @@ class Request {
     })
   }
 
-  async post(url, form, token) {
+  async post(url, form) {
     let options = {
       url,
       ...form
     }
-    token && options.headers ? options.headers = {} : null
-    token ? options.headers.authorization = token : null
 
     return new Promise((resolve, reject) => {
       try {
@@ -56,8 +53,6 @@ class Request {
       url,
       ...form
     }
-    token && options.headers ? options.headers = {} : null
-    token ? options.headers.authorization = token : null
 
     return new Promise((resolve, reject) => {
       try {

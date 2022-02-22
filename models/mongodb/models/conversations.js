@@ -873,6 +873,37 @@ class ConvoModel extends MongoModel {
         }
     }
 
+
+    async update(payload) {
+        try {
+            const query = {
+                _id: payload._id
+            }
+            delete payload._id
+            let mutableElements = payload
+            return await this.mongoUpdate(query, mutableElements)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
+    async updateJob(payload) {
+        try {
+            const operator = "$set"
+            const query = {
+                _id: this.getObjectId(payload._id),
+            }
+            let mutableElements = {}
+            mutableElements.job = payload.job
+
+            return await this.mongoUpdateOne(query, operator, mutableElements)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
     async renumberTurns(convoid) {
         try {
             let allTurns = await this.getAllTurns(convoid)
