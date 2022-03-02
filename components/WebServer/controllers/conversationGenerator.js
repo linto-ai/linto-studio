@@ -72,6 +72,7 @@ function sttToConversation(transcript, conversation) {
                     wid : uuidv4(),
                     stime : word.start,
                     etime : word.end,
+                    word: word.word,
                     pos : word_pos++,
                     confidence : word.conf,
                     highlights : [],
