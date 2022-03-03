@@ -20,10 +20,17 @@ DB_PASS=example
 DB_NAME=conversations
 
 # STT Config
-STT_REQUIRE_AUTH=true
+STT_REQUIRE_AUTH=false
 STT_USER=stt_auth
 STT_PASSWORD=stt_password
 STT_HOST=stt_host
+STT_ENABLE_PUNCTUATION=true
+STT_ENABLE_DIARIZATION=true
+STT_NUMBER_OF_SPEAKER=0
+STT_MAX_NUMBER_OF_SPEAKER=0
+STT_RESULT_CONVERT_NUMBERS=true
+STT_RESULT_RETURN_RAW=false
+
 
 # Cross domain accessibility
 CORS_ENABLED=false
@@ -51,4 +58,5 @@ CM_REFRESH_SECRET=jwt_refresh_secret
 
 # Docker config
 CONVERSATION_MANAGER_HOST=localhost
+
 

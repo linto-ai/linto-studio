@@ -1,3 +1,7 @@
+# 0.1.2 - 2022/02/22
+- New transcribe API
+- Handle transcription job status updates
+
 # 0.1.1 - 2021/07/20
 Unstable version
 - completion of "editText" function + add "updateSpeakerMap" (to be tested)

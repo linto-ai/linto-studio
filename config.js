@@ -54,6 +54,15 @@ function configureDefaults() {
         process.env.STT_HOST = ifHas(process.env.STT_HOST, envdefault.STT_HOST)
         process.env.STT_REQUIRE_AUTH = ifHas(process.env.STT_REQUIRE_AUTH, envdefault.STT_REQUIRE_AUTH)
 
+        process.env.STT_ENABLE_PUNCTUATION  = ifHas(process.env.STT_ENABLE_PUNCTUATION, envdefault.STT_ENABLE_PUNCTUATION)
+        process.env.STT_ENABLE_DIARIZATION  = ifHas(process.env.STT_ENABLE_DIARIZATION, envdefault.STT_ENABLE_DIARIZATION)
+        process.env.STT_NUMBER_OF_SPEAKER  = ifHas(process.env.STT_NUMBER_OF_SPEAKER, envdefault.STT_NUMBER_OF_SPEAKER)
+        process.env.STT_MAX_NUMBER_OF_SPEAKER  = ifHas(process.env.STT_MAX_NUMBER_OF_SPEAKER, envdefault.STT_MAX_NUMBER_OF_SPEAKER)
+
+        process.env.STT_RESULT_CONVERT_NUMBERS = ifHas(process.env.STT_RESULT_CONVERT_NUMBERS, envdefault.STT_RESULT_CONVERT_NUMBERS)
+        process.env.STT_RESULT_RETURN_RAW  = ifHas(process.env.STT_RESULT_RETURN_RAW, envdefault.STT_RESULT_RETURN_RAW)
+
+
         // Storage folder for uploads
         process.env.VOLUME_AUDIO_UPLOAD_PATH = ifHas(process.env.VOLUME_AUDIO_UPLOAD_PATH, envdefault.VOLUME_AUDIO_UPLOAD_PATH)
         process.env.VOLUME_AUDIO_PUBLIC_PATH = ifHas(process.env.VOLUME_AUDIO_PUBLIC_PATH, envdefault.VOLUME_AUDIO_PUBLIC_PATH)

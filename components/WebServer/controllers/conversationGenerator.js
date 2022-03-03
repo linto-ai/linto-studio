@@ -5,14 +5,16 @@ const mm = require('music-metadata')
 const moment = require('moment')
 
 //Parse the stt transcription to for conversation mongodb model
-function sttToConversation(transcript, metadata) {
+
+
+function initConversation(metadata, job_id){
     const dateTime = moment().format()
 
-    let conversation = {
+    return {
         name: metadata.name,
         description: metadata.description,
         conversationType: metadata.conversationType ||  '',
-        audio: '',
+        audio: {},
         file_metadata: {},
         locked: 0,
         agenda: [""],
@@ -24,48 +26,61 @@ function sttToConversation(transcript, metadata) {
         speakers: [],
         text: [],
         created: dateTime,
-        last_update: dateTime
-
+        last_update: dateTime,
+        job : {
+            job_id : job_id,
+            state : 'pending',
+            steps : {}
+        }
     }
+}
+
+function sttToConversation(transcript, conversation) {
+    conversation.last_update =  moment().format()
     try {
-        jsonTranscript = JSON.parse(transcript)
-        if (jsonTranscript === undefined || jsonTranscript.text.length === 0) throw new Error('Transcription was empty')
-        conversation.confidence = jsonTranscript['confidence-score']
-        let spk_pos = 0
-        jsonTranscript.speakers.map(spk_trans => {
-            const spkFound = conversation.speakers.find(spk_conversation => spk_conversation.speaker_name === spk_trans.speaker_id)
-            if (spkFound === undefined) {
-                conversation.speakers.push({
+        jsonTranscript = transcript
+        if (transcript === undefined || transcript.transcription_result.length === 0)
+            throw new Error('Transcription is empty')
+        conversation.confidence = transcript.confidence
+
+        let text_pos = 0
+        transcript.segments.map(segment => {
+            /* Check and init speaker */
+            let speaker = conversation.speakers.filter(speaker => speaker.speaker_name === segment.spk_id)
+            if(speaker.length === 0){ // Add speaker if not found
+                speaker = {
                     speaker_id: uuidv4(),
-                    speaker_name: spk_trans.speaker_id,
-                    stime: spk_trans.start,
-                    etime: spk_trans.end
-                })
-            }
-            let spk_text = {
-                speaker_id: conversation.speakers[conversation.speakers.findIndex(spk => spk.speaker_name === spk_trans.speaker_id)].speaker_id,
-                pos: spk_pos++,
-                turn_id: uuidv4(),
-                words: []
+                    speaker_name : segment.spk_id,
+                    stime: segment.start,
+                    etime: segment.end
+                }
+                conversation.speakers.push(speaker)
+            } else speaker = speaker[0]
+
+            const text_segment = {
+                speaker_id : speaker.speaker_id,
+                turn_id : uuidv4(),
+                raw_segment : segment.raw_segment,
+                segment : segment.segment,
+                pos: text_pos++,
+                words : []
             }
 
             let word_pos = 0
-            spk_trans.words.map(spk_trans_word => {
-                const spk_text_word = {
-                    wid: uuidv4(),
-                    stime: spk_trans_word.start,
-                    etime: spk_trans_word.end,
-                    word: spk_trans_word.word,
-                    confidence: spk_trans_word.conf,
-                    pos: word_pos++,
-                    highlights: [],
+            segment.words.map(word => {
+                text_segment.words.push({
+                    wid : uuidv4(),
+                    stime : word.start,
+                    etime : word.end,
+                    word: word.word,
+                    pos : word_pos++,
+                    confidence : word.conf,
+                    highlights : [],
                     keywords: []
-                }
-                spk_text.words.push(spk_text_word)
+                })
             })
-            conversation.text.push(spk_text)
+            conversation.text.push(text_segment)
         })
-
         return conversation
     } catch (err) {
         throw err
@@ -73,16 +88,17 @@ function sttToConversation(transcript, metadata) {
 }
 
 // Add file metadata to the conversation object
-async function addFileMetadataToConversation(conversation, file) {
+async function addFileMetadataToConversation(conversation, file, filepath) {
     const file_metadata = await mm.parseBuffer(file.data, { mimeType: file.mimetype })
     conversation.audio = {
         size: file.size,
         filename: file.name,
         duration: file_metadata.format.duration,
-        mimetype: file.mimetype
+        mimetype: file.mimetype,
+        filepath : filepath
     }
     conversation.file_metadata = {...file_metadata }
     return conversation
 }
 
-module.exports = { sttToConversation, addFileMetadataToConversation }
+module.exports = { sttToConversation, addFileMetadataToConversation, initConversation }
