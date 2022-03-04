@@ -7,8 +7,8 @@ RUN apt-get update -y && \
 WORKDIR /usr/src/app/conversation-manager
 COPY . /usr/src/app/conversation-manager
 
-# Frontend components/vue_app
-WORKDIR /usr/src/app/conversation-manager/components/vue_app
+# Frontend /vue_app
+WORKDIR /usr/src/app/conversation-manager/vue_app
 RUN npm install && npm install --save-dev node-sass
 
 # Backend install 
