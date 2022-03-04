@@ -5,7 +5,7 @@ const request = require(`${process.cwd()}/lib/utility/request`)
 
 const SttWrapper = require(`${process.cwd()}/components/WebServer/controllers/conversationGenerator`)
 const StoreFile = require(`${process.cwd()}/components/WebServer/controllers/storeFile`)
-const TranscriptionHandler = require(`${process.cwd()}/components/WebServer/controllers/transcriptionHandler`)
+const TranscriptionHandler = require(`${process.cwd()}/components/WebServer/controllers/transcriptHandler`)
 
 const convoModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 

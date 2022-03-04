@@ -67,8 +67,8 @@ if [ "$IMAGE_VUE_REBUILD" = true ]; then
 fi
 
 # Regenerate mono init.js file 
-rm -f ./mongo-seeds/init.js
-envsubst < ./mongo-seeds/init-template.js > ./mongo-seeds/init.js
+rm -f ./config/seeds/mongodb/init.js
+envsubst < ./config/seeds/mongodb/init-template.js > ./config/seeds/mongodb/init.js
 
 # Start docker (build if image not found)
 docker-compose up
