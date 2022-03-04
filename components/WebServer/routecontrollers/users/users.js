@@ -1,5 +1,5 @@
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:user')
-const model = require(`${process.cwd()}/models/mongodb/models/users`)
+const model = require(`${process.cwd()}/lib/mongodb/models/users`)
 
 const StoreFile = require(`${process.cwd()}/components/WebServer/controllers/file`)
 const {

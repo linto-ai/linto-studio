@@ -1,4 +1,4 @@
-const model = require(`${process.cwd()}/models/mongodb/models/conversations`)
+const model = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 
 async function getAllConversations(req, res, next) {
     try {

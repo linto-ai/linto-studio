@@ -4,8 +4,8 @@ require('./local')
 const passport = require('passport')
 const jwt = require('express-jwt')
 
-const UsersModel = require(`${process.cwd()}/models/mongodb/models/users`)
-const ConversationModel = require(`${process.cwd()}/models/mongodb/models/conversations`)
+const UsersModel = require(`${process.cwd()}/lib/mongodb/models/users`)
+const ConversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 
 const { MalformedToken, MultipleUserFound } = require(`${process.cwd()}/components/WebServer/error/exception/auth`)
 const {

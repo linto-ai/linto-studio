@@ -1,5 +1,5 @@
-const convoModel = require(`${process.cwd()}/models/mongodb/models/conversations`)
-const userModel = require(`${process.cwd()}/models/mongodb/models/users`)
+const convoModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
+const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
 const { v4: uuidv4 } = require('uuid')
 const clone = require('rfdc')()
 

@@ -4,7 +4,7 @@ const randomstring = require('randomstring')
 const passport = require('passport')
 const LocalStrategy = require('passport-local')
 
-const UsersModel = require(`${process.cwd()}/models/mongodb/models/users`)
+const UsersModel = require(`${process.cwd()}/lib/mongodb/models/users`)
 const crypto = require('crypto')
 
 

@@ -1,4 +1,4 @@
-const convoModel = require(`${process.cwd()}/models/mongodb/models/conversations`)
+const convoModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 
 async function addShareWith(req, res, next) { //pulls speaker map for a conversation
     try {

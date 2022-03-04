@@ -1,8 +1,8 @@
 const middleware = require(`${process.cwd()}/components/WebServer/middlewares/index.js`)
 const fs = require('fs')
 const debug = require('debug')(`app:conversation-manager:components:WebServer:routeControllers`)
-const convoModel = require(`${process.cwd()}/models/mongodb/models/conversations`)
-const userModel = require(`${process.cwd()}/models/mongodb/models/users`)
+const convoModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
+const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
 
 async function createConvoBase(req, res, next) { //WIP TODO check userid
     try {
