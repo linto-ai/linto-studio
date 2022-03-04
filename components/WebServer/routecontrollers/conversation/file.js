@@ -1,7 +1,7 @@
 const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:conversation:file`)
 const path = require('path')
 
-const request = require(`${process.cwd()}/components/utility/request`)
+const request = require(`${process.cwd()}/lib/utility/request`)
 
 const SttWrapper = require(`${process.cwd()}/components/WebServer/controllers/conversationGenerator`)
 const StoreFile = require(`${process.cwd()}/components/WebServer/controllers/file`)
