@@ -69,10 +69,6 @@ function configureDefaults() {
         process.env.VOLUME_PROFILE_PICTURE_UPLOAD_PATH = ifHas(process.env.VOLUME_PROFILE_PICTURE_UPLOAD_PATH, envdefault.VOLUME_PROFILE_PICTURE_UPLOAD_PATH)
         process.env.VOLUME_PROFILE_PICTURE_PUBLIC_PATH = ifHas(process.env.VOLUME_PROFILE_PICTURE_PUBLIC_PATH, envdefault.VOLUME_PROFILE_PICTURE_PUBLIC_PATH)
 
-        // Share Volumes
-        process.env.VOLUME_DATABASE_FOLDER = ifHas(process.env.VOLUME_DATABASE_FOLDER, envdefault.VOLUME_DATABASE_FOLDER)
-        process.env.VOLUME_REDIS_FOLDER = ifHas(process.env.VOLUME_REDIS_FOLDER, envdefault.VOLUME_REDIS_FOLDER)
-
         // Passeport settings
         process.env.CM_JWT_SECRET = ifHas(process.env.CM_JWT_SECRET, envdefault.CM_JWT_SECRET)
         process.env.CM_REFRESH_SECRET = ifHas(process.env.CM_REFRESH_SECRET, envdefault.CM_REFRESH_SECRET)

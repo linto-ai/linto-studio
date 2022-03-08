@@ -11,7 +11,7 @@ echo "Waiting REDIS..."
 while [ "$1" != "" ]; do
     case $1 in
     --rebuild-vue-app)
-        cd /usr/src/app/conversation-manager/components/vue_app
+        cd /usr/src/app/conversation-manager/vue_app
         echo "REBUILDING VUE APP"
         if [[ "$USE_SSL" == true ]]; then
             echo "VUE_APP_URL=https://$CONVERSATION_MANAGER_HOST
@@ -27,13 +27,13 @@ while [ "$1" != "" ]; do
             npm run build-app
         ;;
     --reinstall-vue-app)
-        cd /usr/src/app/conversation-manager/components/vue_app
+        cd /usr/src/app/conversation-manager/vue_app
         echo "REINSTALL VUE APP"
         npm install
         ;;
     --reinstall-webserver)
         echo "REBUILDING WEBSERVER APP"
-        cd /usr/src/app/conversation-manager/components/vue_app
+        cd /usr/src/app/conversation-manager/vue_app
         npm install
         ;;
     --run-cmd?*)
