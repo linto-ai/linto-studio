@@ -1,13 +1,13 @@
-const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:conversation:file`)
+const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:conversation:transcriptUpload`)
 const path = require('path')
 
-const request = require(`${process.cwd()}/components/utility/request`)
+const request = require(`${process.cwd()}/lib/utility/request`)
 
 const SttWrapper = require(`${process.cwd()}/components/WebServer/controllers/conversationGenerator`)
-const StoreFile = require(`${process.cwd()}/components/WebServer/controllers/file`)
-const TranscriptionHandler = require(`${process.cwd()}/components/WebServer/controllers/transcriptionHandler`)
+const StoreFile = require(`${process.cwd()}/components/WebServer/controllers/storeFile`)
+const TranscriptionHandler = require(`${process.cwd()}/components/WebServer/controllers/transcriptHandler`)
 
-const convoModel = require(`${process.cwd()}/models/mongodb/models/conversations`)
+const convoModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 
 const { ConversationNoFileUploaded, ConversationMetadataRequire } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 

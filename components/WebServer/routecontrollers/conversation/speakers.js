@@ -1,23 +1,5 @@
-const convoModel = require(`${process.cwd()}/models/mongodb/models/conversations`)
+const convoModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 const { v4: uuidv4 } = require('uuid')
-    /*
-    async function demo (req,res,next) {
-      try {
-        if (!!req.body.NEEDED_VALUE) { 
-
-        } else {
-          throw { message: 'Missing information in the payload object' }
-
-        }
-      } catch (error) {
-        console.error(error)
-        res.status(400).send({
-            txtStatus: 'error',
-            msg: !!error.message ? error.message : 'error on creating speaker'
-        })
-
-      }
-    }*/
 
 async function getSpeakers(req, res, next) { //pulls speaker map for a conversation
     try {

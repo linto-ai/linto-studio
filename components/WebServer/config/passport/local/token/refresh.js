@@ -4,7 +4,7 @@ const debug = require('debug')('linto:conversation-manager:components:webserver:
 const jwtDecode = require('jwt-decode')
 
 const TokenGenerator = require('./generator.js')
-const UsersModel = require(`${process.cwd()}/models/mongodb/models/users`)
+const UsersModel = require(`${process.cwd()}/lib/mongodb/models/users`)
 
 
 const TOKEN = 'Bearer'

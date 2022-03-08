@@ -7,8 +7,8 @@
         "start": "NODE_ENV=production node app.js",
         "start-debug": "NODE_ENV=development DEBUG=app/* node app.js",
         "start-dev": "NODE_ENV=development nodemon app.js",
-        "build-dev": "npm --prefix ./components/vue_app run build-dev",
-        "build-prod": "npm --prefix ./components/vue_app run build-app"
+        "build-dev": "npm --prefix ./vue_app run build-dev",
+        "build-prod": "npm --prefix ./vue_app run build-app"
     },
     "license": "GNU GPLv3",
     "dependencies": {
@@ -45,5 +45,8 @@
         "socket.io": "^2.2.0",
         "swagger-ui-dist": "^3.25.0",
         "uuid": "^8.3.2"
+    },
+    "devDependencies": {
+        "node-sass": "^7.0.1"
     }
 }

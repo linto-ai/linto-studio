@@ -1,4 +1,4 @@
-const convoModel = require(`${process.cwd()}/models/mongodb/models/conversations`)
+const convoModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 const { v4: uuidv4 } = require('uuid')
 
 

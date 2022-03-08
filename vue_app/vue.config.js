@@ -7,7 +7,7 @@ module.exports = {
                 splitChunks: false
             }
     },
-    outputDir: path.resolve(__dirname, '../../dist'),
+    outputDir: path.resolve(__dirname, '../dist'),
     publicPath: '/assets',
 
     pages: {

@@ -1,5 +1,5 @@
 const debug = require('debug')('app:webserver:middlewares')
-const convosModel = require(`${process.cwd()}/models/mongodb/models/conversations`)
+const convosModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 
 const getDurationInMilliseconds = (start) => {
     const NS_PER_SEC = 1e9

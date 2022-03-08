@@ -1,7 +1,8 @@
 const fsPromises = require('fs').promises
 const path = require('path')
 const EventEmitter = require('eventemitter3')
-const { componentMissingError } = require(`${process.cwd()}/lib/customErrors.js`)
+const { componentMissingError } = require(`../lib/error/customErrors.js`)
+
 
 class Component extends EventEmitter {
 

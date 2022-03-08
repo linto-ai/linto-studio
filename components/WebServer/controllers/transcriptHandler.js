@@ -1,8 +1,8 @@
-const debug = require('debug')('linto:components:WebServer:controller:transcriptionHandler')
-const request = require(`${process.cwd()}/components/utility/request`)
+const debug = require('debug')('linto:components:WebServer:controller:transcriptHandler')
+const request = require(`${process.cwd()}/lib/utility/request`)
 
 const SttWrapper = require(`${process.cwd()}/components/WebServer/controllers/conversationGenerator`)
-const ConvoModel = require(`${process.cwd()}/models/mongodb/models/conversations`)
+const ConvoModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 
 
 const DEFAULT_INTERVAL_TIMER = 1000 // 10 sec

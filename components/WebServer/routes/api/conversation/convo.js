@@ -50,7 +50,7 @@ const {
 
 const { // Create conversation based on file
     audioUpload
-} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/file.js`)
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/transcriptUpload.js`)
 
 const { // update conversation metadata
     updateTitle,
