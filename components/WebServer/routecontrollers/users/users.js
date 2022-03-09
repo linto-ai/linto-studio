@@ -1,5 +1,7 @@
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:user')
-const model = require(`${process.cwd()}/lib/mongodb/models/users`)
+const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
+const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
+
 
 const StoreFile = require(`${process.cwd()}/components/WebServer/controllers/storeFile`)
 const {
@@ -11,7 +13,7 @@ const {
 
 async function getUsers(req, res, next) {
     try {
-        let users = await model.getAllUsers()
+        let users = await userModel.getAllUsers()
         res.json(users)
     } catch (error) {
         console.error(error)
@@ -23,7 +25,7 @@ async function getUserById(req, res, next) {
     try {
         if (req.params.userid != "undefined") {
             const postUserId = req.params.userid
-            let response = await model.getUserById(postUserId)
+            let response = await userModel.getUserById(postUserId)
             if (response && response.length) {
                 res.json({
                     ...response[0]
@@ -48,7 +50,7 @@ async function getUserById(req, res, next) {
 async function getUserByEmail(req, res, next) {
     try {
         const email = req.params.email
-        let response = await model.getUserByEmail(email)
+        let response = await userModel.getUserByEmail(email)
         res.json(response)
     } catch (error) {
         console.error(error)
@@ -61,27 +63,36 @@ async function getUserByEmail(req, res, next) {
 
 async function createUser(req, res, next) {
     try {
-        const payload = JSON.parse(req.body.payload)
-        if (!payload.email || !payload.firstname || !payload.lastname || !payload.password) throw (new UserParameterMissing())
+        const user = req.body
+        if (!user.email || !user.firstname || !user.lastname || !user.password) throw (new UserParameterMissing())
 
-        const email = payload.email
         if (req.files && Object.keys(req.files).length !== 0 && req.files.file)
-            payload.img = await StoreFile.storeFile(req.files.file, 'picture')
-        else payload.img = StoreFile.defaultPicture()
+            user.img = await StoreFile.storeFile(req.files.file, 'picture')
+        else user.img = StoreFile.defaultPicture()
 
-        const userEmail = await model.getUserByEmail(email)
-        if (userEmail.length > 0) throw (new UserEmailAlreadyUsed())
-        else {
-            const createUser = await model.createUser(payload)
-            if (createUser.status === 'success') {
-                res.json({
-                    status: 'success',
-                    msg: 'Your account has been created'
-                })
-            } else throw (new UserCreationError())
-        }
+        const isUserFind = await userModel.getUserByEmail(user.email)
+        if(isUserFind.length !== 0) throw (new UserEmailAlreadyUsed())
+
+        const isOrganizationFind = await organizationModel.getOrganizationByName(user.email)
+        if(isOrganizationFind.length !== 0) throw (new UserEmailAlreadyUsed())
+
+        const createdUser = await userModel.createUser(user)
+        if(createdUser.status !== 'success') throw (new UserCreationError())
+
+        const createdOrganization = await organizationModel.createPersonal(createdUser.insertedId.toString(), user.email)
+        if(createdOrganization.status !== 'success'){
+            userModel.deleteById(createdUser.insertedId.toString())
+            throw (new UserCreationError())
+        } 
+
+        res.json({
+            status: 'success',
+            msg: 'Your account has been created'
+        })
     } catch (error) {
-        res.json({ error })
+        res.status(error.status).send({
+            msg: !!error.message ? error.message : 'An error occured during user creation'
+        })
     }
 }
 
@@ -94,9 +105,9 @@ async function updateUserPicture(req, res, next) {
                 _id: userId,
                 img
             }
-            let getUser = await model.getUserById(userId)
+            let getUser = await userModel.getUserById(userId)
             if (getUser.length > 0) {
-                let updateUserPswd = await model.update(payload)
+                let updateUserPswd = await userModel.update(payload)
                 if (updateUserPswd === 'success') {
                     res.json({
                         status: 'success',
@@ -120,7 +131,7 @@ async function deleteUser(req, res, next) {
     if (req.params.userid != "") {
         const postUserId = req.params.userid
         try {
-            let response = await model.deleteUserbyId(postUserId)
+            let response = await userModel.deleteUserbyId(postUserId)
             res.json({
                 status: response
             })
@@ -143,9 +154,9 @@ async function updateUserInfos(req, res, next) {
             let userId = req.params.userid
             let payload = req.body.payload
             payload._id = userId
-            let getUser = await model.getUserById(userId)
+            let getUser = await userModel.getUserById(userId)
             if (getUser.length > 0) {
-                let updateUser = await model.update(payload)
+                let updateUser = await userModel.update(payload)
                 if (updateUser === 'success') {
                     res.json({
                         status: 'success',
@@ -174,9 +185,9 @@ async function updateUserPassword(req, res, next) {
                 newPswd: req.body.newPassword,
                 _id: userId
             }
-            let getUser = await model.getUserById(userId)
+            let getUser = await userModel.getUserById(userId)
             if (getUser.length > 0) {
-                let updateUserPswd = await model.updatePassword(payload)
+                let updateUserPswd = await userModel.updatePassword(payload)
                 if (updateUserPswd === 'success') {
                     res.json({
                         status: 'success',
@@ -199,7 +210,7 @@ async function logout(req, res, next) {
     try {
         if (!!req.session.userId) {
             let userId = req.session.userId
-            model.update({
+            userModel.update({
                 _id: userId,
                 keyToken: ''
             }).then(user => {

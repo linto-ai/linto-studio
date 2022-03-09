@@ -49,10 +49,24 @@ class UserLogoutError extends Error {
     }
 }
 
+class UserNotFound extends Error {
+    constructor(message) {
+        super()
+        this.name = 'UserNotFound'
+        this.type = ExceptionType
+        this.status = '404'
+        if (message) this.message = message
+        else this.message = 'User not found'
+    }
+}
+
+
+
 module.exports = {
     //Users Exception
     UserEmailAlreadyUsed,
     UserParameterMissing,
     UserCreationError,
+    UserNotFound,
     UserLogoutError
 }
