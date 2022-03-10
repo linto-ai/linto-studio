@@ -16,6 +16,17 @@
     }
 }
 
+class OrganizationUpdateUserError extends Error {
+    constructor(message) {
+        super()
+        this.name = 'OrganizationUpdateUserError'
+        this.type = ExceptionType
+        this.status = '400'
+        if (message) this.message = message
+        else this.message = 'Unable to update the user to the organization'
+    }
+}
+
  class OrganizationNameAlreadyUsed extends Error {
      constructor(message) {
          super()
@@ -38,6 +49,17 @@
      }
  }
  
+ class OrganizationUnknowType extends Error {
+    constructor(message) {
+        super()
+        this.name = 'OrganizationUnknowType'
+        this.type = ExceptionType
+        this.status = '405'
+        if (message) this.message = message
+        else this.message = 'Organization type requested is not supported'
+    }
+}
+
  class OrganizationCreationError extends Error {
      constructor(message) {
          super()
@@ -76,8 +98,10 @@ class OrganizationNotFound extends Error {
      //Users Exception
      OrganizationNameAlreadyUsed,
      OrganizationParameterMissing,
+     OrganizationUnknowType,
      OrganizationCreationError,
      OrganizationNotFound,
      OrganizationAddUserError,
+     OrganizationUpdateUserError,
      OrganizationError
  }
