@@ -121,7 +121,7 @@ function generateSecretFromHeaders(req, payload, done) {
         } else {
             const { headers: { authorization } } = req
             if (authorization.split(' ')[0] === 'Bearer') {
-                UsersModel.getUserById(payload.data.userId).then(users => {
+                UsersModel.getUserTokenById(payload.data.userId).then(users => {
                     if (users.length === 1) return done(null, users[0].keyToken + process.env.CM_JWT_SECRET)
                     else throw MultipleUserFound
                 })
@@ -140,7 +140,7 @@ function generateRefreshSecretFromHeaders(req, payload, done) {
         } else {
             const { headers: { authorization } } = req
             if (authorization.split(' ')[0] === 'Bearer') {
-                UsersModel.getUserById(payload.data.userId).then(users => {
+                UsersModel.getUserTokenById(payload.data.userId).then(users => {
                     if (users.length === 1) done(null, users[0].keyToken + process.env.CM_REFRESH_SECRET)
                     else throw MultipleUserFound
                 })

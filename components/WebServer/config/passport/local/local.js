@@ -18,10 +18,11 @@ const STRATEGY = new LocalStrategy({
 passport.use('local', STRATEGY)
 
 function generateUserToken(email, password, done) {
-    UsersModel.getUserByEmail(email).then(users => {
+    UsersModel.getUserTokenByEmail(email).then(users => {
         if (users.length === 1) user = users[0]
         else if (users.length > 1) throw new MultipleUserFound()
         else throw new UserNotFound()
+
         if (!user || !validatePassword(password, user)) return done(new InvalidCredential())
         let tokenData = { // Data stored in the token
             salt: randomstring.generate(12),
@@ -34,6 +35,7 @@ function generateUserToken(email, password, done) {
             .then(user => {
                 if (!user) return done(new UnableToGenerateKeyToken())
             }).catch(done)
+
         return done(null, {
             token: TokenGenerator(tokenData).token,
         })

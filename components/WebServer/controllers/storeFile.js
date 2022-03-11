@@ -15,7 +15,7 @@ async function storeFile(file, type = 'audio') {
 
     let publicPath = ''
     if (type === 'audio') publicPath = `${process.env.VOLUME_AUDIO_PUBLIC_PATH}/${fileName}`
-    if (type === 'picture') publicPath = `${process.env.VOLUME_PROFILE_PICTURE_PUBLIC_PATH}/${fileName}`
+    else if (type === 'picture') publicPath = `${process.env.VOLUME_PROFILE_PICTURE_PUBLIC_PATH}/${fileName}`
 
     return publicPath
 }

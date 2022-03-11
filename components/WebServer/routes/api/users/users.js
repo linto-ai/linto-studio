@@ -1,11 +1,12 @@
 const debug = require('debug')('app:router:api:user:user')
 const {
-    getUsers,
+    listUser,
     createUser,
     getUserById,
-    updateUserInfos,
+    updateUser,
     updateUserPassword,
     updateUserPicture,
+    deleteUserOrganization,
     deleteUser,
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/users/users.js`)
 
@@ -14,7 +15,12 @@ module.exports = (webserver) => {
             path: '/',
             method: 'get',
             requireAuth: true,
-            controller: getUsers
+            controller: listUser
+        }, {
+            path: '/:userid',
+            method: 'get',
+            requireAuth: true,
+            controller: getUserById
         },
         {
             path: '/',
@@ -23,33 +29,27 @@ module.exports = (webserver) => {
             controller: createUser
         },
         {
-            path: '/:userid',
-            method: 'get',
-            requireAuth: true,
-            controller: getUserById
-        },
-        {
-            path: '/:userid/infos',
+            path: '/',
             method: 'put',
             requireAuth: true,
-            controller: updateUserInfos
+            controller: updateUser
         },
         {
-            path: '/:userid/pswd',
+            path: '/password',
             method: 'put',
             requireAuth: true,
             controller: updateUserPassword
         },
         {
-            path: '/:userid/picture',
+            path: '/picture',
             method: 'put',
             requireAuth: true,
             controller: updateUserPicture
         },
         {
-            path: '/:userid',
+            path: '/',
             method: 'delete',
-            requireAuth: false,
+            requireAuth: true,
             controller: deleteUser
         }
     ]

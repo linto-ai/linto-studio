@@ -37,6 +37,29 @@ class UserCreationError extends Error {
     }
 }
 
+class UserUpdateError extends Error {
+    constructor(message) {
+        super()
+        this.name = 'UserCreationError'
+        this.type = ExceptionType
+        this.status = '403'
+        if (message) this.message = message
+        else this.message = 'Error during the user update process'
+    }
+}
+
+class UserDeleteError extends Error {
+    constructor(message) {
+        super()
+        this.name = 'UserDeleteError'
+        this.type = ExceptionType
+        this.status = '400'
+        if (message) this.message = message
+        else this.message = 'Error during deletion process'
+    }
+}
+
+
 class UserLogoutError extends Error {
     constructor(message) {
         super()
@@ -65,8 +88,10 @@ class UserNotFound extends Error {
 module.exports = {
     //Users Exception
     UserEmailAlreadyUsed,
+    UserDeleteError,
     UserParameterMissing,
     UserCreationError,
+    UserUpdateError,
     UserNotFound,
     UserLogoutError
 }

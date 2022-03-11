@@ -16,6 +16,18 @@
     }
 }
 
+class OrganizationDeleteError extends Error {
+    constructor(message) {
+        super()
+        this.name = 'OrganizationDeleteError'
+        this.type = ExceptionType
+        this.status = '400'
+        if (message) this.message = message
+        else this.message = 'Unable to delete the organization'
+    }
+}
+
+
 class OrganizationUpdateUserError extends Error {
     constructor(message) {
         super()
@@ -96,6 +108,7 @@ class OrganizationNotFound extends Error {
 
  module.exports = {
      //Users Exception
+     OrganizationDeleteError,
      OrganizationNameAlreadyUsed,
      OrganizationParameterMissing,
      OrganizationUnknowType,

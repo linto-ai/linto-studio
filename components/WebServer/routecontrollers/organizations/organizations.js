@@ -10,7 +10,8 @@ const {
     OrganizationAddUserError,
     OrganizationUpdateUserError,
     OrganizationNameAlreadyUsed,
-    OrganizationUnknowType
+    OrganizationUnknowType,
+    OrganizationDeleteError
 } = require(`${process.cwd()}/components/WebServer/error/exception/organizations`)
 
 const {
@@ -48,10 +49,11 @@ async function createOrganization(req, res, next) {
 async function listUserOrganization(req, res, next) {
     try{
         const organizations = await organizationModel.getAllOrganizations()
-
         const userOrganizations = organizations.filter(organization => { 
-            return (organization.users.filter(user => user.userId === req.payload.data.userId))
+            const userFind = organization.users.filter(user => user.userId === req.payload.data.userId)
+            if(userFind.length !== 0) return true
         })
+
         res.json({
             userOrganizations
         })
@@ -116,7 +118,6 @@ async function updateUserRightInOrganization(req, res, next) {
             msg: 'User rights updated'
         })
     }catch(err){
-        debug(err)
         res.status(err.status).send({ message: err.message })
     }
 }
@@ -130,7 +131,7 @@ async function deleteUserFromOrganization(req, res, next){
         const user = await userModel.getUserByEmail(req.body.email)
 
         if (organizationRes.length !== 1) throw new OrganizationNotFound()
-        if (organizationRes[0].type === 'personal') throw new OrganizationAddUserError('Unable to delete an user from personal organization')
+        if (organizationRes[0].type === 'personal') throw new OrganizationDeleteError('Unable to delete an user from personal organization')
         if (user.length !== 1) throw new UserNotFound()
 
         let organization = organizationRes[0]
@@ -140,7 +141,7 @@ async function deleteUserFromOrganization(req, res, next){
         organization.users = organization.users.filter(user => user.userId !== userId)
 
         const result = await organizationModel.update(organization)
-        if(result !== 'success') throw new OrganizationAddUserError('Error when delete user in organization')
+        if(result !== 'success') throw new OrganizationDeleteError('Error when delete user in organization')
 
         res.status(200).send({
             msg: 'User rights deleted'
@@ -158,11 +159,10 @@ async function deleteOrganization(req, res, next) {
         const organization = await organizationModel.getOrganizationById(req.params.organizationId)
 
         if (organization.length !== 1) throw new OrganizationNotFound()
-        if (organization[0].type === 'personal') throw new OrganizationAddUserError('Personal organization cannot be deleted' )
+        if (organization[0].type === 'personal') throw new OrganizationDeleteError('Personal organization cannot be deleted' )
 
         const result = await organizationModel.deleteById(organization[0]._id.toString())
-        debug(result)
-        if(result.status !== 'success') throw new OrganizationAddUserError('Error when updating organization')
+        if(result.status !== 'success') throw new OrganizationDeleteError('Error when updating organization')
 
         res.status(200).send({
             msg: 'Organization deleted'
