@@ -1,4 +1,4 @@
-const debug = require('debug')('linto:components:WebServer:controller:transcriptHandler')
+const debug = require('debug')('linto:components:WebServer:controller:transcriptorHandler')
 const request = require(`${process.cwd()}/lib/utility/request`)
 
 const SttWrapper = require(`${process.cwd()}/components/WebServer/controllers/conversationGenerator`)

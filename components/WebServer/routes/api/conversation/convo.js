@@ -49,8 +49,8 @@ const {
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/annotations.js`)
 
 const { // Create conversation based on file
-    audioUpload
-} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/transcriptUpload.js`)
+    transcriptor
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/transcriptor.js`)
 
 const { // update conversation metadata
     updateTitle,
@@ -66,7 +66,7 @@ module.exports = (webserver) => {
             path: '/create',
             method: 'post',
             requireAuth: true,
-            controller: audioUpload
+            controller: transcriptor
         },
         /*{
             path: '/',

@@ -1,6 +1,7 @@
 const debug = require('debug')('app:router:api:organizations:organizations')
 const {
     listUserOrganization,
+    listOrganization,
     createOrganization,
     addUserInOrganization,
     updateUserRightInOrganization,
@@ -11,10 +12,16 @@ const {
 module.exports = (webserver) => {
     return [
         {
-            path: '/',
+            path: '/user',
             method: 'get',
             requireAuth: true,
             controller: listUserOrganization
+        },
+        {
+            path: '/',
+            method: 'get',
+            requireAuth: true,
+            controller: listOrganization
         },
         {
             path: '/',

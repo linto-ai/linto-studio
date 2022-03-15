@@ -3,7 +3,6 @@ const { cpSync } = require('fs')
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:user')
 const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
-const { TYPES } = require(`${process.cwd()}/lib/dao/organizations.js`)
 
 
 const StoreFile = require(`${process.cwd()}/components/WebServer/controllers/storeFile`)
@@ -20,7 +19,7 @@ const {
 async function listUser(req, res, next) {
     try {
         const users = await userModel.getAllUsers()
-        res.json(users)
+        res.status(200).send(users)
     } catch (error) {
         res.send({ message: error.message })
     }
@@ -31,7 +30,7 @@ async function getUserById(req, res, next) {
         const userList = await userModel.getUserById(req.params.userid)
         if (userList && userList.length !== 1) throw new UserNotFound()
 
-        res.json({
+        res.status(200).send({
             ...userList[0]
         })
 
@@ -49,23 +48,22 @@ async function createUser(req, res, next) {
             user.img = await StoreFile.storeFile(req.files.file, 'picture')
         else user.img = StoreFile.defaultPicture()
 
-        const isUserFind = await userModel.getUserByEmail(user.email)
-        if(isUserFind.length !== 0) throw (new UserEmailAlreadyUsed())
+        const isUserFound = await userModel.getUserByEmail(user.email)
+        if(isUserFound.length !== 0) throw (new UserEmailAlreadyUsed())
 
-        const isOrganizationFind = await organizationModel.getOrganizationByName(user.email)
-        if(isOrganizationFind.length !== 0) throw (new UserEmailAlreadyUsed())
+        const isOrganizationFound = await organizationModel.getOrganizationByName(user.email)
+        if(isOrganizationFound.length !== 0) throw (new UserEmailAlreadyUsed())
 
         const createdUser = await userModel.createUser(user)
         if(createdUser.status !== 'success') throw (new UserCreationError())
 
-        const createdOrganization = await organizationModel.createPersonal(createdUser.insertedId.toString(), user.email)
+        const createdOrganization = await organizationModel.createDefaultOrganization(createdUser.insertedId.toString(), user.email)
         if(createdOrganization.status !== 'success'){
             userModel.deleteById(createdUser.insertedId.toString())
             throw (new UserCreationError())
-        } 
+        }
 
-        res.json({
-            status: 'success',
+        res.status(200).send({
             msg: 'Your account has been created'
         })
     } catch (error) {
@@ -141,9 +139,7 @@ async function updateUserPassword(req, res, next) {
         res.cookie('authToken', '')
         res.cookie('userId', '')
         req.session.destroy(function(err) {
-            if (err) {
-                throw 'Error on deleting session'
-            }
+            if (err) throw 'Error on deleting session'
             res.redirect('/login')
         })
     } catch (err) {
@@ -184,19 +180,14 @@ async function deleteUser(req, res, next) {
         const userId = req.payload.data.userId
         
         const organizations = await organizationModel.getAllOrganizations()
-        const userOrganizations = organizations.filter(organization => { 
-            const userFind = organization.users.filter(user => user.userId === userId)
-            if(userFind.length !== 0) return true
+        const userOrganizations = organizations.filter(organization => {
+            const isUserFound = organization.users.filter(user => user.userId === userId)
+            if(isUserFound.length !== 0) return true
         })
         userOrganizations.map(async (organization) => {
-            if(organization.type === TYPES.personal) {
-                const resultOrgaDelete = await organizationModel.deleteById(organization._id)
-                if(resultOrgaDelete.status !== 'success') throw new UserDeleteError('Error during personal organization deletion')
-            }else {
-                organization.users = organization.users.filter(user => user.userId !== userId)
-                const resultOrgaUpdate = await organizationModel.update(organization)
-                if(resultOrgaUpdate !== 'success') throw new UserDeleteError('Error during organization rights deletion')
-            }
+            organization.users = organization.users.filter(user => user.userId !== userId)
+            const resultOrgaUpdate = await organizationModel.update(organization)
+            if(resultOrgaUpdate !== 'success') throw new UserDeleteError('Error during organization rights deletion')
         })
 
         const result = await userModel.deleteUserbyId(req.payload.data.userId)

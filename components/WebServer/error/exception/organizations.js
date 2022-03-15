@@ -60,6 +60,17 @@ class OrganizationUpdateUserError extends Error {
          else this.message = 'Mandatory parameter are missing'
      }
  }
+
+ class OrganizationWrongParameterType extends Error {
+    constructor(message) {
+        super()
+        this.name = 'OrganizationWrongParameterType'
+        this.type = ExceptionType
+        this.status = '405'
+        if (message) this.message = message
+        else this.message = 'Mandatory parameter are missing'
+    }
+}
  
  class OrganizationUnknowType extends Error {
     constructor(message) {
@@ -111,6 +122,7 @@ class OrganizationNotFound extends Error {
      OrganizationDeleteError,
      OrganizationNameAlreadyUsed,
      OrganizationParameterMissing,
+     OrganizationWrongParameterType,
      OrganizationUnknowType,
      OrganizationCreationError,
      OrganizationNotFound,

@@ -1,57 +1,42 @@
-const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:conversation:transcriptUpload`)
-const path = require('path')
+const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:conversation:transcriptor`)
 
 const request = require(`${process.cwd()}/lib/utility/request`)
 
 const SttWrapper = require(`${process.cwd()}/components/WebServer/controllers/conversationGenerator`)
 const StoreFile = require(`${process.cwd()}/components/WebServer/controllers/storeFile`)
-const TranscriptionHandler = require(`${process.cwd()}/components/WebServer/controllers/transcriptHandler`)
+const TranscriptionHandler = require(`${process.cwd()}/components/WebServer/controllers/transcriptorHandler`)
 
 const convoModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 
-const { ConversationNoFileUploaded, ConversationMetadataRequire } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
+const { 
+    ConversationNoFileUploaded, 
+    ConversationMetadataRequire, 
+    ConversationError 
+} = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
-async function audioUpload(req, res, next) {
+async function transcriptor(req, res, next) {
     try {
+        if (!req.files || Object.keys(req.files).length === 0) throw new ConversationNoFileUploaded()
+        if (!req.body.name) throw new ConversationMetadataRequire()
+
         const conversation = await transcribe(req)
-        // End block STT request
-        if(conversation._id && conversation.job.job_id){
-            TranscriptionHandler.createJobInterval(conversation)
-            res.status(200).send({
-                txtStatus: 'success',
-                msg: 'A conversation is currently being processed'
-            })
-        } else{
-            res.status(400).send({
-                txtStatus: 'error',
-                msg: 'error on uploading audio file'
-            })
-        }
-        return
-    } catch (error) {
-        // Error
-        console.error(error)
-        res.status(400).send({
-            txtStatus: 'error',
-            msg: !!error.message ? error.message : 'error on uploading audio file'
+
+        if(!conversation._id && !conversation.job.job_id) throw new ConversationError()
+        
+        TranscriptionHandler.createJobInterval(conversation)
+        res.status(200).send({
+            msg: 'A conversation is currently being processed'
         })
+    } catch (error) {
+        res.status(err.status).send({ message: err.message })
     }
 }
 
-module.exports = {
-    audioUpload
-}
-
 async function transcribe(req){
-    if (!req.files || Object.keys(req.files).length === 0)
-        next(new ConversationNoFileUploaded())
-    if (!req.body.payload || Object.keys(req.body).length === 0)
-        next(new ConversationMetadataRequire())
-
     const file = req.files.file
     const payload = {...JSON.parse(req.body.payload), owner: req.payload.data.userId }
 
-    // Block STT request
+    // STT request
     const options = prepareRequest(file)
     const job_buffer = await request.post(`${process.env.STT_HOST}/transcribe`, options)
 
@@ -113,3 +98,6 @@ function prepareRequest(file) {
     return options
 }
 
+module.exports = {
+    transcriptor
+}

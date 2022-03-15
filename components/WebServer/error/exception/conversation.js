@@ -89,6 +89,17 @@ class ConversationIdRequire extends Error {
     else this.message = `Conversation id param is require`
   }
 }
+
+class ConversationError extends Error {
+  constructor(message) {
+    super()
+    this.name = 'ConversationError'
+    this.type = ExceptionType
+    this.status = '400'
+    if (message) this.message = message
+    else this.message = `Error on generating conversation`
+  }
+}
 module.exports = {
   //Conversation Exception
   ConversationNotAddedToUser,
@@ -98,5 +109,6 @@ module.exports = {
   ConversationReadAccessDenied,
   ConversationWriteAccessDenied,
   ConversationNotShared,
-  ConversationIdRequire
+  ConversationIdRequire,
+  ConversationError
 }

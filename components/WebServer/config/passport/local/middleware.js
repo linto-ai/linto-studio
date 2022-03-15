@@ -17,7 +17,7 @@ const {
 } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
 const refreshToken = require('./token/refresh')
-const RIGHTS = require(`${process.cwd()}/components/WebServer/controllers/rights`)
+const RIGHTS = require(`${process.cwd()}/lib/dao/rights/conversation`)
 
 module.exports = {
     authType: 'local',
