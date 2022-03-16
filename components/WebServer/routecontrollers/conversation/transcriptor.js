@@ -6,7 +6,7 @@ const SttWrapper = require(`${process.cwd()}/components/WebServer/controllers/co
 const StoreFile = require(`${process.cwd()}/components/WebServer/controllers/storeFile`)
 const TranscriptionHandler = require(`${process.cwd()}/components/WebServer/controllers/transcriptorHandler`)
 
-const convoModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
+const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 
 const { 
     ConversationNoFileUploaded, 
@@ -28,13 +28,14 @@ async function transcriptor(req, res, next) {
             msg: 'A conversation is currently being processed'
         })
     } catch (error) {
-        res.status(err.status).send({ message: err.message })
+        res.status(error.status).send({ message: error.message })
     }
 }
 
 async function transcribe(req){
     const file = req.files.file
-    const payload = {...JSON.parse(req.body.payload), owner: req.payload.data.userId }
+
+    const payload = {...req.body, owner: req.payload.data.userId }
 
     // STT request
     const options = prepareRequest(file)
@@ -47,7 +48,7 @@ async function transcribe(req){
             const filepath = await StoreFile.storeFile(file, 'audio')
             conversation = await SttWrapper.addFileMetadataToConversation(conversation, file, filepath)
 
-            const mongo_status = await convoModel.createConversation(conversation)
+            const mongo_status = await conversationModel.createConversation(conversation)
             if(mongo_status.status === 'success')
                 return conversation
         }

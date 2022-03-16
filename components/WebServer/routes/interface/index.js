@@ -29,7 +29,7 @@ module.exports = (webServer) => {
             path: '/conversation/:convoId',
             method: 'get',
             requireSession: true,
-            requireFrontReadAccess: true,
+            asReadAccess: true,
             controller: [
                 (req, res, next) => {
                     res.setHeader("Content-Type", "text/html")
@@ -42,7 +42,7 @@ module.exports = (webServer) => {
             path: '/conversation/:convoId/transcription',
             method: 'get',
             requireSession: true,
-            requireFrontReadAccess: true,
+            asReadAccess: true,
             controller: [
                 (req, res, next) => {
                     res.setHeader("Content-Type", "text/html")

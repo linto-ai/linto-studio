@@ -116,6 +116,17 @@ class OrganizationNotFound extends Error {
     }
 }
 
+class OrganizationAccessDenied extends Error {
+    constructor(message) {
+      super()
+      this.name = 'OrganizationAccessDenied'
+      this.type = ExceptionType
+      this.status = '401'
+      if (message) this.message = message
+      else this.message = 'User don\'t have access to the organization'
+    }
+  }
+
 
  module.exports = {
      //Users Exception
@@ -128,5 +139,6 @@ class OrganizationNotFound extends Error {
      OrganizationNotFound,
      OrganizationAddUserError,
      OrganizationUpdateUserError,
+     OrganizationAccessDenied,
      OrganizationError
  }

@@ -10,6 +10,14 @@ const moment = require('moment')
 function initConversation(metadata, job_id){
     const dateTime = moment().format()
 
+    let sharedWith = metadata.sharedWith
+    if(sharedWith === undefined) {
+        sharedWith = {
+            users : [],
+            organizations : []
+        }
+    }
+
     return {
         name: metadata.name,
         description: metadata.description,
@@ -20,7 +28,7 @@ function initConversation(metadata, job_id){
         agenda: [""],
         abstract: '',
         owner: metadata.owner,
-        sharedWith: metadata.sharedWith,
+        sharedWith: sharedWith,
         highlights: [],
         keywords: [],
         speakers: [],

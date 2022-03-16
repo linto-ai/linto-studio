@@ -77,7 +77,7 @@ module.exports = (webserver) => {
             path: '/',
             method: 'delete',
             requireAuth: true,
-            requireOwnerAccess: true,
+            requireConversationOwnerAccess: true,
             controller: deleteConvo
         },*/
         {
@@ -85,7 +85,7 @@ module.exports = (webserver) => {
             path: '/:conversationid/speakers',
             method: 'get',
             requireAuth: true,
-            requireReadAccess: true,
+            requireConversationReadAccess: true,
             controller: getSpeakers
         },
         {
@@ -93,7 +93,7 @@ module.exports = (webserver) => {
             path: '/:conversationid/speakers',
             method: 'post',
             requireAuth: true,
-            requireWriteAccess: true,
+            requireConversationWriteAccess: true,
             controller: createNewSpeaker
         },
         {
@@ -101,7 +101,7 @@ module.exports = (webserver) => {
             path: '/:conversationid/speakers/:speakerid',
             method: 'patch',
             requireAuth: true,
-            requireWriteAccess: true,
+            requireConversationWriteAccess: true,
             controller: identifySpeaker
         },
         {
@@ -109,7 +109,7 @@ module.exports = (webserver) => {
             path: '/:conversationid/speakers/:speakerid',
             method: 'delete',
             requireAuth: true,
-            requireWriteAccess: true,
+            requireConversationWriteAccess: true,
             controller: deleteSpeaker
         },
         {
@@ -117,7 +117,7 @@ module.exports = (webserver) => {
             path: '/:conversationid/mergespeakers/:speakerid',
             method: 'patch',
             requireAuth: true,
-            requireWriteAccess: true,
+            requireConversationWriteAccess: true,
             controller: [combineSpeakerIds, deleteSpeaker]
         },
         {
@@ -125,7 +125,7 @@ module.exports = (webserver) => {
             path: '/:conversationid/turnspeaker/:turnid',
             method: 'put',
             requireAuth: true,
-            requireWriteAccess: true,
+            requireConversationWriteAccess: true,
             controller: identifyTurnSpeaker
         },
         {
@@ -133,7 +133,7 @@ module.exports = (webserver) => {
             path: '/:conversationid/turn/:speakerid',
             method: 'post',
             requireAuth: true,
-            requireWriteAccess: true,
+            requireConversationWriteAccess: true,
             controller: [createTurn, renumberTurns]
         },
         {
@@ -141,7 +141,7 @@ module.exports = (webserver) => {
             path: '/:conversationid/turn',
             method: 'delete',
             requireAuth: true,
-            requireWriteAccess: true,
+            requireConversationWriteAccess: true,
             controller: [deleteTurns, renumberTurns]
         },
         {
@@ -149,7 +149,7 @@ module.exports = (webserver) => {
             path: '/:conversationid/turn/merge',
             method: 'patch',
             requireAuth: true,
-            requireWriteAccess: true,
+            requireConversationWriteAccess: true,
             controller: [mergeTurns, renumberTurns]
         },
         {
@@ -157,7 +157,7 @@ module.exports = (webserver) => {
             path: '/:conversationid/turn/split',
             method: 'put',
             requireAuth: true,
-            requireWriteAccess: true,
+            requireConversationWriteAccess: true,
             controller: [splitTurns, renumberTurns]
         },
         {
@@ -165,7 +165,7 @@ module.exports = (webserver) => {
             path: '/:conversationid/fulltext',
             method: 'put',
             requireAuth: true,
-            requireWriteAccess: true,
+            requireConversationWriteAccess: true,
             controller: replaceFullText
         },
         {
@@ -173,7 +173,7 @@ module.exports = (webserver) => {
             path: '/:conversationid/text',
             method: 'put',
             requireAuth: true,
-            requireWriteAccess: true,
+            requireConversationWriteAccess: true,
             controller: replaceTurnText
         },
         {
@@ -181,7 +181,7 @@ module.exports = (webserver) => {
             path: '/:conversationid/highlight',
             method: 'post',
             requireAuth: true,
-            requireWriteAccess: true,
+            requireConversationWriteAccess: true,
             controller: createhighlight
         },
         {
@@ -189,7 +189,7 @@ module.exports = (webserver) => {
             path: '/:conversationid/highlight/:hid',
             method: 'delete',
             requireAuth: true,
-            requireWriteAccess: true,
+            requireConversationWriteAccess: true,
             controller: deletehighlight
         },
         {
@@ -197,7 +197,7 @@ module.exports = (webserver) => {
             path: '/:conversationid/highlight/:hid',
             method: 'patch',
             requireAuth: true,
-            requireWriteAccess: true,
+            requireConversationWriteAccess: true,
             controller: updatehighlighttype
         },
         {
@@ -205,7 +205,7 @@ module.exports = (webserver) => {
             path: '/:conversationid/highlight/:hid',
             method: 'put',
             requireAuth: true,
-            requireWriteAccess: true,
+            requireConversationWriteAccess: true,
             controller: updatehighlightwords
         },
         {
@@ -213,7 +213,7 @@ module.exports = (webserver) => {
             path: '/:conversationid/sharewith',
             method: 'put',
             requireAuth: true,
-            requireOwnerAccess: true,
+            requireConversationOwnerAccess: true,
             controller: addShareWith
         },
         {
@@ -221,7 +221,7 @@ module.exports = (webserver) => {
             path: '/:conversationid/sharewith/:userid',
             method: 'patch',
             requireAuth: true,
-            requireOwnerAccess: true,
+            requireConversationOwnerAccess: true,
             controller: updateShareWith
         },
         {
@@ -229,7 +229,7 @@ module.exports = (webserver) => {
             path: '/:conversationid/sharewith/:userid',
             method: 'delete',
             requireAuth: true,
-            requireOwnerAccess: true,
+            requireConversationOwnerAccess: true,
             controller: removeShareWith
         },
         {
@@ -237,7 +237,7 @@ module.exports = (webserver) => {
             path: '/:conversationid/title',
             method: 'put',
             requireAuth: false,
-            requireWriteAccess: false,
+            requireConversationWriteAccess: false,
             controller: updateTitle
         },
         {
@@ -245,7 +245,7 @@ module.exports = (webserver) => {
             path: '/:conversationid/description',
             method: 'put',
             requireAuth: true,
-            requireWriteAccess: true,
+            requireConversationWriteAccess: true,
             controller: updateDescription
         },
         {
@@ -253,7 +253,7 @@ module.exports = (webserver) => {
             path: '/:conversationid/agenda',
             method: 'put',
             requireAuth: true,
-            requireWriteAccess: true,
+            requireConversationWriteAccess: true,
             controller: updateAgenda
         },
         {
@@ -261,7 +261,7 @@ module.exports = (webserver) => {
             path: '/:conversationid/convotype',
             method: 'put',
             requireAuth: true,
-            requireWriteAccess: true,
+            requireConversationWriteAccess: true,
             controller: updateConvoType
         },
         {
@@ -269,7 +269,7 @@ module.exports = (webserver) => {
             path: '/:conversationid/speakermap',
             method: 'put',
             requireAuth: true,
-            requireWriteAccess: true,
+            requireConversationWriteAccess: true,
             controller: updateSpeakerMap
         },
         {
@@ -278,7 +278,7 @@ module.exports = (webserver) => {
             path: '/:conversationid',
             method: 'delete',
             requireAuth: true,
-            requireWriteAccess: true,
+            requireConversationWriteAccess: true,
             controller: deleteConversation
         }
     ]

@@ -181,6 +181,21 @@ async function deleteOrganization(req, res, next) {
     }
 }
 
+async function getOrganization(req, res, next) {
+    try{
+        if(!req.params.organizationId) throw new OrganizationParameterMissing()
+
+        const organization = await organizationModel.getOrganizationById(req.params.organizationId)
+        if (organization.length !== 1) throw new OrganizationNotFound()
+
+        res.status(200).send({
+            ...organization[0]
+        })
+    }catch(err){
+        res.status(err.status).send({ message: err.message })
+    }
+}
+
 
 module.exports = {
     createOrganization,
@@ -189,5 +204,6 @@ module.exports = {
     addUserInOrganization,
     updateUserRightInOrganization,
     deleteUserFromOrganization,
-    deleteOrganization
+    deleteOrganization,
+    getOrganization
 }
