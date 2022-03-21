@@ -1,5 +1,5 @@
-const path = require('path')
-const middlewares = require(path.join(__dirname, "../middlewares"))
+const debug = require('debug')('app:webserver:router')
+
 const auth_middlewares = require(`../config/passport/local/middleware`)
 const conversation_middlewares = require(`${process.cwd()}/components/WebServer/middlewares/rights/conversation.js`)
 const organization_middlewares = require(`${process.cwd()}/components/WebServer/middlewares/rights/organization.js`)
@@ -41,7 +41,10 @@ class Router {
                 // Conversation rights
                 if (route.requireConversationOwnerAccess) middlewaresLoaded.push(conversation_middlewares.asOwnerAccess) // require owner access
                 if (route.requireConversationReadAccess) middlewaresLoaded.push(conversation_middlewares.asReadAccess) // require read access
+                if (route.requireConversationCommentAccess) middlewaresLoaded.push(conversation_middlewares.asCommentAccess) // require comment access
                 if (route.requireConversationWriteAccess) middlewaresLoaded.push(conversation_middlewares.asWriteAccess) // require write access
+                if (route.requireConversationDeleteAccess) middlewaresLoaded.push(conversation_middlewares.asDeleteAccess) // require delete access
+                if (route.requireConversationShareAccess) middlewaresLoaded.push(conversation_middlewares.asShareAccess) // require delete access
 
                 // Organization rights
                 if (route.requireOrganizationOwnerAccess) middlewaresLoaded.push(organization_middlewares.asOwnerAccess)

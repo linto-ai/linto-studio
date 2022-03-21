@@ -37,7 +37,6 @@ module.exports = {
 }
 
 function checkOrganizationUserRight(next, organizationId, userId, right, rightException) {
-  debug('Hi')
   try{
 
     if (!organizationId) {

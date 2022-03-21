@@ -13,8 +13,8 @@ function initConversation(metadata, job_id){
     let sharedWith = metadata.sharedWith
     if(sharedWith === undefined) {
         sharedWith = {
-            users : [],
-            organizations : []
+            users : [], //0-n users
+            organizations : {} // 0-1 organization
         }
     }
 
