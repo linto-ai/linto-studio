@@ -1,15 +1,14 @@
 const debug = require('debug')('app:webserver:router')
 
 const auth_middlewares = require(`../config/passport/local/middleware`)
-const conversation_middlewares = require(`${process.cwd()}/components/WebServer/middlewares/rights/conversation.js`)
-const organization_middlewares = require(`${process.cwd()}/components/WebServer/middlewares/rights/organization.js`)
+const conversation_middlewares = require(`${process.cwd()}/components/WebServer/middlewares/access/conversation.js`)
+const organization_middlewares = require(`${process.cwd()}/components/WebServer/middlewares/access/organization.js`)
 
 const nav_middlewares = require(`${process.cwd()}/components/WebServer/middlewares/index.js`)
 
 const ifHasElse = (condition, ifHas, otherwise) => {
     return !condition ? otherwise() : ifHas()
 }
-
 class Router {
     constructor(webServer) {
         const routes = require('./routes.js')(webServer)
@@ -51,7 +50,6 @@ class Router {
                 if (route.requireOrganizationAdminAccess) middlewaresLoaded.push(organization_middlewares.asAdminAccess)
                 if (route.requireOrganizationMaintainerAccess) middlewaresLoaded.push(organization_middlewares.asMaintainerAccess)
                 if (route.requireOrganizationMemberAccess) middlewaresLoaded.push(organization_middlewares.asMemberAccess)
-                if (route.requireOrganizationGuestAccess) middlewaresLoaded.push(organization_middlewares.asGuestAccess)
 
                 if (process.env.LOGGER_ENABLED === "true") middlewaresLoaded.push(nav_middlewares.logger)
 

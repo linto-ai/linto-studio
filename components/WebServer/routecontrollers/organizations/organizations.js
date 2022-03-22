@@ -1,9 +1,9 @@
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:organizations')
-const RIGHTS  = require(`${process.cwd()}/lib/dao/rights/organization.js`)
-const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
 const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
+const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
 
 const TYPES = organizationModel.getTypes()
+const ROLES = require(`${process.cwd()}/lib/dao/roles/organization`)
 
 const {
     OrganizationError,
@@ -15,29 +15,34 @@ const {
     OrganizationNameAlreadyUsed,
     OrganizationUnknowType,
     OrganizationDeleteError
-} = require(`${process.cwd()}/components/WebServer/error/exception/organizations`)
+} = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
 const { UserNotFound } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
 
 async function createOrganization(req, res, next) {
     try{
-        if(!req.body.name || !req.body.type) throw new OrganizationParameterMissing()
-        if(!TYPES.asType(req.body.type)) throw new OrganizationUnknowType()
+        if(!req.body.name || !req.body.type) 
+            throw new OrganizationParameterMissing()
+        if(!TYPES.asType(req.body.type)) 
+            throw new OrganizationUnknowType()
 
         const isOrgaFound = await organizationModel.getOrganizationByName(req.body.name)
-        if (isOrgaFound.length === 1) throw new OrganizationNameAlreadyUsed()
+        if (isOrgaFound.length === 1) 
+            throw new OrganizationNameAlreadyUsed()
 
         const organization = {
             name : req.body.name,
             type : req.body.type,
             description : req.body.description,
-            users : [{userId : req.payload.data.userId, rights : RIGHTS.OWNER}],
+            users : [{userId : req.payload.data.userId, role : ROLES.OWNER}],
             owner : req.payload.data.userId
         }
 
-        const result = await organizationModel.create(organization)
-        if(result.status !== 'success') throw new OrganizationError('Error while creating an organization')
-        res.json({
+        const dbResult = await organizationModel.create(organization)
+        if(dbResult.status !== 'success') 
+            throw new OrganizationError('Error while creating an organization')
+        
+        return res.json({ 
             msg : 'Organization '+ organization.name +' has been created'
         })
     }catch(err){
@@ -47,12 +52,9 @@ async function createOrganization(req, res, next) {
 
 async function listOrganization(req, res, next) {
     try{
-        const organizationsList = await organizationModel.getAllOrganizations()
-        const organizations = organizationsList.filter(organization => organization.type === TYPES.public)
-
-        res.json({
-            organizations
-        })
+        const organizations = (await organizationModel.getAllOrganizations())
+            .filter(organization => organization.type === TYPES.public)
+        return res.json({ organizations })
     }catch(err){
         res.status(err.status).send({ message: err.message })
     }
@@ -62,13 +64,11 @@ async function listUserOrganization(req, res, next) {
     try{
         const organizations = await organizationModel.getAllOrganizations()
         const userOrganizations = organizations.filter(organization => { 
-            const isUserFound = organization.users.filter(user => user.userId === req.payload.data.userId)
-            if(isUserFound.length !== 0) return true
+            if(organization.owner === req.payload.data.userId) return true
+            return organization.users.filter(user => user.userId === req.payload.data.userId) ? true : false
         })
 
-        res.json({
-            userOrganizations
-        })
+        return res.json({ userOrganizations })
     }catch(err){
         res.status(err.status).send({ message: err.message })
     }
@@ -76,47 +76,47 @@ async function listUserOrganization(req, res, next) {
 
 async function addUserInOrganization(req, res, next) {
     try{
-        if(!req.params.organizationId || !req.body.email) throw new OrganizationParameterMissing()
-        if(!req.body.rights) req.body.rights = 1
-
-        const organization = await organizationModel.getOrganizationById(req.params.organizationId)
-        const user = await userModel.getUserByEmail(req.body.email)
-        if (organization.length !== 1) throw new OrganizationNotFound()
-        if (user.length !== 1) throw new UserNotFound()
+        if(!req.params.organizationId || !req.body.email) 
+            throw new OrganizationParameterMissing()
+        if(!req.body.role) 
+            req.body.role = ROLES.MEMBER
+        else if(isNaN(req.body.role) && req.body.role > ROLES.OWNER) 
+            throw new OrganizationWrongParameterType("Unknown role value")
         
-        const userId = user[0]._id.toString()
-        if(organization[0].users.filter(user => user.userId === userId).length !== 0) throw new OrganizationAddUserError('User already in '+ organization[0].name +' organization')
+        const organization = await getOrga(req.params.organizationId)
+        const user = await getUser(req.body.email)
 
-        organization[0].users.push( { userId : user[0]._id.toString(), rights: req.body.rights })
-        const result = await organizationModel.update(organization[0])
-        if(result !== 'success') throw new OrganizationAddUserError('Error when updating organization')
+        if(organization.users.filter(oUser => oUser.userId === user.userId).length !== 0) 
+            throw new OrganizationAddUserError('User already in '+ organization.name +' organization')
+        organization.users.push( { userId : user.userId, role: req.body.role }) // add user to organization
+
+        const dbResult = await organizationModel.update(organization)
+        if(dbResult !== 'success') 
+            throw new OrganizationAddUserError('Error while updating organization')
 
         res.status(200).send({
-            msg: 'User added to the '+ organization[0].name +' organization'
+            msg: 'User added to the '+ organization.name +' organization'
         })
     }catch(err){
         res.status(err.status).send({ message: err.message })
     }
 }
 
-async function updateUserRightInOrganization(req, res, next) {
+async function updateUserRoleInOrganization(req, res, next) {
     try{
-        if(!req.params.organizationId || !req.body.email || !req.body.rights) throw new OrganizationParameterMissing()
-        if(isNaN(req.body.rights)) throw new OrganizationWrongParameterType("Rights must be a number")
+        if(!req.params.organizationId || !req.body.email || !req.body.role) 
+            throw new OrganizationParameterMissing()
+        if(isNaN(req.body.role) && req.body.role > ROLES.OWNER) 
+            throw new OrganizationWrongParameterType("Unknown role value")
 
-        const isOrgaFound = await organizationModel.getOrganizationById(req.params.organizationId)
-        const user = await userModel.getUserByEmail(req.body.email)
+        let organization = await getOrga(req.params.organizationId)
+        const user = await getUser(req.body.email)
 
-        if (isOrgaFound.length !== 1) throw new OrganizationNotFound()
-        if (user.length !== 1) throw new UserNotFound()
+        if(organization.users.filter(oUser => oUser.userId === user.userId).length === 0) throw new OrganizationUpdateUserError('User is not part of the '+ organization.name +' organization')
 
-        let organization = isOrgaFound[0]
-        const userId = user[0]._id.toString()
-        if(organization.users.filter(user => user.userId === userId).length === 0) throw new OrganizationUpdateUserError('User is not part of the '+ organization.name +' organization')
-
-        organization.users.map(user => {
-            if(user.userId === userId) {
-                user.rights = parseInt(req.body.rights)
+        organization.users.map(oUser => {
+            if(oUser.userId === user.userId) {
+                oUser.role = parseInt(req.body.role)
                 return
             }
         })
@@ -125,7 +125,7 @@ async function updateUserRightInOrganization(req, res, next) {
         if(result !== 'success') throw new OrganizationAddUserError('Error when updating organization')
 
         res.status(200).send({
-            msg: 'User rights updated'
+            msg: 'User role updated'
         })
     }catch(err){
         res.status(err.status).send({ message: err.message })
@@ -137,23 +137,18 @@ async function deleteUserFromOrganization(req, res, next){
     try{
         if(!req.params.organizationId || !req.body.email) throw new OrganizationParameterMissing()
 
-        const isOrgaFound = await organizationModel.getOrganizationById(req.params.organizationId)
-        const user = await userModel.getUserByEmail(req.body.email)
+        let organization = await getOrga(req.params.organizationId)
+        const user = await getUser(req.body.email)
 
-        if (isOrgaFound.length !== 1) throw new OrganizationNotFound()
-        if (user.length !== 1) throw new UserNotFound()
+        if(organization.users.filter(oUser => oUser.userId === user.userId).length === 0) throw new OrganizationUpdateUserError('User is not part of the '+ organization.name +' organization')
 
-        let organization = isOrgaFound[0]
-        const userId = user[0]._id.toString()
-        if(organization.users.filter(user => user.userId === userId).length === 0) throw new OrganizationUpdateUserError('User is not part of the '+ organization.name +' organization')
-
-        organization.users = organization.users.filter(user => user.userId !== userId)
-
+        organization.users = organization.users.filter(oUser => oUser.userId !== user.userId)
         const result = await organizationModel.update(organization)
+
         if(result !== 'success') throw new OrganizationDeleteError('Error when delete user in organization')
 
         res.status(200).send({
-            msg: 'User rights deleted'
+            msg: 'User role deleted'
         })
     }catch(err){
         res.status(err.status).send({ message: err.message })
@@ -164,13 +159,9 @@ async function deleteUserFromOrganization(req, res, next){
 async function deleteOrganization(req, res, next) {
     try{
         if(!req.params.organizationId) throw new OrganizationParameterMissing()
-
-        const isOrgaFound = await organizationModel.getOrganizationById(req.params.organizationId)
-
-        if (isOrgaFound.length !== 1) throw new OrganizationNotFound()
-
-        const organization = isOrgaFound[0]
+        const organization = await getOrga(req.params.organizationId)
         const result = await organizationModel.deleteById(organization._id.toString())
+
         if(result.status !== 'success') throw new OrganizationDeleteError('Error when updating organization')
 
         res.status(200).send({
@@ -185,25 +176,41 @@ async function getOrganization(req, res, next) {
     try{
         if(!req.params.organizationId) throw new OrganizationParameterMissing()
 
-        const organization = await organizationModel.getOrganizationById(req.params.organizationId)
-        if (organization.length !== 1) throw new OrganizationNotFound()
+        const organization = await getOrga(req.params.organizationId)
 
-        res.status(200).send({
-            ...organization[0]
-        })
+        res.status(200).send(organization)
     }catch(err){
         res.status(err.status).send({ message: err.message })
     }
 }
-
 
 module.exports = {
     createOrganization,
     listOrganization,
     listUserOrganization,
     addUserInOrganization,
-    updateUserRightInOrganization,
+    updateUserRoleInOrganization,
     deleteUserFromOrganization,
     deleteOrganization,
     getOrganization
+}
+
+
+async function getOrga(organizationId) {
+    const organization = await organizationModel.getOrganizationById(organizationId)
+    if (organization.length !== 1) throw new OrganizationNotFound()
+    return {
+        ...organization[0],
+        organizationId : organization[0]._id.toString()
+    }
+}
+
+async function getUser(email){
+    const user = await userModel.getUserByEmail(email)
+    if (user.length !== 1) throw new UserNotFound()
+    
+    return {
+        ...user[0],
+        userId : user[0]._id.toString()
+    }
 }

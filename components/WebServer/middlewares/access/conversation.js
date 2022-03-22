@@ -3,7 +3,7 @@ const debug = require('debug')('linto:conversation-manager:components:webserver:
 const ConversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 const OrganizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
 const CONVERSATION_RIGHTS = require(`${process.cwd()}/lib/dao/rights/conversation`)
-const ORGANIZATION_RIGHTS = require(`${process.cwd()}/lib/dao/rights/organization`)
+const ORGANIZATION_ROLES = require(`${process.cwd()}/lib/dao/roles/organization`)
 
 
 const {
@@ -23,23 +23,24 @@ module.exports = {
       })
   },
   asReadAccess: (req, res, next) => {
-      checkConvAccessRight(next, req.params.conversationId, req.payload.data.userId, CONVERSATION_RIGHTS.READ, ConversationReadAccessDenied) // ORGA MEMBER
+    checkConvAccess(next, req.params.conversationId, req.payload.data.userId, CONVERSATION_RIGHTS.READ, ConversationReadAccessDenied) // ORGA MEMBER
   },
   asCommentAccess: (req, res, next) => {
-    checkConvAccessRight(next, req.params.conversationId, req.payload.data.userId, CONVERSATION_RIGHTS.COMMENT, ConversationReadAccessDenied) // ORGA MAINTENER
+    checkConvAccess(next, req.params.conversationId, req.payload.data.userId, CONVERSATION_RIGHTS.COMMENT, ConversationReadAccessDenied) // ORGA MAINTENER
   },
   asWriteAccess: (req, res, next) => {
-    checkConvAccessRight(next, req.params.conversationId, req.payload.data.userId, CONVERSATION_RIGHTS.WRITE, ConversationWriteAccessDenied) // ORGA MAINTENER
+    checkConvAccess(next, req.params.conversationId, req.payload.data.userId, CONVERSATION_RIGHTS.WRITE, ConversationWriteAccessDenied) // ORGA MAINTENER
   },
   asDeleteAccess: (req, res, next) => {
-    checkConvAccessRight(next, req.params.conversationId, req.payload.data.userId, CONVERSATION_RIGHTS.DELETE, ConversationReadAccessDenied) // ORGA MAINTENER
+    checkConvRestrictedAcess(next, req.params.conversationId, req.payload.data.userId, CONVERSATION_RIGHTS.DELETE, ConversationReadAccessDenied) // ORGA MAINTENER
   },
   asShareAccess: (req, res, next) => {
-    checkConvAcessShareRight(next, req.params.conversationId, req.payload.data.userId, CONVERSATION_RIGHTS.SHARE, ConversationShareAccessDenied)
+    checkConvRestrictedAcess(next, req.params.conversationId, req.payload.data.userId, CONVERSATION_RIGHTS.SHARE, ConversationShareAccessDenied)
   }
 }
 
-function checkConvAccessRight(next, conversationId, userId, rightConvo, rightException) {
+// Check right for orga and user
+function checkConvAccess(next, conversationId, userId, rightConvo, rightException) {
   try{
     let hasAccess = false
 
@@ -75,11 +76,11 @@ function checkConvAccessRight(next, conversationId, userId, rightConvo, rightExc
                     if(isUserFound.length !== 1) next(new ConversationNotShared())
 
                     const user = isUserFound[0] // user right in organization
-                    if(ORGANIZATION_RIGHTS.asRightAccess(user.rights, ORGANIZATION_RIGHTS.MAINTAINER) ||
-                    ORGANIZATION_RIGHTS.asRightAccess(user.rights, conversation.sharedWith.organization.rights)){
+                    if(ORGANIZATION_ROLES.asRightAccess(user.role, ORGANIZATION_ROLES.MAINTAINER) ||
+                    ORGANIZATION_ROLES.asRightAccess(user.role, conversation.sharedWith.organization.role)){
                         hasAccess = true
                         next()
-                    } else if(!userFind){
+                    } else if(!hasAccess){
                       next(new ConversationNotShared())
                     }
                   })
@@ -92,7 +93,8 @@ function checkConvAccessRight(next, conversationId, userId, rightConvo, rightExc
   }
 }
 
-function checkConvAcessShareRight(next, conversationId, userId, rightConvo, rightException) {
+// check right for user in an organization
+function checkConvRestrictedAcess(next, conversationId, userId, rightConvo, rightException) {
   try{
     if (!conversationId) {
         next(new ConversationIdRequire())
@@ -115,8 +117,8 @@ function checkConvAcessShareRight(next, conversationId, userId, rightConvo, righ
 
                     // user is MAINTAINER or as right to share conversation
                     const user = isUserFound[0] // user right in organization
-                    if(ORGANIZATION_RIGHTS.asRightAccess(user.rights, ORGANIZATION_RIGHTS.MAINTAINER) ||
-                      ORGANIZATION_RIGHTS.asRightAccess(user.rights, conversation.sharedWith.organization.rights)){
+                    if(ORGANIZATION_ROLES.asRightAccess(user.role, ORGANIZATION_ROLES.MAINTAINER) ||
+                      ORGANIZATION_ROLES.asRightAccess(user.role, conversation.sharedWith.organization.role)){
                         next()
                     } else if(conversation.sharedWith.users.length !== 0){
                       conversation.sharedWith.users.map(conversationUsers => {
