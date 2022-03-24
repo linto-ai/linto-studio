@@ -5,7 +5,9 @@ const { // Create conversation based on file
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/transcriptor.js`)
 
 const { // Create conversation based on file
-  getOwnerConversation
+  getOwnerConversation,
+  getConversation,
+  listConversation
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/conversation.js`)
 
 module.exports = (webserver) => {
@@ -17,11 +19,24 @@ module.exports = (webserver) => {
             controller: transcriptor
         },
         {
-            path: '/:conversationid',
+            path: '/',
             method: 'get',
             requireAuth: true,
             requireConversationOwnerAccess: true,
             controller: getOwnerConversation
+        },
+        {
+            path: '/list',
+            method: 'get',
+            requireAuth: true,
+            controller: listConversation
+        },
+        {
+            path: '/:conversationId',
+            method: 'get',
+            requireAuth: true,
+            requireConversationReadAccess: true,
+            controller: getConversation
         }
     ]
 }

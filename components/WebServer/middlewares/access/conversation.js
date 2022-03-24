@@ -43,22 +43,21 @@ module.exports = {
 function checkConvAccess(next, conversationId, userId, rightConvo, rightException) {
   try{
     let hasAccess = false
-
     if (!conversationId) {
         next(new ConversationIdRequire())
         return
     }
 
     ConversationModel.getConvoShared(conversationId).then(conversationRes => {
-      if (conversationRes.length === 1 && conversationRes[0].sharedWith) {
+      if (conversationRes.length === 1) {
             const conversation = conversationRes[0]
-            if (conversation.owner === userId) next() // If owner all rightsJe
+            if (conversation.owner === userId) next() // If owner got all rights
             else {
 
                 // User access middleware management
-                if(conversation.sharedWith.users.length !== 0){
-                  conversation.sharedWith.users.map(conversationUsers => {
-                    if (conversationUsers.userId === userId && CONVERSATION_RIGHTS.asRightAccess(conversationUsers.rights, rightConvo)){
+                if(conversation.sharedWithUsers.length !== 0){
+                  conversation.sharedWithUsers.map(conversationUsers => {
+                    if (conversationUsers.userId === userId && CONVERSATION_RIGHTS.asRightAccess(conversationUsers.right, rightConvo)){
                       hasAccess = true
                       next()
                     }
@@ -66,8 +65,8 @@ function checkConvAccess(next, conversationId, userId, rightConvo, rightExceptio
                 }
 
                 // Organization access middleware management
-                if(conversation.sharedWith.organization.organizationId !== undefined){
-                  OrganizationModel.getOrganizationById(conversation.sharedWith.organization.organizationId)
+                if(conversation.organization.organizationId !== undefined){
+                  OrganizationModel.getOrganizationById(conversation.organization.organizationId)
                   .then(organization => {
                     if (organization.length !== 1) next(new rightException())
                     if (organization.length === 1 && organization[0].owner === userId) next()
@@ -76,8 +75,8 @@ function checkConvAccess(next, conversationId, userId, rightConvo, rightExceptio
                     if(isUserFound.length !== 1) next(new ConversationNotShared())
 
                     const user = isUserFound[0] // user right in organization
-                    if(ORGANIZATION_ROLES.asRightAccess(user.role, ORGANIZATION_ROLES.MAINTAINER) ||
-                    ORGANIZATION_ROLES.asRightAccess(user.role, conversation.sharedWith.organization.role)){
+                    if(ORGANIZATION_ROLES.asRoleAccess(user.role, ORGANIZATION_ROLES.MAINTAINER) ||
+                    ORGANIZATION_ROLES.asRoleAccess(user.role, conversation.organization.role)){
                         hasAccess = true
                         next()
                     } else if(!hasAccess){
@@ -101,13 +100,13 @@ function checkConvRestrictedAcess(next, conversationId, userId, rightConvo, righ
         return
     }
     ConversationModel.getConvoShared(conversationId).then(conversationRes => {
-      if (conversationRes.length === 1 && conversationRes[0].sharedWith) {
+      if (conversationRes.length === 1) {
             const conversation = conversationRes[0]
             if (conversation.owner === userId) next() // If owner all rightsJe
             else {
                 // Organization access middleware management
-                if(conversation.sharedWith.organization.organizationId !== undefined){
-                  OrganizationModel.getOrganizationById(conversation.sharedWith.organization.organizationId).then(organization => {
+                if(conversation.organization.organizationId !== undefined){
+                  OrganizationModel.getOrganizationById(conversation.organization.organizationId).then(organization => {
 
                     if (organization.length !== 1) next(new rightException())
                     if (organization.length === 1 && organization[0].owner === userId) next()
@@ -117,18 +116,18 @@ function checkConvRestrictedAcess(next, conversationId, userId, rightConvo, righ
 
                     // user is MAINTAINER or as right to share conversation
                     const user = isUserFound[0] // user right in organization
-                    if(ORGANIZATION_ROLES.asRightAccess(user.role, ORGANIZATION_ROLES.MAINTAINER) ||
-                      ORGANIZATION_ROLES.asRightAccess(user.role, conversation.sharedWith.organization.role)){
+                    if(ORGANIZATION_ROLES.asRoleAccess(user.role, ORGANIZATION_ROLES.MAINTAINER) ||
+                      ORGANIZATION_ROLES.asRoleAccess(user.role, conversation.organization.role)){
                         next()
-                    } else if(conversation.sharedWith.users.length !== 0){
-                      conversation.sharedWith.users.map(conversationUsers => {
-                        if (conversationUsers.userId === userId && CONVERSATION_RIGHTS.asRightAccess(conversationUsers.rights, rightConvo)){
+                    } else if(conversation.sharedWithUsers.length !== 0){
+                      conversation.sharedWithUsers.map(conversationUsers => {
+                        if (conversationUsers.userId === userId && CONVERSATION_RIGHTS.asRightAccess(conversationUsers.right, rightConvo)){
                           next()
                         } else next(new rightException())
                       })
                     } else next(new rightException())
                   })
-                }
+                }else next(new rightException())
             }
         } else next(new ConversationNotShared())
     })

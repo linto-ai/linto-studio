@@ -7,6 +7,7 @@ const StoreFile = require(`${process.cwd()}/components/WebServer/controllers/sto
 const TranscriptionHandler = require(`${process.cwd()}/components/WebServer/controllers/transcriptorHandler`)
 
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
+const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
 
 const { 
     ConversationNoFileUploaded, 
@@ -14,10 +15,19 @@ const {
     ConversationError 
 } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
+
+const {
+    OrganizationNotFound,
+} = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
+
 async function transcriptor(req, res, next) {
     try {
         if (!req.files || Object.keys(req.files).length === 0) throw new ConversationNoFileUploaded()
-        if (!req.body.name) throw new ConversationMetadataRequire()
+        if (!req.body.name || !req.body.organizationId || !req.body.organizationRole) throw new ConversationMetadataRequire()
+
+
+        const organization = await organizationModel.getOrganizationById(req.body.organizationId)
+        if (organization.length !== 1) throw new OrganizationNotFound()
 
         const conversation = await transcribe(req)
 

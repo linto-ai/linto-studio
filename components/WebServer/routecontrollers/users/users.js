@@ -3,6 +3,7 @@ const { cpSync } = require('fs')
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:user')
 const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
+const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 
 
 const StoreFile = require(`${process.cwd()}/components/WebServer/controllers/storeFile`)
@@ -12,8 +13,7 @@ const {
     UserParameterMissing,
     UserCreationError,
     UserUpdateError,
-    UserDeleteError,
-    UserLogoutError
+    UserDeleteError
 } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
 
 async function listUser(req, res, next) {
@@ -180,17 +180,32 @@ async function deleteUser(req, res, next) {
         const userId = req.payload.data.userId
         
         const organizations = await organizationModel.getAllOrganizations()
-        const userOrganizations = organizations.filter(organization => {
-            const isUserFound = organization.users.filter(user => user.userId === userId)
-            if(isUserFound.length !== 0) return true
-        })
-        userOrganizations.map(async (organization) => {
-            organization.users = organization.users.filter(user => user.userId !== userId)
-            const resultOrgaUpdate = await organizationModel.update(organization)
-            if(resultOrgaUpdate !== 'success') throw new UserDeleteError('Error during organization rights deletion')
+
+        organizations.filter(organization => {
+            if (organization.owner === userId && organization.users.length === 0) return true
+            else if ((organization.users.filter(user => user.userId === userId)).length !== 0 ) return true
+        }).map(async (organization) => {
+            let resultOperation
+            if(organization.owner === userId  && organization.users.length === 0){
+                resultOperation = await organizationModel.deleteOrganization(organization._id.toString())
+            }else {
+                organization.users = organization.users.filter(user => user.userId !== userId)
+                resultOperation = await organizationModel.update(organization)
+            }
+            if(resultOperation !== 'success' || resultOperation.status !== 'success') throw new UserDeleteError('Error during organization rights deletion')
         })
 
-        const result = await userModel.deleteUserbyId(req.payload.data.userId)
+        const conversations = await conversationModel.getAllConvos()
+        conversations.filter(conversation => {
+            if ((conversation.sharedWithUsers.filter(user => user.userId === userId)).length !== 0 ) return true
+        }).map(async (conversation) => {
+            conversation.sharedWithUsers = conversation.sharedWithUsers.filter(user => user.userId !== userId)
+            const resultConvoUpdate = await conversationModel.update(conversation)
+            if(resultConvoUpdate !== 'success') throw new UserDeleteError('Error during conversation rights deletion')
+        })
+        // TODO: check if owner and nobody else is in the conversation
+
+        const result = await userModel.deleteUser(req.payload.data.userId)
         if(result.status !== 'success') throw new UserDeleteError
 
         res.status(200).send({

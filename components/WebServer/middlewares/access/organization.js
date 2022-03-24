@@ -1,7 +1,7 @@
 const debug = require('debug')('linto:conversation-manager:components:webserver:middlewares:rights:organization')
 
 const OrganizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
-const RIGHTS = require(`${process.cwd()}/lib/dao/roles/organization`)
+const ROLES = require(`${process.cwd()}/lib/dao/roles/organization`)
 
 const {
   OrganizationAccessDenied,
@@ -17,13 +17,13 @@ module.exports = {
     })
   },
   asAdminAccess: (req, res, next) => {
-    checkOrganizationUserRight(next, req.params.organizationId, req.payload.data.userId, RIGHTS.ADMIN, OrganizationAccessDenied)
+    checkOrganizationUserRight(next, req.params.organizationId, req.payload.data.userId, ROLES.ADMIN, OrganizationAccessDenied)
   },
   asMaintainerAccess: (req, res, next) => {
-    checkOrganizationUserRight(next, req.params.organizationId, req.payload.data.userId, RIGHTS.MAINTAINER, OrganizationAccessDenied)
+    checkOrganizationUserRight(next, req.params.organizationId, req.payload.data.userId, ROLES.MAINTAINER, OrganizationAccessDenied)
   },
   asMemberAccess: (req, res, next) => {
-    checkOrganizationUserRight(next, req.params.organizationId, req.payload.data.userId, RIGHTS.MEMBER, OrganizationAccessDenied)
+    checkOrganizationUserRight(next, req.params.organizationId, req.payload.data.userId, ROLES.MEMBER, OrganizationAccessDenied)
   }
 }
 
@@ -39,7 +39,7 @@ function checkOrganizationUserRight(next, organizationId, userId, right, rightEx
       if (organization.length !== 1) next(new OrganizationError('Requested organization not found'))
       if (organization[0].owner === userId) next()
       
-      const isUserFound = organization[0].users.filter(user => user.userId === userId && RIGHTS.asRightAccess(user.role, right))
+      const isUserFound = organization[0].users.filter(user => user.userId === userId && ROLES.asRoleAccess(user.role, right))
       
       if(isUserFound.length !== 0) next()
       else next(new OrganizationAccessDenied('Acces denied'))

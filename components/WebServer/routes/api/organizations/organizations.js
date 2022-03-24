@@ -4,9 +4,10 @@ const {
     listOrganization,
     createOrganization,
     addUserInOrganization,
-    updateUserRightInOrganization,
+    updateUserRoleInOrganization,
     deleteUserFromOrganization,
-    deleteOrganization
+    deleteOrganization,
+    getOrganization
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/organizations.js`)
 
 module.exports = (webserver) => {
@@ -39,7 +40,7 @@ module.exports = (webserver) => {
             path: '/:organizationId/user/update',
             method: 'post',
             requireAuth: true,
-            controller: updateUserRightInOrganization
+            controller: updateUserRoleInOrganization
         },
         {
             path: '/:organizationId',
