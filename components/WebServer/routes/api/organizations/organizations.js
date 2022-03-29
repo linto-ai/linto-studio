@@ -4,7 +4,8 @@ const {
     listOrganization,
     createOrganization,
     addUserInOrganization,
-    updateUserRoleInOrganization,
+    updateOrganization,
+    updateUserInOrganization,
     deleteUserFromOrganization,
     deleteOrganization,
     getOrganization
@@ -12,6 +13,14 @@ const {
 
 module.exports = (webserver) => {
     return [
+
+        /* No right*/
+        {
+            path: '/',
+            method: 'post',
+            requireAuth: true,
+            controller: createOrganization
+        },
         {
             path: '/user',
             method: 'get',
@@ -24,28 +33,42 @@ module.exports = (webserver) => {
             requireAuth: true,
             controller: listOrganization
         },
+
+        /* Maintainer right*/
         {
-            path: '/',
+            path: '/:organizationId/user',
             method: 'post',
             requireAuth: true,
-            controller: createOrganization
-        },
-        {
-            path: '/:organizationId/user/add',
-            method: 'post',
-            requireAuth: true,
+            requireOrganizationMaintainerAccess: true,
             controller: addUserInOrganization
         },
         {
-            path: '/:organizationId/user/update',
-            method: 'post',
+            path: '/:organizationId/user',
+            method: 'patch',
             requireAuth: true,
-            controller: updateUserRoleInOrganization
+            requireOrganizationMaintainerAccess: true,
+            controller: updateUserInOrganization
+        },
+        {
+            path: '/:organizationId/user',
+            method: 'delete',
+            requireAuth: true,
+            requireOrganizationMaintainerAccess: true,
+            controller: deleteUserFromOrganization
+        },
+        /* Admin right*/
+        {
+            path: '/:organizationId',
+            method: 'patch',
+            requireAuth: true,
+            requireOrganizationAdminAccess: true,
+            controller: updateOrganization
         },
         {
             path: '/:organizationId',
             method: 'delete',
             requireAuth: true,
+            requireOrganizationAdminAccess: true,
             controller: deleteOrganization
         },
         {

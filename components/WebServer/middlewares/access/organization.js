@@ -29,20 +29,23 @@ module.exports = {
 
 function checkOrganizationUserRight(next, organizationId, userId, right, rightException) {
   try{
-
     if (!organizationId) {
         next(new OrganizationParameterMissing())
         return
     }
 
     OrganizationModel.getOrganizationById(organizationId).then(organization => {
-      if (organization.length !== 1) next(new OrganizationError('Requested organization not found'))
-      if (organization[0].owner === userId) next()
-      
-      const isUserFound = organization[0].users.filter(user => user.userId === userId && ROLES.asRoleAccess(user.role, right))
-      
-      if(isUserFound.length !== 0) next()
-      else next(new OrganizationAccessDenied('Acces denied'))
+      if (organization.length !== 1)
+        next(new OrganizationError('Requested organization not found'))
+      else if (organization[0].owner === userId)
+        next()
+      else {
+        const isUserFound = organization[0].users
+          .filter(user => user.userId === userId && ROLES.asRoleAccess(user.role, right))
+
+        if(isUserFound.length !== 0) next()
+        else next(new OrganizationAccessDenied('Acces denied'))
+      }
     })
   } catch(err) {
     next(err)

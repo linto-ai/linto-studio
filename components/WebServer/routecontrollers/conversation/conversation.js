@@ -48,8 +48,10 @@ async function listConversation(req, res, next) {
     const conversations = await conversationModel.getAllConvos()
     for(let conversation of conversations){
       // User is owner
-      if(conversation.owner === userId){        convList.push(conversation)
-      }      // User have rights to read
+      if(conversation.owner === userId){
+        convList.push(conversation)
+      }
+      // User have rights to read
       else if(conversation.sharedWithUsers.filter(user => user.userId === userId &&
                   CONVERSATION_RIGHTS.asRightAccess(user.right, CONVERSATION_RIGHTS.READ)).length !== 0)
       {

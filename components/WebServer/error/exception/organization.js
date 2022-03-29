@@ -28,14 +28,14 @@ class OrganizationDeleteError extends Error {
 }
 
 
-class OrganizationUpdateUserError extends Error {
+class OrganizationUpdateError extends Error {
     constructor(message) {
         super()
-        this.name = 'OrganizationUpdateUserError'
+        this.name = 'OrganizationUpdateError'
         this.type = ExceptionType
         this.status = '400'
         if (message) this.message = message
-        else this.message = 'Unable to update the user to the organization'
+        else this.message = 'Unable to update the organization'
     }
 }
 
@@ -138,7 +138,7 @@ class OrganizationAccessDenied extends Error {
      OrganizationCreationError,
      OrganizationNotFound,
      OrganizationAddUserError,
-     OrganizationUpdateUserError,
+     OrganizationUpdateError,
      OrganizationAccessDenied,
      OrganizationError
  }

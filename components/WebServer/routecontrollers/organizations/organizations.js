@@ -11,7 +11,7 @@ const {
     OrganizationParameterMissing,
     OrganizationAddUserError,
     OrganizationWrongParameterType,
-    OrganizationUpdateUserError,
+    OrganizationUpdateError,
     OrganizationNameAlreadyUsed,
     OrganizationUnknowType,
     OrganizationDeleteError
@@ -35,7 +35,8 @@ async function createOrganization(req, res, next) {
             type : req.body.type,
             description : req.body.description,
             users : [{userId : req.payload.data.userId, role : ROLES.OWNER}],
-            owner : req.payload.data.userId
+            owner : req.payload.data.userId,
+            token : ''
         }
 
         const dbResult = await organizationModel.create(organization)
@@ -88,7 +89,7 @@ async function addUserInOrganization(req, res, next) {
 
         if(organization.users.filter(oUser => oUser.userId === user.userId).length !== 0) 
             throw new OrganizationAddUserError('User already in '+ organization.name +' organization')
-        organization.users.push( { userId : user.userId, role: req.body.role }) // add user to organization
+        organization.users.push( { userId : user.userId, role: req.body.role , visibility : TYPES.public}) // add user to organization
 
         const dbResult = await organizationModel.update(organization)
         if(dbResult !== 'success') 
@@ -102,33 +103,43 @@ async function addUserInOrganization(req, res, next) {
     }
 }
 
-async function updateUserRoleInOrganization(req, res, next) {
+async function updateUserInOrganization(req, res, next) {
     try{
-        if(!req.params.organizationId || !req.body.email || !req.body.role) 
+        let update = {
+            role : true,
+            visibility : true
+        }
+
+        if(!req.params.organizationId || !req.body.email || (!req.body.role || !req.body.visibility) )
             throw new OrganizationParameterMissing()
-        if(isNaN(req.body.role) && req.body.role > ROLES.OWNER) 
-            throw new OrganizationWrongParameterType("Unknown role value")
+
+        if(isNaN(req.body.role) && req.body.role > ROLES.OWNER) update.role = false
+        if(!TYPES.asType(req.body.visibility)) update.visibility = false
+
+        if(!update.role && !update.visibility) throw new OrganizationWrongParameterType("Required role or visibility")
 
         let organization = await getOrga(req.params.organizationId)
         const user = await getUser(req.body.email)
 
-        if(organization.users.filter(oUser => oUser.userId === user.userId).length === 0) throw new OrganizationUpdateUserError('User is not part of the '+ organization.name +' organization')
+        if(organization.users.filter(oUser => oUser.userId === user.userId).length === 0) throw new OrganizationUpdateError('User is not part of the '+ organization.name +' organization')
 
         organization.users.map(oUser => {
             if(oUser.userId === user.userId) {
-                oUser.role = parseInt(req.body.role)
+                if(update.role) oUser.role = parseInt(req.body.role)
+                if(update.visibility) oUser.visibility = req.body.visibility
                 return
             }
         })
 
         const result = await organizationModel.update(organization)
-        if(result !== 'success') throw new OrganizationAddUserError('Error when updating organization')
+        if(result !== 'success') throw new OrganizationAddUserError('Error while updating user in organization')
 
         res.status(200).send({
-            msg: 'User role updated'
+            msg: 'User updated'
         })
     }catch(err){
-        res.status(err.status).send({ message: err.message })
+        if(err.error === 'no_match') res.status(400).send({ message: 'No change for the organization' })
+        else res.status(err.status).send({ message: err.message })
     }
 }
 
@@ -177,10 +188,30 @@ async function getOrganization(req, res, next) {
         if(!req.params.organizationId) throw new OrganizationParameterMissing()
 
         const organization = await getOrga(req.params.organizationId)
-
         res.status(200).send(organization)
     }catch(err){
         res.status(err.status).send({ message: err.message })
+    }
+}
+
+async function updateOrganization(req, res, next) {
+    try{
+        if(!req.params.organizationId) throw new OrganizationParameterMissing()
+
+        let organization = await getOrga(req.params.organizationId, res)
+        if(req.body.token) organization.token = req.body.token
+        if(req.body.description) organization.description = req.body.description
+        if(req.body.name) organization.name = req.body.name
+        if(TYPES.asType(req.body.type)) organization.type = req.body.type
+
+        const result = await organizationModel.update(organization)
+        if(result !== 'success') throw new OrganizationUpdateError()
+        res.status(200).send({
+            msg: 'Organization updated'
+        })
+    }catch(err){
+        if(err.error === 'no_match') res.status(400).send({ message: 'No change for the organization' })
+        else res.status(err.status).send({ message: err.message })
     }
 }
 
@@ -189,15 +220,17 @@ module.exports = {
     listOrganization,
     listUserOrganization,
     addUserInOrganization,
-    updateUserRoleInOrganization,
+    updateOrganization,
+    updateUserInOrganization,
     deleteUserFromOrganization,
     deleteOrganization,
     getOrganization
 }
 
 
-async function getOrga(organizationId) {
-    const organization = await organizationModel.getOrganizationById(organizationId)
+async function getOrga(organizationId, res) {
+    const organization = await organizationModel.getOrganizationById(organizationId, res)
+
     if (organization.length !== 1) throw new OrganizationNotFound()
     return {
         ...organization[0],
