@@ -2,106 +2,28 @@
  *****Organization*******
  *****************/
 
- const ExceptionType = 'organization'
+const ExceptionType = 'organization'
 
 
- class OrganizationAddUserError extends Error {
-    constructor(message) {
-        super()
-        this.name = 'OrganizationAddUser'
-        this.type = ExceptionType
-        this.status = '400'
-        if (message) this.message = message
-        else this.message = 'Unable to add the user to the organization'
-    }
-}
-
-class OrganizationDeleteError extends Error {
-    constructor(message) {
-        super()
-        this.name = 'OrganizationDeleteError'
-        this.type = ExceptionType
-        this.status = '400'
-        if (message) this.message = message
-        else this.message = 'Unable to delete the organization'
-    }
-}
-
-
-class OrganizationUpdateError extends Error {
-    constructor(message) {
-        super()
-        this.name = 'OrganizationUpdateError'
-        this.type = ExceptionType
-        this.status = '400'
-        if (message) this.message = message
-        else this.message = 'Unable to update the organization'
-    }
-}
-
- class OrganizationNameAlreadyUsed extends Error {
-     constructor(message) {
-         super()
-         this.name = 'OrganizationNameAlreadyUsed'
-         this.type = ExceptionType
-         this.status = '403'
-         if (message) this.message = message
-         else this.message = 'Organization name already use'
-     }
- }
- 
- class OrganizationParameterMissing extends Error {
-     constructor(message) {
-         super()
-         this.name = 'OrganizationParameterMissing'
-         this.type = ExceptionType
-         this.status = '405'
-         if (message) this.message = message
-         else this.message = 'Mandatory parameter are missing'
-     }
- }
-
- class OrganizationWrongParameterType extends Error {
-    constructor(message) {
-        super()
-        this.name = 'OrganizationWrongParameterType'
-        this.type = ExceptionType
-        this.status = '405'
-        if (message) this.message = message
-        else this.message = 'Mandatory parameter are missing'
-    }
-}
- 
- class OrganizationUnknowType extends Error {
-    constructor(message) {
-        super()
-        this.name = 'OrganizationUnknowType'
-        this.type = ExceptionType
-        this.status = '405'
-        if (message) this.message = message
-        else this.message = 'Organization type requested is not supported'
-    }
-}
-
- class OrganizationCreationError extends Error {
-     constructor(message) {
-         super()
-         this.name = 'OrganizationCreationError'
-         this.type = ExceptionType
-         this.status = '403'
-         if (message) this.message = message
-         else this.message = 'Error during the organization creation process'
-     }
- }
- 
- class OrganizationError extends Error {
+class OrganizationError extends Error {
     constructor(message) {
         super()
         this.name = 'OrganizationError'
         this.type = ExceptionType
-        this.status = '500'
+        this.status = '400'
         if (message) this.message = message
-        else this.message = 'Internal Server Error during an organization process'
+        else this.message = 'Error during the operation'
+    }
+}
+
+class OrganizationForbidden extends Error {
+    constructor(message) {
+        super()
+        this.name = 'OrganizationForbidden'
+        this.type = ExceptionType
+        this.status = '403'
+        if (message) this.message = message
+        else this.message = 'Not allowed to do this'
     }
 }
 
@@ -112,33 +34,38 @@ class OrganizationNotFound extends Error {
         this.type = ExceptionType
         this.status = '404'
         if (message) this.message = message
-        else this.message = 'Requested organization not found'
+        else this.message = 'Organization not found'
     }
 }
 
-class OrganizationAccessDenied extends Error {
+class OrganizationConflict extends Error {
     constructor(message) {
-      super()
-      this.name = 'OrganizationAccessDenied'
-      this.type = ExceptionType
-      this.status = '401'
-      if (message) this.message = message
-      else this.message = 'User don\'t have access to the organization'
+        super()
+        this.name = 'OrganizationConflict'
+        this.type = ExceptionType
+        this.status = '409'
+        if (message) this.message = message
+        else this.message = 'Organization already exists'
     }
-  }
+}
+
+class OrganizationUnsupportedMediaType extends Error {
+    constructor(message) {
+        super()
+        this.name = 'OrganizationUnsupportedMediaType'
+        this.type = ExceptionType
+        this.status = '415'
+        if (message) this.message = message
+        else this.message = 'Parameter is not supported'
+    }
+}
 
 
- module.exports = {
-     //Users Exception
-     OrganizationDeleteError,
-     OrganizationNameAlreadyUsed,
-     OrganizationParameterMissing,
-     OrganizationWrongParameterType,
-     OrganizationUnknowType,
-     OrganizationCreationError,
-     OrganizationNotFound,
-     OrganizationAddUserError,
-     OrganizationUpdateError,
-     OrganizationAccessDenied,
-     OrganizationError
- }
+
+module.exports = {
+    OrganizationError,
+    OrganizationForbidden,
+    OrganizationNotFound,
+    OrganizationConflict,
+    OrganizationUnsupportedMediaType
+}

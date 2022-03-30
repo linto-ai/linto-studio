@@ -5,15 +5,17 @@ const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 
-
 const StoreFile = require(`${process.cwd()}/components/WebServer/controllers/storeFile`)
+
 const {
+    OrganizationConflict,
+} = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
+
+const {
+    UserConflict,
+    UserError,
     UserNotFound,
-    UserEmailAlreadyUsed,
-    UserParameterMissing,
-    UserCreationError,
-    UserUpdateError,
-    UserDeleteError
+    UserUnsupportedMediaType,
 } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
 
 async function listUser(req, res, next) {
@@ -42,25 +44,25 @@ async function getUserById(req, res, next) {
 async function createUser(req, res, next) {
     try {
         const user = req.body
-        if (!user.email || !user.firstname || !user.lastname || !user.userName ||!user.password) throw (new UserParameterMissing())
+        if (!user.email || !user.firstname || !user.lastname || !user.userName || !user.password) throw (new UserUnsupportedMediaType())
 
         if (req.files && Object.keys(req.files).length !== 0 && req.files.file)
             user.img = await StoreFile.storeFile(req.files.file, 'picture')
         else user.img = StoreFile.defaultPicture()
 
         const isUserFound = await userModel.getUserByEmail(user.email)
-        if(isUserFound.length !== 0) throw (new UserEmailAlreadyUsed())
+        if (isUserFound.length !== 0) throw (new UserConflict())
 
         const isOrganizationFound = await organizationModel.getOrganizationByName(user.email)
-        if(isOrganizationFound.length !== 0) throw (new UserEmailAlreadyUsed())
+        if (isOrganizationFound.length !== 0) throw (new OrganizationConflict())
 
         const createdUser = await userModel.createUser(user)
-        if(createdUser.status !== 'success') throw (new UserCreationError())
+        if (createdUser.status !== 'success') throw (new UserError())
 
         const createdOrganization = await organizationModel.createDefaultOrganization(createdUser.insertedId.toString(), user.email)
-        if(createdOrganization.status !== 'success'){
+        if (createdOrganization.status !== 'success') {
             userModel.deleteById(createdUser.insertedId.toString())
-            throw (new UserCreationError())
+            throw (new UserError())
         }
 
         res.status(200).send({
@@ -75,10 +77,10 @@ async function createUser(req, res, next) {
 
 async function updateUser(req, res, next) {
     try {
-        if (!(req.body.userName || req.body.email || req.body.firstname || req.body.lastname)) throw (new UserParameterMissing())
+        if (!(req.body.userName || req.body.email || req.body.firstname || req.body.lastname)) throw (new UserUnsupportedMediaType())
 
         let myUser = await userModel.getUserById(req.payload.data.userId)
-        if(myUser.length !== 1) throw (new UserNotFound())
+        if (myUser.length !== 1) throw (new UserNotFound())
         let user = myUser[0]
 
         req.body.userName ? user.userName = req.body.userName : ''
@@ -87,19 +89,20 @@ async function updateUser(req, res, next) {
         req.body.lastname ? user.lastname = req.body.lastname : ''
 
         let result = await userModel.update(user)
-        if (result !== 'success') throw new UserUpdateError()
+        if (result !== 'success') throw new UserError()
 
         res.status(200).send({
             msg: 'User has been updated'
         })
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
+        if (err.error === 'no_match') res.status(304).send({ message: 'User unchanged' })
+        else res.status(err.status).send({ message: err.message })
     }
 }
 
 async function updateUserPicture(req, res, next) {
     try {
-        if(!req.files && Object.keys(req.files).length === 0 && !req.files.file) throw new UserParameterMissing()
+        if (!req.files && Object.keys(req.files).length === 0 && !req.files.file) throw new UserUnsupportedMediaType()
 
         const payload = {
             _id: req.payload.data.userId,
@@ -107,43 +110,45 @@ async function updateUserPicture(req, res, next) {
         }
 
         const myUser = await userModel.getUserById(req.payload.data.userId)
-        if(myUser.length !== 1) throw (new UserNotFound())
+        if (myUser.length !== 1) throw (new UserNotFound())
 
         const result = await userModel.update(payload)
-        if (result !== 'success') throw new UserUpdateError()
+        if (result !== 'success') throw new UserError()
 
         res.status(200).send({
             msg: 'User picture has been updated'
         })
 
-    } catch(err){
-        res.status(err.status).send({ message: err.message })
+    } catch (err) {
+        if (err.error === 'no_match') res.status(304).send({ message: 'User unchanged' })
+        else res.status(err.status).send({ message: err.message })
     }
 }
 
 async function updateUserPassword(req, res, next) {
     try {
-        if (!req.body.newPassword) throw (new UserParameterMissing())
+        if (!req.body.newPassword) throw (new UserUnsupportedMediaType())
 
         const myUser = await userModel.getUserById(req.payload.data.userId)
 
-        if(myUser.length !== 1) throw (new UserNotFound())
+        if (myUser.length !== 1) throw (new UserNotFound())
         const payload = {
             ...myUser[0],
-            newPassword : req.body.newPassword
+            newPassword: req.body.newPassword
         }
 
         const result = await userModel.updatePassword(payload)
-        if (result !== 'success') throw new UserUpdateError()
+        if (result !== 'success') throw new UserError()
 
         res.cookie('authToken', '')
         res.cookie('userId', '')
-        req.session.destroy(function(err) {
+        req.session.destroy(function (err) {
             if (err) throw 'Error on deleting session'
             res.redirect('/login')
         })
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
+        if (err.error === 'no_match') res.status(304).send({ message: 'User unchanged' })
+        else res.status(err.status).send({ message: err.message })
     }
 }
 
@@ -156,7 +161,7 @@ async function logout(req, res, next) {
             }).then(user => {
                 res.cookie('authToken', '')
                 res.cookie('userId', '')
-                req.session.destroy(function(err) {
+                req.session.destroy(function (err) {
                     // cannot access session here
                     if (err) {
                         throw 'Error on deleting session'
@@ -178,35 +183,35 @@ async function deleteUser(req, res, next) {
     try {
 
         const userId = req.payload.data.userId
-        
+
         const organizations = await organizationModel.getAllOrganizations()
 
         organizations.filter(organization => {
             if (organization.owner === userId && organization.users.length === 0) return true
-            else if ((organization.users.filter(user => user.userId === userId)).length !== 0 ) return true
+            else if ((organization.users.filter(user => user.userId === userId)).length !== 0) return true
         }).map(async (organization) => {
             let resultOperation
-            if(organization.owner === userId  && organization.users.length === 0){
+            if (organization.owner === userId && organization.users.length === 0) {
                 resultOperation = await organizationModel.deleteOrganization(organization._id.toString())
-            }else {
+            } else {
                 organization.users = organization.users.filter(user => user.userId !== userId)
                 resultOperation = await organizationModel.update(organization)
             }
-            if(resultOperation !== 'success' || resultOperation.status !== 'success') throw new UserDeleteError('Error during organization rights deletion')
+            if (resultOperation !== 'success' || resultOperation.status !== 'success') throw new UserError('Error during organization rights deletion')
         })
 
         const conversations = await conversationModel.getAllConvos()
         conversations.filter(conversation => {
-            if ((conversation.sharedWithUsers.filter(user => user.userId === userId)).length !== 0 ) return true
+            if ((conversation.sharedWithUsers.filter(user => user.userId === userId)).length !== 0) return true
         }).map(async (conversation) => {
             conversation.sharedWithUsers = conversation.sharedWithUsers.filter(user => user.userId !== userId)
             const resultConvoUpdate = await conversationModel.update(conversation)
-            if(resultConvoUpdate !== 'success') throw new UserDeleteError('Error during conversation rights deletion')
+            if (resultConvoUpdate !== 'success') throw new UserError('Error during conversation rights deletion')
         })
         // TODO: check if owner and nobody else is in the conversation
 
         const result = await userModel.deleteUser(req.payload.data.userId)
-        if(result.status !== 'success') throw new UserDeleteError
+        if (result.status !== 'success') throw new UserError
 
         res.status(200).send({
             msg: 'User deleted'

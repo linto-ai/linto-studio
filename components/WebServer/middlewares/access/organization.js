@@ -4,50 +4,53 @@ const OrganizationModel = require(`${process.cwd()}/lib/mongodb/models/organizat
 const ROLES = require(`${process.cwd()}/lib/dao/roles/organization`)
 
 const {
-  OrganizationAccessDenied,
-  OrganizationParameterMissing,
-  OrganizationError
+  OrganizationForbidden,
+  OrganizationNotFound,
+  OrganizationUnsupportedMediaType,
 } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
 module.exports = {
   asOwnerAccess: (req, res, next) => { //.owner
     OrganizationModel.getOrganizationById(req.params.organizationid).then(organization => {
-      if(organization.length === 1 && organization[0].owner === req.payload.data.userId) next()
-      else next(new OrganizationAccessDenied())
+      if (organization.length === 1 && organization[0].owner === req.payload.data.userId) next()
+      else next(new OrganizationForbidden())
     })
   },
   asAdminAccess: (req, res, next) => {
-    checkOrganizationUserRight(next, req.params.organizationId, req.payload.data.userId, ROLES.ADMIN, OrganizationAccessDenied)
+    checkOrganizationUserRight(req, next, req.params.organizationId, req.payload.data.userId, ROLES.ADMIN)
   },
   asMaintainerAccess: (req, res, next) => {
-    checkOrganizationUserRight(next, req.params.organizationId, req.payload.data.userId, ROLES.MAINTAINER, OrganizationAccessDenied)
+    checkOrganizationUserRight(req, next, req.params.organizationId, req.payload.data.userId, ROLES.MAINTAINER)
   },
   asMemberAccess: (req, res, next) => {
-    checkOrganizationUserRight(next, req.params.organizationId, req.payload.data.userId, ROLES.MEMBER, OrganizationAccessDenied)
+    checkOrganizationUserRight(req, next, req.params.organizationId, req.payload.data.userId, ROLES.MEMBER)
   }
 }
 
-function checkOrganizationUserRight(next, organizationId, userId, right, rightException) {
-  try{
+function checkOrganizationUserRight(req, next, organizationId, userId, right) {
+  try {
     if (!organizationId) {
-        next(new OrganizationParameterMissing())
-        return
+      next(new OrganizationUnsupportedMediaType())
+      return
     }
 
     OrganizationModel.getOrganizationById(organizationId).then(organization => {
       if (organization.length !== 1)
-        next(new OrganizationError('Requested organization not found'))
-      else if (organization[0].owner === userId)
+        next(new OrganizationNotFound())
+      else if (organization[0].owner === userId) {
+        req.userRole = ROLES.ADMIN
         next()
-      else {
+      } else {
         const isUserFound = organization[0].users
           .filter(user => user.userId === userId && ROLES.asRoleAccess(user.role, right))
 
-        if(isUserFound.length !== 0) next()
-        else next(new OrganizationAccessDenied('Acces denied'))
+        if (isUserFound.length !== 0) {
+          req.userRole = isUserFound[0].role
+          next()
+        } else next(new OrganizationForbidden())
       }
     })
-  } catch(err) {
+  } catch (err) {
     next(err)
   }
 }

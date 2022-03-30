@@ -1,15 +1,30 @@
 const debug = require('debug')('app:router:api:organizations:organizations')
 const {
-    listUserOrganization,
-    listOrganization,
     createOrganization,
-    addUserInOrganization,
-    updateOrganization,
-    updateUserInOrganization,
-    deleteUserFromOrganization,
-    deleteOrganization,
+    listOrganization,
     getOrganization
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/organizations.js`)
+
+const {
+    listSelfOrganization,
+    updateSelfFromOrganization,
+    leaveSelfFromOrganization
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/member.js`)
+
+const {
+    addUserInOrganization,
+    updateUserFromOrganization,
+    deleteUserFromOrganization
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/maintainer.js`)
+
+const {
+    adminAddUserInOrganization,
+    adminUpdateUserFromOrganization,
+    adminDeleteUserFromOrganization,
+    updateOrganization,
+    deleteOrganization
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/admin.js`)
+
 
 module.exports = (webserver) => {
     return [
@@ -22,17 +37,36 @@ module.exports = (webserver) => {
             controller: createOrganization
         },
         {
-            path: '/user',
-            method: 'get',
-            requireAuth: true,
-            controller: listUserOrganization
-        },
-        {
             path: '/',
             method: 'get',
             requireAuth: true,
             controller: listOrganization
         },
+
+        /*Member right */
+
+        {
+            path: '/user',
+            method: 'get',
+            requireAuth: true,
+            controller: listSelfOrganization
+        },
+        {
+            path: '/user/:organizationId',
+            method: 'patch',
+            requireAuth: true,
+            controller: updateSelfFromOrganization
+        },
+        {
+            path: '/user/:organizationId',
+            method: 'delete',
+            requireAuth: true,
+            controller: leaveSelfFromOrganization
+        },
+
+
+        // TODO: WIP HERE
+
 
         /* Maintainer right*/
         {
@@ -47,7 +81,7 @@ module.exports = (webserver) => {
             method: 'patch',
             requireAuth: true,
             requireOrganizationMaintainerAccess: true,
-            controller: updateUserInOrganization
+            controller: updateUserFromOrganization
         },
         {
             path: '/:organizationId/user',
@@ -56,6 +90,7 @@ module.exports = (webserver) => {
             requireOrganizationMaintainerAccess: true,
             controller: deleteUserFromOrganization
         },
+
         /* Admin right*/
         {
             path: '/:organizationId',
@@ -70,12 +105,6 @@ module.exports = (webserver) => {
             requireAuth: true,
             requireOrganizationAdminAccess: true,
             controller: deleteOrganization
-        },
-        {
-            path: '/:organizationId/user/',
-            method: 'delete',
-            requireAuth: true,
-            controller: deleteUserFromOrganization
         }
     ]
 }

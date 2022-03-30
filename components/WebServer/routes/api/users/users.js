@@ -6,7 +6,6 @@ const {
     updateUser,
     updateUserPassword,
     updateUserPicture,
-    deleteUserOrganization,
     deleteUser,
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/users/users.js`)
 

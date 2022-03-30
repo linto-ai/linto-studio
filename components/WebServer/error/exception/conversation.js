@@ -124,7 +124,6 @@ class ConversationError extends Error {
 }
 
 module.exports = {
-  //Conversation Exception
   ConversationNotAddedToUser,
   ConversationNoFileUploaded,
   ConversationMetadataRequire,

@@ -17,6 +17,5 @@ class InternalServerError extends Error {
 
 
 module.exports = {
-  //Server Exception
   InternalServerError,
 }

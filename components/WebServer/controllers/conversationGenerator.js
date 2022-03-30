@@ -1,4 +1,4 @@
-const debug = require('debug')('linto:components:WebServer:controller:request')
+const debug = require('debug')('linto:components:WebServer:controller:conversationGenerator')
 
 const { v4: uuidv4 } = require('uuid');
 const mm = require('music-metadata')

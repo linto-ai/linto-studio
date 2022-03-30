@@ -4,71 +4,36 @@
 
 const ExceptionType = 'users'
 
-class UserEmailAlreadyUsed extends Error {
+class UserError extends Error {
     constructor(message) {
         super()
-        this.name = 'UserEmailAlreadyUsed'
-        this.type = ExceptionType
-        this.status = '403'
-        if (message) this.message = message
-        else this.message = 'Email address already in use'
-    }
-}
-
-class UserParameterMissing extends Error {
-    constructor(message) {
-        super()
-        this.name = 'UserParameterMissing'
-        this.type = ExceptionType
-        this.status = '405'
-        if (message) this.message = message
-        else this.message = 'Mandatory parameter are missing'
-    }
-}
-
-class UserCreationError extends Error {
-    constructor(message) {
-        super()
-        this.name = 'UserCreationError'
-        this.type = ExceptionType
-        this.status = '403'
-        if (message) this.message = message
-        else this.message = 'Error during the user creation process'
-    }
-}
-
-class UserUpdateError extends Error {
-    constructor(message) {
-        super()
-        this.name = 'UserCreationError'
-        this.type = ExceptionType
-        this.status = '403'
-        if (message) this.message = message
-        else this.message = 'Error during the user update process'
-    }
-}
-
-class UserDeleteError extends Error {
-    constructor(message) {
-        super()
-        this.name = 'UserDeleteError'
+        this.name = 'UserError'
         this.type = ExceptionType
         this.status = '400'
         if (message) this.message = message
-        else this.message = 'Error during deletion process'
+        else this.message = 'Error during the operation'
     }
 }
 
-
-class UserLogoutError extends Error {
+class UserConflict extends Error {
     constructor(message) {
         super()
+        this.name = 'UserConflict'
+        this.type = ExceptionType
+        this.status = '409'
+        if (message) this.message = message
+        else this.message = 'user address already use'
+    }
+}
 
-        this.name = 'UserLogoutError'
+class UserForbidden extends Error {
+    constructor(message) {
+        super()
+        this.name = 'UserForbidden'
         this.type = ExceptionType
         this.status = '403'
         if (message) this.message = message
-        else this.message = 'Unable to disconnect the user'
+        else this.message = 'Not allowed to do this'
     }
 }
 
@@ -83,15 +48,24 @@ class UserNotFound extends Error {
     }
 }
 
+class UserUnsupportedMediaType extends Error {
+    constructor(message) {
+        super()
+        this.name = 'UserUnsupportedMediaType'
+        this.type = ExceptionType
+        this.status = '415'
+        if (message) this.message = message
+        else this.message = 'Parameter is not supported'
+    }
+}
+
+
 
 
 module.exports = {
-    //Users Exception
-    UserEmailAlreadyUsed,
-    UserDeleteError,
-    UserParameterMissing,
-    UserCreationError,
-    UserUpdateError,
+    UserConflict,
+    UserError,
+    UserForbidden,
     UserNotFound,
-    UserLogoutError
+    UserUnsupportedMediaType
 }
