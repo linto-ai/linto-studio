@@ -1,7 +1,6 @@
 const debug = require('debug')(`app:conversation-manager:components:WebServer:routeControllers:conversation`)
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
-const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
 
 const CONVERSATION_RIGHTS = require(`${process.cwd()}/lib/dao/rights/conversation`)
 const ORGANIZATION_ROLES = require(`${process.cwd()}/lib/dao/roles/organization`)

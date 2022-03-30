@@ -46,7 +46,7 @@ async function updateSelfFromOrganization(req, res, next) {
     if (result !== 'success') throw new OrganizationError()
 
     res.status(200).send({
-      msg: 'User updated'
+      msg: 'Updated yourself from organization'
     })
   } catch (err) {
     if (err.error === 'no_match') res.status(304).send({ message: 'Organization unchanged' })
@@ -69,7 +69,7 @@ async function leaveSelfFromOrganization(req, res, next) {
     if (result !== 'success') throw new OrganizationError()
 
     res.status(200).send({
-      msg: 'User updated'
+      msg: 'Removed yourself from organization'
     })
   } catch (err) {
     if (err.error === 'no_match') res.status(304).send({ message: 'Organization unchanged' })

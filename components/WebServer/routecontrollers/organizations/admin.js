@@ -3,13 +3,6 @@ const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizat
 const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
 
 const {
-  /*
-      OrganizationError,
-      OrganizationForbidden,
-      OrganizationNotFound,
-      OrganizationConflict,
-      OrganizationUnsupportedMediaType
-  } */
   OrganizationUnsupportedMediaType,
   OrganizationError,
 } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)

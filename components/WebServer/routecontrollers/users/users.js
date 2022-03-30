@@ -66,7 +66,7 @@ async function createUser(req, res, next) {
         }
 
         res.status(200).send({
-            msg: 'Your account has been created'
+            msg: 'Account have been created'
         })
     } catch (error) {
         res.status(error.status).send({

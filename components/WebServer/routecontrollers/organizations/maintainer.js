@@ -36,7 +36,7 @@ async function addUserInOrganization(req, res, next) {
     if (result !== 'success') throw new OrganizationError()
 
     res.status(200).send({
-      msg: 'User updated'
+      msg: 'Added a user to the organization'
     })
   } catch (err) {
     if (err.error === 'no_match') res.status(304).send({ message: 'Organization unchanged' })
@@ -68,7 +68,7 @@ async function updateUserFromOrganization(req, res, next) {
     if (result !== 'success') throw new OrganizationError('Error while updating user in organization')
 
     res.status(200).send({
-      msg: 'User updated'
+      msg: 'Updated user role from the organization'
     })
   } catch (err) {
     if (err.error === 'no_match') res.status(304).send({ message: 'Organization unchanged' })
@@ -91,7 +91,7 @@ async function deleteUserFromOrganization(req, res, next) {
     if (result !== 'success') throw new OrganizationError()
 
     res.status(200).send({
-      msg: 'User role deleted'
+      msg: 'Removed user from organization'
     })
   } catch (err) {
     res.status(err.status).send({ message: err.message })
