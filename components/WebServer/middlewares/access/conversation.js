@@ -57,7 +57,7 @@ function checkConvAccess(next, conversationId, userId, rightConvo, rightExceptio
                 // User access middleware management
                 if(conversation.sharedWithUsers.length !== 0){
                   conversation.sharedWithUsers.map(conversationUsers => {
-                    if (conversationUsers.userId === userId && CONVERSATION_RIGHTS.asRightAccess(conversationUsers.right, rightConvo)){
+                    if (conversationUsers.userId === userId && CONVERSATION_RIGHTS.hasRightAccess(conversationUsers.right, rightConvo)){
                       hasAccess = true
                       next()
                     }
@@ -75,8 +75,8 @@ function checkConvAccess(next, conversationId, userId, rightConvo, rightExceptio
                     if(isUserFound.length !== 1) next(new ConversationNotShared())
 
                     const user = isUserFound[0] // user right in organization
-                    if(ORGANIZATION_ROLES.asRoleAccess(user.role, ORGANIZATION_ROLES.MAINTAINER) ||
-                    ORGANIZATION_ROLES.asRoleAccess(user.role, conversation.organization.role)){
+                    if(ORGANIZATION_ROLES.hasRoleAccess(user.role, ORGANIZATION_ROLES.MAINTAINER) ||
+                    ORGANIZATION_ROLES.hasRoleAccess(user.role, conversation.organization.role)){
                         hasAccess = true
                         next()
                     } else if(!hasAccess){
@@ -116,12 +116,12 @@ function checkConvRestrictedAcess(next, conversationId, userId, rightConvo, righ
 
                     // user is MAINTAINER or as right to share conversation
                     const user = isUserFound[0] // user right in organization
-                    if(ORGANIZATION_ROLES.asRoleAccess(user.role, ORGANIZATION_ROLES.MAINTAINER) ||
-                      ORGANIZATION_ROLES.asRoleAccess(user.role, conversation.organization.role)){
+                    if(ORGANIZATION_ROLES.hasRoleAccess(user.role, ORGANIZATION_ROLES.MAINTAINER) ||
+                      ORGANIZATION_ROLES.hasRoleAccess(user.role, conversation.organization.role)){
                         next()
                     } else if(conversation.sharedWithUsers.length !== 0){
                       conversation.sharedWithUsers.map(conversationUsers => {
-                        if (conversationUsers.userId === userId && CONVERSATION_RIGHTS.asRightAccess(conversationUsers.right, rightConvo)){
+                        if (conversationUsers.userId === userId && CONVERSATION_RIGHTS.hasRightAccess(conversationUsers.right, rightConvo)){
                           next()
                         } else next(new rightException())
                       })

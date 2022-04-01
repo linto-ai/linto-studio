@@ -18,9 +18,6 @@ const {
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/maintainer.js`)
 
 const {
-    adminAddUserInOrganization,
-    adminUpdateUserFromOrganization,
-    adminDeleteUserFromOrganization,
     updateOrganization,
     deleteOrganization
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/admin.js`)

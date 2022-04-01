@@ -42,7 +42,7 @@ function checkOrganizationUserRight(req, next, organizationId, userId, right) {
         next()
       } else {
         const isUserFound = organization[0].users
-          .filter(user => user.userId === userId && ROLES.asRoleAccess(user.role, right))
+          .filter(user => user.userId === userId && ROLES.hasRoleAccess(user.role, right))
 
         if (isUserFound.length !== 0) {
           req.userRole = isUserFound[0].role

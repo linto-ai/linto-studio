@@ -82,7 +82,7 @@ async function deleteUserFromOrganization(req, res, next) {
 
     let organization = await orgaUtility.getOrganization(req.params.organizationId)
     if (organization.users.filter(oUser => (oUser.userId === req.body.userId &&
-      ROLES.asRevokeRoleAccess(oUser.role, req.userRole))).length === 0)
+      ROLES.hasRevokeRoleAccess(oUser.role, req.userRole))).length === 0)
       throw new OrganizationError('User is not in the ' + organization.name + ' organization')
 
     organization.users = organization.users.filter(oUser => oUser.userId !== req.body.userId)

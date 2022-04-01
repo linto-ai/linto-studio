@@ -52,7 +52,7 @@ async function listConversation(req, res, next) {
       }
       // User have rights to read
       else if(conversation.sharedWithUsers.filter(user => user.userId === userId &&
-                  CONVERSATION_RIGHTS.asRightAccess(user.right, CONVERSATION_RIGHTS.READ)).length !== 0)
+                  CONVERSATION_RIGHTS.hasRightAccess(user.right, CONVERSATION_RIGHTS.READ)).length !== 0)
       {
             convList.push(conversation)
       }
@@ -61,7 +61,7 @@ async function listConversation(req, res, next) {
         const organization = await organizationModel.getOrganizationById(conversation.organization.organizationId)
 
         if(organization[0].users.filter(user => user.userId === userId &&
-                ORGANIZATION_ROLES.asRoleAccess(user.role, conversation.organization.role)).length !== 0)
+                ORGANIZATION_ROLES.hasRoleAccess(user.role, conversation.organization.role)).length !== 0)
         {
           convList.push(conversation)
         }
