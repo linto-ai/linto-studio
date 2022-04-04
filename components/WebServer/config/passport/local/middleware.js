@@ -5,19 +5,12 @@ const passport = require('passport')
 const jwt = require('express-jwt')
 
 const UsersModel = require(`${process.cwd()}/lib/mongodb/models/users`)
-const ConversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 
 const { MalformedToken, MultipleUserFound } = require(`${process.cwd()}/components/WebServer/error/exception/auth`)
-const {
-    ConversationOwnerAccessDenied,
-    ConversationReadAccessDenied,
-    ConversationWriteAccessDenied,
-    ConversationNotShared,
-    ConversationIdRequire
-} = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
+const { UserNotFound } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
+
 
 const refreshToken = require('./token/refresh')
-const RIGHTS = require(`${process.cwd()}/components/WebServer/controllers/rights`)
 
 module.exports = {
     authType: 'local',
@@ -79,20 +72,6 @@ module.exports = {
             next()
         }
     ],
-    asOwnerAccess: [
-        (req, res, next) => {
-            ConversationModel.getConvoOwner(req.params.conversationid).then(conversation => {
-                if (conversation.length === 1 && conversation[0].owner === req.payload.data.userId) next()
-                else next(new ConversationOwnerAccessDenied())
-            })
-        },
-    ],
-    asReadAccess: [(req, res, next) => {
-        checkConvSharedRight(next, req.params.conversationid, req.payload.data.userId, RIGHTS.READ, ConversationReadAccessDenied)
-    }],
-    asWriteAccess: [(req, res, next) => {
-        checkConvSharedRight(next, req.params.conversationid, req.payload.data.userId, RIGHTS.WRITE, ConversationWriteAccessDenied)
-    }],
     refresh_token: [
         jwt({
             secret: generateRefreshSecretFromHeaders,
@@ -116,62 +95,37 @@ function getTokenFromHeaders(req, res, next) {
 
 function generateSecretFromHeaders(req, payload, done) {
     try {
-        if (!payload || !payload.data) {
-            return new MalformedToken()
-        } else {
-            const { headers: { authorization } } = req
-            if (authorization.split(' ')[0] === 'Bearer') {
-                UsersModel.getUserById(payload.data.userId).then(users => {
-                    if (users.length === 1) return done(null, users[0].keyToken + process.env.CM_JWT_SECRET)
-                    else throw MultipleUserFound
-                })
-            }
+        if (!payload || !payload.data) done(new MalformedToken())
+        const { headers: { authorization } } = req
+        
+        if (authorization.split(' ')[0] === 'Bearer') {
+            UsersModel.getUserTokenById(payload.data.userId).then(users => {
+                if(users.length === 0) done(new UserNotFound())
+                else if(users.length !== 1) done(new MultipleUserFound())
+                else return done(null, users[0].keyToken + process.env.CM_JWT_SECRET)
+            })
         }
     } catch (error) {
-        console.error('generateSecretFromHeaders ERR:', error)
-        return error
+        console.error('generateSecretFromHeaders ERR:')
+        done(error)
     }
 }
 
 function generateRefreshSecretFromHeaders(req, payload, done) {
     try {
-        if (!payload || !payload.data) {
-            throw new MalformedToken()
-        } else {
-            const { headers: { authorization } } = req
-            if (authorization.split(' ')[0] === 'Bearer') {
-                UsersModel.getUserById(payload.data.userId).then(users => {
-                    if (users.length === 1) done(null, users[0].keyToken + process.env.CM_REFRESH_SECRET)
-                    else throw MultipleUserFound
-                })
-            }
+        if (!payload || !payload.data) done(new MalformedToken())
+
+        const { headers: { authorization } } = req
+        if (authorization.split(' ')[0] === 'Bearer') {
+            UsersModel.getUserTokenById(payload.data.userId).then(users => {
+                if(users.length === 0) done(new UserNotFound())
+                else if(users.length !== 1) done(new MultipleUserFound())
+                else done(null, users[0].keyToken + process.env.CM_REFRESH_SECRET)
+            })
         }
     } catch (error) {
-        console.error('generateRefreshSecretFromHeaders ERR:', error)
-        return error
+        console.error('generateRefreshSecretFromHeaders ERR:')
+        done(error)
     }
 
-}
-
-function checkConvSharedRight(next, conversationId, userId, right, rightException) {
-    if (!conversationId) {
-        next(new ConversationIdRequire())
-        return
-    }
-    ConversationModel.getConvoShared(conversationId).then(conversation => {
-        if (conversation.length === 1 && conversation[0].sharedWith) {
-            if (conversation.length === 1 && conversation[0].owner === userId) next()
-            else {
-                let userFound = false
-                conversation[0].sharedWith.map(conversationUsers => {
-                    if (conversationUsers.user_id === userId)
-                        if (RIGHTS.asRightAccess(conversationUsers.rights, right)) {
-                            userFound = true
-                            next()
-                        } else next(new rightException())
-                })
-                if (!userFound) next(new ConversationNotShared())
-            }
-        } else next(new ConversationNotShared())
-    })
 }

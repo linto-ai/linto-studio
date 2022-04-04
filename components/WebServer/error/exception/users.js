@@ -4,55 +4,68 @@
 
 const ExceptionType = 'users'
 
-class UserEmailAlreadyUsed extends Error {
+class UserError extends Error {
     constructor(message) {
         super()
-        this.name = 'UserEmailAlreadyUsed'
+        this.name = 'UserError'
+        this.type = ExceptionType
+        this.status = '400'
+        if (message) this.message = message
+        else this.message = 'Error during the operation'
+    }
+}
+
+class UserConflict extends Error {
+    constructor(message) {
+        super()
+        this.name = 'UserConflict'
+        this.type = ExceptionType
+        this.status = '409'
+        if (message) this.message = message
+        else this.message = 'user address already use'
+    }
+}
+
+class UserForbidden extends Error {
+    constructor(message) {
+        super()
+        this.name = 'UserForbidden'
         this.type = ExceptionType
         this.status = '403'
         if (message) this.message = message
-        else this.message = 'Email address already in use'
+        else this.message = 'Not allowed to do this'
     }
 }
 
-class UserParameterMissing extends Error {
+class UserNotFound extends Error {
     constructor(message) {
         super()
-        this.name = 'UserParameterMissing'
+        this.name = 'UserNotFound'
         this.type = ExceptionType
-        this.status = '405'
+        this.status = '404'
         if (message) this.message = message
-        else this.message = 'Mandatory parameter are missing'
+        else this.message = 'User not found'
     }
 }
 
-class UserCreationError extends Error {
+class UserUnsupportedMediaType extends Error {
     constructor(message) {
         super()
-        this.name = 'UserCreationError'
+        this.name = 'UserUnsupportedMediaType'
         this.type = ExceptionType
-        this.status = '403'
+        this.status = '415'
         if (message) this.message = message
-        else this.message = 'Error during the user creation process'
+        else this.message = 'Parameter is not supported'
     }
 }
 
-class UserLogoutError extends Error {
-    constructor(message) {
-        super()
 
-        this.name = 'UserLogoutError'
-        this.type = ExceptionType
-        this.status = '403'
-        if (message) this.message = message
-        else this.message = 'Unable to disconnect the user'
-    }
-}
+
 
 module.exports = {
-    //Users Exception
-    UserEmailAlreadyUsed,
-    UserParameterMissing,
-    UserCreationError,
-    UserLogoutError
+    UserConflict,
+    UserError,
+    UserForbidden,
+    UserNotFound,
+    UserUnsupportedMediaType
 }

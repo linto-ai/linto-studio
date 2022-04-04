@@ -58,6 +58,17 @@ class ConversationWriteAccessDenied extends Error {
   }
 }
 
+class ConversationShareAccessDenied extends Error {
+  constructor(message) {
+    super()
+    this.name = 'ConversationShareAccessDenied'
+    this.type = ExceptionType
+    this.status = '401'
+    if (message) this.message = message
+    else this.message = `User don't have share access to the conversation`
+  }
+}
+
 class ConversationReadAccessDenied extends Error {
   constructor(message) {
     super()
@@ -89,14 +100,38 @@ class ConversationIdRequire extends Error {
     else this.message = `Conversation id param is require`
   }
 }
+
+class ConversationNotFound extends Error {
+  constructor(message) {
+      super()
+      this.name = 'ConversationNotFound'
+      this.type = ExceptionType
+      this.status = '404'
+      if (message) this.message = message
+      else this.message = 'Requested conversation not found'
+  }
+}
+
+class ConversationError extends Error {
+  constructor(message) {
+    super()
+    this.name = 'ConversationError'
+    this.type = ExceptionType
+    this.status = '400'
+    if (message) this.message = message
+    else this.message = `Error on generating conversation`
+  }
+}
+
 module.exports = {
-  //Conversation Exception
   ConversationNotAddedToUser,
   ConversationNoFileUploaded,
   ConversationMetadataRequire,
   ConversationOwnerAccessDenied,
   ConversationReadAccessDenied,
   ConversationWriteAccessDenied,
+  ConversationShareAccessDenied,
   ConversationNotShared,
-  ConversationIdRequire
+  ConversationIdRequire,
+  ConversationError
 }

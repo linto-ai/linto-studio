@@ -1,10 +1,12 @@
 const debug = require('debug')('linto:conversation-manager:routes:auth')
 
 const { logout } = require(`${process.cwd()}/components/WebServer/routecontrollers/users/users.js`)
+const auth_middleware = require(`${process.cwd()}/components/WebServer/config/passport/local/middleware`)
 
 
-module.exports = (webServer, auth_middleware) => {
-    return [{
+module.exports = (webServer) => {
+    return [
+        {
             path: '/login',
             method: 'post',
             requireAuth: false,
@@ -20,7 +22,8 @@ module.exports = (webServer, auth_middleware) => {
             method: 'get',
             requireAuth: false,
             controller: logout
-        }, {
+        }, 
+        {
             path: '/isAuth',
             method: 'get',
             requireAuth: true,

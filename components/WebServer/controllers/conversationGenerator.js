@@ -1,4 +1,4 @@
-const debug = require('debug')('linto:components:WebServer:controller:request')
+const debug = require('debug')('linto:components:WebServer:controller:conversationGenerator')
 
 const { v4: uuidv4 } = require('uuid');
 const mm = require('music-metadata')
@@ -10,6 +10,11 @@ const moment = require('moment')
 function initConversation(metadata, job_id){
     const dateTime = moment().format()
 
+    let sharedWithUsers = []
+    if(metadata.sharedWithUsers) {
+        sharedWithUsers = metadata.sharedWithUsers
+    }
+
     return {
         name: metadata.name,
         description: metadata.description,
@@ -20,7 +25,8 @@ function initConversation(metadata, job_id){
         agenda: [""],
         abstract: '',
         owner: metadata.owner,
-        sharedWith: metadata.sharedWith,
+        sharedWithUsers: sharedWithUsers,
+        organization: { organizationId : metadata.organizationId , role: metadata.organizationRole },
         highlights: [],
         keywords: [],
         speakers: [],
