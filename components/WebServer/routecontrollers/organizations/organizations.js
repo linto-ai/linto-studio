@@ -14,10 +14,11 @@ const {
 
 async function createOrganization(req, res, next) {
     try {
-        if (!req.body.name || !req.body.type)
-            throw new OrganizationUnsupportedMediaType()
-        if (!TYPES.asType(req.body.type))
-            throw new OrganizationUnsupportedMediaType()
+        if (!req.body.name) throw new OrganizationUnsupportedMediaType()
+
+        // Type is optional (default is public)
+        if (!req.body.type) req.body.type = TYPES.public
+        else if (!TYPES.asType(req.body.type)) throw new OrganizationUnsupportedMediaType()
 
         const isOrgaFound = await organizationModel.getOrganizationByName(req.body.name)
         if (isOrgaFound.length === 1)

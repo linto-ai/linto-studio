@@ -44,7 +44,7 @@ async function getUserById(req, res, next) {
 async function createUser(req, res, next) {
     try {
         const user = req.body
-        if (!user.email || !user.firstname || !user.lastname || !user.userName || !user.password) throw (new UserUnsupportedMediaType())
+        if (!user.email || !user.firstname || !user.lastname || !user.password) throw (new UserUnsupportedMediaType())
 
         if (req.files && Object.keys(req.files).length !== 0 && req.files.file)
             user.img = await StoreFile.storeFile(req.files.file, 'picture')
@@ -77,13 +77,12 @@ async function createUser(req, res, next) {
 
 async function updateUser(req, res, next) {
     try {
-        if (!(req.body.userName || req.body.email || req.body.firstname || req.body.lastname)) throw (new UserUnsupportedMediaType())
+        if (!(req.body.email || req.body.firstname || req.body.lastname)) throw (new UserUnsupportedMediaType())
 
         let myUser = await userModel.getUserById(req.payload.data.userId)
         if (myUser.length !== 1) throw (new UserNotFound())
         let user = myUser[0]
 
-        req.body.userName ? user.userName = req.body.userName : ''
         req.body.email ? user.email = req.body.email : ''
         req.body.firstname ? user.firstname = req.body.firstname : ''
         req.body.lastname ? user.lastname = req.body.lastname : ''
@@ -103,7 +102,6 @@ async function updateUser(req, res, next) {
 async function updateUserPicture(req, res, next) {
     try {
         if (!req.files && Object.keys(req.files).length === 0 && !req.files.file) throw new UserUnsupportedMediaType()
-
         const payload = {
             _id: req.payload.data.userId,
             img: await StoreFile.storeFile(req.files.file, 'picture')
