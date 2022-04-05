@@ -2,17 +2,19 @@ const debug = require('debug')(`linto:conversation-manager:components:WebServer:
 
 const request = require(`${process.cwd()}/lib/utility/request`)
 
-const SttWrapper = require(`${process.cwd()}/components/WebServer/controllers/conversationGenerator`)
+const SttWrapper = require(`${process.cwd()}/components/WebServer/controllers/conversation/generator`)
 const StoreFile = require(`${process.cwd()}/components/WebServer/controllers/storeFile`)
 const TranscriptionHandler = require(`${process.cwd()}/components/WebServer/controllers/transcriptorHandler`)
 
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
 
-const { 
-    ConversationNoFileUploaded, 
-    ConversationMetadataRequire, 
-    ConversationError 
+const ORGANIZATION_ROLES = require(`${process.cwd()}/lib/dao/roles/organization`)
+
+const {
+    ConversationNoFileUploaded,
+    ConversationMetadataRequire,
+    ConversationError
 } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
 
@@ -23,16 +25,18 @@ const {
 async function transcriptor(req, res, next) {
     try {
         if (!req.files || Object.keys(req.files).length === 0) throw new ConversationNoFileUploaded()
-        if (!req.body.name || !req.body.organizationId || !req.body.organizationRole) throw new ConversationMetadataRequire()
+        if (!req.body.name || !req.body.organizationId) throw new ConversationMetadataRequire()
 
+        const userId = req.payload.data.userId
+        if (!req.body.role) req.body.role = ORGANIZATION_ROLES.MEMBER
 
         const organization = await organizationModel.getOrganizationById(req.body.organizationId)
         if (organization.length !== 1) throw new OrganizationNotFound()
 
-        const conversation = await transcribe(req)
+        const conversation = await transcribe(req.body, req.files, userId)
 
-        if(!conversation._id && !conversation.job.job_id) throw new ConversationError()
-        
+        if (!conversation._id && !conversation.job.job_id) throw new ConversationError()
+
         TranscriptionHandler.createJobInterval(conversation)
         res.status(200).send({
             msg: 'A conversation is currently being processed'
@@ -42,28 +46,25 @@ async function transcriptor(req, res, next) {
     }
 }
 
-async function transcribe(req){
-    const file = req.files.file
-
-    const payload = {...req.body, owner: req.payload.data.userId }
-
+async function transcribe(body, files, userId) {
+    const file = files.file
     // STT request
     const options = prepareRequest(file)
     const job_buffer = await request.post(`${process.env.STT_HOST}/transcribe`, options)
 
-    if(job_buffer){
+    if (job_buffer) {
         const job = JSON.parse(job_buffer)
-        if(job.jobid){
-            let conversation = SttWrapper.initConversation(payload, job.jobid )
+        if (job.jobid) {
+            let conversation = SttWrapper.initConversation(body, userId, job.jobid)
             const filepath = await StoreFile.storeFile(file, 'audio')
             conversation = await SttWrapper.addFileMetadataToConversation(conversation, file, filepath)
 
             const mongo_status = await conversationModel.createConversation(conversation)
-            if(mongo_status.status === 'success')
+            if (mongo_status.status === 'success')
                 return conversation
         }
     }
-    return { status : 'error' }
+    return { status: 'error' }
 }
 
 function prepareRequest(file) {
@@ -87,19 +88,19 @@ function prepareRequest(file) {
     let transcriptionConfig = {
         enablePunctuation: false,
         diarizationConfig: {
-          enableDiarization: false,
-          numberOfSpeaker: 0,
-          maxNumberOfSpeaker: 0
+            enableDiarization: false,
+            numberOfSpeaker: 0,
+            maxNumberOfSpeaker: 0
         }
-      }
+    }
 
-    if(process.env.STT_ENABLE_PUNCTUATION === "true")
+    if (process.env.STT_ENABLE_PUNCTUATION === "true")
         transcriptionConfig.enablePunctuation = true
-    if(process.env.STT_ENABLE_DIARIZATION === "true")
+    if (process.env.STT_ENABLE_DIARIZATION === "true")
         transcriptionConfig.diarizationConfig.enableDiarization = true
-    if(process.env.STT_NUMBER_OF_SPEAKER !== "0")
+    if (process.env.STT_NUMBER_OF_SPEAKER !== "0")
         transcriptionConfig.diarizationConfig.numberOfSpeaker = parseInt(process.env.NUMBER_OF_SPEAKER)
-    if(process.env.STT_MAX_NUMBER_OF_SPEAKER !== "0")
+    if (process.env.STT_MAX_NUMBER_OF_SPEAKER !== "0")
         transcriptionConfig.diarizationConfig.maxNumberOfSpeaker = parseInt(process.env.MAX_NUMBER_OF_SPEAKER)
 
     options.formData.transcriptionConfig = JSON.stringify(transcriptionConfig)

@@ -1,15 +1,13 @@
-const debug = require('debug')('linto:components:WebServer:controller:conversationGenerator')
+const debug = require('debug')('linto:components:WebServer:controller:generator')
 
 const { v4: uuidv4 } = require('uuid');
 const mm = require('music-metadata')
-const moment = require('moment')
+
 
 //Parse the stt transcription to for conversation mongodb model
 
 
-function initConversation(metadata, job_id){
-    const dateTime = moment().format()
-
+function initConversation(metadata, userId, job_id){
     let sharedWithUsers = []
     if(metadata.sharedWithUsers) {
         sharedWithUsers = metadata.sharedWithUsers
@@ -24,15 +22,13 @@ function initConversation(metadata, job_id){
         locked: 0,
         agenda: [""],
         abstract: '',
-        owner: metadata.owner,
+        owner: userId,
         sharedWithUsers: sharedWithUsers,
-        organization: { organizationId : metadata.organizationId , role: metadata.organizationRole },
+        organization: { organizationId : metadata.organizationId , role: metadata.role },
         highlights: [],
         keywords: [],
         speakers: [],
         text: [],
-        created: dateTime,
-        last_update: dateTime,
         job : {
             job_id : job_id,
             state : 'pending',
@@ -42,7 +38,6 @@ function initConversation(metadata, job_id){
 }
 
 function sttToConversation(transcript, conversation) {
-    conversation.last_update =  moment().format()
     try {
         jsonTranscript = transcript
         if (transcript === undefined || transcript.transcription_result.length === 0)

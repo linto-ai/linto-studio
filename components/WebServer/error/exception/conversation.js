@@ -4,6 +4,17 @@
 
 const ExceptionType = 'conversation'
 
+class ConversationError extends Error {
+  constructor(message) {
+    super()
+    this.name = 'ConversationError'
+    this.type = ExceptionType
+    this.status = '400'
+    if (message) this.message = message
+    else this.message = 'Error during the operation'
+  }
+}
+
 class ConversationNotAddedToUser extends Error {
   constructor(message) {
     super()
@@ -32,7 +43,7 @@ class ConversationMetadataRequire extends Error {
     this.type = ExceptionType
     this.status = '400'
     if (message) this.message = message
-    else this.message = 'No metadata was provided.'
+    else this.message = 'Require metadata was not provide.'
   }
 }
 
@@ -112,16 +123,7 @@ class ConversationNotFound extends Error {
   }
 }
 
-class ConversationError extends Error {
-  constructor(message) {
-    super()
-    this.name = 'ConversationError'
-    this.type = ExceptionType
-    this.status = '400'
-    if (message) this.message = message
-    else this.message = `Error on generating conversation`
-  }
-}
+
 
 module.exports = {
   ConversationNotAddedToUser,
