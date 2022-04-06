@@ -26,7 +26,7 @@ async function transcriptor(req, res, next) {
     try {
         if (!req.files || Object.keys(req.files).length === 0) throw new ConversationNoFileUploaded()
         if (!req.body.name || !req.body.organizationId) throw new ConversationMetadataRequire()
-
+        // TODO: SELECT DEFAULT USER ORGA
         const userId = req.payload.data.userId
         if (!req.body.role) req.body.role = ORGANIZATION_ROLES.MEMBER
 
@@ -38,8 +38,8 @@ async function transcriptor(req, res, next) {
         if (!conversation._id && !conversation.job.job_id) throw new ConversationError()
 
         TranscriptionHandler.createJobInterval(conversation)
-        res.status(200).send({
-            msg: 'A conversation is currently being processed'
+        res.status(201).send({
+            message: 'A conversation is currently being processed'
         })
     } catch (error) {
         res.status(error.status).send({ message: error.message })
@@ -59,9 +59,9 @@ async function transcribe(body, files, userId) {
             const filepath = await StoreFile.storeFile(file, 'audio')
             conversation = await SttWrapper.addFileMetadataToConversation(conversation, file, filepath)
 
-            const mongo_status = await conversationModel.createConversation(conversation)
-            if (mongo_status.status === 'success')
-                return conversation
+            const result = await conversationModel.createConversation(conversation)
+            if (result.insertedCount !== 1) throw new ConversationError()
+            return conversation
         }
     }
     return { status: 'error' }

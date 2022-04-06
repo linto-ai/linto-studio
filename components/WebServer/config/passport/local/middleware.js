@@ -41,7 +41,7 @@ module.exports = {
                         }
                         res.json({
                             status: 200,
-                            msg: 'login success',
+                            message: 'login success',
                             code: 'ok',
                             token: user.token.auth_token
                         })
@@ -56,7 +56,7 @@ module.exports = {
                         }
                         res.json({
                             status: 401,
-                            msg: 'token not found',
+                            message: 'token not found',
                             code: 'error'
                         })
                     })
@@ -80,7 +80,7 @@ module.exports = {
             userProperty: 'payload',
             getToken: getTokenFromHeaders,
         }),
-        async(req, res, next) => {
+        async (req, res, next) => {
             const { headers: { authorization } } = req
             let token = await refreshToken(authorization)
             res.local = token

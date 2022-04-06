@@ -35,7 +35,6 @@ async function getUserById(req, res, next) {
         res.status(200).send({
             ...userList[0]
         })
-
     } catch (err) {
         res.status(err.status).send({ message: err.message })
     }
@@ -57,20 +56,20 @@ async function createUser(req, res, next) {
         if (isOrganizationFound.length !== 0) throw (new OrganizationConflict())
 
         const createdUser = await userModel.createUser(user)
-        if (createdUser.status !== 'success') throw (new UserError())
-
+        if (createdUser.insertedCount !== 1) throw (new UserError())
         const createdOrganization = await organizationModel.createDefaultOrganization(createdUser.insertedId.toString(), user.email)
-        if (createdOrganization.status !== 'success') {
+
+        if (createdOrganization.insertedCount !== 1) {
             userModel.deleteById(createdUser.insertedId.toString())
             throw (new UserError())
         }
 
-        res.status(200).send({
-            msg: 'Account have been created'
+        res.status(201).send({
+            message: 'User account created'
         })
     } catch (error) {
         res.status(error.status).send({
-            msg: !!error.message ? error.message : 'An error occured during user creation'
+            message: !!error.message ? error.message : 'An error occured during user creation'
         })
     }
 }
@@ -79,7 +78,7 @@ async function updateUser(req, res, next) {
     try {
         if (!(req.body.email || req.body.firstname || req.body.lastname)) throw (new UserUnsupportedMediaType())
 
-        let myUser = await userModel.getUserById(req.payload.data.userId)
+        const myUser = await userModel.getUserById(req.payload.data.userId)
         if (myUser.length !== 1) throw (new UserNotFound())
         let user = myUser[0]
 
@@ -87,15 +86,15 @@ async function updateUser(req, res, next) {
         req.body.firstname ? user.firstname = req.body.firstname : ''
         req.body.lastname ? user.lastname = req.body.lastname : ''
 
-        let result = await userModel.update(user)
-        if (result !== 'success') throw new UserError()
+        const result = await userModel.update(user)
+        if (result.matchedCount === 0) throw new UserError()
 
+        let message(result.modifiedCount === 1) ? message = 'User updated' : message = 'No modification to user'
         res.status(200).send({
-            msg: 'User has been updated'
+            message
         })
     } catch (err) {
-        if (err.error === 'no_match') res.status(304).send({ message: 'User unchanged' })
-        else res.status(err.status).send({ message: err.message })
+        res.status(err.status).send({ message: err.message })
     }
 }
 
@@ -111,15 +110,13 @@ async function updateUserPicture(req, res, next) {
         if (myUser.length !== 1) throw (new UserNotFound())
 
         const result = await userModel.update(payload)
-        if (result !== 'success') throw new UserError()
+        if (result.matchedCount === 0) throw new UserError()
 
         res.status(200).send({
-            msg: 'User picture has been updated'
+            message: 'User picture updated'
         })
-
     } catch (err) {
-        if (err.error === 'no_match') res.status(304).send({ message: 'User unchanged' })
-        else res.status(err.status).send({ message: err.message })
+        res.status(err.status).send({ message: err.message })
     }
 }
 
@@ -141,21 +138,10 @@ async function updateUserPassword(req, res, next) {
         req.body.password = req.body.newPassword
 
         const result = await userModel.updatePassword(payload)
-        if (result !== 'success') throw new UserError()
-
+        if (result.matchedCount === 0) throw new UserError()
         next()
-            //res.cookie('authToken', '')
-            //res.cookie('userId', '')
-
-        /*  
-        req.session.destroy(async function(err) {
-            if (err) throw 'Error on deleting session'
-                //res.redirect('/login')
-
-    })*/
     } catch (err) {
-        if (err.error === 'no_match') res.status(304).send({ message: 'User unchanged' })
-        else res.status(err.status).send({ message: err.message })
+        res.status(err.status).send({ message: err.message })
     }
 }
 
@@ -170,9 +156,7 @@ async function logout(req, res, next) {
                 res.cookie('userId', '')
                 req.session.destroy(function(err) {
                     // cannot access session here
-                    if (err) {
-                        throw 'Error on deleting session'
-                    }
+                    if (err) throw 'Error on deleting session'
                     res.redirect('/login')
                 })
             })
@@ -195,20 +179,26 @@ async function deleteUser(req, res, next) {
 
         organizations.filter(organization => {
             if (organization.owner === userId && organization.users.length === 0) return true
-            else if ((organization.users.filter(user => user.userId === userId)).length !== 0) return true
+            else if ((organization.users.filter(user => user.userId === userId)).length !== 0) return true <<
+                << << < HEAD
         }).map(async(organization) => {
-            let resultOperation
+            let resultOperation ===
+                === =
+        }).map(async(organization) => { >>>
+            >>> > next
             if (organization.owner === userId && organization.users.length === 0) {
-                resultOperation = await organizationModel.deleteOrganization(organization._id.toString())
+                let resultOperation = await organizationModel.deleteById(organization._id.toString())
+                if (resultOperation.deletedCount !== 1) throw new UserError('Error on personal organization')
             } else {
                 organization.users = organization.users.filter(user => user.userId !== userId)
-                resultOperation = await organizationModel.update(organization)
+                let resultOperation = await organizationModel.update(organization)
+                if (resultOperation.modifiedCount === 0) throw new UserError('Error on organization rights deletion')
             }
-            if (resultOperation !== 'success' || resultOperation.status !== 'success') throw new UserError('Error during organization rights deletion')
         })
 
         const conversations = await conversationModel.getAllConvos()
-        conversations.filter(conversation => {
+        conversations.filter(conversation => { <<
+                << << < HEAD
                 if ((conversation.sharedWithUsers.filter(user => user.userId === userId)).length !== 0) return true
             }).map(async(conversation) => {
                 conversation.sharedWithUsers = conversation.sharedWithUsers.filter(user => user.userId !== userId)
@@ -216,18 +206,29 @@ async function deleteUser(req, res, next) {
                 if (resultConvoUpdate !== 'success') throw new UserError('Error during conversation rights deletion')
             })
             // TODO: check if owner and nobody else is in the conversation
+            ===
+            === =
+            if ((conversation.sharedWithUsers.filter(user => user.userId === userId)).length !== 0) return true
+    }).map(async(conversation) => {
+        conversation.sharedWithUsers = conversation.sharedWithUsers.filter(user => user.userId !== userId)
+        const resultConvoUpdate = await conversationModel.update(conversation)
+        if (resultConvoUpdate.modifiedCount === 0) throw new UserError('Error on conversation rights deletion')
+    })
+    // TODO: check if owner and nobody else is in the conversation
+    >>>
+    >>> > next
 
-        const result = await userModel.deleteUser(req.payload.data.userId)
-        if (result.status !== 'success') throw new UserError
+const result = await userModel.deleteUser(req.payload.data.userId)
+if (result.deletedCount !== 1) throw new UserError
 
-        res.status(200).send({
-            msg: 'User deleted'
-        })
-    } catch (err) {
-        res.status(err.status).send({ message: err.message })
-    }
+res.status(200).send({
+    message: 'User deleted'
+})
 }
-
+catch (err) {
+    res.status(err.status).send({ message: err.message })
+}
+}
 
 module.exports = {
     listUser,
