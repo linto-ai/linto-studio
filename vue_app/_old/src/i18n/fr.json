@@ -1,0 +1,144 @@
+{
+    "message": {
+        "hello": "Bonjour Monde"
+    },
+    "nav": {
+        "conversations_overview": "Mes conversations",
+        "my_account": "Mon compte"
+    },
+    "page": {
+        "conversations": {
+            "h1": "Mes conversations"
+        },
+        "conversation_manage": {
+            "h2": "Informations"
+        },
+        "conversation_transcription": {
+            "h2": "Options d'affichage",
+            "edition_mode": "Mode édition"
+        },
+        "conversations_create": {
+            "conversation_name": "Titre",
+            "description": "Description",
+            "audio_file": "Fichier audio",
+            "share_with": "Partager"
+        }
+    },
+    "filters": {
+        "filters": "Filtres",
+        "all": "Voir tout",
+        "owned_by_me": "Mes conversations",
+        "shared_with_me": "Partagée(s) avec moi"
+    },
+    "array_labels": {
+        "abstract": "Résumé",
+        "agenda": "Agenda",
+        "audio": "Durée",
+        "created": "Date",
+        "date": "Date",
+        "delete": "Supprimer",
+        "documents": "Documents",
+        "description": "Description",
+        "duration": "Durée",
+        "editer": "Editeur",
+        "editers": "Editeurs",
+        "highlights": "Étiquettes",
+        "keywords": "Mots-clés",
+        "last_update": "Dernière modification",
+        "loked": "Statut",
+        "name": "Titre",
+        "none": "Aucun",
+        "owner": "Créateur",
+        "readers": "Lecteurs",
+        "select": "Sélectionner",
+        "sharedWith": "Partagé avec",
+        "speakers": "Locuteurs",
+        "status": "Statut",
+        "user": "Utilisateur",
+        "users": "Utilisateurs"
+    },
+    "buttons": {
+        "apply": "Valider",
+        "cancel": "Annuler",
+        "close": "Fermer",
+        "conversation_landing": "Vue d'ensemble",
+        "create_highlight": "Créer étiquette",
+        "create_conversation": "Créer conversation",
+        "delete": "Supprimer",
+        "export": "Exporter",
+        "merge": "Fusionner",
+        "new_conversation": "Nouvelle conversation",
+        "new_speaker": "Nouveau locuteur",
+        "remove": "Supprimer",
+        "save": "Enregistrer",
+        "share": "Partager",
+        "split": "Séparer",
+        "transcription": "Transcription",
+        "unshare": "Révoquer l'accès"
+    },
+    "toolbox": {
+        "keywords": "Mots-clés",
+        "highlights": "Etiquettes",
+        "unhighlight": "Suppr. étiquettes",
+        "remove": "Supprimer",
+        "comment": "Commenter",
+        "split_turns": "Séparer tours",
+        "merge": "Fusionner tours"
+    },
+    "modals": {
+        "edit_speaker": {
+            "edit": "Editer le locuteur",
+            "rename": "Renommer locuteur",
+            "replaceby": "Remplacer le locuteur",
+            "update": "Mettre à jour",
+            "everywhere": "Partout",
+            "turn_only": "Ce tour seulement",
+            "type_speakername": "Saisissez un nom"
+        },
+        "delete_speaker": {
+            "title": "Supprimer locuteur",
+            "content_delete_html": "Êtes-vous sûr de vouloir <strong>supprimer</strong> ce locuteur: <strong>{spk}</strong> ?",
+            "content_reassing_html": "Certains tours de parole sont attribué à ce locuteur: {spk}.<br/> Veuillez <strong>re-attribuer ces tours de paroles</strong> pour pouvoir <strong>supprimer le locuteur \"{spk}</strong>\"",
+            "form_label": "Réassigner les tours à"
+        },
+        "merge_speakers": {
+            "title": "Fusionner les locuteurs",
+            "content_html": "Vous êtes sur le point de <strong>fusionner un locuteur avec un locuteur existant</strong> dans la conversation. Si vous appliquer les modifications, les deux locuteurs seront fusionné en un.<br/>Êtes-vous sûr de vouloir <strong>remplacer \"{speakername}\" par \"{targetspeaker}\"?"
+        },
+        "delete_conversation": {
+            "title": "Supprimer la conversation",
+            "content_html": "Êtes-vous sur de vouloir supprimer la conversation <strong>\"{convoTitle}\"</strong>?"
+        },
+        "highlights": {
+            "title": "Ajouter un étiquette",
+            "selection": "Votre selection",
+            "choose_highlight": "Choisissez une étiquette",
+            "set_highlight": "Appliquer une étiquette",
+            "new_highlight": "Créer une étiquette"
+        },
+        "merge_turns": {
+            "title": "Fusionner les tours",
+            "content_html": "Vous êtes sur le point de <strong>fusionner les tours suivants</strong>:",
+            "select_speaker": "Sélectionnez un locuteur pour ces tours"
+        },
+        "share_with": {
+            "title": "Partager la conversation",
+            "content_html": "Vous pouvez <strong>partager cette conversation avec les autres utilisateurs</strong> et leur donner des accès de lecture ou d'édition. Sélectionnez un ou plusieurs dans la liste et <strong>managez leurs droits d'édition</strong>.",
+            "no_user": "Pas d'utilisateur trouvé."
+        },
+        "unshare_with": {
+            "title": "Révoquer l'accès à la conversation",
+            "content_html": "Êtes-vous sûr de vouloir <strong>révoquer les droits d'accès</strong> à la conversations <strong>\"{conversationname}\"</strong> de l'utilisateur <strong>\"{firstname} {lastname}\"</strong>"
+        },
+        "split_turns": {
+            "title": "Séparer les tours",
+            "content_html": "Vous êtes sur le point de <strong>séparer les tours suivants</strong>:",
+            "split_before": "Séparer avant",
+            "split_out": "Séparer sur le mot",
+            "split_after": "Séparer après",
+            "speaker_select": "Sélectionner un locuteur",
+            "speaker_add": "Ajouter un locuteur",
+            "speaker_create": "Créer un locuteur"
+        }
+    }
+}

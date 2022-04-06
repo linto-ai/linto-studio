@@ -1,0 +1,42 @@
+.conversation-filter-container {
+    padding: 5px 0;
+    .conversation-filter--btn {
+        display: inline-block;
+        font-size: 18px;
+        font-weight: 500;
+        color: $greyLight;
+        position: relative;
+        padding: 5px 3px;
+        text-transform: uppercase;
+        @include transition(all 0.3s ease);
+        white-space: nowrap;
+        &:after {
+            content: "";
+            display: inline-block;
+            height: 1px;
+            width: 0px;
+            position: absolute;
+            top: 25px;
+            left: 0;
+            background-color: $greenChart;
+            @include transition(all 0.3s ease);
+        }
+        &:hover {
+            color: $greenChart;
+            &:after {
+                width: 100%;
+            }
+        }
+        &.active {
+            &,
+            &:hover {
+                color: $blueChart;
+                font-weight: 700;
+                &:after {
+                    background-color: $blueChart;
+                    width: 100%;
+                }
+            }
+        }
+    }
+}

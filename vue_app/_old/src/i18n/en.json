@@ -1,0 +1,144 @@
+{
+    "message": {
+        "hello": "Hello world"
+    },
+    "nav": {
+        "conversations_overview": "My conversations",
+        "my_account": "My account"
+    },
+    "page": {
+        "conversations": {
+            "h1": "My conversations"
+        },
+        "conversation_manage": {
+            "h2": "Conversation information"
+        },
+        "conversation_transcription": {
+            "h2": "Transcription display options",
+            "edition_mode": "Edition mode"
+        },
+        "conversations_create": {
+            "conversation_name": "Conversation name",
+            "description": "Description",
+            "audio_file": "Audio file",
+            "share_with": "Share with users"
+        }
+    },
+    "filters": {
+        "filters": "Filters",
+        "all": "All",
+        "owned_by_me": "Owned by me",
+        "shared_with_me": "Shared with me"
+    },
+    "array_labels": {
+        "abstract": "Abstract",
+        "agenda": "Agenda",
+        "audio": "Duration",
+        "created": "Date",
+        "date": "Date",
+        "delete": "Delete",
+        "description": "Description",
+        "documents": "Documents",
+        "duration": "Duration",
+        "editer": "Editer",
+        "editers": "Editers",
+        "highlights": "Highlights",
+        "keywords": "Keywords",
+        "last_update": "Last update",
+        "locked": "Status",
+        "name": "Title",
+        "none": "None",
+        "owner": "Owner",
+        "readers": "Readers",
+        "select": "Sélectionner",
+        "sharedWith": "Shared with",
+        "speakers": "Speakers",
+        "status": "Status",
+        "user": "Utilisateur",
+        "users": "Utilisateurs"
+    },
+    "buttons": {
+        "apply": "Apply",
+        "cancel": "Cancel",
+        "close": "Close",
+        "conversation_landing": "Conversation landing",
+        "create_highlight": "Create Highlight",
+        "create_conversation": "Create conversation",
+        "delete": "Delete",
+        "export": "Export",
+        "merge": "Merge",
+        "new_conversation": "New conversation",
+        "new_speaker": "New Speaker",
+        "remove": "Remove",
+        "save": "Save",
+        "share": "Share",
+        "split": "Split",
+        "transcription": "Transcription",
+        "unshare": "Revoke access"
+    },
+    "toolbox": {
+        "keywords": "Keywords",
+        "highlights": "Hihglight",
+        "unhighlight": "Unhihgliht",
+        "remove": "Remove",
+        "comment": "Comment",
+        "split_turns": "Split turns",
+        "merge": "Merger turns"
+    },
+    "modals": {
+        "edit_speaker": {
+            "edit": "Edit speaker",
+            "rename": "Rename speaker",
+            "replaceby": "Replace speaker by",
+            "update": "Update speaker",
+            "everywhere": "Everywhere",
+            "turn_only": "This turn only",
+            "type_speakername": "Type a speaker name"
+        },
+        "delete_speaker": {
+            "title": "Delete speaker",
+            "content_delete_html": "Are you sure you want to <strong>delete</strong> this speaker: <strong>{spk}</strong> ?",
+            "content_reassing_html": "Some turns are still attributed to this speaker: {spk}.<br/>Please <strong>re-assign these turns</strong> to a different speaker in order to <stong>delete speaker \"{spk}</strong>\"",
+            "form_label": "Reassign turns to"
+        },
+        "merge_speakers": {
+            "title": "Merge speakers",
+            "content_html": "You're about to identify a speaker as an other existing speaker in the conversation. If you apply those modifications, both speakers will be merged as one.<br/>Are you sure you want to <strong>replace \"{speakername}\" by \"{targetspeaker}\"?"
+        },
+        "delete_conversation": {
+            "title": "Delete conversation",
+            "content_html": "Are you sure you want to remove the conversation <strong>\"{convoTitle}\"</strong>?"
+        },
+        "highlights": {
+            "title": "Highlight words",
+            "selection": "Your selection",
+            "choose_highlight": "Choose a highlight",
+            "set_highlight": "Set a highlight",
+            "new_highlight": "Create a highlight"
+        },
+        "merge_turns": {
+            "title": "Merge turns",
+            "content_html": "You are about to <strong>merge the following turns</strong>:",
+            "select_speaker": "Select a speaker for these turns"
+        },
+        "share_with": {
+            "title": "Share conversation",
+            "content_html": "You can <strong>share a conversation with other users</strong>, and give them access to the conversation overview and the transcription. Select one or mutliple users in the following list and <strong>manage them edition rights</strong>.",
+            "no_user": "No user found."
+        },
+        "unshare_with": {
+            "title": "Revoke acces to the conversation",
+            "content_html": "Are you sure you want to <strong>revoke the access</strong> to the converation <strong>\"{conversationname}\"</strong> from the user <strong>\"{firstname} {lastname}</strong>\""
+        },
+        "split_turns": {
+            "title": "Séparer les tours",
+            "content_html": "You are about to <strong>split the following turns</strong>:",
+            "split_before": "Split before",
+            "split_out": "Split out",
+            "split_after": "Split after",
+            "speaker_select": "Select a speaker",
+            "speaker_add": "Add a speaker",
+            "speaker_create": "Create a speaker"
+        }
+    }
+}

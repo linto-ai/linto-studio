@@ -577,7 +577,6 @@ export default {
     },
     // Render text selection and open Toolbox
     setTextSelection (selectionObj) {
-      //console.log(selectionObj)
       this.cancelTextSelection()
       this.playerPause()
       setTimeout(() => {

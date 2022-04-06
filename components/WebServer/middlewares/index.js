@@ -42,10 +42,10 @@ async function isConnected(req, res, next) {
                     res.cookie('authToken', req.session.token.auth_token, {
                         expires: new Date(Date.now() + 900000)
                     })
-
                     res.cookie('userId', req.session.userId.toString(), {
                         expires: new Date(Date.now() + 900000)
                     })
+
                     if (req.url === '/login') {
                         res.redirect('/interface/conversations')
                     } else {

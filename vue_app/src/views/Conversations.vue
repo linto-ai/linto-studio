@@ -1,6 +1,9 @@
 <template>
   <div class="flex col scrollable">
-    <h1>{{$t('page.conversations.h1')}}</h1>
+    Convo
+
+    <!-- 
+      <h1>{{$t('page.conversations.h1')}}</h1>
     
     <div class="flex row" v-if="dataLoaded">
       <div class="conversation-filter-container flex1">
@@ -60,10 +63,12 @@
         </tbody>
       </table>
     </div>
-    <ModalRemoveConversation></ModalRemoveConversation>
+    <ModalRemoveConversation></ModalRemoveConversation>-->
   </div>
 </template>
 <script>
+
+/*
 import { bus } from '../main.js'
 import ModalRemoveConversation from '@/components/ModalRemoveConversation.vue'
 export default {
@@ -186,6 +191,13 @@ export default {
   },
   components: {
     ModalRemoveConversation
+  }
+}*/
+export default {
+  data() {
+    return {
+
+    }
   }
 }
 </script>

@@ -8,7 +8,6 @@ const passport = require('passport')
 const redisClient = require(`${process.cwd()}/lib/redis`)
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
-const pathToSwaggerUi = require('swagger-ui-dist').absolutePath()
 const WebServerErrorHandler = require('./error/handler')
 
 const CORS = require('cors')
@@ -82,7 +81,7 @@ class WebServer extends Component {
         WebServerErrorHandler.init(this)
 
         this.express.use('/', express.static(path.resolve(__dirname, './public'))) // Attaches ./public folder to / route
-        this.express.use('/swagger-ui/', express.static(pathToSwaggerUi)) // Attaches swagger-ui JS file to /swagger-ui route
+            //this.express.use('/swagger-ui/', express.static(pathToSwaggerUi)) // Attaches swagger-ui JS file to /swagger-ui route
 
         return this.init()
     }

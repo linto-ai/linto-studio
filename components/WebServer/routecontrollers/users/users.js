@@ -129,21 +129,30 @@ async function updateUserPassword(req, res, next) {
 
         const myUser = await userModel.getUserById(req.payload.data.userId)
 
+        console.log('body', req.body)
+        console.log('myUser', myUser)
         if (myUser.length !== 1) throw (new UserNotFound())
         const payload = {
             ...myUser[0],
             newPassword: req.body.newPassword
         }
 
+        req.body.email = myUser[0].email
+        req.body.password = req.body.newPassword
+
         const result = await userModel.updatePassword(payload)
         if (result !== 'success') throw new UserError()
 
-        res.cookie('authToken', '')
-        res.cookie('userId', '')
-        req.session.destroy(function (err) {
+        next()
+            //res.cookie('authToken', '')
+            //res.cookie('userId', '')
+
+        /*  
+        req.session.destroy(async function(err) {
             if (err) throw 'Error on deleting session'
-            res.redirect('/login')
-        })
+                //res.redirect('/login')
+
+    })*/
     } catch (err) {
         if (err.error === 'no_match') res.status(304).send({ message: 'User unchanged' })
         else res.status(err.status).send({ message: err.message })
@@ -159,7 +168,7 @@ async function logout(req, res, next) {
             }).then(user => {
                 res.cookie('authToken', '')
                 res.cookie('userId', '')
-                req.session.destroy(function (err) {
+                req.session.destroy(function(err) {
                     // cannot access session here
                     if (err) {
                         throw 'Error on deleting session'
@@ -187,7 +196,7 @@ async function deleteUser(req, res, next) {
         organizations.filter(organization => {
             if (organization.owner === userId && organization.users.length === 0) return true
             else if ((organization.users.filter(user => user.userId === userId)).length !== 0) return true
-        }).map(async (organization) => {
+        }).map(async(organization) => {
             let resultOperation
             if (organization.owner === userId && organization.users.length === 0) {
                 resultOperation = await organizationModel.deleteOrganization(organization._id.toString())
@@ -200,13 +209,13 @@ async function deleteUser(req, res, next) {
 
         const conversations = await conversationModel.getAllConvos()
         conversations.filter(conversation => {
-            if ((conversation.sharedWithUsers.filter(user => user.userId === userId)).length !== 0) return true
-        }).map(async (conversation) => {
-            conversation.sharedWithUsers = conversation.sharedWithUsers.filter(user => user.userId !== userId)
-            const resultConvoUpdate = await conversationModel.update(conversation)
-            if (resultConvoUpdate !== 'success') throw new UserError('Error during conversation rights deletion')
-        })
-        // TODO: check if owner and nobody else is in the conversation
+                if ((conversation.sharedWithUsers.filter(user => user.userId === userId)).length !== 0) return true
+            }).map(async(conversation) => {
+                conversation.sharedWithUsers = conversation.sharedWithUsers.filter(user => user.userId !== userId)
+                const resultConvoUpdate = await conversationModel.update(conversation)
+                if (resultConvoUpdate !== 'success') throw new UserError('Error during conversation rights deletion')
+            })
+            // TODO: check if owner and nobody else is in the conversation
 
         const result = await userModel.deleteUser(req.payload.data.userId)
         if (result.status !== 'success') throw new UserError

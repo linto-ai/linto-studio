@@ -18,6 +18,7 @@ const STRATEGY = new LocalStrategy({
 passport.use('local', STRATEGY)
 
 function generateUserToken(email, password, done) {
+    console.log('>>', email, password)
     UsersModel.getUserTokenByEmail(email).then(users => {
         if (users.length === 1) user = users[0]
         else if (users.length > 1) throw new MultipleUserFound()

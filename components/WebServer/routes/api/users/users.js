@@ -9,6 +9,9 @@ const {
     deleteUser,
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/users/users.js`)
 
+const auth_middleware = require(`${process.cwd()}/components/WebServer/config/passport/local/middleware`)
+
+
 module.exports = (webserver) => {
     return [{
             path: '/',
@@ -37,7 +40,7 @@ module.exports = (webserver) => {
             path: '/password',
             method: 'put',
             requireAuth: true,
-            controller: updateUserPassword
+            controller: [updateUserPassword, auth_middleware.authenticate]
         },
         {
             path: '/picture',

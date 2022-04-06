@@ -1,0 +1,245 @@
+#audio-player {
+    background-color: $greenChart;
+    padding: 20px;
+    z-index: 10;
+    .control {
+        align-items: center;
+        margin: 0 10px;
+        position: relative;
+    }
+    .audio-player--control__label {
+        padding-top: 3px;
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 700;
+        color: #fff;
+    }
+}
+
+.audio-player--control {
+    display: inline-block;
+    border: none;
+    @include cancelBoxShadow;
+    min-width: 30px;
+    min-height: 30px;
+    margin: 0 10px;
+    &:before {
+        display: none !important;
+    }
+    .icon {
+        display: inline-block;
+        background-color: rgba(255, 255, 255, 0.8);
+        vertical-align: top;
+        margin: 0;
+        &.prevspeaker {
+            width: 30px;
+            height: 30px;
+            @include maskImage('../img/prev-speaker.svg');
+        }
+        &.nextspeaker {
+            width: 30px;
+            height: 30px;
+            @include maskImage('../img/next-speaker.svg');
+        }
+        &.speed {
+            width: 30px;
+            height: 30px;
+            @include maskImage('../img/speed.svg');
+        }
+        &.speed-label {
+            display: inline-block;
+            font-size: 16px;
+            font-weight: 500;
+            height: 30px;
+            line-height: 30px;
+            color: #fff;
+            background-color: transparent;
+            padding-left: 5px;
+        }
+        &.pause {
+            width: 40px;
+            height: 40px;
+            @include maskImage('../img/pause.svg');
+            margin-top: -5px;
+        }
+        &.play {
+            width: 40px;
+            height: 40px;
+            @include maskImage('../img/play.svg');
+            margin-top: -5px;
+        }
+    }
+    &:hover {
+        .icon {
+            background-color: #fff;
+            &.speed-label {
+                background-color: transparent;
+            }
+        }
+    }
+}
+
+.audio-player-speed-options {
+    display: inline-block;
+    position: absolute;
+    top: -160px;
+    left: 0;
+    @include blockShadow();
+    background-color: $greenChart;
+    .audio-player-speed-item {
+        display: inline-block;
+        width: 100%;
+        text-align: center;
+        color: #fff;
+        font-size: 16px;
+        height: 25px;
+        line-height: 25px;
+        background-color: $greenChart;
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        &.active {
+            &,
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.7);
+                color: #333;
+                font-weight: 600;
+            }
+        }
+        &.hidden {
+            display: none;
+        }
+    }
+}
+
+
+/* Timeline */
+
+.audio-player--timeline {
+    position: relative;
+    margin: 0 20px 0 10px;
+}
+
+.audio-player--timeline__input {
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 40px;
+    @include borderRadius(5px);
+    position: absolute;
+    z-index: 10;
+    background-color: rgba(255, 255, 255, 0);
+    top: 0;
+    left: 0;
+    cursor: pointer;
+    &:focus {
+        outline: none;
+    }
+}
+
+.audio-player--timeline__input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 0;
+    height: 0;
+    cursor: pointer;
+}
+
+.audio-player--timeline__input::-moz-range-thumb {
+    width: 0;
+    height: 0;
+    cursor: pointer;
+}
+
+.audio-player--timeline__bg {
+    position: absolute;
+    display: inline-block;
+    z-index: 4;
+    top: 16px;
+    left: 0;
+    height: 8px;
+    width: 100%;
+    @include borderRadius(5px);
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.audio-player--timeline__played {
+    position: relative;
+    display: inline-block;
+    margin-top: 16px;
+    height: 8px;
+    background-color: #fff;
+    @include borderRadiusMulti(5px, 0, 0, 5px);
+    z-index: 5;
+    &:after {
+        content: "";
+        display: inline-block;
+        position: absolute;
+        top: -4px;
+        left: 100%;
+        width: 3px;
+        height: 16px;
+        background-color: #fff;
+    }
+}
+
+.audio-player--timeline__time {
+    display: inline-block;
+    line-height: 40px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+}
+
+
+/* End Timeline */
+
+.keyboard-commands-btn {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    background-color: #eee;
+    margin-left: 10px;
+    position: relative;
+    @include borderRadius(3px);
+    @include transition(all 0.3s ease);
+    &:after {
+        content: "";
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: $greenChart;
+        @include maskImage('../img/keyboard.svg');
+        @include transition(all 0.3s ease);
+    }
+    &:hover {
+        background-color: #fff;
+    }
+}
+
+#timeline-hover {
+    display: inline-block;
+    height: 20px;
+    background: #fff;
+    padding: 5px 10px;
+    position: absolute;
+    top: -20px;
+    left: 0;
+    @include borderRadius(3px);
+}
+
+#timeline-sub {
+    position: absolute;
+    display: inline-block;
+    margin-top: 16px;
+    height: 8px;
+    width: 0px;
+    z-index: 4;
+    top: 0;
+    left: 0;
+    background: rgba(255, 255, 255, 0.5);
+}

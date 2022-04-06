@@ -1,0 +1,133 @@
+.edit-frame {
+    padding: 0;
+    background: #fcfcfc;
+    @include boxShadow(0, 2px, 2px, 0, rgba(0, 0, 0, 0.2));
+    @include borderRadius(1px);
+    z-index: 10;
+    position: absolute;
+    top: 0;
+    left: 40px;
+    min-width: 280px;
+    border: 2px solid $greenChart;
+    &>div {
+        .btn.btn--edit-speaker {
+            border: none;
+            background-color: transparent;
+            font-size: 16px;
+            padding: 5px 0;
+            color: $greenChart;
+            &:hover {
+                color: $blueChart;
+            }
+        }
+    }
+}
+
+.edit-frame--head {
+    padding: 10px;
+    background-color: $greenChart;
+    align-items: center;
+    .icon {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        margin-right: 10px;
+        @include maskImage('../img/speakers.svg');
+        background-color: #fff;
+    }
+    .label {
+        display: inline-block;
+        color: #fff;
+        font-size: 16px;
+        font-weight: 500;
+    }
+    .btn--icon {
+        width: 24px;
+        height: 24px;
+        &:before {
+            display: none;
+        }
+        .icon {
+            width: 24px;
+            height: 24px;
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+        &:hover {
+            background-color: rgba(255, 255, 255, 1);
+        }
+    }
+}
+
+.edit-frame--body {
+    padding: 10px;
+    background-color: #fff;
+    .btn--icon {
+        margin-left: 10px;
+    }
+}
+
+.edit-frame-options {
+    padding-bottom: 5px;
+    border-bottom: 1px solid #ccc;
+    .edit-frame-options--item {
+        margin: 5px 0;
+        .edit-frame-option--label {
+            display: inline-block;
+            font-size: 15px;
+            vertical-align: top;
+            padding: 5px;
+            font-weight: 700;
+        }
+        .edit-frame-option--radio-label {
+            display: inline-block;
+            font-size: 15px;
+            vertical-align: top;
+        }
+        .edit-frame-option--radio {
+            vertical-align: top;
+            margin: 0 10px 0 0;
+        }
+    }
+    .edit-frame--btns {
+        margin-top: 10px;
+        justify-content: flex-start;
+    }
+}
+
+.speakers-list {
+    width: 100%;
+    max-height: 100px;
+    overflow: auto;
+    margin: 0;
+    padding: 0;
+    .speakers-list-item {
+        width: 100%;
+        padding: 4px 0;
+        button {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333333;
+            text-align: left;
+            padding-left: 20px;
+            position: relative;
+            &:before {
+                content: "";
+                display: inline-block;
+                width: 15px;
+                height: 15px;
+                position: absolute;
+                top: 2px;
+                left: 0;
+                @include maskImage('../img/filter-arrow.svg');
+                background-color: #333;
+                @include transform(rotate(-90deg));
+            }
+            &:hover {
+                color: $greenChart;
+                &:before {
+                    background-color: $greenChart;
+                }
+            }
+        }
+    }
+}

@@ -82,7 +82,7 @@
         <h2>Profile picture</h2>
         <div class="flex row">
           <div class="flex col flex1">
-            <img :src="'/' + userInfo.img" class="user-profil-picture">
+            <img :src="'/' + userInfo.img" class="user-profil-picture" v-if="!!userInfo">
           </div>
           <div class="flex col flex1">
             <!-- Profil picture -->
@@ -204,20 +204,22 @@ export default {
         this.handleInfoForm()
         if(this.infoFormValid) {
           let payload = {}
-          if(this.firstname.value !== this.userInfo.firstname) payload.firstname = this.firstname.value
-          if(this.lastname.value !== this.userInfo.lastname) payload.lastname = this.lastname.value
-          if(this.email.value !== this.userInfo.email) payload.email = this.email.value
+          
+          payload.firstname = this.firstname.value
+          payload.lastname = this.lastname.value
+          payload.email = this.email.value
+
           if(Object.keys(payload).length > 0) {
-            const req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/users/${this.userInfo._id}/infos`, 'put', {payload})
+            const req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/users`, 'put', payload)
+            console.log('REQ', req)
             if(req.status === 200 && !!req.data.msg) {
-              //await this.$options.filters.dispatchStore('getuserInfo')
               bus.$emit('refresh_user', {})
               bus.$emit('app_notif', {
                 status: 'success',
                 message: req.data.msg,
                 timeout: 3000
               })
-            } else {
+            }else {
               throw req
             }
           }
@@ -229,7 +231,7 @@ export default {
         }
         bus.$emit('app_notif', {
           status: 'error',
-          message: !!error.msg ? error.msg : 'Error on updating speaker',
+          message:  error.msg || error.message || 'Error on updating speaker',
           timeout: null
         })
       }
@@ -244,9 +246,8 @@ export default {
         let payload = {
           newPassword: this.newPassword.value
         }
-        const req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/users/${this.userInfo._id}/pswd`, 'put', payload)
+        const req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/users/password`, 'put', payload)
         if(req.status === 200 && !!req.data.msg) {
-          //await this.$options.filters.dispatchStore('getuserInfo')
           bus.$emit('refresh_user', {})
           bus.$emit('app_notif', {
             status: 'success',
@@ -285,7 +286,7 @@ export default {
         try {
           let formData = new FormData()
           formData.append('file', this.picture.value)
-          const req = await axios(`${process.env.VUE_APP_CONVO_API}/users/${this.userInfo._id}/picture`, {
+          const req = await axios(`${process.env.VUE_APP_CONVO_API}/users/picture`, {
             method: 'put',
             headers: {
             'charset': 'utf-8',
@@ -295,7 +296,6 @@ export default {
             data: formData
           })
           if(req.status === 200 && !!req.data.msg) {
-            //await this.$options.filters.dispatchStore('getuserInfo')
             bus.$emit('refresh_user', {})
             bus.$emit('app_notif', {
               status: 'success',

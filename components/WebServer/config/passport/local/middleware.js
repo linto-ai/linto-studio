@@ -15,7 +15,9 @@ const refreshToken = require('./token/refresh')
 module.exports = {
     authType: 'local',
     authenticate: (req, res, next) => {
+        console.log('BODY middleWare', req.body)
         passport.authenticate('local', { session: false }, (err, user) => {
+            console.log('Passeport user', user)
             if (err) {
                 console.error(err)
                 res.json({
@@ -97,11 +99,11 @@ function generateSecretFromHeaders(req, payload, done) {
     try {
         if (!payload || !payload.data) done(new MalformedToken())
         const { headers: { authorization } } = req
-        
+
         if (authorization.split(' ')[0] === 'Bearer') {
             UsersModel.getUserTokenById(payload.data.userId).then(users => {
-                if(users.length === 0) done(new UserNotFound())
-                else if(users.length !== 1) done(new MultipleUserFound())
+                if (users.length === 0) done(new UserNotFound())
+                else if (users.length !== 1) done(new MultipleUserFound())
                 else return done(null, users[0].keyToken + process.env.CM_JWT_SECRET)
             })
         }
@@ -118,8 +120,8 @@ function generateRefreshSecretFromHeaders(req, payload, done) {
         const { headers: { authorization } } = req
         if (authorization.split(' ')[0] === 'Bearer') {
             UsersModel.getUserTokenById(payload.data.userId).then(users => {
-                if(users.length === 0) done(new UserNotFound())
-                else if(users.length !== 1) done(new MultipleUserFound())
+                if (users.length === 0) done(new UserNotFound())
+                else if (users.length !== 1) done(new MultipleUserFound())
                 else done(null, users[0].keyToken + process.env.CM_REFRESH_SECRET)
             })
         }

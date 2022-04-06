@@ -4,29 +4,15 @@ import Router from 'vue-router'
 // Views
 
 import Conversations from '../views/Conversations.vue'
+import Login from '../views/Login.vue'
+import CreateAccount from '../views/CreateAccount.vue'
+import UserProfile from '../views/UserProfile.vue'
+/*
 import ConversationsCreate from '../views/ConversationCreate.vue'
 import ConversationManage from '../views/ConversationManage.vue'
 import ConversationTranscription from '../views/ConversationTranscription.vue'
-import Login from '../views/Login.vue'
-import UserProfile from '../views/UserProfile.vue'
-import CreateAccount from '../views/CreateAccount.vue'
+*/
 Vue.use(Router)
-
-let getCookie = function(cname) {
-    let name = cname + "="
-    let decodedCookie = decodeURIComponent(document.cookie)
-    let ca = decodedCookie.split(';')
-    for (var i = 0; i < ca.length; i++) {
-        var c = ca[i]
-        while (c.charAt(0) == ' ') {
-            c = c.substring(1)
-        }
-        if (c.indexOf(name) == 0) {
-            return c.substring(name.length, c.length)
-        }
-    }
-    return null
-}
 
 const router = new Router({
     mode: 'history',
@@ -40,30 +26,20 @@ const router = new Router({
             name: 'create-account',
             component: CreateAccount
         },
-        /*{
-            path: '/interface',
-            name: 'index',
-            component: Index,
-            /* ADD META DATA : EXAMPLE
-                meta: [
-                  {
-                    name: 'title',
-                    content: 'Linto Admin - Tock interface'
-                  },
-                  {
-                    name: 'robots',
-                    content: 'noindex, nofollow'
-                  }
-                ]
-              
-        }, 
-        */
         {
             path: '/interface/conversations',
             name: 'conversations',
             component: Conversations
         },
         {
+            path: '/interface/user/profile/:userId',
+            name: 'User profile settings',
+            component: UserProfile
+        }
+    ]
+})
+
+/*{
             path: '/interface/conversation/create',
             name: 'Create a new conversation',
             component: ConversationsCreate
@@ -77,17 +53,13 @@ const router = new Router({
             name: 'conversations transcription',
             component: ConversationTranscription
         },
-        {
-            path: '/interface/user/profile/:userId',
-            name: 'User profile settings',
-            component: UserProfile
-        }
+        /
 
     ]
 })
 
 /* The following function parse the route.meta attribtue to set page "title" and "meta" before entering a route" */
-router.beforeEach((to, from, next) => {
+/*router.beforeEach((to, from, next) => {
     if (to.meta.length > 0) {
         to.meta.map(m => {
             if (m.name === 'title') {
@@ -101,6 +73,6 @@ router.beforeEach((to, from, next) => {
         })
     }
     next()
-})
+})*/
 
 export default router

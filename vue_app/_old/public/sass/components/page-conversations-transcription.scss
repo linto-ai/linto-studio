@@ -1,0 +1,366 @@
+#transcription-wrapper {
+    overflow: hidden;
+}
+
+.transcritpion-container {
+    padding: 40px;
+    position: relative;
+    overflow: auto;
+}
+
+#transcription {
+    border: 2px solid rgba(255, 255, 255, 0);
+    background-color: rgba(255, 255, 255, 0);
+    padding: 0;
+    overflow: auto;
+    scroll-behavior: smooth;
+    @include borderRadius(5px);
+    position: relative;
+    &.editing {
+        border-color: $greenChart;
+        background-color: #fff;
+    }
+}
+
+.table--transcription {
+    margin: 0;
+    tr {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        &.active {
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+        &.editing {
+            border-color: #e2e2e2;
+        }
+    }
+    td {
+        vertical-align: top;
+        padding: 20px;
+        &.transcription--turn {
+            max-width: 80px;
+            .label {
+                font-size: 14px;
+                color: $greyLight;
+            }
+        }
+        &.transcription--speaker {
+            text-align: right;
+        }
+        &.transcription--play-turn {
+            width: 20px;
+            text-align: center;
+        }
+        &.transcription--turn,
+        &.transcription--speaker {
+            .label {
+                line-height: 26px;
+                @include noTextSelection();
+            }
+        }
+        &.transcription-speaker-sentence {
+            cursor: pointer;
+            &:hover {
+                background-color: $blueLight;
+            }
+        }
+        &.editing {
+            cursor: text !important;
+            background-color: $greenLight;
+            &:focus {
+                background-color: $blueXLight;
+                outline: 1px solid $blueLight;
+            }
+        }
+    }
+}
+
+.transcription--word {
+    display: inline;
+    line-height: 26px;
+    position: relative;
+    z-index: 2;
+    &:after {
+        content: '';
+        display: inline-block;
+        width: 0px;
+        height: 3px;
+        background: $greenChart;
+        position: absolute;
+        top: 18px;
+        left: 0;
+        z-index: 3;
+    }
+    &.isplaying {
+        &:after {
+            @include underlineAnim();
+        }
+    }
+    &.highlighted {
+        padding: 3px 0;
+        background: yellow;
+    }
+    &.keyword {
+        text-decoration: underline;
+        font-weight: 700;
+        color: $blueChart;
+    }
+}
+
+.transcription--play-turn {
+    padding: 20px 10;
+    .play-turn-btn {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        @include maskImage('../img/play.svg');
+        background-color: $blueLight;
+        @include noTextSelection();
+        &:hover {
+            @include maskImage('../img/play-hover.svg');
+        }
+        &:active {
+            @include maskImage('../img/play-hover.svg');
+            background: $blueChart;
+        }
+    }
+}
+
+.text-selected {
+    @include noTextSelection();
+    background-color: $blueChart;
+    color: #fff;
+}
+
+.transcription-edition--textarea {
+    display: inline-block;
+    min-height: 60px;
+    padding: 5px;
+    font-size: 16px;
+    font-family: $comfortaa;
+    line-height: 20px;
+    border: 1px solid #ccc;
+    background-color: transparent;
+    width: 100%;
+}
+
+.transcription-options {
+    margin: 10px 0;
+}
+
+.transcription-options--item {
+    margin: 7px 0;
+    .transcription-options--item-checkbox {
+        display: inline-block;
+        width: 19px;
+        height: 19px;
+        border: 1px solid #fff;
+        margin: 0 10px;
+        background-color: #fff;
+        position: relative;
+        @include borderRadius(3px);
+        @include boxShadow(0, 1px, 2px, 0, rgba(0, 0, 0, 0.2));
+        &:hover {
+            border-color: $greenChart;
+        }
+        &:after {
+            display: none;
+        }
+        &.selected {
+            border-color: $greenChart;
+            &:after {
+                display: inline-block;
+                content: '';
+                width: 30px;
+                height: 30px;
+                position: absolute;
+                top: -8px;
+                left: -3px;
+                @include maskImage('../img/apply.svg');
+                background-color: $greenChart;
+            }
+        }
+    }
+}
+
+input[type="color"] {
+    &.transcription-options--item-color {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        margin: 0 10px;
+        @include borderRadius(15px);
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        border: 1px solid $blueChart;
+        padding: 0;
+        overflow: hidden;
+    }
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+input[type="color"]::-webkit-color-swatch {
+    border: none;
+}
+
+.edition__btns {
+    margin-bottom: 20px;
+    justify-content: flex-end;
+    .btn--icon {
+        margin: 0 5px;
+    }
+    .edition__btns-label {
+        display: inline-block;
+        height: 30px;
+        line-height: 30px;
+        vertical-align: top;
+        font-size: 16px;
+        color: $greenChart;
+        text-transform: uppercase;
+    }
+    .edition__btn-toggle {
+        background: #fff;
+        vertical-align: top;
+        margin: 2px 5px;
+        display: inline-block;
+        width: 40px;
+        height: 20px;
+        @include borderRadius(20px);
+        @include transition(all 0.3s ease);
+        border: 1px solid;
+        position: relative;
+        &.enabled {
+            border-color: $greenChart;
+        }
+        &.disabled {
+            border-color: $redLight;
+        }
+        .edition__btn-toggle-circle {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            position: absolute;
+            top: 1px;
+            background: red;
+            @include borderRadius(10px);
+            @include transition(all 0.3s ease);
+            &.disabled {
+                left: 2px;
+                background-color: $redLight;
+            }
+            &.enabled {
+                left: 100%;
+                margin-left: -18px;
+                background-color: $greenChart;
+            }
+        }
+        &:hover {
+            &.disabled {
+                border-color: $redChart;
+            }
+            .edition__btn-toggle-circle {
+                &.disabled {
+                    background-color: $redChart;
+                }
+            }
+        }
+    }
+    .btn--icon__cancel-edition:hover {
+        &:after {
+            content: 'Cancel changes';
+            display: inline-block;
+            width: 120px;
+            padding: 5px;
+            @include borderRadius(3px);
+            background-color: #656565;
+            color: #fff;
+            position: absolute;
+            top: -35px;
+            left: -60px;
+            font-size: 14px;
+            text-align: center;
+        }
+    }
+    .btn--icon__apply-edition:hover {
+        &:after {
+            content: 'Apply changes';
+            display: inline-block;
+            width: 120px;
+            padding: 5px;
+            @include borderRadius(3px);
+            background-color: $greenChart;
+            color: #fff;
+            position: absolute;
+            top: -35px;
+            left: -60px;
+            font-size: 14px;
+            text-align: center;
+        }
+    }
+}
+
+
+/* FILTER */
+
+.transcription-filters {
+    padding: 10px 0;
+    align-items: center;
+    margin-bottom: 20px;
+    &>div {
+        margin: 0 10px 0 0;
+        padding-right: 40px;
+        position: relative;
+    }
+    .transcription-filters-label {
+        display: inline-block;
+        text-transform: uppercase;
+        color: $blueLight;
+        padding: 0 40px 0 20px;
+    }
+}
+
+.transcription-filters__select-label {
+    display: inline-block;
+    font-size: 14px;
+    line-height: 16px;
+    padding: 2px 0;
+    color: $blueLight;
+}
+
+.transcription-filters__select {
+    display: inline-block;
+}
+
+.cancel-filter-btn {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    @include maskImage('../img/close.svg');
+    background-color: $redLight;
+    &:hover {
+        background-color: $redChart;
+    }
+}
+
+#transcription-loader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.75);
+    z-index: 10;
+    align-items: center;
+    justify-content: center;
+    .icon.loader {
+        display: inline-block;
+        width: 60px;
+        height: 60px;
+        @include maskImage('../img/loading.svg');
+        @include rotating();
+        background-color: $blueChart;
+    }
+}
