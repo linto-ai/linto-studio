@@ -5,38 +5,58 @@ const { // Create conversation based on file
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/transcriptor.js`)
 
 const { // Create conversation based on file
-  getOwnerConversation,
-  getConversation,
-  listConversation
+    getOwnerConversation,
+    getConversation,
+    listConversation,
+    updateConversation,
+    searchText
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/conversation.js`)
 
 module.exports = (webserver) => {
     return [{
-            // Create a conversation (upload 1 file)
-            path: '/create',
-            method: 'post',
-            requireAuth: true,
-            controller: transcriptor
-        },
-        {
-            path: '/',
-            method: 'get',
-            requireAuth: true,
-            requireConversationOwnerAccess: true,
-            controller: getOwnerConversation
-        },
-        {
-            path: '/list',
-            method: 'get',
-            requireAuth: true,
-            controller: listConversation
-        },
-        {
-            path: '/:conversationId',
-            method: 'get',
-            requireAuth: true,
-            requireConversationReadAccess: true,
-            controller: getConversation
-        }
+        // Create a conversation (upload 1 file)
+        path: '/create',
+        method: 'post',
+        requireAuth: true,
+        controller: transcriptor
+    },
+    {
+        path: '/list',
+        method: 'get',
+        requireAuth: true,
+        controller: listConversation
+    },
+    {
+        path: '/search/text',
+        method: 'post',
+        requireAuth: true,
+        controller: searchText
+    },
+
+
+    /*Require Auth */
+    {
+        path: '/',
+        method: 'get',
+        requireAuth: true,
+        requireConversationOwnerAccess: true,
+        controller: getOwnerConversation
+    },
+
+    {
+        path: '/:conversationId',
+        method: 'get',
+        requireAuth: true,
+        requireConversationReadAccess: true,
+        controller: getConversation
+    },
+
+    {
+        path: '/:conversationId',
+        method: 'patch',
+        requireAuth: true,
+        requireConversationWriteAccess: true,
+        controller: updateConversation
+    }
     ]
 }

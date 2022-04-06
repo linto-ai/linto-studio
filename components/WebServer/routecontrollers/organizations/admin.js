@@ -20,13 +20,14 @@ async function updateOrganization(req, res, next) {
     if (TYPES.asType(req.body.type)) organization.type = req.body.type
 
     const result = await organizationModel.update(organization)
-    if (result !== 'success') throw new OrganizationError()
+    if (result.matchedCount === 0) throw new OrganizationError()
+
     res.status(200).send({
-      msg: 'Organization updated'
+      message: 'Organization has been updated'
     })
+
   } catch (err) {
-    if (err.error === 'no_match') res.status(304).send({ message: 'Organization unchanged' })
-    else res.status(err.status).send({ message: err.message })
+    res.status(err.status).send({ message: err.message })
   }
 }
 
@@ -36,10 +37,10 @@ async function deleteOrganization(req, res, next) {
     const organization = await orgaUtility.getOrganization(req.params.organizationId)
     const result = await organizationModel.deleteById(organization._id.toString())
 
-    if (result.status !== 'success') throw new OrganizationDeleteError('Error when updating organization')
+    if (result.deletedCount !== 1) throw new OrganizationError('Error when deleting organization')
 
     res.status(200).send({
-      msg: 'Organization deleted'
+      message: 'Organization has been deleted'
     })
   } catch (err) {
     res.status(err.status).send({ message: err.message })

@@ -9,7 +9,7 @@ const {
   ConversationError
 } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
-async function getOwnerConversation(req, res, next){
+async function getOwnerConversation(req, res, next) {
   try {
     const conversationList = await conversationModel.getAllConvos()
     const conversations = conversationList.filter(conversation => conversation.owner === req.payload.data.userId)
@@ -17,45 +17,46 @@ async function getOwnerConversation(req, res, next){
     res.json({
       conversations
     })
-  }catch(err){
+  } catch (err) {
     res.status(err.status).send({ message: err.message })
 
   }
 }
 
-async function updateConversation(req, res, next){
+async function updateConversation(req, res, next) {
   try {
-    if(!req.params.conversationId) throw new ConversationIdRequire()
+    if (!req.params.conversationId) throw new ConversationIdRequire()
     const conversation = await conversationModel.getConvoById(req.params.conversationId)
     if (conversation.length !== 1) throw new ConversationNotFound()
 
     const conv = {
-      _id : req.params.conversationId,
+      _id: req.params.conversationId,
       ...req.body
     }
 
     const result = await conversationModel.update(conv)
-    if (result !== 'success') throw new ConversationError()
+    if (result.matchedCount === 0) throw new ConversationError()
+
     res.status(200).send({
-      msg: 'Organization updated'
+      message: 'Conversation updated'
     })
-  }catch(err){
+  } catch (err) {
     res.status(err.status).send({ message: err.message })
   }
 }
 
 async function getConversation(req, res, next) {
-  try{
-      if(!req.params.conversationId) throw new ConversationIdRequire()
+  try {
+    if (!req.params.conversationId) throw new ConversationIdRequire()
 
-      const conversation = await conversationModel.getConvoById(req.params.conversationId)
-      if (conversation.length !== 1) throw new ConversationNotFound()
+    const conversation = await conversationModel.getConvoById(req.params.conversationId)
+    if (conversation.length !== 1) throw new ConversationNotFound()
 
-      res.status(200).send({
-          ...conversation[0]
-      })
-  }catch(err){
-      res.status(err.status).send({ message: err.message })
+    res.status(200).send({
+      ...conversation[0]
+    })
+  } catch (err) {
+    res.status(err.status).send({ message: err.message })
   }
 }
 
@@ -65,7 +66,7 @@ async function listConversation(req, res, next) {
     const convList = await conversationUtility.getUserConversation(userId)
 
     res.status(200).send({
-      conversartions : convList
+      conversartions: convList
     })
   } catch (err) {
     res.status(err.status).send({ message: err.message })
@@ -78,8 +79,8 @@ async function searchText(req, res, next) {
     const convList = await conversationUtility.getUserConversation(userId)
     let convText = []
     convList.map(conversation => {
-      for(const text of conversation.text){
-        if(text.raw_segment.toLowerCase().includes(req.body.text.toLowerCase())){
+      for (const text of conversation.text) {
+        if (text.raw_segment.toLowerCase().includes(req.body.text.toLowerCase())) {
           convText.push(conversation)
           break
         }
@@ -87,8 +88,8 @@ async function searchText(req, res, next) {
     })
 
     res.status(200).send({
-      search_text : req.body.text,
-      conversartions : convText
+      search_text: req.body.text,
+      conversartions: convText
     })
   } catch (err) {
     res.status(err.status).send({ message: err.message })
