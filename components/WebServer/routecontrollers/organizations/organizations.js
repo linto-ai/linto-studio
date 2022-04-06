@@ -21,8 +21,7 @@ async function createOrganization(req, res, next) {
         else if (!TYPES.asType(req.body.type)) throw new OrganizationUnsupportedMediaType()
 
         const isOrgaFound = await organizationModel.getOrganizationByName(req.body.name)
-        if (isOrgaFound.length === 1)
-            throw new OrganizationConflict()
+        if (isOrgaFound.length === 1) throw new OrganizationConflict()
 
         const organization = {
             name: req.body.name,
@@ -33,12 +32,11 @@ async function createOrganization(req, res, next) {
             token: ''
         }
 
-        const dbResult = await organizationModel.create(organization)
-        if (dbResult.status !== 'success')
-            throw new OrganizationError()
+        const result = await organizationModel.create(organization)
+        if (result.insertedCount !== 1) throw new OrganizationError()
 
-        return res.json({
-            msg: 'Organization ' + organization.name + ' has been created'
+        return res.status(201).send({
+            message: 'Organization ' + organization.name + ' created'
         })
     } catch (err) {
         res.status(err.status).send({ message: err.message })

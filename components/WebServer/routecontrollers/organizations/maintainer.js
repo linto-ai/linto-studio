@@ -24,7 +24,7 @@ async function addUserInOrganization(req, res, next) {
     const user = await orgaUtility.getUser(req.body.email)
 
     if (organization.users.filter(oUser => oUser.userId === user.userId).length !== 0)
-      throw new OrganizationError('User is already in ' + organization.name + ' organization')
+      throw new OrganizationError(req.body.email + ' is already in ' + organization.name)
 
     organization.users.push({
       userId: user.userId,
@@ -33,14 +33,13 @@ async function addUserInOrganization(req, res, next) {
     })
 
     const result = await organizationModel.update(organization)
-    if (result !== 'success') throw new OrganizationError()
+    if (result.matchedCount === 0) throw new OrganizationError()
 
     res.status(200).send({
-      msg: 'Added a user to the organization'
+      message: req.body.email + ' has been added to the organization'
     })
   } catch (err) {
-    if (err.error === 'no_match') res.status(304).send({ message: 'Organization unchanged' })
-    else res.status(err.status).send({ message: err.message })
+    res.status(err.status).send({ message: err.message })
   }
 }
 
@@ -55,7 +54,7 @@ async function updateUserFromOrganization(req, res, next) {
     let organization = await orgaUtility.getOrganization(req.params.organizationId)
 
     if (organization.users.filter(oUser => oUser.userId === req.body.userId).length === 0)
-      throw new OrganizationError('User is not part of the ' + organization.name + ' organization')
+      throw new OrganizationError('User is not part of the ' + organization.name)
 
     organization.users.map(oUser => {
       if (oUser.userId === req.body.userId) {
@@ -65,14 +64,13 @@ async function updateUserFromOrganization(req, res, next) {
     })
 
     const result = await organizationModel.update(organization)
-    if (result !== 'success') throw new OrganizationError('Error while updating user in organization')
+    if (result.matchedCount === 0) throw new OrganizationError('Error while updating user in organization')
 
     res.status(200).send({
-      msg: 'Updated user role from the organization'
+      message: 'Updated user from the organization'
     })
   } catch (err) {
-    if (err.error === 'no_match') res.status(304).send({ message: 'Organization unchanged' })
-    else res.status(err.status).send({ message: err.message })
+    res.status(err.status).send({ message: err.message })
   }
 }
 
@@ -83,15 +81,15 @@ async function deleteUserFromOrganization(req, res, next) {
     let organization = await orgaUtility.getOrganization(req.params.organizationId)
     if (organization.users.filter(oUser => (oUser.userId === req.body.userId &&
       ROLES.hasRevokeRoleAccess(oUser.role, req.userRole))).length === 0)
-      throw new OrganizationError('User is not in the ' + organization.name + ' organization')
+      throw new OrganizationError('User is not in ' + organization.name)
 
     organization.users = organization.users.filter(oUser => oUser.userId !== req.body.userId)
     const result = await organizationModel.update(organization)
 
-    if (result !== 'success') throw new OrganizationError()
+    if (result.matchedCount === 0) throw new OrganizationError()
 
     res.status(200).send({
-      msg: 'Removed user from organization'
+      message: 'Removed user from organization'
     })
   } catch (err) {
     res.status(err.status).send({ message: err.message })

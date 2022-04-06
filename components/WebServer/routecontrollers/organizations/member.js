@@ -16,10 +16,10 @@ async function listSelfOrganization(req, res, next) {
     const userOrganizations = organizations.filter(organization => {
       if (organization.owner === req.payload.data.userId) return true
 
-      return organization.users.filter(user => user.userId === req.payload.data.userId) ? true : false
+      if((organization.users.filter(user => user.userId === req.payload.data.userId)).length === 1) return true
     })
 
-    return res.json({ userOrganizations })
+    return res.json({ count: userOrganizations.length, userOrganizations })
   } catch (err) {
     res.status(err.status).send({ message: err.message })
   }
@@ -32,7 +32,7 @@ async function updateSelfFromOrganization(req, res, next) {
     if (!TYPES.asType(req.body.visibility)) throw new OrganizationUnsupportedMediaType('Visibility parameter must be public or private')
 
     let organization = await orgaUtility.getOrganization(req.params.organizationId)
-    if (organization.users.filter(oUser => oUser.userId === userId).length === 0) 
+    if (organization.users.filter(oUser => oUser.userId === userId).length === 0)
       throw new OrganizationError('User is not part of the ' + organization.name + ' organization')
 
     organization.users.map(oUser => {
@@ -43,14 +43,13 @@ async function updateSelfFromOrganization(req, res, next) {
     })
 
     const result = await organizationModel.update(organization)
-    if (result !== 'success') throw new OrganizationError()
+    if (result.matchedCount === 0) throw new OrganizationError()
 
     res.status(200).send({
-      msg: 'Updated yourself from organization'
+      message: 'User updated from the organization'
     })
   } catch (err) {
-    if (err.error === 'no_match') res.status(304).send({ message: 'Organization unchanged' })
-    else res.status(err.status).send({ message: err.message })
+    res.status(err.status).send({ message: err.message })
   }
 }
 
@@ -60,20 +59,19 @@ async function leaveSelfFromOrganization(req, res, next) {
     if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
 
     let organization = await orgaUtility.getOrganization(req.params.organizationId)
-    if (organization.users.filter(oUser => oUser.userId === userId).length === 0) 
-      throw new OrganizationError('User is not part of the ' + organization.name + ' organization')
+    if (organization.users.filter(oUser => oUser.userId === userId).length === 0)
+      throw new OrganizationError('You are not part of ' + organization.name)
 
     organization.users = organization.users.filter(oUser => oUser.userId !== userId)
     const result = await organizationModel.update(organization)
 
-    if (result !== 'success') throw new OrganizationError()
+    if (result.matchedCount === 0) throw new OrganizationError()
 
     res.status(200).send({
-      msg: 'Removed yourself from organization'
+      message: 'Removed yourself from the organization'
     })
   } catch (err) {
-    if (err.error === 'no_match') res.status(304).send({ message: 'Organization unchanged' })
-    else res.status(err.status).send({ message: err.message })
+    res.status(err.status).send({ message: err.message })
   }
 }
 
