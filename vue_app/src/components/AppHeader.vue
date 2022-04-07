@@ -24,6 +24,11 @@
             <span class="icon logout"></span>
             <span class="label">{{ $t('nav.my_account') }}</span>
           </a>
+
+            <a class="user-menu-links--item flex" :href="`/interface/user/organizations`">
+            <span class="icon logout"></span>
+            <span class="label">Organizations</span>
+          </a>
         </div>
     </div>
     <div class="header-logout">

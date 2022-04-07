@@ -1,3 +1,5 @@
+const organizations = require('../../../../lib/mongodb/models/organizations')
+
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:organizations')
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
 const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
@@ -32,6 +34,9 @@ async function createOrganization(req, res, next) {
             token: ''
         }
 
+        if (!!req.body.users) organization.users.push(...req.body.users)
+
+        console.log('>orga>', organization)
         const result = await organizationModel.create(organization)
         if (result.insertedCount !== 1) throw new OrganizationError()
 
@@ -39,6 +44,7 @@ async function createOrganization(req, res, next) {
             message: 'Organization ' + organization.name + ' created'
         })
     } catch (err) {
+        console.error(err)
         res.status(err.status).send({ message: err.message })
     }
 }
