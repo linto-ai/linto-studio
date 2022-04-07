@@ -25,16 +25,24 @@ const {
 async function transcriptor(req, res, next) {
     try {
         if (!req.files || Object.keys(req.files).length === 0) throw new ConversationNoFileUploaded()
-        if (!req.body.name || !req.body.organizationId) throw new ConversationMetadataRequire()
-        // TODO: SELECT DEFAULT USER ORGA
+        if (!req.body.name) throw new ConversationMetadataRequire()
+
         const userId = req.payload.data.userId
         if (!req.body.role) req.body.role = ORGANIZATION_ROLES.MEMBER
 
-        const organization = await organizationModel.getOrganizationById(req.body.organizationId)
-        if (organization.length !== 1) throw new OrganizationNotFound()
-
+        if (req.body.organizationId) {
+            const organization = await organizationModel.getOrganizationById(req.body.organizationId)
+            if (organization.length !== 1) throw new OrganizationNotFound()
+        } else {
+            const organizations = await organizationModel.getPersonalOrganization()
+            organizations.map(organization => {
+                if (organization.owner === req.payload.data.userId) {
+                    req.body.organizationId = organization._id
+                    return true
+                }
+            })
+        }
         const conversation = await transcribe(req.body, req.files, userId)
-
         if (!conversation._id && !conversation.job.job_id) throw new ConversationError()
 
         TranscriptionHandler.createJobInterval(conversation)

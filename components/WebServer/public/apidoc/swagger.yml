@@ -32,13 +32,16 @@ paths:
       requestBody:
         content:
           multipart/form-data:
-            schema:      # Request body contents
+            schema:
               type: object
               properties:
                 email:
                   type: string
                 password:
                   type: string
+              required:
+                - email
+                - password
       responses:
         '200':
           description: OK
@@ -52,7 +55,7 @@ paths:
       requestBody:
         content:
           multipart/form-data:
-            schema:      # Request body contents
+            schema:
               type: object
               properties:
                 email:
@@ -63,6 +66,11 @@ paths:
                   type: string
                 lastname:
                   type: string
+              required:
+                - email
+                - password
+                - firstname
+                - lastname
       responses:
         '201':
           description: OK
@@ -73,7 +81,7 @@ paths:
       requestBody:
         content:
           multipart/form-data:
-            schema:      # Request body contents
+            schema:
               type: object
               properties:
                 email:
@@ -110,11 +118,13 @@ paths:
       requestBody:
         content:
           multipart/form-data:
-            schema:      # Request body contents
+            schema:
               type: object
               properties:
                 newPassword:
                   type: string
+              required:
+                - newPassword
       responses:
         '200':
           description: OK
@@ -127,11 +137,13 @@ paths:
       requestBody:
         content:
           multipart/form-data:
-            schema:      # Request body contents
+            schema:
               type: object
               properties:
                 file:
                   type: file
+              required:
+                - file
       responses:
         '200':
           description: OK
@@ -161,13 +173,16 @@ paths:
       requestBody:
         content:
           multipart/form-data:
-            schema:      # Request body contents
+            schema:
               type: object
               properties:
                 name:
                   type: string
                 type:
                   type: string
+              required:
+                - name
+                - type
       responses:
         '201':
           description: OK
@@ -203,7 +218,7 @@ paths:
       requestBody:
         content:
           multipart/form-data:
-            schema:      # Request body contents
+            schema:
               type: object
               properties:
                 visibility:
@@ -243,13 +258,16 @@ paths:
       requestBody:
         content:
           multipart/form-data:
-            schema:      # Request body contents
+            schema:
               type: object
               properties:
                 email:
                   type: string
                 role:
                   type: string
+              required:
+                - email
+                - role
       responses:
         '200':
           description: OK
@@ -267,13 +285,16 @@ paths:
       requestBody:
         content:
           multipart/form-data:
-            schema:      # Request body contents
+            schema:
               type: object
               properties:
                 userId:
                   type: string
                 role:
                   type: string
+              required:
+                - userId
+                - role
       responses:
         '201':
           description: OK
@@ -291,11 +312,13 @@ paths:
       requestBody:
         content:
           multipart/form-data:
-            schema:      # Request body contents
+            schema:
               type: object
               properties:
                 userId:
                   type: string
+              required:
+                - userId
       responses:
         '200':
           description: OK
@@ -315,7 +338,7 @@ paths:
       requestBody:
         content:
           multipart/form-data:
-            schema:      # Request body contents
+            schema:
               type: object
               properties:
                 name:
@@ -352,7 +375,7 @@ paths:
       requestBody:
         content:
           multipart/form-data:
-            schema:      # Request body contents
+            schema:
               type: object
               properties:
                 file:
@@ -365,6 +388,9 @@ paths:
                   type: uiid
                 organizationRole:
                   type: integer
+              required:
+                - file
+                - name
       responses:
         '201':
           description: OK
@@ -372,7 +398,7 @@ paths:
     get:
       tags: 
         - "conversations"
-      summary: List all user conversation
+      summary: List you'r user conversation
       responses:
         '200':
           description: OK
@@ -394,7 +420,7 @@ paths:
     patch:
       tags: 
         - "conversations"
-      summary: Get one conversation 
+      summary: Update one conversation 
       parameters:
         - in: path
           name: conversationId
@@ -405,7 +431,7 @@ paths:
       requestBody:
         content:
           application/json:
-            schema:      # Request body contents
+            schema:
               type: object
               properties:
                 name:
@@ -415,19 +441,35 @@ paths:
       responses:
         '200':
           description: OK
+    delete:
+      tags: 
+        - "conversations"
+      summary: Delete an conversation
+      parameters:
+        - in: path
+          name: conversationId
+          type: string 
+          format: uuid 
+          required: true 
+          description: uuid string identifier for an conversationId
+      responses:
+        '200':
+          description: OK
   /api/conversations/search/text:
     post:
       tags: 
         - "conversations"
-      summary: Get one conversation 
+      summary: Get conversation containing specific text
       requestBody:
         content:
           multipart/form-data:
-            schema:      # Request body contents
+            schema:
               type: object
               properties:
                 text:
                   type: string
+              required:
+                - text
       responses:
         '200':
           description: OK
