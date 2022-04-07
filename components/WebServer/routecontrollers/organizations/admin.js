@@ -35,6 +35,8 @@ async function deleteOrganization(req, res, next) {
   try {
     if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
     const organization = await orgaUtility.getOrganization(req.params.organizationId)
+
+    if (organization.personal === true) throw new OrganizationError('Personal organization cannot be deleted')
     const result = await organizationModel.deleteById(organization._id.toString())
 
     if (result.deletedCount !== 1) throw new OrganizationError('Error when deleting organization')
