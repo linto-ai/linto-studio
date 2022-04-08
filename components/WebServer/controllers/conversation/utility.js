@@ -35,7 +35,4 @@ async function getUserConversation(userId) {
   return convList
 }
 
-async function getUser(email) {
-}
-
 module.exports = { getUserConversation }

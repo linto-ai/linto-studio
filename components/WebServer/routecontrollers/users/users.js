@@ -67,9 +67,9 @@ async function createUser(req, res, next) {
         res.status(201).send({
             message: 'User account created'
         })
-    } catch (error) {
-        res.status(error.status).send({
-            message: !!error.message ? error.message : 'An error occured during user creation'
+    } catch (err) {
+        res.status(err.status).send({
+            message: !!err.message ? err.message : 'An error occured during user creation'
         })
     }
 }
@@ -82,9 +82,9 @@ async function updateUser(req, res, next) {
         if (myUser.length !== 1) throw (new UserNotFound())
         let user = myUser[0]
 
-        req.body.email ? user.email = req.body.email : ''
-        req.body.firstname ? user.firstname = req.body.firstname : ''
-        req.body.lastname ? user.lastname = req.body.lastname : ''
+        if (req.body.email) user.email = req.body.email
+        if (req.body.firstname) user.firstname = req.body.firstname
+        if (req.body.lastname) user.lastname = req.body.lastname
 
         const result = await userModel.update(user)
         if (result.matchedCount === 0) throw new UserError()
@@ -114,7 +114,7 @@ async function updateUserPicture(req, res, next) {
         if (result.matchedCount === 0) throw new UserError()
 
         res.status(200).send({
-            message : 'User picture updated'
+            message: 'User picture updated'
         })
     } catch (err) {
         res.status(err.status).send({ message: err.message })
@@ -144,7 +144,7 @@ async function updateUserPassword(req, res, next) {
         })
 
         res.status(200).send({
-            message : 'User password updated'
+            message: 'User password updated'
         })
     } catch (err) {
         res.status(err.status).send({ message: err.message })
@@ -206,7 +206,6 @@ async function deleteUser(req, res, next) {
             const resultConvoUpdate = await conversationModel.update(conversation)
             if (resultConvoUpdate.modifiedCount === 0) throw new UserError('Error on conversation rights deletion')
         })
-        // TODO: check if owner and nobody else is in the conversation
 
         const result = await userModel.deleteUser(req.payload.data.userId)
         if (result.deletedCount !== 1) throw new UserError

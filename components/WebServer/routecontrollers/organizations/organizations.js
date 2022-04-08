@@ -45,12 +45,20 @@ async function createOrganization(req, res, next) {
 
 async function listOrganization(req, res, next) {
     try {
-        let organizations = (await organizationModel.getAllOrganizations())
-            .filter(organization => organization.type === TYPES.public)
+        let organizations = await organizationModel.getAllOrganizations()
 
-        organizations.map(organization => {
-            organization.users = organization.users.filter(oUser => oUser.visibility === TYPES.public)
-        })
+        organizations = organizations
+            .filter(orga => orga.owner === req.payload.data.userId || !orga.personal)
+            .map(orga => {
+                const userInOrga = orga.users.some(oUser => oUser.userId === req.payload.data.userId)
+                if (!userInOrga) {
+                    orga.users = orga.users.filter(oUser => oUser.visibility === TYPES.public)
+                }
+
+                if (!userInOrga && orga.type === TYPES.private) return null
+                return orga
+            }).filter(orga => orga !== null)
+
         return res.json({ organizations })
     } catch (err) {
         res.status(err.status).send({ message: err.message })
