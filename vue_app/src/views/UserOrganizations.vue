@@ -2,7 +2,12 @@
   <div class="flex col scrollable" v-if="dataLoaded">
     <h1>Organizations</h1>
     <div class="flex col">
-      <h2>My organizations</h2>
+      <div class="flex row">
+        <a href="/interface/user/organizations/create" class="btn btn-big green">
+          <span class="icon icon__plus"></span>
+          <span class="label">Create organization</span>
+        </a>
+      </div>
       <div class="flex">
         <table class="table" >
           <thead>
@@ -18,23 +23,61 @@
           </thead>
           <tbody>
             <tr v-for="orga in userOrganizations.userOrganizations" :key="orga._id">
-              <td>{{orga.name}}</td>
+              <td class="title">{{orga.name}}</td>
               <td>{{orga.description}}</td>
-              <td>{{ getUserById(orga.owner).firstname }} {{ getUserById(orga.owner).lastname }}</td>
-              <td>{{orga.type}}</td>
               <td>
-                <div class="flex col">
-                <span v-for="user in orga.users" :key="user.userId">{{ getUserById(user.userId).firstname }} {{getUserById(user.userId).lastname }}</span>
+                <div class="table-user-img flex row">
+                  <span class="table-user-img__span" :data-name="`${getUserById(orga.owner).firstname} ${getUserById(orga.owner).lastname}`">
+                    <img :src="'/'+getUserById(orga.owner).img" class="table-user-img__img">
+                  </span>
                 </div>
               </td>
-              <td>Edit</td>
-              <td>Remove</td>
+              <td>{{orga.type}}</td>
+              <td class="center">
+                  {{ orga.users.length}}
+              </td>
+              <td class="center">
+                <button class="btn btn-medium info-text green" data-content="Edit organization">
+                  <span class="icon icon__edit"></span>
+                </button>
+              </td>
+              <td class="center" v-if="orga.owner === userInfo._id">
+                <button class="btn btn-medium red info-text" data-content="Remove organization">
+                  <span class="icon icon__remove"></span>
+                </button>
+              </td>
+              <td class="center" v-else>
+                <button class="btn btn-medium red info-text" data-content="Leave organization">
+                  <span class="icon icon__cancel"></span>
+                </button>
+              </td>
             </tr>
           </tbody>
         </table>
       </div> 
     </div>
     <a href="/interface/user/organizations/create">Create new Organization</a>
+
+    <div class="test flex row">
+      <button class="btn btn-small">
+        <span class="icon icon__plus"></span>
+        <span class="label">Button small</span>
+      </button>
+
+      <button class="btn btn-medium">
+        <span class="icon icon__plus"></span>
+        <span class="label">Button medium</span>
+      </button>
+
+      <button class="btn btn-medium">
+        <span class="icon icon__plus"></span>
+      </button>
+
+      <button class="btn btn-big green">
+        <span class="icon icon__plus"></span>
+        <span class="label">Button Big</span>
+      </button>
+    </div>
   </div>
   <div v-else>
     loading
@@ -87,3 +130,12 @@ export default({
   }
 })
 </script>
+
+<style scoped>
+.test {
+  margin-top: 20px;
+}
+.test .btn{
+  margin: 0 20px;
+}
+</style>

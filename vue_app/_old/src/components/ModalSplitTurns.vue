@@ -570,7 +570,6 @@ export default {
           })
         }
       }
-      console.log('splitArray', this.splitContentArray)
     },
     async dispatchStore (topic) {
       try {

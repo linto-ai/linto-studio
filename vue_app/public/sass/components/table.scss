@@ -1,0 +1,151 @@
+/*** TABLE ***/
+
+.table {
+    margin: 20px 0;
+    border-collapse: collapse;
+    width: 100%;
+    padding: 0;
+    thead {
+        border-bottom: 1px solid #8e8e8e;
+        th {
+            text-align: left;
+            vertical-align: middle;
+            padding: 10px 15px;
+            .table-th-filter {
+                display: inline-block;
+                font-size: 14px;
+                font-weight: 600;
+                color: rgb(199, 169, 169);
+                position: relative;
+                &:hover {
+                    color: $blueChart;
+                }
+                &.selected {
+                    color: $blueChart;
+                    &:after {
+                        content: "";
+                        display: inline-block;
+                        width: 15px;
+                        height: 15px;
+                        position: absolute;
+                        top: 0;
+                        left: 105%;
+                        @include maskImage('../img/filter-arrow.svg');
+                        background-color: $blueChart;
+                        @include transition(all 0.3s ease);
+                    }
+                    &.up {
+                        &:after {
+                            @include transform(rotate(180deg));
+                        }
+                    }
+                }
+            }
+        }
+    }
+    tbody {
+        border-collapse: separate;
+        tr {
+            td {
+                max-width: 420px;
+                padding: 10px;
+                font-size: 16px;
+                color: #333;
+                &.title {
+                    font-weight: 600;
+                    color: $greenChart;
+                    /*
+
+                  &:hover {
+                      color: $blueChart;
+                      text-decoration: underline;
+                  }
+                      */
+                }
+                &.center {
+                    text-align: center;
+                }
+                &.status {
+                    .label {
+                        font-weight: 600;
+                        font-size: 14px;
+                        position: relative;
+                        padding-left: 20px;
+                        &:after {
+                            content: "";
+                            position: absolute;
+                            left: 0;
+                            top: 0;
+                            height: 12px;
+                            width: 12px;
+                            @include borderRadius(10px);
+                        }
+                    }
+                    &.open {
+                        .label {
+                            color: $greenChart;
+                            &:after {
+                                background-color: $greenChart;
+                            }
+                        }
+                    }
+                    &.locked {
+                        .label {
+                            color: $redChart;
+                            &:after {
+                                background-color: $redChart;
+                            }
+                        }
+                    }
+                }
+                .table-user-img {
+                    height: 40px;
+                    width: 40px;
+                    position: relative;
+                    margin-right: -15px;
+                    .table-user-img__span {
+                        width: 40px;
+                        height: 40px;
+                        border: 2px solid $blueLight;
+                        position: relative;
+                        @include borderRadius(25px);
+                        @include boxShadow(0, 1px, 2px, 0, rgba(0, 0, 0, 0.3));
+                        .table-user-img__img {
+                            background-color: #fff;
+                            width: 40px;
+                            height: 40px;
+                            display: inline-block;
+                            @include borderRadius(25px);
+                            position: relative;
+                            top: 0;
+                            left: 0;
+                        }
+                        &:hover {
+                            &:after {
+                                content: attr(data-name);
+                                display: inline-block;
+                                padding: 10px;
+                                font-size: 14px;
+                                @include borderRadius(3px);
+                                position: absolute;
+                                top: 45px;
+                                left: 0;
+                                background-color: $blueChart;
+                                color: #fff;
+                                z-index: 5;
+                                white-space: nowrap;
+                            }
+                        }
+                    }
+                }
+            }
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.7);
+                &.clickable {
+                    @include boxShadow(0, 2px, 3px, 0, rgba(0, 0, 0, 0.2));
+                    cursor: pointer;
+                }
+            }
+        }
+    }
+}

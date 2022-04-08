@@ -1,0 +1,584 @@
+button,
+a {
+    cursor: pointer;
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+    border: none;
+    color: inherit;
+    background-color: transparent;
+    font-family: inherit;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    &:focus,
+    &:active {
+        outline: none;
+    }
+}
+
+.btn {
+    @include borderRadius(3px);
+    @include buttonShadow();
+    @include transition(all 0.3s ease);
+    background-color: #fff;
+    &>span {
+        display: inline-block;
+        @include transition(all 0.3s ease);
+    }
+    .label {
+        font-size: 16px;
+        vertical-align: top;
+        padding: 0 10px;
+        font-weight: 500;
+    }
+    .icon {
+        display: inline-block;
+        background-color: #333;
+        &.icon__plus,
+        &.icon__add {
+            @include maskImage('../img/plus.svg');
+        }
+        &.icon__cancel {
+            @include maskImage('../img/cancel.svg');
+        }
+        &.icon__apply {
+            @include maskImage('../img/apply.svg');
+        }
+        &.icon__trash {
+            @include maskImage('../img/trash-big.svg');
+        }
+        &.icon__transcription {
+            @include maskImage('../img/abstract.svg');
+        }
+        &.icon__backto {
+            @include maskImage('../img/backto.svg');
+        }
+        &.icon__share {
+            @include maskImage('../img/hand-shake.svg');
+        }
+        &.icon__undo {
+            @include maskImage('../img/lastupdate.svg');
+        }
+        &.icon__loading {
+            @include maskImage('../img/loading.svg');
+            @include rotate();
+        }
+        &.icon__edit {
+            @include maskImage('../img/edit.svg');
+        }
+        &.icon__play {
+            @include maskImage('../img/listen.svg');
+        }
+        &.icon__remove {
+            @include maskImage('../img/trash.svg');
+        }
+        &.icon__close {
+            @include maskImage('../img/close.svg');
+        }
+        &.icon__merge {
+            @include maskImage('../img/merge.svg');
+        }
+        &.icon__list {
+            @include maskImage('../img/agenda.svg');
+        }
+    }
+    /* SMALL */
+    &.btn-small {
+        height: 24px;
+        min-width: 24px;
+        &>span {
+            line-height: 24px;
+        }
+        .label {
+            font-size: 14px;
+        }
+        .icon {
+            margin: 2px;
+            width: 20px;
+            height: 20px;
+        }
+    }
+    /* MEDIUM */
+    &.btn-medium {
+        height: 30px;
+        min-width: 30px;
+        &>span {
+            line-height: 30px;
+        }
+        .icon {
+            width: 30px;
+            height: 30px;
+        }
+    }
+    /* BIG */
+    &.btn-big {
+        height: 40px;
+        min-width: 40px;
+        &>span {
+            line-height: 40px;
+        }
+        .icon {
+            width: 30px;
+            height: 30px;
+            margin: 5px 0;
+        }
+    }
+    &.green {
+        .label {
+            color: $greenChart;
+        }
+        .icon {
+            background-color: $greenChart;
+        }
+        &:hover {
+            background-color: $greenChart;
+            @include buttonShadowHover();
+            .label {
+                color: #fff;
+            }
+            .icon {
+                background-color: #fff;
+            }
+            &:after {
+                background-color: $greenChart;
+            }
+        }
+    }
+    &.red {
+        .label {
+            color: $redChart;
+        }
+        .icon {
+            background-color: $redChart;
+        }
+        &:hover {
+            background-color: $redChart;
+            @include buttonShadowHover();
+            .label {
+                color: #fff;
+            }
+            .icon {
+                background-color: #fff;
+            }
+            &:after {
+                background-color: $redChart;
+            }
+        }
+    }
+    &.grey {
+        margin-right: 20px;
+        background-color: rgba(0, 0, 0, 0.4);
+        .label {
+            color: #fff;
+        }
+        .icon {
+            background-color: #fff;
+        }
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+            @include buttonShadowHover();
+            &:after {
+                background-color: rgba(0, 0, 0, 0.8);
+            }
+        }
+    }
+    &.blue {
+        .label {
+            color: $blueChart;
+        }
+        .icon {
+            background-color: $blueChart;
+        }
+        &:hover {
+            background-color: $blueChart;
+            @include buttonShadowHover();
+            .label {
+                color: #fff;
+            }
+            .icon {
+                background-color: #fff;
+            }
+            &:after {
+                background-color: $blueChart;
+            }
+        }
+    }
+    &.info-text {
+        overflow: visible;
+        &:after {
+            display: none;
+        }
+        &:hover {
+            &:after {
+                content: attr(data-content);
+                display: inline-block;
+                padding: 5px;
+                position: absolute;
+                top: -35px;
+                left: -60px;
+                z-index: 5;
+                font-size: 14px;
+                line-height: 20px;
+                white-space: nowrap;
+                color: #fff;
+            }
+        }
+    }
+}
+
+
+/*
+.btn {
+    &.btn--txt-icon {
+        background-color: #fff;
+        height: 40px;
+        padding: 0 15px;
+        @include borderRadius(20px);
+        @include buttonShadow();
+        @include transition(all 0.3s ease);
+        position: relative;
+        z-index: 1;
+        overflow: hidden;
+        .label {
+            display: inline-block;
+            font-size: 16px;
+            line-height: 40px;
+            font-weight: 700;
+            z-index: 5;
+            vertical-align: top;
+            @include transition(all 0.3s ease);
+        }
+        .icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            position: relative;
+            vertical-align: top;
+            margin: 10px 0 10px 5px;
+            @include transition(all 0.3s ease);
+            &.icon__plus {
+                @include maskImage('../img/plus.svg');
+            }
+            &.icon__cancel {
+                @include maskImage('../img/cancel.svg');
+            }
+            &.icon__apply {
+                @include maskImage('../img/apply.svg');
+            }
+            &.icon__trash {
+                @include maskImage('../img/trash-big.svg');
+            }
+            &.icon__transcription {
+                @include maskImage('../img/abstract.svg');
+            }
+            &.icon__backto {
+                @include maskImage('../img/backto.svg');
+            }
+            &.icon__share {
+                @include maskImage('../img/hand-shake.svg');
+            }
+            &.icon__undo {
+                @include maskImage('../img/lastupdate.svg');
+            }
+            &.icon__loading {
+                @include maskImage('../img/loading.svg');
+                @include rotate();
+            }
+        }
+        &:hover {
+            background-color: #fff;
+        }
+        &:focus {
+            &:before {
+                display: inline-block;
+                content: "";
+            }
+        }
+        &.green {
+            .label {
+                color: $greenChart;
+            }
+            .icon {
+                background-color: $greenChart;
+            }
+            &:hover {
+                background-color: $greenChart;
+                @include buttonShadowHover();
+                .label {
+                    color: #fff;
+                }
+                .icon {
+                    background-color: #fff;
+                }
+            }
+        }
+        &.green-green {
+            background-color: $greenChart;
+            .label {
+                color: #fff;
+            }
+            .icon {
+                background-color: #fff;
+            }
+            &:hover {
+                background-color: rgba(66, 212, 186, 0.8);
+                @include buttonShadowHover();
+            }
+        }
+        &.red {
+            background-color: rgba(254, 52, 110, 0.7);
+            .label {
+                color: #fff;
+            }
+            .icon {
+                background-color: #fff;
+            }
+            &:hover {
+                background-color: $redChart;
+                @include buttonShadowHover();
+            }
+        }
+        &.grey {
+            margin-right: 20px;
+            background-color: rgba(0, 0, 0, 0.4);
+            .label {
+                color: #fff;
+            }
+            .icon {
+                background-color: #fff;
+            }
+            &:hover {
+                background-color: rgba(0, 0, 0, 0.8);
+                @include buttonShadowHover();
+            }
+        }
+        &.blue {
+            .label {
+                color: $blueChart;
+            }
+            .icon {
+                background-color: $blueChart;
+            }
+            &:hover {
+                background-color: $blueChart;
+                @include buttonShadowHover();
+                .label {
+                    color: #fff;
+                }
+                .icon {
+                    background-color: #fff;
+                }
+            }
+        }
+    }
+    &.btn--txt {
+        height: 30px;
+        @include borderRadius(3px);
+        padding: 0 5px;
+        @include buttonShadow();
+        @include transition(all 0.3s ease);
+        margin: 5px;
+        background-color: #fff;
+        .label {
+            display: inline-block;
+            line-height: 30px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        &.btn--txt__save {
+            .label {
+                color: $greenChart;
+            }
+            &:hover {
+                background-color: $greenChart;
+                .label {
+                    color: #fff;
+                }
+            }
+        }
+        &.btn--txt__cancel {
+            .label {
+                color: #555;
+            }
+            &:hover {
+                background-color: #555;
+                .label {
+                    color: #fff;
+                }
+            }
+        }
+    }
+}
+
+&.btn--icon {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    background-color: #fff;
+    @include borderRadius(3px);
+    @include buttonShadow();
+    @include transition(all 0.3s ease);
+    position: relative;
+    z-index: 1;
+    .icon {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        background-color: $greenChart;
+        @include transition(background-color 0.3s ease);
+        &.icon--edit {
+            @include maskImage('../img/edit.svg');
+        }
+        &.icon--play {
+            @include maskImage('../img/listen.svg');
+        }
+        &.icon--add {
+            @include maskImage('../img/plus.svg');
+        }
+        &.icon--apply {
+            @include maskImage('../img/apply.svg');
+        }
+        &.icon--cancel {
+            @include maskImage('../img/cancel.svg');
+        }
+        &.icon--remove {
+            background-color: rgba(254, 52, 110, 0.5);
+            @include maskImage('../img/trash.svg');
+        }
+        &.icon--close {
+            background-color: rgba(254, 52, 110, 0.5);
+            @include maskImage('../img/close.svg');
+        }
+        &.icon--merge {
+            background-color: rgba(254, 52, 110, 0.5);
+            @include maskImage('../img/merge.svg');
+        }
+        &.icon--list {
+            @include maskImage('../img/agenda.svg');
+        }
+    }
+    &.grey {
+        .icon {
+            background-color: #656565;
+        }
+    }
+    &.red {
+        .icon {
+            background-color: $redChart;
+        }
+    }
+    &:hover,
+    &.active {
+        background-color: $greenChart;
+        @include buttonShadowHover();
+        .icon {
+            background-color: #fff;
+            &.icon--remove,
+            &.icon--merge,
+            &.icon--close {
+                background-color: $redChart;
+            }
+        }
+        &.red {
+            background-color: $redChart;
+            .icon {
+                background-color: #fff;
+            }
+        }
+        &.grey {
+            background-color: #656565;
+        }
+    }
+}
+
+&:focus {
+    &:before {
+        display: inline-block;
+        content: "";
+    }
+}
+
+&.btn--inline {
+    border: none;
+    white-space: nowrap;
+    @include cancelBoxShadow();
+    @include borderRadius(0px);
+    .label {
+        font-size: 16px;
+        font-weight: 600;
+    }
+    &:hover {
+        color: $greenChart;
+        text-decoration: underline;
+    }
+}
+
+&.btn--icon__no-bg {
+    background-color: transparent;
+    @include cancelBoxShadow();
+    &:hover {
+        background-color: transparent;
+        @include cancelBoxShadow();
+    }
+}
+
+&.btn--small {
+    display: inline-block;
+    padding: 5px;
+    @include borderRadius(3px);
+    @include boxShadow(1px, 1px, 2px, 0, rgba(0, 0, 0, 0.2));
+    @include transition(all 0.3s ease);
+    .label {
+        font-size: 15px;
+        font-weight: 700;
+    }
+    &.blue-dark {
+        .label {
+            color: $blueChart;
+        }
+        &:hover {
+            background-color: $blueChart;
+            .label {
+                color: #fff;
+            }
+        }
+    }
+    &.green {
+        .label {
+            color: $greenChart;
+        }
+        &:hover {
+            background-color: $greenChart;
+            .label {
+                color: #fff;
+            }
+        }
+        &.border {
+            border: 1px solid $greenChart;
+        }
+    }
+}
+
+.list-btn-small {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    margin: 0 2px;
+    vertical-align: top;
+    &.plus {
+        @include maskImage('../img/plus.svg');
+        background-color: $greenMedium;
+        &:hover {
+            background-color: $greenChart;
+        }
+    }
+    &.minus {
+        @include maskImage('../img/minus.svg');
+        background-color: $redLight;
+        &:hover {
+            background-color: $redChart;
+        }
+    }
+}*/

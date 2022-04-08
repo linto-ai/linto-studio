@@ -15,9 +15,7 @@ const refreshToken = require('./token/refresh')
 module.exports = {
     authType: 'local',
     authenticate: (req, res, next) => {
-        console.log('BODY middleWare', req.body)
         passport.authenticate('local', { session: false }, (err, user) => {
-            console.log('Passeport user', user)
             if (err) {
                 console.error(err)
                 res.json({
@@ -80,7 +78,7 @@ module.exports = {
             userProperty: 'payload',
             getToken: getTokenFromHeaders,
         }),
-        async (req, res, next) => {
+        async(req, res, next) => {
             const { headers: { authorization } } = req
             let token = await refreshToken(authorization)
             res.local = token

@@ -110,7 +110,7 @@ export default {
       usersList: [],
       userRoles: [
         {
-          name: "Guest",
+          name: "Member",
           value: 1
         },
         {
@@ -151,15 +151,11 @@ export default {
     },
     filterUsersList (searchValue) {
       let availableUsers = this.$store.state.users
-      for(let user of availableUsers) {
-          console.log( `${user.firstname} ${user.lastname}`, searchValue)
-          console.log(`${user.firstname} ${user.lastname}`.indexOf(searchValue))
-        }
-    // Return all user filtered by: searchValue + Not current User + Not selected
-    return availableUsers.filter(user => 
-    (`${user.firstname} ${user.lastname}`.indexOf(searchValue) >= 0 || user.email.indexOf(searchValue) >= 0) && user._id !== this.userInfo._id && this.selectedMembersId.indexOf(user._id) < 0)
-    },
 
+      // Return all user filtered by: searchValue + Not current User + Not selected
+      return availableUsers.filter(user => 
+      (`${user.firstname} ${user.lastname}`.indexOf(searchValue) >= 0 || user.email.indexOf(searchValue) >= 0) && user._id !== this.userInfo._id && this.selectedMembersId.indexOf(user._id) < 0)
+    },
     addToMembers(user) {
       let newUser = user
       newUser.role = 1
@@ -196,9 +192,6 @@ export default {
         }
 
         let req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/organizations`, 'post', payload) 
-          
-          console.log('ALLO', !!req.data.msg, !!req.data.message, !!req.data.msg || !!req.data.message)
-          console.log('donc ? ', req.status >= 200 && req.status < 300 && (!!req.data.msg || !!req.data.message))
 
         if(req.status >= 200 && req.status < 300 && (!!req.data.msg || !!req.data.message)) {
           bus.$emit('app_notif', {

@@ -59,7 +59,7 @@ Vue.filter('sendRequest', async function(url, method, data) {
                 'Authorization': `Bearer ${ userToken }`
             }
         })
-        if (req.status === 200) {
+        if (req.status >= 200 && req.status < 300) {
             return req
         } else {
             throw req

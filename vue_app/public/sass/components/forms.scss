@@ -1,0 +1,201 @@
+/*** FORMS / INPUTS ***/
+
+.form-container {
+    border: 1px solid $blueLight;
+    margin: 20px;
+    padding: 20px;
+    &.no-border {
+        border: none;
+    }
+}
+
+.form-field {
+    width: 100%;
+    margin-bottom: 10px;
+    .form-label {
+        font-weight: 700;
+        font-size: 16px;
+        padding: 10px 0 5px 0;
+        color: $blueChart;
+        i {
+            font-size: 16px;
+            font-weight: 400;
+            color: $redChart;
+            font-style: normal;
+        }
+        strong {
+            font-weight: 500;
+            font-size: 18px;
+            color: $redChart;
+        }
+    }
+    .form-error {
+        display: inline-block;
+        padding: 10px 0;
+        width: 100%;
+        color: $redChart;
+        font-style: italic;
+        text-align: center;
+    }
+}
+
+textarea,
+input[type="text"],
+input[type="password"],
+select {
+    font-family: $comfortaa;
+    color: #333333;
+    font-size: 15px;
+    font-weight: 400;
+    display: inline-block;
+    padding: 5px;
+    background-color: #fff;
+    border: 1px solid $blueLight;
+    min-width: 140px;
+    max-width: 320px;
+    @include borderRadius(3px);
+    &.error {
+        border-color: $redChart;
+    }
+    &:focus,
+    &:active {
+        outline: 1px solid $blueLight;
+    }
+}
+
+textarea {
+    resize: vertical;
+    min-height: 100px;
+    max-height: 320px;
+}
+
+.error-field {
+    display: inline-block;
+    font-size: 14px;
+    height: 20px;
+    line-height: 20px;
+    color: $redChart;
+}
+
+.custom-checkbox {
+    display: inline-block;
+    width: 19px;
+    height: 19px;
+    border: 1px solid #fff;
+    margin: 0 10px;
+    background-color: #fff;
+    position: relative;
+    @include borderRadius(3px);
+    @include boxShadow(0, 1px, 2px, 0, rgba(0, 0, 0, 0.2));
+    &:hover {
+        border-color: $greenChart;
+    }
+    &:after {
+        display: none;
+    }
+    &.selected {
+        border-color: $greenChart;
+        &:after {
+            display: inline-block;
+            content: '';
+            width: 30px;
+            height: 30px;
+            position: absolute;
+            top: -8px;
+            left: -3px;
+            @include maskImage('../img/apply.svg');
+            background-color: $greenChart;
+        }
+    }
+}
+
+.input-file-container {
+    position: relative;
+    .input__file {
+        position: absolute;
+        z-index: -1;
+        top: 5px;
+        left: 5px;
+        width: 1px;
+        height: 1px;
+        &:hover {
+            cursor: pointer;
+        }
+    }
+    .input__file-label-btn {
+        display: inline-block;
+        min-width: 120px;
+        text-align: center;
+        padding: 10px;
+        border: 1px solid $blueChart;
+        background-color: $blueChart;
+        color: #fff;
+        z-index: 5;
+        @include borderRadius(3px);
+        @include boxShadow(0, 2px, 2px, 0, rgba(0, 0, 0, 0.2));
+        .input__file-icon {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            @include maskImage('../img/upload.svg');
+            background-color: #fff;
+            vertical-align: top;
+        }
+        .input__file-label {
+            vertical-align: top;
+            display: inline-block;
+            height: 30px;
+            line-height: 30px;
+            font-weight: 700;
+            color: #fff;
+        }
+        &.error {
+            background-color: $redChart;
+            border-color: $redChart;
+        }
+        &.valid {
+            background-color: $greenChart;
+            border-color: $greenChart;
+        }
+        &:hover {
+            cursor: pointer;
+            background-color: #fff;
+            color: $blueChart;
+            .input__file-label {
+                color: $blueChart;
+            }
+            .input__file-icon {
+                background-color: $blueChart;
+            }
+            &.valid {
+                &:hover {
+                    .input__file-label {
+                        color: $greenChart;
+                    }
+                    .input__file-icon {
+                        background-color: $greenChart;
+                    }
+                }
+            }
+            &.error {
+                &:hover {
+                    .input__file-label {
+                        color: $redChart;
+                    }
+                    .input__file-icon {
+                        background-color: $redChart;
+                    }
+                }
+            }
+        }
+        @include transition(all 0.3s ease);
+    }
+}
+
+.input__file-name {
+    display: inline-block;
+    padding: 5px 0;
+    color: $blueChart;
+    font-size: 15px;
+    font-weight: 500;
+}

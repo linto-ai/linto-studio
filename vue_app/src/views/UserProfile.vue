@@ -211,15 +211,14 @@ export default {
 
           if(Object.keys(payload).length > 0) {
             const req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/users`, 'put', payload)
-            console.log('REQ', req)
-            if(req.status === 200 && !!req.data.msg) {
+            if(req.status >= 200 && req.status < 300 ) {
               bus.$emit('refresh_user', {})
               bus.$emit('app_notif', {
                 status: 'success',
-                message: req.data.msg,
+                message: req.data.message || 'User profile updated' ,
                 timeout: 3000
               })
-            }else {
+            } else {
               throw req
             }
           }
@@ -231,7 +230,7 @@ export default {
         }
         bus.$emit('app_notif', {
           status: 'error',
-          message:  error.msg || error.message || 'Error on updating speaker',
+          message:  error.message || 'Error on updating user profile',
           timeout: null
         })
       }
@@ -241,6 +240,8 @@ export default {
       this.testPasswordConfirm(this.newPasswordConfirm, this.newPassword)
     },
     async sendPassword () {
+
+        
       this.handlePasswordForm()
       if(this.pswdFormValid) {
         let payload = {

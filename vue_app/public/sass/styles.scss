@@ -2,12 +2,23 @@
 @import "./_mixin.scss";
 @import "./_variables.scss";
 // Global
-@import "./components/_global.scss";
-@import "./components/app.scss";
-// Vertical Navigation
-@import "./components/vertical-navigation.scss";
-// Header
+@import "./_global.scss";
+// Views
+@import "./views/login.scss";
+@import "./views/app.scss";
+@import "./views/user-profile.scss";
+// Components
 @import "./components/app-header.scss";
+@import "./components/app-vertical-navigation.scss";
+@import "./components/buttons.scss";
+@import "./components/forms.scss";
+@import "./components/table.scss";
+// Vertical Navigation
+
+/*
+// Header
+
+
 // Views
 @import "./components/page-conversations.scss";
 @import "./components/page-conversations-manage.scss";
@@ -22,4 +33,4 @@
 @import "./components/app-notif.scss";
 @import "./components/keyboard-commands-frame.scss";
 @import "./components/selected-text-toolbox.scss";
-@import "./components/organizations.scss";
+@import "./components/organizations.scss";*/

@@ -1,4 +1,6 @@
-const { cpSync } = require('fs')
+const {
+    cpSync
+} = require('fs')
 
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:user')
 const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
@@ -23,7 +25,9 @@ async function listUser(req, res, next) {
         const users = await userModel.getAllUsers()
         res.status(200).send(users)
     } catch (error) {
-        res.send({ message: error.message })
+        res.send({
+            message: error.message
+        })
     }
 }
 
@@ -36,7 +40,9 @@ async function getUserById(req, res, next) {
             ...userList[0]
         })
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
+        res.status(err.status).send({
+            message: err.message
+        })
     }
 }
 
@@ -88,13 +94,17 @@ async function updateUser(req, res, next) {
 
         const result = await userModel.update(user)
         if (result.matchedCount === 0) throw new UserError()
+        let message
 
-        (result.modifiedCount === 1) ? message = 'User updated': message = 'No modification to user'
+            (result.modifiedCount === 1) ? message = 'User updated' : message = 'No modification to user'
         res.status(200).send({
             message
         })
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
+        console.error(err)
+        res.status(err.status).send({
+            message: err.message
+        })
     }
 }
 
@@ -116,7 +126,9 @@ async function updateUserPicture(req, res, next) {
             message: 'User picture updated'
         })
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
+        res.status(err.status).send({
+            message: err.message
+        })
     }
 }
 
@@ -138,7 +150,9 @@ async function updateUserPassword(req, res, next) {
         if (result.matchedCount === 0) throw new UserError()
         next()
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
+        res.status(err.status).send({
+            message: err.message
+        })
     }
 }
 
@@ -205,7 +219,9 @@ async function deleteUser(req, res, next) {
             message: 'User deleted'
         })
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
+        res.status(err.status).send({
+            message: err.message
+        })
     }
 }
 
