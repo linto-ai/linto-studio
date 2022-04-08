@@ -184,7 +184,8 @@ async function deleteUser(req, res, next) {
         const organizations = await organizationModel.getAllOrganizations()
 
         organizations.filter(organization => {
-            if (organization.owner === userId && organization.users.length === 0) return true
+            if (organization.owner !== userId && organization.personal === true) return false
+            else if (organization.owner === userId && organization.users.length === 0) return true
             else if ((organization.users.filter(user => user.userId === userId)).length !== 0) return true
         }).map(async (organization) => {
             if (organization.owner === userId && organization.users.length === 0) {

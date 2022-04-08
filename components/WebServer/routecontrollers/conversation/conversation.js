@@ -23,6 +23,25 @@ async function getOwnerConversation(req, res, next) {
   }
 }
 
+async function deleteConversation(req, res, next) {
+  try {
+    if (!req.params.conversationId) throw new ConversationIdRequire()
+    const conversation = await conversationModel.getConvoById(req.params.conversationId)
+    if (conversation.length !== 1) throw new ConversationNotFound()
+
+    const result = await conversationModel.deleteById(req.params.conversationId)
+
+    if (result.deletedCount !== 1) throw new ConversationError('Error when deleting conversation')
+
+    res.status(200).send({
+      message: 'Conversation has been deleted'
+    })
+  } catch (err) {
+    res.status(err.status).send({ message: err.message })
+  }
+}
+
+
 async function updateConversation(req, res, next) {
   try {
     if (!req.params.conversationId) throw new ConversationIdRequire()
@@ -101,5 +120,6 @@ module.exports = {
   getConversation,
   listConversation,
   updateConversation,
-  searchText
+  searchText,
+  deleteConversation
 }
