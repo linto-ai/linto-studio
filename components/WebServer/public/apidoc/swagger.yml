@@ -2,7 +2,7 @@ openapi: '3.0.0'
 info:
   version: '1.0.0'
   title: 'Conversation manager API client'
-  description: 'a tool for listening to, reading, editing and annotating a conversation transcript'
+  description: 'A tool allowing to play with the conversation manager '
   termsOfService: https://doc.linto.ai/#/?id=gnu-affero-general-public-licence-v3
   contact:
     name: LINAGORA
@@ -13,1024 +13,463 @@ host: localhost:8001
 basePath: /
 schemes:
  - https
+
+components:
+  securitySchemes:
+    bearerAuth:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT    # optional, arbitrary value for documentation purposes
+
+
+
 paths:
-## CONVERSATIONS
-##  /api/conversations:
-##    get:
-##      tags: 
-##        - "conversations"
-##      summary: Get all conversations
-##      responses:
-##        '200':
-##          description: request success
-##          content:
-##            application/json:
-##              schema:
-##                type: array
-##                items:
-##                  type: object
-##        '400':
-##          description: bad request error
-##          content:
-##            application/json:
-##              schema:
-##                $ref: '#/components/schemas/customError'
-## CONVERSATION METADATA
-  /api/conversation/{conversationid}/title:
+  /auth/login:
+    post:
+      tags: 
+        - "auth"
+      summary: AUthenticate user
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: OK
+
+
+  /api/users/:
+    post:
+      tags: 
+        - "users"
+      summary: Adds a new user
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                firstname:
+                  type: string
+                lastname:
+                  type: string
+              required:
+                - email
+                - password
+                - firstname
+                - lastname
+      responses:
+        '201':
+          description: OK
     put:
       tags: 
-        - "metadata"
-      summary: updates conversation title
-      parameters:
-        - in: path
-          name: conversationid
-          type: string 
-          format: uuid 
-          required: true 
-          description: uuid string identifier for a conversation
+        - "users"
+      summary: Update an user
       requestBody:
-        required: true
-        description: takes an object with fields for title
         content:
-          application/json:
+          multipart/form-data:
             schema:
+              type: object
               properties:
-                title:
+                email:
+                  type: string
+                password:
+                  type: string
+                firstname:
+                  type: string
+                lastname:
                   type: string
       responses:
         '200':
-          description: request success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customSuccess'
-        '400':
-          description: bad request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customError'
-  /api/conversation/{conversationid}/description:
+          description: OK
+    get:
+      tags: 
+        - "users"
+      summary: List all user
+      responses:
+        '200':
+          description: OK
+    delete:
+      tags: 
+        - "users"
+      summary: Delete user
+      responses:
+        '200':
+          description: OK
+
+  /api/users/password:
     put:
       tags: 
-        - "metadata"
-      summary: updates conversation description 
+        - "users"
+      summary: Update user passwrd
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                newPassword:
+                  type: string
+              required:
+                - newPassword
+      responses:
+        '200':
+          description: OK
+
+  /api/users/picture:
+    put:
+      tags: 
+        - "users"
+      summary: Update user profile picture
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: file
+              required:
+                - file
+      responses:
+        '200':
+          description: OK
+
+  /api/users/{userId}/:
+    get:
+      tags: 
+        - "users"
+      summary: Get an user information
       parameters:
         - in: path
-          name: conversationid
+          name: userId
           type: string 
           format: uuid 
           required: true 
-          description: uuid string identifier for a conversation
+          description: uuid string identifier for an user
+      responses:
+        '200':
+          description: OK
+
+
+  /api/organizations/:
+    post:
+      tags: 
+        - "organizations"
+      summary: Create an organization
       requestBody:
-        required: true
-        description: takes an object with fields for title
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                type:
+                  type: string
+              required:
+                - name
+                - type
+      responses:
+        '201':
+          description: OK
+    get:
+      tags: 
+        - "organizations"
+      summary: List all public organization
+      responses:
+        '200':
+          description: OK
+
+  /api/organizations/user/:
+    get:
+      tags: 
+        - "organizations members"
+      summary: List self organization
+      responses:
+        '200':
+          description: OK
+
+  /api/organizations/user/{organizationId}/:
+    patch:
+      tags: 
+        - "organizations members"
+      summary: Update self visibility from an organization
+      parameters:
+        - in: path
+          name: organizationId
+          type: string 
+          format: uuid 
+          required: true 
+          description: uuid string identifier for an organization
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                visibility:
+                  type: string
+      responses:
+        '201':
+          description: OK
+    delete:
+      tags: 
+        - "organizations members"
+      summary: Remove self from an organization
+      parameters:
+        - in: path
+          name: organizationId
+          type: string 
+          format: uuid 
+          required: true 
+          description: uuid string identifier for an organization
+      responses:
+        '200':
+          description: OK
+          
+
+
+  /api/organizations/{organizationId}/user:
+    post:
+      tags: 
+        - "organizations maintainer"
+      summary: Add an user into the organization
+      parameters:
+        - in: path
+          name: organizationId
+          type: string 
+          format: uuid 
+          required: true 
+          description: uuid string identifier for an organization
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                role:
+                  type: string
+              required:
+                - email
+                - role
+      responses:
+        '200':
+          description: OK
+    patch:
+      tags: 
+        - "organizations maintainer"
+      summary: Update an user role from organization
+      parameters:
+        - in: path
+          name: organizationId
+          type: string 
+          format: uuid 
+          required: true 
+          description: uuid string identifier for an organization
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                role:
+                  type: string
+              required:
+                - userId
+                - role
+      responses:
+        '201':
+          description: OK
+    delete:
+      tags: 
+        - "organizations maintainer"
+      summary: Remove an user from organization
+      parameters:
+        - in: path
+          name: organizationId
+          type: string 
+          format: uuid 
+          required: true 
+          description: uuid string identifier for an organization
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+              required:
+                - userId
+      responses:
+        '200':
+          description: OK
+
+  /api/organizations/{organizationId}/:
+    patch:
+      tags: 
+        - "organizations admin"
+      summary: Update an organization
+      parameters:
+        - in: path
+          name: organizationId
+          type: string 
+          format: uuid 
+          required: true 
+          description: uuid string identifier for an organization
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                token:
+                  type: string
+                description:
+                  type: string
+                type:
+                  type: string
+      responses:
+        '201':
+          description: OK
+    delete:
+      tags: 
+        - "organizations admin"
+      summary: Remove an organization
+      parameters:
+        - in: path
+          name: organizationId
+          type: string 
+          format: uuid 
+          required: true 
+          description: uuid string identifier for an organization
+      responses:
+        '200':
+          description: OK
+
+  /api/conversations/create/:
+    post:
+      tags: 
+        - "conversations"
+      summary: Create conversation
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: file
+                name:
+                  type: string
+                description:
+                  type: string
+                organizationId:
+                  type: uiid
+                organizationRole:
+                  type: integer
+              required:
+                - file
+                - name
+      responses:
+        '201':
+          description: OK
+  /api/conversations/list/:
+    get:
+      tags: 
+        - "conversations"
+      summary: List you'r user conversation
+      responses:
+        '200':
+          description: OK
+  /api/conversations/{conversationId}/:
+    get:
+      tags: 
+        - "conversations"
+      summary: Get one conversation 
+      parameters:
+        - in: path
+          name: conversationId
+          type: string 
+          format: uuid 
+          required: true 
+          description: uuid string identifier for an conversation
+      responses:
+        '200':
+          description: OK
+    patch:
+      tags: 
+        - "conversations"
+      summary: Update one conversation 
+      parameters:
+        - in: path
+          name: conversationId
+          type: string 
+          format: uuid 
+          required: true 
+          description: uuid string identifier for an conversation
+      requestBody:
         content:
           application/json:
             schema:
+              type: object
               properties:
+                name:
+                  type: string
                 description:
                   type: string
       responses:
         '200':
-          description: request success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customSuccess'
-        '400':
-          description: bad request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customError'
-  /api/conversation/{conversationid}/agenda:
-    put:
+          description: OK
+    delete:
       tags: 
-        - "metadata"
-      summary: updates conversation agenda
+        - "conversations"
+      summary: Delete an conversation
       parameters:
         - in: path
-          name: conversationid
+          name: conversationId
           type: string 
           format: uuid 
           required: true 
-          description: uuid string identifier for a conversation
-      requestBody:
-        required: true
-        description: takes an object with fields for title
-        content:
-          application/json:
-            schema:
-              type: array 
-              items:
-                type: string
+          description: uuid string identifier for an conversationId
       responses:
         '200':
-          description: request success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customSuccess'
-        '400':
-          description: bad request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customError'
-  /api/conversation/{conversationid}/convotype:
-    put:
+          description: OK
+  /api/conversations/search/text:
+    post:
       tags: 
-        - "metadata"
-      summary: updates conversation type
-      parameters:
-        - in: path
-          name: conversationid
-          type: string 
-          format: uuid 
-          required: true 
-          description: uuid string identifier for a conversation
+        - "conversations"
+      summary: Get conversation containing specific text
       requestBody:
-        required: true
-        description: takes an object with fields for title
         content:
-          application/json:
+          multipart/form-data:
             schema:
+              type: object
               properties:
-                convoType:
+                text:
                   type: string
+              required:
+                - text
       responses:
         '200':
-          description: request success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customSuccess'
-        '400':
-          description: bad request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customError'
-## CONVERSATION / SPEAKER
-  /api/conversation/{conversationid}/speakers:
-    get:
-      tags:
-        - "speakers"
-      summary: Returns all speaker objects for a conversation
-      parameters: 
-        - in: path
-          name: conversationid
-          type: string
-          format: uuid
-          required: true
-          description: uuid string identifier for a conversation
-      responses:
-        '200':
-          description: request success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/speakers'
-        '400':
-          description: bad request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customError'
-    post:
-      tags:
-        - "speakers"
-      summary: Creates a new speaker object for a conversation
-      parameters: 
-        - in: path
-          name: conversationid
-          type: string
-          format: uuid
-          required: true
-          description: uuid string identifier for a conversation
-      requestBody:
-        required: true
-        description: An object containing a speaker name and turnid if speaker is created wrt a specific turn
-        content:
-          application/json:
-            schema:
-              type: object 
-              properties:
-                speakername: 
-                  type: string
-                turnid:
-                  type: string
-                  format: uuid
-      responses:
-        '200':
-          description: request success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customSuccess'
-        '400':
-          description: bad request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customError'
-  /api/conversation/{conversationid}/mergespeakers/{speakerid}:
-    patch: 
-      tags:
-        - "speakers"
-      summary: Merges two speaker ids and deletes the id that is replaced
-      parameters: 
-        - in: path
-          name: conversationid
-          type: string
-          format: uuid
-          required: true
-          description: uuid string identifier for a conversation
-        - in: path
-          name: speakerid
-          type: string
-          format: uuid
-          required: true
-          description: uuid string identifier for a speaker
-      requestBody:
-        required: true
-        description: An object containing speaker id to replace id in params
-        content:
-          application/json:
-            schema:
-              type: object 
-              properties:
-                newspeakerid:
-                  type: string
-      responses:
-        '200':
-          description: request success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customSuccess'
-        '400':
-          description: bad request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customError'              
-  /api/conversation/{conversationid}/speakers/{speakerid}:
-    patch: 
-      tags:
-        - "speakers"
-      summary: Update the name (string) associated with a speaker id 
-      parameters: 
-        - in: path
-          name: conversationid
-          type: string
-          format: uuid
-          required: true
-          description: uuid string identifier for a conversation
-        - in: path
-          name: speakerid
-          type: string
-          format: uuid
-          required: true
-          description: uuid string identifier for a speaker
-      requestBody:
-        required: true
-        description: An object containing a new speakername
-        content:
-          application/json:
-            schema:
-              type: object 
-              properties:
-                newspeakername: 
-                  type: string
-      responses:
-        '200':
-          description: request success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customSuccess'
-        '400':
-          description: bad request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customError'
-    delete: 
-      tags:
-        - "speakers"
-      summary: Deletes a speaker from a conversation
-      parameters: 
-        - in: path
-          name: conversationid
-          type: string
-          format: uuid
-          required: true
-          description: uuid string identifier for a conversation
-        - in: path
-          name: speakerid
-          type: string
-          format: uuid
-          required: true
-          description: uuid string identifier for a speaker
-      responses:
-        '200':
-          description: request success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customSuccess'
-        '400':
-          description: bad request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customError'
-        '428':
-          description: speaker can't be deleted 
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  turn_number:
-                    type: string
-                  msg:
-                    type: string
-  /api/conversation/{conversationid}/speakermap:
-    put:
-      tags:
-        - "speakers"
-      summary: updates audio for all speakers in map 
-      parameters: 
-        - in: path
-          name: conversationid
-          type: string
-          format: uuid
-          required: true
-          description: uuid string identifier for a conversation
-      responses:
-        '200':
-          description: request success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/speakers'
-        '400':
-          description: bad request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customError'
-## CONVERSATION / TURNS
-  /api/conversation/{conversationid}/turn:
-    delete:
-      tags:
-        - "turns"
-      summary: Deletes a set of turns in a conversation
-      parameters: 
-        - in: path
-          name: conversationid
-          type: string 
-          format: uuid 
-          required: true 
-          description: uuid string identifier for a conversation
-      requestBody:
-        required: true
-        description: An array of one or more turnids 
-        content:
-          application/json:
-            schema:
-              type: array 
-              items:
-                type: string
-                format: uuid 
-            example:
-              ['3fa85f645717456443fc2c963f66afa6', '3fa66f645717456443fc2c963f66ay9d']
-      responses:
-        '200':
-          description: request success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customSuccess'
-        '400':
-          description: bad request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customError'
-  /api/conversation/{conversationid}/turn/merge:
-    patch: 
-      tags:
-        - "turns"
-      summary: Merges a set of turns
-      parameters: 
-        - in: path
-          name: conversationid
-          type: string
-          format: uuid
-          required: true
-          description: uuid string identifier for a conversation
-      requestBody:
-        required: true
-        description: An object containing an array of turn ids and a speaker name 
-        content:
-          application/json:
-            schema:
-              type: object 
-              properties:
-                turnids: 
-                  type: array
-                  items:
-                    type: string
-                    format: uuid
-                speakerid:
-                  type: string
-                  format: uuid 
-      responses:
-        '200':
-          description: request success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customSuccess'
-        '400':
-          description: bad request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customError'
-  /api/conversation/{conversationid}/turnspeaker/{turnid}:
-    put:
-      tags:
-        - "turns"
-      summary: Replaces a speaker by an existing speaker in a single turn
-      parameters: 
-        - in: path
-          name: conversationid
-          type: string
-          format: uuid
-          required: true
-          description: uuid string identifier for a conversation
-        - in: path
-          name: turnid
-          type: string
-          format: uuid
-          required: true
-          description: uuid string identifier for a turn
-      requestBody:
-        required: true
-        description: An object containing a speaker id
-        content:
-          application/json:
-            schema:
-              type: object 
-              properties:
-                speakerid: 
-                  type: string
-                  format: uuid
-      responses:
-        '200':
-          description: request success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customSuccess'
-        '400':
-          description: bad request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customError'
-  /api/conversation/{conversationid}/turn/split:
-    put: 
-      tags:
-        - "turns"
-      summary: Splits a set of turns and associate speakerid to new turn 
-      parameters: 
-        - in: path
-          name: conversationid
-          type: string
-          format: uuid
-          required: true
-          description: uuid string identifier for a conversation
-      requestBody:
-        required: true
-        description: An object containing wordid array, turn position array, a speaker id and a split type
-        content:
-          application/json:
-            schema:
-              type: object 
-              properties:
-                wordids:
-                  type: array
-                  items:
-                    type: string
-                    format: uuid
-                turnpositions:
-                  type: array
-                  items:
-                    type: number
-                speakerid:
-                  type: string
-                  format: uuid 
-                splitype: 
-                  description: 0 for split out, 1 for split before, 2 for split after word
-                  type: number
-                  minimum: 0
-                  maximum: 2
-                
-      responses:
-        '200':
-          description: request success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customSuccess'
-        '400':
-          description: bad request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customError'
-  /api/conversation/{conversationid}/turn/{speakerid}:
-    post:
-      tags:
-        - "turns"
-      summary: Creates a turn in a conversation
-      parameters: 
-        - in: path
-          name: conversationid
-          type: string
-          format: uuid
-          required: true
-          description: uuid string identifier for a conversation
-        - in: path
-          name: speakerid
-          type: string
-          format: uuid
-          required: true 
-          description: uuid string identifier for a speaker
-      # requestBody:
-      #   required: true
-      #   description: a uuid string speaker id 
-      #   content:
-      #     application/json:
-      #       schema:
-      #         type: string
-      #         format: uuid 
-      #         example:
-      #           '3fa85f6457174562b3fc2c963f66afa6'
-      responses:
-        '200':
-          description: request success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customSuccess'
-        '400':
-          description: bad request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customError'
-    # put:
-    #   tags:
-    #     - "turns"
-    #   summary: Replace a speaker by an existing speaker (associate turns)
-    #   operationId: "CombineSpeakerIds"
-    #   parameters: 
-    #     - in: path
-    #       name: conversationid
-    #       type: string
-    #       format: uuid
-    #       required: true
-    #     - in: path
-    #       name: speakerid
-    #       type: string
-    #       format: uuid
-    #       required: true
-    #     - in: requestBody
-    #       name: newspeakerid
-    #       type: string
-    #       format: uuid
-    #       required: true
-    #   responses:
-    #     '200':
-    #       description: request success
-    #       content:
-    #         application/json:
-    #           schema:
-    #             $ref: '#/components/schemas/customSuccess'
-    #     '400':
-    #       description: bad request error
-    #       content:
-    #         application/json:
-    #           schema:
-    #             $ref: '#/components/schemas/customError'
-  /api/conversation/{conversationid}/text:
-    put: 
-      tags:
-        - "textedit"
-      summary: Replace all the text object in a conversation
-      parameters: 
-        - in: path
-          name: conversationid
-          type: string
-          format: uuid
-          required: true
-          description: uuid string identifier for a conversation
-      requestBody:
-        required: true
-        description: takes an object with turn id, and a list of word objects 
-        content:
-          application/json:
-            schema:
-              type: object 
-              properties:
-                turnid:
-                  type: string
-                  format: uuid
-                words:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      wid:
-                        type: string
-                        format: uuid
-                      etime:
-                        type: number
-                      stime: 
-                        type: number 
-                      pos:
-                        type: number
-                      word:
-                        type: string
-                      highlights:
-                        type: array
-                        items:
-                          type: string
-                      keywords:
-                        type: array
-                        items:
-                          type: string
-      responses:
-        '200':
-          description: request success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customSuccess'
-        '400':
-          description: bad request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customError'
-  /api/conversation/{conversationid}/highlight:
-    post: 
-      tags:
-        - "highlights"
-      summary: Creates a new highlight type for a  set of wordids
-      parameters: 
-        - in: path
-          name: conversationid
-          type: string
-          format: uuid
-          required: true
-          description: uuid string identifier for a conversation
-      requestBody:
-        required: true
-        description: takes an object with highlight label, color, and a list of word ids
-        content:
-          application/json:
-            schema:
-              type: object 
-              properties:
-                label:
-                    type: string
-                color:
-                    type: string 
-                wordids:
-                  type: array
-                  items:
-                    type: string
-                    format: uuid
-      responses:
-        '200':
-          description: request success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customSuccess'
-        '400':
-          description: bad request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customError'
-  /api/conversation/{conversationid}/highlight/{hid}:
-    delete:
-      tags:
-        - "highlights"
-      summary: Deletes highlight type
-      parameters: 
-        - in: path
-          name: conversationid
-          type: string 
-          format: uuid 
-          required: true 
-          description: uuid string identifier for a conversation
-        - in: path
-          name: hid
-          type: string
-          format: uuid
-          required: true
-          description: uuid string identifier for highlight type 
-      responses:
-        '200':
-          description: request success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customSuccess'
-        '400':
-          description: bad request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customError'
-    put:
-      tags:
-        - "highlights"
-      summary: updates highlight type by adding or removing hid from wids
-      parameters: 
-        - in: path
-          name: conversationid
-          type: string 
-          format: uuid 
-          required: true 
-          description: uuid string identifier for a conversation
-        - in: path
-          name: hid
-          type: string
-          format: uuid
-          required: true
-          description: uuid string identifier for highlight type 
-      requestBody:
-        required: true
-        description: takes an object with a list of word ids and an operation variable "add"/"remove"
-        content:
-          application/json:
-            schema:
-              type: object 
-              properties:
-                operator:
-                    type: string 
-                    example:
-                      "add"
-                wordids:
-                  type: array
-                  items:
-                    type: string
-                    format: uuid
-      responses:
-        '200':
-          description: request success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customSuccess'
-        '400':
-          description: bad request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customError'
-    patch:
-      tags:
-        - "highlights"
-      summary: updates highlight lable and/or color
-      parameters: 
-        - in: path
-          name: conversationid
-          type: string 
-          format: uuid 
-          required: true 
-          description: uuid string identifier for a conversation
-        - in: path
-          name: hid
-          type: string
-          format: uuid
-          required: true
-          description: uuid string identifier for highlight type 
-      requestBody:
-        required: true
-        description: takes an object with highlight label and/or color
-        content:
-          application/json:
-            schema:
-              type: object 
-              properties:
-                label:
-                    type: string
-                color:
-                    type: string 
-      responses:
-        '200':
-          description: request success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customSuccess'
-        '400':
-          description: bad request error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customError'
-tags:
-  - name: conversations
-    description: All conversations
-  - name: metadata
-    description: operations on conversation metadata
-  - name: speakers
-    description: operations on speaker data
-  - name: turns 
-    description: operations on turn data
-  - name: textedit
-    description: operations for text editing
-  - name: highlights
-    description: operations on conversation highlights
-  
-
-components: 
-  schemas:
-    customError:
-      type: object
-      properties:
-        txtStatus: 
-          type: string
-        msg:
-          type: string
-    customSuccess:
-      type: object
-      properties:
-        txtStatus: 
-          type: string
-        msg:
-          type: string
-    conversation:
-      type: object 
-      properties: 
-        _id: 
-          type: string
-          format: uuid
-        created:
-          type: string
-          format: date-time
-        owner:
-          type: array
-          items:
-            type: object
-            properties:
-              user_id:
-                type: string
-                format: uuid
-              name:
-                type: string
-              img:
-                type: string
-                format: uri
-        description:
-          type: string
-        audio:
-          type: string
-          format: uri
-        name: 
-          type: string
-        mtype:
-          type: string
-        locked:
-          type: integer
-        mdate:
-          type: string
-          format: date-time
-        mtime:
-          format: string
-        duration:
-          format: string
-        agenda:
-          type: string
-        abstract:
-          type: string
-        sharedWith:
-          type: array
-          items:
-            type: object 
-            properties:
-              user_id:
-                type: string
-                format: uuid
-              name:
-                type: string
-              img:
-                type: string
-                format: uri
-        highlights:
-          type: array
-          items:
-            type: object 
-            properties:
-              _id:
-                type: string
-                format: uuid
-              label: 
-                type: string
-              color:
-                type: string
-                format: uri
-        keywords:
-          type: array
-          items:
-            type: object 
-            properties:
-              _id:
-                type: string
-                format: uuid
-              label: 
-                type: string
-        speakers:
-          type: array
-          items:
-            type: object 
-            properties:
-              speaker_id:
-                type: string
-                format: uuid
-              speaker_name:
-                type: string
-              stime:
-                type: number
-              etime:
-                type: number
-        text:
-          type: array
-          items:
-            type: object 
-            properties:
-              speaker_id:
-                type: string
-                format: uuid
-              turn_id:
-                type: string
-                format: uuid
-              pos: 
-                type: integer
-              words:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    wid:
-                      type: string
-                      format: uuid
-                    etime:
-                      type: number
-                    stime:
-                      type: number
-                    word:
-                      type: string
-                    pos:
-                      type: integer
-                    highlights:
-                      type: array
-                      items:
-                        type: string
-                        format: uuid
-                    keywords:
-                      type: array
-                      items:
-                        type: string
-                        format: uuid
-    conversations:
-      type: array
-      items:
-        $ref: '#/components/schemas/conversation'
-    speakers:
-      type: array
-      items:
-        type: object 
-        properties:
-          speaker_id:
-            type: string
-            format: uuid
-          speaker_name:
-            type: string
-          stime:
-            type: number
-          etime:
-            type: number
+          description: OK
