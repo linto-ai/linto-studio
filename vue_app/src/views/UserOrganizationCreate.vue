@@ -1,81 +1,100 @@
 <template>
   <div class="flex col scrollable" v-if="dataLoaded">
     <h1>Create Organiaztion</h1>
-    <div class="form-field flex col">
-      <span class="label">Organization Name</span>
-      <input 
-        type="text"
-        v-model="organizationName.value"
-        :class="organizationName.error !== null ? 'error' : ''"
-      >
-    </div>
-    <div class="form-field flex col">
-      <span class="label">Description</span>
-      <textarea
-        v-model="organizationDescription.value"
-      ></textarea>
-    </div>
 
-    <div class="form-field flex col">
-      <span class="label">Visibility</span>
-      <select 
-        v-model="organizationVisibility.value"
-      >
-        <option value="private">private</option>
-        <option value="public">public</option>
-      </select>
-    </div>
-    <!-- Members -->
-    <div class="form-field flex col">
-      <span class="label">Members</span>
-      
-      <div class="flex col search-member-container" >
-        <input type="text" v-model="searchMemberValue" @input="searchMember()">
-        <div class="flex col search-member-list" v-if="searchMemberValue.length > 0">
-          
-          <div class="flex row search-member-item" v-for="user in usersList" :key="user._id">
-              <button 
-                class="search-member-link flex row"
-                @click="addToMembers(user)">
-                  <img class="picture" :src="'/'+user.img">
-                  <span class="name">{{ getUserById(user._id).firstname }} {{getUserById(user._id).lastname }}</span>
-                  <span class="email">({{ user.email }})</span>
-              </button>
+    <!-- Organization name -->
+      <div class="form-field flex col">
+        <span class="form-label">Organization Name</span>
+        <input 
+          type="text"
+          v-model="organizationName.value"
+          :class="organizationName.error !== null ? 'error' : ''"
+        >
+        <span class="error-field" v-if="organizationName.error !== null">{{ organizationName.error }}</span>
+      </div>
+
+      <!-- Description -->
+      <div class="form-field flex col">
+        <span class="form-label">Description</span>
+        <textarea
+          v-model="organizationDescription.value"
+        ></textarea>
+        <span class="error-field" v-if="organizationDescription.error !== null">{{ organizationDescription.error }}</span>
+      </div>
+
+
+      <!-- Visibility -->
+      <div class="form-field flex col">
+        <span class="form-label">Visibility</span>
+        <select 
+          v-model="organizationVisibility.value"
+        >
+          <option value="private">private</option>
+          <option value="public">public</option>
+        </select>
+      </div>
+
+      <!-- Members -->
+      <div class="form-field flex col">
+        <span class="form-label">Members</span>
+        <div class="flex col search-member-container" >
+          <input type="text" v-model="searchMemberValue" @input="searchMember()">
+          <div class="flex col search-member-list" v-if="searchMemberValue.length > 0">
+            <div class="flex col" v-if="usersList.length > 0">
+              <div class="flex row search-member-item" v-for="user in usersList" :key="user._id">
+                  <button 
+                    class="search-member-link flex row"
+                    @click="addToMembers(user)">
+                      <img class="picture" :src="'/'+user.img">
+                      <span class="name">{{ getUserById(user._id).firstname }} {{getUserById(user._id).lastname }}</span>
+                      <span class="email">({{ user.email }})</span>
+                  </button>
+              </div>
+            </div>
+            <div v-else>
+              <span class="no-result">No resulte found</span>
+          </div>
           </div>
         </div>
-      </div>
 
-      <div class="organization-members">
-        <table class="table" v-if="organizationMembers.length > 0">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Remove</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="member in organizationMembers" :key="member._id">
-              <td>{{ getUserById(member._id).firstname }} {{ getUserById(member._id).lastname }}</td>
-              <td>{{ getUserById(member._id).email }}</td>
-              <td>
-                <select v-model="member.role">
-                  <option v-for="role in userRoles" :key="role.value" :value="role.value">{{ role.name }}</option>
-                </select>
-              </td>
-              <td><button @click="removeFromMembers(member)">Remove</button></td>
-            </tr>
-          </tbody>
-        </table>
-        <span v-else>No member selected</span>
+        <div class="organization-members">
+          <table class="table members" v-if="organizationMembers.length > 0">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Remove</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="member in organizationMembers" :key="member._id">
+                <td class="title">{{ getUserById(member._id).firstname }} {{ getUserById(member._id).lastname }}</td>
+                <td>{{ getUserById(member._id).email }}</td>
+                <td>
+                  <select v-model="member.role">
+                    <option v-for="role in userRoles" :key="role.value" :value="role.value">{{ role.name }}</option>
+                  </select>
+                </td>
+                <td class="center">
+                  <button class="btn btn-small red" @click="removeFromMembers(member)">
+                    <span class="icon icon__remove"></span>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <span v-else class="no-member">No member selected</span>
 
-      </div>
-      <div class="flex col form-field">
-        <button @click="handleOrganizationForm()">Envoyer</button>
+        </div>
+        <div class="flex row form-field">
+          <button class="btn btn-big green" @click="handleOrganizationForm()">
+            <span class="icon icon__apply"></span>
+            <span class="label">Envoyer</span>
+          </button>
+        </div>
       </div>
     </div>
-  </div>
   <div v-else>
     loading
   </div>

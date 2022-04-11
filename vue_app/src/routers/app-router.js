@@ -9,6 +9,7 @@ import CreateAccount from '../views/CreateAccount.vue'
 import UserProfile from '../views/UserProfile.vue'
 import UserOrganizations from '../views/UserOrganizations.vue'
 import UserOrganizationCreate from '../views/UserOrganizationCreate.vue'
+import UserOrganizationUpdate from '../views/UserOrganizationUpdate.vue'
 /*
 import ConversationsCreate from '../views/ConversationCreate.vue'
 import ConversationManage from '../views/ConversationManage.vue'
@@ -47,6 +48,11 @@ const router = new Router({
             path: '/interface/user/organizations/create',
             name: 'Create organization',
             component: UserOrganizationCreate
+        },
+        {
+            path: '/interface/user/organizations/:organizationId',
+            name: 'Update organization',
+            component: UserOrganizationUpdate
         }
     ]
 })

@@ -5,6 +5,9 @@
     border-collapse: collapse;
     width: 100%;
     padding: 0;
+    &.members {
+        width: auto;
+    }
     thead {
         border-bottom: 1px solid #8e8e8e;
         th {

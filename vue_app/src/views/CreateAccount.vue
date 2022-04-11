@@ -82,7 +82,7 @@
           <div class="form-field flex row" style="margin: 10px; justify-content: center;">
             <button
               @click="handleForm()" 
-              class="btn btn--txt-icon blue">
+              class="btn btn-big blue">
               <span class="label">Create account</span>
               <span class="icon icon__apply"></span></button>
           </div>

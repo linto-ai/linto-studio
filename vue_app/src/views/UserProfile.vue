@@ -38,7 +38,7 @@
         </div>
 
         <div class="form-field flex row">
-          <button class="btn btn--txt-icon green" @click="sendInfoForm()" style="margin-top: 10px;">
+          <button class="btn btn-medium green" @click="sendInfoForm()" style="margin-top: 10px;">
             <span class="label">Update</span>
             <span class="icon icon__apply"></span>
           </button>
@@ -70,7 +70,7 @@
           <span class="error-field" v-if="newPasswordConfirm.error !== null">{{ newPasswordConfirm.error }}</span>
         </div>
         <div class="form-field flex row" style="margin-top: 10px;">
-          <button class="btn btn--txt-icon green" @click="sendPassword()">
+          <button class="btn btn-medium green" @click="sendPassword()">
             <span class="label">Update</span>
             <span class="icon icon__apply"></span>
           </button>
@@ -112,7 +112,7 @@
             <div class="form-field flex row" style="margin-top: 10px;">
               <button
                 @click="handlePictureForm()" 
-                class="btn btn--txt-icon green">
+                class="btn btn-medium green">
               <span class="label">Update picture</span>
               <span class="icon icon__apply"></span>
             </button>

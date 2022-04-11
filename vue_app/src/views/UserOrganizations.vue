@@ -37,17 +37,26 @@
                   {{ orga.users.length}}
               </td>
               <td class="center">
-                <button class="btn btn-medium info-text green" data-content="Edit organization">
+                <a 
+                  :href="`/interface/user/organizations/${orga._id}`"
+                  class="btn btn-medium info-text green" data-content="Edit organization">
                   <span class="icon icon__edit"></span>
-                </button>
+                </a>
               </td>
               <td class="center" v-if="orga.owner === userInfo._id">
-                <button class="btn btn-medium red info-text" data-content="Remove organization">
+                <button 
+                  class="btn btn-medium red info-text" 
+                  data-content="Remove organization"
+                  @click="deleteOrganization(orga)"
+                >
                   <span class="icon icon__remove"></span>
                 </button>
               </td>
               <td class="center" v-else>
-                <button class="btn btn-medium red info-text" data-content="Leave organization">
+                <button 
+                  class="btn btn-medium red info-text" 
+                  data-content="Leave organization"
+                  @click="leaveOrganization(orga)">
                   <span class="icon icon__cancel"></span>
                 </button>
               </td>
@@ -56,28 +65,7 @@
         </table>
       </div> 
     </div>
-    <a href="/interface/user/organizations/create">Create new Organization</a>
-
-    <div class="test flex row">
-      <button class="btn btn-small">
-        <span class="icon icon__plus"></span>
-        <span class="label">Button small</span>
-      </button>
-
-      <button class="btn btn-medium">
-        <span class="icon icon__plus"></span>
-        <span class="label">Button medium</span>
-      </button>
-
-      <button class="btn btn-medium">
-        <span class="icon icon__plus"></span>
-      </button>
-
-      <button class="btn btn-big green">
-        <span class="icon icon__plus"></span>
-        <span class="label">Button Big</span>
-      </button>
-    </div>
+    <Modal></Modal>
   </div>
   <div v-else>
     loading
@@ -85,7 +73,7 @@
 </template>
 <script>
 import { bus } from '../main.js'
-
+import Modal from '@/components/Modal.vue'
 export default({
   props: ['userInfo'],
 
@@ -100,6 +88,10 @@ export default({
     await this.dispatchOrganizations()
     await this.dispatchUserOrganizations()
     await this.dispatchUsers()
+
+    bus.$on('refresh_user_organizations', async () => {
+      await this.dispatchUserOrganizations()
+    })
   },
   computed: {
     dataLoaded () {
@@ -117,6 +109,24 @@ export default({
     getUserById (id) {
       return this.$store.getters.getUserById(id)
     },
+    leaveOrganization (orga) {
+      bus.$emit('show_modal', { 
+        title: 'Leave Organisation',
+        content: 'Are you sure you want to leave this organization ?',
+        actionBtnLabel: 'Leave organization',
+        actionName: 'leave_organization',
+        organization: orga
+      })
+    },
+    deleteOrganization (orga) {
+      bus.$emit('show_modal', { 
+        title: 'Delete Organisation',
+        content: 'Are you sure you want to delete this organization ?',
+        actionBtnLabel: 'Delete organization',
+        actionName: 'delete_organization',
+        organization: orga
+      })
+    },
     async dispatchOrganizations () {
       this.orgaLoaded = await this.$options.filters.dispatchStore('getOrganisations')
     },
@@ -126,16 +136,9 @@ export default({
     async dispatchUsers () {
       this.usersLoaded = await this.$options.filters.dispatchStore('getAllUsers')
     }
-    
+  },
+  components: {
+    Modal
   }
 })
 </script>
-
-<style scoped>
-.test {
-  margin-top: 20px;
-}
-.test .btn{
-  margin: 0 20px;
-}
-</style>

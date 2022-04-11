@@ -199,3 +199,63 @@ textarea {
     font-size: 15px;
     font-weight: 500;
 }
+
+
+/* Search member fields */
+
+.search-member-container {
+    position: relative;
+}
+
+.search-member-list {
+    border: 1px solid #ccc;
+    padding: 5px;
+    background: #fff;
+    min-width: 140px;
+    max-width: 320px;
+    .search-member-link {
+        padding: 0 5px;
+        margin: 3px 0;
+        width: 100%;
+        overflow: hidden;
+        flex-wrap: nowrap;
+        .picture {
+            display: inline-block;
+            width: 25px;
+            height: 25px;
+            @include borderRadius(15px);
+            overflow: hidden;
+            margin: 0 5px;
+        }
+        &>span {
+            display: inline-block;
+            line-height: 25px;
+            font-size: 15px;
+            margin: 0 5px;
+            &.email {
+                font-size: 14px;
+                font-style: italic;
+                color: #777;
+                overflow: hidden;
+            }
+        }
+        &:hover {
+            background-color: #aee6ff;
+        }
+    }
+    .no-result {
+        display: inline-block;
+        font-size: 14px;
+        color: #777;
+        font-style: italic;
+        line-height: 20px;
+        height: 20px;
+    }
+}
+
+.no-member {
+    display: inline-block;
+    margin: 10px 0;
+    color: #777;
+    font-style: italic;
+}

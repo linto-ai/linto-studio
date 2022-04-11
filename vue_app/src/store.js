@@ -108,6 +108,9 @@ export default new Vuex.Store({
     getters: {
         getUserById: (state) => (userId) => {
             return state.users.find(usr => usr._id === userId)
+        },
+        getOrganizationById: (state) => (organizationId) => {
+            return state.organizations.find(orga => orga._id === organizationId)
         }
     }
 })
