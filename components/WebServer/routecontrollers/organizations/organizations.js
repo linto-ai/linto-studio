@@ -74,7 +74,6 @@ async function listOrganization(req, res, next) {
 async function getOrganization(req, res, next) {
     try {
         if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
-
         const organization = await orgaUtility.getOrganization(req.params.organizationId)
 
         res.status(200).send(organization)

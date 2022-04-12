@@ -38,7 +38,6 @@ export default ({
   },
   mounted() {
     bus.$on('show_modal', (data) => {
-      console.log(data)
       this.modalData = data
       this.title = data.title
       this.content = data.content
@@ -118,8 +117,6 @@ export default ({
       try {
         let req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/organizations/${this.modalData.organizationId}/user`, 'delete', {userId: this.modalData.user._id})
         
-        console.log('Si ça marche', {user: this.modalData.user})
-
         if(req.status >= 200 && req.status < 300) {
           bus.$emit('refresh_user_organizations', {user: this.modalData.user})
           bus.$emit('app_notif', {

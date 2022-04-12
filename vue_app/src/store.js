@@ -111,6 +111,15 @@ export default new Vuex.Store({
         },
         getOrganizationById: (state) => (organizationId) => {
             return state.organizations.find(orga => orga._id === organizationId)
+        },
+        getUserRoleByOrganizationId: (state) => (organizationId, userId) => {
+            let organization = state.organizations.find(orga => orga._id === organizationId)
+
+            if (organization.owner === userId) {
+                return 'owner'
+            } else {
+                return organization.users.find(user => user.userId === userId).role
+            }
         }
     }
 })

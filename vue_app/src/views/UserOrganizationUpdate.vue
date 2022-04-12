@@ -147,7 +147,7 @@ export default {
     await this.dispatchUsers()
 
     this.organizationId = this.$route.params.organizationId
-
+   
     bus.$on('refresh_user_organizations', async (data) => {
       await this.dispatchOrganizations()
       this.removeFromMembers(data.user)
@@ -156,8 +156,9 @@ export default {
   },
   computed: {
     dataLoaded () {
-      return this.orgaLoaded && this.usersLoaded && this.userOrgaLoaded && !!this.currentOrganization
+      return this.orgaLoaded && this.usersLoaded && this.userOrgaLoaded && !!this.currentOrganization 
     },
+    
     userOrganizations () {
       return this.$store.state.userOrganizations
 

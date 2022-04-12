@@ -40,6 +40,7 @@ module.exports = (webserver) => {
             controller: listOrganization
         },
 
+
         /*Member right */
 
         {
@@ -61,9 +62,7 @@ module.exports = (webserver) => {
             controller: leaveSelfFromOrganization
         },
 
-
         // TODO: WIP HERE
-
 
         /* Maintainer right*/
         {

@@ -144,8 +144,12 @@ export default {
   },
   async mounted () {
     await this.dispatchOrganizations()
+    debugger
     await this.dispatchUserOrganizations()
+    debugger
     await this.dispatchUsers()
+    debugger
+
   },
   computed: {
     dataLoaded () {

@@ -19,6 +19,7 @@
               <th>Members</th>
               <th>Edit</th>
               <th>Remove</th>
+              <th>My role</th>
             </tr>
           </thead>
           <tbody>
@@ -34,10 +35,11 @@
               </td>
               <td>{{orga.type}}</td>
               <td class="center">
-                  {{ orga.users.length}}
+                  {{ orga.users.length }}
               </td>
               <td class="center">
                 <a 
+                  v-if="getUserRoleByOrganizationId(orga._id) === 'owner' || getUserRoleByOrganizationId(orga._id) > 1"
                   :href="`/interface/user/organizations/${orga._id}`"
                   class="btn btn-medium info-text green" data-content="Edit organization">
                   <span class="icon icon__edit"></span>
@@ -59,6 +61,9 @@
                   @click="leaveOrganization(orga)">
                   <span class="icon icon__cancel"></span>
                 </button>
+              </td>
+              <td>
+                {{ getUserRoleByOrganizationId(orga._id) }}
               </td>
             </tr>
           </tbody>
@@ -126,6 +131,9 @@ export default({
         actionName: 'delete_organization',
         organization: orga
       })
+    },
+    getUserRoleByOrganizationId(organizationId) {
+      return this.$store.getters.getUserRoleByOrganizationId(organizationId, this.userInfo._id)
     },
     async dispatchOrganizations () {
       this.orgaLoaded = await this.$options.filters.dispatchStore('getOrganisations')

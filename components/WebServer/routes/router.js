@@ -56,6 +56,9 @@ class Router {
                 webServer.express[method](
                     level + route.path,
                     middlewaresLoaded,
+                    (req, res, next) => {
+                        next();
+                    },
                     ifHasElse(
                         Array.isArray(route.controller),
                         () => Object.values(route.controller),

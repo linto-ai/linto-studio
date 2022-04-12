@@ -17,6 +17,52 @@ import ConversationTranscription from '../views/ConversationTranscription.vue'
 */
 Vue.use(Router)
 
+import axios from 'axios'
+
+let getCookie = function(cname) {
+    let name = cname + "="
+    let decodedCookie = decodeURIComponent(document.cookie)
+    let ca = decodedCookie.split(';')
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i]
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1)
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length)
+        }
+    }
+    return null
+}
+
+let checkRole = async function(to, from, next) {
+    let orgaId = to.params.organizationId
+    let userId = getCookie('userId')
+    const token = getCookie('authToken')
+    const getOrganizations = await axios.get(`${process.env.VUE_APP_CONVO_API}/organizations`, {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+    let orgas = getOrganizations.data.organizations
+    let orga = orgas.find(org => org._id === orgaId)
+    let role = ''
+    orga.owner === userId ? role = 'owner' : role = orga.users.find(user => user.userId === userId).role
+
+    if (role === 'owner' ||  role > 1) {
+        next()
+    } else {
+        // If role < 'maintainer', redirect to homepage
+        next('/interface/conversations')
+    }
+}
+
+
+const hydrateProps = (route, props) => {
+    Object.assign(route.meta, { props });
+}
+
+
 const router = new Router({
     mode: 'history',
     routes: [{
