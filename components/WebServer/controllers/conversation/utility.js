@@ -35,4 +35,9 @@ async function getUserConversation(userId) {
   return convList
 }
 
-module.exports = { getUserConversation }
+async function getOrgaConversation(orgaId){
+  const conversations = await conversationModel.getAllConvos()
+  return conversations.filter(conv => conv.organization.organizationId.toString() === orgaId)
+}
+
+module.exports = { getUserConversation, getOrgaConversation }
