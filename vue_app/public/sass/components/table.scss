@@ -5,8 +5,8 @@
     border-collapse: collapse;
     width: 100%;
     padding: 0;
-    &.members {
-        width: auto;
+    &.no-margin {
+        margin: 0;
     }
     thead {
         border-bottom: 1px solid #8e8e8e;
@@ -49,6 +49,9 @@
     tbody {
         border-collapse: separate;
         tr {
+            &.current-user {
+                background-color: #d6f1ff;
+            }
             td {
                 max-width: 420px;
                 padding: 10px;
@@ -57,13 +60,6 @@
                 &.title {
                     font-weight: 600;
                     color: $greenChart;
-                    /*
-
-                  &:hover {
-                      color: $blueChart;
-                      text-decoration: underline;
-                  }
-                      */
                 }
                 &.center {
                     text-align: center;
@@ -150,5 +146,28 @@
                 }
             }
         }
+    }
+}
+
+.user-td {
+    .user-img {
+        display: inline-block;
+        height: 30px;
+        width: 30px;
+        margin: 5px;
+        @include borderRadius(15px);
+        overflow: hidden;
+    }
+    .user-name {
+        display: inline-block;
+        font-size: 15px;
+        line-height: 20px;
+    }
+    .user-email {
+        display: inline-block;
+        font-size: 14px;
+        line-height: 18px;
+        font-style: italic;
+        color: #777;
     }
 }

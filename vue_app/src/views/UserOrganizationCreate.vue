@@ -36,7 +36,7 @@
 
       <!-- Members -->
       <div class="form-field flex col">
-        <span class="form-label">Members</span>
+        <span class="form-label">Find a member</span>
         <div class="flex col search-member-container" >
           <input type="text" v-model="searchMemberValue" @input="searchMember()">
           <div class="flex col search-member-list" v-if="searchMemberValue.length > 0">
@@ -58,19 +58,25 @@
         </div>
 
         <div class="organization-members">
-          <table class="table members" v-if="organizationMembers.length > 0">
+          <table class="table members" v-if="organizationMembers.length > 0" style="width:auto;">
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Email</th>
+                <th>User</th>
                 <th>Role</th>
-                <th>Remove</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="member in organizationMembers" :key="member._id">
-                <td class="title">{{ getUserById(member._id).firstname }} {{ getUserById(member._id).lastname }}</td>
-                <td>{{ getUserById(member._id).email }}</td>
+                <td>
+                  <div class="user-td flex row">
+                    <img class="user-img" :src="'/' + member.img">
+                    <div class="flex col">
+                      <span class="user-name">{{ getUserById(member._id).firstname }} {{ getUserById(member._id).lastname }}</span>
+                      <span class="user-email">{{ member.email }}</span>
+                    </div>
+                  </div>
+                </td>
                 <td>
                   <select v-model="member.role">
                     <option v-for="role in userRoles" :key="role.value" :value="role.value">{{ role.name }}</option>
@@ -144,12 +150,8 @@ export default {
   },
   async mounted () {
     await this.dispatchOrganizations()
-    debugger
     await this.dispatchUserOrganizations()
-    debugger
     await this.dispatchUsers()
-    debugger
-
   },
   computed: {
     dataLoaded () {
@@ -182,6 +184,7 @@ export default {
     addToMembers(user) {
       let newUser = user
       newUser.role = 1
+      newUser.visibility = 'public'
       this.organizationMembers.push(newUser)
       this.selectedMembersId.push(user._id)
       this.searchMemberValue = ''

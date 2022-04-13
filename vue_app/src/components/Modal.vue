@@ -70,11 +70,11 @@ export default ({
         let req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/organizations/user/${this.modalData.organization._id}`, 'delete', {})
         
         if(req.status >= 200 && req.status < 300) {
-          bus.$emit('refresh_user_organizations', {})
           bus.$emit('app_notif', {
             status: 'success',
             message: req.data.message || req.data.msg || `You leaved the orgnaization "${this.modalData.orga.name}"`,
-            timeout: 3000
+            timeout: 0,
+            redirect: '/interface/user/organizations'
           })
           this.close()
         } else {

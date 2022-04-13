@@ -83,6 +83,9 @@ a {
         &.icon__list {
             @include maskImage('../img/agenda.svg');
         }
+        &.icon__arrow-left {
+            @include maskImage('../img/long-arrow-left.svg');
+        }
     }
     /* SMALL */
     &.btn-small {

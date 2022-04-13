@@ -116,7 +116,7 @@ export default new Vuex.Store({
             let organization = state.organizations.find(orga => orga._id === organizationId)
 
             if (organization.owner === userId) {
-                return 'owner'
+                return 4
             } else {
                 return organization.users.find(user => user.userId === userId).role
             }

@@ -47,6 +47,7 @@
               </td>
               <td class="center" v-if="orga.owner === userInfo._id">
                 <button 
+                  v-if="!orga.personal"
                   class="btn btn-medium red info-text" 
                   data-content="Remove organization"
                   @click="deleteOrganization(orga)"
@@ -56,6 +57,7 @@
               </td>
               <td class="center" v-else>
                 <button 
+                  v-if="!orga.personal"
                   class="btn btn-medium red info-text" 
                   data-content="Leave organization"
                   @click="leaveOrganization(orga)">
@@ -63,7 +65,7 @@
                 </button>
               </td>
               <td>
-                {{ getUserRoleByOrganizationId(orga._id) }}
+                {{ userRoles.find(role => role.value === getUserRoleByOrganizationId(orga._id)).name }}
               </td>
             </tr>
           </tbody>
@@ -86,7 +88,23 @@ export default({
     return {
       orgaLoaded: false,
       usersLoaded: false,
-      userOrgaLoaded: false
+      userOrgaLoaded: false,
+      userRoles: [
+        {
+          name: "Member",
+          value: 1
+        },
+        {
+          name: "Maintainer", 
+          value: 2
+        }, {
+          name:"Admin", 
+          value: 3
+        }, {
+          name:"Owner", 
+          value: 4
+        }
+      ]
     }
   },
   async mounted () {
