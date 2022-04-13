@@ -58,7 +58,10 @@ async function updateUserFromOrganization(req, res, next) {
 
     organization.users.map(oUser => {
       if (oUser.userId === req.body.userId) {
-        oUser.role = parseInt(req.body.role)
+        if (ROLES.hasRoleAccess(req.userRole, oUser.role)) // Update role need to be lower or equal than my current role
+          oUser.role = parseInt(req.body.role)
+        else throw new OrganizationForbidden()
+
         return
       }
     })
