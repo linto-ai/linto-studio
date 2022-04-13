@@ -58,7 +58,10 @@ async function updateUserFromOrganization(req, res, next) {
 
     organization.users.map(oUser => {
       if (oUser.userId === req.body.userId) {
-        oUser.role = parseInt(req.body.role)
+        if (ROLES.hasRoleAccess(req.userRole, oUser.role)) // Update role need to be lower or equal than my current role
+          oUser.role = parseInt(req.body.role)
+        else throw new OrganizationForbidden()
+
         return
       }
     })
@@ -79,17 +82,17 @@ async function deleteUserFromOrganization(req, res, next) {
     if (!req.params.organizationId || !req.body.userId) throw new OrganizationUnsupportedMediaType()
 
     let organization = await orgaUtility.getOrganization(req.params.organizationId)
-    if (organization.users.filter(oUser => (oUser.userId === req.body.userId &&
-      ROLES.hasRevokeRoleAccess(oUser.role, req.userRole))).length === 0)
-      throw new OrganizationError('User is not in ' + organization.name)
+    let user = organization.users.filter(oUser => oUser.userId === req.body.userId)
+
+    if (user.length === 0) throw new OrganizationError('User is not in ' + organization.name)
+    if (!ROLES.hasRevokeRoleAccess(user[0].role, req.userRole)) throw new OrganizationForbidden()
 
     organization.users = organization.users.filter(oUser => oUser.userId !== req.body.userId)
     const result = await organizationModel.update(organization)
-
     if (result.matchedCount === 0) throw new OrganizationError()
 
     res.status(200).send({
-      message: 'Removed user from organization'
+      message: 'User has been deleted from the organization'
     })
   } catch (err) {
     res.status(err.status).send({ message: err.message })
