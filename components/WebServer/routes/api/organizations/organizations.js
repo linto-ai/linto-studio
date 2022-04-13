@@ -53,16 +53,16 @@ module.exports = (webserver) => {
             path: '/user/:organizationId',
             method: 'patch',
             requireAuth: true,
+            requireOrganizationMemberAccess: true,
             controller: updateSelfFromOrganization
         },
         {
             path: '/user/:organizationId',
             method: 'delete',
             requireAuth: true,
+            requireOrganizationMemberAccess: true,
             controller: leaveSelfFromOrganization
         },
-
-        // TODO: WIP HERE
 
         /* Maintainer right*/
         {

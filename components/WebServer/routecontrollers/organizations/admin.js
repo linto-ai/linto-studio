@@ -1,11 +1,16 @@
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:organizations:admin')
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
+const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
+
 const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
+const convUtility = require(`${process.cwd()}/components/WebServer/controllers/conversation/utility`)
 
 const {
   OrganizationUnsupportedMediaType,
   OrganizationError,
 } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
+
+const { ConversationError } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
 const TYPES = organizationModel.getTypes()
 
@@ -37,8 +42,14 @@ async function deleteOrganization(req, res, next) {
     const organization = await orgaUtility.getOrganization(req.params.organizationId)
 
     if (organization.personal === true) throw new OrganizationError('Personal organization cannot be deleted')
-    const result = await organizationModel.deleteById(organization._id.toString())
 
+    const conversations = await convUtility.getOrgaConversation(req.params.organizationId)
+    conversations.map(async conversation => {
+      const result = await conversationModel.deleteById(conversation._id)
+      if (result.deletedCount !== 1) throw new ConversationError('Error when deleting conversation from organization')
+    })
+
+    const result = await organizationModel.deleteById(organization._id.toString())
     if (result.deletedCount !== 1) throw new OrganizationError('Error when deleting organization')
 
     res.status(200).send({
