@@ -52,7 +52,7 @@
         background-color: #fff;
         vertical-align: top;
         @include buttonShadow();
-        @include transition(all 0.3s ease);
+        @include transition(all 0.2s ease);
         .user-menu-btn--img {
             display: inline-block;
             height: 32px;
@@ -81,7 +81,7 @@
             margin: 10px 5px 0 10px;
             @include maskImage('../img/triangle.svg');
             background-color: $greenChart;
-            @include transition(all 0.3s ease);
+            @include transition(all 0.2s ease);
         }
         &:hover {
             @include buttonShadowHover();
@@ -160,7 +160,7 @@
         @include borderRadius(20px);
         background-color: transparent;
         @include cancelBoxShadow();
-        @include transition(all 0.3s ease);
+        @include transition(all 0.2s ease);
         .icon {
             display: inline-block;
             width: 30px;
@@ -168,7 +168,7 @@
             margin: 5px;
             @include maskImage('../img/logout.svg');
             background-color: $redChart;
-            @include transition(all 0.3s ease);
+            @include transition(all 0.2s ease);
         }
         &:hover {
             @include buttonShadow();

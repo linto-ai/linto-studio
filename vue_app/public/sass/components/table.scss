@@ -2,22 +2,28 @@
 
 .table {
     margin: 20px 0;
-    border-collapse: collapse;
+    border-collapse: separate;
     width: 100%;
     padding: 0;
+    border-spacing: 0 10px;
+    &.auto {
+        width: auto
+    }
     &.no-margin {
         margin: 0;
     }
     thead {
-        border-bottom: 1px solid #8e8e8e;
         th {
             text-align: left;
             vertical-align: middle;
             padding: 10px 15px;
-            .table-th-filter {
+            font-size: 14px;
+            font-weight: 600;
+            color: $secondary;
+            /*.table-th-filter {
                 display: inline-block;
                 font-size: 14px;
-                font-weight: 600;
+                font-weight: 400;
                 color: rgb(199, 169, 169);
                 position: relative;
                 &:hover {
@@ -35,7 +41,7 @@
                         left: 105%;
                         @include maskImage('../img/filter-arrow.svg');
                         background-color: $blueChart;
-                        @include transition(all 0.3s ease);
+                        @include transition(all 0.2s ease);
                     }
                     &.up {
                         &:after {
@@ -43,23 +49,46 @@
                         }
                     }
                 }
-            }
+            }*/
         }
     }
     tbody {
-        border-collapse: separate;
         tr {
+            border: 1px solid $secondary;
             &.current-user {
                 background-color: #d6f1ff;
             }
             td {
                 max-width: 420px;
-                padding: 10px;
-                font-size: 16px;
+                padding: 10px 10px 10px 20px;
+                font-size: 13px;
                 color: #333;
+                border-bottom: 2px solid rgba(39, 44, 51, 0.15);
+                background-color: #fff;
+                &:first-child {
+                    @include borderRadiusMulti(5px, 0, 0, 5px);
+                }
+                &:nth-last-child(-n+2) {
+                    @include borderRadiusMulti(0, 5px, 5px, 0);
+                }
+                &:last-child {
+                    background-color: transparent !important;
+                    border: none;
+                }
                 &.title {
-                    font-weight: 600;
+                    font-weight: 500;
+                    font-size: 15px;
                     color: $greenChart;
+                    a {
+                        display: inline-block;
+                        font-weight: 600;
+                        color: $greenChart;
+                        text-decoration: none;
+                        &:hover {
+                            color: $secondary;
+                            text-decoration: underline;
+                        }
+                    }
                 }
                 &.center {
                     text-align: center;
@@ -139,7 +168,6 @@
                 }
             }
             &:hover {
-                background-color: rgba(255, 255, 255, 0.7);
                 &.clickable {
                     @include boxShadow(0, 2px, 3px, 0, rgba(0, 0, 0, 0.2));
                     cursor: pointer;
@@ -169,5 +197,28 @@
         line-height: 18px;
         font-style: italic;
         color: #777;
+    }
+}
+
+.user-role {
+    display: inline-block;
+    padding: 5px;
+    background-color: red;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    @include borderRadius(3px);
+    &.owner {
+        background-color: #ff8d00;
+    }
+    &.admin {
+        background-color: #8e7aff;
+    }
+    &.maintainer {
+        background-color: #4baecc;
+    }
+    &.member {
+        background-color: #676767;
     }
 }

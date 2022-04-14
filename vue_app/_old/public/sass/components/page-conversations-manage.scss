@@ -159,7 +159,7 @@
             vertical-align: top;
             margin: 5px;
             @include maskImage('../img/triangle.svg');
-            @include transition(all 0.3s ease);
+            @include transition(all 0.2s ease);
             &.closed {
                 @include transform(rotate(-90deg));
             }

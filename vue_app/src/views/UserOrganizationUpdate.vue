@@ -1,9 +1,10 @@
 <template>
   <div class="flex col scrollable" v-if="dataLoaded">
     <div class="flex row" style="margin-bottom:20px;">
-      <a class="btn btn-medium blue" href="/interface/user/organizations">
-      <span class="icon icon__arrow-left"></span>
-      <span class="label">Back to organizations</span></a>
+      <a class="btn btn-medium secondary" href="/interface/user/organizations">
+        <span class="icon icon__arrow-left"></span>
+        <span class="label">Back to organizations</span>
+      </a>
     </div>
     <h1>Update Organiaztion - {{organizationName.value}}</h1>
     <div class="flex row">
@@ -91,8 +92,7 @@
                           <span class="user-email">{{ member.email }}</span>
                         </div>
                       </div>
-                      </td>
-                    
+                    </td>
                     <td class="center">
                       <select v-model="userVisibility.value" v-if="member._id === userInfo._id" @change="updateSelfVisibility()">
                         <option value="private">Private</option>
@@ -112,13 +112,16 @@
                     <td class="center">
                       <button 
                         v-if="member.role <= userRole && member._id !== userInfo._id && member._id !== currentOrganization.owner"
-                        class="btn btn-small red" @click="removeMemberValidation(member)">
+                        class="btn btn-small red info-text" 
+                        data-content="Remove from organization" 
+                        @click="removeMemberValidation(member)">
                         <span class="icon icon__remove"></span>
                       </button>
                       <button 
-                        v-if="member._id === userInfo._id && userRole < 4"
-                        class="btn btn-small red" @click="leaveOrganization()">
-                        <span class="icon icon__remove"></span>
+                        v-if="member._id === userInfo._id && userRole < 4" data-content="Leave organization" 
+                        class="btn btn-small red info-text" 
+                        @click="leaveOrganization()" >
+                        <span class="icon icon__cancel"></span>
                       </button>
                     </td>
                   </tr>

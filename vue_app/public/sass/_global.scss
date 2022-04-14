@@ -1,6 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500&display=swap');
 body {
-    font-family: 'Comfortaa', Arial, Helvetica, sans-serif;
+    font-family: 'Montserrat', Arial, Helvetica, sans-serif;
     font-size: 16px;
     color: #333;
     font-weight: 400;
@@ -24,7 +24,7 @@ h1 {
     font-size: 30px;
     font-weight: 700;
     padding: 0 0 40px 0;
-    color: $blueChart;
+    color: $secondary;
 }
 
 h2 {
@@ -71,93 +71,3 @@ h3 {
 .hidden {
     display: none !important;
 }
-
-
-/*** BUTTONS ***/
-
-
-/* SHARE WITH LIST 
-
-.share-with-list {
-    border-collapse: collapse;
-    margin: 10px 0;
-    max-width: 620px;
-    thead {
-        tr {
-            th {
-                text-align: left;
-                padding: 5px 0;
-            }
-        }
-    }
-    tbody {
-        tr {
-            background-color: #fafafa;
-            border: 1px solid #dedede;
-            &.selected {
-                background-color: $greenLight;
-            }
-            td {
-                padding: 10px;
-                &.img {
-                    width: 30px;
-                }
-            }
-        }
-    }
-    .share-with-list-img {
-        display: inline-block;
-        height: 30px;
-        width: 30px;
-        @include borderRadius(15px);
-        overflow: hidden;
-    }
-}
-
-.btn-toggle {
-    background: #fff;
-    vertical-align: top;
-    margin: 2px 5px;
-    display: inline-block;
-    width: 40px;
-    height: 20px;
-    @include borderRadius(20px);
-    @include transition(all 0.3s ease);
-    border: 1px solid;
-    position: relative;
-    &.enabled {
-        border-color: $greenChart;
-    }
-    &.disabled {
-        border-color: $redLight;
-    }
-    .btn-toggle-circle {
-        display: inline-block;
-        width: 16px;
-        height: 16px;
-        position: absolute;
-        top: 1px;
-        background: red;
-        @include borderRadius(10px);
-        @include transition(all 0.3s ease);
-        &.disabled {
-            left: 2px;
-            background-color: $redLight;
-        }
-        &.enabled {
-            left: 100%;
-            margin-left: -18px;
-            background-color: $greenChart;
-        }
-    }
-    &:hover {
-        &.disabled {
-            border-color: $redChart;
-        }
-        .btn-toggle-circle {
-            &.disabled {
-                background-color: $redChart;
-            }
-        }
-    }
-}*/

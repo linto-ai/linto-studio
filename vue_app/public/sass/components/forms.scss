@@ -1,7 +1,7 @@
 /*** FORMS / INPUTS ***/
 
 .form-container {
-    border: 1px solid $blueLight;
+    border: 1px solid $secondary;
     margin: 20px;
     padding: 20px;
     &.no-border {
@@ -13,10 +13,10 @@
     width: 100%;
     margin-bottom: 10px;
     .form-label {
-        font-weight: 700;
+        font-weight: 500;
         font-size: 16px;
         padding: 10px 0 5px 0;
-        color: $blueChart;
+        color: $secondary;
         i {
             font-size: 16px;
             font-weight: 400;
@@ -43,17 +43,17 @@ textarea,
 input[type="text"],
 input[type="password"],
 select {
-    font-family: $comfortaa;
     color: #333333;
     font-size: 15px;
     font-weight: 400;
     display: inline-block;
     padding: 5px;
     background-color: #fff;
-    border: 1px solid $blueLight;
+    border: 1px solid #aaa;
     min-width: 140px;
     max-width: 320px;
     @include borderRadius(3px);
+    box-sizing: border-box;
     &.error {
         border-color: $redChart;
     }
@@ -188,7 +188,7 @@ textarea {
                 }
             }
         }
-        @include transition(all 0.3s ease);
+        @include transition(all 0.2s ease);
     }
 }
 

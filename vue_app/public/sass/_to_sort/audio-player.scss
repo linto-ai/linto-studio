@@ -203,7 +203,7 @@
     margin-left: 10px;
     position: relative;
     @include borderRadius(3px);
-    @include transition(all 0.3s ease);
+    @include transition(all 0.2s ease);
     &:after {
         content: "";
         display: inline-block;
@@ -214,7 +214,7 @@
         left: 0;
         background-color: $greenChart;
         @include maskImage('../img/keyboard.svg');
-        @include transition(all 0.3s ease);
+        @include transition(all 0.2s ease);
     }
     &:hover {
         background-color: #fff;

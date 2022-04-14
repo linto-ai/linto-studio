@@ -12,7 +12,7 @@
     @include borderRadius(3px);
     @include boxShadow(0, 2px, 4px, 0, rgba(0, 0, 0, 0.3));
     border: 1px solid #ccc;
-    @include transition(all 0.3s ease);
+    @include transition(all 0.2s ease);
     z-index: 20;
     &.hidden {
         height: 0px;

@@ -97,7 +97,7 @@ a {
             padding: 0 15px;
             @include borderRadius(20px);
             @include buttonShadow();
-            @include transition(all 0.3s ease);
+            @include transition(all 0.2s ease);
             position: relative;
             z-index: 1;
             overflow: hidden;
@@ -108,7 +108,7 @@ a {
                 font-weight: 700;
                 z-index: 5;
                 vertical-align: top;
-                @include transition(all 0.3s ease);
+                @include transition(all 0.2s ease);
             }
             .icon {
                 display: inline-block;
@@ -117,7 +117,7 @@ a {
                 position: relative;
                 vertical-align: top;
                 margin: 10px 0 10px 5px;
-                @include transition(all 0.3s ease);
+                @include transition(all 0.2s ease);
                 &.icon__plus {
                     @include maskImage('../img/plus.svg');
                 }
@@ -239,7 +239,7 @@ a {
             @include borderRadius(3px);
             padding: 0 5px;
             @include buttonShadow();
-            @include transition(all 0.3s ease);
+            @include transition(all 0.2s ease);
             margin: 5px;
             background-color: #fff;
             .label {
@@ -279,7 +279,7 @@ a {
         background-color: #fff;
         @include borderRadius(3px);
         @include buttonShadow();
-        @include transition(all 0.3s ease);
+        @include transition(all 0.2s ease);
         position: relative;
         z-index: 1;
         .icon {
@@ -287,7 +287,7 @@ a {
             width: 24px;
             height: 24px;
             background-color: $greenChart;
-            @include transition(background-color 0.3s ease);
+            @include transition(background-color 0.2s ease);
             &.icon--edit {
                 @include maskImage('../img/edit.svg');
             }
@@ -390,7 +390,7 @@ a {
         2px,
         0,
         rgba(0, 0, 0, 0.2));
-        @include transition(all 0.3s ease);
+        @include transition(all 0.2s ease);
         .label {
             font-size: 15px;
             font-weight: 700;
@@ -480,7 +480,7 @@ a {
                         left: 105%;
                         @include maskImage('../img/filter-arrow.svg');
                         background-color: $blueChart;
-                        @include transition(all 0.3s ease);
+                        @include transition(all 0.2s ease);
                     }
                     &.up {
                         &:after {
@@ -605,7 +605,7 @@ a {
 /*** FORMS / INPUTS ***/
 
 .form-container {
-    border: 1px solid $blueLight;
+    border: 1px solid $secondary;
     margin: 20px;
     padding: 20px;
     &.no-border {
@@ -617,20 +617,15 @@ a {
     width: 100%;
     margin-bottom: 10px;
     .form-label {
-        font-weight: 700;
+        font-weight: 500;
         font-size: 16px;
         padding: 10px 0 5px 0;
-        color: $blueChart;
+        color: $secondary;
         i {
             font-size: 16px;
             font-weight: 400;
             color: $redChart;
             font-style: normal;
-        }
-        strong {
-            font-weight: 500;
-            font-size: 18px;
-            color: $redChart;
         }
         strong {
             font-weight: 500;
@@ -805,7 +800,7 @@ textarea {
                 }
             }
         }
-        @include transition(all 0.3s ease);
+        @include transition(all 0.2s ease);
     }
 }
 
@@ -864,7 +859,7 @@ textarea {
     width: 40px;
     height: 20px;
     @include borderRadius(20px);
-    @include transition(all 0.3s ease);
+    @include transition(all 0.2s ease);
     border: 1px solid;
     position: relative;
     &.enabled {
@@ -881,7 +876,7 @@ textarea {
         top: 1px;
         background: red;
         @include borderRadius(10px);
-        @include transition(all 0.3s ease);
+        @include transition(all 0.2s ease);
         &.disabled {
             left: 2px;
             background-color: $redLight;

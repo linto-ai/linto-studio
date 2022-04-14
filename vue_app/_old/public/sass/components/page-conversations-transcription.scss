@@ -229,7 +229,7 @@ input[type="color"]::-webkit-color-swatch {
         width: 40px;
         height: 20px;
         @include borderRadius(20px);
-        @include transition(all 0.3s ease);
+        @include transition(all 0.2s ease);
         border: 1px solid;
         position: relative;
         &.enabled {
@@ -246,7 +246,7 @@ input[type="color"]::-webkit-color-swatch {
             top: 1px;
             background: red;
             @include borderRadius(10px);
-            @include transition(all 0.3s ease);
+            @include transition(all 0.2s ease);
             &.disabled {
                 left: 2px;
                 background-color: $redLight;

@@ -10,7 +10,7 @@
     align-items: center;
     justify-content: center;
     border: 2px solid;
-    @include transition(all 0.3s ease);
+    @include transition(all 0.2s ease);
     &.closed {
         top: 100%;
         margin: 0;
@@ -73,7 +73,7 @@
         @include maskImage('../img/close.svg');
         background-color: #545454;
         border: none;
-        @include transition(all 0.3s ease);
+        @include transition(all 0.2s ease);
         &:hover {
             background-color: $redChart;
         }

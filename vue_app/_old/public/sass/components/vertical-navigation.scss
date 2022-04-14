@@ -4,7 +4,7 @@
     z-index: 10;
     width: 240px;
     @include boxShadow(0, 2px, 4px, 0, rgba(0, 0, 0, 0.3));
-    @include transition(all 0.3s ease);
+    @include transition(all 0.2s ease);
     .app-logo {
         height: 100px;
         text-align: center;
@@ -28,7 +28,7 @@
             vertical-align: top;
             @include maskImage('../img/nav-toggle.svg');
             @include transform(rotate(180deg));
-            @include transition(all 0.3s ease);
+            @include transition(all 0.2s ease);
             position: relative;
             &.closed {
                 @include transform(rotate(0deg));
@@ -47,7 +47,7 @@
             text-decoration: none;
             padding: 20px 0;
             position: relative;
-            @include transition(all 0.3s ease-in-out);
+            @include transition(all 0.2s ease-in-out);
             &:after {
                 content: "";
                 display: inline-block;
@@ -57,7 +57,7 @@
                 top: 40px;
                 left: 0;
                 background: $blueChart;
-                @include transition(all 0.3s ease-in-out);
+                @include transition(all 0.2s ease-in-out);
             }
             &:hover {
                 color: $blueChart;

@@ -20,19 +20,16 @@
         <span class="user-menu-btn--arrow flex col" :class="userMenuOpened ? 'user-menu-btn--arrow__opened' : 'user-menu-btn--arrow__closed'"></span>
       </button>
       <div class="user-menu-links flex col" :class="userMenuOpened ? 'opened' : 'closed'">
-          <a class="user-menu-links--item flex" :href="`/interface/user/profile/${user._id}`">
-            <span class="icon logout"></span>
+          <a class="user-menu-links--item flex row" :href="`/interface/user/profile/${user._id}`">
+            <span class="icon account"></span>
             <span class="label">{{ $t('nav.my_account') }}</span>
           </a>
 
-            <a class="user-menu-links--item flex" :href="`/interface/user/organizations`">
+          <a class="user-menu-links--item red flex row" href="/auth/logout">
             <span class="icon logout"></span>
-            <span class="label">Organizations</span>
+            <span class="label">Déconnexion</span>
           </a>
         </div>
-    </div>
-    <div class="header-logout">
-      <a href="/auth/logout" id="logout"><span class="icon"></span></a>
     </div>
   </div>
 </template>

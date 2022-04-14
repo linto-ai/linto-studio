@@ -2,7 +2,6 @@
     height: 40px;
     justify-content: flex-end;
     background: transparent;
-    border-bottom: 1px solid #fff;
     padding: 20px 40px;
 }
 
@@ -52,7 +51,7 @@
         background-color: #fff;
         vertical-align: top;
         @include buttonShadow();
-        @include transition(all 0.3s ease);
+        @include transition(all 0.2s ease);
         .user-menu-btn--img {
             display: inline-block;
             height: 32px;
@@ -67,11 +66,12 @@
             height: 40px;
             line-height: 40px;
             font-size: 14px;
-            font-weight: 700;
+            font-weight: 500;
             vertical-align: top;
             padding-left: 10px;
             max-width: 300px;
             overflow: hidden;
+            color: $secondaryDark;
         }
         .user-menu-btn--arrow {
             display: inline-block;
@@ -80,14 +80,14 @@
             vertical-align: top;
             margin: 10px 5px 0 10px;
             @include maskImage('../img/triangle.svg');
-            background-color: $greenChart;
-            @include transition(all 0.3s ease);
+            background-color: $secondary;
+            @include transition(all 0.2s ease);
         }
         &:hover {
             @include buttonShadowHover();
             background-color: #fcfcfc;
             .user-menu-btn--arrow {
-                background-color: $blueChart;
+                background-color: $secondaryDark;
             }
         }
         &.opened {
@@ -121,60 +121,50 @@
             height: 20px;
             text-decoration: none;
             white-space: nowrap;
+            @include borderRadius(3px);
+            @include transition(all 0.2s ease);
             .label {
                 font-size: 14px;
-                font-weight: 600;
+                font-weight: 400;
                 margin-left: 5px;
                 height: 20px;
                 line-height: 20px;
                 vertical-align: top;
-                color: $blueChart;
+                color: $secondary;
             }
             .icon {
                 display: inline-block;
                 height: 20px;
                 width: 20px;
                 vertical-align: top;
-                @include maskImage('../img/edit.svg');
-                background-color: $blueChart;
+                background-color: $secondary;
+                &.account {
+                    @include maskImage('../img/edit.svg');
+                }
+                &.logout {
+                    @include maskImage('../img/logout.svg');
+                }
+            }
+            &.red {
+                .label {
+                    color: $redChart;
+                }
+                .icon {
+                    background-color: $redChart;
+                }
             }
             &:hover {
-                background-color: $blueChart;
+                background-color: $secondaryDark;
+                @include transition(all 0.2s ease);
                 .label {
                     color: #fff;
                 }
                 .icon {
                     background-color: #fff;
                 }
-            }
-        }
-    }
-}
-
-.header-logout {
-    margin-left: 20px;
-    #logout {
-        display: inline-block;
-        width: 40px;
-        height: 40px;
-        @include borderRadius(20px);
-        background-color: transparent;
-        @include cancelBoxShadow();
-        @include transition(all 0.3s ease);
-        .icon {
-            display: inline-block;
-            width: 30px;
-            height: 30px;
-            margin: 5px;
-            @include maskImage('../img/logout.svg');
-            background-color: $redChart;
-            @include transition(all 0.3s ease);
-        }
-        &:hover {
-            @include buttonShadow();
-            background-color: $redChart;
-            .icon {
-                background-color: #fff;
+                &.red {
+                    background-color: $redChart;
+                }
             }
         }
     }

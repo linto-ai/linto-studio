@@ -3,49 +3,44 @@
     <h1>Organizations</h1>
     <div class="flex col">
       <div class="flex row">
-        <a href="/interface/user/organizations/create" class="btn btn-big green">
+        <a href="/interface/user/organizations/create" class="btn btn-medium green">
           <span class="icon icon__plus"></span>
           <span class="label">Create organization</span>
         </a>
       </div>
       <div class="flex">
-        <table class="table" >
+        <table class="table auto" >
           <thead>
             <tr>
-              <th>Organization Name</th>
-              <th>Description</th>
+              <th>Organization</th>
               <th>Owner</th>
+              <th>Role</th>
               <th>Visibility</th>
               <th>Members</th>
-              <th>Edit</th>
-              <th>Remove</th>
-              <th>My role</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="orga in userOrganizations.userOrganizations" :key="orga._id">
-              <td class="title">{{orga.name}}</td>
-              <td>{{orga.description}}</td>
+              <td class="title"><a :href="`/interface/user/organizations/${orga._id}`">{{orga.name}}</a></td>
               <td>
-                <div class="table-user-img flex row">
-                  <span class="table-user-img__span" :data-name="`${getUserById(orga.owner).firstname} ${getUserById(orga.owner).lastname}`">
-                    <img :src="'/'+getUserById(orga.owner).img" class="table-user-img__img">
-                  </span>
+                <div class="user-td flex row">
+                  <img class="user-img" :src="'/' + getUserById(orga.owner).img">
+                  <div class="flex col">
+                    <span class="user-name">{{ getUserById(orga.owner).firstname }} {{ getUserById(orga.owner).lastname }}</span>
+                    <span class="user-email">{{getUserById(orga.owner).email }}</span>
+                  </div>
                 </div>
               </td>
-              <td>{{orga.type}}</td>
-              <td class="center">
-                  {{ orga.users.length }}
+              <td>
+                <span :class="`user-role ${userRoles.find(role => role.value === getUserRoleByOrganizationId(orga._id)).name.toLowerCase()}`">
+                  {{ userRoles.find(role => role.value === getUserRoleByOrganizationId(orga._id)).name }}</span>
               </td>
+              <td><i>{{orga.type}}</i></td>
               <td class="center">
-                <a 
-                  v-if="getUserRoleByOrganizationId(orga._id) === 'owner' || getUserRoleByOrganizationId(orga._id) > 1"
-                  :href="`/interface/user/organizations/${orga._id}`"
-                  class="btn btn-medium info-text green" data-content="Edit organization">
-                  <span class="icon icon__edit"></span>
-                </a>
+                  {{ orga.users.length }} member{{ orga.users.length > 1 ? 's' : ''}}
               </td>
-              <td class="center" v-if="orga.owner === userInfo._id">
+              
+                            <td class="center" v-if="orga.owner === userInfo._id">
                 <button 
                   v-if="!orga.personal"
                   class="btn btn-medium red info-text" 
@@ -64,9 +59,7 @@
                   <span class="icon icon__cancel"></span>
                 </button>
               </td>
-              <td>
-                {{ userRoles.find(role => role.value === getUserRoleByOrganizationId(orga._id)).name }}
-              </td>
+              
             </tr>
           </tbody>
         </table>

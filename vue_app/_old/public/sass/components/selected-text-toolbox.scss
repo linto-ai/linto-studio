@@ -17,7 +17,7 @@
     padding: 0 10px;
     margin: 3px 0;
     position: relative;
-    @include transition(all 0.3s ease);
+    @include transition(all 0.2s ease);
     @include borderRadius(3px);
     min-width: 120px;
     width: 100%;
@@ -30,7 +30,7 @@
         background: $blueChart;
         margin: 2px 2px 0 0;
         vertical-align: top;
-        @include transition(all 0.3s ease);
+        @include transition(all 0.2s ease);
         &.keywords {
             @include maskImage('../img/keywords.svg');
         }
@@ -60,7 +60,7 @@
         color: $blueChart;
         font-weight: 600;
         font-size: 14px;
-        @include transition(all 0.3s ease);
+        @include transition(all 0.2s ease);
         vertical-align: top;
     }
     &:hover {

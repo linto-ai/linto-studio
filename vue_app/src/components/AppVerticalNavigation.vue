@@ -11,9 +11,12 @@
       ></button>
     </div>
     
-    <div class="app-nav">
-      <div>
-        <a href="/interface/conversations" class="app-nav-link">{{ $t('nav.conversations_overview')}}</a>
+    <div class="app-nav flex col">
+      <div class="flex row">
+        <a href="/interface/user/organizations" class="app-nav-link">Organizations</a>
+      </div>
+      <div class="flex row">
+        <a href="/interface/conversations" class="app-nav-link">Conversations</a>
       </div>
     </div>
   </div>
@@ -35,7 +38,7 @@ export default {
   computed: {
     logoPath () {
       if (this.verticalNavOpen) {
-        return '/assets/img/conversation-manager-logo.svg'
+        return '/assets/img/conversation-manager-logo-white.svg'
       } else {
         return '/assets/img/conversation-manager-logo-small.svg'
       }

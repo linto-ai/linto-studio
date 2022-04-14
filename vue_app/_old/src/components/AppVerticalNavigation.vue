@@ -35,7 +35,7 @@ export default {
   computed: {
     logoPath () {
       if (this.verticalNavOpen) {
-        return '/assets/img/conversation-manager-logo.svg'
+        return '/assets/img/conversation-manager-logo-white.svg'
       } else {
         return '/assets/img/conversation-manager-logo-small.svg'
       }

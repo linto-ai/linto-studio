@@ -2,7 +2,7 @@ button,
 a {
     cursor: pointer;
     display: inline-block;
-    padding: 0;
+    padding: 0 5px;
     margin: 0;
     border: none;
     color: inherit;
@@ -21,11 +21,11 @@ a {
 .btn {
     @include borderRadius(3px);
     @include buttonShadow();
-    @include transition(all 0.3s ease);
+    @include transition(all 0.2s ease);
     background-color: #fff;
     &>span {
         display: inline-block;
-        @include transition(all 0.3s ease);
+        @include transition(all 0.2s ease);
     }
     .label {
         font-size: 16px;
@@ -170,20 +170,27 @@ a {
             }
         }
     }
+    &.secondary,
     &.grey {
         margin-right: 20px;
-        background-color: rgba(0, 0, 0, 0.4);
+        background-color: #fff;
         .label {
-            color: #fff;
+            color: $secondary;
         }
         .icon {
-            background-color: #fff;
+            background-color: $secondary;
         }
         &:hover {
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: $secondaryDark;
             @include buttonShadowHover();
+            .label {
+                color: #fff;
+            }
+            .icon {
+                background-color: #fff;
+            }
             &:after {
-                background-color: rgba(0, 0, 0, 0.8);
+                background-color: $secondaryDark;
             }
         }
     }
@@ -240,7 +247,7 @@ a {
         padding: 0 15px;
         @include borderRadius(20px);
         @include buttonShadow();
-        @include transition(all 0.3s ease);
+        @include transition(all 0.2s ease);
         position: relative;
         z-index: 1;
         overflow: hidden;
@@ -251,7 +258,7 @@ a {
             font-weight: 700;
             z-index: 5;
             vertical-align: top;
-            @include transition(all 0.3s ease);
+            @include transition(all 0.2s ease);
         }
         .icon {
             display: inline-block;
@@ -260,7 +267,7 @@ a {
             position: relative;
             vertical-align: top;
             margin: 10px 0 10px 5px;
-            @include transition(all 0.3s ease);
+            @include transition(all 0.2s ease);
             &.icon__plus {
                 @include maskImage('../img/plus.svg');
             }
@@ -381,7 +388,7 @@ a {
         @include borderRadius(3px);
         padding: 0 5px;
         @include buttonShadow();
-        @include transition(all 0.3s ease);
+        @include transition(all 0.2s ease);
         margin: 5px;
         background-color: #fff;
         .label {
@@ -422,7 +429,7 @@ a {
     background-color: #fff;
     @include borderRadius(3px);
     @include buttonShadow();
-    @include transition(all 0.3s ease);
+    @include transition(all 0.2s ease);
     position: relative;
     z-index: 1;
     .icon {
@@ -430,7 +437,7 @@ a {
         width: 24px;
         height: 24px;
         background-color: $greenChart;
-        @include transition(background-color 0.3s ease);
+        @include transition(background-color 0.2s ease);
         &.icon--edit {
             @include maskImage('../img/edit.svg');
         }
@@ -532,7 +539,7 @@ a {
     padding: 5px;
     @include borderRadius(3px);
     @include boxShadow(1px, 1px, 2px, 0, rgba(0, 0, 0, 0.2));
-    @include transition(all 0.3s ease);
+    @include transition(all 0.2s ease);
     .label {
         font-size: 15px;
         font-weight: 700;

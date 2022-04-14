@@ -1,5 +1,11 @@
 <template>
   <div class="flex col scrollable" v-if="dataLoaded">
+    <div class="flex row" style="margin-bottom:20px;">
+      <a class="btn btn-medium secondary" href="/interface/user/organizations">
+        <span class="icon icon__arrow-left"></span>
+        <span class="label">Back to organizations</span>
+      </a>
+    </div>
     <h1>Create Organiaztion</h1>
 
     <!-- Organization name -->

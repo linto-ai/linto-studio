@@ -8,7 +8,7 @@
         position: relative;
         padding: 5px 3px;
         text-transform: uppercase;
-        @include transition(all 0.3s ease);
+        @include transition(all 0.2s ease);
         white-space: nowrap;
         &:after {
             content: "";
@@ -19,7 +19,7 @@
             top: 25px;
             left: 0;
             background-color: $greenChart;
-            @include transition(all 0.3s ease);
+            @include transition(all 0.2s ease);
         }
         &:hover {
             color: $greenChart;
