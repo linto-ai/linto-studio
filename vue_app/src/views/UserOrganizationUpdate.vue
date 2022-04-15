@@ -13,7 +13,7 @@
           <div class="form-field flex col">
             <span class="form-label">Organization Name</span>
             <input 
-              v-if="userRole > 2"
+              v-if="userRole.value > 2"
               type="text"
               v-model="organizationName.value"
               :class="organizationName.error !== null ? 'error' : ''"
@@ -26,7 +26,7 @@
           <div class="form-field flex col">
             <span class="form-label">Description</span>
             <textarea
-              v-if="userRole > 2"
+              v-if="userRole.value > 2"
               v-model="organizationDescription.value"
             ></textarea>
             <span v-else class="organization-info-desc" :class="organizationDescription.value.length > 0 ? '' : 'no-desc'">{{ organizationDescription.value.length > 0 ? organizationDescription.value : 'No description' }}</span> 
@@ -38,7 +38,7 @@
           <div class="form-field flex col">
             <span class="form-label">Visibility</span>
             <select 
-              v-if="userRole > 2"
+              v-if="userRole.value > 2"
               v-model="organizationVisibility.value"
             >
               <option value="private">private</option>
@@ -46,7 +46,7 @@
             </select>
             <span class="organization-info-visibility" v-else>{{organizationVisibility.value}}</span>
           </div>
-          <div class="flex row form-field" v-if="userRole > 2">
+          <div class="flex row form-field" v-if="userRole.value > 2">
               <button class="btn btn-big green" @click="handleOrganizationForm()">
                 <span class="icon icon__apply"></span>
                 <span class="label">Update</span>
@@ -57,7 +57,7 @@
         <div class="flex2 flex col">
           <!-- Members -->
 
-          <div class="form-field flex col" v-if="userRole >= 2">
+          <div class="form-field flex col" v-if="userRole.value >= 2">
             <span class="form-label">Add a member</span>
             <div class="flex col search-member-container" >
               <input type="text" v-model="searchMemberValue" @input="searchMember()" placeholder="User name or email...">
@@ -89,7 +89,7 @@
                         class="table-th-filter" 
                         @click="orderOrgaBy('username')"
                         :class="[this.orderByKey === 'username' ? 'selected' : '', this.orderByKey === 'username' && !this.orderByDirectionAsc ? 'desc' : '']"
-                      >Role
+                      >User
                       </button>
                     </th>
                     <th>
@@ -134,8 +134,8 @@
                       <select 
                         v-model="member.role" 
                         @change="updateUserRole(member)" 
-                        v-if="member.role <= userRole && member._id !== userInfo._id && userRole >= 2">
-                          <option v-for="role in userRoles.filter(ur => ur.value < 4)" :key="role.value" :value="role.value" :disabled="userRole < role.value">{{ role.name }}</option>
+                        v-if="member.role <= userRole.value && member._id !== userInfo._id && userRole.value >= 2">
+                          <option v-for="role in userRoles.filter(ur => ur.value < 4)" :key="role.value" :value="role.value" :disabled="userRole.value < role.value">{{ role.name }}</option>
                       </select>
                       <span v-else :class="`user-role ${member._id === currentOrganization.owner ? 'owner' :
                         userRoles.find(role => role.value === member.role).name.toLowerCase()}`">
@@ -144,14 +144,14 @@
                     </td>
                     <td class="center">
                       <button 
-                        v-if="member.role <= userRole && member._id !== userInfo._id && member._id !== currentOrganization.owner && userRole >= 2"
+                        v-if="member.role <= userRole.value && member._id !== userInfo._id && member._id !== currentOrganization.owner && userRole.value >= 2"
                         class="btn btn-small red info-text" 
                         data-content="Remove from organization" 
                         @click="removeMemberValidation(member)">
                         <span class="icon icon__trash"></span>
                       </button>
                       <button 
-                        v-if="member._id === userInfo._id && userRole < 4" data-content="Leave organization" 
+                        v-if="member._id === userInfo._id && userRole.value < 4" data-content="Leave organization" 
                         class="btn btn-small red info-text" 
                         @click="leaveOrganization()" >
                         <span class="icon icon__leave"></span>
