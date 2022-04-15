@@ -8,15 +8,17 @@
     </div>
     <h1>Update Organiaztion - {{organizationName.value}}</h1>
     <div class="flex row">
-      <div class="flex flex1 col" v-if="userRole > 2">
+      <div class="flex flex1 col oganization-infos">
         <!-- Organization name -->
           <div class="form-field flex col">
             <span class="form-label">Organization Name</span>
             <input 
+              v-if="userRole > 2"
               type="text"
               v-model="organizationName.value"
               :class="organizationName.error !== null ? 'error' : ''"
             >
+            <span v-else class="organization-info-title">{{ organizationName.value }}</span>
             <span class="error-field" v-if="organizationName.error !== null">{{ organizationName.error }}</span>
           </div>
 
@@ -24,8 +26,10 @@
           <div class="form-field flex col">
             <span class="form-label">Description</span>
             <textarea
+              v-if="userRole > 2"
               v-model="organizationDescription.value"
             ></textarea>
+            <span v-else class="organization-info-desc" :class="organizationDescription.value.length > 0 ? '' : 'no-desc'">{{ organizationDescription.value.length > 0 ? organizationDescription.value : 'No description' }}</span> 
             <span class="error-field" v-if="organizationDescription.error !== null">{{ organizationDescription.error }}</span>
           </div>
 
@@ -34,26 +38,29 @@
           <div class="form-field flex col">
             <span class="form-label">Visibility</span>
             <select 
+              v-if="userRole > 2"
               v-model="organizationVisibility.value"
             >
               <option value="private">private</option>
               <option value="public">public</option>
             </select>
+            <span class="organization-info-visibility" v-else>{{organizationVisibility.value}}</span>
           </div>
-          <div class="flex row form-field">
+          <div class="flex row form-field" v-if="userRole > 2">
               <button class="btn btn-big green" @click="handleOrganizationForm()">
                 <span class="icon icon__apply"></span>
-                <span class="label">Envoyer</span>
+                <span class="label">Update</span>
               </button>
             </div>
         </div>
 
-        <div class="flex2 flex col" v-if="!currentOrganization.personal">
+        <div class="flex2 flex col">
           <!-- Members -->
-          <div class="form-field flex col">
-            <span class="form-label">Find a member</span>
+
+          <div class="form-field flex col" v-if="userRole >= 2">
+            <span class="form-label">Add a member</span>
             <div class="flex col search-member-container" >
-              <input type="text" v-model="searchMemberValue" @input="searchMember()">
+              <input type="text" v-model="searchMemberValue" @input="searchMember()" placeholder="User name or email...">
               <div class="flex col search-member-list" v-if="searchMemberValue.length > 0">
                 <div class="flex col" v-if="usersList.length > 0">
                   <div class="flex row search-member-item" v-for="user in usersList" :key="user._id">
@@ -71,14 +78,36 @@
               </div>
               </div>
             </div>
+          </div>
 
             <div class="organization-members">
-              <table class="table members" v-if="organizationMembers.length > 0">
+              <table class="table auto" v-if="organizationMembers.length > 0">
                 <thead>
                   <tr>
-                    <th>User</th>
-                    <th>Visibility</th>
-                    <th>Role</th>
+                    <th>
+                      <button 
+                        class="table-th-filter" 
+                        @click="orderOrgaBy('username')"
+                        :class="[this.orderByKey === 'username' ? 'selected' : '', this.orderByKey === 'username' && !this.orderByDirectionAsc ? 'desc' : '']"
+                      >Role
+                      </button>
+                    </th>
+                    <th>
+                    <button 
+                      class="table-th-filter" 
+                      @click="orderOrgaBy('visibility')"
+                      :class="[this.orderByKey === 'visibility' ? 'selected' : '', this.orderByKey === 'visibility' && !this.orderByDirectionAsc ? 'desc' : '']"
+                    >Visibility
+                    </button>
+                    </th>
+                    <th>
+                      <button 
+                        class="table-th-filter" 
+                        @click="orderOrgaBy('role')"
+                        :class="[this.orderByKey === 'role' ? 'selected' : '', this.orderByKey === 'role' && !this.orderByDirectionAsc ? 'desc' : '']"
+                      >Role
+                      </button>
+                    </th>
                     <th></th>
                   </tr>
                 </thead>
@@ -93,35 +122,39 @@
                         </div>
                       </div>
                     </td>
-                    <td class="center">
+                    <td>
                       <select v-model="userVisibility.value" v-if="member._id === userInfo._id" @change="updateSelfVisibility()">
                         <option value="private">Private</option>
                         <option value="public">Public</option>
                       </select>
 
-                      <span v-else>{{ member.visibility }}</span>
+                      <span v-else><i>{{ member.visibility }}</i></span>
                     </td>
                     <td>
-                      <select v-model="member.role" @change="updateUserRole(member)" v-if="member.role <= userRole && member._id !== userInfo._id">
-                        <option v-for="role in userRoles.filter(ur => ur.value < 4)" :key="role.value" :value="role.value" :disabled="userRole < role.value">{{ role.name }}</option>
+                      <select 
+                        v-model="member.role" 
+                        @change="updateUserRole(member)" 
+                        v-if="member.role <= userRole && member._id !== userInfo._id && userRole >= 2">
+                          <option v-for="role in userRoles.filter(ur => ur.value < 4)" :key="role.value" :value="role.value" :disabled="userRole < role.value">{{ role.name }}</option>
                       </select>
-                      <span v-else>{{ 
-                        member._id === currentOrganization.owner ? 'Owner' :
-                        userRoles.find(role => role.value === member.role).name }}</span>
+                      <span v-else :class="`user-role ${member._id === currentOrganization.owner ? 'owner' :
+                        userRoles.find(role => role.value === member.role).name.toLowerCase()}`">
+                          {{ member._id === currentOrganization.owner ? 'Owner' : userRoles.find(role => role.value === member.role).name }}
+                        </span>
                     </td>
                     <td class="center">
                       <button 
-                        v-if="member.role <= userRole && member._id !== userInfo._id && member._id !== currentOrganization.owner"
+                        v-if="member.role <= userRole && member._id !== userInfo._id && member._id !== currentOrganization.owner && userRole >= 2"
                         class="btn btn-small red info-text" 
                         data-content="Remove from organization" 
                         @click="removeMemberValidation(member)">
-                        <span class="icon icon__remove"></span>
+                        <span class="icon icon__trash"></span>
                       </button>
                       <button 
                         v-if="member._id === userInfo._id && userRole < 4" data-content="Leave organization" 
                         class="btn btn-small red info-text" 
                         @click="leaveOrganization()" >
-                        <span class="icon icon__cancel"></span>
+                        <span class="icon icon__leave"></span>
                       </button>
                     </td>
                   </tr>
@@ -129,7 +162,6 @@
               </table>
               <span v-else class="no-member">No member selected</span>
             </div>
-          </div>
         </div>
       </div>
       <Modal></Modal>
@@ -177,7 +209,9 @@ export default {
           name:"Owner", 
           value: 4
         }
-      ]
+      ],
+      orderByKey: '',
+      orderByDirectionAsc: true
     } 
   },
   async mounted () {
@@ -199,10 +233,8 @@ export default {
     dataLoaded () {
       return this.orgaLoaded && this.usersLoaded && this.userOrgaLoaded && !!this.currentOrganization && !!this.userRole
     },
-    
     userOrganizations () {
       return this.$store.state.userOrganizations
-
     },
     organizations () {
       return this.$store.state.organizations
@@ -210,6 +242,8 @@ export default {
     currentOrganization () {
       if(this.orgaLoaded && this.organizationId !== '') {
         return this.$store.getters.getOrganizationById(this.organizationId)
+
+        
       }
     },
     userRole () {
@@ -254,9 +288,47 @@ export default {
         valid: true,
         error: null
       }
+    },
+    orderByKey(data) {
+      
     }
   },
   methods: {
+    orderOrgaBy(name) {
+      if(this.orderByKey === name) {
+        this.orderByDirectionAsc = !this.orderByDirectionAsc
+      } else {
+        this.orderByKey = name
+        this.orderByDirectionAsc = true
+      }
+      if(this.orderByKey !== '') {
+        this.organizationMembers.sort((a,b) => {
+          let fa = ''
+          let fb = ''
+
+          if(this.orderByKey === 'visibility') {
+            fa = a[this.orderByKey].toLowerCase()
+            fb = b[this.orderByKey].toLowerCase()
+          }
+          if(this.orderByKey === 'role') {
+            fa = a[this.orderByKey]
+            fb = b[this.orderByKey]
+          }
+
+          if(this.orderByKey === 'username') {
+            fa = a.firstname.toLowerCase() + a.lastname.toLowerCase() 
+            fb = b.firstname.toLowerCase() + b.lastname.toLowerCase() 
+          }
+
+          if(fa === fb) return 0
+          if(this.orderByDirectionAsc) {
+            return fa > fb ? 1 : -1
+          } else {
+            return fa < fb ? 1 : -1
+          }
+        })
+      }
+    },
     getUserById (id) {
       return this.$store.getters.getUserById(id)
     },

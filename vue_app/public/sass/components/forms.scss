@@ -16,7 +16,7 @@
         font-weight: 500;
         font-size: 16px;
         padding: 10px 0 5px 0;
-        color: $secondary;
+        color: $greenChart;
         i {
             font-size: 16px;
             font-weight: 400;
@@ -44,8 +44,9 @@ input[type="text"],
 input[type="password"],
 select {
     color: #333333;
-    font-size: 15px;
-    font-weight: 400;
+    font-family: $montserrat;
+    font-size: 14px;
+    font-weight: 500;
     display: inline-block;
     padding: 5px;
     background-color: #fff;
@@ -59,8 +60,17 @@ select {
     }
     &:focus,
     &:active {
-        outline: 1px solid $blueLight;
+        border: 1px solid $secondary;
+        outline: none;
     }
+    &::placeholder {
+        font-style: italic;
+        color: #b2b2b2;
+    }
+}
+
+select:hover {
+    cursor: pointer;
 }
 
 textarea {
@@ -254,6 +264,7 @@ textarea {
 }
 
 .no-member {
+    font-size: 14px;
     display: inline-block;
     margin: 10px 0;
     color: #777;

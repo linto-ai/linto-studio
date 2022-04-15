@@ -12,15 +12,40 @@
         <table class="table auto" >
           <thead>
             <tr>
-              <th>Organization</th>
-              <th>Owner</th>
-              <th>Role</th>
-              <th>Visibility</th>
-              <th>Members</th>
+              <th>
+                <button 
+                  class="table-th-filter" 
+                  :class="[this.orderByKey === 'name' ? 'selected' : '', this.orderByKey === 'name' && !this.orderByDirectionAsc ? 'desc' : '']"
+                  @click="orderOrgaBy('name')"
+                >Organization</button>
+              </th>
+              <th>
+                  <button 
+                    class="table-th-filter" 
+                    @click="orderOrgaBy('owner')"
+                    :class="[this.orderByKey === 'owner' ? 'selected' : '', this.orderByKey === 'owner' && !this.orderByDirectionAsc ? 'desc' : '']"
+                  >Owner</button>
+                </th>
+              <th>
+                <button 
+                  class="table-th-filter" 
+                  @click="orderOrgaBy('userRole')"
+                  :class="[this.orderByKey === 'userRole' ? 'selected' : '', this.orderByKey === 'userRole' && !this.orderByDirectionAsc ? 'desc' : '']"
+                >Role</button>
+              </th>
+              <th>
+                <button 
+                  class="table-th-filter" 
+                  @click="orderOrgaBy('type')"
+                  :class="[this.orderByKey === 'type' ? 'selected' : '', this.orderByKey === 'type' && !this.orderByDirectionAsc ? 'desc' : '']"
+                >Visibility
+                </button>
+              </th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="orga in userOrganizations.userOrganizations" :key="orga._id">
+            <tr v-for="orga in userOrganizations" :key="orga._id">
               <td class="title"><a :href="`/interface/user/organizations/${orga._id}`">{{orga.name}}</a></td>
               <td>
                 <div class="user-td flex row">
@@ -32,22 +57,20 @@
                 </div>
               </td>
               <td>
-                <span :class="`user-role ${userRoles.find(role => role.value === getUserRoleByOrganizationId(orga._id)).name.toLowerCase()}`">
-                  {{ userRoles.find(role => role.value === getUserRoleByOrganizationId(orga._id)).name }}</span>
+                <span :class="`user-role ${orga.userRole.name.toLowerCase()}`">{{orga.userRole.name }}</span>
               </td>
               <td><i>{{orga.type}}</i></td>
-              <td class="center">
+              <td>
                   {{ orga.users.length }} member{{ orga.users.length > 1 ? 's' : ''}}
               </td>
-              
-                            <td class="center" v-if="orga.owner === userInfo._id">
+              <td class="center" v-if="orga.owner === userInfo._id">
                 <button 
                   v-if="!orga.personal"
                   class="btn btn-medium red info-text" 
                   data-content="Remove organization"
                   @click="deleteOrganization(orga)"
                 >
-                  <span class="icon icon__remove"></span>
+                  <span class="icon icon__trash"></span>
                 </button>
               </td>
               <td class="center" v-else>
@@ -56,7 +79,7 @@
                   class="btn btn-medium red info-text" 
                   data-content="Leave organization"
                   @click="leaveOrganization(orga)">
-                  <span class="icon icon__cancel"></span>
+                  <span class="icon icon__leave"></span>
                 </button>
               </td>
               
@@ -97,7 +120,9 @@ export default({
           name:"Owner", 
           value: 4
         }
-      ]
+      ],
+      orderByKey: '',
+      orderByDirectionAsc: true
     }
   },
   async mounted () {
@@ -114,8 +139,32 @@ export default({
       return this.orgaLoaded && this.usersLoaded && this.userOrgaLoaded
     },
     userOrganizations () {
-      return this.$store.state.userOrganizations
+      let organizations = this.$store.state.userOrganizations
+      if(this.orderByKey === '') {
+        return organizations
+      } else {
+        let sortedOrgas = organizations.sort((a,b) => {
+          let fa = ''
+          let fb = ''
 
+          if(this.orderByKey === 'userRole') {
+            fa = a[this.orderByKey].name.toLowerCase()
+            fb = b[this.orderByKey].name.toLowerCase()
+          }
+          else{
+            fa = a[this.orderByKey].toLowerCase()
+            fb = b[this.orderByKey].toLowerCase()
+          }
+
+          if(fa === fb) return 0
+          if(this.orderByDirectionAsc) {
+            return fa > fb ? 1 : -1
+          } else {
+            return fa < fb ? 1 : -1
+          }
+        })
+        return sortedOrgas
+      }
     },
     organizations () {
       return this.$store.state.organizations
@@ -124,6 +173,15 @@ export default({
   methods: {
     getUserById (id) {
       return this.$store.getters.getUserById(id)
+    },
+
+    orderOrgaBy(name) {
+      if(this.orderByKey === name) {
+        this.orderByDirectionAsc = !this.orderByDirectionAsc
+      } else {
+        this.orderByKey = name
+        this.orderByDirectionAsc = true
+      }
     },
     leaveOrganization (orga) {
       bus.$emit('show_modal', { 
@@ -142,9 +200,6 @@ export default({
         actionName: 'delete_organization',
         organization: orga
       })
-    },
-    getUserRoleByOrganizationId(organizationId) {
-      return this.$store.getters.getUserRoleByOrganizationId(organizationId, this.userInfo._id)
     },
     async dispatchOrganizations () {
       this.orgaLoaded = await this.$options.filters.dispatchStore('getOrganisations')

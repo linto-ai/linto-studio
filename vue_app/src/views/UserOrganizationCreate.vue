@@ -102,7 +102,7 @@
         <div class="flex row form-field">
           <button class="btn btn-big green" @click="handleOrganizationForm()">
             <span class="icon icon__apply"></span>
-            <span class="label">Envoyer</span>
+            <span class="label">Create</span>
           </button>
         </div>
       </div>
@@ -131,7 +131,7 @@ export default {
         valid: false
       },
       organizationVisibility: {
-        value: 'private',
+        value: 'public',
         error: null,
         valid: false
       },

@@ -4,7 +4,22 @@ import axios from 'axios'
 
 Vue.use(Vuex)
 
-
+let userRoles = [{
+        name: "Member",
+        value: 1
+    },
+    {
+        name: "Maintainer",
+        value: 2
+    }, {
+        name: "Admin",
+        value: 3
+    },
+    {
+        name: "Owner",
+        value: 4
+    }
+]
 let getCookie = function(cname) {
     let name = cname + "="
     let decodedCookie = decodeURIComponent(document.cookie)
@@ -19,6 +34,18 @@ let getCookie = function(cname) {
         }
     }
     return null
+}
+
+let getUserRoleByOrganization = (organization, userId) => {
+    if (organization.owner === userId) {
+        return { value: 4, name: 'owner' }
+    } else {
+        let role = organization.users.find(user => user.userId === userId).role
+        return {
+            value: role,
+            name: userRoles.find(ur => ur.value === role).name
+        }
+    }
 }
 
 export default new Vuex.Store({
@@ -76,13 +103,19 @@ export default new Vuex.Store({
         getUserOrganisations: async({  commit, state }) => {
             try {
                 const token = getCookie('authToken')
+                const userId = getCookie('userId')
                 const getUserOrganizations = await axios.get(`${process.env.VUE_APP_CONVO_API}/organizations/user`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 })
+                let userOrganizations = getUserOrganizations.data.userOrganizations
+                userOrganizations.map(orga => {
+                    orga.userRole = getUserRoleByOrganization(orga, userId)
 
-                commit('SET_USER_ORGANIZATIONS', getUserOrganizations.data)
+                })
+
+                commit('SET_USER_ORGANIZATIONS', userOrganizations)
                 return state.userOrganizations
 
             } catch (error) {
@@ -114,12 +147,7 @@ export default new Vuex.Store({
         },
         getUserRoleByOrganizationId: (state) => (organizationId, userId) => {
             let organization = state.organizations.find(orga => orga._id === organizationId)
-
-            if (organization.owner === userId) {
-                return 4
-            } else {
-                return organization.users.find(user => user.userId === userId).role
-            }
+            return getUserRoleByOrganization(organization, userId)
         }
     }
 })

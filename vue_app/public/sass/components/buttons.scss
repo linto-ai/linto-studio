@@ -2,7 +2,7 @@ button,
 a {
     cursor: pointer;
     display: inline-block;
-    padding: 0 5px;
+    padding: 0;
     margin: 0;
     border: none;
     color: inherit;
@@ -52,7 +52,8 @@ a {
         &.icon__transcription {
             @include maskImage('../img/abstract.svg');
         }
-        &.icon__backto {
+        &.icon__backto,
+        &.icon__leave {
             @include maskImage('../img/backto.svg');
         }
         &.icon__share {
@@ -111,8 +112,9 @@ a {
             line-height: 30px;
         }
         .icon {
-            width: 30px;
-            height: 30px;
+            margin: 3px;
+            width: 24px;
+            height: 24px;
         }
     }
     /* BIG */
@@ -125,7 +127,7 @@ a {
         .icon {
             width: 30px;
             height: 30px;
-            margin: 5px 0;
+            margin: 5px;
         }
     }
     &.green {

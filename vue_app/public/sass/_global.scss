@@ -1,7 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500&display=swap');
 body {
-    font-family: 'Montserrat', Arial, Helvetica, sans-serif;
-    font-size: 16px;
+    font-family: $montserrat;
+    font-size: 15px;
     color: #333;
     font-weight: 400;
     padding: 0;
@@ -24,19 +23,21 @@ h1 {
     font-size: 30px;
     font-weight: 700;
     padding: 0 0 40px 0;
-    color: $secondary;
+    color: $secondaryDark;
 }
 
 h2 {
     font-size: 26px;
     font-weight: 600;
     padding: 0 0 5px 0;
+    color: $secondary;
 }
 
 h3 {
     font-size: 22px;
     font-weight: 500;
     padding: 0 0 5px 0;
+    color: $secondary;
 }
 
 .flex {

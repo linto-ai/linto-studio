@@ -17,20 +17,18 @@
             text-align: left;
             vertical-align: middle;
             padding: 10px 15px;
-            font-size: 14px;
-            font-weight: 600;
             color: $secondary;
-            /*.table-th-filter {
+            .table-th-filter {
                 display: inline-block;
-                font-size: 14px;
-                font-weight: 400;
-                color: rgb(199, 169, 169);
                 position: relative;
+                overflow: visible;
+                font-size: 14px;
+                font-weight: 600;
                 &:hover {
-                    color: $blueChart;
+                    color: $turquoise;
                 }
                 &.selected {
-                    color: $blueChart;
+                    color: $turquoise;
                     &:after {
                         content: "";
                         display: inline-block;
@@ -38,25 +36,27 @@
                         height: 15px;
                         position: absolute;
                         top: 0;
-                        left: 105%;
+                        left: 104%;
                         @include maskImage('../img/filter-arrow.svg');
-                        background-color: $blueChart;
+                        background-color: $turquoise;
                         @include transition(all 0.2s ease);
                     }
-                    &.up {
+                    &.desc {
                         &:after {
                             @include transform(rotate(180deg));
                         }
                     }
                 }
-            }*/
+            }
         }
     }
     tbody {
         tr {
             border: 1px solid $secondary;
             &.current-user {
-                background-color: #d6f1ff;
+                td {
+                    background-color: #f1f7ff;
+                }
             }
             td {
                 max-width: 420px;
@@ -125,6 +125,9 @@
                             }
                         }
                     }
+                }
+                i {
+                    font-weight: 500;
                 }
                 .table-user-img {
                     height: 40px;
@@ -203,12 +206,11 @@
 .user-role {
     display: inline-block;
     padding: 5px;
-    background-color: red;
     color: #fff;
     font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
-    @include borderRadius(3px);
+    @include borderRadius(5px);
     &.owner {
         background-color: #ff8d00;
     }
@@ -216,7 +218,7 @@
         background-color: #8e7aff;
     }
     &.maintainer {
-        background-color: #4baecc;
+        background-color: $turquoise;
     }
     &.member {
         background-color: #676767;
