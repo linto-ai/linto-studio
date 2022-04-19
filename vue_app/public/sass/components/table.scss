@@ -207,20 +207,20 @@
     display: inline-block;
     padding: 5px;
     color: #fff;
-    font-size: 12px;
+    font-size: 10px;
     font-weight: 600;
     text-transform: uppercase;
     @include borderRadius(5px);
     &.owner {
-        background-color: #ff8d00;
+        background-color: #003554;
     }
     &.admin {
-        background-color: #8e7aff;
+        background-color: #006494;
     }
     &.maintainer {
-        background-color: $turquoise;
+        background-color: #0582ca;
     }
     &.member {
-        background-color: #676767;
+        background-color: #00a6fb;
     }
 }

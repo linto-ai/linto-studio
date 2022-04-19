@@ -240,8 +240,6 @@ export default {
       this.testPasswordConfirm(this.newPasswordConfirm, this.newPassword)
     },
     async sendPassword () {
-
-        
       this.handlePasswordForm()
       if(this.pswdFormValid) {
         let payload = {
@@ -296,11 +294,11 @@ export default {
             },
             data: formData
           })
-          if(req.status === 200 && !!req.data.msg) {
+          if(req.status === 200 && (!!req.data.message || !!req.data.msg)) {
             bus.$emit('refresh_user', {})
             bus.$emit('app_notif', {
               status: 'success',
-              message: req.data.msg,
+              message: req.data.message || req.data.msg || 'Profile picture updated',
               timeout: 3000
             })
           } else {

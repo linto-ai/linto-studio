@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
+import { cp } from 'fs'
 
 Vue.use(Vuex)
 
@@ -54,7 +55,8 @@ export default new Vuex.Store({
         userInfo: '',
         users: '',
         userOrganizations: '',
-        organizations: ''
+        organizations: '',
+        conversations: ''
     },
     mutations: {
         SET_USER_INFOS: (state, data) => {
@@ -68,6 +70,9 @@ export default new Vuex.Store({
         },
         SET_ORGANIZATIONS: (state, data) => {
             state.organizations = data
+        },
+        SET_CONVERSATIONS: (state, data) => {
+            state.conversations = data
         }
     },
     actions: {
@@ -132,6 +137,32 @@ export default new Vuex.Store({
                 })
                 commit('SET_ORGANIZATIONS', getOrganizations.data.organizations)
                 return state.organizations
+
+            } catch (error) {
+                return error.toString()
+            }
+        },
+        getConversations: async({  commit, state }) => {
+            try {
+                const token = getCookie('authToken')
+                const userId = getCookie('userId')
+
+                const getOrganizations = await axios.get(`${process.env.VUE_APP_CONVO_API}/conversations/list`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+
+                let conversations = getOrganizations.data.conversations
+
+                conversations.map(convo => {
+                    let convoOrga = state.userOrganizations.find(orga => convo.organization.organizationId === orga._id)
+
+                    convo.userRole = getUserRoleByOrganization(convoOrga, userId)
+                })
+
+                commit('SET_CONVERSATIONS', conversations)
+                return state.conversations
 
             } catch (error) {
                 return error.toString()

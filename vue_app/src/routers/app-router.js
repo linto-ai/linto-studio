@@ -10,6 +10,8 @@ import UserProfile from '../views/UserProfile.vue'
 import UserOrganizations from '../views/UserOrganizations.vue'
 import UserOrganizationCreate from '../views/UserOrganizationCreate.vue'
 import UserOrganizationUpdate from '../views/UserOrganizationUpdate.vue'
+
+import ConversationCreate from '../views/ConversationCreate.vue'
 /*
 import ConversationsCreate from '../views/ConversationCreate.vue'
 import ConversationManage from '../views/ConversationManage.vue'
@@ -79,6 +81,11 @@ const router = new Router({
             path: '/interface/conversations',
             name: 'conversations',
             component: Conversations
+        },
+        {
+            path: '/interface/conversation/create',
+            name: 'conversations',
+            component: ConversationCreate
         },
         {
             path: '/interface/user/profile/:userId',

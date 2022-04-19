@@ -4,122 +4,122 @@ const conversationUtility = require(`${process.cwd()}/components/WebServer/contr
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 
 const {
-  ConversationIdRequire,
-  ConversationNotFound,
-  ConversationError
+    ConversationIdRequire,
+    ConversationNotFound,
+    ConversationError
 } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
 async function getOwnerConversation(req, res, next) {
-  try {
-    const conversationList = await conversationModel.getAllConvos()
-    const conversations = conversationList.filter(conversation => conversation.owner === req.payload.data.userId)
+    try {
+        const conversationList = await conversationModel.getAllConvos()
+        const conversations = conversationList.filter(conversation => conversation.owner === req.payload.data.userId)
 
-    res.json({
-      conversations
-    })
-  } catch (err) {
-    res.status(err.status).send({ message: err.message })
+        res.json({
+            conversations
+        })
+    } catch (err) {
+        res.status(err.status).send({ message: err.message })
 
-  }
+    }
 }
 
 async function deleteConversation(req, res, next) {
-  try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
-    const conversation = await conversationModel.getConvoById(req.params.conversationId)
-    if (conversation.length !== 1) throw new ConversationNotFound()
+    try {
+        if (!req.params.conversationId) throw new ConversationIdRequire()
+        const conversation = await conversationModel.getConvoById(req.params.conversationId)
+        if (conversation.length !== 1) throw new ConversationNotFound()
 
-    const result = await conversationModel.deleteById(req.params.conversationId)
+        const result = await conversationModel.deleteById(req.params.conversationId)
 
-    if (result.deletedCount !== 1) throw new ConversationError('Error when deleting conversation')
+        if (result.deletedCount !== 1) throw new ConversationError('Error when deleting conversation')
 
-    res.status(200).send({
-      message: 'Conversation has been deleted'
-    })
-  } catch (err) {
-    res.status(err.status).send({ message: err.message })
-  }
+        res.status(200).send({
+            message: 'Conversation has been deleted'
+        })
+    } catch (err) {
+        res.status(err.status).send({ message: err.message })
+    }
 }
 
 
 async function updateConversation(req, res, next) {
-  try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
-    const conversation = await conversationModel.getConvoById(req.params.conversationId)
-    if (conversation.length !== 1) throw new ConversationNotFound()
+    try {
+        if (!req.params.conversationId) throw new ConversationIdRequire()
+        const conversation = await conversationModel.getConvoById(req.params.conversationId)
+        if (conversation.length !== 1) throw new ConversationNotFound()
 
-    const conv = {
-      _id: req.params.conversationId,
-      ...req.body
+        const conv = {
+            _id: req.params.conversationId,
+            ...req.body
+        }
+
+        const result = await conversationModel.update(conv)
+        if (result.matchedCount === 0) throw new ConversationError()
+
+        res.status(200).send({
+            message: 'Conversation updated'
+        })
+    } catch (err) {
+        res.status(err.status).send({ message: err.message })
     }
-
-    const result = await conversationModel.update(conv)
-    if (result.matchedCount === 0) throw new ConversationError()
-
-    res.status(200).send({
-      message: 'Conversation updated'
-    })
-  } catch (err) {
-    res.status(err.status).send({ message: err.message })
-  }
 }
 
 async function getConversation(req, res, next) {
-  try {
-    if (!req.params.conversationId) throw new ConversationIdRequire()
+    try {
+        if (!req.params.conversationId) throw new ConversationIdRequire()
 
-    const conversation = await conversationModel.getConvoById(req.params.conversationId)
-    if (conversation.length !== 1) throw new ConversationNotFound()
+        const conversation = await conversationModel.getConvoById(req.params.conversationId)
+        if (conversation.length !== 1) throw new ConversationNotFound()
 
-    res.status(200).send({
-      ...conversation[0]
-    })
-  } catch (err) {
-    res.status(err.status).send({ message: err.message })
-  }
+        res.status(200).send({
+            ...conversation[0]
+        })
+    } catch (err) {
+        res.status(err.status).send({ message: err.message })
+    }
 }
 
 async function listConversation(req, res, next) {
-  try {
-    const userId = req.payload.data.userId
-    const convList = await conversationUtility.getUserConversation(userId)
+    try {
+        const userId = req.payload.data.userId
+        const convList = await conversationUtility.getUserConversation(userId)
 
-    res.status(200).send({
-      conversartions: convList
-    })
-  } catch (err) {
-    res.status(err.status).send({ message: err.message })
-  }
+        res.status(200).send({
+            conversations: convList
+        })
+    } catch (err) {
+        res.status(err.status).send({ message: err.message })
+    }
 }
 
 async function searchText(req, res, next) {
-  try {
-    const userId = req.payload.data.userId
-    const convList = await conversationUtility.getUserConversation(userId)
-    let convText = []
-    convList.map(conversation => {
-      for (const text of conversation.text) {
-        if (text.raw_segment.toLowerCase().includes(req.body.text.toLowerCase())) {
-          convText.push(conversation)
-          break
-        }
-      }
-    })
+    try {
+        const userId = req.payload.data.userId
+        const convList = await conversationUtility.getUserConversation(userId)
+        let convText = []
+        convList.map(conversation => {
+            for (const text of conversation.text) {
+                if (text.raw_segment.toLowerCase().includes(req.body.text.toLowerCase())) {
+                    convText.push(conversation)
+                    break
+                }
+            }
+        })
 
-    res.status(200).send({
-      search_text: req.body.text,
-      conversartions: convText
-    })
-  } catch (err) {
-    res.status(err.status).send({ message: err.message })
-  }
+        res.status(200).send({
+            search_text: req.body.text,
+            conversations: convText
+        })
+    } catch (err) {
+        res.status(err.status).send({ message: err.message })
+    }
 }
 
 module.exports = {
-  getOwnerConversation,
-  getConversation,
-  listConversation,
-  updateConversation,
-  searchText,
-  deleteConversation
+    getOwnerConversation,
+    getConversation,
+    listConversation,
+    updateConversation,
+    searchText,
+    deleteConversation
 }

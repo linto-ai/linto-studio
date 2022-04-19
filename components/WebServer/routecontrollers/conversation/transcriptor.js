@@ -50,29 +50,34 @@ async function transcriptor(req, res, next) {
             message: 'A conversation is currently being processed'
         })
     } catch (error) {
+        console.error(error)
         res.status(error.status).send({ message: error.message })
     }
 }
 
 async function transcribe(body, files, userId) {
-    const file = files.file
-    // STT request
-    const options = prepareRequest(file)
-    const job_buffer = await request.post(`${process.env.STT_HOST}/transcribe`, options)
+    try {
+        const file = files.file
+            // STT request
+        const options = prepareRequest(file)
+        const job_buffer = await request.post(`${process.env.STT_HOST}/transcribe`, options)
 
-    if (job_buffer) {
-        const job = JSON.parse(job_buffer)
-        if (job.jobid) {
-            let conversation = SttWrapper.initConversation(body, userId, job.jobid)
-            const filepath = await StoreFile.storeFile(file, 'audio')
-            conversation = await SttWrapper.addFileMetadataToConversation(conversation, file, filepath)
+        if (job_buffer) {
+            const job = JSON.parse(job_buffer)
+            if (job.jobid) {
+                let conversation = SttWrapper.initConversation(body, userId, job.jobid)
+                const filepath = await StoreFile.storeFile(file, 'audio')
+                conversation = await SttWrapper.addFileMetadataToConversation(conversation, file, filepath)
 
-            const result = await conversationModel.createConversation(conversation)
-            if (result.insertedCount !== 1) throw new ConversationError()
-            return conversation
+                const result = await conversationModel.createConversation(conversation)
+                if (result.insertedCount !== 1) throw new ConversationError()
+                return conversation
+            }
         }
+        return { status: 'error' }
+    } catch (error) {
+        throw new ConversationError('Unable to transcribe the audio file')
     }
-    return { status: 'error' }
 }
 
 function prepareRequest(file) {

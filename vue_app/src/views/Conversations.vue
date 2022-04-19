@@ -1,10 +1,49 @@
 <template>
-  <div class="flex col scrollable">
-    Convo
+  <div class="flex col scrollable" v-if="dataLoaded">
+    <h1>Mes conversations</h1>
+    <div class="flex col">
+      <div class="flex row">
+        <a href="/interface/conversation/create" class="btn btn-medium green">
+          <span class="icon icon__plus"></span>
+          <span class="label">Create conversation</span>
+        </a>
+      </div>
 
-    <!-- 
-      <h1>{{$t('page.conversations.h1')}}</h1>
+      <div class="flex col">
+        <table class="table auto">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Duration</th>
+              <th>Role</th>
+              <th>Last update</th>
+              <th>Organization</th>
+              <th>Members</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr 
+              v-for="conv in conversations" 
+              :key="conv._id"
+              :class="'conversation-item ' + conv.job.state">
+              <td class="title">
+                <a :href="`interface/conversations/${conv._id}`">{{ conv.name }}</a>
+              </td>
+              <td>{{ conv.audio.duration !== null ? timeToHMS(conv.audio.duration) : 'undefined?' }}</td>
+              <td>    
+                <span :class="`user-role ${conv.userRole.name.toLowerCase()}`">{{conv.userRole.name }}</span>
+              </td>
+              <td>{{ getFormattedDate(conv.last_update) }}</td>
+              <td class="title"><a :href="`/interface/user/organizations/${conv.organization.organizationId}`">{{ userOrganizations.find(orga => orga._id === conv.organization.organizationId).name }}</a></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      
+      </div>
+    </div>
     
+    <!-- 
     <div class="flex row" v-if="dataLoaded">
       <div class="conversation-filter-container flex1">
         <button class="conversation-filter--btn" :class="filterActive === 'all' ? 'active' : ''"  @click="filterActive = 'all'">{{ $t('filters.all') }}</button> | 
@@ -67,10 +106,56 @@
   </div>
 </template>
 <script>
+export default {
+  data() {
+    return {
+      convosLoaded: false,
+      orgaLoaded: false,
+      userOrgaLoaded: false
+    }
+  },
+  computed: {
+    dataLoaded () {
+      return this.convosLoaded && this.userOrgaLoaded
+    },
+    conversations () {
+      return this.$store.state.conversations
+    },
+    userOrganizations () {
+      return this.$store.state.userOrganizations
+    }
+  },
+  async mounted () {
+    await this.dispatchUserOrganizations()
+    await this.dispatchConversations()
+  },
+     methods: {
+      timeToHMS(time){
+        return this.$options.filters.timeToHMS(time) 
+      },
+       
+      getFormattedDate(dateTime) {
+        let date = dateTime.split('T')[0]
+        let timeSplit = dateTime.split('T')[1]
+        let time = timeSplit.split('+')[0]
 
+        return date + ' - ' + time
+      },
+      async dispatchOrganizations () {
+        this.orgaLoaded = await this.$options.filters.dispatchStore('getOrganisations')
+      },
+      async dispatchUserOrganizations () {
+        this.userOrgaLoaded = await this.$options.filters.dispatchStore('getUserOrganisations')
+      },
+     async dispatchConversations () {
+      this.convosLoaded = await this.$options.filters.dispatchStore('getConversations')
+    },
+    
+   }
+}
 /*
 import { bus } from '../main.js'
-import ModalRemoveConversation from '@/components/ModalRemoveConversation.vue'
+
 export default {
   props: ['userInfo'],
   data () {
@@ -193,11 +278,5 @@ export default {
     ModalRemoveConversation
   }
 }*/
-export default {
-  data() {
-    return {
 
-    }
-  }
-}
 </script>
