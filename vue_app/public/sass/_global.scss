@@ -72,3 +72,11 @@ h3 {
 .hidden {
     display: none !important;
 }
+
+button {
+    @include cancelBoxShadow();
+    border: none;
+    &:hover {
+        cursor: pointer;
+    }
+}

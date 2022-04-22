@@ -1,26 +1,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
-import { cp } from 'fs'
 
 Vue.use(Vuex)
 
-let userRoles = [{
-        name: "Member",
-        value: 1
-    },
-    {
-        name: "Maintainer",
-        value: 2
-    }, {
-        name: "Admin",
-        value: 3
-    },
-    {
-        name: "Owner",
-        value: 4
-    }
-]
 let getCookie = function(cname) {
     let name = cname + "="
     let decodedCookie = decodeURIComponent(document.cookie)
@@ -35,18 +18,6 @@ let getCookie = function(cname) {
         }
     }
     return null
-}
-
-let getUserRoleByOrganization = (organization, userId) => {
-    if (organization.owner === userId) {
-        return { value: 4, name: 'owner' }
-    } else {
-        let role = organization.users.find(user => user.userId === userId).role
-        return {
-            value: role,
-            name: userRoles.find(ur => ur.value === role).name
-        }
-    }
 }
 
 export default new Vuex.Store({
@@ -76,6 +47,12 @@ export default new Vuex.Store({
         }
     },
     actions: {
+        getUserRights: ({ commit, state }) => {
+            return state.userRights
+        },
+        getUserRoles: ({ commit, state }) => {
+            return state.userRoles
+        },
         getuserInfo: async({ commit, state }) =>  {
             try {
                 const token = getCookie('authToken')
@@ -105,7 +82,7 @@ export default new Vuex.Store({
                 return error.toString()
             }
         },
-        getUserOrganisations: async({  commit, state }) => {
+        getUserOrganizations: async({  commit, state }) => {
             try {
                 const token = getCookie('authToken')
                 const userId = getCookie('userId')
@@ -115,19 +92,16 @@ export default new Vuex.Store({
                     }
                 })
                 let userOrganizations = getUserOrganizations.data.userOrganizations
-                userOrganizations.map(orga => {
-                    orga.userRole = getUserRoleByOrganization(orga, userId)
-
-                })
 
                 commit('SET_USER_ORGANIZATIONS', userOrganizations)
                 return state.userOrganizations
 
             } catch (error) {
+                console.error(error)
                 return error.toString()
             }
         },
-        getOrganisations: async({  commit, state }) => {
+        getOrganizations: async({  commit, state }) => {
             try {
                 const token = getCookie('authToken')
                 const getOrganizations = await axios.get(`${process.env.VUE_APP_CONVO_API}/organizations`, {
@@ -139,6 +113,7 @@ export default new Vuex.Store({
                 return state.organizations
 
             } catch (error) {
+                console.error(error)
                 return error.toString()
             }
         },
@@ -155,12 +130,6 @@ export default new Vuex.Store({
 
                 let conversations = getOrganizations.data.conversations
 
-                conversations.map(convo => {
-                    let convoOrga = state.userOrganizations.find(orga => convo.organization.organizationId === orga._id)
-
-                    convo.userRole = getUserRoleByOrganization(convoOrga, userId)
-                })
-
                 commit('SET_CONVERSATIONS', conversations)
                 return state.conversations
 
@@ -174,11 +143,10 @@ export default new Vuex.Store({
             return state.users.find(usr => usr._id === userId)
         },
         getOrganizationById: (state) => (organizationId) => {
-            return state.organizations.find(orga => orga._id === organizationId)
+            return state.userOrganizations.find(orga => orga._id === organizationId)
         },
-        getUserRoleByOrganizationId: (state) => (organizationId, userId) => {
-            let organization = state.organizations.find(orga => orga._id === organizationId)
-            return getUserRoleByOrganization(organization, userId)
-        }
+        getConversationById: (state) => (conversationId) => {
+            return state.conversations.find(conv => conv._id === conversationId)
+        },
     }
 })

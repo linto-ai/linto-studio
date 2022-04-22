@@ -1,18 +1,5 @@
 <template>
   <div id="app-header" class="flex row">
-    <div class="header-lang-btn-container flex row">
-      <button 
-        @click="setAppLanguage('fr')" 
-        class="header-lang-btn fr"
-        :class="$i18n.locale === 'fr' ? 'active' : ''"
-      ></button>
-      <span> | </span>
-      <button 
-        @click="setAppLanguage('en')" 
-        class="header-lang-btn en"
-        :class="$i18n.locale === 'en' ? 'active' : ''"
-      ></button>
-    </div>
     <div class="user-menu flex row">
       <button class="user-menu-btn flex row" @click="toggleUserMenu()" :class="userMenuOpened ? 'opened' : 'closed'" v-if="!!user">
         <img class="user-menu-btn--img" :src="imgUrl">
@@ -22,7 +9,7 @@
       <div class="user-menu-links flex col" :class="userMenuOpened ? 'opened' : 'closed'">
           <a class="user-menu-links--item flex row" :href="`/interface/user/profile/${user._id}`">
             <span class="icon account"></span>
-            <span class="label">{{ $t('nav.my_account') }}</span>
+            <span class="label">Mon compte</span>
           </a>
 
           <a class="user-menu-links--item red flex row" href="/auth/logout">
@@ -40,12 +27,10 @@ export default {
   data () {
     return {
       userMenuOpened: false,
-      appLanguages: ['fr', 'en'],
       userId: ''
     }
   },
   async mounted () {
-    this.checkLangCookie()
     bus.$on('refresh_user', async () => {
       await this.getUserInfo()
     })
@@ -62,27 +47,11 @@ export default {
     }
   },
   methods: {
-    checkLangCookie () {
-      let cookieLang = this.getCookie('cm_lang')
-      if(cookieLang !== null) {
-        this.$i18n.locale = cookieLang
-      }
-    },
-    setAppLanguage (lang) {
-      this.$i18n.locale = lang
-      this.setCookie('cm_lang', lang, 30)
-    },
     CapitalizeFirstLetter(string) {
       return this.$options.filters.CapitalizeFirstLetter(string)
     },
     toggleUserMenu() {
       this.userMenuOpened = !this.userMenuOpened
-    },
-    getCookie (name) {
-      return this.$options.filters.getCookie(name)
-    },
-    setCookie(name, value, days) {
-      return this.$options.filters.setCookie(name, value, days)
     },
     async getUserInfo () {
         await this.$options.filters.dispatchStore('getuserInfo')

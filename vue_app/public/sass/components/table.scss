@@ -58,6 +58,19 @@
                     background-color: #f1f7ff;
                 }
             }
+            &.conversation-item {
+                &.error {
+                    td {
+                        background-color: #ffd8d8;
+                    }
+                }
+                &.pending,
+                &.started {
+                    td {
+                        background-color: #fffcd8;
+                    }
+                }
+            }
             td {
                 max-width: 420px;
                 padding: 10px 10px 10px 20px;

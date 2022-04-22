@@ -127,18 +127,13 @@ Vue.filter('dispatchStore', async function(label) {
             throw req.error
         }
         if (typeof req !== 'undefined') {
-            return {
-                status: 'success',
-                msg: ''
-            }
+            return true
         } else {
             throw 'an error has occured'
         }
     } catch (error) {
-        return ({
-            status: 'error',
-            msg: error
-        })
+        console.error(error)
+        return false
     }
 })
 

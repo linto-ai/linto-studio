@@ -16,7 +16,7 @@
         font-weight: 500;
         font-size: 16px;
         padding: 10px 0 5px 0;
-        color: $greenChart;
+        color: #455863;
         i {
             font-size: 16px;
             font-weight: 400;
@@ -223,6 +223,7 @@ textarea {
     background: #fff;
     min-width: 140px;
     max-width: 320px;
+    box-sizing: border-box;
     .search-member-link {
         padding: 0 5px;
         margin: 3px 0;
@@ -269,4 +270,29 @@ textarea {
     margin: 10px 0;
     color: #777;
     font-style: italic;
+}
+
+.form-list {
+    padding: 0;
+    list-style: none;
+    margin: 0;
+    .form-list-item {
+        display: inline-block;
+        padding: 5px 0 0 10px;
+        width: 100%;
+        height: 20px;
+        &>span {
+            font-size: 15px;
+            font-weight: 500;
+            line-height: 20px;
+            vertical-align: top;
+            &.value {
+                color: #3a7394;
+                font-style: italic;
+            }
+            a:hover {
+                color: $greenChart;
+            }
+        }
+    }
 }

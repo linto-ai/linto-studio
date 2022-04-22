@@ -1,83 +1,48 @@
 #vertical-navigation {
     padding: 20px;
-    background-color: $secondaryDark;
+    background-color: #fff;
     z-index: 10;
     width: 200px;
     @include boxShadow(0, 2px, 4px, 0, rgba(0, 0, 0, 0.3));
     @include transition(all 0.2s ease);
-    .app-logo {
-        height: 100px;
-        text-align: center;
-        .app-logo--img {
-            display: inline-block;
-            height: auto;
-            width: 100%;
+}
+
+.app-nav-organizations {
+    padding: 0 0 40px 0;
+    border-bottom: 1px solid #ccc;
+    .nav-current-orga {
+        padding: 0 5px;
+        display: inline-block;
+        width: 100%;
+        height: 30px;
+        line-height: 30px;
+        font-size: 16px;
+        font-weight: 500;
+        background-color: #eee;
+        text-align: left;
+        color: #333;
+        &:hover {
+            cursor: pointer;
+            background-color: #ccc;
+        }
+        &.active {
+            background-color: #ddd;
         }
     }
-    .toggle-nav {
-        height: 40px;
-        margin: 20px 0;
-        position: relative;
-        text-align: center;
-        ;
-        .toggle-nav--btn {
+    .nav-orga-list {
+        .nav-orga-item {
             display: inline-block;
-            width: 40px;
-            height: 40px;
-            background-color: #dedede;
-            vertical-align: top;
-            @include maskImage('../img/nav-toggle.svg');
-            @include transform(rotate(180deg));
-            @include transition(all 0.2s ease);
-            position: relative;
-            &.closed {
-                @include transform(rotate(0deg));
-            }
+            width: 100%;
+            height: 20px;
+            line-height: 20px;
+            margin: 0;
+            padding: 0 5px;
+            box-sizing: border-box;
+            background-color: #ddd;
+            font-size: 14px;
+            text-align: left;
             &:hover {
                 background-color: #fff;
-            }
-        }
-    }
-    .app-nav {
-        .app-nav-link {
-            display: inline-block;
-            font-size: 14px;
-            font-weight: 600;
-            color: #dedede;
-            text-decoration: none;
-            padding: 20px 0;
-            position: relative;
-            @include transition(all 0.2s ease-in-out);
-            &:after {
-                content: "";
-                display: inline-block;
-                height: 1px;
-                width: 0px;
-                position: absolute;
-                top: 40px;
-                left: 0;
-                background: #fff;
-                @include transition(all 0.2s ease-in-out);
-            }
-            &:hover {
-                color: #fff;
-                &:after {
-                    width: 100%;
-                }
-            }
-        }
-    }
-    &.small {
-        width: 60px;
-        .app-logo {
-            .app-logo--img {
-                height: 60px;
-                width: 60px;
-            }
-        }
-        .app-nav {
-            .app-nav-link {
-                display: none;
             }
         }
     }

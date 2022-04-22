@@ -61,9 +61,13 @@ export default ({
         this.leaveOrganization()
       } else if (actionName === 'delete_organization') {
         this.deleteOrganization()
-       } else if (actionName === 'remove_user_from_organization') {
+      } else if (actionName === 'remove_user_from_organization') {
          this.removeUserFromOrganization()
-       }
+      } else if (actionName === 'unshare_conversation') {
+         this.unshareConversationWithUser()
+      } else if (actionName === 'leave_conversation') {
+         this.leaveConversation()
+      } 
     },
     async leaveOrganization() {
       try {
@@ -136,6 +140,12 @@ export default ({
             timeout: null
         })
       }
+    },
+    async unshareConversationWithUser() {
+      console.log('TODO: Unshare conversation')
+    },
+    async leaveConversation() {
+      console.log('TODO: Leave conversation')
     }
   }
 })
