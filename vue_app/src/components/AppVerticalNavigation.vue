@@ -7,6 +7,7 @@
 
       <div class="nav-orga-list" :class="[navOrganizationVisible ? 'visible' : 'hidden','flex','col']">
         <button class="nav-orga-item" v-for="orga in navOrganizationList" :key="orga._id">{{ orga.name }}</button>
+        <a href="/interface/organizations" class="nav-orga-item">See organizations</a>
       </div>
     </div>
     
@@ -27,7 +28,6 @@ export default {
       orgasLoaded: false,
       userOrgasLoaded: false,
       reduced: false,
-      currentOrganization: null,
       navOrganizationVisible: false
     }
   },
@@ -35,15 +35,13 @@ export default {
     await this.dispatchOrganizations()
     await this.dispatchUserOrganizations()
 
-    this.getActiveOrganizationScope()
-
     bus.$on('vertical_nav_close', (data) => {
       this.verticalNavOpen = false
     })
   },
   computed: {
     dataLoaded () {
-      return this.orgasLoaded && this.userOrgasLoaded && this.currentOrganization !== null
+      return  this.currentOrganization !== null
     },
     logoPath () {
       if (this.verticalNavOpen) {
@@ -55,6 +53,11 @@ export default {
     userOrganizations () {
       return this.$store.state.userOrganizations
     },
+    currentOrganization () {
+      if(this.orgasLoaded && this.userOrgasLoaded ) return this.$store.getters.getOrganizationById(this.currentOrganizationScope)
+      return null
+
+    },
     navOrganizationList() {
       return this.userOrganizations.filter(orga => orga._id !== this.currentOrganization._id)
     }
@@ -63,17 +66,12 @@ export default {
     toggleNav () {
       this.verticalNavOpen = !this.verticalNavOpen
     },
-    getActiveOrganizationScope() {
-        this.currentOrganization = this.userOrganizations.find(orga => orga._id === this.currentOrganizationScope)
-    },
     async dispatchOrganizations() {
       this.orgasLoaded = await this.$options.filters.dispatchStore('getOrganizations')
     },
     async dispatchUserOrganizations() {
       this.userOrgasLoaded = await this.$options.filters.dispatchStore('getUserOrganizations')
     }
-
-
   }
 }
 </script>

@@ -30,6 +30,7 @@ module.exports = {
                     res.cookie('userId', user.token.session_id.toString(), {
                         expires: new Date(Date.now() + 900000)
                     })
+                    res.cookie('cm_orga_scope', '')
                     req.session.token = user.token
                     req.session.userId = user.token.session_id
                     req.session.logged = 1

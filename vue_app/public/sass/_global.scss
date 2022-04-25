@@ -51,6 +51,12 @@ h3 {
     &.flex-end {
         align-items: flex-end;
     }
+    &.align-center {
+        align-items: center;
+    }
+    &.justify-center {
+        justify-content: center;
+    }
 }
 
 .flex1 {
@@ -74,9 +80,22 @@ h3 {
 }
 
 button {
+    display: inline-block;
     @include cancelBoxShadow();
     border: none;
+    padding: 5px;
+    margin: 0;
+    border: 1px solid #ccc;
+    background-color: #fff;
     &:hover {
         cursor: pointer;
+        background-color: #ddd;
+    }
+}
+
+table {
+    th,
+    td {
+        text-align: left;
     }
 }

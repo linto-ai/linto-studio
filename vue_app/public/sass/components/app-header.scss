@@ -52,6 +52,7 @@
         vertical-align: top;
         @include buttonShadow();
         @include transition(all 0.2s ease);
+        padding: 0;
         .user-menu-btn--img {
             display: inline-block;
             height: 32px;

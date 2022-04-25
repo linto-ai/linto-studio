@@ -165,6 +165,7 @@ async function logout(req, res, next) {
             }).then(user => {
                 res.cookie('authToken', '')
                 res.cookie('userId', '')
+                res.cookie('cm_orga_scope', '')
                 req.session.destroy(function(err) {
                     // cannot access session here
                     if (err) throw 'Error on deleting session'

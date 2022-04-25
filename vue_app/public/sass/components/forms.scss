@@ -1,298 +1,52 @@
-/*** FORMS / INPUTS ***/
-
-.form-container {
-    border: 1px solid $secondary;
-    margin: 20px;
-    padding: 20px;
-    &.no-border {
-        border: none;
-    }
-}
-
-.form-field {
-    width: 100%;
-    margin-bottom: 10px;
-    .form-label {
-        font-weight: 500;
-        font-size: 16px;
-        padding: 10px 0 5px 0;
-        color: #455863;
-        i {
-            font-size: 16px;
-            font-weight: 400;
-            color: $redChart;
-            font-style: normal;
-        }
-        strong {
-            font-weight: 500;
-            font-size: 18px;
-            color: $redChart;
-        }
-    }
-    .form-error {
-        display: inline-block;
-        padding: 10px 0;
-        width: 100%;
-        color: $redChart;
-        font-style: italic;
-        text-align: center;
-    }
-}
-
-textarea,
-input[type="text"],
-input[type="password"],
-select {
-    color: #333333;
-    font-family: $montserrat;
-    font-size: 14px;
-    font-weight: 500;
-    display: inline-block;
-    padding: 5px;
-    background-color: #fff;
-    border: 1px solid #aaa;
-    min-width: 140px;
-    max-width: 320px;
-    @include borderRadius(3px);
-    box-sizing: border-box;
-    &.error {
-        border-color: $redChart;
-    }
-    &:focus,
-    &:active {
-        border: 1px solid $secondary;
-        outline: none;
-    }
-    &::placeholder {
-        font-style: italic;
-        color: #b2b2b2;
-    }
-}
-
-select:hover {
-    cursor: pointer;
-}
-
+input,
+select,
 textarea {
-    resize: vertical;
-    min-height: 100px;
-    max-height: 320px;
+    border: 1px solid #ccc;
+    display: inline-block;
+    @include cancelBoxShadow();
+    padding: 5px;
+    margin: 5px 0;
+    max-width: 320px;
+    box-sizing: border-box;
+    background-color: #fff;
+    &.error {
+        border: 1px solid $redChart;
+    }
 }
 
 .error-field {
     display: inline-block;
+    padding: 5px 0;
     font-size: 14px;
-    height: 20px;
-    line-height: 20px;
     color: $redChart;
 }
 
-.custom-checkbox {
-    display: inline-block;
-    width: 19px;
-    height: 19px;
-    border: 1px solid #fff;
-    margin: 0 10px;
-    background-color: #fff;
-    position: relative;
-    @include borderRadius(3px);
-    @include boxShadow(0, 1px, 2px, 0, rgba(0, 0, 0, 0.2));
-    &:hover {
-        border-color: $greenChart;
-    }
-    &:after {
-        display: none;
-    }
-    &.selected {
-        border-color: $greenChart;
-        &:after {
-            display: inline-block;
-            content: '';
-            width: 30px;
-            height: 30px;
-            position: absolute;
-            top: -8px;
-            left: -3px;
-            @include maskImage('../img/apply.svg');
-            background-color: $greenChart;
-        }
-    }
-}
-
-.input-file-container {
-    position: relative;
-    .input__file {
-        position: absolute;
-        z-index: -1;
-        top: 5px;
-        left: 5px;
-        width: 1px;
-        height: 1px;
-        &:hover {
-            cursor: pointer;
-        }
-    }
-    .input__file-label-btn {
-        display: inline-block;
-        min-width: 120px;
-        text-align: center;
-        padding: 10px;
-        border: 1px solid $blueChart;
-        background-color: $blueChart;
-        color: #fff;
-        z-index: 5;
-        @include borderRadius(3px);
-        @include boxShadow(0, 2px, 2px, 0, rgba(0, 0, 0, 0.2));
-        .input__file-icon {
-            display: inline-block;
-            width: 30px;
-            height: 30px;
-            @include maskImage('../img/upload.svg');
-            background-color: #fff;
-            vertical-align: top;
-        }
-        .input__file-label {
-            vertical-align: top;
-            display: inline-block;
-            height: 30px;
-            line-height: 30px;
-            font-weight: 700;
-            color: #fff;
-        }
-        &.error {
-            background-color: $redChart;
-            border-color: $redChart;
-        }
-        &.valid {
-            background-color: $greenChart;
-            border-color: $greenChart;
-        }
-        &:hover {
-            cursor: pointer;
-            background-color: #fff;
-            color: $blueChart;
-            .input__file-label {
-                color: $blueChart;
-            }
-            .input__file-icon {
-                background-color: $blueChart;
-            }
-            &.valid {
-                &:hover {
-                    .input__file-label {
-                        color: $greenChart;
-                    }
-                    .input__file-icon {
-                        background-color: $greenChart;
-                    }
-                }
-            }
-            &.error {
-                &:hover {
-                    .input__file-label {
-                        color: $redChart;
-                    }
-                    .input__file-icon {
-                        background-color: $redChart;
-                    }
-                }
-            }
-        }
-        @include transition(all 0.2s ease);
-    }
-}
-
-.input__file-name {
-    display: inline-block;
-    padding: 5px 0;
-    color: $blueChart;
-    font-size: 15px;
-    font-weight: 500;
-}
-
-
-/* Search member fields */
-
-.search-member-container {
-    position: relative;
-}
-
 .search-member-list {
-    border: 1px solid #ccc;
-    padding: 5px;
-    background: #fff;
-    min-width: 140px;
     max-width: 320px;
+    background-color: #fff;
     box-sizing: border-box;
-    .search-member-link {
-        padding: 0 5px;
-        margin: 3px 0;
-        width: 100%;
-        overflow: hidden;
-        flex-wrap: nowrap;
-        .picture {
-            display: inline-block;
-            width: 25px;
-            height: 25px;
-            @include borderRadius(15px);
-            overflow: hidden;
-            margin: 0 5px;
-        }
-        &>span {
-            display: inline-block;
-            line-height: 25px;
-            font-size: 15px;
-            margin: 0 5px;
-            &.email {
-                font-size: 14px;
-                font-style: italic;
-                color: #777;
-                overflow: hidden;
-            }
-        }
-        &:hover {
-            background-color: #aee6ff;
-        }
-    }
-    .no-result {
-        display: inline-block;
-        font-size: 14px;
-        color: #777;
-        font-style: italic;
-        line-height: 20px;
-        height: 20px;
-    }
-}
-
-.no-member {
-    font-size: 14px;
-    display: inline-block;
-    margin: 10px 0;
-    color: #777;
-    font-style: italic;
-}
-
-.form-list {
     padding: 0;
-    list-style: none;
-    margin: 0;
-    .form-list-item {
-        display: inline-block;
-        padding: 5px 0 0 10px;
+    .search-member-btn {
         width: 100%;
-        height: 20px;
-        &>span {
-            font-size: 15px;
-            font-weight: 500;
-            line-height: 20px;
-            vertical-align: top;
-            &.value {
-                color: #3a7394;
-                font-style: italic;
-            }
-            a:hover {
-                color: $greenChart;
-            }
+        padding: 3px 0;
+        border: none;
+        &:hover {
+            border: none;
         }
+    }
+}
+
+.search-member-img {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    margin: 0 5px;
+}
+
+.search-member-identity {
+    display: inline-block;
+    i {
+        font-style: italic;
+        color: #555;
     }
 }
