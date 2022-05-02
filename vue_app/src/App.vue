@@ -18,6 +18,7 @@
   </div>
 </template>
 <script>
+  import { bus } from './main.js'
   import AppHeader from '@/components/AppHeader.vue'
   import AppVerticalNavigation from '@/components/AppVerticalNavigation.vue'
   import AppNotif from '@/components/AppNotif.vue'
@@ -51,6 +52,10 @@
         await this.getuserInfo()
         await this.dispatchOrganizations()
         await this.dispatchUserOrganizations()
+
+        bus.$on('set_organization_scope', (data) =>{
+          this.setOrganizationScope(data.organizationId)
+        })
       }
     },
     methods: {
@@ -61,6 +66,17 @@
           console.error('err: ', error)
           return
         }
+      },
+      async setOrganizationScope(organizationId){
+        this.$options.filters.setCookie('cm_orga_scope', organizationId, 7)
+          if(this.$route.path === '/interface/conversations/') {
+            await this.getuserInfo()
+            await this.dispatchOrganizations()
+            await this.dispatchUserOrganizations()
+
+          } else {
+            window.location.href = '/interface/conversations/'
+          }
       },
       
       async dispatchOrganizations() {

@@ -79,6 +79,7 @@ h3 {
     display: none !important;
 }
 
+a,
 button {
     display: inline-block;
     @include cancelBoxShadow();
@@ -87,6 +88,8 @@ button {
     margin: 0;
     border: 1px solid #ccc;
     background-color: #fff;
+    text-decoration: none;
+    color: #333;
     &:hover {
         cursor: pointer;
         background-color: #ddd;

@@ -26,6 +26,55 @@ let setCookie = function(cname, cvalue, exdays) {
     document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/"
 }
 
+let getUserRightByConversation = function(conversation, state, userId) {
+
+    const RIGHTS = state.userRights
+    let fullRights = RIGHTS.SHARE + RIGHTS.DELETE + RIGHTS.WRITE + RIGHTS.COMMENT + RIGHTS.READ
+
+    // is Owner
+    if (conversation.owner === userId) {
+        return fullRights
+    }
+    // is in sharedWithUsers
+    else if (conversation.sharedWithUsers.findIndex(usr => usr.userId === userId) >= 0) {
+        return conversation.sharedWithUsers.find(usr => usr.userId === userId).right
+    }
+    // is in organization
+    else {
+        if (convoOrganization.users.findIndex(usr => usr.userId === userId) < 0) {
+            console.log('not in the organization > REDIRECT')
+            return 0
+        } else {
+            let convoOrganization = state.userOrganizations.find(orga => orga._id === conversation.organization.organizationId)
+            if (!convoOrganization) return 'organization not found'
+            let userRole = convoOrganization.users.find(usr => usr.userId === userId).role
+            if (userRole === 1) return RIGHTS.READ
+            if (userRole > 1) return fullRights
+        }
+    }
+    return 0
+}
+let getRightByRole = function(role) {
+    let userRights = Object.freeze({
+        "UNDEFINED": 0,
+        "READ": 1,
+        "COMMENT": 2,
+        "WRITE": 4,
+        "DELETE": 8,
+        "SHARE": 16,
+    })
+    switch (role) {
+        case 1:
+            return userRights.READ
+        case 2:
+            return userRights.READ + userRights.COMMENT + userRights.WRITE + userRights.SHARE
+        case 3:
+            return userRights.READ + userRights.COMMENT + userRights.WRITE + userRights.DELETE + userRights.SHARE
+        default:
+            return userRights.UNDEFINED
+    }
+}
+
 export default new Vuex.Store({
     strict: false,
     state: {
@@ -33,7 +82,16 @@ export default new Vuex.Store({
         users: [],
         userOrganizations: [],
         organizations: [],
-        conversations: []
+        conversations: [],
+        userRights: Object.freeze({
+            "UNDEFINED": 0,
+            "READ": 1,
+            "COMMENT": 2,
+            "WRITE": 4,
+            "DELETE": 8,
+            "SHARE": 16,
+            hasRightAccess: (userRight, desiredRight) => ((userRight & desiredRight) == desiredRight)
+        })
     },
     mutations: {
         SET_USER_INFOS: (state, data) => {
@@ -53,6 +111,9 @@ export default new Vuex.Store({
         }
     },
     actions: {
+        getUserRights: ({ commit, state }) => {
+            return state.userRights
+        },
         getuserInfo: async({ commit, state }) =>  {
             try {
                 const token = getCookie('authToken')
@@ -120,16 +181,17 @@ export default new Vuex.Store({
         getConversations: async({  commit, state }) => {
             try {
                 const token = getCookie('authToken')
-
-                const getOrganizations = await axios.get(`${process.env.VUE_APP_CONVO_API}/conversations/list`, {
+                const userId = getCookie('userId')
+                const getConversations = await axios.get(`${process.env.VUE_APP_CONVO_API}/conversations/list`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 })
 
-                let conversations = getOrganizations.data.conversations
-                console.log('conversations', conversations)
-
+                let conversations = getConversations.data.conversations
+                for (let conv of conversations) {
+                    conv.userRight = getUserRightByConversation(conv, state, userId)
+                }
                 commit('SET_CONVERSATIONS', conversations)
                 return state.conversations
 
@@ -150,7 +212,7 @@ export default new Vuex.Store({
         },
         getCurrentOrganizationScope: (state) => () => {
             let orgaCookie = getCookie('cm_orga_scope')
-            if (orgaCookie !== null && orgaCookie !== '' && orgaCookie !== 'undefined') {
+            if (orgaCookie !== null && orgaCookie !== '' && orgaCookie !== 'undefined' && state.userOrganizations.findIndex(org => org._id === orgaCookie) >= 0) {
                 return orgaCookie
             } else {
                 let target = state.userOrganizations.find(org => org.personal == true)
@@ -192,7 +254,7 @@ export default new Vuex.Store({
                 }
                 return userConvos
             } else {
-                return conversations.filter(conv => conv.organization.orgnizationId === organizationScope)
+                return conversations.filter(conv => conv.organization.organizationId === organizationScope)
             }
         },
         getUserRoleInOrganization: (state) => (organizationId) => {
@@ -201,14 +263,56 @@ export default new Vuex.Store({
             let orgaRoles = []
             orgaRoles[1] = 'member'
             orgaRoles[2] = 'maintainer'
-            orgaRoles[1] = 'admin'
+            orgaRoles[3] = 'admin'
 
-            if (organization.owner === userId) {
-                return { name: 'owner', value: 4 }
-            } else {
-                let userRole = organization.users.find(user => user.userId === userId).role
-                return {  name: orgaRoles[userRole], value: userRole }
+            let userRole = organization.users.find(user => user.userId === userId).role
+            return {  name: orgaRoles[userRole], value: userRole }
+        },
+        getUserRightTxt: (state) => (right) => {
+            if (state.userRights.hasRightAccess(right, state.userRights.SHARE)) return 'Full rights'
+            else if (state.userRights.hasRightAccess(right, state.userRights.WRITE)) return 'Can write'
+            else if (state.userRights.hasRightAccess(right, state.userRights.COMMENT)) return 'Can comment'
+            else if (state.userRights.hasRightAccess(right, state.userRights.READ)) 'Can read'
+            else return 'undefined'
+        },
+        getUsersByConversation: (state) => (conversationId) => {
+            let conversation = state.conversations.find(conv => conv._id === conversationId)
+            let roleAccess = conversation.organization.role
+            let organization = state.organizations.find(orga => orga._id === conversation.organization.organizationId)
+
+            let convUsers = []
+            let organizationUsers = []
+            let sharedWithUsers = []
+
+            // Organization users
+            for (let user of organization.users) {
+                if (user.role >= roleAccess) {
+                    let userInfos = state.users.find(usr => usr._id === user.userId)
+
+                    userInfos.role = user.role
+                    userInfos.visibility = user.visibility
+                    userInfos.right = getRightByRole(user.role)
+                    organizationUsers.push(userInfos)
+                }
             }
+
+            // Organization users with custom rights
+            let customRights = conversation.organization.membersRights
+            if (customRights.length > 0) {
+                organizationUsers.map(ouser => {
+                    if (customRights.findIndex(cr => cr.userId === ouser._id) >= 0) {
+                        ouser.right = customRights.find(cr => cr.userId === ouser._id).right
+                    }
+                })
+            }
+
+
+
+            convUsers = {
+                organization: organizationUsers
+            }
+            return convUsers
+
         }
     }
 })

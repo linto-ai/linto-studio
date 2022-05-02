@@ -3,16 +3,27 @@
 
     <div class="app-nav-organizations flex col">
       
-      <button :class="[navOrganizationVisible ? 'active': '', 'nav-current-orga']" @click="navOrganizationVisible = !navOrganizationVisible">{{ currentOrganization.name }}</button>
+      <button 
+        :class="[navOrganizationVisible ? 'active': '', 'nav-current-orga']" 
+        @click="navOrganizationVisible = !navOrganizationVisible"
+      >{{ currentOrganization.personal ? 'My organization': currentOrganization.name }}</button>
 
       <div class="nav-orga-list" :class="[navOrganizationVisible ? 'visible' : 'hidden','flex','col']">
-        <button class="nav-orga-item" v-for="orga in navOrganizationList" :key="orga._id">{{ orga.name }}</button>
-        <a href="/interface/organizations" class="nav-orga-item">See organizations</a>
+        
+        <button 
+          class="nav-orga-item" 
+          v-for="orga in navOrganizationList" 
+          :key="orga._id"
+          @click="setOrganizationScope(orga._id)"
+        >{{ orga.personal ? 'My Organization' : orga.name }}</button>
+
+        <a :href="`/interface/organizations/${currentOrganizationScope}`" class="nav-orga-item">Organization settings</a>
+        <a href="/interface/organizations/create"  class="nav-orga-item">Create organization</a>
       </div>
     </div>
     
     
-    <div class="app-nav flex col">
+    <div class="app-nav flex col" style="margin-top: 20px;">
       <div class="flex row">
         <a href="/interface/conversations" class="app-nav-link">Conversations</a>
       </div>
@@ -65,6 +76,11 @@ export default {
   methods: {
     toggleNav () {
       this.verticalNavOpen = !this.verticalNavOpen
+    },
+    setOrganizationScope(organizationId){
+      bus.$emit('set_organization_scope', {organizationId})
+      this.navOrganizationVisible = false
+
     },
     async dispatchOrganizations() {
       this.orgasLoaded = await this.$options.filters.dispatchStore('getOrganizations')

@@ -13,7 +13,7 @@
       </thead>
       <tbody>
         <tr v-for="orga in userOrganizations" :key="orga._id">
-          <td>{{ orga.name }}</td>
+          <td><a :href="`/interface/organizations/${orga._id}`">{{ orga.name }}</a></td>
           <td>{{ getRoleByOrganization(orga._id) }}</td>
           <td>todo</td>
         </tr>

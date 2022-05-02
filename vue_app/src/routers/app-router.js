@@ -6,8 +6,11 @@ import CreateAccount from '../views/CreateAccount.vue'
 import Login from '../views/Login.vue'
 
 import Conversations from '../views/Conversations.vue'
+import ConversationsCreate from '../views/ConversationsCreate.vue'
+import ConversationsOverview from '../views/ConversationsOverview.vue'
 import Organizations from '../views/Organizations.vue'
 import OrganizationsCreate from '../views/OrganizationsCreate.vue'
+import OrganizationsUpdate from '../views/OrganizationsUpdate.vue'
 Vue.use(Router)
 
 let getCookie = function(cname) {
@@ -44,6 +47,16 @@ const router = new Router({
             component: Conversations
         },
         {
+            path: '/interface/conversations/create',
+            name: 'conversations create',
+            component: ConversationsCreate
+        },
+        {
+            path: '/interface/conversations/:conversationId',
+            name: 'conversations Overview',
+            component: ConversationsOverview
+        },
+        {
             path: '/interface/organizations',
             name: 'organizations list',
             component: Organizations
@@ -52,6 +65,11 @@ const router = new Router({
             path: '/interface/organizations/create',
             name: 'organizations create',
             component: OrganizationsCreate
+        },
+        {
+            path: '/interface/organizations/:organizationId',
+            name: 'organizations update',
+            component: OrganizationsUpdate
         }
     ]
 })

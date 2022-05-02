@@ -59,15 +59,16 @@ export default ({
     async exec (actionName) {
       if(actionName === 'leave_organization') {
         this.leaveOrganization()
-      } else if (actionName === 'delete_organization') {
-        this.deleteOrganization()
-      } else if (actionName === 'remove_user_from_organization') {
+      } 
+      else if (actionName === 'remove_user_from_organization') {
          this.removeUserFromOrganization()
-      } else if (actionName === 'unshare_conversation') {
+      }/*else if (actionName === 'delete_organization') {
+        this.deleteOrganization()
+      }  else if (actionName === 'unshare_conversation') {
          this.unshareConversationWithUser()
       } else if (actionName === 'leave_conversation') {
          this.leaveConversation()
-      } 
+      } */
     },
     async leaveOrganization() {
       try {
@@ -76,9 +77,9 @@ export default ({
         if(req.status >= 200 && req.status < 300) {
           bus.$emit('app_notif', {
             status: 'success',
-            message: req.data.message || req.data.msg || `You leaved the orgnaization "${this.modalData.orga.name}"`,
+            message: req.data.message || req.data.msg || `You leaved the organization "${this.modalData.organization.name}"`,
             timeout: 0,
-            redirect: '/interface/user/organizations'
+            redirect: '/interface/organizations'
           })
           this.close()
         } else {
@@ -119,13 +120,14 @@ export default ({
     },
     async removeUserFromOrganization() {
       try {
+        console.log('ModalData', this.modalData)
         let req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/organizations/${this.modalData.organizationId}/user`, 'delete', {userId: this.modalData.user._id})
         
         if(req.status >= 200 && req.status < 300) {
-          bus.$emit('refresh_user_organizations', {user: this.modalData.user})
+          bus.$emit('remove_organization_user', {user: this.modalData.user})
           bus.$emit('app_notif', {
             status: 'success',
-            message: req.data.message || req.data.msg || `User "${this.modalData.user.firstname} ${this.modalData.user.lastname}" has been deleted`,
+            message: req.data.message || req.data.msg || `User "${this.modalData.user.email}" has been removed form the organization`,
             timeout: 3000
           })
           this.close()
@@ -136,7 +138,7 @@ export default ({
         console.error(error)
         bus.$emit('app_notif', {
             status: 'error',
-            message: error.message || error.msg || 'Error on leaving organization',
+            message: error.message || error.msg || 'Error on removing user from organization',
             timeout: null
         })
       }

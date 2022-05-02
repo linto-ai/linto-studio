@@ -14,6 +14,11 @@ textarea {
     }
 }
 
+.form-field {
+    margin: 10px 0;
+    position: relative;
+}
+
 .error-field {
     display: inline-block;
     padding: 5px 0;
@@ -48,5 +53,47 @@ textarea {
     i {
         font-style: italic;
         color: #555;
+    }
+}
+
+.form-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: #555;
+}
+
+
+/* input file */
+
+input[type="file"] {
+    position: absolute;
+    z-index: -1;
+    top: 5px;
+    left: 5px;
+    width: 0px;
+    height: 0px;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+}
+
+.input-file-label {
+    display: inline-block;
+    text-align: center;
+    padding: 10px;
+    margin: 5px 0;
+    border: none;
+    background-color: #555;
+    color: #fff;
+    z-index: 5;
+    cursor: pointer;
+    &:hover {
+        background-color: #777;
+    }
+    &.error {
+        background: $redChart;
+    }
+    &.valid {
+        background: #2d9e49;
     }
 }
