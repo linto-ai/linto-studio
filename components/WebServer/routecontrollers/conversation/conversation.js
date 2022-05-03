@@ -2,10 +2,14 @@ const debug = require('debug')(`linto:conversation-manager:components:WebServer:
 
 const conversationUtility = require(`${process.cwd()}/components/WebServer/controllers/conversation/utility`)
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
+const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
+
+
 
 const {
   ConversationIdRequire,
   ConversationNotFound,
+  ConversationMetadataRequire,
   ConversationError
 } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
@@ -115,11 +119,56 @@ async function searchText(req, res, next) {
   }
 }
 
+
+async function updateConversationRights(req, res, next) {
+  try {
+    if (!req.params.conversationId) throw new ConversationIdRequire()
+    if (!req.body.right || !req.params.userId) throw new ConversationMetadataRequire("rights or userId are require")
+
+    const conversation = await conversationModel.getConvoById(req.params.conversationId)
+    if (conversation.length !== 1) throw new ConversationNotFound()
+
+    const organization = await organizationModel.getOrganizationById(conversation[0].organization.organizationId)
+    if (organization.length !== 1) throw new OrganizationNotFound()
+
+    const isInOrga = organization[0].users.filter(user => user.userId === req.params.userId)
+
+    let userRight = []
+    isInOrga.length === 0 ? userRight = conversation[0].sharedWithUsers : userRight = conversation[0].organization.customRights
+
+    let isAdded = false
+    userRight.map(user => {
+      if(user.userId === req.params.userId) {
+        user.right = req.body.right
+        isAdded = true
+      }
+    })
+    if(!isAdded) userRight.push({userId : req.params.userId, right : req.body.right})
+
+    isInOrga.length === 0 ? conversation[0].sharedWithUsers = userRight : conversation[0].organization.customRights = userRight
+
+    const conv = {
+      _id: req.params.conversationId,
+      ...conversation[0]
+    }
+
+    const result = await conversationModel.update(conv)
+    if (result.matchedCount === 0) throw new ConversationError()
+
+    res.status(200).send({
+      message: 'Conversation updated'
+    })
+  } catch (err) {
+    res.status(err.status).send({ message: err.message })
+  }
+}
+
 module.exports = {
   getOwnerConversation,
   getConversation,
   listConversation,
   updateConversation,
+  updateConversationRights,
   searchText,
   deleteConversation
 }

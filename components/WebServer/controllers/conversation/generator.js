@@ -7,16 +7,16 @@ const mm = require('music-metadata')
 //Parse the stt transcription to for conversation mongodb model
 
 
-function initConversation(metadata, userId, job_id){
+function initConversation(metadata, userId, job_id) {
     let sharedWithUsers = []
-    if(metadata.sharedWithUsers) {
+    if (metadata.sharedWithUsers) {
         sharedWithUsers = metadata.sharedWithUsers
     }
 
     return {
         name: metadata.name,
         description: metadata.description,
-        conversationType: metadata.conversationType ||  '',
+        conversationType: metadata.conversationType || '',
         audio: {},
         file_metadata: {},
         locked: 0,
@@ -24,15 +24,19 @@ function initConversation(metadata, userId, job_id){
         abstract: '',
         owner: userId,
         sharedWithUsers: sharedWithUsers,
-        organization: { organizationId : metadata.organizationId , role: metadata.role },
+        organization: {
+            organizationId: metadata.organizationId,
+            membersRight: metadata.right,
+            customRight: []
+        },
         highlights: [],
         keywords: [],
         speakers: [],
         text: [],
-        job : {
-            job_id : job_id,
-            state : 'pending',
-            steps : {}
+        job: {
+            job_id: job_id,
+            state: 'pending',
+            steps: {}
         }
     }
 }
@@ -48,10 +52,10 @@ function sttToConversation(transcript, conversation) {
         transcript.segments.map(segment => {
             /* Check and init speaker */
             let speaker = conversation.speakers.filter(speaker => speaker.speaker_name === segment.spk_id)
-            if(speaker.length === 0){ // Add speaker if not found
+            if (speaker.length === 0) { // Add speaker if not found
                 speaker = {
                     speaker_id: uuidv4(),
-                    speaker_name : segment.spk_id,
+                    speaker_name: segment.spk_id,
                     stime: segment.start,
                     etime: segment.end
                 }
@@ -59,24 +63,24 @@ function sttToConversation(transcript, conversation) {
             } else speaker = speaker[0]
 
             const text_segment = {
-                speaker_id : speaker.speaker_id,
-                turn_id : uuidv4(),
-                raw_segment : segment.raw_segment,
-                segment : segment.segment,
+                speaker_id: speaker.speaker_id,
+                turn_id: uuidv4(),
+                raw_segment: segment.raw_segment,
+                segment: segment.segment,
                 pos: text_pos++,
-                words : []
+                words: []
             }
 
             let word_pos = 0
             segment.words.map(word => {
                 text_segment.words.push({
-                    wid : uuidv4(),
-                    stime : word.start,
-                    etime : word.end,
+                    wid: uuidv4(),
+                    stime: word.start,
+                    etime: word.end,
                     word: word.word,
-                    pos : word_pos++,
-                    confidence : word.conf,
-                    highlights : [],
+                    pos: word_pos++,
+                    confidence: word.conf,
+                    highlights: [],
                     keywords: []
                 })
             })
@@ -96,9 +100,9 @@ async function addFileMetadataToConversation(conversation, file, filepath) {
         filename: file.name,
         duration: file_metadata.format.duration,
         mimetype: file.mimetype,
-        filepath : filepath
+        filepath: filepath
     }
-    conversation.file_metadata = {...file_metadata }
+    conversation.file_metadata = { ...file_metadata }
     return conversation
 }
 

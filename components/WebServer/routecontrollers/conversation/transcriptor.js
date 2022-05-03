@@ -9,7 +9,7 @@ const TranscriptionHandler = require(`${process.cwd()}/components/WebServer/cont
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
 
-const ORGANIZATION_ROLES = require(`${process.cwd()}/lib/dao/roles/organization`)
+const CONVERSATION_RIGHT = require(`${process.cwd()}/lib/dao/rights/conversation`)
 
 const {
     ConversationNoFileUploaded,
@@ -28,7 +28,7 @@ async function transcriptor(req, res, next) {
         if (!req.body.name) throw new ConversationMetadataRequire()
 
         const userId = req.payload.data.userId
-        if (!req.body.role) req.body.role = ORGANIZATION_ROLES.MEMBER
+        if (!req.body.right) req.body.right = CONVERSATION_RIGHT.READ + CONVERSATION_RIGHT.COMMENT
 
         if (req.body.organizationId) {
             const organization = await organizationModel.getOrganizationById(req.body.organizationId)
