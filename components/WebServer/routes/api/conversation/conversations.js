@@ -10,59 +10,68 @@ const { // Create conversation based on file
     listConversation,
     updateConversation,
     searchText,
-    deleteConversation
+    deleteConversation,
+    updateConversationRights
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/conversation.js`)
 
 module.exports = (webserver) => {
-    return [{
+    return [
         // Create a conversation (upload 1 file)
-        path: '/create',
-        method: 'post',
-        requireAuth: true,
-        controller: transcriptor
-    },
-    {
-        path: '/list',
-        method: 'get',
-        requireAuth: true,
-        controller: listConversation
-    },
-    {
-        path: '/search/text',
-        method: 'post',
-        requireAuth: true,
-        controller: searchText
-    },
+        {
+            path: '/create',
+            method: 'post',
+            requireAuth: true,
+            controller: transcriptor
+        },
+        {
+            path: '/list',
+            method: 'get',
+            requireAuth: true,
+            controller: listConversation
+        },
+        {
+            path: '/search/text',
+            method: 'post',
+            requireAuth: true,
+            controller: searchText
+        },
 
 
-    /*Require Auth */
-    {
-        path: '/',
-        method: 'get',
-        requireAuth: true,
-        requireConversationOwnerAccess: true,
-        controller: getOwnerConversation
-    },
-    {
-        path: '/:conversationId',
-        method: 'get',
-        requireAuth: true,
-        requireConversationReadAccess: true,
-        controller: getConversation
-    },
-    {
-        path: '/:conversationId',
-        method: 'patch',
-        requireAuth: true,
-        requireConversationWriteAccess: true,
-        controller: updateConversation
-    },
-    {
-        path: '/:conversationId',
-        method: 'delete',
-        requireAuth: true,
-        requireConversationDeleteAccess: true,
-        controller: deleteConversation
-    }
+        /*Require Auth */
+        {
+            path: '/:conversationId/user/:userId',
+            method: 'patch',
+            requireAuth: true,
+            requireConversationShareAccess: true,
+            controller: updateConversationRights
+        },
+        {
+            path: '/:conversationId',
+            method: 'patch',
+            requireAuth: true,
+            requireConversationWriteAccess: true,
+            controller: updateConversation
+        },
+        {
+            path: '/',
+            method: 'get',
+            requireAuth: true,
+            requireConversationOwnerAccess: true,
+            controller: getOwnerConversation
+        },
+        {
+            path: '/:conversationId',
+            method: 'get',
+            requireAuth: true,
+            requireConversationReadAccess: true,
+            controller: getConversation
+        },
+        {
+            path: '/:conversationId',
+            method: 'delete',
+            requireAuth: true,
+            requireConversationDeleteAccess: true,
+            controller: deleteConversation
+        }
     ]
 }
