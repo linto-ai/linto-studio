@@ -15,17 +15,6 @@ class ConversationError extends Error {
   }
 }
 
-class ConversationNotAddedToUser extends Error {
-  constructor(message) {
-    super()
-    this.name = 'ConversationNotAddedToUser'
-    this.type = ExceptionType
-    this.status = '403'
-    if (message) this.message = message
-    else this.message = 'Convo not added to user'
-  }
-}
-
 class ConversationNoFileUploaded extends Error {
   constructor(message) {
     super()
@@ -126,7 +115,6 @@ class ConversationNotFound extends Error {
 
 
 module.exports = {
-  ConversationNotAddedToUser,
   ConversationNoFileUploaded,
   ConversationMetadataRequire,
   ConversationOwnerAccessDenied,

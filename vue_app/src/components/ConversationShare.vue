@@ -7,7 +7,7 @@
               <img :src="`/${user.img}`" class="search-member-img">
               <span class="search-member-identity">{{ user.firstname }} {{ user.lastname }} <i>{{ user.email }}</i></span>
           </div>
-          <div class=" flex row">
+          <div class="flex row">
             <select v-model="user.right">
               <option v-for="uright in rigthsList" :key="uright" :value="uright.value">{{ uright.txt }}</option>
             </select>

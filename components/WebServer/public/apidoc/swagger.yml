@@ -455,6 +455,35 @@ paths:
       responses:
         '200':
           description: OK
+  /api/conversations/{conversationId}/user/{userId}:
+    patch:
+      tags:
+        - "conversations"
+      summary: Add an user right to the conversation
+      parameters:
+        - in: path
+          name: conversationId
+          type: string
+          format: uuid
+          required: true
+          description: uuid string identifier for an conversation
+        - in: path
+          name: userId
+          type: string
+          format: uuid
+          required: true
+          description: uuid string identifier for an user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                right:
+                  type: integer
+      responses:
+        '200':
+          description: OK
   /api/conversations/search/text:
     post:
       tags: 
