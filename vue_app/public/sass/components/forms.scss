@@ -33,7 +33,7 @@ textarea {
     padding: 0;
     .search-member-btn {
         width: 100%;
-        padding: 3px 0;
+        padding: 5px 0;
         border: none;
         &:hover {
             border: none;
@@ -45,14 +45,22 @@ textarea {
     display: inline-block;
     width: 30px;
     height: 30px;
-    margin: 0 5px;
 }
 
 .search-member-identity {
+    text-align: left;
     display: inline-block;
+    font-size: 14px;
+    line-height: 16px;
+    padding: 0 5px;
     i {
+        display: inline-block;
+        width: 100%;
         font-style: italic;
         color: #555;
+        font-size: 13px;
+        line-height: 15px;
+        white-space: nowrap;
     }
 }
 

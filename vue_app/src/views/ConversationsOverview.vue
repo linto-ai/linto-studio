@@ -1,20 +1,18 @@
 <template>
   <div class="flex col scrollable" v-if="dataLoaded">
-    <h1>Conversation overview</h1>
-    <div class="flex col">
-      <span>Users</span>
-      <div class="flex col">
-        Organization
-        <div v-for="usr of conversationUsers.organization" :key="usr._id">
-          {{ usr.email }} / role: {{ usr.role }} / right: {{ usr.right }}
-        </div>
-      </div>
-
+    <div class="flex row conversation-actions">
+      <ConversationShare 
+        :userInfo="userInfo" 
+        :currentOrganizationScope="currentOrganizationScope"
+        :conversation="conversation"
+      ></ConversationShare>
     </div>
+    <h1>Conversation overview</h1>
   </div>
 </template>
 <script>
 import axios from 'axios'
+import ConversationShare from '@/components/ConversationShare.vue'
 import { bus } from '../main.js'
 export default {
   props:["userInfo", "currentOrganizationScope"],
@@ -56,12 +54,8 @@ export default {
         return this.$store.getters.getConversationById(this.conversationId)
       } 
       return null
-    },
-    conversationUsers () {
-      if(this.usersLoaded && this.conversation !== null) {
-        return this.$store.getters.getUsersByConversation(this.conversationId)
-      } return null
     }
+    
   },
   methods: {
     getUserById(id) {
@@ -82,6 +76,9 @@ export default {
     async dispatchUserRights() {
       this.userRightsLoaded = await this.$options.filters.dispatchStore('getUserRights')
     }
+  },
+  components: {
+    ConversationShare
   }
 }
 </script>

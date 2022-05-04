@@ -1,0 +1,26 @@
+.conversation-actions {
+    justify-content: flex-end;
+}
+
+#conversation-share-container {
+    position: relative;
+    border: 1px solid #111;
+}
+
+.conversation-share-list {
+    display: inline-block;
+    padding: 5px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    z-index: 5;
+    position: absolute;
+    top: 30px;
+    right: 0;
+    width: 420px;
+    .conversation-share-item {
+        padding: 5px;
+        &:hover {
+            background-color: #eee;
+        }
+    }
+}

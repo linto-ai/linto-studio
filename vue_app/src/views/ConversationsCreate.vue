@@ -157,9 +157,9 @@ export default {
             bus.$emit('app_notif', {
               status: 'success',
               message: req.data.message || req.data.msg || 'Conversation created',
-              timeout: 3000
+              timeout: 3000,
+              redirect:'/interface/conversations'
             })
-            console.log('Req', req)
           } else {
             throw req
           }

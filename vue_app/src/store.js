@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
+import { format } from 'path'
 
 Vue.use(Vuex)
 
@@ -269,10 +270,11 @@ export default new Vuex.Store({
             return {  name: orgaRoles[userRole], value: userRole }
         },
         getUserRightTxt: (state) => (right) => {
-            if (state.userRights.hasRightAccess(right, state.userRights.SHARE)) return 'Full rights'
+            if (state.userRights.hasRightAccess(right, state.userRights.DELETE)) return 'Full rights'
+            else if (state.userRights.hasRightAccess(right, state.userRights.SHARE)) return 'Full share'
             else if (state.userRights.hasRightAccess(right, state.userRights.WRITE)) return 'Can write'
             else if (state.userRights.hasRightAccess(right, state.userRights.COMMENT)) return 'Can comment'
-            else if (state.userRights.hasRightAccess(right, state.userRights.READ)) 'Can read'
+            else if (state.userRights.hasRightAccess(right, state.userRights.READ)) return 'Can read'
             else return 'undefined'
         },
         getUsersByConversation: (state) => (conversationId) => {
@@ -283,12 +285,10 @@ export default new Vuex.Store({
             let convUsers = []
             let organizationUsers = []
             let sharedWithUsers = []
-
-            // Organization users
+                // Organization users
             for (let user of organization.users) {
                 if (user.role >= roleAccess) {
                     let userInfos = state.users.find(usr => usr._id === user.userId)
-
                     userInfos.role = user.role
                     userInfos.visibility = user.visibility
                     userInfos.right = getRightByRole(user.role)
@@ -306,10 +306,18 @@ export default new Vuex.Store({
                 })
             }
 
-
+            if (conversation.sharedWithUsers) {
+                for (let swuser of conversation.sharedWithUsers) {
+                    let userInfos = state.users.find(usr => usr._id === swuser.userId)
+                    userInfos.right = swuser.right
+                    userInfos.visibility = swuser.visibility
+                    sharedWithUsers.push(userInfos)
+                }
+            }
 
             convUsers = {
-                organization: organizationUsers
+                organization: organizationUsers,
+                sharedWithUsers
             }
             return convUsers
 
