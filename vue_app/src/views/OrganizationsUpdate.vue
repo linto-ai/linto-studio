@@ -96,7 +96,7 @@
               <span v-else>{{ member.visibility }}</span></td>
             <td>
               <button 
-              v-if="!currentOrganization.personal && userRole.value >= member.role && userInfo._id !== member._id"
+              v-if="!currentOrganization.personal && userRole.value > 1 && userRole.value >= member.role && userInfo._id !== member._id"
               @click="removeFromMembersValidation(member)">Remove</button>
               <button 
               v-if="!currentOrganization.personal  && userInfo._id === member._id"

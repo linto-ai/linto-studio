@@ -47,8 +47,13 @@ export default ({
     })
   },
   methods:{
-    close(){
+   async close(){
       this.hide()
+      if(this.modalData.actionName === 'unshare_user_conversation'){
+            await this.dispatchConversations()
+            await this.dispatchUsers()
+            await this.dispatchUserRights()
+      }
     },
     show(){
       this.modalShow = true
@@ -62,13 +67,21 @@ export default ({
       } 
       else if (actionName === 'remove_user_from_organization') {
          this.removeUserFromOrganization()
-      }/*else if (actionName === 'delete_organization') {
+      }
+      else if (actionName === 'unshare_user_conversation') {
+         this.unshareUserConversation()
+      }
+      /*else if (actionName === 'delete_organization') {
         this.deleteOrganization()
       }  else if (actionName === 'unshare_conversation') {
          this.unshareConversationWithUser()
       } else if (actionName === 'leave_conversation') {
          this.leaveConversation()
       } */
+    },
+    unshareUserConversation() {
+      bus.$emit('confirm_unshare_user_conversation', {user: this.modalData.user})
+      this.hide()
     },
     async leaveOrganization() {
       try {
@@ -120,7 +133,6 @@ export default ({
     },
     async removeUserFromOrganization() {
       try {
-        console.log('ModalData', this.modalData)
         let req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/organizations/${this.modalData.organizationId}/user`, 'delete', {userId: this.modalData.user._id})
         
         if(req.status >= 200 && req.status < 300) {
@@ -148,6 +160,21 @@ export default ({
     },
     async leaveConversation() {
       console.log('TODO: Leave conversation')
+    },
+     async dispatchUsers() {
+      this.usersLoaded = await this.$options.filters.dispatchStore('getAllUsers')
+    },
+    async dispatchConversations() {
+      this.convosLoaded = await this.$options.filters.dispatchStore('getConversations')
+    },
+    async dispatchOrganizations() {
+      this.orgasLoaded = await this.$options.filters.dispatchStore('getOrganizations')
+    },
+    async dispatchUserOrganizations() {
+      this.userOrgasLoaded = await this.$options.filters.dispatchStore('getUserOrganizations')
+    },
+    async dispatchUserRights() {
+      this.userRightsLoaded = await this.$options.filters.dispatchStore('getUserRights')
     }
   }
 })

@@ -123,7 +123,7 @@ async function searchText(req, res, next) {
 async function updateConversationRights(req, res, next) {
     try {
         if (!req.params.conversationId) throw new ConversationIdRequire()
-        if (!req.body.right || !req.params.userId) throw new ConversationMetadataRequire("rights or userId are require")
+        if (req.body.right === undefined || !req.params.userId) throw new ConversationMetadataRequire("rights or userId are require")
 
         const conversation = await conversationModel.getConvoById(req.params.conversationId)
         if (conversation.length !== 1) throw new ConversationNotFound()
@@ -132,17 +132,21 @@ async function updateConversationRights(req, res, next) {
         if (organization.length !== 1) throw new OrganizationNotFound()
 
         const isInOrga = organization[0].users.filter(user => user.userId === req.params.userId)
-
         let userRight = []
         isInOrga.length === 0 ? userRight = conversation[0].sharedWithUsers : userRight = conversation[0].organization.customRights
 
         let isAdded = false
-        userRight.map(user => {
-            if (user.userId === req.params.userId) {
-                user.right = req.body.right
+        if (req.body.right === 0 && isInOrga.length === 0) {
+            userRight = userRight.filter(usr => usr.userId !== req.params.userId)
+            isAdded = true
+        } else {
+            let userIndex = userRight.findIndex(usr => usr.userId === req.params.userId)
+            if (userIndex >= 0) {
                 isAdded = true
+                userRight[userIndex].right = req.body.right
+
             }
-        })
+        }
         if (!isAdded) userRight.push({ userId: req.params.userId, right: req.body.right })
 
         isInOrga.length === 0 ? conversation[0].sharedWithUsers = userRight : conversation[0].organization.customRights = userRight
@@ -159,6 +163,7 @@ async function updateConversationRights(req, res, next) {
             message: 'Conversation updated'
         })
     } catch (err) {
+        console.error(err)
         res.status(err.status).send({ message: err.message })
     }
 }

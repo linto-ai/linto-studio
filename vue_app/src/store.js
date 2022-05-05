@@ -28,11 +28,12 @@ let setCookie = function(cname, cvalue, exdays) {
 }
 
 let getUserRightByConversation = function(conversation, state, userId) {
-
     const RIGHTS = state.userRights
     let fullRights = RIGHTS.SHARE + RIGHTS.DELETE + RIGHTS.WRITE + RIGHTS.COMMENT + RIGHTS.READ
 
-    // is Owner
+
+    let convoOrganization = state.userOrganizations.find(orga => orga._id === conversation.organization.organizationId)
+        // is Owner
     if (conversation.owner === userId) {
         return fullRights
     }
@@ -40,17 +41,15 @@ let getUserRightByConversation = function(conversation, state, userId) {
     else if (conversation.sharedWithUsers.findIndex(usr => usr.userId === userId) >= 0) {
         return conversation.sharedWithUsers.find(usr => usr.userId === userId).right
     }
-    // is in organization
-    else {
-        if (convoOrganization.users.findIndex(usr => usr.userId === userId) < 0) {
-            console.log('not in the organization > REDIRECT')
-            return 0
+    // is in Organization
+    else if (convoOrganization.users.findIndex(usr => usr.userId === userId) >= 0) {
+        let userRole = convoOrganization.users.find(usr => usr.userId === userId).role
+        if (conversation.organization.customRights.findIndex(usr => usr.userId === userId) >= 0) {
+            return conversation.organization.customRights.find(usr => usr.userId === userId).right
+        } else if (userRole === 1) {
+            return conversation.organization.membersRight
         } else {
-            let convoOrganization = state.userOrganizations.find(orga => orga._id === conversation.organization.organizationId)
-            if (!convoOrganization) return 'organization not found'
-            let userRole = convoOrganization.users.find(usr => usr.userId === userId).role
-            if (userRole === 1) return RIGHTS.READ
-            if (userRole > 1) return fullRights
+            return getRightByRole(userRole)
         }
     }
     return 0
@@ -188,7 +187,6 @@ export default new Vuex.Store({
                         'Authorization': `Bearer ${token}`
                     }
                 })
-
                 let conversations = getConversations.data.conversations
                 for (let conv of conversations) {
                     conv.userRight = getUserRightByConversation(conv, state, userId)
@@ -197,6 +195,7 @@ export default new Vuex.Store({
                 return state.conversations
 
             } catch (error) {
+                console.error(error)
                 return error.toString()
             }
         }
@@ -224,7 +223,6 @@ export default new Vuex.Store({
         getConversationByOrganizationScope: (state) => (organizationScope) => {
             let userId = getCookie('userId')
             let conversations = state.conversations
-
             let userOrganizationsIds = []
             for (let userOrga of state.userOrganizations) {
                 userOrganizationsIds.push(userOrga._id)
@@ -255,7 +253,13 @@ export default new Vuex.Store({
                 }
                 return userConvos
             } else {
-                return conversations.filter(conv => conv.organization.organizationId === organizationScope)
+                let organizationConvos = conversations.filter(conv => conv.organization.organizationId === organizationScope)
+                let userRole = targetOrga.users.find(usr => usr.userId === userId).role
+                if (userRole > 1) {
+                    return organizationConvos
+                } else {
+                    return organizationConvos.filter(conv => conv.organization.membersRight > 0)
+                }
             }
         },
         getUserRoleInOrganization: (state) => (organizationId) => {
@@ -271,33 +275,45 @@ export default new Vuex.Store({
         },
         getUserRightTxt: (state) => (right) => {
             if (state.userRights.hasRightAccess(right, state.userRights.DELETE)) return 'Full rights'
-            else if (state.userRights.hasRightAccess(right, state.userRights.SHARE)) return 'Full share'
+            else if (state.userRights.hasRightAccess(right, state.userRights.SHARE)) return 'Can share'
             else if (state.userRights.hasRightAccess(right, state.userRights.WRITE)) return 'Can write'
             else if (state.userRights.hasRightAccess(right, state.userRights.COMMENT)) return 'Can comment'
             else if (state.userRights.hasRightAccess(right, state.userRights.READ)) return 'Can read'
-            else return 'undefined'
+            else return 'No access'
         },
         getUsersByConversation: (state) => (conversationId) => {
             let conversation = state.conversations.find(conv => conv._id === conversationId)
-            let roleAccess = conversation.organization.role
+            let membersRight = conversation.organization.membersRight
             let organization = state.organizations.find(orga => orga._id === conversation.organization.organizationId)
 
             let convUsers = []
             let organizationUsers = []
             let sharedWithUsers = []
-                // Organization users
+
+            // Organization users
             for (let user of organization.users) {
-                if (user.role >= roleAccess) {
+                if (membersRight === 0) {
+                    if (user.role > 1) {
+                        let userInfos = state.users.find(usr => usr._id === user.userId)
+                        userInfos.role = user.role
+                        userInfos.visibility = user.visibility
+                        userInfos.right = getRightByRole(user.role)
+                    }
+                } else {
                     let userInfos = state.users.find(usr => usr._id === user.userId)
                     userInfos.role = user.role
                     userInfos.visibility = user.visibility
-                    userInfos.right = getRightByRole(user.role)
+                    if (user.role === 1) {
+                        userInfos.right = membersRight
+                    } else {
+                        userInfos.right = getRightByRole(user.role)
+
+                    }
                     organizationUsers.push(userInfos)
                 }
             }
-
             // Organization users with custom rights
-            let customRights = conversation.organization.membersRights
+            let customRights = conversation.organization.customRights
             if (customRights.length > 0) {
                 organizationUsers.map(ouser => {
                     if (customRights.findIndex(cr => cr.userId === ouser._id) >= 0) {

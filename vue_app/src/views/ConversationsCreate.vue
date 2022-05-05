@@ -15,7 +15,6 @@
         <span class="error-field" v-if="conversationOrganization.error !== null">{{ conversationOrganization.error }}</span>
       </div>
 
-
       <div class="flex col">
         <!--Conversation Name -->
         <span class="form-label">Name</span>
@@ -32,6 +31,9 @@
       <div class="flex row">
         <input type="checkbox" v-model="organizationMemberAccess"> <span class="form-label">Grant organization member access</span>
       </div>
+      <select v-model="membersRight.value" v-if="organizationMemberAccess">
+        <option v-for="right in rigthsList" :key="right.value" :value="right.value">{{right.txt}}</option>
+      </select>
     </div>
     <!--Conversations Descirption -->
     <div class="form-field flex col">
@@ -93,6 +95,33 @@ export default {
         error: null,
         valid: false
       },
+      membersRight: {
+        value: 1,
+        error: null,
+        valid: true
+      },
+      rigthsList: [
+        {
+          value: 1,
+          txt: 'Can read'
+        },
+        {
+          value: 3,
+          txt: 'Can comment'
+        },
+        {
+          value: 7,
+          txt: 'Can write'
+        },
+        {
+          value: 23,
+          txt: 'Can share'
+        },
+        {
+          value: 31,
+          txt: 'Full rights'
+        }
+      ],
       organizationMemberAccess: false,
       audioFileUploadLabel: 'Choose a file...',
       formSubmitLabel: 'Create conversation',
@@ -141,7 +170,7 @@ export default {
           formData.append('name', this.conversationName.value)
           formData.append('description', this.conversationDescription.value)
           formData.append('organizationId', this.conversationOrganization.value)
-          formData.append('role', this.organizationMemberAccess ? 1 : 2)
+          formData.append('membersRight', this.organizationMemberAccess ? this.membersRight.value : 0)
 
           let req = await  axios(`${process.env.VUE_APP_CONVO_API}/conversations/create`, {
             method: 'post',

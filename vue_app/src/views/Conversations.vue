@@ -44,8 +44,14 @@ export default {
       if(this.orgasLoaded && this.userOrgasLoaded) return this.$store.getters.getOrganizationById(this.currentOrganizationScope)
       return null
     },
+    userConvos () {
+      return this.$store.state.conversations
+    },
     conversations() {
-      if(!!this.currentOrganization && this.convosLoaded && this.userRightsLoaded ) return this.$store.getters.getConversationByOrganizationScope(this.currentOrganizationScope)
+      if(this.currentOrganization !== null && this.convosLoaded && this.userRightsLoaded) {
+
+        return this.$store.getters.getConversationByOrganizationScope(this.currentOrganizationScope)
+      }
       return []
     },
     userRights (){
@@ -57,6 +63,7 @@ export default {
     await this.dispatchOrganizations()
     await this.dispatchUserOrganizations()
     await this.dispatchConversations()
+
   },
   methods: {
     getUserRightTxt(right) {

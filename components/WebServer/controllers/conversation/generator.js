@@ -26,8 +26,8 @@ function initConversation(metadata, userId, job_id) {
         sharedWithUsers: sharedWithUsers,
         organization: {
             organizationId: metadata.organizationId,
-            membersRight: metadata.right,
-            customRight: []
+            membersRight: metadata.membersRight,
+            customRights: []
         },
         highlights: [],
         keywords: [],
@@ -102,7 +102,7 @@ async function addFileMetadataToConversation(conversation, file, filepath) {
         mimetype: file.mimetype,
         filepath: filepath
     }
-    conversation.file_metadata = { ...file_metadata }
+    conversation.file_metadata = {...file_metadata }
     return conversation
 }
 

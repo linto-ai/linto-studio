@@ -8,6 +8,22 @@
       ></ConversationShare>
     </div>
     <h1>Conversation overview</h1>
+
+    <!-- conversation name -->
+    <div class="form-field flex col" v-if="userRights.hasRightAccess(conversation.userRight, userRights.WRITE)"
+    >
+      <span class="form-label">Title</span>
+      <input  type="text" :value="conversationName.value">
+      <span class="error-field" v-if="conversationName.error !== null">{{conversationName.error}}</span>
+    </div>
+    <div v-else>{{ conversationName.value }}</div>
+    <!-- conversation description -->
+    <div class="form-field flex col" v-if="userRights.hasRightAccess(conversation.userRight, userRights.WRITE)">
+      <span class="form-label">Description</span>
+      <textarea  v-model="conversationDescription.value"></textarea>
+      <span class="error-field" v-if="conversationName.error !== null">{{conversationName.error}}</span>
+    </div>
+    <div v-if="userRights.hasRightAccess(conversation.userRight, userRights.WRITE) &&  conversationDescription.value.length > 0">{{ conversationDescription.value }}</div>
   </div>
 </template>
 <script>
@@ -41,19 +57,39 @@ export default {
     await this.dispatchUserOrganizations()
     await this.dispatchConversations()
     await this.dispatchUsers()
+    await this.dispatchUserRights()
 
 
     this.conversationId = this.$route.params.conversationId
   },
+  watch:{
+    dataLoaded(data) {
+      if(data) {
+        this.conversationName = {
+          value: this.conversation.name,
+          error: null,
+          valid: true
+        }
+        this.conversationDescription = {
+          value: this.conversation.description,
+          error: null,
+          valid: true
+        }
+      }
+    }
+  },
   computed: {
     dataLoaded() {
-      return this.conversation !== null && this.conversationUsers !== null
+      return this.conversation !== null && this.conversationUsers !== null && this.userRightsLoaded
     },
     conversation(){
       if(this.conversationId !== '' && this.orgasLoaded) {
         return this.$store.getters.getConversationById(this.conversationId)
       } 
       return null
+    },
+    userRights(){
+      return this.$store.state.userRights
     }
     
   },
