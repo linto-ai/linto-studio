@@ -1,7 +1,3 @@
-const {
-    cpSync
-} = require('fs')
-
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:user')
 const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
@@ -22,8 +18,28 @@ const {
 
 async function listUser(req, res, next) {
     try {
-        const users = await userModel.getAllUsers()
-        res.status(200).send(users)
+        let userId = req.payload.data.userId
+        let allUsers = await userModel.getAllUsers()
+        let allOrganizations = await organizationModel.getAllOrganizations()
+        let publicUsers = []
+
+        // Get all users with "public" personal organization
+        allUsers.map(user => {
+            let userOrga = allOrganizations.find(orga => orga.owner.toString() === user._id.toString() && orga.personal === true)
+            if (userOrga.type === 'public') publicUsers.push(user)
+        })
+
+        // Get users in current user organizations
+        let userOrganizations = allOrganizations.filter(orga => !orga.personal && (orga.owner === userId ||  orga.users.findIndex(usr => usr.userId === userId) >= 0))
+        userOrganizations.map(uorga => {
+            for (let user of uorga.users) {
+                if (publicUsers.findIndex(usr => usr._id.toString() === user.userId.toString()) < 0) {
+                    publicUsers.push(allUsers.find(auser => auser._id.toString() === user.userId.toString()))
+                }
+            }
+        })
+
+        res.status(200).send(publicUsers)
     } catch (error) {
         res.send({
             message: error.message

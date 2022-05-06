@@ -6,7 +6,7 @@
       <button 
         :class="[navOrganizationVisible ? 'active': '', 'nav-current-orga']" 
         @click="navOrganizationVisible = !navOrganizationVisible"
-      >{{ currentOrganization.personal ? 'My organization': currentOrganization.name }}</button>
+      >{{ currentOrganization.name }}</button>
 
       <div class="nav-orga-list" :class="[navOrganizationVisible ? 'visible' : 'hidden','flex','col']">
         
@@ -15,9 +15,9 @@
           v-for="orga in navOrganizationList" 
           :key="orga._id"
           @click="setOrganizationScope(orga._id)"
-        >{{ orga.personal ? 'My Organization' : orga.name }}</button>
+        >{{ orga.name }}</button>
 
-        <a :href="`/interface/organizations/${currentOrganizationScope}`" class="nav-orga-item">Organization settings</a>
+        <a v-if="!currentOrganization.personal" :href="`/interface/organizations/${currentOrganizationScope}`" class="nav-orga-item">Organization settings</a>
         <a href="/interface/organizations/create"  class="nav-orga-item">Create organization</a>
       </div>
     </div>

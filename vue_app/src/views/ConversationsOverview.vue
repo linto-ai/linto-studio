@@ -1,29 +1,52 @@
 <template>
   <div class="flex col scrollable" v-if="dataLoaded">
     <div class="flex row conversation-actions">
+      <a :href="`/interface/conversations/${conversation._id}/transcription`">Transcription</a>
+
       <ConversationShare 
         :userInfo="userInfo" 
         :currentOrganizationScope="currentOrganizationScope"
         :conversation="conversation"
       ></ConversationShare>
     </div>
-    <h1>Conversation overview</h1>
+    <div class="flex row">
+      <h1>Conversation overview</h1>
+    </div>
 
-    <!-- conversation name -->
-    <div class="form-field flex col" v-if="userRights.hasRightAccess(conversation.userRight, userRights.WRITE)"
-    >
-      <span class="form-label">Title</span>
-      <input  type="text" :value="conversationName.value">
-      <span class="error-field" v-if="conversationName.error !== null">{{conversationName.error}}</span>
+    <div class="flex row">
+      <div class="flex col flex1">
+        <!-- conversation name -->
+        <div class="form-field flex col" v-if="userRights.hasRightAccess(conversation.userRight, userRights.WRITE)"
+        >
+          <span class="form-label">Title</span>
+          <input  type="text" :value="conversationName.value">
+          <span class="error-field" v-if="conversationName.error !== null">{{conversationName.error}}</span>
+        </div>
+        <div v-else>{{ conversationName.value }}</div>
+        <!-- conversation description -->
+        <div class="form-field flex col" v-if="userRights.hasRightAccess(conversation.userRight, userRights.WRITE)">
+          <span class="form-label">Description</span>
+          <textarea  v-model="conversationDescription.value"></textarea>
+          <span class="error-field" v-if="conversationName.error !== null">{{conversationName.error}}</span>
+        </div>
+        <div v-if="userRights.hasRightAccess(conversation.userRight, userRights.WRITE) &&  conversationDescription.value.length > 0">{{ conversationDescription.value }}</div>
+      </div>
+      <div class="flex col flex1">
+        <span class="form-label">Title</span>
+        <ul>
+          <li><span class="info-list-label">Owner : </span><span class="info-list-value">{{ getUserById(currentOrganization.owner).email}}</span></li> 
+          <li><span class="info-list-label">Created date : </span><span class="info-list-value">{{dateToJMYHMS(conversation.created)}}</span></li> 
+          <li><span class="info-list-label">Last update : </span><span class="info-list-value">{{dateToJMYHMS(conversation.last_update)}}</span></li> 
+        </ul>
+
+        <span class="form-label">Media file</span>
+        <ul>
+          <li><span class="info-list-label">File : </span><span class="info-list-value"><a target="_blank" :href="`/${conversation.audio.filepath}`">{{conversation.audio.filename}}</a></span></li> 
+          <li><span class="info-list-label">Duration : </span><span class="info-list-value">{{timeToHMS(conversation.audio.duration)}}</span></li> 
+        
+        </ul>
+      </div>
     </div>
-    <div v-else>{{ conversationName.value }}</div>
-    <!-- conversation description -->
-    <div class="form-field flex col" v-if="userRights.hasRightAccess(conversation.userRight, userRights.WRITE)">
-      <span class="form-label">Description</span>
-      <textarea  v-model="conversationDescription.value"></textarea>
-      <span class="error-field" v-if="conversationName.error !== null">{{conversationName.error}}</span>
-    </div>
-    <div v-if="userRights.hasRightAccess(conversation.userRight, userRights.WRITE) &&  conversationDescription.value.length > 0">{{ conversationDescription.value }}</div>
   </div>
 </template>
 <script>
@@ -88,14 +111,27 @@ export default {
       } 
       return null
     },
+    currentOrganization() {
+      if(this.conversations !== null) return this.$store.getters.getOrganizationById(this.conversation.organization.organizationId)
+      return null
+    },
     userRights(){
       return this.$store.state.userRights
     }
     
   },
   methods: {
+    timeToHMS (time) {
+      return this.$options.filters.timeToHMS(time)
+    },
+    dateToJMYHMS(date) {
+      return this.$options.filters.dateToJMYHMS(date)
+    },
     getUserById(id) {
       return this.$store.getters.getUserById(id)
+    },
+    getOrganizationById(id){
+      return this.$store.getters.getOrganizationById(id)
     },
     async dispatchUsers() {
       this.usersLoaded = await this.$options.filters.dispatchStore('getAllUsers')

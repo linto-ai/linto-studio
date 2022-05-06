@@ -1,0 +1,257 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@300;400;500;600;700;800&display=swap');
+$RobotoSlab: 'Roboto Slab',
+arial,
+helvetica,
+verdana;
+$playingWord: #95fff0;
+$selectedWord: #0057f5;
+
+/* GLOBAL */
+
+body {
+    padding: 0;
+    margin: 0;
+    font-family: $RobotoSlab;
+    font-weight: 400;
+}
+
+.flex {
+    display: flex;
+    .col {
+        flex-direction: column;
+    }
+    .row {
+        flex-direction: row;
+    }
+}
+
+.flex1 {
+    flex: 1;
+}
+
+.flex2 {
+    flex: 2;
+}
+
+.flex3 {
+    flex: 3;
+}
+
+button {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    border: none;
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.container {
+    max-width: 1400px;
+    margin: 20px auto;
+}
+
+
+/* AUDIO PLAYER */
+
+#conversation-audio-player {
+    padding: 20px;
+    border: 1px solid #111;
+    border-right: none;
+    background-color: #ccc
+}
+
+#audio-player-play {
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+    @include borderRadius(30px);
+    @include buttonShadow();
+    position: relative;
+    margin: 10px auto;
+    &:hover {
+        @include buttonShadowHover()
+    }
+    &:after {
+        content: "";
+        display: inline-block;
+        width: 30px;
+        height: 30px;
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        @include maskImage('../img/play.svg');
+        background-color: #333;
+    }
+    &.playing {
+        &:after {
+            @include maskImage('../img/pause.svg');
+        }
+    }
+}
+
+#audio-player-timeline {
+    margin: 10px 0;
+}
+
+#audio-player-timer {
+    display: flex;
+    justify-content: flex-end;
+    font-size: 14px;
+}
+
+
+/* TRANSCRIPTION EDITOR */
+
+#conversation {
+    border: 1px solid #111;
+    box-sizing: border-box;
+    padding: 20px;
+    position: relative;
+    max-height: 800px;
+    overflow: auto;
+}
+
+.turn {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    line-height: 1.5em;
+}
+
+#audio-player {
+    border: 1px solid #111;
+    margin: 20px;
+    padding: 10px;
+}
+
+.word {
+    @include transition(all 0.2s ease);
+    &.playing {
+        background: $playingWord;
+        padding-left: 2px;
+        @include borderRadius(2px);
+    }
+    &.selected {
+        @include noTextSelection();
+        background: $selectedWord;
+        padding-left: 2px;
+        color: #fff;
+    }
+}
+
+.conversation-speaker {
+    margin-top: 10px;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+
+/* Pagination */
+
+#conversation-pagination {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+#pagination-next,
+#pagination-prev {
+    display: inline-block;
+    height: 30px;
+    width: 30px;
+    margin: 5px;
+    position: relative;
+    &:after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 30px;
+        height: 30px;
+        background-color: #333;
+    }
+    &:hover {
+        &::after {
+            background-color: blue;
+        }
+    }
+}
+
+#pagination-next {
+    @include maskImage('../img/next.svg');
+}
+
+#pagination-prev {
+    @include maskImage('../img/previous.svg');
+}
+
+.pagination-btn {
+    display: inline-block;
+    margin: 5px;
+    width: 20px;
+    height: 30px;
+    line-height: 30px;
+    font-size: 18px;
+    color: #333;
+    background-color: transparent;
+    &:hover {
+        color: blue;
+        font-weight: 600;
+    }
+    &.active {
+        background-color: blue;
+        color: #fff;
+    }
+}
+
+
+/* Toolbox */
+
+#conversation-toolbox {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: auto;
+    height: 40px;
+    background: red;
+}
+
+.toolbox-btn {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    position: relative;
+    background-color: #eee;
+    &:after {
+        content: "";
+        display: inline-block;
+        width: 30px;
+        height: 30px;
+        position: absolute;
+        top: 5px;
+        left: 5px;
+    }
+    &.toolbox-btn-play {
+        &:after {
+            background-color: #333;
+            @include maskImage('../img/play.svg');
+        }
+    }
+    &.toolbox-btn-close {
+        &:after {
+            background-color: #333;
+            @include maskImage('../img/close.svg');
+        }
+    }
+    &:hover {
+        &:after {
+            background-color: blue;
+        }
+    }
+}

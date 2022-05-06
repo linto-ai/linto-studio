@@ -8,6 +8,7 @@ import Login from '../views/Login.vue'
 import Conversations from '../views/Conversations.vue'
 import ConversationsCreate from '../views/ConversationsCreate.vue'
 import ConversationsOverview from '../views/ConversationsOverview.vue'
+import ConversationsTranscription from '../views/ConversationsTranscription.vue'
 import Organizations from '../views/Organizations.vue'
 import OrganizationsCreate from '../views/OrganizationsCreate.vue'
 import OrganizationsUpdate from '../views/OrganizationsUpdate.vue'
@@ -55,6 +56,11 @@ const router = new Router({
             path: '/interface/conversations/:conversationId',
             name: 'conversations Overview',
             component: ConversationsOverview
+        },
+        {
+            path: '/interface/conversations/:conversationId/transcription',
+            name: 'conversations Overview',
+            component: ConversationsTranscription
         },
         {
             path: '/interface/organizations',
