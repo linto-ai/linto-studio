@@ -67,7 +67,6 @@ function checkConvAccess(next, conversationId, userId, rightConvo, rightExceptio
           if (!hasAccess && conversation.organization.organizationId !== undefined) {
             OrganizationModel.getOrganizationById(conversation.organization.organizationId)
               .then(organization => {
-
                 if (organization.length !== 1) next(new rightException())
                 if (organization.length === 1 && organization[0].owner === userId) next()
 
@@ -75,19 +74,24 @@ function checkConvAccess(next, conversationId, userId, rightConvo, rightExceptio
                 if (isUserFound.length !== 1) next(new ConversationNotShared())
                 else {
                   const user = isUserFound[0] // user right in organization
+
                   if (ORGANIZATION_ROLES.hasRoleAccess(user.role, ORGANIZATION_ROLES.MAINTAINER)) { // MAINTAINER or above
                     hasAccess = true
                     next()
-                  } else if (CONVERSATION_RIGHTS.hasRightAccess(conversation.organization.membersRight, rightConvo)) { // Member got right to share
-                    hasAccess = true
-                    next()
                   } else if (conversation.organization.customRights.length !== 0) { // Custom rights for specific member
+
                     conversation.organization.customRights.map(orgaUser => {
-                      if (orgaUser.userId === userId && CONVERSATION_RIGHTS.hasRightAccess(orgaUser.right, rightConvo)) {
-                        hasAccess = true
-                        next()
-                      } else next(new rightException())
+                      if (orgaUser.userId === userId) {
+                        if (CONVERSATION_RIGHTS.hasRightAccess(orgaUser.right, rightConvo)) {
+                          hasAccess = true
+                          next()
+                        } else next(new rightException())
+                      }
                     })
+                  }
+
+                  if (!hasAccess && CONVERSATION_RIGHTS.hasRightAccess(conversation.organization.membersRight, rightConvo)) { // Member got right to share
+                    next()
                   } else if (!hasAccess) {
                     next(new ConversationNotShared())
                   }
@@ -122,21 +126,28 @@ function checkConvRestrictedAcess(next, conversationId, userId, rightConvo, righ
               if (organization.length === 1 && organization[0].owner === userId) next()
 
               const isUserFound = organization[0].users.filter(user => user.userId === userId)
+              let haveAccess = false
               if (isUserFound.length !== 1) next(new ConversationNotShared())
               else {
                 // user is MAINTAINER or as right to share conversation
                 const user = isUserFound[0] // user right in organization
                 if (ORGANIZATION_ROLES.hasRoleAccess(user.role, ORGANIZATION_ROLES.MAINTAINER)) { // MAINTAINER or above
                   next()
-                } else if (CONVERSATION_RIGHTS.hasRightAccess(conversation.organization.membersRight, rightConvo)) { // Member got right to share
-                  next()
                 } else if (conversation.organization.customRights.length !== 0) { // Custom rights for specific member
                   conversation.organization.customRights.map(orgaUser => {
-                    if (orgaUser.userId === userId && CONVERSATION_RIGHTS.hasRightAccess(orgaUser.right, rightConvo)) {
-                      next()
-                    } else next(new rightException())
+                    if (orgaUser.userId === userId) {
+                      if (CONVERSATION_RIGHTS.hasRightAccess(orgaUser.right, rightConvo))
+                        next()
+                      else next(new rightException())
+                      haveAccess = true
+                    }
                   })
-                } else next(new rightException())
+                }
+                if (!haveAccess && CONVERSATION_RIGHTS.hasRightAccess(conversation.organization.membersRight, rightConvo)) { // Member got right to share
+                  next()
+                } else if (!haveAccess) {
+                  next(new rightException())
+                }
               }
             })
           } else next(new rightException())

@@ -16,9 +16,9 @@ usage() {
 Usage:
     ./start [-- command args]
     -p   | --pull           Pull image
-    -vrb | --vue-rebuild    Rebuild vue
+    -v   | --vue-rebuild    Rebuild vue
 
-    -pvrb| -vrbp            Do all command
+    -pv  | -vp              Do all command
     -h   | --help           Information on command args
 USAGE
   exit 1
@@ -30,7 +30,7 @@ IMAGE_VUE_REBUILD=false
 # process arguments
 while [[ $# -gt 0 ]]; do
   case "$1" in
-  -pvrb | -vrbp)
+  -pv | -vp)
     IMAGE_PULL=true
     IMAGE_VUE_REBUILD=true
     shift 1
@@ -39,7 +39,7 @@ while [[ $# -gt 0 ]]; do
     IMAGE_PULL=true
     shift 1
     ;;
-  -vrb | --vue-rebuild )
+  -v | --vue-rebuild )
     IMAGE_VUE_REBUILD=true
     shift 1
     ;;

@@ -132,19 +132,19 @@ async function updateConversationRights(req, res, next) {
         if (organization.length !== 1) throw new OrganizationNotFound()
 
         const isInOrga = organization[0].users.filter(user => user.userId === req.params.userId)
-        let userRight = []
-        isInOrga.length === 0 ? userRight = conversation[0].sharedWithUsers : userRight = conversation[0].organization.customRights
+
+        // Select user right in the conversation
+        let userRight = isInOrga.length === 0 ? conversation[0].sharedWithUsers : conversation[0].organization.customRights
 
         let isAdded = false
         if (req.body.right === 0 && isInOrga.length === 0) {
             userRight = userRight.filter(usr => usr.userId !== req.params.userId)
             isAdded = true
         } else {
-            let userIndex = userRight.findIndex(usr => usr.userId === req.params.userId)
+            const userIndex = userRight.findIndex(usr => usr.userId === req.params.userId)
             if (userIndex >= 0) {
                 isAdded = true
                 userRight[userIndex].right = req.body.right
-
             }
         }
         if (!isAdded) userRight.push({ userId: req.params.userId, right: req.body.right })
