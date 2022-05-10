@@ -8,50 +8,6 @@ $selectedWord: #0057f5;
 
 /* GLOBAL */
 
-body {
-    padding: 0;
-    margin: 0;
-    font-family: $RobotoSlab;
-    font-weight: 400;
-}
-
-.flex {
-    display: flex;
-    .col {
-        flex-direction: column;
-    }
-    .row {
-        flex-direction: row;
-    }
-}
-
-.flex1 {
-    flex: 1;
-}
-
-.flex2 {
-    flex: 2;
-}
-
-.flex3 {
-    flex: 3;
-}
-
-button {
-    display: inline-block;
-    margin: 0;
-    padding: 0;
-    border: none;
-    &:hover {
-        cursor: pointer;
-    }
-}
-
-.container {
-    max-width: 1400px;
-    margin: 20px auto;
-}
-
 
 /* AUDIO PLAYER */
 
@@ -219,7 +175,8 @@ button {
     left: 0;
     width: auto;
     height: 40px;
-    background: red;
+    background: #fff;
+    z-index: 10;
 }
 
 .toolbox-btn {
@@ -227,7 +184,7 @@ button {
     width: 40px;
     height: 40px;
     position: relative;
-    background-color: #eee;
+    background-color: #fff;
     &:after {
         content: "";
         display: inline-block;

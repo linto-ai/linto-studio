@@ -71,13 +71,6 @@ export default ({
       else if (actionName === 'unshare_user_conversation') {
          this.unshareUserConversation()
       }
-      /*else if (actionName === 'delete_organization') {
-        this.deleteOrganization()
-      }  else if (actionName === 'unshare_conversation') {
-         this.unshareConversationWithUser()
-      } else if (actionName === 'leave_conversation') {
-         this.leaveConversation()
-      } */
     },
     unshareUserConversation() {
       bus.$emit('confirm_unshare_user_conversation', {user: this.modalData.user})
@@ -154,12 +147,6 @@ export default ({
             timeout: null
         })
       }
-    },
-    async unshareConversationWithUser() {
-      console.log('TODO: Unshare conversation')
-    },
-    async leaveConversation() {
-      console.log('TODO: Leave conversation')
     },
      async dispatchUsers() {
       this.usersLoaded = await this.$options.filters.dispatchStore('getAllUsers')

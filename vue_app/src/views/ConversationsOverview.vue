@@ -1,7 +1,7 @@
 <template>
   <div class="flex col scrollable" v-if="dataLoaded">
     <div class="flex row conversation-actions">
-      <a :href="`/interface/conversations/${conversation._id}/transcription`">Transcription</a>
+      <a :href="`/interface/conversations/${conversation._id}/transcription`" style="margin-right: 10px;">Transcription</a>
 
       <ConversationShare 
         :userInfo="userInfo" 
@@ -50,7 +50,6 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
 import ConversationShare from '@/components/ConversationShare.vue'
 import { bus } from '../main.js'
 export default {
