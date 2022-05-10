@@ -44,8 +44,5 @@
         "sha1": "^1.1.1",
         "socket.io": "^2.2.0",
         "uuid": "^8.3.2"
-    },
-    "devDependencies": {
-        "node-sass": "^7.0.1"
     }
 }

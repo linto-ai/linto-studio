@@ -1,7 +1,7 @@
-FROM node:latest
+FROM node:16.2.0
 
 RUN apt-get update -y && \
-    apt-get install gettext -y
+  apt-get install gettext -y
 
 # Copy project in default workdir
 WORKDIR /usr/src/app/conversation-manager
@@ -9,7 +9,8 @@ COPY . /usr/src/app/conversation-manager
 
 # Frontend /vue_app
 WORKDIR /usr/src/app/conversation-manager/vue_app
-RUN npm install && npm install --save-dev node-sass
+RUN npm install -g node-sass
+RUN npm install  
 
 # Backend install 
 WORKDIR /usr/src/app/conversation-manager

@@ -87,7 +87,6 @@ export default {
         })
     },
     async updateConversation(text) {
-      console.log('la', text)
       try {
         let req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversations/${this.conversationId}`, 'patch', {text}) 
         if(req.status >= 200 && req.status < 300 && (!!req.data.msg || !!req.data.message)) {
