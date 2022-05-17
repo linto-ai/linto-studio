@@ -44,11 +44,11 @@ function initConversation(metadata, userId, job_id) {
 function sttToConversation(transcript, conversation) {
     try {
         jsonTranscript = transcript
+
         if (transcript === undefined || transcript.transcription_result.length === 0)
             throw new Error('Transcription is empty')
         conversation.confidence = transcript.confidence
 
-        let text_pos = 0
         transcript.segments.map(segment => {
             /* Check and init speaker */
             let speaker = conversation.speakers.filter(speaker => speaker.speaker_name === segment.spk_id)
@@ -67,18 +67,15 @@ function sttToConversation(transcript, conversation) {
                 turn_id: uuidv4(),
                 raw_segment: segment.raw_segment,
                 segment: segment.segment,
-                pos: text_pos++,
                 words: []
             }
 
-            let word_pos = 0
             segment.words.map(word => {
                 text_segment.words.push({
                     wid: uuidv4(),
                     stime: word.start,
                     etime: word.end,
                     word: word.word,
-                    pos: word_pos++,
                     confidence: word.conf,
                     highlights: [],
                     keywords: []
