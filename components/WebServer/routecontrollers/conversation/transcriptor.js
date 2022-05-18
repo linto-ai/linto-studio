@@ -3,6 +3,7 @@ const debug = require('debug')(`linto:conversation-manager:components:WebServer:
 const request = require(`${process.cwd()}/lib/utility/request`)
 
 const SttWrapper = require(`${process.cwd()}/components/WebServer/controllers/conversation/generator`)
+
 const StoreFile = require(`${process.cwd()}/components/WebServer/controllers/storeFile`)
 const TranscriptionHandler = require(`${process.cwd()}/components/WebServer/controllers/transcriptorHandler`)
 
@@ -58,7 +59,7 @@ async function transcriptor(req, res, next) {
 async function transcribe(body, files, userId) {
     try {
         const file = files.file
-            // STT request
+        // STT request
         const options = prepareRequest(file)
         const job_buffer = await request.post(`${process.env.STT_HOST}/transcribe`, options)
 
@@ -68,6 +69,7 @@ async function transcribe(body, files, userId) {
                 let conversation = SttWrapper.initConversation(body, userId, job.jobid)
                 const filepath = await StoreFile.storeFile(file, 'audio')
                 conversation = await SttWrapper.addFileMetadataToConversation(conversation, file, filepath)
+                conversation.transcriptionConfig = JSON.parse(options.formData.transcriptionConfig)
 
                 const result = await conversationModel.createConversation(conversation)
                 if (result.insertedCount !== 1) throw new ConversationError()

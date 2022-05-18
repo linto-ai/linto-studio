@@ -2,6 +2,8 @@ const debug = require('debug')('linto:components:WebServer:controller:transcript
 const request = require(`${process.cwd()}/lib/utility/request`)
 
 const SttWrapper = require(`${process.cwd()}/components/WebServer/controllers/conversation/generator`)
+const Normalizer = require(`${process.cwd()}/components/WebServer/controllers/conversation/normalize`)
+
 const ConvoModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 
 
@@ -27,7 +29,8 @@ async function getTranscriptionResult(conversation) {
     const result_buffer = await request.get(url, options)
     if (result_buffer) {
         const result = JSON.parse(result_buffer)
-        conversation = SttWrapper.sttToConversation(result, conversation)
+        const normalizeTranscription = Normalizer.normalizeTranscription(result)
+        conversation = SttWrapper.sttToConversation(normalizeTranscription, conversation)
         ConvoModel.update(conversation)
     }
 }
