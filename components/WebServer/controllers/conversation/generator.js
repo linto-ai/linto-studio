@@ -92,6 +92,7 @@ function sttToConversation(transcript, conversation) {
 // Add file metadata to the conversation object
 async function addFileMetadataToConversation(conversation, file, filepath) {
     const file_metadata = await mm.parseBuffer(file.data, { mimeType: file.mimetype })
+    delete file_metadata.native
     conversation.audio = {
         size: file.size,
         filename: file.name,
@@ -99,6 +100,7 @@ async function addFileMetadataToConversation(conversation, file, filepath) {
         mimetype: file.mimetype,
         filepath: filepath
     }
+
     conversation.file_metadata = {...file_metadata }
     return conversation
 }
