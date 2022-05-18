@@ -24,7 +24,7 @@ services:
       - internal
 
   conversation-manager-api:
-    image: lintoai/linto-platform-conversation-manager:$LINTO_STACK_IMAGE_TAG
+    build: .
     container_name: conversation-manager
     env_file: .dockerenv
     environment: 

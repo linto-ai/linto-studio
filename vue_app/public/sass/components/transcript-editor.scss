@@ -212,3 +212,19 @@ $selectedWord: #0057f5;
         }
     }
 }
+
+.spk-toolbox {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #ddd;
+    padding: 5px;
+    border: 1px solid #ccc;
+    z-index: 10;
+}
+
+.speaker-toolbox-title {
+    display: inline-block;
+    width: 100%;
+    padding: 5px 0;
+}

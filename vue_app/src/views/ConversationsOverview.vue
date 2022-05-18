@@ -30,7 +30,15 @@
           <span class="error-field" v-if="conversationName.error !== null">{{conversationName.error}}</span>
         </div>
         <div v-if="userRights.hasRightAccess(conversation.userRight, userRights.WRITE) &&  conversationDescription.value.length > 0">{{ conversationDescription.value }}</div>
+      
+      <div class="form-field flex col" v-if="userRights.hasRightAccess(conversation.userRight, userRights.WRITE)">
+        <span class="form-label">Agenda</span>
+          <textarea  v-model="conversationAgenda.value"></textarea>
+          <span class="error-field" v-if="conversationAgenda.error !== null">{{conversationAgenda.error}}</span>
+        </div>
+        <div v-if="userRights.hasRightAccess(conversation.userRight, userRights.WRITE) &&  conversationDescription.value.length > 0">{{ conversationDescription.value }}</div>
       </div>
+
       <div class="flex col flex1">
         <span class="form-label">Title</span>
         <ul>
@@ -71,6 +79,11 @@ export default {
         value:'',
         error: null,
         valid: true
+      },
+      conversationAgenda: {
+        value:'',
+        error: null,
+        valid: true
       }
     }
   },
@@ -94,6 +107,11 @@ export default {
         }
         this.conversationDescription = {
           value: this.conversation.description,
+          error: null,
+          valid: true
+        }
+        this.conversationAgenda = {
+          value: this.conversation.agenda,
           error: null,
           valid: true
         }
