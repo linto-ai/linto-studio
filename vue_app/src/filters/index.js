@@ -265,16 +265,31 @@ Vue.filter('testPasswordConfirm', function(obj, password) {
 
 // Test email field
 Vue.filter('testEmail', function(obj) {
+        obj.valid = false
+        obj.error = null
+        obj.value = obj.value.toLowerCase().trim()
+        const regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+        if (obj.value.match(regex)) {
+            obj.valid = true
+        } else {
+            obj.error = 'Invalid email'
+        }
+    })
+    // Test email field
+Vue.filter('testDescription', function(obj) {
     obj.valid = false
     obj.error = null
-    obj.value = obj.value.toLowerCase().trim()
-    const regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+    const regex = /^[0-9A-Za-z\u00C0-\u00FF\!\#\-\_\,\;\:\?\.\(\)\s]*$/
+
     if (obj.value.match(regex)) {
         obj.valid = true
     } else {
-        obj.error = 'Invalid email'
+        obj.error = 'Invalid characters'
     }
-
+    if (obj.value.lenght === 0) {
+        obj.valid = true
+        obj.error = null
+    }
 })
 
 // Set cookie

@@ -2,245 +2,37 @@ button,
 a {
     cursor: pointer;
     display: inline-block;
-    padding: 5px;
     margin: 0;
-    border: 1px solid #ccc;
-    background-color: #fff;
-    text-decoration: none;
     color: #333;
     font-family: inherit;
     position: relative;
     z-index: 1;
     overflow: hidden;
     white-space: nowrap;
+    text-decoration: none;
     &:focus,
     &:active {
         outline: none;
     }
     &:hover {
         cursor: pointer;
-        background-color: #ddd;
     }
 }
 
+a {
+    font-weight: 500;
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+button,
 .btn {
-    @include borderRadius(3px);
-    @include buttonShadow();
-    @include transition(all 0.2s ease);
+    padding: 5px;
     background-color: #fff;
-    &>span {
-        display: inline-block;
-        @include transition(all 0.2s ease);
-    }
-    .label {
-        font-size: 16px;
-        vertical-align: top;
-        padding: 0 10px;
-        font-weight: 500;
-    }
-    .icon {
-        display: inline-block;
-        background-color: #333;
-        &.icon__plus,
-        &.icon__add {
-            @include maskImage('../img/plus.svg');
-        }
-        &.icon__cancel {
-            @include maskImage('../img/cancel.svg');
-        }
-        &.icon__apply {
-            @include maskImage('../img/apply.svg');
-        }
-        &.icon__trash {
-            @include maskImage('../img/trash-big.svg');
-        }
-        &.icon__transcription {
-            @include maskImage('../img/abstract.svg');
-        }
-        &.icon__backto,
-        &.icon__leave {
-            @include maskImage('../img/backto.svg');
-        }
-        &.icon__share {
-            @include maskImage('../img/hand-shake.svg');
-        }
-        &.icon__undo {
-            @include maskImage('../img/lastupdate.svg');
-        }
-        &.icon__loading {
-            @include maskImage('../img/loading.svg');
-            @include rotate();
-        }
-        &.icon__edit {
-            @include maskImage('../img/edit.svg');
-        }
-        &.icon__play {
-            @include maskImage('../img/listen.svg');
-        }
-        &.icon__remove {
-            @include maskImage('../img/trash.svg');
-        }
-        &.icon__close {
-            @include maskImage('../img/close.svg');
-        }
-        &.icon__merge {
-            @include maskImage('../img/merge.svg');
-        }
-        &.icon__list {
-            @include maskImage('../img/agenda.svg');
-        }
-        &.icon__arrow-left {
-            @include maskImage('../img/long-arrow-left.svg');
-        }
-    }
-    /* SMALL */
-    &.btn-small {
-        height: 24px;
-        min-width: 24px;
-        &>span {
-            line-height: 24px;
-        }
-        .label {
-            font-size: 14px;
-        }
-        .icon {
-            margin: 2px;
-            width: 20px;
-            height: 20px;
-        }
-    }
-    /* MEDIUM */
-    &.btn-medium {
-        height: 30px;
-        min-width: 30px;
-        &>span {
-            line-height: 30px;
-        }
-        .icon {
-            margin: 3px;
-            width: 24px;
-            height: 24px;
-        }
-    }
-    /* BIG */
-    &.btn-big {
-        height: 40px;
-        min-width: 40px;
-        &>span {
-            line-height: 40px;
-        }
-        .icon {
-            width: 30px;
-            height: 30px;
-            margin: 5px;
-        }
-    }
-    &.green {
-        .label {
-            color: $greenChart;
-        }
-        .icon {
-            background-color: $greenChart;
-        }
-        &:hover {
-            background-color: $greenChart;
-            @include buttonShadowHover();
-            .label {
-                color: #fff;
-            }
-            .icon {
-                background-color: #fff;
-            }
-            &:after {
-                background-color: $greenChart;
-            }
-        }
-    }
-    &.red {
-        .label {
-            color: $redChart;
-        }
-        .icon {
-            background-color: $redChart;
-        }
-        &:hover {
-            background-color: $redChart;
-            @include buttonShadowHover();
-            .label {
-                color: #fff;
-            }
-            .icon {
-                background-color: #fff;
-            }
-            &:after {
-                background-color: $redChart;
-            }
-        }
-    }
-    &.secondary,
-    &.grey {
-        margin-right: 20px;
-        background-color: #fff;
-        .label {
-            color: $secondary;
-        }
-        .icon {
-            background-color: $secondary;
-        }
-        &:hover {
-            background-color: $secondaryDark;
-            @include buttonShadowHover();
-            .label {
-                color: #fff;
-            }
-            .icon {
-                background-color: #fff;
-            }
-            &:after {
-                background-color: $secondaryDark;
-            }
-        }
-    }
-    &.blue {
-        .label {
-            color: $blueChart;
-        }
-        .icon {
-            background-color: $blueChart;
-        }
-        &:hover {
-            background-color: $blueChart;
-            @include buttonShadowHover();
-            .label {
-                color: #fff;
-            }
-            .icon {
-                background-color: #fff;
-            }
-            &:after {
-                background-color: $blueChart;
-            }
-        }
-    }
-    &.info-text {
-        overflow: visible;
-        &:after {
-            display: none;
-        }
-        &:hover {
-            &:after {
-                content: attr(data-content);
-                display: inline-block;
-                padding: 5px;
-                position: absolute;
-                top: -35px;
-                left: -60px;
-                z-index: 5;
-                font-size: 14px;
-                line-height: 20px;
-                white-space: nowrap;
-                color: #fff;
-            }
-        }
+    border: 1px solid #aaa;
+    &:hover {
+        background-color: #ddd;
+        text-decoration: none;
     }
 }

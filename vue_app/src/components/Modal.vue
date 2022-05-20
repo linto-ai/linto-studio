@@ -63,13 +63,13 @@ export default ({
     },
     async exec (actionName) {
       if(actionName === 'leave_organization') {
-        this.leaveOrganization()
-      } 
-      else if (actionName === 'remove_user_from_organization') {
-         this.removeUserFromOrganization()
-      }
-      else if (actionName === 'unshare_user_conversation') {
-         this.unshareUserConversation()
+        await this.leaveOrganization()
+      } else if (actionName === 'remove_user_from_organization') {
+         await this.removeUserFromOrganization()
+      } else if (actionName === 'unshare_user_conversation') {
+         await this.unshareUserConversation()
+      } else if (actionName === 'delete_conversation') {
+         await this.deleteConversation()
       }
     },
     unshareUserConversation() {
@@ -134,6 +134,30 @@ export default ({
             status: 'success',
             message: req.data.message || req.data.msg || `User "${this.modalData.user.email}" has been removed form the organization`,
             timeout: 3000
+          })
+          this.close()
+        } else {
+          throw req
+        }
+      } catch (error) {
+        console.error(error)
+        bus.$emit('app_notif', {
+            status: 'error',
+            message: error.message || error.msg || 'Error on removing user from organization',
+            timeout: null
+        })
+      }
+    },
+    async deleteConversation () {
+       try {
+        let req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversations/${this.modalData.conversation._id}`, 'delete', {})
+        
+        if(req.status >= 200 && req.status < 300) {
+          bus.$emit('app_notif', {
+            status: 'success',
+            message: req.data.message || req.data.msg || `The conversation has been deleted`,
+            timeout: 2000,
+            redirect: '/interface/conversations'
           })
           this.close()
         } else {

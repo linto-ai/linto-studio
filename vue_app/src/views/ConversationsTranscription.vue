@@ -83,19 +83,46 @@ export default {
         this.editor.conversation.addEventListener('conversation_update', async (data) => {
           if(this.editorDebounce === null) {
             this.editorDebounce = setTimeout(async () => {
-              await this.updateConversation(this.editor.conversation.conversationObj.text)
+              await this.updateConversationText(this.editor.conversation.conversationObj.text)
             }, 1500)
           } else {
             clearTimeout(this.editorDebounce)
             this.editorDebounce = setTimeout(async () => {
-              await this.updateConversation(this.editor.conversation.conversationObj.text)
+              await this.updateConversationText(this.editor.conversation.conversationObj.text)
             }, 1500)
           }
         })
+
+        this.editor.conversation.addEventListener('speaker_created', async (data) => {
+          await this.updateConversationSpeaker(this.editor.conversation.conversationObj.speakers)
+        })
     },
-    async updateConversation(text) {
+    async updateConversationText(text) {
       try {
         let req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversations/${this.conversationId}`, 'patch', {text}) 
+        if(req.status >= 200 && req.status < 300 && (!!req.data.msg || !!req.data.message)) {
+          await this.dispatchConversations()
+          bus.$emit('app_notif', {
+            status: 'success',
+            message: req.data.msg || req.data.message,
+            timeout: 3000
+          })
+        } else {
+          throw req
+        }
+      } catch (error) {
+        if(process.env.VUE_APP_DEBUG === 'true') {
+          bus.$emit('app_notif', {
+            status: 'error',
+            message:  error.msg || error.message || 'Error on creating organization',
+            timeout: null
+          })
+        }
+      }
+    },
+    async updateConversationSpeaker(speakers) {
+      try {
+        let req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversations/${this.conversationId}`, 'patch', {speakers}) 
         if(req.status >= 200 && req.status < 300 && (!!req.data.msg || !!req.data.message)) {
           await this.dispatchConversations()
           bus.$emit('app_notif', {

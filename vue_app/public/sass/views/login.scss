@@ -17,14 +17,6 @@
         width: auto;
         margin: 0 0 20px 0;
     }
-    .toggle-login-link {
-        color: $blueChart;
-        font-weight: 600;
-        display: inline-block;
-        &:hover {
-            color: $greenChart;
-        }
-    }
 }
 
 #app-login {
@@ -36,10 +28,4 @@
     @include borderRadius(3px);
     @include blockShadow();
     align-items: center;
-    .form-field {
-        input[type="text"],
-        input[type="password"] {
-            background-color: #edf8ff;
-        }
-    }
 }

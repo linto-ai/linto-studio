@@ -2,23 +2,26 @@
   <div class="flex col scrollable" v-if="dataLoaded">
     <h1>Conversations</h1>
     <div class="flex row">
-      <a href="/interface/conversations/create">Create conversation</a>
+      <a href="/interface/conversations/create" class="btn" style="margin-bottom: 10px;">Create conversation</a>
     </div>
-    <div class="conversations-list flex col" v-if="conversations.length > 0">
-        <div v-for="conv of conversations" :key="conv._id" class="flex row conversation-list-item">
-          <div class="flex col flex2">
-            <a :href="`/interface/conversations/${conv._id}`" class="conv-title">{{ conv.name }}</a>
-            <p class="conv-desc">{{ conv.description }}</p>
-            <span>Right : {{ getUserRightTxt(conv.userRight) }}</span>
-          </div>
-          <div class="flex col flex1">
-            <div class="flex col">
-              <span class="conv-data">Duration: {{ timeToHMS(conv.audio.duration) }}</span>
-              <span class="conv-data">Last update: {{ dateToJMYHMS(conv.last_update) }}</span>
-            </div>
-          </div>
-        </div>
-    </div>
+    <table v-if="conversations.length > 0">
+      <thead>
+        <tr>
+          <th>Tilte</th>
+          <th>Description</th>
+          <th>Duration</th>
+          <th>Update</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="conv of conversations" :key="conv._id">
+          <td><a :href="`/interface/conversations/${conv._id}`">{{ conv.name }}</a></td>
+          <td>{{ conv.description }}</td>
+          <td>{{ timeToHMS(conv.audio.duration)}}</td>
+          <td>{{ dateToJMYHMS(conv.last_update)}}</td>
+        </tr>
+      </tbody>
+    </table>
     <span v-else class="no-result">No conversation found</span>
   </div>
 </template>

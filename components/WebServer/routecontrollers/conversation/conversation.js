@@ -29,11 +29,12 @@ async function getOwnerConversation(req, res, next) {
 
 async function deleteConversation(req, res, next) {
     try {
-        if (!req.params.conversationId) throw new ConversationIdRequire()
-        const conversation = await conversationModel.getConvoById(req.params.conversationId)
-        if (conversation.length !== 1) throw new ConversationNotFound()
 
-        const result = await conversationModel.deleteById(req.params.conversationId)
+        if (!req.params.conversationId) throw new ConversationIdRequire()
+        let conversationId = req.params.conversationId
+        const conversation = await conversationModel.getConvoById(conversationId)
+        if (conversation.length !== 1) throw new ConversationNotFound()
+        const result = await conversationModel.deleteById(conversationId)
 
         if (result.deletedCount !== 1) throw new ConversationError('Error when deleting conversation')
 
@@ -41,6 +42,7 @@ async function deleteConversation(req, res, next) {
             message: 'Conversation has been deleted'
         })
     } catch (err) {
+        console.error(err)
         res.status(err.status).send({ message: err.message })
     }
 }

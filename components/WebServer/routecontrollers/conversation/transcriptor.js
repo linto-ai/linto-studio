@@ -59,8 +59,8 @@ async function transcriptor(req, res, next) {
 async function transcribe(body, files, userId) {
     try {
         const file = files.file
-        // STT request
-        const options = prepareRequest(file)
+            // STT request
+        const options = prepareRequest(file, body.transcriptionConfig)
         const job_buffer = await request.post(`${process.env.STT_HOST}/transcribe`, options)
 
         if (job_buffer) {
@@ -82,7 +82,7 @@ async function transcribe(body, files, userId) {
     }
 }
 
-function prepareRequest(file) {
+function prepareRequest(file, transcriptionConfig) {
     let options = {
         headers: {
             accept: 'application/json'
@@ -100,26 +100,7 @@ function prepareRequest(file) {
         encoding: null
     }
 
-    let transcriptionConfig = {
-        enablePunctuation: false,
-        diarizationConfig: {
-            enableDiarization: false,
-            numberOfSpeaker: 0,
-            maxNumberOfSpeaker: 0
-        }
-    }
-
-    if (process.env.STT_ENABLE_PUNCTUATION === "true")
-        transcriptionConfig.enablePunctuation = true
-    if (process.env.STT_ENABLE_DIARIZATION === "true")
-        transcriptionConfig.diarizationConfig.enableDiarization = true
-    if (process.env.STT_NUMBER_OF_SPEAKER !== "0")
-        transcriptionConfig.diarizationConfig.numberOfSpeaker = parseInt(process.env.NUMBER_OF_SPEAKER)
-    if (process.env.STT_MAX_NUMBER_OF_SPEAKER !== "0")
-        transcriptionConfig.diarizationConfig.maxNumberOfSpeaker = parseInt(process.env.MAX_NUMBER_OF_SPEAKER)
-
-    options.formData.transcriptionConfig = JSON.stringify(transcriptionConfig)
-
+    options.formData.transcriptionConfig = transcriptionConfig
     if (process.env.STT_REQUIRE_AUTH === 'true')
         options.headers.Authorization = 'Basic ' + Buffer.from(process.env.STT_USER + ':' + process.env.STT_PASSWORD).toString('base64');
     return options

@@ -1,16 +1,31 @@
 input,
 select,
 textarea {
-    border: 1px solid #ccc;
+    border: 1px solid #aaa;
     display: inline-block;
     @include cancelBoxShadow();
     padding: 5px;
     margin: 5px 0;
     max-width: 320px;
     box-sizing: border-box;
-    background-color: #fff;
+    background-color: #f2f2f2;
     &.error {
         border: 1px solid $redChart;
+    }
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+    margin: 3px 5px;
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+label {
+    padding-right: 5px;
+    &:hover {
+        cursor: pointer;
     }
 }
 
@@ -108,5 +123,46 @@ input[type="file"] {
     }
     &.valid {
         background: #2d9e49;
+    }
+}
+
+.form-field-wrapper {
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin: 0 20px 20px 0;
+    &>div {
+        padding: 0 10px;
+        white-space: nowrap;
+    }
+}
+
+
+/*** FORM INFO ***/
+
+.form-info-container {
+    padding: 0 20px;
+    border-left: 1px solid #ccc;
+    .form-info-title {
+        padding: 0 0 5px 0;
+        font-size: 14px;
+        font-weight: 500;
+        text-transform: uppercase;
+        margin: 0;
+    }
+    .form-info-content {
+        padding: 0 0 10px 0;
+        margin: 0 0 10px 0;
+        font-size: 14px;
+        line-height: 18px;
+    }
+    .form-info-list {
+        margin: 0 0 10px 0;
+        line-height: 18px;
+        li {
+            padding-bottom: 5px;
+            strong {
+                font-weight: 500;
+            }
+        }
     }
 }
