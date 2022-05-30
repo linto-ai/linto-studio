@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div class="flex col scrollable">
     <div class="flex row conversation-actions">
-
+      
       <ConversationShare 
         :userInfo="userInfo" 
         :currentOrganizationScope="currentOrganizationScope"
@@ -29,6 +29,7 @@ export default {
       usersLoaded: false,
       conversationId: '',
       editor: null,
+      editorSettings: {},
       editorDebounce: null
     }
   },
@@ -63,24 +64,29 @@ export default {
   watch: {
     dataLoaded(data){
       if(data) {
-        this.setTranscriptEditor()
+        this.initTranscriptEditor()
       } else{
         this.editor = null
       }
     }
   },
   methods: {
-    async setTranscriptEditor(){
-        let editorObj = {
+    async initTranscriptEditor(){
+        // TODO >  Get editor settings cookie for pagination ?
+        this.editorSettings = {
           conversationId: this.conversationId,
           wrapperId: 'conversation',
           playerWrapperId: 'conversation-audio-player',
           language: 'fr-FR',
-          pagination: 6,
+          pagination: 4,
           conversation: this.conversation
         }
-        this.editor = new Editor(editorObj)
-        this.editor.conversation.addEventListener('conversation_update', async (data) => {
+        this.editor = new Editor(this.editorSettings)
+        this.bindEditorEvents()
+    },
+    bindEditorEvents() {
+      this.editor.conversation.addEventListener('conversation_update', async (data) => {
+          console.log('> Conversation update')
           if(this.editorDebounce === null) {
             this.editorDebounce = setTimeout(async () => {
               await this.updateConversationText(this.editor.conversation.conversationObj.text)

@@ -58,9 +58,31 @@ $selectedWord: #0057f5;
 }
 
 
+/* TRANSCRIPTION EDITOR SETTINGS */
+
+#editor-settings {
+    padding: 0 10px 10px 10px;
+    position: relative;
+}
+
+#editor-settings-frame {
+    padding: 10px;
+    position: absolute;
+    top: 25px;
+    left: 0;
+    z-index: 10;
+    background: #fff;
+    border: 1px solid #ccc;
+    align-items: center;
+    &>* {
+        margin: 0 3px;
+    }
+}
+
+
 /* TRANSCRIPTION EDITOR */
 
-#conversation {
+#tanscript-editor-conversation {
     border: 1px solid #111;
     box-sizing: border-box;
     padding: 20px;
