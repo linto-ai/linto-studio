@@ -91,13 +91,15 @@ function normalizeTranscription(data) {
 
 
 function checkShortPunctuation(seg, words) {
-  if (process.env.LANGUE === LANGUE.french)
-    return seg.replace(/,/g, '').replace(/\./g, '') === words.word
+  if (process.env.LANGUE === LANGUE.french) {
+    const regex = /[,.:]$/
+    return seg.replace(regex, '') === words.word
+  }
 }
 
 function checkLongPunctuation(seg) {
   if (process.env.LANGUE === LANGUE.french)
-    return seg.includes('?') || seg.includes('!')
+    return /[?!.]$/.test(seg)
 }
 
 function checkApostrophe(seg, words) {
@@ -107,15 +109,20 @@ function checkApostrophe(seg, words) {
 
 function checkNumber(seg) {
   if (seg === undefined) return false
-  if (process.env.LANGUE === LANGUE.french)
-    return (!isNaN(seg.replace(/,/g, '').replace(/\./g, '')))
+  if (process.env.LANGUE === LANGUE.french) {
+    const regex = /[,.:]$/
+    return (!isNaN(seg.replace(regex, '')))
+  }
 }
 
 function checkNextWord(next_word, words) {
   if (next_word === undefined) return true
-  if (process.env.LANGUE === LANGUE.french)
-    return next_word.toLowerCase().replace(/,/g, '').replace(/\./g, '') === words.word
+  if (process.env.LANGUE === LANGUE.french){
+    const regex = /[,.:]$/
+    return next_word.toLowerCase().replace(regex, '') === words.word
+  }
 }
+
 
 module.exports = {
   normalizeTranscription,

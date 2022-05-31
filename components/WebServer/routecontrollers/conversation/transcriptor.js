@@ -59,7 +59,6 @@ async function transcriptor(req, res, next) {
 async function transcribe(body, files, userId) {
     try {
         const file = files.file
-            // STT request
         const options = prepareRequest(file, body.transcriptionConfig)
         const job_buffer = await request.post(`${process.env.STT_HOST}/transcribe`, options)
 
@@ -100,9 +99,13 @@ function prepareRequest(file, transcriptionConfig) {
         encoding: null
     }
 
-    options.formData.transcriptionConfig = transcriptionConfig
+
+    if (transcriptionConfig) options.formData.transcriptionConfig = transcriptionConfig
+    else options.formData.transcriptionConfig = {}
+
     if (process.env.STT_REQUIRE_AUTH === 'true')
         options.headers.Authorization = 'Basic ' + Buffer.from(process.env.STT_USER + ':' + process.env.STT_PASSWORD).toString('base64');
+
     return options
 }
 
