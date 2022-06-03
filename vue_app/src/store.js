@@ -285,7 +285,6 @@ export default new Vuex.Store({
             let conversation = state.conversations.find(conv => conv._id === conversationId)
             let membersRight = conversation.organization.membersRight
             let organization = state.organizations.find(orga => orga._id === conversation.organization.organizationId)
-
             let convUsers = []
             let organizationUsers = []
             let sharedWithUsers = []
@@ -307,7 +306,6 @@ export default new Vuex.Store({
                         userInfos.right = membersRight
                     } else {
                         userInfos.right = getRightByRole(user.role)
-
                     }
                     organizationUsers.push(userInfos)
                 }

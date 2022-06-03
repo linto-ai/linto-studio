@@ -52,7 +52,6 @@ export default {
     },
     conversations() {
       if(this.currentOrganization !== null && this.convosLoaded && this.userRightsLoaded) {
-
         return this.$store.getters.getConversationByOrganizationScope(this.currentOrganizationScope)
       }
       return []

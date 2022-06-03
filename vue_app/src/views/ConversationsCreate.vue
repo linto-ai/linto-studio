@@ -80,8 +80,13 @@
                   :class="[audioFile.error !== null ? 'error' : '', audioFile.valid ? 'valid' : '', 'input-file-label']"
                 >{{ audioFileUploadLabel }}</label>
               </div>  
-              <div v-if="mediaType === 'mic'" class="flex row">
-                  #Feature
+              <div v-if="mediaType === 'mic'" class="flex col">
+                  <div class="flex row">
+                    <button @click="startRecording()">Start</button>
+                    <button @click="stopRecording()">Stop</button>
+                    <button @click="replay()">Replay</button>
+                </div>
+                <span class="error-field" v-if="audioRecFile.error !== null">{{ audioRecFile.error}}</span>
               </div>
             </div>
             <!-- Transcription settings -->
@@ -150,6 +155,7 @@
 <script>
 import axios from 'axios'
 import { bus } from '../main.js'
+import WebVoiceSDK from '../../public/js/webVoiceSDK-linto.min.js'
 export default {
   props:["userInfo", "currentOrganizationScope"],
   data() {
@@ -166,6 +172,11 @@ export default {
         valid: true
       },
       audioFile: {
+        value:'',
+        error: null,
+        valid: false
+      },
+      audioRecFile: {
         value:'',
         error: null,
         valid: false
@@ -211,19 +222,18 @@ export default {
           txt: 'Full rights'
         }
       ],
-      
       organizationMemberAccess: false,
       audioFileUploadLabel: 'Choose a file...',
       formSubmitLabel: 'Create conversation',
       formState: 'available',
-
-
       mediaType: 'file',
       diarizationSelected: false,
       punctuationSelected: false,
       normalizationSelected: false,
-      diarizationSpeakers: 2
-      
+      diarizationSpeakers: 2,
+      recorder: null,
+      mic: null,
+      downSampler: null,
       
     }
   },
@@ -235,6 +245,11 @@ export default {
       valid: true,
       error: null
     }
+    this.recorder = new WebVoiceSDK.Recorder()
+    this.mic = new WebVoiceSDK.Mic()
+
+      await this.mic.start()
+      await this.recorder.start(this.mic)
   },
   computed: {
     selectedOrganizationPersonal () {
@@ -247,10 +262,28 @@ export default {
       return this.$store.state.userOrganizations
     },
     formValid () {
-      return this.conversationName.valid && this.conversationDescription.valid && this.audioFile.valid && this.conversationOrganization.valid
+      if(this.mediaType === 'file') return this.conversationName.valid && this.conversationDescription.valid && this.audioFile.valid && this.conversationOrganization.valid
+      else if(this.mediaType === 'mic') return this.conversationName.valid && this.conversationDescription.valid && this.audioRecFile.valid && this.conversationOrganization.valid
     }
   },
   methods: {
+    async startRecording () {
+      try {
+        this.recorder.punchIn()
+      } catch (error) {
+        console.error(error)  
+      }
+    },
+    async stopRecording() {
+      try {
+        this.recorder.punchOut()
+      } catch (error) {
+        console.error(error)  
+      }
+    },
+    replay() {
+      this.recorder.play()
+    },
     testForm() {
       // test conversation name
       this.$options.filters.testName(this.conversationName)
@@ -258,17 +291,41 @@ export default {
       if(this.mediaType === 'file') {
         // test audio file
         this.handleFileUpload()
+      } 
+      else if(this.mediaType === 'mic') {
+      // test recorded audio
+        this.handleRecord() 
       }
-
       // todo > test description
     },
-    
+    async getRecFile() {
+      try {
+        let wavFile = this.recorder.getWavFile()
+        return new File([wavFile], 'test.wav')
+      } catch (error) {
+        console.error(error)
+        return false
+      }
+    },
+    async handleRecord () {
+      let recFile = await this.getRecFile()
+      if(!recFile) {
+        this.audioRecFile.value = ''
+        this.audioRecFile.error = 'Please record something'
+        this.audioRecFile.valid = false
+      } else {
+        this.audioRecFile.value = recFile
+        this.audioRecFile.error = null
+        this.audioRecFile.valid = true
+      }
+    },
     async createConversation() {
       this.testForm()
       if(this.formValid) {
         try {
           let formData = new FormData()
-          formData.append('file', this.audioFile.value)
+          if(this.mediaType === 'file') formData.append('file', this.audioFile.value)
+          if(this.mediaType === 'mic') formData.append('file', this.audioRecFile.value)
           formData.append('name', this.conversationName.value)
           formData.append('description', this.conversationDescription.value)
           formData.append('organizationId', this.conversationOrganization.value)
@@ -284,7 +341,6 @@ export default {
             }
           }
           formData.append('transcriptionConfig', JSON.stringify(transcriptionConfig))
-
           let req = await  axios(`${process.env.VUE_APP_CONVO_API}/conversations/create`, {
             method: 'post',
             headers: {
@@ -294,7 +350,6 @@ export default {
             },
             data: formData
           })
-
           if(req.status >= 200 && req.status < 300 && (!!req.data.message || !!req.data.msg)) {
             bus.$emit('app_notif', {
               status: 'success',
