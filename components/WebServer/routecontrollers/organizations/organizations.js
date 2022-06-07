@@ -11,8 +11,34 @@ const {
     OrganizationError,
     OrganizationUnsupportedMediaType,
     OrganizationConflict,
+    OrganizationForbidden,
 } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
+async function searchOrganizationByName(req, res, next) {
+    try {
+        if (!req.body.name) throw new OrganizationUnsupportedMediaType()
+
+        let organizations = await organizationModel.getAllOrganizations()
+
+        organizations = organizations
+            .filter(orga => orga.name.includes(req.body.name))
+            .filter(orga => orga.owner === req.payload.data.userId || !orga.personal)
+            .map(orga => {
+                const isInOrga = orga.users.some(oUser => oUser.userId === req.payload.data.userId)
+                if (!isInOrga) {
+                    orga.users = orga.users.filter(oUser => oUser.visibility === TYPES.public)
+                }
+                delete orga.users
+                if (!isInOrga && orga.type === TYPES.private) return null
+
+                return orga
+            }).filter(orga => orga !== null)
+
+        return res.json({ organizations })
+    } catch (err) {
+        res.status(err.status).send({ message: err.message })
+    }
+}
 
 async function createOrganization(req, res, next) {
     try {
@@ -43,10 +69,49 @@ async function createOrganization(req, res, next) {
             message: 'Organization ' + organization.name + ' created'
         })
     } catch (err) {
-        console.error(err)
         res.status(err.status).send({ message: err.message })
     }
 }
+
+
+
+
+async function getOrganization(req, res, next) {
+    try {
+        if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
+        const organization = await orgaUtility.getOrganization(req.params.organizationId)
+
+        if (organization.type === TYPES.private) throw new OrganizationForbidden()
+        else {
+            const isInOrga = organization.users.some(oUser => oUser.userId === req.payload.data.userId)
+            if (!isInOrga) {
+                organization.users = organization.users.filter(oUser => oUser.visibility === TYPES.public)
+            }
+            res.status(200).send(organization)
+        }
+
+    } catch (err) {
+        res.status(err.status).send({ message: err.message })
+    }
+}
+
+async function listSelfOrganization(req, res, next) {
+    try {
+        const organizations = await organizationModel.getAllOrganizations()
+        const userOrganizations = organizations.filter(organization => {
+            if (organization.owner === req.payload.data.userId) return true
+
+            if ((organization.users.filter(user => user.userId === req.payload.data.userId)).length === 1) return true
+        }).map(organization => {
+            delete organization.users
+            return organization
+        })
+        return res.json({ userOrganizations })
+    } catch (err) {
+        res.status(err.status).send({ message: err.message })
+    }
+}
+
 
 async function listOrganization(req, res, next) {
     try {
@@ -55,12 +120,12 @@ async function listOrganization(req, res, next) {
         organizations = organizations
             .filter(orga => orga.owner === req.payload.data.userId || !orga.personal)
             .map(orga => {
-                const userInOrga = orga.users.some(oUser => oUser.userId === req.payload.data.userId)
-                if (!userInOrga) {
+                const isInOrga = orga.users.some(oUser => oUser.userId === req.payload.data.userId)
+                if (!isInOrga) {
                     orga.users = orga.users.filter(oUser => oUser.visibility === TYPES.public)
                 }
 
-                if (!userInOrga && orga.type === TYPES.private) return null
+                if (!isInOrga && orga.type === TYPES.private) return null
                 return orga
             }).filter(orga => orga !== null)
 
@@ -70,22 +135,10 @@ async function listOrganization(req, res, next) {
     }
 }
 
-
-async function getOrganization(req, res, next) {
-    try {
-        if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
-        const organization = await orgaUtility.getOrganization(req.params.organizationId)
-
-        res.status(200).send(organization)
-    } catch (err) {
-        res.status(err.status).send({ message: err.message })
-    }
-}
-
-
-
 module.exports = {
     createOrganization,
+    listSelfOrganization,
     listOrganization,
+    searchOrganizationByName,
     getOrganization
 }

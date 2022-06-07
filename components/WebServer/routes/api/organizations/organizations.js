@@ -1,12 +1,15 @@
 const debug = require('debug')('app:router:api:organizations:organizations')
 const {
     createOrganization,
-    listOrganization,
+    // listOrganization,
+    listSelfOrganization,
+    searchOrganizationByName,
     getOrganization
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/organizations.js`)
 
 const {
-    listSelfOrganization,
+    // listSelfOrganization,
+    listConversationFromOrganization,
     updateSelfFromOrganization,
     leaveSelfFromOrganization
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/member.js`)
@@ -34,21 +37,25 @@ module.exports = (webserver) => {
             controller: createOrganization
         },
         {
-            path: '/',
-            method: 'get',
+            path: '/search',
+            method: 'post',
             requireAuth: true,
-            controller: listOrganization
+            controller: searchOrganizationByName
         },
-
-
-        /*Member right */
-
         {
             path: '/user',
             method: 'get',
             requireAuth: true,
             controller: listSelfOrganization
         },
+        {
+            path: '/:organizationId',
+            method: 'get',
+            requireAuth: true,
+            controller: getOrganization
+        },
+
+        /*Member right */
         {
             path: '/user/:organizationId',
             method: 'patch',
@@ -62,6 +69,13 @@ module.exports = (webserver) => {
             requireAuth: true,
             requireOrganizationMemberAccess: true,
             controller: leaveSelfFromOrganization
+        },
+        {
+            path: '/:organizationId/conversation',
+            method: 'get',
+            requireAuth: true,
+            requireOrganizationMemberAccess: true,
+            controller: listConversationFromOrganization
         },
 
         /* Maintainer right*/
