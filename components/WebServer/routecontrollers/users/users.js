@@ -30,7 +30,7 @@ async function listUser(req, res, next) {
         })
 
         // Get users in current user organizations
-        let userOrganizations = allOrganizations.filter(orga => !orga.personal && (orga.owner === userId ||  orga.users.findIndex(usr => usr.userId === userId) >= 0))
+        let userOrganizations = allOrganizations.filter(orga => !orga.personal && (orga.owner === userId || orga.users.findIndex(usr => usr.userId === userId) >= 0))
         userOrganizations.map(uorga => {
             for (let user of uorga.users) {
                 if (publicUsers.findIndex(usr => usr._id.toString() === user.userId.toString()) < 0) {
@@ -40,10 +40,60 @@ async function listUser(req, res, next) {
         })
 
         res.status(200).send(publicUsers)
-    } catch (error) {
-        res.send({
-            message: error.message
+    } catch (err) {
+        res.status(err.status).send({ message: err.message })
+    }
+}
+
+
+async function searchUser(req, res, next) {
+    try {
+        let userId = req.payload.data.userId
+        let userList = await userModel.getAllUsers()
+        let allOrganizations = await organizationModel.getAllOrganizations()
+        let filterUser = []
+
+        // Filter not searched user
+        searchUser = userList.map(user => {
+            const userField = [user.firstname, user.lastname, user.email,
+            user.firstname + ' ' + user.lastname, user.lastname + ' ' + user.firstname]
+
+            const fieldFind = userField
+                .map(field => field.toLowerCase())
+                .filter(field => field.indexOf(req.body.search.toLowerCase()) >= 0)
+
+            if (fieldFind.length > 0) return user
+        }).filter(user => user !== undefined)
+
+        if (searchUser.length === 0) throw new UserNotFound()
+
+        // Get users in user current related organizations
+        let userOrganizations = allOrganizations.filter(orga => !orga.personal && (orga.owner === userId || orga.users.findIndex(usr => usr.userId === userId) >= 0))
+
+        userOrganizations.map(uorga => {
+            uorga.users.map(user => {
+                searchUser = searchUser.filter(usr => {
+                    if (usr._id.toString() === user.userId.toString()) {
+                        filterUser.push(usr)
+                        return false
+                    }
+                    return true
+                })
+            })
         })
+
+        // Get all users with "public" personal organization
+        searchUser.map(user => {
+            let userOrga = allOrganizations.find(orga => orga.owner.toString() === user._id.toString() && orga.personal === true)
+            if (userOrga.type === 'public') {
+                filterUser.push(user)
+                return false
+            }
+        })
+
+        res.status(200).send(filterUser)
+    } catch (err) {
+        res.status(err.status).send({ message: err.message })
     }
 }
 
@@ -56,9 +106,7 @@ async function getUserById(req, res, next) {
             ...userList[0]
         })
     } catch (err) {
-        res.status(err.status).send({
-            message: err.message
-        })
+        res.status(err.status).send({ message: err.message })
     }
 }
 
@@ -112,15 +160,12 @@ async function updateUser(req, res, next) {
         if (result.matchedCount === 0) throw new UserError()
         let message
 
-            (result.modifiedCount === 1) ? message = 'User updated' : message = 'No modification to user'
+        (result.modifiedCount === 1) ? message = 'User updated' : message = 'No modification to user'
         res.status(200).send({
             message
         })
     } catch (err) {
-        console.error(err)
-        res.status(err.status).send({
-            message: err.message
-        })
+        res.status(err.status).send({ message: err.message })
     }
 }
 
@@ -142,9 +187,7 @@ async function updateUserPicture(req, res, next) {
             message: 'User picture updated'
         })
     } catch (err) {
-        res.status(err.status).send({
-            message: err.message
-        })
+        res.status(err.status).send({ message: err.message })
     }
 }
 
@@ -166,9 +209,7 @@ async function updateUserPassword(req, res, next) {
         if (result.matchedCount === 0) throw new UserError()
         next()
     } catch (err) {
-        res.status(err.status).send({
-            message: err.message
-        })
+        res.status(err.status).send({ message: err.message })
     }
 }
 
@@ -182,7 +223,7 @@ async function logout(req, res, next) {
                 res.cookie('authToken', '')
                 res.cookie('userId', '')
                 res.cookie('cm_orga_scope', '')
-                req.session.destroy(function(err) {
+                req.session.destroy(function (err) {
                     // cannot access session here
                     if (err) throw 'Error on deleting session'
                     res.redirect('/login')
@@ -209,7 +250,7 @@ async function deleteUser(req, res, next) {
             if (organization.owner !== userId && organization.personal === true) return false
             else if (organization.owner === userId && organization.users.length === 0) return true
             else if ((organization.users.filter(user => user.userId === userId)).length !== 0) return true
-        }).map(async(organization) => {
+        }).map(async (organization) => {
             if (organization.owner === userId && organization.users.length === 0) {
                 let resultOperation = await organizationModel.deleteById(organization._id.toString())
                 if (resultOperation.deletedCount !== 1) throw new UserError('Error on personal organization')
@@ -223,7 +264,7 @@ async function deleteUser(req, res, next) {
         const conversations = await conversationModel.getAllConvos()
         conversations.filter(conversation => {
             if ((conversation.sharedWithUsers.filter(user => user.userId === userId)).length !== 0) return true
-        }).map(async(conversation) => {
+        }).map(async (conversation) => {
             conversation.sharedWithUsers = conversation.sharedWithUsers.filter(user => user.userId !== userId)
             const resultConvoUpdate = await conversationModel.update(conversation)
             if (resultConvoUpdate.modifiedCount === 0) throw new UserError('Error on conversation rights deletion')
@@ -236,14 +277,14 @@ async function deleteUser(req, res, next) {
             message: 'User deleted'
         })
     } catch (err) {
-        res.status(err.status).send({
-            message: err.message
-        })
+        res.status(err.status).send({ message: err.message })
+
     }
 }
 
 module.exports = {
     listUser,
+    searchUser,
     getUserById,
     deleteUser,
     createUser,
