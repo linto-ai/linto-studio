@@ -14,21 +14,23 @@ function normalizeTranscription(data) {
     let number_in_a_row_find = 0
 
     segment.segment.split(' ').map((seg_normalize_word, index, array) => {
+      seg_normalize_word = correctSegment(seg_normalize_word)
+
       if (number_in_a_row_find !== 0) {
         number_in_a_row_find--
         return
       }
-      // segment.segment.split(' ').map((seg_word, index, array) => {
+
       let normalize_word = {}
       let lower_seg_normalize_word = seg_normalize_word.toLowerCase()
       if (checkLongPunctuation(lower_seg_normalize_word)) { //word with long punctuation
         normalize_word = {
-          start: segment.raw_words[words_index - 1].start,
+          start: segment.raw_words[words_index - 1].end,
           end: segment.raw_words[words_index - 1].end,
           word: seg_normalize_word,
           conf: 1
         }
-        normalize_word.word = seg_normalize_word
+
         words_index++
       } else if (checkShortPunctuation(lower_seg_normalize_word, segment.raw_words[words_index])) { //word with short punctuation
         normalize_word = segment.raw_words[words_index]
@@ -89,6 +91,12 @@ function normalizeTranscription(data) {
   return data
 }
 
+function correctSegment(seg) {
+  if (process.env.LANGUE === LANGUE.french) {
+    return seg.replace(',-', '-')
+  }
+  return seg
+}
 
 function checkShortPunctuation(seg, words) {
   if (process.env.LANGUE === LANGUE.french) {
@@ -117,7 +125,7 @@ function checkNumber(seg) {
 
 function checkNextWord(next_word, words) {
   if (next_word === undefined) return true
-  if (process.env.LANGUE === LANGUE.french){
+  if (process.env.LANGUE === LANGUE.french) {
     const regex = /[,.:]$/
     return next_word.toLowerCase().replace(regex, '') === words.word
   }
