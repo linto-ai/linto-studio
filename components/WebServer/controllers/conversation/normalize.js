@@ -30,7 +30,6 @@ function normalizeTranscription(data) {
           word: seg_normalize_word,
           conf: 1
         }
-
         words_index++
       } else if (checkShortPunctuation(lower_seg_normalize_word, segment.raw_words[words_index])) { //word with short punctuation
         normalize_word = segment.raw_words[words_index]
@@ -69,11 +68,19 @@ function normalizeTranscription(data) {
           }
         }
       } else {
-        debug('ERR', seg_normalize_word, segment.raw_words[words_index])
+        // Special case
+        if (lower_seg_normalize_word === segment.raw_words[index].word) {
+          normalize_word = segment.raw_words[index]
+          normalize_word.word = seg_normalize_word
+        } else if (lower_seg_normalize_word === segment.raw_words[words_index].word) {
+          normalize_word = segment.raw_words[words_index]
+          normalize_word.word = seg_normalize_word
+        }
       }
 
       if (number_in_a_row_find === 0) {
-        segment.words.push(normalize_word)
+        if (normalize_word.word !== undefined)
+          segment.words.push(normalize_word)
       } else { // Special rule when multiple number in a row
         const time = (normalize_word.end - normalize_word.start) / (number_in_a_row_find + 1)
         for (let i = 0; i <= number_in_a_row_find; i++) {
