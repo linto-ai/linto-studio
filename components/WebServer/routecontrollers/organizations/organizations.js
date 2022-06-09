@@ -88,7 +88,7 @@ async function getOrganization(req, res, next) {
             }
 
             let orgaUser = []
-            for await (let user of organization.users) {
+            for (let user of organization.users) {
                 const myUser = await userModel.getUserById(user.userId)
                 if (myUser && myUser.length !== 1) {
                     orgaUser.push(user)

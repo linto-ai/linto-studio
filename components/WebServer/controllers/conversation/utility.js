@@ -6,7 +6,6 @@ const CONVERSATION_RIGHTS = require(`${process.cwd()}/lib/dao/rights/conversatio
 const ORGANIZATION_ROLES = require(`${process.cwd()}/lib/dao/roles/organization`)
 
 const { ConversationError } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
-
 const { OrganizationNotFound } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
 async function getUserConversation(userId) {
@@ -77,7 +76,10 @@ async function getUserRightFromConversation(userId, conversation) {
       if (conversationRight) access.right = conversationRight.right
     }
 
-    return access
+    return {
+      access,
+      personal : organization[0].personal
+    }
   } catch (err) {
     throw err
   }

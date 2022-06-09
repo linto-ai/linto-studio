@@ -11,7 +11,8 @@ const { // Create conversation based on file
     updateConversation,
     searchText,
     deleteConversation,
-    updateConversationRights
+    updateConversationRights,
+    getUsersByConversation
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/conversation.js`)
 
 module.exports = (webserver) => {
@@ -38,6 +39,13 @@ module.exports = (webserver) => {
 
 
         /*Require Auth */
+        {
+            path: '/:conversationId/user',
+            method: 'get',
+            requireAuth: true,
+            requireConversationShareAccess: true,
+            controller: getUsersByConversation
+        },
         {
             path: '/:conversationId/user/:userId',
             method: 'patch',
