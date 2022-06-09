@@ -7,6 +7,8 @@ const ORGANIZATION_ROLES = require(`${process.cwd()}/lib/dao/roles/organization`
 
 const { ConversationError } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
+const { OrganizationNotFound } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
+
 async function getUserConversation(userId) {
   try {
     const convList = []
@@ -50,4 +52,35 @@ async function getOrgaConversation(orgaId) {
   return conversations.filter(conv => conv.organization.organizationId.toString() === orgaId)
 }
 
-module.exports = { getUserConversation, getOrgaConversation }
+async function getUserRightFromConversation(userId, conversation) {
+  try {
+    const organization = await organizationModel.getOrganizationById(conversation.organization.organizationId)
+    if (organization.length !== 1) throw new OrganizationNotFound()
+
+    const orgaRole = organization[0].users.filter(user => user.userId === userId)[0]
+
+    let access = {
+      role: (orgaRole) ? orgaRole.role : 0,
+      right: conversation.organization.membersRight
+    }
+
+    if (ORGANIZATION_ROLES.hasRoleAccess(access.role, ORGANIZATION_ROLES.ADMIN)) {
+      access.right = CONVERSATION_RIGHTS.adminRight()
+    } else if (ORGANIZATION_ROLES.hasRoleAccess(orgaRole, ORGANIZATION_ROLES.MAINTAINER)) {
+      access.right = CONVERSATION_RIGHTS.maintainerRight()
+    } else if (ORGANIZATION_ROLES.hasRoleAccess(access.role, ORGANIZATION_ROLES.MEMBER) ||
+      ORGANIZATION_ROLES.hasRoleAccess(access.role, ORGANIZATION_ROLES.MAINTAINER)) {
+      const organizationRight = conversation.organization.customRights.filter(user => user.userId === userId)[0]
+      if (organizationRight) access.right = organizationRight.right
+    } else {
+      const conversationRight = conversation.sharedWithUsers.filter(user => user.userId === userId)[0]
+      if (conversationRight) access.right = conversationRight.right
+    }
+
+    return access
+  } catch (err) {
+    throw err
+  }
+}
+
+module.exports = { getUserConversation, getOrgaConversation, getUserRightFromConversation }

@@ -4,8 +4,6 @@ const conversationUtility = require(`${process.cwd()}/components/WebServer/contr
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
 
-
-
 const {
     ConversationIdRequire,
     ConversationNotFound,
@@ -77,8 +75,10 @@ async function getConversation(req, res, next) {
         const conversation = await conversationModel.getConvoById(req.params.conversationId)
         if (conversation.length !== 1) throw new ConversationNotFound()
 
+        const access = await conversationUtility.getUserRightFromConversation(req.payload.data.userId, conversation[0])
         res.status(200).send({
-            ...conversation[0]
+            ...conversation[0],
+            userAccess : access
         })
     } catch (err) {
         res.status(err.status).send({ message: err.message })
