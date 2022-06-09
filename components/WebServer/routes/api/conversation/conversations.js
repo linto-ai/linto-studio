@@ -40,7 +40,7 @@ module.exports = (webserver) => {
 
         /*Require Auth */
         {
-            path: '/:conversationId/user',
+            path: '/:conversationId/users',
             method: 'get',
             requireAuth: true,
             requireConversationShareAccess: true,
