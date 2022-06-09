@@ -1,6 +1,5 @@
-const organizations = require('../../../../lib/mongodb/models/organizations')
-
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:organizations')
+const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
 const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
 
@@ -79,7 +78,7 @@ async function createOrganization(req, res, next) {
 async function getOrganization(req, res, next) {
     try {
         if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
-        const organization = await orgaUtility.getOrganization(req.params.organizationId)
+        let organization = await orgaUtility.getOrganization(req.params.organizationId)
 
         if (organization.type === TYPES.private) throw new OrganizationForbidden()
         else {
@@ -87,9 +86,24 @@ async function getOrganization(req, res, next) {
             if (!isInOrga) {
                 organization.users = organization.users.filter(oUser => oUser.visibility === TYPES.public)
             }
+
+            let orgaUser = []
+            for await (let user of organization.users) {
+                const myUser = await userModel.getUserById(user.userId)
+                if (myUser && myUser.length !== 1) {
+                    orgaUser.push(user)
+                } else {
+                    orgaUser.push({
+                        ...myUser[0],
+                        role: user.role,
+                        visibility: user.visibility
+                    })
+                }
+            }
+            organization.users = orgaUser
+
             res.status(200).send(organization)
         }
-
     } catch (err) {
         res.status(err.status).send({ message: err.message })
     }
