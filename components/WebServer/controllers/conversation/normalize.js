@@ -14,21 +14,22 @@ function normalizeTranscription(data) {
     let number_in_a_row_find = 0
 
     segment.segment.split(' ').map((seg_normalize_word, index, array) => {
+      seg_normalize_word = correctSegment(seg_normalize_word)
+
       if (number_in_a_row_find !== 0) {
         number_in_a_row_find--
         return
       }
-      // segment.segment.split(' ').map((seg_word, index, array) => {
+
       let normalize_word = {}
       let lower_seg_normalize_word = seg_normalize_word.toLowerCase()
       if (checkLongPunctuation(lower_seg_normalize_word)) { //word with long punctuation
         normalize_word = {
-          start: segment.raw_words[words_index - 1].start,
+          start: segment.raw_words[words_index - 1].end,
           end: segment.raw_words[words_index - 1].end,
           word: seg_normalize_word,
           conf: 1
         }
-        normalize_word.word = seg_normalize_word
         words_index++
       } else if (checkShortPunctuation(lower_seg_normalize_word, segment.raw_words[words_index])) { //word with short punctuation
         normalize_word = segment.raw_words[words_index]
@@ -67,11 +68,19 @@ function normalizeTranscription(data) {
           }
         }
       } else {
-        debug('ERR', seg_normalize_word, segment.raw_words[words_index])
+        // Special case
+        if (lower_seg_normalize_word === segment.raw_words[index].word) {
+          normalize_word = segment.raw_words[index]
+          normalize_word.word = seg_normalize_word
+        } else if (lower_seg_normalize_word === segment.raw_words[words_index].word) {
+          normalize_word = segment.raw_words[words_index]
+          normalize_word.word = seg_normalize_word
+        }
       }
 
       if (number_in_a_row_find === 0) {
-        segment.words.push(normalize_word)
+        if (normalize_word.word !== undefined)
+          segment.words.push(normalize_word)
       } else { // Special rule when multiple number in a row
         const time = (normalize_word.end - normalize_word.start) / (number_in_a_row_find + 1)
         for (let i = 0; i <= number_in_a_row_find; i++) {
@@ -89,6 +98,12 @@ function normalizeTranscription(data) {
   return data
 }
 
+function correctSegment(seg) {
+  if (process.env.LANGUE === LANGUE.french) {
+    return seg.replace(',-', '-')
+  }
+  return seg
+}
 
 function checkShortPunctuation(seg, words) {
   if (process.env.LANGUE === LANGUE.french) {
@@ -117,7 +132,7 @@ function checkNumber(seg) {
 
 function checkNextWord(next_word, words) {
   if (next_word === undefined) return true
-  if (process.env.LANGUE === LANGUE.french){
+  if (process.env.LANGUE === LANGUE.french) {
     const regex = /[,.:]$/
     return next_word.toLowerCase().replace(regex, '') === words.word
   }

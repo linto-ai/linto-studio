@@ -1,10 +1,11 @@
 const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:conversation`)
 
 const conversationUtility = require(`${process.cwd()}/components/WebServer/controllers/conversation/utility`)
+const userUtility = require(`${process.cwd()}/components/WebServer/controllers/user/utility`)
+
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
-
-
+const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
 
 const {
     ConversationIdRequire,
@@ -77,8 +78,11 @@ async function getConversation(req, res, next) {
         const conversation = await conversationModel.getConvoById(req.params.conversationId)
         if (conversation.length !== 1) throw new ConversationNotFound()
 
+        const data = await conversationUtility.getUserRightFromConversation(req.payload.data.userId, conversation[0])
         res.status(200).send({
-            ...conversation[0]
+            ...conversation[0],
+            userAccess: data.access,
+            personal: data.personal
         })
     } catch (err) {
         res.status(err.status).send({ message: err.message })
@@ -170,6 +174,47 @@ async function updateConversationRights(req, res, next) {
     }
 }
 
+async function getUsersByConversation(req, res, next) {
+    try {
+        let conversationUser = {
+            organization_member: [],
+            external_member: []
+        }
+        const userId = req.payload.data.userId
+        if (!req.params.conversationId) throw new ConversationIdRequire()
+
+        const conversation = await conversationModel.getConvoById(req.params.conversationId)
+        if (conversation.length !== 1) throw new ConversationNotFound()
+
+        let organization = await organizationModel.getOrganizationById(conversation[0].organization.organizationId)
+        if (organization.length !== 1) throw new OrganizationNotFound()
+
+        const isInOrga = organization[0].users.filter(user => user.userId === userId)
+        if (isInOrga.length === 0) {
+            organization.users = organization.users.filter(oUser => oUser.visibility === TYPES.public)
+        }
+
+        const organization_custom_member = await userUtility.getUsersConversationByArary(conversation[0].organization.customRights)
+        conversationUser.organization_member = await userUtility.getUsersConversationByArary(organization[0].users, conversation[0].organization.membersRight)
+        conversationUser.external_member = await userUtility.getUsersConversationByArary(conversation[0].sharedWithUsers)
+
+        conversationUser.organization_member.map(oUser => {
+            for (let cUser of organization_custom_member) {
+                if (cUser._id.toString() === oUser._id.toString()) {
+                    oUser.right = cUser.right
+                    break
+                }
+            }
+        })
+
+        res.status(200).send({
+            ...conversationUser
+        })
+    } catch (err) {
+        res.status(err.status).send({ message: err.message })
+    }
+}
+
 module.exports = {
     getOwnerConversation,
     getConversation,
@@ -177,5 +222,6 @@ module.exports = {
     updateConversation,
     updateConversationRights,
     searchText,
-    deleteConversation
+    deleteConversation,
+    getUsersByConversation
 }

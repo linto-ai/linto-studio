@@ -101,7 +101,7 @@ function prepareRequest(file, transcriptionConfig) {
 
 
     if (transcriptionConfig) options.formData.transcriptionConfig = transcriptionConfig
-    else options.formData.transcriptionConfig = {}
+    else options.formData.transcriptionConfig = "{}"
 
     if (process.env.STT_REQUIRE_AUTH === 'true')
         options.headers.Authorization = 'Basic ' + Buffer.from(process.env.STT_USER + ':' + process.env.STT_PASSWORD).toString('base64');

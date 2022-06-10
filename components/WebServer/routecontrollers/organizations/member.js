@@ -2,6 +2,8 @@ const debug = require('debug')('linto:conversation-manager:components:WebServer:
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
 
 const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
+const convUtility = require(`${process.cwd()}/components/WebServer/controllers/conversation/utility`)
+
 const TYPES = organizationModel.getTypes()
 
 const {
@@ -9,21 +11,6 @@ const {
     OrganizationUnsupportedMediaType,
 } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
-
-async function listSelfOrganization(req, res, next) {
-    try {
-        const organizations = await organizationModel.getAllOrganizations()
-        const userOrganizations = organizations.filter(organization => {
-            if (organization.owner === req.payload.data.userId) return true
-
-            if ((organization.users.filter(user => user.userId === req.payload.data.userId)).length === 1) return true
-        })
-
-        return res.json({ count: userOrganizations.length, userOrganizations })
-    } catch (err) {
-        res.status(err.status).send({ message: err.message })
-    }
-}
 
 async function updateSelfFromOrganization(req, res, next) {
     try {
@@ -68,16 +55,27 @@ async function leaveSelfFromOrganization(req, res, next) {
         if (result.matchedCount === 0) throw new OrganizationError()
 
         res.status(200).send({
-            message: 'Removed yourself from the organization'
+            message: 'You have leaved the organization'
         })
     } catch (err) {
         res.status(err.status).send({ message: err.message })
     }
 }
 
+async function listConversationFromOrganization(req, res, next) {
+    try {
+        if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
+
+        const conversations = await convUtility.getOrgaConversation(req.params.organizationId)
+
+        res.status(200).send(conversations)
+    } catch (err) {
+        res.status(err.status).send({ message: err.message })
+    }
+}
 
 module.exports = {
-    listSelfOrganization,
+    listConversationFromOrganization,
     updateSelfFromOrganization,
     leaveSelfFromOrganization
 }
