@@ -12,6 +12,7 @@ import ConversationsTranscription from '../views/ConversationsTranscription.vue'
 import Organizations from '../views/Organizations.vue'
 import OrganizationsCreate from '../views/OrganizationsCreate.vue'
 import OrganizationsUpdate from '../views/OrganizationsUpdate.vue'
+
 Vue.use(Router)
 
 let getCookie = function(cname) {
@@ -59,7 +60,7 @@ const router = new Router({
         },
         {
             path: '/interface/conversations/:conversationId/transcription',
-            name: 'conversations Overview',
+            name: 'conversations Transcription',
             component: ConversationsTranscription
         },
         {

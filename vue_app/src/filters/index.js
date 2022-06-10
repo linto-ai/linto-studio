@@ -120,9 +120,9 @@ Vue.filter('testFieldEmpty', function(obj) {
 
 
 // DISPATCH STORE
-Vue.filter('dispatchStore', async function(label) {
+Vue.filter('dispatchStore', async function(label, options) {
     try {
-        const req = await store.dispatch(label)
+        const req = await store.dispatch(label, options)
         if (!!req.error) {
             throw req.error
         }

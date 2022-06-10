@@ -1,9 +1,9 @@
 <template>
   <div id="app" v-if="renderInterface && dataLoaded">
-    <AppVerticalNavigation :currentOrganizationScope="currentOrganizationScope"></AppVerticalNavigation>
+    <AppVerticalNavigation :currentOrganizationScope="currentOrganizationScope" :userOrganizations="userOrganizations"></AppVerticalNavigation> 
     <div id="app-view" class="flex col flex1">
       <AppHeader :userInfo="userInfo"></AppHeader>
-      <div class="app-view-content flex col flex1">
+      <div class="app-view-content flex col flex1" v-show="renderInterface && dataLoaded">
         <router-view 
           class="flex1" 
           :userInfo="userInfo"
@@ -13,7 +13,7 @@
       </div>
     </div>
   </div>
-  <div id="app" v-else>
+    <div id="app" v-else>
       <router-view class="login-form-wrapper flex col flex1"></router-view>
   </div>
 </template>
@@ -34,7 +34,7 @@
         return (this.$route.fullPath.indexOf('interface') >= 0)
       },
       dataLoaded () {
-        return !!this.userInfo && !!this.currentOrganizationScope
+        return !!this.userInfo && this.userOrgasLoaded && this.currentOrganizationScope.length > 0
       },
       userInfo () {
         return this.$store.state.userInfo
@@ -43,16 +43,19 @@
         return this.$store.state.userOrganizations
       },
       currentOrganizationScope() {
-        if(this.orgasLoaded && this.userOrgasLoaded) return this.$store.getters.getCurrentOrganizationScope()
+        if(this.userOrgasLoaded === true) {
+          const orgaScopeId = this.$store.getters.getCurrentOrganizationScope()
+          return orgaScopeId
+        }
         return null
       }
     },
+  
     async mounted () {
       if(this.renderInterface){
         await this.getuserInfo()
-        await this.dispatchOrganizations()
         await this.dispatchUserOrganizations()
-
+          
         bus.$on('set_organization_scope', (data) =>{
           this.setOrganizationScope(data.organizationId)
         })
@@ -71,16 +74,10 @@
         this.$options.filters.setCookie('cm_orga_scope', organizationId, 7)
           if(this.$route.path === '/interface/conversations/') {
             await this.getuserInfo()
-            await this.dispatchOrganizations()
             await this.dispatchUserOrganizations()
-
           } else {
             window.location.href = '/interface/conversations/'
           }
-      },
-      
-      async dispatchOrganizations() {
-        this.orgasLoaded = await this.$options.filters.dispatchStore('getOrganizations')
       },
       async dispatchUserOrganizations() {
         this.userOrgasLoaded = await this.$options.filters.dispatchStore('getUserOrganizations')

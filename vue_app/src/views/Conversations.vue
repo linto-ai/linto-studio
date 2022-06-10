@@ -1,5 +1,5 @@
 <template>
-  <div class="flex col scrollable" v-if="dataLoaded">
+  <div class="flex col scrollable" >
     <h1>Conversations</h1>
     <div class="flex row">
       <a href="/interface/conversations/create" class="btn" style="margin-bottom: 10px;">Create conversation</a>
@@ -22,7 +22,7 @@
         </tr>
       </tbody>
     </table>
-    <span v-else class="no-result">No conversation found</span>
+    <span v-else class="no-result">No conversation found</span> 
   </div>
 </template>
 <script>
@@ -31,46 +31,24 @@ export default {
   data() {
     return {
       userOrgasLoaded: false,
-      orgasLoaded: false,
       convosLoaded: false,
       userRightsLoaded: false
     }
   },
   computed: {
-    dataLoaded () {
-      return !!this.currentOrganization && !!this.conversations 
-    },
-    userOrganizations () {
-      return this.$store.state.userOrganizations
-    },
-    currentOrganization () {
-      if(this.orgasLoaded && this.userOrgasLoaded) return this.$store.getters.getOrganizationById(this.currentOrganizationScope)
-      return null
-    },
-    userConvos () {
-      return this.$store.state.conversations
-    },
     conversations() {
-      if(this.currentOrganization !== null && this.convosLoaded && this.userRightsLoaded) {
-        return this.$store.getters.getConversationByOrganizationScope(this.currentOrganizationScope)
-      }
-      return []
-    },
-    userRights (){
-      return this.$store.state.userRights
+        return this.$store.state.conversationsList || []
+    }
+  },
+  watch: {
+    async currentOrganizationScope(data) {
+      await this.dispatchConversations()
     }
   },
   async mounted () {
-    await this.dispatchUserRights()
-    await this.dispatchOrganizations()
-    await this.dispatchUserOrganizations()
     await this.dispatchConversations()
-
   },
   methods: {
-    getUserRightTxt(right) {
-      return this.$store.getters.getUserRightTxt(right)
-    },
     dateToJMYHMS(date) {
       return this.$options.filters.dateToJMYHMS(date)
     },
@@ -78,16 +56,10 @@ export default {
       return this.$options.filters.timeToHMS(time)
     },
     async dispatchConversations() {
-      this.convosLoaded = await this.$options.filters.dispatchStore('getConversations')
-    },
-    async dispatchOrganizations() {
-      this.orgasLoaded = await this.$options.filters.dispatchStore('getOrganizations')
-    },
-    async dispatchUserOrganizations() {
-      this.userOrgasLoaded = await this.$options.filters.dispatchStore('getUserOrganizations')
-    },
-    async dispatchUserRights() {
-      this.userRightsLoaded = await this.$options.filters.dispatchStore('getUserRights')
+      if(!!this.currentOrganizationScope && this.currentOrganizationScope.length > 0) {
+        this.convosLoaded = await this.$options.filters.dispatchStore('getConversationsByOrganization')
+      }
+      else this.convosLoaded = false
     }
   }
 }

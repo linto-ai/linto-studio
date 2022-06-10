@@ -1,7 +1,6 @@
 <template>
-  <div class="flex col scrollable">
+  <div class="flex col scrollable" v-if="dataLoaded">
     <div class="flex row conversation-actions">
-      
       <ConversationShare 
         :userInfo="userInfo" 
         :currentOrganizationScope="currentOrganizationScope"
@@ -9,73 +8,55 @@
       ></ConversationShare>
     </div>
     <h1>Transcription</h1>
-    <div id="conversation"></div>
+    <div id="conversationss"></div>
     <div id="conversation-audio-player"></div>
   </div>
 </template>
 <script>
 import ConversationShare from '@/components/ConversationShare.vue'
 import { bus } from '../main.js'
-import Editor from '../../public/js/editor.js'
+import Editor from '../../public/js/transcript-editor/editor.js'
 
 export default {
   props:["userInfo", "currentOrganizationScope"],
   data() {
     return {
-      userOrgasLoaded: false,
-      orgasLoaded: false,
-      convosLoaded: false,
-      userRightsLoaded: false,
-      usersLoaded: false,
+      conversationLoaded: false,
       conversationId: '',
       editor: null,
+      editorInitialized: false,
       editorSettings: {},
       editorDebounce: null
     }
   },
   async mounted () {
-    await this.dispatchOrganizations() 
-    await this.dispatchUserOrganizations()
-    await this.dispatchConversations()
-    await this.dispatchUsers()
-    await this.dispatchUserRights()
     this.conversationId = this.$route.params.conversationId
-
-    
+    await this.dispatchConversation()
+    this.initTranscriptEditor()
   },
   computed: {
     dataLoaded() {
-      return this.conversation !== null && this.conversationUsers !== null && this.userRightsLoaded
+      return this.conversationLoaded
     },
-    conversation(){
-      if(this.conversationId !== '' && this.orgasLoaded) {
-        return this.$store.getters.getConversationById(this.conversationId)
-      } 
-      return null
+    conversation() {
+      return this.$store.state.conversation
     },
-    currentOrganization() {
-      if(this.conversations !== null) return this.$store.getters.getOrganizationById(this.conversation.organization.organizationId)
-      return null
+    userRight() {
+      if(this.conversationLoaded) {
+        return this.conversation.userAccess.right
+      }
+      return 0
     },
-    userRights(){
+    userRights() {
       return this.$store.state.userRights
     }
   },
-  watch: {
-    dataLoaded(data){
-      if(data) {
-        this.initTranscriptEditor()
-      } else{
-        this.editor = null
-      }
-    }
-  },
   methods: {
-    async initTranscriptEditor(){
+    initTranscriptEditor(){
         // TODO >  Get editor settings cookie for pagination ?
         this.editorSettings = {
           conversationId: this.conversationId,
-          wrapperId: 'conversation',
+          wrapperId: 'conversationss',
           playerWrapperId: 'conversation-audio-player',
           language: 'fr-FR',
           pagination: 4,
@@ -86,7 +67,6 @@ export default {
     },
     bindEditorEvents() {
       this.editor.conversation.addEventListener('conversation_update', async (data) => {
-          console.log('> Conversation update')
           if(this.editorDebounce === null) {
             this.editorDebounce = setTimeout(async () => {
               await this.updateConversationText(this.editor.conversation.conversationObj.text)
@@ -107,7 +87,7 @@ export default {
       try {
         let req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversations/${this.conversationId}`, 'patch', {text}) 
         if(req.status >= 200 && req.status < 300 && (!!req.data.msg || !!req.data.message)) {
-          await this.dispatchConversations()
+          await this.dispatchConversation()
           bus.$emit('app_notif', {
             status: 'success',
             message: req.data.msg || req.data.message,
@@ -130,7 +110,7 @@ export default {
       try {
         let req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversations/${this.conversationId}`, 'patch', {speakers}) 
         if(req.status >= 200 && req.status < 300 && (!!req.data.msg || !!req.data.message)) {
-          await this.dispatchConversations()
+          await this.dispatchConversation()
           bus.$emit('app_notif', {
             status: 'success',
             message: req.data.msg || req.data.message,
@@ -155,26 +135,8 @@ export default {
     dateToJMYHMS(date) {
       return this.$options.filters.dateToJMYHMS(date)
     },
-    getUserById(id) {
-      return this.$store.getters.getUserById(id)
-    },
-    getOrganizationById(id){
-      return this.$store.getters.getOrganizationById(id)
-    },
-    async dispatchUsers() {
-      this.usersLoaded = await this.$options.filters.dispatchStore('getAllUsers')
-    },
-    async dispatchConversations() {
-      this.convosLoaded = await this.$options.filters.dispatchStore('getConversations')
-    },
-    async dispatchOrganizations() {
-      this.orgasLoaded = await this.$options.filters.dispatchStore('getOrganizations')
-    },
-    async dispatchUserOrganizations() {
-      this.userOrgasLoaded = await this.$options.filters.dispatchStore('getUserOrganizations')
-    },
-    async dispatchUserRights() {
-      this.userRightsLoaded = await this.$options.filters.dispatchStore('getUserRights')
+    async dispatchConversation() {
+      this.conversationLoaded = await this.$options.filters.dispatchStore('getConversationById', {conversationId: this.conversationId})
     }
   },
   components: {

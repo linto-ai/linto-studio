@@ -47,18 +47,10 @@ export default ({
     })
   },
   methods:{
-   async close(){
-      this.hide()
-      if(this.modalData.actionName === 'unshare_user_conversation'){
-            await this.dispatchConversations()
-            await this.dispatchUsers()
-            await this.dispatchUserRights()
-      }
-    },
     show(){
       this.modalShow = true
     }, 
-    hide(){
+    close(){
       this.modalShow = false
     },
     async exec (actionName) {
@@ -74,7 +66,7 @@ export default ({
     },
     unshareUserConversation() {
       bus.$emit('confirm_unshare_user_conversation', {user: this.modalData.user})
-      this.hide()
+      this.close()
     },
     async leaveOrganization() {
       try {
@@ -85,7 +77,7 @@ export default ({
             status: 'success',
             message: req.data.message || req.data.msg || `You leaved the organization "${this.modalData.organization.name}"`,
             timeout: 0,
-            redirect: '/interface/organizations'
+            redirect: '/interface/conversations'
           })
           this.close()
         } else {
@@ -172,14 +164,8 @@ export default ({
         })
       }
     },
-     async dispatchUsers() {
-      this.usersLoaded = await this.$options.filters.dispatchStore('getAllUsers')
-    },
     async dispatchConversations() {
       this.convosLoaded = await this.$options.filters.dispatchStore('getConversations')
-    },
-    async dispatchOrganizations() {
-      this.orgasLoaded = await this.$options.filters.dispatchStore('getOrganizations')
     },
     async dispatchUserOrganizations() {
       this.userOrgasLoaded = await this.$options.filters.dispatchStore('getUserOrganizations')
