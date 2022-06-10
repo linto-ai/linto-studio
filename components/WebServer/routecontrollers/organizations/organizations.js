@@ -24,11 +24,12 @@ async function searchOrganizationByName(req, res, next) {
             .filter(orga => orga.owner === req.payload.data.userId || !orga.personal)
             .map(orga => {
                 const isInOrga = orga.users.some(oUser => oUser.userId === req.payload.data.userId)
+                if (!isInOrga && orga.type === TYPES.private) return null
+
                 if (!isInOrga) {
                     orga.users = orga.users.filter(oUser => oUser.visibility === TYPES.public)
                 }
                 delete orga.users
-                if (!isInOrga && orga.type === TYPES.private) return null
 
                 return orga
             }).filter(orga => orga !== null)
@@ -80,9 +81,10 @@ async function getOrganization(req, res, next) {
         if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
         let organization = await orgaUtility.getOrganization(req.params.organizationId)
 
-        if (organization.type === TYPES.private) throw new OrganizationForbidden()
+        const isInOrga = organization.users.some(oUser => oUser.userId === req.payload.data.userId)
+
+        if (!isInOrga && organization.type === TYPES.private) throw new OrganizationForbidden()
         else {
-            const isInOrga = organization.users.some(oUser => oUser.userId === req.payload.data.userId)
             if (!isInOrga) {
                 organization.users = organization.users.filter(oUser => oUser.visibility === TYPES.public)
             }
@@ -135,11 +137,12 @@ async function listOrganization(req, res, next) {
             .filter(orga => orga.owner === req.payload.data.userId || !orga.personal)
             .map(orga => {
                 const isInOrga = orga.users.some(oUser => oUser.userId === req.payload.data.userId)
+                if (!isInOrga && orga.type === TYPES.private) return null
+
                 if (!isInOrga) {
                     orga.users = orga.users.filter(oUser => oUser.visibility === TYPES.public)
                 }
 
-                if (!isInOrga && orga.type === TYPES.private) return null
                 return orga
             }).filter(orga => orga !== null)
 
