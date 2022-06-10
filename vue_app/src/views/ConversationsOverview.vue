@@ -7,28 +7,27 @@
         :currentOrganizationScope="currentOrganizationScope"
         :conversation="conversation"
       ></ConversationShare>
-      <button v-if="userRights.hasRightAccess(conversation.userRight, userRights.DELETE)" @click="deleteConversationConfirm()">Delete</button>
+      <button v-if="userRights.hasRightAccess(userRight, userRights.DELETE)" @click="deleteConversationConfirm()">Delete</button>
     </div>
-    
     <div class="flex col">
       <h1>Conversation overview</h1>
       <span class="conversation-dates">Created at : {{dateToJMYHMS(conversation.created)}} / Last update : {{dateToJMYHMS(conversation.last_update)}}</span>
     </div>
     <div class="flex row">
-      <!-- LEFT COLUMN -->
+       <!-- LEFT COLUMN -->
       <div class="flex col flex1">
         <span class="form-label">Global information</span>
         <div class="flex col form-field-wrapper">
           <!-- conversation name -->
-          <div class="form-field flex col" v-if="userRights.hasRightAccess(conversation.userRight, userRights.WRITE)"
-          >
+          <div class="form-field flex col" v-if="userRights.hasRightAccess(userRight, userRights.WRITE)">
             <span class="form-label">Title</span>
             <input  type="text" v-model="conversationName.value" @blur="testConverationTitle()">
             <span class="error-field" v-if="conversationName.error !== null">{{conversationName.error}}</span>
           </div>
           <div v-else>{{ conversationName.value }}</div>
+          
           <!-- conversation description -->
-          <div class="form-field flex col" v-if="userRights.hasRightAccess(conversation.userRight, userRights.WRITE)">
+            <div class="form-field flex col" v-if="userRights.hasRightAccess(userRight, userRights.WRITE)">
             <span class="form-label">Description</span>
             <textarea 
               v-model="conversationDescription.value" 
@@ -37,8 +36,12 @@
             ></textarea>
             <span class="error-field" v-if="conversationDescription.error !== null">{{conversationDescription.error}}</span>
           </div>
-          <!-- Conversation Agenda -->
-          <div v-if="!userRights.hasRightAccess(conversation.userRight, userRights.WRITE) &&  conversationDescription.value.length > 0">{{ conversationDescription.value }}</div>
+          <div v-if="!userRights.hasRightAccess(userRight, userRights.WRITE) &&  conversationDescription.value.length > 0">
+            <span class="form-label">Description</span>
+            <div>{{ conversationDescription.value }}</div>
+          </div>
+          
+          <!-- Conversation Agenda  
           <div class="form-field flex col" v-if="userRights.hasRightAccess(conversation.userRight, userRights.WRITE)">
             <span class="form-label">Agenda</span>
             <textarea 
@@ -48,13 +51,17 @@
             ></textarea>
             <span class="error-field" v-if="conversationAgenda.error !== null">{{conversationAgenda.error}}</span>
           </div>
-          <div v-if="!userRights.hasRightAccess(conversation.userRight, userRights.WRITE) && conversationAgenda.value.length > 0">{{conversationAgenda.value }}
+          <div v-if="!userRights.hasRightAccess(conversation.userRight, userRights.WRITE) && conversationAgenda.value.length > 0">
+            <span class="form-label">Agenda</span>
+            <div>{{conversationAgenda.value }}</div>
           </div>
+        </div> -->
         </div>
+        
         <!-- Organization members -->
-        <span class="form-label" v-if="userInOrga">Organization members</span>
-        <div class="flex col form-field-wrapper" v-if="userInOrga && userRights.hasRightAccess(conversation.userRight, userRights.SHARE)">
-          <div class="flex col form-field" v-if="!currentOrganization.personal">
+        <span class="form-label" v-if="userInOrga && !conversation.personal">Organization members</span>
+        <div class="flex col form-field-wrapper" v-if="userInOrga && !conversation.personal && userRights.hasRightAccess(userRight, userRights.SHARE)">
+          <div class="flex col form-field">
             <div class="flex row">
               <input type="checkbox" v-model="organizationMemberAccess" @change="toggleOrgaMembersAccess()"> <span class="form-label">Grant organization member access</span>
             </div>
@@ -63,10 +70,11 @@
             </select>
           </div>
         </div>
-        <div class="flex col form-field-wrapper" v-if="userInOrga && !userRights.hasRightAccess(conversation.userRight, userRights.SHARE) && organizationMemberAccess">
+        <div class="flex col form-field-wrapper" v-if="userInOrga && !conversation.personal && !userRights.hasRightAccess(userRight, userRights.SHARE)">
           Members {{ rigthsList.find(right => right.value === membersRight.value ).txt.toLowerCase() }}
         </div>
       </div>
+      
       <!-- RIGHT COLUMN -->
       <div class="flex col flex1">
         <!-- Media file -->
@@ -83,7 +91,6 @@
         <span class="form-label">Transcription settings</span>
         <div class="flex col form-field-wrapper">
           <div class="conversation-info-item fex row">
-
             <span class="info-list-label">Diarization : </span><span class="info-list-value">{{ conversation.transcriptionConfig.diarizationConfig.enableDiarization ? 'enabled' : 'disabled' }}</span>
             <span v-if="conversation.transcriptionConfig.diarizationConfig.enableDiarization">({{ conversation.transcriptionConfig.diarizationConfig.numberOfSpeaker }} speakers)</span>
           </div>
@@ -107,11 +114,7 @@ export default {
   props:["userInfo", "currentOrganizationScope"],
   data() {
     return {
-      userOrgasLoaded: false,
-      orgasLoaded: false,
-      convosLoaded: false,
-      userRightsLoaded: false,
-      usersLoaded: false,
+      conversationLoaded: false,
       conversationId: '',
       conversationName: {
         value:'',
@@ -119,11 +122,6 @@ export default {
         valid: false
       },
       conversationDescription: {
-        value:'',
-        error: null,
-        valid: true
-      },
-      conversationAgenda: {
         value:'',
         error: null,
         valid: true
@@ -156,20 +154,32 @@ export default {
           txt: 'Full rights'
         }
       ],
-      
     }
   },
-  async mounted () {
-    await this.dispatchOrganizations() 
-    await this.dispatchUserOrganizations()
-    await this.dispatchConversations()
-    await this.dispatchUsers()
-    await this.dispatchUserRights()
-
-
-    this.conversationId = this.$route.params.conversationId
+  computed: {
+    dataLoaded() {
+      return this.conversationLoaded
+    },
+    conversation() {
+      return this.$store.state.conversation
+    },
+    userOrganizations() {
+      return this.$store.state.userOrganizations
+    },
+    userInOrga() {
+      if(this.conversationLoaded){
+        return this.conversation.userAccess.role > 0
+      }
+      return false
+    },
+    userRight() {
+      return this.conversation.userAccess.right
+    },
+    userRights() {
+      return this.$store.state.userRights
+    }
   },
-  watch:{
+   watch:{
     dataLoaded(data) {
       if(data) {
         this.conversationName = {
@@ -189,33 +199,13 @@ export default {
         }
         this.organizationMemberAccess = this.conversation.organization.membersRight !== 0
         this.membersRight.value = this.conversation.organization.membersRight
-        
       }
     },
     
   },
-  computed: {
-    dataLoaded() {
-      return this.conversation !== null && this.conversationUsers !== null && this.userRightsLoaded
-    },
-    conversation(){
-      if(this.conversationId !== '' && this.orgasLoaded) {
-        return this.$store.getters.getConversationById(this.conversationId)
-      } 
-      return null
-    },
-    currentOrganization() {
-      if(this.conversations !== null) return this.$store.getters.getOrganizationById(this.conversation.organization.organizationId)
-      return null
-    },
-    userRights(){
-      return this.$store.state.userRights
-    },
-    userInOrga() {
-      let userOrgas = this.$store.state.userOrganizations
-      let userIndex = userOrgas.findIndex(orga => orga._id === this.conversation.organization.organizationId)
-      return userIndex >= 0
-    }
+  async mounted(){
+    this.conversationId = this.$route.params.conversationId
+    await this.dispatchConversation()
   },
   methods: {
     async testConverationTitle () {
@@ -243,7 +233,7 @@ export default {
 
         let req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/conversations/${this.conversationId}`, 'patch', payload) 
         if(req.status >= 200 && req.status < 300 && (!!req.data.msg || !!req.data.message)) {
-          await this.dispatchConversations()
+          await this.dispatchConversation()
           bus.$emit('app_notif', {
             status: 'success',
             message: req.data.msg || req.data.message,
@@ -292,26 +282,8 @@ export default {
     dateToJMYHMS(date) {
       return this.$options.filters.dateToJMYHMS(date)
     },
-    getUserById(id) {
-      return this.$store.getters.getUserById(id)
-    },
-    getOrganizationById(id){
-      return this.$store.getters.getOrganizationById(id)
-    },
-    async dispatchUsers() {
-      this.usersLoaded = await this.$options.filters.dispatchStore('getAllUsers')
-    },
-    async dispatchConversations() {
-      this.convosLoaded = await this.$options.filters.dispatchStore('getConversations')
-    },
-    async dispatchOrganizations() {
-      this.orgasLoaded = await this.$options.filters.dispatchStore('getOrganizations')
-    },
-    async dispatchUserOrganizations() {
-      this.userOrgasLoaded = await this.$options.filters.dispatchStore('getUserOrganizations')
-    },
-    async dispatchUserRights() {
-      this.userRightsLoaded = await this.$options.filters.dispatchStore('getUserRights')
+    async dispatchConversation() {
+      this.conversationLoaded = await this.$options.filters.dispatchStore('getConversationById', {conversationId: this.conversationId})
     }
   },
   components: {

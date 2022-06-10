@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
-import { format } from 'path'
 
 Vue.use(Vuex)
 
@@ -80,9 +79,7 @@ export default new Vuex.Store({
     state: {
         userInfo: '',
         users: [],
-        userOrganizations: [],
-        organizations: [],
-        conversations: [],
+        publicUsers: [],
         userRights: Object.freeze({
             "UNDEFINED": 0,
             "READ": 1,
@@ -91,30 +88,39 @@ export default new Vuex.Store({
             "DELETE": 8,
             "SHARE": 16,
             hasRightAccess: (userRight, desiredRight) => ((userRight & desiredRight) == desiredRight)
-        })
+        }),
+        conversationsList: [],
+        conversation: [], // current conversations
+        conversationUsers: [],
+        publicOrganizations: [],
+        userOrganizations: [],
+        organization: [] // current organization
     },
     mutations: {
         SET_USER_INFOS: (state, data) => {
             state.userInfo = data
         },
-        SET_USERS: (state, data) => {
-            state.users = data
+        SET_CONVERSATIONS_LIST: (state, data) => {
+            state.conversationsList = data
+        },
+        SET_CURRENT_CONVERSATION: (state, data) => {
+            state.conversation = data
         },
         SET_USER_ORGANIZATIONS: (state, data) => {
             state.userOrganizations = data
         },
-        SET_ORGANIZATIONS: (state, data) => {
-            state.organizations = data
+        SET_CURRENT_ORGANIZATION: (state, data) => {
+            state.organization = data
         },
-        SET_CONVERSATIONS: (state, data) => {
-            state.conversations = data
+        SET_PUBLIC_USERS: (state, data) => {
+            state.publicUsers = data
+        },
+        SET_CONVERSATION_USERS: (state, data) => {
+            state.conversationUsers = data
         }
     },
     actions: {
-        getUserRights: ({ commit, state }) => {
-            return state.userRights
-        },
-        getuserInfo: async({ commit, state }) =>  {
+        getuserInfo: async({ commit, state }) => {
             try {
                 const token = getCookie('authToken')
                 const userId = getCookie('userId')
@@ -123,30 +129,52 @@ export default new Vuex.Store({
                         'Authorization': `Bearer ${token}`
                     }
                 })
+
                 commit('SET_USER_INFOS', { token, ...getUserInfos.data })
                 return state.userInfo
             } catch (error) {
                 return error.toString()
             }
         },
-        getAllUsers: async({ commit, state }) =>  {
+        getConversationsByOrganization: async({ commit, state }) => {
             try {
                 const token = getCookie('authToken')
-                const getAllUsers = await axios.get(`${process.env.VUE_APP_CONVO_API}/users`, {
+                const organizationScope = getCookie('cm_orga_scope')
+                const getConversations = await axios.get(`${process.env.VUE_APP_CONVO_API}/organizations/${organizationScope}/conversation`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 })
-                commit('SET_USERS', getAllUsers.data)
-                return state.users
+                let conversations = getConversations.data
+
+                commit('SET_CONVERSATIONS_LIST', conversations)
+                return state.conversationsList
             } catch (error) {
+                console.error(error)
                 return error.toString()
             }
         },
-        getUserOrganizations: async({  commit, state }) => {
+        getConversationById: async({ commit, state }, paylaod) => {
+            try {
+                let conversationId = paylaod.conversationId
+                const token = getCookie('authToken')
+
+                const getConversation = await axios.get(`${process.env.VUE_APP_CONVO_API}/conversations/${conversationId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                let conversation = getConversation.data
+                commit('SET_CURRENT_CONVERSATION', conversation)
+                return state.conversation
+            } catch (error) {
+                console.error(error)
+                return error.toString()
+            }
+        },
+        getUserOrganizations: async({ commit, state }) => {
             try {
                 const token = getCookie('authToken')
-                const userId = getCookie('userId')
                 const getUserOrganizations = await axios.get(`${process.env.VUE_APP_CONVO_API}/organizations/user`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -156,44 +184,38 @@ export default new Vuex.Store({
 
                 commit('SET_USER_ORGANIZATIONS', userOrganizations)
                 return state.userOrganizations
-
             } catch (error) {
                 console.error(error)
                 return error.toString()
             }
         },
-        getOrganizations: async({  commit, state }) => {
+        getOrganizationById: async({ commit, state }, payload) => {
             try {
                 const token = getCookie('authToken')
-                const getOrganizations = await axios.get(`${process.env.VUE_APP_CONVO_API}/organizations`, {
+                const getOrganization = await axios.get(`${process.env.VUE_APP_CONVO_API}/organizations/${payload.organizationId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 })
-                commit('SET_ORGANIZATIONS', getOrganizations.data.organizations)
-                return state.organizations
-
+                let organization = getOrganization.data
+                commit('SET_CURRENT_ORGANIZATION', organization)
+                return state.organization
             } catch (error) {
                 console.error(error)
                 return error.toString()
             }
         },
-        getConversations: async({  commit, state }) => {
+        getUsersByConversationId: async({ commit, state }, payload) => {
             try {
                 const token = getCookie('authToken')
-                const userId = getCookie('userId')
-                const getConversations = await axios.get(`${process.env.VUE_APP_CONVO_API}/conversations/list`, {
+                const getUsers = await axios.get(`${process.env.VUE_APP_CONVO_API}/conversations/${payload.conversationId}/users`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 })
-                let conversations = getConversations.data.conversations
-                for (let conv of conversations) {
-                    conv.userRight = getUserRightByConversation(conv, state, userId)
-                }
-                commit('SET_CONVERSATIONS', conversations)
-                return state.conversations
-
+                let users = getUsers.data
+                commit('SET_CONVERSATION_USERS', users)
+                return state.conversationUsers
             } catch (error) {
                 console.error(error)
                 return error.toString()
@@ -201,15 +223,6 @@ export default new Vuex.Store({
         }
     },
     getters: {
-        getUserById: (state) => (userId) => {
-            return state.users.find(usr => usr._id === userId)
-        },
-        getOrganizationById: (state) => (organizationId) => {
-            return state.userOrganizations.find(orga => orga._id === organizationId)
-        },
-        getConversationById: (state) => (conversationId) => {
-            return state.conversations.find(conv => conv._id === conversationId)
-        },
         getCurrentOrganizationScope: (state) => () => {
             let orgaCookie = getCookie('cm_orga_scope')
             if (orgaCookie !== null && orgaCookie !== '' && orgaCookie !== 'undefined' && state.userOrganizations.findIndex(org => org._id === orgaCookie) >= 0) {
@@ -220,58 +233,31 @@ export default new Vuex.Store({
                 return target._id
             }
         },
-        getConversationByOrganizationScope: (state) => (organizationScope) => {
-            let userId = getCookie('userId')
-            let conversations = state.conversations
-            let userOrganizationsIds = []
-            for (let userOrga of state.userOrganizations) {
-                userOrganizationsIds.push(userOrga._id)
-            }
+        searchPublicUsers: (state) => async(payload) => {
+            try {
+                const token = getCookie('authToken')
+                const getPublicUsers = await axios(`${process.env.VUE_APP_CONVO_API}/users/search`, {
+                    method: 'post',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    data: { search: payload.search }
+                })
+                return getPublicUsers.data
 
-            let targetOrga = state.userOrganizations.find(orga => orga._id === organizationScope)
-            let userConvos = []
-
-            // personal organization
-            if (targetOrga.owner === userId && targetOrga.personal) {
-                if (conversations.length > 0) {
-                    conversations.map(conv => {
-                        let convoOrganizationId = conv.organization.organizationId
-                            // Conversations created by user
-                        if (convoOrganizationId === organizationScope) {
-                            userConvos.push(conv)
-                        }
-                        // Conversations shared with user
-                        else {
-                            if (convoOrganizationId.indexOf(userOrganizationsIds) < 0) {
-                                let userIndex = conv.sharedWithUsers.findIndex(usr => usr.userId === userId)
-                                if (userIndex >= 0) {
-                                    userConvos.push(conv)
-                                }
-                            }
-                        }
-                    })
-                }
-                return userConvos
-            } else {
-                let organizationConvos = conversations.filter(conv => conv.organization.organizationId === organizationScope)
-                let userRole = targetOrga.users.find(usr => usr.userId === userId).role
-                if (userRole > 1) {
-                    return organizationConvos
-                } else {
-                    return organizationConvos.filter(conv => conv.organization.membersRight > 0)
-                }
+            } catch (error) {
+                console.error(error)
+                return error.toString()
             }
         },
-        getUserRoleInOrganization: (state) => (organizationId) => {
-            let organization = state.userOrganizations.find(orga => orga._id === organizationId)
-            let userId = getCookie('userId')
-            let orgaRoles = []
-            orgaRoles[1] = 'member'
-            orgaRoles[2] = 'maintainer'
-            orgaRoles[3] = 'admin'
-
-            let userRole = organization.users.find(user => user.userId === userId).role
-            return {  name: orgaRoles[userRole], value: userRole }
+        getUserRoleInOrganization: (state) => () => {
+            let organization = state.organization
+            const userId = getCookie('userId')
+            if (organization.owner === userId) return 3
+            else {
+                let findUser = organization.users.filter(usr => usr._id === userId)
+                return findUser.length > 0 ? findUser[0].role : 0
+            }
         },
         getUserRightTxt: (state) => (right) => {
             if (state.userRights.hasRightAccess(right, state.userRights.DELETE)) return 'Full rights'
@@ -281,60 +267,6 @@ export default new Vuex.Store({
             else if (state.userRights.hasRightAccess(right, state.userRights.READ)) return 'Can read'
             else return 'No access'
         },
-        getUsersByConversation: (state) => (conversationId) => {
-            let conversation = state.conversations.find(conv => conv._id === conversationId)
-            let membersRight = conversation.organization.membersRight
-            let organization = state.organizations.find(orga => orga._id === conversation.organization.organizationId)
-            let convUsers = []
-            let organizationUsers = []
-            let sharedWithUsers = []
 
-            // Organization users
-            for (let user of organization.users) {
-                if (membersRight === 0) {
-                    if (user.role > 1) {
-                        let userInfos = state.users.find(usr => usr._id === user.userId)
-                        userInfos.role = user.role
-                        userInfos.visibility = user.visibility
-                        userInfos.right = getRightByRole(user.role)
-                    }
-                } else {
-                    let userInfos = state.users.find(usr => usr._id === user.userId)
-                    userInfos.role = user.role
-                    userInfos.visibility = user.visibility
-                    if (user.role === 1) {
-                        userInfos.right = membersRight
-                    } else {
-                        userInfos.right = getRightByRole(user.role)
-                    }
-                    organizationUsers.push(userInfos)
-                }
-            }
-            // Organization users with custom rights
-            let customRights = conversation.organization.customRights
-            if (customRights.length > 0) {
-                organizationUsers.map(ouser => {
-                    if (customRights.findIndex(cr => cr.userId === ouser._id) >= 0) {
-                        ouser.right = customRights.find(cr => cr.userId === ouser._id).right
-                    }
-                })
-            }
-
-            if (conversation.sharedWithUsers) {
-                for (let swuser of conversation.sharedWithUsers) {
-                    let userInfos = state.users.find(usr => usr._id === swuser.userId)
-                    userInfos.right = swuser.right
-                    userInfos.visibility = swuser.visibility
-                    sharedWithUsers.push(userInfos)
-                }
-            }
-
-            convUsers = {
-                organization: organizationUsers,
-                sharedWithUsers
-            }
-            return convUsers
-
-        }
     }
 })

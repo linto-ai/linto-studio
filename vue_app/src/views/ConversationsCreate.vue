@@ -367,7 +367,7 @@ export default {
       return
     },
     getOrganizationById(id){
-      return this.$store.getters.getOrganizationById(id)
+      return this.userOrganizations.find(orga => orga._id === id)
     },
     handleFileUpload() {
       this.audioFile.value = this.$refs.file.files[0]

@@ -1,0 +1,1840 @@
+{
+    "_id": "61854d7e8519a840f0ec8804",
+    "name": "demonstration OS experience",
+    "description": "Transcription de la vidéo de démonstration pour le salon Open Source Experience",
+    "conversationType": "",
+    "audio": {
+        "size": 2317732,
+        "filename": "linto-osx.wav",
+        "duration": 72.4266875,
+        "mimetype": "audio/wav",
+        "filepath": "audios/af5f13bd-05d9-4de2-9ae0-c363d4d85f88.wav"
+    },
+    "file_metadata": {
+        "format": {
+            "tagTypes": [
+                "exif"
+            ],
+            "trackInfo": [],
+            "container": "WAVE",
+            "codec": "PCM",
+            "bitsPerSample": 16,
+            "sampleRate": 16000,
+            "numberOfChannels": 1,
+            "bitrate": 32000,
+            "lossless": true,
+            "numberOfSamples": 1158827,
+            "duration": 72.4266875
+        },
+        "native": {},
+        "quality": {
+            "warnings": []
+        },
+        "common": {
+            "track": {
+                "no": null,
+                "of": null
+            },
+            "disk": {
+                "no": null,
+                "of": null
+            },
+            "movementIndex": {},
+            "encodedby": "Lavf58.20.100"
+        }
+    },
+    "locked": 0,
+    "agenda": [
+        "un",
+        "deux"
+    ],
+    "abstract": "",
+    "owner": "608bcb7c25e3be67431c5898",
+    "sharedWith": [{
+            "user_id": "60be387758613b7dedd2a0e0",
+            "rights": 3
+        },
+        {
+            "user_id": "60bf2c7162639813c4e9baa0",
+            "rights": 1
+        }
+    ],
+    "highlights": [{
+        "hid": "37ee694f-7bec-4462-bc95-07c0a52796cd",
+        "label": "Noms",
+        "color": "#c2dcff"
+    }],
+    "keywords": [],
+    "speakers": [{
+            "speaker_id": "09f1bb3e-cdc1-45a3-9903-934d31036d4c",
+            "speaker_name": "Damien",
+            "etime": 7,
+            "stime": 4
+        },
+        {
+            "speaker_id": "8dc9d7f6-caf2-4915-9bf4-8ebeac39042b",
+            "speaker_name": "Rudy",
+            "etime": 26,
+            "stime": 23
+        },
+        {
+            "speaker_id": "d79935a0-5f21-4cff-8700-734c6514f7b3",
+            "speaker_name": "Romain",
+            "etime": 34,
+            "stime": 31
+        },
+        {
+            "speaker_id": "22e07100-71ce-4fd8-901a-fae6e879afff",
+            "speaker_name": "Yoann",
+            "etime": 52,
+            "stime": 49
+        }
+    ],
+    "text": [{
+            "speaker_id": "09f1bb3e-cdc1-45a3-9903-934d31036d4c",
+            "pos": 0,
+            "turn_id": "78d5a7c9-6a70-4a83-8145-8a3f10969036",
+            "words": [{
+                    "wid": "63f5bee8-a728-44ce-95e7-ffed5c9fbf04",
+                    "etime": 2.76,
+                    "stime": 2.37,
+                    "pos": 0,
+                    "word": "Bien",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "b03c6ad4-c80b-4e2e-9bfb-b8887cb2598c",
+                    "etime": 3.21,
+                    "stime": 2.79,
+                    "pos": 1,
+                    "word": "merci",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "99f29368-eeda-4462-bef7-32d454092849",
+                    "etime": 3.27,
+                    "stime": 3.21,
+                    "pos": 2,
+                    "word": "à",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "b6e97783-6e43-4c87-ada5-6475cbeeff81",
+                    "etime": 3.633559,
+                    "stime": 3.27,
+                    "pos": 3,
+                    "word": "tous",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "9fd08a53-2906-4903-b8dc-0c8295a816b1",
+                    "etime": 3.87,
+                    "stime": 3.75,
+                    "pos": 4,
+                    "word": "de",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "c125a543-a550-48da-82fd-f79b41b02d90",
+                    "etime": 3.989996,
+                    "stime": 3.87,
+                    "pos": 5,
+                    "word": "me",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "01e9eca7-351e-4913-b408-63322b684d82",
+                    "etime": 4.53,
+                    "stime": 3.989996,
+                    "pos": 6,
+                    "word": "rejoindre",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "ec7cf93d-ea6d-4dec-a316-d8f484e4a23a",
+                    "etime": 4.71,
+                    "stime": 4.53,
+                    "pos": 7,
+                    "word": "pour",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "28887acb-8ead-4975-aaa7-0238187b20fa",
+                    "etime": 4.89,
+                    "stime": 4.71,
+                    "pos": 8,
+                    "word": "cet",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "04a3c957-e3ae-4646-badd-ecff0f7a59d9",
+                    "etime": 5.79,
+                    "stime": 4.89,
+                    "pos": 9,
+                    "word": "enregistrement",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "2a6ed125-615b-4478-a017-701d2cdfb253",
+                    "etime": 5.999951,
+                    "stime": 5.85,
+                    "pos": 10,
+                    "word": "où",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "b45e0f9b-a4ed-4869-a313-08ad19177d45",
+                    "etime": 6.09,
+                    "stime": 5.999951,
+                    "pos": 11,
+                    "word": "on",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "c4d5704b-99f4-410a-ac55-856298d3d799",
+                    "etime": 6.21,
+                    "stime": 6.09,
+                    "pos": 12,
+                    "word": "va",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "acc788c1-3d76-43ac-8333-e3ba78cec724",
+                    "etime": 6.42,
+                    "stime": 6.21,
+                    "pos": 13,
+                    "word": "essayer",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "cbb90808-7ab9-42cc-b9f5-b84493333b1f",
+                    "etime": 6.51,
+                    "stime": 6.42,
+                    "pos": 14,
+                    "word": "de",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "3071fde2-e574-4554-811c-65431a0055ee",
+                    "etime": 6.9,
+                    "stime": 6.51,
+                    "pos": 15,
+                    "word": "démontrer",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "786c7a91-36dd-4612-a1c6-c5fdeed767c0",
+                    "etime": 6.99,
+                    "stime": 6.9,
+                    "pos": 16,
+                    "word": "un",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "88559758-df78-4385-8e00-997832ba296b",
+                    "etime": 7.17,
+                    "stime": 6.99,
+                    "pos": 17,
+                    "word": "peu",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "7846931b-b31e-48db-8c50-708864463ccd",
+                    "etime": 7.38,
+                    "stime": 7.17,
+                    "pos": 18,
+                    "word": "comment",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "afa432c9-eeff-4c5b-9841-db90f7db530d",
+                    "etime": 8.04,
+                    "stime": 7.38,
+                    "pos": 19,
+                    "word": "fonctionne",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "bba4e5a7-8b8a-44b9-bb8d-61445fa2d61e",
+                    "etime": 8.43,
+                    "stime": 8.13,
+                    "pos": 20,
+                    "word": "notre",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "27f7c314-c62d-4d52-a103-4e3ea7dff868",
+                    "etime": 8.91,
+                    "stime": 8.43,
+                    "pos": 21,
+                    "word": "système",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "0cba9134-7939-4f94-bae8-a919ca041453",
+                    "etime": 9.03,
+                    "stime": 8.91,
+                    "pos": 22,
+                    "word": "de",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "8c532f1c-2bd2-444d-ac7a-31a1a4cc6b9a",
+                    "etime": 10.05,
+                    "stime": 9.03,
+                    "pos": 23,
+                    "word": "transcription",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "69302bbb-af10-4f67-8967-de17ad968b01",
+                    "etime": 10.47,
+                    "stime": 10.11,
+                    "pos": 24,
+                    "word": "dans",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "2baa9129-c3ba-4741-82c9-e9d22a1a5208",
+                    "etime": 10.59,
+                    "stime": 10.47,
+                    "pos": 25,
+                    "word": "une",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "d8ac7270-9e7e-4135-84a2-6b2a313a290b",
+                    "etime": 11.04,
+                    "stime": 10.59,
+                    "pos": 26,
+                    "word": "plateforme",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "829ba593-aeee-4b1a-a5ee-3200bf573064",
+                    "etime": 11.13,
+                    "stime": 11.04,
+                    "pos": 27,
+                    "word": "de",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "bc399431-befe-47ca-99de-ce1a08d9f152",
+                    "etime": 12.09,
+                    "stime": 11.130013,
+                    "pos": 28,
+                    "word": "visioconférence",
+                    "highlights": [],
+                    "keywords": []
+                }
+            ]
+        },
+        {
+            "speaker_id": "09f1bb3e-cdc1-45a3-9903-934d31036d4c",
+            "pos": 1,
+            "turn_id": "24014e81-bd28-43d4-aac7-359daf904f7b",
+            "words": [{
+                    "wid": "2f788d4e-c1da-4c9a-b2aa-29d27a0f7229",
+                    "etime": 13.05,
+                    "stime": 12.84,
+                    "pos": 0,
+                    "word": "alors",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "15dde1c0-13a4-4f10-bae2-8ea47d78a6ae",
+                    "etime": 13.2,
+                    "stime": 13.05,
+                    "pos": 1,
+                    "word": "moi",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "0d962274-145e-4ea7-a948-33317c9053d7",
+                    "etime": 13.259736,
+                    "stime": 13.2,
+                    "pos": 2,
+                    "word": "de",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "5ea1cdcb-0ab0-42dd-abe9-79baec82dcd9",
+                    "etime": 13.32,
+                    "stime": 13.259736,
+                    "pos": 3,
+                    "word": "mon",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "fe9d0109-d27e-45ce-b182-0723352235e7",
+                    "etime": 13.83,
+                    "stime": 13.32,
+                    "pos": 4,
+                    "word": "côté",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "efe07592-85a9-4989-93a3-a0ba94e52fe0",
+                    "etime": 14.1,
+                    "stime": 13.89,
+                    "pos": 5,
+                    "word": "je",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "6e31ae5d-846a-4421-a816-2a92dc40e1d3",
+                    "etime": 14.58,
+                    "stime": 14.100268,
+                    "pos": 6,
+                    "word": "vois",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "f00749d7-e9f9-4e72-ba5e-a654970ed524",
+                    "etime": 14.73,
+                    "stime": 14.58,
+                    "pos": 7,
+                    "word": "que",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "ff81e90a-ec64-46a2-b571-0fdb7fb96ffb",
+                    "etime": 14.82,
+                    "stime": 14.73,
+                    "pos": 8,
+                    "word": "ce",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "0a81bf36-6685-4f16-be5a-1ab31d924f71",
+                    "etime": 14.94,
+                    "stime": 14.82,
+                    "pos": 9,
+                    "word": "que",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "87db09db-a317-4da3-8d2f-4c0557fecf83",
+                    "etime": 15.059995,
+                    "stime": 14.94,
+                    "pos": 10,
+                    "word": "je",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "41823617-25e9-4d74-8169-7155e403a35e",
+                    "etime": 15.341256,
+                    "stime": 15.06,
+                    "pos": 11,
+                    "word": "dis",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "acfb89fd-91e4-4996-a853-7426fb511342",
+                    "etime": 15.989753,
+                    "stime": 15.42,
+                    "pos": 12,
+                    "word": "fidèlement",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "467d8a99-48c9-4fb1-86a7-9148396531e6",
+                    "etime": 16.62,
+                    "stime": 15.99,
+                    "pos": 13,
+                    "word": "transcrit",
+                    "highlights": [],
+                    "keywords": []
+                }
+            ]
+        },
+        {
+            "speaker_id": "09f1bb3e-cdc1-45a3-9903-934d31036d4c",
+            "turn_id": "2dc7499b-372d-48a4-a9b0-2dd8164a803e",
+            "pos": 2,
+            "words": [{
+                    "wid": "903a96ea-009f-4556-9a04-16a8deb1996d",
+                    "etime": 18.244217,
+                    "stime": 17.716104,
+                    "pos": 0,
+                    "word": "rudy",
+                    "highlights": [
+                        "37ee694f-7bec-4462-bc95-07c0a52796cd"
+                    ],
+                    "keywords": []
+                },
+                {
+                    "wid": "ad77ceff-5597-4970-b808-d2914f5441b1",
+                    "etime": 18.36,
+                    "stime": 18.244217,
+                    "pos": 1,
+                    "word": "est-ce",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "1a4efc9d-ab38-4295-8ccd-1219e3a8e530",
+                    "etime": 18.48,
+                    "stime": 18.373693,
+                    "pos": 2,
+                    "word": "que",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "f81268a4-f179-4129-aee7-dd6ee0129af7",
+                    "etime": 18.66,
+                    "stime": 18.48,
+                    "pos": 3,
+                    "word": "tu",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "952bf5ec-9c1e-4e56-bfc4-62bc35c95f79",
+                    "etime": 18.72,
+                    "stime": 18.66,
+                    "pos": 4,
+                    "word": "as",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "9f9b38fd-09f8-4af7-b0f6-999db68bfa65",
+                    "etime": 18.81,
+                    "stime": 18.72,
+                    "pos": 5,
+                    "word": "les",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "d7db1ab6-f6ac-41d3-8427-d9b4035a5c10",
+                    "etime": 19.26,
+                    "stime": 18.81,
+                    "pos": 6,
+                    "word": "sous-titres",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "d58a8b88-3843-4ac3-93b5-8e266eab475f",
+                    "etime": 19.38,
+                    "stime": 19.26,
+                    "pos": 7,
+                    "word": "qui",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "ae681e5c-5d25-4e6c-ab59-2001e5efcb2f",
+                    "etime": 19.47,
+                    "stime": 19.38,
+                    "pos": 8,
+                    "word": "s'",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "6c7c0105-6c25-43c4-80cd-f947348ff3eb",
+                    "etime": 19.975972,
+                    "stime": 19.47,
+                    "pos": 9,
+                    "word": "affiche",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "62fb61af-985f-4413-b09b-60bfc1f3a111",
+                    "etime": 20.189848,
+                    "stime": 19.98,
+                    "pos": 10,
+                    "word": "toi",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "90eceffb-c430-4903-b701-f7f6f922966c",
+                    "etime": 20.55,
+                    "stime": 20.189848,
+                    "pos": 11,
+                    "word": "également",
+                    "highlights": [],
+                    "keywords": []
+                }
+            ]
+        },
+        {
+            "speaker_id": "8dc9d7f6-caf2-4915-9bf4-8ebeac39042b",
+            "pos": 3,
+            "turn_id": "8d94ad10-7453-426e-9760-2ce12a45c7ea",
+            "words": [{
+                    "wid": "878a1401-d6c2-462e-850b-1bcddc60614c",
+                    "etime": 22.349357,
+                    "stime": 22.080148,
+                    "pos": 0,
+                    "word": "oui",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "5b1c6948-68e3-4ea0-bbab-4ef82875e6ea",
+                    "etime": 22.62,
+                    "stime": 22.349357,
+                    "pos": 1,
+                    "word": "damien",
+                    "highlights": [
+                        "37ee694f-7bec-4462-bc95-07c0a52796cd"
+                    ],
+                    "keywords": []
+                },
+                {
+                    "wid": "723aa9e3-e858-44d3-8630-05b59dd522d1",
+                    "etime": 22.86,
+                    "stime": 22.62,
+                    "pos": 2,
+                    "word": "j'ai",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "2f4ef85c-d68f-42a2-914d-eec05bf06c31",
+                    "etime": 23.04,
+                    "stime": 22.92,
+                    "pos": 3,
+                    "word": "les",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "ae4c901f-dfc5-4e90-ad6e-0d074b48a2dd",
+                    "etime": 23.4,
+                    "stime": 23.04,
+                    "pos": 4,
+                    "word": "sous-titres",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "4050c378-0c45-45e0-9c15-dbdac5e9e091",
+                    "etime": 23.55,
+                    "stime": 23.4,
+                    "pos": 5,
+                    "word": "qui",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "fb07d1c5-a3d2-42ce-8669-c67d7be0b106",
+                    "etime": 23.64,
+                    "stime": 23.55,
+                    "pos": 6,
+                    "word": "s'",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "df8820ab-401c-4e11-ba35-1f658ba8b789",
+                    "etime": 24,
+                    "stime": 23.64,
+                    "pos": 7,
+                    "word": "affichent",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "9fe4cf1d-d6f9-4bc5-9aaf-8cf6811e445a",
+                    "etime": 24.15,
+                    "stime": 24.03,
+                    "pos": 8,
+                    "word": "en",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "1c3a32d2-5dc6-43af-9428-560d5cf1374f",
+                    "etime": 24.3,
+                    "stime": 24.15,
+                    "pos": 9,
+                    "word": "temps",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "fce90b1f-42ac-4b06-85e9-582abc4f7009",
+                    "etime": 24.81,
+                    "stime": 24.3,
+                    "pos": 10,
+                    "word": "réel",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "908eb8ca-196f-4e3b-9f20-1390e98988be",
+                    "etime": 24.99,
+                    "stime": 24.87,
+                    "pos": 11,
+                    "word": "et",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "450d2370-9184-443a-b118-81b15fe143cd",
+                    "etime": 25.17,
+                    "stime": 24.99,
+                    "pos": 12,
+                    "word": "sans",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "69572884-5b4f-4010-8e2d-ea734fca4b0f",
+                    "etime": 25.74,
+                    "stime": 25.17,
+                    "pos": 13,
+                    "word": "latence",
+                    "highlights": [],
+                    "keywords": []
+                }
+            ]
+        },
+        {
+            "speaker_id": "09f1bb3e-cdc1-45a3-9903-934d31036d4c",
+            "pos": 4,
+            "turn_id": "65cfb9d1-97c5-4131-8db4-c42b788a2d57",
+            "words": [{
+                    "wid": "2434d504-1251-4984-ad03-9437b75c0d1f",
+                    "etime": 28.439943,
+                    "stime": 28.289998,
+                    "pos": 0,
+                    "word": "je",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "ba10bc8c-6f75-4e6c-8773-3407fd7cc556",
+                    "etime": 28.56,
+                    "stime": 28.439943,
+                    "pos": 1,
+                    "word": "vois",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "74201c35-48dd-4e22-9339-3d9526038dbd",
+                    "etime": 28.919991,
+                    "stime": 28.56,
+                    "pos": 2,
+                    "word": "ça",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "eebe7745-429e-45a4-bbc2-ae81347f47c0",
+                    "etime": 29.369751,
+                    "stime": 28.98,
+                    "pos": 3,
+                    "word": "et",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "29278b7b-a8a3-4b0f-ae3c-d2832cb78c35",
+                    "etime": 29.845638,
+                    "stime": 29.43,
+                    "pos": 4,
+                    "word": "toi",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "eebbf239-53fc-4562-a962-46095ab58cc3",
+                    "etime": 29.999392,
+                    "stime": 29.845638,
+                    "pos": 5,
+                    "word": "euh",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "e3df6803-d1d1-4c43-b038-e1b1f824caac",
+                    "etime": 30.33,
+                    "stime": 29.999392,
+                    "pos": 6,
+                    "word": "romain",
+                    "highlights": [
+                        "37ee694f-7bec-4462-bc95-07c0a52796cd"
+                    ],
+                    "keywords": []
+                },
+                {
+                    "wid": "0cc520d7-d1e9-4441-8902-2071a9c7af69",
+                    "etime": 30.419998,
+                    "stime": 30.343995,
+                    "pos": 7,
+                    "word": "qu'",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "52ae1826-f0d3-464a-b630-40dbe0b406c4",
+                    "etime": 30.479996,
+                    "stime": 30.419998,
+                    "pos": 8,
+                    "word": "est",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "9a5c4fee-28d5-435a-b1fc-2ca23948e61d",
+                    "etime": 30.539993,
+                    "stime": 30.479998,
+                    "pos": 9,
+                    "word": "ce",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "5792caa1-318f-4984-8066-2eda23422e2e",
+                    "etime": 30.6,
+                    "stime": 30.539993,
+                    "pos": 10,
+                    "word": "que",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "d2479612-4847-40d3-8724-1c91020d760f",
+                    "etime": 30.72,
+                    "stime": 30.6,
+                    "pos": 11,
+                    "word": "ça",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "b5ef9f75-5f46-4d81-b6c9-99eea8f9b7a5",
+                    "etime": 31.01996,
+                    "stime": 30.720073,
+                    "pos": 12,
+                    "word": "donne",
+                    "highlights": [],
+                    "keywords": []
+                }
+            ]
+        },
+        {
+            "speaker_id": "d79935a0-5f21-4cff-8700-734c6514f7b3",
+            "pos": 5,
+            "turn_id": "79cecb51-061a-4382-8ace-640fa7b534d9",
+            "words": [{
+                    "wid": "d75b10c1-ea61-4849-a10a-5f34101f47c6",
+                    "etime": 31.950029,
+                    "stime": 31.71,
+                    "pos": 0,
+                    "word": "euh",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "34534a2e-cd2c-4dc3-93e2-80c2aad29535",
+                    "etime": 32.07,
+                    "stime": 31.950396,
+                    "pos": 1,
+                    "word": "de",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "94ebc5b6-8c62-424d-b4be-fbe0572f8d6a",
+                    "etime": 32.22,
+                    "stime": 32.07,
+                    "pos": 2,
+                    "word": "mon",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "46573699-8c36-46b2-860d-48f6f4e0786c",
+                    "etime": 32.54993,
+                    "stime": 32.22,
+                    "pos": 3,
+                    "word": "côté",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "7d8d8216-8569-4268-ba27-d3961fb4279a",
+                    "etime": 33.03,
+                    "stime": 32.55,
+                    "pos": 4,
+                    "word": "pareil",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "c7ba5d52-bb5b-49d5-8090-aebeeee65b77",
+                    "etime": 33.24,
+                    "stime": 33.03,
+                    "pos": 5,
+                    "word": "euh",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "a5eeabfc-c7ba-4865-a6ff-cda2a91b04b3",
+                    "etime": 33.44,
+                    "stime": 33.24,
+                    "pos": 6,
+                    "word": "tout",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "409699e6-85ba-43b5-9d56-421fcce4db66",
+                    "etime": 33.64,
+                    "stime": 33.44,
+                    "pos": 7,
+                    "word": "es",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "34a55908-9c42-4d29-8963-48ae944edc46",
+                    "etime": 34.349773,
+                    "stime": 33.643894,
+                    "pos": 8,
+                    "word": "t",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "e22846b1-bb24-4464-9f77-8d47a85e027e",
+                    "etime": 34.59,
+                    "stime": 34.41,
+                    "pos": 9,
+                    "word": "tout",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "6bbb6034-c1af-454c-804b-e3274784fae2",
+                    "etime": 34.71,
+                    "stime": 34.59,
+                    "pos": 10,
+                    "word": "est",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "c5509aa4-fe1b-42e9-8382-ca8c12cf5157",
+                    "etime": 35.279949,
+                    "stime": 34.71,
+                    "pos": 11,
+                    "word": "parfait",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "a5390d9e-a770-44bb-a4b3-4ceb93b86f81",
+                    "etime": 35.974248,
+                    "stime": 35.34,
+                    "pos": 12,
+                    "word": "euh",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "66fe80c8-6c3e-429b-be52-1f322e89e01b",
+                    "etime": 36.060015,
+                    "stime": 35.999982,
+                    "pos": 13,
+                    "word": "il",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "b353021d-6e8a-47ff-882b-298dd301a28e",
+                    "etime": 36.120099,
+                    "stime": 36.064684,
+                    "pos": 14,
+                    "word": "y",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "763c2440-b89b-4fd7-a373-bdb261448b74",
+                    "etime": 36.179352,
+                    "stime": 36.120099,
+                    "pos": 15,
+                    "word": "a",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "010cc734-49d6-48ea-8898-61bca05db81f",
+                    "etime": 36.3,
+                    "stime": 36.18,
+                    "pos": 16,
+                    "word": "pas",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "c5820b88-3d9f-4e78-81ac-eaaca14d2463",
+                    "etime": 36.36,
+                    "stime": 36.3,
+                    "pos": 17,
+                    "word": "de",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "a7d15f64-69aa-4f0a-99cf-61c6dc0a65cf",
+                    "etime": 36.51,
+                    "stime": 36.36,
+                    "pos": 18,
+                    "word": "fautes",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "338dda1c-6c31-4551-a07b-660845b132d7",
+                    "etime": 36.57,
+                    "stime": 36.51,
+                    "pos": 19,
+                    "word": "d'",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "4fa7f955-8a9e-482c-8077-fa03edaec765",
+                    "etime": 37.2,
+                    "stime": 36.57,
+                    "pos": 20,
+                    "word": "orthographe",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "848a5b3d-2763-4b71-b040-db9cd6e800af",
+                    "etime": 37.29,
+                    "stime": 37.2,
+                    "pos": 21,
+                    "word": "et",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "cc7d0825-1380-42cf-9388-7fd8b2afc42d",
+                    "etime": 37.38,
+                    "stime": 37.290011,
+                    "pos": 22,
+                    "word": "la",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "6f0a8f6c-824a-4718-b512-c973e257415e",
+                    "etime": 37.860048,
+                    "stime": 37.38,
+                    "pos": 23,
+                    "word": "transcription",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "0c6d20c9-e974-43fe-8557-dbae07f54b82",
+                    "etime": 37.92,
+                    "stime": 37.860048,
+                    "pos": 24,
+                    "word": "et",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "483e255a-32b6-4f11-b403-4d0e02062be0",
+                    "etime": 38.31,
+                    "stime": 37.920011,
+                    "pos": 25,
+                    "word": "fidèle",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "d0cd56aa-b3e6-4877-a0f1-2f6edd556d1b",
+                    "etime": 38.4,
+                    "stime": 38.31,
+                    "pos": 26,
+                    "word": "à",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "1d94af12-5bc0-4f5b-ad71-71c8df3a2bf7",
+                    "etime": 39.089956,
+                    "stime": 38.4,
+                    "pos": 27,
+                    "word": "notre",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "88c2d152-712f-4cdb-9de2-3217e0c8c412",
+                    "etime": 40.049897,
+                    "stime": 39.63,
+                    "pos": 28,
+                    "word": "discours",
+                    "highlights": [],
+                    "keywords": []
+                }
+            ]
+        },
+        {
+            "speaker_id": "09f1bb3e-cdc1-45a3-9903-934d31036d4c",
+            "pos": 6,
+            "turn_id": "199b0899-c27b-42b5-8acf-94186699bc80",
+            "words": [{
+                    "wid": "bd95164a-17a6-43e5-b067-b4675204277d",
+                    "etime": 41.73,
+                    "stime": 41.55,
+                    "pos": 0,
+                    "word": "faut",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "e9a6767f-1b5d-430a-aa8e-39c3e9b35c1c",
+                    "etime": 41.91,
+                    "stime": 41.730055,
+                    "pos": 1,
+                    "word": "dire",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "9bddd3b5-f02d-420b-991e-f5068ad4ac6f",
+                    "etime": 41.97,
+                    "stime": 41.91,
+                    "pos": 2,
+                    "word": "que",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "385acfec-4e39-4722-b89e-4e15b4fcdd01",
+                    "etime": 42.18,
+                    "stime": 41.97,
+                    "pos": 3,
+                    "word": "notre",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "9c5ab80c-7d13-49ca-b01e-572571a52791",
+                    "etime": 42.6,
+                    "stime": 42.18,
+                    "pos": 4,
+                    "word": "modèle",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "9ed5c43c-553c-4531-a45f-6837db81161c",
+                    "etime": 42.78,
+                    "stime": 42.6,
+                    "pos": 5,
+                    "word": "pour",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "a5a5e6b0-5afe-44b2-9ad8-ca9355dfd072",
+                    "etime": 42.87,
+                    "stime": 42.78,
+                    "pos": 6,
+                    "word": "le",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "1a29b407-be8c-4819-bd87-d601b2866d62",
+                    "etime": 43.32,
+                    "stime": 42.87,
+                    "pos": 7,
+                    "word": "français",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "d46a427b-eed5-4242-9155-821696842e30",
+                    "etime": 43.47,
+                    "stime": 43.35,
+                    "pos": 8,
+                    "word": "est",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "697b7803-064e-460e-aade-b6361bf03598",
+                    "etime": 44.28,
+                    "stime": 43.47,
+                    "pos": 9,
+                    "word": "particulièrement",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "14ecf10f-65b6-4fc0-8444-8b434822f67c",
+                    "etime": 44.91,
+                    "stime": 44.28,
+                    "pos": 10,
+                    "word": "performant",
+                    "highlights": [],
+                    "keywords": []
+                }
+            ]
+        },
+        {
+            "speaker_id": "09f1bb3e-cdc1-45a3-9903-934d31036d4c",
+            "pos": 7,
+            "turn_id": "ea44ea66-0d95-44a1-b99c-989f2ce3e30a",
+            "words": [{
+                    "wid": "9c53034a-57fa-46af-8754-dd38520c212d",
+                    "etime": 45.689956,
+                    "stime": 45.57,
+                    "pos": 0,
+                    "word": "et",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "d5835924-6896-400a-a127-1cecf5381403",
+                    "etime": 45.9,
+                    "stime": 45.689956,
+                    "pos": 1,
+                    "word": "toi",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "69d25d0d-c25c-40e4-a7c2-9f6e33cc6ae4",
+                    "etime": 46.499985,
+                    "stime": 45.9,
+                    "pos": 2,
+                    "word": "yoann",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "385d42be-af09-481a-bbde-84baeaa98776",
+                    "etime": 47.13,
+                    "stime": 46.77,
+                    "pos": 3,
+                    "word": "dis-nous",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "82e1d0d6-95a1-40c6-bf10-808f9b3351ff",
+                    "etime": 47.19,
+                    "stime": 47.13,
+                    "pos": 4,
+                    "word": "qu'",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "e5201de5-0476-43c0-965c-e3687efa9df2",
+                    "etime": 47.34,
+                    "stime": 47.190004,
+                    "pos": 5,
+                    "word": "est-ce",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "ed443368-ce2d-4e03-9528-7953c41c1933",
+                    "etime": 47.43,
+                    "stime": 47.34,
+                    "pos": 6,
+                    "word": "que",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "3524f4c3-823f-40e1-9d7d-747a769b57cd",
+                    "etime": 47.55,
+                    "stime": 47.43,
+                    "pos": 7,
+                    "word": "ça",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "f841cf7e-c8d2-457a-ad2c-7c42db324579",
+                    "etime": 47.79,
+                    "stime": 47.55,
+                    "pos": 8,
+                    "word": "donne",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "8b589699-535c-48d1-a54d-3454b3d83a84",
+                    "etime": 47.91,
+                    "stime": 47.79,
+                    "pos": 9,
+                    "word": "de",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "c9a842e4-4cd5-43e1-ae5e-3323a41f9abe",
+                    "etime": 48.03,
+                    "stime": 47.91,
+                    "pos": 10,
+                    "word": "ton",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "167d3882-2be6-44a1-9740-f4f08dc67e03",
+                    "etime": 48.39,
+                    "stime": 48.03,
+                    "pos": 11,
+                    "word": "côté",
+                    "highlights": [],
+                    "keywords": []
+                }
+            ]
+        },
+        {
+            "speaker_id": "22e07100-71ce-4fd8-901a-fae6e879afff",
+            "pos": 8,
+            "turn_id": "9c590446-a7f6-4393-9f2d-4d66ce8c2158",
+            "words": [{
+                    "wid": "d4dcea86-7114-4faa-9cd0-9099d092ecca",
+                    "etime": 50.219938,
+                    "stime": 49.98007,
+                    "pos": 0,
+                    "word": "alors",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "4f03d85b-21c3-46cc-a30d-f8027224ff24",
+                    "etime": 50.31,
+                    "stime": 50.219938,
+                    "pos": 1,
+                    "word": "de",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "cf163512-ec14-4cee-99f3-1ee1142e7adf",
+                    "etime": 50.46,
+                    "stime": 50.31,
+                    "pos": 2,
+                    "word": "mon",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "59dc5844-28a4-4719-9f75-d1c539280000",
+                    "etime": 50.94,
+                    "stime": 50.46,
+                    "pos": 3,
+                    "word": "côté",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "b0b5109a-9f99-460d-8384-c1e9dc15d799",
+                    "etime": 51.18,
+                    "stime": 50.94,
+                    "pos": 4,
+                    "word": "euh",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "1eb1b7f3-1a93-4646-a598-75be0a5ea5da",
+                    "etime": 51.45,
+                    "stime": 51.21,
+                    "pos": 5,
+                    "word": "bah",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "c5e9a723-cbc2-4af8-8ceb-664ed28033cf",
+                    "etime": 51.63,
+                    "stime": 51.450469,
+                    "pos": 6,
+                    "word": "tout",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "08de5a77-c86f-40a1-afcc-dc1c0342e102",
+                    "etime": 51.899949,
+                    "stime": 51.63,
+                    "pos": 7,
+                    "word": "semble",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "43668d98-48d4-4178-a11b-ca8cb1700fd3",
+                    "etime": 52.08,
+                    "stime": 51.9,
+                    "pos": 8,
+                    "word": "très",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "2c5615d9-644b-440c-8e73-3e28c4db474d",
+                    "etime": 52.2,
+                    "stime": 52.08,
+                    "pos": 9,
+                    "word": "bien",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "66ee0547-9a33-41c1-b907-a03976cf42fc",
+                    "etime": 52.649938,
+                    "stime": 52.2,
+                    "pos": 10,
+                    "word": "marché",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "c8ba3d2d-9d5e-4441-b23a-6caedc8ea41a",
+                    "etime": 52.83,
+                    "stime": 52.71,
+                    "pos": 11,
+                    "word": "la",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "636f2dee-dddd-4b9b-a8c1-cbb22ac5def2",
+                    "etime": 53.46,
+                    "stime": 52.83,
+                    "pos": 12,
+                    "word": "transcription",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "41c3f494-3e52-43dd-96bc-2db715f43465",
+                    "etime": 53.58,
+                    "stime": 53.46,
+                    "pos": 13,
+                    "word": "s'",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "e18dccd4-43e6-4f68-bc32-abf54e4273b9",
+                    "etime": 54.06,
+                    "stime": 53.58,
+                    "pos": 14,
+                    "word": "envolait",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "477c47ed-7a39-4dcd-8b71-61ebf1af10db",
+                    "etime": 54.599974,
+                    "stime": 54.12,
+                    "pos": 15,
+                    "word": "semble",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "72d778e9-b5bc-4160-a07e-74f5a35dd0a9",
+                    "etime": 54.93,
+                    "stime": 54.63,
+                    "pos": 16,
+                    "word": "être",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "e004435b-9851-40bc-9e97-a55eea85099a",
+                    "etime": 55.32,
+                    "stime": 54.96,
+                    "pos": 17,
+                    "word": "aussi",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "0028d6d2-1746-4100-9c7f-392fa3cf1b26",
+                    "etime": 55.89,
+                    "stime": 55.32,
+                    "pos": 18,
+                    "word": "fidèle",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "c5587647-338d-4535-8c0d-a7bbc7026c52",
+                    "etime": 56.727993,
+                    "stime": 56.550436,
+                    "pos": 19,
+                    "word": "et",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "be3bee63-75ee-4d37-8d14-0d928638c7cf",
+                    "etime": 56.85,
+                    "stime": 56.729905,
+                    "pos": 20,
+                    "word": "du",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "fe6a3974-1aef-480b-9c52-49899164dc48",
+                    "etime": 57.176693,
+                    "stime": 56.85,
+                    "pos": 21,
+                    "word": "coup",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "9fbc41b4-6bb2-4a4e-b7cc-4fc4e4756ce4",
+                    "etime": 57.419901,
+                    "stime": 57.269941,
+                    "pos": 22,
+                    "word": "le",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "5add94e1-4ffd-4ac3-9e4d-395109e1494e",
+                    "etime": 57.78,
+                    "stime": 57.42,
+                    "pos": 23,
+                    "word": "service",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "74921265-a1b8-4ac8-91f4-104950bfd845",
+                    "etime": 57.87,
+                    "stime": 57.78,
+                    "pos": 24,
+                    "word": "de",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "9eebc37c-5010-4d6a-ae43-e182b26b37a2",
+                    "etime": 58.5897,
+                    "stime": 57.87,
+                    "pos": 25,
+                    "word": "transcription",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "f37df91f-dc39-4ad4-994f-95a3c7eed017",
+                    "etime": 58.77,
+                    "stime": 58.62,
+                    "pos": 26,
+                    "word": "fait",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "3c58d457-578a-4402-bdfa-5aebc8af380d",
+                    "etime": 58.92,
+                    "stime": 58.77,
+                    "pos": 27,
+                    "word": "bien",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "5ce7aa43-f498-43dc-8d64-e42c40b0897b",
+                    "etime": 59.07,
+                    "stime": 58.92,
+                    "pos": 28,
+                    "word": "son",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "06394cc2-ac52-449d-8334-cdfeb3511c77",
+                    "etime": 59.67,
+                    "stime": 59.07,
+                    "pos": 29,
+                    "word": "travail",
+                    "highlights": [],
+                    "keywords": []
+                }
+            ]
+        },
+        {
+            "speaker_id": "09f1bb3e-cdc1-45a3-9903-934d31036d4c",
+            "pos": 9,
+            "turn_id": "64a3b296-4316-4b07-beee-7a7699a7078f",
+            "words": [{
+                    "wid": "eb11c50e-5d5d-4a36-b8fe-b11f4f6e8c18",
+                    "etime": 61.38,
+                    "stime": 61.08,
+                    "pos": 0,
+                    "word": "quel",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "ac57872b-fc41-4bbf-b653-300365df736b",
+                    "etime": 61.829011,
+                    "stime": 61.41,
+                    "pos": 1,
+                    "word": "excellent",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "afc1132e-7cf2-475c-b6f4-1233fb4f3037",
+                    "etime": 62.16,
+                    "stime": 61.830645,
+                    "pos": 2,
+                    "word": "service",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "afa9a297-5971-4cd8-b571-061acba4b9be",
+                    "etime": 62.22,
+                    "stime": 62.16,
+                    "pos": 3,
+                    "word": "de",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "d5b3c4d6-4139-4d1a-943c-84ca735d479a",
+                    "etime": 62.91,
+                    "stime": 62.22,
+                    "pos": 4,
+                    "word": "transcription",
+                    "highlights": [],
+                    "keywords": []
+                }
+            ]
+        },
+        {
+            "speaker_id": "09f1bb3e-cdc1-45a3-9903-934d31036d4c",
+            "pos": 10,
+            "turn_id": "845c588d-d27f-41f9-8bdd-99c2d6906df8",
+            "words": [{
+                    "wid": "2ddb3b65-8c8c-43d0-aa2d-ad84abdaff61",
+                    "etime": 63.48,
+                    "stime": 63.24,
+                    "pos": 0,
+                    "word": "quel",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "dec24ae9-65df-4fb3-bd38-10fb8dd57c9e",
+                    "etime": 63.78,
+                    "stime": 63.48,
+                    "pos": 1,
+                    "word": "forte",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "1dd4c089-cc67-433a-8aff-8cfccd577e65",
+                    "etime": 64.26,
+                    "stime": 63.78,
+                    "pos": 2,
+                    "word": "impression",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "91580b7c-dfe6-4760-8eb7-e6d0b213b8d7",
+                    "etime": 64.44,
+                    "stime": 64.26,
+                    "pos": 3,
+                    "word": "nous",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "9c1b9e95-1c45-408b-b853-1f5e6aed6a74",
+                    "etime": 64.68,
+                    "stime": 64.44,
+                    "pos": 4,
+                    "word": "aurons",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "2b78b506-22a3-48ca-8e5a-88234f37c579",
+                    "etime": 65.1,
+                    "stime": 64.68,
+                    "pos": 5,
+                    "word": "fait",
+                    "highlights": [],
+                    "keywords": []
+                }
+            ]
+        },
+        {
+            "speaker_id": "09f1bb3e-cdc1-45a3-9903-934d31036d4c",
+            "pos": 11,
+            "turn_id": "d75a72c3-eee8-423d-8b44-7041338ef8bd",
+            "words": [{
+                    "wid": "c428bc64-06f1-4ccf-9c7c-8c48cbabcb41",
+                    "etime": 65.49,
+                    "stime": 65.13,
+                    "pos": 0,
+                    "word": "sur",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "36dd93f4-f9a3-4952-bdae-9d5ea68edf27",
+                    "etime": 65.61,
+                    "stime": 65.49,
+                    "pos": 1,
+                    "word": "le",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "680f2e35-afc7-4783-ab74-20df0b82fe09",
+                    "etime": 66.03,
+                    "stime": 65.61,
+                    "pos": 2,
+                    "word": "salon",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "52218c98-c8d8-45b2-9cfc-0e96d974261d",
+                    "etime": 66.168735,
+                    "stime": 66.09,
+                    "pos": 3,
+                    "word": "où",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "faaede86-8db9-492f-9e76-cb86b4f36bd6",
+                    "etime": 66.3,
+                    "stime": 66.168735,
+                    "pos": 4,
+                    "word": "nous",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "73fe9fe3-1061-4cac-9c7e-96c769b4b161",
+                    "etime": 66.69,
+                    "stime": 66.3,
+                    "pos": 5,
+                    "word": "présentant",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "03a33710-2eca-47d0-ad18-678ea28ee6f8",
+                    "etime": 66.87,
+                    "stime": 66.69,
+                    "pos": 6,
+                    "word": "cette",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "3f291c69-58a9-4c60-8802-e02b9e2c3ded",
+                    "etime": 67.35,
+                    "stime": 66.87,
+                    "pos": 7,
+                    "word": "vidéo",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "6bf13003-7ab6-4bbc-a99e-9eabbb9834ee",
+                    "etime": 67.83,
+                    "stime": 67.5,
+                    "pos": 8,
+                    "word": "merci",
+                    "highlights": [],
+                    "keywords": []
+                },
+                {
+                    "wid": "faeb23f3-cfb1-4ba5-b502-57c348eab33b",
+                    "etime": 68.28,
+                    "stime": 67.83,
+                    "pos": 9,
+                    "word": "messieurs",
+                    "highlights": [],
+                    "keywords": []
+                }
+            ]
+        }
+    ],
+    "created": "2021-11-05T16:27:58+01:00",
+    "last_update": "2021-11-05T16:27:58+01:00",
+    "confidence": 0.912816047668457
+}

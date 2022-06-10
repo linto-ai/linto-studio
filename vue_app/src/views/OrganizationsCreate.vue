@@ -1,5 +1,5 @@
 <template>
-  <div class="flex col scrollable" v-if="usersLoaded">
+  <div class="flex col scrollable">
     <h1>Create organization</h1>
     <!--Organization Name -->
     <div class="form-field flex col">
@@ -28,7 +28,7 @@
     <div class="form-field flex col">
       <span class="form-label">Add a member</span>
       <input type="text" v-model="searchMemberValue">
-      <div v-if="searchMemberValue.length > 0 && availableUsers.length > 0" class="search-member-list flex col">
+       <div v-if="searchMemberValue.length > 0 && availableUsers.length > 0" class="search-member-list flex col">
         <button class="search-member-btn flex row align-center" v-for="user of availableUsers" :key="user._id" @click="addToMembers(user)">
           <img :src="`/${user.img}`" class="search-member-img">
           <span class="search-member-identity">{{ user.firstname }} {{ user.lastname }} <i>({{ user.email }})</i></span>
@@ -71,7 +71,6 @@
     <div class="flex row">
       <button @click="createOrganization()">{{ formSubmitLabel }}</button>
     </div>
-
   </div>
 </template>
 <script>
@@ -80,7 +79,6 @@ export default {
   props:["userInfo"],
   data() {
     return {
-      usersLoaded: false,
       orgaName: {
         value:'',
         error: null,
@@ -99,6 +97,8 @@ export default {
       orgaMembers: [],
       orgaMembersIds: [],
       searchMemberValue: '',
+      searchDebounce: null,
+      searchUsersList: [],
       userRoles: [
         {
           name: 'Member',
@@ -119,19 +119,31 @@ export default {
     }
   },
   computed: {
-    allUsers () {
-      return this.$store.state.users
-    },
     availableUsers () {
       if(this.searchMemberValue.length > 0) {
-        return this.allUsers.filter(user => 
-          user._id !== this.userInfo._id && this.orgaMembersIds.indexOf(user._id) < 0 && ((user.firstname + ' ' + user.lastname).indexOf(this.searchMemberValue) >= 0 || user.email.indexOf(this.searchMemberValue) >= 0))
-      } 
+        return this.searchUsersList.filter(user => 
+          user._id !== this.userInfo._id && this.orgaMembersIds.indexOf(user._id) < 0)
+      }
       return []
     }
   },
-  async mounted () {
-    await this.dispatchUsers()
+  watch: {
+    async searchMemberValue(data) {
+      if(data.length > 0) {
+        if(this.searchDebounce === null) {
+          this.searchDebounce = setTimeout(async ()=> {
+            this.searchUsersList = await this.searchUsers(data)
+          },300)
+        } else {
+          clearTimeout(this.searchDebounce)
+          this.searchDebounce = setTimeout(async ()=> {
+              this.searchUsersList = await this.searchUsers(data)
+          },300) 
+        }
+      } else {
+        this.searchUsersList = []
+      }
+    }
   },
   methods: {
     async createOrganization() {
@@ -155,7 +167,7 @@ export default {
               type: this.orgaVisibility.value,
               users
             }
-            let req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/organizations`, 'post', payload) 
+            let req = await this.$options.filters.sendRequest(`${process.env.VUE_APP_CONVO_API}/organizations`, 'post', payload)
             if(req.status >= 200 && req.status < 300 && (!!req.data.msg || !!req.data.message)) {
               this.formState = 'success'
               bus.$emit('app_notif', {
@@ -195,8 +207,8 @@ export default {
       let memberIndex = this.orgaMembers.findIndex(usr => usr._id === user._id)
       this.orgaMembers.splice(memberIndex, 1)
     },
-    async dispatchUsers() {
-      this.usersLoaded = await this.$options.filters.dispatchStore('getAllUsers')
+    async searchUsers(search) {
+      return await this.$store.getters.searchPublicUsers({search})
     }
   }
 }

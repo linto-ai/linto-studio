@@ -30,7 +30,7 @@
 <script>
 import { bus } from '../main.js'
 export default {
-  props:['currentOrganizationScope'],
+  props:['currentOrganizationScope', 'userOrganizations'],
   data () {
     return {
       orgasLoaded: false,
@@ -39,10 +39,7 @@ export default {
       navOrganizationVisible: false
     }
   },
-  async mounted () {
-    await this.dispatchOrganizations()
-    await this.dispatchUserOrganizations()
-
+    mounted () {
     bus.$on('vertical_nav_close', (data) => {
       this.verticalNavOpen = false
     })
@@ -58,13 +55,8 @@ export default {
         return '/assets/img/conversation-manager-logo-small.svg'
       }
     },
-    userOrganizations () {
-      return this.$store.state.userOrganizations
-    },
     currentOrganization () {
-      if(this.orgasLoaded && this.userOrgasLoaded ) return this.$store.getters.getOrganizationById(this.currentOrganizationScope)
-      return null
-
+      return this.userOrganizations.find(orga => orga._id === this.currentOrganizationScope) || null
     },
     navOrganizationList() {
       return this.userOrganizations.filter(orga => orga._id !== this.currentOrganization._id)
@@ -77,13 +69,6 @@ export default {
     setOrganizationScope(organizationId){
       bus.$emit('set_organization_scope', {organizationId})
       this.navOrganizationVisible = false
-
-    },
-    async dispatchOrganizations() {
-      this.orgasLoaded = await this.$options.filters.dispatchStore('getOrganizations')
-    },
-    async dispatchUserOrganizations() {
-      this.userOrgasLoaded = await this.$options.filters.dispatchStore('getUserOrganizations')
     }
   }
 }

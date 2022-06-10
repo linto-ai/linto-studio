@@ -2,7 +2,7 @@
   <div class="flex col scrollable" v-if="dataLoaded">
     <h1>Organization: {{ currentOrganization.name }}</h1>
     <!--Organization Name -->
-    <div class="form-field flex col" v-if="userRole.value === 3">
+    <div class="form-field flex col" v-if="userRole === 3">
       <span class="form-label">Name</span>
       <input 
         type="text" 
@@ -15,7 +15,7 @@
     <h3 v-else class="orga-info title">{{ orgaName.value }}</h3>
 
     <!--Organization Descirption -->
-    <div class="form-field flex col" v-if="userRole.value === 3">
+    <div class="form-field flex col" v-if="userRole === 3">
       <span class="form-label">Description</span>
       <input 
         type="text" 
@@ -26,7 +26,7 @@
     <span v-else class="orga-info description">{{ orgaDescription.value }}</span>
 
     <!--Organization Visibility -->
-    <div class="form-field flex col" v-if="userRole.value === 3">
+    <div class="form-field flex col" v-if="userRole === 3">
       <span class="form-label">Visibility</span>
       <select 
         v-model="orgaVisibility.value" 
@@ -37,8 +37,8 @@
       </select>
     </div>
     <span class="orga-info visibility" v-else>{{ orgaVisibility.value }}</span>
-    <!--Organization Members -->
-    <div class="form-field flex col" v-if="userRole.value > 1 && !currentOrganization.personal">
+    <!--Organization Members --> 
+    <div class="form-field flex col" v-if="userRole > 1 && !currentOrganization.personal">
       <span class="form-label">Add a member</span>
       <input type="text" v-model="searchMemberValue">
       <div v-if="searchMemberValue.length > 0 && availableUsers.length > 0" class="search-member-list flex col">
@@ -72,14 +72,14 @@
             <td>
               <select 
                 v-model="member.role" 
-                v-if="userRole.value > 1 && userRole.value >= member.role && userInfo._id!== member._id"
+                v-if="userRole > 1 && userRole >= member.role && userInfo._id!== member._id"
                 @change="updateUserRole(member)"
               >
                 <option 
                   v-for="role in userRoles" 
                   :key="role.value" 
                   :value="role.value" 
-                  :disabled="userRole.value < role.value"
+                  :disabled="userRole < role.value"
                 >{{ role.name }}</option>
               </select>
               <span v-else>{{ userRoles.find(ur => ur.value === member.role).name }}</span>
@@ -96,7 +96,7 @@
               <span v-else>{{ member.visibility }}</span></td>
             <td>
               <button 
-              v-if="!currentOrganization.personal && userRole.value > 1 && userRole.value >= member.role && userInfo._id !== member._id"
+              v-if="!currentOrganization.personal && userRole > 1 && userRole >= member.role && userInfo._id !== member._id"
               @click="removeFromMembersValidation(member)">Remove</button>
               <button 
               v-if="!currentOrganization.personal  && userInfo._id === member._id"
@@ -116,8 +116,7 @@ export default {
   props:["userInfo"],
   data() {
     return {
-      usersLoaded: false,
-      userOrgasLoaded: true,
+      orgaLoaded: false,
       organizationId: '',
       orgaName: {
         value:'',
@@ -134,9 +133,11 @@ export default {
         error: null,
         valid: false
       },
-      orgaMembers: [],
-      orgaMembersIds: [],
-      searchMemberValue: '',
+      userVisibility: {
+        value:'',
+        error: null,
+        valid: false
+      },
       userRoles: [
         {
           name: 'Member',
@@ -151,48 +152,42 @@ export default {
           value: 3
         }
       ],
-      userVisibility: {
-        value:'',
-        error: null,
-        valid: false
-      }
+      orgaMembers: [],
+      orgaMembersIds: [],
+      searchMemberValue: '',
+      searchDebounce: null,
+      searchUsersList: []
     }
   },
   computed: {
     dataLoaded () {
-      return this.usersLoaded && this.currentOrganization !== null && this.userRole !== null && !!this.userInfo
-    },
-    allUsers () {
-      return this.$store.state.users
+      return this.userRole !== null && !!this.userInfo
     },
     availableUsers () {
       if(this.searchMemberValue.length > 0) {
-        return this.allUsers.filter(user => 
-          user._id !== this.userInfo._id && this.orgaMembersIds.indexOf(user._id) < 0 && ((user.firstname + ' ' + user.lastname).indexOf(this.searchMemberValue) >= 0 || user.email.indexOf(this.searchMemberValue) >= 0))
-      } 
+        return this.searchUsersList.filter(user => 
+          user._id !== this.userInfo._id && this.orgaMembersIds.indexOf(user._id) < 0)
+      }
       return []
     },
     currentOrganization() {
-      if(this.organizationId !== '' && this.userOrgasLoaded) {
-        return this.$store.getters.getOrganizationById(this.organizationId)
-      }return null
+     return this.$store.state.organization
     },
     userRole () {
-      if(!!this.currentOrganization) {
-        return this.$store.getters.getUserRoleInOrganization(this.organizationId)
+      if(this.orgaLoaded) {
+        return this.$store.getters.getUserRoleInOrganization()
       }
       return null
     }
-
   },
   async mounted () {
-    await this.dispatchUsers()
-    await this.dispatchUserOrganizations() 
-
     this.organizationId = this.$route.params.organizationId
 
+    await this.dispatchOrganization() 
+
+
     bus.$on('remove_organization_user', async(data) => {
-      await this.dispatchUserOrganizations() 
+      await this.dispatchOrganization() 
       this.removeFromMembers(data.user)
     })
   },
@@ -215,18 +210,30 @@ export default {
           error: null
         }
         this.userVisibility = {
-          value: this.currentOrganization.users.find(usr => usr.userId === this.userInfo._id).visibility,
+          value: this.currentOrganization.users.find(usr => usr._id === this.userInfo._id).visibility,
           valid: true,
           error: null
         }
         for(let user of this.currentOrganization.users) {
-          let userObj = this.getUserById(user.userId)
-          userObj.role = user.role
-          userObj.visibility = user.visibility
-          
-          this.orgaMembersIds.push(userObj._id)
-          this.orgaMembers.push(userObj)
+          this.orgaMembersIds.push(user._id)
+          this.orgaMembers.push(user)
         }
+      }
+    },
+    async searchMemberValue(data) {
+      if(data.length > 0) {
+        if(this.searchDebounce === null) {
+          this.searchDebounce = setTimeout(async ()=> {
+            this.searchUsersList = await this.searchUsers(data)
+          },300)
+        } else {
+          clearTimeout(this.searchDebounce)
+          this.searchDebounce = setTimeout(async ()=> {
+              this.searchUsersList = await this.searchUsers(data)
+          },300) 
+        }
+      } else {
+        this.searchUsersList = []
       }
     }
   },
@@ -244,7 +251,7 @@ export default {
             message: req.data.msg || req.data.message,
             timeout: 3000
           })
-          await this.dispatchUserOrganizations() 
+          await this.dispatchOrganization() 
           this.orgaMembers.push(newUser)
           this.orgaMembersIds.push(user._id)
           this.searchMemberValue = ''
@@ -300,7 +307,7 @@ export default {
             message: req.data.msg || req.data.message,
             timeout: 3000
           })
-          await this.dispatchUserOrganizations() 
+          await this.dispatchOrganization() 
         } else {
           throw req
         }
@@ -332,7 +339,7 @@ export default {
               message: req.data.msg || req.data.message,
               timeout: 3000
             })
-            await this.dispatchUserOrganizations() 
+            await this.dispatchOrganization() 
           } else {
             throw req
           }
@@ -359,7 +366,7 @@ export default {
             message: req.data.msg || req.data.message,
             timeout: 3000
           })
-          await this.dispatchUserOrganizations() 
+          await this.dispatchOrganization() 
         } else {
           throw req
         }
@@ -374,14 +381,11 @@ export default {
         })
       }
     },
-    getUserById(userId) {
-      return this.$store.getters.getUserById(userId)
+    async searchUsers(search) {
+      return await this.$store.getters.searchPublicUsers({search})
     },
-    async dispatchUsers() {
-      this.usersLoaded = await this.$options.filters.dispatchStore('getAllUsers')
-    },
-    async dispatchUserOrganizations() {
-      this.userOrgasLoaded = await this.$options.filters.dispatchStore('getUserOrganizations')
+    async dispatchOrganization() {
+      this.orgaLoaded = await this.$options.filters.dispatchStore('getOrganizationById', {organizationId: this.organizationId})
     }
   },
   components:{
