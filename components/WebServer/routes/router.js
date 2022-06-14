@@ -4,8 +4,6 @@ const auth_middlewares = require(`../config/passport/local/middleware`)
 const conversation_middlewares = require(`${process.cwd()}/components/WebServer/middlewares/access/conversation.js`)
 const organization_middlewares = require(`${process.cwd()}/components/WebServer/middlewares/access/organization.js`)
 
-const nav_middlewares = require(`${process.cwd()}/components/WebServer/middlewares/index.js`)
-
 const ifHasElse = (condition, ifHas, otherwise) => {
     return !condition ? otherwise() : ifHas()
 }
@@ -32,10 +30,8 @@ class Router {
 
                 //debug('Create route : ' + route.method + ' - ' + level + route.path)
                 let middlewaresLoaded = []
-                    // require passport auth (headers)
+                // require passport auth (headers)
                 if (route.requireAuth) middlewaresLoaded.push(auth_middlewares.isAuthenticate)
-                    // require user session (authenticated)
-                if (route.requireSession) middlewaresLoaded.push(nav_middlewares.isConnected)
 
                 // Conversation rights
                 if (route.requireConversationOwnerAccess) middlewaresLoaded.push(conversation_middlewares.asOwnerAccess) // require owner access

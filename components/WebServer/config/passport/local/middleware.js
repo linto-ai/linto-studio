@@ -1,4 +1,4 @@
-const debug = require('debug')('linto:conversation-manager:components:webserver:config:auth:auth')
+const debug = require('debug')('linto:conversation-manager:components:webserver:config:passport:local:middleware')
 
 require('./local')
 const passport = require('passport')
@@ -9,7 +9,6 @@ const UsersModel = require(`${process.cwd()}/lib/mongodb/models/users`)
 const { MalformedToken, MultipleUserFound } = require(`${process.cwd()}/components/WebServer/error/exception/auth`)
 const { UserNotFound } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
 
-
 const refreshToken = require('./token/refresh')
 
 module.exports = {
@@ -17,49 +16,17 @@ module.exports = {
     authenticate: (req, res, next) => {
         passport.authenticate('local', { session: false }, (err, user) => {
             if (err) {
-                console.error(err)
                 res.json({
                     error: err
                 })
             } else {
-                if (!!user && !!user.token) {
-                    res.cookie('authToken', user.token.auth_token, {
-                        expires: new Date(Date.now() + 900000)
-                    })
-
-                    res.cookie('userId', user.token.session_id.toString(), {
-                        expires: new Date(Date.now() + 900000)
-                    })
-                    res.cookie('cm_orga_scope', '')
-                    req.session.token = user.token
-                    req.session.userId = user.token.session_id
-                    req.session.logged = 1
-                    req.session.save((err) => {
-                        if (err) {
-                            throw "Error on saving session"
-                        }
-                        res.json({
-                            status: 200,
-                            message: 'login success',
-                            code: 'ok',
-                            token: user.token.auth_token
-                        })
-                    })
-                } else {
-                    req.session.token = ''
-                    req.session.logged = 0
-                    req.session.userId = ''
-                    req.session.save((err) => {
-                        if (err) {
-                            throw "Error on saving session"
-                        }
-                        res.json({
-                            status: 401,
-                            message: 'token not found',
-                            code: 'error'
-                        })
-                    })
-                }
+                res.json({
+                    status: 200,
+                    message: 'login success',
+                    code: 'ok',
+                    token: user.token.auth_token,
+                    userId: user.token.session_id.toString()
+                })
             }
         })(req, res, next);
     },

@@ -22,7 +22,7 @@ class UserConflict extends Error {
         this.type = ExceptionType
         this.status = '409'
         if (message) this.message = message
-        else this.message = 'user address already use'
+        else this.message = 'User address already use'
     }
 }
 
