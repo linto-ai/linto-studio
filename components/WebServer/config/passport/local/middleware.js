@@ -24,7 +24,8 @@ module.exports = {
                     status: 200,
                     message: 'login success',
                     code: 'ok',
-                    token: user.token.auth_token
+                    token: user.token.auth_token,
+                    userId: user.token.session_id.toString()
                 })
             }
         })(req, res, next);
