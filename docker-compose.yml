@@ -10,19 +10,6 @@ services:
     networks:
       - internal
 
-  conversation-manager-redis:
-    image: redis:latest
-    environment:
-      # ALLOW_EMPTY_PASSWORD is recommended only for development.
-      - ALLOW_EMPTY_PASSWORD=yes
-      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
-    ports:
-      - '6379:6379'
-    volumes:
-      - './${VOLUME_REDIS_FOLDER}:/bitnami/redis/data'
-    networks:
-      - internal
-
   conversation-manager-api:
     build: .
     container_name: conversation-manager

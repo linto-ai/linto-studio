@@ -45,9 +45,6 @@ function configureDefaults() {
         process.env.EXPRESS_SIZE_FILE_MAX = ifHas(process.env.EXPRESS_SIZE_FILE_MAX, envdefault.EXPRESS_SIZE_FILE_MAX)
         process.env.EXPRESS_TIMEOUT = ifHas(process.env.EXPRESS_TIMEOUT, envdefault.EXPRESS_TIMEOUT)
 
-        // Redis
-        process.env.REDIS_SESSION_SERVICE = ifHas(process.env.REDIS_SESSION_SERVICE, envdefault.REDIS_SESSION_SERVICE)
-        process.env.REDIS_SESSION_SERVICE_PORT = ifHas(process.env.REDIS_SESSION_SERVICE_PORT, envdefault.REDIS_SESSION_SERVICE_PORT)
 
         process.env.STT_USER = ifHas(process.env.STT_USER, envdefault.STT_USER)
         process.env.STT_PASSWORD = ifHas(process.env.STT_PASSWORD, envdefault.STT_PASSWORD)
