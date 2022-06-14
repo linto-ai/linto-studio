@@ -113,25 +113,25 @@ async function getUserById(req, res, next) {
 async function createUser(req, res, next) {
     try {
         const user = req.body
-        if (!user.email || !user.firstname || !user.lastname || !user.password) throw (new UserUnsupportedMediaType())
+        if (!user.email || !user.firstname || !user.lastname || !user.password) throw new UserUnsupportedMediaType()
 
         if (req.files && Object.keys(req.files).length !== 0 && req.files.file)
             user.img = await StoreFile.storeFile(req.files.file, 'picture')
         else user.img = StoreFile.defaultPicture()
 
         const isUserFound = await userModel.getUserByEmail(user.email)
-        if (isUserFound.length !== 0) throw (new UserConflict())
+        if (isUserFound.length !== 0) throw new UserConflict()
 
         const isOrganizationFound = await organizationModel.getOrganizationByName(user.email)
-        if (isOrganizationFound.length !== 0) throw (new OrganizationConflict())
+        if (isOrganizationFound.length !== 0) throw new OrganizationConflict()
 
         const createdUser = await userModel.createUser(user)
-        if (createdUser.insertedCount !== 1) throw (new UserError())
+        if (createdUser.insertedCount !== 1) throw new UserError()
         const createdOrganization = await organizationModel.createDefaultOrganization(createdUser.insertedId.toString(), user.email)
 
         if (createdOrganization.insertedCount !== 1) {
             userModel.deleteById(createdUser.insertedId.toString())
-            throw (new UserError())
+            throw new UserError()
         }
 
         res.status(201).send({
@@ -146,10 +146,10 @@ async function createUser(req, res, next) {
 
 async function updateUser(req, res, next) {
     try {
-        if (!(req.body.email || req.body.firstname || req.body.lastname)) throw (new UserUnsupportedMediaType())
+        if (!(req.body.email || req.body.firstname || req.body.lastname)) throw new UserUnsupportedMediaType()
 
         const myUser = await userModel.getUserById(req.payload.data.userId)
-        if (myUser.length !== 1) throw (new UserNotFound())
+        if (myUser.length !== 1) throw new UserNotFound()
         let user = myUser[0]
 
         if (req.body.email) user.email = req.body.email
@@ -193,10 +193,10 @@ async function updateUserPicture(req, res, next) {
 
 async function updateUserPassword(req, res, next) {
     try {
-        if (!req.body.newPassword) throw (new UserUnsupportedMediaType())
+        if (!req.body.newPassword) throw new UserUnsupportedMediaType()
 
         const myUser = await userModel.getUserById(req.payload.data.userId)
-        if (myUser.length !== 1) throw (new UserNotFound())
+        if (myUser.length !== 1) throw new UserNotFound()
         const payload = {
             ...myUser[0],
             newPassword: req.body.newPassword
@@ -215,26 +215,21 @@ async function updateUserPassword(req, res, next) {
 
 async function logout(req, res, next) {
     try {
-        if (!!req.session.userId) {
-            userModel.update({
-                _id: req.session.userId,
-                keyToken: ''
-            }).then(user => {
-                res.cookie('authToken', '')
-                res.cookie('userId', '')
-                res.cookie('cm_orga_scope', '')
-                req.session.destroy(function (err) {
-                    // cannot access session here
-                    if (err) throw 'Error on deleting session'
-                    res.redirect('/login')
+        if (!req.payload.data && !req.payload.data.userId) throw new UserUnsupportedMediaType()
+        let userId = userModel.getObjectId(req.payload.data.userId)
+
+        userModel.update({
+            _id: userId,
+            keyToken: ''
+        }).then(user => {
+            if (user)
+                res.status(200).send({
+                    message: 'User has been disconnected'
                 })
-            })
-        } else {
-            throw 'Session not found'
-        }
+            else throw new UserError()
+        })
     } catch (error) {
-        console.error(error)
-        res.redirect('/login')
+        res.status(error.status).send({ message: error.message })
     }
 }
 

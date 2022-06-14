@@ -20,7 +20,7 @@ module.exports = (webServer) => {
         {
             path: '/logout',
             method: 'get',
-            requireAuth: false,
+            requireAuth: true,
             controller: logout
         }, 
         {
