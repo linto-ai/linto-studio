@@ -107,14 +107,16 @@ async function searchText(req, res, next) {
         const userId = req.payload.data.userId
         const convList = await conversationUtility.getUserConversation(userId)
         let convText = []
-        convList.map(conversation => {
-            for (const text of conversation.text) {
+        for (let conversation of convList) {
+            const conv = (await conversationModel.getConvoById(conversation._id))[0]
+
+            for (const text of conv.text) {
                 if (text.raw_segment.toLowerCase().includes(req.body.text.toLowerCase())) {
-                    convText.push(conversation)
+                    convText.push(conv)
                     break
                 }
             }
-        })
+        }
 
         res.status(200).send({
             search_text: req.body.text,
