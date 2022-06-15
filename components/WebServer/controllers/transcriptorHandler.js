@@ -1,5 +1,5 @@
 const debug = require('debug')('linto:components:WebServer:controller:transcriptorHandler')
-const request = require(`${process.cwd()}/lib/utility/request`)
+const axios = require(`${process.cwd()}/lib/utility/axios`)
 
 const SttWrapper = require(`${process.cwd()}/components/WebServer/controllers/conversation/generator`)
 const Normalizer = require(`${process.cwd()}/components/WebServer/controllers/conversation/normalize`)
@@ -26,9 +26,8 @@ async function getTranscriptionResult(conversation) {
             url += `return_raw=${process.env.STT_RESULT_RETURN_RAW}&`
     }
 
-    const result_buffer = await request.get(url, options)
-    if (result_buffer) {
-        const result = JSON.parse(result_buffer)
+    const result = await axios.get(url, options)
+    if (result) {
         const normalizeTranscription = Normalizer.normalizeTranscription(result)
         conversation = SttWrapper.sttToConversation(normalizeTranscription, conversation)
         ConvoModel.update(conversation)
@@ -39,8 +38,7 @@ async function createJobInterval(conversation) {
     const job_id = conversation.job.job_id
     let interval = setInterval(async function() {
         try {
-            const job_buffer = await request.get(`${process.env.STT_HOST}/job/${job_id}`)
-            const job = JSON.parse(job_buffer)
+            const job = await axios.get(`${process.env.STT_HOST}/job/${job_id}`)
 
             conversation.job = {
                 ...job,
@@ -57,7 +55,6 @@ async function createJobInterval(conversation) {
             }
 
         } catch (err) {
-
             conversation.job = {
                 job_id: job_id,
                 state: 'error',

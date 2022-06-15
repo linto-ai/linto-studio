@@ -1,6 +1,6 @@
 const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:conversation:transcriptor`)
 
-const request = require(`${process.cwd()}/lib/utility/request`)
+const axios = require(`${process.cwd()}/lib/utility/axios`)
 
 const SttWrapper = require(`${process.cwd()}/components/WebServer/controllers/conversation/generator`)
 
@@ -11,6 +11,8 @@ const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversat
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
 
 const CONVERSATION_RIGHT = require(`${process.cwd()}/lib/dao/rights/conversation`)
+
+const FormData = require('form-data');
 
 const {
     ConversationNoFileUploaded,
@@ -44,7 +46,7 @@ async function transcriptor(req, res, next) {
             })
         }
         const conversation = await transcribe(req.body, req.files, userId)
-        if (!conversation._id && !conversation.job.job_id) throw new ConversationError()
+        if (!conversation._id || !conversation.job || !conversation.job.job_id) throw new ConversationError()
 
         TranscriptionHandler.createJobInterval(conversation)
         res.status(201).send({
@@ -60,48 +62,39 @@ async function transcribe(body, files, userId) {
     try {
         const file = files.file
         const options = prepareRequest(file, body.transcriptionConfig)
-        const job_buffer = await request.post(`${process.env.STT_HOST}/transcribe`, options)
+        const job = await axios.post(`${process.env.STT_HOST}/transcribe`, options)
+        if (job && job.jobid) {
+            let conversation = SttWrapper.initConversation(body, userId, job.jobid)
+            const filepath = await StoreFile.storeFile(file, 'audio')
+            conversation = await SttWrapper.addFileMetadataToConversation(conversation, file, filepath)
+            conversation.transcriptionConfig = JSON.parse(body.transcriptionConfig)
 
-        if (job_buffer) {
-            const job = JSON.parse(job_buffer)
-            if (job.jobid) {
-                let conversation = SttWrapper.initConversation(body, userId, job.jobid)
-                const filepath = await StoreFile.storeFile(file, 'audio')
-                conversation = await SttWrapper.addFileMetadataToConversation(conversation, file, filepath)
-                conversation.transcriptionConfig = JSON.parse(options.formData.transcriptionConfig)
-
-                const result = await conversationModel.createConversation(conversation)
-                if (result.insertedCount !== 1) throw new ConversationError()
-                return conversation
-            }
+            const result = await conversationModel.createConversation(conversation)
+            if (result.insertedCount !== 1) throw new ConversationError()
+            return conversation
         }
         return { status: 'error' }
     } catch (error) {
+
         throw new ConversationError('Unable to transcribe the audio file')
     }
 }
 
 function prepareRequest(file, transcriptionConfig) {
+    const form = new FormData()
+    form.append('file', file.data, file.name)
+
+    if (transcriptionConfig) form.append('transcriptionConfig', transcriptionConfig.toString())
+    else form.append('transcriptionConfig', '{}')
+
     let options = {
         headers: {
+            'Content-Type': 'multipart/form-data',
             accept: 'application/json'
         },
-        formData: {
-            file: {
-                value: file.data,
-                options: {
-                    filename: file.name,
-                    type: file.mimetype.split('/').pop(),
-                    contentType: file.mimetype,
-                }
-            }
-        },
+        formData: form,
         encoding: null
     }
-
-
-    if (transcriptionConfig) options.formData.transcriptionConfig = transcriptionConfig
-    else options.formData.transcriptionConfig = "{}"
 
     if (process.env.STT_REQUIRE_AUTH === 'true')
         options.headers.Authorization = 'Basic ' + Buffer.from(process.env.STT_USER + ':' + process.env.STT_PASSWORD).toString('base64');
