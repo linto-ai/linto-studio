@@ -59,6 +59,7 @@ function sttToConversation(transcript, conversation) {
                     stime: segment.start,
                     etime: segment.end
                 }
+                if (!speaker.speaker_name) speaker.speaker_name = 'speaker'
                 conversation.speakers.push(speaker)
             } else speaker = speaker[0]
 
