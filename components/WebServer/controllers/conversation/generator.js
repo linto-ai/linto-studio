@@ -9,16 +9,17 @@ const mm = require('music-metadata')
 
 function initConversation(metadata, userId, job_id) {
     let sharedWithUsers = []
-    if (metadata.sharedWithUsers) {
-        sharedWithUsers = metadata.sharedWithUsers
-    }
+    if (metadata.sharedWithUsers) sharedWithUsers = metadata.sharedWithUsers
+
+    let transcriptionConfig = metadata.transcriptionConfig
+    try {
+        transcriptionConfig = JSON.parse(metadata.transcriptionConfig)
+    } catch (err) { }
 
     return {
         name: metadata.name,
         description: metadata.description,
         conversationType: metadata.conversationType || '',
-        audio: {},
-        file_metadata: {},
         locked: 0,
         agenda: [""],
         abstract: '',
@@ -33,6 +34,15 @@ function initConversation(metadata, userId, job_id) {
         keywords: [],
         speakers: [],
         text: [],
+        metadata: {
+            transcription: {
+                ...metadata.service,
+                transcriptionConfig: transcriptionConfig
+            },
+            audio: {},
+            file: {}
+        },
+        locale: metadata.service.locale,
         job: {
             job_id: job_id,
             state: 'pending',
@@ -94,7 +104,7 @@ function sttToConversation(transcript, conversation) {
 async function addFileMetadataToConversation(conversation, file, filepath) {
     const file_metadata = await mm.parseBuffer(file.data, { mimeType: file.mimetype })
     delete file_metadata.native
-    conversation.audio = {
+    conversation.metadata.audio = {
         size: file.size,
         filename: file.name,
         duration: file_metadata.format.duration,
@@ -102,7 +112,7 @@ async function addFileMetadataToConversation(conversation, file, filepath) {
         filepath: filepath
     }
 
-    conversation.file_metadata = {...file_metadata }
+    conversation.metadata.file = { ...file_metadata }
     return conversation
 }
 

@@ -1,37 +1,35 @@
 const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:conversation:transcriptor`)
-
+const FormData = require('form-data');
 const axios = require(`${process.cwd()}/lib/utility/axios`)
-
-const SttWrapper = require(`${process.cwd()}/components/WebServer/controllers/conversation/generator`)
-
-const StoreFile = require(`${process.cwd()}/components/WebServer/controllers/storeFile`)
-const TranscriptionHandler = require(`${process.cwd()}/components/WebServer/controllers/transcriptorHandler`)
 
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
 
+const { createJobInterval } = require(`${process.cwd()}/components/WebServer/controllers/transcriptorHandler`)
+const { addFileMetadataToConversation, initConversation } = require(`${process.cwd()}/components/WebServer/controllers/conversation/generator`)
+const { storeFile } = require(`${process.cwd()}/components/WebServer/controllers/storeFile`)
+const { getTranscriptionService } = require(`${process.cwd()}/components/WebServer/controllers/services/utility`)
+
 const CONVERSATION_RIGHT = require(`${process.cwd()}/lib/dao/rights/conversation`)
-
-const FormData = require('form-data');
-
 const {
     ConversationNoFileUploaded,
     ConversationMetadataRequire,
     ConversationError
 } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
-
-
 const {
     OrganizationNotFound,
 } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
 async function transcriptor(req, res, next) {
     try {
-        if (!req.files || Object.keys(req.files).length === 0) throw new ConversationNoFileUploaded()
-        if (!req.body.name) throw new ConversationMetadataRequire()
-
         const userId = req.payload.data.userId
+
+        if (!req.files || Object.keys(req.files).length === 0) throw new ConversationNoFileUploaded()
+        if (!req.body.name) throw new ConversationMetadataRequire("name param is required")
         if (!req.body.right) req.body.right = CONVERSATION_RIGHT.READ + CONVERSATION_RIGHT.COMMENT
+        if (!req.body.serviceName) throw new ConversationMetadataRequire("serviceName param is required")
+
+        req.body.service = getTranscriptionService(req.body.serviceName)
 
         if (req.body.organizationId) {
             const organization = await organizationModel.getOrganizationById(req.body.organizationId)
@@ -45,15 +43,15 @@ async function transcriptor(req, res, next) {
                 }
             })
         }
+
         const conversation = await transcribe(req.body, req.files, userId)
         if (!conversation._id || !conversation.job || !conversation.job.job_id) throw new ConversationError()
 
-        TranscriptionHandler.createJobInterval(conversation)
+        createJobInterval(conversation)
         res.status(201).send({
             message: 'A conversation is currently being processed'
         })
     } catch (error) {
-        console.error(error)
         res.status(error.status).send({ message: error.message })
     }
 }
@@ -61,13 +59,14 @@ async function transcriptor(req, res, next) {
 async function transcribe(body, files, userId) {
     try {
         const file = files.file
+
         const options = prepareRequest(file, body.transcriptionConfig)
-        const job = await axios.post(`${process.env.STT_HOST}/transcribe`, options)
+        const job = await axios.post(`${body.service.host}/transcribe`, options)
+
         if (job && job.jobid) {
-            let conversation = SttWrapper.initConversation(body, userId, job.jobid)
-            const filepath = await StoreFile.storeFile(file, 'audio')
-            conversation = await SttWrapper.addFileMetadataToConversation(conversation, file, filepath)
-            conversation.transcriptionConfig = JSON.parse(body.transcriptionConfig)
+            let conversation = initConversation(body, userId, job.jobid)
+            const filepath = await storeFile(file, 'audio')
+            conversation = await addFileMetadataToConversation(conversation, file, filepath)
 
             const result = await conversationModel.createConversation(conversation)
             if (result.insertedCount !== 1) throw new ConversationError()
@@ -75,7 +74,6 @@ async function transcribe(body, files, userId) {
         }
         return { status: 'error' }
     } catch (error) {
-
         throw new ConversationError('Unable to transcribe the audio file')
     }
 }

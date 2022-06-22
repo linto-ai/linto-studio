@@ -12,7 +12,7 @@ const DEFAULT_INTERVAL_TIMER = 1000 // 10 sec
 async function getTranscriptionResult(conversation) {
     const result_id = conversation.job.result_id
 
-    let url = `${process.env.STT_HOST}/results/${result_id}`
+    let url = `${conversation.metadata.transcription.host}/results/${result_id}`
     const options = {
         headers: {
             accept: 'application/json'
@@ -38,7 +38,7 @@ async function createJobInterval(conversation) {
     const job_id = conversation.job.job_id
     let interval = setInterval(async function() {
         try {
-            const job = await axios.get(`${process.env.STT_HOST}/job/${job_id}`)
+            const job = await axios.get(`${conversation.metadata.transcription.host}/job/${job_id}`)
 
             conversation.job = {
                 ...job,
