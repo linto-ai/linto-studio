@@ -45,10 +45,9 @@ function configureDefaults() {
         process.env.EXPRESS_SIZE_FILE_MAX = ifHas(process.env.EXPRESS_SIZE_FILE_MAX, envdefault.EXPRESS_SIZE_FILE_MAX)
         process.env.EXPRESS_TIMEOUT = ifHas(process.env.EXPRESS_TIMEOUT, envdefault.EXPRESS_TIMEOUT)
 
-
         process.env.STT_USER = ifHas(process.env.STT_USER, envdefault.STT_USER)
         process.env.STT_PASSWORD = ifHas(process.env.STT_PASSWORD, envdefault.STT_PASSWORD)
-        process.env.STT_HOST = ifHas(process.env.STT_HOST, envdefault.STT_HOST)
+        process.env.STT_SERVICES = ifHas(process.env.STT_SERVICES, envdefault.STT_SERVICES)
         process.env.STT_REQUIRE_AUTH = ifHas(process.env.STT_REQUIRE_AUTH, envdefault.STT_REQUIRE_AUTH)
 
         process.env.STT_RESULT_CONVERT_NUMBERS = ifHas(process.env.STT_RESULT_CONVERT_NUMBERS, envdefault.STT_RESULT_CONVERT_NUMBERS)
