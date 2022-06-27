@@ -47,7 +47,7 @@ describe('insert organization', () => {
     expect(organizationCreated.users[0]).toEqual({ userId: id_user, role: ROLES.OWNER, visibility: 'public' })
     expect(organizationCreated.description).toEqual('Default user organization for ' + mockUser.email)
     expect(organizationCreated.type).toEqual(TYPES.public)
-    expect(organizationCreated.personal).toEqual(true)
+    expect(organizationCreated.personal).toBeTruthy()
 
     await organizationDb.deleteOne({ _id: id_orga })
   })
@@ -63,7 +63,7 @@ describe('insert organization', () => {
     expect(organizationCreated.users.length).toEqual(1)
     expect(organizationCreated.users[0]).toEqual({ userId: id_user, role: ROLES.OWNER, visibility: 'public' })
     expect(organizationCreated.type).toEqual(TYPES.public)
-    expect(organizationCreated.personal).toEqual(false)
+    expect(organizationCreated.personal).toBeFalsy()
 
     await organizationDb.deleteOne({ _id: id_orga })
   })
@@ -82,7 +82,7 @@ describe('insert organization', () => {
     expect(organizationCreated.name).toEqual(mockOrga.name)
     expect(organizationCreated.users.length).toEqual(3)
     expect(organizationCreated.type).toEqual(TYPES.public)
-    expect(organizationCreated.personal).toEqual(false)
+    expect(organizationCreated.personal).toBeFalsy()
 
     await organizationDb.deleteOne({ _id: id_orga })
   })

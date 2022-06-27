@@ -28,17 +28,17 @@ describe('initialzation conversation', () => {
     const filepath = '/audio/'
     const conversation = await generator.addFileMetadataToConversation(conversation_template, file, filepath)
 
-    expect(conversation.metadata.audio).not.toBe(undefined)
+    expect(conversation.metadata.audio).not.toBeUndefined()
   
     expect(conversation.metadata.audio.filename).toEqual(file.name)
     expect(conversation.metadata.audio.size).toEqual(file.size)
-    expect(conversation.metadata.audio.duration).not.toBe(undefined)
+    expect(conversation.metadata.audio.duration).not.toBeUndefined()
     expect(conversation.metadata.audio.duration).toEqual(2.7036875)
     expect(conversation.metadata.audio.mimetype).toEqual(file.mimetype)
     expect(conversation.metadata.audio.filepath).toEqual(filepath)
     expect(conversation.metadata.audio.size).toEqual(file.size)
 
-    expect(conversation.metadata.file).not.toBe(undefined)
+    expect(conversation.metadata.file).not.toBeUndefined()
     expect(conversation.metadata.file.format.duration).toEqual(conversation.metadata.audio.duration)
   })
 })

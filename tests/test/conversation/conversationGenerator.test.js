@@ -37,24 +37,12 @@ describe('initialzation conversation', () => {
   })
 
   it('should throw an exception when no transcription', () => {
-    try {
-      sttToConversation(undefined, conversation_metadata)
-
-      expect(false).toEqual(true) // should not go here
-    } catch (err) {
-      expect(err).not.toBe(undefined)
-      expect(err.message).toEqual('Transcription is empty')
-    }
+    expect(() => sttToConversation(undefined, conversation_metadata)).toThrow()
+    expect(() => sttToConversation(undefined, conversation_metadata)).toThrow('Transcription is empty')
   })
 
   it('should throw an exception when no conversation', () => {
-    try {
-      sttToConversation(MOCK_TRANSCRIPTION_NO_PUNC, undefined)
-
-      expect(false).toEqual(true) // should not go here
-    } catch (err) {
-      expect(err).not.toBe(undefined)
-    }
+    expect(() => sttToConversation(MOCK_TRANSCRIPTION_NO_PUNC, undefined)).toThrow()
   })
 })
 

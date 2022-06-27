@@ -39,8 +39,8 @@ describe('update organization', () => {
     let searchedOrga = await organizationModel.getAllOrganizations()
 
     expect(searchedOrga.length).not.toBe(0)
-    expect(searchedOrga[0].name).not.toBe(undefined)
-    expect(searchedOrga[0].token).toEqual(undefined)
+    expect(searchedOrga[0].name).not.toBeUndefined()
+    expect(searchedOrga[0].token).toBeUndefined()
   })
 
   it('should get an organization by id', async () => {
@@ -61,8 +61,8 @@ describe('update organization', () => {
     let searchedOrga = await organizationModel.getPersonalOrganization()
 
     expect(searchedOrga.length).not.toBe(0)
-    expect(searchedOrga[0].name).not.toBe(undefined)
-    expect(searchedOrga[0].personal).toEqual(true)
-    expect(searchedOrga[0].token).toEqual(undefined)
+    expect(searchedOrga[0].name).not.toBeUndefined()
+    expect(searchedOrga[0].personal).toBeTruthy()
+    expect(searchedOrga[0].token).toBeUndefined()
   })
 })

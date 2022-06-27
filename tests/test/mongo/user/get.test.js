@@ -32,8 +32,8 @@ describe('get users', () => {
     let searchedUser = await userModel.getUserByEmail(mockUser.email)
 
     expect(searchedUser.length).toEqual(1)
-    expect(searchedUser[0].salt).toEqual(undefined)
-    expect(searchedUser[0].passwordHash).toEqual(undefined)
+    expect(searchedUser[0].salt).toBeUndefined()
+    expect(searchedUser[0].passwordHash).toBeUndefined()
 
     await usersDb.deleteOne({ _id: id_user })
   })
@@ -48,14 +48,14 @@ describe('get users', () => {
     let searchedUser = await userModel.getUserTokenByEmail(mockUser.email)
 
     expect(searchedUser.length).toEqual(1)
-    expect(searchedUser[0].salt).not.toBe(undefined)
-    expect(searchedUser[0].passwordHash).not.toBe(undefined)
+    expect(searchedUser[0].salt).not.toBeUndefined()
+    expect(searchedUser[0].passwordHash).not.toBeUndefined()
     await usersDb.deleteOne({ _id: id_user })
   })
 
   it('should get all user', async () => {
     const userList = await userModel.getAllUsers()
-    expect(Array.isArray(userList)).toBe(true)
+    expect(Array.isArray(userList)).toBeTruthy()
   })
 
   it('should get an user token information by id', async () => {
@@ -69,8 +69,8 @@ describe('get users', () => {
 
     //removing randomly generated data
     expect(searchedUser.length).toEqual(1)
-    expect(searchedUser[0].salt).not.toBe(undefined)
-    expect(searchedUser[0].passwordHash).not.toBe(undefined)
+    expect(searchedUser[0].salt).not.toBeUndefined()
+    expect(searchedUser[0].passwordHash).not.toBeUndefined()
     await usersDb.deleteOne({ _id: id_user })
   })
 

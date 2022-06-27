@@ -3,10 +3,7 @@ const debug = require('debug')('linto:components:WebServer:controller:generator'
 const { v4: uuidv4 } = require('uuid');
 const mm = require('music-metadata')
 
-
 //Parse the stt transcription to for conversation mongodb model
-
-
 function initConversation(metadata, userId, job_id) {
     let sharedWithUsers = []
     if (metadata.sharedWithUsers) sharedWithUsers = metadata.sharedWithUsers
@@ -14,7 +11,9 @@ function initConversation(metadata, userId, job_id) {
     let transcriptionConfig = metadata.transcriptionConfig
     try {
         transcriptionConfig = JSON.parse(metadata.transcriptionConfig)
-    } catch (err) { }
+    } catch (err) {
+        // Do nothing, already a json
+    }
 
     return {
         name: metadata.name,
@@ -56,7 +55,7 @@ function sttToConversation(transcript, conversation) {
         jsonTranscript = transcript
 
         if (transcript === undefined || transcript.transcription_result.length === 0)
-            throw new Error('Transcription is empty')
+            throw new Error('Transcription was empty')
         conversation.confidence = transcript.confidence
 
         transcript.segments.map(segment => {
