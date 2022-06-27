@@ -38,7 +38,7 @@ describe('initialzation conversation', () => {
 
   it('should throw an exception when no transcription', () => {
     expect(() => sttToConversation(undefined, conversation_metadata)).toThrow()
-    expect(() => sttToConversation(undefined, conversation_metadata)).toThrow('Transcription is empty')
+    expect(() => sttToConversation(undefined, conversation_metadata)).toThrow('Transcription was empty')
   })
 
   it('should throw an exception when no conversation', () => {
