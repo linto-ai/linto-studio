@@ -1,0 +1,53 @@
+{
+  "transcription_result": "je veux appeler gabonaise sort dit",
+  "raw_transcription": "je veux appeler gabonaise sort dit",
+  "confidence": 0.8286760000000001,
+  "segments": [
+    {
+      "spk_id": null,
+      "start": 0.42,
+      "end": 2.22,
+      "duration": 1.8000000000000003,
+      "raw_segment": "je veux appeler gabonaise sort dit",
+      "segment": "je veux appeler gabonaise sort dit",
+      "words": [
+        {
+          "word": "je",
+          "start": 0.42,
+          "end": 0.66,
+          "conf": 1
+        },
+        {
+          "word": "veux",
+          "start": 0.66,
+          "end": 0.87,
+          "conf": 1
+        },
+        {
+          "word": "appeler",
+          "start": 0.87,
+          "end": 1.23,
+          "conf": 0.925501
+        },
+        {
+          "word": "gabonaise",
+          "start": 1.26,
+          "end": 1.735236,
+          "conf": 0.695977
+        },
+        {
+          "word": "sort",
+          "start": 1.735236,
+          "end": 1.95,
+          "conf": 0.692287
+        },
+        {
+          "word": "dit",
+          "start": 1.95,
+          "end": 2.22,
+          "conf": 0.658291
+        }
+      ]
+    }
+  ]
+}

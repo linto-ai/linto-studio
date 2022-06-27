@@ -1,0 +1,141 @@
+{
+  "_id" : ObjectId("62b07202e2d80f12c74a77be"),
+  "name" : "conv-example",
+  "description" : null,
+  "conversationType" : "",
+  "audio" : {
+      "size" : 86562,
+      "filename" : "conv-example.wav",
+      "duration" : 2.7036875,
+      "mimetype" : "audio/wave",
+      "filepath" : "audios/af0706db-9740-4b17-b032-15173238852c.wav"
+  },
+  "file_metadata" : {
+      "format" : {
+          "tagTypes" : [],
+          "trackInfo" : [],
+          "container" : "WAVE",
+          "codec" : "PCM",
+          "bitsPerSample" : 16,
+          "sampleRate" : 16000,
+          "numberOfChannels" : 1,
+          "bitrate" : 32000,
+          "lossless" : true,
+          "numberOfSamples" : 43259,
+          "duration" : 2.7036875
+      },
+      "quality" : {
+          "warnings" : [ 
+              {
+                  "message" : "Data chunk size exceeds file size"
+              }
+          ]
+      },
+      "common" : {
+          "track" : {
+              "no" : null,
+              "of" : null
+          },
+          "disk" : {
+              "no" : null,
+              "of" : null
+          },
+          "movementIndex" : {}
+      }
+  },
+  "locked" : 0,
+  "agenda" : [ 
+      ""
+  ],
+  "abstract" : "",
+  "owner" : "62500266ef90824a8bf933fb",
+  "sharedWithUsers" : [],
+  "organization" : {
+      "organizationId" : ObjectId("62500266ef90824a8bf933fc"),
+      "membersRight" : null,
+      "customRights" : []
+  },
+  "highlights" : [],
+  "keywords" : [],
+  "speakers" : [ 
+      {
+          "speaker_id" : "b1ded461-8e09-46ad-bf34-d6f304af32ec",
+          "speaker_name" : null,
+          "stime" : 0.42,
+          "etime" : 2.22
+      }
+  ],
+  "text" : [ 
+      {
+          "speaker_id" : "b1ded461-8e09-46ad-bf34-d6f304af32ec",
+          "turn_id" : "06fa527d-e118-4d04-b436-9cb2f1232368",
+          "raw_segment" : "je veux appeler gabonaise sort dit",
+          "segment" : "je veux appeler gabonaise sort dit",
+          "words" : [ 
+              {
+                  "wid" : "7fa64fec-5ed4-4cd4-85cc-817321fd5fe5",
+                  "stime" : 0.42,
+                  "etime" : 0.66,
+                  "word" : "je",
+                  "confidence" : 1,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "6db04537-3d12-4ca3-b8ed-e56c62859ce4",
+                  "stime" : 0.66,
+                  "etime" : 0.87,
+                  "word" : "veux",
+                  "confidence" : 1,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "5c0073c5-fed0-447e-9bab-ac6bdb7e1e10",
+                  "stime" : 0.87,
+                  "etime" : 1.23,
+                  "word" : "appeler",
+                  "confidence" : 0.925502,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "7e61d677-c1e1-4182-9926-3a90ced9e737",
+                  "stime" : 1.26,
+                  "etime" : 1.735276,
+                  "word" : "gabonaise",
+                  "confidence" : 0.70126,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "b75187c9-1c89-4e1b-ba6d-1db417f108b3",
+                  "stime" : 1.735276,
+                  "etime" : 1.95,
+                  "word" : "sort",
+                  "confidence" : 0.700923,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "ecf56f07-d351-4b9b-a99a-93759452fcdd",
+                  "stime" : 1.95,
+                  "etime" : 2.22,
+                  "word" : "dit",
+                  "confidence" : 0.666191,
+                  "highlights" : [],
+                  "keywords" : []
+              }
+          ]
+      }
+  ],
+  "job" : {
+      "state" : "done",
+      "result_id" : "cffedf02-5908-40a3-a781-e77bec879ec9",
+      "job_id" : "8b19f31c-f906-4021-8f61-e6fec088d31d"
+  },
+  "transcriptionConfig" : {},
+  "created" : "2022-06-20T15:11:30+02:00",
+  "last_update" : "2022-06-20T15:11:30+02:00",
+  "confidence" : 0.832312666666667
+}
