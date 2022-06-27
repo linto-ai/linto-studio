@@ -6,7 +6,9 @@
     "scripts": {
         "start": "NODE_ENV=production node app.js",
         "start-debug": "NODE_ENV=development DEBUG=app/* node app.js",
-        "start-dev": "NODE_ENV=development nodemon app.js"
+        "start-dev": "NODE_ENV=development nodemon app.js",
+        "test": "jest",
+        "test:current": "jest -- conversationGenerator"
     },
     "license": "GNU GPLv3",
     "dependencies": {
@@ -35,6 +37,12 @@
         "passport-local": "^1.0.0",
         "path": "^0.12.7",
         "randomstring": "^1.1.5",
+        "utils-copy": "^1.1.1",
         "uuid": "^8.3.2"
+    },
+    "devDependencies": {
+        "@shelf/jest-mongodb": "^3.0.1",
+        "jest": "^28.1.1",
+        "nodemon": "^2.0.16"
     }
 }

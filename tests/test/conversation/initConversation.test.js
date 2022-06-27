@@ -22,7 +22,7 @@ describe('initialzation conversation', () => {
     expect(conversation.organization.organizationId).toEqual(param_metadata.organizationId)
     expect(conversation.organization.membersRight).toEqual(param_metadata.membersRight)
     expect(conversation.sharedWithUsers).not.toBe([])
-    expect(conversation.sharedWithUsers.length).toEqual(1)
+    expect(conversation.sharedWithUsers.length).toEqual(param_metadata.sharedWithUsers.length)
     expect(conversation.sharedWithUsers[0]).toEqual(param_metadata.sharedWithUsers[0])
 
     expect(conversation.owner).toEqual(user_id)
