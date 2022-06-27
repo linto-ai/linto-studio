@@ -1,0 +1,13 @@
+{
+  "name": "conversation-unit-test",
+  "description": "Just a simple description",
+  "organizationId": "92b8bddc-979c-4931-8943-ac1f60a77516",
+  "membersRight": "7",
+  "sharedWithUsers": [{
+    "userId": "62500274ef90824a8bf933ff",
+    "right": 1
+  }],
+  "service" :{
+    "local" : "Fr-fr"
+  }
+}
