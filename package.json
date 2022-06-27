@@ -43,6 +43,6 @@
     "devDependencies": {
         "@shelf/jest-mongodb": "^3.0.1",
         "jest": "^28.1.1",
-        "nodemon": "^2.0.16"
+        "nodemon": "^2.0.18"
     }
 }
