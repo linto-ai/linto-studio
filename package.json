@@ -37,6 +37,7 @@
         "passport-local": "^1.0.0",
         "path": "^0.12.7",
         "randomstring": "^1.1.5",
+        "utf8": "^3.0.0",
         "utils-copy": "^1.1.1",
         "uuid": "^8.3.2"
     },

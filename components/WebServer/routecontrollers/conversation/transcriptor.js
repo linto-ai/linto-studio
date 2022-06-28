@@ -1,6 +1,7 @@
 const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:conversation:transcriptor`)
 const FormData = require('form-data');
 const axios = require(`${process.cwd()}/lib/utility/axios`)
+const utf8 = require('utf8');
 
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
@@ -52,14 +53,18 @@ async function transcriptor(req, res, next) {
             message: 'A conversation is currently being processed'
         })
     } catch (error) {
+        console.log(error)
         res.status(error.status).send({ message: error.message })
     }
 }
 
+//decoded utf8 string
 async function transcribe(body, files, userId) {
     try {
-        const file = files.file
-
+        const file = {
+            ...files.file,
+            name : utf8.decode(files.file.name)
+        }
         const options = prepareRequest(file, body.transcriptionConfig)
         const job = await axios.post(`${body.service.host}/transcribe`, options)
 

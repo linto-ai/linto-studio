@@ -30,7 +30,9 @@ class WebServer extends Component {
         this.express = express()
         this.express.set('etag', false)
         this.express.set('trust proxy', true)
-        this.express.use(fileUpload())
+        this.express.use(fileUpload({
+            uriDecodeFileNames : true
+        }))
 
         this.express.use(bodyParser.json({
             limit: process.env.EXPRESS_SIZE_FILE_MAX,
