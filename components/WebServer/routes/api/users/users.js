@@ -1,4 +1,4 @@
-const debug = require('debug')('app:router:api:user:user')
+const debug = require('debug')('linto:conversation-manager:router:api:user:user')
 const {
     listUser,
     searchUser,

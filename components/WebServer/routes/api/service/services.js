@@ -1,4 +1,4 @@
-const debug = require('debug')('app:router:api:services:service')
+const debug = require('debug')('linto:conversation-manager:router:api:services:service')
 
 const { 
   getTranscriptionServices

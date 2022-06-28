@@ -1,4 +1,4 @@
-const debug = require('debug')('app:router:api:conversation:conversations')
+const debug = require('debug')('linto:conversation-manager:router:api:conversation:conversations')
 
 const { // Create conversation based on file
     transcriptor

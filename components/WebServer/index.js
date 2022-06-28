@@ -43,11 +43,6 @@ class WebServer extends Component {
             extended: true
         }))
 
-        // Public path
-        this.express.use('/assets', express.static(`${process.cwd()}/dist`))
-        this.express.use('/audios', express.static(`${process.env.VOLUME_AUDIO_UPLOAD_PATH}`))
-        this.express.use('/pictures', express.static(`${process.env.VOLUME_PROFILE_PICTURE_UPLOAD_PATH}`))
-
         // Cross domain whitelist
         if (process.env.CORS_ENABLED === 'true') this.express.use(CORS(corsOptions))
 
@@ -58,7 +53,6 @@ class WebServer extends Component {
             debug(` WebServer listening on : ${process.env.WEBSERVER_HTTP_PORT}`)
             if (err) throw (err)
         })
-        //this.httpServer.setTimeout(parseInt(process.env.EXPRESS_TIMEOUT, 10)) //TODO: Set timeout for only required route (upload mainly)
 
         require('./routes/router.js')(this) // Loads all defined routes
         WebServerErrorHandler.init(this)

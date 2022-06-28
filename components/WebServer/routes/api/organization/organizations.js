@@ -1,4 +1,4 @@
-const debug = require('debug')('app:router:api:organizations:organizations')
+const debug = require('debug')('linto:conversation-manager:router:api:organizations:organizations')
 const {
     createOrganization,
     // listOrganization,
