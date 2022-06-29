@@ -12,7 +12,7 @@ let corsOptions = {}
 if (process.env.CORS_ENABLED === 'true' && process.env.CORS_API_WHITELIST.length > 0) {
     whitelistDomains = process.env.CORS_API_WHITELIST.split(',')
     corsOptions = {
-        origin: function (origin, callback) {
+        origin: function(origin, callback) {
             if (!origin || whitelistDomains.indexOf(origin) !== -1 || origin === 'undefined') {
                 callback(null, true)
             } else {
@@ -31,7 +31,7 @@ class WebServer extends Component {
         this.express.set('etag', false)
         this.express.set('trust proxy', true)
         this.express.use(fileUpload({
-            uriDecodeFileNames : true
+            uriDecodeFileNames: true
         }))
 
         this.express.use(bodyParser.json({
@@ -49,6 +49,8 @@ class WebServer extends Component {
         this.express.use(passport.initialize())
         this.express.use(passport.session())
 
+        this.express.use('/pictures', express.static(process.env.VOLUME_PROFILE_PICTURE_UPLOAD_PATH))
+
         this.httpServer = this.express.listen(process.env.WEBSERVER_HTTP_PORT, "0.0.0.0", (err) => {
             debug(` WebServer listening on : ${process.env.WEBSERVER_HTTP_PORT}`)
             if (err) throw (err)
@@ -58,7 +60,7 @@ class WebServer extends Component {
         WebServerErrorHandler.init(this)
 
         this.express.use('/', express.static(path.resolve(__dirname, './public'))) // Attaches ./public folder to / route
-        //this.express.use('/swagger-ui/', express.static(pathToSwaggerUi)) // Attaches swagger-ui JS file to /swagger-ui route
+            //this.express.use('/swagger-ui/', express.static(pathToSwaggerUi)) // Attaches swagger-ui JS file to /swagger-ui route
 
         return this.init()
     }

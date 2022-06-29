@@ -4,37 +4,22 @@ const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
 
 
 module.exports = (webserver) => {
-    return [
-        {
-            path: '/conversations/:conversationId/media',
-            method: 'get',
-            requireAuth: true,
-            requireConversationReadAccess: true,
-            controller: async (req, res, next) => {
-                const conversation = await conversationModel.getConvoById(req.params.conversationId)
-                if (conversation.length === 1) {
-                    const fileName = conversation[0].metadata.audio.filepath.split('/').pop()
-                    const file = `${process.env.VOLUME_AUDIO_UPLOAD_PATH}/${fileName}`
-                    res.download(file)
-                } else {
-                    res.status(401).send({ message: 'Conversation audio not found' })
-                }
-            }
-        },
-        {
-            path: '/users/:userId/picture',
-            method: 'get',
-            requireAuth: true,
-            controller: async (req, res, next) => {
-                const user = await userModel.getUserById(req.params.userId)
-                if (user.length === 1) {
-                    const fileName = user[0].img.split('/').pop()
-                    const file = `${process.env.VOLUME_PROFILE_PICTURE_UPLOAD_PATH}/${fileName}`
-                    res.download(file)
-                } else {
-                    res.status(401).send({ message: 'User profile picture not found' })
-                }
+    return [{
+        path: '/conversations/:conversationId/media',
+        method: 'get',
+        requireAuth: true,
+        requireConversationReadAccess: true,
+        controller: async(req, res, next) => {
+            const conversation = await conversationModel.getConvoById(req.params.conversationId)
+            if (conversation.length === 1) {
+                const fileName = conversation[0].metadata.audio.filepath.split('/').pop()
+                const file = `${process.cwd()}/${process.env.VOLUME_AUDIO_UPLOAD_PATH}/${fileName}`
+                    // TODO: handle file type (mp3, wav, etc)
+                res.setHeader('Content-Type', 'audio/mpeg')
+                res.sendFile(file)
+            } else {
+                res.status(401).send({ message: 'Conversation audio not found' })
             }
         }
-    ]
+    }]
 }
