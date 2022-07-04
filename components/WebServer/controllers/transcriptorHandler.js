@@ -2,7 +2,7 @@ const debug = require('debug')('linto:components:WebServer:controller:transcript
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 
 const SttWrapper = require(`${process.cwd()}/components/WebServer/controllers/conversation/generator`)
-const Normalizer = require(`${process.cwd()}/components/WebServer/controllers/conversation/normalize`)
+const {segmentNormalizeText} = require(`${process.cwd()}/components/WebServer/controllers/conversation/normalizeSegment`)
 
 const ConvoModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 
@@ -28,7 +28,8 @@ async function getTranscriptionResult(conversation) {
 
     const result = await axios.get(url, options)
     if (result) {
-        const normalizeTranscription = Normalizer.normalizeTranscription(result)
+        const normalizeTranscription = segmentNormalizeText(result, conversation.locale)
+
         conversation = SttWrapper.sttToConversation(normalizeTranscription, conversation)
         ConvoModel.update(conversation)
     }
