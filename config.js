@@ -43,6 +43,7 @@ function configureDefaults() {
 
         // Express settings
         process.env.EXPRESS_SIZE_FILE_MAX = ifHas(process.env.EXPRESS_SIZE_FILE_MAX, envdefault.EXPRESS_SIZE_FILE_MAX)
+        process.env.AXIOS_SIZE_FILE_MAX = ifHas(process.env.AXIOS_SIZE_FILE_MAX, envdefault.AXIOS_SIZE_FILE_MAX)
         process.env.EXPRESS_TIMEOUT = ifHas(process.env.EXPRESS_TIMEOUT, envdefault.EXPRESS_TIMEOUT)
 
         process.env.STT_USER = ifHas(process.env.STT_USER, envdefault.STT_USER)
@@ -51,7 +52,7 @@ function configureDefaults() {
         process.env.STT_REQUIRE_AUTH = ifHas(process.env.STT_REQUIRE_AUTH, envdefault.STT_REQUIRE_AUTH)
 
         process.env.STT_RESULT_CONVERT_NUMBERS = ifHas(process.env.STT_RESULT_CONVERT_NUMBERS, envdefault.STT_RESULT_CONVERT_NUMBERS)
-        process.env.STT_RESULT_RETURN_RAW  = ifHas(process.env.STT_RESULT_RETURN_RAW, envdefault.STT_RESULT_RETURN_RAW)
+        process.env.STT_RESULT_RETURN_RAW = ifHas(process.env.STT_RESULT_RETURN_RAW, envdefault.STT_RESULT_RETURN_RAW)
 
 
         // Storage folder for uploads
