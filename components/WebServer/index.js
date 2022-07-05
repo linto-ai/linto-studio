@@ -39,7 +39,7 @@ class WebServer extends Component {
             extended: true
         }))
         this.express.use(bodyParser.urlencoded({
-            limit: '50mb',
+            limit: process.env.EXPRESS_SIZE_FILE_MAX,
             extended: true
         }))
 

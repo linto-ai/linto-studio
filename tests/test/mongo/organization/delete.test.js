@@ -31,7 +31,7 @@ describe('delete organization', () => {
 
   it('should delete an organization', async () => {
     let mockUser = mongoUtilityTest.mockUser()
-    const insertedOrgaData = await organizationModel.createDefaultOrganization(id_user, mockUser.email)
+    const insertedOrgaData = await organizationModel.createDefaultOrganization(mockUser.email)
     const id_orga = insertedOrgaData.insertedId
     
     const organizationCreated = await organizationDb.findOne({ _id: id_orga })
