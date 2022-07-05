@@ -113,7 +113,7 @@ function numberNormalize(seg_text, words, loop_data) {
 }
 
 function notFound(segment_text, words) {
-  return word
+  return words
 }
 
 module.exports = [correctSegmentText, simplePunctuation, doublePunctuation, apostropheNormalize, numberNormalize, notFound]
