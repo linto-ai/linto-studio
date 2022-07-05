@@ -1,16 +1,13 @@
 const debug = require('debug')('linto:components:WebServer:controller:langueRules:french')
-let print_debug = true
-let stop_debug = 10
-let debug_show_index = 0
 
 function correctSegmentText(seg_text) {
   let fixed_segment_text = seg_text.original
 
-  fixed_segment_text = fixed_segment_text.replace(',\'', '\'').replace(',-', '-').replace(/[,.]$/, '')
+  fixed_segment_text = fixed_segment_text.replace(',\'', '\'').replace(',-', '-')
 
   return {
     original: fixed_segment_text,
-    lowercase: fixed_segment_text.toLowerCase()
+    lowercase: fixed_segment_text.replace(/[,.]$/, '').toLowerCase()
   }
 }
 
@@ -52,8 +49,10 @@ function apostropheNormalize(seg_text, words, loop_data) {
 }
 
 function numberNormalize(seg_text, words, loop_data) {
-  if (!isNaN(seg_text.lowercase.replace(/[,.:]$/, ''))) {
-    if (loop_data.segment_index + 1 > loop_data.segment.length - 1) { // The last word is a number
+  const regex_number = /.*[0-9].*/
+
+  if (regex_number.test(seg_text.lowercase.replace(/[,.:]$/, ''))) {
+    if (loop_data.segment_index + 1 > loop_data.segment.length - 1) {
       return {
         ...words,
         word: seg_text.original,
@@ -64,11 +63,13 @@ function numberNormalize(seg_text, words, loop_data) {
     let number_in_a_row_find = 0
 
     while (loop_data.segment_index + number_in_a_row_find < loop_data.segment.length) {
-      if (!isNaN(loop_data.segment[loop_data.segment_index + number_in_a_row_find].replace(/[,.:]$/, ''))) {
+      if (regex_number.test(loop_data.segment[loop_data.segment_index + number_in_a_row_find].replace(/[,.:]$/, ''))) {
+
         seg_number.push(loop_data.segment[loop_data.segment_index + number_in_a_row_find])
         number_in_a_row_find++
       } else break
     }
+
 
     let next_word_seg = correctSegmentText({ original: loop_data.segment[loop_data.segment_index + number_in_a_row_find] })
     let index = loop_data.word_index
@@ -89,7 +90,7 @@ function numberNormalize(seg_text, words, loop_data) {
               end: start + diff,
               conf: confidences_scores / (number_in_a_row_find + 1),
               go_to_segment: loop_data.segment_index + number_in_a_row_find - 1,
-              skip_words: index - loop_data.word_index - 1
+              skip_words: index - loop_data.word_index - number_in_a_row_find + 1
             })
             start += diff
           }
@@ -111,19 +112,8 @@ function numberNormalize(seg_text, words, loop_data) {
   }
 }
 
-function printNotFound(segment_text, words) {
-  if (print_debug) {
-    if (debug_show_index > stop_debug)
-      print_debug = false
-    else {
-      console.log("Not found", segment_text, words)
-      debug_show_index++
-    }
-  }
-}
-
 function notFound(segment_text, words) {
-  return {}
+  return word
 }
 
-module.exports = [correctSegmentText, simplePunctuation, doublePunctuation, apostropheNormalize, numberNormalize, printNotFound, notFound]
+module.exports = [correctSegmentText, simplePunctuation, doublePunctuation, apostropheNormalize, numberNormalize, notFound]
