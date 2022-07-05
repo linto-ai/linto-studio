@@ -66,7 +66,8 @@ async function createOrganization(req, res, next) {
         if (result.insertedCount !== 1) throw new OrganizationError()
 
         return res.status(201).send({
-            message: 'Organization ' + organization.name + ' created'
+            message: 'Organization ' + organization.name + ' created',
+            organizationId: result.insertedId
         })
     } catch (err) {
         res.status(err.status).send({ message: err.message })
