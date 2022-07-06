@@ -6,32 +6,6 @@ echo "Waiting mongo..."
 
 while [ "$1" != "" ]; do
     case $1 in
-    --rebuild-vue-app)
-        cd /usr/src/app/conversation-manager/vue_app
-        echo "REBUILDING VUE APP"
-        if [[ "$USE_SSL" == true ]]; then
-            echo "VUE_APP_URL=https://$CONVERSATION_MANAGER_HOST
-            VUE_APP_CONVO_API=https://$CONVERSATION_MANAGER_HOST/api
-            VUE_APP_CONVO_AUTH=https://$CONVERSATION_MANAGER_HOST/auth
-            VUE_APP_DEBUG=false" >.env.production
-        else
-            echo "VUE_APP_URL=http://$CONVERSATION_MANAGER_HOST
-            VUE_APP_CONVO_API=http://$CONVERSATION_MANAGER_HOST/api
-            VUE_APP_CONVO_AUTH=http://$CONVERSATION_MANAGER_HOST/auth
-            VUE_APP_DEBUG=false" >.env.production
-        fi
-            npm run build-app
-        ;;
-    --reinstall-vue-app)
-        cd /usr/src/app/conversation-manager/vue_app
-        echo "REINSTALL VUE APP"
-        npm install
-        ;;
-    --reinstall-webserver)
-        echo "REBUILDING WEBSERVER APP"
-        cd /usr/src/app/conversation-manager/vue_app
-        npm install
-        ;;
     --run-cmd?*)
         script=${1#*=} # Deletes everything up to "=" and assigns the remainder.
         ;;

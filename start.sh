@@ -4,7 +4,6 @@ SUDO=''
 . .dockerenv # Source all env
 
 EXTRA_COMMAND_DOCKER=--skip
-
 ####################################
 ###### Parameter command init ######
 ####################################
@@ -15,32 +14,32 @@ usage() {
   cat <<USAGE >&2
 Usage:
     ./start [-- command args]
-    -p   | --pull           Pull image
-    -v   | --vue-rebuild    Rebuild vue
+    -b   | --backend-build     Backend build
+    -f   | --frontend-build    Frontend build
 
-    -pv  | -vp              Do all command
+    -bf  | -fb              Do all command
     -h   | --help           Information on command args
 USAGE
   exit 1
 }
 
-IMAGE_PULL=false
-IMAGE_VUE_REBUILD=false
+BACK_BUILD=false
+FRONT_BUILD=false
 
 # process arguments
 while [[ $# -gt 0 ]]; do
   case "$1" in
-  -pv | -vp)
-    IMAGE_PULL=true
-    IMAGE_VUE_REBUILD=true
+  -fb | -bf)
+    BACK_BUILD=true
+    FRONT_BUILD=true
     shift 1
     ;;
-  -p | --pull)
-    IMAGE_PULL=true
+  -b | --backend-build)
+    BACK_BUILD=true
     shift 1
     ;;
-  -v | --vue-rebuild )
-    IMAGE_VUE_REBUILD=true
+  -f | --frontend-build)
+    FRONT_BUILD=true
     shift 1
     ;;
   -h | --help)
@@ -54,16 +53,28 @@ while [[ $# -gt 0 ]]; do
 done
 
 mkdir -p ${VOLUME_DATABASE_FOLDER}
-sudo chown -R ${USER} ${VOLUME_DATABASE_FOLDER}
+chown -R ${USER} ${VOLUME_DATABASE_FOLDER}
 
-if [ "$IMAGE_PULL" = true ]; then
-  echo -e '\e[31mPulling image\e[0m' : $LINTO_STACK_IMAGE_TAG
-  docker image pull lintoai/linto-platform-conversation-manager:$LINTO_STACK_IMAGE_TAG
+
+if [ "$FRONT_BUILD" = true ]; then
+  echo -e '\e[31mFrontend build\e[0m'
+  DIR="/platform-conversation-manager-front/"
+  if [ -d "$DIR" ]; then
+    echo "Installing config files in ${DIR}..."
+    git clone git@github.com:linto-ai/platform-conversation-manager-front.git
+  else
+    ###  Control will jump here if $DIR does NOT exists ###
+    echo "Skip clone."
+  fi
+  git checkout next
+  cd platform-conversation-manager-front
+  docker build -t conversation-manager-front .
+  cd .. 
 fi
 
-if [ "$IMAGE_VUE_REBUILD" = true ]; then
-  echo -e '\e[31mForce rebuild vue-app\e[0m'
-  EXTRA_COMMAND_DOCKER=--rebuild-vue-app
+if [ "$BACK_BUILD" = true ]; then
+  echo -e '\e[31mBuilding image\e[0m'
+  docker-compose build
 fi
 
 # Regenerate mono init.js file 
