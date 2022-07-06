@@ -4,28 +4,40 @@ services:
   conversation-manager-mongo:
     image: mongo:latest
     env_file: .dockerenv
-    volumes:
-      - ./${VOLUME_DATABASE_FOLDER}/:/data/db
-      - ./config/seeds/mongodb/init.js:/docker-entrypoint-initdb.d/init.js
+    # volumes:
+    # - ./${VOLUME_DATABASE_FOLDER}/:/data/db
+    # - ./config/seeds/mongodb/init.js:/docker-entrypoint-initdb.d/init.js
     networks:
       - internal
 
   conversation-manager-api:
     build: .
-    container_name: conversation-manager
+    container_name: conversation-manager-api
     env_file: .dockerenv
-    environment: 
-      - WEBSERVER_HTTP_PORT=80 #Match the expose Dockerfile, but docker-compose will use the WEBSERVER_HTTP_PORT .env settings
+    environment:
+      - BACKEND_HTTP_PORT=80 #Match the expose Dockerfile, but docker-compose will use the WEBSERVER_HTTP_PORT .env settings
       - DEBUG=${DEBUG}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./${VOLUME_AUDIO_UPLOAD_PATH}:/usr/src/app/conversation-manager/${VOLUME_AUDIO_UPLOAD_PATH}
     command:
       # - --rebuild-vue-app
-      - ${EXTRA_COMMAND_DOCKER}
       - --run-cmd=node app.js
     ports:
-      - "${WEBSERVER_HTTP_PORT}:80"
+      - "8001:80"
+    networks:
+      - internal
+
+  conversation-manager-front:
+    depends_on:
+      - "conversation-manager-api"
+    image: conversation-manager-front:latest
+    container_name: conversation-manager-front
+    env_file: .dockerenv
+    environment:
+      - WEBSERVER_HTTP_PORT=8080 #Match the expose Dockerfile, but docker-compose will use the WEBSERVER_HTTP_PORT .env settings
+    ports:
+      - "8080:${WEBSERVER_HTTP_PORT}"
     networks:
       - internal
 

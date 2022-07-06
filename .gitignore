@@ -10,3 +10,4 @@
 **/storages/database/*
 **/mongo-seeds/init.js
 !/storages/pictures/default.jpg
+**/platform-conversation-manager-front/*
