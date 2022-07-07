@@ -2,6 +2,8 @@ const debug = require('debug')(`linto:conversation-manager:components:WebServer:
 const FormData = require('form-data');
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 const utf8 = require('utf8');
+const fs = require('fs')
+
 
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
@@ -53,25 +55,24 @@ async function transcriptor(req, res, next) {
             message: 'A conversation is currently being processed'
         })
     } catch (error) {
-        console.log(error)
         res.status(error.status).send({ message: error.message })
     }
 }
 
-//decoded utf8 string
 async function transcribe(body, files, userId) {
     try {
-        const file = {
+        const fileData = {
             ...files.file,
-            name : utf8.decode(files.file.name)
+            name: utf8.decode(files.file.name)
         }
-        const options = prepareRequest(file, body.transcriptionConfig)
+
+        const filePath = await storeFile(fileData, 'audio')
+        const options = prepareRequest(filePath, body.transcriptionConfig)
         const job = await axios.post(`${body.service.host}/transcribe`, options)
 
         if (job && job.jobid) {
             let conversation = initConversation(body, userId, job.jobid)
-            const filepath = await storeFile(file, 'audio')
-            conversation = await addFileMetadataToConversation(conversation, file, filepath)
+            conversation = await addFileMetadataToConversation(conversation, filePath)
 
             const result = await conversationModel.createConversation(conversation)
             if (result.insertedCount !== 1) throw new ConversationError()
@@ -79,13 +80,14 @@ async function transcribe(body, files, userId) {
         }
         return { status: 'error' }
     } catch (error) {
+        debug(error)
         throw new ConversationError('Unable to transcribe the audio file')
     }
 }
 
 function prepareRequest(file, transcriptionConfig) {
     const form = new FormData()
-    form.append('file', file.data, file.name)
+    form.append('file', fs.createReadStream(file.storageFilePath))
 
     if (transcriptionConfig) form.append('transcriptionConfig', transcriptionConfig.toString())
     else form.append('transcriptionConfig', '{}')

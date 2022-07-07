@@ -1,6 +1,7 @@
 const debug = require('debug')('linto:components:WebServer:controller:generator')
 
 const { v4: uuidv4 } = require('uuid');
+const fs = require('fs')
 const mm = require('music-metadata')
 
 //Parse the stt transcription to for conversation mongodb model
@@ -100,15 +101,16 @@ function sttToConversation(transcript, conversation) {
 }
 
 // Add file metadata to the conversation object
-async function addFileMetadataToConversation(conversation, file, filepath) {
-    const file_metadata = await mm.parseBuffer(file.data, { mimeType: file.mimetype })
+async function addFileMetadataToConversation(conversation, file) {
+    const file_metadata = await mm.parseStream(fs.createReadStream(file.storageFilePath), { mimeType: 'audio/mpeg' })
     delete file_metadata.native
+
     conversation.metadata.audio = {
-        size: file.size,
-        filename: file.name,
+        filename: file.originalFileName,
         duration: file_metadata.format.duration,
-        mimetype: file.mimetype,
-        filepath: filepath
+        mimetype: 'audio/mpeg', // mp3
+        filepath: file.filePath,
+        originalFilepath: file.originalFilePath
     }
 
     conversation.metadata.file = { ...file_metadata }
