@@ -15,7 +15,7 @@ services:
     container_name: conversation-manager-api
     env_file: .dockerenv
     environment:
-      - BACKEND_HTTP_PORT=80 #Match the expose Dockerfile, but docker-compose will use the WEBSERVER_HTTP_PORT .env settings
+      - WEBSERVER_HTTP_PORT=80 #Match the expose Dockerfile, but docker-compose will use the WEBSERVER_HTTP_PORT .env settings
       - DEBUG=${DEBUG}
     volumes:
       - /etc/localtime:/etc/localtime:ro
@@ -35,9 +35,9 @@ services:
     container_name: conversation-manager-front
     env_file: .dockerenv
     environment:
-      - WEBSERVER_HTTP_PORT=8080 #Match the expose Dockerfile, but docker-compose will use the WEBSERVER_HTTP_PORT .env settings
+      - INTERFACE_HTTP_PORT=8080 #Match the expose Dockerfile, but docker-compose will use the WEBSERVER_HTTP_PORT .env settings
     ports:
-      - "8080:${WEBSERVER_HTTP_PORT}"
+      - "8080:8080"
     networks:
       - internal
 
