@@ -178,11 +178,6 @@ async function updateConversationRights(req, res, next) {
 
 async function getUsersByConversation(req, res, next) {
     try {
-        let conversationUser = {
-            organization_member: [],
-            external_member: []
-        }
-        const userId = req.payload.data.userId
         if (!req.params.conversationId) throw new ConversationIdRequire()
 
         const conversation = await conversationModel.getConvoById(req.params.conversationId)
@@ -191,28 +186,13 @@ async function getUsersByConversation(req, res, next) {
         let organization = await organizationModel.getOrganizationById(conversation[0].organization.organizationId)
         if (organization.length !== 1) throw new OrganizationNotFound()
 
-        const isInOrga = organization[0].users.filter(user => user.userId === userId)
-        if (isInOrga.length === 0) {
-            organization.users = organization.users.filter(oUser => oUser.visibility === TYPES.public)
-        }
-
-        const organization_custom_member = await userUtility.getUsersConversationByArary(conversation[0].organization.customRights)
-        conversationUser.organization_member = await userUtility.getUsersConversationByArary(organization[0].users, conversation[0].organization.membersRight)
-        conversationUser.external_member = await userUtility.getUsersConversationByArary(conversation[0].sharedWithUsers)
-
-        conversationUser.organization_member.map(oUser => {
-            for (let cUser of organization_custom_member) {
-                if (cUser._id.toString() === oUser._id.toString()) {
-                    oUser.right = cUser.right
-                    break
-                }
-            }
-        })
-
+        const conversationUsers = await userUtility.getUsersListByConversation(conversation[0], organization[0])
         res.status(200).send({
-            ...conversationUser
+            conversationUsers
         })
+        res.end()
     } catch (err) {
+        console.error('ERRRR', err)
         res.status(err.status).send({ message: err.message })
     }
 }
