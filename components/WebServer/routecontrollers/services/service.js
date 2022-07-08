@@ -5,7 +5,7 @@ async function getTranscriptionServices(req, res, next) {
   try {
     const services_list = process.env.STT_SERVICES.split('|')
     const services = services_list.map(service => {
-      service = service.split(';')
+      service = service.split(',')
       return {
         name: service[0],
         lang: service[1],

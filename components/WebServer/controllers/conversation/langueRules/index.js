@@ -18,8 +18,8 @@ function executeLangRule(lang, segment_text, words, loop_data) {
     try {
       res = func(segment_text, words, loop_data)
     } catch (err) {
-      debug(func.name)
-      debug(err)
+      debug(func.name, err)
+      return words
     }
 
     // handle different rules

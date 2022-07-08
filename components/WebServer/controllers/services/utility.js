@@ -5,7 +5,7 @@ function getTranscriptionService(serviceName) {
   const services_list = process.env.STT_SERVICES.split('|')
 
   for (let services of services_list) {
-    let service = services.split(';')
+    let service = services.split(',')
     if (service[0] === serviceName) return {
       name: service[0],
       locale: service[1],
