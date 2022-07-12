@@ -89,6 +89,35 @@ async function getConversation(req, res, next) {
     }
 }
 
+
+async function downloadConversation(req, res, next) {
+    try {
+        if (!req.params.conversationId) throw new ConversationIdRequire()
+        if (!req.params.format) throw new ConversationMetadataRequire('format is required')
+
+        const conversation = await conversationModel.getConvoById(req.params.conversationId)
+        if (conversation.length !== 1) throw new ConversationNotFound()
+
+        let output = ""
+        if (req.params.format === 'json') {
+            output = conversation[0]
+        }
+
+        else if (req.params.format === 'text') {
+            if (!conversation[0].text) throw new ConversationError('Conversation has no text')
+            conversation[0].text.map(text => {
+                output += text.segment + ""
+            })
+        }
+
+        else throw new ConversationMetadataRequire('Format not supported')
+
+        res.status(200).send(output)
+    } catch (err) {
+        res.status(err.status).send({ message: err.message })
+    }
+}
+
 async function listConversation(req, res, next) {
     try {
         const userId = req.payload.data.userId
@@ -200,6 +229,7 @@ async function getUsersByConversation(req, res, next) {
 module.exports = {
     getOwnerConversation,
     getConversation,
+    downloadConversation,
     listConversation,
     updateConversation,
     updateConversationRights,
