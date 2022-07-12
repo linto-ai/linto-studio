@@ -23,8 +23,7 @@ async function getOwnerConversation(req, res, next) {
             conversations
         })
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
-
+        next(err)
     }
 }
 
@@ -43,8 +42,7 @@ async function deleteConversation(req, res, next) {
             message: 'Conversation has been deleted'
         })
     } catch (err) {
-        console.error(err)
-        res.status(err.status).send({ message: err.message })
+        next(err)
     }
 }
 
@@ -67,7 +65,7 @@ async function updateConversation(req, res, next) {
             message: 'Conversation updated'
         })
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
+        next(err)
     }
 }
 
@@ -85,7 +83,7 @@ async function getConversation(req, res, next) {
             personal: data.personal
         })
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
+        next(err)
     }
 }
 
@@ -114,7 +112,7 @@ async function downloadConversation(req, res, next) {
 
         res.status(200).send(output)
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
+        next(err)
     }
 }
 
@@ -127,7 +125,7 @@ async function listConversation(req, res, next) {
             conversations: convList
         })
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
+        next(err)
     }
 }
 
@@ -152,7 +150,7 @@ async function searchText(req, res, next) {
             conversations: convText
         })
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
+        next(err)
     }
 }
 
@@ -200,8 +198,7 @@ async function updateConversationRights(req, res, next) {
             message: 'Conversation updated'
         })
     } catch (err) {
-        console.error(err)
-        res.status(err.status).send({ message: err.message })
+        next(err)
     }
 }
 
@@ -221,8 +218,7 @@ async function getUsersByConversation(req, res, next) {
         })
         res.end()
     } catch (err) {
-        console.error('ERRRR', err)
-        res.status(err.status).send({ message: err.message })
+        next(err)
     }
 }
 

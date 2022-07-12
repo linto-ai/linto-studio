@@ -15,7 +15,7 @@ async function getTranscriptionServices(req, res, next) {
 
     res.status(200).send(services)
   } catch (err) {
-    res.status(err.status).send({ message: err.message })
+    next(err)
   }
 }
 

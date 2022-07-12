@@ -41,7 +41,7 @@ async function listUser(req, res, next) {
 
         res.status(200).send(publicUsers)
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
+        next(err)
     }
 }
 
@@ -93,7 +93,7 @@ async function searchUser(req, res, next) {
 
         res.status(200).send(filterUser)
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
+        next(err)
     }
 }
 
@@ -106,7 +106,7 @@ async function getUserById(req, res, next) {
             ...userList[0]
         })
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
+        next(err)
     }
 }
 
@@ -138,9 +138,8 @@ async function createUser(req, res, next) {
             message: 'User account created'
         })
     } catch (err) {
-        res.status(err.status).send({
-            message: !!err.message ? err.message : 'An error occured during user creation'
-        })
+        next(err)
+
     }
 }
 
@@ -165,7 +164,7 @@ async function updateUser(req, res, next) {
             message
         })
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
+        next(err)
     }
 }
 
@@ -187,7 +186,7 @@ async function updateUserPicture(req, res, next) {
             message: 'User picture updated'
         })
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
+        next(err)
     }
 }
 
@@ -209,7 +208,7 @@ async function updateUserPassword(req, res, next) {
         if (result.matchedCount === 0) throw new UserError()
         next()
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
+        next(err)
     }
 }
 
@@ -229,7 +228,7 @@ async function logout(req, res, next) {
             else throw new UserError()
         })
     } catch (error) {
-        res.status(error.status).send({ message: error.message })
+        next(err)
     }
 }
 
@@ -272,8 +271,7 @@ async function deleteUser(req, res, next) {
             message: 'User deleted'
         })
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
-
+        next(err)
     }
 }
 

@@ -36,7 +36,7 @@ async function updateSelfFromOrganization(req, res, next) {
             message: 'User updated from the organization'
         })
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
+        next(err)
     }
 }
 
@@ -58,7 +58,7 @@ async function leaveSelfFromOrganization(req, res, next) {
             message: 'You have leaved the organization'
         })
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
+        next(err)
     }
 }
 
@@ -70,7 +70,7 @@ async function listConversationFromOrganization(req, res, next) {
 
         res.status(200).send(conversations)
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
+        next(err)
     }
 }
 
