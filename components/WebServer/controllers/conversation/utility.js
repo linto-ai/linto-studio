@@ -9,80 +9,79 @@ const { ConversationError } = require(`${process.cwd()}/components/WebServer/err
 const { OrganizationNotFound } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
 async function getUserConversation(userId) {
-  try {
-    const convList = []
-    const conversations = await conversationModel.getAllConvos()
-    for (let conversation of conversations) {
-      // User is owner
-      if (conversation.owner === userId) convList.push(conversation)
-      // User may have a right to see the conversation from sharedWithUsers
+    try {
+        const convList = []
+        const conversations = await conversationModel.getAllConvos()
+        for (let conversation of conversations) {
+            // User is owner
+            if (conversation.owner === userId) convList.push(conversation)
+                // User may have a right to see the conversation from sharedWithUsers
 
-      else if (conversation.sharedWithUsers.filter(user => user.userId === userId &&
-        CONVERSATION_RIGHTS.hasRightAccess(user.right, CONVERSATION_RIGHTS.READ)).length !== 0) {
-        convList.push(conversation)
-      }
-      // User may have a right from the conversation organization
-
-      else {
-        const organization = await organizationModel.getOrganizationById(conversation.organization.organizationId)
-        const userInOgra = organization[0].users.filter(user => user.userId === userId)
-        if (userInOgra.length === 1) {
-          if (ORGANIZATION_ROLES.hasRoleAccess(userInOgra[0].role, ORGANIZATION_ROLES.MAINTAINER)) {
-            convList.push(conversation)
-          } else if (CONVERSATION_RIGHTS.hasRightAccess(conversation.organization.membersRight, CONVERSATION_RIGHTS.READ)) {
-            convList.push(conversation)
-          } else {
-            conversation.organization.customRights.map(orgaUser => {
-              if (orgaUser.userId === userId && CONVERSATION_RIGHTS.hasRightAccess(orgaUser.right, CONVERSATION_RIGHTS.READ))
+            else if (conversation.sharedWithUsers.filter(user => user.userId === userId &&
+                    CONVERSATION_RIGHTS.hasRightAccess(user.right, CONVERSATION_RIGHTS.READ)).length !== 0) {
                 convList.push(conversation)
-            })
-          }
+            }
+            // User may have a right from the conversation organization
+            else {
+                const organization = await organizationModel.getOrganizationById(conversation.organization.organizationId)
+                const userInOgra = organization[0].users.filter(user => user.userId === userId)
+                if (userInOgra.length === 1) {
+                    if (ORGANIZATION_ROLES.hasRoleAccess(userInOgra[0].role, ORGANIZATION_ROLES.MAINTAINER)) {
+                        convList.push(conversation)
+                    } else if (CONVERSATION_RIGHTS.hasRightAccess(conversation.organization.membersRight, CONVERSATION_RIGHTS.READ)) {
+                        convList.push(conversation)
+                    } else {
+                        conversation.organization.customRights.map(orgaUser => {
+                            if (orgaUser.userId === userId && CONVERSATION_RIGHTS.hasRightAccess(orgaUser.right, CONVERSATION_RIGHTS.READ))
+                                convList.push(conversation)
+                        })
+                    }
+                }
+            }
         }
-      }
+        return convList
+    } catch (err) {
+        throw new ConversationError(err)
     }
-    return convList
-  } catch (err) {
-    throw new ConversationError(err)
-  }
 }
 
 async function getOrgaConversation(orgaId) {
-  const conversations = await conversationModel.getAllConvos()
-  return conversations.filter(conv => conv.organization.organizationId.toString() === orgaId)
+    const conversations = await conversationModel.getAllConvos()
+    return conversations.filter(conv => conv.organization.organizationId.toString() === orgaId)
 }
 
 async function getUserRightFromConversation(userId, conversation) {
-  try {
-    const organization = await organizationModel.getOrganizationById(conversation.organization.organizationId)
-    if (organization.length !== 1) throw new OrganizationNotFound()
+    try {
+        const organization = await organizationModel.getOrganizationById(conversation.organization.organizationId)
+        if (organization.length !== 1) throw new OrganizationNotFound()
 
-    const orgaRole = organization[0].users.filter(user => user.userId === userId)[0]
+        const orgaRole = organization[0].users.filter(user => user.userId === userId)[0]
 
-    let access = {
-      role: (orgaRole) ? orgaRole.role : 0,
-      right: conversation.organization.membersRight
+        let access = {
+            role: (orgaRole) ? orgaRole.role : 0,
+            right: conversation.organization.membersRight
+        }
+
+        if (ORGANIZATION_ROLES.hasRoleAccess(access.role, ORGANIZATION_ROLES.ADMIN)) {
+            access.right = CONVERSATION_RIGHTS.adminRight()
+        } else if (ORGANIZATION_ROLES.hasRoleAccess(access.role, ORGANIZATION_ROLES.MAINTAINER)) {
+            access.right = CONVERSATION_RIGHTS.maintainerRight()
+        } else if (ORGANIZATION_ROLES.hasRoleAccess(access.role, ORGANIZATION_ROLES.MEMBER) ||
+            ORGANIZATION_ROLES.hasRoleAccess(access.role, ORGANIZATION_ROLES.MAINTAINER)) {
+            const organizationRight = conversation.organization.customRights.filter(user => user.userId === userId)[0]
+            if (organizationRight) access.right = organizationRight.right
+        } else {
+            const conversationRight = conversation.sharedWithUsers.filter(user => user.userId === userId)[0]
+            if (conversationRight) access.right = conversationRight.right
+        }
+
+        return {
+            access,
+            personal: organization[0].personal
+        }
+    } catch (err) {
+        throw err
     }
-
-    if (ORGANIZATION_ROLES.hasRoleAccess(access.role, ORGANIZATION_ROLES.ADMIN)) {
-      access.right = CONVERSATION_RIGHTS.adminRight()
-    } else if (ORGANIZATION_ROLES.hasRoleAccess(orgaRole, ORGANIZATION_ROLES.MAINTAINER)) {
-      access.right = CONVERSATION_RIGHTS.maintainerRight()
-    } else if (ORGANIZATION_ROLES.hasRoleAccess(access.role, ORGANIZATION_ROLES.MEMBER) ||
-      ORGANIZATION_ROLES.hasRoleAccess(access.role, ORGANIZATION_ROLES.MAINTAINER)) {
-      const organizationRight = conversation.organization.customRights.filter(user => user.userId === userId)[0]
-      if (organizationRight) access.right = organizationRight.right
-    } else {
-      const conversationRight = conversation.sharedWithUsers.filter(user => user.userId === userId)[0]
-      if (conversationRight) access.right = conversationRight.right
-    }
-
-    return {
-      access,
-      personal : organization[0].personal
-    }
-  } catch (err) {
-    throw err
-  }
 }
 
 module.exports = { getUserConversation, getOrgaConversation, getUserRightFromConversation }

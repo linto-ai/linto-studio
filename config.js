@@ -24,7 +24,7 @@ function configureDefaults() {
 
         // Webserver Settings
         process.env.COMPONENTS = ifHas(process.env.COMPONENTS, envdefault.COMPONENTS)
-        process.env.BACKEND_HTTP_PORT = ifHas(process.env.BACKEND_HTTP_PORT, envdefault.BACKEND_HTTP_PORT)
+        process.env.WEBSERVER_HTTP_PORT = ifHas(process.env.WEBSERVER_HTTP_PORT, envdefault.WEBSERVER_HTTP_PORT)
         process.env.SESSION_SECRET = ifHas(process.env.SESSION_SECRET, envdefault.SESSION_SECRET)
         process.env.USE_SSL = ifHas(process.env.USE_SSL, envdefault.USE_SSL)
 

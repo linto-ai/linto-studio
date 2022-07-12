@@ -7,7 +7,6 @@ LOGGER_ENABLED=false
 # Components loading in this order
 COMPONENTS=WebServer
 WEBSERVER_HTTP_PORT=8001
-BACKEND_HTTP_PORT=80
 SESSION_SECRET=mysecret
 USE_SSL=false
 
@@ -21,7 +20,7 @@ DB_PASS=example
 DB_NAME=conversations
 
 # STT Config
-STT_SERVICES=french-service-name;fr-FR;endpoint|english-service-name;en-US;endpoint
+STT_SERVICES=french-service-name,fr-FR,endpoint~english-service-name,en-US,endpoint
 STT_REQUIRE_AUTH=false
 STT_USER=stt_auth
 STT_PASSWORD=stt_password

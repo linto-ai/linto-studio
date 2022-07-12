@@ -7,6 +7,7 @@ const { // Create conversation based on file
 const { // Create conversation based on file
     getOwnerConversation,
     getConversation,
+    downloadConversation,
     listConversation,
     updateConversation,
     searchText,
@@ -66,6 +67,13 @@ module.exports = (webserver) => {
             requireAuth: true,
             requireConversationOwnerAccess: true,
             controller: getOwnerConversation
+        },
+        {
+            path: '/:conversationId/download/:format',
+            method: 'get',
+            requireAuth: true,
+            requireConversationReadAccess: true,
+            controller: downloadConversation
         },
         {
             path: '/:conversationId',

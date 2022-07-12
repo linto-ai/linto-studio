@@ -3,7 +3,7 @@ const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizat
 
 async function getTranscriptionServices(req, res, next) {
   try {
-    const services_list = process.env.STT_SERVICES.split('|')
+    const services_list = process.env.STT_SERVICES.split('~')
     const services = services_list.map(service => {
       service = service.split(',')
       return {
