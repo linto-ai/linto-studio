@@ -1,194 +1,288 @@
-const model = require(`${process.cwd()}/models/mongodb/models/users`)
+const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:user')
+const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
+const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
+const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 
-async function getUsers(req, res, next) {
+const StoreFile = require(`${process.cwd()}/components/WebServer/controllers/storeFile`)
+
+const {
+    OrganizationConflict,
+} = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
+
+const {
+    UserConflict,
+    UserError,
+    UserNotFound,
+    UserUnsupportedMediaType,
+} = require(`${process.cwd()}/components/WebServer/error/exception/users`)
+
+async function listUser(req, res, next) {
     try {
-        let lol = await model.getAllUsers()
-        res.json({
-            status: lol
+        let userId = req.payload.data.userId
+        let allUsers = await userModel.getAllUsers()
+        let allOrganizations = await organizationModel.getAllOrganizations()
+        let publicUsers = []
+
+        // Get all users with "public" personal organization
+        allUsers.map(user => {
+            let userOrga = allOrganizations.find(orga => orga.owner.toString() === user._id.toString() && orga.personal === true)
+            if (userOrga.type === 'public') publicUsers.push(user)
         })
-    } catch (error) {
-        console.error(error)
-    }
-}
 
-async function getUserbyId(req, res, next) {
-    // get user id input then return user
-    try {
-        if (req.params.userid != "undefined") {
-            const postUserId = req.params.userid
-            let response = await model.getUserbyId(postUserId)
-            if (response && response.length) {
-                res.json({
-                    status: response[0]
-                })
-            } else {
-                res.json({
-                    msg: "user id doesn't exist"
-                })
+        // Get users in current user organizations
+        let userOrganizations = allOrganizations.filter(orga => !orga.personal && (orga.owner === userId || orga.users.findIndex(usr => usr.userId === userId) >= 0))
+        userOrganizations.map(uorga => {
+            for (let user of uorga.users) {
+                if (publicUsers.findIndex(usr => usr._id.toString() === user.userId.toString()) < 0) {
+                    publicUsers.push(allUsers.find(auser => auser._id.toString() === user.userId.toString()))
+                }
             }
-        } else {
-            res.status(400) // bad request
-        } 
-    } catch (error) {
-        res.json({
-            status: "error",
-            msg: error
         })
+
+        res.status(200).send(publicUsers)
+    } catch (err) {
+        next(err)
     }
 }
 
-async function getUserByName(req, res, next) {
-    // get user id input then return user
+
+async function searchUser(req, res, next) {
     try {
-        const username = req.params.username
-        let response = await model.getUserByName(username)
-        res.json(response)
-    } catch (error) {
-        console.error(error)
-        res.json({
-            status: "error",
-            msg: error
+        let userId = req.payload.data.userId
+        let userList = await userModel.getAllUsers()
+        let allOrganizations = await organizationModel.getAllOrganizations()
+        let filterUser = []
+
+        // Filter not searched user
+        searchUser = userList.map(user => {
+            const userField = [user.firstname, user.lastname, user.email,
+            user.firstname + ' ' + user.lastname, user.lastname + ' ' + user.firstname]
+
+            const fieldFind = userField
+                .map(field => field.toLowerCase())
+                .filter(field => field.indexOf(req.body.search.toLowerCase()) >= 0)
+
+            if (fieldFind.length > 0) return user
+        }).filter(user => user !== undefined)
+
+        if (searchUser.length === 0) throw new UserNotFound()
+
+        // Get users in user current related organizations
+        let userOrganizations = allOrganizations.filter(orga => !orga.personal && (orga.owner === userId || orga.users.findIndex(usr => usr.userId === userId) >= 0))
+
+        userOrganizations.map(uorga => {
+            uorga.users.map(user => {
+                searchUser = searchUser.filter(usr => {
+                    if (usr._id.toString() === user.userId.toString()) {
+                        filterUser.push(usr)
+                        return false
+                    }
+                    return true
+                })
+            })
         })
+
+        // Get all users with "public" personal organization
+        searchUser.map(user => {
+            let userOrga = allOrganizations.find(orga => orga.owner.toString() === user._id.toString() && orga.personal === true)
+            if (userOrga.type === 'public') {
+                filterUser.push(user)
+                return false
+            }
+        })
+
+        res.status(200).send(filterUser)
+    } catch (err) {
+        next(err)
     }
 }
 
-async function getUserByEmail(req, res, next) {
+async function getUserById(req, res, next) {
     try {
-        const email = req.params.email
-        let response = await model.getUserByEmail(email)
-        res.json(response)
-    } catch (error) {
-        console.error(error)
-        res.json({
-            status: "error",
-            msg: error
+        const userList = await userModel.getUserById(req.params.userid)
+        if (userList && userList.length !== 1) throw new UserNotFound()
+
+        res.status(200).send({
+            ...userList[0]
         })
+    } catch (err) {
+        next(err)
     }
 }
 
 async function createUser(req, res, next) {
-    // WIP -- ADD PASSWORD REQUIREMENTS 
-    // WIP -- ADD name and email form requirements
     try {
-        const payload = req.body
-        const username = payload.userName
-        const email = payload.email
-        //const password = payload.password
+        const user = req.body
+        if (!user.email || !user.firstname || !user.lastname || !user.password) throw new UserUnsupportedMediaType()
 
-        // check user parameters ==> should we use the getUserbyName controller function here instead?
-        const getUserName = await model.getUserByName(username)
-        if (getUserName.length > 0) {
-            throw ({
-                status: 'error',
-                msg: 'User name already exists',
-                code: 'UsernameAlreadyUsed'
-            })
-        } else {
-            const getUserEmail = await model.getUserByEmail(email)
-            if (getUserEmail.length > 0) {
-                throw ({
-                    status: 'error',
-                    msg: 'Email address already exists',
-                    code: 'EmailAlreadyUsed'
-                })
-            } else {
-                const createUser = await model.createUser(payload)
-                if (createUser === 'success') {
-                    res.json({
-                        status: 'success',
-                        msg: 'User has been created'
-                    })
-                } else {
-                    res.json({
-                        status: "error",
-                        msg: error
-                    })
-                }
-            }
+        if (req.files && Object.keys(req.files).length !== 0 && req.files.file)
+            user.img = await StoreFile.storeFile(req.files.file, 'picture')
+        else user.img = StoreFile.defaultPicture()
+
+        const isUserFound = await userModel.getUserByEmail(user.email)
+        if (isUserFound.length !== 0) throw new UserConflict()
+
+        const isOrganizationFound = await organizationModel.getOrganizationByName(user.email)
+        if (isOrganizationFound.length !== 0) throw new OrganizationConflict()
+
+        const createdUser = await userModel.createUser(user)
+        if (createdUser.insertedCount !== 1) throw new UserError()
+        const createdOrganization = await organizationModel.createDefaultOrganization(createdUser.insertedId.toString(), user.email)
+
+        if (createdOrganization.insertedCount !== 1) {
+            userModel.deleteById(createdUser.insertedId.toString())
+            throw new UserError()
         }
-    } catch (error) {
-        console.error(error)
-        res.json(error)
+
+        res.status(201).send({
+            message: 'User account created'
+        })
+    } catch (err) {
+        next(err)
+
     }
 }
+
+async function updateUser(req, res, next) {
+    try {
+        if (!(req.body.email || req.body.firstname || req.body.lastname)) throw new UserUnsupportedMediaType()
+
+        const myUser = await userModel.getUserById(req.payload.data.userId)
+        if (myUser.length !== 1) throw new UserNotFound()
+        let user = myUser[0]
+
+        if (req.body.email) user.email = req.body.email
+        if (req.body.firstname) user.firstname = req.body.firstname
+        if (req.body.lastname) user.lastname = req.body.lastname
+
+        const result = await userModel.update(user)
+        if (result.matchedCount === 0) throw new UserError()
+        let message
+
+        (result.modifiedCount === 1) ? message = 'User updated' : message = 'No modification to user'
+        res.status(200).send({
+            message
+        })
+    } catch (err) {
+        next(err)
+    }
+}
+
+async function updateUserPicture(req, res, next) {
+    try {
+        if (!req.files && Object.keys(req.files).length === 0 && !req.files.file) throw new UserUnsupportedMediaType()
+        const payload = {
+            _id: req.payload.data.userId,
+            img: await StoreFile.storeFile(req.files.file, 'picture')
+        }
+
+        const myUser = await userModel.getUserById(req.payload.data.userId)
+        if (myUser.length !== 1) throw (new UserNotFound())
+
+        const result = await userModel.update(payload)
+        if (result.matchedCount === 0) throw new UserError()
+
+        res.status(200).send({
+            message: 'User picture updated'
+        })
+    } catch (err) {
+        next(err)
+    }
+}
+
+async function updateUserPassword(req, res, next) {
+    try {
+        if (!req.body.newPassword) throw new UserUnsupportedMediaType()
+
+        const myUser = await userModel.getUserById(req.payload.data.userId)
+        if (myUser.length !== 1) throw new UserNotFound()
+        const payload = {
+            ...myUser[0],
+            newPassword: req.body.newPassword
+        }
+
+        req.body.email = myUser[0].email
+        req.body.password = req.body.newPassword
+
+        const result = await userModel.updatePassword(payload)
+        if (result.matchedCount === 0) throw new UserError()
+        next()
+    } catch (err) {
+        next(err)
+    }
+}
+
+async function logout(req, res, next) {
+    try {
+        if (!req.payload.data && !req.payload.data.userId) throw new UserUnsupportedMediaType()
+        let userId = userModel.getObjectId(req.payload.data.userId)
+
+        userModel.update({
+            _id: userId,
+            keyToken: ''
+        }).then(user => {
+            if (user)
+                res.status(200).send({
+                    message: 'User has been disconnected'
+                })
+            else throw new UserError()
+        })
+    } catch (error) {
+        next(err)
+    }
+}
+
 
 async function deleteUser(req, res, next) {
-    if (req.params.userid != "") {
-        const postUserId = req.params.userid
-        try {
-            let response = await model.deleteUserbyId(postUserId)
-            res.json({
-                status: response
-            })
-        } catch (error) {
-            res.json({
-                status: "error",
-                msg: error
-            })
-        }
-    } else {
-        console.log("empty string")
-    }
-}
-
-async function addUserConvoAccess(req, res, next) {
     try {
-        const payload = req.body
-        const addConvo = await model.updateUserAccess(payload)
-        if (addConvo === 'success') {
-            res.json({
-                status: 'success',
-                msg: 'convo has been added to user'
-            })
-            //!! now need to add user to convo with rights??
 
-        } else {
-            res.json({
-                status: "error",
-                msg: error
-            })
-        }
-    } catch(error) {
-        res.json({
-            status: "error",
-            msg: error
-        })
-    }
-}
+        const userId = req.payload.data.userId
 
-/// WIP
-async function removeUserConvoAccess(req, res, next) {
-    try {
-        const payload = req.body
-        const removeConvo = await model.removeUserAccess(payload)
-        if (removeConvo === 'success') {
-            res.json({
-                status: 'success',
-                msg: 'convo has been added to user'
-            })
-            //!! now need to remove user from convo?
-            
-        } else {
-            res.json({
-                status: "error",
-                msg: error
-            })
-        }
-    } catch(error) {
-        res.json({
-            status: "error",
-            msg: error
+        const organizations = await organizationModel.getAllOrganizations()
+
+        organizations.filter(organization => {
+            if (organization.owner !== userId && organization.personal === true) return false
+            else if (organization.owner === userId && organization.users.length === 0) return true
+            else if ((organization.users.filter(user => user.userId === userId)).length !== 0) return true
+        }).map(async (organization) => {
+            if (organization.owner === userId && organization.users.length === 0) {
+                let resultOperation = await organizationModel.deleteById(organization._id.toString())
+                if (resultOperation.deletedCount !== 1) throw new UserError('Error on personal organization')
+            } else {
+                organization.users = organization.users.filter(user => user.userId !== userId)
+                let resultOperation = await organizationModel.update(organization)
+                if (resultOperation.modifiedCount === 0) throw new UserError('Error on organization rights deletion')
+            }
         })
+
+        const conversations = await conversationModel.getAllConvos()
+        conversations.filter(conversation => {
+            if ((conversation.sharedWithUsers.filter(user => user.userId === userId)).length !== 0) return true
+        }).map(async (conversation) => {
+            conversation.sharedWithUsers = conversation.sharedWithUsers.filter(user => user.userId !== userId)
+            const resultConvoUpdate = await conversationModel.update(conversation)
+            if (resultConvoUpdate.modifiedCount === 0) throw new UserError('Error on conversation rights deletion')
+        })
+
+        const result = await userModel.deleteUser(req.payload.data.userId)
+        if (result.deletedCount !== 1) throw new UserError
+
+        res.status(200).send({
+            message: 'User deleted'
+        })
+    } catch (err) {
+        next(err)
     }
 }
 
 module.exports = {
-    getUsers,
-    getUserbyId,
-    getUserByEmail,
-    getUserByName,
+    listUser,
+    searchUser,
+    getUserById,
     deleteUser,
-    createUser, 
-    addUserConvoAccess, 
-    removeUserConvoAccess
+    createUser,
+    logout,
+    updateUser,
+    updateUserPassword,
+    updateUserPicture
 }

@@ -1,10 +1,11 @@
 const fsPromises = require('fs').promises
 const path = require('path')
 const EventEmitter = require('eventemitter3')
-const { componentMissingError } = require(`${process.cwd()}/lib/customErrors.js`)
+const { componentMissingError } = require(`../lib/error/customErrors.js`)
+
 
 class Component extends EventEmitter {
-    
+
     constructor(app, ...requiredComponents) {
         super()
         let missingComponents = []
@@ -42,7 +43,7 @@ class Component extends EventEmitter {
     }
 
     async init() {
-        return new Promise(async (resolve, reject) => {
+        return new Promise(async(resolve, reject) => {
             try {
                 await this.loadEventControllers(path.join(__dirname, this.constructor.name, "/controllers"))
                 resolve(this)

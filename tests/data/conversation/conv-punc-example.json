@@ -1,0 +1,148 @@
+{
+  "_id" : ObjectId("62b08172b53bdf2cba695509"),
+  "name" : "conv-punc-example",
+  "description" : null,
+  "conversationType" : "",
+  "audio" : {
+      "size" : 86562,
+      "filename" : "conv-punc-example.wav",
+      "duration" : 2.7036875,
+      "mimetype" : "audio/wave",
+      "filepath" : "audios/35e6ef3e-e7d9-452f-b964-540e3bbdb19f.wav"
+  },
+  "file_metadata" : {
+      "format" : {
+          "tagTypes" : [],
+          "trackInfo" : [],
+          "container" : "WAVE",
+          "codec" : "PCM",
+          "bitsPerSample" : 16,
+          "sampleRate" : 16000,
+          "numberOfChannels" : 1,
+          "bitrate" : 32000,
+          "lossless" : true,
+          "numberOfSamples" : 43259,
+          "duration" : 2.7036875
+      },
+      "quality" : {
+          "warnings" : [ 
+              {
+                  "message" : "Data chunk size exceeds file size"
+              }
+          ]
+      },
+      "common" : {
+          "track" : {
+              "no" : null,
+              "of" : null
+          },
+          "disk" : {
+              "no" : null,
+              "of" : null
+          },
+          "movementIndex" : {}
+      }
+  },
+  "locked" : 0,
+  "agenda" : [ 
+      ""
+  ],
+  "abstract" : "",
+  "owner" : "62500266ef90824a8bf933fb",
+  "sharedWithUsers" : [],
+  "organization" : {
+      "organizationId" : ObjectId("62500266ef90824a8bf933fc"),
+      "membersRight" : null,
+      "customRights" : []
+  },
+  "highlights" : [],
+  "keywords" : [],
+  "speakers" : [ 
+      {
+          "speaker_id" : "1cf39742-71e0-4bdb-a764-969701854aaa",
+          "speaker_name" : null,
+          "stime" : 0.42,
+          "etime" : 2.22
+      }
+  ],
+  "text" : [ 
+      {
+          "speaker_id" : "1cf39742-71e0-4bdb-a764-969701854aaa",
+          "turn_id" : "e63883ae-5b5e-4d19-b78c-b5c3a4dee9ac",
+          "raw_segment" : "je veux appeler gabonaise sort dit",
+          "segment" : "Je veux appeler gabonaise, sort, dit",
+          "words" : [ 
+              {
+                  "wid" : "bcb7f2d4-27cb-46d1-87bd-7f6e90568969",
+                  "stime" : 0.42,
+                  "etime" : 0.66,
+                  "word" : "Je",
+                  "confidence" : 1,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "65551b02-9886-481f-b702-f5670b972eec",
+                  "stime" : 0.66,
+                  "etime" : 0.87,
+                  "word" : "veux",
+                  "confidence" : 1,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "ce28d8e3-7382-4544-ad67-00617ef2bd13",
+                  "stime" : 0.87,
+                  "etime" : 1.23,
+                  "word" : "appeler",
+                  "confidence" : 0.925502,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "c4d24f33-4ada-4ef6-86e9-0d9cab5e3820",
+                  "stime" : 1.26,
+                  "etime" : 1.735276,
+                  "word" : "gabonaise,",
+                  "confidence" : 0.70126,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "e9bce72f-9859-45d4-8d01-06f1df621301",
+                  "stime" : 1.735276,
+                  "etime" : 1.95,
+                  "word" : "sort,",
+                  "confidence" : 0.700923,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "571c594a-a966-4898-b1dc-6167c8f5905d",
+                  "stime" : 1.95,
+                  "etime" : 2.22,
+                  "word" : "dit",
+                  "confidence" : 0.666191,
+                  "highlights" : [],
+                  "keywords" : []
+              }
+          ]
+      }
+  ],
+  "job" : {
+      "state" : "done",
+      "result_id" : "d576fd92-cb0f-4a1b-8bde-1b2dbe42cf87",
+      "job_id" : "d6e487b5-ef5a-4d9a-b5bc-d8dfc9683832"
+  },
+  "transcriptionConfig" : {
+      "enablePunctuation" : true,
+      "diarizationConfig" : {
+          "enableDiarization" : true,
+          "numberOfSpeaker" : 1,
+          "maxNumberOfSpeaker" : 1
+      }
+  },
+  "created" : "2022-06-20T16:17:22+02:00",
+  "last_update" : "2022-06-20T16:17:22+02:00",
+  "confidence" : 0.832312666666667
+}

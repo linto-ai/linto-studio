@@ -4,3 +4,10 @@
 **/package-lock.json
 **/test-sample
 **/audios
+**/dist
+**/storages/audios/*
+**/storages/pictures/*
+**/storages/database/*
+**/mongo-seeds/init.js
+!/storages/pictures/default.jpg
+**/platform-conversation-manager-front/*
