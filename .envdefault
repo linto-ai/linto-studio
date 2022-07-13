@@ -1,5 +1,5 @@
 # Dev env
-DEBUG=/none
+DEBUG=false
 DEV_DISABLE_AUTH=false
 LINTO_STACK_IMAGE_TAG=latest-unstable
 LOGGER_ENABLED=false
@@ -7,7 +7,6 @@ LOGGER_ENABLED=false
 # Components loading in this order
 COMPONENTS=WebServer
 WEBSERVER_HTTP_PORT=8001
-BACKEND_HTTP_PORT=80
 SESSION_SECRET=mysecret
 USE_SSL=false
 
@@ -21,7 +20,7 @@ DB_PASS=example
 DB_NAME=conversations
 
 # STT Config
-STT_SERVICES=french-service-name;fr-FR;endpoint|english-service-name;en-US;endpoint
+STT_SERVICES=french-service-name,fr-FR,endpoint~english-service-name,en-US,endpoint
 STT_REQUIRE_AUTH=false
 STT_USER=stt_auth
 STT_PASSWORD=stt_password
@@ -38,6 +37,10 @@ EXPRESS_TIMEOUT=1000000
 AXIOS_SIZE_FILE_MAX=500000000
 
 
+# Redis
+REDIS_SESSION_SERVICE=localhost
+REDIS_SESSION_SERVICE_PORT=6379
+
 # Storage folder of audio volume
 VOLUME_AUDIO_UPLOAD_PATH=storages/audios
 VOLUME_AUDIO_PUBLIC_PATH=audios
@@ -52,5 +55,3 @@ CM_REFRESH_SECRET=jwt_refresh_secret
 
 # Docker config
 CONVERSATION_MANAGER_HOST=localhost
-
-

@@ -2,7 +2,7 @@ const debug = require('debug')('linto:components:WebServer:controller:transcript
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 
 const SttWrapper = require(`${process.cwd()}/components/WebServer/controllers/conversation/generator`)
-const {segmentNormalizeText} = require(`${process.cwd()}/components/WebServer/controllers/conversation/normalizeSegment`)
+const { segmentNormalizeText } = require(`${process.cwd()}/components/WebServer/controllers/conversation/normalizeSegment`)
 
 const ConvoModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 
@@ -37,7 +37,9 @@ async function getTranscriptionResult(conversation) {
 
 async function createJobInterval(conversation) {
     const job_id = conversation.job.job_id
-    let interval = setInterval(async function() {
+    const conv_id = conversation._id
+
+    let interval = setInterval(async function () {
         try {
             const job = await axios.get(`${conversation.metadata.transcription.host}/job/${job_id}`)
 
@@ -47,24 +49,23 @@ async function createJobInterval(conversation) {
             }
 
             if (job.state === 'done' && job.result_id) { //triger last request
-                ConvoModel.updateJob(conversation)
+                debug('job done')
+                ConvoModel.updateJob(conv_id, conversation.job)
                 getTranscriptionResult(conversation)
-
                 clearInterval(interval)
             } else {
-                ConvoModel.updateJob(conversation)
+                ConvoModel.updateJob(conv_id, conversation.job)
             }
 
         } catch (err) {
             conversation.job = {
                 job_id: job_id,
                 state: 'error',
-                err: err
+                err: err.message
             }
-
-            ConvoModel.updateJob(conversation)
+            ConvoModel.updateJob(conv_id, conversation.job)
             clearInterval(interval)
-            throw new Error(err)
+            debug('Jobs error', err)
         }
     }, DEFAULT_INTERVAL_TIMER)
 }

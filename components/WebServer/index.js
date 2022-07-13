@@ -49,7 +49,7 @@ class WebServer extends Component {
         this.express.use(passport.initialize())
         this.express.use(passport.session())
 
-        this.express.use('/pictures', express.static(process.env.VOLUME_PROFILE_PICTURE_UPLOAD_PATH))
+        this.express.use('/media/pictures', express.static(process.env.VOLUME_PROFILE_PICTURE_UPLOAD_PATH))
 
         this.httpServer = this.express.listen(process.env.WEBSERVER_HTTP_PORT, "0.0.0.0", (err) => {
             debug(` WebServer listening on : ${process.env.WEBSERVER_HTTP_PORT}`)
@@ -57,7 +57,7 @@ class WebServer extends Component {
         })
 
         require('./routes/router.js')(this) // Loads all defined routes
-        WebServerErrorHandler.init(this)
+        WebServerErrorHandler.init(this) // Manage error from controllers
 
         this.express.use('/', express.static(path.resolve(__dirname, './public'))) // Attaches ./public folder to / route
             //this.express.use('/swagger-ui/', express.static(pathToSwaggerUi)) // Attaches swagger-ui JS file to /swagger-ui route

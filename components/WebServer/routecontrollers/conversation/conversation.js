@@ -23,8 +23,7 @@ async function getOwnerConversation(req, res, next) {
             conversations
         })
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
-
+        next(err)
     }
 }
 
@@ -43,8 +42,7 @@ async function deleteConversation(req, res, next) {
             message: 'Conversation has been deleted'
         })
     } catch (err) {
-        console.error(err)
-        res.status(err.status).send({ message: err.message })
+        next(err)
     }
 }
 
@@ -67,7 +65,7 @@ async function updateConversation(req, res, next) {
             message: 'Conversation updated'
         })
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
+        next(err)
     }
 }
 
@@ -85,7 +83,36 @@ async function getConversation(req, res, next) {
             personal: data.personal
         })
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
+        next(err)
+    }
+}
+
+
+async function downloadConversation(req, res, next) {
+    try {
+        if (!req.params.conversationId) throw new ConversationIdRequire()
+        if (!req.params.format) throw new ConversationMetadataRequire('format is required')
+
+        const conversation = await conversationModel.getConvoById(req.params.conversationId)
+        if (conversation.length !== 1) throw new ConversationNotFound()
+
+        let output = ""
+        if (req.params.format === 'json') {
+            output = conversation[0]
+        }
+
+        else if (req.params.format === 'text') {
+            if (!conversation[0].text) throw new ConversationError('Conversation has no text')
+            conversation[0].text.map(text => {
+                output += text.segment + ""
+            })
+        }
+
+        else throw new ConversationMetadataRequire('Format not supported')
+
+        res.status(200).send(output)
+    } catch (err) {
+        next(err)
     }
 }
 
@@ -98,7 +125,7 @@ async function listConversation(req, res, next) {
             conversations: convList
         })
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
+        next(err)
     }
 }
 
@@ -123,7 +150,7 @@ async function searchText(req, res, next) {
             conversations: convText
         })
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
+        next(err)
     }
 }
 
@@ -171,18 +198,12 @@ async function updateConversationRights(req, res, next) {
             message: 'Conversation updated'
         })
     } catch (err) {
-        console.error(err)
-        res.status(err.status).send({ message: err.message })
+        next(err)
     }
 }
 
 async function getUsersByConversation(req, res, next) {
     try {
-        let conversationUser = {
-            organization_member: [],
-            external_member: []
-        }
-        const userId = req.payload.data.userId
         if (!req.params.conversationId) throw new ConversationIdRequire()
 
         const conversation = await conversationModel.getConvoById(req.params.conversationId)
@@ -191,35 +212,20 @@ async function getUsersByConversation(req, res, next) {
         let organization = await organizationModel.getOrganizationById(conversation[0].organization.organizationId)
         if (organization.length !== 1) throw new OrganizationNotFound()
 
-        const isInOrga = organization[0].users.filter(user => user.userId === userId)
-        if (isInOrga.length === 0) {
-            organization.users = organization.users.filter(oUser => oUser.visibility === TYPES.public)
-        }
-
-        const organization_custom_member = await userUtility.getUsersConversationByArary(conversation[0].organization.customRights)
-        conversationUser.organization_member = await userUtility.getUsersConversationByArary(organization[0].users, conversation[0].organization.membersRight)
-        conversationUser.external_member = await userUtility.getUsersConversationByArary(conversation[0].sharedWithUsers)
-
-        conversationUser.organization_member.map(oUser => {
-            for (let cUser of organization_custom_member) {
-                if (cUser._id.toString() === oUser._id.toString()) {
-                    oUser.right = cUser.right
-                    break
-                }
-            }
-        })
-
+        const conversationUsers = await userUtility.getUsersListByConversation(conversation[0], organization[0])
         res.status(200).send({
-            ...conversationUser
+            conversationUsers
         })
+        res.end()
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
+        next(err)
     }
 }
 
 module.exports = {
     getOwnerConversation,
     getConversation,
+    downloadConversation,
     listConversation,
     updateConversation,
     updateConversationRights,

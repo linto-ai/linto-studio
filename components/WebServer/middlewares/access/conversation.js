@@ -41,120 +41,132 @@ module.exports = {
 
 // Check right for orga and user
 function checkConvAccess(next, conversationId, userId, rightConvo, rightException) {
+  let isToNext = false
   try {
-    let hasAccess = false
     if (!conversationId) {
-      next(new ConversationIdRequire())
+      isToNext = callNext(next, isToNext, new ConversationIdRequire())
       return
     }
 
     ConversationModel.getConvoShared(conversationId).then(conversationRes => {
       if (conversationRes.length === 1) {
         const conversation = conversationRes[0]
-        if (conversation.owner === userId) next() // If owner got all rights
-        else {
+        if (conversation.owner === userId) { // If owner got all rights
+          isToNext = callNext(next, isToNext)
+        } else {
           // User access middleware management
           if (conversation.sharedWithUsers.length !== 0) {
             conversation.sharedWithUsers.map(conversationUsers => {
               if (conversationUsers.userId === userId && CONVERSATION_RIGHTS.hasRightAccess(conversationUsers.right, rightConvo)) {
-                hasAccess = true
-                next()
+                isToNext = callNext(next, isToNext)
               }
             })
           }
 
           // Organization access middleware management
-          if (!hasAccess && conversation.organization.organizationId !== undefined) {
+          if (!isToNext && conversation.organization.organizationId !== undefined) {
             OrganizationModel.getOrganizationById(conversation.organization.organizationId)
               .then(organization => {
-                if (organization.length !== 1) next(new rightException())
-                if (organization.length === 1 && organization[0].owner === userId) next()
+                if (organization.length !== 1) isToNext = callNext(next, isToNext, new rightException())
+                if (organization.length === 1 && organization[0].owner === userId) isToNext = callNext(next, isToNext)
 
                 const isUserFound = organization[0].users.filter(user => user.userId === userId)
-                if (isUserFound.length !== 1) next(new ConversationNotShared())
+                if (isUserFound.length !== 1) isToNext = callNext(next, isToNext, new ConversationNotShared())
                 else {
                   const user = isUserFound[0] // user right in organization
 
                   if (ORGANIZATION_ROLES.hasRoleAccess(user.role, ORGANIZATION_ROLES.MAINTAINER)) { // MAINTAINER or above
-                    hasAccess = true
-                    next()
+                    isToNext = callNext(next, isToNext)
                   } else if (conversation.organization.customRights.length !== 0) { // Custom rights for specific member
 
                     conversation.organization.customRights.map(orgaUser => {
                       if (orgaUser.userId === userId) {
                         if (CONVERSATION_RIGHTS.hasRightAccess(orgaUser.right, rightConvo)) {
-                          hasAccess = true
-                          next()
-                        } else next(new rightException())
+                          isToNext = callNext(next, isToNext)
+                        } else isToNext = callNext(next, isToNext, new rightException())
                       }
                     })
                   }
 
-                  if (!hasAccess && CONVERSATION_RIGHTS.hasRightAccess(conversation.organization.membersRight, rightConvo)) { // Member got right to share
-                    next()
-                  } else if (!hasAccess) {
-                    next(new ConversationNotShared())
+                  if (!isToNext && CONVERSATION_RIGHTS.hasRightAccess(conversation.organization.membersRight, rightConvo)) { // Member got right to share
+                    isToNext = callNext(next, isToNext)
+                  } else if (!isToNext) {
+                    isToNext = callNext(next, isToNext, new ConversationNotShared())
                   }
                 }
               })
           }
         }
-      } else next(new ConversationNotShared())
+      }
+      if (!isToNext) callNext(next, isToNext, new ConversationNotShared())
+
     })
   } catch (err) {
-    next(err)
+    callNext(next, isToNext, err)
   }
 }
 
 // check right for user in an organization
 function checkConvRestrictedAcess(next, conversationId, userId, rightConvo, rightException) {
+  let isToNext = false
   try {
     if (!conversationId) {
-      next(new ConversationIdRequire())
+      isToNext = callNext(next, isToNext, new ConversationIdRequire())
       return
     }
     ConversationModel.getConvoShared(conversationId).then(conversationRes => {
       if (conversationRes.length === 1) {
         const conversation = conversationRes[0]
-        if (conversation.owner === userId) next() // If owner all rightsJe
+        if (conversation.owner === userId) isToNext = callNext(next, isToNext) // If owner all rightsJe
         else {
           // Organization access middleware management
           if (conversation.organization.organizationId !== undefined) {
             OrganizationModel.getOrganizationById(conversation.organization.organizationId).then(organization => {
 
-              if (organization.length !== 1) next(new rightException())
-              if (organization.length === 1 && organization[0].owner === userId) next()
+              if (organization.length !== 1) isToNext = callNext(next, isToNext, new rightException())
+              if (organization.length === 1 && organization[0].owner === userId) isToNext = callNext(next, isToNext)
 
               const isUserFound = organization[0].users.filter(user => user.userId === userId)
-              let haveAccess = false
-              if (isUserFound.length !== 1) next(new ConversationNotShared())
+              if (isUserFound.length !== 1) isToNext = callNext(next, isToNext, new ConversationNotShared())
               else {
                 // user is MAINTAINER or as right to share conversation
                 const user = isUserFound[0] // user right in organization
                 if (ORGANIZATION_ROLES.hasRoleAccess(user.role, ORGANIZATION_ROLES.MAINTAINER)) { // MAINTAINER or above
-                  next()
+                  isToNext = callNext(next, isToNext,)
                 } else if (conversation.organization.customRights.length !== 0) { // Custom rights for specific member
                   conversation.organization.customRights.map(orgaUser => {
                     if (orgaUser.userId === userId) {
                       if (CONVERSATION_RIGHTS.hasRightAccess(orgaUser.right, rightConvo))
-                        next()
-                      else next(new rightException())
-                      haveAccess = true
+                        isToNext = callNext(next, isToNext)
+                      else isToNext = callNext(next, isToNext, new rightException())
                     }
                   })
                 }
-                if (!haveAccess && CONVERSATION_RIGHTS.hasRightAccess(conversation.organization.membersRight, rightConvo)) { // Member got right to share
-                  next()
-                } else if (!haveAccess) {
-                  next(new rightException())
+                if (!isToNext && CONVERSATION_RIGHTS.hasRightAccess(conversation.organization.membersRight, rightConvo)) { // Member got right to share
+                  isToNext = callNext(next, isToNext)
+                } else if (!isToNext) {
+                  isToNext = callNext(next, isToNext, new rightException())
                 }
               }
             })
-          } else next(new rightException())
+          } else isToNext = callNext(next, isToNext, new rightException())
         }
-      } else next(new ConversationNotShared())
+      }
+      if (!isToNext) callNext(next, isToNext, new ConversationNotShared())
     })
+
   } catch (err) {
-    next(err)
+    callNext(next, isToNext, err)
   }
+}
+
+function callNext(next, isToNext, err) {
+  if (!isToNext && err) next(err)
+  else if (!isToNext) next()
+  else if (err) {
+    console.error('Next called multiple times')
+    console.error(err)
+  } else console.error('Next called multiple times')
+
+  return true
 }

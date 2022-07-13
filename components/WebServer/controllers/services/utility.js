@@ -2,7 +2,7 @@ const debug = require('debug')('linto:conversation-manager:components:WebServer:
 const { ConversationError } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
 function getTranscriptionService(serviceName) {
-  const services_list = process.env.STT_SERVICES.split('|')
+  const services_list = process.env.STT_SERVICES.split('~')
 
   for (let services of services_list) {
     let service = services.split(',')
