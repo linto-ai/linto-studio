@@ -37,6 +37,10 @@ EXPRESS_TIMEOUT=1000000
 AXIOS_SIZE_FILE_MAX=500000000
 
 
+# Redis
+REDIS_SESSION_SERVICE=localhost
+REDIS_SESSION_SERVICE_PORT=6379
+
 # Storage folder of audio volume
 VOLUME_AUDIO_UPLOAD_PATH=storages/audios
 VOLUME_AUDIO_PUBLIC_PATH=audios
@@ -51,5 +55,3 @@ CM_REFRESH_SECRET=jwt_refresh_secret
 
 # Docker config
 CONVERSATION_MANAGER_HOST=localhost
-
-
