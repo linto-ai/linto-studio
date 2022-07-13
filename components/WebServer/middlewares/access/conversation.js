@@ -83,6 +83,7 @@ function checkConvAccess(next, conversationId, userId, rightConvo, rightExceptio
                       if (orgaUser.userId === userId) {
                         if (CONVERSATION_RIGHTS.hasRightAccess(orgaUser.right, rightConvo)) {
                           isToNext = callNext(next, isToNext)
+                          debug('OK')
                         } else isToNext = callNext(next, isToNext, new rightException())
                       }
                     })
@@ -97,8 +98,7 @@ function checkConvAccess(next, conversationId, userId, rightConvo, rightExceptio
               })
           }
         }
-      }
-      if (!isToNext) callNext(next, isToNext, new ConversationNotShared())
+      } else if (!isToNext) callNext(next, isToNext, new ConversationNotShared())
 
     })
   } catch (err) {
@@ -151,10 +151,8 @@ function checkConvRestrictedAcess(next, conversationId, userId, rightConvo, righ
             })
           } else isToNext = callNext(next, isToNext, new rightException())
         }
-      }
-      if (!isToNext) callNext(next, isToNext, new ConversationNotShared())
+      } else if (!isToNext) callNext(next, isToNext, new ConversationNotShared())
     })
-
   } catch (err) {
     callNext(next, isToNext, err)
   }
