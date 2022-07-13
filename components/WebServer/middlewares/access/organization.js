@@ -28,29 +28,40 @@ module.exports = {
 }
 
 function checkOrganizationUserRight(req, next, organizationId, userId, right) {
+    let isToNext = false
+
     try {
         if (!organizationId) {
-            next(new OrganizationUnsupportedMediaType())
+            isToNext = callNext(next, isToNext, new OrganizationUnsupportedMediaType())
             return
         }
         OrganizationModel.getOrganizationById(organizationId).then(organization => {
 
             if (organization.length !== 1)
-                next(new OrganizationNotFound())
+                isToNext = callNext(next, isToNext, new OrganizationNotFound())
             else if (organization[0].owner === userId) {
                 req.userRole = ROLES.ADMIN
-                next()
+                isToNext = callNext(next, isToNext)
             } else {
                 const isUserFound = organization[0].users
                     .filter(user => user.userId === userId && ROLES.hasRoleAccess(user.role, right))
 
                 if (isUserFound.length !== 0) {
                     req.userRole = isUserFound[0].role
-                    next()
-                } else next(new OrganizationForbidden())
+                    isToNext = callNext(next, isToNext)
+                } else isToNext = callNext(next, isToNext, new OrganizationForbidden())
             }
         })
     } catch (err) {
-        next(err)
+        callNext(next, isToNext, err)
     }
+}
+
+function callNext(next, isToNext, err) {
+    if (!isToNext && err) next(err)
+    else if (!isToNext) next()
+    else if (err) console.error(err)
+    else console.error('Next called multiple times')
+
+    return true
 }
