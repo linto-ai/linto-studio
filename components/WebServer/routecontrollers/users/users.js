@@ -85,7 +85,7 @@ async function searchUser(req, res, next) {
         // Get all users with "public" personal organization
         searchUser.map(user => {
             let userOrga = allOrganizations.find(orga => orga.owner.toString() === user._id.toString() && orga.personal === true)
-            if (userOrga.type === 'public') {
+            if (userOrga?.type === 'public') {
                 filterUser.push(user)
                 return false
             }
