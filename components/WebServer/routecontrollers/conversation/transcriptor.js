@@ -55,7 +55,7 @@ async function transcriptor(req, res, next) {
             message: 'A conversation is currently being processed'
         })
     } catch (error) {
-        res.status(error.status).send({ message: error.message })
+        next(err)
     }
 }
 
@@ -80,8 +80,7 @@ async function transcribe(body, files, userId) {
         }
         return { status: 'error' }
     } catch (error) {
-        debug(error)
-        throw new ConversationError('Unable to transcribe the audio file')
+        throw new ConversationError('Unable to transcribe the audio file', err)
     }
 }
 

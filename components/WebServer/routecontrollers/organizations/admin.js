@@ -32,7 +32,7 @@ async function updateOrganization(req, res, next) {
     })
 
   } catch (err) {
-    res.status(err.status).send({ message: err.message })
+    next(err)
   }
 }
 
@@ -56,7 +56,7 @@ async function deleteOrganization(req, res, next) {
       message: 'Organization has been deleted'
     })
   } catch (err) {
-    res.status(err.status).send({ message: err.message })
+    next(err)
   }
 }
 

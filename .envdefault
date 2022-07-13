@@ -1,5 +1,5 @@
 # Dev env
-DEBUG=/none
+DEBUG=false
 DEV_DISABLE_AUTH=false
 LINTO_STACK_IMAGE_TAG=latest-unstable
 LOGGER_ENABLED=false

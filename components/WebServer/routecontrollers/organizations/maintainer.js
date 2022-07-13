@@ -39,7 +39,7 @@ async function addUserInOrganization(req, res, next) {
       message: req.body.email + ' has been added to the organization'
     })
   } catch (err) {
-    res.status(err.status).send({ message: err.message })
+    next(err)
   }
 }
 
@@ -73,7 +73,7 @@ async function updateUserFromOrganization(req, res, next) {
       message: 'Updated user from the organization'
     })
   } catch (err) {
-    res.status(err.status).send({ message: err.message })
+    next(err)
   }
 }
 
@@ -95,7 +95,7 @@ async function deleteUserFromOrganization(req, res, next) {
       message: 'User has been deleted from the organization'
     })
   } catch (err) {
-    res.status(err.status).send({ message: err.message })
+    next(err)
   }
 }
 

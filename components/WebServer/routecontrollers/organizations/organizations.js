@@ -36,7 +36,7 @@ async function searchOrganizationByName(req, res, next) {
 
         return res.json({ organizations })
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
+        next(err)
     }
 }
 
@@ -70,7 +70,7 @@ async function createOrganization(req, res, next) {
             organizationId: result.insertedId
         })
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
+        next(err)
     }
 }
 
@@ -108,7 +108,7 @@ async function getOrganization(req, res, next) {
             res.status(200).send(organization)
         }
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
+        next(err)
     }
 }
 
@@ -125,7 +125,7 @@ async function listSelfOrganization(req, res, next) {
         })
         return res.json({ userOrganizations })
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
+        next(err)
     }
 }
 
@@ -149,7 +149,7 @@ async function listOrganization(req, res, next) {
 
         return res.json({ organizations })
     } catch (err) {
-        res.status(err.status).send({ message: err.message })
+        next(err)
     }
 }
 

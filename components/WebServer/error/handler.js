@@ -9,7 +9,7 @@ const OrganizationException = require('./exception/organization')
 
 const JWT_DEFAULT_EXCEPTION = 'UnauthorizedError' // Default JWT exception
 
-let init = function(webserver) {
+let init = function (webserver) {
     //Handle controller exception has API output
     let customException = [JWT_DEFAULT_EXCEPTION]
     Object.keys(AuthsException).forEach(key => customException.push(key))
@@ -18,10 +18,13 @@ let init = function(webserver) {
     Object.keys(ConversationException).forEach(key => customException.push(key))
     Object.keys(OrganizationException).forEach(key => customException.push(key))
 
-    webserver.express.use(function(err, req, res, next) {
-        if (err) console.error(err)
+    webserver.express.use(function (err, req, res, next) {
+        if (err) debug(err)
 
         if (customException.indexOf(err.name) > -1) {
+
+            if (err.err) debug(err.err)
+
             res.status(err.status).send({ message: err.message })
             return
         } else if (err) { // Handle unsupported exception
