@@ -16,14 +16,10 @@ module.exports = {
     authenticate: (req, res, next) => {
         passport.authenticate('local', { session: false }, (err, user) => {
             if (err) {
-                res.json({
-                    error: err
-                })
+                res.status(err.status).json({error: err})
             } else {
-                res.json({
-                    status: 200,
+                res.status(200).json({
                     message: 'login success',
-                    code: 'ok',
                     token: user.token.auth_token,
                     userId: user.token.session_id.toString()
                 })
