@@ -98,7 +98,7 @@ async function downloadConversation(req, res, next) {
 
         let output = ""
         if (req.params.format === 'json') {
-            output = conversation[0]
+            output = conversation[0].text
         }
 
         else if (req.params.format === 'text') {
