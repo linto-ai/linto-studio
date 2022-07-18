@@ -5,16 +5,16 @@ const { // Create conversation based on file
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/transcriptor.js`)
 
 const { // Create conversation based on file
+    deleteConversation,
+    downloadConversation,
     getOwnerConversation,
     getConversation,
-    downloadConversation,
+    getUsersByConversation,
     listConversation,
     lockConversation,
-    updateConversation,
     searchText,
-    deleteConversation,
-    updateConversationRights,
-    getUsersByConversation
+    updateConversation,
+    updateConversationRights
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/conversation.js`)
 
 module.exports = (webserver) => {
