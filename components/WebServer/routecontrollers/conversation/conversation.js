@@ -5,13 +5,15 @@ const userUtility = require(`${process.cwd()}/components/WebServer/controllers/u
 
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
-const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
+
+let timeout = {}
 
 const {
     ConversationIdRequire,
     ConversationNotFound,
     ConversationMetadataRequire,
-    ConversationError
+    ConversationError,
+    ConversationLocked
 } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
 async function getOwnerConversation(req, res, next) {
@@ -52,6 +54,10 @@ async function updateConversation(req, res, next) {
         if (!req.params.conversationId) throw new ConversationIdRequire()
         const conversation = await conversationModel.getConvoById(req.params.conversationId)
         if (conversation.length !== 1) throw new ConversationNotFound()
+
+        const conversation_lock = conversation?.[0]?.locked
+        if (!(conversation_lock === 0 || conversation_lock === req.payload.data.userId))
+            throw new ConversationLocked('Conversation locked by an other user')
 
         const conv = {
             _id: req.params.conversationId,
@@ -216,20 +222,69 @@ async function getUsersByConversation(req, res, next) {
         res.status(200).send({
             conversationUsers
         })
-        res.end()
+    } catch (err) {
+        next(err)
+    }
+}
+
+async function lockConversation(req, res, next) {
+    try {
+        if (!req.params.conversationId) throw new ConversationIdRequire()
+        if (!req.body.lock || !(req.body.lock === 'true' || req.body.lock === 'false')) throw new ConversationMetadataRequire()
+
+        let lock = false
+        if (req.body.lock === 'true') lock = true
+
+        const conversation = await conversationModel.getConvoById(req.params.conversationId)
+        if (conversation.length !== 1) throw new ConversationNotFound()
+
+        const conversation_lock = conversation?.[0]?.locked
+        // User ask to unlock and is locked by an other user
+        if (conversation_lock !== 0 && conversation_lock !== req.payload.data.userId)
+            throw new ConversationLocked('Conversation locked by an other user')
+
+        // User ask to lock but already locked
+        else if (lock && conversation_lock !== 0) throw new ConversationLocked()
+
+        // User ask to unlock but is already unlocked
+        else if (!lock && conversation_lock === 0) res.status(200).send()
+
+        // User ask to lock and is not locked
+        else if (lock && conversation_lock === 0) {
+            await conversationModel.updateLock(req.params.conversationId, req.payload.data.userId)
+
+            timeout[req.params.conversationId] = setTimeout(async function () {
+                await conversationModel.updateLock(req.params.conversationId, 0)
+            }, 360000)
+
+            res.status(200).send()
+        }
+
+        // User ask to unlock and is locked
+        else if (!lock && conversation_lock === req.payload.data.userId) {
+            await conversationModel.updateLock(req.params.conversationId, 0)
+
+            if (timeout?.[req.params.conversationId]?._destroyed === false)
+                clearTimeout(timeout[req.params.conversationId])
+
+            res.status(200).send()
+        }
+        else throw new ConversationError()
+
     } catch (err) {
         next(err)
     }
 }
 
 module.exports = {
+    deleteConversation,
+    downloadConversation,
     getOwnerConversation,
     getConversation,
-    downloadConversation,
+    getUsersByConversation,
     listConversation,
-    updateConversation,
-    updateConversationRights,
+    lockConversation,
     searchText,
-    deleteConversation,
-    getUsersByConversation
+    updateConversation,
+    updateConversationRights
 }
