@@ -5,13 +5,13 @@ const userUtility = require(`${process.cwd()}/components/WebServer/controllers/u
 
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
-const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
 
 const {
     ConversationIdRequire,
     ConversationNotFound,
     ConversationMetadataRequire,
-    ConversationError
+    ConversationError,
+    ConversationLocked
 } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
 async function getOwnerConversation(req, res, next) {
@@ -216,7 +216,29 @@ async function getUsersByConversation(req, res, next) {
         res.status(200).send({
             conversationUsers
         })
-        res.end()
+    } catch (err) {
+        next(err)
+    }
+}
+
+async function lockConversation(req, res, next) {
+    try {
+        if (!req.params.conversationId) throw new ConversationIdRequire()
+        if (!req.body.lock) throw new ConversationMetadataRequire()
+        const lock = parseInt(req.body.lock)
+        if (isNaN(lock)) throw new ConversationMetadataRequire('lock must be a number')
+
+        const conversation = await conversationModel.getConvoById(req.params.conversationId)
+        if (conversation.length !== 1) throw new ConversationNotFound()
+
+        if (lock === 1 && conversation?.[0]?.locked === 1) throw new ConversationLocked()
+        else if (lock === 0 && conversation?.[0]?.locked === 0) res.status(200).send()
+        else if ((lock === 1 && conversation?.[0]?.locked === 0) ||
+            (lock === 0 && conversation?.[0]?.locked === 1)) {
+            await conversationModel.updateLock(req.params.conversationId, lock)
+            res.status(200).send()
+        } else throw new ConversationError()
+
     } catch (err) {
         next(err)
     }
@@ -227,6 +249,7 @@ module.exports = {
     getConversation,
     downloadConversation,
     listConversation,
+    lockConversation,
     updateConversation,
     updateConversationRights,
     searchText,
