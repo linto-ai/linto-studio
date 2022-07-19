@@ -10,7 +10,7 @@ COPY . /usr/src/app/conversation-manager
 RUN npm install
 
 #LOCAL END
-HEALTHCHECK CMD node docker-healthcheck.js || exit 1
+HEALTHCHECK CMD curl -f http://localhost
 EXPOSE 80
 
 COPY ./wait-for-it.sh /
