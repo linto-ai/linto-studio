@@ -129,7 +129,7 @@ class ConversationLocked extends Error {
     this.type = ExceptionType
     this.status = '423'
     if (message) this.message = message
-    else this.message = 'Conversation is currently edited by another user'
+    else this.message = 'Conversation is currently locked'
     if (err) this.err = err
   }
 }

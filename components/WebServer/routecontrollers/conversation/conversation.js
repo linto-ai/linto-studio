@@ -6,6 +6,7 @@ const userUtility = require(`${process.cwd()}/components/WebServer/controllers/u
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
 
+const TIMEOUT_LOCK = 180000
 let timeout = {}
 
 const {
@@ -58,6 +59,13 @@ async function updateConversation(req, res, next) {
         const conversation_lock = conversation?.[0]?.locked
         if (!(conversation_lock === 0 || conversation_lock === req.payload.data.userId))
             throw new ConversationLocked('Conversation locked by an other user')
+        // User ask to refresh the lock timeout
+        else if (conversation_lock === req.payload.data.userId) {
+            clearTimeout(timeout[req.params.conversationId])
+            timeout[req.params.conversationId] = setTimeout(async function () {
+                await conversationModel.updateLock(req.params.conversationId, 0)
+            }, TIMEOUT_LOCK)
+        }
 
         const conv = {
             _id: req.params.conversationId,
@@ -255,7 +263,7 @@ async function lockConversation(req, res, next) {
 
             timeout[req.params.conversationId] = setTimeout(async function () {
                 await conversationModel.updateLock(req.params.conversationId, 0)
-            }, 360000)
+            }, TIMEOUT_LOCK)
 
             res.status(200).send()
         }
