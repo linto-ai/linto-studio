@@ -9,7 +9,7 @@ const {
 
 const {
     // listSelfOrganization,
-    listConversationFromOrganization,
+    listSelfConversationFromOrganization,
     updateSelfFromOrganization,
     leaveSelfFromOrganization
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/member.js`)
@@ -75,7 +75,7 @@ module.exports = (webserver) => {
             method: 'get',
             requireAuth: true,
             requireOrganizationMemberAccess: true,
-            controller: listConversationFromOrganization
+            controller: listSelfConversationFromOrganization
         },
 
         /* Maintainer right*/

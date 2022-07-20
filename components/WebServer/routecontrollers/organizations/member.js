@@ -1,8 +1,9 @@
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:organizations:member')
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
+const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 
 const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
-const convUtility = require(`${process.cwd()}/components/WebServer/controllers/conversation/utility`)
+const CONVERSATION_RIGHT = require(`${process.cwd()}/lib/dao/rights/conversation`)
 
 const TYPES = organizationModel.getTypes()
 
@@ -62,20 +63,34 @@ async function leaveSelfFromOrganization(req, res, next) {
     }
 }
 
-async function listConversationFromOrganization(req, res, next) {
+async function listSelfConversationFromOrganization(req, res, next) {
     try {
         if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
+        const conversations = await conversationModel.getConvoByOrga(req.params.organizationId)
 
-        const conversations = await convUtility.getOrgaConversation(req.params.organizationId)
+        let selfConvFromOrga = []
+        conversations.filter(conv => {
+            if (conv.owner === req.payload.data.userId) {
+                selfConvFromOrga.push(conv)
+            } else {
+                let access = conv.organization.customRights.find(customRight =>
+                    (customRight.userId === req.payload.data.userId))
 
-        res.status(200).send(conversations)
+                if (access && CONVERSATION_RIGHT.hasRightAccess(access.right, CONVERSATION_RIGHT.READ)) {
+                    selfConvFromOrga.push(conv)
+                } else if (CONVERSATION_RIGHT.hasRightAccess(conv.organization.membersRight, CONVERSATION_RIGHT.READ)) {
+                    selfConvFromOrga.push(conv)
+                }
+            }
+        })
+        res.status(200).send(selfConvFromOrga)
     } catch (err) {
         next(err)
     }
 }
 
 module.exports = {
-    listConversationFromOrganization,
+    listSelfConversationFromOrganization,
     updateSelfFromOrganization,
     leaveSelfFromOrganization
 }

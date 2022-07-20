@@ -39,15 +39,11 @@ async function getUserConversation(userId) {
                 }
             }
         }
+
         return convList
     } catch (err) {
         throw new ConversationError(err)
     }
-}
-
-async function getOrgaConversation(orgaId) {
-    const conversations = await conversationModel.getAllConvos()
-    return conversations.filter(conv => conv.organization.organizationId.toString() === orgaId)
 }
 
 async function getUserRightFromConversation(userId, conversation) {
@@ -84,4 +80,4 @@ async function getUserRightFromConversation(userId, conversation) {
     }
 }
 
-module.exports = { getUserConversation, getOrgaConversation, getUserRightFromConversation }
+module.exports = { getUserConversation, getUserRightFromConversation }

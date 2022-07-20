@@ -43,7 +43,7 @@ async function deleteOrganization(req, res, next) {
 
     if (organization.personal === true) throw new OrganizationError('Personal organization cannot be deleted')
 
-    const conversations = await convUtility.getOrgaConversation(req.params.organizationId)
+    const conversations = await conversationModel.getConvoByOrga(req.params.organizationId)
     conversations.map(async conversation => {
       const result = await conversationModel.deleteById(conversation._id)
       if (result.deletedCount !== 1) throw new ConversationError('Error when deleting conversation from organization')
