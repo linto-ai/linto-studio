@@ -3,12 +3,14 @@ const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizat
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 
 const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
-const CONVERSATION_RIGHT = require(`${process.cwd()}/lib/dao/rights/conversation`)
+
+const RIGHT = require(`${process.cwd()}/lib/dao/rights/conversation`)
 
 const TYPES = organizationModel.getTypes()
 
 const {
     OrganizationError,
+    OrganizationForbidden,
     OrganizationUnsupportedMediaType,
 } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
@@ -50,10 +52,8 @@ async function leaveSelfFromOrganization(req, res, next) {
         if (organization.users.filter(oUser => oUser.userId === userId).length === 0)
             throw new OrganizationError('You are not part of ' + organization.name)
 
-        organization.users = organization.users.filter(oUser => oUser.userId !== userId)
-        const result = await organizationModel.update(organization)
-
-        if (result.matchedCount === 0) throw new OrganizationError()
+        const data = orgaUtility.countAdmin(organization, userId)
+        if (data.adminCount === 1 && data.isAdmin) throw new OrganizationForbidden('You cannot leave the organization because you are the last admin')
 
         res.status(200).send({
             message: 'You have leaved the organization'
@@ -76,9 +76,9 @@ async function listSelfConversationFromOrganization(req, res, next) {
                 let access = conv.organization.customRights.find(customRight =>
                     (customRight.userId === req.payload.data.userId))
 
-                if (access && CONVERSATION_RIGHT.hasRightAccess(access.right, CONVERSATION_RIGHT.READ)) {
+                if (access && RIGHT.hasRightAccess(access.right, RIGHT.READ)) {
                     selfConvFromOrga.push(conv)
-                } else if (CONVERSATION_RIGHT.hasRightAccess(conv.organization.membersRight, CONVERSATION_RIGHT.READ)) {
+                } else if (RIGHT.hasRightAccess(conv.organization.membersRight, RIGHT.READ)) {
                     selfConvFromOrga.push(conv)
                 }
             }
