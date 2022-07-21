@@ -66,6 +66,9 @@ async function updateUserFromOrganization(req, res, next) {
       }
     })
 
+    const data = orgaUtility.countAdmin(organization, req.body.userId)
+    if (data.adminCount === 1 && data.isAdmin) throw new OrganizationForbidden('You cannot change the last admin role')
+
     const result = await organizationModel.update(organization)
     if (result.matchedCount === 0) throw new OrganizationError('Error while updating user in organization')
 
@@ -85,7 +88,10 @@ async function deleteUserFromOrganization(req, res, next) {
     let user = organization.users.filter(oUser => oUser.userId === req.body.userId)
 
     if (user.length === 0) throw new OrganizationError('User is not in ' + organization.name)
-    if (!ROLES.hasRevokeRoleAccess(user[0].role, req.userRole)) throw new OrganizationForbidden()
+    if (!ROLES.hasRevokeRoleAccess(user[0].role, req.userRole)) throw new OrganizationForbidden()// Update role need to be lower or equal than my current role
+
+    const data = orgaUtility.countAdmin(organization, req.body.userId)
+    if (data.adminCount === 1 && data.isAdmin) throw new OrganizationForbidden('You cannot delete the last admin')
 
     organization.users = organization.users.filter(oUser => oUser.userId !== req.body.userId)
     const result = await organizationModel.update(organization)

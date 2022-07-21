@@ -3,7 +3,6 @@ const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizat
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 
 const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
-const convUtility = require(`${process.cwd()}/components/WebServer/controllers/conversation/utility`)
 
 const {
   OrganizationUnsupportedMediaType,
