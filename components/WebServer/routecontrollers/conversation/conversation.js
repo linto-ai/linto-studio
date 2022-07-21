@@ -87,7 +87,18 @@ async function getConversation(req, res, next) {
     try {
         if (!req.params.conversationId) throw new ConversationIdRequire()
 
-        const conversation = await conversationModel.getConvoById(req.params.conversationId)
+
+        let conversation
+        if (req?.query?.key) {
+            let filter = ['name','owner', 'organization', 'sharedWithUsers']
+
+            if (typeof req.query.key === 'string') filter.push(req.query.key)
+            else filter.push(...req.query.key)
+
+            conversation = await conversationModel.getConvoById(req.params.conversationId, filter)
+
+        } else conversation = await conversationModel.getConvoById(req.params.conversationId)
+
         if (conversation.length !== 1) throw new ConversationNotFound()
 
         const data = await conversationUtility.getUserRightFromConversation(req.payload.data.userId, conversation[0])
