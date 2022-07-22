@@ -206,7 +206,10 @@ async function updateUserPassword(req, res, next) {
 
         const result = await userModel.updatePassword(payload)
         if (result.matchedCount === 0) throw new UserError()
-        next()
+
+        res.status(200).send({
+            message: 'Password updated'
+        })
     } catch (err) {
         next(err)
     }
@@ -227,7 +230,7 @@ async function logout(req, res, next) {
                 })
             else throw new UserError()
         })
-    } catch (error) {
+    } catch (err) {
         next(err)
     }
 }

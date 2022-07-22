@@ -47,7 +47,6 @@ function checkConvAccess(next, conversationId, userId, rightConvo, rightExceptio
       isToNext = callNext(next, isToNext, new ConversationIdRequire())
       return
     }
-
     ConversationModel.getConvoShared(conversationId).then(conversationRes => {
       if (conversationRes.length === 1) {
         const conversation = conversationRes[0]
