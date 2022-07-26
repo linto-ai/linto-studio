@@ -8,7 +8,8 @@ const fs = require('fs')
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
 
-const { createJobInterval } = require(`${process.cwd()}/components/WebServer/controllers/transcriptorHandler`)
+const { createJobInterval } = require(`${process.cwd()}/components/WebServer/controllers/jobsHandler`)
+
 const { addFileMetadataToConversation, initConversation } = require(`${process.cwd()}/components/WebServer/controllers/conversation/generator`)
 const { storeFile } = require(`${process.cwd()}/components/WebServer/controllers/storeFile`)
 const { getTranscriptionService } = require(`${process.cwd()}/components/WebServer/controllers/services/utility`)
@@ -50,7 +51,7 @@ async function transcriptor(req, res, next) {
         const conversation = await transcribe(req.body, req.files, userId)
         if (!conversation._id || !conversation.job || !conversation.job.job_id) throw new ConversationError()
 
-        createJobInterval(conversation)
+        createJobInterval(req.body.service.host, conversation.job.job_id, 'transcription', conversation)
         res.status(201).send({
             message: 'A conversation is currently being processed'
         })
@@ -68,7 +69,7 @@ async function transcribe(body, files, userId) {
 
         const filePath = await storeFile(fileData, 'audio')
         const options = prepareRequest(filePath, body.transcriptionConfig)
-        const job = await axios.post(`${body.service.host}/transcribe`, options)
+        const job = await axios.postFormData(`${body.service.host}/transcribe`, options)
 
         if (job && job.jobid) {
             let conversation = initConversation(body, userId, job.jobid)
