@@ -54,6 +54,8 @@ function configureDefaults() {
         process.env.STT_RESULT_CONVERT_NUMBERS = ifHas(process.env.STT_RESULT_CONVERT_NUMBERS, envdefault.STT_RESULT_CONVERT_NUMBERS)
         process.env.STT_RESULT_RETURN_RAW = ifHas(process.env.STT_RESULT_RETURN_RAW, envdefault.STT_RESULT_RETURN_RAW)
 
+        process.env.NLP_SERVICES = ifHas(process.env.NLP_SERVICES, envdefault.NLP_SERVICES)
+        process.env.NLP_METHOD = ifHas(process.env.NLP_METHOD, envdefault.NLP_METHOD)
 
         // Storage folder for uploads
         process.env.VOLUME_AUDIO_UPLOAD_PATH = ifHas(process.env.VOLUME_AUDIO_UPLOAD_PATH, envdefault.VOLUME_AUDIO_UPLOAD_PATH)
