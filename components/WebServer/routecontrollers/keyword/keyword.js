@@ -15,14 +15,13 @@ const {
   ConversationIdRequire,
 } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
-const host = "http://saas.linto.ai:8080"
 
 async function keywordExtract(req, res, next) {
   try {
     if (!req.body.method) throw new KeywordUnsupportedMediaType('Method is required')
     if (process.env.NLP_METHOD.split(',').indexOf(req.body.method) === -1) throw new KeywordUnsupportedMediaType('Method is not supported')
 
-    if (!req.params.conversationId) throw new KeywordError('ConversationId is required')
+    if (!req.params.conversationId) throw new ConversationIdRequire()
     const conversation = await conversationModel.getConvoById(req.params.conversationId)
     if (conversation.length !== 1) throw new ConversationNotFound()
 
@@ -47,7 +46,7 @@ async function keywordExtract(req, res, next) {
 
 
     const job = await axios.post(`${process.env.NLP_SERVICES}/nlp`, options)
-    createJobInterval(host, job.jobid, 'keyword', conversation[0])
+    createJobInterval(process.env.NLP_SERVICES, job.jobid, 'keyword', conversation[0])
 
     res.status(201).send({
       message: 'A keyword job is currently being processed'
