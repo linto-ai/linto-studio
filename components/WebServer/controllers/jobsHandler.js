@@ -25,20 +25,19 @@ async function getResult(host, job, jobs_type, conversation) {
             const normalizeTranscription = segmentNormalizeText(result, conversation.locale)
             conversation = SttWrapper.sttToConversation(normalizeTranscription, conversation)
             ConvoModel.update(conversation)
-        } else if (result && jobs_type === 'keyword'){
-            ConvoModel.updateKeyword(conversation._id, { ...result, ...job })
-
+        } else if (result && jobs_type === 'keyword') {
+            ConvoModel.updateKeyword(conversation._id, { ...conversation.keywords, ...result })
         }
 
     } catch (err) {
         debug(`Error while getting transcription result: ${err}`)
-        
+
         let job_status = {
             ...job,
             state: 'error',
             err: err.message
         }
-        updateConv(conversation._id, jobs_type, job_status)
+        updateConv(conversation, jobs_type, job_status)
     }
 }
 
@@ -52,13 +51,14 @@ async function createJobInterval(host, jobs_id, jobs_type, conversation) {
             }
 
             if (job.state === 'done' && job.result_id) { //triger last request
-                ConvoModel.updateKeyword(conversation._id, job_status)
+                updateConv(conversation, jobs_type, job_status)
+
                 getResult(host, job_status, jobs_type, conversation)
 
                 debug('jobs done')
                 clearInterval(interval)
             } else {
-                updateConv(conversation._id, jobs_type, job_status)
+                updateConv(conversation, jobs_type, job_status)
             }
         } catch (err) {
             let job_status = {
@@ -67,7 +67,7 @@ async function createJobInterval(host, jobs_id, jobs_type, conversation) {
                 err: err.message
             }
 
-            updateConv(conversation._id, jobs_type, job_status)
+            updateConv(conversation, jobs_type, job_status)
             clearInterval(interval)
             debug('Jobs error', err)
         }
@@ -76,12 +76,15 @@ async function createJobInterval(host, jobs_id, jobs_type, conversation) {
 
 
 
-function updateConv(id, jobs_type, job) {
+function updateConv(conversation, jobs_type, job) {
+    const id = conversation._id
     if (jobs_type === 'transcription') {
-        ConvoModel.updateJob(id, job)
+        conversation.jobs.transcription = job
     } else if (jobs_type === 'keyword') {
-        ConvoModel.updateKeyword(id, job)
+        conversation.jobs.keyword = job
     }
+    ConvoModel.updateJob(id, conversation.jobs)
+
 }
 
 module.exports = { createJobInterval }

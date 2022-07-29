@@ -49,9 +49,9 @@ async function transcriptor(req, res, next) {
         }
 
         const conversation = await transcribe(req.body, req.files, userId)
-        if (!conversation._id || !conversation.job || !conversation.job.job_id) throw new ConversationError()
+        if (!conversation._id || !conversation?.jobs?.transcription?.job_id) throw new ConversationError()
 
-        createJobInterval(req.body.service.host, conversation.job.job_id, 'transcription', conversation)
+        createJobInterval(req.body.service.host, conversation.jobs.transcription.job_id, 'transcription', conversation)
         res.status(201).send({
             message: 'A conversation is currently being processed'
         })

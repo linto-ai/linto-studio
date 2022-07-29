@@ -43,10 +43,12 @@ function initConversation(metadata, userId, job_id) {
             file: {}
         },
         locale: metadata.service.locale,
-        job: {
-            job_id: job_id,
-            state: 'pending',
-            steps: {}
+        jobs: {
+            transcription: {
+                job_id: job_id,
+                state: 'pending',
+                steps: {}
+            }
         }
     }
 }
