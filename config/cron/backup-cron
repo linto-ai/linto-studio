@@ -1,0 +1,1 @@
+30 6 * * 7 /usr/src/app/conversation-manager/config/cron/backup.sh

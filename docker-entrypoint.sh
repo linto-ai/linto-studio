@@ -25,5 +25,6 @@ done
 
 echo "RUNNING : $script"
 cd /usr/src/app/conversation-manager
+cron
 
 eval "$script"
