@@ -18,7 +18,7 @@ function executeLangRule(lang, segment_text, words, loop_data) {
     try {
       res = func(segment_text, words, loop_data)
     } catch (err) {
-      debug(func.name, err)
+      debug(`rule error on ${func.name}, will add default words\n`, err)
       return words
     }
 

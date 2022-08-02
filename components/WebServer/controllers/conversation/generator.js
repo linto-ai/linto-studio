@@ -21,8 +21,6 @@ function initConversation(metadata, userId, job_id) {
         description: metadata.description,
         conversationType: metadata.conversationType || '',
         locked: 0,
-        agenda: [""],
-        abstract: '',
         owner: userId,
         sharedWithUsers: sharedWithUsers,
         organization: {
@@ -59,7 +57,7 @@ function sttToConversation(transcript, conversation) {
 
         if (transcript === undefined || transcript.transcription_result.length === 0)
             throw new Error('Transcription was empty')
-        conversation.confidence = transcript.confidence
+        conversation.metadata.transcription.confidence = transcript.confidence
 
         transcript.segments.map(segment => {
             /* Check and init speaker */
