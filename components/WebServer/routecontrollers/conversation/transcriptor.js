@@ -55,7 +55,7 @@ async function transcriptor(req, res, next) {
             message: 'A conversation is currently being processed'
         })
     } catch (error) {
-        next(err)
+        next(error)
     }
 }
 
@@ -65,7 +65,6 @@ async function transcribe(body, files, userId) {
             ...files.file,
             name: utf8.decode(files.file.name)
         }
-
         const filePath = await storeFile(fileData, 'audio')
         const options = prepareRequest(filePath, body.transcriptionConfig)
         const job = await axios.post(`${body.service.host}/transcribe`, options)
@@ -80,7 +79,7 @@ async function transcribe(body, files, userId) {
         }
         return { status: 'error' }
     } catch (error) {
-        throw new ConversationError('Unable to transcribe the audio file', err)
+        throw new ConversationError('Unable to transcribe the audio file', error)
     }
 }
 
