@@ -66,7 +66,6 @@ async function transcribe(body, files, userId) {
             ...files.file,
             name: utf8.decode(files.file.name)
         }
-
         const filePath = await storeFile(fileData, 'audio')
         const options = prepareRequest(filePath, body.transcriptionConfig)
         const job = await axios.postFormData(`${body.service.host}/transcribe`, options)
