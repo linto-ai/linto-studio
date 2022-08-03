@@ -90,7 +90,7 @@ async function getConversation(req, res, next) {
 
         let conversation
         if (req?.query?.key) {
-            let filter = ['name','owner', 'organization', 'sharedWithUsers']
+            let filter = ['name', 'owner', 'organization', 'sharedWithUsers']
 
             if (typeof req.query.key === 'string') filter.push(req.query.key)
             else filter.push(...req.query.key)
@@ -154,26 +154,36 @@ async function listConversation(req, res, next) {
     }
 }
 
-//TODO: wip
 async function searchConversation(req, res, next) {
     try {
-        const userId = req.payload.data.userId
-        const convList = await conversationUtility.getUserConversation(userId)
-        let convText = []
-        for (let conversation of convList) {
-            const conv = (await conversationModel.getConvoById(conversation._id))[0]
+        if (!req.params.searchType) throw new ConversationMetadataRequire('searchType is required')
+        const searchType = req.params.searchType
 
-            for (const text of conv.text) {
-                if (text.raw_segment.toLowerCase().includes(req.body.text.toLowerCase())) {
-                    convText.push(conv)
-                    break
+        const convUserList = await conversationUtility.getUserConversation(req.payload.data.userId)
+
+        let convSearch = []
+        for (const convList of convUserList) {
+            let addConvo = false
+            const conversation = (await conversationModel.getConvoById(convList._id))[0]
+
+            if (searchType === 'text' && req.body.text) {
+                for (const text of conversation.text) {
+                    if (text.raw_segment.toLowerCase().includes(req.body.text.toLowerCase())) {
+                        addConvo = true
+                        break
+                    }
                 }
+            }
+
+            if (addConvo) {
+                addConvo = false
+                convSearch.push({ text, speakers, keywords, highlights, ...filterConv } = conversation) // filter undesired fields
             }
         }
 
         res.status(200).send({
-            search_text: req.body.text,
-            conversations: convText
+            searchType,
+            conversations: convSearch
         })
     } catch (err) {
         next(err)
