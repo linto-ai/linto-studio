@@ -65,7 +65,7 @@ module.exports = (webserver) => {
             controller: updateSelfFromOrganization
         },
         {
-            path: '/:organizationId/self/leave',
+            path: '/:organizationId/self',
             method: 'delete',
             requireAuth: true,
             requireOrganizationMemberAccess: true,

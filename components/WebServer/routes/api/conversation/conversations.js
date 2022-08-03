@@ -26,7 +26,7 @@ module.exports = (webserver) => {
         },
 
         {
-            path: '/search/text',
+            path: '/search/:searchType',
             method: 'post',
             requireAuth: true,
             controller: searchConversation
