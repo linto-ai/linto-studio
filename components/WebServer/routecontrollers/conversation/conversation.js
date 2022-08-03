@@ -177,7 +177,8 @@ async function searchConversation(req, res, next) {
 
             if (addConvo) {
                 addConvo = false
-                convSearch.push({ text, speakers, keywords, highlights, ...filterConv } = conversation) // filter undesired fields
+                const { text, speakers, keywords, highlights, ...filterConv } = conversation
+                convSearch.push(filterConv) // filter undesired fields
             }
         }
 
