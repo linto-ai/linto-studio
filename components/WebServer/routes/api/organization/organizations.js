@@ -9,7 +9,7 @@ const {
 
 const {
     // listSelfOrganization,
-    listSelfConversationFromOrganization,
+    listConversationFromOrganization,
     updateSelfFromOrganization,
     leaveSelfFromOrganization
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/member.js`)
@@ -47,24 +47,25 @@ module.exports = (webserver) => {
             method: 'get',
             requireAuth: true,
             controller: listSelfOrganization
-        },
-        {
+        }
+
+        /*Member right */
+        , {
             path: '/:organizationId',
             method: 'get',
             requireAuth: true,
+            requireOrganizationMemberAccess: true,
             controller: getOrganization
         },
-
-        /*Member right */
         {
-            path: '/user/:organizationId',
+            path: '/:organizationId/self',
             method: 'patch',
             requireAuth: true,
             requireOrganizationMemberAccess: true,
             controller: updateSelfFromOrganization
         },
         {
-            path: '/user/:organizationId',
+            path: '/:organizationId/self/leave',
             method: 'delete',
             requireAuth: true,
             requireOrganizationMemberAccess: true,
@@ -75,7 +76,7 @@ module.exports = (webserver) => {
             method: 'get',
             requireAuth: true,
             requireOrganizationMemberAccess: true,
-            controller: listSelfConversationFromOrganization
+            controller: listConversationFromOrganization
         },
 
         /* Maintainer right*/

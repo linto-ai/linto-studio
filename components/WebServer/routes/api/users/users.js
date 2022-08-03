@@ -55,7 +55,8 @@ module.exports = (webserver) => {
         method: 'post',
         requireAuth: true,
         controller: searchUser
-    }, {
+    },
+    {
         path: '/:userid',
         method: 'get',
         requireAuth: true,

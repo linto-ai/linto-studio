@@ -154,7 +154,8 @@ async function listConversation(req, res, next) {
     }
 }
 
-async function searchText(req, res, next) {
+//TODO: wip
+async function searchConversation(req, res, next) {
     try {
         const userId = req.payload.data.userId
         const convList = await conversationUtility.getUserConversation(userId)
@@ -303,7 +304,7 @@ module.exports = {
     getUsersByConversation,
     listConversation,
     lockConversation,
-    searchText,
+    searchConversation,
     updateConversation,
     updateConversationRights
 }

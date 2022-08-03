@@ -63,7 +63,7 @@ async function leaveSelfFromOrganization(req, res, next) {
     }
 }
 
-async function listSelfConversationFromOrganization(req, res, next) {
+async function listConversationFromOrganization(req, res, next) {
     try {
         if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
         const conversations = await conversationModel.getConvoByOrga(req.params.organizationId)
@@ -90,7 +90,7 @@ async function listSelfConversationFromOrganization(req, res, next) {
 }
 
 module.exports = {
-    listSelfConversationFromOrganization,
+    listConversationFromOrganization,
     updateSelfFromOrganization,
     leaveSelfFromOrganization
 }

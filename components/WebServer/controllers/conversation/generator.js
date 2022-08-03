@@ -19,7 +19,6 @@ function initConversation(metadata, userId, job_id) {
     return {
         name: metadata.name,
         description: metadata.description,
-        conversationType: metadata.conversationType || '',
         locked: 0,
         owner: userId,
         sharedWithUsers: sharedWithUsers,

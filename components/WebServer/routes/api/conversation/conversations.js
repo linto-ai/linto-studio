@@ -7,12 +7,10 @@ const { // Create conversation based on file
 const { // Create conversation based on file
     deleteConversation,
     downloadConversation,
-    getOwnerConversation,
     getConversation,
     getUsersByConversation,
-    listConversation,
     lockConversation,
-    searchText,
+    searchConversation,
     updateConversation,
     updateConversationRights
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/conversation.js`)
@@ -26,17 +24,12 @@ module.exports = (webserver) => {
             requireAuth: true,
             controller: transcriptor
         },
-        {
-            path: '/list',
-            method: 'get',
-            requireAuth: true,
-            controller: listConversation
-        },
+
         {
             path: '/search/text',
             method: 'post',
             requireAuth: true,
-            controller: searchText
+            controller: searchConversation
         },
 
 
@@ -68,13 +61,6 @@ module.exports = (webserver) => {
             requireAuth: true,
             requireConversationWriteAccess: true,
             controller: updateConversation
-        },
-        {
-            path: '/',
-            method: 'get',
-            requireAuth: true,
-            requireConversationOwnerAccess: true,
-            controller: getOwnerConversation
         },
         {
             path: '/:conversationId/download/:format',
