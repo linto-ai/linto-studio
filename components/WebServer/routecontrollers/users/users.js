@@ -155,6 +155,9 @@ async function updateUser(req, res, next) {
         if (req.body.firstname) user.firstname = req.body.firstname
         if (req.body.lastname) user.lastname = req.body.lastname
 
+        const isUserFound = await userModel.getUserByEmail(user.email)
+        if (isUserFound.length !== 0) throw new UserConflict()
+
         const result = await userModel.update(user)
         if (result.matchedCount === 0) throw new UserError()
         let message
