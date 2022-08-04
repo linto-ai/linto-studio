@@ -7,6 +7,7 @@ const StoreFile = require(`${process.cwd()}/components/WebServer/controllers/sto
 
 const {
     OrganizationConflict,
+    OrganizationError
 } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
 const {
@@ -150,13 +151,21 @@ async function updateUser(req, res, next) {
         const myUser = await userModel.getUserById(req.payload.data.userId)
         if (myUser.length !== 1) throw new UserNotFound()
         let user = myUser[0]
+        const userMail = user.email
 
         if (req.body.email) user.email = req.body.email
         if (req.body.firstname) user.firstname = req.body.firstname
         if (req.body.lastname) user.lastname = req.body.lastname
 
-        const isUserFound = await userModel.getUserByEmail(user.email)
-        if (isUserFound.length !== 0) throw new UserConflict()
+        if ((await userModel.getUserByEmail(req.body.email)).length !== 0) throw new UserConflict()
+        if ((await organizationModel.getOrganizationByName(req.body.email)).length !== 0) throw new OrganizationConflict()
+        let organization = (await organizationModel.getOrganizationByName(userMail))[0]
+
+        if (req.body.email && organization?.personal === true) {
+            debug('Update organization name')
+            organization.name = req.body.email
+            let res = await organizationModel.update(organization)
+        }
 
         const result = await userModel.update(user)
         if (result.matchedCount === 0) throw new UserError()
@@ -179,8 +188,7 @@ async function updateUserPicture(req, res, next) {
             img: await StoreFile.storeFile(req.files.file, 'picture')
         }
 
-        const myUser = await userModel.getUserById(req.payload.data.userId)
-        if (myUser.length !== 1) throw (new UserNotFound())
+        if ((await userModel.getUserById(req.payload.data.userId)).length !== 0) throw new UserNotFound()
 
         const result = await userModel.update(payload)
         if (result.matchedCount === 0) throw new UserError()
