@@ -154,6 +154,19 @@ async function listConversation(req, res, next) {
     }
 }
 
+
+async function listSharedConversation(req, res, next) {
+    try {
+        const userId = req.payload.data.userId
+        const convList = await conversationModel.getConvoByShare(userId)
+
+        res.status(200).send({
+            conversations: convList
+        })
+    } catch (err) {
+        next(err)
+    }
+}
 async function searchConversation(req, res, next) {
     try {
         if (!req.params.searchType) throw new ConversationMetadataRequire('searchType is required')
@@ -314,6 +327,7 @@ module.exports = {
     getConversation,
     getUsersByConversation,
     listConversation,
+    listSharedConversation,
     lockConversation,
     searchConversation,
     updateConversation,

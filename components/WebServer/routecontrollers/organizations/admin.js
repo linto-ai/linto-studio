@@ -45,7 +45,7 @@ async function deleteOrganization(req, res, next) {
     const conversations = await conversationModel.getConvoByOrga(req.params.organizationId)
     conversations.map(async conversation => {
       const result = await conversationModel.deleteById(conversation._id)
-      if (result.deletedCount !== 1) throw new ConversationError('Error when deleting conversation from organization')
+      if (result.deletedCount !== 1) throw new ConversationError('Error while deleting conversation from organization')
     })
 
     const result = await organizationModel.deleteById(organization._id.toString())

@@ -12,7 +12,8 @@ const { // Create conversation based on file
     lockConversation,
     searchConversation,
     updateConversation,
-    updateConversationRights
+    updateConversationRights,
+    listSharedConversation
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/conversation.js`)
 
 module.exports = (webserver) => {
@@ -32,6 +33,12 @@ module.exports = (webserver) => {
             controller: searchConversation
         },
 
+        {
+            path: '/list/share',
+            method: 'get',
+            requireAuth: true,
+            controller: listSharedConversation
+        },
 
         /*Require Auth */
         {

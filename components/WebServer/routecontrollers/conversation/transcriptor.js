@@ -39,13 +39,9 @@ async function transcriptor(req, res, next) {
             const organization = await organizationModel.getOrganizationById(req.body.organizationId)
             if (organization.length !== 1) throw new OrganizationNotFound()
         } else {
-            const organizations = await organizationModel.getPersonalOrganization()
-            organizations.map(organization => {
-                if (organization.owner === req.payload.data.userId) {
-                    req.body.organizationId = organization._id
-                    return true
-                }
-            })
+            const organizations = await organizationModel.getPersonalOrganization(req.payload.data.userId)
+            if (!organizations[0]?._id) throw new OrganizationNotFound()
+            req.body.organizationId = organizations[0]._id
         }
 
         const conversation = await transcribe(req.body, req.files, userId)
