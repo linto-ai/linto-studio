@@ -27,9 +27,9 @@ describe('initialzation conversation', () => {
 
     expect(conversation.owner).toEqual(user_id)
 
-    expect(conversation.job.steps).toEqual({})
-    expect(conversation.job.job_id).toEqual(job_id)
-    expect(conversation.job.state).toEqual('pending')
+    expect(conversation.jobs.transcription.steps).toEqual({})
+    expect(conversation.jobs.transcription.job_id).toEqual(job_id)
+    expect(conversation.jobs.transcription.state).toEqual('pending')
   })
 
   it('should create an conversation without shared user', () => {
@@ -46,9 +46,9 @@ describe('initialzation conversation', () => {
 
     expect(conversation.owner).toEqual(user_id)
 
-    expect(conversation.job.steps).toEqual({})
-    expect(conversation.job.job_id).toEqual(job_id)
-    expect(conversation.job.state).toEqual('pending')
+    expect(conversation.jobs.transcription.steps).toEqual({})
+    expect(conversation.jobs.transcription.job_id).toEqual(job_id)
+    expect(conversation.jobs.transcription.state).toEqual('pending')
   })
 
 })

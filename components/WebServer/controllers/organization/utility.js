@@ -32,11 +32,10 @@ async function getUser(email) {
 function countAdmin(organization, userId) {
     let adminCount = 0
     let isAdmin = false
-    organization.users.reduce(oUser => {
-        debug(oUser.userId ,userId)
+    for(let oUser of organization.users) {
         if (oUser.role === ROLE.ADMIN) adminCount++
         if (oUser.userId === userId && oUser.role === ROLE.ADMIN) isAdmin = true
-    })
+    }
 
     return {
         adminCount,

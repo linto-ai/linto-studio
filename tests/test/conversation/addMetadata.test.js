@@ -12,12 +12,16 @@ describe('initialzation conversation', () => {
     job_id = uuidv4()
 
     file = {
-      name: 'audio.wav',
-      data: fs.readFileSync(`${process.cwd()}/tests/data/audio/audio.wav`),
-      size: 86562,
-      mimetype: 'audio/wave',
+      name: 'audio.mp3',
+      data: fs.readFileSync(`${process.cwd()}/tests/data/audio/audio.mp3`),
+      mimetype: 'audio/mpeg',
       md5: 'da1490ff7b8d7bedcb654bcbb7206501',
+      filePath: `${process.cwd()}/tests/data/audio/audio.mp3`,
+      originalFilePath: `${process.cwd()}/tests/data/audio/audio.mp3`,
+      storageFilePath: `${process.cwd()}/tests/data/audio/audio.mp3`,
+      originalFileName: `audio.mp3`
     }
+
     conversation_template = generator.initConversation(param_metadata, user_id, job_id)
   })
 
@@ -25,20 +29,19 @@ describe('initialzation conversation', () => {
   })
 
   it('should add file metadata to conversation', async () => {
-    const filepath = '/audio/'
-    const conversation = await generator.addFileMetadataToConversation(conversation_template, file, filepath)
+    const conversation = await generator.addFileMetadataToConversation(conversation_template, file)
 
     expect(conversation.metadata.audio).not.toBeUndefined()
-  
+
     expect(conversation.metadata.audio.filename).toEqual(file.name)
-    expect(conversation.metadata.audio.size).toEqual(file.size)
     expect(conversation.metadata.audio.duration).not.toBeUndefined()
-    expect(conversation.metadata.audio.duration).toEqual(2.7036875)
+    expect(conversation.metadata.audio.duration).toEqual(2.808)
+
     expect(conversation.metadata.audio.mimetype).toEqual(file.mimetype)
-    expect(conversation.metadata.audio.filepath).toEqual(filepath)
-    expect(conversation.metadata.audio.size).toEqual(file.size)
+    expect(conversation.metadata.audio.filepath).toEqual(file.filePath)
 
     expect(conversation.metadata.file).not.toBeUndefined()
+
     expect(conversation.metadata.file.format.duration).toEqual(conversation.metadata.audio.duration)
   })
 })
