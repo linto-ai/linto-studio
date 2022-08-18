@@ -4,7 +4,7 @@ const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversat
 
 const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
 
-const RIGHT = require(`${process.cwd()}/lib/dao/rights/conversation`)
+const RIGHT = require(`${process.cwd()}/lib/dao/conversation/rights`)
 
 const TYPES = organizationModel.getTypes()
 

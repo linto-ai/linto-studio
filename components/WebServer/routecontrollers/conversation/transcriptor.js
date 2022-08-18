@@ -14,7 +14,7 @@ const { addFileMetadataToConversation, initConversation } = require(`${process.c
 const { storeFile } = require(`${process.cwd()}/components/WebServer/controllers/storeFile`)
 const { getTranscriptionService } = require(`${process.cwd()}/components/WebServer/controllers/services/utility`)
 
-const CONVERSATION_RIGHT = require(`${process.cwd()}/lib/dao/rights/conversation`)
+const CONVERSATION_RIGHT = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const {
     ConversationNoFileUploaded,
     ConversationMetadataRequire,

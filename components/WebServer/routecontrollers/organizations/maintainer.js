@@ -9,7 +9,7 @@ const {
 } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
 const TYPES = organizationModel.getTypes()
-const ROLES = require(`${process.cwd()}/lib/dao/roles/organization`)
+const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 
 async function addUserInOrganization(req, res, next) {
   try {

@@ -5,7 +5,7 @@ const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizat
 const { OrganizationNotFound } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 const { UserNotFound } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
 
-const ROLE = require(`${process.cwd()}/lib/dao/roles/organization`)
+const ROLE = require(`${process.cwd()}/lib/dao/organization/roles`)
 
 
 async function getOrganization(organizationId) {

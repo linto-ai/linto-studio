@@ -4,7 +4,7 @@ const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizat
 const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
 
 const TYPES = organizationModel.getTypes()
-const ROLES = require(`${process.cwd()}/lib/dao/roles/organization`)
+const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 
 const {
     OrganizationError,
