@@ -37,7 +37,7 @@ async function getResult(host, job, jobs_type, conversation) {
             state: 'error',
             err: err.message
         }
-        updateConv(conversation, jobs_type, job_status)
+        updateConversation(conversation, jobs_type, job_status)
     }
 }
 
@@ -51,14 +51,14 @@ async function createJobInterval(host, jobs_id, jobs_type, conversation) {
             }
 
             if (job.state === 'done' && job.result_id) { //triger last request
-                updateConv(conversation, jobs_type, job_status)
+                updateConversation(conversation, jobs_type, job_status)
 
                 getResult(host, job_status, jobs_type, conversation)
 
                 debug('jobs done')
                 clearInterval(interval)
             } else {
-                updateConv(conversation, jobs_type, job_status)
+                updateConversation(conversation, jobs_type, job_status)
             }
         } catch (err) {
             let job_status = {
@@ -67,7 +67,7 @@ async function createJobInterval(host, jobs_id, jobs_type, conversation) {
                 err: err.message
             }
 
-            updateConv(conversation, jobs_type, job_status)
+            updateConversation(conversation, jobs_type, job_status)
             clearInterval(interval)
             debug('Jobs error', err)
         }
@@ -76,7 +76,7 @@ async function createJobInterval(host, jobs_id, jobs_type, conversation) {
 
 
 
-function updateConv(conversation, jobs_type, job) {
+function updateConversation(conversation, jobs_type, job) {
     const id = conversation._id
     if (jobs_type === 'transcription') {
         conversation.jobs.transcription = job

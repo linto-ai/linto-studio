@@ -18,17 +18,6 @@ async function getOrganization(organizationId) {
     }
 }
 
-async function getUser(email) {
-    const user = await userModel.getUserByEmail(email)
-    if (user.length !== 1) throw new UserNotFound()
-
-    return {
-        ...user[0],
-        userId: user[0]._id.toString()
-    }
-}
-
-
 function countAdmin(organization, userId) {
     let adminCount = 0
     let isAdmin = false
@@ -42,4 +31,4 @@ function countAdmin(organization, userId) {
         isAdmin
     }
 }
-module.exports = { getOrganization, getUser, countAdmin }
+module.exports = { getOrganization, countAdmin }

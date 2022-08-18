@@ -92,4 +92,14 @@ async function getUsersListByConversation(conversation, organiaztion) {
     }
 }
 
-module.exports = { getUsersConversationByArray, getUsersListByConversation }
+async function getUser(email) {
+    const user = await userModel.getUserByEmail(email)
+    if (user.length !== 1) throw new UserNotFound()
+
+    return {
+        ...user[0],
+        userId: user[0]._id.toString()
+    }
+}
+
+module.exports = { getUsersConversationByArray, getUsersListByConversation, getUser }

@@ -1,6 +1,7 @@
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:organizations:maitainer')
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
 const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
+const userUtility = require(`${process.cwd()}/components/WebServer/controllers/user/utility`)
 
 const {
   OrganizationError,
@@ -21,7 +22,7 @@ async function addUserInOrganization(req, res, next) {
     if (ROLES.canGiveAccess(req.body.role, req.userRole)) throw new OrganizationForbidden()
 
     let organization = await orgaUtility.getOrganization(req.params.organizationId)
-    const user = await orgaUtility.getUser(req.body.email)
+    const user = await userUtility.getUser(req.body.email)
 
     if (organization.users.filter(oUser => oUser.userId === user.userId).length !== 0)
       throw new OrganizationError(req.body.email + ' is already in ' + organization.name)

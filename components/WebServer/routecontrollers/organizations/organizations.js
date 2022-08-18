@@ -112,6 +112,7 @@ async function getOrganization(req, res, next) {
     }
 }
 
+// List organization where the user are in
 async function listSelfOrganization(req, res, next) {
     try {
         const organizations = await organizationModel.getAllOrganizations()
@@ -129,7 +130,7 @@ async function listSelfOrganization(req, res, next) {
     }
 }
 
-
+// List all public organization
 async function listOrganization(req, res, next) {
     try {
         let organizations = await organizationModel.getAllOrganizations()
