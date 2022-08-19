@@ -50,7 +50,7 @@ function initConversation(metadata, userId, job_id) {
     }
 }
 
-function sttToConversation(transcript, conversation) {
+function transcriptionToConversation(transcript, conversation) {
     try {
         jsonTranscript = transcript
 
@@ -116,4 +116,4 @@ async function addFileMetadataToConversation(conversation, file) {
     return conversation
 }
 
-module.exports = { sttToConversation, addFileMetadataToConversation, initConversation }
+module.exports = { transcriptionToConversation, addFileMetadataToConversation, initConversation }

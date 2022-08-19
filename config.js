@@ -2,11 +2,6 @@ const debug = require('debug')('linto:conversation-manager:config')
 const dotenv = require('dotenv')
 const fs = require('fs')
 
-function ifHasNotThrow(element, error) {
-    if (!element) throw error
-    return element
-}
-
 function ifHas(element, defaultValue) {
     if (!element) return defaultValue
     return element

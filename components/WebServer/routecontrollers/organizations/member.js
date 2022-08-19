@@ -4,7 +4,7 @@ const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversat
 
 const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
 
-const RIGHT = require(`${process.cwd()}/lib/dao/rights/conversation`)
+const RIGHT = require(`${process.cwd()}/lib/dao/conversation/rights`)
 
 const TYPES = organizationModel.getTypes()
 
@@ -54,6 +54,7 @@ async function leaveSelfFromOrganization(req, res, next) {
 
         const data = orgaUtility.countAdmin(organization, userId)
         if (data.adminCount === 1 && data.isAdmin) throw new OrganizationForbidden('You cannot leave the organization because you are the last admin')
+        if (organization.owner === userId && data.isAdmin) organization.owner = data.replaceOwner
 
         organization.users = organization.users.filter(oUser => oUser.userId !== userId)
         const result = await organizationModel.update(organization)

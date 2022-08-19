@@ -1,4 +1,4 @@
-const { sttToConversation } = require(`${process.cwd()}/components/WebServer/controllers/conversation/generator`)
+const { transcriptionToConversation } = require(`${process.cwd()}/components/WebServer/controllers/conversation/generator`)
 const { initConversation } = require(`${process.cwd()}/components/WebServer/controllers/conversation/generator`)
 
 const { v4: uuidv4 } = require('uuid');
@@ -21,7 +21,7 @@ describe('initialzation conversation', () => {
   })
 
   it('should create a conversation based from an transcription', () => {
-    let conversation = sttToConversation(MOCK_TRANSCRIPTION_NO_PUNC, conversation_metadata)
+    let conversation = transcriptionToConversation(MOCK_TRANSCRIPTION_NO_PUNC, conversation_metadata)
 
     expect(conversation.name).toEqual(param_metadata.name)
     expect(conversation.description).toEqual(param_metadata.description)
@@ -37,12 +37,12 @@ describe('initialzation conversation', () => {
   })
 
   it('should throw an exception when no transcription', () => {
-    expect(() => sttToConversation(undefined, conversation_metadata)).toThrow()
-    expect(() => sttToConversation(undefined, conversation_metadata)).toThrow('Transcription was empty')
+    expect(() => transcriptionToConversation(undefined, conversation_metadata)).toThrow()
+    expect(() => transcriptionToConversation(undefined, conversation_metadata)).toThrow('Transcription was empty')
   })
 
   it('should throw an exception when no conversation', () => {
-    expect(() => sttToConversation(MOCK_TRANSCRIPTION_NO_PUNC, undefined)).toThrow()
+    expect(() => transcriptionToConversation(MOCK_TRANSCRIPTION_NO_PUNC, undefined)).toThrow()
   })
 })
 

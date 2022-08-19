@@ -17,19 +17,6 @@ const {
     ConversationLocked
 } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
-async function getOwnerConversation(req, res, next) {
-    try {
-        const conversationList = await conversationModel.getAllConvos()
-        const conversations = conversationList.filter(conversation => conversation.owner === req.payload.data.userId)
-
-        res.json({
-            conversations
-        })
-    } catch (err) {
-        next(err)
-    }
-}
-
 async function deleteConversation(req, res, next) {
     try {
 
@@ -323,7 +310,6 @@ async function lockConversation(req, res, next) {
 module.exports = {
     deleteConversation,
     downloadConversation,
-    getOwnerConversation,
     getConversation,
     getUsersByConversation,
     listConversation,

@@ -14,7 +14,7 @@ const { addFileMetadataToConversation, initConversation } = require(`${process.c
 const { storeFile } = require(`${process.cwd()}/components/WebServer/controllers/storeFile`)
 const { getTranscriptionService } = require(`${process.cwd()}/components/WebServer/controllers/services/utility`)
 
-const CONVERSATION_RIGHT = require(`${process.cwd()}/lib/dao/rights/conversation`)
+const CONVERSATION_RIGHT = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const {
     ConversationNoFileUploaded,
     ConversationMetadataRequire,
@@ -44,7 +44,7 @@ async function transcriptor(req, res, next) {
             req.body.organizationId = organizations[0]._id
         }
 
-        const conversation = await transcribe(req.body, req.files, userId)
+        const conversation = await transcribeRequest(req.body, req.files, userId)
         if (!conversation._id || !conversation?.jobs?.transcription?.job_id) throw new ConversationError()
 
         createJobInterval(req.body.service.host, conversation.jobs.transcription.job_id, 'transcription', conversation)
@@ -56,7 +56,7 @@ async function transcriptor(req, res, next) {
     }
 }
 
-async function transcribe(body, files, userId) {
+async function transcribeRequest(body, files, userId) {
     try {
         const fileData = {
             ...files.file,
