@@ -21,14 +21,17 @@ async function getOrganization(organizationId) {
 function countAdmin(organization, userId) {
     let adminCount = 0
     let isAdmin = false
-    for(let oUser of organization.users) {
+    let replaceOwner
+    for (let oUser of organization.users) {
         if (oUser.role === ROLE.ADMIN) adminCount++
         if (oUser.userId === userId && oUser.role === ROLE.ADMIN) isAdmin = true
+        if (oUser.userId !== userId && oUser.role === ROLE.ADMIN) replaceOwner = oUser.userId
     }
 
     return {
         adminCount,
-        isAdmin
+        isAdmin,
+        replaceOwner
     }
 }
 module.exports = { getOrganization, countAdmin }
