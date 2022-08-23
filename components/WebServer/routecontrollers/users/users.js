@@ -188,7 +188,7 @@ async function updateUserPicture(req, res, next) {
             img: await StoreFile.storeFile(req.files.file, 'picture')
         }
 
-        if ((await userModel.getUserById(req.payload.data.userId)).length !== 0) throw new UserNotFound()
+        if ((await userModel.getUserById(req.payload.data.userId)).length !== 1) throw new UserNotFound()
 
         const result = await userModel.update(payload)
         if (result.matchedCount === 0) throw new UserError()
