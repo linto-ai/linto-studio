@@ -6,13 +6,12 @@ class App {
         try {
             // Load env variables
             require('./config')
-                // Auto-loads components based on process.env.COMPONENTS list
+
+            // Auto-loads components based on process.env.COMPONENTS list
             this.components = {}
             process.env.COMPONENTS.split(',').reduce((prev, componentFolderName) => {
-                return prev.then(async() => { await this.use(componentFolderName) })
-            }, Promise.resolve()).then(() => {
-                // Do some stuff after all components being loaded
-            })
+                return prev.then(async () => { await this.use(componentFolderName) })
+            }, Promise.resolve()).then(() => { })
         } catch (e) {
             console.error(debug.namespace, e)
         }

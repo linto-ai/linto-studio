@@ -252,14 +252,14 @@ async function deleteUser(req, res, next) {
 
         const userId = req.payload.data.userId
 
+        // Remove user from organizations
         const organizations = await organizationModel.getAllOrganizations()
-
         organizations.filter(organization => {
             if (organization.owner !== userId && organization.personal === true) return false
             else if (organization.owner === userId && organization.users.length === 0) return true
             else if ((organization.users.filter(user => user.userId === userId)).length !== 0) return true
         }).map(async (organization) => {
-            if (organization.owner === userId && organization.users.length === 0) {
+            if (organization.owner === userId && organization.users.length === 1) {
                 let resultOperation = await organizationModel.deleteById(organization._id.toString())
                 if (resultOperation.deletedCount !== 1) throw new UserError('Error on personal organization')
             } else {
@@ -269,13 +269,16 @@ async function deleteUser(req, res, next) {
             }
         })
 
+        // Delete conversation if owner and remove user from shared with
         const conversations = await conversationModel.getAllConvos()
         conversations.filter(conversation => {
             if ((conversation.sharedWithUsers.filter(user => user.userId === userId)).length !== 0) return true
-        }).map(async (conversation) => {
+        }).map(async conversation => {
             conversation.sharedWithUsers = conversation.sharedWithUsers.filter(user => user.userId !== userId)
             const resultConvoUpdate = await conversationModel.update(conversation)
             if (resultConvoUpdate.modifiedCount === 0) throw new UserError('Error on conversation rights deletion')
+        }).map(async conversation => {
+            if (conversation.owner === userId) await conversationModel.deleteById(conversation._id.toString())
         })
 
         const result = await userModel.deleteUser(req.payload.data.userId)

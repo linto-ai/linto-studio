@@ -2,7 +2,7 @@ const debug = require('debug')('linto:components:WebServer:controller:segment_no
 
 const rules = require('./langueRules/index')
 
-function* sequenceGenerator(segments, lang) {
+function* ruleSequenceGenerator(segments, lang) {
   let i = 0 
   let word_skip_count = 0
   try {
@@ -60,7 +60,7 @@ function segmentNormalizeText(transcription, lang) {
     segments.words = []
     segments.segment_array = segments.segment.split(' ')
 
-    for (let words_sequence of sequenceGenerator(segments, lang)) {
+    for (let words_sequence of ruleSequenceGenerator(segments, lang)) {
       segments.words.push(words_sequence)
     }
     delete segments.segment_array

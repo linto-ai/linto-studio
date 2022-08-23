@@ -3,18 +3,18 @@ const debug = require('debug')('linto:conversation-manager:components:webserver:
 
 const jwt = require('jsonwebtoken')
 
+const EXPIRATION_TIME_DAYS = 60
 const TOKEN_DAYS_TIME = '7d'
 const REFRESH_TOKEN_DAYS_TIME = '14d'
 
 module.exports = function (tokenData) {
-    let expiration_time_days = 60
     const authSecret = tokenData.salt
 
     delete tokenData.salt
 
     return {
         _id: tokenData._id,
-        token: generateJWT(tokenData, authSecret, expiration_time_days)
+        token: generateJWT(tokenData, authSecret, EXPIRATION_TIME_DAYS)
     }
 }
 

@@ -1,11 +1,8 @@
-const { cp } = require('fs')
-const { off } = require('process')
-
 const debug = require('debug')('linto:conversation-manager:components:WebServer:controller:user:utility')
 const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
 
-const CONVERSATION_RIGHTS = require(`${process.cwd()}/lib/dao/rights/conversation`)
-const ORGANIZATION_ROLES = require(`${process.cwd()}/lib/dao/roles/organization`)
+const CONVERSATION_RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
+const ORGANIZATION_ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 
 // Deprecated function
 async function getUsersConversationByArray(users, setupRight) {
@@ -95,4 +92,14 @@ async function getUsersListByConversation(conversation, organiaztion) {
     }
 }
 
-module.exports = { getUsersConversationByArray, getUsersListByConversation }
+async function getUser(email) {
+    const user = await userModel.getUserByEmail(email)
+    if (user.length !== 1) throw new UserNotFound()
+
+    return {
+        ...user[0],
+        userId: user[0]._id.toString()
+    }
+}
+
+module.exports = { getUsersConversationByArray, getUsersListByConversation, getUser }

@@ -23,7 +23,7 @@ class KeywordUnsupportedMediaType extends Error {
       this.type = ExceptionType
       this.status = '415'
       if (message) this.message = message
-      else this.message = 'Parameter is not supported'
+      else this.message = 'Request parameter is not supported'
       if (err) this.err = err
   }
 }
