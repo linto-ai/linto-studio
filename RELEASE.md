@@ -1,4 +1,4 @@
-# 0.2.0 - 2022/08/30
+# 0.2.0
 - Split backend and frontend
 - Audio transformation with ffmpeg
 - Added a lock system
