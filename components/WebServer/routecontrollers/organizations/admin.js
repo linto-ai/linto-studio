@@ -3,7 +3,6 @@ const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizat
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 
 const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
-const convUtility = require(`${process.cwd()}/components/WebServer/controllers/conversation/utility`)
 
 const {
   OrganizationUnsupportedMediaType,
@@ -43,10 +42,10 @@ async function deleteOrganization(req, res, next) {
 
     if (organization.personal === true) throw new OrganizationError('Personal organization cannot be deleted')
 
-    const conversations = await convUtility.getOrgaConversation(req.params.organizationId)
+    const conversations = await conversationModel.getConvoByOrga(req.params.organizationId)
     conversations.map(async conversation => {
       const result = await conversationModel.deleteById(conversation._id)
-      if (result.deletedCount !== 1) throw new ConversationError('Error when deleting conversation from organization')
+      if (result.deletedCount !== 1) throw new ConversationError('Error while deleting conversation from organization')
     })
 
     const result = await organizationModel.deleteById(organization._id.toString())

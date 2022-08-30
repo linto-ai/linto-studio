@@ -1,3 +1,10 @@
+# 0.2.0 - 2022/08/30
+- Split backend and frontend
+- Audio transformation with ffmpeg
+- Added a lock system
+- Lot of fix
+- Add a cron backup system
+
 # 0.1.2 - 2022/02/22
 - New transcribe API
 - Handle transcription job status updates

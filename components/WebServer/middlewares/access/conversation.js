@@ -2,9 +2,10 @@ const debug = require('debug')('linto:conversation-manager:components:webserver:
 
 const ConversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 const OrganizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
-const CONVERSATION_RIGHTS = require(`${process.cwd()}/lib/dao/rights/conversation`)
-const ORGANIZATION_ROLES = require(`${process.cwd()}/lib/dao/roles/organization`)
+const CONVERSATION_RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
+const ORGANIZATION_ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 
+const projection = ['owner', 'sharedWithUsers', 'organization']
 
 const {
   ConversationOwnerAccessDenied,
@@ -17,7 +18,7 @@ const {
 
 module.exports = {
   asOwnerAccess: (req, res, next) => {
-    ConversationModel.getConvoOwner(req.params.conversationId).then(conversation => {
+    ConversationModel.getConvoById(req.params.conversationId).then(conversation => {
       if (conversation.length === 1 && conversation[0].owner === req.payload.data.userId) next()
       else next(new ConversationOwnerAccessDenied())
     })
@@ -47,8 +48,7 @@ function checkConvAccess(next, conversationId, userId, rightConvo, rightExceptio
       isToNext = callNext(next, isToNext, new ConversationIdRequire())
       return
     }
-
-    ConversationModel.getConvoShared(conversationId).then(conversationRes => {
+    ConversationModel.getConvoById(conversationId, projection).then(conversationRes => {
       if (conversationRes.length === 1) {
         const conversation = conversationRes[0]
         if (conversation.owner === userId) { // If owner got all rights
@@ -83,6 +83,7 @@ function checkConvAccess(next, conversationId, userId, rightConvo, rightExceptio
                       if (orgaUser.userId === userId) {
                         if (CONVERSATION_RIGHTS.hasRightAccess(orgaUser.right, rightConvo)) {
                           isToNext = callNext(next, isToNext)
+                          debug('OK')
                         } else isToNext = callNext(next, isToNext, new rightException())
                       }
                     })
@@ -97,8 +98,7 @@ function checkConvAccess(next, conversationId, userId, rightConvo, rightExceptio
               })
           }
         }
-      }
-      if (!isToNext) callNext(next, isToNext, new ConversationNotShared())
+      } else if (!isToNext) callNext(next, isToNext, new ConversationNotShared())
 
     })
   } catch (err) {
@@ -114,7 +114,7 @@ function checkConvRestrictedAcess(next, conversationId, userId, rightConvo, righ
       isToNext = callNext(next, isToNext, new ConversationIdRequire())
       return
     }
-    ConversationModel.getConvoShared(conversationId).then(conversationRes => {
+    ConversationModel.getConvoById(conversationId, projection).then(conversationRes => {
       if (conversationRes.length === 1) {
         const conversation = conversationRes[0]
         if (conversation.owner === userId) isToNext = callNext(next, isToNext) // If owner all rightsJe
@@ -151,10 +151,8 @@ function checkConvRestrictedAcess(next, conversationId, userId, rightConvo, righ
             })
           } else isToNext = callNext(next, isToNext, new rightException())
         }
-      }
-      if (!isToNext) callNext(next, isToNext, new ConversationNotShared())
+      } else if (!isToNext) callNext(next, isToNext, new ConversationNotShared())
     })
-
   } catch (err) {
     callNext(next, isToNext, err)
   }

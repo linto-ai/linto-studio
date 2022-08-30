@@ -13,7 +13,7 @@ module.exports = (webserver) => {
             const conversation = await conversationModel.getConvoById(req.params.conversationId)
             if (conversation.length === 1) {
                 const fileName = conversation[0].metadata.audio.filepath.split('/').pop()
-                const file = `${process.cwd()}/${process.env.VOLUME_AUDIO_UPLOAD_PATH}/${fileName}`
+                const file = `${process.cwd()}/${process.env.VOLUME_FOLDER}/${process.env.VOLUME_AUDIO_PATH}/${fileName}`
                     // TODO: handle file type (mp3, wav, etc)
                 res.setHeader('Content-Type', 'audio/mpeg')
                 res.sendFile(file)

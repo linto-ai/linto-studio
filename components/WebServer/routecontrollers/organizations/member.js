@@ -1,13 +1,16 @@
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:organizations:member')
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
+const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 
 const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
-const convUtility = require(`${process.cwd()}/components/WebServer/controllers/conversation/utility`)
+
+const RIGHT = require(`${process.cwd()}/lib/dao/conversation/rights`)
 
 const TYPES = organizationModel.getTypes()
 
 const {
     OrganizationError,
+    OrganizationForbidden,
     OrganizationUnsupportedMediaType,
 } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
@@ -49,6 +52,10 @@ async function leaveSelfFromOrganization(req, res, next) {
         if (organization.users.filter(oUser => oUser.userId === userId).length === 0)
             throw new OrganizationError('You are not part of ' + organization.name)
 
+        const data = orgaUtility.countAdmin(organization, userId)
+        if (data.adminCount === 1 && data.isAdmin) throw new OrganizationForbidden('You cannot leave the organization because you are the last admin')
+        if (organization.owner === userId && data.isAdmin) organization.owner = data.replaceOwner
+
         organization.users = organization.users.filter(oUser => oUser.userId !== userId)
         const result = await organizationModel.update(organization)
 
@@ -65,10 +72,24 @@ async function leaveSelfFromOrganization(req, res, next) {
 async function listConversationFromOrganization(req, res, next) {
     try {
         if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
+        const conversations = await conversationModel.getConvoByOrga(req.params.organizationId)
 
-        const conversations = await convUtility.getOrgaConversation(req.params.organizationId)
+        let selfConvFromOrga = []
+        conversations.filter(conv => {
+            if (conv.owner === req.payload.data.userId) {
+                selfConvFromOrga.push(conv)
+            } else {
+                let access = conv.organization.customRights.find(customRight =>
+                    (customRight.userId === req.payload.data.userId))
 
-        res.status(200).send(conversations)
+                if (access && RIGHT.hasRightAccess(access.right, RIGHT.READ)) {
+                    selfConvFromOrga.push(conv)
+                } else if (RIGHT.hasRightAccess(conv.organization.membersRight, RIGHT.READ)) {
+                    selfConvFromOrga.push(conv)
+                }
+            }
+        })
+        res.status(200).send(selfConvFromOrga)
     } catch (err) {
         next(err)
     }

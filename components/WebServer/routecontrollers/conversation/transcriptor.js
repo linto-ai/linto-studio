@@ -8,12 +8,13 @@ const fs = require('fs')
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
 
-const { createJobInterval } = require(`${process.cwd()}/components/WebServer/controllers/transcriptorHandler`)
+const { createJobInterval } = require(`${process.cwd()}/components/WebServer/controllers/jobsHandler`)
+
 const { addFileMetadataToConversation, initConversation } = require(`${process.cwd()}/components/WebServer/controllers/conversation/generator`)
 const { storeFile } = require(`${process.cwd()}/components/WebServer/controllers/storeFile`)
 const { getTranscriptionService } = require(`${process.cwd()}/components/WebServer/controllers/services/utility`)
 
-const CONVERSATION_RIGHT = require(`${process.cwd()}/lib/dao/rights/conversation`)
+const CONVERSATION_RIGHT = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const {
     ConversationNoFileUploaded,
     ConversationMetadataRequire,
@@ -38,37 +39,32 @@ async function transcriptor(req, res, next) {
             const organization = await organizationModel.getOrganizationById(req.body.organizationId)
             if (organization.length !== 1) throw new OrganizationNotFound()
         } else {
-            const organizations = await organizationModel.getPersonalOrganization()
-            organizations.map(organization => {
-                if (organization.owner === req.payload.data.userId) {
-                    req.body.organizationId = organization._id
-                    return true
-                }
-            })
+            const organizations = await organizationModel.getPersonalOrganization(req.payload.data.userId)
+            if (!organizations[0]?._id) throw new OrganizationNotFound()
+            req.body.organizationId = organizations[0]._id
         }
 
-        const conversation = await transcribe(req.body, req.files, userId)
-        if (!conversation._id || !conversation.job || !conversation.job.job_id) throw new ConversationError()
+        const conversation = await transcribeRequest(req.body, req.files, userId)
+        if (!conversation._id || !conversation?.jobs?.transcription?.job_id) throw new ConversationError()
 
-        createJobInterval(conversation)
+        createJobInterval(req.body.service.host, conversation.jobs.transcription.job_id, 'transcription', conversation)
         res.status(201).send({
             message: 'A conversation is currently being processed'
         })
     } catch (error) {
-        next(err)
+        next(error)
     }
 }
 
-async function transcribe(body, files, userId) {
+async function transcribeRequest(body, files, userId) {
     try {
         const fileData = {
             ...files.file,
             name: utf8.decode(files.file.name)
         }
-
         const filePath = await storeFile(fileData, 'audio')
         const options = prepareRequest(filePath, body.transcriptionConfig)
-        const job = await axios.post(`${body.service.host}/transcribe`, options)
+        const job = await axios.postFormData(`${body.service.host}/transcribe`, options)
 
         if (job && job.jobid) {
             let conversation = initConversation(body, userId, job.jobid)
@@ -80,7 +76,7 @@ async function transcribe(body, files, userId) {
         }
         return { status: 'error' }
     } catch (error) {
-        throw new ConversationError('Unable to transcribe the audio file', err)
+        throw new ConversationError('Unable to transcribe the audio file', error)
     }
 }
 

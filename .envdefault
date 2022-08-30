@@ -27,6 +27,10 @@ STT_PASSWORD=stt_password
 STT_RESULT_CONVERT_NUMBERS=true
 STT_RESULT_RETURN_RAW=false
 
+# NLP Service
+NLP_SERVICES=<nlp_service_host>
+NLP_METHOD=frequencies,textrank
+
 # Cross domain accessibility
 CORS_ENABLED=false
 CORS_API_WHITELIST=
@@ -41,11 +45,11 @@ AXIOS_SIZE_FILE_MAX=500000000
 REDIS_SESSION_SERVICE=localhost
 REDIS_SESSION_SERVICE_PORT=6379
 
-# Storage folder of audio volume
-VOLUME_AUDIO_UPLOAD_PATH=storages/audios
-VOLUME_AUDIO_PUBLIC_PATH=audios
-VOLUME_PROFILE_PICTURE_UPLOAD_PATH=storages/pictures
-VOLUME_PROFILE_PICTURE_PUBLIC_PATH=pictures
+# Storage folder
+VOLUME_FOLDER=storages
+VOLUME_AUDIO_PATH=audios
+VOLUME_PROFILE_PICTURE_PATH=pictures
+VOLUME_DATABASE_PATH=database
 
 VOLUME_DATABASE_FOLDER=storages/database
 

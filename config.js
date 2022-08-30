@@ -2,11 +2,6 @@ const debug = require('debug')('linto:conversation-manager:config')
 const dotenv = require('dotenv')
 const fs = require('fs')
 
-function ifHasNotThrow(element, error) {
-    if (!element) throw error
-    return element
-}
-
 function ifHas(element, defaultValue) {
     if (!element) return defaultValue
     return element
@@ -54,12 +49,14 @@ function configureDefaults() {
         process.env.STT_RESULT_CONVERT_NUMBERS = ifHas(process.env.STT_RESULT_CONVERT_NUMBERS, envdefault.STT_RESULT_CONVERT_NUMBERS)
         process.env.STT_RESULT_RETURN_RAW = ifHas(process.env.STT_RESULT_RETURN_RAW, envdefault.STT_RESULT_RETURN_RAW)
 
+        process.env.NLP_SERVICES = ifHas(process.env.NLP_SERVICES, envdefault.NLP_SERVICES)
+        process.env.NLP_METHOD = ifHas(process.env.NLP_METHOD, envdefault.NLP_METHOD)
 
         // Storage folder for uploads
-        process.env.VOLUME_AUDIO_UPLOAD_PATH = ifHas(process.env.VOLUME_AUDIO_UPLOAD_PATH, envdefault.VOLUME_AUDIO_UPLOAD_PATH)
-        process.env.VOLUME_AUDIO_PUBLIC_PATH = ifHas(process.env.VOLUME_AUDIO_PUBLIC_PATH, envdefault.VOLUME_AUDIO_PUBLIC_PATH)
-        process.env.VOLUME_PROFILE_PICTURE_UPLOAD_PATH = ifHas(process.env.VOLUME_PROFILE_PICTURE_UPLOAD_PATH, envdefault.VOLUME_PROFILE_PICTURE_UPLOAD_PATH)
-        process.env.VOLUME_PROFILE_PICTURE_PUBLIC_PATH = ifHas(process.env.VOLUME_PROFILE_PICTURE_PUBLIC_PATH, envdefault.VOLUME_PROFILE_PICTURE_PUBLIC_PATH)
+        process.env.VOLUME_FOLDER = ifHas(process.env.VOLUME_FOLDER, envdefault.VOLUME_FOLDER)
+        process.env.VOLUME_AUDIO_PATH = ifHas(process.env.VOLUME_AUDIO_PATH, envdefault.VOLUME_AUDIO_PATH)
+        process.env.VOLUME_PROFILE_PICTURE_PATH = ifHas(process.env.VOLUME_PROFILE_PICTURE_PATH, envdefault.VOLUME_PROFILE_PICTURE_PATH)
+        process.env.VOLUME_DATABASE_PATH = ifHas(process.env.VOLUME_DATABASE_PATH, envdefault.VOLUME_DATABASE_PATH)
 
         // Passeport settings
         process.env.CM_JWT_SECRET = ifHas(process.env.CM_JWT_SECRET, envdefault.CM_JWT_SECRET)

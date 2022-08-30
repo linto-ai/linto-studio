@@ -2,8 +2,8 @@ const debug = require('debug')('linto:conversation-manager:components:WebServer:
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
 
-const CONVERSATION_RIGHTS = require(`${process.cwd()}/lib/dao/rights/conversation`)
-const ORGANIZATION_ROLES = require(`${process.cwd()}/lib/dao/roles/organization`)
+const CONVERSATION_RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
+const ORGANIZATION_ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 
 const { ConversationError } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 const { OrganizationNotFound } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
@@ -15,10 +15,10 @@ async function getUserConversation(userId) {
         for (let conversation of conversations) {
             // User is owner
             if (conversation.owner === userId) convList.push(conversation)
-                // User may have a right to see the conversation from sharedWithUsers
+            // User may have a right to see the conversation from sharedWithUsers
 
             else if (conversation.sharedWithUsers.filter(user => user.userId === userId &&
-                    CONVERSATION_RIGHTS.hasRightAccess(user.right, CONVERSATION_RIGHTS.READ)).length !== 0) {
+                CONVERSATION_RIGHTS.hasRightAccess(user.right, CONVERSATION_RIGHTS.READ)).length !== 0) {
                 convList.push(conversation)
             }
             // User may have a right from the conversation organization
@@ -39,15 +39,11 @@ async function getUserConversation(userId) {
                 }
             }
         }
+
         return convList
     } catch (err) {
         throw new ConversationError(err)
     }
-}
-
-async function getOrgaConversation(orgaId) {
-    const conversations = await conversationModel.getAllConvos()
-    return conversations.filter(conv => conv.organization.organizationId.toString() === orgaId)
 }
 
 async function getUserRightFromConversation(userId, conversation) {
@@ -84,4 +80,4 @@ async function getUserRightFromConversation(userId, conversation) {
     }
 }
 
-module.exports = { getUserConversation, getOrgaConversation, getUserRightFromConversation }
+module.exports = { getUserConversation, getUserRightFromConversation }

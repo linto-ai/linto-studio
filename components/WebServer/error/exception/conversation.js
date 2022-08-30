@@ -34,7 +34,7 @@ class ConversationMetadataRequire extends Error {
     this.type = ExceptionType
     this.status = '400'
     if (message) this.message = message
-    else this.message = 'Require metadata was not provide.'
+    else this.message = 'Metadata was not provided.'
     if (err) this.err = err
   }
 }
@@ -46,7 +46,7 @@ class ConversationOwnerAccessDenied extends Error {
     this.type = ExceptionType
     this.status = '401'
     if (message) this.message = message
-    else this.message = 'User is not the owner of the conversation'
+    else this.message = 'Owner of the conversation is require.'
     if (err) this.err = err
   }
 }
@@ -122,6 +122,19 @@ class ConversationNotFound extends Error {
   }
 }
 
+class ConversationLocked extends Error {
+  constructor(message, err) {
+    super()
+    this.name = 'ConversationLocked'
+    this.type = ExceptionType
+    this.status = '423'
+    if (message) this.message = message
+    else this.message = 'Conversation is currently edited by an other user'
+    if (err) this.err = err
+  }
+}
+
+
 
 
 module.exports = {
@@ -134,5 +147,6 @@ module.exports = {
   ConversationNotShared,
   ConversationIdRequire,
   ConversationError,
+  ConversationLocked,
   ConversationNotFound
 }

@@ -4,7 +4,7 @@ const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizat
 const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
 
 const TYPES = organizationModel.getTypes()
-const ROLES = require(`${process.cwd()}/lib/dao/roles/organization`)
+const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 
 const {
     OrganizationError,
@@ -112,6 +112,7 @@ async function getOrganization(req, res, next) {
     }
 }
 
+// List organization where the user are in
 async function listSelfOrganization(req, res, next) {
     try {
         const organizations = await organizationModel.getAllOrganizations()
@@ -129,7 +130,7 @@ async function listSelfOrganization(req, res, next) {
     }
 }
 
-
+// List all public organization
 async function listOrganization(req, res, next) {
     try {
         let organizations = await organizationModel.getAllOrganizations()

@@ -7,6 +7,7 @@ const StoreFile = require(`${process.cwd()}/components/WebServer/controllers/sto
 
 const {
     OrganizationConflict,
+    OrganizationError
 } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
 const {
@@ -85,7 +86,7 @@ async function searchUser(req, res, next) {
         // Get all users with "public" personal organization
         searchUser.map(user => {
             let userOrga = allOrganizations.find(orga => orga.owner.toString() === user._id.toString() && orga.personal === true)
-            if (userOrga.type === 'public') {
+            if (userOrga?.type === 'public') {
                 filterUser.push(user)
                 return false
             }
@@ -150,10 +151,21 @@ async function updateUser(req, res, next) {
         const myUser = await userModel.getUserById(req.payload.data.userId)
         if (myUser.length !== 1) throw new UserNotFound()
         let user = myUser[0]
+        const userMail = user.email
 
         if (req.body.email) user.email = req.body.email
         if (req.body.firstname) user.firstname = req.body.firstname
         if (req.body.lastname) user.lastname = req.body.lastname
+
+        if ((await userModel.getUserByEmail(req.body.email)).length !== 0) throw new UserConflict()
+        if ((await organizationModel.getOrganizationByName(req.body.email)).length !== 0) throw new OrganizationConflict()
+        let organization = (await organizationModel.getOrganizationByName(userMail))[0]
+
+        if (req.body.email && organization?.personal === true) {
+            debug('Update organization name')
+            organization.name = req.body.email
+            let res = await organizationModel.update(organization)
+        }
 
         const result = await userModel.update(user)
         if (result.matchedCount === 0) throw new UserError()
@@ -176,8 +188,7 @@ async function updateUserPicture(req, res, next) {
             img: await StoreFile.storeFile(req.files.file, 'picture')
         }
 
-        const myUser = await userModel.getUserById(req.payload.data.userId)
-        if (myUser.length !== 1) throw (new UserNotFound())
+        if ((await userModel.getUserById(req.payload.data.userId)).length !== 1) throw new UserNotFound()
 
         const result = await userModel.update(payload)
         if (result.matchedCount === 0) throw new UserError()
@@ -206,7 +217,10 @@ async function updateUserPassword(req, res, next) {
 
         const result = await userModel.updatePassword(payload)
         if (result.matchedCount === 0) throw new UserError()
-        next()
+
+        res.status(200).send({
+            message: 'Password updated'
+        })
     } catch (err) {
         next(err)
     }
@@ -227,7 +241,7 @@ async function logout(req, res, next) {
                 })
             else throw new UserError()
         })
-    } catch (error) {
+    } catch (err) {
         next(err)
     }
 }
@@ -238,14 +252,14 @@ async function deleteUser(req, res, next) {
 
         const userId = req.payload.data.userId
 
+        // Remove user from organizations
         const organizations = await organizationModel.getAllOrganizations()
-
         organizations.filter(organization => {
             if (organization.owner !== userId && organization.personal === true) return false
             else if (organization.owner === userId && organization.users.length === 0) return true
             else if ((organization.users.filter(user => user.userId === userId)).length !== 0) return true
         }).map(async (organization) => {
-            if (organization.owner === userId && organization.users.length === 0) {
+            if (organization.owner === userId && organization.users.length === 1) {
                 let resultOperation = await organizationModel.deleteById(organization._id.toString())
                 if (resultOperation.deletedCount !== 1) throw new UserError('Error on personal organization')
             } else {
@@ -255,13 +269,16 @@ async function deleteUser(req, res, next) {
             }
         })
 
+        // Delete conversation if owner and remove user from shared with
         const conversations = await conversationModel.getAllConvos()
         conversations.filter(conversation => {
             if ((conversation.sharedWithUsers.filter(user => user.userId === userId)).length !== 0) return true
-        }).map(async (conversation) => {
+        }).map(async conversation => {
             conversation.sharedWithUsers = conversation.sharedWithUsers.filter(user => user.userId !== userId)
             const resultConvoUpdate = await conversationModel.update(conversation)
             if (resultConvoUpdate.modifiedCount === 0) throw new UserError('Error on conversation rights deletion')
+        }).map(async conversation => {
+            if (conversation.owner === userId) await conversationModel.deleteById(conversation._id.toString())
         })
 
         const result = await userModel.deleteUser(req.payload.data.userId)

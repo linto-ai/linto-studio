@@ -19,10 +19,6 @@ function initConversation(metadata, userId, job_id) {
     return {
         name: metadata.name,
         description: metadata.description,
-        conversationType: metadata.conversationType || '',
-        locked: 0,
-        agenda: [""],
-        abstract: '',
         owner: userId,
         sharedWithUsers: sharedWithUsers,
         organization: {
@@ -43,21 +39,23 @@ function initConversation(metadata, userId, job_id) {
             file: {}
         },
         locale: metadata.service.locale,
-        job: {
-            job_id: job_id,
-            state: 'pending',
-            steps: {}
+        jobs: {
+            transcription: {
+                job_id: job_id,
+                state: 'pending',
+                steps: {}
+            }
         }
     }
 }
 
-function sttToConversation(transcript, conversation) {
+function transcriptionToConversation(transcript, conversation) {
     try {
         jsonTranscript = transcript
 
         if (transcript === undefined || transcript.transcription_result.length === 0)
             throw new Error('Transcription was empty')
-        conversation.confidence = transcript.confidence
+        conversation.metadata.transcription.confidence = transcript.confidence
 
         transcript.segments.map(segment => {
             /* Check and init speaker */
@@ -117,4 +115,4 @@ async function addFileMetadataToConversation(conversation, file) {
     return conversation
 }
 
-module.exports = { sttToConversation, addFileMetadataToConversation, initConversation }
+module.exports = { transcriptionToConversation, addFileMetadataToConversation, initConversation }

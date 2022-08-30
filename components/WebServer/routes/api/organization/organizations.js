@@ -47,24 +47,25 @@ module.exports = (webserver) => {
             method: 'get',
             requireAuth: true,
             controller: listSelfOrganization
-        },
-        {
+        }
+
+        /*Member right */
+        , {
             path: '/:organizationId',
             method: 'get',
             requireAuth: true,
+            requireOrganizationMemberAccess: true,
             controller: getOrganization
         },
-
-        /*Member right */
         {
-            path: '/user/:organizationId',
+            path: '/:organizationId/self',
             method: 'patch',
             requireAuth: true,
             requireOrganizationMemberAccess: true,
             controller: updateSelfFromOrganization
         },
         {
-            path: '/user/:organizationId',
+            path: '/:organizationId/self',
             method: 'delete',
             requireAuth: true,
             requireOrganizationMemberAccess: true,

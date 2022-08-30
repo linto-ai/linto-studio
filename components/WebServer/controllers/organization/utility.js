@@ -5,6 +5,8 @@ const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizat
 const { OrganizationNotFound } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 const { UserNotFound } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
 
+const ROLE = require(`${process.cwd()}/lib/dao/organization/roles`)
+
 
 async function getOrganization(organizationId) {
     const organization = await organizationModel.getOrganizationById(organizationId)
@@ -16,14 +18,20 @@ async function getOrganization(organizationId) {
     }
 }
 
-async function getUser(email) {
-    const user = await userModel.getUserByEmail(email)
-    if (user.length !== 1) throw new UserNotFound()
+function countAdmin(organization, userId) {
+    let adminCount = 0
+    let isAdmin = false
+    let replaceOwner
+    for (let oUser of organization.users) {
+        if (oUser.role === ROLE.ADMIN) adminCount++
+        if (oUser.userId === userId && oUser.role === ROLE.ADMIN) isAdmin = true
+        if (oUser.userId !== userId && oUser.role === ROLE.ADMIN) replaceOwner = oUser.userId
+    }
 
     return {
-        ...user[0],
-        userId: user[0]._id.toString()
+        adminCount,
+        isAdmin,
+        replaceOwner
     }
 }
-
-module.exports = { getOrganization, getUser }
+module.exports = { getOrganization, countAdmin }

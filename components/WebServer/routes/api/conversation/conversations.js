@@ -5,15 +5,15 @@ const { // Create conversation based on file
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/transcriptor.js`)
 
 const { // Create conversation based on file
-    getOwnerConversation,
-    getConversation,
-    downloadConversation,
-    listConversation,
-    updateConversation,
-    searchText,
     deleteConversation,
+    downloadConversation,
+    getConversation,
+    getUsersByConversation,
+    lockConversation,
+    searchConversation,
+    updateConversation,
     updateConversationRights,
-    getUsersByConversation
+    listSharedConversation
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/conversation.js`)
 
 module.exports = (webserver) => {
@@ -25,19 +25,20 @@ module.exports = (webserver) => {
             requireAuth: true,
             controller: transcriptor
         },
+
         {
-            path: '/list',
-            method: 'get',
-            requireAuth: true,
-            controller: listConversation
-        },
-        {
-            path: '/search/text',
+            path: '/search/:searchType',
             method: 'post',
             requireAuth: true,
-            controller: searchText
+            controller: searchConversation
         },
 
+        {
+            path: '/list/share',
+            method: 'get',
+            requireAuth: true,
+            controller: listSharedConversation
+        },
 
         /*Require Auth */
         {
@@ -55,18 +56,18 @@ module.exports = (webserver) => {
             controller: updateConversationRights
         },
         {
+            path: '/:conversationId/lock',
+            method: 'post',
+            requireAuth: true,
+            requireConversationWriteAccess: true,
+            controller: lockConversation
+        },
+        {
             path: '/:conversationId',
             method: 'patch',
             requireAuth: true,
             requireConversationWriteAccess: true,
             controller: updateConversation
-        },
-        {
-            path: '/',
-            method: 'get',
-            requireAuth: true,
-            requireConversationOwnerAccess: true,
-            controller: getOwnerConversation
         },
         {
             path: '/:conversationId/download/:format',
