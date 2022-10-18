@@ -84,7 +84,8 @@ async function getOrganization(req, res, next) {
 
         const isInOrga = organization.users.some(oUser => oUser.userId === req.payload.data.userId)
 
-        if (!isInOrga && organization.type === TYPES.private) throw new OrganizationForbidden()
+        if (!TYPES.public || (!isInOrga && organization.type === TYPES.private)) throw new OrganizationForbidden()
+
         else {
             if (!isInOrga) {
                 organization.users = organization.users.filter(oUser => oUser.visibility === TYPES.public)

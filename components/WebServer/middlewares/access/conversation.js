@@ -36,7 +36,7 @@ module.exports = {
     checkConvRestrictedAcess(next, req.params.conversationId, req.payload.data.userId, CONVERSATION_RIGHTS.DELETE, ConversationReadAccessDenied) // ORGA MAINTENER
   },
   asShareAccess: (req, res, next) => {
-    checkConvRestrictedAcess(next, req.params.conversationId, req.payload.data.userId, CONVERSATION_RIGHTS.SHARE, ConversationShareAccessDenied)
+    checkConvAccess(next, req.params.conversationId, req.payload.data.userId, CONVERSATION_RIGHTS.SHARE, ConversationShareAccessDenied)
   }
 }
 

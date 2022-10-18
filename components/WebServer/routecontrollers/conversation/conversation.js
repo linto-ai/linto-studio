@@ -222,9 +222,11 @@ async function updateConversationRights(req, res, next) {
             if (userIndex >= 0) {
                 isAdded = true
                 userRight[userIndex].right = req.body.right
+                userRight[userIndex].sharedBy = req.payload.data.userId
             }
         }
-        if (!isAdded) userRight.push({ userId: req.params.userId, right: req.body.right })
+
+        if (!isAdded) userRight.push({ userId: req.params.userId, right: req.body.right, sharedBy: req.payload.data.userId })
 
         isInOrga.length === 0 ? conversation[0].sharedWithUsers = userRight : conversation[0].organization.customRights = userRight
 
