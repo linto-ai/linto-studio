@@ -9,6 +9,7 @@ const { // Create conversation based on file
     downloadConversation,
     getConversation,
     getUsersByConversation,
+    getRightsByConversation,
     lockConversation,
     searchConversation,
     updateConversation,
@@ -47,6 +48,13 @@ module.exports = (webserver) => {
             requireAuth: true,
             requireConversationReadAccess: true,
             controller: getUsersByConversation
+        },
+        {
+            path: '/:conversationId/rights',
+            method: 'get',
+            requireAuth: true,
+            requireConversationReadAccess: true,
+            controller: getRightsByConversation
         },
         {
             path: '/:conversationId/user/:userId',

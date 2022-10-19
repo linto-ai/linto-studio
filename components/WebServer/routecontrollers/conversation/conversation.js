@@ -285,6 +285,25 @@ async function getUsersByConversation(req, res, next) {
     }
 }
 
+async function getRightsByConversation(req, res, next) {
+    try {
+        if (!req.params.conversationId) throw new ConversationIdRequire()
+
+        const conversation = await conversationModel.getConvoById(req.params.conversationId)
+        if (conversation.length !== 1) throw new ConversationNotFound()
+
+        const data = await conversationUtility.getUserRightFromConversation(req.payload.data.userId, conversation[0])
+
+        res.status(200).send({
+            ...data.access,
+            personal: data.personal
+        })
+    } catch (err) {
+        next(err)
+    }
+}
+
+
 async function lockConversation(req, res, next) {
     try {
         if (!req.params.conversationId) throw new ConversationIdRequire()
@@ -337,6 +356,7 @@ module.exports = {
     downloadConversation,
     getConversation,
     getUsersByConversation,
+    getRightsByConversation,
     listConversation,
     listSharedConversation,
     lockConversation,
