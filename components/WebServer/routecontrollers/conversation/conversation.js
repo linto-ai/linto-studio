@@ -5,6 +5,8 @@ const userUtility = require(`${process.cwd()}/components/WebServer/controllers/u
 
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
+const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
+
 
 const TIMEOUT_LOCK = 180000
 
@@ -86,7 +88,10 @@ async function getConversation(req, res, next) {
 
             conversation = await conversationModel.getConvoById(req.params.conversationId, filter)
 
-        } else conversation = await conversationModel.getConvoById(req.params.conversationId)
+        } else {
+            let filter = ['organization', 'shareWithUsers']
+            conversation = await conversationModel.getConvoById(req.params.conversationId, filter)
+        }
 
         if (conversation.length !== 1) throw new ConversationNotFound()
 
@@ -146,11 +151,21 @@ async function listConversation(req, res, next) {
     }
 }
 
-
 async function listSharedConversation(req, res, next) {
     try {
         const userId = req.payload.data.userId
-        const convList = await conversationModel.getConvoByShare(userId)
+        let convList = await conversationModel.getConvoByShare(userId)
+
+        for (let conv of convList) {
+            for (let user of conv.sharedWithUsers) {
+                if (user.userId === userId) {
+                    const sharedBy = await userModel.getUserById(user.sharedBy)
+                    conv.sharedBy = sharedBy[0]
+                    break
+                }
+            }
+            delete conv.sharedWithUsers
+        }
 
         res.status(200).send({
             conversations: convList
@@ -256,7 +271,8 @@ async function getUsersByConversation(req, res, next) {
         let organization = await organizationModel.getOrganizationById(conversation[0].organization.organizationId)
         if (organization.length !== 1) throw new OrganizationNotFound()
 
-        const conversationUsers = await userUtility.getUsersListByConversation(conversation[0], organization[0])
+        const userId = req.payload.data.userId
+        const conversationUsers = await userUtility.getUsersListByConversation(userId, conversation[0], organization[0])
         res.status(200).send({
             conversationUsers
         })
@@ -271,7 +287,7 @@ async function lockConversation(req, res, next) {
         if (!req.body.lock || !(req.body.lock === 'true' || req.body.lock === 'false')) throw new ConversationMetadataRequire()
 
         let lock = true
-        if(req.body.lock === 'false') lock = false
+        if (req.body.lock === 'false') lock = false
 
         const conversation = await conversationModel.getConvoById(req.params.conversationId)
         if (conversation.length !== 1) throw new ConversationNotFound()

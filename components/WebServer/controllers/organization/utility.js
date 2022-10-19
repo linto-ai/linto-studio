@@ -1,9 +1,7 @@
 const debug = require('debug')('linto:conversation-manager:components:WebServer:controller:organizations:utility')
-const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
 
 const { OrganizationNotFound } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
-const { UserNotFound } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
 
 const ROLE = require(`${process.cwd()}/lib/dao/organization/roles`)
 

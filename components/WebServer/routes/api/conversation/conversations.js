@@ -45,7 +45,7 @@ module.exports = (webserver) => {
             path: '/:conversationId/users',
             method: 'get',
             requireAuth: true,
-            requireConversationShareAccess: true,
+            requireConversationReadAccess: true,
             controller: getUsersByConversation
         },
         {
