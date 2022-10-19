@@ -42,7 +42,9 @@ async function getUsersConversationByArray(users, setupRight) {
 async function getUsersListByConversation(userId, conversation, organiaztion) {
     try {
         let isShare = false
-        let sharedBy = undefined
+        let sharedById = undefined
+        let sharedByAdded = false
+
         const organizationUsers = organiaztion.users
         const convoMembersRight = conversation.organization.membersRight
         const convoCustomRights = conversation.organization.customRights
@@ -56,12 +58,15 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
         for (const swUser of sharedWithUsers) {
             if (swUser.userId === userId) {
                 isShare = true
-                sharedBy = swUser.sharedBy
+                sharedById = swUser.sharedBy
             }
             const userInfo = await userModel.getUserById(swUser.userId)
             const userOrga = await organizationsModel.getOrganizationByName(userInfo[0].email)
 
             if (userOrga[0].type === 'public' || userOrga[0].name === myUserInfo[0].email) {
+                if (swUser.userId === sharedById) {
+                    sharedByAdded = true
+                }
                 external_members.push({
                     ...userInfo[0],
                     role: 0,
@@ -70,10 +75,24 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
             }
         }
 
+        if (sharedById && !sharedByAdded) {
+            for (const swUser of sharedWithUsers) {
+                if (swUser.userId === sharedById) {
+                    sharedByAdded = true
+                    const userInfo = await userModel.getUserById(swUser.userId)
+                    external_members.push({
+                        ...userInfo[0],
+                        role: 0,
+                        right: swUser.right
+                    })
+                }
+            }
+        }
+
         //  organization members default rights
         if (organiaztion.type === 'public' || (organiaztion.type === 'private' && isShare === false)) {
             for (const oUser of organizationUsers) {
-                if (isShare && oUser.visibility === 'private') {
+                if (oUser.userId !== sharedById && (isShare && oUser.visibility === 'private')) {
                     continue
                 }
 
@@ -91,15 +110,16 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
                 }
                 organization_members.push(userObj)
             }
+        } else if (sharedByAdded === false) {
+            const userInfo = await userModel.getUserById(sharedById)
+            organization_members.push(userInfo[0])
         }
+
         // organization members custom rights
         for (const oUser of convoCustomRights) {
             let orgaUser = organization_members.find(u => u._id.toString() === oUser.userId)
             orgaUser.right = oUser.right
         }
-
-        //TODO: Add shared by
-        debug(sharedBy)
 
         return {
             external_members,
