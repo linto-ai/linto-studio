@@ -1,4 +1,4 @@
-const debug = require('debug')('linto:conversation-manager:components:webserver:middlewares:rights:conversation')
+const debug = require('debug')('linto:conversation-manager:components:webserver:middlewares:access:conversation')
 
 const ConversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 const OrganizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)

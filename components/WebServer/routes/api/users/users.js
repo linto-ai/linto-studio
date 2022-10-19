@@ -57,9 +57,10 @@ module.exports = (webserver) => {
         controller: searchUser
     },
     {
-        path: '/:userid',
+        path: '/:userId',
         method: 'get',
         requireAuth: true,
+        requireUserVisibility: true,
         controller: getUserById
     }
     ]
