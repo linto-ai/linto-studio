@@ -83,7 +83,6 @@ function checkConvAccess(next, conversationId, userId, rightConvo, rightExceptio
                       if (orgaUser.userId === userId) {
                         if (CONVERSATION_RIGHTS.hasRightAccess(orgaUser.right, rightConvo)) {
                           isToNext = callNext(next, isToNext)
-                          debug('OK')
                         } else isToNext = callNext(next, isToNext, new rightException())
                       }
                     })

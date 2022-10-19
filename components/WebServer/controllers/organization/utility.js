@@ -32,4 +32,15 @@ function countAdmin(organization, userId) {
         replaceOwner
     }
 }
-module.exports = { getOrganization, countAdmin }
+
+async function canReadOrganization(organizationId, userId) {
+    const organization = await getOrganization(organizationId)
+
+    if (organization.type === 'public') return true
+
+    for (let oUser of organization.users) {
+        if (oUser.userId === userId) return true
+    }
+    return false
+}
+module.exports = { getOrganization, countAdmin, canReadOrganization }

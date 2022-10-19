@@ -1,6 +1,7 @@
 const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:conversation`)
 
 const conversationUtility = require(`${process.cwd()}/components/WebServer/controllers/conversation/utility`)
+const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
 const userUtility = require(`${process.cwd()}/components/WebServer/controllers/user/utility`)
 
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
@@ -89,11 +90,14 @@ async function getConversation(req, res, next) {
             conversation = await conversationModel.getConvoById(req.params.conversationId, filter)
 
         } else {
-            let filter = ['organization', 'shareWithUsers']
-            conversation = await conversationModel.getConvoById(req.params.conversationId, filter)
+            conversation = await conversationModel.getConvoById(req.params.conversationId)
         }
-
         if (conversation.length !== 1) throw new ConversationNotFound()
+
+        if(!orgaUtility.canReadOrganization(conversation[0].organization.organizationId, req.payload.data.userId)) {
+            delete conversation.organization
+            delete conversation.sharedWithUsers
+        }
 
         const data = await conversationUtility.getUserRightFromConversation(req.payload.data.userId, conversation[0])
         const locked = (conv_lock_map.get(req.params.conversationId)) ? conv_lock_map.get(req.params.conversationId) : 0

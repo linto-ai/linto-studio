@@ -5,6 +5,7 @@ const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversat
 const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
 
 const RIGHT = require(`${process.cwd()}/lib/dao/conversation/rights`)
+const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 
 const TYPES = organizationModel.getTypes()
 
@@ -73,6 +74,15 @@ async function listConversationFromOrganization(req, res, next) {
     try {
         if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
         const conversations = await conversationModel.getConvoByOrga(req.params.organizationId)
+        const organization = await orgaUtility.getOrganization(req.params.organizationId)
+
+        let userRole = ROLES.MEMBER
+        organization.users.map(oUser => {
+            if (oUser.userId === req.payload.data.userId) {
+                userRole = oUser.role
+                return
+            }
+        })
 
         let selfConvFromOrga = []
         conversations.filter(conv => {
@@ -81,8 +91,9 @@ async function listConversationFromOrganization(req, res, next) {
             } else {
                 let access = conv.organization.customRights.find(customRight =>
                     (customRight.userId === req.payload.data.userId))
-
                 if (access && RIGHT.hasRightAccess(access.right, RIGHT.READ)) {
+                    selfConvFromOrga.push(conv)
+                } else if (!access && ROLES.hasRoleAccess(userRole, ROLES.MAINTAINER)) {
                     selfConvFromOrga.push(conv)
                 } else if (RIGHT.hasRightAccess(conv.organization.membersRight, RIGHT.READ)) {
                     selfConvFromOrga.push(conv)
