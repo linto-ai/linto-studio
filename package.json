@@ -1,6 +1,6 @@
 {
     "name": "linto-platform-conversation-manager",
-    "version": "0.2.0",
+    "version": "1.0.0",
     "description": "Transcription, summarization, annotation interface for recorded audio files ",
     "main": "app.js",
     "scripts": {
