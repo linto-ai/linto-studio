@@ -101,7 +101,9 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
                     ...userInfo[0],
                     role: oUser.role
                 }
-                if (userObj.role === 3) {
+                if (oUser.userId === conversation.owner) {
+                    userObj.right = CONVERSATION_RIGHTS.adminRight()
+                } else if (userObj.role === 3) {
                     userObj.right = CONVERSATION_RIGHTS.adminRight()
                 } else if (userObj.role === 2) {
                     userObj.right = CONVERSATION_RIGHTS.maintainerRight()
