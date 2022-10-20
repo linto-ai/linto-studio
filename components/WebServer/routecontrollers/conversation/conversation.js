@@ -1,10 +1,13 @@
 const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:conversation`)
 
 const conversationUtility = require(`${process.cwd()}/components/WebServer/controllers/conversation/utility`)
+const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
 const userUtility = require(`${process.cwd()}/components/WebServer/controllers/user/utility`)
 
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
+const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
+
 
 const TIMEOUT_LOCK = 180000
 
@@ -86,9 +89,15 @@ async function getConversation(req, res, next) {
 
             conversation = await conversationModel.getConvoById(req.params.conversationId, filter)
 
-        } else conversation = await conversationModel.getConvoById(req.params.conversationId)
-
+        } else {
+            conversation = await conversationModel.getConvoById(req.params.conversationId)
+        }
         if (conversation.length !== 1) throw new ConversationNotFound()
+
+        if(!orgaUtility.canReadOrganization(conversation[0].organization.organizationId, req.payload.data.userId)) {
+            delete conversation.organization
+            delete conversation.sharedWithUsers
+        }
 
         const data = await conversationUtility.getUserRightFromConversation(req.payload.data.userId, conversation[0])
         const locked = (conv_lock_map.get(req.params.conversationId)) ? conv_lock_map.get(req.params.conversationId) : 0
@@ -146,11 +155,21 @@ async function listConversation(req, res, next) {
     }
 }
 
-
 async function listSharedConversation(req, res, next) {
     try {
         const userId = req.payload.data.userId
-        const convList = await conversationModel.getConvoByShare(userId)
+        let convList = await conversationModel.getConvoByShare(userId)
+
+        for (let conv of convList) {
+            for (let user of conv.sharedWithUsers) {
+                if (user.userId === userId) {
+                    const sharedBy = await userModel.getUserById(user.sharedBy)
+                    conv.sharedBy = sharedBy[0]
+                    break
+                }
+            }
+            delete conv.sharedWithUsers
+        }
 
         res.status(200).send({
             conversations: convList
@@ -222,9 +241,11 @@ async function updateConversationRights(req, res, next) {
             if (userIndex >= 0) {
                 isAdded = true
                 userRight[userIndex].right = req.body.right
+                userRight[userIndex].sharedBy = req.payload.data.userId
             }
         }
-        if (!isAdded) userRight.push({ userId: req.params.userId, right: req.body.right })
+
+        if (!isAdded) userRight.push({ userId: req.params.userId, right: req.body.right, sharedBy: req.payload.data.userId })
 
         isInOrga.length === 0 ? conversation[0].sharedWithUsers = userRight : conversation[0].organization.customRights = userRight
 
@@ -254,7 +275,8 @@ async function getUsersByConversation(req, res, next) {
         let organization = await organizationModel.getOrganizationById(conversation[0].organization.organizationId)
         if (organization.length !== 1) throw new OrganizationNotFound()
 
-        const conversationUsers = await userUtility.getUsersListByConversation(conversation[0], organization[0])
+        const userId = req.payload.data.userId
+        const conversationUsers = await userUtility.getUsersListByConversation(userId, conversation[0], organization[0])
         res.status(200).send({
             conversationUsers
         })
@@ -263,13 +285,32 @@ async function getUsersByConversation(req, res, next) {
     }
 }
 
+async function getRightsByConversation(req, res, next) {
+    try {
+        if (!req.params.conversationId) throw new ConversationIdRequire()
+
+        const conversation = await conversationModel.getConvoById(req.params.conversationId)
+        if (conversation.length !== 1) throw new ConversationNotFound()
+
+        const data = await conversationUtility.getUserRightFromConversation(req.payload.data.userId, conversation[0])
+
+        res.status(200).send({
+            ...data.access,
+            personal: data.personal
+        })
+    } catch (err) {
+        next(err)
+    }
+}
+
+
 async function lockConversation(req, res, next) {
     try {
         if (!req.params.conversationId) throw new ConversationIdRequire()
         if (!req.body.lock || !(req.body.lock === 'true' || req.body.lock === 'false')) throw new ConversationMetadataRequire()
 
         let lock = true
-        if(req.body.lock === 'false') lock = false
+        if (req.body.lock === 'false') lock = false
 
         const conversation = await conversationModel.getConvoById(req.params.conversationId)
         if (conversation.length !== 1) throw new ConversationNotFound()
@@ -315,6 +356,7 @@ module.exports = {
     downloadConversation,
     getConversation,
     getUsersByConversation,
+    getRightsByConversation,
     listConversation,
     listSharedConversation,
     lockConversation,

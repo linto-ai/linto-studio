@@ -1,4 +1,4 @@
-const debug = require('debug')('linto:conversation-manager:components:webserver:middlewares:rights:conversation')
+const debug = require('debug')('linto:conversation-manager:components:webserver:middlewares:access:conversation')
 
 const ConversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 const OrganizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
@@ -36,7 +36,7 @@ module.exports = {
     checkConvRestrictedAcess(next, req.params.conversationId, req.payload.data.userId, CONVERSATION_RIGHTS.DELETE, ConversationReadAccessDenied) // ORGA MAINTENER
   },
   asShareAccess: (req, res, next) => {
-    checkConvRestrictedAcess(next, req.params.conversationId, req.payload.data.userId, CONVERSATION_RIGHTS.SHARE, ConversationShareAccessDenied)
+    checkConvAccess(next, req.params.conversationId, req.payload.data.userId, CONVERSATION_RIGHTS.SHARE, ConversationShareAccessDenied)
   }
 }
 
@@ -83,7 +83,6 @@ function checkConvAccess(next, conversationId, userId, rightConvo, rightExceptio
                       if (orgaUser.userId === userId) {
                         if (CONVERSATION_RIGHTS.hasRightAccess(orgaUser.right, rightConvo)) {
                           isToNext = callNext(next, isToNext)
-                          debug('OK')
                         } else isToNext = callNext(next, isToNext, new rightException())
                       }
                     })
