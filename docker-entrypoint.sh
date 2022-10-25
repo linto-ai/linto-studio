@@ -27,6 +27,7 @@ echo "RUNNING : $script"
 cd /usr/src/app/conversation-manager
 mkdir -p $VOLUME_FOLDER
 mkdir -p $VOLUME_FOLDER/$VOLUME_AUDIO_PATH
+mkdir -p $VOLUME_FOLDER/$VOLUME_AUDIO_PATH/original
 mkdir -p $VOLUME_FOLDER/$VOLUME_PROFILE_PICTURE_PATH
 
 cron
