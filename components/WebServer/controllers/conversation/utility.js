@@ -71,6 +71,9 @@ async function getUserRightFromConversation(userId, conversation) {
             if (conversationRight) access.right = conversationRight.right
         }
 
+        // If owner of the conversation > admin rights
+        if(conversation.owner === userId) access.right = CONVERSATION_RIGHTS.adminRight()
+
         return {
             access,
             personal: organization[0].personal
