@@ -12,6 +12,7 @@ const { // Create conversation based on file
     getRightsByConversation,
     lockConversation,
     searchConversation,
+    searchConversationByOrganization,
     updateConversation,
     updateConversationRights,
     listSharedConversation
@@ -33,7 +34,12 @@ module.exports = (webserver) => {
             requireAuth: true,
             controller: searchConversation
         },
-
+        {
+          path: '/search/organization/:organizationId',
+          method: 'post',
+          requireAuth: true,
+          controller: searchConversationByOrganization
+        },
         {
             path: '/list/share',
             method: 'get',

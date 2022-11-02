@@ -216,6 +216,72 @@ async function searchConversation(req, res, next) {
 }
 
 
+// Rsearch text in conversations (name + description + text) filtered by organizations
+async function searchConversationByOrganization(req, res, next) {
+  try {
+      if (!req.params.organizationId) throw new ConversationMetadataRequire('organizationScope is required')
+      const organizationId = req.params.organizationId
+      const organization = await orgaUtility.getOrganization(organizationId)
+      const isOrgaPersonnal = organization.personal
+      const convUserList = await conversationUtility.getUserConversation(req.payload.data.userId)
+      
+       let orgaConv = [] // conversations filtered by organization
+       if(!isOrgaPersonnal) {
+        orgaConv = convUserList.filter(conv => conv.organization.organizationId === organizationId)
+       } else {
+        // if organization is personal, add sharedWithUsers conversations
+        let sharedConv = []
+        for (const conv of convUserList) {
+          if(conv.sharedWithUsers.length > 0) {
+            for (const user of conv.sharedWithUsers) {
+              if (user.userId === req.payload.data.userId) {
+                sharedConv.push(conv)
+                break
+              }
+            }
+          }
+        }
+        orgaConv = [...convUserList.filter(conv => conv.organization.organizationId === organizationId), ...sharedConv]
+       }
+
+      const convSearch = [] // result of search in organization conversations
+      for(let conv of orgaConv){
+          let textinconv = await textInConv(req.body.text, conv._id)
+          // check if text is in conversation title
+          if(conv.name.toLowerCase().includes(req.body.text.toLowerCase())) {
+            convSearch.push(conv)
+          }
+          // check if text is in conversation description
+          else if(conv.description.toLowerCase().includes(req.body.text.toLowerCase())) {
+            convSearch.push(conv)
+          } 
+          // check if text is in conversation text
+          else if(textinconv) {
+            convSearch.push(conv)
+          }
+        }
+      res.status(200).send({
+          conversations: convSearch
+      })
+  } catch (err) {
+      next(err)
+  }
+}
+
+async function textInConv (text, conversationId) {
+  const conversation = (await conversationModel.getConvoById(conversationId))[0]
+  let addConvo = false
+  for (const turn of conversation.text) {
+    if (turn.raw_segment.toLowerCase().includes(text.toLowerCase())) {
+      addConvo = true
+      break
+    }
+  }
+  return addConvo
+}
+
+
+
 async function updateConversationRights(req, res, next) {
     try {
         if (!req.params.conversationId) throw new ConversationIdRequire()
@@ -361,6 +427,7 @@ module.exports = {
     listSharedConversation,
     lockConversation,
     searchConversation,
+    searchConversationByOrganization,
     updateConversation,
     updateConversationRights
 }
