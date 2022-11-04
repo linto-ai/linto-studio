@@ -3,6 +3,7 @@ const debug = require('debug')('app:webserver:routes')
 module.exports = (webServer) => {
     return {
         "/": require('./root')(webServer),
+        "/healthcheck": require('./api/healthcheck/healthcheck')(webServer),
         "/auth": require('./auth')(webServer),
         "/api/users": require('./api/users/users.js')(webServer),
         "/api/organizations": require('./api/organization/organizations')(webServer),

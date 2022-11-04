@@ -53,6 +53,7 @@ async function storeFile(file, type = 'audio') {
             return {
                 filePath: `${process.env.VOLUME_AUDIO_PATH}/${fileName}.mp3`,
                 originalFilePath: `${process.env.VOLUME_AUDIO_PATH}/original/${fileName}${fileExtension}`,
+                originalStorageFilePath: `${process.env.VOLUME_FOLDER}/${process.env.VOLUME_AUDIO_PATH}/original/${fileName}${fileExtension}`,
                 storageFilePath: `${process.env.VOLUME_FOLDER}/${process.env.VOLUME_AUDIO_PATH}/` + fileName + '.mp3',
                 originalFileName: file.name
             }

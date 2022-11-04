@@ -12,19 +12,11 @@ function configureDefaults() {
         dotenv.config() // loads process.env from .env file (if not specified by the system)
         const envdefault = dotenv.parse(fs.readFileSync('.envdefault')) // default usable values
 
-        // Dev variable
-        process.env.DEV_DISABLE_AUTH = ifHas(process.env.DEV_DISABLE_AUTH, envdefault.DEV_DISABLE_AUTH)
-        process.env.LOGGER_ENABLED = ifHas(process.env.LOGGER_ENABLED, envdefault.LOGGER_ENABLED)
-        process.env.DEBUG = ifHas(process.env.DEBUG, envdefault.DEBUG)
-
         // Webserver Settings
         process.env.COMPONENTS = ifHas(process.env.COMPONENTS, envdefault.COMPONENTS)
         process.env.WEBSERVER_HTTP_PORT = ifHas(process.env.WEBSERVER_HTTP_PORT, envdefault.WEBSERVER_HTTP_PORT)
-        process.env.SESSION_SECRET = ifHas(process.env.SESSION_SECRET, envdefault.SESSION_SECRET)
-        process.env.USE_SSL = ifHas(process.env.USE_SSL, envdefault.USE_SSL)
 
         // Mongo
-        process.env.DB_DRIVER = ifHas(process.env.DB_DRIVER, envdefault.DB_DRIVER)
         process.env.DB_HOST = ifHas(process.env.DB_HOST, envdefault.DB_HOST)
         process.env.DB_USER = ifHas(process.env.DB_USER, envdefault.DB_USER)
         process.env.DB_PASS = ifHas(process.env.DB_PASS, envdefault.DB_PASS)
@@ -39,15 +31,11 @@ function configureDefaults() {
         // Express settings
         process.env.EXPRESS_SIZE_FILE_MAX = ifHas(process.env.EXPRESS_SIZE_FILE_MAX, envdefault.EXPRESS_SIZE_FILE_MAX)
         process.env.AXIOS_SIZE_FILE_MAX = ifHas(process.env.AXIOS_SIZE_FILE_MAX, envdefault.AXIOS_SIZE_FILE_MAX)
-        process.env.EXPRESS_TIMEOUT = ifHas(process.env.EXPRESS_TIMEOUT, envdefault.EXPRESS_TIMEOUT)
 
         process.env.STT_USER = ifHas(process.env.STT_USER, envdefault.STT_USER)
         process.env.STT_PASSWORD = ifHas(process.env.STT_PASSWORD, envdefault.STT_PASSWORD)
         process.env.STT_SERVICES = ifHas(process.env.STT_SERVICES, envdefault.STT_SERVICES)
         process.env.STT_REQUIRE_AUTH = ifHas(process.env.STT_REQUIRE_AUTH, envdefault.STT_REQUIRE_AUTH)
-
-        process.env.STT_RESULT_CONVERT_NUMBERS = ifHas(process.env.STT_RESULT_CONVERT_NUMBERS, envdefault.STT_RESULT_CONVERT_NUMBERS)
-        process.env.STT_RESULT_RETURN_RAW = ifHas(process.env.STT_RESULT_RETURN_RAW, envdefault.STT_RESULT_RETURN_RAW)
 
         process.env.NLP_SERVICES = ifHas(process.env.NLP_SERVICES, envdefault.NLP_SERVICES)
         process.env.NLP_METHOD = ifHas(process.env.NLP_METHOD, envdefault.NLP_METHOD)
@@ -56,7 +44,6 @@ function configureDefaults() {
         process.env.VOLUME_FOLDER = ifHas(process.env.VOLUME_FOLDER, envdefault.VOLUME_FOLDER)
         process.env.VOLUME_AUDIO_PATH = ifHas(process.env.VOLUME_AUDIO_PATH, envdefault.VOLUME_AUDIO_PATH)
         process.env.VOLUME_PROFILE_PICTURE_PATH = ifHas(process.env.VOLUME_PROFILE_PICTURE_PATH, envdefault.VOLUME_PROFILE_PICTURE_PATH)
-        process.env.VOLUME_DATABASE_PATH = ifHas(process.env.VOLUME_DATABASE_PATH, envdefault.VOLUME_DATABASE_PATH)
 
         // Passeport settings
         process.env.CM_JWT_SECRET = ifHas(process.env.CM_JWT_SECRET, envdefault.CM_JWT_SECRET)

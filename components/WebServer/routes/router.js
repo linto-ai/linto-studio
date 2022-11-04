@@ -3,6 +3,7 @@ const debug = require('debug')('app:webserver:router')
 const auth_middlewares = require(`../config/passport/local/middleware`)
 const conversation_middlewares = require(`${process.cwd()}/components/WebServer/middlewares/access/conversation.js`)
 const organization_middlewares = require(`${process.cwd()}/components/WebServer/middlewares/access/organization.js`)
+const user_middlewares = require(`${process.cwd()}/components/WebServer/middlewares/access/user.js`)
 
 const ifHasElse = (condition, ifHas, otherwise) => {
     return !condition ? otherwise() : ifHas()
@@ -26,6 +27,7 @@ class Router {
                     route.requireOrganizationMaintainerAccess = false
                     route.requireOrganizationMemberAccess = false
                     route.requireOrganizationGuestAccess = false
+                    route.requireUserVisibility = false
                 }
 
                 //debug('Create route : ' + route.method + ' - ' + level + route.path)
@@ -46,6 +48,9 @@ class Router {
                 if (route.requireOrganizationAdminAccess) middlewaresLoaded.push(organization_middlewares.asAdminAccess)
                 if (route.requireOrganizationMaintainerAccess) middlewaresLoaded.push(organization_middlewares.asMaintainerAccess)
                 if (route.requireOrganizationMemberAccess) middlewaresLoaded.push(organization_middlewares.asMemberAccess)
+
+                // User visibility
+                if(route.requireUserVisibility) middlewaresLoaded.push(user_middlewares.isVisibility)
 
                 if (process.env.LOGGER_ENABLED === "true") middlewaresLoaded.push(nav_middlewares.logger)
 

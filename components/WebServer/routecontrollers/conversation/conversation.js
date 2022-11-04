@@ -1,10 +1,13 @@
 const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:conversation`)
 
 const conversationUtility = require(`${process.cwd()}/components/WebServer/controllers/conversation/utility`)
+const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
 const userUtility = require(`${process.cwd()}/components/WebServer/controllers/user/utility`)
 
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
+const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
+
 
 const TIMEOUT_LOCK = 180000
 
@@ -16,6 +19,7 @@ const {
     ConversationIdRequire,
     ConversationNotFound,
     ConversationMetadataRequire,
+    ConversationUnsupportedMediaType,
     ConversationError,
     ConversationLocked
 } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
@@ -86,9 +90,15 @@ async function getConversation(req, res, next) {
 
             conversation = await conversationModel.getConvoById(req.params.conversationId, filter)
 
-        } else conversation = await conversationModel.getConvoById(req.params.conversationId)
-
+        } else {
+            conversation = await conversationModel.getConvoById(req.params.conversationId)
+        }
         if (conversation.length !== 1) throw new ConversationNotFound()
+
+        if (!orgaUtility.canReadOrganization(conversation[0].organization.organizationId, req.payload.data.userId)) {
+            delete conversation.organization
+            delete conversation.sharedWithUsers
+        }
 
         const data = await conversationUtility.getUserRightFromConversation(req.payload.data.userId, conversation[0])
         const locked = (conv_lock_map.get(req.params.conversationId)) ? conv_lock_map.get(req.params.conversationId) : 0
@@ -146,11 +156,21 @@ async function listConversation(req, res, next) {
     }
 }
 
-
 async function listSharedConversation(req, res, next) {
     try {
         const userId = req.payload.data.userId
-        const convList = await conversationModel.getConvoByShare(userId)
+        let convList = await conversationModel.getConvoByShare(userId)
+
+        for (let conv of convList) {
+            for (let user of conv.sharedWithUsers) {
+                if (user.userId === userId) {
+                    const sharedBy = await userModel.getUserById(user.sharedBy)
+                    conv.sharedBy = sharedBy[0]
+                    break
+                }
+            }
+            delete conv.sharedWithUsers
+        }
 
         res.status(200).send({
             conversations: convList
@@ -161,32 +181,58 @@ async function listSharedConversation(req, res, next) {
 }
 async function searchConversation(req, res, next) {
     try {
-        if (!req.params.searchType) throw new ConversationMetadataRequire('searchType is required')
-        const searchType = req.params.searchType
+        if (!req.body.searchType) throw new ConversationUnsupportedMediaType('searchType is required')
 
-        const convUserList = await conversationUtility.getUserConversation(req.payload.data.userId)
+        const searchType = req.body.searchType
+        const searchText = req.body.text.toLowerCase()
+        const organizationId = req.body.organizationId || ''
+        const userId = req.payload.data.userId
 
-        let convSearch = []
-        for (const convList of convUserList) {
-            let addConvo = false
-            const conversation = (await conversationModel.getConvoById(convList._id))[0]
+        const convUserList = await conversationUtility.getUserConversation(userId)
 
-            if (searchType === 'text' && req.body.text) {
-                for (const text of conversation.text) {
-                    if (text.raw_segment.toLowerCase().includes(req.body.text.toLowerCase())) {
-                        addConvo = true
-                        break
-                    }
-                }
-            }
+        let filteredConv = [] // conversations filtered by organization
 
-            if (addConvo) {
-                addConvo = false
-                const { text, speakers, keywords, highlights, ...filterConv } = conversation
-                convSearch.push(filterConv) // filter undesired fields
+        if (organizationId === '') {
+            filteredConv = convUserList
+        } else {
+            const organization = await orgaUtility.getOrganization(organizationId)
+            const isOrgaPersonnal = organization.personal
+            const organizationConvos = convUserList.filter(conv => conv.organization.organizationId === organizationId)
+
+            filteredConv = organizationConvos
+            if (isOrgaPersonnal) {
+                let sharedConv = await conversationModel.getConvoByShare(userId)
+                filteredConv = [...organizationConvos, ...sharedConv]
             }
         }
 
+        let convSearch = []
+        let convInArray = []
+        for (const conv of filteredConv) {
+            let addConv = false
+            const textInConv = await conversationUtility.textInConversation(req.body.text, conv._id)
+
+            // check if text is in conversation title
+            if (!convInArray[conv._id]) {
+                if (searchType.includes('title') && conv.name.toLowerCase().includes(searchText)) {
+                    addConv = true
+                }
+                // check if text is in conversation description
+                if (searchType.includes('description') && conv.description.toLowerCase().includes(searchText)) {
+                    addConv = true
+                }
+                // check if text is in conversation text
+                if (searchType.includes('text') && textInConv) {
+                    addConv = true
+                }
+
+                if (addConv) {
+                    convInArray[conv._id] = true
+                    convSearch.push(conv)
+                }
+            }
+
+        }
         res.status(200).send({
             searchType,
             conversations: convSearch
@@ -195,6 +241,7 @@ async function searchConversation(req, res, next) {
         next(err)
     }
 }
+
 
 
 async function updateConversationRights(req, res, next) {
@@ -222,9 +269,11 @@ async function updateConversationRights(req, res, next) {
             if (userIndex >= 0) {
                 isAdded = true
                 userRight[userIndex].right = req.body.right
+                userRight[userIndex].sharedBy = req.payload.data.userId
             }
         }
-        if (!isAdded) userRight.push({ userId: req.params.userId, right: req.body.right })
+
+        if (!isAdded) userRight.push({ userId: req.params.userId, right: req.body.right, sharedBy: req.payload.data.userId })
 
         isInOrga.length === 0 ? conversation[0].sharedWithUsers = userRight : conversation[0].organization.customRights = userRight
 
@@ -254,7 +303,8 @@ async function getUsersByConversation(req, res, next) {
         let organization = await organizationModel.getOrganizationById(conversation[0].organization.organizationId)
         if (organization.length !== 1) throw new OrganizationNotFound()
 
-        const conversationUsers = await userUtility.getUsersListByConversation(conversation[0], organization[0])
+        const userId = req.payload.data.userId
+        const conversationUsers = await userUtility.getUsersListByConversation(userId, conversation[0], organization[0])
         res.status(200).send({
             conversationUsers
         })
@@ -263,13 +313,32 @@ async function getUsersByConversation(req, res, next) {
     }
 }
 
+async function getRightsByConversation(req, res, next) {
+    try {
+        if (!req.params.conversationId) throw new ConversationIdRequire()
+
+        const conversation = await conversationModel.getConvoById(req.params.conversationId)
+        if (conversation.length !== 1) throw new ConversationNotFound()
+
+        const data = await conversationUtility.getUserRightFromConversation(req.payload.data.userId, conversation[0])
+
+        res.status(200).send({
+            ...data.access,
+            personal: data.personal
+        })
+    } catch (err) {
+        next(err)
+    }
+}
+
+
 async function lockConversation(req, res, next) {
     try {
         if (!req.params.conversationId) throw new ConversationIdRequire()
         if (!req.body.lock || !(req.body.lock === 'true' || req.body.lock === 'false')) throw new ConversationMetadataRequire()
 
         let lock = true
-        if(req.body.lock === 'false') lock = false
+        if (req.body.lock === 'false') lock = false
 
         const conversation = await conversationModel.getConvoById(req.params.conversationId)
         if (conversation.length !== 1) throw new ConversationNotFound()
@@ -315,6 +384,7 @@ module.exports = {
     downloadConversation,
     getConversation,
     getUsersByConversation,
+    getRightsByConversation,
     listConversation,
     listSharedConversation,
     lockConversation,

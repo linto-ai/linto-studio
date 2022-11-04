@@ -1,3 +1,8 @@
+# 1.0.0
+- Handle sharedBy user information
+- Added user middleware to protect private user
+- Better management of private user / orga
+
 # 0.2.0
 - Split backend and frontend
 - Audio transformation with ffmpeg

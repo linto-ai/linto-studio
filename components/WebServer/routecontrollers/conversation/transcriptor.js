@@ -82,7 +82,7 @@ async function transcribeRequest(body, files, userId) {
 
 function prepareRequest(file, transcriptionConfig) {
     const form = new FormData()
-    form.append('file', fs.createReadStream(file.storageFilePath))
+    form.append('file', fs.createReadStream(file.originalStorageFilePath))
 
     if (transcriptionConfig) form.append('transcriptionConfig', transcriptionConfig.toString())
     else form.append('transcriptionConfig', '{}')

@@ -39,6 +39,19 @@ class ConversationMetadataRequire extends Error {
   }
 }
 
+class ConversationUnsupportedMediaType extends Error {
+  constructor(message, err) {
+    super()
+    this.name = 'ConversationUnsupportedMediaType'
+    this.type = ExceptionType
+    this.status = '415'
+    if (message) this.message = message
+    else this.message = 'Parameter is not supported'
+    if (err) this.err = err
+  }
+}
+
+
 class ConversationOwnerAccessDenied extends Error {
   constructor(message, err) {
     super()
@@ -140,6 +153,7 @@ class ConversationLocked extends Error {
 module.exports = {
   ConversationNoFileUploaded,
   ConversationMetadataRequire,
+  ConversationUnsupportedMediaType,
   ConversationOwnerAccessDenied,
   ConversationReadAccessDenied,
   ConversationWriteAccessDenied,

@@ -100,7 +100,7 @@ async function searchUser(req, res, next) {
 
 async function getUserById(req, res, next) {
     try {
-        const userList = await userModel.getUserById(req.params.userid)
+        const userList = await userModel.getUserById(req.params.userId)
         if (userList && userList.length !== 1) throw new UserNotFound()
 
         res.status(200).send({
@@ -162,7 +162,6 @@ async function updateUser(req, res, next) {
         let organization = (await organizationModel.getOrganizationByName(userMail))[0]
 
         if (req.body.email && organization?.personal === true) {
-            debug('Update organization name')
             organization.name = req.body.email
             let res = await organizationModel.update(organization)
         }

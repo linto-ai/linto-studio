@@ -1,4 +1,4 @@
-const debug = require('debug')('linto:conversation-manager:components:webserver:middlewares:rights:organization')
+const debug = require('debug')('linto:conversation-manager:components:webserver:middlewares:access:organization')
 
 const OrganizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
