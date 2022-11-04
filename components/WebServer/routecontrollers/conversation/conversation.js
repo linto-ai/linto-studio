@@ -1,5 +1,3 @@
-const { cp } = require('fs')
-
 const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:conversation`)
 
 const conversationUtility = require(`${process.cwd()}/components/WebServer/controllers/conversation/utility`)
@@ -21,6 +19,7 @@ const {
     ConversationIdRequire,
     ConversationNotFound,
     ConversationMetadataRequire,
+    ConversationUnsupportedMediaType,
     ConversationError,
     ConversationLocked
 } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
@@ -96,7 +95,7 @@ async function getConversation(req, res, next) {
         }
         if (conversation.length !== 1) throw new ConversationNotFound()
 
-        if(!orgaUtility.canReadOrganization(conversation[0].organization.organizationId, req.payload.data.userId)) {
+        if (!orgaUtility.canReadOrganization(conversation[0].organization.organizationId, req.payload.data.userId)) {
             delete conversation.organization
             delete conversation.sharedWithUsers
         }
@@ -182,7 +181,8 @@ async function listSharedConversation(req, res, next) {
 }
 async function searchConversation(req, res, next) {
     try {
-        if (!req.body.searchType) throw new ConversationMetadataRequire('searchType is required')
+        if (!req.body.searchType) throw new ConversationUnsupportedMediaType('searchType is required')
+
         const searchType = req.body.searchType
         const searchText = req.body.text.toLowerCase()
         const organizationId = req.body.organizationId || ''
@@ -191,50 +191,47 @@ async function searchConversation(req, res, next) {
         const convUserList = await conversationUtility.getUserConversation(userId)
 
         let filteredConv = [] // conversations filtered by organization
-        
-        if(organizationId === '') { 
-          filteredConv = convUserList
+
+        if (organizationId === '') {
+            filteredConv = convUserList
         } else {
-          const organization = await orgaUtility.getOrganization(organizationId)
-          const isOrgaPersonnal = organization.personal
-          const organizationConvos = convUserList.filter(conv => conv.organization.organizationId === organizationId)
-          if(!isOrgaPersonnal) {
+            const organization = await orgaUtility.getOrganization(organizationId)
+            const isOrgaPersonnal = organization.personal
+            const organizationConvos = convUserList.filter(conv => conv.organization.organizationId === organizationId)
+
             filteredConv = organizationConvos
-          } else {
-            // if organization is personal, add sharedWithUsers conversations
-            let sharedConv = await conversationModel.getConvoByShare(userId)
-            filteredConv = [...organizationConvos, ...sharedConv]
-          }
+            if (isOrgaPersonnal) {
+                let sharedConv = await conversationModel.getConvoByShare(userId)
+                filteredConv = [...organizationConvos, ...sharedConv]
+            }
         }
 
         let convSearch = []
         let convInArray = []
-        for(let conv of filteredConv){
-          let textinconv = await conversationUtility.textInConversation(req.body.text, conv._id)
+        for (const conv of filteredConv) {
+            let addConv = false
+            const textInConv = await conversationUtility.textInConversation(req.body.text, conv._id)
 
-          // check if text is in conversation title
-          if(searchType.includes('title') && conv.name.toLowerCase().includes(searchText)) {
-            if(!convInArray[conv._id]) {
-              convSearch.push(conv)
-              convInArray[conv._id] = conv
+            // check if text is in conversation title
+            if (!convInArray[conv._id]) {
+                if (searchType.includes('title') && conv.name.toLowerCase().includes(searchText)) {
+                    addConv = true
+                }
+                // check if text is in conversation description
+                if (searchType.includes('description') && conv.description.toLowerCase().includes(searchText)) {
+                    addConv = true
+                }
+                // check if text is in conversation text
+                if (searchType.includes('text') && textInConv) {
+                    addConv = true
+                }
+
+                if (addConv) {
+                    convInArray[conv._id] = true
+                    convSearch.push(conv)
+                }
             }
-          }
-          
-          // check if text is in conversation description
-          if(searchType.includes('description') && conv.description.toLowerCase().includes(searchText)) {
-            if(!convInArray[conv._id]) {
-              convSearch.push(conv)
-              convInArray[conv._id] = conv
-            }
-          } 
-          
-          // check if text is in conversation text
-          if(searchType.includes('text') && textinconv) {
-            if(!convInArray[conv._id]) {
-              convSearch.push(conv)
-              convInArray[conv._id] = conv
-            }
-          }
+
         }
         res.status(200).send({
             searchType,

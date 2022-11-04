@@ -86,14 +86,12 @@ async function getUserRightFromConversation(userId, conversation) {
 
 async function textInConversation (text, conversationId) {
   const conversation = (await conversationModel.getConvoById(conversationId))[0]
-  let addConvo = false
   for (const turn of conversation.text) {
     if (turn.raw_segment.toLowerCase().includes(text.toLowerCase())) {
-      addConvo = true
-      break
+      return true
     }
   }
-  return addConvo
+  return false
 }
 
 
