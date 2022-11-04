@@ -28,12 +28,11 @@ module.exports = (webserver) => {
         },
 
         {
-            path: '/search/:searchType',
+            path: '/search',
             method: 'post',
             requireAuth: true,
             controller: searchConversation
         },
-
         {
             path: '/list/share',
             method: 'get',

@@ -83,4 +83,16 @@ async function getUserRightFromConversation(userId, conversation) {
     }
 }
 
-module.exports = { getUserConversation, getUserRightFromConversation }
+
+async function textInConversation (text, conversationId) {
+  const conversation = (await conversationModel.getConvoById(conversationId))[0]
+  for (const turn of conversation.text) {
+    if (turn.raw_segment.toLowerCase().includes(text.toLowerCase())) {
+      return true
+    }
+  }
+  return false
+}
+
+
+module.exports = { getUserConversation, getUserRightFromConversation, textInConversation }
