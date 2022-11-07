@@ -1,3 +1,7 @@
+# 1.0.1
+- Removed lock system
+
+
 # 1.0.0
 - Handle sharedBy user information
 - Added user middleware to protect private user
