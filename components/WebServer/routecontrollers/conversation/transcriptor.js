@@ -57,13 +57,17 @@ async function transcriptor(req, res, next) {
 }
 
 async function transcribeRequest(body, files, userId) {
+    let originalFilePath
     try {
         const fileData = {
             ...files.file,
             name: utf8.decode(files.file.name)
         }
-        const filePath = await storeFile(fileData, 'audio')
-        const options = prepareRequest(filePath, body.transcriptionConfig)
+        let filePath = await storeFile(fileData, 'audio')
+        originalFilePath = filePath.originalFilePath
+        delete filePath.originalFilePath
+
+        const options = prepareRequest(originalFilePath, body.transcriptionConfig)
         const job = await axios.postFormData(`${body.service.host}/transcribe`, options)
 
         if (job && job.jobid) {
@@ -71,18 +75,23 @@ async function transcribeRequest(body, files, userId) {
             conversation = await addFileMetadataToConversation(conversation, filePath)
 
             const result = await conversationModel.createConversation(conversation)
+
             if (result.insertedCount !== 1) throw new ConversationError()
+            fs.unlinkSync(originalFilePath)
             return conversation
         }
         return { status: 'error' }
     } catch (error) {
+        fs.unlinkSync(originalFilePath)
         throw new ConversationError('Unable to transcribe the audio file', error)
     }
 }
 
-function prepareRequest(file, transcriptionConfig) {
+function prepareRequest(originalFilePath, transcriptionConfig) {
     const form = new FormData()
-    form.append('file', fs.createReadStream(file.originalStorageFilePath))
+    form.append('file', fs.createReadStream(originalFilePath))
+
+
 
     if (transcriptionConfig) form.append('transcriptionConfig', transcriptionConfig.toString())
     else form.append('transcriptionConfig', '{}')

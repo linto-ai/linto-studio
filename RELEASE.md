@@ -1,6 +1,9 @@
 # 1.0.1
 - Removed lock system
-
+- Update transcription on job completion (not other information)
+- Original file is now send to the transcription service
+- Original file is now deleted after transcription
+- Transformed file is now stored
 
 # 1.0.0
 - Handle sharedBy user information
