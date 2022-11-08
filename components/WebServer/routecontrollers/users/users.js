@@ -6,8 +6,7 @@ const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversat
 const StoreFile = require(`${process.cwd()}/components/WebServer/controllers/storeFile`)
 
 const {
-    OrganizationConflict,
-    OrganizationError
+    OrganizationConflict
 } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
 const {
@@ -187,10 +186,15 @@ async function updateUserPicture(req, res, next) {
             img: await StoreFile.storeFile(req.files.file, 'picture')
         }
 
-        if ((await userModel.getUserById(req.payload.data.userId)).length !== 1) throw new UserNotFound()
+        const user = await userModel.getUserById(req.payload.data.userId)
+        if (user.length !== 1) throw new UserNotFound()
 
         const result = await userModel.update(payload)
         if (result.matchedCount === 0) throw new UserError()
+
+        if (user[0].img !== StoreFile.defaultPicture())
+            await StoreFile.deleteFile(`${process.env.VOLUME_FOLDER}/${user[0].img}`)
+
 
         res.status(200).send({
             message: 'User picture updated'

@@ -64,7 +64,11 @@ async function storeFile(file, type = 'audio') {
 }
 
 function defaultPicture() {
-    return `${process.env.VOLUME_PROFILE_PICTURE_PATH}/default.jpg`
+    return `pictures/default.jpg`
 }
 
-module.exports = { storeFile, defaultPicture }
+function deleteFile(filePath) {
+    fs.unlinkSync(filePath)
+}
+
+module.exports = { storeFile, defaultPicture, deleteFile }

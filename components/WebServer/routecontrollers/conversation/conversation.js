@@ -8,6 +8,8 @@ const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversat
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
 const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
 
+const storeFile = require(`${process.cwd()}/components/WebServer/controllers/storeFile`)
+
 const {
     ConversationIdRequire,
     ConversationNotFound,
@@ -24,8 +26,9 @@ async function deleteConversation(req, res, next) {
         const conversation = await conversationModel.getConvoById(conversationId)
         if (conversation.length !== 1) throw new ConversationNotFound()
         const result = await conversationModel.deleteById(conversationId)
-
         if (result.deletedCount !== 1) throw new ConversationError('Error when deleting conversation')
+
+        storeFile.deleteFile(`${process.env.VOLUME_FOLDER}/${conversation[0].metadata.audio.filepath}`)
 
         res.status(200).send({
             message: 'Conversation has been deleted'
