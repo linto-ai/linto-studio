@@ -13,6 +13,10 @@ const DEFAULT_INTERVAL_TIMER = 1000 // 10 sec
 async function getResult(host, job, jobs_type, conversation) {
     try {
         let url = `${host}/results/${job.result_id}`
+        if (conversation.metadata.transcription.transcriptionConfig.enableNormalization) {
+            url += '?convert_numbers=true'
+        }
+
         const options = {
             headers: {
                 accept: 'application/json'
