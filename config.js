@@ -41,9 +41,9 @@ function configureDefaults() {
         process.env.NLP_METHOD = ifHas(process.env.NLP_METHOD, envdefault.NLP_METHOD)
 
         // Storage folder for uploads
-        process.env.VOLUME_FOLDER = ifHas(process.env.VOLUME_FOLDER, envdefault.VOLUME_FOLDER)
-        process.env.VOLUME_AUDIO_PATH = ifHas(process.env.VOLUME_AUDIO_PATH, envdefault.VOLUME_AUDIO_PATH)
-        process.env.VOLUME_PROFILE_PICTURE_PATH = ifHas(process.env.VOLUME_PROFILE_PICTURE_PATH, envdefault.VOLUME_PROFILE_PICTURE_PATH)
+        process.env.VOLUME_FOLDER = 'storages'
+        process.env.VOLUME_AUDIO_PATH = 'audios'
+        process.env.VOLUME_PROFILE_PICTURE_PATH = 'pictures'
 
         // Passeport settings
         process.env.CM_JWT_SECRET = ifHas(process.env.CM_JWT_SECRET, envdefault.CM_JWT_SECRET)

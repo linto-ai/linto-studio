@@ -3,6 +3,8 @@
 - Update transcription on job completion (not other information)
 - Original file is now send to the transcription service
 - Original file is now deleted after transcription
+- Handle file deletion
+- Remove folder path configuration from environment
 - Transformed file is now stored
 
 # 1.0.0
