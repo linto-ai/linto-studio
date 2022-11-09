@@ -34,7 +34,7 @@ async function addTurn(req, res, next) {
         if (result.matchedCount === 0) throw new ConversationError()
 
         res.status(200).send({
-            message: 'Conversation turn has been deleted'
+            message: 'Conversation turn has been added'
         })
     } catch (err) {
         next(err)
