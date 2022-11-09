@@ -10,7 +10,6 @@ const { // Create conversation based on file
     getConversation,
     getUsersByConversation,
     getRightsByConversation,
-    lockConversation,
     searchConversation,
     updateConversation,
     updateConversationRights,
@@ -61,13 +60,6 @@ module.exports = (webserver) => {
             requireAuth: true,
             requireConversationShareAccess: true,
             controller: updateConversationRights
-        },
-        {
-            path: '/:conversationId/lock',
-            method: 'post',
-            requireAuth: true,
-            requireConversationWriteAccess: true,
-            controller: lockConversation
         },
         {
             path: '/:conversationId',

@@ -135,20 +135,6 @@ class ConversationNotFound extends Error {
   }
 }
 
-class ConversationLocked extends Error {
-  constructor(message, err) {
-    super()
-    this.name = 'ConversationLocked'
-    this.type = ExceptionType
-    this.status = '423'
-    if (message) this.message = message
-    else this.message = 'Conversation is currently edited by an other user'
-    if (err) this.err = err
-  }
-}
-
-
-
 
 module.exports = {
   ConversationNoFileUploaded,
@@ -161,6 +147,5 @@ module.exports = {
   ConversationNotShared,
   ConversationIdRequire,
   ConversationError,
-  ConversationLocked,
   ConversationNotFound
 }

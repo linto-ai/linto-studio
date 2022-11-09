@@ -18,15 +18,15 @@ async function storeFile(file, type = 'audio') {
         const fileExtension = path.extname(file.name)
 
         if (type === 'picture') {
-
             fs.writeFileSync(`${process.env.VOLUME_FOLDER}/${process.env.VOLUME_PROFILE_PICTURE_PATH}/${fileName}${fileExtension}`, file.data)
             return `${process.env.VOLUME_PROFILE_PICTURE_PATH}/${fileName}${fileExtension}`
 
         } else if (type === 'audio') {
-            filePath = `${process.env.VOLUME_FOLDER}/${process.env.VOLUME_AUDIO_PATH}/original/${fileName}${fileExtension}` // origine file
+            filePath = `${process.env.VOLUME_FOLDER}/${process.env.VOLUME_AUDIO_PATH}/${fileName}_tmp${fileExtension}` // origine file
             fs.writeFileSync(filePath, file.data)
 
             let transformedFilePath = `${process.env.VOLUME_FOLDER}/${process.env.VOLUME_AUDIO_PATH}/` + fileName + '.mp3'
+
             await new Promise((resolve, reject) => {
                 let streamProcess = spawn("ffmpeg", ['-i', `${filePath}`, '-vn', '-ar', '16000', '-ac', '1', '-b:a', '96k', transformedFilePath], { detached: true })
 
@@ -52,9 +52,8 @@ async function storeFile(file, type = 'audio') {
 
             return {
                 filePath: `${process.env.VOLUME_AUDIO_PATH}/${fileName}.mp3`,
-                originalFilePath: `${process.env.VOLUME_AUDIO_PATH}/original/${fileName}${fileExtension}`,
-                originalStorageFilePath: `${process.env.VOLUME_FOLDER}/${process.env.VOLUME_AUDIO_PATH}/original/${fileName}${fileExtension}`,
                 storageFilePath: `${process.env.VOLUME_FOLDER}/${process.env.VOLUME_AUDIO_PATH}/` + fileName + '.mp3',
+                originalFilePath : filePath,
                 originalFileName: file.name
             }
         }
@@ -65,7 +64,11 @@ async function storeFile(file, type = 'audio') {
 }
 
 function defaultPicture() {
-    return `${process.env.VOLUME_PROFILE_PICTURE_PATH}/default.jpg`
+    return `pictures/default.jpg`
 }
 
-module.exports = { storeFile, defaultPicture }
+function deleteFile(filePath) {
+    fs.unlinkSync(filePath)
+}
+
+module.exports = { storeFile, defaultPicture, deleteFile }

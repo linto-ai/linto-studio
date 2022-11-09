@@ -8,20 +8,14 @@ const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversat
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
 const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
 
-
-const TIMEOUT_LOCK = 180000
-
-let timeout = {}
-let conv_lock_map = new Map()
-
+const storeFile = require(`${process.cwd()}/components/WebServer/controllers/storeFile`)
 
 const {
     ConversationIdRequire,
     ConversationNotFound,
     ConversationMetadataRequire,
     ConversationUnsupportedMediaType,
-    ConversationError,
-    ConversationLocked
+    ConversationError
 } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
 async function deleteConversation(req, res, next) {
@@ -32,8 +26,9 @@ async function deleteConversation(req, res, next) {
         const conversation = await conversationModel.getConvoById(conversationId)
         if (conversation.length !== 1) throw new ConversationNotFound()
         const result = await conversationModel.deleteById(conversationId)
-
         if (result.deletedCount !== 1) throw new ConversationError('Error when deleting conversation')
+
+        storeFile.deleteFile(`${process.env.VOLUME_FOLDER}/${conversation[0].metadata.audio.filepath}`)
 
         res.status(200).send({
             message: 'Conversation has been deleted'
@@ -49,17 +44,6 @@ async function updateConversation(req, res, next) {
         if (!req.params.conversationId) throw new ConversationIdRequire()
         const conversation = await conversationModel.getConvoById(req.params.conversationId)
         if (conversation.length !== 1) throw new ConversationNotFound()
-
-        const conversation_lock = conv_lock_map.get(req.params.conversationId)
-        if (conversation_lock && conversation_lock !== req.payload.data.userId)
-            throw new ConversationLocked('Conversation locked by an other user')
-        // User ask to refresh the lock timeout
-        else if (conversation_lock && conversation_lock === req.payload.data.userId) {
-            clearTimeout(timeout[req.params.conversationId])
-            timeout[req.params.conversationId] = setTimeout(async function () {
-                conv_lock_map.delete(req.params.conversationId)
-            }, TIMEOUT_LOCK)
-        }
 
         const conv = {
             _id: req.params.conversationId,
@@ -101,13 +85,11 @@ async function getConversation(req, res, next) {
         }
 
         const data = await conversationUtility.getUserRightFromConversation(req.payload.data.userId, conversation[0])
-        const locked = (conv_lock_map.get(req.params.conversationId)) ? conv_lock_map.get(req.params.conversationId) : 0
 
         res.status(200).send({
             ...conversation[0],
             userAccess: data.access,
-            personal: data.personal,
-            locked
+            personal: data.personal
         })
     } catch (err) {
         next(err)
@@ -331,54 +313,6 @@ async function getRightsByConversation(req, res, next) {
     }
 }
 
-
-async function lockConversation(req, res, next) {
-    try {
-        if (!req.params.conversationId) throw new ConversationIdRequire()
-        if (!req.body.lock || !(req.body.lock === 'true' || req.body.lock === 'false')) throw new ConversationMetadataRequire()
-
-        let lock = true
-        if (req.body.lock === 'false') lock = false
-
-        const conversation = await conversationModel.getConvoById(req.params.conversationId)
-        if (conversation.length !== 1) throw new ConversationNotFound()
-
-        const conv_lock = conv_lock_map.get(req.params.conversationId)
-        // User ask to unlock and is locked by an other user
-        if (conv_lock && conv_lock !== req.payload.data.userId)
-            throw new ConversationLocked('Conversation locked by an other user')
-
-        // User ask to lock but already locked
-        else if (lock && conv_lock) throw new ConversationLocked('Conversation already locked by you')
-
-        // User ask to unlock but is already unlocked
-        else if (!lock && !conv_lock) res.status(200).send()
-
-        // User ask to lock and is not locked
-        else if (lock && !conv_lock) {
-            conv_lock_map.set(req.params.conversationId, req.payload.data.userId)
-
-            timeout[req.params.conversationId] = setTimeout(async function () {
-                conv_lock_map.delete(req.params.conversationId)
-            }, TIMEOUT_LOCK)
-
-            res.status(200).send()
-        }
-
-        // User ask to unlock and is locked
-        else if (!lock && conv_lock === req.payload.data.userId) {
-            conv_lock_map.delete(req.params.conversationId)
-
-            if (timeout?.[req.params.conversationId]?._destroyed === false)
-                clearTimeout(timeout[req.params.conversationId])
-            res.status(200).send()
-        }
-        else throw new ConversationError()
-    } catch (err) {
-        next(err)
-    }
-}
-
 module.exports = {
     deleteConversation,
     downloadConversation,
@@ -387,7 +321,6 @@ module.exports = {
     getRightsByConversation,
     listConversation,
     listSharedConversation,
-    lockConversation,
     searchConversation,
     updateConversation,
     updateConversationRights
