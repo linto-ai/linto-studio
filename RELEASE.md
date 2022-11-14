@@ -6,7 +6,7 @@
 - Handle file deletion
 - Remove folder path configuration from environment
 - Transformed file is now stored
-
+- Added api to handle turn
 # 1.0.0
 - Handle sharedBy user information
 - Added user middleware to protect private user
