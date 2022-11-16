@@ -8,13 +8,10 @@ class WorkerWatcher extends Component {
         this.app = app
 
         this.id = this.constructor.name
-        this.containerRegistered = {
-            stt : {},
-            diarization : [],
-            punctuation : [],
-        }
+        this.containerRegistered = {}
 
         this.discovery = lib.discovery.bind(this)
+        this.list = lib.list.bind(this)
         this.register = lib.register.bind(this)
         this.remove = lib.remove.bind(this)
 

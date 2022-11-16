@@ -6,6 +6,8 @@ const Type = require('./container-type')
 class Container {
   constructor(containerName, container) {
     if (container.Config.Image.includes(dockerhub_community)) {
+      this.enabled = false
+
       const type = Type.checkType(container.Config.Image)
       if (type !== Type.UNSUPORTED) {
         this.enabled = true
@@ -28,11 +30,7 @@ class Container {
             this.language = env.split('=')[1]
           }
         })
-      } else {
-        this.enabled = false
       }
-    } else {
-      this.enabled = false
     }
   }
 

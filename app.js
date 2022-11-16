@@ -1,4 +1,4 @@
-const debug = require('debug')('app:main')
+const debug = require('debug')('linto:app:main')
 const ora = require('ora')
 
 class App {
@@ -15,8 +15,8 @@ class App {
                 if (this.components['WorkerWatcher'] !== undefined) {
                     await this.components['WorkerWatcher'].discovery()
                 }
-
             })
+
         } catch (e) {
             console.error(debug.namespace, e)
         }

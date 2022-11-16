@@ -2,20 +2,26 @@ const debug = require('debug')('linto:components:worcker-watcher::controllers:li
 
 module.exports = async function containerRegister(container) {
   if (container && container.enabled) {
-      if (container.type === 'stt') {
-        this.containerRegistered.stt = container
-      } else {
-        let isUpadted = false
-        this.containerRegistered[container.type].map(registeredContainer => {
-          if (container.id === registeredContainer.id) {
-            registeredContainer = container
-            isUpadted = true
-            return
-          }
-        })
-        if (!isUpadted) {
-          this.containerRegistered[container.type].push(container)
-        }
+    let isUpadted = false
+
+    let type = container.type
+    if (type === 'stt') {
+      type = container.language
+    }
+    
+    if (!this.containerRegistered[type]) {
+      this.containerRegistered[type] = []
+    }
+
+    this.containerRegistered[type].map(registeredContainer => {
+      if (container.id === registeredContainer.id) {
+        registeredContainer = container
+        isUpadted = true
+        return
       }
+    })
+    if (!isUpadted) {
+      this.containerRegistered[type].push(container)
+    }
   }
 }
