@@ -11,7 +11,12 @@ class App {
             this.components = {}
             process.env.COMPONENTS.split(',').reduce((prev, componentFolderName) => {
                 return prev.then(async () => { await this.use(componentFolderName) })
-            }, Promise.resolve()).then(() => { })
+            }, Promise.resolve()).then(async () => {
+                if (this.components['WorkerWatcher'] !== undefined) {
+                    await this.components['WorkerWatcher'].discovery()
+                }
+
+            })
         } catch (e) {
             console.error(debug.namespace, e)
         }

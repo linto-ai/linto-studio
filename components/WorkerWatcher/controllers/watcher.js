@@ -14,7 +14,7 @@ module.exports = async function () {
 
       switch (Type) {
         case 'container':
-          debug(`Docker event : ${Type}-${Action}`)
+          // debug(`Docker event : ${Type}-${Action}`)
           dockerContainer.call(this, Type, Action, Actor)
           break;
         default:
@@ -30,15 +30,13 @@ module.exports = async function () {
 async function dockerContainer(Type, Action, Actor) {
   try {
     const container = await docker.getContainer(Actor?.ID).inspect()
-    const runningContainer = new Container(Actor?.Attributes?.name, container)
 
     if (Action === 'remove') {
-      debug(`Docker event : ${Type}-${Action} for ${Actor?.Attributes?.name}`)
-    } else if (Action === 'update' || Action === 'restart') {
-      debug(`Docker event : ${Type}-${Action} for ${Actor?.Attributes?.name}`)
-    } else if (Action === 'create' || Action === 'start') {
-      debug(runningContainer)
-      debug(`Docker event : ${Type}-${Action} for ${Actor?.Attributes?.name}`)
+      debug(`Docker event : ${Type}-${Action}`)
+      this.remove(Actor?.ID)
+    } else if (Action === 'update' || Action === 'restart' || Action === 'create' || Action === 'start') {
+      debug(`Docker event : ${Type}-${Action}`)
+      this.register(new Container(Actor?.Attributes?.name, container))
     }
   } catch (err) {
     console.error(err)
