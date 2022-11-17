@@ -10,7 +10,8 @@ DB_PASS=example
 DB_NAME=conversations
 
 # STT Config
-STT_SERVICES=french-service-name,fr-FR,endpoint~english-service-name,en-US,endpoint
+TRANSCRIPTION_SERVICES=[{"host":"<transcription_host>","lang":"fr-FR","name":"transcription_service_name", "desc":"some description", "model_quality" : 4, "accoustic" : 2}]
+
 STT_REQUIRE_AUTH=false
 STT_USER=stt_auth
 STT_PASSWORD=stt_password
