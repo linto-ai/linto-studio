@@ -12,7 +12,7 @@ module.exports = (webServer) => {
             ...require('./api/conversation/turn')(webServer),
         ],
         "/api/nlp": require('./api/nlp/keyword')(webServer),
-        "/api/services": require('./api/service/services')(webServer),
+        "/api/services": require('./api/service/services')(webServer, this),
         "/api": require('./api/media/media')(webServer)
     }
 }

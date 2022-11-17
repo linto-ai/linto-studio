@@ -1,6 +1,6 @@
 const Component = require(`../component.js`)
 const path = require("path")
-const debug = require('debug')(`app:webserver`)
+const debug = require('debug')(`linto:components:webserver`)
 const express = require('express')
 const fileUpload = require('express-fileupload')
 const passport = require('passport')
@@ -26,7 +26,8 @@ class WebServer extends Component {
     constructor(app) {
         super(app)
         this.id = this.constructor.name
-        this.express = app
+        this.app = app
+
         this.express = express()
         this.express.set('etag', false)
         this.express.set('trust proxy', true)
@@ -60,7 +61,6 @@ class WebServer extends Component {
         WebServerErrorHandler.init(this) // Manage error from controllers
 
         this.express.use('/', express.static(path.resolve(__dirname, './public'))) // Attaches ./public folder to / route
-            //this.express.use('/swagger-ui/', express.static(pathToSwaggerUi)) // Attaches swagger-ui JS file to /swagger-ui route
 
         return this.init()
     }

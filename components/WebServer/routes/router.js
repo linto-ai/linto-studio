@@ -1,4 +1,4 @@
-const debug = require('debug')('app:webserver:router')
+const debug = require('debug')('linto:app:webserver:router')
 
 const auth_middlewares = require(`../config/passport/local/middleware`)
 const conversation_middlewares = require(`${process.cwd()}/components/WebServer/middlewares/access/conversation.js`)
@@ -11,7 +11,6 @@ const ifHasElse = (condition, ifHas, otherwise) => {
 class Router {
     constructor(webServer) {
         const routes = require('./routes.js')(webServer)
-
         for (let level in routes) {
             for (let path in routes[level]) {
                 const route = routes[level][path]
