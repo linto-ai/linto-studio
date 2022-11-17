@@ -34,12 +34,19 @@ class Container {
     }
   }
 
-  printServiceInfo() {
+  printServiceInfo(reduce = false, isTranscription = false) {
     let container = Object.assign({}, this)
-    delete container.enabled
-    delete container.id
-    delete container.type
-    delete container.image
+
+    if (reduce) {
+      delete container.enabled
+      delete container.id
+      delete container.type
+      delete container.image
+    }
+
+    if (isTranscription) {
+      container.sub_services = {}
+    }
 
     return container
   }

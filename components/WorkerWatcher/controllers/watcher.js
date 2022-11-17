@@ -31,11 +31,11 @@ async function dockerContainer(Type, Action, Actor) {
   try {
     const container = await docker.getContainer(Actor?.ID).inspect()
 
-    if (Action === 'remove') {
-      debug(`Docker event : ${Type}-${Action}`)
+    if (Action === 'remove' || Action === 'stop') {
+      // debug(`Docker event : ${Type}-${Action}`)
       this.remove(Actor?.ID)
     } else if (Action === 'update' || Action === 'restart' || Action === 'create' || Action === 'start') {
-      debug(`Docker event : ${Type}-${Action}`)
+      // debug(`Docker event : ${Type}-${Action}`)
       this.register(new Container(Actor?.Attributes?.name, container))
     }
   } catch (err) {
