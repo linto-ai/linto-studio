@@ -34,8 +34,9 @@ function configureDefaults() {
 
         process.env.STT_USER = ifHas(process.env.STT_USER, envdefault.STT_USER)
         process.env.STT_PASSWORD = ifHas(process.env.STT_PASSWORD, envdefault.STT_PASSWORD)
-        process.env.STT_SERVICES = ifHas(process.env.STT_SERVICES, envdefault.STT_SERVICES)
         process.env.STT_REQUIRE_AUTH = ifHas(process.env.STT_REQUIRE_AUTH, envdefault.STT_REQUIRE_AUTH)
+        process.env.TRANSCRIPTION_SERVICES = ifHas(process.env.TRANSCRIPTION_SERVICES, envdefault.TRANSCRIPTION_SERVICES)
+
 
         process.env.NLP_SERVICES = ifHas(process.env.NLP_SERVICES, envdefault.NLP_SERVICES)
         process.env.NLP_METHOD = ifHas(process.env.NLP_METHOD, envdefault.NLP_METHOD)

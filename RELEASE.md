@@ -8,6 +8,9 @@
   - Original file is now send to the transcription service
   - Original file is now deleted after transcription
   - Remove folder path configuration from environment
+- Environement
+  - Change STT_SERVICE to TRANSCRIPTION_SERVICE
+  - TRANSCRIPTION_SERVICE is a json object
 - Component
   - Added a WorkerWatcher to manage worker container
 

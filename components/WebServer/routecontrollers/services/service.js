@@ -1,18 +1,11 @@
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:services:services')
 
+const serviceUtility = require(`${process.cwd()}/components/WebServer/controllers/services/utility`)
+
 async function getSaasServices(req, res, next) {
   try {
-    const services_list = process.env.STT_SERVICES.split('~')
-    const services = services_list.map(service => {
-      service = service.split(',')
-      return {
-        name: service[0],
-        lang: service[1],
-        host: service[2]
-      }
-    })
+    const services = await serviceUtility.listSaasServices(true)
     res.status(200).send(services)
-
   } catch (err) {
     next(err)
   }
