@@ -1,5 +1,5 @@
 const debug = require('debug')('linto:conversation-manager:components:WebServer:controller:services:utility')
-const { ConversationError } = require(`${process.cwd()}/components/WebServer/error/exception/service`)
+const { ServiceError } = require(`${process.cwd()}/components/WebServer/error/exception/service`)
 
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 
