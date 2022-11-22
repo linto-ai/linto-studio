@@ -32,13 +32,13 @@ function initConversation(metadata, userId, job_id) {
         text: [],
         metadata: {
             transcription: {
-                ...metadata.service,
+                ...metadata.lang,
                 transcriptionConfig: transcriptionConfig
             },
             audio: {},
             file: {}
         },
-        locale: metadata.service.locale,
+        locale: metadata.lang,
         jobs: {
             transcription: {
                 job_id: job_id,

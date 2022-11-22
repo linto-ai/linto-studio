@@ -12,7 +12,6 @@ const { createJobInterval } = require(`${process.cwd()}/components/WebServer/con
 
 const { addFileMetadataToConversation, initConversation } = require(`${process.cwd()}/components/WebServer/controllers/conversation/generator`)
 const { storeFile } = require(`${process.cwd()}/components/WebServer/controllers/storeFile`)
-const { getTranscriptionService } = require(`${process.cwd()}/components/WebServer/controllers/services/utility`)
 
 const CONVERSATION_RIGHT = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const {
@@ -30,10 +29,11 @@ async function transcriptor(req, res, next) {
 
         if (!req.files || Object.keys(req.files).length === 0) throw new ConversationNoFileUploaded()
         if (!req.body.name) throw new ConversationMetadataRequire("name param is required")
+        if (!req.body.lang) throw new ConversationMetadataRequire("lang param is required")
         if (!req.body.right) req.body.right = CONVERSATION_RIGHT.READ + CONVERSATION_RIGHT.COMMENT
-        if (!req.body.serviceName) throw new ConversationMetadataRequire("serviceName param is required")
+        if (!req.body.endpoint) throw new ConversationMetadataRequire("serviceEndpoint param is required")
 
-        req.body.service = getTranscriptionService(req.body.serviceName)
+        const transcriptionService = process.env.GATEWAY_SERVICES + '/' + req.body.endpoint
 
         if (req.body.organizationId) {
             const organization = await organizationModel.getOrganizationById(req.body.organizationId)
@@ -44,10 +44,10 @@ async function transcriptor(req, res, next) {
             req.body.organizationId = organizations[0]._id
         }
 
-        const conversation = await transcribeRequest(req.body, req.files, userId)
+        const conversation = await transcribeRequest(transcriptionService, req.body, req.files, userId)
         if (!conversation._id || !conversation?.jobs?.transcription?.job_id) throw new ConversationError()
 
-        createJobInterval(req.body.service.host, conversation.jobs.transcription.job_id, 'transcription', conversation)
+        createJobInterval(transcriptionService, conversation.jobs.transcription.job_id, 'transcription', conversation)
         res.status(201).send({
             message: 'A conversation is currently being processed'
         })
@@ -56,7 +56,7 @@ async function transcriptor(req, res, next) {
     }
 }
 
-async function transcribeRequest(body, files, userId) {
+async function transcribeRequest(transcriptionService, body, files, userId) {
     let originalFilePath
     try {
         const fileData = {
@@ -68,7 +68,7 @@ async function transcribeRequest(body, files, userId) {
         delete filePath.originalFilePath
 
         const options = prepareRequest(originalFilePath, body.transcriptionConfig)
-        const job = await axios.postFormData(`${body.service.host}/transcribe`, options)
+        const job = await axios.postFormData(`${transcriptionService}/transcribe`, options)
 
         if (job && job.jobid) {
             let conversation = initConversation(body, userId, job.jobid)
@@ -91,8 +91,6 @@ function prepareRequest(originalFilePath, transcriptionConfig) {
     const form = new FormData()
     form.append('file', fs.createReadStream(originalFilePath))
 
-
-
     if (transcriptionConfig) form.append('transcriptionConfig', transcriptionConfig.toString())
     else form.append('transcriptionConfig', '{}')
 
@@ -104,9 +102,6 @@ function prepareRequest(originalFilePath, transcriptionConfig) {
         formData: form,
         encoding: null
     }
-
-    if (process.env.STT_REQUIRE_AUTH === 'true')
-        options.headers.Authorization = 'Basic ' + Buffer.from(process.env.STT_USER + ':' + process.env.STT_PASSWORD).toString('base64');
 
     return options
 }
