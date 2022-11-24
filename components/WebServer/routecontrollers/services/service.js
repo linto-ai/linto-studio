@@ -4,7 +4,7 @@ const serviceUtility = require(`${process.cwd()}/components/WebServer/controller
 
 async function getSaasServices(req, res, next) {
   try {
-    const services = await serviceUtility.listSaasServices(true)
+    const services = await serviceUtility.listSaasServices(req.params.scope)
     res.status(200).send(services)
   } catch (err) {
     next(err)
