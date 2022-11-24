@@ -1,3 +1,16 @@
+# 1.0.1
+- API updates
+  - Update transcription on job completion (not other information)
+  - Added api to handle turn
+  - Removed lock system
+  - Handle file deletion
+- Cleaned up code
+  - Original file is now send to the transcription service
+  - Original file is now deleted after transcription
+  - Remove folder path configuration from environment
+- Component
+  - Added a WorkerWatcher to manage worker container
+
 # 1.0.0
 - Handle sharedBy user information
 - Added user middleware to protect private user

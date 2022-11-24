@@ -1,16 +1,28 @@
 const debug = require('debug')('linto:conversation-manager:router:api:services:service')
 
-const { 
-  getTranscriptionServices
+const {
+    getSaasServices,
+    getWorkerServices
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/services/service.js`)
 
 module.exports = (webserver) => {
-    return [
-        {
-            path: '/transcriptions',
-            method: 'get',
-            requireAuth: true,
-            controller: getTranscriptionServices
-        }
-    ]
+    if (webserver.app.components['WorkerWatcher']) {
+        return [
+            {
+                path: '',
+                method: 'get',
+                requireAuth: true,
+                controller: getWorkerServices.bind(webserver)
+            }
+        ]
+    } else {
+        return [
+            {
+                path: '',
+                method: 'get',
+                requireAuth: true,
+                controller: getSaasServices
+            }
+        ]
+    }
 }

@@ -1,7 +1,6 @@
-const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:organizations:member')
-const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
+const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:services:services')
 
-async function getTranscriptionServices(req, res, next) {
+async function getSaasServices(req, res, next) {
   try {
     const services_list = process.env.STT_SERVICES.split('~')
     const services = services_list.map(service => {
@@ -12,13 +11,28 @@ async function getTranscriptionServices(req, res, next) {
         host: service[2]
       }
     })
-
     res.status(200).send(services)
+
+  } catch (err) {
+    next(err)
+  }
+}
+
+async function getWorkerServices(req, res, next) {
+  try {
+    if (!this.app.components['WorkerWatcher']) {
+      res.status(404).send('WorkerWatcher component not properly loaded')
+
+    } else {
+      const services = await this.app.components['WorkerWatcher'].list()
+      res.status(200).send(services)
+    }
   } catch (err) {
     next(err)
   }
 }
 
 module.exports = {
-  getTranscriptionServices
+  getSaasServices,
+  getWorkerServices
 }

@@ -135,20 +135,35 @@ class ConversationNotFound extends Error {
   }
 }
 
-class ConversationLocked extends Error {
+/******************************
+ ******Conversation Turn*******
+ ******************************/
+
+const ExceptionTurnType = ExceptionType + 'Turn'
+
+class TurnIdRequire extends Error {
   constructor(message, err) {
     super()
-    this.name = 'ConversationLocked'
-    this.type = ExceptionType
-    this.status = '423'
+    this.name = 'TurnIdRequire'
+    this.type = ExceptionTurnType
+    this.status = '403'
     if (message) this.message = message
-    else this.message = 'Conversation is currently edited by an other user'
+    else this.message = 'Turn id param is require'
     if (err) this.err = err
   }
 }
 
-
-
+class TurnNotFound extends Error {
+  constructor(message, err) {
+    super()
+    this.name = 'TurnNotFound'
+    this.type = ExceptionTurnType
+    this.status = '404'
+    if (message) this.message = message
+    else this.message = 'Requested turn not found'
+    if (err) this.err = err
+  }
+}
 
 module.exports = {
   ConversationNoFileUploaded,
@@ -161,6 +176,7 @@ module.exports = {
   ConversationNotShared,
   ConversationIdRequire,
   ConversationError,
-  ConversationLocked,
-  ConversationNotFound
+  ConversationNotFound,
+  TurnIdRequire,
+  TurnNotFound
 }
