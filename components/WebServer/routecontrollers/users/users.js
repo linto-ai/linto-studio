@@ -3,7 +3,7 @@ const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 
-const StoreFile = require(`${process.cwd()}/components/WebServer/controllers/storeFile`)
+const { storeFile, defaultPicture, deleteFile, getStorageFolder } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 
 const {
     OrganizationConflict
@@ -116,8 +116,8 @@ async function createUser(req, res, next) {
         if (!user.email || !user.firstname || !user.lastname || !user.password) throw new UserUnsupportedMediaType()
 
         if (req.files && Object.keys(req.files).length !== 0 && req.files.file)
-            user.img = await StoreFile.storeFile(req.files.file, 'picture')
-        else user.img = StoreFile.defaultPicture()
+            user.img = await storeFile(req.files.file, 'picture')
+        else user.img = defaultPicture()
 
         const isUserFound = await userModel.getUserByEmail(user.email)
         if (isUserFound.length !== 0) throw new UserConflict()
@@ -183,7 +183,7 @@ async function updateUserPicture(req, res, next) {
         if (!req.files && Object.keys(req.files).length === 0 && !req.files.file) throw new UserUnsupportedMediaType()
         const payload = {
             _id: req.payload.data.userId,
-            img: await StoreFile.storeFile(req.files.file, 'picture')
+            img: await storeFile(req.files.file, 'picture')
         }
 
         const user = await userModel.getUserById(req.payload.data.userId)
@@ -192,8 +192,8 @@ async function updateUserPicture(req, res, next) {
         const result = await userModel.update(payload)
         if (result.matchedCount === 0) throw new UserError()
 
-        if (user[0].img !== StoreFile.defaultPicture())
-            await StoreFile.deleteFile(`${process.env.VOLUME_FOLDER}/${user[0].img}`)
+        if (user[0].img !== defaultPicture())
+            await deleteFile(`${getStorageFolder()}/${user[0].img}`)
 
 
         res.status(200).send({
