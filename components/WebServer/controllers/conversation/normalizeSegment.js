@@ -51,7 +51,8 @@ function* ruleSequenceGenerator(segments, lang) {
 }
 
 
-function segmentNormalizeText(transcription, lang) {
+function segmentNormalizeText(transcription, lang, filter) {
+
   if (transcription === undefined) throw new Error('Transcription was empty')
   else if (lang === undefined) throw new Error('Langue was empty')
 

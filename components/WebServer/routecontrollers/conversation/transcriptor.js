@@ -46,6 +46,7 @@ async function transcribe(isSingleFile, req, res, next) {
 
     req.body.organizationId = await checkOrganization(req.body.organizationId, userId)
     req.body.userId = userId
+    req.body.filter = {}
 
     let service = process.env.GATEWAY_SERVICES + '/' + req.body.endpoint
     let transcription_service = service
@@ -56,8 +57,8 @@ async function transcribe(isSingleFile, req, res, next) {
     isSingleFile ? transcription_service += '/transcribe' : transcription_service += '/transcribe-multi'
     req.body.file_data = form_data.file_data
 
-    const job = await axios.postFormData(transcription_service, options)
-    await createConversationAndJobInterval(service, job, req.body)
+    const processing_job = await axios.postFormData(transcription_service, options)
+    await createConversationAndJobInterval(service, processing_job, req.body)
 
     res.status(201).send({
         message: 'A conversation is currently being processed'
@@ -105,16 +106,24 @@ async function prepareRequest(form, body, isSingleFile) {
     return options
 }
 
-async function createConversationAndJobInterval(service, job, body) {
-    if (job && job.jobid) {
-        let conversation = initConversation(body, body.userId, job.jobid)
+async function createConversationAndJobInterval(service, processing_job, body) {
+    if (processing_job && processing_job.jobid) {
+        let job = {
+            type: 'transcription',
+            job_id: processing_job.jobid,
+            filter: {}
+        }
+        if (body.segmentSize)
+        job.filter.segmentSize = body.segmentSize
+
+        let conversation = initConversation(body, body.userId, job.job_id)
         conversation = await addFileMetadataToConversation(conversation, body.file_data)
 
         const result = await conversationModel.createConversation(conversation)
         if (result.insertedCount !== 1) throw new ConversationError()
 
         if (!conversation._id || !conversation?.jobs?.transcription?.job_id) throw new ConversationError()
-        createJobInterval(service, conversation.jobs.transcription.job_id, 'transcription', conversation)
+        createJobInterval(service, conversation, job)
 
         return conversation
     }
