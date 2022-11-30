@@ -104,7 +104,7 @@ async function addFileMetadataToConversation(conversation, file) {
     delete file_metadata.native
 
     conversation.metadata.audio = {
-        filename: file.originalFileName,
+        filename: file.filename,
         duration: file_metadata.format.duration,
         mimetype: 'audio/mpeg', // mp3
         filepath: file.filePath

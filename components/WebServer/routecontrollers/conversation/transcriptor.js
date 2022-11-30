@@ -2,8 +2,8 @@ const debug = require('debug')(`linto:conversation-manager:components:WebServer:
 const FormData = require('form-data');
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 const utf8 = require('utf8');
-const fs = require('fs')
 
+const { v4: uuidv4 } = require('uuid');
 
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
@@ -11,7 +11,7 @@ const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizat
 const { createJobInterval } = require(`${process.cwd()}/components/WebServer/controllers/jobsHandler`)
 
 const { addFileMetadataToConversation, initConversation } = require(`${process.cwd()}/components/WebServer/controllers/conversation/generator`)
-const { storeFile } = require(`${process.cwd()}/components/WebServer/controllers/storeFile`)
+const { storeFile } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 
 const CONVERSATION_RIGHT = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const {
@@ -23,76 +23,76 @@ const {
     OrganizationNotFound,
 } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
-async function transcriptor(req, res, next) {
+async function transcribeReq(req, res, next) {
     try {
-        const userId = req.payload.data.userId
-
         if (!req.files || Object.keys(req.files).length === 0) throw new ConversationNoFileUploaded()
-        if (!req.body.name) throw new ConversationMetadataRequire("name param is required")
-        if (!req.body.lang) throw new ConversationMetadataRequire("lang param is required")
-        if (!req.body.right) req.body.right = CONVERSATION_RIGHT.READ + CONVERSATION_RIGHT.COMMENT
-        if (!req.body.endpoint) throw new ConversationMetadataRequire("serviceEndpoint param is required")
 
-        const transcriptionService = process.env.GATEWAY_SERVICES + '/' + req.body.endpoint
-
-        if (req.body.organizationId) {
-            const organization = await organizationModel.getOrganizationById(req.body.organizationId)
-            if (organization.length !== 1) throw new OrganizationNotFound()
-        } else {
-            const organizations = await organizationModel.getPersonalOrganization(req.payload.data.userId)
-            if (!organizations[0]?._id) throw new OrganizationNotFound()
-            req.body.organizationId = organizations[0]._id
-        }
-
-        const conversation = await transcribeRequest(transcriptionService, req.body, req.files, userId)
-        if (!conversation._id || !conversation?.jobs?.transcription?.job_id) throw new ConversationError()
-
-        createJobInterval(transcriptionService, conversation.jobs.transcription.job_id, 'transcription', conversation)
-        res.status(201).send({
-            message: 'A conversation is currently being processed'
-        })
-    } catch (error) {
-        next(error)
+        if (Array.isArray(req.files.file))  // Multifile
+            await transcribe(false, req, res, next)
+        else // Single file
+            await transcribe(true, req, res, next)
+    } catch (err) {
+        next(err)
     }
 }
 
-async function transcribeRequest(transcriptionService, body, files, userId) {
-    let originalFilePath
-    try {
+async function transcribe(isSingleFile, req, res, next) {
+    const userId = req.payload.data.userId
+
+    if (!req.body.name) throw new ConversationMetadataRequire("name param is required")
+    if (!req.body.lang) throw new ConversationMetadataRequire("lang param is required")
+    if (!req.body.right) req.body.right = CONVERSATION_RIGHT.READ + CONVERSATION_RIGHT.COMMENT
+    if (!req.body.endpoint) throw new ConversationMetadataRequire("serviceEndpoint param is required")
+
+    req.body.organizationId = await checkOrganization(req.body.organizationId, userId)
+    req.body.userId = userId
+
+    let service = process.env.GATEWAY_SERVICES + '/' + req.body.endpoint
+    let transcription_service = service
+
+    const form_data = await prepareFileFormData(req.files)
+    const options = await prepareRequest(form_data.form, req.body, isSingleFile)
+
+    isSingleFile ? transcription_service += '/transcribe' : transcription_service += '/transcribe-multi'
+    req.body.file_data = form_data.file_data
+
+    const job = await axios.postFormData(transcription_service, options)
+    await createConversationAndJobInterval(service, job, req.body)
+
+    res.status(201).send({
+        message: 'A conversation is currently being processed'
+    })
+
+}
+
+async function prepareFileFormData(files) {
+    const form = new FormData()
+    let file_data = {}
+
+    if (Array.isArray(files.file)) {
+        for (const file of files.file) {
+            form.append('file', file.data, { filename: uuidv4() })
+        }
+        file_data = await storeFile(files, 'multi_audio')
+    } else {
         const fileData = {
             ...files.file,
             name: utf8.decode(files.file.name)
         }
-        let filePath = await storeFile(fileData, 'audio')
-        originalFilePath = filePath.originalFilePath
-        delete filePath.originalFilePath
-
-        const options = prepareRequest(originalFilePath, body.transcriptionConfig)
-        const job = await axios.postFormData(`${transcriptionService}/transcribe`, options)
-
-        if (job && job.jobid) {
-            let conversation = initConversation(body, userId, job.jobid)
-            conversation = await addFileMetadataToConversation(conversation, filePath)
-
-            const result = await conversationModel.createConversation(conversation)
-
-            if (result.insertedCount !== 1) throw new ConversationError()
-            fs.unlinkSync(originalFilePath)
-            return conversation
-        }
-        return { status: 'error' }
-    } catch (error) {
-        fs.unlinkSync(originalFilePath)
-        throw new ConversationError('Unable to transcribe the audio file', error)
+        file_data = await storeFile(fileData, 'audio')
+        form.append('file', files.file.data, { filename: uuidv4() })
+    }
+    return {
+        form: form,
+        file_data
     }
 }
 
-function prepareRequest(originalFilePath, transcriptionConfig) {
-    const form = new FormData()
-    form.append('file', fs.createReadStream(originalFilePath))
-
-    if (transcriptionConfig) form.append('transcriptionConfig', transcriptionConfig.toString())
-    else form.append('transcriptionConfig', '{}')
+async function prepareRequest(form, body, isSingleFile) {
+    if (isSingleFile && body.transcriptionConfig) form.append('transcriptionConfig', body.transcriptionConfig.toString())
+    else if (isSingleFile) form.append('transcriptionConfig', '{}')
+    else if (!isSingleFile && body.transcriptionConfig) form.append('multiTranscriptionConfig', body.transcriptionConfig.toString())
+    else if (!isSingleFile) form.append('multiTranscriptionConfig', '{}')
 
     let options = {
         headers: {
@@ -102,10 +102,38 @@ function prepareRequest(originalFilePath, transcriptionConfig) {
         formData: form,
         encoding: null
     }
-
     return options
 }
 
-module.exports = {
-    transcriptor
+async function createConversationAndJobInterval(service, job, body) {
+    if (job && job.jobid) {
+        let conversation = initConversation(body, body.userId, job.jobid)
+        conversation = await addFileMetadataToConversation(conversation, body.file_data)
+
+        const result = await conversationModel.createConversation(conversation)
+        if (result.insertedCount !== 1) throw new ConversationError()
+
+        if (!conversation._id || !conversation?.jobs?.transcription?.job_id) throw new ConversationError()
+        createJobInterval(service, conversation.jobs.transcription.job_id, 'transcription', conversation)
+
+        return conversation
+    }
 }
+
+async function checkOrganization(organizationId, userId) {
+    if (organizationId) {
+        const organization = await organizationModel.getOrganizationById(organizationId)
+        if (organization.length === 1) return organizationId
+    } else {
+        const organizations = await organizationModel.getPersonalOrganization(userId)
+        if (organizations[0]?._id) return organizations[0]._id
+    }
+    throw new OrganizationNotFound()
+}
+
+
+module.exports = {
+    transcribeReq
+}
+
+
