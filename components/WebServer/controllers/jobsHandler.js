@@ -65,12 +65,12 @@ async function createJobInterval(host, conversation, processing_job) {
             let job_status = {
                 job_id: processing_job.job_id,
                 state: 'error',
-                err: err.message
+                err: err.response.data
             }
 
             updateConversation(conversation, processing_job, job_status)
             clearInterval(interval)
-            debug('Jobs error', err)
+            debug('Jobs error', err.response.data)
         }
     }, DEFAULT_INTERVAL_TIMER)
 }
