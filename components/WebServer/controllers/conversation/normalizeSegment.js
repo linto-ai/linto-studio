@@ -24,25 +24,27 @@ function* ruleSequenceGenerator(segments, lang) {
         lowercase: segments.segment_array[i].toLowerCase()
       }
 
-      let seg_words = rules.executeLangRule(lang, segment_text, segments.raw_words[j - 1], loop_data)
+      if (segments.raw_words[j - 1] !== undefined) {
+        let seg_words = rules.executeLangRule(lang, segment_text, segments.raw_words[j - 1], loop_data)
 
-      if (seg_words.skip_words) {
-        word_skip_count += seg_words.skip_words
-        delete seg_words.skip_words
-      }
-
-      if (Array.isArray(seg_words)) {
-        i = seg_words[0].go_to_segment
-        word_skip_count += seg_words[0].skip_words
-
-        for (let word of seg_words) {
-          delete word.go_to_segment
-          delete word.skip_words
-
-          yield word
+        if (seg_words?.skip_words) {
+          word_skip_count += seg_words.skip_words
+          delete seg_words.skip_words
         }
-      } else {
-        yield seg_words
+
+        if (Array.isArray(seg_words)) {
+          i = seg_words[0].go_to_segment
+          word_skip_count += seg_words[0].skip_words
+
+          for (let word of seg_words) {
+            delete word.go_to_segment
+            delete word.skip_words
+
+            yield word
+          }
+        } else {
+          yield seg_words
+        }
       }
       i++
     }
