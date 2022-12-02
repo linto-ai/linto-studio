@@ -8,7 +8,7 @@ function executeFilterRule(segments, filter) {
   let segment_filtered = []
 
   try {
-    if (filter.segmentWordSize) {
+    if (filter.segmentWordResize) {
       segment_filtered = segmentWordResize(segments, filter.segmentWordSize)
     }
     if (filter.segmentCharResize) {

@@ -5,27 +5,35 @@ module.exports = function (segments, segmentCharResize) {
   if (segments && segments.length > 0) {
     for (let i = 0; i < segments.length; i++) {
       const segment_to_splice = Math.ceil(segments[i].segment.length / segmentCharResize)
-      let last_word_split = 0
+      let last_word_split = -1
+      let last_word_added = false
 
       if (segment_to_splice > 1) {
         for (let j = 0; j < segment_to_splice; j++) {
+          if (last_word_added)
+            break
+
           let new_words = []
           let current_segment_size = 0
           for (let k = last_word_split + 1; k < segments[i].words.length; k++) {
             if (current_segment_size <= segmentCharResize || current_segment_size === 0) {
               new_words.push(segments[i].words[k])
               current_segment_size += segments[i].words[k].word.length
-
               last_word_split = k
+
+              if (k === segments[i].words.length - 1)
+                last_word_added = true
+
             }
           }
+
           if (new_words.length > 0) {
             const last_end_word = new_words[new_words.length - 1].end
             const first_start_word = new_words[0].start
 
             let new_raw_words = segments[i].raw_words.filter(word => word.start >= first_start_word && word.end <= last_end_word)
 
-            if (j === segment_to_splice - 1) {
+            if (last_word_added) {
               if (new_raw_words[new_raw_words.length - 1].end !== segments[i].raw_words[segments[i].raw_words.length - 1].end) {
                 let last_missed_words = segments[i].raw_words.filter(word => word.start >= last_end_word)
                 new_raw_words.push(...last_missed_words)
