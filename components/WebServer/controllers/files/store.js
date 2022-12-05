@@ -24,12 +24,12 @@ async function storeFile(files, type = 'audio') {
         } else if (type === 'multi_audio') {
             let tmp_stored_file = []
 
-            const store_path = `${getStorageFolder()}/${getAudioFolder()}/${fileName}`
-            const audio_merged = `${store_path}.mp3`
+            const store_path = `${getStorageFolder()}/${getAudioFolder()}`
+            const audio_merged = `${store_path}/${fileName}.mp3`
             const audio_merged_channel = `${store_path}_multiple_chanel.mp3`
 
             files.file.map(file => {
-                const filePath = `${store_path}_tmp${path.extname(file.name)}`
+                const filePath = `${store_path}/${uuidv4()}_tmp${path.extname(file.name)}`
                 fs.writeFileSync(filePath, file.data)
                 tmp_stored_file.push(filePath)
             })
