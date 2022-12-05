@@ -10,10 +10,7 @@ DB_PASS=example
 DB_NAME=conversations
 
 # STT Config
-STT_SERVICES=french-service-name,fr-FR,endpoint~english-service-name,en-US,endpoint
-STT_REQUIRE_AUTH=false
-STT_USER=stt_auth
-STT_PASSWORD=stt_password
+GATEWAY_SERVICES=https://alpha.api.linto.ai
 
 # NLP Service
 NLP_SERVICES=<nlp_service_host>

@@ -14,11 +14,16 @@ class Container {
 
         this.type = type
         this.name = containerName
+        this.service_name = containerName
 
         this.id = container.Id
         this.image = container.Config.Image
         this.host = container.Config.Labels['com.docker.compose.service']
-
+        if(type === Type.STT) {
+          this.endpoints = [{
+            endpoint : container.Config.Labels['com.docker.compose.service']
+          }]
+        }
         container.Config.Env.map(env => {
           if (env.includes('DESC')) {
             this.desc = env.split('=')[1]
@@ -40,7 +45,6 @@ class Container {
     if (reduce) {
       delete container.enabled
       delete container.id
-      delete container.type
       delete container.image
     }
 

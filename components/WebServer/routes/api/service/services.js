@@ -22,6 +22,12 @@ module.exports = (webserver) => {
                 method: 'get',
                 requireAuth: true,
                 controller: getSaasServices
+            },
+            {
+                path: '/:scope',
+                method: 'get',
+                requireAuth: true,
+                controller: getSaasServices
             }
         ]
     }

@@ -1,7 +1,5 @@
 const debug = require('debug')('linto:conversation-manager:router:api:file:files')
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
-const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
-
 
 module.exports = (webserver) => {
     return [{

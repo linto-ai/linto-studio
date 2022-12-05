@@ -18,14 +18,6 @@ const { // Create conversation based on file
 
 module.exports = (webserver) => {
     return [
-        // Create a conversation (upload 1 file)
-        {
-            path: '/create',
-            method: 'post',
-            requireAuth: true,
-            controller: transcriptor
-        },
-
         {
             path: '/search',
             method: 'post',
