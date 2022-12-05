@@ -32,7 +32,7 @@ function initConversation(metadata, userId, job_id) {
         text: [],
         metadata: {
             transcription: {
-                ...metadata.lang,
+                lang : metadata.lang,
                 transcriptionConfig: transcriptionConfig
             },
             audio: {},
