@@ -1,63 +1,83 @@
 const debug = require('debug')('linto:components:WebServer:controller:filterRules:segmentCharResize')
 
+
+// "segment_1" : "J'enregistre un nouvel agneau, 10508, et je parle avec la suite du segment 5303, et je continue à parler. Je",
+// "segment_2" : "Commence, un dernier serment, avec 10808, et je vais bien",
 module.exports = function (segments, segmentCharResize) {
+  if (!segments || segments.length === 0) return segments
+
   let segment_resized = []
-  if (segments && segments.length > 0) {
-    for (let i = 0; i < segments.length; i++) {
-      const segment_to_splice = Math.ceil(segments[i].segment.length / segmentCharResize)
-      let last_word_split = -1
-      let last_word_added = false
+  for (let segment of segments) {
+    const segment_to_splice = Math.ceil(segment.segment.length / segmentCharResize)
+    let last_word_added = -1
+    let is_last_word_added = false
 
-      if (segment_to_splice > 1) {
-        for (let j = 0; j < segment_to_splice; j++) {
-          if (last_word_added)
-            break
+    if (segment_to_splice <= 0) segment_resized.push(segment) // No need to resize
+    else {
+      for (let j = 0; j < segment_to_splice; j++) {
+        if (is_last_word_added) break
 
-          let new_words = []
-          let current_segment_size = 0
-          for (let k = last_word_split + 1; k < segments[i].words.length; k++) {
-            if (current_segment_size <= segmentCharResize || current_segment_size === 0) {
-              new_words.push(segments[i].words[k])
-              current_segment_size += segments[i].words[k].word.length
-              last_word_split = k
+        let words = []
+        let segment_size = 0
+        for (let k = last_word_added + 1; k < segment.words.length; k++) {
+          if (segment_size <= segmentCharResize || segment_size === 0) {
+            last_word_added = k
 
-              if (k === segments[i].words.length - 1)
-                last_word_added = true
+            if (last_word_added === segment.words.length - 1)
+              is_last_word_added = true
 
-            }
-          }
-
-          if (new_words.length > 0) {
-            const last_end_word = new_words[new_words.length - 1].end
-            const first_start_word = new_words[0].start
-
-            let new_raw_words = segments[i].raw_words.filter(word => word.start >= first_start_word && word.end <= last_end_word)
-
-            if (last_word_added) {
-              if (new_raw_words[new_raw_words.length - 1].end !== segments[i].raw_words[segments[i].raw_words.length - 1].end) {
-                let last_missed_words = segments[i].raw_words.filter(word => word.start >= last_end_word)
-                new_raw_words.push(...last_missed_words)
-              }
-            }
-
-            let new_segment = {
-              ...segments[i],
-              words: new_words,
-              segment: new_words.map(word => word.word).join(' '),
-              raw_segment: new_raw_words.map(word => word.word).join(' '),
-              start: first_start_word,
-              end: last_end_word,
-              duration: last_end_word - first_start_word
-            }
-            delete new_segment.raw_words
-            segment_resized.push(new_segment)
-          }
+            words.push(segment.words[k])
+            segment_size += segment.words[k].word.length
+          } else break
         }
-      } else {
-        segment_resized.push(segments[i])
+
+        // check if few x words contains some punctuation
+        let extra_words_check = Math.ceil(segmentCharResize * 0.2) + last_word_added
+        debug(extra_words_check)
+        if (!is_last_word_added) {
+          if (extra_words_check > segment.words.length)
+            extra_words_check = segment.words.length
+
+          let tmp_extra_words = []
+          let add_extra = false
+          for (let k = last_word_added + 1; k < extra_words_check; k++) {
+            tmp_extra_words.push(segment.words[k])
+            debug(segment.words[k].word, /[.,!?;:]$/.test(segment.words[k].word))
+            if (/[.,!?;:]$/.test(segment.words[k].word)) {
+              debug('ADDED AN EXTRA WORD')
+              add_extra = true
+              last_word_added = k
+              break
+            }
+          }
+          // debug(tmp_extra_words)
+          if (add_extra) words.push(...tmp_extra_words)
+        }
+
+
+
+        const first_start_word = words[0].start
+        const last_end_word = words[words.length - 1].end
+
+        let raw_words = segment.raw_words.filter(word => word.start >= first_start_word && word.end <= last_end_word)
+        if (is_last_word_added) { // if last segment words added, add all the remaining raw words
+          let missed_raw_words = segment.raw_words.filter(word => word.start >= last_end_word)
+          raw_words.push(...missed_raw_words)
+        }
+
+        let new_segment = {
+          ...segment,
+          words: words,
+          segment: words.map(word => word.word).join(' '),
+          raw_segment: raw_words.map(word => word.word).join(' '),
+          start: first_start_word,
+          end: last_end_word,
+          duration: last_end_word - first_start_word
+        }
+        delete new_segment.raw_words
+        segment_resized.push(new_segment)
       }
     }
-
-    return segment_resized
   }
+  return segment_resized
 }

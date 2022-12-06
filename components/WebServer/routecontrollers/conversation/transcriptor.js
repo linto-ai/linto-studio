@@ -113,8 +113,8 @@ async function createConversationAndJobInterval(service, processing_job, body) {
             job_id: processing_job.jobid,
             filter: {}
         }
-        if (body.segmentWordSize) job.filter.segmentWordResize = body.segmentWordSize
-        if (body.segmentCharResize) job.filter.segmentCharResize = body.segmentCharResize
+        if (body.segmentWordSize) job.filter.segmentWordSize = body.segmentWordSize
+        if (body.segmentCharSize) job.filter.segmentCharSize = body.segmentCharSize
 
         let conversation = initConversation(body, body.userId, job.job_id)
         conversation = await addFileMetadataToConversation(conversation, body.file_data)

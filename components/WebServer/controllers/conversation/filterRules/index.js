@@ -8,11 +8,11 @@ function executeFilterRule(segments, filter) {
   let segment_filtered = []
 
   try {
-    if (filter.segmentWordResize) {
+    if (filter.segmentWordSize) {
       segment_filtered = segmentWordResize(segments, filter.segmentWordSize)
     }
-    if (filter.segmentCharResize) {
-      segment_filtered = segmentCharResize(segments, filter.segmentCharResize)
+    if (filter.segmentCharSize) {
+      segment_filtered = segmentCharResize(segments, filter.segmentCharSize)
     }
 
     return segment_filtered
