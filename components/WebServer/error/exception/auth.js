@@ -68,6 +68,17 @@ class MalformedToken extends Error {
     }
 }
 
+class ExpiredLink extends Error {
+    constructor(message, err) {
+        super()
+        this.name = 'ExpiredLink'
+        this.type = ExceptionType
+        this.status = 401
+        if (message) this.message = message
+        else this.message = 'Link is expired'
+        if (err) this.err = err
+    }
+}
 
 module.exports = {
     //Auth Exception
@@ -77,4 +88,5 @@ module.exports = {
     UserNotFound,
     //Passport Exception
     MalformedToken,
+    ExpiredLink
 }

@@ -15,6 +15,8 @@ const {
     UserNotFound,
     UserUnsupportedMediaType,
 } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
+const e = require('cors')
+const moment = require('moment')
 
 
 async function listUser(req, res, next) {
@@ -250,7 +252,6 @@ async function logout(req, res, next) {
     }
 }
 
-
 async function deleteUser(req, res, next) {
     try {
         const userId = req.payload.data.userId
@@ -297,37 +298,33 @@ async function deleteUser(req, res, next) {
 
 async function recoverPassword(req, res, next) {
   try {
-    console.log('PASSE PAR API', req.body)
     if (!req.body.email) throw new UserUnsupportedMediaType()
     const isUserFound = await userModel.getUserByEmail(req.body.email)
-    console.log('User Found: ', isUserFound)
     if(isUserFound.length === 0) throw new UserError('Email address was not found, please create an account')
 
     const generateResetId = await userModel.setUserResetLink(req.body.email)
     if(generateResetId.modifiedCount === 0) throw ('Error on generating reset link')
 
     const getResetId = await userModel.getUserResetLink(req.body.email)
-    console.log('getResetId', getResetId)
+    
     if(getResetId.length > 0) {
-      console.log('Send Mail ?')
       let sendmail = await sendMail({
         email: req.body.email,
         resetId: getResetId[0].resetId,
         type:"send_reset_link",
-        subjet: "Demande de mot de passe"
-  
+        subject: "Demande de mot de passe"
       })  
-      console.log('sendmail', sendmail)
-    }
-
-    res.status(200).send({
-      test: 'test'
-    })
+      if(sendmail === 'mailSend') {
+        res.status(200).send({
+          status: 'success',
+          message: 'Une email avec un lien de connexion vien de vous être envoyé'
+        })
+      } else throw sendmail
+    } else throw new UserNotFound()
   } catch (error) {
     next(error)
   }
 }
-
 
 module.exports = {
     listUser,

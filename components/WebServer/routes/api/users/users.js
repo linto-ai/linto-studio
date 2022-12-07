@@ -8,7 +8,7 @@ const {
     updateUserPassword,
     updateUserPicture,
     deleteUser,
-    recoverPassword
+    recoverPassword,
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/users/users.js`)
 
 const auth_middleware = require(`${process.cwd()}/components/WebServer/config/passport/local/middleware`)

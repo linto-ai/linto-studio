@@ -21,6 +21,10 @@ module.exports = (webServer) => {
             method: 'post',
             requireAuth: false,
             controller: [
+              (req,res,next)=> {
+                console.log('API Reset', req.params, req.body)
+                next()
+              },
                 auth_middleware.authenticate_reset,
                 (req, res, next) => {
                     res.status(202).json(req.user)
