@@ -2,7 +2,7 @@ const debug = require('debug')('linto:conversation-manager:components:WebServer:
 const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
-
+const { sendMail } = require(`${process.cwd()}/lib/nodemailer`)
 const { storeFile, defaultPicture, deleteFile, getStorageFolder } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 
 const {
@@ -15,6 +15,7 @@ const {
     UserNotFound,
     UserUnsupportedMediaType,
 } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
+
 
 async function listUser(req, res, next) {
     try {
@@ -252,7 +253,6 @@ async function logout(req, res, next) {
 
 async function deleteUser(req, res, next) {
     try {
-
         const userId = req.payload.data.userId
 
         // Remove user from organizations
@@ -295,6 +295,40 @@ async function deleteUser(req, res, next) {
     }
 }
 
+async function recoverPassword(req, res, next) {
+  try {
+    console.log('PASSE PAR API', req.body)
+    if (!req.body.email) throw new UserUnsupportedMediaType()
+    const isUserFound = await userModel.getUserByEmail(req.body.email)
+    console.log('User Found: ', isUserFound)
+    if(isUserFound.length === 0) throw new UserError('Email address was not found, please create an account')
+
+    const generateResetId = await userModel.setUserResetLink(req.body.email)
+    if(generateResetId.modifiedCount === 0) throw ('Error on generating reset link')
+
+    const getResetId = await userModel.getUserResetLink(req.body.email)
+    console.log('getResetId', getResetId)
+    if(getResetId.length > 0) {
+      console.log('Send Mail ?')
+      let sendmail = await sendMail({
+        email: req.body.email,
+        resetId: getResetId[0].resetId,
+        type:"send_reset_link",
+        subjet: "Demande de mot de passe"
+  
+      })  
+      console.log('sendmail', sendmail)
+    }
+
+    res.status(200).send({
+      test: 'test'
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+
 module.exports = {
     listUser,
     searchUser,
@@ -304,5 +338,6 @@ module.exports = {
     logout,
     updateUser,
     updateUserPassword,
-    updateUserPicture
+    updateUserPicture,
+    recoverPassword
 }
