@@ -1,0 +1,181 @@
+{
+  "/api/users/": {
+    "post": {
+      "tags": [
+        "users"
+      ],
+      "summary": "Adds a new user",
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "firstname": {
+                  "type": "string"
+                },
+                "lastname": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "email",
+                "password",
+                "firstname",
+                "lastname"
+              ]
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "OK"
+        }
+      }
+    },
+    "put": {
+      "tags": [
+        "users"
+      ],
+      "summary": "Update an user",
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "firstname": {
+                  "type": "string"
+                },
+                "lastname": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK"
+        }
+      }
+    },
+    "get": {
+      "tags": [
+        "users"
+      ],
+      "summary": "List all user",
+      "responses": {
+        "200": {
+          "description": "OK"
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "users"
+      ],
+      "summary": "Delete user",
+      "responses": {
+        "200": {
+          "description": "OK"
+        }
+      }
+    }
+  },
+  "/api/users/password": {
+    "put": {
+      "tags": [
+        "users"
+      ],
+      "summary": "Update user passwrd",
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "newPassword": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "newPassword"
+              ]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK"
+        }
+      }
+    }
+  },
+  "/api/users/picture": {
+    "put": {
+      "tags": [
+        "users"
+      ],
+      "summary": "Update user profile picture",
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "file": {
+                  "type": "file"
+                }
+              },
+              "required": [
+                "file"
+              ]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK"
+        }
+      }
+    }
+  },
+  "/api/users/{userId}/": {
+    "get": {
+      "tags": [
+        "users"
+      ],
+      "summary": "Get an user information",
+      "parameters": [{
+        "in": "path",
+        "name": "userId",
+        "type": "string",
+        "format": "uuid",
+        "required": true,
+        "description": "uuid string identifier for an user"
+      }],
+      "responses": {
+        "200": {
+          "description": "OK"
+        }
+      }
+    }
+  }
+}

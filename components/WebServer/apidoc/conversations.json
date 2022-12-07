@@ -1,0 +1,209 @@
+{
+
+  "/api/conversations/create/": {
+    "post": {
+      "tags": [
+        "conversations"
+      ],
+      "summary": "Create conversation",
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "file": {
+                  "type": "file"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "organizationId": {
+                  "type": "uiid"
+                },
+                "organizationRole": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "file",
+                "name"
+              ]
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "OK"
+        }
+      }
+    }
+  },
+  "/api/conversations/list/": {
+    "get": {
+      "tags": [
+        "conversations"
+      ],
+      "summary": "List you'r user conversation",
+      "responses": {
+        "200": {
+          "description": "OK"
+        }
+      }
+    }
+  },
+  "/api/conversations/{conversationId}/": {
+    "get": {
+      "tags": [
+        "conversations"
+      ],
+      "summary": "Get one conversation",
+      "parameters": [{
+        "in": "path",
+        "name": "conversationId",
+        "type": "string",
+        "format": "uuid",
+        "required": true,
+        "description": "uuid string identifier for an conversation"
+      }],
+      "responses": {
+        "200": {
+          "description": "OK"
+        }
+      }
+    },
+    "patch": {
+      "tags": [
+        "conversations"
+      ],
+      "summary": "Update one conversation",
+      "parameters": [{
+        "in": "path",
+        "name": "conversationId",
+        "type": "string",
+        "format": "uuid",
+        "required": true,
+        "description": "uuid string identifier for an conversation"
+      }],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK"
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "conversations"
+      ],
+      "summary": "Delete an conversation",
+      "parameters": [{
+        "in": "path",
+        "name": "conversationId",
+        "type": "string",
+        "format": "uuid",
+        "required": true,
+        "description": "uuid string identifier for an conversationId"
+      }],
+      "responses": {
+        "200": {
+          "description": "OK"
+        }
+      }
+    }
+  },
+  "/api/conversations/{conversationId}/user/{userId}": {
+    "patch": {
+      "tags": [
+        "conversations"
+      ],
+      "summary": "Add an user right to the conversation",
+      "parameters": [{
+          "in": "path",
+          "name": "conversationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an conversation"
+        },
+        {
+          "in": "path",
+          "name": "userId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an user"
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "right": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK"
+        }
+      }
+    }
+  },
+  "/api/conversations/search/text": {
+    "post": {
+      "tags": [
+        "conversations"
+      ],
+      "summary": "Get conversation containing specific text",
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "text"
+              ]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK"
+        }
+      }
+    }
+  }
+}

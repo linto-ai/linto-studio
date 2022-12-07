@@ -1,0 +1,295 @@
+{
+  "/api/organizations/": {
+    "post": {
+      "tags": [
+        "organizations"
+      ],
+      "summary": "Create an organization",
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "type"
+              ]
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "OK"
+        }
+      }
+    },
+    "get": {
+      "tags": [
+        "organizations"
+      ],
+      "summary": "List all public organization",
+      "responses": {
+        "200": {
+          "description": "OK"
+        }
+      }
+    }
+  },
+  "/api/organizations/user/": {
+    "get": {
+      "tags": [
+        "organizations members"
+      ],
+      "summary": "List self organization",
+      "responses": {
+        "200": {
+          "description": "OK"
+        }
+      }
+    }
+  },
+  "/api/organizations/user/{organizationId}/": {
+    "patch": {
+      "tags": [
+        "organizations members"
+      ],
+      "summary": "Update self visibility from an organization",
+      "parameters": [{
+        "in": "path",
+        "name": "organizationId",
+        "type": "string",
+        "format": "uuid",
+        "required": true,
+        "description": "uuid string identifier for an organization"
+      }],
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "visibility": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "OK"
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "organizations members"
+      ],
+      "summary": "Remove self from an organization",
+      "parameters": [{
+        "in": "path",
+        "name": "organizationId",
+        "type": "string",
+        "format": "uuid",
+        "required": true,
+        "description": "uuid string identifier for an organization"
+      }],
+      "responses": {
+        "200": {
+          "description": "OK"
+        }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/user": {
+    "post": {
+      "tags": [
+        "organizations maintainer"
+      ],
+      "summary": "Add an user into the organization",
+      "parameters": [{
+        "in": "path",
+        "name": "organizationId",
+        "type": "string",
+        "format": "uuid",
+        "required": true,
+        "description": "uuid string identifier for an organization"
+      }],
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "email",
+                "role"
+              ]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK"
+        }
+      }
+    },
+    "patch": {
+      "tags": [
+        "organizations maintainer"
+      ],
+      "summary": "Update an user role from organization",
+      "parameters": [{
+        "in": "path",
+        "name": "organizationId",
+        "type": "string",
+        "format": "uuid",
+        "required": true,
+        "description": "uuid string identifier for an organization"
+      }],
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "userId": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "userId",
+                "role"
+              ]
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "OK"
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "organizations maintainer"
+      ],
+      "summary": "Remove an user from organization",
+      "parameters": [{
+        "in": "path",
+        "name": "organizationId",
+        "type": "string",
+        "format": "uuid",
+        "required": true,
+        "description": "uuid string identifier for an organization"
+      }],
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "userId": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "userId"
+              ]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK"
+        }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/": {
+    "patch": {
+      "tags": [
+        "organizations admin"
+      ],
+      "summary": "Update an organization",
+      "parameters": [{
+        "in": "path",
+        "name": "organizationId",
+        "type": "string",
+        "format": "uuid",
+        "required": true,
+        "description": "uuid string identifier for an organization"
+      }],
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "token": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "OK"
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "organizations admin"
+      ],
+      "summary": "Remove an organization",
+      "parameters": [{
+        "in": "path",
+        "name": "organizationId",
+        "type": "string",
+        "format": "uuid",
+        "required": true,
+        "description": "uuid string identifier for an organization"
+      }],
+      "responses": {
+        "200": {
+          "description": "OK"
+        }
+      }
+    }
+  }
+}

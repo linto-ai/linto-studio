@@ -7,12 +7,17 @@ const passport = require('passport')
 const bodyParser = require('body-parser')
 const WebServerErrorHandler = require('./error/handler')
 
+const swaggerUi = require('swagger-ui-express')
+const swaggerJsdoc = require("swagger-jsdoc")
+
+let swaggerDocument = require('./apidoc/swagger.json')
+
 const CORS = require('cors')
 let corsOptions = {}
 if (process.env.CORS_ENABLED === 'true' && process.env.CORS_API_WHITELIST.length > 0) {
     whitelistDomains = process.env.CORS_API_WHITELIST.split(',')
     corsOptions = {
-        origin: function(origin, callback) {
+        origin: function (origin, callback) {
             if (!origin || whitelistDomains.indexOf(origin) !== -1 || origin === 'undefined') {
                 callback(null, true)
             } else {
@@ -60,7 +65,17 @@ class WebServer extends Component {
         require('./routes/router.js')(this) // Loads all defined routes
         WebServerErrorHandler.init(this) // Manage error from controllers
 
-        this.express.use('/', express.static(path.resolve(__dirname, './public'))) // Attaches ./public folder to / route
+        if(!process.env.WEBSERVER_HTTP_HOST)
+            process.env.WEBSERVER_HTTP_HOST = "localhost"
+        swaggerDocument.definition.host = process.env.WEBSERVER_HTTP_HOST + ":" + process.env.WEBSERVER_HTTP_PORT
+        swaggerDocument.definition.paths = require('./apidoc/index.js')
+        swaggerDocument.apis = ["./apidoc/"]
+
+        this.express.use(
+            "/apidoc",
+            swaggerUi.serve,
+            swaggerUi.setup(swaggerJsdoc(swaggerDocument))
+        );
 
         return this.init()
     }
