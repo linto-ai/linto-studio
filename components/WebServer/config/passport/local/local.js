@@ -42,6 +42,38 @@ function generateUserToken(email, password, done) {
     }).catch(done)
 }
 
+const STRATEGY_RESET_PSW = new LocalStrategy({
+    usernameField: 'email',
+    passwordField: 'resetId',
+}, (email, resetId, done) => generateResetUserToken(email, resetId, done))
+passport.use('local_reset_psw', STRATEGY_RESET_PSW)
+
+function generateResetUserToken(email, resetId, done) {
+    UsersModel.getUserByEmailAndResetId(email,resetId).then(users => {
+        if (users.length === 1) user = users[0]
+        else if (users.length > 1) throw new MultipleUserFound()
+        else throw new UserNotFound()
+
+        if (!user) return done(new InvalidCredential())
+        let tokenData = { // Data stored in the token
+            salt: user.salt,
+            sessionId: user._id,
+            email: user.email,
+            userId: user._id
+        }
+
+        UsersModel.update({ _id: user._id, keyToken: tokenData.salt, resetId : null })
+            .then(user => {
+                if (!user) return done(new UnableToGenerateKeyToken())
+            }).catch(done)
+
+        return done(null, {
+            token: TokenGenerator(tokenData).token,
+        })
+    }).catch(done)
+}
+
+
 
 function validatePassword(password, user) {
     const hash = crypto.pbkdf2Sync(password, user.salt, 10000, 512, 'sha512').toString('hex')
