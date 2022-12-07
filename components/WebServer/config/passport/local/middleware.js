@@ -29,6 +29,20 @@ module.exports = {
             }
         })(req, res, next)
     },
+    authenticate_reset: (req, res, next) => {
+        passport.authenticate('local_reset_psw', { session: false }, (err, user) => {
+            if (err) {
+                res.status(err.status).json({ error: err })
+            } else if (!user) throw new InvalidCredential()
+            else {
+                res.status(200).json({
+                    message: 'login success',
+                    token: user.token.auth_token,
+                    userId: user.token.session_id.toString()
+                })
+            }
+        })(req, res, next)
+    },
     isAuthenticate: [
         jwt({
             secret: generateSecretFromHeaders,
