@@ -50,7 +50,6 @@ const STRATEGY_RESET_PSW = new LocalStrategy({
 passport.use('local_reset_psw', STRATEGY_RESET_PSW)
 
 function generateResetUserToken(resetId, psw, done) {
-  console.log('je passe par la bravo !')
   UsersModel.getUserByResetId(resetId).then(users => {
       if (users.length === 1) user = users[0]
       else if (users.length > 1) throw new MultipleUserFound()

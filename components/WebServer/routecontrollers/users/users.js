@@ -15,9 +15,6 @@ const {
     UserNotFound,
     UserUnsupportedMediaType,
 } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
-const e = require('cors')
-const moment = require('moment')
-
 
 async function listUser(req, res, next) {
     try {
@@ -305,12 +302,12 @@ async function recoverPassword(req, res, next) {
     const generateResetId = await userModel.setUserResetLink(req.body.email)
     if(generateResetId.modifiedCount === 0) throw ('Error on generating reset link')
 
-    const getResetId = await userModel.getUserResetLink(req.body.email)
+    const user = await userModel.getUserByEmail(req.body.email)
     
-    if(getResetId.length > 0) {
+    if(user.length > 0) {
       let sendmail = await sendMail({
         email: req.body.email,
-        resetId: getResetId[0].resetId,
+        resetId: user[0].resetId,
         type:"send_reset_link",
         subject: "Demande de mot de passe"
       })  

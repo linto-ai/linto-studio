@@ -22,7 +22,6 @@ module.exports = (webServer) => {
             requireAuth: false,
             controller: [
               (req,res,next)=> {
-                console.log('API Reset', req.params, req.body)
                 next()
               },
                 auth_middleware.authenticate_reset,
