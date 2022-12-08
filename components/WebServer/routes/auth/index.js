@@ -21,9 +21,6 @@ module.exports = (webServer) => {
             method: 'post',
             requireAuth: false,
             controller: [
-              (req,res,next)=> {
-                next()
-              },
                 auth_middleware.authenticate_reset,
                 (req, res, next) => {
                     res.status(202).json(req.user)

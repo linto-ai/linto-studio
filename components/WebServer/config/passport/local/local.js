@@ -43,11 +43,11 @@ function generateUserToken(email, password, done) {
         })
     }).catch(done)
 }
-const STRATEGY_RESET_PSW = new LocalStrategy({
+const STRATEGY_MAGIC_LINK = new LocalStrategy({
   usernameField: 'resetId',
   passwordField: 'psw',
 }, (resetId, psw, done) => generateResetUserToken(resetId, psw, done))
-passport.use('local_reset_psw', STRATEGY_RESET_PSW)
+passport.use('local_magic_link', STRATEGY_MAGIC_LINK)
 
 function generateResetUserToken(resetId, psw, done) {
   UsersModel.getUserByResetId(resetId).then(users => {
