@@ -1,0 +1,34 @@
+{
+  "Unauthorized": {
+    "description": "Unauthorized",
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "example": "invalid signature"
+            }
+          }
+        }
+      }
+    }
+  },
+  "InternalServer": {
+    "description": "Internal Server Error",
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "example": "Server error"
+            }
+          }
+        }
+      }
+    }
+  }
+}

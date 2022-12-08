@@ -1,0 +1,28 @@
+{
+  "/api/services": {
+    "get": {
+      "tags": [
+        "services"
+      ],
+      "summary": "List running services",
+      "responses": {
+        "200": {
+          "description": "The list of services",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Services"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "500": {
+          "$ref": "#/components/responses/InternalServer"
+        }
+      }
+    }
+  }
+}

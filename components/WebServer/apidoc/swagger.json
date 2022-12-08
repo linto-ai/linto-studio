@@ -25,6 +25,9 @@
           "bearerFormat": "JWT"
         }
       }
-    }
+    },
+    "security": [{
+      "bearerAuth": []
+    }]
   }
 }

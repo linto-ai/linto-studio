@@ -69,6 +69,11 @@ class WebServer extends Component {
             process.env.WEBSERVER_HTTP_HOST = "localhost"
         swaggerDocument.definition.host = process.env.WEBSERVER_HTTP_HOST + ":" + process.env.WEBSERVER_HTTP_PORT
         swaggerDocument.definition.paths = require('./apidoc/index.js')
+        swaggerDocument.definition.components = {
+            ...swaggerDocument.definition.components,
+            ...require('./apidoc/components/index.js')
+        }
+
         swaggerDocument.apis = ["./apidoc/"]
 
         this.express.use(

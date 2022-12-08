@@ -1,0 +1,26 @@
+{
+  "Authenticate": {
+    "description": "OK",
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "example": "login success"
+            },
+            "token": {
+              "type": "string",
+              "example": "eyJhbGciOiJIUzI1N..."
+            },
+            "userId": {
+              "type": "string",
+              "example": "634e6ab183f5db343dfc40d2"
+            }
+          }
+        }
+      }
+    }
+  }
+}

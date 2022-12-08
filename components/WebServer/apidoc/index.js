@@ -1,7 +1,7 @@
 module.exports = {
-  ...require('./auth.json'),
-  ...require('./conversations.json'),
-  ...require('./organizations.json'),
-  ...require('./services.json'),
-  ...require('./users.json')
+  ...require('./api/auth.json'),
+  // ...require('./api/conversations.json'),
+  // ...require('./api/organizations.json'),
+  ...require('./api/services.json'),
+  // ...require('./api/users.json')
 }
