@@ -2,7 +2,7 @@ const debug = require('debug')('linto:conversation-manager:components:WebServer:
 const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
-
+const { sendMail } = require(`${process.cwd()}/lib/nodemailer`)
 const { storeFile, defaultPicture, deleteFile, getStorageFolder } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 
 const {
@@ -249,10 +249,8 @@ async function logout(req, res, next) {
     }
 }
 
-
 async function deleteUser(req, res, next) {
     try {
-
         const userId = req.payload.data.userId
 
         // Remove user from organizations
@@ -295,6 +293,37 @@ async function deleteUser(req, res, next) {
     }
 }
 
+async function recoverPassword(req, res, next) {
+  try {
+    if (!req.body.email) throw new UserUnsupportedMediaType()
+    const isUserFound = await userModel.getUserByEmail(req.body.email)
+    if(isUserFound.length === 0) throw new UserError('Email address was not found, please create an account')
+    const reqOrigin = req.headers.origin
+    const generateResetId = await userModel.setUserResetLink(req.body.email)
+    if(generateResetId.modifiedCount === 0) throw ('Error on generating reset link')
+
+    const user = await userModel.getUserByEmail(req.body.email)
+    
+    if(user.length > 0) {
+      let sendmail = await sendMail({
+        email: req.body.email,
+        resetId: user[0].resetId,
+        type:"send_reset_link",
+        subject: "Mot de passe oublié",
+        reqOrigin
+      })  
+      if(sendmail === 'mailSend') {
+        res.status(200).send({
+          status: 'success',
+          message: 'Une email avec un lien de connexion vient de vous être envoyé'
+        })
+      } else throw sendmail
+    } else throw new UserNotFound()
+  } catch (error) {
+    next(error)
+  }
+}
+
 module.exports = {
     listUser,
     searchUser,
@@ -304,5 +333,6 @@ module.exports = {
     logout,
     updateUser,
     updateUserPassword,
-    updateUserPicture
+    updateUserPicture,
+    recoverPassword
 }

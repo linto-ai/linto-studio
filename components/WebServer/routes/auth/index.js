@@ -17,7 +17,7 @@ module.exports = (webServer) => {
                 }
             ]
         },        {
-            path: '/login/reset',
+            path: '/login/magic-link',
             method: 'post',
             requireAuth: false,
             controller: [

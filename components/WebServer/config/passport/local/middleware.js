@@ -30,7 +30,7 @@ module.exports = {
         })(req, res, next)
     },
     authenticate_reset: (req, res, next) => {
-        passport.authenticate('local_reset_psw', { session: false }, (err, user) => {
+        passport.authenticate('local_magic_link', { session: false }, (err, user) => {
             if (err) {
                 res.status(err.status).json({ error: err })
             } else if (!user) throw new InvalidCredential()
