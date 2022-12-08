@@ -309,7 +309,7 @@ async function recoverPassword(req, res, next) {
         email: req.body.email,
         resetId: user[0].resetId,
         type:"send_reset_link",
-        subject: "Demande de mot de passe",
+        subject: "Mot de passe oublié",
         reqOrigin
       })  
       if(sendmail === 'mailSend') {
