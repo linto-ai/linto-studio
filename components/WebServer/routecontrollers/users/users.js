@@ -298,7 +298,7 @@ async function recoverPassword(req, res, next) {
     if (!req.body.email) throw new UserUnsupportedMediaType()
     const isUserFound = await userModel.getUserByEmail(req.body.email)
     if(isUserFound.length === 0) throw new UserError('Email address was not found, please create an account')
-
+    const reqOrigin = req.headers.origin
     const generateResetId = await userModel.setUserResetLink(req.body.email)
     if(generateResetId.modifiedCount === 0) throw ('Error on generating reset link')
 
@@ -309,12 +309,13 @@ async function recoverPassword(req, res, next) {
         email: req.body.email,
         resetId: user[0].resetId,
         type:"send_reset_link",
-        subject: "Demande de mot de passe"
+        subject: "Demande de mot de passe",
+        reqOrigin
       })  
       if(sendmail === 'mailSend') {
         res.status(200).send({
           status: 'success',
-          message: 'Une email avec un lien de connexion vien de vous être envoyé'
+          message: 'Une email avec un lien de connexion vient de vous être envoyé'
         })
       } else throw sendmail
     } else throw new UserNotFound()
