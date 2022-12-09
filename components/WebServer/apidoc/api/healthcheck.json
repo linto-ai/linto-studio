@@ -1,0 +1,29 @@
+{
+  "/healthcheck": {
+    "get": {
+      "tags": [
+        "healthcheck"
+      ],
+      "summary": "Healthcheck",
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "description": "Status of the service"
+                }
+              },
+              "example": {
+                "status": "OK"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
