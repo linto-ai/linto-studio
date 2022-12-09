@@ -48,6 +48,9 @@ async function listUser(req, res, next) {
 
 async function searchUser(req, res, next) {
     try {
+        if (!req.body.search)
+            throw new UserUnsupportedMediaType()
+
         let userId = req.payload.data.userId
         let userList = await userModel.getAllUsers()
         let allOrganizations = await organizationModel.getAllOrganizations()

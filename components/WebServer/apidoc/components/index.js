@@ -5,6 +5,8 @@ module.exports = {
   },
   schemas: {
     ...require('./schemas/service.json'),
-    ...require('./schemas/services.json')
+    ...require('./schemas/services.json'),
+    ...require('./schemas/user.json')
+
   }
 }

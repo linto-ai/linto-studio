@@ -4,7 +4,7 @@
       "tags": [
         "users"
       ],
-      "summary": "Adds a new user",
+      "summary": "Create a new user",
       "requestBody": {
         "content": {
           "multipart/form-data": {
@@ -36,7 +36,45 @@
       },
       "responses": {
         "201": {
-          "description": "OK"
+          "description": "Ok",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "User account created"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "409": {
+          "$ref": "#/components/responses/Conflict"
+        }
+      }
+    },
+    "get": {
+      "tags": [
+        "users"
+      ],
+      "summary": "List all visible user",
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -44,7 +82,7 @@
       "tags": [
         "users"
       ],
-      "summary": "Update an user",
+      "summary": "Update the current connected user",
       "requestBody": {
         "content": {
           "multipart/form-data": {
@@ -70,18 +108,26 @@
       },
       "responses": {
         "200": {
-          "description": "OK"
-        }
-      }
-    },
-    "get": {
-      "tags": [
-        "users"
-      ],
-      "summary": "List all user",
-      "responses": {
-        "200": {
-          "description": "OK"
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "User updated"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "415": {
+          "$ref": "#/components/responses/UnsupportedMediaType"
         }
       }
     },
@@ -89,10 +135,29 @@
       "tags": [
         "users"
       ],
-      "summary": "Delete user",
+      "summary": "Delete the current connected user",
       "responses": {
         "200": {
-          "description": "OK"
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "User deleted"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
         }
       }
     }
@@ -102,7 +167,7 @@
       "tags": [
         "users"
       ],
-      "summary": "Update user passwrd",
+      "summary": "Update the user passwrd",
       "requestBody": {
         "content": {
           "multipart/form-data": {
@@ -122,7 +187,23 @@
       },
       "responses": {
         "200": {
-          "description": "OK"
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "User password updated"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
         }
       }
     }
@@ -152,7 +233,73 @@
       },
       "responses": {
         "200": {
-          "description": "OK"
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "User picture has been updated"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    }
+  },
+  "/api/users/search/": {
+    "post": {
+      "tags": [
+        "users"
+      ],
+      "summary": "Search users information based on theire firstname, lastname or email",
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "search": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "search"
+              ]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "415": {
+          "$ref": "#/components/responses/UnsupportedMediaType"
         }
       }
     }
@@ -162,7 +309,7 @@
       "tags": [
         "users"
       ],
-      "summary": "Get an user information",
+      "summary": "Get an user information based on his uuid",
       "parameters": [{
         "in": "path",
         "name": "userId",
@@ -173,7 +320,21 @@
       }],
       "responses": {
         "200": {
-          "description": "OK"
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
         }
       }
     }

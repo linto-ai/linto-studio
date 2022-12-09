@@ -8,7 +8,55 @@
           "properties": {
             "message": {
               "type": "string",
-              "example": "invalid signature"
+              "example": "invalid signature || No authorization token was found"
+            }
+          }
+        }
+      }
+    }
+  },
+  "Conflict": {
+    "description": "User already exists",
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "example": "User already exists"
+            }
+          }
+        }
+      }
+    }
+  },
+  "UnsupportedMediaType": {
+    "description": "Unsupported Media Type",
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "example": "Parameter is not supported"
+            }
+          }
+        }
+      }
+    }
+  },
+  "NotFound": {
+    "description": "Not Found",
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "example": "Not Found"
             }
           }
         }
