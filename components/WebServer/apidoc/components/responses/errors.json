@@ -15,8 +15,8 @@
       }
     }
   },
-  "Conflict": {
-    "description": "User already exists",
+  "Forbidden": {
+    "description": "Forbidden",
     "content": {
       "application/json": {
         "schema": {
@@ -24,7 +24,23 @@
           "properties": {
             "message": {
               "type": "string",
-              "example": "User already exists"
+              "example": "This action cannot be done"
+            }
+          }
+        }
+      }
+    }
+  },
+  "Conflict": {
+    "description": "Resource already exists",
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "example": "Resource already exists"
             }
           }
         }

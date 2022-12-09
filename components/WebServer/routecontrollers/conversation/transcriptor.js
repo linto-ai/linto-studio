@@ -126,7 +126,7 @@ async function checkOrganization(organizationId, userId) {
         if (organization.length === 1) return organizationId
     } else {
         const organizations = await organizationModel.getPersonalOrganization(userId)
-        if (organizations[0]?._id) return organizations[0]._id
+        if (organizations[0]?._id) return organizations[0]._id.toString()
     }
     throw new OrganizationNotFound()
 }

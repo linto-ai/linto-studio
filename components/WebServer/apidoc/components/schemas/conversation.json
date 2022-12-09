@@ -1,0 +1,148 @@
+{
+  "Conversation": {
+    "type": "object",
+    "properties": {
+      "_id": {
+        "type": "string",
+        "description": "Conversation id"
+      },
+      "name": {
+        "type": "string",
+        "description": "Conversation name"
+      },
+      "description": {
+        "type": "string",
+        "description": "Conversation description"
+      },
+      "owner": {
+        "type": "string",
+        "description": "Conversation owner id"
+      },
+      "sharedWithUsers": {
+        "type": "array",
+        "description": "List of users id with whom the conversation is shared",
+        "items": {
+          "type": "string"
+        }
+      },
+      "organization": {
+        "type": "object",
+        "description": "Organization object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "Organization id"
+          },
+          "membersRight": {
+            "type": "integer",
+            "description": "Organization members right"
+          },
+          "customRights": {
+            "type": "array",
+            "description": "List of custom rights"
+          }
+        }
+      },
+      "metadata": {
+        "type": "object",
+        "description": "Conversation metadata",
+        "properties": {
+          "transcription": {
+            "type": "object",
+            "description": "Conversation transcription metadata"
+          },
+          "audio": {
+            "type": "object",
+            "description": "Conversation audio metadata"
+          },
+          "file": {
+            "type": "object",
+            "description": "Conversation file metadata"
+          }
+        }
+      },
+      "locale": {
+        "type": "string",
+        "description": "Conversation locale"
+      },
+      "jobs": {
+        "type": "object",
+        "description": "Conversation jobs",
+        "properties": {
+          "transcription": {
+            "type": "object",
+            "description": "Conversation transcription job",
+            "properties": {
+              "state": {
+                "type": "string"
+              },
+              "result_id": {
+                "type": "string"
+              },
+              "job_id": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "created": {
+        "type": "string",
+        "description": "Conversation creation date"
+      },
+      "last_update": {
+        "type": "string",
+        "description": "Conversation last update date"
+      }
+    },
+
+    "example": {
+      "_id": "639361665e930a69059ceca6",
+      "name": "conversation_name",
+      "description": "conversation_description",
+      "owner": "634eae867d29b677f13e7e6c",
+      "sharedWithUsers": [],
+      "organization": {
+        "organizationId": "634eae867d29b677f13e7e6d",
+        "membersRight": 2,
+        "customRights": []
+      },
+      "metadata": {
+        "transcription": {
+          "lang": "fr-FR",
+          "transcriptionConfig": {
+            "punctuationConfig": {
+              "enablePunctuation": true,
+              "serviceName": "nlp-french-punctuation-default"
+            },
+            "diarizationConfig": {
+              "enableDiarization": true,
+              "numberOfSpeaker": 2,
+              "maxNumberOfSpeaker": 2,
+              "serviceName": null
+            },
+            "enableNormalization": true
+          },
+          "confidence": 0.9799515813953488
+        },
+        "audio": {
+          "filename": "number_2.mp3",
+          "duration": 20.7,
+          "mimetype": "audio/mpeg",
+          "filepath": "audios/1cd7aed5-c00c-4e2e-9ea5-9b4de3add443.mp3"
+        },
+        "file": {}
+      },
+      "locale": "fr-FR",
+      "jobs": {
+        "transcription": {
+          "state": "done",
+          "result_id": "ed2141e4-b308-47df-994a-f975debe19a1",
+          "job_id": "d79ccb18-4b8d-4300-a719-c3d636f99cca"
+        }
+      },
+      "created": "2022-12-09T17:25:10+01:00",
+      "last_update": "2022-12-09T17:25:10+01:00"
+    }
+  }
+}

@@ -1,49 +1,4 @@
 {
-  "/api/organizations/": {
-    "post": {
-      "tags": [
-        "organizations"
-      ],
-      "summary": "Create an organization",
-      "requestBody": {
-        "content": {
-          "multipart/form-data": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string"
-                },
-                "type": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "name",
-                "type"
-              ]
-            }
-          }
-        }
-      },
-      "responses": {
-        "201": {
-          "description": "OK"
-        }
-      }
-    },
-    "get": {
-      "tags": [
-        "organizations"
-      ],
-      "summary": "List all public organization",
-      "responses": {
-        "200": {
-          "description": "OK"
-        }
-      }
-    }
-  },
   "/api/organizations/user/": {
     "get": {
       "tags": [
@@ -287,7 +242,20 @@
       }],
       "responses": {
         "200": {
-          "description": "OK"
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "userOrganizations": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/Conversation"
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
