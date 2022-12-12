@@ -4,7 +4,7 @@
       "tags": [
         "organizations"
       ],
-      "summary": "Create an organization",
+      "summary": "Create a new organization",
       "requestBody": {
         "content": {
           "multipart/form-data": {
@@ -69,7 +69,7 @@
       "tags": [
         "organizations"
       ],
-      "summary": "List user organizations where the user is a member",
+      "summary": "Get user organizations list where user is member (public and private)",
       "responses": {
         "200": {
           "description": "OK",

@@ -7,6 +7,8 @@ const {
   OrganizationError,
   OrganizationUnsupportedMediaType,
   OrganizationForbidden,
+  OrganizationNotFound,
+  OrganizationConflict
 } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
 const TYPES = organizationModel.getTypes()
@@ -25,7 +27,7 @@ async function addUserInOrganization(req, res, next) {
     const user = await userUtility.getUser(req.body.email)
 
     if (organization.users.filter(oUser => oUser.userId === user.userId).length !== 0)
-      throw new OrganizationError(req.body.email + ' is already in ' + organization.name)
+      throw new OrganizationConflict(req.body.email + ' is already in ' + organization.name)
 
     organization.users.push({
       userId: user.userId,
@@ -36,7 +38,7 @@ async function addUserInOrganization(req, res, next) {
     const result = await organizationModel.update(organization)
     if (result.matchedCount === 0) throw new OrganizationError()
 
-    res.status(200).send({
+    res.status(201).send({
       message: req.body.email + ' has been added to the organization'
     })
   } catch (err) {
@@ -88,7 +90,7 @@ async function deleteUserFromOrganization(req, res, next) {
     let organization = await orgaUtility.getOrganization(req.params.organizationId)
     let user = organization.users.filter(oUser => oUser.userId === req.body.userId)
 
-    if (user.length === 0) throw new OrganizationError('User is not in ' + organization.name)
+    if (user.length === 0) throw new OrganizationNotFound('User is not in ' + organization.name)
     if (!ROLES.hasRevokeRoleAccess(user[0].role, req.userRole)) throw new OrganizationForbidden()// Update role need to be lower or equal than my current role
 
     const data = orgaUtility.countAdmin(organization, req.body.userId)

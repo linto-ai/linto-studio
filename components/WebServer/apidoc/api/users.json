@@ -60,7 +60,7 @@
       "tags": [
         "users"
       ],
-      "summary": "List all visible user",
+      "summary": "Get all public users",
       "responses": {
         "200": {
           "description": "OK",
@@ -167,7 +167,7 @@
       "tags": [
         "users"
       ],
-      "summary": "Update the user passwrd",
+      "summary": "Update user password",
       "requestBody": {
         "content": {
           "multipart/form-data": {
@@ -213,7 +213,7 @@
       "tags": [
         "users"
       ],
-      "summary": "Update user profile picture",
+      "summary": "Update user picture",
       "requestBody": {
         "content": {
           "multipart/form-data": {
@@ -259,7 +259,7 @@
       "tags": [
         "users"
       ],
-      "summary": "Search users information based on theire firstname, lastname or email",
+      "summary": "Search users information based on their firstname, lastname or email",
       "requestBody": {
         "content": {
           "multipart/form-data": {
@@ -309,7 +309,7 @@
       "tags": [
         "users"
       ],
-      "summary": "Get an user information based on his uuid",
+      "summary": "Get user information based on their uuid",
       "parameters": [{
         "in": "path",
         "name": "userId",

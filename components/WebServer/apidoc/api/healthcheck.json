@@ -4,7 +4,7 @@
       "tags": [
         "healthcheck"
       ],
-      "summary": "Healthcheck",
+      "summary": "Check the health of the service",
       "responses": {
         "200": {
           "description": "OK",

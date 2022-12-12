@@ -5,6 +5,8 @@ module.exports = {
   ...require('./api/users.json'),
   ...require('./api/organizations/organizations.json'),
   ...require('./api/organizations/members.json'),
+  ...require('./api/organizations/maintainer.json'),
+  ...require('./api/organizations/admin.json'),
 
 
   // ...require('./api/conversations.json'),
