@@ -156,7 +156,7 @@
                 "type": "array",
                 "items": {
                   "type": "object",
-                  "$ref": "#/components/schemas/Conversation"
+                  "$ref": "#/components/schemas/ConversationList"
                 }
               }
             }

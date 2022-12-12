@@ -1,0 +1,37 @@
+{
+  "Text": {
+    "type": "object",
+    "properties": {
+      "speaker_id": {
+        "type": "string",
+        "description": "The speaker id"
+      },
+      "turn_id": {
+        "type": "string",
+        "description": "The turn id"
+      },
+      "raw_segment": {
+        "type": "string",
+        "description": "The raw segment"
+      },
+      "segment": {
+        "type": "string",
+        "description": "The segment"
+      },
+      "words": {
+        "type": "array",
+        "description": "The words",
+        "items": {
+          "$ref": "#/components/schemas/Words"
+        }
+      }
+    },
+    "example": {
+      "speaker_id": "60ac8c45-751e-4cf9-8617-833313dd2d12",
+      "turn_id": "06e34723-25ee-4dad-853a-d9ee39377e75",
+      "raw_segment": "bonjour je vais donner quelques chiffres hum deux cinq et je vais en donner encore d' autres huit douze un petit dernier dix mille",
+      "segment": "bonjour je vais donner quelques chiffres hum 2 5 et je vais en donner encore d'autres 8 12 un petit dernier 10000",
+      "words": []
+    }
+  }
+}

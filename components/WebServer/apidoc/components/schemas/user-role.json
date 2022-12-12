@@ -1,0 +1,44 @@
+{
+  "UserRole": {
+    "type": "object",
+    "properties": {
+      "_id": {
+        "type": "string",
+        "description": "User ID"
+      },
+      "email": {
+        "type": "string",
+        "description": "User email"
+      },
+      "firstname": {
+        "type": "string",
+        "description": "User first name"
+      },
+      "lastname": {
+        "type": "string",
+        "description": "User last name"
+      },
+      "img": {
+        "type": "string",
+        "description": "User picture"
+      },
+      "role": {
+        "type": "integer",
+        "description": "User role"
+      },
+      "right": {
+        "type": "string",
+        "description": "User right"
+      }
+    },
+    "example":       {
+      "_id": "6392f74a32d603288c910185",
+      "email": "user@email.com",
+      "firstname": "first_name",
+      "lastname": "last_name",
+      "img": "user_pictures",
+      "role": 0,
+      "right": "3"
+    }
+  }
+}

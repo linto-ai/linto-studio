@@ -1,0 +1,29 @@
+{
+  "Speakers": {
+    "type": "object",
+    "properties": {
+      "speaker_id": {
+        "type": "string",
+        "description": "speaker id"
+      },
+      "speaker_name": {
+        "type": "string",
+        "description": "speaker name"
+      },
+      "stime": {
+        "type": "number",
+        "description": "start time of the first speak time"
+      },
+      "etime": {
+        "type": "number",
+        "description": "end of the first speak time"
+      }
+    },
+    "example": {
+      "speaker_id": "60ac8c45-751e-4cf9-8617-833313dd2d12",
+      "speaker_name": "speaker",
+      "stime": 0,
+      "etime": 16.23
+    }
+  }
+}

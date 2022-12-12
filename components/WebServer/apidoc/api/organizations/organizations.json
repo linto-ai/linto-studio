@@ -82,7 +82,7 @@
                     "type": "array",
                     "items": {
                       "type": "object",
-                      "$ref": "#/components/schemas/OrganizationReduce"
+                      "$ref": "#/components/schemas/OrganizationUsers"
                     }
                   }
                 }
@@ -131,7 +131,7 @@
                     "type": "array",
                     "items": {
                       "type": "object",
-                      "$ref": "#/components/schemas/OrganizationReduce"
+                      "$ref": "#/components/schemas/Organization"
                     }
                   }
                 }

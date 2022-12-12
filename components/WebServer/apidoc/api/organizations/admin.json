@@ -29,7 +29,11 @@
                   "type": "string"
                 },
                 "type": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "public",
+                    "private"
+                  ]
                 }
               }
             }
@@ -103,4 +107,3 @@
     }
   }
 }
-

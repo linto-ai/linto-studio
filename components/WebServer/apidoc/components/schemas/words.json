@@ -1,0 +1,53 @@
+{
+  "Words": {
+    "type": "object",
+    "properties": {
+      "wid": {
+        "type": "integer",
+        "description": "Unique identifier of the word"
+      },
+      "stime": {
+        "type": "number",
+        "description": "Start time of the speaker in seconds"
+      },
+      "etime": {
+        "type": "number",
+        "description": "End time of the speaker in seconds"
+      },
+      "words": {
+        "type": "array",
+        "description": "List of words spoken by the speaker",
+        "items": {
+          "type": "string"
+        }
+      },
+      "confidence": {
+        "type": "number",
+        "description": "Confidence score of the speaker"
+      },
+      "highlights": {
+        "type": "array",
+        "description": "List of highlights spoken by the speaker",
+        "items": {
+          "type": "string"
+        }
+      },
+      "keywords": {
+        "type": "array",
+        "description": "List of keywords spoken by the speaker",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "example": {
+      "wid": "0d7ea137-ea70-467e-b3a0-8646a38a7bcb",
+      "stime": 0,
+      "etime": 1.41,
+      "word": "bonjour",
+      "confidence": 1,
+      "highlights": [],
+      "keywords": []
+    }
+  }
+}

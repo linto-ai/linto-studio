@@ -1,11 +1,10 @@
 {
-
   "/api/conversations/create/": {
     "post": {
       "tags": [
         "conversations"
       ],
-      "summary": "Create conversation",
+      "summary": "Create a new conversation",
       "requestBody": {
         "content": {
           "multipart/form-data": {
@@ -13,45 +12,184 @@
               "type": "object",
               "properties": {
                 "file": {
-                  "type": "file"
+                  "type": "file",
+                  "format": "binary",
+                  "description": "Audio file to convert into a conversation"
                 },
                 "name": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Name of the conversation"
+                },
+                "endpoint": {
+                  "type": "string",
+                  "description": "Endpoint of the conversation (can get information from service api)"
+                },
+                "lang": {
+                  "type": "string",
+                  "description": "Language of the conversation"
+                },
+                "transcriptionConfig": {
+                  "$ref": "#/components/schemas/TranscriptionConfig"
                 },
                 "description": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Description of the conversation"
                 },
                 "organizationId": {
-                  "type": "uiid"
+                  "type": "uiid",
+                  "description": "Organization id to add the conversation (default to personal organization)"
                 },
-                "organizationRole": {
-                  "type": "integer"
+                "membersRight": {
+                  "type": "integer",
+                  "description": "Right of the members from the organization"
+                },
+                "segmentCharSize": {
+                  "type": "integer",
+                  "description": "Size of the segment in char"
                 }
-              },
-              "required": [
-                "file",
-                "name"
-              ]
-            }
+
+              }
+
+            },
+            "required": [
+              "file",
+              "name",
+              "endpoint",
+              "lang"
+            ]
           }
         }
       },
       "responses": {
-        "201": {
-          "description": "OK"
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Information about the conversation processus"
+                }
+              },
+              "example": {
+                "message": "A conversation is currently being processed"
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "415": {
+          "$ref": "#/components/responses/UnsupportedMediaType"
         }
       }
     }
   },
-  "/api/conversations/list/": {
+  "/api/conversations/search": {
+    "post": {
+      "tags": [
+        "conversations"
+      ],
+      "summary": "Search conversations",
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "searchType": {
+                  "type": "string",
+                  "enum": [
+                    "title",
+                    "description",
+                    "text"
+                  ],
+                  "description": "Type of search to do in conversation"
+                },
+                "text": {
+                  "type": "string",
+                  "description": "Text to search"
+                },
+                "organizationId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "Organization id to search in (can be empty)"
+                }
+              }
+            },
+            "required": [
+              "searchType",
+              "text"
+            ]
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "searchType": {
+                    "type": "string",
+                    "enum": [
+                      "title",
+                      "description",
+                      "text"
+                    ],
+                    "description": "Type of search to do in conversation"
+                  },
+                  "conversations": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/ConversationList"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    }
+  },
+  "/api/conversations/list/share": {
     "get": {
       "tags": [
         "conversations"
       ],
-      "summary": "List you'r user conversation",
+      "summary": "Get all conversations shared with the user",
       "responses": {
         "200": {
-          "description": "OK"
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/ConversationList"
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
         }
       }
     }
@@ -61,7 +199,7 @@
       "tags": [
         "conversations"
       ],
-      "summary": "Get one conversation",
+      "summary": "Get desired conversation by id",
       "parameters": [{
         "in": "path",
         "name": "conversationId",
@@ -72,7 +210,21 @@
       }],
       "responses": {
         "200": {
-          "description": "OK"
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/Conversation"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
         }
       }
     },
@@ -100,6 +252,10 @@
                 },
                 "description": {
                   "type": "string"
+                },
+                "other": {
+                  "type": "string",
+                  "description": "Any other conversation field desired"
                 }
               }
             }
@@ -108,7 +264,27 @@
       },
       "responses": {
         "200": {
-          "description": "OK"
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "message": "Information about the succes of the request"
+                }
+              },
+              "example": {
+                "message": "Conversation updated"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "500": {
+          "$ref": "#/components/responses/InternalServer"
         }
       }
     },
@@ -128,6 +304,9 @@
       "responses": {
         "200": {
           "description": "OK"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
         }
       }
     }
@@ -137,7 +316,7 @@
       "tags": [
         "conversations"
       ],
-      "summary": "Add an user right to the conversation",
+      "summary": "Give access to a user to a conversation",
       "parameters": [{
           "in": "path",
           "name": "conversationId",
@@ -157,51 +336,216 @@
       ],
       "requestBody": {
         "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "right": {
-                  "type": "integer"
-                }
-              }
-            }
-          }
-        }
-      },
-      "responses": {
-        "200": {
-          "description": "OK"
-        }
-      }
-    }
-  },
-  "/api/conversations/search/text": {
-    "post": {
-      "tags": [
-        "conversations"
-      ],
-      "summary": "Get conversation containing specific text",
-      "requestBody": {
-        "content": {
           "multipart/form-data": {
             "schema": {
               "type": "object",
               "properties": {
-                "text": {
-                  "type": "string"
+                "right": {
+                  "type": "integer",
+                  "description": "Right to give to the user"
                 }
-              },
-              "required": [
-                "text"
-              ]
-            }
+              }
+            },
+            "required": [
+              "right"
+            ]
           }
         }
       },
       "responses": {
         "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "message": "Information about the succes of the request"
+                }
+              },
+              "example": {
+                "message": "Conversation updated"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "500": {
+          "$ref": "#/components/responses/InternalServer"
+        }
+      }
+    }
+  },
+  "/api/conversations/{conversationId}/users": {
+    "get": {
+      "tags": [
+        "conversations"
+      ],
+      "summary": "Get all users of a conversation",
+      "parameters": [{
+        "in": "path",
+        "name": "conversationId",
+        "type": "string",
+        "format": "uuid",
+        "required": true,
+        "description": "uuid string identifier for an conversation"
+      }],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "type": "object",
+              "properties": {
+                "conversationUsers": {
+                  "type": "object",
+                  "properties": {
+                    "external_members": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/User"
+                      }
+                    },
+                    "organization_members": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/User"
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "conversationUsers": {
+                  "external_members": [
+                    {
+                      "_id": "6392f74a32d603288c910185",
+                      "email": "me@linagora.com",
+                      "firstname": "me",
+                      "lastname": "last",
+                      "img": "pictures/default.jpg",
+                      "role": 0,
+                      "right": "3"
+                    }
+                  ],
+                  "organization_members": [
+                    {
+                      "_id": "634eae867d29b677f13e7e6c",
+                      "email": "first@linagora.com",
+                      "firstname": "name",
+                      "lastname": "second",
+                      "img": "pictures/default.jpg",
+                      "role": 3,
+                      "right": 31
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/conversations/{conversationId}/rights": {
+    "get": {
+      "tags": [
+        "conversations"
+      ],
+      "summary": "Get all rights of a conversation",
+      "parameters": [{
+        "in": "path",
+        "name": "conversationId",
+        "type": "string",
+        "format": "uuid",
+        "required": true,
+        "description": "uuid string identifier for an conversation"
+      }],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "role": {
+                    "type": "integer",
+                    "description": "Role access of the organization"
+                  },
+                  "right": {
+                    "type": "integer",
+                    "description": "Right of the user"
+                  },
+                  "personal": {
+                    "type": "boolean",
+                    "description": "If the user has a personal right"
+                  }
+                }
+              },
+              "example": {
+                "role": 3,
+                "right": 31,
+                "personal": true
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/conversations/{conversationId}/download/{format}": {
+    "get": {
+      "tags": [
+        "conversations"
+      ],
+      "summary": "Get all rights of a conversation",
+      "parameters": [{
+        "in": "path",
+        "name": "conversationId",
+        "type": "string",
+        "format": "uuid",
+        "required": true,
+        "description": "uuid string identifier for an conversation"
+      },
+      {
+        "in": "path",
+        "name": "format",
+        "type": "string",
+        "enum": [
+          "json",
+          "text"
+        ],
+        "required": true,
+        "description": "desired format of conversation export (text or json)"
+      }],
+      "responses": {
+        "200": {
           "description": "OK"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
         }
       }
     }
