@@ -1,3 +1,8 @@
+# 1.0.2
+- Swagger
+  - Added swagger documentation
+  - Added swagger ui
+
 # 1.0.1
 - API updates
   - Update transcription on job completion (not other information)

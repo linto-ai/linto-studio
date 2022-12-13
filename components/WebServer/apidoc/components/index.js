@@ -11,10 +11,10 @@ module.exports = {
     ...require('./schemas/service.json'),
     ...require('./schemas/services.json'),
     ...require('./schemas/speakers.json'),
-    ...require('./schemas/text.json'),
+    ...require('./schemas/turn.json'),
     ...require('./schemas/transcription-config.json'),
-    ...require('./schemas/words.json'),
     ...require('./schemas/user-role.json'),
-    ...require('./schemas/user.json')
+    ...require('./schemas/user.json'),
+    ...require('./schemas/word.json')
   }
 }

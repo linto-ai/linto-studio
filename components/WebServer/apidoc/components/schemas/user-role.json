@@ -31,7 +31,7 @@
         "description": "User right"
       }
     },
-    "example":       {
+    "example": {
       "_id": "6392f74a32d603288c910185",
       "email": "user@email.com",
       "firstname": "first_name",

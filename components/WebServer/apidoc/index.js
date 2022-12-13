@@ -7,7 +7,8 @@ module.exports = {
   ...require('./api/organizations/members.json'),
   ...require('./api/organizations/maintainer.json'),
   ...require('./api/organizations/admin.json'),
-  ...require('./api/conversations.json'),
-
-  // ...require('./api/nlp.json'),
+  ...require('./api/conversations/conversation.json'),
+  ...require('./api/conversations/member.json'),
+  ...require('./api/conversations/nlp.json'),
+  ...require('./api/conversations/turn.json'),
 }

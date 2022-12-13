@@ -1,0 +1,62 @@
+{
+  "/api/conversations/{conversationId}/keyword": {
+    "post": {
+      "tags": ["conversation keyword"],
+      "summary": "Add keywords to a conversation",
+      "parameters": [{
+        "in": "path",
+        "name": "conversationId",
+        "type": "string",
+        "format": "uuid",
+        "required": true,
+        "description": "uuid string identifier for an conversation"
+      }],
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "method": {
+                  "type": "string",
+                  "enum": [
+                    "textrank",
+                    "frequencies"
+                  ]
+                }
+              },
+              "required": [
+                "method"
+              ]
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Message indicating the result of the operation"
+                }
+              },
+              "example": {
+                "message": "A keyword job is currently being processed"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  }
+}

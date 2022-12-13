@@ -1,5 +1,5 @@
 {
-  "Text": {
+  "Turn": {
     "type": "object",
     "properties": {
       "speaker_id": {
@@ -22,7 +22,7 @@
         "type": "array",
         "description": "The words",
         "items": {
-          "$ref": "#/components/schemas/Words"
+          "$ref": "#/components/schemas/Word"
         }
       }
     },
@@ -31,7 +31,15 @@
       "turn_id": "06e34723-25ee-4dad-853a-d9ee39377e75",
       "raw_segment": "bonjour je vais donner quelques chiffres hum deux cinq et je vais en donner encore d' autres huit douze un petit dernier dix mille",
       "segment": "bonjour je vais donner quelques chiffres hum 2 5 et je vais en donner encore d'autres 8 12 un petit dernier 10000",
-      "words": []
+      "words": [{
+        "wid": "0d7ea137-ea70-467e-b3a0-8646a38a7bcb",
+        "stime": 0,
+        "etime": 1.41,
+        "word": "bonjour",
+        "confidence": 1,
+        "highlights": [],
+        "keywords": []
+      }]
     }
   }
 }

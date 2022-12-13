@@ -1,5 +1,5 @@
 {
-  "Words": {
+  "Word": {
     "type": "object",
     "properties": {
       "wid": {
