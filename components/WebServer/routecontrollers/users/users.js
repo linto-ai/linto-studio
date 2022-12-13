@@ -5,6 +5,8 @@ const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversat
 const { sendMail } = require(`${process.cwd()}/lib/nodemailer`)
 const { storeFile, defaultPicture, deleteFile, getStorageFolder } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 
+
+
 const {
     OrganizationConflict
 } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
@@ -15,6 +17,10 @@ const {
     UserNotFound,
     UserUnsupportedMediaType,
 } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
+
+const {
+  NodemailerError
+} = require(`${process.cwd()}/components/WebServer/error/exception/nodemailer`)
 
 async function listUser(req, res, next) {
     try {
@@ -296,15 +302,13 @@ async function deleteUser(req, res, next) {
 async function recoverPassword(req, res, next) {
   try {
     if (!req.body.email) throw new UserUnsupportedMediaType()
-    const isUserFound = await userModel.getUserByEmail(req.body.email)
-    if(isUserFound.length === 0) throw new UserError('Email address was not found, please create an account')
-    const reqOrigin = req.headers.origin
-    const generateResetId = await userModel.setUserResetLink(req.body.email)
-    if(generateResetId.modifiedCount === 0) throw ('Error on generating reset link')
+    const userExist = await userModel.getUserByEmail(req.body.email)
+    if(userExist.length > 0) {
+      const reqOrigin = req.headers.origin
+      const generateResetId = await userModel.setUserResetLink(req.body.email)
+      if(generateResetId.modifiedCount === 0) throw ('Error on generating reset link')
 
-    const user = await userModel.getUserByEmail(req.body.email)
-    
-    if(user.length > 0) {
+      const user = await userModel.getUserByEmail(req.body.email)
       let sendmail = await sendMail({
         email: req.body.email,
         resetId: user[0].resetId,
@@ -315,11 +319,20 @@ async function recoverPassword(req, res, next) {
       if(sendmail === 'mailSend') {
         res.status(200).send({
           status: 'success',
-          message: 'Une email avec un lien de connexion vient de vous être envoyé'
+          message: 'An email with an authentication link has been sent to you.'
         })
-      } else throw sendmail
-    } else throw new UserNotFound()
+      } else throw new NodemailerError()
+    } 
+    else {
+      // if email address doesn't exist, fake a success to secure database informations
+      console.log(`Forgotten password request for an unknown or invalid email address: "${req.body.email}"`)
+      res.status(200).send({
+        status: 'success',
+        message: 'An email with an authentication link has been sent to you.'
+      })
+    }
   } catch (error) {
+    console.error(error)
     next(error)
   }
 }
