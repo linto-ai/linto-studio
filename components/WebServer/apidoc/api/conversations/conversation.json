@@ -1,0 +1,197 @@
+{
+  "/api/conversations/create/": {
+    "post": {
+      "tags": [
+        "conversations"
+      ],
+      "summary": "Create a new conversation",
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "file": {
+                  "type": "file",
+                  "format": "binary",
+                  "description": "Audio file to convert into a conversation"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Name of the conversation"
+                },
+                "endpoint": {
+                  "type": "string",
+                  "description": "Endpoint of the conversation (can get information from service api)"
+                },
+                "lang": {
+                  "type": "string",
+                  "description": "Language of the conversation"
+                },
+                "transcriptionConfig": {
+                  "$ref": "#/components/schemas/TranscriptionConfig"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Description of the conversation"
+                },
+                "organizationId": {
+                  "type": "uiid",
+                  "description": "Organization id to add the conversation (default to personal organization)"
+                },
+                "membersRight": {
+                  "type": "integer",
+                  "description": "Right of the members from the organization"
+                },
+                "segmentCharSize": {
+                  "type": "integer",
+                  "description": "Size of the segment in char"
+                }
+
+              }
+
+            },
+            "required": [
+              "file",
+              "name",
+              "endpoint",
+              "lang"
+            ]
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Information about the conversation processus"
+                }
+              },
+              "example": {
+                "message": "A conversation is currently being processed"
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "415": {
+          "$ref": "#/components/responses/UnsupportedMediaType"
+        }
+      }
+    }
+  },
+  "/api/conversations/search": {
+    "post": {
+      "tags": [
+        "conversations"
+      ],
+      "summary": "Search conversations",
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "searchType": {
+                  "type": "string",
+                  "enum": [
+                    "title",
+                    "description",
+                    "text"
+                  ],
+                  "description": "Type of search to do in conversation"
+                },
+                "text": {
+                  "type": "string",
+                  "description": "Text to search"
+                },
+                "organizationId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "Organization id to search in (can be empty)"
+                }
+              }
+            },
+            "required": [
+              "searchType",
+              "text"
+            ]
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "searchType": {
+                    "type": "string",
+                    "enum": [
+                      "title",
+                      "description",
+                      "text"
+                    ],
+                    "description": "Type of search to do in conversation"
+                  },
+                  "conversations": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/ConversationList"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    }
+  },
+  "/api/conversations/list/share": {
+    "get": {
+      "tags": [
+        "conversations"
+      ],
+      "summary": "Get all conversations shared with the user",
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/ConversationList"
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    }
+  }
+}

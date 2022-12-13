@@ -92,7 +92,7 @@ function getStorageFolder() {
 }
 
 function getPictureFolder() {
-    return VOLUME_PROFILE_PICTURE_PATH
+    return process.env.VOLUME_PROFILE_PICTURE_PATH
 }
 
 function getAudioFolder() {

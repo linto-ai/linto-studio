@@ -41,7 +41,7 @@ async function transcribe(isSingleFile, req, res, next) {
 
     if (!req.body.name) throw new ConversationMetadataRequire("name param is required")
     if (!req.body.lang) throw new ConversationMetadataRequire("lang param is required")
-    if (!req.body.right) req.body.right = CONVERSATION_RIGHT.READ + CONVERSATION_RIGHT.COMMENT
+    if (!req.body.membersRight) req.body.membersRight = CONVERSATION_RIGHT.READ + CONVERSATION_RIGHT.COMMENT
     if (!req.body.endpoint) throw new ConversationMetadataRequire("serviceEndpoint param is required")
 
     req.body.organizationId = await checkOrganization(req.body.organizationId, userId)
@@ -126,7 +126,7 @@ async function checkOrganization(organizationId, userId) {
         if (organization.length === 1) return organizationId
     } else {
         const organizations = await organizationModel.getPersonalOrganization(userId)
-        if (organizations[0]?._id) return organizations[0]._id
+        if (organizations[0]?._id) return organizations[0]._id.toString()
     }
     throw new OrganizationNotFound()
 }

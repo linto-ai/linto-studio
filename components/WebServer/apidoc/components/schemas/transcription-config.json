@@ -1,0 +1,51 @@
+{
+  "TranscriptionConfig": {
+    "type": "object",
+    "properties": {
+      "punctuationConfig": {
+        "type": "object",
+        "properties": {
+          "enablePunctuation": {
+            "type": "boolean"
+          },
+          "serviceName": {
+            "type": "string"
+          }
+        }
+      },
+      "diarizationConfig": {
+        "type": "object",
+        "properties": {
+          "enableDiarization": {
+            "type": "boolean"
+          },
+          "numberOfSpeaker": {
+            "type": "integer"
+          },
+          "maxNumberOfSpeaker": {
+            "type": "integer"
+          },
+          "serviceName": {
+            "type": "string"
+          }
+        },
+        "enableNormalization": {
+          "type": "boolean"
+        }
+      }
+    },
+    "example": {
+      "punctuationConfig": {
+        "enablePunctuation": false,
+        "serviceName": null
+      },
+      "diarizationConfig": {
+        "enableDiarization": false,
+        "numberOfSpeaker": null,
+        "maxNumberOfSpeaker": null,
+        "serviceName": null
+      },
+      "enableNormalization": true
+    }
+  }
+}

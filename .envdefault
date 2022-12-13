@@ -1,6 +1,9 @@
 COMPONENTS=WebServer
 WEBSERVER_HTTP_PORT=80
 
+# Optional for swagger
+WEBSERVER_SWAGGER_HTTP_HOST=localhost
+
 # Mongo
 DB_HOST=localhost
 DB_PORT=27017

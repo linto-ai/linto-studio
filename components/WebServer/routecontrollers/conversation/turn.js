@@ -22,15 +22,19 @@ async function addTurn(req, res, next) {
         const conversation = await conversationModel.getConvoById(conversationId)
         if (conversation.length !== 1) throw new ConversationNotFound()
 
-        let turnAdded = []
+        let addedTurn = []
+        let isTurnAdded = false
         conversation[0].text.map((turn, i) => {
-            turnAdded.push(turn)
+            addedTurn.push(turn)
             if (turn.turn_id === req.params.turnId) {
-                turnAdded.push({ ...req.body, turn_id: uuidv4() })
+                addedTurn.push({ ...req.body, turn_id: uuidv4() })
+                isTurnAdded = true
             }
         })
 
-        const result = await conversationModel.updateTurn(req.params.conversationId, turnAdded)
+        if (!isTurnAdded) throw new TurnNotFound()
+
+        const result = await conversationModel.updateTurn(req.params.conversationId, addedTurn)
         if (result.matchedCount === 0) throw new ConversationError()
 
         res.status(200).send({
@@ -75,16 +79,21 @@ async function updateTurn(req, res, next) {
         let conversation = await conversationModel.getConvoById(conversationId)
         if (conversation.length !== 1) throw new ConversationNotFound()
 
-        let turnUpdated = []
+        let updatedTurn = []
+        let isTurnUpdated = false
+
         for (let turn of conversation[0].text) {
             if (turn.turn_id === req.params.turnId) {
                 turn = req.body
                 turn.turn_id = req.params.turnId
+                isTurnUpdated = true
             }
-            turnUpdated.push(turn)
+            updatedTurn.push(turn)
         }
 
-        const result = await conversationModel.updateTurn(req.params.conversationId, turnUpdated)
+        if (!isTurnUpdated) throw new TurnNotFound()
+
+        const result = await conversationModel.updateTurn(req.params.conversationId, updatedTurn)
         if (result.matchedCount === 0) throw new ConversationError()
 
         res.status(200).send({

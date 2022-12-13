@@ -1,6 +1,6 @@
 {
     "name": "linto-platform-conversation-manager",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Transcription, summarization, annotation interface for recorded audio files ",
     "main": "app.js",
     "scripts": {
@@ -37,6 +37,8 @@
         "passport-local": "^1.0.0",
         "path": "^0.12.7",
         "randomstring": "^1.1.5",
+        "swagger-jsdoc": "^6.2.5",
+        "swagger-ui-express": "^4.6.0",
         "utf8": "^3.0.0",
         "utils-copy": "^1.1.1",
         "uuid": "^8.3.2"

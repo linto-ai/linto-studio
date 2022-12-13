@@ -5,6 +5,7 @@ const UserModel = require(`${process.cwd()}/lib/mongodb/models/users`)
 
 const {
   UserForbidden,
+  UserNotFound
 } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
 
 module.exports = {
@@ -12,7 +13,8 @@ module.exports = {
     if (req.payload.data.userId === req.params.userId) next()
     else {
       OrganizationModel.getPersonalOrganization(req.params.userId).then(async orga => {
-        if (orga[0].type === 'public') next()
+        if (orga.length === 0) next(new UserNotFound())
+        else if (orga[0].type === 'public') next()
         else next(new UserForbidden())
       })
     }

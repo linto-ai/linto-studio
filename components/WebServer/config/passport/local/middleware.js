@@ -8,8 +8,7 @@ const jwtDecode = require('jwt-decode')
 
 const UsersModel = require(`${process.cwd()}/lib/mongodb/models/users`)
 
-const { MalformedToken, MultipleUserFound, InvalidCredential } = require(`${process.cwd()}/components/WebServer/error/exception/auth`)
-const { UserNotFound } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
+const { MalformedToken, MultipleUserFound, InvalidCredential, UserNotFound } = require(`${process.cwd()}/components/WebServer/error/exception/auth`)
 
 const refreshToken = require('./token/refresh')
 
