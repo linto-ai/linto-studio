@@ -1,6 +1,8 @@
 const debug = require('debug')('linto:components:WebServer:controller:generator')
 
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require('uuid')
+const uuid = require('uuid')
+
 const fs = require('fs')
 const mm = require('music-metadata')
 
@@ -59,6 +61,10 @@ function transcriptionToConversation(transcript, conversation) {
 
         transcript.segments.map(segment => {
             /* Check and init speaker */
+            if (segment.spk_id === null) {
+                segment.spk_id = 'speaker'
+            }
+
             let speaker = conversation.speakers.filter(speaker => speaker.speaker_name === segment.spk_id)
             if (speaker.length === 0) { // Add speaker if not found
                 speaker = {
@@ -91,6 +97,14 @@ function transcriptionToConversation(transcript, conversation) {
                 })
             })
             conversation.text.push(text_segment)
+        })
+
+        let speaker_num = 1
+        conversation.speakers.map(speaker => {
+            if (uuid.validate(speaker.speaker_name)) {
+                speaker.speaker_name = 'speaker' + speaker_num
+                speaker_num++
+            }
         })
         return conversation
     } catch (err) {

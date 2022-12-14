@@ -33,7 +33,6 @@ module.exports = function (segments, segmentCharResize) {
 
         // check if few x words contains some punctuation
         let extra_words_check = Math.ceil(segmentCharResize * 0.2) + last_word_added
-        debug(extra_words_check)
         if (!is_last_word_added) {
           if (extra_words_check > segment.words.length)
             extra_words_check = segment.words.length
@@ -42,15 +41,12 @@ module.exports = function (segments, segmentCharResize) {
           let add_extra = false
           for (let k = last_word_added + 1; k < extra_words_check; k++) {
             tmp_extra_words.push(segment.words[k])
-            debug(segment.words[k].word, /[.,!?;:]$/.test(segment.words[k].word))
             if (/[.,!?;:]$/.test(segment.words[k].word)) {
-              debug('ADDED AN EXTRA WORD')
               add_extra = true
               last_word_added = k
               break
             }
           }
-          // debug(tmp_extra_words)
           if (add_extra) words.push(...tmp_extra_words)
         }
 
