@@ -6,11 +6,9 @@ const { segmentNormalizeText } = require(`${process.cwd()}/components/WebServer/
 
 const ConvoModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 
-
 const DEFAULT_INTERVAL_TIMER = 1000 // 10 sec
 
-
-async function getResult(host, job, jobs_type, conversation) {
+async function getResult(host, processing_job, job, conversation) {
     try {
         let url = `${host}/results/${job.result_id}`
         if (conversation.metadata.transcription.transcriptionConfig.enableNormalization) {
@@ -22,14 +20,13 @@ async function getResult(host, job, jobs_type, conversation) {
                 accept: 'application/json'
             }
         }
-
         const result = await axios.get(url, options)
 
-        if (result && jobs_type === 'transcription') {
-            const normalizeTranscription = segmentNormalizeText(result, conversation.locale)
+        if (result && processing_job.type === 'transcription') {
+            const normalizeTranscription = segmentNormalizeText(result, conversation.locale, processing_job.filter)
             conversation = SttWrapper.transcriptionToConversation(normalizeTranscription, conversation)
             ConvoModel.updateConvOnTranscriptionResult(conversation._id, conversation)
-        } else if (result && jobs_type === 'keyword') {
+        } else if (result && processing_job.type === 'keyword') {
             ConvoModel.updateKeyword(conversation._id, { ...conversation.keywords, ...result })
         }
 
@@ -45,47 +42,47 @@ async function getResult(host, job, jobs_type, conversation) {
     }
 }
 
-async function createJobInterval(host, jobs_id, jobs_type, conversation) {
+async function createJobInterval(host, conversation, processing_job) {
     let interval = setInterval(async function () {
         try {
-            const job = await axios.get(`${host}/job/${jobs_id}`)
+            const job_info = await axios.get(`${host}/job/${processing_job.job_id}`)
             let job_status = {
-                ...job,
-                job_id: jobs_id
+                ...job_info,
+                job_id: processing_job.job_id
             }
 
-            if (job.state === 'done' && job.result_id) { //triger last request
-                updateConversation(conversation, jobs_type, job_status)
+            if (job_info.state === 'done' && job_info.result_id) { //triger last request
+                updateConversation(conversation, processing_job, job_info)
 
-                getResult(host, job_status, jobs_type, conversation)
+                getResult(host, processing_job, job_status, conversation)
 
                 debug('jobs done')
                 clearInterval(interval)
             } else {
-                updateConversation(conversation, jobs_type, job_status)
+                updateConversation(conversation, processing_job, job_status)
             }
         } catch (err) {
             let job_status = {
-                job_id: jobs_id,
+                job_id: processing_job.job_id,
                 state: 'error',
-                err: err.message
+                err: err.response.data
             }
 
-            updateConversation(conversation, jobs_type, job_status)
+            updateConversation(conversation, processing_job, job_status)
             clearInterval(interval)
-            debug('Jobs error', err)
+            debug('Jobs error', err.response.data)
         }
     }, DEFAULT_INTERVAL_TIMER)
 }
 
 
 
-function updateConversation(conversation, jobs_type, job) {
+function updateConversation(conversation, processing_job, job_info) {
     const id = conversation._id
-    if (jobs_type === 'transcription') {
-        conversation.jobs.transcription = job
-    } else if (jobs_type === 'keyword') {
-        conversation.jobs.keyword = job
+    if (processing_job.type === 'transcription') {
+        conversation.jobs.transcription = job_info
+    } else if (processing_job.type === 'keyword') {
+        conversation.jobs.keyword = job_info
     }
     ConvoModel.updateJob(id, conversation.jobs)
 

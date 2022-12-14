@@ -46,7 +46,13 @@ async function keywordExtract(req, res, next) {
 
 
     const job = await axios.post(`${process.env.NLP_SERVICES}/nlp`, options)
-    createJobInterval(process.env.NLP_SERVICES, job.jobid, 'keyword', conversation[0])
+    let jobs = {
+      type: 'keyword',
+      job_id: job.jobid,
+      filter: {}
+  }
+
+    createJobInterval(process.env.NLP_SERVICES, conversation[0], jobs)
 
     res.status(201).send({
       message: 'A keyword job is currently being processed'

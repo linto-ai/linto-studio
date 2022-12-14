@@ -70,7 +70,8 @@ function numberNormalize(seg_text, words, loop_data) {
       } else break
     }
 
-
+    if(!loop_data.segment[loop_data.segment_index + number_in_a_row_find]) // No next word, exit
+      return
     let next_word_seg = correctSegmentText({ original: loop_data.segment[loop_data.segment_index + number_in_a_row_find] })
     let index = loop_data.word_index
     let confidences_scores = words.conf
