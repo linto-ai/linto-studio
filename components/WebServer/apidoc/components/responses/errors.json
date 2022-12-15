@@ -47,6 +47,22 @@
       }
     }
   },
+  "NotModifier": {
+    "description": "NotModified",
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "example": "Noting to modify"
+            }
+          }
+        }
+      }
+    }
+  },
   "Conflict": {
     "description": "Resource already exists",
     "content": {

@@ -2,15 +2,16 @@ const debug = require('debug')(`linto:conversation-manager:components:WebServer:
 
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 
-const { cp } = require('fs')
 const { v4: uuidv4 } = require('uuid')
+const { isTurnLonger } = require(`${process.cwd()}/components/WebServer/controllers/conversation/turn`)
 
 const {
     ConversationIdRequire,
     ConversationNotFound,
     ConversationError,
     TurnIdRequire,
-    TurnNotFound
+    TurnNotFound,
+    ConversationUnsupportedMediaType
 } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
 async function addTurn(req, res, next) {
@@ -104,9 +105,81 @@ async function updateTurn(req, res, next) {
     }
 }
 
+async function mergeTurn(req, res, next) {
+    try {
+        if (!req.params.conversationId) throw new ConversationIdRequire()
+        if (!req.params.turnId) throw new TurnIdRequire()
+        if (!req.params.direction) throw new ConversationUnsupportedMediaType('Direction is required')
+
+        //direction must be next or previous
+        const direction = req.params.direction
+        if (direction !== 'next' && direction !== 'previous') throw new ConversationUnsupportedMediaType('Direction must be next or previous')
+
+
+        let conversationId = req.params.conversationId
+        let conversation = await conversationModel.getConvoById(conversationId)
+        if (conversation.length !== 1) throw new ConversationNotFound()
+
+        //find the turn id and merge with the direction
+        let isTurnFound = false
+        let updatedTurn = []
+        for (let turn of conversation[0].text) {
+            if (turn.turn_id === req.params.turnId) {
+                isTurnFound = true
+                if (direction === 'next') {
+                    updatedTurn.push(turn)
+                }
+            }
+
+            if (isTurnFound) {
+                let isLonger
+                if (updatedTurn.length > 0)
+                    isLonger = isTurnLonger(updatedTurn[updatedTurn.length - 1], turn)
+
+                if (direction === 'next' && turn.turn_id !== req.params.turnId) { // Is 
+
+                    //remove the next turn
+                    updatedTurn[updatedTurn.length - 1].raw_segment = updatedTurn[updatedTurn.length - 1].raw_segment + ' ' + turn.raw_segment
+                    updatedTurn[updatedTurn.length - 1].segment = updatedTurn[updatedTurn.length - 1].segment + ' ' + turn.segment
+                    updatedTurn[updatedTurn.length - 1].words.push(...turn.words)
+
+                    if (!isLonger) updatedTurn[updatedTurn.length - 1].speaker_id = turn.speaker_id
+
+                    isTurnFound = false
+                } else if (direction === 'previous') {
+                    if (updatedTurn.length === 0) { //  if first turn, nothing to merge
+                        updatedTurn.push(turn)
+                    } else {
+                        updatedTurn[updatedTurn.length - 1].raw_segment = updatedTurn[updatedTurn.length - 1].raw_segment + ' ' + turn.raw_segment
+                        updatedTurn[updatedTurn.length - 1].segment = updatedTurn[updatedTurn.length - 1].segment + ' ' + turn.segment
+                        updatedTurn[updatedTurn.length - 1].words.push(...turn.words)
+                        if (!isLonger) updatedTurn[updatedTurn.length - 1].speaker_id = turn.speaker_id
+
+                    }
+                    isTurnFound = false
+                }
+            } else
+                updatedTurn.push(turn)
+        }
+
+        const result = await conversationModel.updateTurn(req.params.conversationId, updatedTurn)
+        if (conversation[0].text.length === updatedTurn.length) {
+            res.status(304).send({
+                message: 'Nothing to merge'
+            })
+        } else {
+            res.status(200).send({
+                message: 'Conversation turn has been merged'
+            })
+        }
+    } catch (err) {
+        next(err)
+    }
+}
 
 module.exports = {
     addTurn,
     deleteTurn,
-    updateTurn
+    updateTurn,
+    mergeTurn
 }
