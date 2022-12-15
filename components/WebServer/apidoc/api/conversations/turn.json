@@ -156,5 +156,67 @@
         }
       }
     }
+  },
+  "/api/conversations/{conversationId}/turn/{turnId}/merge/{direction}": {
+    "patch": {
+      "tags": ["conversation turn"],
+      "summary": "Merge the indicated turn with the next or previous turn",
+      "parameters": [{
+          "in": "path",
+          "name": "conversationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an conversation"
+        },
+        {
+          "in": "path",
+          "name": "turnId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for a turn"
+        },
+        {
+          "in": "path",
+          "name": "direction",
+          "type": "string",
+          "enum": [
+            "next",
+            "previous"
+          ],
+          "required": true,
+          "description": "Direction to merge the turn with the next or previous turn (value is either 'next' or 'previous')"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Message indicating the result of the operation"
+                }
+              },
+              "example": {
+                "message": "Conversation turn has been merged"
+              }
+            }
+          }
+        },
+        "304":{
+          "$ref":"#/components/responses/NotModifier"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
   }
 }

@@ -3,7 +3,8 @@ const debug = require('debug')('linto:conversation-manager:router:api:conversati
 const {
     addTurn,
     deleteTurn,
-    updateTurn
+    updateTurn,
+    mergeTurn
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/turn.js`)
 
 module.exports = (webserver) => {
@@ -28,6 +29,13 @@ module.exports = (webserver) => {
             requireAuth: true,
             requireConversationWriteAccess: true,
             controller: updateTurn
+        },
+        {
+            path: '/:conversationId/turn/:turnId/merge/:direction',
+            method: 'patch',
+            requireAuth: true,
+            requireConversationWriteAccess: true,
+            controller: mergeTurn
         }
     ]
 }
