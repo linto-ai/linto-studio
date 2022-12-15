@@ -1,13 +1,9 @@
-const { MultipleUserFound } = require('../../error/exception/auth')
-
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:user')
 const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 const { sendMail } = require(`${process.cwd()}/lib/nodemailer`)
 const { storeFile, defaultPicture, deleteFile, getStorageFolder } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
-
-
 
 const {
     OrganizationConflict
