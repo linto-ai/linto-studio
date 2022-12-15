@@ -1,3 +1,5 @@
+const { MultipleUserFound } = require('../../error/exception/auth')
+
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:user')
 const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
@@ -16,6 +18,7 @@ const {
     UserError,
     UserNotFound,
     UserUnsupportedMediaType,
+    GenerateMagicLinkError
 } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
 
 const {
@@ -303,12 +306,12 @@ async function recoverPassword(req, res, next) {
   try {
     if (!req.body.email) throw new UserUnsupportedMediaType()
     const userExist = await userModel.getUserByEmail(req.body.email)
-    if(userExist.length > 0) {
+    if(userExist.length === 1) {
       const reqOrigin = req.headers.origin
       const generateResetId = await userModel.setUserResetLink(req.body.email)
-      if(generateResetId.modifiedCount === 0) throw ('Error on generating reset link')
+      if(generateResetId.modifiedCount === 0) throw new GenerateMagicLinkError()
 
-      const user = await userModel.getUserByEmail(req.body.email)
+      const user = await userModel.getUserByEmail(req.body.email) 
       let sendmail = await sendMail({
         email: req.body.email,
         resetId: user[0].resetId,
@@ -324,8 +327,8 @@ async function recoverPassword(req, res, next) {
       } else throw new NodemailerError()
     } 
     else {
-      // if email address doesn't exist, fake a success to secure database informations
-      console.log(`Forgotten password request for an unknown or invalid email address: "${req.body.email}"`)
+      // if user is not found, fake a success to secure database informations
+      debug(`Forgotten password request for an unknown or invalid email address: "${req.body.email}"`)
       res.status(200).send({
         status: 'success',
         message: 'An email with an authentication link has been sent to you.'
