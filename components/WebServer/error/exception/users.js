@@ -64,6 +64,17 @@ class UserUnsupportedMediaType extends Error {
     }
 }
 
+class GenerateMagicLinkError extends Error {
+  constructor(message, err) {
+      super()
+      this.name = 'GenerateMagicLinkError'
+      this.type = ExceptionType
+      this.status = '424' // Method failure
+      if (message) this.message = message
+      else this.message = 'Error on generating authentication link.'
+      if (err) this.err = err
+  }
+}
 
 
 
@@ -72,5 +83,6 @@ module.exports = {
     UserError,
     UserForbidden,
     UserNotFound,
-    UserUnsupportedMediaType
+    UserUnsupportedMediaType,
+    GenerateMagicLinkError,
 }
