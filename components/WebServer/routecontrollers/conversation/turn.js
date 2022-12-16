@@ -136,12 +136,13 @@ async function mergeTurn(req, res, next) {
                 if (updatedTurn.length > 0)
                     isLonger = isTurnLonger(updatedTurn[updatedTurn.length - 1], turn)
 
-                if (direction === 'next' && turn.turn_id !== req.params.turnId) { // Is 
+                if (direction === 'next' && turn.turn_id !== req.params.turnId) { // Merge the next turn
 
                     //remove the next turn
                     updatedTurn[updatedTurn.length - 1].raw_segment = updatedTurn[updatedTurn.length - 1].raw_segment + ' ' + turn.raw_segment
                     updatedTurn[updatedTurn.length - 1].segment = updatedTurn[updatedTurn.length - 1].segment + ' ' + turn.segment
                     updatedTurn[updatedTurn.length - 1].words.push(...turn.words)
+                    updatedTurn[updatedTurn.length - 1].turn_id = req.params.turnId
 
                     if (!isLonger) updatedTurn[updatedTurn.length - 1].speaker_id = turn.speaker_id
 
@@ -153,6 +154,8 @@ async function mergeTurn(req, res, next) {
                         updatedTurn[updatedTurn.length - 1].raw_segment = updatedTurn[updatedTurn.length - 1].raw_segment + ' ' + turn.raw_segment
                         updatedTurn[updatedTurn.length - 1].segment = updatedTurn[updatedTurn.length - 1].segment + ' ' + turn.segment
                         updatedTurn[updatedTurn.length - 1].words.push(...turn.words)
+                        updatedTurn[updatedTurn.length - 1].turn_id = req.params.turnId
+
                         if (!isLonger) updatedTurn[updatedTurn.length - 1].speaker_id = turn.speaker_id
 
                     }
