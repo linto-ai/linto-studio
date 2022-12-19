@@ -16,6 +16,16 @@ module.exports = (webServer) => {
                     res.status(202).json(req.user)
                 }
             ]
+        },        {
+            path: '/login/magic-link',
+            method: 'post',
+            requireAuth: false,
+            controller: [
+                auth_middleware.authenticate_reset,
+                (req, res, next) => {
+                    res.status(202).json(req.user)
+                }
+            ]
         },
         {
             path: '/logout',

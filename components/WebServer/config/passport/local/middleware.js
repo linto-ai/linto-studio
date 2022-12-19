@@ -8,8 +8,7 @@ const jwtDecode = require('jwt-decode')
 
 const UsersModel = require(`${process.cwd()}/lib/mongodb/models/users`)
 
-const { MalformedToken, MultipleUserFound, InvalidCredential } = require(`${process.cwd()}/components/WebServer/error/exception/auth`)
-const { UserNotFound } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
+const { MalformedToken, MultipleUserFound, InvalidCredential, UserNotFound } = require(`${process.cwd()}/components/WebServer/error/exception/auth`)
 
 const refreshToken = require('./token/refresh')
 
@@ -17,6 +16,20 @@ module.exports = {
     authType: 'local',
     authenticate: (req, res, next) => {
         passport.authenticate('local', { session: false }, (err, user) => {
+            if (err) {
+                res.status(err.status).json({ error: err })
+            } else if (!user) throw new InvalidCredential()
+            else {
+                res.status(200).json({
+                    message: 'login success',
+                    token: user.token.auth_token,
+                    userId: user.token.session_id.toString()
+                })
+            }
+        })(req, res, next)
+    },
+    authenticate_reset: (req, res, next) => {
+        passport.authenticate('local_magic_link', { session: false }, (err, user) => {
             if (err) {
                 res.status(err.status).json({ error: err })
             } else if (!user) throw new InvalidCredential()

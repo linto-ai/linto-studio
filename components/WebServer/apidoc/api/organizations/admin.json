@@ -1,0 +1,109 @@
+{
+  "/api/organizations/{organizationId}/": {
+    "patch": {
+      "tags": [
+        "organizations admin"
+      ],
+      "summary": "Update an organization",
+      "parameters": [{
+        "in": "path",
+        "name": "organizationId",
+        "type": "string",
+        "format": "uuid",
+        "required": true,
+        "description": "uuid string identifier for an organization"
+      }],
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "token": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "public",
+                    "private"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Message"
+                }
+              },
+              "example": {
+                "message": "Organization has been updated"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "organizations admin"
+      ],
+      "summary": "Delete an organization",
+      "parameters": [{
+        "in": "path",
+        "name": "organizationId",
+        "type": "string",
+        "format": "uuid",
+        "required": true,
+        "description": "uuid string identifier for an organization"
+      }],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Message"
+                }
+              },
+              "example": {
+                "message": "Organization has been deleted"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  }
+}

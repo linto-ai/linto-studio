@@ -1,0 +1,130 @@
+{
+  "Unauthorized": {
+    "description": "Unauthorized",
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "example": "invalid signature || No authorization token was found"
+            }
+          }
+        }
+      }
+    }
+  },
+  "BadRequest": {
+    "description": "Bad Request",
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "example": "Bad Request"
+            }
+          }
+        }
+      }
+    }
+  },
+  "Forbidden": {
+    "description": "Forbidden",
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "example": "This action cannot be done"
+            }
+          }
+        }
+      }
+    }
+  },
+  "NotModifier": {
+    "description": "NotModified",
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "example": "Noting to modify"
+            }
+          }
+        }
+      }
+    }
+  },
+  "Conflict": {
+    "description": "Resource already exists",
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "example": "Resource already exists"
+            }
+          }
+        }
+      }
+    }
+  },
+  "UnsupportedMediaType": {
+    "description": "Unsupported Media Type",
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "example": "Parameter is not supported"
+            }
+          }
+        }
+      }
+    }
+  },
+  "NotFound": {
+    "description": "Not Found",
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "example": "Not Found"
+            }
+          }
+        }
+      }
+    }
+  },
+  "InternalServer": {
+    "description": "Internal Server Error",
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "example": "Server error"
+            }
+          }
+        }
+      }
+    }
+  }
+}

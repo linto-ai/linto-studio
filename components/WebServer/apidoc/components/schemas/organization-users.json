@@ -1,0 +1,84 @@
+{
+  "OrganizationUsers": {
+    "type": "object",
+    "properties": {
+      "_id": {
+        "type": "string",
+        "description": "The organization id"
+      },
+      "name": {
+        "type": "string",
+        "description": "The organization name"
+      },
+      "type": {
+        "type": "string",
+        "description": "The organization type",
+        "enum": [
+          "private",
+          "public"
+        ]
+      },
+      "description": {
+        "type": "string",
+        "description": "The organization description"
+      },
+      "users": {
+        "type": "array",
+        "description": "The organization users",
+        "items": {
+          "type": "object",
+          "properties": {
+            "_id": {
+              "type": "string",
+              "description": "The user id"
+            },
+            "email": {
+              "type": "string",
+              "description": "The user email"
+            },
+            "firstname": {
+              "type": "string",
+              "description": "The user firstname"
+            },
+            "lastname": {
+              "type": "string",
+              "description": "The user lastname"
+            },
+            "role": {
+              "type": "integer",
+              "description": "The user role"
+            },
+            "visibility": {
+              "type": "string",
+              "description": "The user visibility"
+            }
+          }
+        }
+      },
+      "owner": {
+        "type": "string",
+        "description": "The organization owner"
+      },
+      "personal": {
+        "type": "boolean",
+        "description": "The organization personal"
+      }
+    },
+    "example": {
+      "_id": "639312d5b36cdb549eb1deab",
+      "name": "orga-name",
+      "type": "public",
+      "description": "",
+      "users": [{
+        "_id": "634e6ab183f5db343dfc40d2",
+        "email": "email@linagora.com",
+        "firstname": "firstname",
+        "lastname": "lastname",
+        "role": 3,
+        "visibility": "public"
+      }],
+      "owner": "634e6ab183f5db343dfc40d2",
+      "personal": false
+    }
+  }
+}

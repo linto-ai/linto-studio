@@ -1,6 +1,8 @@
 const debug = require('debug')('linto:components:WebServer:controller:generator')
 
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require('uuid')
+const uuid = require('uuid')
+
 const fs = require('fs')
 const mm = require('music-metadata')
 
@@ -32,13 +34,13 @@ function initConversation(metadata, userId, job_id) {
         text: [],
         metadata: {
             transcription: {
-                ...metadata.service,
+                lang : metadata.lang,
                 transcriptionConfig: transcriptionConfig
             },
             audio: {},
             file: {}
         },
-        locale: metadata.service.locale,
+        locale: metadata.lang,
         jobs: {
             transcription: {
                 job_id: job_id,
@@ -59,6 +61,10 @@ function transcriptionToConversation(transcript, conversation) {
 
         transcript.segments.map(segment => {
             /* Check and init speaker */
+            if (segment.spk_id === null) {
+                segment.spk_id = 'speaker'
+            }
+
             let speaker = conversation.speakers.filter(speaker => speaker.speaker_name === segment.spk_id)
             if (speaker.length === 0) { // Add speaker if not found
                 speaker = {
@@ -92,6 +98,14 @@ function transcriptionToConversation(transcript, conversation) {
             })
             conversation.text.push(text_segment)
         })
+
+        let speaker_num = 1
+        conversation.speakers.map(speaker => {
+            if (uuid.validate(speaker.speaker_name)) {
+                speaker.speaker_name = 'speaker' + speaker_num
+                speaker_num++
+            }
+        })
         return conversation
     } catch (err) {
         throw err
@@ -104,7 +118,7 @@ async function addFileMetadataToConversation(conversation, file) {
     delete file_metadata.native
 
     conversation.metadata.audio = {
-        filename: file.originalFileName,
+        filename: file.filename,
         duration: file_metadata.format.duration,
         mimetype: 'audio/mpeg', // mp3
         filepath: file.filePath

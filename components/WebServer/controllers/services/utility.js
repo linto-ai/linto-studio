@@ -1,18 +1,27 @@
 const debug = require('debug')('linto:conversation-manager:components:WebServer:controller:services:utility')
-const { ConversationError } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
+const { ServiceError } = require(`${process.cwd()}/components/WebServer/error/exception/service`)
 
-function getTranscriptionService(serviceName) {
-  const services_list = process.env.STT_SERVICES.split('~')
+const axios = require(`${process.cwd()}/lib/utility/axios`)
 
-  for (let services of services_list) {
-    let service = services.split(',')
-    if (service[0] === serviceName) return {
-      name: service[0],
-      locale: service[1],
-      host: service[2]
+async function listSaasServices(scope) {
+  try {
+
+    const gateway_services = process.env.GATEWAY_SERVICES
+    let services = []
+
+    let host = gateway_services + '/gateway/services'
+    if (scope) host += `/${scope}`
+
+    const saas_service_info = await axios.get(host)
+    for (const transcription_service of saas_service_info.transcription) {
+      services.push(transcription_service)
     }
+
+    return services
+  } catch (err) {
+    throw new ServiceError('Error while listing services')
   }
-  throw new ConversationError('Service not found')
 }
 
-module.exports = { getTranscriptionService }
+
+module.exports = { listSaasServices }

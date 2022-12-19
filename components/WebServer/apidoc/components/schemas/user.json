@@ -1,0 +1,34 @@
+{
+  "User": {
+    "type": "object",
+    "properties": {
+      "_id": {
+        "type": "string",
+        "description": "User ID"
+      },
+      "email": {
+        "type": "string",
+        "description": "User email"
+      },
+      "firstname": {
+        "type": "string",
+        "description": "User first name"
+      },
+      "lastname": {
+        "type": "string",
+        "description": "User last name"
+      },
+      "img": {
+        "type": "string",
+        "description": "User picture"
+      }
+    },
+    "example": {
+      "_id": "634e6a0783f5db343dfc40cd",
+      "email": "user@email.com",
+      "firstname": "first_name",
+      "lastname": "last_name",
+      "img": "user_pictures"
+    }
+  }
+}

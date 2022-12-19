@@ -2,8 +2,8 @@ const debug = require('debug')('linto:conversation-manager:components:WebServer:
 const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
-
-const StoreFile = require(`${process.cwd()}/components/WebServer/controllers/storeFile`)
+const { sendMail } = require(`${process.cwd()}/lib/nodemailer`)
+const { storeFile, defaultPicture, deleteFile, getStorageFolder } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 
 const {
     OrganizationConflict
@@ -14,7 +14,12 @@ const {
     UserError,
     UserNotFound,
     UserUnsupportedMediaType,
+    GenerateMagicLinkError
 } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
+
+const {
+  NodemailerError
+} = require(`${process.cwd()}/components/WebServer/error/exception/nodemailer`)
 
 async function listUser(req, res, next) {
     try {
@@ -48,6 +53,9 @@ async function listUser(req, res, next) {
 
 async function searchUser(req, res, next) {
     try {
+        if (!req.body.search)
+            throw new UserUnsupportedMediaType()
+
         let userId = req.payload.data.userId
         let userList = await userModel.getAllUsers()
         let allOrganizations = await organizationModel.getAllOrganizations()
@@ -116,8 +124,8 @@ async function createUser(req, res, next) {
         if (!user.email || !user.firstname || !user.lastname || !user.password) throw new UserUnsupportedMediaType()
 
         if (req.files && Object.keys(req.files).length !== 0 && req.files.file)
-            user.img = await StoreFile.storeFile(req.files.file, 'picture')
-        else user.img = StoreFile.defaultPicture()
+            user.img = await storeFile(req.files.file, 'picture')
+        else user.img = defaultPicture()
 
         const isUserFound = await userModel.getUserByEmail(user.email)
         if (isUserFound.length !== 0) throw new UserConflict()
@@ -183,7 +191,7 @@ async function updateUserPicture(req, res, next) {
         if (!req.files && Object.keys(req.files).length === 0 && !req.files.file) throw new UserUnsupportedMediaType()
         const payload = {
             _id: req.payload.data.userId,
-            img: await StoreFile.storeFile(req.files.file, 'picture')
+            img: await storeFile(req.files.file, 'picture')
         }
 
         const user = await userModel.getUserById(req.payload.data.userId)
@@ -192,8 +200,8 @@ async function updateUserPicture(req, res, next) {
         const result = await userModel.update(payload)
         if (result.matchedCount === 0) throw new UserError()
 
-        if (user[0].img !== StoreFile.defaultPicture())
-            await StoreFile.deleteFile(`${process.env.VOLUME_FOLDER}/${user[0].img}`)
+        if (user[0].img !== defaultPicture())
+            await deleteFile(`${getStorageFolder()}/${user[0].img}`)
 
 
         res.status(200).send({
@@ -249,10 +257,8 @@ async function logout(req, res, next) {
     }
 }
 
-
 async function deleteUser(req, res, next) {
     try {
-
         const userId = req.payload.data.userId
 
         // Remove user from organizations
@@ -295,6 +301,44 @@ async function deleteUser(req, res, next) {
     }
 }
 
+async function recoverPassword(req, res, next) {
+  try {
+    if (!req.body.email) throw new UserUnsupportedMediaType()
+    const userExist = await userModel.getUserByEmail(req.body.email)
+    if(userExist.length === 1) {
+      const reqOrigin = req.headers.origin
+      const generateResetId = await userModel.setUserResetLink(req.body.email)
+      if(generateResetId.modifiedCount === 0) throw new GenerateMagicLinkError()
+
+      const user = await userModel.getUserByEmail(req.body.email) 
+      let sendmail = await sendMail({
+        email: req.body.email,
+        resetId: user[0].resetId,
+        type:"send_reset_link",
+        subject: "Mot de passe oublié",
+        reqOrigin
+      })  
+      if(sendmail === 'mailSend') {
+        res.status(200).send({
+          status: 'success',
+          message: 'An email with an authentication link has been sent to you.'
+        })
+      } else throw new NodemailerError()
+    } 
+    else {
+      // if user is not found, fake a success to secure database informations
+      debug(`Forgotten password request for an unknown or invalid email address: "${req.body.email}"`)
+      res.status(200).send({
+        status: 'success',
+        message: 'An email with an authentication link has been sent to you.'
+      })
+    }
+  } catch (error) {
+    console.error(error)
+    next(error)
+  }
+}
+
 module.exports = {
     listUser,
     searchUser,
@@ -304,5 +348,6 @@ module.exports = {
     logout,
     updateUser,
     updateUserPassword,
-    updateUserPicture
+    updateUserPicture,
+    recoverPassword
 }

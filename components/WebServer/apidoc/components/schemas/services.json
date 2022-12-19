@@ -1,0 +1,138 @@
+{
+  "Services": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "serviceName": {
+          "type": "string"
+        },
+        "desc": {
+          "type": "object",
+          "properties": {
+            "fr": {
+              "type": "string"
+            },
+            "en": {
+              "type": "string"
+            },
+            "lang_x": {
+              "type": "string"
+            }
+          }
+        },
+        "scope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "endpoints": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "endpoint": {
+                "type": "string"
+              },
+              "middlewares": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "billing": {
+                "type": "object",
+                "properties": {
+                  "json": {
+                    "type": "object",
+                    "properties": {
+                      "accoustic": {
+                        "type": "integer"
+                      },
+                      "model_quality": {
+                        "type": "integer"
+                      },
+                      "plan": {
+                        "type": "string"
+                      },
+                      "service": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "lang": {
+          "type": "string"
+        },
+        "model_quality": {
+          "type": "string"
+        },
+        "accoustic": {
+          "type": "string"
+        },
+        "sub_services": {
+          "type": "object",
+          "properties": {
+            "diarization": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "$ref": "#/components/schemas/Service"
+              }
+            },
+            "punctuation": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "$ref": "#/components/schemas/Service"
+              }
+            }
+          }
+        }
+      }
+    },
+    "example": [{
+      "name": "linto-stack_stt-french-generic",
+      "serviceName": "stt-french-generic",
+      "desc": {
+        "en": "An french generic model",
+        "fr": "Un service français générique"
+      },
+      "scope": [
+        "cm",
+        "api"
+      ],
+      "endpoints": [{
+          "endpoint": "/stt-french-generic",
+          "middlewares": [
+            "logs",
+            "billing"
+          ],
+          "billing": {
+            "json": {
+              "accoustic": 2,
+              "model_quality": 4,
+              "plan": "free",
+              "service": "stt-french-generic"
+            }
+          }
+        }
+      ],
+      "lang": "fr-FR",
+      "model_quality": "4",
+      "accoustic": "2",
+      "sub_services": {
+        "diarization": [],
+        "punctuation": []
+      }
+    }]
+  }
+}

@@ -4,7 +4,7 @@ module.exports = async function containerList() {
   let services = {}
   for (const type in this.containerRegistered) {
     if (type !== 'diarization' && type !== 'punctuation') {
-      if(!services[type]) services[type] = []
+      if (!services[type]) services[type] = []
 
       this.containerRegistered[type].map(container => {
         services[type].push(container.printServiceInfo(true, true))
@@ -26,5 +26,10 @@ module.exports = async function containerList() {
     }
   }
 
-  return services
+  let result = { transcription: [] }
+  for (const type in services) {
+    result.transcription.push(...services[type])
+  }
+
+  return result
 }

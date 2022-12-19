@@ -5,6 +5,8 @@ const organizationsModel = require(`${process.cwd()}/lib/mongodb/models/organiza
 const CONVERSATION_RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const ORGANIZATION_ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 
+const { UserNotFound } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
+
 // Deprecated function
 async function getUsersConversationByArray(users, setupRight) {
     try {

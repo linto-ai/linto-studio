@@ -1,0 +1,65 @@
+{
+  "Service": {
+    "type": "object",
+    "properties": {
+      "service_name": {
+        "type": "string",
+        "description": "The name of the service."
+      },
+      "service_type": {
+        "type": "string",
+        "description": "The type of the service (punctuation || diarization)."
+      },
+      "service_language": {
+        "type": "string",
+        "description": "The language of the service."
+      },
+      "queue_name": {
+        "type": "string",
+        "description": "The name of the queue."
+      },
+      "info": {
+        "type": "string",
+        "description": "The info of the service."
+      },
+      "instances": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "host_name": {
+              "type": "string",
+              "description": "The name of the host."
+            },
+            "last_alive": {
+              "type": "integer",
+              "description": "The last alive time of the instance."
+            },
+            "version": {
+              "type": "string",
+              "description": "The version of the instance."
+            },
+            "concurrency": {
+              "type": "integer",
+              "description": "The concurrency of the instance."
+            }
+          }
+        },
+        "description": "The instances of the service."
+      }
+    },
+    "example": {
+      "service_name": "stt-diarization-second",
+      "service_type": "diarization",
+      "service_language": "*",
+      "queue_name": "diarization-default",
+      "info": "1.1.2",
+      "instances": [{
+        "host_name": "0043de704fa6",
+        "last_alive": 1669906347,
+        "version": "1.1.2",
+        "concurrency": 1
+      }]
+    }
+  }
+}

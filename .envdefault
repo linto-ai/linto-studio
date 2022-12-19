@@ -1,6 +1,9 @@
 COMPONENTS=WebServer
 WEBSERVER_HTTP_PORT=80
 
+# Optional for swagger
+WEBSERVER_SWAGGER_HTTP_HOST=localhost
+
 # Mongo
 DB_HOST=localhost
 DB_PORT=27017
@@ -10,10 +13,7 @@ DB_PASS=example
 DB_NAME=conversations
 
 # STT Config
-STT_SERVICES=french-service-name,fr-FR,endpoint~english-service-name,en-US,endpoint
-STT_REQUIRE_AUTH=false
-STT_USER=stt_auth
-STT_PASSWORD=stt_password
+GATEWAY_SERVICES=https://alpha.api.linto.ai
 
 # NLP Service
 NLP_SERVICES=<nlp_service_host>
@@ -30,3 +30,17 @@ AXIOS_SIZE_FILE_MAX=500000000
 # JWT SECRET
 CM_JWT_SECRET=jwt_secret
 CM_REFRESH_SECRET=jwt_refresh_secret
+
+# SMTP
+SMTP_HOST=
+SMTP_PORT=
+SMTP_SECURE=
+SMTP_REQUIRE_TLS=
+SMTP_AUTH=
+SMTP_PSWD=
+NO_REPLY_EMAIL=
+
+ 
+VOLUME_FOLDER=storages
+VOLUME_AUDIO_PATH=audios
+VOLUME_PROFILE_PICTURE_PATH=pictures
