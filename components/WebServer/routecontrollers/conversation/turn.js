@@ -123,6 +123,7 @@ async function mergeTurn(req, res, next) {
         //find the turn id and merge with the direction
         let isTurnFound = false
         let updatedTurn = []
+        let turnResult = {}
         for (let turn of conversation[0].text) {
             if (turn.turn_id === req.params.turnId) {
                 isTurnFound = true
@@ -136,17 +137,18 @@ async function mergeTurn(req, res, next) {
                 if (updatedTurn.length > 0)
                     isLonger = isTurnLonger(updatedTurn[updatedTurn.length - 1], turn)
 
-                if (direction === 'next' && turn.turn_id !== req.params.turnId) { // Merge the next turn
+                if (direction === 'next' && turn.turn_id !== req.params.turnId) { // Is 
 
                     //remove the next turn
                     updatedTurn[updatedTurn.length - 1].raw_segment = updatedTurn[updatedTurn.length - 1].raw_segment + ' ' + turn.raw_segment
                     updatedTurn[updatedTurn.length - 1].segment = updatedTurn[updatedTurn.length - 1].segment + ' ' + turn.segment
                     updatedTurn[updatedTurn.length - 1].words.push(...turn.words)
-                    updatedTurn[updatedTurn.length - 1].turn_id = req.params.turnId
 
                     if (!isLonger) updatedTurn[updatedTurn.length - 1].speaker_id = turn.speaker_id
 
                     isTurnFound = false
+                    turnResult = updatedTurn[updatedTurn.length - 1]
+
                 } else if (direction === 'previous') {
                     if (updatedTurn.length === 0) { //  if first turn, nothing to merge
                         updatedTurn.push(turn)
@@ -154,26 +156,24 @@ async function mergeTurn(req, res, next) {
                         updatedTurn[updatedTurn.length - 1].raw_segment = updatedTurn[updatedTurn.length - 1].raw_segment + ' ' + turn.raw_segment
                         updatedTurn[updatedTurn.length - 1].segment = updatedTurn[updatedTurn.length - 1].segment + ' ' + turn.segment
                         updatedTurn[updatedTurn.length - 1].words.push(...turn.words)
-                        updatedTurn[updatedTurn.length - 1].turn_id = req.params.turnId
-
                         if (!isLonger) updatedTurn[updatedTurn.length - 1].speaker_id = turn.speaker_id
+                        turnResult = updatedTurn[updatedTurn.length - 1]
 
                     }
+                    turnResult = updatedTurn[updatedTurn.length - 1]
                     isTurnFound = false
                 }
             } else
                 updatedTurn.push(turn)
         }
 
-        const result = await conversationModel.updateTurn(req.params.conversationId, updatedTurn)
+        await conversationModel.updateTurn(req.params.conversationId, updatedTurn)
         if (conversation[0].text.length === updatedTurn.length) {
             res.status(304).send({
                 message: 'Nothing to merge'
             })
         } else {
-            res.status(200).send({
-                message: 'Conversation turn has been merged'
-            })
+            res.status(200).send(turnResult)
         }
     } catch (err) {
         next(err)
