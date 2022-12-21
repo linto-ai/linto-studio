@@ -4,12 +4,9 @@ const debug = require('debug')(`linto:components:MongoMigration:controllers:migr
 const fs = require('fs')
 const fsPromises = require('fs').promises
 
-const LAST_VERSION = 2
-
-
 module.exports = {
   async migrationProcessing(db, version) {
-    const availabelVersion = fs.readdirSync(`${process.cwd()}/components/MongoMigration/controllers/version/`)
+    const availabelVersion = fs.readdirSync(`${process.cwd()}/components/MongoMigration/version/`)
     //check is desired version is available
     if (availabelVersion.indexOf(version.desired_version.toString()) === -1) {
       debug('Error, desired version not found ' + version.desired_version + '. Version range ' + availabelVersion)
@@ -27,8 +24,6 @@ module.exports = {
         }
       }
     }
-
-    //List all folder location in version
   },
 
   async checkVersion(db, desired_version) {
@@ -40,6 +35,7 @@ module.exports = {
     if (versionCollection.length === 0) {
       await db.createCollection('version')
       await db.collection('version').insertOne({ version: desired_version })
+      current_version = 0
     } else {
       current_version = (await db.collection('version').findOne()).version
     }
@@ -57,18 +53,22 @@ module.exports = {
 async function doMigration(versionStep, db, step) {
   try {
 
-    const migrationFiles = await fsPromises.readdir(`${process.cwd()}/components/MongoMigration/controllers/version/${versionStep}`)
+    const migrationFiles = await fsPromises.readdir(`${process.cwd()}/components/MongoMigration/version/${versionStep}`)
 
-    debug(`Migration ${step} version ${versionStep}`)
+    if (step === 'up')
+      debug(`Migration ${step} to version ${versionStep}`)
+    else
+      debug(`Migration ${step} to version ${versionStep - 1}`)
+
 
     for (let j = 0; j < migrationFiles.length; j++) {
       const file = migrationFiles[j]
-      const migration = require(`${process.cwd()}/components/MongoMigration/controllers/version/${versionStep}/${file}`)
+      const migration = require(`${process.cwd()}/components/MongoMigration/version/${versionStep}/${file}`)
 
-      if (step === 'up'){
+      if (step === 'up') {
         await migration.up(db)
       }
-      else if (step === 'down'){
+      else if (step === 'down') {
         await migration.down(db)
       }
       else {

@@ -4,6 +4,7 @@ const debug = require('debug')(`linto:components:MongoMigration`)
 const migration = require('./controllers/migration')
 const MongoDriver = require(`${process.cwd()}/lib/mongodb/driver`)
 
+let  migration_version = 1
 
 class MongoMigration extends Component {
     constructor(app) {
@@ -12,6 +13,10 @@ class MongoMigration extends Component {
         this.id = this.constructor.name
         this.db = MongoDriver.constructor.db
 
+        if(process.env.MONGO_MIGRATION_VERSION) {
+            migration_version = process.env.MONGO_MIGRATION_VERSION
+        }
+
         this.initVersion()
 
         return this.init()
@@ -19,7 +24,7 @@ class MongoMigration extends Component {
 
 
     async initVersion() {
-        let version = await migration.checkVersion(this.db, 1)
+        let version = await migration.checkVersion(this.db, migration_version)
         migration.migrationProcessing(this.db, version)
 
         return this
