@@ -1,5 +1,6 @@
 # 1.0.3
 - Implementation of a migration system
+  - Swagger schema match the database version
 
 # 1.0.2
 - Swagger

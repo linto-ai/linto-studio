@@ -13,11 +13,9 @@ class MongoMigration extends Component {
         this.id = this.constructor.name
         this.db = MongoDriver.constructor.db
 
-        if(process.env.MONGO_MIGRATION_VERSION) {
-            migration_version = process.env.MONGO_MIGRATION_VERSION
+        if(process.env.DB_MIGRATION_VERSION) {
+            migration_version = process.env.DB_MIGRATION_VERSION
         }
-
-        this.initVersion()
 
         return this.init()
     }
