@@ -6,47 +6,60 @@ const fsPromises = require('fs').promises
 
 module.exports = {
   async migrationProcessing(db, version) {
-    const availabelVersion = fs.readdirSync(`${process.cwd()}/components/MongoMigration/version/`)
-    //check is desired version is available
-    if (availabelVersion.indexOf(version.desired_version.toString()) === -1) {
-      debug('Error, desired version not found ' + version.desired_version + '. Version range ' + availabelVersion)
-      return
-    }
+    try {
+      const availabelVersion = fs.readdirSync(`${process.cwd()}/components/MongoMigration/version/`)
+      //check if desired version is available
 
-    if (version.diff !== 0) {
-      if (version.diff > 0) {
-        for (let i = version.current_version + 1; i <= version.desired_version; i++) {
-          await doMigration(i, db, 'up')
-        }
-      } else {
-        for (let i = version.current_version; i > version.desired_version; i--) {
-          await doMigration(i, db, 'down')
+      const desired_index = availabelVersion.indexOf(version.desired_version.toString())
+      const current_index = availabelVersion.indexOf(version.current_version.toString())
+
+      if (desired_index === -1 || current_index === -1) {
+        debug('Error, desired version not found ' + version.desired_version + '. Version range ' + availabelVersion)
+        return
+      }
+
+      const version_diff = desired_index - current_index
+      if (version_diff !== 0) {
+        if (version_diff > 0) {
+          for (let i = current_index + 1; i <= desired_index; i++) {
+            await doMigration(availabelVersion[i], db, 'up')
+          }
+        } else {
+          for (let i = current_index; i > desired_index; i--) {
+            await doMigration(availabelVersion[i], db, 'down')
+          }
         }
       }
+    } catch (err) {
+      debug(err)
     }
   },
 
   async checkVersion(db, desired_version) {
-    let current_version = desired_version
+    try {
 
-    const collectionsList = await db.listCollections().toArray()
-    const versionCollection = collectionsList.filter(c => c.name === 'version')
+      let current_version = desired_version
 
-    if (versionCollection.length === 0) {
-      await db.createCollection('version')
-      await db.collection('version').insertOne({ version: desired_version })
-      current_version = 0
-    } else {
-      current_version = (await db.collection('version').findOne()).version
+      const collectionsList = await db.listCollections().toArray()
+      const versionCollection = collectionsList.filter(c => c.name === 'version')
+
+      if (versionCollection.length === 0) {
+        await db.createCollection('version')
+        await db.collection('version').insertOne({ version: desired_version })
+        current_version = 0
+      } else {
+        current_version = (await db.collection('version').findOne()).version
+      }
+
+      let version = {
+        current_version: current_version,
+        desired_version: desired_version
+      }
+
+      return version
+    } catch (err) {
+      debug(err)
     }
-
-    let version = {
-      current_version: current_version,
-      desired_version: desired_version,
-      diff: desired_version - current_version
-    }
-
-    return version
   }
 }
 
@@ -54,11 +67,10 @@ async function doMigration(versionStep, db, step) {
   try {
 
     const migrationFiles = await fsPromises.readdir(`${process.cwd()}/components/MongoMigration/version/${versionStep}`)
-
     if (step === 'up')
       debug(`Migration ${step} to version ${versionStep}`)
     else
-      debug(`Migration ${step} to version ${versionStep - 1}`)
+      debug(`Migration ${step} to version ${versionStep}`)
 
 
     for (let j = 0; j < migrationFiles.length; j++) {
