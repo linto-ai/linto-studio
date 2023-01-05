@@ -14,24 +14,24 @@ class MongoMigration extends Component {
         this.id = this.constructor.name
         this.db = MongoDriver.constructor.db
 
-        if (process.env.DB_MIGRATION_VERSION) {
-            migration_version = process.env.DB_MIGRATION_VERSION
+        if (process.env.DB_MIGRATION_TARGET) {
+            migration_version = process.env.DB_MIGRATION_TARGET
         }
 
         return this.init()
     }
 
 
-    async initVersion() { // Make sure that mongo driver is connected
+    async migrate() { // Make sure that mongo driver is connected
         var interval = setInterval(() =>{
             if (this.db) {
                 clearInterval(interval)
-                this.migrate()
+                this.doMigrate()
             }
         }, TIMEOUT)
     }
 
-    async migrate() {
+    async doMigrate() {
         // require drivers to be connected
         let version = await migration.checkVersion(this.db, migration_version)
         migration.migrationProcessing(this.db, version)

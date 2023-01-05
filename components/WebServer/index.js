@@ -83,7 +83,7 @@ class WebServer extends Component {
                     ...swaggerDocument.definition.components.schemas,
                     ...require(`./apidoc/components/schemas/${version}/index.js`)
                 }
-                if (version === process.env.DB_MIGRATION_VERSION) break
+                if (version === process.env.DB_MIGRATION_TARGET) break
             }
         } catch (err) {
             debug('Error while loading swagger schema')

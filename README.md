@@ -1,13 +1,14 @@
 # Conversation Manager
 Transcription / summarization / annotation interface for recorded audio files 
 
-## 1/ clone project and install dependencies
+## Run project
+### 1/ clone project and install dependencies
 ```bash
-cd your/project/path
 git clone git@github.com:linto-ai/platform-conversation-manager.git
 cd platform-conversation-manager
+npm install
 ```
-## 2/ Set Docker environment variables
+### 2/ Set Docker environment variables
 Duplicate *".envdefault"* file to create *".dockerenv"* file
 ```bash
 cp .envdefault .dockerenv
@@ -15,7 +16,37 @@ cp .envdefault .dockerenv
 
 Set up your environment variables by editing *".dockerenv"*
 
-## 3/ Lauch the "start" script
+### 3/ Run the project
+Run the following command to start the project
 ```bash
-./start.sh -p -vrb
+node app.js
 ```
+
+## Migration
+MongoMigration is a component that allows to migrate data from one version of the conversation manager to another one.
+
+### Enabling migration
+Two environment variables are required to use the component:
+- `COMPONENTS` must contain the desired to be loaded  `MongoMigration`.
+- `DB_MIGRATION_TARGET` must be set to the desired version (1.0.0)
+
+### Migration process
+The migration process is composed of two steps:
+
+### Add migration version
+The first step to add a new version is done by the creation of a new folder in `components/MongoMigration/version/`. The name of the folder must be the version number of the migration (it's better if they match *RELEASE.md* format). Then create a new file `collections_name.js` in that contain the needed data:
+
+```javascript
+module.exports = {
+  up: async (db) => {
+    // migration code example
+    // db.collection(collections_name).updateMany({}, { $set: migration_update })
+  },
+  down: async (db) => {
+    // rollback code example
+    // db.collection(collections_name).updateMany({}, { $unset: migration_update })
+  }
+}
+```
+
+Make sure to create a `version.js` file to update the version on a migration step.
