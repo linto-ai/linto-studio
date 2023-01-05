@@ -14,7 +14,7 @@ module.exports = {
       const current_index = availabelVersion.indexOf(version.current_version.toString())
 
       if (desired_index === -1 || current_index === -1) {
-        debug('Error, desired version not found ' + version.desired_version + '. Version range ' + availabelVersion)
+        console.error('Error, desired version not found ' + version.desired_version + '. Version range ' + availabelVersion)
         return
       }
 
@@ -31,7 +31,7 @@ module.exports = {
         }
       }
     } catch (err) {
-      debug(err)
+      console.error(err)
     }
   },
 
@@ -58,7 +58,7 @@ module.exports = {
 
       return version
     } catch (err) {
-      debug(err)
+      console.error(err)
     }
   }
 }
@@ -68,9 +68,9 @@ async function doMigration(versionStep, db, step) {
 
     const migrationFiles = await fsPromises.readdir(`${process.cwd()}/components/MongoMigration/version/${versionStep}`)
     if (step === 'up')
-      debug(`Migration ${step} to version ${versionStep}`)
+      console.log(`Migration ${step} to version ${versionStep}`)
     else
-      debug(`Migration ${step} to version ${versionStep}`)
+      console.log(`Migration ${step} to version ${versionStep}`)
 
 
     for (let j = 0; j < migrationFiles.length; j++) {
@@ -79,15 +79,13 @@ async function doMigration(versionStep, db, step) {
 
       if (step === 'up') {
         await migration.up(db)
-      }
-      else if (step === 'down') {
+      } else if (step === 'down') {
         await migration.down(db)
-      }
-      else {
-        debug('Error, step not found')
+      } else {
+        console.error('Error, step not found')
       }
     }
   } catch (err) {
-    debug(err)
+    console.error(err)
   }
 }
