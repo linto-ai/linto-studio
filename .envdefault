@@ -1,6 +1,9 @@
 COMPONENTS=WebServer
 WEBSERVER_HTTP_PORT=80
 
+# App URL
+APP_URL=http://localhost:8080
+
 # Optional for swagger
 WEBSERVER_SWAGGER_HTTP_HOST=localhost
 

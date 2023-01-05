@@ -1,3 +1,5 @@
+const { copyFile } = require('fs')
+
 const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:conversation`)
 
 const conversationUtility = require(`${process.cwd()}/components/WebServer/controllers/conversation/utility`)
@@ -9,8 +11,8 @@ const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizat
 const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
 
 const { deleteFile, getStorageFolder } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
-
-
+const { sendMail } = require(`${process.cwd()}/lib/nodemailer`)
+const { NodemailerError } = require(`${process.cwd()}/components/WebServer/error/exception/nodemailer`)
 const {
     ConversationIdRequire,
     ConversationNotFound,
@@ -244,6 +246,8 @@ async function updateConversationRights(req, res, next) {
         let userRight = isInOrga.length === 0 ? conversation[0].sharedWithUsers : conversation[0].organization.customRights
 
         let isAdded = false
+
+        // Update user right
         if (req.body.right === 0 && isInOrga.length === 0) {
             userRight = userRight.filter(usr => usr.userId !== req.params.userId)
             isAdded = true
@@ -256,7 +260,29 @@ async function updateConversationRights(req, res, next) {
             }
         }
 
-        if (!isAdded) userRight.push({ userId: req.params.userId, right: req.body.right, sharedBy: req.payload.data.userId })
+        // Share to a new user
+        if (!isAdded) {
+          const user = await userModel.getUserById(req.params.userId)
+          const userNotif = user[0].shareNotification
+          const userEmail = user[0].email
+          const sharedByUser = await userModel.getUserById(req.payload.data.userId)
+          const sharedBy = sharedByUser[0].firstname + ' ' + sharedByUser[0].lastname
+          if(userNotif) {
+            const reqOrigin = process.env.APP_URL
+            const emailPayload = {
+              email: userEmail,
+              type:"send_share_link",
+              subject: "Partage d'une conversation",
+              conversationId: req.params.conversationId,
+              sharedBy,
+              reqOrigin
+            }
+            let sendmail = await sendMail(emailPayload)
+            if(!sendmail === 'mailSend') throw new NodemailerError()
+          }
+
+          userRight.push({ userId: req.params.userId, right: req.body.right, sharedBy: req.payload.data.userId })
+        }
 
         isInOrga.length === 0 ? conversation[0].sharedWithUsers = userRight : conversation[0].organization.customRights = userRight
 
