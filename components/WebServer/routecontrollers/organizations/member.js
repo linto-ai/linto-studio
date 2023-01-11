@@ -3,6 +3,7 @@ const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizat
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 
 const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
+const convUtility = require(`${process.cwd()}/components/WebServer/controllers/conversation/utility`)
 
 const RIGHT = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
@@ -72,13 +73,14 @@ async function leaveSelfFromOrganization(req, res, next) {
 
 async function listConversationFromOrganization(req, res, next) {
     try {
+        const userId = req.payload.data.userId
         if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
         const conversations = await conversationModel.getConvoByOrga(req.params.organizationId)
         const organization = await orgaUtility.getOrganization(req.params.organizationId)
 
         let userRole = ROLES.MEMBER
         organization.users.map(oUser => {
-            if (oUser.userId === req.payload.data.userId) {
+            if (oUser.userId === userId) {
                 userRole = oUser.role
                 return
             }
@@ -86,11 +88,11 @@ async function listConversationFromOrganization(req, res, next) {
 
         let selfConvFromOrga = []
         conversations.filter(conv => {
-            if (conv.owner === req.payload.data.userId) {
+            if (conv.owner === userId) {
                 selfConvFromOrga.push(conv)
             } else {
                 let access = conv.organization.customRights.find(customRight =>
-                    (customRight.userId === req.payload.data.userId))
+                    (customRight.userId === userId))
                 if (access && RIGHT.hasRightAccess(access.right, RIGHT.READ)) {
                     selfConvFromOrga.push(conv)
                 } else if (!access && ROLES.hasRoleAccess(userRole, ROLES.MAINTAINER)) {
@@ -100,6 +102,8 @@ async function listConversationFromOrganization(req, res, next) {
                 }
             }
         })
+        selfConvFromOrga = await convUtility.getUserRightFromConversationList(userId, selfConvFromOrga)
+
         res.status(200).send(selfConvFromOrga)
     } catch (err) {
         next(err)
