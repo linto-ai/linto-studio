@@ -72,7 +72,6 @@ async function importTranscription(req, res) {
   let conversation = initConversation(req.body, req.body.userId, 'imported')
   addFileToConv(conversation, req)
 
-
   let filter = {}
   if (req.body.segmentWordSize) filter.segmentWordSize = req.body.segmentWordSize
   if (req.body.segmentCharSize) filter.segmentCharSize = req.body.segmentCharSize
@@ -98,7 +97,6 @@ async function importConversation(req, res, next) {
     req.body.organizationId = await orgaUtility.checkOrganization(req.body.organizationId, req.payload.data.userId)
     req.body.userId = req.payload.data.userId
 
-    debug(req.query)
     if (req.query.type === 'conversation') await importConv(req, res)
     else if (req.query.type === 'transcription') await importTranscription(req, res)
     else if (req.query.type === 'srt') await importSrt(req, res)
@@ -106,16 +104,12 @@ async function importConversation(req, res, next) {
     else if (req.query.type) throw new ConversationError(`Query param type ${req.query.type} is not supported, Supported type are : conversation, transcription, srt, audapolis`)
     else throw new ConversationError("Query param type is required")
 
-
   } catch (err) {
     next(err)
   }
 
 }
-async function exportConversation(req, res, next) {
-
-}
 
 module.exports = {
-  importConversation,
+  importConversation
 }

@@ -93,6 +93,20 @@
       "last_update": {
         "type": "string",
         "description": "Conversation last update date"
+      },
+      "userAccess": {
+        "type": "object",
+        "description": "Conversation user access",
+        "properties": {
+          "role": {
+            "type": "integer",
+            "description": "Conversation user role from organization"
+          },
+          "right": {
+            "type": "string",
+            "description": "Conversation user right from conversation"
+          }
+        }
       }
     },
 
@@ -142,7 +156,11 @@
         }
       },
       "created": "2022-12-09T17:25:10+01:00",
-      "last_update": "2022-12-09T17:25:10+01:00"
+      "last_update": "2022-12-09T17:25:10+01:00",
+      "userAccess": {
+        "role": 0,
+        "right": "31"
+      }
     }
   }
 }
