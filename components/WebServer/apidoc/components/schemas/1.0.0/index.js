@@ -8,6 +8,7 @@ module.exports = {
   ...require('./speakers.json'),
   ...require('./turn.json'),
   ...require('./transcription-config.json'),
+  ...require('./transcription-model.json'),
   ...require('./user-role.json'),
   ...require('./user.json'),
   ...require('./word.json')
