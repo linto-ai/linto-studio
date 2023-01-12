@@ -27,6 +27,7 @@ async function addFileToConv(conversation, req) {
     let file_data = await storeFile(fileData, 'audio')
     conversation = await addFileMetadataToConversation(conversation, file_data)
   }
+
   return conversation
 }
 
@@ -52,7 +53,7 @@ async function importConv(req, res) {
       if (!conversation.organization?.customRights) conversation.organization.customRights = []
     }
     conversation.owner = req.payload.data.userId
-    addFileToConv(conversation, req)
+    await addFileToConv(conversation, req)
 
     conversation = await conversationModel.createConversation(conversation)
 
@@ -70,7 +71,7 @@ async function importTranscription(req, res) {
   if (!req.body.membersRight) req.body.membersRight = CONVERSATION_RIGHT.READ + CONVERSATION_RIGHT.COMMENT
 
   let conversation = initConversation(req.body, req.body.userId, 'imported')
-  addFileToConv(conversation, req)
+  await addFileToConv(conversation, req)
 
   let filter = {}
   if (req.body.segmentWordSize) filter.segmentWordSize = req.body.segmentWordSize
