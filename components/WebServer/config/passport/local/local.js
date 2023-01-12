@@ -66,7 +66,7 @@ async function generateResetUserToken(magicId, psw, done) {
           userId: user._id
       }
 
-      UsersModel.update({ _id: user._id, keyToken: tokenData.salt, authLink :{magicId: null, validityDate:null} })
+      UsersModel.update({ _id: user._id, keyToken: tokenData.salt, authLink :{magicId: null, validityDate:null}, accountActivated: true })
           .then(user => {
               if (!user) return done(new UnableToGenerateKeyToken())
           }).catch(done)

@@ -1,4 +1,5 @@
 const { copyFile } = require('fs')
+const { get } = require('http')
 
 const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:conversation`)
 
@@ -133,7 +134,6 @@ async function listConversation(req, res, next) {
     try {
         const userId = req.payload.data.userId
         const convList = await conversationUtility.getUserConversation(userId)
-
         res.status(200).send({
             conversations: convList
         })
@@ -146,7 +146,6 @@ async function listSharedConversation(req, res, next) {
     try {
         const userId = req.payload.data.userId
         let convList = await conversationModel.getConvoByShare(userId)
-
         for (let conv of convList) {
             for (let user of conv.sharedWithUsers) {
                 if (user.userId === userId) {
@@ -230,8 +229,12 @@ async function searchConversation(req, res, next) {
 
 async function updateConversationRights(req, res, next) {
   try {
+      const reqOrigin = process.env.APP_URL
       if (!req.params.conversationId) throw new ConversationIdRequire()
       if (req.body.right === undefined || !req.params.userId) throw new ConversationMetadataRequire("rights or userId are require")
+
+      const user = await userModel.getUserById(req.params.userId)
+      if(user.length !== 1) throw new UserNotFound()
 
       const conversation = await conversationModel.getConvoById(req.params.conversationId)
       if (conversation.length !== 1) throw new ConversationNotFound()
@@ -239,7 +242,7 @@ async function updateConversationRights(req, res, next) {
       const organization = await organizationModel.getOrganizationById(conversation[0].organization.organizationId)
       if (organization.length !== 1) throw new OrganizationNotFound()
 
-      const isInOrga = organization[0].users.filter(user => user.userId === req.params.userId)
+      const isInOrga = organization[0].users.filter(usr => usr.userId === req.params.userId)
 
       // Select user right in the conversation
       let userRight = isInOrga.length === 0 ? conversation[0].sharedWithUsers : conversation[0].organization.customRights
@@ -248,6 +251,18 @@ async function updateConversationRights(req, res, next) {
       if (req.body.right === 0 && isInOrga.length === 0) {
           userRight = userRight.filter(usr => usr.userId !== req.params.userId)
           isAdded = true
+          /*
+          // Sendmail unsharing
+          const emailPayload = {
+            email: user[0].email,
+            type:"send_unshare_conversation",
+            subject: `Révocation de vos droit sur la conversation "${conversation[0].name}"`,
+            reqOrigin
+          }
+          let sendmail = await sendMail(emailPayload)
+          if(!sendmail === 'mailSend') throw new NodemailerError()
+          */
+
       } else {
           const userIndex = userRight.findIndex(usr => usr.userId === req.params.userId)
           if (userIndex >= 0) {
@@ -258,21 +273,17 @@ async function updateConversationRights(req, res, next) {
       }
 
       if (!isAdded) {
-        const user = await userModel.getUserById(req.params.userId)
-        if(user.length !== 1) throw new UserNotFound()
-        console.log(user)
         const sharedByUser = await userModel.getUserById(req.payload.data.userId)
         if(sharedByUser.length !== 1) throw new UserNotFound()
         const sharedBy = sharedByUser[0].firstname + ' ' + sharedByUser[0].lastname
-        const userNotif = user[0].shareNotification
+        const userNotif = user[0].notifications.sharing
           // Send Mail
-          if(userNotif) {
-            // RLOP todo : Vérifier pourquoi on ne peut pas récupérer req.header.origin
-            const reqOrigin = process.env.APP_URL
+          if(userNotif && user[0].accountActivated) {
             const emailPayload = {
               email: user[0].email,
-              type:"send_share_link",
+              type:"send_share_conversation",
               subject: "Partage d'une conversation",
+              magicId: user[0].authLink.magicId,
               conversationId: req.params.conversationId,
               sharedBy,
               reqOrigin
@@ -356,32 +367,46 @@ async function inviteUserByEmail(req, res, next) {
 async function inviteNewUser(req, res, next) {
   try {
     const email = req.body.email
-    console.log('0> Invite new user', email)
-    
     // Create new user in database
-    const createUser = await userModel.createExternalUser({email})
+    const createdUser = await userModel.createExternalUser({email})
     let magicId = null
-    if(createUser?.ops && createUser?.ops.length > 0) {
-      magicId = createUser.ops[0].authLink.magicId
+    let userId = null
+    // Create new user personal organization
+    if (createdUser.insertedCount !== 1) throw new UserError()
+    const createOrganization = await organizationModel.createDefaultOrganization(createdUser.insertedId.toString(), {email, type:'private'})
+    if (createOrganization.insertedCount !== 1) {
+        userModel.deleteById(createdUser.insertedId.toString())
+        throw new UserError()
     }
+    if(createdUser?.ops && createdUser?.ops.length > 0) {
+      magicId = createdUser.ops[0].authLink.magicId
+      userId = createdUser.ops[0]._id
+    }
+    // Share converation to created user
     if(magicId !== null) {
       // Send Mail
       const sharedByUser = await userModel.getUserById(req.payload.data.userId)
-        if(sharedByUser.length !== 1) throw new UserNotFound()
-        const sharedBy = sharedByUser[0].firstname + ' ' + sharedByUser[0].lastname
-      const reqOrigin = req.headers.origin
-      const emailPayload = {
+      if(sharedByUser.length !== 1) throw new UserNotFound()
+      const sharedBy = sharedByUser[0].firstname + ' ' + sharedByUser[0].lastname
+      let sendmail = await sendMail({
         email,
         type:"send_share_external_link",
         subject: "Partage d'une conversation",
         conversationId: req.params.conversationId,
         sharedBy,
-        reqOrigin
-      }
-      console.log('email payload', emailPayload)
+        magicId,
+        reqOrigin: req.headers.origin
+      }) 
+      if(sendmail !== 'mailSend') throw new NodemailerError()
     }
-    
-    res.json({test:'test'})
+
+    if(userId !== null && userId !== undefined) {
+      req.params.userId = userId.toString()
+      req.body.right = 1
+      updateConversationRights(req,res,next)
+    } else {
+      throw 'user not found'
+    }
   } catch (err) {
     next(err)
   }
