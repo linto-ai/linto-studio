@@ -1,6 +1,8 @@
 # 1.0.3
 - Implementation of a migration system
   - Swagger schema match the database version
+- Added an import endpoint to create conversation
+- Fix a bug on missing conversation audio
 
 # 1.0.2
 - Swagger
