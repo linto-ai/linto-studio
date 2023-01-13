@@ -31,6 +31,15 @@ async function addFileToConv(conversation, req) {
   return conversation
 }
 
+function setJobsDataToImport(conversation) {
+  conversation.jobs.transcription = {
+    state: 'done',
+    result_id: '',
+    type: 'import'
+  }
+  return conversation
+}
+
 async function importConv(req, res) {
   try {
     let conversation
@@ -45,16 +54,16 @@ async function importConv(req, res) {
     if (!conversation.name) throw new ConversationMetadataRequire("Conversation name key is required")
     if (!conversation.locale) throw new ConversationMetadataRequire("Conversation locale key is required")
 
-
     if (!conversation?.organization) {
       conversation.organization = {}
       if (!conversation.organization?.organizationId) conversation.organization.organizationId = req.body.organizationId
       if (!conversation.organization?.membersRight) conversation.organization.membersRight = CONVERSATION_RIGHT.READ + CONVERSATION_RIGHT.COMMENT
       if (!conversation.organization?.customRights) conversation.organization.customRights = []
     }
+
     conversation.owner = req.payload.data.userId
     await addFileToConv(conversation, req)
-
+    setJobsDataToImport(conversation)
     conversation = await conversationModel.createConversation(conversation)
 
     res.status(200).send({ message: 'Conversation imported' })
@@ -83,8 +92,10 @@ async function importTranscription(req, res) {
   } catch (err) {
     throw new ConversationMetadataRequire("Transcription is not a valid json")
   }
+
   const normalizeTranscription = segmentNormalizeText(transcription, conversation.locale, filter)
   conversation = SttWrapper.transcriptionToConversation(normalizeTranscription, conversation)
+  setJobsDataToImport(conversation)
 
   const result = await conversationModel.createConversation(conversation)
   if (result.insertedCount !== 1) throw new ConversationError()
