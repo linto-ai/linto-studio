@@ -229,7 +229,12 @@ async function searchConversation(req, res, next) {
 
 async function updateConversationRights(req, res, next) {
   try {
-      const reqOrigin = process.env.APP_URL
+      // Get request origin
+      let reqOrigin = null
+      if(!!req.headers['x-forwarded-host'] && req.headers ['x-forwarded-proto']) {
+        reqOrigin = `${req.headers ['x-forwarded-proto']}://${req.headers ['x-forwarded-host']}`
+      }
+        
       if (!req.params.conversationId) throw new ConversationIdRequire()
       if (req.body.right === undefined || !req.params.userId) throw new ConversationMetadataRequire("rights or userId are require")
 
@@ -251,18 +256,17 @@ async function updateConversationRights(req, res, next) {
       if (req.body.right === 0 && isInOrga.length === 0) {
           userRight = userRight.filter(usr => usr.userId !== req.params.userId)
           isAdded = true
-          /*
-          // Sendmail unsharing
-          const emailPayload = {
-            email: user[0].email,
-            type:"send_unshare_conversation",
-            subject: `Révocation de vos droit sur la conversation "${conversation[0].name}"`,
-            reqOrigin
+          if(reqOrigin !== null) {
+            // Sendmail unsharing
+            const emailPayload = {
+              email: user[0].email,
+              type:"send_unshare_conversation",
+              subject: `Révocation de vos droit sur la conversation "${conversation[0].name}"`,
+              reqOrigin
+            }
+            let sendmail = await sendMail(emailPayload)
+            if(!sendmail === 'mailSend') throw new NodemailerError()
           }
-          let sendmail = await sendMail(emailPayload)
-          if(!sendmail === 'mailSend') throw new NodemailerError()
-          */
-
       } else {
           const userIndex = userRight.findIndex(usr => usr.userId === req.params.userId)
           if (userIndex >= 0) {
@@ -275,23 +279,25 @@ async function updateConversationRights(req, res, next) {
       if (!isAdded) {
         const sharedByUser = await userModel.getUserById(req.payload.data.userId)
         if(sharedByUser.length !== 1) throw new UserNotFound()
-        const sharedBy = sharedByUser[0].firstname + ' ' + sharedByUser[0].lastname
-        const userNotif = user[0].notifications.sharing
+        const sharedByName = sharedByUser[0].firstname + ' ' + sharedByUser[0].lastname
+        const sharedByEmail = sharedByUser[0].email
+        const userNotif = user[0].emailNotifications.conversations.sharing
           // Send Mail
-          if(userNotif && user[0].accountActivated) {
+          if(userNotif && user[0].accountActivated && reqOrigin !== null) {
             const emailPayload = {
               email: user[0].email,
               type:"send_share_conversation",
               subject: "Partage d'une conversation",
               magicId: user[0].authLink.magicId,
               conversationId: req.params.conversationId,
-              sharedBy,
+              sharedByName,
+              sharedByEmail,
               reqOrigin
             }
             let sendmail = await sendMail(emailPayload)
             if(!sendmail === 'mailSend') throw new NodemailerError()
           }
-          userRight.push({ userId: req.params.userId, right: req.body.right, sharedBy: req.payload.data.userId })
+          userRight.push({ userId: req.params.userId.toString(), right: req.body.right, sharedBy: req.payload.data.userId })
       }
 
       isInOrga.length === 0 ? conversation[0].sharedWithUsers = userRight : conversation[0].organization.customRights = userRight
@@ -367,6 +373,7 @@ async function inviteUserByEmail(req, res, next) {
 async function inviteNewUser(req, res, next) {
   try {
     const email = req.body.email
+    console.log('Inviite user', req.headers)
     // Create new user in database
     const createdUser = await userModel.createExternalUser({email})
     let magicId = null
@@ -387,16 +394,19 @@ async function inviteNewUser(req, res, next) {
       // Send Mail
       const sharedByUser = await userModel.getUserById(req.payload.data.userId)
       if(sharedByUser.length !== 1) throw new UserNotFound()
-      const sharedBy = sharedByUser[0].firstname + ' ' + sharedByUser[0].lastname
+      const sharedByName = sharedByUser[0].firstname + ' ' + sharedByUser[0].lastname
+      const sharedByEmail = sharedByUser[0].email
       let sendmail = await sendMail({
         email,
         type:"send_share_external_link",
         subject: "Partage d'une conversation",
         conversationId: req.params.conversationId,
-        sharedBy,
+        sharedByName,
+        sharedByEmail,
         magicId,
         reqOrigin: req.headers.origin
       }) 
+      
       if(sendmail !== 'mailSend') throw new NodemailerError()
     }
 

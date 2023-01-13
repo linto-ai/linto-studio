@@ -149,7 +149,6 @@ async function createUser(req, res, next) {
           const sendmail = await sendMail({
             email: user.email,
             type:"send_account_created",
-            subject: "Conversation Manager - Validation de votre adresse email",
             magicId,
             reqOrigin
           })  
@@ -165,7 +164,7 @@ async function createUser(req, res, next) {
 
 async function updateUser(req, res, next) {
     try {
-        if (!(req.body.email || req.body.firstname || req.body.lastname || req.body.notifications )) throw new UserUnsupportedMediaType()
+        if (!(req.body.email || req.body.firstname || req.body.lastname || req.body.accountNotifications || req.body.emailNotifications )) throw new UserUnsupportedMediaType()
         const myUser = await userModel.getUserById(req.payload.data.userId)
         if (myUser.length !== 1) throw new UserNotFound()
         let user = myUser[0]
@@ -174,9 +173,18 @@ async function updateUser(req, res, next) {
         if (req.body.email) user.email = req.body.email
         if (req.body.firstname) user.firstname = req.body.firstname
         if (req.body.lastname) user.lastname = req.body.lastname
-        if(req.body.notifications) {
-          for(let key of Object.keys(req.body.notifications)){
-            user.notifications[key] = req.body.notifications[key] === 'true' ? true : false
+
+        
+        if(req.body.accountNotifications) {
+          for(let key of Object.keys(req.body.accountNotifications)){
+            user.accountNotifications[key] = req.body.accountNotifications[key]
+          }
+        }
+        if(req.body.emailNotifications) {
+          for(let keyParent of Object.keys(req.body.emailNotifications)){
+            for(let keyChild of Object.keys(req.body.emailNotifications[keyParent])) {
+              user.emailNotifications[keyParent][keyChild] = req.body.emailNotifications[keyParent][keyChild]
+            }
           }
         }
         if ((await userModel.getUserByEmail(req.body.email)).length !== 0) throw new UserConflict()
@@ -235,7 +243,11 @@ async function updateUserPassword(req, res, next) {
         if (myUser.length !== 1) throw new UserNotFound()
         const payload = {
             ...myUser[0],
-            newPassword: req.body.newPassword
+            newPassword: req.body.newPassword,
+            accountNotifications : {
+              updatePassword : false,
+              inviteAccount : false
+          }
         }
 
         req.body.email = myUser[0].email
@@ -330,7 +342,6 @@ async function recoverPassword(req, res, next) {
         email: req.body.email,
         magicId: user[0].authLink.magicId,
         type:"send_reset_link",
-        subject: "Mot de passe oublié",
         reqOrigin
       })  
       if(sendmail === 'mailSend') {
