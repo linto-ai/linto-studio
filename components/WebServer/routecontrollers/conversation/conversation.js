@@ -197,14 +197,13 @@ async function searchConversation(req, res, next) {
         for (const conv of filteredConv) {
             let addConv = false
             const textInConv = await conversationUtility.textInConversation(req.body.text, conv._id)
-
             // check if text is in conversation title
             if (!convInArray[conv._id]) {
                 if (searchType.includes('title') && conv.name.toLowerCase().includes(searchText)) {
                     addConv = true
                 }
                 // check if text is in conversation description
-                if (searchType.includes('description') && conv.description.toLowerCase().includes(searchText)) {
+                if (conv.description && searchType.includes('description') && conv.description.toLowerCase().includes(searchText)) {
                     addConv = true
                 }
                 // check if text is in conversation text
