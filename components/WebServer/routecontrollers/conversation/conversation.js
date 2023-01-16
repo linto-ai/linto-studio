@@ -373,7 +373,6 @@ async function inviteUserByEmail(req, res, next) {
 async function inviteNewUser(req, res, next) {
   try {
     const email = req.body.email
-    console.log('Inviite user', req.headers)
     // Create new user in database
     const createdUser = await userModel.createExternalUser({email})
     let magicId = null
