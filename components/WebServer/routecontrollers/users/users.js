@@ -148,6 +148,7 @@ async function createUser(req, res, next) {
           const reqOrigin = req.headers.origin
           const sendmail = await sendMail({
             email: user.email,
+            subject: 'Validation de votre compte',
             type:"send_account_created",
             magicId,
             reqOrigin
@@ -340,6 +341,7 @@ async function recoverPassword(req, res, next) {
       const user = await userModel.getUserByEmail(req.body.email) 
       let sendmail = await sendMail({
         email: req.body.email,
+        subject: 'Lien de connexion unique',
         magicId: user[0].authLink.magicId,
         type:"send_reset_link",
         reqOrigin

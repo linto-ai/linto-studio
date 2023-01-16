@@ -268,7 +268,8 @@ async function updateConversationRights(req, res, next) {
             const emailPayload = {
               email: user[0].email,
               type:"send_unshare_conversation",
-              subject: `Révocation de vos droit sur la conversation "${conversation[0].name}"`,
+              subject: `Révocation de vos droit sur une conversation`,
+              content: `Révocation de vos droit sur la conversation "${conversation[0].name}"`,
               reqOrigin
             }
             let sendmail = await sendMail(emailPayload)
