@@ -334,7 +334,7 @@ async function recoverPassword(req, res, next) {
     const userExist = await userModel.getUserByEmail(req.body.email)
     if(userExist.length === 1) {
       const reqOrigin = req.headers.origin
-      const generateMagicId = await userModel.setUserMagicLink(req.body.email, 30, 'm') // 30 minutes
+      const generateMagicId = await userModel.setUserMagicLink(req.body.email)
       if(generateMagicId.modifiedCount === 0) throw new GenerateMagicLinkError()
       
       const user = await userModel.getUserByEmail(req.body.email) 
