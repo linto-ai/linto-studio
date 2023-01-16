@@ -63,18 +63,20 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
             }
             const userInfo = await userModel.getUserById(swUser.userId)
             if(userInfo.length > 0) {
-              const userOrga = await organizationsModel.getOrganizationByName(userInfo[0].email)
-              
-              if (userOrga[0].type === 'public' || userOrga[0].name === myUserInfo[0].email) {
-                  if (swUser.userId === sharedById) {
-                      sharedByAdded = true
-                  }
-                  external_members.push({
-                      ...userInfo[0],
-                      role: 0,
-                      right: swUser.right
-                  })
-              }
+              if(userInfo.length === 1) {
+                const userOrga = await organizationsModel.getOrganizationByName(userInfo[0].email)
+                
+                if (userOrga[0].type === 'public' || userOrga[0].name === myUserInfo[0].email) {
+                    if (swUser.userId === sharedById) {
+                        sharedByAdded = true
+                    }
+                    external_members.push({
+                        ...userInfo[0],
+                        role: 0,
+                        right: swUser.right
+                    })
+                }
+              } else throw new UserNotFound()
             }
         }
 
