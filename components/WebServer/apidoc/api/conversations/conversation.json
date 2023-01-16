@@ -342,5 +342,61 @@
         }
       }
     }
+  },
+  "/api/conversations/{conversationId}/invite": {
+    "post": {
+      "tags": [
+        "conversations"
+      ],
+      "summary": "Invite an external or private user to a conversation",
+      "parameters": [{
+        "in": "path",
+        "name": "conversationId",
+        "type": "string",
+        "format": "uuid",
+        "required": true,
+        "description": "uuid string identifier for an conversation"
+      }],
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "format": "email"
+                }
+              },
+              "required": [
+                "email"
+              ]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Information about the conversation processus"
+                }
+              },
+              "example": {
+                "message": "Conversation updated"
+              }
+            }
+          }
+        }
+      },
+      "401": {
+        "$ref": "#/components/responses/Unauthorized"
+      }
+    }
   }
 }
