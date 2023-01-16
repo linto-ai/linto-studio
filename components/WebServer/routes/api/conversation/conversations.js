@@ -13,7 +13,8 @@ const { // Create conversation based on file
     searchConversation,
     updateConversation,
     updateConversationRights,
-    listSharedConversation
+    listSharedConversation,
+    inviteUserByEmail
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/conversation.js`)
 
 module.exports = (webserver) => {
@@ -80,6 +81,13 @@ module.exports = (webserver) => {
             requireAuth: true,
             requireConversationDeleteAccess: true,
             controller: deleteConversation
-        }
+        },
+        {
+          path: '/:conversationId/invite',
+          method: 'post',
+          requireAuth: true,
+          requireConversationShareAccess: true,
+          controller: inviteUserByEmail
+      }
     ]
 }

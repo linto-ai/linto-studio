@@ -135,26 +135,36 @@ async function createUser(req, res, next) {
 
         const createdUser = await userModel.createUser(user)
         if (createdUser.insertedCount !== 1) throw new UserError()
-        const createdOrganization = await organizationModel.createDefaultOrganization(createdUser.insertedId.toString(), user.email)
+        const createdOrganization = await organizationModel.createDefaultOrganization(createdUser.insertedId.toString(), {email: user.email})
 
         if (createdOrganization.insertedCount !== 1) {
             userModel.deleteById(createdUser.insertedId.toString())
             throw new UserError()
         }
-
+        
+        // Send email validation link
+        if(createdUser?.ops && createdUser?.ops.length > 0) {
+          const magicId = createdUser.ops[0].authLink.magicId
+          const reqOrigin = req.headers.origin
+          const sendmail = await sendMail({
+            email: user.email,
+            type:"send_account_created",
+            magicId,
+            reqOrigin
+          })  
+          if(sendmail !== 'mailSend') throw new NodemailerError()
+        }
         res.status(201).send({
-            message: 'User account created'
+            message: 'Account created. An email has been sent to you. Please open it and click on the link to validate your email address.'
         })
     } catch (err) {
         next(err)
-
     }
 }
 
 async function updateUser(req, res, next) {
     try {
-        if (!(req.body.email || req.body.firstname || req.body.lastname)) throw new UserUnsupportedMediaType()
-
+        if (!(req.body.email || req.body.firstname || req.body.lastname || req.body.accountNotifications || req.body.emailNotifications )) throw new UserUnsupportedMediaType()
         const myUser = await userModel.getUserById(req.payload.data.userId)
         if (myUser.length !== 1) throw new UserNotFound()
         let user = myUser[0]
@@ -164,6 +174,19 @@ async function updateUser(req, res, next) {
         if (req.body.firstname) user.firstname = req.body.firstname
         if (req.body.lastname) user.lastname = req.body.lastname
 
+        
+        if(req.body.accountNotifications) {
+          for(let key of Object.keys(req.body.accountNotifications)){
+            user.accountNotifications[key] = req.body.accountNotifications[key]
+          }
+        }
+        if(req.body.emailNotifications) {
+          for(let keyParent of Object.keys(req.body.emailNotifications)){
+            for(let keyChild of Object.keys(req.body.emailNotifications[keyParent])) {
+              user.emailNotifications[keyParent][keyChild] = req.body.emailNotifications[keyParent][keyChild]
+            }
+          }
+        }
         if ((await userModel.getUserByEmail(req.body.email)).length !== 0) throw new UserConflict()
         if ((await organizationModel.getOrganizationByName(req.body.email)).length !== 0) throw new OrganizationConflict()
         let organization = (await organizationModel.getOrganizationByName(userMail))[0]
@@ -220,7 +243,11 @@ async function updateUserPassword(req, res, next) {
         if (myUser.length !== 1) throw new UserNotFound()
         const payload = {
             ...myUser[0],
-            newPassword: req.body.newPassword
+            newPassword: req.body.newPassword,
+            accountNotifications : {
+              updatePassword : false,
+              inviteAccount : false
+          }
         }
 
         req.body.email = myUser[0].email
@@ -307,15 +334,14 @@ async function recoverPassword(req, res, next) {
     const userExist = await userModel.getUserByEmail(req.body.email)
     if(userExist.length === 1) {
       const reqOrigin = req.headers.origin
-      const generateResetId = await userModel.setUserResetLink(req.body.email)
-      if(generateResetId.modifiedCount === 0) throw new GenerateMagicLinkError()
-
+      const generateMagicId = await userModel.setUserMagicLink(req.body.email)
+      if(generateMagicId.modifiedCount === 0) throw new GenerateMagicLinkError()
+      
       const user = await userModel.getUserByEmail(req.body.email) 
       let sendmail = await sendMail({
         email: req.body.email,
-        resetId: user[0].resetId,
+        magicId: user[0].authLink.magicId,
         type:"send_reset_link",
-        subject: "Mot de passe oublié",
         reqOrigin
       })  
       if(sendmail === 'mailSend') {

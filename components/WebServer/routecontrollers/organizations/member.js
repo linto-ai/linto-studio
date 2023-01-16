@@ -85,7 +85,6 @@ async function listConversationFromOrganization(req, res, next) {
                 return
             }
         })
-
         let selfConvFromOrga = []
         conversations.filter(conv => {
             if (conv.owner === userId) {

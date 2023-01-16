@@ -53,9 +53,8 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
         const sharedWithUsers = conversation.sharedWithUsers
         let external_members = []
         let organization_members = []
-
+        
         const myUserInfo = await userModel.getUserById(userId)
-
         // external users (shared with users)
         for (const swUser of sharedWithUsers) {
             if (swUser.userId === userId) {
@@ -63,17 +62,21 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
                 sharedById = swUser.sharedBy
             }
             const userInfo = await userModel.getUserById(swUser.userId)
-            const userOrga = await organizationsModel.getOrganizationByName(userInfo[0].email)
-
-            if (userOrga[0].type === 'public' || userOrga[0].name === myUserInfo[0].email) {
-                if (swUser.userId === sharedById) {
-                    sharedByAdded = true
+            if(userInfo.length > 0) {
+              if(userInfo.length === 1) {
+                const userOrga = await organizationsModel.getOrganizationByName(userInfo[0].email)
+                
+                if (userOrga[0].type === 'public' || userOrga[0].name === myUserInfo[0].email) {
+                    if (swUser.userId === sharedById) {
+                        sharedByAdded = true
+                    }
+                    external_members.push({
+                        ...userInfo[0],
+                        role: 0,
+                        right: swUser.right
+                    })
                 }
-                external_members.push({
-                    ...userInfo[0],
-                    role: 0,
-                    right: swUser.right
-                })
+              } else throw new UserNotFound()
             }
         }
 

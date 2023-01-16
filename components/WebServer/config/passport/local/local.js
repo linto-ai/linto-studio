@@ -44,19 +44,20 @@ function generateUserToken(email, password, done) {
     }).catch(done)
 }
 const STRATEGY_MAGIC_LINK = new LocalStrategy({
-  usernameField: 'resetId',
+  usernameField: 'magicId',
   passwordField: 'psw',
-}, (resetId, psw, done) => generateResetUserToken(resetId, psw, done))
+}, (magicId, psw, done) => generateResetUserToken(magicId, psw, done))
 passport.use('local_magic_link', STRATEGY_MAGIC_LINK)
 
-function generateResetUserToken(resetId, psw, done) {
-  UsersModel.getUserByResetId(resetId).then(users => {
+async function generateResetUserToken(magicId, psw, done) {
+  const test = await UsersModel.getUserByMagicId(magicId)
+  UsersModel.getUserByMagicId(magicId).then(users => {
       if (users.length === 1) user = users[0]
       else if (users.length > 1) throw new MultipleUserFound()
       else throw new UserNotFound()
 
       if (!user) return done(new InvalidCredential())
-      else if(!moment().isBefore(user.resetDate)) return done(new ExpiredLink()) // expired token
+      else if(!moment().isBefore(user.authLink.validityDate)) return done(new ExpiredLink()) // expired token
 
       let tokenData = { // Data stored in the token
           salt: randomstring.generate(12),
@@ -65,7 +66,7 @@ function generateResetUserToken(resetId, psw, done) {
           userId: user._id
       }
 
-      UsersModel.update({ _id: user._id, keyToken: tokenData.salt, resetId : null, resetDate : null })
+      UsersModel.update({ _id: user._id, keyToken: tokenData.salt, authLink :{magicId: null, validityDate:null}, accountActivated: true })
           .then(user => {
               if (!user) return done(new UnableToGenerateKeyToken())
           }).catch(done)
