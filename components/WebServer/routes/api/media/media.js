@@ -7,16 +7,20 @@ module.exports = (webserver) => {
         method: 'get',
         requireAuth: true,
         requireConversationReadAccess: true,
-        controller: async(req, res, next) => {
-            const conversation = await conversationModel.getConvoById(req.params.conversationId)
-            if (conversation.length === 1) {
-                const fileName = conversation[0].metadata.audio.filepath.split('/').pop()
-                const file = `${process.cwd()}/${process.env.VOLUME_FOLDER}/${process.env.VOLUME_AUDIO_PATH}/${fileName}`
+        controller: async (req, res, next) => {
+            try {
+                const conversation = await conversationModel.getConvoById(req.params.conversationId)
+                if (conversation.length === 1 && conversation[0].metadata && conversation[0].metadata.audio && conversation[0].metadata.audio.filepath) {
+                    const fileName = conversation[0].metadata.audio.filepath.split('/').pop()
+                    const file = `${process.cwd()}/${process.env.VOLUME_FOLDER}/${process.env.VOLUME_AUDIO_PATH}/${fileName}`
                     // TODO: handle file type (mp3, wav, etc)
-                res.setHeader('Content-Type', 'audio/mpeg')
-                res.sendFile(file)
-            } else {
-                res.status(401).send({ message: 'Conversation audio not found' })
+                    res.setHeader('Content-Type', 'audio/mpeg')
+                    res.sendFile(file)
+                } else {
+                    res.status(404).send({ message: 'Conversation audio not found' })
+                }
+            } catch (err) {
+                next(err)
             }
         }
     }]

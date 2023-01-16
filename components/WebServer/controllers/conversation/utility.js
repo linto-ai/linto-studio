@@ -72,7 +72,7 @@ async function getUserRightFromConversation(userId, conversation) {
         }
 
         // If owner of the conversation > admin rights
-        if(conversation.owner === userId) access.right = CONVERSATION_RIGHTS.adminRight()
+        if (conversation.owner === userId) access.right = CONVERSATION_RIGHTS.adminRight()
 
         return {
             access,
@@ -83,16 +83,24 @@ async function getUserRightFromConversation(userId, conversation) {
     }
 }
 
-
-async function textInConversation (text, conversationId) {
-  const conversation = (await conversationModel.getConvoById(conversationId))[0]
-  for (const turn of conversation.text) {
-    if (turn.raw_segment.toLowerCase().includes(text.toLowerCase())) {
-      return true
+async function getUserRightFromConversationList(userId, conversations) {
+    for (let conv of conversations) {
+        const data = await getUserRightFromConversation(userId, conv)
+        conv.userAccess = data.access
     }
-  }
-  return false
+    return conversations
 }
 
 
-module.exports = { getUserConversation, getUserRightFromConversation, textInConversation }
+async function textInConversation(text, conversationId) {
+    const conversation = (await conversationModel.getConvoById(conversationId))[0]
+    for (const turn of conversation.text) {
+        if (turn.raw_segment.toLowerCase().includes(text.toLowerCase())) {
+            return true
+        }
+    }
+    return false
+}
+
+
+module.exports = { getUserConversation, getUserRightFromConversation, getUserRightFromConversationList, textInConversation }

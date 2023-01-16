@@ -1,0 +1,90 @@
+{
+  "TranscriptionModel": {
+    "type": "object",
+    "properties": {
+      "transcription_result": {
+        "type": "string",
+        "description": "The transcription result"
+      },
+      "raw_transcription": {
+        "type": "string",
+        "description": "The raw transcription result"
+      },
+      "confidence": {
+        "type": "number",
+        "description": "The confidence of the transcription"
+      },
+      "segment" :{
+        "type": "array",
+        "description": "The segments of the transcription",
+        "item": {
+          "type": "object",
+          "properties": {
+            "spk_id": {
+              "type": "string",
+              "description": "The speaker id"
+            },
+            "start": {
+              "type": "number",
+              "description": "The start time of the segment"
+            },
+            "end": {
+              "type": "number",
+              "description": "The end time of the segment"
+            },
+            "duration": {
+              "type": "number",
+              "description": "The duration of the segment"
+            },
+            "raw_segment": {
+              "type": "string",
+              "description": "The raw segment"
+            },
+            "segment": {
+              "type": "string",
+              "description": "The segment"
+            },
+            "words": {
+              "type": "array",
+              "description": "The words",
+              "items": {
+                "$ref": "#/components/schemas/Word"
+              }
+            }
+          }
+        }
+
+      }
+
+    },
+    "example": {
+      "transcription_result": "spk1: Bonjour, je vais donner quelques chiffres, hein, deux, cinq \nspk2: Et. Je vais en donner encore d'autres \nspk3: Huit, douze, un petit dernier, dix mille",
+      "raw_transcription": "bonjour je vais donner quelques chiffres hein deux cinq et je vais en donner encore d' autres huit douze un petit dernier dix mille",
+      "confidence": 0.9325185416666666,
+      "segments": [
+        {
+          "spk_id": "spk1",
+          "start": 0.33,
+          "end": 7.199999999999999,
+          "duration": 6.869999999999999,
+          "raw_segment": "bonjour je vais donner quelques chiffres hein deux cinq",
+          "segment": "Bonjour, je vais donner quelques chiffres, hein, deux, cinq",
+          "words": [
+            {
+              "word": "bonjour",
+              "start": 0.33,
+              "end": 0.96,
+              "conf": 1
+            },
+            {
+              "word": "cinq",
+              "start": 6.51,
+              "end": 7.199999999999999,
+              "conf": 1
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

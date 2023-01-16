@@ -134,6 +134,8 @@ async function listConversation(req, res, next) {
     try {
         const userId = req.payload.data.userId
         const convList = await conversationUtility.getUserConversation(userId)
+        convList = await conversationUtility.getUserRightFromConversationList(userId, convList)
+
         res.status(200).send({
             conversations: convList
         })
@@ -146,6 +148,8 @@ async function listSharedConversation(req, res, next) {
     try {
         const userId = req.payload.data.userId
         let convList = await conversationModel.getConvoByShare(userId)
+        convList = await conversationUtility.getUserRightFromConversationList(userId, convList)
+
         for (let conv of convList) {
             for (let user of conv.sharedWithUsers) {
                 if (user.userId === userId) {
@@ -154,6 +158,7 @@ async function listSharedConversation(req, res, next) {
                     break
                 }
             }
+            delete conv.organization
             delete conv.sharedWithUsers
         }
 
@@ -218,6 +223,9 @@ async function searchConversation(req, res, next) {
             }
 
         }
+
+        convSearch = await conversationUtility.getUserRightFromConversationList(userId, convSearch)
+
         res.status(200).send({
             searchType,
             conversations: convSearch

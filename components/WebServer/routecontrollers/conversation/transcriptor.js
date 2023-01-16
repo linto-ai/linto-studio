@@ -1,12 +1,12 @@
 const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:conversation:transcriptor`)
 const FormData = require('form-data');
 const axios = require(`${process.cwd()}/lib/utility/axios`)
-const utf8 = require('utf8');
+const utf8 = require('utf8')
 
 const { v4: uuidv4 } = require('uuid');
 
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
-const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
+const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
 
 const { createJobInterval } = require(`${process.cwd()}/components/WebServer/controllers/jobsHandler`)
 
@@ -44,7 +44,7 @@ async function transcribe(isSingleFile, req, res, next) {
     if (!req.body.membersRight) req.body.membersRight = CONVERSATION_RIGHT.READ + CONVERSATION_RIGHT.COMMENT
     if (!req.body.endpoint) throw new ConversationMetadataRequire("serviceEndpoint param is required")
 
-    req.body.organizationId = await checkOrganization(req.body.organizationId, userId)
+    req.body.organizationId = await orgaUtility.checkOrganization(req.body.organizationId, userId)
     req.body.userId = userId
     req.body.filter = {}
 
@@ -128,18 +128,6 @@ async function createConversationAndJobInterval(service, processing_job, body) {
         return conversation
     }
 }
-
-async function checkOrganization(organizationId, userId) {
-    if (organizationId) {
-        const organization = await organizationModel.getOrganizationById(organizationId)
-        if (organization.length === 1) return organizationId
-    } else {
-        const organizations = await organizationModel.getPersonalOrganization(userId)
-        if (organizations[0]?._id) return organizations[0]._id.toString()
-    }
-    throw new OrganizationNotFound()
-}
-
 
 module.exports = {
     transcribeReq

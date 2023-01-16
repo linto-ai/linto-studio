@@ -25,6 +25,8 @@ async function getResult(host, processing_job, job, conversation) {
         if (result && processing_job.type === 'transcription') {
             const normalizeTranscription = segmentNormalizeText(result, conversation.locale, processing_job.filter)
             conversation = SttWrapper.transcriptionToConversation(normalizeTranscription, conversation)
+
+            conversation.jobs.transcription.type = 'transcription'
             ConvoModel.updateConvOnTranscriptionResult(conversation._id, conversation)
         } else if (result && processing_job.type === 'keyword') {
             ConvoModel.updateKeyword(conversation._id, { ...conversation.keywords, ...result })
