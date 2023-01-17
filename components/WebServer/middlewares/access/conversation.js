@@ -49,8 +49,8 @@ function checkConvAccess(next, conversationId, userId, rightConvo, rightExceptio
       return
     }
     ConversationModel.getConvoById(conversationId, projection).then(conversationRes => {
+      const conversation = conversationRes[0]
       if (conversationRes.length === 1) {
-        const conversation = conversationRes[0]
         if (conversation.owner === userId) { // If owner got all rights
           isToNext = callNext(next, isToNext)
         } else {

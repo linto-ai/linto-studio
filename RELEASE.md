@@ -1,7 +1,22 @@
+# 1.0.3
+- Implementation of a migration system
+  - Swagger schema match the database version
+- Added an import endpoint to create conversation
+- Manage email sending on some route (share external user, reset password, create user)
+- Fix a bug on missing conversation audio
+- Fix a bug on first mongo migration (on version collection creation)
+
 # 1.0.2
 - Swagger
   - Added swagger documentation
   - Added swagger ui
+- Handle mailing service
+  - reset password
+- Handle magic-link authentification
+- API now manage split conversation turn
+- API now manage multi-file for conversation
+- Update list service to get information on gateway
+- Added an merge turn api
 
 # 1.0.1
 - API updates

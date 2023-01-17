@@ -25,6 +25,8 @@ async function getResult(host, processing_job, job, conversation) {
         if (result && processing_job.type === 'transcription') {
             const normalizeTranscription = segmentNormalizeText(result, conversation.locale, processing_job.filter)
             conversation = SttWrapper.transcriptionToConversation(normalizeTranscription, conversation)
+
+            conversation.jobs.transcription.type = 'transcription'
             ConvoModel.updateConvOnTranscriptionResult(conversation._id, conversation)
         } else if (result && processing_job.type === 'keyword') {
             ConvoModel.updateKeyword(conversation._id, { ...conversation.keywords, ...result })
@@ -52,8 +54,7 @@ async function createJobInterval(host, conversation, processing_job) {
             }
 
             if (job_info.state === 'done' && job_info.result_id) { //triger last request
-                updateConversation(conversation, processing_job, job_info)
-
+                conversation.jobs.transcription = job_info
                 getResult(host, processing_job, job_status, conversation)
 
                 debug('jobs done')
@@ -85,7 +86,6 @@ function updateConversation(conversation, processing_job, job_info) {
         conversation.jobs.keyword = job_info
     }
     ConvoModel.updateJob(id, conversation.jobs)
-
 }
 
 module.exports = { createJobInterval }

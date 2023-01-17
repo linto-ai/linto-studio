@@ -12,8 +12,16 @@ class App {
             process.env.COMPONENTS.split(',').reduce((prev, componentFolderName) => {
                 return prev.then(async () => { await this.use(componentFolderName) })
             }, Promise.resolve()).then(async () => {
+
                 if (this.components['WorkerWatcher'] !== undefined) {
                     await this.components['WorkerWatcher'].discovery()
+                }
+
+                if (this.components['MongoMigration'] !== undefined) {
+                    await this.components['MongoMigration'].migrate()
+
+                    delete this.components['MongoMigration']
+                    console.log(`MongoMigration unloaded`)
                 }
             })
 

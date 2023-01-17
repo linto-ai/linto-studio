@@ -1,5 +1,5 @@
 const Component = require(`../component.js`)
-const path = require("path")
+const fs = require('fs')
 const debug = require('debug')(`linto:components:webserver`)
 const express = require('express')
 const fileUpload = require('express-fileupload')
@@ -65,7 +65,7 @@ class WebServer extends Component {
         require('./routes/router.js')(this) // Loads all defined routes
         WebServerErrorHandler.init(this) // Manage error from controllers
 
-        if(!process.env.WEBSERVER_SWAGGER_HTTP_HOST)
+        if (!process.env.WEBSERVER_SWAGGER_HTTP_HOST)
             process.env.WEBSERVER_SWAGGER_HTTP_HOST = "localhost"
 
         swaggerDocument.definition.host = process.env.WEBSERVER_SWAGGER_HTTP_HOST + ":" + process.env.WEBSERVER_HTTP_PORT
@@ -73,6 +73,21 @@ class WebServer extends Component {
         swaggerDocument.definition.components = {
             ...swaggerDocument.definition.components,
             ...require('./apidoc/components/index.js')
+        }
+
+        try {
+            const availabelVersion = fs.readdirSync(`${process.cwd()}/components/WebServer/apidoc/components/schemas/`)
+            for (let version of availabelVersion) {
+                // availabelVersion.forEach(version => {
+                swaggerDocument.definition.components.schemas = {
+                    ...swaggerDocument.definition.components.schemas,
+                    ...require(`./apidoc/components/schemas/${version}/index.js`)
+                }
+                if (version === process.env.DB_MIGRATION_TARGET) break
+            }
+        } catch (err) {
+            debug('Error while loading swagger schema')
+            debug(err)
         }
 
         swaggerDocument.apis = ["./apidoc/"]

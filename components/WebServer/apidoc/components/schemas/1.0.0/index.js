@@ -1,0 +1,15 @@
+module.exports = {
+  ...require('./conversation-list.json'),
+  ...require('./conversation.json'),
+  ...require('./organization-users.json'),
+  ...require('./organization.json'),
+  ...require('./service.json'),
+  ...require('./services.json'),
+  ...require('./speakers.json'),
+  ...require('./turn.json'),
+  ...require('./transcription-config.json'),
+  ...require('./transcription-model.json'),
+  ...require('./user-role.json'),
+  ...require('./user.json'),
+  ...require('./word.json')
+}

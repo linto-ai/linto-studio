@@ -53,44 +53,48 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
         const sharedWithUsers = conversation.sharedWithUsers
         let external_members = []
         let organization_members = []
-
+        
         const myUserInfo = await userModel.getUserById(userId)
-
-        // external users (shared with users)
+        // Show user if public
         for (const swUser of sharedWithUsers) {
-            if (swUser.userId === userId) {
+            if (swUser.sharedBy === userId) {
                 isShare = true
                 sharedById = swUser.sharedBy
             }
             const userInfo = await userModel.getUserById(swUser.userId)
-            const userOrga = await organizationsModel.getOrganizationByName(userInfo[0].email)
-
-            if (userOrga[0].type === 'public' || userOrga[0].name === myUserInfo[0].email) {
-                if (swUser.userId === sharedById) {
-                    sharedByAdded = true
-                }
-                external_members.push({
-                    ...userInfo[0],
-                    role: 0,
-                    right: swUser.right
-                })
-            }
-        }
-
-        if (sharedById && !sharedByAdded) {
-            for (const swUser of sharedWithUsers) {
-                if (swUser.userId === sharedById) {
-                    sharedByAdded = true
-                    const userInfo = await userModel.getUserById(swUser.userId)
+            if(userInfo.length > 0) {
+              if(userInfo.length === 1) {
+                const userOrga = await organizationsModel.getOrganizationByName(userInfo[0].email)
+                
+                if (userOrga[0].type === 'public' || userOrga[0].name === myUserInfo[0].email) {
+                    if (swUser.userId === sharedById) {
+                        sharedByAdded = true
+                    }
                     external_members.push({
                         ...userInfo[0],
                         role: 0,
                         right: swUser.right
                     })
                 }
+              } else throw new UserNotFound()
             }
         }
-
+        // Show user if private and ashaerd by loged user
+        if (sharedById && !sharedByAdded) {
+            for (const swUser of sharedWithUsers) {
+                if (swUser.sharedBy === sharedById) {
+                    sharedByAdded = true
+                    const userInfo = await userModel.getUserById(swUser.userId)
+                    if(external_members.findIndex(usr => usr._id.toString() === swUser.userId) < 0) {
+                      external_members.push({
+                        ...userInfo[0],
+                        role: 0,
+                        right: swUser.right
+                    })
+                  }
+                }
+            }
+        }
         //  organization members default rights
         if (organiaztion.type === 'public' || (organiaztion.type === 'private' && isShare === false)) {
             for (const oUser of organizationUsers) {
