@@ -2,7 +2,9 @@
 - Implementation of a migration system
   - Swagger schema match the database version
 - Added an import endpoint to create conversation
+- Manage email sending on some route (share external user, reset password, create user)
 - Fix a bug on missing conversation audio
+- Fix a bug on first mongo migration (on version collection creation)
 
 # 1.0.2
 - Swagger
