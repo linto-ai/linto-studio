@@ -55,9 +55,9 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
         let organization_members = []
         
         const myUserInfo = await userModel.getUserById(userId)
-        // external users (shared with users)
+        // Show user if public
         for (const swUser of sharedWithUsers) {
-            if (swUser.userId === userId) {
+            if (swUser.sharedBy === userId) {
                 isShare = true
                 sharedById = swUser.sharedBy
             }
@@ -79,21 +79,22 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
               } else throw new UserNotFound()
             }
         }
-
+        // Show user if private and ashaerd by loged user
         if (sharedById && !sharedByAdded) {
             for (const swUser of sharedWithUsers) {
-                if (swUser.userId === sharedById) {
+                if (swUser.sharedBy === sharedById) {
                     sharedByAdded = true
                     const userInfo = await userModel.getUserById(swUser.userId)
-                    external_members.push({
+                    if(external_members.findIndex(usr => usr._id.toString() === swUser.userId) < 0) {
+                      external_members.push({
                         ...userInfo[0],
                         role: 0,
                         right: swUser.right
                     })
+                  }
                 }
             }
         }
-
         //  organization members default rights
         if (organiaztion.type === 'public' || (organiaztion.type === 'private' && isShare === false)) {
             for (const oUser of organizationUsers) {
