@@ -166,6 +166,7 @@ async function createUser(req, res, next) {
 async function updateUser(req, res, next) {
     try {
         if (!(req.body.email || req.body.firstname || req.body.lastname || req.body.accountNotifications || req.body.emailNotifications )) throw new UserUnsupportedMediaType()
+
         const myUser = await userModel.getUserById(req.payload.data.userId)
         if (myUser.length !== 1) throw new UserNotFound()
         let user = myUser[0]
@@ -332,13 +333,12 @@ async function deleteUser(req, res, next) {
 async function recoverPassword(req, res, next) {
   try {
     if (!req.body.email) throw new UserUnsupportedMediaType()
-    const userExist = await userModel.getUserByEmail(req.body.email)
-    if(userExist.length === 1) {
+    const user = await userModel.getUserByEmail(req.body.email)
+    if(user.length === 1) {
       const reqOrigin = req.headers.origin
       const generateMagicId = await userModel.setUserMagicLink(req.body.email)
       if(generateMagicId.modifiedCount === 0) throw new GenerateMagicLinkError()
-      
-      const user = await userModel.getUserByEmail(req.body.email) 
+      const user = await userModel.getUserByEmail(req.body.email)
       let sendmail = await sendMail({
         email: req.body.email,
         subject: 'Lien de connexion unique',
@@ -352,6 +352,10 @@ async function recoverPassword(req, res, next) {
           message: 'An email with an authentication link has been sent to you.'
         })
       } else throw new NodemailerError()
+
+      const updateNotif = await userModel.update({_id: user[0]._id, accountNotifications:{...user[0].accountNotifications, updatePassword: true}}) // update account notifications
+      if (updateNotif.matchedCount === 0) throw new UserError()
+
     } 
     else {
       // if user is not found, fake a success to secure database informations
