@@ -50,7 +50,6 @@ const STRATEGY_MAGIC_LINK = new LocalStrategy({
 passport.use('local_magic_link', STRATEGY_MAGIC_LINK)
 
 async function generateResetUserToken(magicId, psw, done) {
-  const test = await UsersModel.getUserByMagicId(magicId)
   UsersModel.getUserByMagicId(magicId).then(users => {
       if (users.length === 1) user = users[0]
       else if (users.length > 1) throw new MultipleUserFound()

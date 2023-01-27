@@ -8,7 +8,7 @@ const {
     updateUserPassword,
     updateUserPicture,
     deleteUser,
-    recoverPassword,
+    recoveryAuth,
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/users/users.js`)
 
 const auth_middleware = require(`${process.cwd()}/components/WebServer/config/passport/local/middleware`)
@@ -65,10 +65,10 @@ module.exports = (webserver) => {
         controller: getUserById
     },
     {
-      path: '/reset-password',
-      method: 'post',
-      requireAuth: false,
-      controller: recoverPassword
+        path: '/reset-password',
+        method: 'post',
+        requireAuth: false,
+        controller: recoveryAuth
     }
     ]
 }

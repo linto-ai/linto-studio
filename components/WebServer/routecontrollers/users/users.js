@@ -18,10 +18,6 @@ const {
     GenerateMagicLinkError
 } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
 
-const {
-    NodemailerError
-} = require(`${process.cwd()}/components/WebServer/error/exception/nodemailer`)
-
 async function createUser(req, res, next) {
     try {
         const user = req.body
@@ -47,10 +43,9 @@ async function createUser(req, res, next) {
             throw new UserError()
         }
 
-        const magicId = createdUser.ops[0].authLink.magicId
-        let mail_result = await Mailing.accountCreate(user.email, req, magicId)
-        if(!mail_result) debug('Error when sending mail')
-        // }
+        const mail_result = await Mailing.accountCreate(user.email, req, createdUser.ops[0].authLink.magicId)
+        if (!mail_result) debug('Error when sending mail')
+
         res.status(201).send({
             message: 'Account created. An email has been sent to you. Please open it and click on the link to validate your email address.'
         })
@@ -61,27 +56,7 @@ async function createUser(req, res, next) {
 
 async function listUser(req, res, next) {
     try {
-        let userId = req.payload.data.userId
-        let allUsers = await model.user.getAllUsers()
-        let allOrganizations = await model.organization.getAllOrganizations()
-        let publicUsers = []
-
-        // Get all users with "public" personal organization
-        allUsers.map(user => {
-            let userOrga = allOrganizations.find(orga => orga.owner.toString() === user._id.toString() && orga.personal === true)
-            if (userOrga.type === 'public') publicUsers.push(user)
-        })
-
-        // Get users in current user organizations
-        let userOrganizations = allOrganizations.filter(orga => !orga.personal && (orga.owner === userId || orga.users.findIndex(usr => usr.userId === userId) >= 0))
-        userOrganizations.map(uorga => {
-            for (let user of uorga.users) {
-                if (publicUsers.findIndex(usr => usr._id.toString() === user.userId.toString()) < 0) {
-                    publicUsers.push(allUsers.find(auser => auser._id.toString() === user.userId.toString()))
-                }
-            }
-        })
-
+        const publicUsers = await model.user.listPublicUsers()
         res.status(200).send(publicUsers)
     } catch (err) {
         next(err)
@@ -91,53 +66,21 @@ async function listUser(req, res, next) {
 
 async function searchUser(req, res, next) {
     try {
-        if (!req.body.search)
-            throw new UserUnsupportedMediaType()
+        if (!req.body.search) throw new UserUnsupportedMediaType()
 
-        let userId = req.payload.data.userId
-        let userList = await model.user.getAllUsers()
-        let allOrganizations = await model.organization.getAllOrganizations()
-        let filterUser = []
-
-        // Filter not searched user
-        searchUser = userList.map(user => {
+        const userList = (await model.user.listPublicUsers()).filter(user => {
             const userField = [user.firstname, user.lastname, user.email,
             user.firstname + ' ' + user.lastname, user.lastname + ' ' + user.firstname]
 
-            const fieldFind = userField
+            const find = userField
                 .map(field => field.toLowerCase())
                 .filter(field => field.indexOf(req.body.search.toLowerCase()) >= 0)
 
-            if (fieldFind.length > 0) return user
-        }).filter(user => user !== undefined)
-
-        if (searchUser.length === 0) throw new UserNotFound()
-
-        // Get users in user current related organizations
-        let userOrganizations = allOrganizations.filter(orga => !orga.personal && (orga.owner === userId || orga.users.findIndex(usr => usr.userId === userId) >= 0))
-
-        userOrganizations.map(uorga => {
-            uorga.users.map(user => {
-                searchUser = searchUser.filter(usr => {
-                    if (usr._id.toString() === user.userId.toString()) {
-                        filterUser.push(usr)
-                        return false
-                    }
-                    return true
-                })
-            })
+            return (find.length > 0)
         })
 
-        // Get all users with "public" personal organization
-        searchUser.map(user => {
-            let userOrga = allOrganizations.find(orga => orga.owner.toString() === user._id.toString() && orga.personal === true)
-            if (userOrga?.type === 'public') {
-                filterUser.push(user)
-                return false
-            }
-        })
-
-        res.status(200).send(filterUser)
+        if (searchUser.length === 0) res.status(204).send()
+        else res.status(200).send(userList)
     } catch (err) {
         next(err)
     }
@@ -145,7 +88,7 @@ async function searchUser(req, res, next) {
 
 async function getUserById(req, res, next) {
     try {
-        const userList = await model.user.getUserById(req.params.userId)
+        const userList = await model.user.getUserById(req.params.userId, true)
         if (userList && userList.length !== 1) throw new UserNotFound()
 
         res.status(200).send({
@@ -163,9 +106,11 @@ async function updateUser(req, res, next) {
         const myUser = await model.user.getUserById(req.payload.data.userId)
         if (myUser.length !== 1) throw new UserNotFound()
         let user = myUser[0]
-        const userMail = user.email
 
-        if (req.body.email) user.email = req.body.email
+        if (req.body.email) {
+            if ((await model.user.getUserByEmail(req.body.email)).length === 1) throw new UserConflict("Email already used")
+            user.email = req.body.email
+        }
         if (req.body.firstname) user.firstname = req.body.firstname
         if (req.body.lastname) user.lastname = req.body.lastname
 
@@ -182,23 +127,11 @@ async function updateUser(req, res, next) {
                 }
             }
         }
-        if ((await model.user.getUserByEmail(req.body.email)).length !== 0) throw new UserConflict()
-        if ((await model.organization.getOrganizationByName(req.body.email)).length !== 0) throw new OrganizationConflict()
-        let organization = (await model.organization.getOrganizationByName(userMail))[0]
-
-        if (req.body.email && organization?.personal === true) {
-            organization.name = req.body.email
-            let res = await model.organization.update(organization)
-        }
 
         const result = await model.user.update(user)
         if (result.matchedCount === 0) throw new UserError()
-        let message
-
-        (result.modifiedCount === 1) ? message = 'User updated' : message = 'No modification to user'
-        res.status(200).send({
-            message
-        })
+        else if (result.modifiedCount === 1) res.status(200).send({ message: 'User updated' })
+        else res.status(200).send({ message: 'No modification to user' })
     } catch (err) {
         next(err)
     }
@@ -234,21 +167,7 @@ async function updateUserPassword(req, res, next) {
     try {
         if (!req.body.newPassword) throw new UserUnsupportedMediaType()
 
-        const myUser = await model.user.getUserById(req.payload.data.userId)
-        if (myUser.length !== 1) throw new UserNotFound()
-        const payload = {
-            ...myUser[0],
-            newPassword: req.body.newPassword,
-            accountNotifications: {
-                updatePassword: false,
-                inviteAccount: false
-            }
-        }
-
-        req.body.email = myUser[0].email
-        req.body.password = req.body.newPassword
-
-        const result = await model.user.updatePassword(payload)
+        const result = await model.user.updatePassword(req.payload.data.userId, req.body.newPassword)
         if (result.matchedCount === 0) throw new UserError()
 
         res.status(200).send({
@@ -262,22 +181,37 @@ async function updateUserPassword(req, res, next) {
 async function logout(req, res, next) {
     try {
         if (!req.payload.data && !req.payload.data.userId) throw new UserUnsupportedMediaType()
-        let userId = model.user.getObjectId(req.payload.data.userId)
+        const result = await model.user.logout(req.payload.data.userId)
+        if (result.matchedCount === 0) throw new UserError()
 
-        model.user.update({
-            _id: userId,
-            keyToken: ''
-        }).then(user => {
-            if (user)
-                res.status(200).send({
-                    message: 'User has been disconnected'
-                })
-            else throw new UserError()
-        })
+        res.status(200).send({ message: 'User has been disconnected' })
     } catch (err) {
         next(err)
     }
 }
+
+async function recoveryAuth(req, res, next) {
+    try {
+        if (!req.body.email) throw new UserUnsupportedMediaType()
+        const userList = await model.user.getUserByEmail(req.body.email, true)
+        if (userList.length !== 1) {
+            debug(`Forgotten password request for an unknown or invalid email address: ${req.body.email}`)
+            res.status(200).send({
+                message: 'An email with an authentication link has been sent to you.'
+            })
+        } else {
+            const updatedUser = await model.user.generateMagicLink(userList[0])
+            if (updatedUser.modifiedCount === 0) throw new GenerateMagicLinkError()
+
+            const mail_result = await Mailing.resetPassword(userList[0].email, req, updatedUser.data.magicId)
+            if (!mail_result) res.status(400).send({ message: 'Error while sending email' })
+            else res.status(200).send({ message: 'An email with an authentication link has been sent to you.' })
+        }
+    } catch (error) {
+        next(error)
+    }
+}
+
 
 async function deleteUser(req, res, next) {
     try {
@@ -286,8 +220,7 @@ async function deleteUser(req, res, next) {
         // Remove user from organizations
         const organizations = await model.organization.getAllOrganizations()
         organizations.filter(organization => {
-            if (organization.owner !== userId && organization.personal === true) return false
-            else if (organization.owner === userId && organization.users.length === 0) return true
+            if (organization.owner === userId && organization.users.length === 0) return true
             else if ((organization.users.filter(user => user.userId === userId)).length !== 0) return true
         }).map(async (organization) => {
             if (organization.owner === userId && organization.users.length === 1) {
@@ -323,46 +256,6 @@ async function deleteUser(req, res, next) {
     }
 }
 
-async function recoverPassword(req, res, next) {
-    try {
-        if (!req.body.email) throw new UserUnsupportedMediaType()
-        const user = await model.user.getUserByEmail(req.body.email)
-        if (user.length === 1) {
-            const reqOrigin = req.headers.origin
-            const generateMagicId = await model.user.setUserMagicLink(req.body.email)
-            if (generateMagicId.modifiedCount === 0) throw new GenerateMagicLinkError()
-            const user = await model.user.getUserByEmail(req.body.email)
-            let sendmail = await sendMail({
-                email: req.body.email,
-                subject: 'Lien de connexion unique',
-                magicId: user[0].authLink.magicId,
-                type: "send_reset_link",
-                reqOrigin
-            })
-            if (sendmail === 'mailSend') {
-                res.status(200).send({
-                    status: 'success',
-                    message: 'An email with an authentication link has been sent to you.'
-                })
-            } else throw new NodemailerError()
-
-            const updateNotif = await model.user.update({ _id: user[0]._id, accountNotifications: { ...user[0].accountNotifications, updatePassword: true } }) // update account notifications
-            if (updateNotif.matchedCount === 0) throw new UserError()
-
-        }
-        else {
-            // if user is not found, fake a success to secure database informations
-            debug(`Forgotten password request for an unknown or invalid email address: "${req.body.email}"`)
-            res.status(200).send({
-                status: 'success',
-                message: 'An email with an authentication link has been sent to you.'
-            })
-        }
-    } catch (error) {
-        console.error(error)
-        next(error)
-    }
-}
 
 module.exports = {
     listUser,
@@ -374,5 +267,5 @@ module.exports = {
     updateUser,
     updateUserPassword,
     updateUserPicture,
-    recoverPassword
+    recoveryAuth
 }
