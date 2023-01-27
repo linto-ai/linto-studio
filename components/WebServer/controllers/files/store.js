@@ -4,8 +4,8 @@ const { v4: uuidv4 } = require('uuid');
 const fs = require('fs')
 const path = require('path')
 
-const { transformAudio, mergeAudio, mergeChannel } = require(`${process.cwd()}/components/WebServer/controllers/files/transform`)
-const { generateAudioWaveform }  = require(`${process.cwd()}/components/WebServer/controllers/files/waveform.js`)
+const { transformAudio, mergeAudio, generateAudioWaveform, mergeChannel } = require(`${process.cwd()}/components/WebServer/controllers/files/transform`)
+
 /*
 ffmpeg -i in.whatever -vn -ar 16000 -ac 1 -b:a 96k out.mp3
 ffmpeg -i in.whatever -vn -c:a aac -ar 16000 -ac 1 -b:a 64k out.m4a

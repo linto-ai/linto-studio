@@ -9,17 +9,10 @@ RUN apt-get update -y && \
 
 RUN apt-get install -y \
     build-essential \
-    libsndfile1-dev \
-    libsamplerate0-dev \
-    libfftw3-dev \
     libboost-program-options-dev \
-    libboost-test-dev \
     libboost-filesystem-dev \
-    libboost-iostreams-dev \
-    libboost-regex-dev \
     libboost-date-time-dev \
-    libboost-thread-dev \
-    libboost-system-dev \
+    libboost-regex-dev \
     libmad0-dev \
     libid3tag0-dev \ 
     libgd-dev

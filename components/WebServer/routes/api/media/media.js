@@ -31,7 +31,6 @@ module.exports = (webserver) => {
                     res.status(404).send({ message: 'Conversation audio not found' })
                 }
             } catch (err) {
-              console.error(error)
                 next(err)
             }
         }
