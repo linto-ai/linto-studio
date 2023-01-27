@@ -1,8 +1,9 @@
+const Mail = require('nodemailer/lib/mailer')
+
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:user')
-const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
-const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
-const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
-const { sendMail } = require(`${process.cwd()}/lib/nodemailer`)
+const model = require(`${process.cwd()}/lib/mongodb/models`)
+
+const Mailing = require(`${process.cwd()}/lib/mailer/mailing`)
 const { storeFile, defaultPicture, deleteFile, getStorageFolder } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 
 const {
@@ -18,14 +19,51 @@ const {
 } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
 
 const {
-  NodemailerError
+    NodemailerError
 } = require(`${process.cwd()}/components/WebServer/error/exception/nodemailer`)
+
+async function createUser(req, res, next) {
+    try {
+        const user = req.body
+        let organizationName = req.body.organizationName
+
+        if (!user.email || !user.firstname || !user.lastname || !user.password) throw new UserUnsupportedMediaType()
+
+        if (req.files && Object.keys(req.files).length !== 0 && req.files.file)
+            user.img = await storeFile(req.files.file, 'picture')
+        else user.img = defaultPicture()
+
+        if (!organizationName) organizationName = user.email + '\'s Organization'
+
+        if (((await model.user.getUserByEmail(user.email)).length) !== 0) throw new UserConflict()
+        if (((await model.organization.getOrganizationByName(organizationName)).length) !== 0) throw new OrganizationConflict()
+
+        const createdUser = await model.user.createUser(user)
+        if (createdUser.insertedCount !== 1) throw new UserError()
+
+        const createdOrganization = await model.organization.create(createdUser.insertedId.toString(), organizationName)
+        if (createdOrganization.insertedCount !== 1) {
+            model.user.deleteUser(createdUser.insertedId.toString())
+            throw new UserError()
+        }
+
+        const magicId = createdUser.ops[0].authLink.magicId
+        let mail_result = await Mailing.accountCreate(user.email, req, magicId)
+        if(!mail_result) debug('Error when sending mail')
+        // }
+        res.status(201).send({
+            message: 'Account created. An email has been sent to you. Please open it and click on the link to validate your email address.'
+        })
+    } catch (err) {
+        next(err)
+    }
+}
 
 async function listUser(req, res, next) {
     try {
         let userId = req.payload.data.userId
-        let allUsers = await userModel.getAllUsers()
-        let allOrganizations = await organizationModel.getAllOrganizations()
+        let allUsers = await model.user.getAllUsers()
+        let allOrganizations = await model.organization.getAllOrganizations()
         let publicUsers = []
 
         // Get all users with "public" personal organization
@@ -57,8 +95,8 @@ async function searchUser(req, res, next) {
             throw new UserUnsupportedMediaType()
 
         let userId = req.payload.data.userId
-        let userList = await userModel.getAllUsers()
-        let allOrganizations = await organizationModel.getAllOrganizations()
+        let userList = await model.user.getAllUsers()
+        let allOrganizations = await model.organization.getAllOrganizations()
         let filterUser = []
 
         // Filter not searched user
@@ -107,7 +145,7 @@ async function searchUser(req, res, next) {
 
 async function getUserById(req, res, next) {
     try {
-        const userList = await userModel.getUserById(req.params.userId)
+        const userList = await model.user.getUserById(req.params.userId)
         if (userList && userList.length !== 1) throw new UserNotFound()
 
         res.status(200).send({
@@ -118,56 +156,11 @@ async function getUserById(req, res, next) {
     }
 }
 
-async function createUser(req, res, next) {
-    try {
-        const user = req.body
-        if (!user.email || !user.firstname || !user.lastname || !user.password) throw new UserUnsupportedMediaType()
-
-        if (req.files && Object.keys(req.files).length !== 0 && req.files.file)
-            user.img = await storeFile(req.files.file, 'picture')
-        else user.img = defaultPicture()
-
-        const isUserFound = await userModel.getUserByEmail(user.email)
-        if (isUserFound.length !== 0) throw new UserConflict()
-
-        const isOrganizationFound = await organizationModel.getOrganizationByName(user.email)
-        if (isOrganizationFound.length !== 0) throw new OrganizationConflict()
-
-        const createdUser = await userModel.createUser(user)
-        if (createdUser.insertedCount !== 1) throw new UserError()
-        const createdOrganization = await organizationModel.createDefaultOrganization(createdUser.insertedId.toString(), {email: user.email})
-
-        if (createdOrganization.insertedCount !== 1) {
-            userModel.deleteById(createdUser.insertedId.toString())
-            throw new UserError()
-        }
-        
-        // Send email validation link
-        if(createdUser?.ops && createdUser?.ops.length > 0) {
-          const magicId = createdUser.ops[0].authLink.magicId
-          const reqOrigin = req.headers.origin
-          const sendmail = await sendMail({
-            email: user.email,
-            subject: 'Validation de votre compte',
-            type:"send_account_created",
-            magicId,
-            reqOrigin
-          })  
-          if(sendmail !== 'mailSend') throw new NodemailerError()
-        }
-        res.status(201).send({
-            message: 'Account created. An email has been sent to you. Please open it and click on the link to validate your email address.'
-        })
-    } catch (err) {
-        next(err)
-    }
-}
-
 async function updateUser(req, res, next) {
     try {
-        if (!(req.body.email || req.body.firstname || req.body.lastname || req.body.accountNotifications || req.body.emailNotifications )) throw new UserUnsupportedMediaType()
+        if (!(req.body.email || req.body.firstname || req.body.lastname || req.body.accountNotifications || req.body.emailNotifications)) throw new UserUnsupportedMediaType()
 
-        const myUser = await userModel.getUserById(req.payload.data.userId)
+        const myUser = await model.user.getUserById(req.payload.data.userId)
         if (myUser.length !== 1) throw new UserNotFound()
         let user = myUser[0]
         const userMail = user.email
@@ -176,29 +169,29 @@ async function updateUser(req, res, next) {
         if (req.body.firstname) user.firstname = req.body.firstname
         if (req.body.lastname) user.lastname = req.body.lastname
 
-        
-        if(req.body.accountNotifications) {
-          for(let key of Object.keys(req.body.accountNotifications)){
-            user.accountNotifications[key] = req.body.accountNotifications[key]
-          }
-        }
-        if(req.body.emailNotifications) {
-          for(let keyParent of Object.keys(req.body.emailNotifications)){
-            for(let keyChild of Object.keys(req.body.emailNotifications[keyParent])) {
-              user.emailNotifications[keyParent][keyChild] = req.body.emailNotifications[keyParent][keyChild]
+
+        if (req.body.accountNotifications) {
+            for (let key of Object.keys(req.body.accountNotifications)) {
+                user.accountNotifications[key] = req.body.accountNotifications[key]
             }
-          }
         }
-        if ((await userModel.getUserByEmail(req.body.email)).length !== 0) throw new UserConflict()
-        if ((await organizationModel.getOrganizationByName(req.body.email)).length !== 0) throw new OrganizationConflict()
-        let organization = (await organizationModel.getOrganizationByName(userMail))[0]
+        if (req.body.emailNotifications) {
+            for (let keyParent of Object.keys(req.body.emailNotifications)) {
+                for (let keyChild of Object.keys(req.body.emailNotifications[keyParent])) {
+                    user.emailNotifications[keyParent][keyChild] = req.body.emailNotifications[keyParent][keyChild]
+                }
+            }
+        }
+        if ((await model.user.getUserByEmail(req.body.email)).length !== 0) throw new UserConflict()
+        if ((await model.organization.getOrganizationByName(req.body.email)).length !== 0) throw new OrganizationConflict()
+        let organization = (await model.organization.getOrganizationByName(userMail))[0]
 
         if (req.body.email && organization?.personal === true) {
             organization.name = req.body.email
-            let res = await organizationModel.update(organization)
+            let res = await model.organization.update(organization)
         }
 
-        const result = await userModel.update(user)
+        const result = await model.user.update(user)
         if (result.matchedCount === 0) throw new UserError()
         let message
 
@@ -219,10 +212,10 @@ async function updateUserPicture(req, res, next) {
             img: await storeFile(req.files.file, 'picture')
         }
 
-        const user = await userModel.getUserById(req.payload.data.userId)
+        const user = await model.user.getUserById(req.payload.data.userId)
         if (user.length !== 1) throw new UserNotFound()
 
-        const result = await userModel.update(payload)
+        const result = await model.user.update(payload)
         if (result.matchedCount === 0) throw new UserError()
 
         if (user[0].img !== defaultPicture())
@@ -241,21 +234,21 @@ async function updateUserPassword(req, res, next) {
     try {
         if (!req.body.newPassword) throw new UserUnsupportedMediaType()
 
-        const myUser = await userModel.getUserById(req.payload.data.userId)
+        const myUser = await model.user.getUserById(req.payload.data.userId)
         if (myUser.length !== 1) throw new UserNotFound()
         const payload = {
             ...myUser[0],
             newPassword: req.body.newPassword,
-            accountNotifications : {
-              updatePassword : false,
-              inviteAccount : false
-          }
+            accountNotifications: {
+                updatePassword: false,
+                inviteAccount: false
+            }
         }
 
         req.body.email = myUser[0].email
         req.body.password = req.body.newPassword
 
-        const result = await userModel.updatePassword(payload)
+        const result = await model.user.updatePassword(payload)
         if (result.matchedCount === 0) throw new UserError()
 
         res.status(200).send({
@@ -269,9 +262,9 @@ async function updateUserPassword(req, res, next) {
 async function logout(req, res, next) {
     try {
         if (!req.payload.data && !req.payload.data.userId) throw new UserUnsupportedMediaType()
-        let userId = userModel.getObjectId(req.payload.data.userId)
+        let userId = model.user.getObjectId(req.payload.data.userId)
 
-        userModel.update({
+        model.user.update({
             _id: userId,
             keyToken: ''
         }).then(user => {
@@ -291,35 +284,35 @@ async function deleteUser(req, res, next) {
         const userId = req.payload.data.userId
 
         // Remove user from organizations
-        const organizations = await organizationModel.getAllOrganizations()
+        const organizations = await model.organization.getAllOrganizations()
         organizations.filter(organization => {
             if (organization.owner !== userId && organization.personal === true) return false
             else if (organization.owner === userId && organization.users.length === 0) return true
             else if ((organization.users.filter(user => user.userId === userId)).length !== 0) return true
         }).map(async (organization) => {
             if (organization.owner === userId && organization.users.length === 1) {
-                let resultOperation = await organizationModel.deleteById(organization._id.toString())
+                let resultOperation = await model.organization.deleteById(organization._id.toString())
                 if (resultOperation.deletedCount !== 1) throw new UserError('Error on personal organization')
             } else {
                 organization.users = organization.users.filter(user => user.userId !== userId)
-                let resultOperation = await organizationModel.update(organization)
+                let resultOperation = await model.organization.update(organization)
                 if (resultOperation.modifiedCount === 0) throw new UserError('Error on organization rights deletion')
             }
         })
 
         // Delete conversation if owner and remove user from shared with
-        const conversations = await conversationModel.getAllConvos()
+        const conversations = await model.conversation.getAllConvos()
         conversations.filter(conversation => {
             if ((conversation.sharedWithUsers.filter(user => user.userId === userId)).length !== 0) return true
         }).map(async conversation => {
             conversation.sharedWithUsers = conversation.sharedWithUsers.filter(user => user.userId !== userId)
-            const resultConvoUpdate = await conversationModel.update(conversation)
+            const resultConvoUpdate = await model.conversation.update(conversation)
             if (resultConvoUpdate.modifiedCount === 0) throw new UserError('Error on conversation rights deletion')
         }).map(async conversation => {
-            if (conversation.owner === userId) await conversationModel.deleteById(conversation._id.toString())
+            if (conversation.owner === userId) await model.conversation.deleteById(conversation._id.toString())
         })
 
-        const result = await userModel.deleteUser(req.payload.data.userId)
+        const result = await model.user.deleteUser(req.payload.data.userId)
         if (result.deletedCount !== 1) throw new UserError
 
         res.status(200).send({
@@ -331,44 +324,44 @@ async function deleteUser(req, res, next) {
 }
 
 async function recoverPassword(req, res, next) {
-  try {
-    if (!req.body.email) throw new UserUnsupportedMediaType()
-    const user = await userModel.getUserByEmail(req.body.email)
-    if(user.length === 1) {
-      const reqOrigin = req.headers.origin
-      const generateMagicId = await userModel.setUserMagicLink(req.body.email)
-      if(generateMagicId.modifiedCount === 0) throw new GenerateMagicLinkError()
-      const user = await userModel.getUserByEmail(req.body.email)
-      let sendmail = await sendMail({
-        email: req.body.email,
-        subject: 'Lien de connexion unique',
-        magicId: user[0].authLink.magicId,
-        type:"send_reset_link",
-        reqOrigin
-      })  
-      if(sendmail === 'mailSend') {
-        res.status(200).send({
-          status: 'success',
-          message: 'An email with an authentication link has been sent to you.'
-        })
-      } else throw new NodemailerError()
+    try {
+        if (!req.body.email) throw new UserUnsupportedMediaType()
+        const user = await model.user.getUserByEmail(req.body.email)
+        if (user.length === 1) {
+            const reqOrigin = req.headers.origin
+            const generateMagicId = await model.user.setUserMagicLink(req.body.email)
+            if (generateMagicId.modifiedCount === 0) throw new GenerateMagicLinkError()
+            const user = await model.user.getUserByEmail(req.body.email)
+            let sendmail = await sendMail({
+                email: req.body.email,
+                subject: 'Lien de connexion unique',
+                magicId: user[0].authLink.magicId,
+                type: "send_reset_link",
+                reqOrigin
+            })
+            if (sendmail === 'mailSend') {
+                res.status(200).send({
+                    status: 'success',
+                    message: 'An email with an authentication link has been sent to you.'
+                })
+            } else throw new NodemailerError()
 
-      const updateNotif = await userModel.update({_id: user[0]._id, accountNotifications:{...user[0].accountNotifications, updatePassword: true}}) // update account notifications
-      if (updateNotif.matchedCount === 0) throw new UserError()
+            const updateNotif = await model.user.update({ _id: user[0]._id, accountNotifications: { ...user[0].accountNotifications, updatePassword: true } }) // update account notifications
+            if (updateNotif.matchedCount === 0) throw new UserError()
 
-    } 
-    else {
-      // if user is not found, fake a success to secure database informations
-      debug(`Forgotten password request for an unknown or invalid email address: "${req.body.email}"`)
-      res.status(200).send({
-        status: 'success',
-        message: 'An email with an authentication link has been sent to you.'
-      })
+        }
+        else {
+            // if user is not found, fake a success to secure database informations
+            debug(`Forgotten password request for an unknown or invalid email address: "${req.body.email}"`)
+            res.status(200).send({
+                status: 'success',
+                message: 'An email with an authentication link has been sent to you.'
+            })
+        }
+    } catch (error) {
+        console.error(error)
+        next(error)
     }
-  } catch (error) {
-    console.error(error)
-    next(error)
-  }
 }
 
 module.exports = {

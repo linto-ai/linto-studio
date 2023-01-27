@@ -1,3 +1,7 @@
+# 1.1.0
+- Mongo model update
+- Refactoring of mailing library
+
 # 1.0.3
 - Implementation of a migration system
   - Swagger schema match the database version
