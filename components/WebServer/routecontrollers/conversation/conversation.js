@@ -11,7 +11,7 @@ const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversat
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
 const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
 
-const { deleteFile, getStorageFolder } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
+const { deleteFile, getStorageFolder, getAudioWaveformFolder} = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 const { sendMail } = require(`${process.cwd()}/lib/nodemailer`)
 const { NodemailerError } = require(`${process.cwd()}/components/WebServer/error/exception/nodemailer`)
 const {
@@ -33,7 +33,13 @@ async function deleteConversation(req, res, next) {
         const result = await conversationModel.deleteById(conversationId)
         if (result.deletedCount !== 1) throw new ConversationError('Error when deleting conversation')
 
+        const audioFilename = conversation[0].metadata.audio.filepath.split('/').pop()
+        const jsonFilename = audioFilename.split('.')[0]+ '.json'
+
+        // delete audio file
         deleteFile(`${getStorageFolder()}/${conversation[0].metadata.audio.filepath}`)
+        // delete audiowaveform json file
+        deleteFile(`${getStorageFolder()}/${getAudioWaveformFolder()}/${jsonFilename}`)
 
         res.status(200).send({
             message: 'Conversation has been deleted'

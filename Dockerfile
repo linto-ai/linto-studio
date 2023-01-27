@@ -7,9 +7,28 @@ RUN apt-get update -y && \
   apt-get install zip -y
 
 
-# Copy project in default workdir
+RUN apt-get install -y \
+    build-essential \
+    libsndfile1-dev \
+    libsamplerate0-dev \
+    libfftw3-dev \
+    libboost-program-options-dev \
+    libboost-test-dev \
+    libboost-filesystem-dev \
+    libboost-iostreams-dev \
+    libboost-regex-dev \
+    libboost-date-time-dev \
+    libboost-thread-dev \
+    libboost-system-dev \
+    libmad0-dev \
+    libid3tag0-dev \ 
+    libgd-dev
+
 WORKDIR /usr/src/app/conversation-manager
 COPY . /usr/src/app/conversation-manager
+
+RUN cp /usr/src/app/conversation-manager/config/bin/audiowaveform /usr/local/bin/audiowaveform
+
 RUN npm install
 
 RUN chmod 0644 /usr/src/app/conversation-manager/config/cron/backup-cron && \
