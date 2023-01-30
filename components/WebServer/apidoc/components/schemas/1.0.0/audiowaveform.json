@@ -1,0 +1,52 @@
+{
+  "Audiowaveform": {
+    "type": "file",
+    "schema": {
+      "properties": {
+        "version": {
+          "type": "integer" 
+        },
+        "channels": {
+          "type": "integer" 
+        },
+        "sample_rate": {
+          "type": "integer" 
+        },
+        "samples_per_pixel": {
+          "type": "integer" 
+        },
+        "bits": {
+          "type": "integer" 
+        },
+        "length": {
+          "type": "integer" 
+        },
+        "data": {
+          "type":"array",
+          "items": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "example": {
+      "version": 2,
+      "channels": 1,
+      "sample_rate": 16000,
+      "samples_per_pixel": 256,
+      "bits": 16,
+      "length": 4528,
+      "data": [
+        -21,
+        21,
+        -28,
+        25,
+        -23,
+        24,
+        -30,
+        27,
+        -29
+      ]
+    }
+  }
+}

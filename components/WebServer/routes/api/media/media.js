@@ -1,5 +1,3 @@
-const { cp } = require('fs')
-
 const debug = require('debug')('linto:conversation-manager:router:api:file:files')
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 

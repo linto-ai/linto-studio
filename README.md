@@ -50,3 +50,9 @@ module.exports = {
 ```
 
 Make sure to create a `version.js` file to update the version on a migration step.
+
+## Install Audiowavesurfer
+Audiowaveform is a C++ command-line application that generates waveform data from either MP3, WAV, FLAC, Ogg Vorbis, or Opus format audio files.
+You need to install it to be able to generate audiowaveforms that be loaded with your audio.
+
+Please read the [documentation](https://github.com/bbc/audiowaveform) to install it.
