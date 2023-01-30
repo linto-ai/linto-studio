@@ -41,6 +41,8 @@ function configureDefaults() {
         process.env.VOLUME_FOLDER = 'storages'
         process.env.VOLUME_AUDIO_PATH = 'audios'
         process.env.VOLUME_PROFILE_PICTURE_PATH = 'pictures'
+        process.env.VOLUME_AUDIO_WAVEFORM_PATH = 'audiowaveform'
+
 
         // Passeport settings
         process.env.CM_JWT_SECRET = ifHas(process.env.CM_JWT_SECRET, envdefault.CM_JWT_SECRET)

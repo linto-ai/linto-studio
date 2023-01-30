@@ -10,6 +10,11 @@
         "test": "jest",
         "test:current": "jest -- conversationGenerator"
     },
+    "nodemonConfig": {
+        "ignore": [
+            "**/storages/**"
+        ]
+    },
     "license": "GNU GPLv3",
     "dependencies": {
         "axios": "^0.27.2",

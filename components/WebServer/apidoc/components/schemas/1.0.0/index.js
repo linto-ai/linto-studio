@@ -11,5 +11,6 @@ module.exports = {
   ...require('./transcription-model.json'),
   ...require('./user-role.json'),
   ...require('./user.json'),
-  ...require('./word.json')
+  ...require('./word.json'),
+  ...require('./audiowaveform.json')
 }
