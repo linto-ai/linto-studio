@@ -13,13 +13,6 @@
               "properties": {
                 "name": {
                   "type": "string"
-                },
-                "type": {
-                  "type": "string",
-                  "enum": [
-                    "public",
-                    "private"
-                  ]
                 }
               },
               "required": [
@@ -92,58 +85,6 @@
         },
         "401": {
           "$ref": "#/components/responses/Unauthorized"
-        }
-      }
-    }
-  },
-  "/api/organizations/search": {
-    "post": {
-      "tags": [
-        "organizations"
-      ],
-      "summary": "Search organizations by name",
-      "requestBody": {
-        "content": {
-          "multipart/form-data": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "name"
-              ]
-            }
-          }
-        }
-      },
-      "responses": {
-        "200": {
-          "description": "OK",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "organization": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "$ref": "#/components/schemas/Organization"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "401": {
-          "$ref": "#/components/responses/Unauthorized"
-        },
-        "415": {
-          "$ref": "#/components/responses/UnsupportedMediaType"
         }
       }
     }

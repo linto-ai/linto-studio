@@ -11,8 +11,6 @@ const {
 
 const { ConversationError } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
-const TYPES = organizationModel.getTypes()
-
 async function updateOrganization(req, res, next) {
   try {
     if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()

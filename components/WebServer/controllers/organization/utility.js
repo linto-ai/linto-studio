@@ -27,6 +27,7 @@ function countAdmin(organization, userId) {
     }
 
     return {
+        userCount : organization.users.length,
         adminCount,
         isAdmin,
         replaceOwner

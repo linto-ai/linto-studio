@@ -11,7 +11,6 @@ const {
   OrganizationConflict
 } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
-const TYPES = organizationModel.getTypes()
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 
 async function addUserInOrganization(req, res, next) {

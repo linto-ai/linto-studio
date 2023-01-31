@@ -1,14 +1,11 @@
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:organizations:member')
-const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
-const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
+const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
 const convUtility = require(`${process.cwd()}/components/WebServer/controllers/conversation/utility`)
 
 const RIGHT = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
-
-const TYPES = organizationModel.getTypes()
 
 const {
     OrganizationError,
@@ -17,29 +14,40 @@ const {
 } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
 
-async function updateSelfFromOrganization(req, res, next) {
+async function listConversationFromOrganization(req, res, next) {
     try {
         const userId = req.payload.data.userId
-        if (!req.params.organizationId || !req.body.visibility) throw new OrganizationUnsupportedMediaType()
-        if (!TYPES.asType(req.body.visibility)) throw new OrganizationUnsupportedMediaType('Visibility parameter must be public or private')
+        if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
 
-        let organization = await orgaUtility.getOrganization(req.params.organizationId)
-        if (organization.users.filter(oUser => oUser.userId === userId).length === 0)
-            throw new OrganizationError('User is not part of the ' + organization.name + ' organization')
+        const organization = (await model.organization.getByIdAndUser(req.params.organizationId, userId))[0]
+        if (!organization) throw new OrganizationError('You are not part of ' + organization.name)
 
+        let userRole = ROLES.MEMBER
         organization.users.map(oUser => {
             if (oUser.userId === userId) {
-                oUser.visibility = req.body.visibility
+                userRole = oUser.role
                 return
             }
         })
 
-        const result = await organizationModel.update(organization)
-        if (result.matchedCount === 0) throw new OrganizationError()
+        const conversations = await model.conversation.getByOrga(req.params.organizationId)
 
-        res.status(200).send({
-            message: 'User updated from the organization'
-        })
+        let listConv = conversations.filter(conv => {
+            let access = conv.organization.customRights.find(customRight => (customRight.userId === userId))
+            if (access && RIGHT.hasRightAccess(access.right, RIGHT.READ)) {
+                return conv
+            } else if (!access && ROLES.hasRoleAccess(userRole, ROLES.MAINTAINER)) {
+                return conv
+            } else if (RIGHT.hasRightAccess(conv.organization.membersRight, RIGHT.READ)) {
+                return conv
+            }
+        }).filter(conv => conv !== undefined)
+
+        if (listConv.length === 0) res.status(204).send()
+        else {
+            listConv = await convUtility.getUserRightFromConversationList(userId, listConv)
+            res.status(200).send(listConv)
+        }
     } catch (err) {
         next(err)
     }
@@ -50,16 +58,15 @@ async function leaveSelfFromOrganization(req, res, next) {
         const userId = req.payload.data.userId
         if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
 
-        let organization = await orgaUtility.getOrganization(req.params.organizationId)
-        if (organization.users.filter(oUser => oUser.userId === userId).length === 0)
-            throw new OrganizationError('You are not part of ' + organization.name)
+        let organization = await model.organization.getByIdAndUser(req.params.organizationId, userId)
+        if (organization.length === 0) throw new OrganizationError('You are not part of ' + organization.name)
 
-        const data = orgaUtility.countAdmin(organization, userId)
+        const data = orgaUtility.countAdmin(organization[0], userId)
         if (data.adminCount === 1 && data.isAdmin) throw new OrganizationForbidden('You cannot leave the organization because you are the last admin')
         if (organization.owner === userId && data.isAdmin) organization.owner = data.replaceOwner
 
         organization.users = organization.users.filter(oUser => oUser.userId !== userId)
-        const result = await organizationModel.update(organization)
+        const result = await model.organization.update(organization)
 
         if (result.matchedCount === 0) throw new OrganizationError()
 
@@ -71,46 +78,8 @@ async function leaveSelfFromOrganization(req, res, next) {
     }
 }
 
-async function listConversationFromOrganization(req, res, next) {
-    try {
-        const userId = req.payload.data.userId
-        if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
-        const conversations = await conversationModel.getConvoByOrga(req.params.organizationId)
-        const organization = await orgaUtility.getOrganization(req.params.organizationId)
-
-        let userRole = ROLES.MEMBER
-        organization.users.map(oUser => {
-            if (oUser.userId === userId) {
-                userRole = oUser.role
-                return
-            }
-        })
-        let selfConvFromOrga = []
-        conversations.filter(conv => {
-            if (conv.owner === userId) {
-                selfConvFromOrga.push(conv)
-            } else {
-                let access = conv.organization.customRights.find(customRight =>
-                    (customRight.userId === userId))
-                if (access && RIGHT.hasRightAccess(access.right, RIGHT.READ)) {
-                    selfConvFromOrga.push(conv)
-                } else if (!access && ROLES.hasRoleAccess(userRole, ROLES.MAINTAINER)) {
-                    selfConvFromOrga.push(conv)
-                } else if (RIGHT.hasRightAccess(conv.organization.membersRight, RIGHT.READ)) {
-                    selfConvFromOrga.push(conv)
-                }
-            }
-        })
-        selfConvFromOrga = await convUtility.getUserRightFromConversationList(userId, selfConvFromOrga)
-
-        res.status(200).send(selfConvFromOrga)
-    } catch (err) {
-        next(err)
-    }
-}
 
 module.exports = {
     listConversationFromOrganization,
-    updateSelfFromOrganization,
     leaveSelfFromOrganization
 }

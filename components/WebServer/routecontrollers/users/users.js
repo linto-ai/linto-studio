@@ -37,7 +37,7 @@ async function createUser(req, res, next) {
         const createdUser = await model.user.createUser(user)
         if (createdUser.insertedCount !== 1) throw new UserError()
 
-        const createdOrganization = await model.organization.create(createdUser.insertedId.toString(), organizationName)
+        const createdOrganization = await model.organization.createDefault(createdUser.insertedId.toString(), organizationName)
         if (createdOrganization.insertedCount !== 1) {
             model.user.deleteUser(createdUser.insertedId.toString())
             throw new UserError()
