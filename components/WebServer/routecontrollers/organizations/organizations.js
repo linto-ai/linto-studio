@@ -6,8 +6,7 @@ const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const {
     OrganizationError,
     OrganizationUnsupportedMediaType,
-    OrganizationConflict,
-    OrganizationForbidden,
+    OrganizationConflict
 } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
 async function createOrganization(req, res, next) {

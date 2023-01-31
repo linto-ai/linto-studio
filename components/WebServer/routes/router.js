@@ -43,7 +43,6 @@ class Router {
                 if (route.requireConversationShareAccess) middlewaresLoaded.push(conversation_middlewares.asShareAccess) // require delete access
 
                 // Organization rights
-                if (route.requireOrganizationOwnerAccess) middlewaresLoaded.push(organization_middlewares.asOwnerAccess)
                 if (route.requireOrganizationAdminAccess) middlewaresLoaded.push(organization_middlewares.asAdminAccess)
                 if (route.requireOrganizationMaintainerAccess) middlewaresLoaded.push(organization_middlewares.asMaintainerAccess)
                 if (route.requireOrganizationMemberAccess) middlewaresLoaded.push(organization_middlewares.asMemberAccess)

@@ -31,7 +31,7 @@ async function createUser(req, res, next) {
 
         if (!organizationName) organizationName = user.email + '\'s Organization'
 
-        if (((await model.user.getUserByEmail(user.email)).length) !== 0) throw new UserConflict()
+        if (((await model.user.getByEmail(user.email)).length) !== 0) throw new UserConflict()
         if (((await model.organization.getOrganizationByName(organizationName)).length) !== 0) throw new OrganizationConflict()
 
         const createdUser = await model.user.createUser(user)
@@ -88,7 +88,7 @@ async function searchUser(req, res, next) {
 
 async function getUserById(req, res, next) {
     try {
-        const userList = await model.user.getUserById(req.params.userId, true)
+        const userList = await model.user.getById(req.params.userId, true)
         if (userList && userList.length !== 1) throw new UserNotFound()
 
         res.status(200).send({
@@ -103,12 +103,12 @@ async function updateUser(req, res, next) {
     try {
         if (!(req.body.email || req.body.firstname || req.body.lastname || req.body.accountNotifications || req.body.emailNotifications)) throw new UserUnsupportedMediaType()
 
-        const myUser = await model.user.getUserById(req.payload.data.userId)
+        const myUser = await model.user.getById(req.payload.data.userId)
         if (myUser.length !== 1) throw new UserNotFound()
         let user = myUser[0]
 
         if (req.body.email) {
-            if ((await model.user.getUserByEmail(req.body.email)).length === 1) throw new UserConflict("Email already used")
+            if ((await model.user.getByEmail(req.body.email)).length === 1) throw new UserConflict("Email already used")
             user.email = req.body.email
         }
         if (req.body.firstname) user.firstname = req.body.firstname
@@ -145,7 +145,7 @@ async function updateUserPicture(req, res, next) {
             img: await storeFile(req.files.file, 'picture')
         }
 
-        const user = await model.user.getUserById(req.payload.data.userId)
+        const user = await model.user.getById(req.payload.data.userId)
         if (user.length !== 1) throw new UserNotFound()
 
         const result = await model.user.update(payload)

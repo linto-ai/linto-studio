@@ -1,6 +1,5 @@
 const debug = require('debug')('linto:conversation-manager:components:WebServer:controller:user:utility')
-const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
-const organizationsModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
+const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const CONVERSATION_RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const ORGANIZATION_ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
@@ -13,7 +12,7 @@ async function getUsersConversationByArray(users, setupRight) {
         let members = []
         if (!users) return []
         for (let user of users) {
-            const u = await userModel.getUserById(user.userId)
+            const u = await model.user.getById(user.userId)
             if (u && u.length !== 1) {
                 members.push(u)
             } else {
@@ -54,17 +53,17 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
         let external_members = []
         let organization_members = []
         
-        const myUserInfo = await userModel.getUserById(userId)
+        const myUserInfo = await model.user.getById(userId)
         // Show user if public
         for (const swUser of sharedWithUsers) {
             if (swUser.sharedBy === userId) {
                 isShare = true
                 sharedById = swUser.sharedBy
             }
-            const userInfo = await userModel.getUserById(swUser.userId)
+            const userInfo = await model.user.getById(swUser.userId)
             if(userInfo.length > 0) {
               if(userInfo.length === 1) {
-                const userOrga = await organizationsModel.getOrganizationByName(userInfo[0].email)
+                const userOrga = await model.organization.getByName(userInfo[0].email)
                 
                 if (userOrga[0].type === 'public' || userOrga[0].name === myUserInfo[0].email) {
                     if (swUser.userId === sharedById) {
@@ -84,7 +83,7 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
             for (const swUser of sharedWithUsers) {
                 if (swUser.sharedBy === sharedById) {
                     sharedByAdded = true
-                    const userInfo = await userModel.getUserById(swUser.userId)
+                    const userInfo = await model.user.getById(swUser.userId)
                     if(external_members.findIndex(usr => usr._id.toString() === swUser.userId) < 0) {
                       external_members.push({
                         ...userInfo[0],
@@ -102,7 +101,7 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
                     continue
                 }
 
-                const userInfo = await userModel.getUserById(oUser.userId)
+                const userInfo = await model.user.getById(oUser.userId)
                 let userObj = {
                     ...userInfo[0],
                     role: oUser.role
@@ -119,7 +118,7 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
                 organization_members.push(userObj)
             }
         } else if (sharedByAdded === false) {
-            const userInfo = await userModel.getUserById(sharedById)
+            const userInfo = await model.user.getById(sharedById)
             organization_members.push(userInfo[0])
         }
 
@@ -140,7 +139,7 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
 }
 
 async function getUser(email) {
-    const user = await userModel.getUserByEmail(email)
+    const user = await model.user.getByEmail(email)
     if (user.length !== 1) throw new UserNotFound()
 
     return {

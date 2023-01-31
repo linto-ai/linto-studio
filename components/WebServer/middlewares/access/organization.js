@@ -1,6 +1,6 @@
 const debug = require('debug')('linto:conversation-manager:components:webserver:middlewares:access:organization')
 
-const OrganizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
+const model = require(`${process.cwd()}/lib/mongodb/models`)
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 
 const {
@@ -10,12 +10,6 @@ const {
 } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
 module.exports = {
-    asOwnerAccess: (req, res, next) => { //.owner
-        OrganizationModel.getOrganizationById(req.params.organizationid).then(organization => {
-            if (organization.length === 1 && organization[0].owner === req.payload.data.userId) next()
-            else next(new OrganizationForbidden())
-        })
-    },
     asAdminAccess: (req, res, next) => {
         checkOrganizationUserRight(req, next, req.params.organizationId, req.payload.data.userId, ROLES.ADMIN)
     },
@@ -35,14 +29,10 @@ function checkOrganizationUserRight(req, next, organizationId, userId, right) {
             isToNext = callNext(next, isToNext, new OrganizationUnsupportedMediaType())
             return
         }
-        OrganizationModel.getOrganizationById(organizationId).then(organization => {
-
+        model.organization.getById(organizationId).then(organization => {
             if (organization.length !== 1)
                 isToNext = callNext(next, isToNext, new OrganizationNotFound())
-            else if (organization[0].owner === userId) {
-                req.userRole = ROLES.ADMIN
-                isToNext = callNext(next, isToNext)
-            } else {
+            else {
                 const isUserFound = organization[0].users
                     .filter(user => user.userId === userId && ROLES.hasRoleAccess(user.role, right))
 
