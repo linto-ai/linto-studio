@@ -81,8 +81,11 @@ function defaultPicture() {
 
 // function deleteFile(filename, type) {
 function deleteFile(filePath) {
-
+  try {
     fs.unlinkSync(filePath)
+  } catch (error) {
+    debug('File not found to be deleted : ', filePath)
+  }
 
     //     if (type === 'picture') {
     //         fs.unlinkSync(`${getStorageFolder()}/${getPictureFolder()}/${filename}`)
