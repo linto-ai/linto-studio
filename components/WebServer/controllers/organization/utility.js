@@ -34,17 +34,6 @@ function countAdmin(organization, userId) {
     }
 }
 
-async function canReadOrganization(organizationId, userId) {
-    const organization = await getOrganization(organizationId)
-
-    if (organization.type === 'public') return true
-
-    for (let oUser of organization.users) {
-        if (oUser.userId === userId) return true
-    }
-    return false
-}
-
 async function checkOrganization(organizationId, userId) {
     if (organizationId) {
         const organization = await organizationModel.getOrganizationById(organizationId)
@@ -56,4 +45,4 @@ async function checkOrganization(organizationId, userId) {
     throw new OrganizationNotFound()
 }
 
-module.exports = { getOrganization, countAdmin, canReadOrganization, checkOrganization }
+module.exports = { getOrganization, countAdmin, checkOrganization }

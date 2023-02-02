@@ -32,7 +32,7 @@ async function createUser(req, res, next) {
         if (!organizationName) organizationName = user.email + '\'s Organization'
 
         if (((await model.user.getByEmail(user.email)).length) !== 0) throw new UserConflict()
-        if (((await model.organization.getOrganizationByName(organizationName)).length) !== 0) throw new OrganizationConflict()
+        if (((await model.organization.getByName(organizationName)).length) !== 0) throw new OrganizationConflict()
 
         const createdUser = await model.user.createUser(user)
         if (createdUser.insertedCount !== 1) throw new UserError()

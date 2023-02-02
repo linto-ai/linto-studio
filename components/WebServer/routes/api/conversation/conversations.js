@@ -9,12 +9,8 @@ const { // Create conversation based on file
     downloadConversation,
     getConversation,
     getUsersByConversation,
-    getRightsByConversation,
     searchConversation,
     updateConversation,
-    updateConversationRights,
-    listSharedConversation,
-    inviteUserByEmail
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/conversation.js`)
 
 module.exports = (webserver) => {
@@ -25,12 +21,6 @@ module.exports = (webserver) => {
             requireAuth: true,
             controller: searchConversation
         },
-        {
-            path: '/list/share',
-            method: 'get',
-            requireAuth: true,
-            controller: listSharedConversation
-        },
 
         /*Require Auth */
         {
@@ -39,20 +29,6 @@ module.exports = (webserver) => {
             requireAuth: true,
             requireConversationReadAccess: true,
             controller: getUsersByConversation
-        },
-        {
-            path: '/:conversationId/rights',
-            method: 'get',
-            requireAuth: true,
-            requireConversationReadAccess: true,
-            controller: getRightsByConversation
-        },
-        {
-            path: '/:conversationId/user/:userId',
-            method: 'patch',
-            requireAuth: true,
-            requireConversationShareAccess: true,
-            controller: updateConversationRights
         },
         {
             path: '/:conversationId',
@@ -81,13 +57,6 @@ module.exports = (webserver) => {
             requireAuth: true,
             requireConversationDeleteAccess: true,
             controller: deleteConversation
-        },
-        {
-          path: '/:conversationId/invite',
-          method: 'post',
-          requireAuth: true,
-          requireConversationShareAccess: true,
-          controller: inviteUserByEmail
-      }
+        }
     ]
 }

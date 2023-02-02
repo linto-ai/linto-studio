@@ -1,6 +1,7 @@
 const debug = require('debug')('linto:conversation-manager:components:WebServer:controller:conversation:utility')
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
+const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const CONVERSATION_RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const ORGANIZATION_ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
@@ -48,7 +49,7 @@ async function getUserConversation(userId) {
 
 async function getUserRightFromConversation(userId, conversation) {
     try {
-        const organization = await organizationModel.getOrganizationById(conversation.organization.organizationId)
+        const organization = await model.organization.getById(conversation.organization.organizationId)
         if (organization.length !== 1) throw new OrganizationNotFound()
 
         const orgaRole = organization[0].users.filter(user => user.userId === userId)[0]
@@ -71,13 +72,7 @@ async function getUserRightFromConversation(userId, conversation) {
             if (conversationRight) access.right = conversationRight.right
         }
 
-        // If owner of the conversation > admin rights
-        if (conversation.owner === userId) access.right = CONVERSATION_RIGHTS.adminRight()
-
-        return {
-            access,
-            personal: organization[0].personal
-        }
+        return access
     } catch (err) {
         throw err
     }

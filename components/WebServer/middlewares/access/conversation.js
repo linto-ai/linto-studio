@@ -18,7 +18,7 @@ const {
 
 module.exports = {
   asOwnerAccess: (req, res, next) => {
-    ConversationModel.getConvoById(req.params.conversationId).then(conversation => {
+    ConversationModel.getById(req.params.conversationId).then(conversation => {
       if (conversation.length === 1 && conversation[0].owner === req.payload.data.userId) next()
       else next(new ConversationOwnerAccessDenied())
     })
@@ -48,7 +48,7 @@ function checkConvAccess(next, conversationId, userId, rightConvo, rightExceptio
       isToNext = callNext(next, isToNext, new ConversationIdRequire())
       return
     }
-    ConversationModel.getConvoById(conversationId, projection).then(conversationRes => {
+    ConversationModel.getById(conversationId, projection).then(conversationRes => {
       const conversation = conversationRes[0]
       if (conversationRes.length === 1) {
         if (conversation.owner === userId) { // If owner got all rights
@@ -65,7 +65,7 @@ function checkConvAccess(next, conversationId, userId, rightConvo, rightExceptio
 
           // Organization access middleware management
           if (!isToNext && conversation.organization.organizationId !== undefined) {
-            OrganizationModel.getOrganizationById(conversation.organization.organizationId)
+            OrganizationModel.getById(conversation.organization.organizationId)
               .then(organization => {
                 if (organization.length !== 1) isToNext = callNext(next, isToNext, new rightException())
                 if (organization.length === 1 && organization[0].owner === userId) isToNext = callNext(next, isToNext)
@@ -113,14 +113,14 @@ function checkConvRestrictedAcess(next, conversationId, userId, rightConvo, righ
       isToNext = callNext(next, isToNext, new ConversationIdRequire())
       return
     }
-    ConversationModel.getConvoById(conversationId, projection).then(conversationRes => {
+    ConversationModel.getById(conversationId, projection).then(conversationRes => {
       if (conversationRes.length === 1) {
         const conversation = conversationRes[0]
         if (conversation.owner === userId) isToNext = callNext(next, isToNext) // If owner all rightsJe
         else {
           // Organization access middleware management
           if (conversation.organization.organizationId !== undefined) {
-            OrganizationModel.getOrganizationById(conversation.organization.organizationId).then(organization => {
+            OrganizationModel.getById(conversation.organization.organizationId).then(organization => {
 
               if (organization.length !== 1) isToNext = callNext(next, isToNext, new rightException())
               if (organization.length === 1 && organization[0].owner === userId) isToNext = callNext(next, isToNext)
