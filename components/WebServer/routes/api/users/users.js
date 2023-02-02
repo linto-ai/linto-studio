@@ -9,6 +9,7 @@ const {
     updateUserPicture,
     deleteUser,
     recoveryAuth,
+    sendVerificationEmail
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/users/users.js`)
 
 const auth_middleware = require(`${process.cwd()}/components/WebServer/config/passport/local/middleware`)
@@ -69,6 +70,12 @@ module.exports = (webserver) => {
         method: 'post',
         requireAuth: false,
         controller: recoveryAuth
+    },
+    {
+      path: '/:userId/verify-email',
+      method: 'post',
+      requireAuth: true,
+      controller: sendVerificationEmail
     }
     ]
 }

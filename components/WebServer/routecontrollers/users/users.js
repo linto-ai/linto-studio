@@ -110,6 +110,7 @@ async function updateUser(req, res, next) {
         if (req.body.email) {
             if ((await model.user.getByEmail(req.body.email)).length === 1) throw new UserConflict("Email already used")
             user.email = req.body.email
+            user.accountActivated = false
         }
         if (req.body.firstname) user.firstname = req.body.firstname
         if (req.body.lastname) user.lastname = req.body.lastname
@@ -255,6 +256,27 @@ async function deleteUser(req, res, next) {
         next(err)
     }
 }
+async function sendVerificationEmail(req, res, next) {
+  try {
+    const userId = req.payload.data.userId
+    const user = await model.user.getById(userId)
+    if (user.length !== 1) throw new UserNotFound()
+
+    await model.user.generateMagicLink({_id: userId})
+
+    const userUpdated = await model.user.getById(userId, true)
+    const email = userUpdated[0].email
+    const magicId = userUpdated[0].authLink.magicId
+    const mail_result = await Mailing.verifyEmailAddress(email, req, magicId)
+    if (!mail_result) debug('Error when sending mail')
+    res.status(200).send({
+      status: 'success',
+      message: 'An email has been sent to you.'
+    })
+  } catch (error) {
+    next(error)
+  }
+}
 
 
 module.exports = {
@@ -267,5 +289,6 @@ module.exports = {
     updateUser,
     updateUserPassword,
     updateUserPicture,
-    recoveryAuth
+    recoveryAuth,
+    sendVerificationEmail
 }
