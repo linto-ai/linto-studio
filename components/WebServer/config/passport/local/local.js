@@ -25,6 +25,8 @@ function generateUserToken(email, password, done) {
         else if (users.length > 1) throw new MultipleUserFound()
         else throw new UserNotFound()
 
+        if(!user.salt) throw new UnableToGenerateKeyToken()
+
         if (!user || !validatePassword(password, user)) return done(new InvalidCredential())
         let tokenData = { // Data stored in the token
             salt: randomstring.generate(12),
