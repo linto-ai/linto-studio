@@ -43,8 +43,9 @@ async function getOrganization(req, res, next) {
         if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
 
         const organization = await model.organization.getByIdAndUser(req.params.organizationId, req.payload.data.userId)
+        if (organization.length !== 1) throw new OrganizationError()
 
-        return res.status(200).send(organization)
+        return res.status(200).send(organization[0])
     } catch (err) {
         next(err)
     }
