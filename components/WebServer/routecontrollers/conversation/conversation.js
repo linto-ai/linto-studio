@@ -167,15 +167,8 @@ async function searchConversation(req, res, next) {
         if (organizationId === '') {
             filteredConv = convUserList
         } else {
-            const organization = await orgaUtility.getOrganization(organizationId)
-            const isOrgaPersonnal = organization.personal
             const organizationConvos = convUserList.filter(conv => conv.organization.organizationId === organizationId)
-
             filteredConv = organizationConvos
-            if (isOrgaPersonnal) {
-                let sharedConv = await conversationModel.getConvoByShare(userId)
-                filteredConv = [...organizationConvos, ...sharedConv]
-            }
         }
 
         let convSearch = []
