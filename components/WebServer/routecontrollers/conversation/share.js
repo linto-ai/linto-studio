@@ -2,15 +2,10 @@ const debug = require('debug')(`linto:conversation-manager:components:WebServer:
 
 const conversationUtility = require(`${process.cwd()}/components/WebServer/controllers/conversation/utility`)
 
-const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
-const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
-const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
-
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const Mailing = require(`${process.cwd()}/lib/mailer/mailing`)
-const { sendMail } = require(`${process.cwd()}/lib/nodemailer`)
-const { NodemailerError } = require(`${process.cwd()}/components/WebServer/error/exception/nodemailer`)
+
 const {
   ConversationIdRequire,
   ConversationNotFound,
@@ -18,7 +13,10 @@ const {
   ConversationError
 } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
-const { UserNotFound } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
+const {
+  UserNotFound,
+  UserError
+} = require(`${process.cwd()}/components/WebServer/error/exception/users`)
 
 async function listSharedConversation(req, res, next) {
   try {
@@ -114,7 +112,7 @@ async function updateConversationRights(req, res, next) {
 
     isInOrga.length === 0 ? conversation.sharedWithUsers = userRight : conversation.organization.customRights = userRight
 
-    const result = await conversationModel.update(conversation)
+    const result = await model.conversation.update(conversation)
     if (result.matchedCount === 0) throw new ConversationError()
 
     res.status(200).send({
@@ -128,50 +126,32 @@ async function updateConversationRights(req, res, next) {
 async function inviteNewUser(req, res, next) {
   try {
     const email = req.body.email
-    // Create new user in database
-    const createdUser = await userModel.createExternalUser({ email })
-    let magicId = null
-    let userId = null
+    const createdUser = await model.user.createExternal({ email })
+
     // Create new user personal organization
     if (createdUser.insertedCount !== 1) throw new UserError()
-    const createOrganization = await organizationModel.create(createdUser.insertedId.toString(), email + '\'s Organization')
+    const userId = createdUser.insertedId.toString()
+    const magicId = createdUser.ops[0].authLink.magicId
 
+    const createOrganization = await model.organization.createDefault(userId, email + '\'s Organization', {})
     if (createOrganization.insertedCount !== 1) {
-      userModel.deleteById(createdUser.insertedId.toString())
+      model.user.deleteById(userId)
       throw new UserError()
     }
-    if (createdUser?.ops && createdUser?.ops.length > 0) {
-      magicId = createdUser.ops[0].authLink.magicId
-      userId = createdUser.ops[0]._id
-    }
+
     // Share converation to created user
-    if (magicId !== null) {
-      // Send Mail
-      const sharedByUser = await userModel.getUserById(req.payload.data.userId)
-      if (sharedByUser.length !== 1) throw new UserNotFound()
-      const sharedByName = sharedByUser[0].firstname + ' ' + sharedByUser[0].lastname
-      const sharedByEmail = sharedByUser[0].email
-      let sendmail = await sendMail({
-        email,
-        type: "send_share_external_link",
-        subject: "Partage d'une conversation",
-        conversationId: req.params.conversationId,
-        sharedByName,
-        sharedByEmail,
-        magicId,
-        reqOrigin: req.headers.origin
-      })
+    if (!magicId) {
+      const sharedBy = await model.user.getById(req.payload.data.userId)
+      if (sharedBy.length !== 1) throw new UserNotFound()
 
-      if (sendmail !== 'mailSend') throw new NodemailerError()
+      const mail_result = await Mailing.conversationSharedExternal(email, req, magicId, sharedBy[0].email)
+      if (!mail_result) debug('Error when sending mail')
     }
 
-    if (userId !== null && userId !== undefined) {
-      req.params.userId = userId.toString()
-      req.body.right = 1
-      updateConversationRights(req, res, next)
-    } else {
-      throw 'user not found'
-    }
+    res.status(200).send({
+      message: 'Invitation send'
+    })
+
   } catch (err) {
     next(err)
   }
@@ -180,14 +160,13 @@ async function inviteNewUser(req, res, next) {
 
 async function inviteUserByEmail(req, res, next) {
   const email = req.body.email
-  const user = await userModel.getUserByEmail(email)
-  // Share to an internal user
-  if (user.length > 0) {
+  const user = await model.user.getByEmail(email)
+  if (user.length === 1) {  // Share to an internal user
     req.params.userId = user[0]._id
+    req.body.right = 1
     updateConversationRights(req, res, next)
   }
-  // Share to an external user
-  else {
+  else {  // Share to an external user
     inviteNewUser(req, res, next)
   }
 }
