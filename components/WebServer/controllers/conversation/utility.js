@@ -13,7 +13,6 @@ async function getUserConversation(userId) {
         const convShare = await model.conversation.getByShare(userId)
         for (let conversation of convShare) {
             // User may have a right to see the conversation from sharedWithUsers
-
             if (conversation.sharedWithUsers.filter(user => user.userId === userId &&
                 CONVERSATION_RIGHTS.hasRightAccess(user.right, CONVERSATION_RIGHTS.READ)).length !== 0) {
                 convList.push(conversation)
@@ -67,7 +66,7 @@ async function getUserRightFromConversation(userId, conversation) {
             if (organizationRight) access.right = organizationRight.right
         } else {
             const conversationRight = conversation.sharedWithUsers.filter(user => user.userId === userId)[0]
-            if (conversationRight) access.right = conversationRight.right
+            if (conversationRight) access.right = parseInt(conversationRight.right)
         }
 
         return access
