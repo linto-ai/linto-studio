@@ -88,11 +88,11 @@ async function searchUser(req, res, next) {
 
 async function getUserById(req, res, next) {
     try {
-        const userList = await model.user.getById(req.params.userId, true)
-        if (userList && userList.length !== 1) throw new UserNotFound()
+        const user = await model.user.getById(req.params.userId)
+        if (user && user.length !== 1) throw new UserNotFound()
 
         res.status(200).send({
-            ...userList[0]
+            ...user[0]
         })
     } catch (err) {
         next(err)
