@@ -54,6 +54,21 @@
             }
           }
         },
+        "400": {
+          "description": "Invalid email format or domain.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
         "409": {
           "$ref": "#/components/responses/Conflict"
         }

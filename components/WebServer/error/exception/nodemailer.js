@@ -15,6 +15,19 @@ class NodemailerError extends Error {
     if (err) this.err = err
   }
 }
+
+class NodemailerInvalidEmail extends Error {
+  constructor(message, err) {
+    super()
+    this.name = 'NodemailerInvalidEmail'
+    this.type = ExceptionType
+    this.status = '400'
+    if (message) this.message = message
+    else this.message = 'The email address is invalid or have a bad domain.'
+    if (err) this.err = err
+  }
+}
 module.exports = {
-  NodemailerError
+  NodemailerError,
+  NodemailerInvalidEmail
 }

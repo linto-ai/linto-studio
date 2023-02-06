@@ -18,6 +18,8 @@ const {
     GenerateMagicLinkError
 } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
 
+const { NodemailerError, NodemailerInvalidEmail } = require(`${process.cwd()}/components/WebServer/error/exception/nodemailer`)
+
 async function createUser(req, res, next) {
     try {
         const user = req.body
@@ -32,7 +34,11 @@ async function createUser(req, res, next) {
         if (!organizationName) organizationName = user.email + '\'s Organization'
 
         if (((await model.user.getByEmail(user.email)).length) !== 0) throw new UserConflict()
-        if (((await model.organization.getOrganizationByName(organizationName)).length) !== 0) throw new OrganizationConflict()
+
+        if (((await model.organization.getByName(organizationName)).length) !== 0) throw new OrganizationConflict()
+
+        const emailValid = await Mailing.isEmailValid(user.email)
+        if(!emailValid) throw new NodemailerInvalidEmail()
 
         const createdUser = await model.user.createUser(user)
         if (createdUser.insertedCount !== 1) throw new UserError()
@@ -44,7 +50,7 @@ async function createUser(req, res, next) {
         }
 
         const mail_result = await Mailing.accountCreate(user.email, req, createdUser.ops[0].authLink.magicId)
-        if (!mail_result) debug('Error when sending mail')
+        if (!mail_result) throw new NodemailerError()
 
         res.status(201).send({
             message: 'Account created. An email has been sent to you. Please open it and click on the link to validate your email address.'
@@ -109,6 +115,11 @@ async function updateUser(req, res, next) {
 
         if (req.body.email) {
             if ((await model.user.getByEmail(req.body.email)).length === 1) throw new UserConflict("Email already used")
+
+            // Test email validity
+            const emailValid = await Mailing.isEmailValid(req.body.email)
+            if(!emailValid) throw new NodemailerInvalidEmail()
+
             user.email = req.body.email
             user.accountActivated = false
         }
@@ -268,7 +279,7 @@ async function sendVerificationEmail(req, res, next) {
     const email = userUpdated[0].email
     const magicId = userUpdated[0].authLink.magicId
     const mail_result = await Mailing.verifyEmailAddress(email, req, magicId)
-    if (!mail_result) debug('Error when sending mail')
+    if (!mail_result) throw('Error when sending mail')
     res.status(200).send({
       status: 'success',
       message: 'An email has been sent to you.'
@@ -277,7 +288,6 @@ async function sendVerificationEmail(req, res, next) {
     next(error)
   }
 }
-
 
 module.exports = {
     listUser,

@@ -10,10 +10,12 @@ const userUtility = require(`${process.cwd()}/components/WebServer/controllers/u
 const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
 const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
 const userModel = require(`${process.cwd()}/lib/mongodb/models/users`)
-
 const { deleteFile, getStorageFolder, getAudioWaveformFolder} = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
+
+const Mailing = require(`${process.cwd()}/lib/mailer/mailing`)
 const { sendMail } = require(`${process.cwd()}/lib/nodemailer`)
-const { NodemailerError } = require(`${process.cwd()}/components/WebServer/error/exception/nodemailer`)
+const { NodemailerError, NodemailerInvalidEmail } = require(`${process.cwd()}/components/WebServer/error/exception/nodemailer`)
+const model = require(`${process.cwd()}/lib/mongodb/models`)
 const {
     ConversationIdRequire,
     ConversationNotFound,
@@ -387,6 +389,12 @@ async function inviteUserByEmail(req, res, next) {
 async function inviteNewUser(req, res, next) {
     try {
         const email = req.body.email
+        
+        // Test email validity
+        if ((await model.user.getByEmail(req.body.email)).length === 1) throw new UserConflict("Email already used")
+        const emailValid = await Mailing.isEmailValid(user.email)
+        if(!emailValid) throw new NodemailerInvalidEmail()
+        
         // Create new user in database
         const createdUser = await userModel.createExternalUser({ email })
         let magicId = null
