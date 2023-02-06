@@ -35,7 +35,6 @@ class Router {
                 if (route.requireAuth) middlewaresLoaded.push(auth_middlewares.isAuthenticate)
 
                 // Conversation rights
-                if (route.requireConversationOwnerAccess) middlewaresLoaded.push(conversation_middlewares.asOwnerAccess) // require owner access
                 if (route.requireConversationReadAccess) middlewaresLoaded.push(conversation_middlewares.asReadAccess) // require read access
                 if (route.requireConversationCommentAccess) middlewaresLoaded.push(conversation_middlewares.asCommentAccess) // require comment access
                 if (route.requireConversationWriteAccess) middlewaresLoaded.push(conversation_middlewares.asWriteAccess) // require write access
