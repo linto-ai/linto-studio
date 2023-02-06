@@ -1,11 +1,7 @@
 const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:conversation`)
 
 const conversationUtility = require(`${process.cwd()}/components/WebServer/controllers/conversation/utility`)
-const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
 const userUtility = require(`${process.cwd()}/components/WebServer/controllers/user/utility`)
-
-const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
-const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
@@ -57,7 +53,7 @@ async function updateConversation(req, res, next) {
             ...req.body
         }
 
-        const result = await conversationModel.update(conv)
+        const result = await model.conversation.update(conv)
         if (result.matchedCount === 0) throw new ConversationError()
 
         res.status(200).send({
@@ -134,10 +130,10 @@ async function getUsersByConversation(req, res, next) {
     try {
         if (!req.params.conversationId) throw new ConversationIdRequire()
 
-        const conversation = await conversationModel.getConvoById(req.params.conversationId)
+        const conversation = await model.conversation.getById(req.params.conversationId)
         if (conversation.length !== 1) throw new ConversationNotFound()
 
-        let organization = await organizationModel.getOrganizationById(conversation[0].organization.organizationId)
+        let organization = await model.organization.getById(conversation[0].organization.organizationId)
         if (organization.length !== 1) throw new OrganizationNotFound()
 
         const userId = req.payload.data.userId
