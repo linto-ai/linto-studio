@@ -11,18 +11,17 @@ module.exports = (webserver) => {
             try {
                 const conversation = await model.conversation.getById(req.params.conversationId)
                 if (conversation.length === 1 && conversation[0].metadata && conversation[0].metadata.audio && conversation[0].metadata.audio.filepath) {
-                  if(req.headers.accept.indexOf('audio/mpeg') >= 0) {
-                    const fileName = conversation[0].metadata.audio.filepath.split('/').pop()
-                    const file = `${process.cwd()}/${process.env.VOLUME_FOLDER}/${process.env.VOLUME_AUDIO_PATH}/${fileName}`
-                    // TODO: handle file type (mp3, wav, etc)
-                    res.setHeader('Content-Type', 'audio/mpeg')
-                    res.sendFile(file)
-                  }
-                  else if(req.headers.accept.indexOf('application/json') >= 0) {
+                  if(req?.query?.mediatype === 'json') {
                     const audioFilename = conversation[0].metadata.audio.filepath.split('/').pop()
                     const jsonFilename = audioFilename.split('.')[0]+ '.json'
                     const file = `${process.cwd()}/${process.env.VOLUME_FOLDER}/${process.env.VOLUME_AUDIO_WAVEFORM_PATH}/${jsonFilename}`
                     res.setHeader('Content-Type', 'application/json')
+                    res.sendFile(file)
+                  }
+                  else{
+                    const fileName = conversation[0].metadata.audio.filepath.split('/').pop()
+                    const file = `${process.cwd()}/${process.env.VOLUME_FOLDER}/${process.env.VOLUME_AUDIO_PATH}/${fileName}`
+                    res.setHeader('Content-Type', 'audio/mpeg')
                     res.sendFile(file)
                   }
                 } else {

@@ -79,18 +79,12 @@ function defaultPicture() {
     return `pictures/default.jpg`
 }
 
-// function deleteFile(filename, type) {
 function deleteFile(filePath) {
-    try {
-        fs.unlinkSync(filePath)
-    } catch (e) {
-        console.log(e)
-    }
-    //     if (type === 'picture') {
-    //         fs.unlinkSync(`${getStorageFolder()}/${getPictureFolder()}/${filename}`)
-    //     } else if (type === 'audio') {
-    //         fs.unlinkSync(`${getStorageFolder()}/${getAudioFolder()}/${filename}`)
-    //     }
+  try {
+    fs.unlinkSync(filePath)
+  } catch (error) {
+    debug('File not found to be deleted : ', filePath)
+  }
 }
 
 function getStorageFolder() {

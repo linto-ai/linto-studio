@@ -413,6 +413,13 @@
         "format": "uuid",
         "required": true,
         "description": "uuid string identifier for an conversation "
+      },
+      {
+        "in": "query",
+        "name": "mediatype",
+        "type": "string",
+        "required": false,
+        "description": "If the mediatype 'json' is passed as query, return audiowaveform json"
       }
       ],
       "responses": {
