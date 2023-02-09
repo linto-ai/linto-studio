@@ -1,5 +1,5 @@
 const debug = require('debug')('linto:conversation-manager:router:api:file:files')
-const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
+const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 module.exports = (webserver) => {
     return [{
@@ -9,7 +9,7 @@ module.exports = (webserver) => {
         requireConversationReadAccess: true,
         controller: async (req, res, next) => {
             try {
-                const conversation = await conversationModel.getConvoById(req.params.conversationId)
+                const conversation = await model.conversation.getById(req.params.conversationId)
                 if (conversation.length === 1 && conversation[0].metadata && conversation[0].metadata.audio && conversation[0].metadata.audio.filepath) {
                   if(req.headers.accept.indexOf('audio/mpeg') >= 0) {
                     const fileName = conversation[0].metadata.audio.filepath.split('/').pop()
