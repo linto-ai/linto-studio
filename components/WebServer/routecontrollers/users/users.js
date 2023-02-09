@@ -117,7 +117,7 @@ async function getPersonalInfo(req, res, next) {
 
 async function updateUser(req, res, next) {
     try {
-        if (!(req.body.email || req.body.firstname || req.body.lastname || req.body.accountNotifications || req.body.emailNotifications)) throw new UserUnsupportedMediaType()
+        if (!(req.body.email || req.body.firstname || req.body.lastname || req.body.accountNotifications || req.body.emailNotifications || req.body.private)) throw new UserUnsupportedMediaType()
 
         const myUser = await model.user.getById(req.payload.data.userId)
         if (myUser.length !== 1) throw new UserNotFound()
@@ -129,7 +129,7 @@ async function updateUser(req, res, next) {
         }
         if (req.body.firstname) user.firstname = req.body.firstname
         if (req.body.lastname) user.lastname = req.body.lastname
-
+        if (req.body.private) user.private = req.body.private
 
         if (req.body.accountNotifications) {
             for (let key of Object.keys(req.body.accountNotifications)) {
