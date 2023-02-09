@@ -1,5 +1,5 @@
 const debug = require('debug')('linto:conversation-manager:components:WebServer:controller:organizations:utility')
-const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
+const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const { OrganizationNotFound } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
@@ -7,7 +7,7 @@ const ROLE = require(`${process.cwd()}/lib/dao/organization/roles`)
 
 
 async function getOrganization(organizationId) {
-    const organization = await organizationModel.getOrganizationById(organizationId)
+    const organization = await model.organization.getById(organizationId)
 
     if (organization.length !== 1) throw new OrganizationNotFound()
     return {
@@ -34,15 +34,4 @@ function countAdmin(organization, userId) {
     }
 }
 
-async function checkOrganization(organizationId, userId) {
-    if (organizationId) {
-        const organization = await organizationModel.getOrganizationById(organizationId)
-        if (organization.length === 1) return organizationId
-    } else {
-        const organizations = await organizationModel.getPersonalOrganization(userId)
-        if (organizations[0]?._id) return organizations[0]._id.toString()
-    }
-    throw new OrganizationNotFound()
-}
-
-module.exports = { getOrganization, countAdmin, checkOrganization }
+module.exports = { getOrganization, countAdmin }

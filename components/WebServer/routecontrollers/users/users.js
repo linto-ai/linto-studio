@@ -3,8 +3,10 @@ const Mail = require('nodemailer/lib/mailer')
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:user')
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
+const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
+
 const Mailing = require(`${process.cwd()}/lib/mailer/mailing`)
-const { storeFile, defaultPicture, deleteFile, getStorageFolder } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
+const { storeFile, defaultPicture, deleteFile, getStorageFolder, getAudioWaveformFolder } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 
 const {
     OrganizationConflict
@@ -39,7 +41,7 @@ async function createUser(req, res, next) {
 
         const createdOrganization = await model.organization.createDefault(createdUser.insertedId.toString(), organizationName)
         if (createdOrganization.insertedCount !== 1) {
-            model.user.deleteUser(createdUser.insertedId.toString())
+            model.user.delete(createdUser.insertedId.toString())
             throw new UserError()
         }
 
@@ -98,6 +100,20 @@ async function getUserById(req, res, next) {
         next(err)
     }
 }
+
+async function getPersonalInfo(req, res, next) {
+    try {
+        const user = await model.user.getPersonalInfo(req.payload.data.userId)
+        if (user && user.length !== 1) throw new UserNotFound()
+
+        res.status(200).send({
+            ...user[0]
+        })
+    } catch (err) {
+        next(err)
+    }
+}
+
 
 async function updateUser(req, res, next) {
     try {
@@ -193,7 +209,7 @@ async function logout(req, res, next) {
 async function recoveryAuth(req, res, next) {
     try {
         if (!req.body.email) throw new UserUnsupportedMediaType()
-        const userList = await model.user.getUserByEmail(req.body.email, true)
+        const userList = await model.user.getByEmail(req.body.email, true)
         if (userList.length !== 1) {
             debug(`Forgotten password request for an unknown or invalid email address: ${req.body.email}`)
             res.status(200).send({
@@ -218,34 +234,43 @@ async function deleteUser(req, res, next) {
         const userId = req.payload.data.userId
 
         // Remove user from organizations
-        const organizations = await model.organization.getAllOrganizations()
-        organizations.filter(organization => {
-            if (organization.owner === userId && organization.users.length === 0) return true
-            else if ((organization.users.filter(user => user.userId === userId)).length !== 0) return true
-        }).map(async (organization) => {
-            if (organization.owner === userId && organization.users.length === 1) {
-                let resultOperation = await model.organization.deleteById(organization._id.toString())
-                if (resultOperation.deletedCount !== 1) throw new UserError('Error on personal organization')
-            } else {
+        const organizations = await model.organization.listSelf(userId)
+        organizations.map(async (organization) => {
+            const data = orgaUtility.countAdmin(organization, userId)
+            if (data.adminCount === 1 && data.isAdmin) { //delete organization
+                // delete conversations from orga
+                const conversations = await model.conversation.getByOrga(organization._id)
+                conversations.map(async conversation => {
+
+                    const audioFilename = conversation.metadata.audio.filepath.split('/').pop()
+                    const jsonFilename = audioFilename.split('.')[0] + '.json'
+
+                    deleteFile(`${getStorageFolder()}/${conversation.metadata.audio.filepath}`)
+                    deleteFile(`${getStorageFolder()}/${getAudioWaveformFolder()}/${jsonFilename}`)
+
+                    const resultConvo = await model.conversation.delete(conversation._id)
+                    if (resultConvo.deletedCount !== 1) throw new UserError()
+                })
+                // delete orga
+                const resultOrga = await model.organization.delete(organization._id)
+                if (resultOrga.deletedCount !== 1) throw new UserError()
+            } else if (data.adminCount > 1) { // delete user from orga
                 organization.users = organization.users.filter(user => user.userId !== userId)
                 let resultOperation = await model.organization.update(organization)
-                if (resultOperation.modifiedCount === 0) throw new UserError('Error on organization rights deletion')
+                if (resultOperation.matchedCount === 0) throw new UserError()
             }
+
         })
 
         // Delete conversation if owner and remove user from shared with
-        const conversations = await model.conversation.getAllConvos()
-        conversations.filter(conversation => {
-            if ((conversation.sharedWithUsers.filter(user => user.userId === userId)).length !== 0) return true
-        }).map(async conversation => {
+        const conversations = await model.conversation.getByShare(userId)
+        conversations.map(async conversation => {
             conversation.sharedWithUsers = conversation.sharedWithUsers.filter(user => user.userId !== userId)
             const resultConvoUpdate = await model.conversation.update(conversation)
-            if (resultConvoUpdate.modifiedCount === 0) throw new UserError('Error on conversation rights deletion')
-        }).map(async conversation => {
-            if (conversation.owner === userId) await model.conversation.deleteById(conversation._id.toString())
+            if (resultConvoUpdate.matchedCount === 0) throw new UserError()
         })
 
-        const result = await model.user.deleteUser(req.payload.data.userId)
+        const result = await model.user.delete(req.payload.data.userId)
         if (result.deletedCount !== 1) throw new UserError
 
         res.status(200).send({
@@ -261,6 +286,7 @@ module.exports = {
     listUser,
     searchUser,
     getUserById,
+    getPersonalInfo,
     deleteUser,
     createUser,
     logout,

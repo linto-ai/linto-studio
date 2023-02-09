@@ -135,7 +135,7 @@ async function inviteNewUser(req, res, next) {
 
     const createOrganization = await model.organization.createDefault(userId, email + '\'s Organization', {})
     if (createOrganization.insertedCount !== 1) {
-      model.user.deleteById(userId)
+      model.user.delete(userId)
       throw new UserError()
     }
 

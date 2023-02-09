@@ -313,6 +313,33 @@
       }
     }
   },
+  "/api/users/personal/": {
+    "get": {
+      "tags": [
+        "users"
+      ],
+      "summary": "Get user information based on their token",
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/UserFull"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
   "/api/users/{userId}/": {
     "get": {
       "tags": [

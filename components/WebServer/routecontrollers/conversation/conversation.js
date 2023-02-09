@@ -22,7 +22,7 @@ async function deleteConversation(req, res, next) {
         const conversation = await model.conversation.getById(req.params.conversationId)
         if (conversation.length !== 1) throw new ConversationNotFound()
 
-        const result = await model.conversation.deleteById(req.params.conversationId)
+        const result = await model.conversation.delete(req.params.conversationId)
         if (result.deletedCount !== 1) throw new ConversationError('Error when deleting conversation')
 
         const audioFilename = conversation[0].metadata.audio.filepath.split('/').pop()
