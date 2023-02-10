@@ -63,7 +63,6 @@ async function leaveSelfFromOrganization(req, res, next) {
 
         const data = orgaUtility.countAdmin(organization[0], userId)
         if (data.adminCount === 1 && data.isAdmin) throw new OrganizationForbidden('You cannot leave the organization because you are the last admin')
-        if (organization.owner === userId && data.isAdmin) organization.owner = data.replaceOwner
 
         organization.users = organization.users.filter(oUser => oUser.userId !== userId)
         const result = await model.organization.update(organization)

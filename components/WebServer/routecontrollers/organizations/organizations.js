@@ -19,7 +19,7 @@ async function createOrganization(req, res, next) {
         const organization = {
             name: req.body.name,
             description: req.body.description ? req.body.description : '',
-            users: [{ userId: req.payload.data.userId, role: ROLES.OWNER }],
+            users: [{ userId: req.payload.data.userId, role: ROLES.ADMIN }],
             owner: req.payload.data.userId,
             token: ''
         }

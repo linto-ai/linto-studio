@@ -52,7 +52,7 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
         const sharedWithUsers = conversation.sharedWithUsers
         let external_members = []
         let organization_members = []
-        
+
         const myUserInfo = await model.user.getById(userId)
         // Show user if public
         for (const swUser of sharedWithUsers) {
@@ -61,21 +61,21 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
                 sharedById = swUser.sharedBy
             }
             const userInfo = await model.user.getById(swUser.userId)
-            if(userInfo.length > 0) {
-              if(userInfo.length === 1) {
-                const userOrga = await model.organization.getByName(userInfo[0].email)
-                
-                if (userOrga[0].type === 'public' || userOrga[0].name === myUserInfo[0].email) {
-                    if (swUser.userId === sharedById) {
-                        sharedByAdded = true
+            if (userInfo.length > 0) {
+                if (userInfo.length === 1) {
+                    const userOrga = await model.organization.getByName(userInfo[0].email)
+
+                    if (userOrga[0].type === 'public' || userOrga[0].name === myUserInfo[0].email) {
+                        if (swUser.userId === sharedById) {
+                            sharedByAdded = true
+                        }
+                        external_members.push({
+                            ...userInfo[0],
+                            role: 0,
+                            right: swUser.right
+                        })
                     }
-                    external_members.push({
-                        ...userInfo[0],
-                        role: 0,
-                        right: swUser.right
-                    })
-                }
-              } else throw new UserNotFound()
+                } else throw new UserNotFound()
             }
         }
         // Show user if private and ashaerd by loged user
@@ -84,13 +84,13 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
                 if (swUser.sharedBy === sharedById) {
                     sharedByAdded = true
                     const userInfo = await model.user.getById(swUser.userId)
-                    if(external_members.findIndex(usr => usr._id.toString() === swUser.userId) < 0) {
-                      external_members.push({
-                        ...userInfo[0],
-                        role: 0,
-                        right: swUser.right
-                    })
-                  }
+                    if (external_members.findIndex(usr => usr._id.toString() === swUser.userId) < 0) {
+                        external_members.push({
+                            ...userInfo[0],
+                            role: 0,
+                            right: swUser.right
+                        })
+                    }
                 }
             }
         }
@@ -106,9 +106,7 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
                     ...userInfo[0],
                     role: oUser.role
                 }
-                if (oUser.userId === conversation.owner) {
-                    userObj.right = CONVERSATION_RIGHTS.adminRight()
-                } else if (userObj.role === 3) {
+                if (userObj.role === 3) {
                     userObj.right = CONVERSATION_RIGHTS.adminRight()
                 } else if (userObj.role === 2) {
                     userObj.right = CONVERSATION_RIGHTS.maintainerRight()

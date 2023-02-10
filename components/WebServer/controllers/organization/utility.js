@@ -19,18 +19,15 @@ async function getOrganization(organizationId) {
 function countAdmin(organization, userId) {
     let adminCount = 0
     let isAdmin = false
-    let replaceOwner
     for (let oUser of organization.users) {
         if (oUser.role === ROLE.ADMIN) adminCount++
         if (oUser.userId === userId && oUser.role === ROLE.ADMIN) isAdmin = true
-        if (oUser.userId !== userId && oUser.role === ROLE.ADMIN) replaceOwner = oUser.userId
     }
 
     return {
         userCount : organization.users.length,
         adminCount,
-        isAdmin,
-        replaceOwner
+        isAdmin
     }
 }
 

@@ -18,10 +18,8 @@ class Router {
                 if (process.env.DEV_DISABLE_AUTH === 'true') {
                     route.requireAuth = false
                     route.requireSession = false
-                    route.requireConversationOwnerAccess = false
                     route.requireConversationReadAccess = false
                     route.requireConversationWriteAccess = false
-                    route.requireOrganizationOwnerAccess = false
                     route.requireOrganizationAdminAccess = false
                     route.requireOrganizationMaintainerAccess = false
                     route.requireOrganizationMemberAccess = false

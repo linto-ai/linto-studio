@@ -51,19 +51,6 @@ class ConversationUnsupportedMediaType extends Error {
   }
 }
 
-
-class ConversationOwnerAccessDenied extends Error {
-  constructor(message, err) {
-    super()
-    this.name = 'ConversationOwnerAccessDenied'
-    this.type = ExceptionType
-    this.status = '401'
-    if (message) this.message = message
-    else this.message = 'Owner of the conversation is require.'
-    if (err) this.err = err
-  }
-}
-
 class ConversationWriteAccessDenied extends Error {
   constructor(message, err) {
     super()
@@ -169,7 +156,6 @@ module.exports = {
   ConversationNoFileUploaded,
   ConversationMetadataRequire,
   ConversationUnsupportedMediaType,
-  ConversationOwnerAccessDenied,
   ConversationReadAccessDenied,
   ConversationWriteAccessDenied,
   ConversationShareAccessDenied,
