@@ -7,6 +7,7 @@ const { expressjwt: jwt } = require("express-jwt")
 const jwtDecode = require('jwt-decode')
 
 const UsersModel = require(`${process.cwd()}/lib/mongodb/models/users`)
+const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const { MalformedToken, MultipleUserFound, InvalidCredential, UserNotFound } = require(`${process.cwd()}/components/WebServer/error/exception/auth`)
 
@@ -87,7 +88,7 @@ async function generateSecretFromHeaders(req, token, done) {
         const userId = token.payload.data.userId
 
         if (authorization.split(' ')[0] === 'Bearer') {
-            const users = await UsersModel.getUserTokenById(userId)
+            const users = await model.user.getTokenById(userId)
             if (users.length === 0) throw new UserNotFound()
             else if (users.length !== 1) throw new MultipleUserFound()
             else return users[0].keyToken + process.env.CM_JWT_SECRET
@@ -105,7 +106,7 @@ async function generateRefreshSecretFromHeaders(req, payload, done) {
 
         const { headers: { authorization } } = req
         if (authorization.split(' ')[0] === 'Bearer') {
-            const users = UsersModel.getUserTokenById(payload.data.userId)
+            const users = model.user.getTokenById(payload.data.userId)
             if (users.length === 0) done(new UserNotFound())
             else if (users.length !== 1) done(new MultipleUserFound())
             else done(null, users[0].keyToken + process.env.CM_REFRESH_SECRET)

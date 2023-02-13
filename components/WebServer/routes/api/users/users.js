@@ -4,6 +4,7 @@ const {
     searchUser,
     createUser,
     getUserById,
+    getPersonalInfo,
     updateUser,
     updateUserPassword,
     updateUserPicture,
@@ -57,6 +58,12 @@ module.exports = (webserver) => {
         method: 'post',
         requireAuth: true,
         controller: searchUser
+    },
+    {
+        path: '/personal',
+        method: 'get',
+        requireAuth: true,
+        controller: getPersonalInfo
     },
     {
         path: '/:userId',

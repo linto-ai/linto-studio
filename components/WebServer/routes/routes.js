@@ -10,6 +10,7 @@ module.exports = (webServer) => {
         "/api/conversations": [
             ...require('./api/conversation/generate')(webServer),
             ...require('./api/conversation/conversations')(webServer),
+            ...require('./api/conversation/share')(webServer),
             ...require('./api/conversation/turn')(webServer),
         ],
         "/api/nlp": require('./api/nlp/keyword')(webServer),

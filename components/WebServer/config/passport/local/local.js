@@ -4,7 +4,8 @@ const randomstring = require('randomstring')
 const passport = require('passport')
 const LocalStrategy = require('passport-local')
 
-const UsersModel = require(`${process.cwd()}/lib/mongodb/models/users`)
+const model = require(`${process.cwd()}/lib/mongodb/models`)
+
 const crypto = require('crypto')
 
 
@@ -20,7 +21,7 @@ const STRATEGY = new LocalStrategy({
 passport.use('local', STRATEGY)
 
 function generateUserToken(email, password, done) {
-    UsersModel.getUserTokenByEmail(email).then(users => {
+    model.user.getTokenByEmail(email).then(users => {
         if (users.length === 1) user = users[0]
         else if (users.length > 1) throw new MultipleUserFound()
         else throw new UserNotFound()
@@ -35,7 +36,7 @@ function generateUserToken(email, password, done) {
             userId: user._id
         }
 
-        UsersModel.update({ _id: user._id, keyToken: tokenData.salt })
+        model.user.update({ _id: user._id, keyToken: tokenData.salt })
             .then(user => {
                 if (!user) return done(new UnableToGenerateKeyToken())
             }).catch(done)
@@ -52,7 +53,7 @@ const STRATEGY_MAGIC_LINK = new LocalStrategy({
 passport.use('local_magic_link', STRATEGY_MAGIC_LINK)
 
 async function generateResetUserToken(magicId, psw, done) {
-  UsersModel.getUserByMagicId(magicId).then(users => {
+  model.user.getByMagicId(magicId, true).then(users => {
       if (users.length === 1) user = users[0]
       else if (users.length > 1) throw new MultipleUserFound()
       else throw new UserNotFound()
@@ -67,7 +68,19 @@ async function generateResetUserToken(magicId, psw, done) {
           userId: user._id
       }
 
-      UsersModel.update({ _id: user._id, keyToken: tokenData.salt, authLink :{magicId: null, validityDate:null}, accountActivated: true })
+      // Push email to verifiedEmail if it is not in the array
+      let verifiedEmail = user.verifiedEmail
+      if(verifiedEmail.indexOf(user.email) < 0) {
+        verifiedEmail.push(user.email)
+      }
+
+      model.user.update({ 
+        _id: user._id, 
+        keyToken: tokenData.salt, 
+        authLink :{magicId: null, validityDate:null}, 
+        accountActivated: true,
+        verifiedEmail
+      })
           .then(user => {
               if (!user) return done(new UnableToGenerateKeyToken())
           }).catch(done)

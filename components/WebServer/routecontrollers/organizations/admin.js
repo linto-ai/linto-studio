@@ -44,18 +44,22 @@ async function deleteOrganization(req, res, next) {
 
     let lconv = await model.conversation.getByOrga(req.params.organizationId)
     lconv.map(async conv => {
-      const result = await model.conversation.deleteById(conv._id)
+      const result = await model.conversation.delete(conv._id)
       if (result.deletedCount !== 1) throw new ConversationError('Error while deleting conversation from organization')
 
       try {
+        const audioFilename = conversation.metadata.audio.filepath.split('/').pop()
+        const jsonFilename = audioFilename.split('.')[0] + '.json'
         deleteFile(`${getStorageFolder()}/${conv.metadata.audio.filepath}`)
+        deleteFile(`${getStorageFolder()}/${getAudioWaveformFolder()}/${jsonFilename}`)
+
       } catch (err) {
         debug(`file not found ${getStorageFolder()}/${conv.metadata.audio.filepath}`)
       }
 
     })
 
-    const result = await model.organization.deleteById(organization._id.toString())
+    const result = await model.organization.delete(organization._id.toString())
     if (result.deletedCount !== 1) throw new OrganizationError('Error when deleting organization')
 
     res.status(200).send({

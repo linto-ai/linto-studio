@@ -5,8 +5,7 @@ const utf8 = require('utf8')
 
 const { v4: uuidv4 } = require('uuid');
 
-const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
-const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
+const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const { createJobInterval } = require(`${process.cwd()}/components/WebServer/controllers/jobsHandler`)
 
@@ -39,12 +38,13 @@ async function transcribeReq(req, res, next) {
 async function transcribe(isSingleFile, req, res, next) {
     const userId = req.payload.data.userId
 
-    if (!req.body.name) throw new ConversationMetadataRequire("name param is required")
-    if (!req.body.lang) throw new ConversationMetadataRequire("lang param is required")
+    if (!req.body.name) throw new ConversationMetadataRequire('name param is required')
+    if (!req.body.lang) throw new ConversationMetadataRequire('lang param is required')
     if (!req.body.membersRight) req.body.membersRight = CONVERSATION_RIGHT.READ + CONVERSATION_RIGHT.COMMENT
-    if (!req.body.endpoint) throw new ConversationMetadataRequire("serviceEndpoint param is required")
+    if (!req.body.endpoint) throw new ConversationMetadataRequire('serviceEndpoint param is required')
+    if (!req.body.organizationId) throw new ConversationMetadataRequire('organizationId param is required')
 
-    req.body.organizationId = await orgaUtility.checkOrganization(req.body.organizationId, userId)
+    if (((await model.organization.getByIdAndUser(req.body.organizationId, userId)).length) !== 1) throw new OrganizationNotFound()
     req.body.userId = userId
     req.body.filter = {}
 
@@ -119,7 +119,7 @@ async function createConversationAndJobInterval(service, processing_job, body) {
         let conversation = initConversation(body, body.userId, job.job_id)
         conversation = await addFileMetadataToConversation(conversation, body.file_data)
 
-        const result = await conversationModel.createConversation(conversation)
+        const result = await model.conversation.create(conversation)
         if (result.insertedCount !== 1) throw new ConversationError()
 
         if (!conversation._id || !conversation?.jobs?.transcription?.job_id) throw new ConversationError()

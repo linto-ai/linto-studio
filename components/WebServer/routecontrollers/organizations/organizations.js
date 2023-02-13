@@ -19,7 +19,7 @@ async function createOrganization(req, res, next) {
         const organization = {
             name: req.body.name,
             description: req.body.description ? req.body.description : '',
-            users: [{ userId: req.payload.data.userId, role: ROLES.OWNER }],
+            users: [{ userId: req.payload.data.userId, role: ROLES.ADMIN }],
             owner: req.payload.data.userId,
             token: ''
         }
@@ -43,8 +43,9 @@ async function getOrganization(req, res, next) {
         if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
 
         const organization = await model.organization.getByIdAndUser(req.params.organizationId, req.payload.data.userId)
+        if (organization.length !== 1) throw new OrganizationError()
 
-        return res.status(200).send(organization)
+        return res.status(200).send(organization[0])
     } catch (err) {
         next(err)
     }

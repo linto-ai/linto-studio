@@ -1,0 +1,96 @@
+{
+  "UserFull": {
+    "type": "object",
+    "properties": {
+      "_id": {
+        "type": "string",
+        "description": "User ID"
+      },
+      "email": {
+        "type": "string",
+        "description": "User email"
+      },
+      "firstname": {
+        "type": "string",
+        "description": "User first name"
+      },
+      "lastname": {
+        "type": "string",
+        "description": "User last name"
+      },
+      "img": {
+        "type": "string",
+        "description": "User picture"
+      },
+      "accountNotifications": {
+        "type": "object",
+        "description": "User account notifications",
+        "properties": {
+          "updatePassword": {
+            "type": "boolean",
+            "description": "User account update password notification"
+          },
+          "inviteAccount": {
+            "type": "boolean",
+            "description": "User account invite notification"
+          }
+        }
+      },
+      "accountActivated": {
+        "type": "boolean",
+        "description": "User account activated"
+      },
+      "private": {
+        "type": "boolean",
+        "description": "User private"
+      },
+      "emailNotifications": {
+        "type": "object",
+        "description": "User email notifications",
+        "properties": {
+          "conversations": {
+            "type": "object",
+            "description": "User conversations email notifications",
+            "properties": {
+              "sharing": {
+                "type": "boolean",
+                "description": "User conversations sharing email notification"
+              }
+            }
+          },
+          "organizations": {
+            "type": "object",
+            "description": "User organizations email notifications",
+            "properties": {
+              "invite": {
+                "type": "boolean",
+                "description": "User organizations invite email notification"
+              }
+            }
+          }
+        }
+      }
+    },
+    "example": {
+      "_id": "63d78cc6c0418e3602518d93",
+      "email": "email@domain.com",
+      "firstname": "first",
+      "lastname": "last",
+      "img": "pictures/default.jpg",
+      "accountNotifications": {
+        "updatePassword": false,
+        "inviteAccount": false
+      },
+      "accountActivated": false,
+      "private": false,
+      "emailNotifications": {
+        "conversations": {
+          "sharing": true
+        },
+        "organizations": {
+          "invite": false
+        }
+      }
+    }
+  }
+}
