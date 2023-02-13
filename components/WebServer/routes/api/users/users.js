@@ -6,7 +6,6 @@ const {
     getUserById,
     getPersonalInfo,
     updateUser,
-    updateUserPassword,
     updateUserPicture,
     deleteUser,
     recoveryAuth,

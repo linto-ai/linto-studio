@@ -42,10 +42,22 @@ async function getOrganization(req, res, next) {
     try {
         if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
 
-        const organization = await model.organization.getByIdAndUser(req.params.organizationId, req.payload.data.userId)
-        if (organization.length !== 1) throw new OrganizationError()
+        const lorganization = await model.organization.getByIdAndUser(req.params.organizationId, req.payload.data.userId)
+        if (lorganization.length !== 1) throw new OrganizationError()
 
-        return res.status(200).send(organization[0])
+        let organization = lorganization[0]
+        let orgaUser = []
+        for (let luser of organization.users) {
+            let user = await model.user.getById(luser.userId)
+
+            orgaUser.push({
+                ...user[0],
+                ...luser
+            })
+        }
+        organization.users = orgaUser
+
+        return res.status(200).send(organization)
     } catch (err) {
         next(err)
     }
