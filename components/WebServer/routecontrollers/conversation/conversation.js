@@ -196,7 +196,8 @@ async function searchConversation(req, res, next) {
 
         convSearch = await conversationUtility.getUserRightFromConversationList(userId, convSearch)
 
-        res.status(200).send({
+        if (convSearch.length === 0) res.status(204).send()
+        else res.status(200).send({
             searchType,
             conversations: convSearch
         })

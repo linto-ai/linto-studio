@@ -289,17 +289,12 @@
                   "right": {
                     "type": "integer",
                     "description": "Right of the user"
-                  },
-                  "personal": {
-                    "type": "boolean",
-                    "description": "If the user has a personal right"
                   }
                 }
               },
               "example": {
                 "role": 3,
-                "right": 31,
-                "personal": true
+                "right": 31
               }
             }
           }

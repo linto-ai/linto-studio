@@ -27,13 +27,6 @@
                 },
                 "description": {
                   "type": "string"
-                },
-                "type": {
-                  "type": "string",
-                  "enum": [
-                    "public",
-                    "private"
-                  ]
                 }
               }
             }

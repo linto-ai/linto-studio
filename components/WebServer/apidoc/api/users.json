@@ -63,24 +63,24 @@
       "tags": [
         "users"
       ],
-      "summary": "Get all public users",
+      "summary": "Get user information based on their token",
       "responses": {
         "200": {
           "description": "OK",
           "content": {
             "application/json": {
               "schema": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "$ref": "#/components/schemas/User"
-                }
+                "type": "object",
+                "$ref": "#/components/schemas/UserFull"
               }
             }
           }
         },
         "401": {
           "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
         }
       }
     },
@@ -106,6 +106,9 @@
                 },
                 "lastname": {
                   "type": "string"
+                },
+                "personal":{
+                  "type": "boolean"
                 }
               }
             }
@@ -164,52 +167,6 @@
         },
         "404": {
           "$ref": "#/components/responses/NotFound"
-        }
-      }
-    }
-  },
-  "/api/users/password": {
-    "put": {
-      "tags": [
-        "users"
-      ],
-      "summary": "Update user password",
-      "requestBody": {
-        "content": {
-          "multipart/form-data": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "newPassword": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "newPassword"
-              ]
-            }
-          }
-        }
-      },
-      "responses": {
-        "200": {
-          "description": "OK",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "message": {
-                    "type": "string",
-                    "example": "User password updated"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "401": {
-          "$ref": "#/components/responses/Unauthorized"
         }
       }
     }
@@ -313,29 +270,29 @@
       }
     }
   },
-  "/api/users/personal/": {
+  "/api/users/list/": {
     "get": {
       "tags": [
         "users"
       ],
-      "summary": "Get user information based on their token",
+      "summary": "Get all public users",
       "responses": {
         "200": {
           "description": "OK",
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "$ref": "#/components/schemas/UserFull"
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/User"
+                }
               }
             }
           }
         },
         "401": {
           "$ref": "#/components/responses/Unauthorized"
-        },
-        "404": {
-          "$ref": "#/components/responses/NotFound"
         }
       }
     }

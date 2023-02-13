@@ -20,7 +20,7 @@ module.exports = (webserver) => {
         path: '/',
         method: 'get',
         requireAuth: true,
-        controller: listUser
+        controller: getPersonalInfo
     },
     {
         path: '/',
@@ -41,12 +41,6 @@ module.exports = (webserver) => {
         controller: updateUser
     },
     {
-        path: '/password',
-        method: 'put',
-        requireAuth: true,
-        controller: [updateUserPassword, auth_middleware.authenticate]
-    },
-    {
         path: '/picture',
         method: 'put',
         requireAuth: true,
@@ -59,10 +53,10 @@ module.exports = (webserver) => {
         controller: searchUser
     },
     {
-        path: '/personal',
+        path: '/list',
         method: 'get',
         requireAuth: true,
-        controller: getPersonalInfo
+        controller: listUser
     },
     {
         path: '/:userId',
