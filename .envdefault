@@ -3,6 +3,7 @@ WEBSERVER_HTTP_PORT=80
 
 # Optional for swagger
 WEBSERVER_SWAGGER_HTTP_HOST=localhost
+WEBSERVER_SWAGGER_API_PATH=cm-api
 
 # Mongo
 DB_HOST=localhost

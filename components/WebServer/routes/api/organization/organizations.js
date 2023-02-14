@@ -1,16 +1,13 @@
 const debug = require('debug')('linto:conversation-manager:router:api:organizations:organizations')
 const {
     createOrganization,
-    // listOrganization,
     listSelfOrganization,
-    searchOrganizationByName,
     getOrganization
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/organizations.js`)
 
 const {
     // listSelfOrganization,
     listConversationFromOrganization,
-    updateSelfFromOrganization,
     leaveSelfFromOrganization
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/member.js`)
 
@@ -37,12 +34,6 @@ module.exports = (webserver) => {
             controller: createOrganization
         },
         {
-            path: '/search',
-            method: 'post',
-            requireAuth: true,
-            controller: searchOrganizationByName
-        },
-        {
             path: '/user',
             method: 'get',
             requireAuth: true,
@@ -56,13 +47,6 @@ module.exports = (webserver) => {
             requireAuth: true,
             requireOrganizationMemberAccess: true,
             controller: getOrganization
-        },
-        {
-            path: '/:organizationId/self',
-            method: 'patch',
-            requireAuth: true,
-            requireOrganizationMemberAccess: true,
-            controller: updateSelfFromOrganization
         },
         {
             path: '/:organizationId/self',

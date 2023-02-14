@@ -35,62 +35,6 @@
     }
   },
   "/api/organizations/{organizationId}/self": {
-    "patch": {
-      "tags": [
-        "organizations members"
-      ],
-      "summary": "Update self from the requested organization",
-      "parameters": [{
-        "in": "path",
-        "name": "organizationId",
-        "type": "string",
-        "format": "uuid",
-        "required": true,
-        "description": "uuid string identifier for an organization"
-      }],
-      "requestBody": {
-        "content": {
-          "multipart/form-data": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "visibility": {
-                  "type": "string",
-                  "enum": [
-                    "public",
-                    "private"
-                  ]
-                }
-              }
-            }
-          }
-        }
-      },
-      "responses": {
-        "200": {
-          "content": {
-            "application/json": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "description": "Information"
-                }
-              },
-              "example": {
-                "message": "User updated from the organization"
-              }
-            }
-          }
-        },
-        "401": {
-          "$ref": "#/components/responses/Unauthorized"
-        },
-        "404": {
-          "$ref": "#/components/responses/NotFound"
-        }
-      }
-    },
     "delete": {
       "tags": [
         "organizations members"
@@ -161,6 +105,9 @@
               }
             }
           }
+        },
+        "204": {
+          "$ref": "#/components/responses/NoContent"
         },
         "401": {
           "$ref": "#/components/responses/Unauthorized"

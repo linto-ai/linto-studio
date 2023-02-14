@@ -310,6 +310,9 @@
             }
           }
         },
+        "204": {
+          "$ref": "#/components/responses/NoContent"
+        },
         "401": {
           "$ref": "#/components/responses/Unauthorized"
         }

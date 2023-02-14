@@ -1,6 +1,6 @@
 const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:turn`)
 
-const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
+const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const { v4: uuidv4 } = require('uuid')
 const { isTurnLonger } = require(`${process.cwd()}/components/WebServer/controllers/conversation/turn`)
@@ -20,7 +20,7 @@ async function addTurn(req, res, next) {
         if (!req.params.turnId) throw new TurnIdRequire()   // Will add a turn after that turnId
 
         let conversationId = req.params.conversationId
-        const conversation = await conversationModel.getConvoById(conversationId)
+        const conversation = await model.conversation.getById(conversationId)
         if (conversation.length !== 1) throw new ConversationNotFound()
 
         let addedTurn = []
@@ -35,7 +35,7 @@ async function addTurn(req, res, next) {
 
         if (!isTurnAdded) throw new TurnNotFound()
 
-        const result = await conversationModel.updateTurn(req.params.conversationId, addedTurn)
+        const result = await model.conversation.updateTurn(req.params.conversationId, addedTurn)
         if (result.matchedCount === 0) throw new ConversationError()
 
         res.status(200).send({
@@ -53,13 +53,13 @@ async function deleteTurn(req, res, next) {
         if (!req.params.turnId) throw new TurnIdRequire()
 
         let conversationId = req.params.conversationId
-        const conversation = await conversationModel.getConvoById(conversationId)
+        const conversation = await model.conversation.getById(conversationId)
         if (conversation.length !== 1) throw new ConversationNotFound()
 
         const turnToRemove = conversation[0].text.filter(turn => turn.turn_id !== req.params.turnId)
         if (conversation[0].text.length === turnToRemove.length) throw new TurnNotFound()
 
-        const result = await conversationModel.updateTurn(req.params.conversationId, turnToRemove)
+        const result = await model.conversation.updateTurn(req.params.conversationId, turnToRemove)
         if (result.matchedCount === 0) throw new ConversationError()
 
         res.status(200).send({
@@ -77,7 +77,7 @@ async function updateTurn(req, res, next) {
         if (!req.params.turnId) throw new TurnIdRequire()
 
         let conversationId = req.params.conversationId
-        let conversation = await conversationModel.getConvoById(conversationId)
+        let conversation = await model.conversation.getById(conversationId)
         if (conversation.length !== 1) throw new ConversationNotFound()
 
         let updatedTurn = []
@@ -94,7 +94,7 @@ async function updateTurn(req, res, next) {
 
         if (!isTurnUpdated) throw new TurnNotFound()
 
-        const result = await conversationModel.updateTurn(req.params.conversationId, updatedTurn)
+        const result = await model.conversation.updateTurn(req.params.conversationId, updatedTurn)
         if (result.matchedCount === 0) throw new ConversationError()
 
         res.status(200).send({
@@ -117,7 +117,7 @@ async function mergeTurn(req, res, next) {
 
 
         let conversationId = req.params.conversationId
-        let conversation = await conversationModel.getConvoById(conversationId)
+        let conversation = await model.conversation.getById(conversationId)
         if (conversation.length !== 1) throw new ConversationNotFound()
 
         //find the turn id and merge with the direction
@@ -167,7 +167,7 @@ async function mergeTurn(req, res, next) {
                 updatedTurn.push(turn)
         }
 
-        await conversationModel.updateTurn(req.params.conversationId, updatedTurn)
+        await model.conversation.updateTurn(req.params.conversationId, updatedTurn)
         if (conversation[0].text.length === updatedTurn.length) {
             res.status(304).send({
                 message: 'Nothing to merge'

@@ -18,10 +18,8 @@ class Router {
                 if (process.env.DEV_DISABLE_AUTH === 'true') {
                     route.requireAuth = false
                     route.requireSession = false
-                    route.requireConversationOwnerAccess = false
                     route.requireConversationReadAccess = false
                     route.requireConversationWriteAccess = false
-                    route.requireOrganizationOwnerAccess = false
                     route.requireOrganizationAdminAccess = false
                     route.requireOrganizationMaintainerAccess = false
                     route.requireOrganizationMemberAccess = false
@@ -35,7 +33,6 @@ class Router {
                 if (route.requireAuth) middlewaresLoaded.push(auth_middlewares.isAuthenticate)
 
                 // Conversation rights
-                if (route.requireConversationOwnerAccess) middlewaresLoaded.push(conversation_middlewares.asOwnerAccess) // require owner access
                 if (route.requireConversationReadAccess) middlewaresLoaded.push(conversation_middlewares.asReadAccess) // require read access
                 if (route.requireConversationCommentAccess) middlewaresLoaded.push(conversation_middlewares.asCommentAccess) // require comment access
                 if (route.requireConversationWriteAccess) middlewaresLoaded.push(conversation_middlewares.asWriteAccess) // require write access
@@ -43,7 +40,6 @@ class Router {
                 if (route.requireConversationShareAccess) middlewaresLoaded.push(conversation_middlewares.asShareAccess) // require delete access
 
                 // Organization rights
-                if (route.requireOrganizationOwnerAccess) middlewaresLoaded.push(organization_middlewares.asOwnerAccess)
                 if (route.requireOrganizationAdminAccess) middlewaresLoaded.push(organization_middlewares.asAdminAccess)
                 if (route.requireOrganizationMaintainerAccess) middlewaresLoaded.push(organization_middlewares.asMaintainerAccess)
                 if (route.requireOrganizationMemberAccess) middlewaresLoaded.push(organization_middlewares.asMemberAccess)

@@ -61,7 +61,7 @@ async function storeFile(files, type = 'audio') {
             // Generate waveform json
             // Write a JSON file in ../audiowaveform folder
             await generateAudioWaveform(output_audio, fileName + '.json')
-            
+
             deleteFile(filePath)
             return {
                 filePath: `${process.env.VOLUME_AUDIO_PATH}/${fileName}.mp3`,
@@ -79,19 +79,12 @@ function defaultPicture() {
     return `pictures/default.jpg`
 }
 
-// function deleteFile(filename, type) {
 function deleteFile(filePath) {
   try {
     fs.unlinkSync(filePath)
   } catch (error) {
     debug('File not found to be deleted : ', filePath)
   }
-
-    //     if (type === 'picture') {
-    //         fs.unlinkSync(`${getStorageFolder()}/${getPictureFolder()}/${filename}`)
-    //     } else if (type === 'audio') {
-    //         fs.unlinkSync(`${getStorageFolder()}/${getAudioFolder()}/${filename}`)
-    //     }
 }
 
 function getStorageFolder() {
@@ -108,7 +101,7 @@ function getAudioFolder() {
 
 
 function getAudioWaveformFolder() {
-  return process.env.VOLUME_AUDIO_WAVEFORM_PATH
+    return process.env.VOLUME_AUDIO_WAVEFORM_PATH
 }
 
 module.exports = { storeFile, defaultPicture, deleteFile, getStorageFolder, getPictureFolder, getAudioFolder, getAudioWaveformFolder }

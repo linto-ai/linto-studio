@@ -1,6 +1,6 @@
 const debug = require('debug')('linto:conversation-manager:routes:auth')
 
-const { logout } = require(`${process.cwd()}/components/WebServer/routecontrollers/users/users.js`)
+const { logout, recoveryAuth } = require(`${process.cwd()}/components/WebServer/routecontrollers/users/users.js`)
 const auth_middleware = require(`${process.cwd()}/components/WebServer/config/passport/local/middleware`)
 
 
@@ -16,7 +16,7 @@ module.exports = (webServer) => {
                     res.status(202).json(req.user)
                 }
             ]
-        },        {
+        }, {
             path: '/login/magic-link',
             method: 'post',
             requireAuth: false,
@@ -32,14 +32,20 @@ module.exports = (webServer) => {
             method: 'get',
             requireAuth: true,
             controller: logout
-        }, 
+        },
         {
             path: '/isAuth',
             method: 'get',
             requireAuth: true,
-            controller: async(req, res, next) => {
+            controller: async (req, res, next) => {
                 res.status(200).send('Ok')
             }
+        },
+        {
+            path: '/recovery',
+            method: 'post',
+            requireAuth: false,
+            controller: recoveryAuth
         }
     ]
 }

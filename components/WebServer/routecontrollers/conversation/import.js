@@ -3,9 +3,8 @@ const utf8 = require('utf8')
 
 
 const { addFileMetadataToConversation, initConversation } = require(`${process.cwd()}/components/WebServer/controllers/conversation/generator`)
-const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
 
-const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
+const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const CONVERSATION_RIGHT = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const { storeFile } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
@@ -64,7 +63,7 @@ async function importConv(req, res) {
     conversation.owner = req.payload.data.userId
     await addFileToConv(conversation, req)
     setJobsDataToImport(conversation)
-    conversation = await conversationModel.createConversation(conversation)
+    conversation = await model.conversation.create(conversation)
 
     res.status(200).send({ message: 'Conversation imported' })
     return
@@ -97,7 +96,7 @@ async function importTranscription(req, res) {
   conversation = SttWrapper.transcriptionToConversation(normalizeTranscription, conversation)
   setJobsDataToImport(conversation)
 
-  const result = await conversationModel.createConversation(conversation)
+  const result = await model.conversation.create(conversation)
   if (result.insertedCount !== 1) throw new ConversationError()
 
   res.status(200).send({ message: 'Conversation imported' })
@@ -106,7 +105,10 @@ async function importTranscription(req, res) {
 
 async function importConversation(req, res, next) {
   try {
-    req.body.organizationId = await orgaUtility.checkOrganization(req.body.organizationId, req.payload.data.userId)
+    if (!req.body.organizationId) throw new ConversationMetadataRequire("organizationId param is required")
+
+    const organization = await model.organization.getByIdAndUser(req.body.organizationId, req.payload.data.userId)
+    if (organization.length !== 1) throw new ConversationError(`Organization ${req.body.organizationId} not found`)
     req.body.userId = req.payload.data.userId
 
     if (req.query.type === 'conversation') await importConv(req, res)
