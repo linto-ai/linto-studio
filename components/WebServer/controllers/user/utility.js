@@ -57,21 +57,27 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
 
         for (const swUser of conversation.sharedWithUsers) {
             let user = await model.user.getById(swUser.userId)
-            if (user.length !== 1) throw new UserNotFound()
-
-            if (isShare && !user.private) {
-                external_members.push({ ...user[0], role: 0, right: swUser.right })
-            } else if (!isShare) {
-                external_members.push({ ...user[0], role: 0, right: swUser.right })
+            if (user.length !== 1) {
+                console.log('User not found', swUser.userId)
+            } else {
+                if (isShare && (!user.private || CONVERSATION_RIGHTS.hasRightAccess(sharedUser.right, CONVERSATION_RIGHTS.SHARE))) {
+                    external_members.push({ ...user[0], role: 0, right: swUser.right })
+                } else if (!isShare) {
+                    external_members.push({ ...user[0], role: 0, right: swUser.right })
+                }
             }
         }
 
         for (const oUser of organiaztion.users) {
             let user = await model.user.getById(oUser.userId)
-            if (isShare && CONVERSATION_RIGHTS.hasRightAccess(sharedUser.right, CONVERSATION_RIGHTS.SHARE)) {
-                organization_members.push({ user, role: oUser.role })
-            } else if (!isShare) {
-                organization_members.push({ user, role: oUser.role })
+            if (user.length !== 1) {
+                console.log('User not found', oUser.userId)
+            } else {
+                if (isShare && CONVERSATION_RIGHTS.hasRightAccess(sharedUser.right, CONVERSATION_RIGHTS.SHARE)) {
+                    organization_members.push({ ...user[0], role: oUser.role })
+                } else if (!isShare) {
+                    organization_members.push({ ...user[0], role: oUser.role })
+                }
             }
         }
 
