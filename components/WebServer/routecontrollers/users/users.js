@@ -203,17 +203,18 @@ async function logout(req, res, next) {
 async function recoveryAuth(req, res, next) {
     try {
         if (!req.body.email) throw new UserUnsupportedMediaType()
-        const userList = await model.user.getByEmail(req.body.email, true)
-        if (userList.length !== 1) {
+        const user = await model.user.getByEmail(req.body.email, true)
+        if (user.length !== 1) {
             debug(`Forgotten password request for an unknown or invalid email address: ${req.body.email}`)
             res.status(200).send({
                 message: 'An email with an authentication link has been sent to you.'
             })
         } else {
-            const updatedUser = await model.user.generateMagicLink(userList[0])
+            user[0].accountNotifications.updatePassword = true
+            const updatedUser = await model.user.generateMagicLink(user[0])
             if (updatedUser.modifiedCount === 0) throw new GenerateMagicLinkError()
 
-            const mail_result = await Mailing.resetPassword(userList[0].email, req, updatedUser.data.magicId)
+            const mail_result = await Mailing.resetPassword(user[0].email, req, updatedUser.data.magicId)
             if (!mail_result) res.status(400).send({ message: 'Error while sending email' })
             else res.status(200).send({ message: 'An email with an authentication link has been sent to you.' })
         }
