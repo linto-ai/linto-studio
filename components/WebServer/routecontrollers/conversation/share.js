@@ -108,12 +108,17 @@ async function updateConversationRights(req, res, next) {
 
       // Get last verified Email
       let userEmail = user.email
+      let emailFound = false
+      if(user.emailIsVerified) {
+        emailFound = true
+      }
       if(!user.emailIsVerified && user.verifiedEmail.length > 0) {
         userEmail = user.verifiedEmail[user.verifiedEmail.length - 1]
+        emailFound = true
       }
 
       // Send Mail
-      if (userNotif) {
+      if (userNotif && emailFound) {
         const mail_result = await Mailing.conversationShared(userEmail, req, sharedBy.email, req.params.conversationId)
         if (!mail_result) debug('Error when sending mail')
       }
