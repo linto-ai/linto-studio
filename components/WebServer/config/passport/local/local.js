@@ -78,7 +78,7 @@ async function generateResetUserToken(magicId, psw, done) {
         _id: user._id, 
         keyToken: tokenData.salt, 
         authLink :{magicId: null, validityDate:null}, 
-        accountActivated: true,
+        emailIsVerified: true,
         verifiedEmail
       })
           .then(user => {
