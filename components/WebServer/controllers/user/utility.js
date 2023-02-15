@@ -74,9 +74,9 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
                 console.log('User not found', oUser.userId)
             } else {
                 if (isShare && CONVERSATION_RIGHTS.hasRightAccess(sharedUser.right, CONVERSATION_RIGHTS.SHARE)) {
-                    organization_members.push({ ...user[0], role: oUser.role })
+                    organization_members.push({ ...user[0], role: oUser.role, right: CONVERSATION_RIGHTS.setRight(oUser.role) })
                 } else if (!isShare) {
-                    organization_members.push({ ...user[0], role: oUser.role })
+                    organization_members.push({ ...user[0], role: oUser.role, right: CONVERSATION_RIGHTS.setRight(oUser.role) })
                 }
             }
         }
