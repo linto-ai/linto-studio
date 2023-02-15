@@ -155,7 +155,7 @@ async function inviteNewUser(req, res, next) {
     }
 
     // Share converation to created user
-    if (!magicId) {
+    if (magicId) {
       const sharedBy = await model.user.getById(req.payload.data.userId)
       if (sharedBy.length !== 1) throw new UserNotFound()
 
