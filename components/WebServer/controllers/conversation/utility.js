@@ -46,7 +46,8 @@ async function getUserConversation(userId) {
 
 async function getUserRightFromConversation(userId, conversation) {
     try {
-        const organization = await model.organization.getById(conversation.organization.organizationId)
+        const orgaId = conversation.organization.organizationId
+        const organization = await model.organization.getById(orgaId)
         if (organization.length !== 1) throw new OrganizationNotFound()
 
         const orgaRole = organization[0].users.filter(user => user.userId === userId)[0]
@@ -78,7 +79,7 @@ async function getUserRightFromConversation(userId, conversation) {
 async function getUserRightFromConversationList(userId, conversations) {
     for (let conv of conversations) {
         const data = await getUserRightFromConversation(userId, conv)
-        conv.userAccess = data.access
+        conv.userAccess = data
     }
     return conversations
 }

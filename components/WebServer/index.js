@@ -65,10 +65,12 @@ class WebServer extends Component {
         require('./routes/router.js')(this) // Loads all defined routes
         WebServerErrorHandler.init(this) // Manage error from controllers
 
-        if (!process.env.WEBSERVER_SWAGGER_HTTP_HOST)
-            process.env.WEBSERVER_SWAGGER_HTTP_HOST = "localhost"
+        let api_host = 'localhost'
+        if (process.env.WEBSERVER_SWAGGER_HTTP_HOST) api_host = process.env.WEBSERVER_SWAGGER_HTTP_HOST
+        if (process.env.WEBSERVER_HTTP_PORT) api_host += ':' + process.env.WEBSERVER_HTTP_PORT
+        if (process.env.WEBSERVER_SWAGGER_API_PATH) api_host += '/' + process.env.WEBSERVER_SWAGGER_API_PATH
 
-        swaggerDocument.definition.host = process.env.WEBSERVER_SWAGGER_HTTP_HOST + ":" + process.env.WEBSERVER_HTTP_PORT
+        swaggerDocument.definition.host = api_host
         swaggerDocument.definition.paths = require('./apidoc/index.js')
         swaggerDocument.definition.components = {
             ...swaggerDocument.definition.components,

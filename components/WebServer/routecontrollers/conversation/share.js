@@ -36,9 +36,13 @@ async function listSharedConversation(req, res, next) {
       delete conv.sharedWithUsers
     }
 
-    res.status(200).send({
-      conversations: convList
-    })
+    if (convList.length === 0) res.status(204).send()
+    else {
+      res.status(200).send({
+        conversations: convList
+      })
+    }
+
   } catch (err) {
     next(err)
   }

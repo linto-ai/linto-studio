@@ -118,7 +118,8 @@ async function getPersonalInfo(req, res, next) {
 
 async function updateUser(req, res, next) {
     try {
-        if (!(req.body.email || req.body.firstname || req.body.lastname || req.body.accountNotifications || req.body.emailNotifications || req.body.private !== undefined)) throw new UserUnsupportedMediaType()
+        if (!(req.body.email || req.body.firstname || req.body.lastname || req.body.accountNotifications ||
+            req.body.emailNotifications || req.body.private !== undefined || req.body.password)) throw new UserUnsupportedMediaType()
 
         const myUser = await model.user.getById(req.payload.data.userId)
         if (myUser.length !== 1) throw new UserNotFound()
@@ -137,6 +138,7 @@ async function updateUser(req, res, next) {
         if (req.body.firstname) user.firstname = req.body.firstname
         if (req.body.lastname) user.lastname = req.body.lastname
         if (req.body.private !== undefined) user.private = req.body.private
+        if (req.body.password) user.password = req.body.password
 
         if (req.body.accountNotifications) {
             for (let key of Object.keys(req.body.accountNotifications)) {
@@ -180,21 +182,6 @@ async function updateUserPicture(req, res, next) {
 
         res.status(200).send({
             message: 'User picture updated'
-        })
-    } catch (err) {
-        next(err)
-    }
-}
-
-async function updateUserPassword(req, res, next) {
-    try {
-        if (!req.body.newPassword) throw new UserUnsupportedMediaType()
-
-        const result = await model.user.updatePassword(req.payload.data.userId, req.body.newPassword)
-        if (result.matchedCount === 0) throw new UserError()
-
-        res.status(200).send({
-            message: 'Password updated'
         })
     } catch (err) {
         next(err)
@@ -318,7 +305,6 @@ module.exports = {
     createUser,
     logout,
     updateUser,
-    updateUserPassword,
     updateUserPicture,
     recoveryAuth,
     sendVerificationEmail
