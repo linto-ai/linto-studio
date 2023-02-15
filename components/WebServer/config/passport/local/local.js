@@ -53,7 +53,7 @@ const STRATEGY_MAGIC_LINK = new LocalStrategy({
 passport.use('local_magic_link', STRATEGY_MAGIC_LINK)
 
 async function generateResetUserToken(magicId, psw, done) {
-  model.user.getByMagicId(magicId).then(users => {
+  model.user.getByMagicId(magicId, true).then(users => {
       if (users.length === 1) user = users[0]
       else if (users.length > 1) throw new MultipleUserFound()
       else throw new UserNotFound()
@@ -68,7 +68,19 @@ async function generateResetUserToken(magicId, psw, done) {
           userId: user._id
       }
 
-      model.user.update({ _id: user._id, keyToken: tokenData.salt, authLink :{magicId: null, validityDate:null}, accountActivated: true })
+      // Push email to verifiedEmail if it is not in the array
+      let verifiedEmail = user.verifiedEmail
+      if(verifiedEmail.indexOf(user.email) < 0) {
+        verifiedEmail.push(user.email)
+      }
+
+      model.user.update({ 
+        _id: user._id, 
+        keyToken: tokenData.salt, 
+        authLink :{magicId: null, validityDate:null}, 
+        emailIsVerified: true,
+        verifiedEmail
+      })
           .then(user => {
               if (!user) return done(new UnableToGenerateKeyToken())
           }).catch(done)

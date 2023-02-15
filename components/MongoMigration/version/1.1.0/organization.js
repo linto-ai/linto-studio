@@ -3,7 +3,8 @@ const debug = require('debug')(`linto:components:MongoMigration:controllers:vers
 const collections_name = 'organization'
 
 const removed_keys = {
-  personal: false
+  personal: false,
+  type: 'public'
 }
 
 module.exports = {

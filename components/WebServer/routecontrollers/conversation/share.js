@@ -106,9 +106,20 @@ async function updateConversationRights(req, res, next) {
       sharedBy = sharedBy[0]
       const userNotif = user.emailNotifications.conversations.sharing
 
+      // Get last verified Email
+      let userEmail = user.email
+      let emailFound = false
+      if(user.emailIsVerified) {
+        emailFound = true
+      }
+      if(!user.emailIsVerified && user.verifiedEmail.length > 0) {
+        userEmail = user.verifiedEmail[user.verifiedEmail.length - 1]
+        emailFound = true
+      }
+
       // Send Mail
-      if (userNotif) {
-        const mail_result = await Mailing.conversationShared(user.email, req, sharedBy.email, req.params.conversationId)
+      if (userNotif && emailFound) {
+        const mail_result = await Mailing.conversationShared(userEmail, req, sharedBy.email, req.params.conversationId)
         if (!mail_result) debug('Error when sending mail')
       }
       userRight.push({ userId: req.params.userId.toString(), right: req.body.right, sharedBy: req.payload.data.userId })
@@ -144,7 +155,7 @@ async function inviteNewUser(req, res, next) {
     }
 
     // Share converation to created user
-    if (!magicId) {
+    if (magicId) {
       const sharedBy = await model.user.getById(req.payload.data.userId)
       if (sharedBy.length !== 1) throw new UserNotFound()
 

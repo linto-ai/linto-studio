@@ -6,6 +6,7 @@ const UsersException = require('./exception/users')
 const ConversationException = require('./exception/conversation')
 const OrganizationException = require('./exception/organization')
 const KeywordException = require('./exception/keyword')
+const NodemailerException = require('./exception/nodemailer')
 
 const JWT_DEFAULT_EXCEPTION = 'UnauthorizedError' // Default JWT exception
 
@@ -18,14 +19,14 @@ let init = function (webserver) {
     Object.keys(ConversationException).forEach(key => customException.push(key))
     Object.keys(OrganizationException).forEach(key => customException.push(key))
     Object.keys(KeywordException).forEach(key => customException.push(key))
+    Object.keys(NodemailerException).forEach(key => customException.push(key))
 
     webserver.express.use(function (err, req, res, next) {
         if (err) debug(err)
 
         if (customException.indexOf(err.name) > -1) {
-
+            
             if (err.err) debug(err.err)
-
             res.status(err.status).send({ message: err.message })
             return
         } else if (err) { // Handle unsupported exception

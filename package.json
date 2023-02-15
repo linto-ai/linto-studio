@@ -24,6 +24,7 @@
         "debug": "^4.1.1",
         "dockerode": "^3.3.4",
         "dotenv": "^8.0.0",
+        "email-deep-validator": "^3.3.0",
         "eventemitter3": "^4.0.0",
         "express": "^4.17.1",
         "express-fileupload": "^1.2.1",

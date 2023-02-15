@@ -20,6 +20,8 @@ const {
     GenerateMagicLinkError
 } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
 
+const { NodemailerError, NodemailerInvalidEmail } = require(`${process.cwd()}/components/WebServer/error/exception/nodemailer`)
+
 async function createUser(req, res, next) {
     try {
         const user = req.body
@@ -46,7 +48,7 @@ async function createUser(req, res, next) {
         }
 
         const mail_result = await Mailing.accountCreate(user.email, req, createdUser.ops[0].authLink.magicId)
-        if (!mail_result) debug('Error when sending mail')
+        if (!mail_result) throw new NodemailerError()
 
         res.status(201).send({
             message: 'Account created. An email has been sent to you. Please open it and click on the link to validate your email address.'
@@ -92,7 +94,6 @@ async function getUserById(req, res, next) {
     try {
         const user = await model.user.getById(req.params.userId)
         if (user && user.length !== 1) throw new UserNotFound()
-
         res.status(200).send({
             ...user[0]
         })
@@ -126,7 +127,13 @@ async function updateUser(req, res, next) {
 
         if (req.body.email) {
             if ((await model.user.getByEmail(req.body.email)).length === 1) throw new UserConflict("Email already used")
+
+            // Test email validity
+            const emailValid = await Mailing.isEmailValid(req.body.email)
+            if(!emailValid) throw new NodemailerInvalidEmail()
+
             user.email = req.body.email
+            user.emailIsVerified = false
         }
         if (req.body.firstname) user.firstname = req.body.firstname
         if (req.body.lastname) user.lastname = req.body.lastname
@@ -196,17 +203,18 @@ async function logout(req, res, next) {
 async function recoveryAuth(req, res, next) {
     try {
         if (!req.body.email) throw new UserUnsupportedMediaType()
-        const userList = await model.user.getByEmail(req.body.email, true)
-        if (userList.length !== 1) {
+        const user = await model.user.getByEmail(req.body.email, true)
+        if (user.length !== 1) {
             debug(`Forgotten password request for an unknown or invalid email address: ${req.body.email}`)
             res.status(200).send({
                 message: 'An email with an authentication link has been sent to you.'
             })
         } else {
-            const updatedUser = await model.user.generateMagicLink(userList[0])
+            user[0].accountNotifications.updatePassword = true
+            const updatedUser = await model.user.generateMagicLink(user[0])
             if (updatedUser.modifiedCount === 0) throw new GenerateMagicLinkError()
 
-            const mail_result = await Mailing.resetPassword(userList[0].email, req, updatedUser.data.magicId)
+            const mail_result = await Mailing.resetPassword(user[0].email, req, updatedUser.data.magicId)
             if (!mail_result) res.status(400).send({ message: 'Error while sending email' })
             else res.status(200).send({ message: 'An email with an authentication link has been sent to you.' })
         }
@@ -267,7 +275,27 @@ async function deleteUser(req, res, next) {
         next(err)
     }
 }
+async function sendVerificationEmail(req, res, next) {
+  try {
+    const userId = req.payload.data.userId
+    const user = await model.user.getById(userId)
+    if (user.length !== 1) throw new UserNotFound()
 
+    await model.user.generateMagicLink({_id: userId})
+
+    const userUpdated = await model.user.getById(userId, true)
+    const email = userUpdated[0].email
+    const magicId = userUpdated[0].authLink.magicId
+    const mail_result = await Mailing.verifyEmailAddress(email, req, magicId)
+    if (!mail_result) throw('Error when sending mail')
+    res.status(200).send({
+      status: 'success',
+      message: 'An email has been sent to you.'
+    })
+  } catch (error) {
+    next(error)
+  }
+}
 
 module.exports = {
     listUser,
@@ -279,5 +307,6 @@ module.exports = {
     logout,
     updateUser,
     updateUserPicture,
-    recoveryAuth
+    recoveryAuth,
+    sendVerificationEmail
 }

@@ -54,6 +54,21 @@
             }
           }
         },
+        "400": {
+          "description": "Invalid email format or domain.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
         "409": {
           "$ref": "#/components/responses/Conflict"
         }
@@ -98,17 +113,43 @@
                 "email": {
                   "type": "string"
                 },
-                "password": {
-                  "type": "string"
-                },
                 "firstname": {
                   "type": "string"
                 },
                 "lastname": {
                   "type": "string"
                 },
-                "personal":{
-                  "type": "boolean"
+                "accountNotifications": {
+                  "type": "object",
+                  "properties": {
+                    "updatePassword": {
+                      "type": "boolean"
+                    },
+                    "inviteAccount": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "emailNotifications": {
+                  "type": "object",
+                  "properties": {
+                    "conversations": {
+                      "type": "object",
+                      "properties": {
+                        "sharing": {
+                          "type":"boolean"
+                        }
+                      }
+                    },
+                    "organizations": {
+                      "type": "object",
+                      "properties": {
+                        "invite": {
+                          "type":"boolean"
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -319,6 +360,90 @@
               "schema": {
                 "type": "object",
                 "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/users/{userId}/reset-password": {
+    "post": {
+      "tags": [
+        "users"
+      ],
+      "summary": "Send an authentication link to the user and set a magicId for 30 minutes.",
+      "parameters": [{
+        "in": "path",
+        "name": "userId",
+        "type": "string",
+        "format": "uuid",
+        "required": true,
+        "description": "uuid string identifier for an user"
+      }],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string"
+                  },
+                  "message":{
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/users/{userId}/verify-email": {
+    "post": {
+      "tags": [
+        "users"
+      ],
+      "summary": "Send a validation link to the user to verify email address ownership and set a magicId for 30 minutes.",
+      "parameters": [{
+        "in": "path",
+        "name": "userId",
+        "type": "string",
+        "format": "uuid",
+        "required": true,
+        "description": "uuid string identifier for an user"
+      }],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string"
+                  },
+                  "message":{
+                    "type": "string"
+                  }
+                }
               }
             }
           }

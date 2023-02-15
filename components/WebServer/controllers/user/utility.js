@@ -43,85 +43,45 @@ async function getUsersConversationByArray(users, setupRight) {
 async function getUsersListByConversation(userId, conversation, organiaztion) {
     try {
         let isShare = false
-        let sharedById = undefined
-        let sharedByAdded = false
+        let sharedUser = undefined
 
-        const organizationUsers = organiaztion.users
-        const convoMembersRight = conversation.organization.membersRight
-        const convoCustomRights = conversation.organization.customRights
-        const sharedWithUsers = conversation.sharedWithUsers
         let external_members = []
         let organization_members = []
 
-        const myUserInfo = await model.user.getById(userId)
-        // Show user if public
-        for (const swUser of sharedWithUsers) {
-            if (swUser.sharedBy === userId) {
+        for (const swUser of conversation.sharedWithUsers) {
+            if (swUser.userId === userId) {
                 isShare = true
-                sharedById = swUser.sharedBy
-            }
-            const userInfo = await model.user.getById(swUser.userId)
-            if (userInfo.length > 0) {
-                if (userInfo.length === 1) {
-                    const userOrga = await model.organization.getByName(userInfo[0].email)
-
-                    if (userOrga[0].type === 'public' || userOrga[0].name === myUserInfo[0].email) {
-                        if (swUser.userId === sharedById) {
-                            sharedByAdded = true
-                        }
-                        external_members.push({
-                            ...userInfo[0],
-                            role: 0,
-                            right: swUser.right
-                        })
-                    }
-                } else throw new UserNotFound()
+                sharedUser = swUser
             }
         }
-        // Show user if private and ashaerd by loged user
-        if (sharedById && !sharedByAdded) {
-            for (const swUser of sharedWithUsers) {
-                if (swUser.sharedBy === sharedById) {
-                    sharedByAdded = true
-                    const userInfo = await model.user.getById(swUser.userId)
-                    if (external_members.findIndex(usr => usr._id.toString() === swUser.userId) < 0) {
-                        external_members.push({
-                            ...userInfo[0],
-                            role: 0,
-                            right: swUser.right
-                        })
-                    }
+
+        for (const swUser of conversation.sharedWithUsers) {
+            let user = await model.user.getById(swUser.userId)
+            if (user.length !== 1) {
+                console.log('User not found', swUser.userId)
+            } else {
+                if (isShare && (!user.private || CONVERSATION_RIGHTS.hasRightAccess(sharedUser.right, CONVERSATION_RIGHTS.SHARE))) {
+                    external_members.push({ ...user[0], role: 0, right: swUser.right })
+                } else if (!isShare) {
+                    external_members.push({ ...user[0], role: 0, right: swUser.right })
                 }
             }
         }
-        //  organization members default rights
-        if (organiaztion.type === 'public' || (organiaztion.type === 'private' && isShare === false)) {
-            for (const oUser of organizationUsers) {
-                if (oUser.userId !== sharedById && (isShare && oUser.visibility === 'private')) {
-                    continue
-                }
 
-                const userInfo = await model.user.getById(oUser.userId)
-                let userObj = {
-                    ...userInfo[0],
-                    role: oUser.role
+        for (const oUser of organiaztion.users) {
+            let user = await model.user.getById(oUser.userId)
+            if (user.length !== 1) {
+                console.log('User not found', oUser.userId)
+            } else {
+                if (isShare && CONVERSATION_RIGHTS.hasRightAccess(sharedUser.right, CONVERSATION_RIGHTS.SHARE)) {
+                    organization_members.push({ ...user[0], role: oUser.role, right: CONVERSATION_RIGHTS.setRight(oUser.role) })
+                } else if (!isShare) {
+                    organization_members.push({ ...user[0], role: oUser.role, right: CONVERSATION_RIGHTS.setRight(oUser.role) })
                 }
-                if (userObj.role === 3) {
-                    userObj.right = CONVERSATION_RIGHTS.adminRight()
-                } else if (userObj.role === 2) {
-                    userObj.right = CONVERSATION_RIGHTS.maintainerRight()
-                } else {
-                    userObj.right = convoMembersRight
-                }
-                organization_members.push(userObj)
             }
-        } else if (sharedByAdded === false) {
-            const userInfo = await model.user.getById(sharedById)
-            organization_members.push(userInfo[0])
         }
 
-        // organization members custom rights
-        for (const oUser of convoCustomRights) {
+        for (const oUser of conversation.organization.customRights) {
             let orgaUser = organization_members.find(u => u._id.toString() === oUser.userId)
             orgaUser.right = oUser.right
         }

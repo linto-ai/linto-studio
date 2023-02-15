@@ -3,9 +3,9 @@ const debug = require('debug')(`linto:conversation-manager:components:WebServer:
 const conversationUtility = require(`${process.cwd()}/components/WebServer/controllers/conversation/utility`)
 const userUtility = require(`${process.cwd()}/components/WebServer/controllers/user/utility`)
 
+const { deleteFile, getStorageFolder, getAudioWaveformFolder} = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
-const { deleteFile, getStorageFolder, getAudioWaveformFolder } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 const {
     ConversationIdRequire,
     ConversationNotFound,
@@ -96,7 +96,6 @@ async function getConversation(req, res, next) {
         next(err)
     }
 }
-
 
 async function downloadConversation(req, res, next) {
     try {
