@@ -45,9 +45,8 @@ async function access(next, convId, userId, restricted, right, rightException) {
       else {
         const conv = lconv[0]
         if (conv.organization.organizationId === undefined) return next(new rightException())
-
         if (!restricted) nextCalled = await shareAccess(conv, userId, right, next, nextCalled)
-        if (nextCalled !== undefined) nextCalled = await organizationAccess(conv, userId, right, next, nextCalled, rightException)
+        if (nextCalled !== undefined) nextCalled = await organizationAccess(conv, userId, right, next, rightException)
 
       }
     }
