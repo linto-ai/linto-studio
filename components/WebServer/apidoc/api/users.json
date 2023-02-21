@@ -415,20 +415,12 @@
       }
     }
   },
-  "/api/users/{userId}/verify-email": {
-    "post": {
+  "/api/users/verify-email": {
+    "patch": {
       "tags": [
         "users"
       ],
       "summary": "Send a validation link to the user to verify email address ownership and set a magicId for 30 minutes.",
-      "parameters": [{
-        "in": "path",
-        "name": "userId",
-        "type": "string",
-        "format": "uuid",
-        "required": true,
-        "description": "uuid string identifier for an user"
-      }],
       "responses": {
         "200": {
           "description": "OK",

@@ -126,14 +126,19 @@ async function updateUser(req, res, next) {
         let user = myUser[0]
 
         if (req.body.email) {
-            if ((await model.user.getByEmail(req.body.email)).length === 1) throw new UserConflict("Email already used")
+            const userMail = await model.user.getByEmail(req.body.email)
 
-            // Test email validity
-            const emailValid = await Mailing.isEmailValid(req.body.email)
-            if(!emailValid) throw new NodemailerInvalidEmail()
+            if (userMail.length !== 0) {
+                if (userMail[0]._id.toString() !== user._id.toString())
+                    throw new UserConflict("Email already used")
+            }
 
-            user.email = req.body.email
             user.emailIsVerified = false
+            user.email = req.body.email
+
+            if (userMail.length === 1) {
+                user.emailIsVerified = true
+            }
         }
         if (req.body.firstname) user.firstname = req.body.firstname
         if (req.body.lastname) user.lastname = req.body.lastname
@@ -276,25 +281,26 @@ async function deleteUser(req, res, next) {
     }
 }
 async function sendVerificationEmail(req, res, next) {
-  try {
-    const userId = req.payload.data.userId
-    const user = await model.user.getById(userId)
-    if (user.length !== 1) throw new UserNotFound()
+    try {
+        const userId = req.payload.data.userId
+        const user = await model.user.getById(userId)
+        if (user.length !== 1) throw new UserNotFound()
 
-    await model.user.generateMagicLink({_id: userId})
+        await model.user.generateMagicLink({ _id: userId })
 
-    const userUpdated = await model.user.getById(userId, true)
-    const email = userUpdated[0].email
-    const magicId = userUpdated[0].authLink.magicId
-    const mail_result = await Mailing.verifyEmailAddress(email, req, magicId)
-    if (!mail_result) throw('Error when sending mail')
-    res.status(200).send({
-      status: 'success',
-      message: 'An email has been sent to you.'
-    })
-  } catch (error) {
-    next(error)
-  }
+        const userUpdated = await model.user.getById(userId, true)
+        const email = userUpdated[0].email
+        const magicId = userUpdated[0].authLink.magicId
+        const mail_result = await Mailing.verifyEmailAddress(email, req, magicId)
+        if (!mail_result) throw ('Error when sending mail')
+
+        res.status(200).send({
+            status: 'success',
+            message: 'An email has been sent to you.'
+        })
+    } catch (error) {
+        next(error)
+    }
 }
 
 module.exports = {
