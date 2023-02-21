@@ -219,7 +219,7 @@ async function recoveryAuth(req, res, next) {
             const updatedUser = await model.user.generateMagicLink(user[0])
             if (updatedUser.modifiedCount === 0) throw new GenerateMagicLinkError()
 
-            const mail_result = await Mailing.resetPassword(user[0].email, req, updatedUser.data.magicId)
+            const mail_result = await Mailing.resetPassword(req.body.email, req, updatedUser.data.magicId)
             if (!mail_result) res.status(400).send({ message: 'Error while sending email' })
             else res.status(200).send({ message: 'An email with an authentication link has been sent to you.' })
         }
