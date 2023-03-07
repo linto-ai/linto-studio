@@ -1,4 +1,4 @@
-const debug = require('debug')(`linto:components:MongoMigration:controllers:version:1.1.0:users`)
+const debug = require('debug')(`linto:components:MongoMigration:controllers:version:1.1.1:users`)
 
 const collections_name = 'users'
 

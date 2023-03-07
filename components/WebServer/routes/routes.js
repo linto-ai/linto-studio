@@ -7,6 +7,8 @@ module.exports = (webServer) => {
         "/auth": require('./auth')(webServer),
         "/api/users": require('./api/users/users.js')(webServer),
         "/api/organizations": require('./api/organization/organizations')(webServer),
+        "/api/organizations/:organizationId/category": require('./api/organization/category')(webServer),
+        "/api/organizations/:organizationId/tag": require('./api/organization/tag')(webServer),
         "/api/conversations": [
             ...require('./api/conversation/generate')(webServer),
             ...require('./api/conversation/conversations')(webServer),
