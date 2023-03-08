@@ -51,14 +51,14 @@ class CategoryConflict extends Error {
   }
 }
 
-class CategoryUnsupportedMediaType extends Error {
+class CategoryNotFound extends Error {
   constructor(message, err) {
     super()
-    this.name = 'CategoryUnsupportedMediaType'
+    this.name = 'CategoryNotFound'
     this.type = ExceptionType
-    this.status = '415'
+    this.status = '404'
     if (message) this.message = message
-    else this.message =  'Parameter is not supported'
+    else this.message = `Category not found`
     if (err) this.err = err
   }
 }
@@ -67,6 +67,6 @@ module.exports = {
   CategoryTypeNotDefined,
   CategoryTypeNotValid,
   CategoryConflict,
-  CategoryUnsupportedMediaType,
+  CategoryNotFound,
   CategoryError
 }

@@ -1,9 +1,10 @@
-const debug = require('debug')(`linto:components:MongoMigration:controllers:version:1.1.1:organization`)
+const debug = require('debug')(`linto:components:MongoMigration:controllers:version:1.1.1:categories`)
 
-const collections_name = 'organization'
+const collections_name = 'conversations'
 
 const migration_update_add = {
   tags: [],
+  category: [],
 }
 
 module.exports = {

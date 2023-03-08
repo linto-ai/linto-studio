@@ -28,14 +28,14 @@ class TagConflict extends Error {
   }
 }
 
-class TagUnsupportedMediaType extends Error {
+class TagNotFound extends Error {
   constructor(message, err) {
     super()
-    this.name = 'TagUnsupportedMediaType'
+    this.name = 'TagNotFound'
     this.type = ExceptionType
-    this.status = '415'
+    this.status = '404'
     if (message) this.message = message
-    else this.message =  'Parameter is not supported'
+    else this.message = `Tag not found`
     if (err) this.err = err
   }
 }
@@ -43,5 +43,5 @@ class TagUnsupportedMediaType extends Error {
 module.exports = {
   TagError,
   TagConflict,
-  TagUnsupportedMediaType
+  TagNotFound,
 }
