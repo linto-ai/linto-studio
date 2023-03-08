@@ -8,7 +8,7 @@ class CategoryTypeNotDefined extends Error {
     super()
     this.name = 'CategoryTypeNotDefined'
     this.type = ExceptionType
-    this.status = '400'
+    this.status = '415'
     if (message) this.message = message
     else this.message = `Category type is not defined`
     if (err) this.err = err
@@ -20,7 +20,7 @@ class CategoryTypeNotValid extends Error {
     super()
     this.name = 'CategoryTypeNotValid'
     this.type = ExceptionType
-    this.status = '400'
+    this.status = '415'
     if (message) this.message = message
     else this.message = `Category type is not valid`
     if (err) this.err = err
@@ -39,8 +39,34 @@ class CategoryError extends Error {
   }
 }
 
+class CategoryConflict extends Error {
+  constructor(message, err) {
+    super()
+    this.name = 'CategoryConflict'
+    this.type = ExceptionType
+    this.status = '409'
+    if (message) this.message = message
+    else this.message = `Category conflict`
+    if (err) this.err = err
+  }
+}
+
+class CategoryUnsupportedMediaType extends Error {
+  constructor(message, err) {
+    super()
+    this.name = 'CategoryUnsupportedMediaType'
+    this.type = ExceptionType
+    this.status = '415'
+    if (message) this.message = message
+    else this.message =  'Parameter is not supported'
+    if (err) this.err = err
+  }
+}
+
 module.exports = {
   CategoryTypeNotDefined,
   CategoryTypeNotValid,
+  CategoryConflict,
+  CategoryUnsupportedMediaType,
   CategoryError
 }

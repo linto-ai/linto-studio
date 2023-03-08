@@ -201,7 +201,7 @@
           }
         },
         "304":{
-          "$ref":"#/components/responses/NotModifier"
+          "$ref":"#/components/responses/NotModified"
         },
         "401": {
           "$ref": "#/components/responses/Unauthorized"

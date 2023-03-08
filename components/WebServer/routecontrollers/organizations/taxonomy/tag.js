@@ -3,6 +3,8 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const {
   TagError,
+  TagConflict,
+  TagUnsupportedMediaType
 } = require(`${process.cwd()}/components/WebServer/error/exception/tag`)
 
 async function getTag(req, res, next) {
@@ -40,8 +42,10 @@ async function getTagByOrganization(req, res, next) {
 
 async function createTag(req, res, next) {
   try {
+    if(!req.body.name) throw new TagUnsupportedMediaType('name is required')
+
     let tag = await model.tag.getByOrgaId(req.params.organizationId, { name: req.body.name })
-    if (tag.length > 0) throw new TagError('Tag already exist')
+    if (tag.length > 0) throw new TagConflict()
 
     if (!req.body.color) req.body.color = '#FFFFFF'
     req.body.organizationId = req.params.organizationId
@@ -52,7 +56,7 @@ async function createTag(req, res, next) {
     const result = await model.tag.create(req.body)
     if (result.insertedCount !== 1) throw new TagError('Error during the creation of the tag')
 
-    res.status(200).send('Tag created')
+    res.status(201).send('Tag created')
   } catch (err) {
     next(err)
   }
@@ -62,6 +66,9 @@ async function updateTag(req, res, next) {
   try {
     let tag = await model.tag.getById(req.params.tagId)
     if (tag.length === 0) throw new TagError('Tag not found')
+
+    let tag_name = await model.tag.getByOrgaId(req.params.organizationId, { name: req.body.name })
+    if (tag_name.length === 1 &&  tag[0]._id !== tag_name[0]._id) throw new TagConflict()
 
     if (req.body.name) tag[0].name = req.body.name
     if (req.body.color) tag[0].color = req.body.color

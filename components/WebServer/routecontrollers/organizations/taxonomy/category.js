@@ -6,6 +6,8 @@ const {
   CategoryError,
   CategoryTypeNotDefined,
   CategoryTypeNotValid,
+  CategoryUnsupportedMediaType,
+  CategoryConflict
 } = require(`${process.cwd()}/components/WebServer/error/exception/category`)
 
 
@@ -47,17 +49,17 @@ async function listCategory(req, res, next) {
 async function createCategory(req, res, next) {
   try {
     let category = await model.category.getByOrgaId(req.params.organizationId, { name: req.body.name })
-    if (category.length > 0) throw new CategoryError('Category already exist')
+    if (category.length > 0) throw new CategoryConflict()
 
     if (!req.body.color) req.body.color = '#FFFFFF'
     if (!req.body.type) throw new CategoryTypeNotDefined()
-    else if (TYPE.checkValue(req.body.type) === false) throw new CategoryTypeNotValid()
+    else if (TYPE.checkValue(req.body.type) === false) throw new CategoryUnsupportedMediaType('Type not supported')
     req.body.organizationId = req.params.organizationId
 
     const result = await model.category.create(req.body)
     if (result.insertedCount !== 1) throw new CategoryError('Error during the creation of the category')
 
-    res.status(200).send('Category created')
+    res.status(201).send({ message: 'Category created' })
   } catch (err) {
     next(err)
   }
@@ -77,7 +79,7 @@ async function updateCategory(req, res, next) {
 
     const result = await model.category.update(category[0])
     if (result.modifiedCount === 0) res.status(304).send('Nothing to update')
-    else res.status(200).send('Category updated')
+    else res.status(200).send({ message: 'Category updated' })
   } catch (err) {
     next(err)
   }
@@ -91,7 +93,7 @@ async function deleteCategory(req, res, next) {
     const result = await model.category.delete(req.params.categoryId)
     if (result.deletedCount !== 1) throw new CategoryError('Error during the deletion of the category')
 
-    res.status(200).send('Category deleted')
+    res.status(204).send()
   } catch (err) {
     next(err)
   }
