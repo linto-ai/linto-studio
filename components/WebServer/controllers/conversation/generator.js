@@ -28,6 +28,7 @@ function initConversation(metadata, userId, job_id) {
             membersRight: metadata.membersRight,
             customRights: []
         },
+        tags: [],
         highlights: [],
         keywords: [],
         speakers: [],

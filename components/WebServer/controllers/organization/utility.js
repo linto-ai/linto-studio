@@ -3,8 +3,8 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const { OrganizationNotFound } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
-const ROLE = require(`${process.cwd()}/lib/dao/organization/roles`)
-
+const RIGHT = require(`${process.cwd()}/lib/dao/conversation/rights`)
+const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 
 async function getOrganization(organizationId) {
     const organization = await model.organization.getById(organizationId)
@@ -25,10 +25,46 @@ function countAdmin(organization, userId) {
     }
 
     return {
-        userCount : organization.users.length,
+        userCount: organization.users.length,
         adminCount,
         isAdmin
     }
 }
 
-module.exports = { getOrganization, countAdmin }
+async function getUserConversationFromOrganization(userId, organizationId) {
+    const organization = (await model.organization.getByIdAndUser(organizationId, userId))[0]
+    if (!organization) throw new OrganizationError('You are not part of ' + organization.name)
+
+    let userRole = ROLES.MEMBER
+    organization.users.map(oUser => {
+        if (oUser.userId === userId) {
+            userRole = oUser.role
+            return
+        }
+    })
+    const projection = {
+        speakers: 0,
+        keywords: 0,
+        highlights: 0
+    }
+    const conversations = await model.conversation.getByOrga(organizationId, projection)
+
+    let listConv = conversations.filter(conv => {
+        let access = conv.organization.customRights.find(customRight => (customRight.userId === userId))
+        if (access && RIGHT.hasRightAccess(access.right, RIGHT.READ)) {
+            return conv
+        } else if (!access && ROLES.hasRoleAccess(userRole, ROLES.MAINTAINER)) {
+            return conv
+        } else if (RIGHT.hasRightAccess(conv.organization.membersRight, RIGHT.READ)) {
+            return conv
+        }
+    }).filter(conv => conv !== undefined)
+
+    return listConv
+}
+
+module.exports = {
+    getOrganization,
+    countAdmin,
+    getUserConversationFromOrganization
+}

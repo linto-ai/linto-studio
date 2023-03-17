@@ -96,4 +96,9 @@ async function textInConversation(text, conversationId) {
 }
 
 
-module.exports = { getUserConversation, getUserRightFromConversation, getUserRightFromConversationList, textInConversation }
+module.exports = {
+    getUserConversation,
+    getUserRightFromConversation,
+    getUserRightFromConversationList,
+    textInConversation
+}

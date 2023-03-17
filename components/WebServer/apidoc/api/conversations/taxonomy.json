@@ -1,0 +1,226 @@
+{
+  "/api/conversations/{conversationId}/category/{categoryId}": {
+    "post": {
+      "tags": [
+        "Conversations taxonomy"
+      ],
+      "summary": "Add a category to a conversation",
+      "consumes": [
+        "application/json"
+      ],
+      "produces": [
+        "application/json"
+      ],
+      "parameters": [{
+          "name": "conversationId",
+          "in": "path",
+          "description": "The conversation id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "categoryId",
+          "in": "path",
+          "description": "The category id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "description": "Category added to conversation"
+                }
+              },
+              "example": {
+                "status": "OK"
+              }
+            }
+          }
+        },
+        "304": {
+          "$ref": "#/components/responses/NotModified"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "415": {
+          "$ref": "#/components/responses/UnsupportedMediaType"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "Conversations taxonomy"
+      ],
+      "summary": "Remove a category from a conversation",
+      "consumes": [
+        "application/json"
+      ],
+      "produces": [
+        "application/json"
+      ],
+      "parameters": [{
+          "name": "conversationId",
+          "in": "path",
+          "description": "The conversation id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "categoryId",
+          "in": "path",
+          "description": "The category id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "description": "Category deleted from conversation"
+                }
+              },
+              "example": {
+                "status": "OK"
+              }
+            }
+          }
+        },
+        "304": {
+          "$ref": "#/components/responses/NotModified"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "415": {
+          "$ref": "#/components/responses/UnsupportedMediaType"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/conversations/{conversationId}/tag/{tagId}": {
+    "post": {
+      "tags": [
+        "Conversations taxonomy"
+      ],
+      "summary": "Add a tag to a conversation",
+      "parameters": [{
+          "name": "conversationId",
+          "in": "path",
+          "description": "The conversation id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "tagId",
+          "in": "path",
+          "description": "The tag id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "description": "Tag added to conversation"
+                }
+              },
+              "example": {
+                "status": "OK"
+              }
+            }
+          }
+        },
+        "304": {
+          "$ref": "#/components/responses/NotModified"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "415": {
+          "$ref": "#/components/responses/UnsupportedMediaType"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "Conversations taxonomy"
+      ],
+      "summary": "Remove a tag from a conversation",
+      "parameters": [{
+          "name": "conversationId",
+          "in": "path",
+          "description": "The conversation id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "tagId",
+          "in": "path",
+          "description": "The tag id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "description": "Tag deleted from conversation"
+                }
+              },
+              "example": {
+                "status": "OK"
+              }
+            }
+          }
+        },
+        "304": {
+          "$ref": "#/components/responses/NotModified"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "415": {
+          "$ref": "#/components/responses/UnsupportedMediaType"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  }
+}

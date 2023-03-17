@@ -8,9 +8,28 @@ const {
     deleteTag,
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/taxonomy/tag.js`)
 
+const {
+    searchConversation,
+    searchTaxonomy
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/taxonomy/taxonomy.js`)
+
 
 module.exports = (webserver) => {
     return [
+        {
+            path: '/search',
+            method: 'post',
+            requireAuth: true,
+            requireOrganizationMemberAccess: true,
+            controller: searchTaxonomy
+        },
+        {
+            path: '/conversation/search',
+            method: 'post',
+            requireAuth: true,
+            requireOrganizationMemberAccess: true,
+            controller: searchConversation
+        },
         {
             path: '/',
             method: 'post',

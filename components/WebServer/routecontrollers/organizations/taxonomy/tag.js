@@ -47,10 +47,9 @@ async function createTag(req, res, next) {
     let tag = await model.tag.getByOrgaId(req.params.organizationId, { name: req.body.name })
     if (tag.length > 0) throw new TagConflict()
 
-    if (!req.body.color) req.body.color = '#FFFFFF'
     req.body.organizationId = req.params.organizationId
 
-    let category = await model.category.getById(req.body.categoryId)
+    let category = await model.categories.getById(req.body.categoryId)
     if (category.length === 0) throw new TagError('categoryId not found')
 
     const result = await model.tag.create(req.body)
@@ -71,7 +70,6 @@ async function updateTag(req, res, next) {
     if (tag_name.length === 1 &&  tag[0]._id !== tag_name[0]._id) throw new TagConflict()
 
     if (req.body.name) tag[0].name = req.body.name
-    if (req.body.color) tag[0].color = req.body.color
 
     const result = await model.tag.update(tag[0])
     if (result.modifiedCount === 0) res.status(304).send('Nothing to update')
