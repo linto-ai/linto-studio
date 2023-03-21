@@ -10,10 +10,14 @@
     ],
 
     "tags": [{
-        "name": 1,
-        "organizationId": 1
-    }],
-
+            "name": 1,
+            "organizationId": 1
+        },
+        {
+            "categoryId": 1,
+            "organizationId": 1
+        }
+    ],
 
     "conversations": [{
             "name": 1,
