@@ -22,10 +22,10 @@ async function addTag(req, res, next) {
     const conversationId = req.params.conversationId
     const tagId = req.params.tagId
 
-    const conversation = await model.conversation.getById(conversationId)
+    const conversation = await model.conversations.getById(conversationId)
     if (conversation.length !== 1) throw new ConversationNotFound()
 
-    const tag = await model.tag.getById(tagId)
+    const tag = await model.tags.getById(tagId)
     if (tag.length !== 1) throw new TagNotFound()
 
     //check if organizationId from the tag is the same as the conversation
@@ -38,7 +38,7 @@ async function addTag(req, res, next) {
       let tagsList = [...conversation[0].tags, tagId]
 
       //add tag to conversation
-      await model.conversation.updateTag(conversationId, tagsList)
+      await model.conversations.updateTag(conversationId, tagsList)
       res.status(200).json({ message: 'Tag added to conversation' })
     }
   } catch (err) {
@@ -54,10 +54,10 @@ async function deleteTag(req, res, next) {
     const conversationId = req.params.conversationId
     const tagId = req.params.tagId
 
-    const conversation = await model.conversation.getById(conversationId)
+    const conversation = await model.conversations.getById(conversationId)
     if (conversation.length !== 1) throw new ConversationNotFound()
 
-    const tag = await model.tag.getById(tagId)
+    const tag = await model.tags.getById(tagId)
     if (tag.length !== 1) throw new TagNotFound()
 
     //check if organizationId from the tag is the same as the conversation
@@ -70,7 +70,7 @@ async function deleteTag(req, res, next) {
       let tagsList = conversation[0].tags.filter(tag => tag !== tagId)
 
       //add tag to conversation
-      await model.conversation.updateTag(conversationId, tagsList)
+      await model.conversations.updateTag(conversationId, tagsList)
       res.status(200).json({ message: 'Tag deleted from conversation' })
     }
   } catch (err) {

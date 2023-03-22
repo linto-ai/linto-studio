@@ -10,7 +10,7 @@ const { OrganizationNotFound } = require(`${process.cwd()}/components/WebServer/
 async function getUserConversation(userId) {
     try {
         const convList = []
-        const convShare = await model.conversation.getByShare(userId)
+        const convShare = await model.conversations.getByShare(userId)
         for (let conversation of convShare) {
             // User may have a right to see the conversation from sharedWithUsers
             if (conversation.sharedWithUsers.filter(user => user.userId === userId &&
@@ -19,9 +19,9 @@ async function getUserConversation(userId) {
             }
         }
 
-        const userOrga = await model.organization.listSelf(userId)
+        const userOrga = await model.organizations.listSelf(userId)
         for (let orga of userOrga) {
-            const convOrga = await model.conversation.getByOrga(orga._id)
+            const convOrga = await model.conversations.getByOrga(orga._id)
 
             const userRole = orga.users.filter(user => user.userId === userId)
             for (let conversation of convOrga) {
@@ -47,7 +47,7 @@ async function getUserConversation(userId) {
 async function getUserRightFromConversation(userId, conversation) {
     try {
         const orgaId = conversation.organization.organizationId
-        const organization = await model.organization.getById(orgaId)
+        const organization = await model.organizations.getById(orgaId)
         if (organization.length !== 1) throw new OrganizationNotFound()
 
         const orgaRole = organization[0].users.filter(user => user.userId === userId)[0]
@@ -86,7 +86,7 @@ async function getUserRightFromConversationList(userId, conversations) {
 
 
 async function textInConversation(text, conversationId) {
-    const conversation = (await model.conversation.getById(conversationId))[0]
+    const conversation = (await model.conversations.getById(conversationId))[0]
     for (const turn of conversation.text) {
         if (turn.raw_segment.toLowerCase().includes(text.toLowerCase())) {
             return true

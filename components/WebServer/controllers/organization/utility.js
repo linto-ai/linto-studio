@@ -7,7 +7,7 @@ const RIGHT = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 
 async function getOrganization(organizationId) {
-    const organization = await model.organization.getById(organizationId)
+    const organization = await model.organizations.getById(organizationId)
 
     if (organization.length !== 1) throw new OrganizationNotFound()
     return {
@@ -32,7 +32,7 @@ function countAdmin(organization, userId) {
 }
 
 async function getUserConversationFromOrganization(userId, organizationId) {
-    const organization = (await model.organization.getByIdAndUser(organizationId, userId))[0]
+    const organization = (await model.organizations.getByIdAndUser(organizationId, userId))[0]
     if (!organization) throw new OrganizationError('You are not part of ' + organization.name)
 
     let userRole = ROLES.MEMBER
@@ -47,7 +47,7 @@ async function getUserConversationFromOrganization(userId, organizationId) {
         keywords: 0,
         highlights: 0
     }
-    const conversations = await model.conversation.getByOrga(organizationId, projection)
+    const conversations = await model.conversations.getByOrga(organizationId, projection)
 
     let listConv = conversations.filter(conv => {
         let access = conv.organization.customRights.find(customRight => (customRight.userId === userId))

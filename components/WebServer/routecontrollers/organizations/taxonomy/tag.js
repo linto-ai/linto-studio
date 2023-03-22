@@ -11,7 +11,7 @@ const {
 
 async function getTag(req, res, next) {
   try {
-    let tag = await model.tag.getById(req.params.tagId)
+    let tag = await model.tags.getById(req.params.tagId)
     if (tag.length === 0) res.status(204).send()
     else res.status(200).send(tag[0])
   } catch (err) {
@@ -21,7 +21,7 @@ async function getTag(req, res, next) {
 
 async function getTagByCategory(req, res, next) {
   try {
-    let tag = await model.search.tag.getByCategory(req.params.categoryId)
+    let tag = await model.search.tags.getByCategory(req.params.categoryId)
 
     if (tag.length === 0) res.status(204).send()
     else res.status(200).send(tag)
@@ -33,7 +33,7 @@ async function getTagByCategory(req, res, next) {
 
 async function getTagByOrganization(req, res, next) {
   try {
-    let tag = await model.tag.getByOrgaId(req.params.organizationId)
+    let tag = await model.tags.getByOrgaId(req.params.organizationId)
     
     if (tag.length === 0) res.status(204).send()
     else res.status(200).send(tag)
@@ -47,15 +47,15 @@ async function createTag(req, res, next) {
   try {
     if (!req.body.name) throw new TagUnsupportedMediaType('name is required')
 
-    let tag = await model.tag.getByOrgaId(req.params.organizationId, { name: req.body.name })
+    let tag = await model.tags.getByOrgaId(req.params.organizationId, { name: req.body.name })
     if (tag.length > 0) throw new TagConflict()
 
     req.body.organizationId = req.params.organizationId
 
-    let category = await model.category.getById(req.body.categoryId)
+    let category = await model.categories.getById(req.body.categoryId)
     if (category.length === 0) throw new TagError('categoryId not found')
 
-    const result = await model.tag.create(req.body)
+    const result = await model.tags.create(req.body)
     if (result.insertedCount !== 1) throw new TagError('Error during the creation of the tag')
 
     res.status(201).send('Tag created')
@@ -66,15 +66,15 @@ async function createTag(req, res, next) {
 
 async function updateTag(req, res, next) {
   try {
-    let tag = await model.tag.getById(req.params.tagId)
+    let tag = await model.tags.getById(req.params.tagId)
     if (tag.length === 0) throw new TagError('Tag not found')
 
-    let tag_name = await model.tag.getByOrgaId(req.params.organizationId, { name: req.body.name })
+    let tag_name = await model.tags.getByOrgaId(req.params.organizationId, { name: req.body.name })
     if (tag_name.length === 1 && tag[0]._id !== tag_name[0]._id) throw new TagConflict()
 
     if (req.body.name) tag[0].name = req.body.name
 
-    const result = await model.tag.update(tag[0])
+    const result = await model.tags.update(tag[0])
     if (result.modifiedCount === 0) res.status(304).send('Nothing to update')
     else res.status(200).send('Tag updated')
 
@@ -85,10 +85,10 @@ async function updateTag(req, res, next) {
 
 async function deleteTag(req, res, next) {
   try {
-    let tag = await model.tag.getById(req.params.tagId)
+    let tag = await model.tags.getById(req.params.tagId)
     if (tag.length === 0) throw new TagError('Tag not found')
 
-    const result = await model.tag.delete(req.params.tagId)
+    const result = await model.tags.delete(req.params.tagId)
     if (result.deletedCount !== 1) throw new TagError('Error during the deletion of the tag')
 
     res.status(200).send('Tag deleted')
@@ -109,15 +109,15 @@ async function searchTag(req, res, next) {
         .getUserConversationFromOrganization(req.payload.data.userId, req.params.organizationId))
         .map(conv => conv._id)
 
-      const conversationsTags = (await model.search.conversation
+      const conversationsTags = (await model.search.conversations
         .getByIdsAndTag(userConversationsIds, req.body.tags.split(',')))
         .flatMap(conv => conv.tags)
 
       const uniqueTagIds = [...new Set([...conversationsTags])]
-      tag = await model.search.tag.searchTag(uniqueTagIds, req.params.organizationId, req.body.name)
+      tag = await model.search.tags.searchTag(uniqueTagIds, req.params.organizationId, req.body.name)
 
     } else {
-      tag = await model.search.tag.searchByName(req.params.organizationId, req.body.name)
+      tag = await model.search.tags.searchByName(req.params.organizationId, req.body.name)
     }
 
     if (tag.length === 0) res.status(204).send()

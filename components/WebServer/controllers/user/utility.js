@@ -12,7 +12,7 @@ async function getUsersConversationByArray(users, setupRight) {
         let members = []
         if (!users) return []
         for (let user of users) {
-            const u = await model.user.getById(user.userId)
+            const u = await model.users.getById(user.userId)
             if (u && u.length !== 1) {
                 members.push(u)
             } else {
@@ -56,7 +56,7 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
         }
 
         for (const swUser of conversation.sharedWithUsers) {
-            let user = await model.user.getById(swUser.userId)
+            let user = await model.users.getById(swUser.userId)
             if (user.length !== 1) {
                 console.log('User not found', swUser.userId)
             } else {
@@ -69,7 +69,7 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
         }
 
         for (const oUser of organiaztion.users) {
-            let user = await model.user.getById(oUser.userId)
+            let user = await model.users.getById(oUser.userId)
             if (user.length !== 1) {
                 console.log('User not found', oUser.userId)
             } else {
@@ -97,7 +97,7 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
 }
 
 async function getUser(email) {
-    const user = await model.user.getByEmail(email)
+    const user = await model.users.getByEmail(email)
     if (user.length !== 1) throw new UserNotFound()
 
     return {

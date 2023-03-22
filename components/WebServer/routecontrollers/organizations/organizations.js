@@ -13,7 +13,7 @@ async function createOrganization(req, res, next) {
     try {
         if (!req.body.name) throw new OrganizationUnsupportedMediaType()
 
-        const isOrgaFound = await model.organization.getByName(req.body.name)
+        const isOrgaFound = await model.organizations.getByName(req.body.name)
         if (isOrgaFound.length === 1) throw new OrganizationConflict()
 
         const organization = {
@@ -26,7 +26,7 @@ async function createOrganization(req, res, next) {
 
         if (!!req.body.users) organization.users.push(...req.body.users)
 
-        const result = await model.organization.create(organization)
+        const result = await model.organizations.create(organization)
         if (result.insertedCount !== 1) throw new OrganizationError()
 
         return res.status(201).send({
@@ -42,13 +42,13 @@ async function getOrganization(req, res, next) {
     try {
         if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
 
-        const lorganization = await model.organization.getByIdAndUser(req.params.organizationId, req.payload.data.userId)
+        const lorganization = await model.organizations.getByIdAndUser(req.params.organizationId, req.payload.data.userId)
         if (lorganization.length !== 1) throw new OrganizationError()
 
         let organization = lorganization[0]
         let orgaUser = []
         for (let luser of organization.users) {
-            let user = await model.user.getById(luser.userId)
+            let user = await model.users.getById(luser.userId)
 
             orgaUser.push({
                 ...user[0],
@@ -65,7 +65,7 @@ async function getOrganization(req, res, next) {
 
 async function listSelfOrganization(req, res, next) {
     try {
-        const organizations = await model.organization.listSelf(req.payload.data.userId)
+        const organizations = await model.organizations.listSelf(req.payload.data.userId)
         return res.status(200).send(organizations)
     } catch (err) {
         next(err)
@@ -75,7 +75,7 @@ async function listSelfOrganization(req, res, next) {
 // List all public organization
 async function listOrganization(req, res, next) {
     try {
-        const organizations = await model.organization.getAll()
+        const organizations = await model.organizations.getAll()
         return res.status(200).send(organizations)
     } catch (err) {
         next(err)

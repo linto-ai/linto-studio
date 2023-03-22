@@ -63,7 +63,7 @@ async function importConv(req, res) {
     conversation.owner = req.payload.data.userId
     await addFileToConv(conversation, req)
     setJobsDataToImport(conversation)
-    conversation = await model.conversation.create(conversation)
+    conversation = await model.conversations.create(conversation)
 
     res.status(200).send({ message: 'Conversation imported' })
     return
@@ -96,7 +96,7 @@ async function importTranscription(req, res) {
   conversation = SttWrapper.transcriptionToConversation(normalizeTranscription, conversation)
   setJobsDataToImport(conversation)
 
-  const result = await model.conversation.create(conversation)
+  const result = await model.conversations.create(conversation)
   if (result.insertedCount !== 1) throw new ConversationError()
 
   res.status(200).send({ message: 'Conversation imported' })
@@ -107,7 +107,7 @@ async function importConversation(req, res, next) {
   try {
     if (!req.body.organizationId) throw new ConversationMetadataRequire("organizationId param is required")
 
-    const organization = await model.organization.getByIdAndUser(req.body.organizationId, req.payload.data.userId)
+    const organization = await model.organizations.getByIdAndUser(req.body.organizationId, req.payload.data.userId)
     if (organization.length !== 1) throw new ConversationError(`Organization ${req.body.organizationId} not found`)
     req.body.userId = req.payload.data.userId
 

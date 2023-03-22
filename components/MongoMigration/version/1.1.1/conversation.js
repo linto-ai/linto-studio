@@ -3,8 +3,7 @@ const debug = require('debug')(`linto:components:MongoMigration:controllers:vers
 const collections_name = 'conversations'
 
 const migration_update_add = {
-  tags: [],
-  category: [],
+  tags: []
 }
 
 module.exports = {

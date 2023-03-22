@@ -26,8 +26,8 @@ async function addUserInOrganization(req, res, next) {
     if (isNaN(req.body.role) && TYPES.checkValue(req.body.role)) throw new OrganizationUnsupportedMediaType("Role value is not valid")
     if (ROLES.canGiveAccess(req.body.role, req.userRole)) throw new OrganizationForbidden()
 
-    let organization = await model.organization.getById(req.params.organizationId)
-    let user = await model.user.getByEmail(req.body.email)
+    let organization = await model.organizations.getById(req.params.organizationId)
+    let user = await model.users.getByEmail(req.body.email)
 
     if (organization.length === 0) throw new OrganizationNotFound()
     else organization = organization[0]
@@ -44,7 +44,7 @@ async function addUserInOrganization(req, res, next) {
       role: parseInt(req.body.role)
     })
 
-    const result = await model.organization.update(organization)
+    const result = await model.organizations.update(organization)
     if (result.matchedCount === 0) throw new OrganizationError()
 
     res.status(201).send({
@@ -62,7 +62,7 @@ async function updateUserFromOrganization(req, res, next) {
     if (isNaN(req.body.role) && TYPES.checkValue(req.body.role)) throw new OrganizationUnsupportedMediaType("Role value is not valid")
     if (ROLES.canGiveAccess(req.body.role, req.userRole)) throw new OrganizationForbidden()
 
-    let organization = await model.organization.getById(req.params.organizationId)
+    let organization = await model.organizations.getById(req.params.organizationId)
     if (organization.length === 0) throw new OrganizationNotFound()
     else organization = organization[0]
 
@@ -83,7 +83,7 @@ async function updateUserFromOrganization(req, res, next) {
     const data = orgaUtility.countAdmin(organization, req.body.userId)
     if (data.adminCount === 0) throw new OrganizationForbidden('You cannot change the last admin role')
 
-    const result = await model.organization.update(organization)
+    const result = await model.organizations.update(organization)
     if (result.matchedCount === 0) throw new OrganizationError('Error while updating user in organization')
 
     res.status(200).send({
@@ -98,7 +98,7 @@ async function deleteUserFromOrganization(req, res, next) {
   try {
     if (!req.params.organizationId || !req.body.userId) throw new OrganizationUnsupportedMediaType()
 
-    let organization = await model.organization.getById(req.params.organizationId)
+    let organization = await model.organizations.getById(req.params.organizationId)
     if (organization.length === 0) throw new OrganizationNotFound()
     else organization = organization[0]
 
@@ -112,7 +112,7 @@ async function deleteUserFromOrganization(req, res, next) {
     const data = orgaUtility.countAdmin(organization, req.body.userId)
     if (data.adminCount === 0) throw new OrganizationForbidden('You cannot delete the last admin')
 
-    const result = await model.organization.update(organization)
+    const result = await model.organizations.update(organization)
     if (result.matchedCount === 0) throw new OrganizationError()
 
     res.status(200).send({

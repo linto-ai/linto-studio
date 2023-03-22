@@ -9,7 +9,7 @@ const {
 
 async function searchCategory(req, res, next) {
   try {
-    const category = await model.search.category.getByOrgaIdAndName(req.params.organizationId, req.body.name)
+    const category = await model.search.categories.getByOrgaIdAndName(req.params.organizationId, req.body.name)
 
     if (category.length === 0) res.status(204).send()
     else res.status(200).send(category)
@@ -22,14 +22,14 @@ async function searchCategory(req, res, next) {
 async function searchCommonTagFromCategory(req, res, next) {
   try {
 
-    const categoryTags = await model.search.tag.getByCategory(req.params.categoryId)
+    const categoryTags = await model.search.tags.getByCategory(req.params.categoryId)
 
     const userConversationsIds = (await organizationUtility
       .getUserConversationFromOrganization(req.payload.data.userId, req.params.organizationId))
       .map(conv => conv._id)
 
     // Search for conversations based on tags and conversation access
-    const conversationsTags = (await model.search.conversation.getByIdsAndTag(userConversationsIds, req.body.tags.split(','))).flatMap(conv => conv.tags)
+    const conversationsTags = (await model.search.conversations.getByIdsAndTag(userConversationsIds, req.body.tags.split(','))).flatMap(conv => conv.tags)
 
     let tags = []
     for (let tag of categoryTags) {
@@ -54,7 +54,7 @@ async function searchTaxonomy(req, res, next) {
       .map(conv => conv._id)
 
     // Search for conversations based on tags and access
-    const conversations = await model.search.conversation.getByIdsAndTag(userConversationsIds, req.body.tags.split(','))
+    const conversations = await model.search.conversations.getByIdsAndTag(userConversationsIds, req.body.tags.split(','))
     const tagIds = conversations.flatMap(conv => conv.tags)
     const tagCount = tagIds.reduce(function (prev, cur) {
       prev[cur] = (prev[cur] || 0) + 1
@@ -67,13 +67,13 @@ async function searchTaxonomy(req, res, next) {
 
     for (const tagId of uniqueTagIds) {
       const tag = {
-        ...(await model.tag.getById(tagId))[0],
+        ...(await model.tags.getById(tagId))[0],
         count: tagCount[tagId]
       }
       const categoryId = tag.categoryId
 
       if (!categories[categoryId]) {
-        let category = (await model.category.getById(categoryId))[0]
+        let category = (await model.categories.getById(categoryId))[0]
         category.tags = []
         category.searchedTag = false
         categories[categoryId] = category
@@ -110,12 +110,12 @@ async function searchConversation(req, res, next) {
       .map(conv => conv._id)
 
     if (!req.body.tags) throw new OrganizationError('Tags are required')
-    let convTag = (await model.search.conversation.getByIdsAndTag(convAccess, req.body.tags.split(','))).map(conv => conv._id)
+    let convTag = (await model.search.conversations.getByIdsAndTag(convAccess, req.body.tags.split(','))).map(conv => conv._id)
 
     if (req.body.title) {
-      conversation = await model.search.conversation.getByIdsAndTitle(convTag, req.body.title)
+      conversation = await model.search.conversations.getByIdsAndTitle(convTag, req.body.title)
     } else if (req.body.text) {
-      conversation = await model.search.conversation.getByIdsAndText(convTag, req.body.text)
+      conversation = await model.search.conversations.getByIdsAndText(convTag, req.body.text)
     }
 
     //TODO: add tag and category listing with conversation

@@ -13,8 +13,8 @@ const {
 
 async function getCategory(req, res, next) {
   try {
-    let category = await model.category.getById(req.params.categoryId)
-    let tag = await model.search.tag.getByCategory(req.params.categoryId)
+    let category = await model.categories.getById(req.params.categoryId)
+    let tag = await model.search.tags.getByCategory(req.params.categoryId)
     category[0].tag = tag
 
     if (category.length === 0) res.status(204).send()
@@ -33,7 +33,7 @@ async function listCategory(req, res, next) {
       }
     }
 
-    let category = await model.category.getByOrgaId(req.params.organizationId, searchQuery)
+    let category = await model.categories.getByOrgaId(req.params.organizationId, searchQuery)
     if (category.length === 0) res.status(204)
     res.status(200).send(category)
   } catch (err) {
@@ -43,7 +43,7 @@ async function listCategory(req, res, next) {
 
 async function createCategory(req, res, next) {
   try {
-    let category = await model.category.getByOrgaId(req.params.organizationId, { name: req.body.name })
+    let category = await model.categories.getByOrgaId(req.params.organizationId, { name: req.body.name })
     if (category.length > 0) throw new CategoryConflict()
 
     if (!req.body.color) req.body.color = '#FFFFFF'
@@ -51,7 +51,7 @@ async function createCategory(req, res, next) {
     else if (TYPE.checkValue(req.body.type) === false) throw new CategoryUnsupportedMediaType('Type not supported')
     req.body.organizationId = req.params.organizationId
 
-    const result = await model.category.create(req.body)
+    const result = await model.categories.create(req.body)
     if (result.insertedCount !== 1) throw new CategoryError('Error during the creation of the category')
 
     res.status(201).send({ message: 'Category created' })
@@ -62,7 +62,7 @@ async function createCategory(req, res, next) {
 
 async function updateCategory(req, res, next) {
   try {
-    let category = await model.category.getById(req.params.categoryId)
+    let category = await model.categories.getById(req.params.categoryId)
     if (category.length === 0) throw new CategoryError('Category not found')
 
     if (req.body.name) category[0].name = req.body.name
@@ -72,7 +72,7 @@ async function updateCategory(req, res, next) {
       category[0].type = req.body.type
     }
 
-    const result = await model.category.update(category[0])
+    const result = await model.categories.update(category[0])
     if (result.modifiedCount === 0) res.status(304).send('Nothing to update')
     else res.status(200).send({ message: 'Category updated' })
   } catch (err) {
@@ -82,17 +82,17 @@ async function updateCategory(req, res, next) {
 
 async function deleteCategory(req, res, next) {
   try {
-    let category = await model.category.getById(req.params.categoryId)
+    let category = await model.categories.getById(req.params.categoryId)
     if (category.length === 0) throw new CategoryError('Category not found')
 
     //delete all tag with this categoryId
-    let tags = await model.tag.getByOrgaId(req.params.organizationId, { categoryId: req.params.categoryId })
+    let tags = await model.tags.getByOrgaId(req.params.organizationId, { categoryId: req.params.categoryId })
     for (let tag of tags) {
-      const result = await model.tag.delete(tag._id)
+      const result = await model.tags.delete(tag._id)
       if (result.deletedCount !== 1) throw new CategoryError('Error during the deletion of the tag')
     }
 
-    const result = await model.category.delete(req.params.categoryId)
+    const result = await model.categories.delete(req.params.categoryId)
     if (result.deletedCount !== 1) throw new CategoryError('Error during the deletion of the category')
 
 
