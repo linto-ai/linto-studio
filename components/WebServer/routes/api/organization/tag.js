@@ -6,29 +6,29 @@ const {
     createTag,
     updateTag,
     deleteTag,
+    searchTag,
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/taxonomy/tag.js`)
 
 const {
-    searchConversation,
-    searchTaxonomy
-} = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/taxonomy/taxonomy.js`)
+    searchConversation
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/taxonomy/search.js`)
 
-
+//Cannot POST /api/organizations/63f4d9ed7d1b424dccabc375/tag/search
 module.exports = (webserver) => {
     return [
-        {
-            path: '/search',
-            method: 'post',
-            requireAuth: true,
-            requireOrganizationMemberAccess: true,
-            controller: searchTaxonomy
-        },
         {
             path: '/conversation/search',
             method: 'post',
             requireAuth: true,
             requireOrganizationMemberAccess: true,
             controller: searchConversation
+        },
+        {
+            path: '/search',
+            method: 'post',
+            requireAuth: true,
+            requireOrganizationMemberAccess: true,
+            controller: searchTag
         },
         {
             path: '/',

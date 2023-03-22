@@ -8,6 +8,14 @@ const {
     deleteCategory,
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/taxonomy/category.js`)
 
+const {
+    searchConversation,
+    searchCategory,
+    searchCommonTagFromCategory,
+    searchTaxonomy
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/taxonomy/search.js`)
+
+
 //path allways preceded by /api/organizations/:organizationId/category
 module.exports = (webserver) => {
     return [
@@ -26,12 +34,34 @@ module.exports = (webserver) => {
             requireOrganizationMaintainerAccess: true
         },
         {
-            path: '/type',
-            method: 'get',
-            controller: getType,
+            path: '/search',
+            method: 'post',
+            controller: searchCategory,
             requireAuth: true,
             requireOrganizationMaintainerAccess: true
         },
+        {
+            path: '/tree',
+            method: 'post',
+            requireAuth: true,
+            requireOrganizationMemberAccess: true,
+            controller: searchTaxonomy
+        },
+        {
+            path: '/:categoryId/search',
+            method: 'post',
+            requireAuth: true,
+            requireOrganizationMemberAccess: true,
+            controller: searchCommonTagFromCategory
+        },
+        
+        // {
+        //     path: '/conversation/search',
+        //     method: 'post',
+        //     requireAuth: true,
+        //     requireOrganizationMemberAccess: true,
+        //     controller: searchConversation
+        // },
         {
             path: '/:categoryId',
             method: 'get',

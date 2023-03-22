@@ -1,6 +1,8 @@
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:tag:tag')
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
+const organizationUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
+
 const {
   TagError,
   TagConflict,
@@ -17,20 +19,22 @@ async function getTag(req, res, next) {
   }
 }
 
-
 async function getTagByCategory(req, res, next) {
   try {
-    let tag = await model.tag.getByCategory(req.params.categoryId)
+    let tag = await model.search.tag.getByCategory(req.params.categoryId)
+
     if (tag.length === 0) res.status(204).send()
     else res.status(200).send(tag)
-    res.status(200).send(tag)
+
   } catch (err) {
     next(err)
   }
 }
+
 async function getTagByOrganization(req, res, next) {
   try {
     let tag = await model.tag.getByOrgaId(req.params.organizationId)
+    
     if (tag.length === 0) res.status(204).send()
     else res.status(200).send(tag)
 
@@ -39,17 +43,16 @@ async function getTagByOrganization(req, res, next) {
   }
 }
 
-
 async function createTag(req, res, next) {
   try {
-    if(!req.body.name) throw new TagUnsupportedMediaType('name is required')
+    if (!req.body.name) throw new TagUnsupportedMediaType('name is required')
 
     let tag = await model.tag.getByOrgaId(req.params.organizationId, { name: req.body.name })
     if (tag.length > 0) throw new TagConflict()
 
     req.body.organizationId = req.params.organizationId
 
-    let category = await model.categories.getById(req.body.categoryId)
+    let category = await model.category.getById(req.body.categoryId)
     if (category.length === 0) throw new TagError('categoryId not found')
 
     const result = await model.tag.create(req.body)
@@ -67,7 +70,7 @@ async function updateTag(req, res, next) {
     if (tag.length === 0) throw new TagError('Tag not found')
 
     let tag_name = await model.tag.getByOrgaId(req.params.organizationId, { name: req.body.name })
-    if (tag_name.length === 1 &&  tag[0]._id !== tag_name[0]._id) throw new TagConflict()
+    if (tag_name.length === 1 && tag[0]._id !== tag_name[0]._id) throw new TagConflict()
 
     if (req.body.name) tag[0].name = req.body.name
 
@@ -94,6 +97,37 @@ async function deleteTag(req, res, next) {
   }
 }
 
+
+async function searchTag(req, res, next) {
+  try {
+    if (req.body.name === undefined && req.body.tags === undefined) throw new TagUnsupportedMediaType('name or tags is required')
+
+    let tag = []
+
+    if (req.body.tags) {
+      const userConversationsIds = (await organizationUtility
+        .getUserConversationFromOrganization(req.payload.data.userId, req.params.organizationId))
+        .map(conv => conv._id)
+
+      const conversationsTags = (await model.search.conversation
+        .getByIdsAndTag(userConversationsIds, req.body.tags.split(',')))
+        .flatMap(conv => conv.tags)
+
+      const uniqueTagIds = [...new Set([...conversationsTags])]
+      tag = await model.search.tag.searchTag(uniqueTagIds, req.params.organizationId, req.body.name)
+
+    } else {
+      tag = await model.search.tag.searchByName(req.params.organizationId, req.body.name)
+    }
+
+    if (tag.length === 0) res.status(204).send()
+    else res.status(200).send(tag)
+
+  } catch (err) {
+    next(err)
+  }
+}
+
 module.exports = {
   getTag,
   getTagByCategory,
@@ -101,4 +135,5 @@ module.exports = {
   createTag,
   updateTag,
   deleteTag,
+  searchTag
 }

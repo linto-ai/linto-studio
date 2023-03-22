@@ -16,6 +16,9 @@
         {
             "categoryId": 1,
             "organizationId": 1
+        },
+        {
+            "categoryId": 1
         }
     ],
 
@@ -32,5 +35,4 @@
             "organization.organizationId ": 1
         }
     ]
-
 }

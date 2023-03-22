@@ -1,8 +1,3 @@
-const { resolve4 } = require('dns')
-const { accessSync } = require('fs')
-const nodemon = require('nodemon')
-const { resolve } = require('path/win32')
-
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:taxonomy:taxonomy')
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
@@ -11,6 +6,43 @@ const organizationUtility = require(`${process.cwd()}/components/WebServer/contr
 const {
   OrganizationError
 } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
+
+async function searchCategory(req, res, next) {
+  try {
+    const category = await model.search.category.getByOrgaIdAndName(req.params.organizationId, req.body.name)
+
+    if (category.length === 0) res.status(204).send()
+    else res.status(200).send(category)
+
+  } catch (err) {
+    next(err)
+  }
+}
+
+async function searchCommonTagFromCategory(req, res, next) {
+  try {
+
+    const categoryTags = await model.search.tag.getByCategory(req.params.categoryId)
+
+    const userConversationsIds = (await organizationUtility
+      .getUserConversationFromOrganization(req.payload.data.userId, req.params.organizationId))
+      .map(conv => conv._id)
+
+    // Search for conversations based on tags and conversation access
+    const conversationsTags = (await model.search.conversation.getByIdsAndTag(userConversationsIds, req.body.tags.split(','))).flatMap(conv => conv.tags)
+
+    let tags = []
+    for (let tag of categoryTags) {
+      if (conversationsTags.includes(tag._id.toString())) {
+        tags.push(tag)
+      }
+    }
+    res.status(200).send(tags)
+  } catch (err) {
+    next(err)
+  }
+}
+
 async function searchTaxonomy(req, res, next) {
   try {
     // Check if tags are provided
@@ -29,7 +61,7 @@ async function searchTaxonomy(req, res, next) {
       return prev
     }, {})
 
-    const uniqueTagIds = [...new Set([...req.body.tags.split(','), ...tagIds])] // add body tag at the start of the list
+    const uniqueTagIds = [...new Set([...req.body.tags.split(','), ...tagIds])] // add searched tag at the start of the list
     // Generate category list based on tags
     let categories = {}
 
@@ -41,7 +73,7 @@ async function searchTaxonomy(req, res, next) {
       const categoryId = tag.categoryId
 
       if (!categories[categoryId]) {
-        let category = (await model.categories.getById(categoryId))[0]
+        let category = (await model.category.getById(categoryId))[0]
         category.tags = []
         category.searchedTag = false
         categories[categoryId] = category
@@ -96,6 +128,8 @@ async function searchConversation(req, res, next) {
 
 module.exports = {
   searchTaxonomy,
+  searchCategory,
+  searchCommonTagFromCategory,
   searchConversation
 }
 
