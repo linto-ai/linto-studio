@@ -3,8 +3,7 @@ const debug = require('debug')('linto:conversation-manager:router:api:conversati
 const { // Create conversation based on file
   addTag,
   deleteTag,
-  searchConversation,
-} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/taxonomy.js`)
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/tag.js`)
 
 module.exports = (webserver) => {
   return [

@@ -6,16 +6,6 @@ const { OrganizationNotFound } = require(`${process.cwd()}/components/WebServer/
 const RIGHT = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 
-async function getOrganization(organizationId) {
-    const organization = await model.organizations.getById(organizationId)
-
-    if (organization.length !== 1) throw new OrganizationNotFound()
-    return {
-        ...organization[0],
-        organizationId: organization[0]._id.toString()
-    }
-}
-
 function countAdmin(organization, userId) {
     let adminCount = 0
     let isAdmin = false
@@ -64,7 +54,6 @@ async function getUserConversationFromOrganization(userId, organizationId) {
 }
 
 module.exports = {
-    getOrganization,
     countAdmin,
     getUserConversationFromOrganization
 }

@@ -21,12 +21,12 @@ const STRATEGY = new LocalStrategy({
 passport.use('local', STRATEGY)
 
 function generateUserToken(email, password, done) {
-    model.user.getTokenByEmail(email).then(users => {
+    model.users.getTokenByEmail(email).then(users => {
         if (users.length === 1) user = users[0]
         else if (users.length > 1) throw new MultipleUserFound()
         else throw new UserNotFound()
 
-        if(!user.salt) throw new UnableToGenerateKeyToken()
+        if (!user.salt) throw new UnableToGenerateKeyToken()
 
         if (!user || !validatePassword(password, user)) return done(new InvalidCredential())
         let tokenData = { // Data stored in the token
@@ -36,7 +36,7 @@ function generateUserToken(email, password, done) {
             userId: user._id
         }
 
-        model.user.update({ _id: user._id, keyToken: tokenData.salt })
+        model.users.update({ _id: user._id, keyToken: tokenData.salt })
             .then(user => {
                 if (!user) return done(new UnableToGenerateKeyToken())
             }).catch(done)
@@ -47,48 +47,48 @@ function generateUserToken(email, password, done) {
     }).catch(done)
 }
 const STRATEGY_MAGIC_LINK = new LocalStrategy({
-  usernameField: 'magicId',
-  passwordField: 'psw',
+    usernameField: 'magicId',
+    passwordField: 'psw',
 }, (magicId, psw, done) => generateResetUserToken(magicId, psw, done))
 passport.use('local_magic_link', STRATEGY_MAGIC_LINK)
 
 async function generateResetUserToken(magicId, psw, done) {
-  model.user.getByMagicId(magicId, true).then(users => {
-      if (users.length === 1) user = users[0]
-      else if (users.length > 1) throw new MultipleUserFound()
-      else throw new UserNotFound()
+    model.users.getByMagicId(magicId, true).then(users => {
+        if (users.length === 1) user = users[0]
+        else if (users.length > 1) throw new MultipleUserFound()
+        else throw new UserNotFound()
 
-      if (!user) return done(new InvalidCredential())
-      else if(!moment().isBefore(user.authLink.validityDate)) return done(new ExpiredLink()) // expired token
+        if (!user) return done(new InvalidCredential())
+        else if (!moment().isBefore(user.authLink.validityDate)) return done(new ExpiredLink()) // expired token
 
-      let tokenData = { // Data stored in the token
-          salt: randomstring.generate(12),
-          sessionId: user._id,
-          email: user.email,
-          userId: user._id
-      }
+        let tokenData = { // Data stored in the token
+            salt: randomstring.generate(12),
+            sessionId: user._id,
+            email: user.email,
+            userId: user._id
+        }
 
-      // Push email to verifiedEmail if it is not in the array
-      let verifiedEmail = user.verifiedEmail
-      if(verifiedEmail.indexOf(user.email) < 0) {
-        verifiedEmail.push(user.email)
-      }
+        // Push email to verifiedEmail if it is not in the array
+        let verifiedEmail = user.verifiedEmail
+        if (verifiedEmail.indexOf(user.email) < 0) {
+            verifiedEmail.push(user.email)
+        }
 
-      model.user.update({ 
-        _id: user._id, 
-        keyToken: tokenData.salt, 
-        authLink :{magicId: null, validityDate:null}, 
-        emailIsVerified: true,
-        verifiedEmail
-      })
-          .then(user => {
-              if (!user) return done(new UnableToGenerateKeyToken())
-          }).catch(done)
+        model.users.update({
+            _id: user._id,
+            keyToken: tokenData.salt,
+            authLink: { magicId: null, validityDate: null },
+            emailIsVerified: true,
+            verifiedEmail
+        })
+            .then(user => {
+                if (!user) return done(new UnableToGenerateKeyToken())
+            }).catch(done)
 
-      return done(null, {
-          token: TokenGenerator(tokenData).token,
-      })
-  }).catch(done)
+        return done(null, {
+            token: TokenGenerator(tokenData).token,
+        })
+    }).catch(done)
 }
 
 

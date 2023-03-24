@@ -24,15 +24,20 @@
 
     "conversations": [{
             "name": 1,
-            "organization.organizationId ": 1
+            "organization.organizationId": 1
         },
         {
             "text": 1,
-            "organization.organizationId ": 1
+            "organization.organizationId": 1
         },
         {
             "tags": 1,
-            "organization.organizationId ": 1
+            "organization.organizationId": 1
+        },
+        {
+            "_id": 1,
+            "name": 1,
+            "text": 1
         }
     ]
 }

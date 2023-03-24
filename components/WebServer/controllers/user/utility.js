@@ -2,43 +2,6 @@ const debug = require('debug')('linto:conversation-manager:components:WebServer:
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const CONVERSATION_RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
-const ORGANIZATION_ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
-
-const { UserNotFound } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
-
-// Deprecated function
-async function getUsersConversationByArray(users, setupRight) {
-    try {
-        let members = []
-        if (!users) return []
-        for (let user of users) {
-            const u = await model.users.getById(user.userId)
-            if (u && u.length !== 1) {
-                members.push(u)
-            } else {
-                let myUser = {
-                    ...u[0],
-                    right: user.right,
-                    visibility: user.visibility
-                }
-                if (user.right) myUser.right = user.right
-                if (user.role) {
-                    if (user.role === ORGANIZATION_ROLES.ADMIN) myUser.right = CONVERSATION_RIGHTS.adminRight()
-                    if (user.role === ORGANIZATION_ROLES.MAINTAINER) myUser.right = CONVERSATION_RIGHTS.maintainerRight()
-                    if (user.role === ORGANIZATION_ROLES.MEMBER) {
-                        myUser.right = (setupRight) ? setupRight : user.right
-                    }
-                    myUser.role = user.role
-                }
-                members.push(myUser)
-            }
-        }
-        return members
-    } catch (err) {
-        throw err
-    }
-
-}
 
 async function getUsersListByConversation(userId, conversation, organiaztion) {
     try {
@@ -96,14 +59,4 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
     }
 }
 
-async function getUser(email) {
-    const user = await model.users.getByEmail(email)
-    if (user.length !== 1) throw new UserNotFound()
-
-    return {
-        ...user[0],
-        userId: user[0]._id.toString()
-    }
-}
-
-module.exports = { getUsersConversationByArray, getUsersListByConversation, getUser }
+module.exports = { getUsersListByConversation }

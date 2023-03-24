@@ -31,13 +31,15 @@ async function searchCommonTagFromCategory(req, res, next) {
     // Search for conversations based on tags and conversation access
     const conversationsTags = (await model.search.conversations.getByIdsAndTag(userConversationsIds, req.body.tags.split(','))).flatMap(conv => conv.tags)
 
-    let tags = []
+    let searchResult = []
     for (let tag of categoryTags) {
       if (conversationsTags.includes(tag._id.toString())) {
-        tags.push(tag)
+        searchResult.push(tag)
       }
     }
-    res.status(200).send(tags)
+    if (searchResult.length === 0) res.status(204).send()
+    else res.status(200).send(searchResult)
+
   } catch (err) {
     next(err)
   }
@@ -56,6 +58,7 @@ async function searchTaxonomy(req, res, next) {
     // Search for conversations based on tags and access
     const conversations = await model.search.conversations.getByIdsAndTag(userConversationsIds, req.body.tags.split(','))
     const tagIds = conversations.flatMap(conv => conv.tags)
+
     const tagCount = tagIds.reduce(function (prev, cur) {
       prev[cur] = (prev[cur] || 0) + 1
       return prev
@@ -79,8 +82,6 @@ async function searchTaxonomy(req, res, next) {
         categories[categoryId] = category
       }
 
-
-
       if (req.body.categories && req.body.categories.includes(categoryId)) {
         categories[categoryId].tags.push(tag)
       } else if (req.body.tags.includes(tagId)) {
@@ -91,36 +92,36 @@ async function searchTaxonomy(req, res, next) {
       }
     }
 
-    let flatResult = []
+    let searchResult = []
     for (const categoryId in categories) {
       delete categories[categoryId].searchedTag
-      flatResult.push(categories[categoryId])
+      searchResult.push(categories[categoryId])
     }
-    res.status(200).send(flatResult)
+
+    if (searchResult.length === 0) res.status(204).send()
+    else res.status(200).send(searchResult)
+
   } catch (err) {
     next(err);
   }
 }
 
-async function searchConversation(req, res, next) {
+async function searchConversationByTag(req, res, next) {
   try {
-    let conversation = []
-    let convAccess = (await organizationUtility
+    const userConversationsIds = (await organizationUtility
       .getUserConversationFromOrganization(req.payload.data.userId, req.params.organizationId))
       .map(conv => conv._id)
 
-    if (!req.body.tags) throw new OrganizationError('Tags are required')
-    let convTag = (await model.search.conversations.getByIdsAndTag(convAccess, req.body.tags.split(','))).map(conv => conv._id)
+    // Search for conversations based on tags and access
+    let convsId = (await model.search.conversations
+      .getByIdsAndTag(userConversationsIds, req.body.tags.split(',')))
+      .map(conv => conv._id)
 
-    if (req.body.title) {
-      conversation = await model.search.conversations.getByIdsAndTitle(convTag, req.body.title)
-    } else if (req.body.text) {
-      conversation = await model.search.conversations.getByIdsAndText(convTag, req.body.text)
-    }
+    let searchResult = await model.search.conversations.searchBy(convsId, req.body)
 
-    //TODO: add tag and category listing with conversation
+    if (searchResult.length === 0) res.status(204).send()
+    else res.status(200).send(searchResult)
 
-    res.status(200).send(conversation)
   } catch (err) {
     next(err)
   }
@@ -130,6 +131,6 @@ module.exports = {
   searchTaxonomy,
   searchCategory,
   searchCommonTagFromCategory,
-  searchConversation
+  searchConversationByTag
 }
 

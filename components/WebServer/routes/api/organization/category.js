@@ -48,21 +48,6 @@ module.exports = (webserver) => {
             controller: searchTaxonomy
         },
         {
-            path: '/:categoryId/search',
-            method: 'post',
-            requireAuth: true,
-            requireOrganizationMemberAccess: true,
-            controller: searchCommonTagFromCategory
-        },
-        
-        // {
-        //     path: '/conversation/search',
-        //     method: 'post',
-        //     requireAuth: true,
-        //     requireOrganizationMemberAccess: true,
-        //     controller: searchConversation
-        // },
-        {
             path: '/:categoryId',
             method: 'get',
             controller: getCategory,
@@ -82,6 +67,13 @@ module.exports = (webserver) => {
             controller: deleteCategory,
             requireAuth: true,
             requireOrganizationMaintainerAccess: true
-        }
+        },
+        {
+            path: '/:categoryId/search',
+            method: 'post',
+            requireAuth: true,
+            requireOrganizationMemberAccess: true,
+            controller: searchCommonTagFromCategory
+        },
     ]
 }

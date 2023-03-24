@@ -22,6 +22,9 @@ const {
     deleteOrganization
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/admin.js`)
 
+const {
+    searchConversationByTag
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/taxonomy/search.js`)
 
 module.exports = (webserver) => {
     return [
@@ -61,6 +64,13 @@ module.exports = (webserver) => {
             requireAuth: true,
             requireOrganizationMemberAccess: true,
             controller: listConversationFromOrganization
+        },
+        {
+            path: '/:organizationId/conversation/searchByTag',
+            method: 'post',
+            requireAuth: true,
+            requireOrganizationMemberAccess: true,
+            controller: searchConversationByTag
         },
 
         /* Maintainer right*/

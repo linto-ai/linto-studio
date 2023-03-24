@@ -1,7 +1,6 @@
 const debug = require('debug')('linto:conversation-manager:router:api:tag:tag')
 const {
     getTag,
-    getTagByCategory,
     getTagByOrganization,
     createTag,
     updateTag,
@@ -9,27 +8,9 @@ const {
     searchTag,
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/taxonomy/tag.js`)
 
-const {
-    searchConversation
-} = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/taxonomy/search.js`)
-
 //Cannot POST /api/organizations/63f4d9ed7d1b424dccabc375/tag/search
 module.exports = (webserver) => {
     return [
-        {
-            path: '/conversation/search',
-            method: 'post',
-            requireAuth: true,
-            requireOrganizationMemberAccess: true,
-            controller: searchConversation
-        },
-        {
-            path: '/search',
-            method: 'post',
-            requireAuth: true,
-            requireOrganizationMemberAccess: true,
-            controller: searchTag
-        },
         {
             path: '/',
             method: 'post',
@@ -45,11 +26,11 @@ module.exports = (webserver) => {
             requireOrganizationMemberAccess: true
         },
         {
-            path: '/category/:categoryId',
-            method: 'get',
-            controller: getTagByCategory,
+            path: '/search',
+            method: 'post',
             requireAuth: true,
-            requireOrganizationMemberAccess: true
+            requireOrganizationMemberAccess: true,
+            controller: searchTag
         },
         {
             path: '/:tagId',

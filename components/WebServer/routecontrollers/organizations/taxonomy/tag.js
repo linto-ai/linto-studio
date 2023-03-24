@@ -19,18 +19,6 @@ async function getTag(req, res, next) {
   }
 }
 
-async function getTagByCategory(req, res, next) {
-  try {
-    let tag = await model.search.tags.getByCategory(req.params.categoryId)
-
-    if (tag.length === 0) res.status(204).send()
-    else res.status(200).send(tag)
-
-  } catch (err) {
-    next(err)
-  }
-}
-
 async function getTagByOrganization(req, res, next) {
   try {
     let tag = await model.tags.getByOrgaId(req.params.organizationId)
@@ -130,7 +118,6 @@ async function searchTag(req, res, next) {
 
 module.exports = {
   getTag,
-  getTagByCategory,
   getTagByOrganization,
   createTag,
   updateTag,
