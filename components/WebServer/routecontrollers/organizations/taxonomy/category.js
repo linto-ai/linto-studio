@@ -14,11 +14,14 @@ const {
 async function getCategory(req, res, next) {
   try {
     let category = await model.categories.getById(req.params.categoryId)
-    let tag = await model.search.tags.getByCategory(req.params.categoryId)
-    category[0].tag = tag
-
     if (category.length === 0) res.status(204).send()
-    else res.status(200).send(category[0])
+    else {
+      let tag = await model.search.tags.getByCategory(req.params.categoryId)
+      category[0].tag = tag
+
+      res.status(200).send(category[0])
+    }
+
   } catch (err) {
     next(err)
   }
