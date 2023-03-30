@@ -137,9 +137,12 @@
           "description": "OK",
           "content": {
             "application/json": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/Tag"
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/CategoryWithTags"
+                }
               }
             }
           }

@@ -22,7 +22,7 @@ async function getTag(req, res, next) {
 async function getTagByOrganization(req, res, next) {
   try {
     let tag = await model.tags.getByOrgaId(req.params.organizationId)
-    
+
     if (tag.length === 0) res.status(204).send()
     else res.status(200).send(tag)
 
@@ -90,7 +90,7 @@ async function searchTag(req, res, next) {
   try {
     if (req.body.name === undefined && req.body.tags === undefined) throw new TagUnsupportedMediaType('name or tags is required')
 
-    let tag = []
+    let tags = []
 
     if (req.body.tags) {
       const userConversationsIds = (await organizationUtility
@@ -102,14 +102,29 @@ async function searchTag(req, res, next) {
         .flatMap(conv => conv.tags)
 
       const uniqueTagIds = [...new Set([...conversationsTags])]
-      tag = await model.search.tags.searchTag(uniqueTagIds, req.params.organizationId, req.body.name)
+      tags = await model.search.tags.searchTag(uniqueTagIds, req.params.organizationId, req.body.name)
 
     } else {
-      tag = await model.search.tags.searchByName(req.params.organizationId, req.body.name)
+      tags = await model.search.tags.searchByName(req.params.organizationId, req.body.name)
     }
 
-    if (tag.length === 0) res.status(204).send()
-    else res.status(200).send(tag)
+    if (tags.length === 0) res.status(204).send()
+    else {
+      let categoriesList = {}
+      for (let tag of tags) {
+        if (!categoriesList[tag.categoryId]) {
+          let category = await model.categories.getById(tag.categoryId)
+          categoriesList[tag.categoryId] = { ...category[0], tags: [] }
+        }
+        categoriesList[tag.categoryId].tags.push(tag)
+      }
+
+      let searchResult = []
+      for (let categoryId in categoriesList) {
+        searchResult.push(categoriesList[categoryId])
+      }
+      res.status(200).send(searchResult)
+    }
 
   } catch (err) {
     next(err)
