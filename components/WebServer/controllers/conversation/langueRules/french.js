@@ -26,12 +26,16 @@ function doublePunctuation(seg_text, words, loop_data) {
     if (loop_data.word_index !== 0) {
       timestamp = loop_data.words[loop_data.word_index - 1].end
     }
+
+    if (/[0-9a-zA-ZÀ-ÿ]/.test(seg_text.lowercase)) skip_words = 0
+    else skip_words = -1
+
     return {
       start: timestamp,
       end: timestamp,
       word: seg_text.original,
       conf: 1,
-      skip_words: -1
+      skip_words: skip_words
     }
   }
 }
@@ -70,7 +74,7 @@ function numberNormalize(seg_text, words, loop_data) {
       } else break
     }
 
-    if(!loop_data.segment[loop_data.segment_index + number_in_a_row_find]) // No next word, exit
+    if (!loop_data.segment[loop_data.segment_index + number_in_a_row_find]) // No next word, exit
       return
     let next_word_seg = correctSegmentText({ original: loop_data.segment[loop_data.segment_index + number_in_a_row_find] })
     let index = loop_data.word_index
