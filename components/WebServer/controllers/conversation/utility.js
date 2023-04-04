@@ -7,6 +7,39 @@ const ORGANIZATION_ROLES = require(`${process.cwd()}/lib/dao/organization/roles`
 const { ConversationError } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 const { OrganizationNotFound } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
+const conversation_projection = ['_id', 'name', 'description', 'owner', 'organization','metadata', 'locale', 'jobs', 'created', 'sharedWithUsers', 'last_update']
+
+async function userAccess(userId, convId) {
+    try {
+        let conversation = await model.conversations.getById(convId, conversation_projection)
+        if (conversation.length !== 1) throw new ConversationError('Conversation not found')
+        conversation = conversation[0]
+
+        if (conversation.sharedWithUsers.filter(user => user.userId === userId &&
+            CONVERSATION_RIGHTS.hasRightAccess(user.right, CONVERSATION_RIGHTS.READ)).length !== 0) {
+            return conversation
+        }
+
+        const orga = await model.organizations.getById(conversation.organization.organizationId)
+        if (orga.length !== 1) throw new OrganizationNotFound('Organization not found')
+
+        const user = orga[0].users.filter(user => user.userId === userId)
+        if (user.length !== 1) return undefined
+
+        for (let customRight of conversation.organization.customRights) {
+            if (customRight.userId === userId && CONVERSATION_RIGHTS
+                .hasRightAccess(customRight.right, CONVERSATION_RIGHTS.READ)) return conversation
+            else if (customRight.userId === userId) return undefined
+        }
+
+        if (ORGANIZATION_ROLES.hasRoleAccess(user[0].role, ORGANIZATION_ROLES.MAINTAINER)) return conversation
+        else return undefined
+
+    } catch (err) {
+        throw err
+    }
+}
+
 async function getUserConversation(userId) {
     try {
         const convList = []
@@ -97,6 +130,7 @@ async function textInConversation(text, conversationId) {
 
 
 module.exports = {
+    userAccess,
     getUserConversation,
     getUserRightFromConversation,
     getUserRightFromConversationList,
