@@ -1,6 +1,6 @@
 const Mail = require('nodemailer/lib/mailer')
 
-const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:user')
+const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:users:user')
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
