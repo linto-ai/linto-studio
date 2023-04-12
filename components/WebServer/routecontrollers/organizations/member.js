@@ -16,6 +16,9 @@ const {
 
 async function listConversationFromOrganization(req, res, next) {
     try {
+        let filterTags = false
+        if(req.query.filter && req.query.filter === 'notags') filterTags = true
+
         const userId = req.payload.data.userId
         if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
 
@@ -33,6 +36,8 @@ async function listConversationFromOrganization(req, res, next) {
         const conversations = await model.conversations.getByOrga(req.params.organizationId)
 
         let listConv = conversations.filter(conv => {
+            if(filterTags && conv.tags.length !== 0) return undefined
+
             let access = conv.organization.customRights.find(customRight => (customRight.userId === userId))
             if (access && RIGHT.hasRightAccess(access.right, RIGHT.READ)) {
                 return conv
