@@ -131,8 +131,36 @@ async function searchTag(req, res, next) {
   }
 }
 
+//get all tags by tagsId
+async function getTagInfo(req, res, next) {
+  try {
+    if (req.body.tags === undefined) throw new TagUnsupportedMediaType('tags is required')
+    let tags = await model.search.tags.getByIds(req.body.tags.split(','), req.params.organizationId)
+    if (tags.length === 0) res.status(204).send()
+    else {
+      let categoriesList = {}
+      for (let tag of tags) {
+        if (!categoriesList[tag.categoryId]) {
+          let category = await model.categories.getById(tag.categoryId)
+          categoriesList[tag.categoryId] = { ...category[0], tags: [] }
+        }
+        categoriesList[tag.categoryId].tags.push(tag)
+      }
+
+      let searchResult = []
+      for (let categoryId in categoriesList) {
+        searchResult.push(categoriesList[categoryId])
+      }
+      res.status(200).send(searchResult)
+    }
+  } catch (err) {
+    next(err)
+  }
+}
+
 module.exports = {
   getTag,
+  getTagInfo,
   getTagByOrganization,
   createTag,
   updateTag,

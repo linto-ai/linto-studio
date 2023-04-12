@@ -1,6 +1,7 @@
 const debug = require('debug')('linto:conversation-manager:router:api:tag:tag')
 const {
     getTag,
+    getTagInfo,
     getTagByOrganization,
     createTag,
     updateTag,
@@ -31,6 +32,13 @@ module.exports = (webserver) => {
             requireAuth: true,
             requireOrganizationMemberAccess: true,
             controller: searchTag
+        },
+        {
+            path: '/info',
+            method: 'post',
+            requireAuth: true,
+            requireOrganizationMemberAccess: true,
+            controller: getTagInfo
         },
         {
             path: '/:tagId',
