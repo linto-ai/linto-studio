@@ -134,7 +134,7 @@ async function searchTag(req, res, next) {
 //get all tags by tagsId
 async function getTagInfo(req, res, next) {
   try {
-    if (req.body.tags === undefined) throw new TagUnsupportedMediaType('tags is required')
+    if (req.body.tags === undefined || req.body.tags.length === 0) throw new TagUnsupportedMediaType('tags is required')
     let tags = await model.search.tags.getByIds(req.body.tags.split(','), req.params.organizationId)
     if (tags.length === 0) res.status(204).send()
     else {
