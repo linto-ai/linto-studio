@@ -4,7 +4,7 @@
       "tags": [
         "users"
       ],
-      "summary": "Create a new user",
+      "summary": "Create an user",
       "requestBody": {
         "content": {
           "multipart/form-data": {
@@ -78,7 +78,35 @@
       "tags": [
         "users"
       ],
-      "summary": "Get user information based on their token",
+      "summary": "List all users",
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    }
+
+  },
+  "/api/users/self/": {
+    "get": {
+      "tags": [
+        "users"
+      ],
+      "summary": "Get connected user information",
       "responses": {
         "200": {
           "description": "OK",
@@ -212,12 +240,12 @@
       }
     }
   },
-  "/api/users/picture": {
+  "/api/users/self/picture": {
     "put": {
       "tags": [
         "users"
       ],
-      "summary": "Update user picture",
+      "summary": "Update connected user picture",
       "requestBody": {
         "content": {
           "multipart/form-data": {
@@ -311,33 +339,6 @@
       }
     }
   },
-  "/api/users/list/": {
-    "get": {
-      "tags": [
-        "users"
-      ],
-      "summary": "Get all public users",
-      "responses": {
-        "200": {
-          "description": "OK",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "$ref": "#/components/schemas/User"
-                }
-              }
-            }
-          }
-        },
-        "401": {
-          "$ref": "#/components/responses/Unauthorized"
-        }
-      }
-    }
-  },
   "/api/users/{userId}/": {
     "get": {
       "tags": [
@@ -415,7 +416,7 @@
       }
     }
   },
-  "/api/users/verify-email": {
+  "/api/users/self/verify-email": {
     "patch": {
       "tags": [
         "users"

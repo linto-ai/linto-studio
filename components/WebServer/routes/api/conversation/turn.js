@@ -10,28 +10,28 @@ const {
 module.exports = (webserver) => {
     return [
         {
-            path: '/:conversationId/turn/:turnId',
+            path: '/:conversationId/turns/:turnId',
             method: 'post',
             requireAuth: true,
             requireConversationWriteAccess: true,
             controller: addTurn
         },
         {
-            path: '/:conversationId/turn/:turnId',
+            path: '/:conversationId/turns/:turnId',
             method: 'delete',
             requireAuth: true,
             requireConversationWriteAccess: true,
             controller: deleteTurn
         },
         {
-            path: '/:conversationId/turn/:turnId',
+            path: '/:conversationId/turns/:turnId',
             method: 'patch',
             requireAuth: true,
             requireConversationWriteAccess: true,
             controller: updateTurn
         },
         {
-            path: '/:conversationId/turn/:turnId/merge/:direction',
+            path: '/:conversationId/turns/:turnId/merge/:direction',
             method: 'patch',
             requireAuth: true,
             requireConversationWriteAccess: true,

@@ -8,8 +8,8 @@ module.exports = (webServer) => {
         "/api/users/favorites": require('./api/users/favorites.js')(webServer),
         "/api/users": require('./api/users/users.js')(webServer),
         "/api/organizations": require('./api/organization/organizations')(webServer),
-        "/api/organizations/:organizationId/category": require('./api/organization/category')(webServer),
-        "/api/organizations/:organizationId/tag": require('./api/organization/tag')(webServer),
+        "/api/organizations/:organizationId/categories": require('./api/organization/categories')(webServer),
+        "/api/organizations/:organizationId/tags": require('./api/organization/tag')(webServer),
         "/api/conversations": [
             ...require('./api/conversation/generate')(webServer),
             ...require('./api/conversation/conversations')(webServer),

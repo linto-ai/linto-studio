@@ -1,5 +1,5 @@
 {
-  "/api/organizations/{organizationId}/tag": {
+  "/api/organizations/{organizationId}/tags": {
     "post": {
       "tags": [
         "organization tag"
@@ -102,17 +102,17 @@
       }
     }
   },
-  "/api/organizations/{organizationId}/tag/info": {
+  "/api/organizations/{organizationId}/tags/info": {
     "post":{
       "tags": [
         "organization tag"
       ],
-      "summary": "Get a list information of tags from an organization",
+      "summary": "Get all tags informations (categories + tags) from a list of id",
       "parameters": [{
         "name": "organizationId",
         "in": "path",
         "description": "Organization ID",
-        "required": true,
+        "required": true, 
         "type": "string"
       }],
       "requestBody": {
@@ -156,7 +156,7 @@
       }
     }
   },
-  "/api/organizations/{organizationId}/tag/search": {
+  "/api/organizations/{organizationId}/tags/search": {
     "post": {
       "tags": [
         "organization tag"
@@ -210,12 +210,12 @@
       }
     }
   },
-  "/api/organizations/{organizationId}/tag/{tagId}": {
+  "/api/organizations/{organizationId}/tags/{tagId}": {
     "get": {
       "tags": [
         "organization tag"
       ],
-      "summary": "Get a tag from an organization",
+      "summary": "Retrieve tag information",
       "parameters": [{
         "name": "organizationId",
         "in": "path",
@@ -253,7 +253,7 @@
       "tags": [
         "organization tag"
       ],
-      "summary": "Update a tag from an organization",
+      "summary": "Update tag information",
       "parameters": [{
         "name": "organizationId",
         "in": "path",
@@ -323,7 +323,7 @@
       "tags": [
         "organization tag"
       ],
-      "summary": "Delete a tag from an organization",
+      "summary": "Delete tag information",
       "parameters": [{
         "name": "organizationId",
         "in": "path",

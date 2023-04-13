@@ -1,4 +1,4 @@
-const debug = require('debug')('linto:conversation-manager:router:api:tag:category')
+const debug = require('debug')('linto:conversation-manager:router:api:tag:categories')
 const {
     getCategory,
     getType,
@@ -41,7 +41,7 @@ module.exports = (webserver) => {
             requireOrganizationMaintainerAccess: true
         },
         {
-            path: '/tree',
+            path: '/explore',
             method: 'post',
             requireAuth: true,
             requireOrganizationMemberAccess: true,

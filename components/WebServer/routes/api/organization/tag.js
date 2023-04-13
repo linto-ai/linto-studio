@@ -9,7 +9,6 @@ const {
     searchTag,
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/taxonomy/tag.js`)
 
-//Cannot POST /api/organizations/63f4d9ed7d1b424dccabc375/tag/search
 module.exports = (webserver) => {
     return [
         {

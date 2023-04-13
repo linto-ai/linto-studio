@@ -4,7 +4,7 @@
       "tags": [
         "organizations members"
       ],
-      "summary": "Get an organization",
+      "summary": "Retrieve organization information",
       "parameters": [{
         "in": "path",
         "name": "organizationId",
@@ -77,12 +77,12 @@
       }
     }
   },
-  "/api/organizations/{organizationId}/conversation": {
+  "/api/organizations/{organizationId}/conversations": {
     "get": {
       "tags": [
         "organizations members"
       ],
-      "summary": "Get the conversation of the requested organization",
+      "summary": "Lists all conversations from an organization where the user have an access",
       "parameters": [{
         "in": "path",
         "name": "organizationId",
@@ -118,7 +118,7 @@
       }
     }
   },
-  "/api/organizations/{organizationId}/conversation/searchByTag": {
+  "/api/organizations/{organizationId}/conversations/searchByTag": {
     "post":{
       "tags": [
         "organizations members"

@@ -1,10 +1,10 @@
 {
-  "/api/conversations/{conversationId}/tag/{tagId}": {
+  "/api/conversations/{conversationId}/tags/{tagId}": {
     "post": {
       "tags": [
         "conversations tag"
       ],
-      "summary": "Add a tag to a conversation",
+      "summary": "Add a tag to a conversation id",
       "parameters": [{
           "name": "conversationId",
           "in": "path",
@@ -56,7 +56,7 @@
       "tags": [
         "conversations tag"
       ],
-      "summary": "Remove a tag from a conversation",
+      "summary": "Delete a tag to a conversation id",
       "parameters": [{
           "name": "conversationId",
           "in": "path",

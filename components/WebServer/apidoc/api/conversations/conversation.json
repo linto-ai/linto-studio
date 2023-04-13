@@ -22,7 +22,7 @@
                 },
                 "endpoint": {
                   "type": "string",
-                  "description": "Endpoint of the conversation (can get information from service api)"
+                  "description": "Endpoint of the conversation (can fetch information from service api)"
                 },
                 "lang": {
                   "type": "string",
@@ -37,19 +37,17 @@
                 },
                 "organizationId": {
                   "type": "uiid",
-                  "description": "Organization id to add the conversation (default to personal organization)"
+                  "description": "Organization id that will own the conversation"
                 },
                 "membersRight": {
                   "type": "integer",
-                  "description": "Right of the members from the organization"
+                  "description": "Right access of organization members"
                 },
                 "segmentCharSize": {
                   "type": "integer",
-                  "description": "Size of the segment in char"
+                  "description": "Size of the segment in characters"
                 }
-
               }
-
             },
             "required": [
               "file",
@@ -98,7 +96,7 @@
       "tags": [
         "conversations"
       ],
-      "summary": "Import a new conversation",
+      "summary": "Import a conversation from an external source",
       "requestBody": {
         "content": {
           "multipart/form-data": {
@@ -113,8 +111,8 @@
                   "type": "string",
                   "description": "Language of the conversation"
                 },
-                "transcription" :{
-                  "$ref":"#/components/schemas/TranscriptionModel"
+                "transcription": {
+                  "$ref": "#/components/schemas/TranscriptionModel"
                 },
                 "file": {
                   "type": "file",
@@ -130,15 +128,15 @@
                 },
                 "organizationId": {
                   "type": "uiid",
-                  "description": "Organization id to add the conversation (default to personal organization)"
+                  "description": "Organization id that will own the conversation"
                 },
                 "membersRight": {
                   "type": "integer",
-                  "description": "Right of the members from the organization"
+                  "description": "Right access of organization members"
                 },
                 "segmentCharSize": {
                   "type": "integer",
-                  "description": "Size of the segment in char"
+                  "description": "Size of the segment in characters"
                 }
               }
             },
@@ -186,7 +184,7 @@
       "tags": [
         "conversations"
       ],
-      "summary": "Import a new conversation",
+      "summary": "Import a conversation from an external source",
       "requestBody": {
         "content": {
           "multipart/form-data": {
@@ -198,8 +196,8 @@
                   "format": "binary",
                   "description": "Audio file to convert into a conversation"
                 },
-                "conversation" :{
-                  "$ref":"#/components/schemas/Conversation"
+                "conversation": {
+                  "$ref": "#/components/schemas/Conversation"
                 }
               }
             },
@@ -247,7 +245,7 @@
       "tags": [
         "conversations"
       ],
-      "summary": "Search conversations",
+      "summary": "Search for conversations based on specified criteria",
       "requestBody": {
         "content": {
           "multipart/form-data": {
@@ -319,12 +317,12 @@
       }
     }
   },
-  "/api/conversations/list/share": {
+  "/api/conversations/shared": {
     "get": {
       "tags": [
         "conversations"
       ],
-      "summary": "Get all conversations shared with the user",
+      "summary": "List all conversations that have been shared with the connected user",
       "responses": {
         "200": {
           "description": "OK",
@@ -351,7 +349,7 @@
       "tags": [
         "conversations"
       ],
-      "summary": "Invite an external or private user to a conversation",
+      "summary": "Invite an external user to access the conversation",
       "parameters": [{
         "in": "path",
         "name": "conversationId",
@@ -407,23 +405,23 @@
       "tags": [
         "conversations"
       ],
-      "summary": "Get media from a conversation",
-      "description":"Set response type to \"audio/mpeg\" to get the mp3 file, or to \"application/json\" to get audiowavesurfer json file.",
+      "summary": "Download media files (e.g. audio, transcription) from a conversation",
+      "description": "Set response type to \"audio/mpeg\" to get the mp3 file, or to \"application/json\" to get audiowavesurfer json file.",
       "parameters": [{
-        "in": "path",
-        "name": "conversationId",
-        "type": "string",
-        "format": "uuid",
-        "required": true,
-        "description": "uuid string identifier for an conversation "
-      },
-      {
-        "in": "query",
-        "name": "mediatype",
-        "type": "string",
-        "required": false,
-        "description": "If the mediatype 'json' is passed as query, return audiowaveform json"
-      }
+          "in": "path",
+          "name": "conversationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an conversation "
+        },
+        {
+          "in": "query",
+          "name": "mediatype",
+          "type": "string",
+          "required": false,
+          "description": "If the mediatype 'json' is passed as query, return audiowaveform json"
+        }
       ],
       "responses": {
         "200": {

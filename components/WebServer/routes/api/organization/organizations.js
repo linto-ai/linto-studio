@@ -37,7 +37,7 @@ module.exports = (webserver) => {
             controller: createOrganization
         },
         {
-            path: '/user',
+            path: '/',
             method: 'get',
             requireAuth: true,
             controller: listSelfOrganization
@@ -59,14 +59,14 @@ module.exports = (webserver) => {
             controller: leaveSelfFromOrganization
         },
         {
-            path: '/:organizationId/conversation',
+            path: '/:organizationId/conversations',
             method: 'get',
             requireAuth: true,
             requireOrganizationMemberAccess: true,
             controller: listConversationFromOrganization
         },
         {
-            path: '/:organizationId/conversation/searchByTag',
+            path: '/:organizationId/conversations/searchByTag',
             method: 'post',
             requireAuth: true,
             requireOrganizationMemberAccess: true,
@@ -75,21 +75,21 @@ module.exports = (webserver) => {
 
         /* Maintainer right*/
         {
-            path: '/:organizationId/user',
+            path: '/:organizationId/users',
             method: 'post',
             requireAuth: true,
             requireOrganizationMaintainerAccess: true,
             controller: addUserInOrganization
         },
         {
-            path: '/:organizationId/user',
+            path: '/:organizationId/users',
             method: 'patch',
             requireAuth: true,
             requireOrganizationMaintainerAccess: true,
             controller: updateUserFromOrganization
         },
         {
-            path: '/:organizationId/user',
+            path: '/:organizationId/users',
             method: 'delete',
             requireAuth: true,
             requireOrganizationMaintainerAccess: true,

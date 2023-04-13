@@ -4,7 +4,7 @@
       "tags": [
         "users favorites"
       ],
-      "summary": "List all favorites conversations of the current connected user",
+      "summary": "List favorites conversations of connected user",
       "responses": {
         "200": {
           "description": "OK",
@@ -37,7 +37,7 @@
       "tags": [
         "users favorites"
       ],
-      "summary": "Add a conversation to the current connected user favorites",
+      "summary": "Add a favorite conversation to the connected user",
       "parameters": [{
         "in": "path",
         "name": "conversationId",
@@ -78,7 +78,7 @@
       "tags": [
         "users favorites"
       ],
-      "summary": "Delete a conversation from the current connected user favorites",
+      "summary": "Delete a conversation from the connected user favorites",
       "parameters": [{
         "in": "path",
         "name": "conversationId",

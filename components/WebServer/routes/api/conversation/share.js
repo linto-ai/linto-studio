@@ -11,7 +11,7 @@ const { // Create conversation based on file
 module.exports = (webserver) => {
   return [
     {
-      path: '/list/share',
+      path: '/shared',
       method: 'get',
       requireAuth: true,
       controller: listSharedConversation

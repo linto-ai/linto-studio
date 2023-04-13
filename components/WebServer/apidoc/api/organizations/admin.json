@@ -4,7 +4,7 @@
       "tags": [
         "organizations admin"
       ],
-      "summary": "Update an organization",
+      "summary": "Update the organization information",
       "parameters": [{
         "in": "path",
         "name": "organizationId",

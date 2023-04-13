@@ -1,5 +1,5 @@
 {
-  "/api/conversations/{conversationId}/turn/{turnId}": {
+  "/api/conversations/{conversationId}/turns/{turnId}": {
     "post": {
       "tags": ["conversation turn"],
       "summary": "Create a conversation turn after the indicated turnId",
@@ -157,7 +157,7 @@
       }
     }
   },
-  "/api/conversations/{conversationId}/turn/{turnId}/merge/{direction}": {
+  "/api/conversations/{conversationId}/turns/{turnId}/merge/{direction}": {
     "patch": {
       "tags": ["conversation turn"],
       "summary": "Merge the indicated turn with the next or previous turn",

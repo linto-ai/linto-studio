@@ -9,13 +9,13 @@ module.exports = (webserver) => {
   return [
 
     {
-      path: '/:conversationId/tag/:tagId',
+      path: '/:conversationId/tags/:tagId',
       method: 'post',
       requireAuth: true,
       controller: addTag
     },
     {
-      path: '/:conversationId/tag/:tagId',
+      path: '/:conversationId/tags/:tagId',
       method: 'delete',
       requireAuth: true,
       controller: deleteTag

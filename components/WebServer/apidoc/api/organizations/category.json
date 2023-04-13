@@ -1,10 +1,10 @@
 {
-  "/api/organizations/{organizationId}/category": {
+  "/api/organizations/{organizationId}/categories": {
     "post": {
       "tags": [
         "organization category"
       ],
-      "summary": "Create a category for an organization",
+      "summary": "Create a category in an organization",
       "parameters": [{
         "name": "organizationId",
         "in": "path",
@@ -75,7 +75,7 @@
       "tags": [
         "organization category"
       ],
-      "summary": "Get all category from an organization",
+      "summary": "Retrieve all categories from an organization",
       "parameters": [{
           "name": "organizationId",
           "in": "path",
@@ -116,12 +116,12 @@
       }
     }
   },
-  "/api/organizations/{organizationId}/category/{categoryId}": {
+  "/api/organizations/{organizationId}/categories/{categoryId}": {
     "get": {
       "tags": [
         "organization category"
       ],
-      "summary": "Get a category from an organization",
+      "summary": "Retrieve a categories from an organization",
       "parameters": [{
         "name": "organizationId",
         "in": "path",
@@ -159,7 +159,7 @@
       "tags": [
         "organization category"
       ],
-      "summary": "Update a category from an organization",
+      "summary": "Update a categories from an organization",
       "parameters": [{
           "name": "organizationId",
           "in": "path",
@@ -235,7 +235,7 @@
       "tags": [
         "organization category"
       ],
-      "summary": "Delete a category from an organization",
+      "summary": "Delete a categories from an organization",
       "parameters": [{
           "name": "organizationId",
           "in": "path",
@@ -264,7 +264,7 @@
       }
     }
   },
-  "/api/organizations/{organizationId}/category/search": {
+  "/api/organizations/{organizationId}/categories/search": {
     "post": {
       "tags": [
         "organization category"
@@ -316,7 +316,7 @@
       }
     }
   },
-  "/api/organizations/{organizationId}/category/{categoryId}/search": {
+  "/api/organizations/{organizationId}/categories/{categoryId}/search": {
     "post": {
       "tags": [
         "organization category"
@@ -374,12 +374,12 @@
       }
     }
   },
-  "/api/organizations/{organizationId}/category/tree": {
+  "/api/organizations/{organizationId}/categories/explore": {
     "post": {
       "tags": [
         "organization category"
       ],
-      "summary": "Generate a tree of categories and their related tags between multiple conversation",
+      "summary": "Fetch all categories and tags that are related across multiple conversations.",
       "parameters": [{
         "name": "organizationId",
         "in": "path",

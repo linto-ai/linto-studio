@@ -1,10 +1,10 @@
 {
-  "/api/organizations/{organizationId}/user": {
+  "/api/organizations/{organizationId}/users": {
     "post": {
       "tags": [
         "organizations maintainer"
       ],
-      "summary": "Add an user to requested organization",
+      "summary": "Add a user with a specific role to the organization",
       "parameters": [{
         "in": "path",
         "name": "organizationId",
@@ -73,7 +73,7 @@
       "tags": [
         "organizations maintainer"
       ],
-      "summary": "Update an user role in organization",
+      "summary": "Update a user with a different role to the organization",
       "parameters": [{
         "in": "path",
         "name": "organizationId",
@@ -139,7 +139,7 @@
       "tags": [
         "organizations maintainer"
       ],
-      "summary": "Remove an user from organization",
+      "summary": "Remove a user from the organization",
       "parameters": [{
         "in": "path",
         "name": "organizationId",
