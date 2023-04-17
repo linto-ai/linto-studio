@@ -5,7 +5,7 @@ module.exports = (webServer) => {
         "/": require('./root')(webServer),
         "/healthcheck": require('./api/healthcheck/healthcheck')(webServer),
         "/auth": require('./auth')(webServer),
-        "/api/users/favorites": require('./api/users/favorites.js')(webServer),
+        "/api/users/self/favorites": require('./api/users/favorites.js')(webServer),
         "/api/users": require('./api/users/users.js')(webServer),
         "/api/organizations": require('./api/organization/organizations')(webServer),
         "/api/organizations/:organizationId/categories": require('./api/organization/categories')(webServer),

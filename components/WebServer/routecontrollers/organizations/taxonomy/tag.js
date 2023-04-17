@@ -86,84 +86,10 @@ async function deleteTag(req, res, next) {
 }
 
 
-async function searchTag(req, res, next) {
-  try {
-    if (req.body.name === undefined && req.body.tags === undefined) throw new TagUnsupportedMediaType('name or tags is required')
-
-    let tags = []
-
-    if (req.body.tags) {
-      const userConversationsIds = (await organizationUtility
-        .getUserConversationFromOrganization(req.payload.data.userId, req.params.organizationId))
-        .map(conv => conv._id)
-
-      const conversationsTags = (await model.search.conversations
-        .getByIdsAndTag(userConversationsIds, req.body.tags.split(',')))
-        .flatMap(conv => conv.tags)
-
-      const uniqueTagIds = [...new Set([...conversationsTags])]
-      tags = await model.search.tags.searchTag(uniqueTagIds, req.params.organizationId, req.body.name)
-
-    } else {
-      tags = await model.search.tags.searchByName(req.params.organizationId, req.body.name)
-    }
-
-    if (tags.length === 0) res.status(204).send()
-    else {
-      let categoriesList = {}
-      for (let tag of tags) {
-        if (!categoriesList[tag.categoryId]) {
-          let category = await model.categories.getById(tag.categoryId)
-          categoriesList[tag.categoryId] = { ...category[0], tags: [] }
-        }
-        categoriesList[tag.categoryId].tags.push(tag)
-      }
-
-      let searchResult = []
-      for (let categoryId in categoriesList) {
-        searchResult.push(categoriesList[categoryId])
-      }
-      res.status(200).send(searchResult)
-    }
-
-  } catch (err) {
-    next(err)
-  }
-}
-
-//get all tags by tagsId
-async function getTagInfo(req, res, next) {
-  try {
-    if (req.body.tags === undefined || req.body.tags.length === 0) throw new TagUnsupportedMediaType('tags is required')
-    let tags = await model.search.tags.getByIds(req.body.tags.split(','), req.params.organizationId)
-    if (tags.length === 0) res.status(204).send()
-    else {
-      let categoriesList = {}
-      for (let tag of tags) {
-        if (!categoriesList[tag.categoryId]) {
-          let category = await model.categories.getById(tag.categoryId)
-          categoriesList[tag.categoryId] = { ...category[0], tags: [] }
-        }
-        categoriesList[tag.categoryId].tags.push(tag)
-      }
-
-      let searchResult = []
-      for (let categoryId in categoriesList) {
-        searchResult.push(categoriesList[categoryId])
-      }
-      res.status(200).send(searchResult)
-    }
-  } catch (err) {
-    next(err)
-  }
-}
-
 module.exports = {
   getTag,
-  getTagInfo,
   getTagByOrganization,
   createTag,
   updateTag,
   deleteTag,
-  searchTag
 }

@@ -17,7 +17,7 @@ const {
 async function listConversationFromOrganization(req, res, next) {
     try {
         let filterTags = false
-        if(req.query.filter && req.query.filter === 'notags') filterTags = true
+        if (req.query.filter && req.query.filter === 'notags') filterTags = true
 
         const userId = req.payload.data.userId
         if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
@@ -36,7 +36,7 @@ async function listConversationFromOrganization(req, res, next) {
         const conversations = await model.conversations.getByOrga(req.params.organizationId)
 
         let listConv = conversations.filter(conv => {
-            if(filterTags && conv.tags.length !== 0) return undefined
+            if (filterTags && conv.tags.length !== 0) return undefined
 
             let access = conv.organization.customRights.find(customRight => (customRight.userId === userId))
             if (access && RIGHT.hasRightAccess(access.right, RIGHT.READ)) {
@@ -82,8 +82,31 @@ async function leaveSelfFromOrganization(req, res, next) {
     }
 }
 
+async function searchConversation(req, res, next) {
+    // desired query : tags, name, text
+
+    try {
+        let convsId = (await orgaUtility
+            .getUserConversationFromOrganization(req.payload.data.userId, req.params.organizationId))
+
+        // Search for conversations based on tags and access
+        if (req.query.tags !== undefined) {
+            const queryTags = req.query.tags.split(',')
+            convsId = convsId.filter(conv => queryTags.every(tag => conv.tags.includes(tag)))
+        }
+
+        convsId = convsId.map(conv => conv._id)
+        let searchResult = await model.search.conversations.searchBy(convsId, req.query)
+
+        if (searchResult.length === 0) res.status(204).send()
+        else res.status(200).send(searchResult)
+    } catch (err) {
+        next(err)
+    }
+}
 
 module.exports = {
     listConversationFromOrganization,
-    leaveSelfFromOrganization
+    leaveSelfFromOrganization,
+    searchConversation
 }

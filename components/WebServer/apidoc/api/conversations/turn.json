@@ -2,7 +2,7 @@
   "/api/conversations/{conversationId}/turns/{turnId}": {
     "post": {
       "tags": ["conversation turn"],
-      "summary": "Create a conversation turn after the indicated turnId",
+      "summary": "Add a conversation turn after the indicated turnId",
       "parameters": [{
           "in": "path",
           "name": "conversationId",

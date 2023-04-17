@@ -1,12 +1,10 @@
 const debug = require('debug')('linto:conversation-manager:router:api:tag:tag')
 const {
     getTag,
-    getTagInfo,
     getTagByOrganization,
     createTag,
     updateTag,
     deleteTag,
-    searchTag,
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/taxonomy/tag.js`)
 
 module.exports = (webserver) => {
@@ -24,20 +22,6 @@ module.exports = (webserver) => {
             controller: getTagByOrganization,
             requireAuth: true,
             requireOrganizationMemberAccess: true
-        },
-        {
-            path: '/search',
-            method: 'post',
-            requireAuth: true,
-            requireOrganizationMemberAccess: true,
-            controller: searchTag
-        },
-        {
-            path: '/info',
-            method: 'post',
-            requireAuth: true,
-            requireOrganizationMemberAccess: true,
-            controller: getTagInfo
         },
         {
             path: '/:tagId',

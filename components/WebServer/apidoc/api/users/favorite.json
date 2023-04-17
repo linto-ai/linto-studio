@@ -1,5 +1,5 @@
 {
-  "/api/users/favorites": {
+  "/api/users/self/favorites": {
     "get": {
       "tags": [
         "users favorites"
@@ -32,7 +32,7 @@
       }
     }
   },
-  "/api/users/favorites/{conversationId}": {
+  "/api/users/self/favorites/{conversationId}": {
     "put": {
       "tags": [
         "users favorites"
