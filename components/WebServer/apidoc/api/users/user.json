@@ -165,7 +165,7 @@
                       "type": "object",
                       "properties": {
                         "sharing": {
-                          "type":"boolean"
+                          "type": "boolean"
                         }
                       }
                     },
@@ -173,7 +173,7 @@
                       "type": "object",
                       "properties": {
                         "invite": {
-                          "type":"boolean"
+                          "type": "boolean"
                         }
                       }
                     }
@@ -303,7 +303,7 @@
                   "status": {
                     "type": "string"
                   },
-                  "message":{
+                  "message": {
                     "type": "string"
                   }
                 }
@@ -321,28 +321,18 @@
     }
   },
   "/api/users/search/": {
-    "post": {
+    "get": {
       "tags": [
         "users"
       ],
       "summary": "Search users information based on their firstname, lastname or email",
-      "requestBody": {
-        "content": {
-          "multipart/form-data": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "search": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "search"
-              ]
-            }
-          }
-        }
-      },
+      "parameters": [{
+        "name": "search",
+        "in": "path",
+        "description": "Search string",
+        "required": true,
+        "type": "string"
+      }],
       "responses": {
         "200": {
           "description": "OK",
@@ -358,8 +348,8 @@
             }
           }
         },
-        "204":{
-          "$ref" : "#/components/responses/NoContent"
+        "204": {
+          "$ref": "#/components/responses/NoContent"
         },
         "401": {
           "$ref": "#/components/responses/Unauthorized"
@@ -433,7 +423,7 @@
                   "status": {
                     "type": "string"
                   },
-                  "message":{
+                  "message": {
                     "type": "string"
                   }
                 }

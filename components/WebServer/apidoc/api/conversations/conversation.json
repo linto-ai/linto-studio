@@ -241,44 +241,32 @@
     }
   },
   "/api/conversations/search": {
-    "post": {
+    "get": {
       "tags": [
         "conversations"
       ],
       "summary": "Search for conversations based on specified criteria",
-      "requestBody": {
-        "content": {
-          "multipart/form-data": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "searchType": {
-                  "type": "string",
-                  "enum": [
-                    "title",
-                    "description",
-                    "text"
-                  ],
-                  "description": "Type of search to do in conversation"
-                },
-                "text": {
-                  "type": "string",
-                  "description": "Text to search"
-                },
-                "organizationId": {
-                  "type": "string",
-                  "format": "uuid",
-                  "description": "Organization id to search in (can be empty)"
-                }
-              }
-            },
-            "required": [
-              "searchType",
-              "text"
-            ]
-          }
+      "parameters": [{
+          "in": "query",
+          "name": "searchType",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/ConversationSearchType"
+          },
+          "description": "Research type:\n * `title` - Search based on conversation title \n * `description` - Search based on conversation description \n * `text` - Search based on conversation text \n "
+        },
+        {
+          "in": "query",
+          "name": "text",
+          "required": false,
+          "description": "Text to search in conversation"
+        }, {
+          "in": "query",
+          "name": "organizationId",
+          "required": false,
+          "description": "Organization ID"
         }
-      },
+      ],
       "responses": {
         "200": {
           "description": "OK",

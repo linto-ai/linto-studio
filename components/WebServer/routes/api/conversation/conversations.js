@@ -1,10 +1,6 @@
 const debug = require('debug')('linto:conversation-manager:router:api:conversation:conversations')
 
 const { // Create conversation based on file
-    transcriptor
-} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/transcriptor.js`)
-
-const { // Create conversation based on file
     deleteConversation,
     downloadConversation,
     getConversation,
@@ -17,7 +13,7 @@ module.exports = (webserver) => {
     return [
         {
             path: '/search',
-            method: 'post',
+            method: 'get',
             requireAuth: true,
             controller: searchConversation
         },

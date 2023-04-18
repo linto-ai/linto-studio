@@ -3,6 +3,7 @@ module.exports = {
   ...require('./category.json'),
   ...require('./category-search-type.json'),
   ...require('./conversation.json'),
+  ...require('./conversation-search-type.json'),
   ...require('./tag.json'),
   ...require('./type.json'),
 }

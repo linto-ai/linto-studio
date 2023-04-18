@@ -123,7 +123,7 @@
       "tags": [
         "organizations members"
       ],
-      "summary": "Search a conversation related to multiple tag",
+      "summary": "Search for conversations ",
       "parameters": [{
           "name": "organizationId",
           "in": "path",

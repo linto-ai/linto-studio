@@ -60,7 +60,7 @@ module.exports = (webserver) => {
     },
     {
         path: '/search',
-        method: 'post',
+        method: 'get',
         requireAuth: true,
         controller: searchUser
     },

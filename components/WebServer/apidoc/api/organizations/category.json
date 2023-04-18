@@ -269,7 +269,7 @@
       "tags": [
         "organization category"
       ],
-      "summary": "Search any categories based on a search",
+      "summary": "Search categories based on the specified research type",
       "parameters": [{
           "name": "organizationId",
           "in": "path",
