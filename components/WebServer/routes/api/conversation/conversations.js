@@ -20,27 +20,12 @@ module.exports = (webserver) => {
 
         /*Require Auth */
         {
-            path: '/:conversationId/users',
-            method: 'get',
-            requireAuth: true,
-            requireConversationReadAccess: true,
-            controller: getUsersByConversation
-        },
-        {
             path: '/:conversationId',
             method: 'patch',
             requireAuth: true,
             requireConversationWriteAccess: true,
             controller: updateConversation
-        },
-        {
-            path: '/:conversationId/download/:format',
-            method: 'get',
-            requireAuth: true,
-            requireConversationReadAccess: true,
-            controller: downloadConversation
-        },
-        {
+        }, {
             path: '/:conversationId',
             method: 'get',
             requireAuth: true,
@@ -53,6 +38,20 @@ module.exports = (webserver) => {
             requireAuth: true,
             requireConversationDeleteAccess: true,
             controller: deleteConversation
+        },
+        {
+            path: '/:conversationId/users',
+            method: 'get',
+            requireAuth: true,
+            requireConversationReadAccess: true,
+            controller: getUsersByConversation
+        },
+        {
+            path: '/:conversationId/download/:format',
+            method: 'get',
+            requireAuth: true,
+            requireConversationReadAccess: true,
+            controller: downloadConversation
         }
     ]
 }

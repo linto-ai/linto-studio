@@ -109,10 +109,10 @@ async function updateConversationRights(req, res, next) {
       // Get last verified Email
       let userEmail = user.email
       let emailFound = false
-      if(user.emailIsVerified) {
+      if (user.emailIsVerified) {
         emailFound = true
       }
-      if(!user.emailIsVerified && user.verifiedEmail.length > 0) {
+      if (!user.emailIsVerified && user.verifiedEmail.length > 0) {
         userEmail = user.verifiedEmail[user.verifiedEmail.length - 1]
         emailFound = true
       }
@@ -148,19 +148,21 @@ async function inviteNewUser(req, res, next) {
     const userId = createdUser.insertedId.toString()
     const magicId = createdUser.ops[0].authLink.magicId
 
-    const createOrganization = await model.organizations.createDefault(userId, email + '\'s Organization', {})
-    if (createOrganization.insertedCount !== 1) {
-      model.users.delete(userId)
-      throw new UserError()
-    }
-
-    // Share converation to created user
     if (magicId) {
+      const createOrganization = await model.organizations.createDefault(userId, email + '\'s Organization', {})
+      if (createOrganization.insertedCount !== 1) {
+        await model.users.delete(userId)
+        throw new UserError()
+      }
+
+      // Share converation to created user
       const sharedBy = await model.users.getById(req.payload.data.userId)
       if (sharedBy.length !== 1) throw new UserNotFound()
 
       const mail_result = await Mailing.conversationSharedExternal(email, req, magicId, sharedBy[0].email)
       if (!mail_result) debug('Error when sending mail')
+
+      await model.conversations.addSharedUser(req.params.conversationId, { userId, sharedBy: req.payload.data.userId, right: 1 })
     }
 
     res.status(200).send({
