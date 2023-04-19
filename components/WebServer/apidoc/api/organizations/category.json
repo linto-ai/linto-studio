@@ -1,10 +1,10 @@
 {
-  "/api/organizations/{organizationId}/category": {
+  "/api/organizations/{organizationId}/categories": {
     "post": {
       "tags": [
         "organization category"
       ],
-      "summary": "Create a category for an organization",
+      "summary": "Create a category in an organization",
       "parameters": [{
         "name": "organizationId",
         "in": "path",
@@ -75,7 +75,7 @@
       "tags": [
         "organization category"
       ],
-      "summary": "Get all category from an organization",
+      "summary": "Retrieve all categories from an organization",
       "parameters": [{
           "name": "organizationId",
           "in": "path",
@@ -116,12 +116,12 @@
       }
     }
   },
-  "/api/organizations/{organizationId}/category/{categoryId}": {
+  "/api/organizations/{organizationId}/categories/{categoryId}": {
     "get": {
       "tags": [
         "organization category"
       ],
-      "summary": "Get a category from an organization",
+      "summary": "Retrieve a categories from an organization",
       "parameters": [{
         "name": "organizationId",
         "in": "path",
@@ -159,7 +159,7 @@
       "tags": [
         "organization category"
       ],
-      "summary": "Update a category from an organization",
+      "summary": "Update a categories from an organization",
       "parameters": [{
           "name": "organizationId",
           "in": "path",
@@ -235,7 +235,7 @@
       "tags": [
         "organization category"
       ],
-      "summary": "Delete a category from an organization",
+      "summary": "Delete a categories from an organization",
       "parameters": [{
           "name": "organizationId",
           "in": "path",
@@ -264,147 +264,55 @@
       }
     }
   },
-  "/api/organizations/{organizationId}/category/search": {
-    "post": {
+  "/api/organizations/{organizationId}/categories/search": {
+    "get": {
       "tags": [
         "organization category"
       ],
-      "summary": "Search any categories based on a search",
+      "summary": "Search categories based on the specified research type",
       "parameters": [{
-        "name": "organizationId",
-        "in": "path",
-        "description": "Organization ID",
-        "required": true,
-        "type": "string"
-      }],
-      "requestBody": {
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string"
-                }
-              },
-              "required": []
-            }
-          }
-        }
-      },
-      "responses": {
-        "200": {
-          "description": "OK",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "$ref": "#/components/schemas/Category"
-                }
-              }
-            }
-          }
+          "name": "organizationId",
+          "in": "path",
+          "description": "Organization ID",
+          "required": true,
+          "type": "string"
         },
-        "204": {
-          "$ref": "#/components/responses/NoContent"
+        {
+          "in": "query",
+          "name": "type",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/CategorySearchType"
+          },
+          "description": "Research type:\n * `explore` - Get a list of tags (and their category) with their linked tags from any conversation (`tags`, `categories`, `name`, `expand`) \n * `info` - Retrieve information for all desired tags with their category information (`tags`, `name`) \n * `category` - Search for any category based on the provided name (`name`)\n "
         },
-        "401": {
-          "$ref": "#/components/responses/Unauthorized"
+        {
+          "in": "query",
+          "name": "tags",
+          "required": false,
+          "description": "List of tags id to search for",
+          "example": "5e9b1b9b0f9b2c0017b5f1b5,5e9b1b9b0f9b2c0017b5f1b6,..."
+        },
+        {
+          "in": "query",
+          "name": "categories",
+          "required": false,
+          "description": "List of categories id to search for",
+          "example": "5e9b1b9b0f9b2c0017b5f1b5,5e9b1b9b0f9b2c0017b5f1b6,..."
+        },
+        {
+          "in": "query",
+          "name": "name",
+          "required": false,
+          "description": "Search for a name on tags or categories based on the search type"
+        },
+        {
+          "in": "query",
+          "name": "expand",
+          "required": false,
+          "description": "Expand the result with their linked tags (only use for `explore` type)"
         }
-      }
-    }
-  },
-  "/api/organizations/{organizationId}/category/{categoryId}/search": {
-    "post": {
-      "tags": [
-        "organization category"
       ],
-      "summary": "Search any categories based on a search, can make a link between multiple categories",
-      "parameters": [{
-        "name": "organizationId",
-        "in": "path",
-        "description": "Organization ID",
-        "required": true,
-        "type": "string"
-      }, {
-        "name": "categoryId",
-        "in": "path",
-        "description": "categoryId ID",
-        "required": true,
-        "type": "string"
-      }],
-      "requestBody": {
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "tags": {
-                  "type": "string"
-                }
-              },
-              "required": []
-            }
-          }
-        }
-      },
-      "responses": {
-        "200": {
-          "description": "OK",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "$ref": "#/components/schemas/Tag"
-                }
-              }
-            }
-          }
-        },
-        "204": {
-          "$ref": "#/components/responses/NoContent"
-        },
-        "401": {
-          "$ref": "#/components/responses/Unauthorized"
-        }
-      }
-    }
-  },
-  "/api/organizations/{organizationId}/category/tree": {
-    "post": {
-      "tags": [
-        "organization category"
-      ],
-      "summary": "Generate a tree of categories and their related tags between multiple conversation",
-      "parameters": [{
-        "name": "organizationId",
-        "in": "path",
-        "description": "Organization ID",
-        "required": true,
-        "type": "string"
-      }],
-      "requestBody": {
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "tags": {
-                  "type": "string"
-                },
-                "categories": {
-                  "type": "string"
-                }
-              },
-              "required": []
-            }
-          }
-        }
-      },
       "responses": {
         "200": {
           "description": "OK",
@@ -427,7 +335,6 @@
           "$ref": "#/components/responses/Unauthorized"
         }
       }
-
     }
   }
 }

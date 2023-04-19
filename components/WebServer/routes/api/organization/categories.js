@@ -1,7 +1,6 @@
-const debug = require('debug')('linto:conversation-manager:router:api:tag:category')
+const debug = require('debug')('linto:conversation-manager:router:api:tag:categories')
 const {
     getCategory,
-    getType,
     listCategory,
     createCategory,
     updateCategory,
@@ -9,16 +8,20 @@ const {
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/taxonomy/category.js`)
 
 const {
-    searchConversation,
-    searchCategory,
-    searchCommonTagFromCategory,
-    searchTaxonomy
+    searchCategory
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/taxonomy/search.js`)
 
 
 //path allways preceded by /api/organizations/:organizationId/category
 module.exports = (webserver) => {
     return [
+        {
+            path: '/search',
+            method: 'get',
+            controller: searchCategory,
+            requireAuth: true,
+            requireOrganizationMaintainerAccess: true
+        },
         {
             path: '/',
             method: 'post',
@@ -32,20 +35,6 @@ module.exports = (webserver) => {
             controller: listCategory,
             requireAuth: true,
             requireOrganizationMaintainerAccess: true
-        },
-        {
-            path: '/search',
-            method: 'post',
-            controller: searchCategory,
-            requireAuth: true,
-            requireOrganizationMaintainerAccess: true
-        },
-        {
-            path: '/tree',
-            method: 'post',
-            requireAuth: true,
-            requireOrganizationMemberAccess: true,
-            controller: searchTaxonomy
         },
         {
             path: '/:categoryId',
@@ -67,13 +56,6 @@ module.exports = (webserver) => {
             controller: deleteCategory,
             requireAuth: true,
             requireOrganizationMaintainerAccess: true
-        },
-        {
-            path: '/:categoryId/search',
-            method: 'post',
-            requireAuth: true,
-            requireOrganizationMemberAccess: true,
-            controller: searchCommonTagFromCategory
-        },
+        }
     ]
 }

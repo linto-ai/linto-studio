@@ -111,5 +111,5 @@ module.exports = {
   listCategory,
   createCategory,
   updateCategory,
-  deleteCategory,
+  deleteCategory
 }

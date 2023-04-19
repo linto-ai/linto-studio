@@ -15,12 +15,7 @@ const {
 const auth_middleware = require(`${process.cwd()}/components/WebServer/config/passport/local/middleware`)
 
 module.exports = (webserver) => {
-    return [{
-        path: '/',
-        method: 'get',
-        requireAuth: true,
-        controller: getPersonalInfo
-    },
+    return [
     {
         path: '/',
         method: 'post',
@@ -29,33 +24,45 @@ module.exports = (webserver) => {
     },
     {
         path: '/',
+        method: 'get',
+        requireAuth: true,
+        controller: listUser
+    },
+    {
+        path: '/self',
+        method: 'get',
+        requireAuth: true,
+        controller: getPersonalInfo
+    },
+    {
+        path: '/self',
         method: 'delete',
         requireAuth: true,
         controller: deleteUser
     },
     {
-        path: '/',
+        path: '/self',
         method: 'put',
         requireAuth: true,
         controller: updateUser
     },
     {
-        path: '/picture',
+        path: '/self/picture',
         method: 'put',
         requireAuth: true,
         controller: updateUserPicture
     },
     {
-        path: '/search',
-        method: 'post',
+        path: '/self/verify-email',
+        method: 'patch',
         requireAuth: true,
-        controller: searchUser
+        controller: sendVerificationEmail
     },
     {
-        path: '/list',
+        path: '/search',
         method: 'get',
         requireAuth: true,
-        controller: listUser
+        controller: searchUser
     },
     {
         path: '/reset-password',
@@ -63,12 +70,7 @@ module.exports = (webserver) => {
         requireAuth: false,
         controller: recoveryAuth
     },
-    {
-        path: '/verify-email',
-        method: 'patch',
-        requireAuth: true,
-        controller: sendVerificationEmail
-    },
+
     {
         path: '/:userId',
         method: 'get',

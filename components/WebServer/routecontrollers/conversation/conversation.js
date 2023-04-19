@@ -148,11 +148,11 @@ async function getUsersByConversation(req, res, next) {
 
 async function searchConversation(req, res, next) {
     try {
-        if (!req.body.searchType) throw new ConversationUnsupportedMediaType('searchType is required')
+        if (!req.query.searchType) throw new ConversationUnsupportedMediaType('searchType is required')
 
-        const searchType = req.body.searchType
-        const searchText = req.body.text.toLowerCase()
-        const organizationId = req.body.organizationId || ''
+        const searchType = req.query.searchType
+        const searchText = req.query.text.toLowerCase()
+        const organizationId = req.query.organizationId || ''
         const userId = req.payload.data.userId
 
         const convUserList = await conversationUtility.getUserConversation(userId)
@@ -170,7 +170,7 @@ async function searchConversation(req, res, next) {
         let convInArray = []
         for (const conv of filteredConv) {
             let addConv = false
-            const textInConv = await conversationUtility.textInConversation(req.body.text, conv._id)
+            const textInConv = await conversationUtility.textInConversation(req.query.text, conv._id)
             // check if text is in conversation title
             if (!convInArray[conv._id]) {
                 if (searchType.includes('title') && conv.name.toLowerCase().includes(searchText)) {
