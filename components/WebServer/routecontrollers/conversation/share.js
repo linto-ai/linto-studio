@@ -85,18 +85,29 @@ async function updateConversationRights(req, res, next) {
     let userRight = isInOrga.length === 0 ? conversation.sharedWithUsers : conversation.organization.customRights
     let isAdded = false
     if (req.body.right === 0 && isInOrga.length === 0) {
-      userRight = userRight.filter(usr => usr.userId !== req.params.userId)
+      userRight = userRight.filter(usr => usr.userId !== req.params.userId.toString())
       isAdded = true
 
       const mail_result = await Mailing.conversationUnshare(user.email, req, conversation.name)
       if (!mail_result) debug('Error when sending mail')
 
     } else {
-      const userIndex = userRight.findIndex(usr => usr.userId === req.params.userId)
+      const userIndex = userRight.findIndex(usr => usr.userId === req.params.userId.toString())
       if (userIndex >= 0) {
         isAdded = true
         userRight[userIndex].right = req.body.right
         userRight[userIndex].sharedBy = req.payload.data.userId
+
+        // mail already in the database but not validate
+        if (!user.emailIsVerified) {
+          let sharedBy = await model.users.getById(req.payload.data.userId)
+          if (sharedBy.length !== 1) throw new UserNotFound()
+          sharedBy = sharedBy[0]
+
+          const updatedUser = await model.users.generateMagicLink(user)
+          const mail_result = await Mailing.conversationSharedExternal(user.email, req, updatedUser.data.magicId, sharedBy.email)
+          if (!mail_result) debug('Error when sending mail')
+        }
       }
     }
 
@@ -159,7 +170,7 @@ async function inviteNewUser(req, res, next) {
       const sharedBy = await model.users.getById(req.payload.data.userId)
       if (sharedBy.length !== 1) throw new UserNotFound()
 
-      const mail_result = await Mailing.conversationSharedExternal(email, req, magicId, sharedBy[0].email)
+      let mail_result = await Mailing.conversationSharedExternal(email, req, magicId, sharedBy[0].email)
       if (!mail_result) debug('Error when sending mail')
 
       await model.conversations.addSharedUser(req.params.conversationId, { userId, sharedBy: req.payload.data.userId, right: 1 })
@@ -173,7 +184,6 @@ async function inviteNewUser(req, res, next) {
     next(err)
   }
 }
-
 
 async function inviteUserByEmail(req, res, next) {
   const email = req.body.email
