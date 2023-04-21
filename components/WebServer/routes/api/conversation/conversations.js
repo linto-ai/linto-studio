@@ -1,13 +1,17 @@
 const debug = require('debug')('linto:conversation-manager:router:api:conversation:conversations')
 
-const { // Create conversation based on file
+const {
     deleteConversation,
-    downloadConversation,
     getConversation,
     getUsersByConversation,
     searchConversation,
     updateConversation,
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/conversation.js`)
+
+const {
+    downloadConversation,
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/export.js`)
+
 
 module.exports = (webserver) => {
     return [
@@ -47,7 +51,7 @@ module.exports = (webserver) => {
             controller: getUsersByConversation
         },
         {
-            path: '/:conversationId/download/:format',
+            path: '/:conversationId/download',
             method: 'get',
             requireAuth: true,
             requireConversationReadAccess: true,

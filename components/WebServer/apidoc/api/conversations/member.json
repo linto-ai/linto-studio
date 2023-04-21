@@ -308,7 +308,7 @@
       }
     }
   },
-  "/api/conversations/{conversationId}/download/{format}": {
+  "/api/conversations/{conversationId}/download": {
     "get": {
       "tags": [
         "conversations member"
@@ -323,15 +323,19 @@
           "description": "uuid string identifier for an conversation"
         },
         {
-          "in": "path",
+          "in": "query",
           "name": "format",
-          "type": "string",
-          "enum": [
-            "json",
-            "text"
-          ],
           "required": true,
-          "description": "desired format of conversation export (text or json)"
+          "schema": {
+            "$ref": "#/components/schemas/DownloadConversationType"
+          },
+          "description": "Dwonload type of media type:\n * `json` - Segment information with timestamp and speaker \n * `text` - Raw transcription \n * `docx` - Generate a .docx file to download\n "
+        },
+        {
+          "in": "query",
+          "name": "metadata",
+          "type" : "boolean",
+          "description": "If true, the metadata of the conversation will be included in the download for the `docx` format"
         }
       ],
       "responses": {

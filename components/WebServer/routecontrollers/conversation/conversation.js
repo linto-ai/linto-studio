@@ -97,34 +97,6 @@ async function getConversation(req, res, next) {
     }
 }
 
-async function downloadConversation(req, res, next) {
-    try {
-        if (!req.params.conversationId) throw new ConversationIdRequire()
-        if (!req.params.format) throw new ConversationMetadataRequire('format is required')
-
-        const conversation = await model.conversations.getById(req.params.conversationId)
-        if (conversation.length !== 1) throw new ConversationNotFound()
-
-        let output = ""
-        if (req.params.format === 'json') {
-            output = conversation[0].text
-        }
-
-        else if (req.params.format === 'text') {
-            if (!conversation[0].text) throw new ConversationError('Conversation has no text')
-            conversation[0].text.map(text => {
-                output += text.segment + ""
-            })
-        }
-
-        else throw new ConversationMetadataRequire('Format not supported')
-
-        res.status(200).send(output)
-    } catch (err) {
-        next(err)
-    }
-}
-
 async function getUsersByConversation(req, res, next) {
     try {
         if (!req.params.conversationId) throw new ConversationIdRequire()
@@ -208,7 +180,6 @@ async function searchConversation(req, res, next) {
 
 module.exports = {
     deleteConversation,
-    downloadConversation,
     getConversation,
     getUsersByConversation,
     searchConversation,
