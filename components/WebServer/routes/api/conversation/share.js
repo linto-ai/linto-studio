@@ -26,7 +26,7 @@ module.exports = (webserver) => {
       controller: getRightsByConversation
     },
     {
-      path: '/:conversationId/user/:userId',
+      path: '/:conversationId/users/:userId',
       method: 'patch',
       requireAuth: true,
       requireConversationShareAccess: true,

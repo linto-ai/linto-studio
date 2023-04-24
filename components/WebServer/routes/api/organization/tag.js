@@ -7,6 +7,11 @@ const {
     deleteTag,
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/taxonomy/tag.js`)
 
+const {
+    searchTag
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/taxonomy/search.js`)
+
+
 module.exports = (webserver) => {
     return [
         {
@@ -20,6 +25,13 @@ module.exports = (webserver) => {
             path: '/',
             method: 'get',
             controller: getTagByOrganization,
+            requireAuth: true,
+            requireOrganizationMemberAccess: true
+        },
+        {
+            path: '/search',
+            method: 'get',
+            controller: searchTag,
             requireAuth: true,
             requireOrganizationMemberAccess: true
         },

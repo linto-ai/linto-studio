@@ -102,6 +102,58 @@
       }
     }
   },
+  "/api/organizations/{organizationId}/tags/search": {
+    "get": {
+      "tags": [
+        "organization tag"
+      ],
+      "summary": "Retrieve tag information",
+      "parameters": [{
+          "name": "organizationId",
+          "in": "path",
+          "description": "Organization ID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "in": "query",
+          "name": "tags",
+          "required": true,
+          "description": "List of tags id to search for",
+          "example": "5e9b1b9b0f9b2c0017b5f1b5,5e9b1b9b0f9b2c0017b5f1b6,..."
+        },
+        {
+          "in": "query",
+          "name": "categoryId",
+          "required": true,
+          "description": "CategoryId to search",
+          "example": "5e9b1b9b0f9b2c0017b5f1b5"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/TagList"
+              }
+            }
+          }
+        },
+        "204": {
+          "$ref": "#/components/responses/NoContent"
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    }
+  },
   "/api/organizations/{organizationId}/tags/{tagId}": {
     "get": {
       "tags": [

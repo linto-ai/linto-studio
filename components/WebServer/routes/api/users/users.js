@@ -59,18 +59,17 @@ module.exports = (webserver) => {
         controller: sendVerificationEmail
     },
     {
+        path: '/self/reset-password',
+        method: 'post',
+        requireAuth: false,
+        controller: recoveryAuth
+    },
+    {
         path: '/search',
         method: 'get',
         requireAuth: true,
         controller: searchUser
     },
-    {
-        path: '/reset-password',
-        method: 'post',
-        requireAuth: false,
-        controller: recoveryAuth
-    },
-
     {
         path: '/:userId',
         method: 'get',

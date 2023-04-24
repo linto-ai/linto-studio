@@ -398,20 +398,12 @@
       }
     }
   },
-  "/api/users/{userId}/reset-password": {
+  "/api/users/self/reset-password": {
     "post": {
       "tags": [
         "users"
       ],
       "summary": "Send an authentication link to the user and set a magicId for 30 minutes.",
-      "parameters": [{
-        "in": "path",
-        "name": "userId",
-        "type": "string",
-        "format": "uuid",
-        "required": true,
-        "description": "uuid string identifier for an user"
-      }],
       "responses": {
         "200": {
           "description": "OK",
