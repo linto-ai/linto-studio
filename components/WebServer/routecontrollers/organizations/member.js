@@ -90,7 +90,7 @@ async function searchConversation(req, res, next) {
             .getUserConversationFromOrganization(req.payload.data.userId, req.params.organizationId))
 
         // Search for conversations based on tags and access
-        if (req.query.tags !== undefined) {
+        if (req.query.tags !== undefined && req.query.tags !== '') {
             const queryTags = req.query.tags.split(',')
             convsId = convsId.filter(conv => queryTags.every(tag => conv.tags.includes(tag)))
         }
