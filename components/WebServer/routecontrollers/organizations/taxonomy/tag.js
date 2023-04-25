@@ -46,7 +46,7 @@ async function createTag(req, res, next) {
     const result = await model.tags.create(req.body)
     if (result.insertedCount !== 1) throw new TagError('Error during the creation of the tag')
 
-    res.status(201).send('Tag created')
+    res.status(201).send({ message: 'Tag created', id: result.insertedId.toString()})
   } catch (err) {
     next(err)
   }
