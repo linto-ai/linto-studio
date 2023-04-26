@@ -62,6 +62,8 @@ async function updateTag(req, res, next) {
 
     if (req.body.name) tag[0].name = req.body.name
 
+    if (req.body.categoryId) tag[0].categoryId = req.body.categoryId
+
     const result = await model.tags.update(tag[0])
     if (result.modifiedCount === 0) res.status(304).send('Nothing to update')
     else res.status(200).send('Tag updated')
