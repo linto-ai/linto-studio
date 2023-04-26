@@ -3,7 +3,7 @@ const debug = require('debug')(`linto:conversation-manager:components:WebServer:
 const conversationUtility = require(`${process.cwd()}/components/WebServer/controllers/conversation/utility`)
 const userUtility = require(`${process.cwd()}/components/WebServer/controllers/user/utility`)
 
-const { deleteFile, getStorageFolder, getAudioWaveformFolder} = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
+const { deleteFile, getStorageFolder, getAudioWaveformFolder } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const {
@@ -117,71 +117,9 @@ async function getUsersByConversation(req, res, next) {
     }
 }
 
-
-async function searchConversation(req, res, next) {
-    try {
-        if (!req.query.searchType) throw new ConversationUnsupportedMediaType('searchType is required')
-
-        const searchType = req.query.searchType
-        const searchText = req.query.text.toLowerCase()
-        const organizationId = req.query.organizationId || ''
-        const userId = req.payload.data.userId
-
-        const convUserList = await conversationUtility.getUserConversation(userId)
-
-        let filteredConv = [] // conversations filtered by organization
-
-        if (organizationId === '') {
-            filteredConv = convUserList
-        } else {
-            const organizationConvos = convUserList.filter(conv => conv.organization.organizationId === organizationId)
-            filteredConv = organizationConvos
-        }
-
-        let convSearch = []
-        let convInArray = []
-        for (const conv of filteredConv) {
-            let addConv = false
-            const textInConv = await conversationUtility.textInConversation(req.query.text, conv._id)
-            // check if text is in conversation title
-            if (!convInArray[conv._id]) {
-                if (searchType.includes('title') && conv.name.toLowerCase().includes(searchText)) {
-                    addConv = true
-                }
-                // check if text is in conversation description
-                if (conv.description && searchType.includes('description') && conv.description.toLowerCase().includes(searchText)) {
-                    addConv = true
-                }
-                // check if text is in conversation text
-                if (searchType.includes('text') && textInConv) {
-                    addConv = true
-                }
-
-                if (addConv) {
-                    convInArray[conv._id] = true
-                    convSearch.push(conv)
-                }
-            }
-
-        }
-
-        convSearch = await conversationUtility.getUserRightFromConversationList(userId, convSearch)
-
-        if (convSearch.length === 0) res.status(204).send()
-        else res.status(200).send({
-            searchType,
-            conversations: convSearch
-        })
-    } catch (err) {
-        next(err)
-    }
-}
-
-
 module.exports = {
     deleteConversation,
     getConversation,
     getUsersByConversation,
-    searchConversation,
     updateConversation,
 }

@@ -4,7 +4,7 @@ const { // Create conversation based on file
   getRightsByConversation,
   updateConversationRights,
   listSharedConversation,
-  inviteUserByEmail
+  inviteUserByEmail,
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/share.js`)
 
 

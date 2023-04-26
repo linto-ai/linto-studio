@@ -1,4 +1,4 @@
-const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:conversation`)
+const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:conversation:share`)
 
 const conversationUtility = require(`${process.cwd()}/components/WebServer/controllers/conversation/utility`)
 
@@ -17,36 +17,6 @@ const {
   UserNotFound,
   UserError
 } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
-
-async function listSharedConversation(req, res, next) {
-  try {
-    const userId = req.payload.data.userId
-    let convList = await model.conversations.getByShare(userId)
-    convList = await conversationUtility.getUserRightFromConversationList(userId, convList)
-
-    for (let conv of convList) {
-      for (let user of conv.sharedWithUsers) {
-        if (user.userId === userId) {
-          const sharedBy = await model.users.getById(user.sharedBy)
-          conv.sharedBy = sharedBy[0]
-          break
-        }
-      }
-      delete conv.organization
-      delete conv.sharedWithUsers
-    }
-
-    if (convList.length === 0) res.status(204).send()
-    else {
-      res.status(200).send({
-        conversations: convList
-      })
-    }
-
-  } catch (err) {
-    next(err)
-  }
-}
 
 async function getRightsByConversation(req, res, next) {
   try {
@@ -198,10 +168,49 @@ async function inviteUserByEmail(req, res, next) {
   }
 }
 
+async function listSharedConversation(req, res, next) {
+  try {
+    const userId = req.payload.data.userId
+    let sharedConversation = (await model.conversations.getByShare(userId, req.query))[0]
+
+    const totalCount = sharedConversation.totalCount[0]
+    sharedConversation = sharedConversation.paginatedResult
+    sharedConversation = await conversationUtility.getUserRightByShare(userId, sharedConversation)
+
+    let shareBy = {} // used to not spam mongo
+
+    for (let conv of sharedConversation) {
+      for (let user of conv.sharedWithUsers) {
+        if (user.userId === userId) {
+          if (shareBy[user.sharedBy] === undefined) {
+            const sharedBy = await model.users.getById(user.sharedBy)
+            shareBy[user.sharedBy] = sharedBy[0]
+          }
+          conv.sharedBy = shareBy[user.sharedBy]
+          break
+        }
+      }
+      delete conv.organization
+      delete conv.sharedWithUsers
+    }
+
+    if (sharedConversation.length === 0) res.status(204).send()
+    else {
+      res.status(200).send({
+        ...totalCount,
+        conversations: sharedConversation
+      })
+    }
+  } catch (err) {
+    next(err)
+  }
+}
+
+
 
 module.exports = {
   getRightsByConversation,
-  listSharedConversation,
   updateConversationRights,
-  inviteUserByEmail
+  inviteUserByEmail,
+  listSharedConversation
 }

@@ -58,9 +58,9 @@
       },
       {
         "in": "query",
-        "name": "tags",
+        "name": "filter",
         "required": false,
-        "description": "List of tags id to search for",
+        "description": "Allow to filter some data (`notags`)",
         "example": ""
       }
     ],
