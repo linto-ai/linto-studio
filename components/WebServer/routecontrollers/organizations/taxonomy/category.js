@@ -96,14 +96,17 @@ async function deleteCategory(req, res, next) {
 
     //delete all tag with this categoryId
     let tags = await model.tags.getByOrgaId(req.params.organizationId, { categoryId: req.params.categoryId })
+
     for (let tag of tags) {
       const result = await model.tags.delete(tag._id)
       if (result.deletedCount !== 1) throw new CategoryError('Error during the deletion of the tag')
     }
+    // Delete tags from conversations
+    const tagsId = tags.map(tag => tag._id.toString())
+    let conv_del_res = await model.conversations.deleteTag(req.params.organizationId, tagsId)
 
     const result = await model.categories.delete(req.params.categoryId)
     if (result.deletedCount !== 1) throw new CategoryError('Error during the deletion of the category')
-
 
     res.status(204).send()
   } catch (err) {

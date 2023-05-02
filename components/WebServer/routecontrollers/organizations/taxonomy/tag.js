@@ -82,6 +82,9 @@ async function deleteTag(req, res, next) {
     const result = await model.tags.delete(req.params.tagId)
     if (result.deletedCount !== 1) throw new TagError('Error during the deletion of the tag')
 
+    // Delete tag from all the conversations
+    let conv_del_res = await model.conversations.deleteTag(req.params.organizationId, req.params.tagId)
+
     res.status(200).send('Tag deleted')
   } catch (err) {
     next(err)
