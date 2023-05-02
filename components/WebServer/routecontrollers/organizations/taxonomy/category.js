@@ -57,7 +57,8 @@ async function createCategory(req, res, next) {
     const result = await model.categories.create(req.body)
     if (result.insertedCount !== 1) throw new CategoryError('Error during the creation of the category')
 
-    res.status(201).send({ message: 'Category created', id: result.insertedId.toString() })
+    const category_created = await model.categories.getById(result.insertedId.toString())
+    return res.status(201).send(category_created[0])
   } catch (err) {
     next(err)
   }

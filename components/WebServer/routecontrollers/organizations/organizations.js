@@ -28,11 +28,10 @@ async function createOrganization(req, res, next) {
 
         const result = await model.organizations.create(organization)
         if (result.insertedCount !== 1) throw new OrganizationError()
-
-        return res.status(201).send({
-            message: 'Organization ' + organization.name + ' created',
-            organizationId: result.insertedId
-        })
+        debug('toto ?')
+        debug(result.insertedId.toString())
+        const orga_created = await model.organizations.getById(result.insertedId.toString())
+        return res.status(201).send(orga_created[0])
     } catch (err) {
         next(err)
     }
