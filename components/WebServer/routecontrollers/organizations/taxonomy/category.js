@@ -68,7 +68,12 @@ async function updateCategory(req, res, next) {
     let category = await model.categories.getById(req.params.categoryId)
     if (category.length === 0) throw new CategoryError('Category not found')
 
-    if (req.body.name) category[0].name = req.body.name
+    if (req.body.name) {
+      let searchedCategoryName = await model.categories.getByOrgaId(req.params.organizationId, { name: req.body.name })
+      if (searchedCategoryName.length > 0) throw new CategoryConflict(`Conflict with category name ${req.body.name} already exist. Category id ${searchedCategoryName[0]._id}`)
+      category[0].name = req.body.name
+    }
+
     if (req.body.color) category[0].color = req.body.color
     if (req.body.type) {
       if (TYPE.checkValue(req.body.type) === false) throw new CategoryTypeNotValid()
