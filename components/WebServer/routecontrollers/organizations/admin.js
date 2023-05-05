@@ -14,7 +14,7 @@ async function updateOrganization(req, res, next) {
   try {
     if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
 
-    let organization = await model.organization.getById(req.params.organizationId)
+    let organization = await model.organizations.getById(req.params.organizationId)
     if (organization.length === 0) throw new OrganizationError('Organization not found')
     organization = organization[0]
 
@@ -22,7 +22,7 @@ async function updateOrganization(req, res, next) {
     if (req.body.description) organization.description = req.body.description
     if (req.body.name) organization.name = req.body.name
 
-    const result = await model.organization.update(organization)
+    const result = await model.organizations.update(organization)
     if (result.matchedCount === 0) throw new OrganizationError()
 
     res.status(200).send({
@@ -38,13 +38,13 @@ async function deleteOrganization(req, res, next) {
   try {
     if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
 
-    let organization = await model.organization.getById(req.params.organizationId)
+    let organization = await model.organizations.getById(req.params.organizationId)
     if (organization.length === 0) throw new OrganizationError('Organization not found')
     organization = organization[0]
 
-    let lconv = await model.conversation.getByOrga(req.params.organizationId)
+    let lconv = await model.conversations.getByOrga(req.params.organizationId)
     lconv.map(async conv => {
-      const result = await model.conversation.delete(conv._id)
+      const result = await model.conversations.delete(conv._id)
       if (result.deletedCount !== 1) throw new ConversationError('Error while deleting conversation from organization')
 
       try {
@@ -59,7 +59,7 @@ async function deleteOrganization(req, res, next) {
 
     })
 
-    const result = await model.organization.delete(organization._id.toString())
+    const result = await model.organizations.delete(organization._id.toString())
     if (result.deletedCount !== 1) throw new OrganizationError('Error when deleting organization')
 
     res.status(200).send({

@@ -1,10 +1,43 @@
 {
   "/api/organizations/{organizationId}/": {
+    "get": {
+      "tags": [
+        "organizations members"
+      ],
+      "summary": "Retrieve organization information",
+      "parameters": [{
+        "in": "path",
+        "name": "organizationId",
+        "type": "string",
+        "format": "uuid",
+        "required": true,
+        "description": "uuid string identifier for an user"
+      }],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/organization"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
     "patch": {
       "tags": [
         "organizations admin"
       ],
-      "summary": "Update an organization",
+      "summary": "Update the organization information",
       "parameters": [{
         "in": "path",
         "name": "organizationId",

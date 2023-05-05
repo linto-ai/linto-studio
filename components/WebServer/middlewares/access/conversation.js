@@ -40,7 +40,7 @@ async function access(next, convId, userId, restricted, right, rightException) {
   try {
     if (!convId) return next(new ConversationIdRequire())
     else {
-      const lconv = await model.conversation.getById(convId, projection)
+      const lconv = await model.conversations.getById(convId, projection)
       if (lconv.length !== 1) return next(new ConversationNotShared())
       else {
         const conv = lconv[0]
@@ -67,7 +67,7 @@ async function shareAccess(conv, userId, right, next) {
 }
 
 async function organizationAccess(conv, userId, right, next, rightException) {
-  const lorga = await model.organization.getById(conv.organization.organizationId)
+  const lorga = await model.organizations.getById(conv.organization.organizationId)
   if (lorga.length !== 1) return next(new rightException())
 
   const luser = lorga[0].users.filter(user => user.userId === userId)

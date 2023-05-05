@@ -1,0 +1,16 @@
+{
+  "ConversationSearchType": {
+    "type": "string",
+    "nullable": false,
+    "enum": [
+      "title",
+      "description",
+      "text"
+    ]
+  },
+  "example": {
+    "title": "title",
+    "description": "description",
+    "text": "text"
+  }
+}

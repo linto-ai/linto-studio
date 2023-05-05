@@ -21,13 +21,13 @@ const {
 async function listSharedConversation(req, res, next) {
   try {
     const userId = req.payload.data.userId
-    let convList = await model.conversation.getByShare(userId)
+    let convList = await model.conversations.getByShare(userId)
     convList = await conversationUtility.getUserRightFromConversationList(userId, convList)
 
     for (let conv of convList) {
       for (let user of conv.sharedWithUsers) {
         if (user.userId === userId) {
-          const sharedBy = await model.user.getById(user.sharedBy)
+          const sharedBy = await model.users.getById(user.sharedBy)
           conv.sharedBy = sharedBy[0]
           break
         }
@@ -52,7 +52,7 @@ async function getRightsByConversation(req, res, next) {
   try {
     if (!req.params.conversationId) throw new ConversationIdRequire()
 
-    const conversation = await model.conversation.getById(req.params.conversationId)
+    const conversation = await model.conversations.getById(req.params.conversationId)
     if (conversation.length !== 1) throw new ConversationNotFound()
 
     const data = await conversationUtility.getUserRightFromConversation(req.payload.data.userId, conversation[0])
@@ -68,15 +68,15 @@ async function updateConversationRights(req, res, next) {
     if (!req.params.conversationId) throw new ConversationIdRequire()
     if (req.body.right === undefined || !req.params.userId) throw new ConversationMetadataRequire("rights or userId are require")
 
-    let user = await model.user.getById(req.params.userId, true)
+    let user = await model.users.getById(req.params.userId, true)
     if (user.length !== 1) throw new UserNotFound()
     user = user[0]
 
-    let conversation = await model.conversation.getById(req.params.conversationId)
+    let conversation = await model.conversations.getById(req.params.conversationId)
     if (conversation.length !== 1) throw new ConversationNotFound()
     conversation = conversation[0]
 
-    const organization = await model.organization.getById(conversation.organization.organizationId)
+    const organization = await model.organizations.getById(conversation.organization.organizationId)
     if (organization.length !== 1) throw new OrganizationNotFound()
 
     const isInOrga = organization[0].users.filter(usr => usr.userId === req.params.userId)
@@ -85,23 +85,34 @@ async function updateConversationRights(req, res, next) {
     let userRight = isInOrga.length === 0 ? conversation.sharedWithUsers : conversation.organization.customRights
     let isAdded = false
     if (req.body.right === 0 && isInOrga.length === 0) {
-      userRight = userRight.filter(usr => usr.userId !== req.params.userId)
+      userRight = userRight.filter(usr => usr.userId !== req.params.userId.toString())
       isAdded = true
 
       const mail_result = await Mailing.conversationUnshare(user.email, req, conversation.name)
       if (!mail_result) debug('Error when sending mail')
 
     } else {
-      const userIndex = userRight.findIndex(usr => usr.userId === req.params.userId)
+      const userIndex = userRight.findIndex(usr => usr.userId === req.params.userId.toString())
       if (userIndex >= 0) {
         isAdded = true
         userRight[userIndex].right = req.body.right
         userRight[userIndex].sharedBy = req.payload.data.userId
+
+        // mail already in the database but not validate
+        if (!user.emailIsVerified) {
+          let sharedBy = await model.users.getById(req.payload.data.userId)
+          if (sharedBy.length !== 1) throw new UserNotFound()
+          sharedBy = sharedBy[0]
+
+          const updatedUser = await model.users.generateMagicLink(user)
+          const mail_result = await Mailing.conversationSharedExternal(user.email, req, updatedUser.data.magicId, sharedBy.email)
+          if (!mail_result) debug('Error when sending mail')
+        }
       }
     }
 
     if (!isAdded) {
-      let sharedBy = await model.user.getById(req.payload.data.userId)
+      let sharedBy = await model.users.getById(req.payload.data.userId)
       if (sharedBy.length !== 1) throw new UserNotFound()
       sharedBy = sharedBy[0]
       const userNotif = user.emailNotifications.conversations.sharing
@@ -109,10 +120,10 @@ async function updateConversationRights(req, res, next) {
       // Get last verified Email
       let userEmail = user.email
       let emailFound = false
-      if(user.emailIsVerified) {
+      if (user.emailIsVerified) {
         emailFound = true
       }
-      if(!user.emailIsVerified && user.verifiedEmail.length > 0) {
+      if (!user.emailIsVerified && user.verifiedEmail.length > 0) {
         userEmail = user.verifiedEmail[user.verifiedEmail.length - 1]
         emailFound = true
       }
@@ -127,7 +138,7 @@ async function updateConversationRights(req, res, next) {
 
     isInOrga.length === 0 ? conversation.sharedWithUsers = userRight : conversation.organization.customRights = userRight
 
-    const result = await model.conversation.update(conversation)
+    const result = await model.conversations.update(conversation)
     if (result.matchedCount === 0) throw new ConversationError()
 
     res.status(200).send({
@@ -141,26 +152,28 @@ async function updateConversationRights(req, res, next) {
 async function inviteNewUser(req, res, next) {
   try {
     const email = req.body.email
-    const createdUser = await model.user.createExternal({ email })
+    const createdUser = await model.users.createExternal({ email })
 
     // Create new user personal organization
     if (createdUser.insertedCount !== 1) throw new UserError()
     const userId = createdUser.insertedId.toString()
     const magicId = createdUser.ops[0].authLink.magicId
 
-    const createOrganization = await model.organization.createDefault(userId, email + '\'s Organization', {})
-    if (createOrganization.insertedCount !== 1) {
-      model.user.delete(userId)
-      throw new UserError()
-    }
-
-    // Share converation to created user
     if (magicId) {
-      const sharedBy = await model.user.getById(req.payload.data.userId)
+      const createOrganization = await model.organizations.createDefault(userId, email + '\'s Organization', {})
+      if (createOrganization.insertedCount !== 1) {
+        await model.users.delete(userId)
+        throw new UserError()
+      }
+
+      // Share converation to created user
+      const sharedBy = await model.users.getById(req.payload.data.userId)
       if (sharedBy.length !== 1) throw new UserNotFound()
 
-      const mail_result = await Mailing.conversationSharedExternal(email, req, magicId, sharedBy[0].email)
+      let mail_result = await Mailing.conversationSharedExternal(email, req, magicId, sharedBy[0].email)
       if (!mail_result) debug('Error when sending mail')
+
+      await model.conversations.addSharedUser(req.params.conversationId, { userId, sharedBy: req.payload.data.userId, right: 1 })
     }
 
     res.status(200).send({
@@ -172,10 +185,9 @@ async function inviteNewUser(req, res, next) {
   }
 }
 
-
 async function inviteUserByEmail(req, res, next) {
   const email = req.body.email
-  const user = await model.user.getByEmail(email)
+  const user = await model.users.getByEmail(email)
   if (user.length === 1) {  // Share to an internal user
     req.params.userId = user[0]._id
     req.body.right = 1

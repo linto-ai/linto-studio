@@ -1,0 +1,119 @@
+{
+  "/api/users/self/favorites": {
+    "get": {
+      "tags": [
+        "users favorites"
+      ],
+      "summary": "List favorites conversations of connected user",
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/ConversationList"
+                }
+              }
+            }
+          }
+        },
+        "204": {
+          "$ref": "#/components/responses/NoContent"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/users/self/favorites/{conversationId}": {
+    "put": {
+      "tags": [
+        "users favorites"
+      ],
+      "summary": "Add a favorite conversation to the connected user",
+      "parameters": [{
+        "in": "path",
+        "name": "conversationId",
+        "type": "string",
+        "format": "uuid",
+        "required": true,
+        "description": "uuid string identifier for an conversation"
+      }],
+      "responses": {
+        "201": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Conversationa dded to my favorites"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "304": {
+          "$ref": "#/components/responses/NotModified"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "users favorites"
+      ],
+      "summary": "Delete a conversation from the connected user favorites",
+      "parameters": [{
+        "in": "path",
+        "name": "conversationId",
+        "type": "string",
+        "format": "uuid",
+        "required": true,
+        "description": "uuid string identifier for an conversation"
+      }],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Conversation deleted from my favorites"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "304" : {
+          "$ref": "#/components/responses/NotModified"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  }
+}

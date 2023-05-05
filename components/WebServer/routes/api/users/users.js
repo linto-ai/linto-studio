@@ -15,12 +15,7 @@ const {
 const auth_middleware = require(`${process.cwd()}/components/WebServer/config/passport/local/middleware`)
 
 module.exports = (webserver) => {
-    return [{
-        path: '/',
-        method: 'get',
-        requireAuth: true,
-        controller: getPersonalInfo
-    },
+    return [
     {
         path: '/',
         method: 'post',
@@ -29,45 +24,51 @@ module.exports = (webserver) => {
     },
     {
         path: '/',
-        method: 'delete',
-        requireAuth: true,
-        controller: deleteUser
-    },
-    {
-        path: '/',
-        method: 'put',
-        requireAuth: true,
-        controller: updateUser
-    },
-    {
-        path: '/picture',
-        method: 'put',
-        requireAuth: true,
-        controller: updateUserPicture
-    },
-    {
-        path: '/search',
-        method: 'post',
-        requireAuth: true,
-        controller: searchUser
-    },
-    {
-        path: '/list',
         method: 'get',
         requireAuth: true,
         controller: listUser
     },
     {
-        path: '/reset-password',
+        path: '/self',
+        method: 'get',
+        requireAuth: true,
+        controller: getPersonalInfo
+    },
+    {
+        path: '/self',
+        method: 'delete',
+        requireAuth: true,
+        controller: deleteUser
+    },
+    {
+        path: '/self',
+        method: 'put',
+        requireAuth: true,
+        controller: updateUser
+    },
+    {
+        path: '/self/picture',
+        method: 'put',
+        requireAuth: true,
+        controller: updateUserPicture
+    },
+    {
+        path: '/self/verify-email',
+        method: 'patch',
+        requireAuth: true,
+        controller: sendVerificationEmail
+    },
+    {
+        path: '/self/reset-password',
         method: 'post',
         requireAuth: false,
         controller: recoveryAuth
     },
     {
-        path: '/verify-email',
-        method: 'patch',
+        path: '/search',
+        method: 'get',
         requireAuth: true,
-        controller: sendVerificationEmail
+        controller: searchUser
     },
     {
         path: '/:userId',

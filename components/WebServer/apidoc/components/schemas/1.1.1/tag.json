@@ -1,0 +1,33 @@
+{
+  "Tag": {
+    "type": "object",
+    "properties": {
+      "_id": {
+        "type": "string",
+        "description": "The tag id"
+      },
+      "name": {
+        "type": "string",
+        "description": "The tag name"
+      },
+      "color": {
+        "type": "string",
+        "description": "The tag color"
+      },
+      "organizationId": {
+        "type": "string",
+        "description": "The organization id attached to the category"
+      },
+      "categoryId": {
+        "type": "string",
+        "description": "The organization id attached to the category"
+      }
+    },
+    "example": {
+      "_id": "5f9f9b9b7d1b424dccabc375",
+      "name": "sad",
+      "categoryId": "3f4d9ed7d1b424dccabc782",
+      "organizationId": "63f4d9ed7d1b424dccabc128"
+    }
+  }
+}

@@ -1,50 +1,35 @@
 const debug = require('debug')('linto:conversation-manager:router:api:conversation:conversations')
 
-const { // Create conversation based on file
-    transcriptor
-} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/transcriptor.js`)
-
-const { // Create conversation based on file
+const {
     deleteConversation,
-    downloadConversation,
     getConversation,
     getUsersByConversation,
     searchConversation,
     updateConversation,
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/conversation.js`)
 
+const {
+    downloadConversation,
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/export.js`)
+
+
 module.exports = (webserver) => {
     return [
         {
             path: '/search',
-            method: 'post',
+            method: 'get',
             requireAuth: true,
             controller: searchConversation
         },
 
         /*Require Auth */
         {
-            path: '/:conversationId/users',
-            method: 'get',
-            requireAuth: true,
-            requireConversationReadAccess: true,
-            controller: getUsersByConversation
-        },
-        {
             path: '/:conversationId',
             method: 'patch',
             requireAuth: true,
             requireConversationWriteAccess: true,
             controller: updateConversation
-        },
-        {
-            path: '/:conversationId/download/:format',
-            method: 'get',
-            requireAuth: true,
-            requireConversationReadAccess: true,
-            controller: downloadConversation
-        },
-        {
+        }, {
             path: '/:conversationId',
             method: 'get',
             requireAuth: true,
@@ -57,6 +42,20 @@ module.exports = (webserver) => {
             requireAuth: true,
             requireConversationDeleteAccess: true,
             controller: deleteConversation
+        },
+        {
+            path: '/:conversationId/users',
+            method: 'get',
+            requireAuth: true,
+            requireConversationReadAccess: true,
+            controller: getUsersByConversation
+        },
+        {
+            path: '/:conversationId/download',
+            method: 'get',
+            requireAuth: true,
+            requireConversationReadAccess: true,
+            controller: downloadConversation
         }
     ]
 }

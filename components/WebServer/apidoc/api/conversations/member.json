@@ -4,7 +4,7 @@
       "tags": [
         "conversations member"
       ],
-      "summary": "Get desired conversation by id",
+      "summary": "Retrieve a conversation based on an ID",
       "parameters": [{
         "in": "path",
         "name": "conversationId",
@@ -37,7 +37,7 @@
       "tags": [
         "conversations member"
       ],
-      "summary": "Update one conversation",
+      "summary": "Update a conversation based on an ID",
       "parameters": [{
         "in": "path",
         "name": "conversationId",
@@ -97,7 +97,7 @@
       "tags": [
         "conversations member"
       ],
-      "summary": "Delete an conversation",
+      "summary": "Delete a conversation based on an ID",
       "parameters": [{
         "in": "path",
         "name": "conversationId",
@@ -121,7 +121,7 @@
       "tags": [
         "conversations member"
       ],
-      "summary": "Give access to a user to a conversation",
+      "summary": "Grant access to a conversation from a member of an organization",
       "parameters": [{
           "in": "path",
           "name": "conversationId",
@@ -192,7 +192,7 @@
       "tags": [
         "conversations member"
       ],
-      "summary": "Get all users of a conversation",
+      "summary": "List all users who have an access to the conversation",
       "parameters": [{
         "in": "path",
         "name": "conversationId",
@@ -265,7 +265,7 @@
       "tags": [
         "conversations member"
       ],
-      "summary": "Get all rights of a conversation",
+      "summary": "Retrieve information about the access rights to the conversation",
       "parameters": [{
         "in": "path",
         "name": "conversationId",
@@ -308,12 +308,12 @@
       }
     }
   },
-  "/api/conversations/{conversationId}/download/{format}": {
+  "/api/conversations/{conversationId}/download": {
     "get": {
       "tags": [
         "conversations member"
       ],
-      "summary": "Get all rights of a conversation",
+      "summary": "Download a conversation's subtitle in a desired format.",
       "parameters": [{
           "in": "path",
           "name": "conversationId",
@@ -323,15 +323,19 @@
           "description": "uuid string identifier for an conversation"
         },
         {
-          "in": "path",
+          "in": "query",
           "name": "format",
-          "type": "string",
-          "enum": [
-            "json",
-            "text"
-          ],
           "required": true,
-          "description": "desired format of conversation export (text or json)"
+          "schema": {
+            "$ref": "#/components/schemas/DownloadConversationType"
+          },
+          "description": "Dwonload type of media type:\n * `json` - Segment information with timestamp and speaker \n * `text` - Raw transcription \n * `docx` - Generate a .docx file to download\n "
+        },
+        {
+          "in": "query",
+          "name": "metadata",
+          "type" : "boolean",
+          "description": "If true, the metadata of the conversation will be included in the download for the `docx` format"
         }
       ],
       "responses": {

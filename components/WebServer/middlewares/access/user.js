@@ -11,7 +11,7 @@ module.exports = {
   isVisibility: (req, res, next) => {
     if (req.payload.data.userId === req.params.userId) next()
     else {
-      model.user.getById(req.params.userId, true).then(async user => {
+      model.users.getById(req.params.userId, true).then(async user => {
         if (user.length === 0) next(new UserNotFound())
         else if (!user[0].private) next()
         else next(new UserForbidden())

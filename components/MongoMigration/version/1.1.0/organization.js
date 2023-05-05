@@ -1,4 +1,4 @@
-const debug = require('debug')(`linto:components:MongoMigration:controllers:version:1.0.1:organization`)
+const debug = require('debug')(`linto:components:MongoMigration:controllers:version:1.1.0:organization`)
 
 const collections_name = 'organization'
 
@@ -14,7 +14,5 @@ module.exports = {
 
   async down(db) {
     db.collection(collections_name).updateMany({}, { $set: removed_keys })
-
-    // No lower version for this migration
   }
 }

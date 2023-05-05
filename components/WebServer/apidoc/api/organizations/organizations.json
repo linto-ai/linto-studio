@@ -4,7 +4,7 @@
       "tags": [
         "organizations"
       ],
-      "summary": "Create a new organization",
+      "summary": "Create an organization",
       "requestBody": {
         "content": {
           "multipart/form-data": {
@@ -55,14 +55,12 @@
           "$ref": "#/components/responses/UnsupportedMediaType"
         }
       }
-    }
-  },
-  "/api/organizations/user": {
+    },
     "get": {
       "tags": [
         "organizations"
       ],
-      "summary": "Get user organizations list where user is member (public and private)",
+      "summary": "List organizations where the user is a member",
       "responses": {
         "200": {
           "description": "OK",

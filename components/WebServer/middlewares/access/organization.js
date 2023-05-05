@@ -26,7 +26,7 @@ async function access(req, next, organizationId, userId, right) {
         if (!organizationId) {
             return next(new OrganizationUnsupportedMediaType())
         }
-        const organization = await model.organization.getById(organizationId)
+        const organization = await model.organizations.getById(organizationId)
         if (organization.length !== 1)
             return next(new OrganizationNotFound())
         else {

@@ -1,6 +1,6 @@
 const Mail = require('nodemailer/lib/mailer')
 
-const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:user')
+const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:users:user')
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
@@ -35,15 +35,15 @@ async function createUser(req, res, next) {
 
         if (!organizationName) organizationName = user.email + '\'s Organization'
 
-        if (((await model.user.getByEmail(user.email)).length) !== 0) throw new UserConflict()
-        if (((await model.organization.getByName(organizationName)).length) !== 0) throw new OrganizationConflict()
+        if (((await model.users.getByEmail(user.email)).length) !== 0) throw new UserConflict()
+        if (((await model.organizations.getByName(organizationName)).length) !== 0) throw new OrganizationConflict()
 
-        const createdUser = await model.user.createUser(user)
+        const createdUser = await model.users.createUser(user)
         if (createdUser.insertedCount !== 1) throw new UserError()
 
-        const createdOrganization = await model.organization.createDefault(createdUser.insertedId.toString(), organizationName)
+        const createdOrganization = await model.organizations.createDefault(createdUser.insertedId.toString(), organizationName)
         if (createdOrganization.insertedCount !== 1) {
-            model.user.delete(createdUser.insertedId.toString())
+            model.users.delete(createdUser.insertedId.toString())
             throw new UserError()
         }
 
@@ -60,7 +60,7 @@ async function createUser(req, res, next) {
 
 async function listUser(req, res, next) {
     try {
-        const publicUsers = await model.user.listPublicUsers()
+        const publicUsers = await model.users.listPublicUsers()
         res.status(200).send(publicUsers)
     } catch (err) {
         next(err)
@@ -70,15 +70,15 @@ async function listUser(req, res, next) {
 
 async function searchUser(req, res, next) {
     try {
-        if (!req.body.search) throw new UserUnsupportedMediaType()
+        if (!req.query.search) throw new UserUnsupportedMediaType()
 
-        const userList = (await model.user.listPublicUsers()).filter(user => {
+        const userList = (await model.users.listPublicUsers()).filter(user => {
             const userField = [user.firstname, user.lastname, user.email,
             user.firstname + ' ' + user.lastname, user.lastname + ' ' + user.firstname]
 
             const find = userField
                 .map(field => field.toLowerCase())
-                .filter(field => field.indexOf(req.body.search.toLowerCase()) >= 0)
+                .filter(field => field.indexOf(req.query.search.toLowerCase()) >= 0)
 
             return (find.length > 0)
         })
@@ -92,7 +92,7 @@ async function searchUser(req, res, next) {
 
 async function getUserById(req, res, next) {
     try {
-        const user = await model.user.getById(req.params.userId)
+        const user = await model.users.getById(req.params.userId)
         if (user && user.length !== 1) throw new UserNotFound()
         res.status(200).send({
             ...user[0]
@@ -104,7 +104,7 @@ async function getUserById(req, res, next) {
 
 async function getPersonalInfo(req, res, next) {
     try {
-        const user = await model.user.getPersonalInfo(req.payload.data.userId)
+        const user = await model.users.getPersonalInfo(req.payload.data.userId)
         if (user && user.length !== 1) throw new UserNotFound()
 
         res.status(200).send({
@@ -121,12 +121,12 @@ async function updateUser(req, res, next) {
         if (!(req.body.email || req.body.firstname || req.body.lastname || req.body.accountNotifications ||
             req.body.emailNotifications || req.body.private !== undefined || req.body.password)) throw new UserUnsupportedMediaType()
 
-        const myUser = await model.user.getById(req.payload.data.userId)
+        const myUser = await model.users.getById(req.payload.data.userId)
         if (myUser.length !== 1) throw new UserNotFound()
         let user = myUser[0]
 
         if (req.body.email) {
-            const userMail = await model.user.getByEmail(req.body.email)
+            const userMail = await model.users.getByEmail(req.body.email)
 
             if (userMail.length !== 0) {
                 if (userMail[0]._id.toString() !== user._id.toString())
@@ -158,7 +158,7 @@ async function updateUser(req, res, next) {
             }
         }
 
-        const result = await model.user.update(user)
+        const result = await model.users.update(user)
         if (result.matchedCount === 0) throw new UserError()
         else if (result.modifiedCount === 1) res.status(200).send({ message: 'User updated' })
         else res.status(200).send({ message: 'No modification to user' })
@@ -175,10 +175,10 @@ async function updateUserPicture(req, res, next) {
             img: await storeFile(req.files.file, 'picture')
         }
 
-        const user = await model.user.getById(req.payload.data.userId)
+        const user = await model.users.getById(req.payload.data.userId)
         if (user.length !== 1) throw new UserNotFound()
 
-        const result = await model.user.update(payload)
+        const result = await model.users.update(payload)
         if (result.matchedCount === 0) throw new UserError()
 
         if (user[0].img !== defaultPicture())
@@ -196,7 +196,7 @@ async function updateUserPicture(req, res, next) {
 async function logout(req, res, next) {
     try {
         if (!req.payload.data && !req.payload.data.userId) throw new UserUnsupportedMediaType()
-        const result = await model.user.logout(req.payload.data.userId)
+        const result = await model.users.logout(req.payload.data.userId)
         if (result.matchedCount === 0) throw new UserError()
 
         res.status(200).send({ message: 'User has been disconnected' })
@@ -207,19 +207,19 @@ async function logout(req, res, next) {
 
 async function recoveryAuth(req, res, next) {
     try {
-        if (!req.body.email) throw new UserUnsupportedMediaType()
-        const user = await model.user.getByEmail(req.body.email, true)
+        if (!req.query.email) throw new UserUnsupportedMediaType()
+        const user = await model.users.getByEmail(req.query.email, true)
         if (user.length !== 1) {
-            debug(`Forgotten password request for an unknown or invalid email address: ${req.body.email}`)
+            debug(`Forgotten password request for an unknown or invalid email address: ${req.query.email}`)
             res.status(200).send({
                 message: 'An email with an authentication link has been sent to you.'
             })
         } else {
             user[0].accountNotifications.updatePassword = true
-            const updatedUser = await model.user.generateMagicLink(user[0])
+            const updatedUser = await model.users.generateMagicLink(user[0])
             if (updatedUser.modifiedCount === 0) throw new GenerateMagicLinkError()
 
-            const mail_result = await Mailing.resetPassword(req.body.email, req, updatedUser.data.magicId)
+            const mail_result = await Mailing.resetPassword(req.query.email, req, updatedUser.data.magicId)
             if (!mail_result) res.status(400).send({ message: 'Error while sending email' })
             else res.status(200).send({ message: 'An email with an authentication link has been sent to you.' })
         }
@@ -234,12 +234,12 @@ async function deleteUser(req, res, next) {
         const userId = req.payload.data.userId
 
         // Remove user from organizations
-        const organizations = await model.organization.listSelf(userId)
+        const organizations = await model.organizations.listSelf(userId)
         organizations.map(async (organization) => {
             const data = orgaUtility.countAdmin(organization, userId)
             if (data.adminCount === 1 && data.isAdmin) { //delete organization
                 // delete conversations from orga
-                const conversations = await model.conversation.getByOrga(organization._id)
+                const conversations = await model.conversations.getByOrga(organization._id)
                 conversations.map(async conversation => {
 
                     const audioFilename = conversation.metadata.audio.filepath.split('/').pop()
@@ -248,29 +248,29 @@ async function deleteUser(req, res, next) {
                     deleteFile(`${getStorageFolder()}/${conversation.metadata.audio.filepath}`)
                     deleteFile(`${getStorageFolder()}/${getAudioWaveformFolder()}/${jsonFilename}`)
 
-                    const resultConvo = await model.conversation.delete(conversation._id)
+                    const resultConvo = await model.conversations.delete(conversation._id)
                     if (resultConvo.deletedCount !== 1) throw new UserError()
                 })
                 // delete orga
-                const resultOrga = await model.organization.delete(organization._id)
+                const resultOrga = await model.organizations.delete(organization._id)
                 if (resultOrga.deletedCount !== 1) throw new UserError()
             } else if (data.adminCount > 1) { // delete user from orga
                 organization.users = organization.users.filter(user => user.userId !== userId)
-                let resultOperation = await model.organization.update(organization)
+                let resultOperation = await model.organizations.update(organization)
                 if (resultOperation.matchedCount === 0) throw new UserError()
             }
 
         })
 
         // Delete conversation if owner and remove user from shared with
-        const conversations = await model.conversation.getByShare(userId)
+        const conversations = await model.conversations.getByShare(userId)
         conversations.map(async conversation => {
             conversation.sharedWithUsers = conversation.sharedWithUsers.filter(user => user.userId !== userId)
-            const resultConvoUpdate = await model.conversation.update(conversation)
+            const resultConvoUpdate = await model.conversations.update(conversation)
             if (resultConvoUpdate.matchedCount === 0) throw new UserError()
         })
 
-        const result = await model.user.delete(req.payload.data.userId)
+        const result = await model.users.delete(req.payload.data.userId)
         if (result.deletedCount !== 1) throw new UserError
 
         res.status(200).send({
@@ -283,12 +283,12 @@ async function deleteUser(req, res, next) {
 async function sendVerificationEmail(req, res, next) {
     try {
         const userId = req.payload.data.userId
-        const user = await model.user.getById(userId)
+        const user = await model.users.getById(userId)
         if (user.length !== 1) throw new UserNotFound()
 
-        await model.user.generateMagicLink({ _id: userId })
+        await model.users.generateMagicLink({ _id: userId })
 
-        const userUpdated = await model.user.getById(userId, true)
+        const userUpdated = await model.users.getById(userId, true)
         const email = userUpdated[0].email
         const magicId = userUpdated[0].authLink.magicId
         const mail_result = await Mailing.verifyEmailAddress(email, req, magicId)

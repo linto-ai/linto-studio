@@ -1,5 +1,8 @@
 {
   "NoContent": {
     "description": "NoContent"
+  },
+  "Ok": {
+    "description": "Ok"
   }
 }

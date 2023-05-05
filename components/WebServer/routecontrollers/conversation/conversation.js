@@ -19,10 +19,10 @@ async function deleteConversation(req, res, next) {
     try {
 
         if (!req.params.conversationId) throw new ConversationIdRequire()
-        const conversation = await model.conversation.getById(req.params.conversationId)
+        const conversation = await model.conversations.getById(req.params.conversationId)
         if (conversation.length !== 1) throw new ConversationNotFound()
 
-        const result = await model.conversation.delete(req.params.conversationId)
+        const result = await model.conversations.delete(req.params.conversationId)
         if (result.deletedCount !== 1) throw new ConversationError('Error when deleting conversation')
 
         const audioFilename = conversation[0].metadata.audio.filepath.split('/').pop()
@@ -45,7 +45,7 @@ async function deleteConversation(req, res, next) {
 async function updateConversation(req, res, next) {
     try {
         if (!req.params.conversationId) throw new ConversationIdRequire()
-        const conversation = await model.conversation.getById(req.params.conversationId)
+        const conversation = await model.conversations.getById(req.params.conversationId)
         if (conversation.length !== 1) throw new ConversationNotFound()
 
         const conv = {
@@ -53,7 +53,7 @@ async function updateConversation(req, res, next) {
             ...req.body
         }
 
-        const result = await model.conversation.update(conv)
+        const result = await model.conversations.update(conv)
         if (result.matchedCount === 0) throw new ConversationError()
 
         res.status(200).send({
@@ -75,14 +75,14 @@ async function getConversation(req, res, next) {
             if (typeof req.query.key === 'string') filter.push(req.query.key)
             else filter.push(...req.query.key)
 
-            conversation = await model.conversation.getById(req.params.conversationId, filter)
-        } else conversation = await model.conversation.getById(req.params.conversationId)
+            conversation = await model.conversations.getById(req.params.conversationId, filter)
+        } else conversation = await model.conversations.getById(req.params.conversationId)
         if (conversation.length !== 1) throw new ConversationNotFound()
         conversation = conversation[0]
 
         const data = await conversationUtility.getUserRightFromConversation(req.payload.data.userId, conversation)
 
-        if (((await model.organization.getByIdAndUser(conversation.organization.organizationId, req.payload.data.userId)).length) === 0) {
+        if (((await model.organizations.getByIdAndUser(conversation.organization.organizationId, req.payload.data.userId)).length) === 0) {
             delete conversation.organization
             delete conversation.sharedWithUsers
         }
@@ -97,42 +97,14 @@ async function getConversation(req, res, next) {
     }
 }
 
-async function downloadConversation(req, res, next) {
-    try {
-        if (!req.params.conversationId) throw new ConversationIdRequire()
-        if (!req.params.format) throw new ConversationMetadataRequire('format is required')
-
-        const conversation = await model.conversation.getById(req.params.conversationId)
-        if (conversation.length !== 1) throw new ConversationNotFound()
-
-        let output = ""
-        if (req.params.format === 'json') {
-            output = conversation[0].text
-        }
-
-        else if (req.params.format === 'text') {
-            if (!conversation[0].text) throw new ConversationError('Conversation has no text')
-            conversation[0].text.map(text => {
-                output += text.segment + ""
-            })
-        }
-
-        else throw new ConversationMetadataRequire('Format not supported')
-
-        res.status(200).send(output)
-    } catch (err) {
-        next(err)
-    }
-}
-
 async function getUsersByConversation(req, res, next) {
     try {
         if (!req.params.conversationId) throw new ConversationIdRequire()
 
-        const conversation = await model.conversation.getById(req.params.conversationId)
+        const conversation = await model.conversations.getById(req.params.conversationId)
         if (conversation.length !== 1) throw new ConversationNotFound()
 
-        let organization = await model.organization.getById(conversation[0].organization.organizationId)
+        let organization = await model.organizations.getById(conversation[0].organization.organizationId)
         if (organization.length !== 1) throw new OrganizationNotFound()
 
         const userId = req.payload.data.userId
@@ -148,11 +120,11 @@ async function getUsersByConversation(req, res, next) {
 
 async function searchConversation(req, res, next) {
     try {
-        if (!req.body.searchType) throw new ConversationUnsupportedMediaType('searchType is required')
+        if (!req.query.searchType) throw new ConversationUnsupportedMediaType('searchType is required')
 
-        const searchType = req.body.searchType
-        const searchText = req.body.text.toLowerCase()
-        const organizationId = req.body.organizationId || ''
+        const searchType = req.query.searchType
+        const searchText = req.query.text.toLowerCase()
+        const organizationId = req.query.organizationId || ''
         const userId = req.payload.data.userId
 
         const convUserList = await conversationUtility.getUserConversation(userId)
@@ -170,7 +142,7 @@ async function searchConversation(req, res, next) {
         let convInArray = []
         for (const conv of filteredConv) {
             let addConv = false
-            const textInConv = await conversationUtility.textInConversation(req.body.text, conv._id)
+            const textInConv = await conversationUtility.textInConversation(req.query.text, conv._id)
             // check if text is in conversation title
             if (!convInArray[conv._id]) {
                 if (searchType.includes('title') && conv.name.toLowerCase().includes(searchText)) {
@@ -208,7 +180,6 @@ async function searchConversation(req, res, next) {
 
 module.exports = {
     deleteConversation,
-    downloadConversation,
     getConversation,
     getUsersByConversation,
     searchConversation,

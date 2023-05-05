@@ -2,13 +2,17 @@ module.exports = {
   ...require('./api/auth.json'),
   ...require('./api/healthcheck.json'),
   ...require('./api/services.json'),
-  ...require('./api/users.json'),
+  ...require('./api/users/user.json'),
+  ...require('./api/users/favorite.json'),
   ...require('./api/organizations/organizations.json'),
   ...require('./api/organizations/members.json'),
   ...require('./api/organizations/maintainer.json'),
   ...require('./api/organizations/admin.json'),
+  ...require('./api/organizations/category.json'),
+  ...require('./api/organizations/tag.json'),
   ...require('./api/conversations/conversation.json'),
   ...require('./api/conversations/member.json'),
   ...require('./api/conversations/nlp.json'),
   ...require('./api/conversations/turn.json'),
+  ...require('./api/conversations/tag.json')
 }

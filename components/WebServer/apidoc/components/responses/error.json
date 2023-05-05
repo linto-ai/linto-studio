@@ -47,7 +47,7 @@
       }
     }
   },
-  "NotModifier": {
+  "NotModified": {
     "description": "NotModified",
     "content": {
       "application/json": {

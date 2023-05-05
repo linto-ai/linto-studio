@@ -9,7 +9,7 @@ module.exports = (webserver) => {
         requireConversationReadAccess: true,
         controller: async (req, res, next) => {
             try {
-                const conversation = await model.conversation.getById(req.params.conversationId)
+                const conversation = await model.conversations.getById(req.params.conversationId)
                 if (conversation.length === 1 && conversation[0].metadata && conversation[0].metadata.audio && conversation[0].metadata.audio.filepath) {
                   if(req?.query?.mediatype === 'json') {
                     const audioFilename = conversation[0].metadata.audio.filepath.split('/').pop()
