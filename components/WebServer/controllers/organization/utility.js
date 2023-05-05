@@ -10,8 +10,8 @@ function countAdmin(organization, userId) {
     let adminCount = 0
     let isAdmin = false
     for (let oUser of organization.users) {
-        if (oUser.role === ROLE.ADMIN) adminCount++
-        if (oUser.userId === userId && oUser.role === ROLE.ADMIN) isAdmin = true
+        if (oUser.role === ROLES.ADMIN) adminCount++
+        if (oUser.userId === userId && oUser.role === ROLES.ADMIN) isAdmin = true
     }
 
     return {
