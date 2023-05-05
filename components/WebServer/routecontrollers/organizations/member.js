@@ -14,50 +14,6 @@ const {
 } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
 
-async function listConversationFromOrganization(req, res, next) {
-    try {
-        let filterTags = false
-        if (req.query.filter && req.query.filter === 'notags') filterTags = true
-
-        const userId = req.payload.data.userId
-        if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
-
-        const organization = (await model.organizations.getByIdAndUser(req.params.organizationId, userId))[0]
-        if (!organization) throw new OrganizationError('You are not part of ' + organization.name)
-
-        let userRole = ROLES.MEMBER
-        organization.users.map(oUser => {
-            if (oUser.userId === userId) {
-                userRole = oUser.role
-                return
-            }
-        })
-
-        const conversations = await model.conversations.getByOrga(req.params.organizationId)
-
-        let listConv = conversations.filter(conv => {
-            if (filterTags && conv.tags.length !== 0) return undefined
-
-            let access = conv.organization.customRights.find(customRight => (customRight.userId === userId))
-            if (access && RIGHT.hasRightAccess(access.right, RIGHT.READ)) {
-                return conv
-            } else if (!access && ROLES.hasRoleAccess(userRole, ROLES.MAINTAINER)) {
-                return conv
-            } else if (RIGHT.hasRightAccess(conv.organization.membersRight, RIGHT.READ)) {
-                return conv
-            }
-        }).filter(conv => conv !== undefined)
-
-        if (listConv.length === 0) res.status(204).send()
-        else {
-            listConv = await convUtility.getUserRightFromConversationList(userId, listConv)
-            res.status(200).send(listConv)
-        }
-    } catch (err) {
-        next(err)
-    }
-}
-
 async function leaveSelfFromOrganization(req, res, next) {
     try {
         const userId = req.payload.data.userId
@@ -105,8 +61,34 @@ async function searchConversation(req, res, next) {
     }
 }
 
+
+async function listConversationFromOrganization(req, res, next) {
+    try {
+        req.query.paginate = false
+
+        const userId = req.payload.data.userId
+        if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
+
+        const organization = (await model.organizations.getByIdAndUser(req.params.organizationId, userId))[0]
+        if (!organization) throw new OrganizationError('You are not part of ' + organization.name)
+
+        let userRole = ROLES.MEMBER
+        organization.users.map(oUser => {
+            if (oUser.userId === userId) {
+                userRole = oUser.role
+                return
+            }
+        })
+
+        let conversations = await model.conversations.listConvFromOrga(req.params.organizationId, userId, userRole, RIGHT.READ, req.query)
+        res.status(200).send(conversations)
+    } catch (err) {
+        next(err)
+    }
+}
+
 module.exports = {
     listConversationFromOrganization,
     leaveSelfFromOrganization,
-    searchConversation
+    searchConversation,
 }

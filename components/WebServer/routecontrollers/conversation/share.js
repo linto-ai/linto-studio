@@ -171,15 +171,12 @@ async function inviteUserByEmail(req, res, next) {
 async function listSharedConversation(req, res, next) {
   try {
     const userId = req.payload.data.userId
-    let sharedConversation = (await model.conversations.getByShare(userId, req.query))[0]
-
-    const totalCount = sharedConversation.totalCount[0]
-    sharedConversation = sharedConversation.paginatedResult
-    sharedConversation = await conversationUtility.getUserRightByShare(userId, sharedConversation)
+    let sharedConversation = await model.conversations.getByShare(userId, req.query)
+    sharedConversation.list = await conversationUtility.getUserRightByShare(userId, sharedConversation.list)
 
     let shareBy = {} // used to not spam mongo
 
-    for (let conv of sharedConversation) {
+    for (let conv of sharedConversation.list) {
       for (let user of conv.sharedWithUsers) {
         if (user.userId === userId) {
           if (shareBy[user.sharedBy] === undefined) {
@@ -196,10 +193,7 @@ async function listSharedConversation(req, res, next) {
 
     if (sharedConversation.length === 0) res.status(204).send()
     else {
-      res.status(200).send({
-        ...totalCount,
-        conversations: sharedConversation
-      })
+      res.status(200).send(sharedConversation)
     }
   } catch (err) {
     next(err)
