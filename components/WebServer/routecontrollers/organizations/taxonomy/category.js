@@ -47,7 +47,7 @@ async function listCategory(req, res, next) {
 async function createCategory(req, res, next) {
   try {
     let category = await model.categories.getByOrgaId(req.params.organizationId, { name: req.body.name })
-    if (category.length > 0) throw new CategoryConflict()
+    if (category.length > 0) throw new CategoryConflict(`Conflict with category name ${req.body.name} already exist. Category id ${category[0]._id}`)
 
     if (!req.body.color) req.body.color = '#FFFFFF'
     if (!req.body.type) throw new CategoryTypeNotDefined()
