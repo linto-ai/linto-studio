@@ -48,6 +48,13 @@ async function listConversationFromOrganization(req, res, next) {
         const organization = (await model.organizations.getByIdAndUser(req.params.organizationId, userId))[0]
         if (!organization) throw new OrganizationError('You are not part of ' + organization.name)
 
+        // Search for conversations based on tags and access
+        if (req.query.tags !== undefined && req.query.tags !== '') {
+            const queryTags = req.query.tags.split(',')
+            convsId = convsId.filter(conv => queryTags.every(tag => conv.tags.includes(tag)))
+        }
+
+
         let userRole = ROLES.MEMBER
         organization.users.map(oUser => {
             if (oUser.userId === userId) {

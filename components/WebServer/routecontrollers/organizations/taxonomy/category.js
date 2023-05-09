@@ -57,7 +57,8 @@ async function createCategory(req, res, next) {
     const result = await model.categories.create(req.body)
     if (result.insertedCount !== 1) throw new CategoryError('Error during the creation of the category')
 
-    res.status(201).send({ message: 'Category created' })
+    const category_created = await model.categories.getById(result.insertedId.toString())
+    return res.status(201).send(category_created[0])
   } catch (err) {
     next(err)
   }
@@ -68,7 +69,12 @@ async function updateCategory(req, res, next) {
     let category = await model.categories.getById(req.params.categoryId)
     if (category.length === 0) throw new CategoryError('Category not found')
 
-    if (req.body.name) category[0].name = req.body.name
+    if (req.body.name) {
+      let searchedCategoryName = await model.categories.getByOrgaId(req.params.organizationId, { name: req.body.name })
+      if (searchedCategoryName.length > 0) throw new CategoryConflict(`Conflict with category name ${req.body.name} already exist. Category id ${searchedCategoryName[0]._id}`)
+      category[0].name = req.body.name
+    }
+
     if (req.body.color) category[0].color = req.body.color
     if (req.body.type) {
       if (TYPE.checkValue(req.body.type) === false) throw new CategoryTypeNotValid()
@@ -90,14 +96,17 @@ async function deleteCategory(req, res, next) {
 
     //delete all tag with this categoryId
     let tags = await model.tags.getByOrgaId(req.params.organizationId, { categoryId: req.params.categoryId })
+
     for (let tag of tags) {
       const result = await model.tags.delete(tag._id)
       if (result.deletedCount !== 1) throw new CategoryError('Error during the deletion of the tag')
     }
+    // Delete tags from conversations
+    const tagsId = tags.map(tag => tag._id.toString())
+    let conv_del_res = await model.conversations.deleteTag(req.params.organizationId, tagsId)
 
     const result = await model.categories.delete(req.params.categoryId)
     if (result.deletedCount !== 1) throw new CategoryError('Error during the deletion of the category')
-
 
     res.status(204).send()
   } catch (err) {

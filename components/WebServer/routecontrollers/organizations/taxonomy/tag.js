@@ -46,7 +46,8 @@ async function createTag(req, res, next) {
     const result = await model.tags.create(req.body)
     if (result.insertedCount !== 1) throw new TagError('Error during the creation of the tag')
 
-    res.status(201).send('Tag created')
+    const tag_created = await model.tags.getById(result.insertedId.toString())
+    return res.status(201).send(tag_created[0])
   } catch (err) {
     next(err)
   }
@@ -61,6 +62,8 @@ async function updateTag(req, res, next) {
     if (tag_name.length === 1 && tag[0]._id !== tag_name[0]._id) throw new TagConflict()
 
     if (req.body.name) tag[0].name = req.body.name
+
+    if (req.body.categoryId) tag[0].categoryId = req.body.categoryId
 
     const result = await model.tags.update(tag[0])
     if (result.modifiedCount === 0) res.status(304).send('Nothing to update')
@@ -78,6 +81,9 @@ async function deleteTag(req, res, next) {
 
     const result = await model.tags.delete(req.params.tagId)
     if (result.deletedCount !== 1) throw new TagError('Error during the deletion of the tag')
+
+    // Delete tag from all the conversations
+    let conv_del_res = await model.conversations.deleteTag(req.params.organizationId, req.params.tagId)
 
     res.status(200).send('Tag deleted')
   } catch (err) {
