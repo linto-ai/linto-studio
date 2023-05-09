@@ -6,7 +6,6 @@ const {
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/organizations.js`)
 
 const {
-    searchConversation,
     listConversationFromOrganization,
     leaveSelfFromOrganization
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/member.js`)
@@ -60,13 +59,6 @@ module.exports = (webserver) => {
             requireAuth: true,
             requireOrganizationMemberAccess: true,
             controller: listConversationFromOrganization
-        },
-        {
-            path: '/:organizationId/conversations/search',
-            method: 'get',
-            requireAuth: true,
-            requireOrganizationMemberAccess: true,
-            controller: searchConversation
         },
 
         /* Maintainer right*/

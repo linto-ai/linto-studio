@@ -38,30 +38,6 @@ async function leaveSelfFromOrganization(req, res, next) {
     }
 }
 
-async function searchConversation(req, res, next) {
-    // desired query : tags, name, text
-
-    try {
-        let convsId = (await orgaUtility
-            .getUserConversationFromOrganization(req.payload.data.userId, req.params.organizationId))
-
-        // Search for conversations based on tags and access
-        if (req.query.tags !== undefined) {
-            const queryTags = req.query.tags.split(',')
-            convsId = convsId.filter(conv => queryTags.every(tag => conv.tags.includes(tag)))
-        }
-
-        convsId = convsId.map(conv => conv._id)
-        let searchResult = await model.search.conversations.searchBy(convsId, req.query)
-
-        if (searchResult.length === 0) res.status(204).send()
-        else res.status(200).send(searchResult)
-    } catch (err) {
-        next(err)
-    }
-}
-
-
 async function listConversationFromOrganization(req, res, next) {
     try {
         req.query.paginate = false
@@ -89,6 +65,5 @@ async function listConversationFromOrganization(req, res, next) {
 
 module.exports = {
     listConversationFromOrganization,
-    leaveSelfFromOrganization,
-    searchConversation,
+    leaveSelfFromOrganization
 }

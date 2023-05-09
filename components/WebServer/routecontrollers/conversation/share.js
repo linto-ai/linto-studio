@@ -37,6 +37,7 @@ async function updateConversationRights(req, res, next) {
   try {
     if (!req.params.conversationId) throw new ConversationIdRequire()
     if (req.body.right === undefined || !req.params.userId) throw new ConversationMetadataRequire("rights or userId are require")
+    req.body.right = parseInt(req.body.right)
 
     let user = await model.users.getById(req.params.userId, true)
     if (user.length !== 1) throw new UserNotFound()
