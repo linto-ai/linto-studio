@@ -1,6 +1,8 @@
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:organizations:maitainer')
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
+const Mailing = require(`${process.cwd()}/lib/mailer/mailing`)
+
 const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
 
 const {
@@ -12,7 +14,7 @@ const {
 } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
 const {
-  UserNotFound,
+  UserError,
 } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
 
 
@@ -33,11 +35,27 @@ async function addUserInOrganization(req, res, next) {
     else organization = organization[0]
 
     let userId = null
-    if (user.length === 0) throw new UserNotFound(req.body.email + ' does not exist')
-    else userId = user[0]._id.toString()
+    let magicId = null
+    if (user.length === 0) {
+      const createdUser = await model.users.createExternal({ email: req.body.email })
 
-    if (organization.users.filter(oUser => oUser.userId === userId).length !== 0)
-      throw new OrganizationConflict(req.body.email + ' is already in ' + organization.name)
+      // Create new user personal organization
+      if (createdUser.insertedCount !== 1) throw new UserError()
+      userId = createdUser.insertedId.toString()
+      magicId = createdUser.ops[0].authLink.magicId
+      if (magicId) {
+        const createOrganization = await model.organizations.createDefault(userId, req.body.email + '\'s Organization', {})
+        if (createOrganization.insertedCount !== 1) {
+          await model.users.delete(userId)
+          throw new UserError()
+        }
+      }
+
+    } else {
+      userId = user[0]._id.toString()
+      if (organization.users.filter(oUser => oUser.userId === userId).length !== 0)
+        throw new OrganizationConflict(req.body.email + ' is already in ' + organization.name)
+    }
 
     organization.users.push({
       userId: userId,
@@ -46,6 +64,14 @@ async function addUserInOrganization(req, res, next) {
 
     const result = await model.organizations.update(organization)
     if (result.matchedCount === 0) throw new OrganizationError()
+
+    const sharedUser = await model.users.getById(req.payload.data.userId)
+
+    if (user.length === 0) {
+      await Mailing.organizationAccountCreate(req.body.email, req, magicId, sharedUser[0].email, organization.name, req.params.organizationId)
+    } else {
+      await Mailing.organizationInvite(req.body.email, req, sharedUser[0].email, organization.name, req.params.organizationId)
+    }
 
     res.status(201).send({
       message: req.body.email + ' has been added to the organization'
