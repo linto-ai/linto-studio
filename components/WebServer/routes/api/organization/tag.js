@@ -19,7 +19,7 @@ module.exports = (webserver) => {
             method: 'post',
             controller: createTag,
             requireAuth: true,
-            requireOrganizationMemberAccess: true
+            requireOrganizationMaintainerAccess: true
         },
         {
             path: '/',
@@ -47,14 +47,14 @@ module.exports = (webserver) => {
             method: 'patch',
             controller: updateTag,
             requireAuth: true,
-            requireOrganizationMemberAccess: true
+            requireOrganizationMaintainerAccess: true
         },
         {
             path: '/:tagId',
             method: 'delete',
             controller: deleteTag,
             requireAuth: true,
-            requireOrganizationMemberAccess: true
+            requireOrganizationMaintainerAccess: true
         }
     ]
 }
