@@ -7,7 +7,7 @@ const ORGANIZATION_ROLES = require(`${process.cwd()}/lib/dao/organization/roles`
 const { ConversationError } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 const { OrganizationNotFound } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
-const conversation_projection = ['_id', 'name', 'description', 'owner', 'organization','metadata', 'locale', 'jobs', 'created', 'sharedWithUsers', 'last_update']
+const conversation_projection = ['_id', 'name', 'description', 'owner', 'organization','metadata', 'locale', 'jobs', 'created', 'sharedWithUsers', 'last_update', 'tags']
 
 async function userAccess(userId, convId) {
     try {

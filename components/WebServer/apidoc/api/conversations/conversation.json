@@ -288,6 +288,13 @@
           "name": "description",
           "required": false,
           "description": "Search based on the conversation description"
+        },
+        {
+          "in": "query",
+          "name": "tags",
+          "required": false,
+          "description": "List of tags id to filter for",
+          "example": "5e9b1b9b0f9b2c0017b5f1b5,5e9b1b9b0f9b2c0017b5f1b6,..."
         }
       ],
       "responses": {
@@ -307,6 +314,46 @@
         },
         "401": {
           "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    }
+  },
+  "/api/conversations/shared/tags": {
+    "get": {
+      "tags": [
+        "conversations"
+      ],
+      "summary": "List tags from favorites conversations of the connected user",
+      "parameters": [{
+        "in": "query",
+        "name": "tags",
+        "required": false,
+        "description": "List of tags id to filter for",
+        "example": "5e9b1b9b0f9b2c0017b5f1b5,5e9b1b9b0f9b2c0017b5f1b6,..."
+      }],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/CategoryWithTags"
+                }
+              }
+            }
+          }
+        },
+        "204": {
+          "$ref": "#/components/responses/NoContent"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
         }
       }
     }

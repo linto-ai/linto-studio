@@ -20,7 +20,7 @@ module.exports = (webserver) => {
             method: 'get',
             controller: searchCategory,
             requireAuth: true,
-            requireOrganizationMaintainerAccess: true
+            requireOrganizationMemberAccess: true
         },
         {
             path: '/',
@@ -34,14 +34,14 @@ module.exports = (webserver) => {
             method: 'get',
             controller: listCategory,
             requireAuth: true,
-            requireOrganizationMaintainerAccess: true
+            requireOrganizationMemberAccess: true
         },
         {
             path: '/:categoryId',
             method: 'get',
             controller: getCategory,
             requireAuth: true,
-            requireOrganizationMaintainerAccess: true
+            requireOrganizationMemberAccess: true
         },
         {
             path: '/:categoryId',

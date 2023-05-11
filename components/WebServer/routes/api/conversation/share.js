@@ -5,6 +5,7 @@ const { // Create conversation based on file
   updateConversationRights,
   listSharedConversation,
   inviteUserByEmail,
+  listShareTags
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/share.js`)
 
 
@@ -15,6 +16,12 @@ module.exports = (webserver) => {
       method: 'get',
       requireAuth: true,
       controller: listSharedConversation
+    },
+    {
+      path: '/shared/tags',
+      method: 'get',
+      requireAuth: true,
+      controller: listShareTags
     },
 
     /*Require Conversation Access */

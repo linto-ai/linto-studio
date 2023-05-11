@@ -107,7 +107,7 @@
       "tags": [
         "organization tag"
       ],
-      "summary": "Retrieve tag information",
+      "summary": "Retrieve tag information related between conversation",
       "parameters": [{
           "name": "organizationId",
           "in": "path",
