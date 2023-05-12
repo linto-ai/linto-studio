@@ -46,14 +46,7 @@ async function listConversationFromOrganization(req, res, next) {
         if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
 
         const organization = (await model.organizations.getByIdAndUser(req.params.organizationId, userId))[0]
-        if (!organization) throw new OrganizationError('You are not part of ' + organization.name)
-
-        // Search for conversations based on tags and access
-        if (req.query.tags !== undefined && req.query.tags !== '') {
-            const queryTags = req.query.tags.split(',')
-            convsId = convsId.filter(conv => queryTags.every(tag => conv.tags.includes(tag)))
-        }
-
+        if (!organization) throw new OrganizationError('You are not part of ' + organization.name)    
 
         let userRole = ROLES.MEMBER
         organization.users.map(oUser => {
@@ -64,6 +57,13 @@ async function listConversationFromOrganization(req, res, next) {
         })
 
         let conversations = await model.conversations.listConvFromOrga(req.params.organizationId, userId, userRole, RIGHT.READ, req.query)
+        
+        if (req.query.tags !== undefined && req.query.tags !== '') {
+            // TODO: need to update count also, and do the filtering in the mongo query
+            const queryTags = req.query.tags.split(',')
+            conversations.list = conversations.list.filter(conv => queryTags.every(tag => conv.tags.includes(tag)))
+        }
+
         res.status(200).send(conversations)
     } catch (err) {
         next(err)
