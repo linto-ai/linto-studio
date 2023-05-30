@@ -86,7 +86,7 @@ async function organizationAccess(conv, userId, right, next, rightException) {
     }
 
     // Member got right to share
-    if (CONVERSATION_RIGHTS.hasRightAccess(conv.organization.membersRight, rightConvo)) return next()
+    if (CONVERSATION_RIGHTS.hasRightAccess(conv.organization.membersRight, right)) return next()
     else return next(new ConversationNotShared())
   }
 

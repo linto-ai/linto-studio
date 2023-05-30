@@ -52,7 +52,7 @@ async function listFav(req, res, next) {
                     let tags = req.query.tags.split(',')
 
                     const containsAll = tags.every(tag => conv.tags.includes(tag))
-                    if(containsAll) conv_favorite.push(conv)
+                    if (containsAll) conv_favorite.push(conv)
                 } else if (conv) conv_favorite.push(conv)
                 else await model.favorites.deleteFav(req.payload.data.userId, favId)
             }
@@ -73,13 +73,14 @@ async function listFavTags(req, res, next) {
 
         if (userFav.length === 0) res.status(204).send()
         else {
-            let listConv = await model.search.conversations.getByIdsAndTag(userFav[0].favorites, req.query.tags)
+            let listConv = await model.search.conversations.getByIdsAndTag(userFav[0].favorites, req.query.tags.split(','))
 
             let tags = []
             let categories = {}
 
-            listConv.map(conv => listConv.tags.map(tag => (tags.indexOf(tag) === -1) ? tags.push(tag) : undefined))
-            let tags_list = await model.tags.getByIdList(tags)
+            listConv.map(conv => conv.tags.map(tag => tags.push(tag)))
+            const uniqueTagsList = [...new Set(tags)]
+            const tags_list = await model.tags.getByIdList(uniqueTagsList)
 
             for (const tag of tags_list) {
                 const categoryId = tag.categoryId

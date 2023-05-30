@@ -58,12 +58,6 @@ async function listConversationFromOrganization(req, res, next) {
 
         let conversations = await model.conversations.listConvFromOrga(req.params.organizationId, userId, userRole, RIGHT.READ, req.query)
         
-        if (req.query.tags !== undefined && req.query.tags !== '') {
-            // TODO: need to update count also, and do the filtering in the mongo query
-            const queryTags = req.query.tags.split(',')
-            conversations.list = conversations.list.filter(conv => queryTags.every(tag => conv.tags.includes(tag)))
-        }
-
         res.status(200).send(conversations)
     } catch (err) {
         next(err)
