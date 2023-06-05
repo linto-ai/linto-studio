@@ -1,4 +1,4 @@
-const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:conversation`)
+const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:conversation:share`)
 
 const conversationUtility = require(`${process.cwd()}/components/WebServer/controllers/conversation/utility`)
 
@@ -17,36 +17,6 @@ const {
   UserNotFound,
   UserError
 } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
-
-async function listSharedConversation(req, res, next) {
-  try {
-    const userId = req.payload.data.userId
-    let convList = await model.conversations.getByShare(userId)
-    convList = await conversationUtility.getUserRightFromConversationList(userId, convList)
-
-    for (let conv of convList) {
-      for (let user of conv.sharedWithUsers) {
-        if (user.userId === userId) {
-          const sharedBy = await model.users.getById(user.sharedBy)
-          conv.sharedBy = sharedBy[0]
-          break
-        }
-      }
-      delete conv.organization
-      delete conv.sharedWithUsers
-    }
-
-    if (convList.length === 0) res.status(204).send()
-    else {
-      res.status(200).send({
-        conversations: convList
-      })
-    }
-
-  } catch (err) {
-    next(err)
-  }
-}
 
 async function getRightsByConversation(req, res, next) {
   try {
@@ -67,6 +37,7 @@ async function updateConversationRights(req, res, next) {
   try {
     if (!req.params.conversationId) throw new ConversationIdRequire()
     if (req.body.right === undefined || !req.params.userId) throw new ConversationMetadataRequire("rights or userId are require")
+    req.body.right = parseInt(req.body.right)
 
     let user = await model.users.getById(req.params.userId, true)
     if (user.length !== 1) throw new UserNotFound()
@@ -198,10 +169,84 @@ async function inviteUserByEmail(req, res, next) {
   }
 }
 
+async function listSharedConversation(req, res, next) {
+  try {
+    const userId = req.payload.data.userId
+    let sharedConversation = await model.conversations.getByShare(userId, req.query)
+    sharedConversation.list = await conversationUtility.getUserRightByShare(userId, sharedConversation.list)
+
+    let shareBy = {} // used to not spam mongo
+
+    for (let conv of sharedConversation.list) {
+      for (let user of conv.sharedWithUsers) {
+        if (user.userId === userId) {
+          if (shareBy[user.sharedBy] === undefined) {
+            const sharedBy = await model.users.getById(user.sharedBy)
+            shareBy[user.sharedBy] = sharedBy[0]
+          }
+          conv.sharedBy = shareBy[user.sharedBy]
+          break
+        }
+      }
+      delete conv.organization
+      delete conv.sharedWithUsers
+    }
+
+    if (sharedConversation.length === 0) res.status(204).send()
+    else {
+      res.status(200).send(sharedConversation)
+    }
+  } catch (err) {
+    next(err)
+  }
+}
+
+async function listShareTags(req, res, next) {
+  try {
+    const userId = req.payload.data.userId
+    const sharedConversation = await model.conversations.getTagByShare(userId, req.query)
+
+    let tags = []
+    let categories = {}
+
+    sharedConversation.map(conv => conv.tags.map(tag => (tags.indexOf(tag) === -1) ? tags.push(tag) : undefined))
+    let tags_list = await model.tags.getByIdList(tags)
+
+    for (const tag of tags_list) {
+      const categoryId = tag.categoryId
+
+      if (!categories[categoryId]) {
+        const category = (await model.categories.getById(categoryId))[0]
+        if (category === undefined) continue
+        categories[categoryId] = {
+          ...category,
+          tags: [],
+          searchedTag: false
+        }
+      }
+      categories[categoryId].tags.push(tag)
+    }
+
+    let searchResult = []
+    for (const categoryId in categories) {
+      delete categories[categoryId].searchedTag
+      searchResult.push(categories[categoryId])
+    }
+
+    if (searchResult.length === 0) res.status(204).send()
+    else res.status(200).send(searchResult)
+
+  } catch (err) {
+    next(err)
+  }
+}
+
+
 
 module.exports = {
   getRightsByConversation,
-  listSharedConversation,
   updateConversationRights,
-  inviteUserByEmail
+  inviteUserByEmail,
+  listSharedConversation,
+  listShareTags
 }

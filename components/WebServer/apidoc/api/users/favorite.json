@@ -5,6 +5,13 @@
         "users favorites"
       ],
       "summary": "List favorites conversations of connected user",
+      "parameters": [{
+        "in": "query",
+        "name": "tags",
+        "required": false,
+        "description": "List of tags id to filter for",
+        "example": "5e9b1b9b0f9b2c0017b5f1b5,5e9b1b9b0f9b2c0017b5f1b6,..."
+      }],
       "responses": {
         "200": {
           "description": "OK",
@@ -15,6 +22,46 @@
                 "items": {
                   "type": "object",
                   "$ref": "#/components/schemas/ConversationList"
+                }
+              }
+            }
+          }
+        },
+        "204": {
+          "$ref": "#/components/responses/NoContent"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/users/self/favorites/tags": {
+    "get": {
+      "tags": [
+        "users favorites"
+      ],
+      "summary": "List tags from favorites conversations of the connected user",
+      "parameters": [{
+        "in": "query",
+        "name": "tags",
+        "required": false,
+        "description": "List of tags id to filter for",
+        "example": "5e9b1b9b0f9b2c0017b5f1b5,5e9b1b9b0f9b2c0017b5f1b6,..."
+      }],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/CategoryWithTags"
                 }
               }
             }
@@ -104,7 +151,7 @@
             }
           }
         },
-        "304" : {
+        "304": {
           "$ref": "#/components/responses/NotModified"
         },
         "401": {

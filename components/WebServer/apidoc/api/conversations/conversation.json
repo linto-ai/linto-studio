@@ -240,77 +240,63 @@
       }
     }
   },
-  "/api/conversations/search": {
-    "get": {
-      "tags": [
-        "conversations"
-      ],
-      "summary": "Search for conversations based on specified criteria",
-      "parameters": [{
-          "in": "query",
-          "name": "searchType",
-          "required": true,
-          "schema": {
-            "$ref": "#/components/schemas/ConversationSearchType"
-          },
-          "description": "Research type:\n * `title` - Search based on conversation title \n * `description` - Search based on conversation description \n * `text` - Search based on conversation text \n "
-        },
-        {
-          "in": "query",
-          "name": "text",
-          "required": false,
-          "description": "Text to search in conversation"
-        }, {
-          "in": "query",
-          "name": "organizationId",
-          "required": false,
-          "description": "Organization ID"
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "OK",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "searchType": {
-                    "type": "string",
-                    "enum": [
-                      "title",
-                      "description",
-                      "text"
-                    ],
-                    "description": "Type of search to do in conversation"
-                  },
-                  "conversations": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "$ref": "#/components/schemas/ConversationList"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "204": {
-          "$ref": "#/components/responses/NoContent"
-        },
-        "401": {
-          "$ref": "#/components/responses/Unauthorized"
-        }
-      }
-    }
-  },
   "/api/conversations/shared": {
     "get": {
       "tags": [
         "conversations"
       ],
       "summary": "List all conversations that have been shared with the connected user",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "size",
+          "required": false,
+          "description": "Number of items per page"
+        },
+        {
+          "in": "query",
+          "name": "page",
+          "required": false,
+          "description": "Page number"
+        },
+        {
+          "in": "query",
+          "name": "sortField",
+          "required": false,
+          "description": "Field to sort by"
+        },
+        {
+          "in": "query",
+          "name": "sortCriteria",
+          "required": false,
+          "description": "Order of sort, supported values: (asc : `1`, dsc: `-1`)"
+        },
+        {
+          "in": "query",
+          "name": "name",
+          "required": false,
+          "description": "Search based on the conversation name"
+        },
+        {
+          "in": "query",
+          "name": "text",
+          "required": false,
+          "description": "Search if conversation contains text"
+        },
+        {
+          "in": "query",
+          "name": "description",
+          "required": false,
+          "description": "Search based on the conversation description"
+        },
+        {
+          "in": "query",
+          "name": "tags",
+          "required": false,
+          "description": "List of tags id to filter for",
+          "example": "5e9b1b9b0f9b2c0017b5f1b5,5e9b1b9b0f9b2c0017b5f1b6,..."
+        }
+      ],
       "responses": {
         "200": {
           "description": "OK",
@@ -328,6 +314,46 @@
         },
         "401": {
           "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    }
+  },
+  "/api/conversations/shared/tags": {
+    "get": {
+      "tags": [
+        "conversations"
+      ],
+      "summary": "List tags from favorites conversations of the connected user",
+      "parameters": [{
+        "in": "query",
+        "name": "tags",
+        "required": false,
+        "description": "List of tags id to filter for",
+        "example": "5e9b1b9b0f9b2c0017b5f1b5,5e9b1b9b0f9b2c0017b5f1b6,..."
+      }],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/CategoryWithTags"
+                }
+              }
+            }
+          }
+        },
+        "204": {
+          "$ref": "#/components/responses/NoContent"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
         }
       }
     }

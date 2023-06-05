@@ -107,7 +107,7 @@
       "tags": [
         "organization tag"
       ],
-      "summary": "Retrieve tag information",
+      "summary": "Retrieve tag information related between conversation",
       "parameters": [{
           "name": "organizationId",
           "in": "path",
@@ -125,7 +125,7 @@
         {
           "in": "query",
           "name": "categoryId",
-          "required": true,
+          "required": false,
           "description": "CategoryId to search",
           "example": "5e9b1b9b0f9b2c0017b5f1b5"
         }

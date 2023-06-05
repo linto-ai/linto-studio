@@ -1,3 +1,9 @@
+# 1.1.2
+- Added pagination
+- Multiple optimisation
+- Handle tags for shared and favorite conversation listing
+- Update migration for memberRights string to int
+
 # 1.1.1
 - Added tags feature
 - Document creation now return their information

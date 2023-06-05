@@ -40,7 +40,8 @@ async function transcribe(isSingleFile, req, res, next) {
 
     if (!req.body.name) throw new ConversationMetadataRequire('name param is required')
     if (!req.body.lang) throw new ConversationMetadataRequire('lang param is required')
-    if (!req.body.membersRight) req.body.membersRight = CONVERSATION_RIGHT.READ + CONVERSATION_RIGHT.COMMENT
+    if (!req.body.membersRight || isNaN(req.body.membersRight)) req.body.membersRight = CONVERSATION_RIGHT.READ + CONVERSATION_RIGHT.COMMENT
+    else req.body.membersRight = parseInt(req.body.membersRight)
     if (!req.body.endpoint) throw new ConversationMetadataRequire('serviceEndpoint param is required')
     if (!req.body.organizationId) throw new ConversationMetadataRequire('organizationId param is required')
 

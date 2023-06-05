@@ -4,7 +4,6 @@ const {
     deleteConversation,
     getConversation,
     getUsersByConversation,
-    searchConversation,
     updateConversation,
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/conversation.js`)
 
@@ -15,13 +14,6 @@ const {
 
 module.exports = (webserver) => {
     return [
-        {
-            path: '/search',
-            method: 'get',
-            requireAuth: true,
-            controller: searchConversation
-        },
-
         /*Require Auth */
         {
             path: '/:conversationId',

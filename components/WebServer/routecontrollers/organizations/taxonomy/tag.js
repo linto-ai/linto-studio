@@ -36,7 +36,7 @@ async function createTag(req, res, next) {
     if (!req.body.name) throw new TagUnsupportedMediaType('name is required')
 
     let tag = await model.tags.getByOrgaId(req.params.organizationId, { name: req.body.name })
-    if (tag.length > 0) throw new TagConflict()
+    if (tag.length > 0) throw new TagConflict(`Conflict with tag name ${req.body.name} already exist. Tag id : ${tag[0]._id}`)
 
     req.body.organizationId = req.params.organizationId
 

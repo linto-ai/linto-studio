@@ -7,7 +7,7 @@ const ORGANIZATION_ROLES = require(`${process.cwd()}/lib/dao/organization/roles`
 const { ConversationError } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 const { OrganizationNotFound } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
-const conversation_projection = ['_id', 'name', 'description', 'owner', 'organization','metadata', 'locale', 'jobs', 'created', 'sharedWithUsers', 'last_update']
+const conversation_projection = ['_id', 'name', 'description', 'owner', 'organization','metadata', 'locale', 'jobs', 'created', 'sharedWithUsers', 'last_update', 'tags']
 
 async function userAccess(userId, convId) {
     try {
@@ -117,6 +117,16 @@ async function getUserRightFromConversationList(userId, conversations) {
     return conversations
 }
 
+async function getUserRightByShare(userId, conversations){
+    for (let conv of conversations) {
+        let data = {}
+        const conversationRight = conv.sharedWithUsers.filter(user => user.userId === userId)[0]
+        if (conversationRight) data.right = parseInt(conversationRight.right)
+        conv.userAccess = data
+    }
+    return conversations
+}
+
 
 async function textInConversation(text, conversationId) {
     const conversation = (await model.conversations.getById(conversationId))[0]
@@ -134,5 +144,6 @@ module.exports = {
     getUserConversation,
     getUserRightFromConversation,
     getUserRightFromConversationList,
+    getUserRightByShare,
     textInConversation
 }
