@@ -6,6 +6,7 @@ const { getStorageFolder, getAudioFolder, deleteFile } = require(`${process.cwd(
 const {
   OrganizationUnsupportedMediaType,
   OrganizationError,
+  OrganizationConflict
 } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
 const { ConversationError } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
@@ -17,6 +18,9 @@ async function updateOrganization(req, res, next) {
     let organization = await model.organizations.getById(req.params.organizationId)
     if (organization.length === 0) throw new OrganizationError('Organization not found')
     organization = organization[0]
+
+    const isOrgaFound = await model.organizations.getByName(req.body.name)
+    if (isOrgaFound.length === 1) throw new OrganizationConflict('Organization name already exists')
 
     if (req.body.token) organization.token = req.body.token
     if (req.body.description) organization.description = req.body.description
