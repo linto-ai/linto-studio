@@ -9,13 +9,18 @@ const {
 
 module.exports = {
   isVisibility: (req, res, next) => {
-    if (req.payload.data.userId === req.params.userId) next()
-    else {
-      model.users.getById(req.params.userId, true).then(async user => {
-        if (user.length === 0) next(new UserNotFound())
-        else if (!user[0].private) next()
-        else next(new UserForbidden())
-      })
+    try {
+
+      if (req.payload.data.userId === req.params.userId) next()
+      else {
+        model.users.getById(req.params.userId, true).then(async user => {
+          if (user.length === 0) next(new UserNotFound())
+          else if (!user[0].private) next()
+          else next(new UserForbidden())
+        })
+      }
+    } catch (err) {
+      return next(err)
     }
   },
 }
