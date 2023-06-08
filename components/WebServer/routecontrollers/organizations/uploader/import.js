@@ -55,7 +55,7 @@ async function importConv(req, res) {
 
     if (!conversation?.organization) {
       conversation.organization = {}
-      if (!conversation.organization?.organizationId) conversation.organization.organizationId = req.body.organizationId
+      if (!conversation.organization?.organizationId) conversation.organization.organizationId = req.params.organizationId
       if (!conversation.organization?.membersRight) conversation.organization.membersRight = CONVERSATION_RIGHT.READ + CONVERSATION_RIGHT.COMMENT
       if (!conversation.organization?.customRights) conversation.organization.customRights = []
     }
@@ -105,11 +105,13 @@ async function importTranscription(req, res) {
 
 async function importConversation(req, res, next) {
   try {
-    if (!req.body.organizationId) throw new ConversationMetadataRequire("organizationId param is required")
+    if (!req.params.organizationId) throw new ConversationMetadataRequire("organizationId param is required")
 
-    const organization = await model.organizations.getByIdAndUser(req.body.organizationId, req.payload.data.userId)
-    if (organization.length !== 1) throw new ConversationError(`Organization ${req.body.organizationId} not found`)
+    const organization = await model.organizations.getByIdAndUser(req.params.organizationId, req.payload.data.userId)
+    if (organization.length !== 1) throw new ConversationError(`Organization ${req.params.organizationId} not found`)
     req.body.userId = req.payload.data.userId
+    req.body.organizationId = req.params.organizationId
+
 
     if (req.query.type === 'conversation') await importConv(req, res)
     else if (req.query.type === 'transcription') await importTranscription(req, res)

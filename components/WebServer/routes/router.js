@@ -42,10 +42,13 @@ class Router {
                 // Organization rights
                 if (route.requireOrganizationAdminAccess) middlewaresLoaded.push(organization_middlewares.asAdminAccess)
                 if (route.requireOrganizationMaintainerAccess) middlewaresLoaded.push(organization_middlewares.asMaintainerAccess)
+                if (route.requireOrganizationUploaderAccess) middlewaresLoaded.push(organization_middlewares.asUploaderAccess)
                 if (route.requireOrganizationMemberAccess) middlewaresLoaded.push(organization_middlewares.asMemberAccess)
 
+
+
                 // User visibility
-                if(route.requireUserVisibility) middlewaresLoaded.push(user_middlewares.isVisibility)
+                if (route.requireUserVisibility) middlewaresLoaded.push(user_middlewares.isVisibility)
 
                 if (process.env.LOGGER_ENABLED === "true") middlewaresLoaded.push(nav_middlewares.logger)
 

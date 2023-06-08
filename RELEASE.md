@@ -1,8 +1,10 @@
 # 1.1.2
-- Added pagination
+- Added pagination on conversation listing (shared and favorite)
 - Multiple optimisation
 - Handle tags for shared and favorite conversation listing
-- Update migration for memberRights string to int
+- Update migration for memberRights string to int and new role
+- Add a new role : uploader
+- Refactoring some api path to handle new role
 
 # 1.1.1
 - Added tags feature

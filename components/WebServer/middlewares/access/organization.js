@@ -16,6 +16,9 @@ module.exports = {
     asMaintainerAccess: async (req, res, next) => {
         await access(req, next, req.params.organizationId, req.payload.data.userId, ROLES.MAINTAINER)
     },
+    asUploaderAccess: async (req, res, next) => {
+        await access(req, next, req.params.organizationId, req.payload.data.userId, ROLES.UPLOADER)
+    },
     asMemberAccess: async (req, res, next) => {
         await access(req, next, req.params.organizationId, req.payload.data.userId, ROLES.MEMBER)
     }

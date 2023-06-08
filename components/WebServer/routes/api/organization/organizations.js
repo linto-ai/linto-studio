@@ -21,6 +21,14 @@ const {
     deleteOrganization
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/admin.js`)
 
+const {
+    transcribeReq
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/uploader/transcriptor.js`)
+
+const {
+    importConversation
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/uploader/import.js`)
+
 module.exports = (webserver) => {
     return [
 
@@ -59,6 +67,22 @@ module.exports = (webserver) => {
             requireAuth: true,
             requireOrganizationMemberAccess: true,
             controller: listConversationFromOrganization
+        },
+
+        /*Uploader right */
+        {
+            path: '/:organizationId/conversations/create',
+            method: 'post',
+            requireAuth: true,
+            requireOrganizationUploaderAccess: true,
+            controller: transcribeReq
+        },
+        {
+            path: '/:organizationId/conversations/import',
+            method: 'post',
+            requireAuth: true,
+            requireOrganizationUploaderAccess: true,
+            controller: importConversation
         },
 
         /* Maintainer right*/
