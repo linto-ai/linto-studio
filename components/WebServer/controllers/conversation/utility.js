@@ -95,7 +95,7 @@ async function getUserRightFromConversation(userId, conversation) {
         } else if (ORGANIZATION_ROLES.hasRoleAccess(access.role, ORGANIZATION_ROLES.MAINTAINER)) {
             access.right = CONVERSATION_RIGHTS.maintainerRight()
         } else if (ORGANIZATION_ROLES.hasRoleAccess(access.role, ORGANIZATION_ROLES.MEMBER) ||
-            ORGANIZATION_ROLES.hasRoleAccess(access.role, ORGANIZATION_ROLES.MAINTAINER)) {
+            ORGANIZATION_ROLES.hasRoleAccess(access.role, ORGANIZATION_ROLES.UPLOADER)) {
             const organizationRight = conversation.organization.customRights.filter(user => user.userId === userId)[0]
             if (organizationRight) access.right = organizationRight.right
         } else {

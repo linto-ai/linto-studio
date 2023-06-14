@@ -1,0 +1,259 @@
+{
+  "/api/organizations/{organizationId}/conversations/create/": {
+    "post": {
+      "tags": [
+        "organizations uploader"
+      ],
+      "summary": "Create a new conversation",
+      "parameters": [{
+        "in": "path",
+        "name": "organizationId",
+        "type": "string",
+        "format": "uuid",
+        "required": true,
+        "description": "uuid string identifier for an organization"
+      }],
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "file": {
+                  "type": "file",
+                  "format": "binary",
+                  "description": "Audio file to convert into a conversation"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Name of the conversation"
+                },
+                "endpoint": {
+                  "type": "string",
+                  "description": "Endpoint of the conversation (can fetch information from service api)"
+                },
+                "lang": {
+                  "type": "string",
+                  "description": "Language of the conversation"
+                },
+                "transcriptionConfig": {
+                  "$ref": "#/components/schemas/TranscriptionConfig"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Description of the conversation"
+                },
+                "membersRight": {
+                  "type": "integer",
+                  "description": "Right access of organization members"
+                },
+                "segmentCharSize": {
+                  "type": "integer",
+                  "description": "Size of the segment in characters"
+                }
+              }
+            },
+            "required": [
+              "file",
+              "name",
+              "endpoint",
+              "lang"
+            ]
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Information about the conversation processus"
+                }
+              },
+              "example": {
+                "message": "A conversation is currently being processed"
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "415": {
+          "$ref": "#/components/responses/UnsupportedMediaType"
+        }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/conversations/import?type=transcription": {
+    "post": {
+      "tags": [
+        "organizations uploader"
+      ],
+      "parameters": [{
+        "in": "path",
+        "name": "organizationId",
+        "type": "string",
+        "format": "uuid",
+        "required": true,
+        "description": "uuid string identifier for an organization"
+      }],
+      "summary": "Import a conversation from an external source",
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the conversation"
+                },
+                "lang": {
+                  "type": "string",
+                  "description": "Language of the conversation"
+                },
+                "transcription": {
+                  "$ref": "#/components/schemas/TranscriptionModel"
+                },
+                "file": {
+                  "type": "file",
+                  "format": "binary",
+                  "description": "Audio file to convert into a conversation"
+                },
+                "transcriptionConfig": {
+                  "$ref": "#/components/schemas/TranscriptionConfig"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Description of the conversation"
+                },
+                "membersRight": {
+                  "type": "integer",
+                  "description": "Right access of organization members"
+                },
+                "segmentCharSize": {
+                  "type": "integer",
+                  "description": "Size of the segment in characters"
+                }
+              }
+            },
+            "required": [
+              "name",
+              "lang",
+              "transcription"
+            ]
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Information about the conversation processus"
+                }
+              },
+              "example": {
+                "message": "Conversation imported"
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "415": {
+          "$ref": "#/components/responses/UnsupportedMediaType"
+        }
+      }
+    }
+  },
+
+  "/api/organizations/{organizationId}/conversations/import?type=conversation": {
+    "post": {
+      "tags": [
+        "organizations uploader"
+      ],
+      "parameters": [{
+        "in": "path",
+        "name": "organizationId",
+        "type": "string",
+        "format": "uuid",
+        "required": true,
+        "description": "uuid string identifier for an organization"
+      }],
+      "summary": "Import a conversation from an external source",
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "file": {
+                  "type": "file",
+                  "format": "binary",
+                  "description": "Audio file to convert into a conversation"
+                },
+                "conversation": {
+                  "$ref": "#/components/schemas/Conversation"
+                }
+              }
+            },
+            "required": [
+              "file",
+              "name",
+              "endpoint",
+              "lang"
+            ]
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Information about the conversation processus"
+                }
+              },
+              "example": {
+                "message": "Conversation imported"
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "415": {
+          "$ref": "#/components/responses/UnsupportedMediaType"
+        }
+      }
+    }
+  }
+}

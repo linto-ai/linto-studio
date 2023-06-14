@@ -43,10 +43,12 @@ async function transcribe(isSingleFile, req, res, next) {
     if (!req.body.membersRight || isNaN(req.body.membersRight)) req.body.membersRight = CONVERSATION_RIGHT.READ + CONVERSATION_RIGHT.COMMENT
     else req.body.membersRight = parseInt(req.body.membersRight)
     if (!req.body.endpoint) throw new ConversationMetadataRequire('serviceEndpoint param is required')
-    if (!req.body.organizationId) throw new ConversationMetadataRequire('organizationId param is required')
+    if (!req.params.organizationId) throw new ConversationMetadataRequire('organizationId param is required')
 
-    if (((await model.organizations.getByIdAndUser(req.body.organizationId, userId)).length) !== 1) throw new OrganizationNotFound()
+    if (((await model.organizations.getByIdAndUser(req.params.organizationId, userId)).length) !== 1) throw new OrganizationNotFound()
     req.body.userId = userId
+    req.body.organizationId = req.params.organizationId
+
     req.body.filter = {}
 
     let service = process.env.GATEWAY_SERVICES + '/' + req.body.endpoint
