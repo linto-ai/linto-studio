@@ -70,7 +70,8 @@ async function addUserInOrganization(req, res, next) {
     if (user.length === 0) {
       await Mailing.organizationAccountCreate(req.body.email, req, magicId, sharedUser[0].email, organization.name, req.params.organizationId)
     } else {
-      await Mailing.organizationInvite(req.body.email, req, sharedUser[0].email, organization.name, req.params.organizationId)
+      user = await model.users.getById(user[0]._id, true)
+      await Mailing.organizationInvite(user[0], req, sharedUser[0].email, organization.name, req.params.organizationId)
     }
 
     res.status(201).send({
@@ -112,6 +113,9 @@ async function updateUserFromOrganization(req, res, next) {
     const result = await model.organizations.update(organization)
     if (result.matchedCount === 0) throw new OrganizationError('Error while updating user in organization')
 
+    user = await model.users.getById(req.body.userId, true)
+    await Mailing.organizationRightUpdate(user[0], req, organization.name)
+
     res.status(200).send({
       message: 'Updated user from the organization'
     })
@@ -140,6 +144,10 @@ async function deleteUserFromOrganization(req, res, next) {
 
     const result = await model.organizations.update(organization)
     if (result.matchedCount === 0) throw new OrganizationError()
+
+
+    user = await model.users.getById(req.body.userId, true)
+    await Mailing.organizationDelete(user[0], req, organization.name)
 
     res.status(200).send({
       message: 'User has been deleted from the organization'

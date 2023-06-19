@@ -5,6 +5,8 @@
 - Update migration for memberRights string to int and new role
 - Add a new role : uploader
 - Refactoring some api path to handle new role
+- Fixing mailing
+  - Manage the email checking on the module side
 
 # 1.1.1
 - Added tags feature

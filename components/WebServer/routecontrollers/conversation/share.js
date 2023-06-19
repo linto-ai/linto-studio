@@ -1,3 +1,5 @@
+const { DocumentAttributes } = require('docx')
+
 const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:conversation:share`)
 
 const conversationUtility = require(`${process.cwd()}/components/WebServer/controllers/conversation/utility`)
@@ -54,56 +56,34 @@ async function updateConversationRights(req, res, next) {
 
     // Select user right in the conversation
     let userRight = isInOrga.length === 0 ? conversation.sharedWithUsers : conversation.organization.customRights
-    let isAdded = false
-    if (req.body.right === 0 && isInOrga.length === 0) {
-      userRight = userRight.filter(usr => usr.userId !== req.params.userId.toString())
-      isAdded = true
+    let isUpdated = false
 
-      const mail_result = await Mailing.conversationUnshare(user.email, req, conversation.name)
-      if (!mail_result) debug('Error when sending mail')
+    if (req.body.right === 0 && isInOrga.length === 0) { // Delete user from conversation rights that is not in the organization
+      userRight = userRight.filter(usr => usr.userId !== req.params.userId.toString())
+      isUpdated = true
+
+      await Mailing.conversationUnshare(user, req, conversation.name)
 
     } else {
       const userIndex = userRight.findIndex(usr => usr.userId === req.params.userId.toString())
-      if (userIndex >= 0) {
-        isAdded = true
+      if (userIndex >= 0) { // User have already acces to the conversation but right have change
+        isUpdated = true
         userRight[userIndex].right = req.body.right
         userRight[userIndex].sharedBy = req.payload.data.userId
 
-        // mail already in the database but not validate
-        if (!user.emailIsVerified) {
-          let sharedBy = await model.users.getById(req.payload.data.userId)
-          if (sharedBy.length !== 1) throw new UserNotFound()
-          sharedBy = sharedBy[0]
+        let sharedBy = await model.users.getById(req.payload.data.userId)
 
-          const updatedUser = await model.users.generateMagicLink(user)
-          const mail_result = await Mailing.conversationSharedExternal(user.email, req, updatedUser.data.magicId, sharedBy.email)
-          if (!mail_result) debug('Error when sending mail')
-        }
+        if (sharedBy.length !== 1) throw new UserNotFound()
+        await Mailing.conversationRightUpdate(user, req, sharedBy[0].email, req.params.conversationId)
       }
     }
 
-    if (!isAdded) {
+    if (!isUpdated) {
       let sharedBy = await model.users.getById(req.payload.data.userId)
       if (sharedBy.length !== 1) throw new UserNotFound()
-      sharedBy = sharedBy[0]
-      const userNotif = user.emailNotifications.conversations.sharing
 
-      // Get last verified Email
-      let userEmail = user.email
-      let emailFound = false
-      if (user.emailIsVerified) {
-        emailFound = true
-      }
-      if (!user.emailIsVerified && user.verifiedEmail.length > 0) {
-        userEmail = user.verifiedEmail[user.verifiedEmail.length - 1]
-        emailFound = true
-      }
+      Mailing.conversationShared(user, req, sharedBy[0].email, req.params.conversationId)
 
-      // Send Mail
-      if (userNotif && emailFound) {
-        const mail_result = await Mailing.conversationShared(userEmail, req, sharedBy.email, req.params.conversationId)
-        if (!mail_result) debug('Error when sending mail')
-      }
       userRight.push({ userId: req.params.userId.toString(), right: req.body.right, sharedBy: req.payload.data.userId })
     }
 
@@ -141,8 +121,7 @@ async function inviteNewUser(req, res, next) {
       const sharedBy = await model.users.getById(req.payload.data.userId)
       if (sharedBy.length !== 1) throw new UserNotFound()
 
-      let mail_result = await Mailing.conversationSharedExternal(email, req, magicId, sharedBy[0].email)
-      if (!mail_result) debug('Error when sending mail')
+      await Mailing.conversationSharedNewUser(email, req, magicId, sharedBy[0].email)
 
       await model.conversations.addSharedUser(req.params.conversationId, { userId, sharedBy: req.payload.data.userId, right: 1 })
     }
@@ -157,14 +136,14 @@ async function inviteNewUser(req, res, next) {
 }
 
 async function inviteUserByEmail(req, res, next) {
-  const email = req.body.email
-  const user = await model.users.getByEmail(email)
+  if (req.body.right) req.body.right = parseInt(req.body.right)
+  else req.body.right = 1
+
+  const user = await model.users.getByEmail(req.body.email)
   if (user.length === 1) {  // Share to an internal user
     req.params.userId = user[0]._id
-    req.body.right = 1
     updateConversationRights(req, res, next)
-  }
-  else {  // Share to an external user
+  } else {  // Share to an external user
     inviteNewUser(req, res, next)
   }
 }
