@@ -32,16 +32,26 @@ async function keywordExtract(req, res, next) {
     conversation[0].text.map(segText => {
       text += segText.segment + ""
     })
+
     const options = {
       headers: { accept: 'application/json' },
       data: {
         nlpConfig: {
           keywordExtractionConfig: {
             enableKeywordExtraction: true,
-            keywordExtractionParameters: { method: req.body.method }
+            serviceName: 'nlp-keyword-extraction',
+
+            // method: 'frequencies',
+            // methodConfig: { "threshold": 10 }
+
+            // method: 'topicrank',
+            // methodConfig: { phrase_count_threshold: 1 }
+
+            method: 'textrank',
+            methodConfig: { damping: 0.85, steps: 10 }
           }
         },
-        text: text
+        documents: [text]
       }
     }
 
@@ -51,7 +61,7 @@ async function keywordExtract(req, res, next) {
       type: 'keyword',
       job_id: job.jobid,
       filter: {}
-  }
+    }
 
     createJobInterval(process.env.NLP_SERVICES, conversation[0], jobs)
 

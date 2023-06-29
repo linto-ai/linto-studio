@@ -6,7 +6,7 @@ const {
 module.exports = (webserver) => {
   return [
     {
-      path: '/:conversationId/keyword',
+      path: '/conversations/:conversationId/keyword',
       method: 'post',
       requireAuth: true,
       requireConversationReadAccess: true,

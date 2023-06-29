@@ -10,37 +10,41 @@ const DEFAULT_INTERVAL_TIMER = 1000 // 10 sec
 
 async function getResult(host, processing_job, job, conversation) {
     try {
+
         let url = `${host}/results/${job.result_id}`
+
         if (conversation.metadata.transcription.transcriptionConfig.enableNormalization) {
             url += '?convert_numbers=true'
         }
 
-        const options = {
+        const result = await axios.get(url, {
             headers: {
                 accept: 'application/json'
             }
-        }
-        const result = await axios.get(url, options)
+        })
 
         if (result && processing_job.type === 'transcription') {
             const normalizeTranscription = segmentNormalizeText(result, conversation.locale, processing_job.filter)
-            conversation = SttWrapper.transcriptionToConversation(normalizeTranscription, conversation)
 
-            conversation.jobs.transcription.type = 'transcription'
+            conversation = SttWrapper.transcriptionToConversation(normalizeTranscription, conversation)
+            conversation.jobs.transcription = job
+
             ConvoModel.updateConvOnTranscriptionResult(conversation._id, conversation)
         } else if (result && processing_job.type === 'keyword') {
-            ConvoModel.updateKeyword(conversation._id, { ...conversation.keywords, ...result })
+            conversation.jobs.nlp.keyword = job
+
+            ConvoModel.updateKeyword(conversation._id, { ...conversation.nlp, ...result }, conversation.jobs)
         }
 
     } catch (err) {
         debug(`Error while getting transcription result: ${err}`)
-
         let job_status = {
             ...job,
             state: 'error',
             err: err.message
         }
-        updateConversation(conversation, jobs_type, job_status)
+
+        updateJobConversation(conversation, processing_job, job_status)
     }
 }
 
@@ -54,14 +58,13 @@ async function createJobInterval(host, conversation, processing_job) {
             }
 
             if (job_info.state === 'done' && job_info.result_id) { //triger last request
-                conversation.jobs.transcription = job_info
                 getResult(host, processing_job, job_status, conversation)
 
-                debug('jobs done')
                 clearInterval(interval)
-            } else {
-                updateConversation(conversation, processing_job, job_status)
-            }
+                debug('jobs done')
+
+            } else updateJobConversation(conversation, processing_job, job_status)  // Jobs still running
+
         } catch (err) {
             let job_status = {
                 job_id: processing_job.job_id,
@@ -69,22 +72,24 @@ async function createJobInterval(host, conversation, processing_job) {
                 err: err.response.data
             }
 
-            updateConversation(conversation, processing_job, job_status)
+            updateJobConversation(conversation, processing_job, job_status)
             clearInterval(interval)
-            debug('Jobs error', err.response.data)
         }
     }, DEFAULT_INTERVAL_TIMER)
 }
 
-
-
-function updateConversation(conversation, processing_job, job_info) {
+function updateJobConversation(conversation, processing_job, job_info) {
     const id = conversation._id
+
     if (processing_job.type === 'transcription') {
         conversation.jobs.transcription = job_info
-    } else if (processing_job.type === 'keyword') {
-        conversation.jobs.keyword = job_info
+    } else {
+        if (conversation.jobs.nlp === undefined) conversation.jobs.nlp = {}
+        if (processing_job.type === 'keyword') {
+            conversation.jobs.nlp.keyword = job_info
+        }
     }
+
     ConvoModel.updateJob(id, conversation.jobs)
 }
 
