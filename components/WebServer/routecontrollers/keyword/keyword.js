@@ -6,7 +6,6 @@ const axios = require(`${process.cwd()}/lib/utility/axios`)
 
 const { createJobInterval } = require(`${process.cwd()}/components/WebServer/controllers/jobsHandler`)
 
-
 const {
   KeywordError,
   KeywordUnsupportedMediaType
@@ -16,22 +15,32 @@ const {
   ConversationIdRequire,
 } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
+const MAX_WORD = 100
 
 async function keywordExtract(req, res, next) {
   try {
-    if (!req.body.method) throw new KeywordUnsupportedMediaType('Method is required')
-    if (process.env.NLP_METHOD.split(',').indexOf(req.body.method) === -1) throw new KeywordUnsupportedMediaType('Method is not supported')
-
     if (!req.params.conversationId) throw new ConversationIdRequire()
     const conversation = await model.conversations.getById(req.params.conversationId)
     if (conversation.length !== 1) throw new ConversationNotFound()
 
 
-    let text = ""
     if (!conversation[0].text) throw new KeywordError('Conversation has no text')
+
+    let documents = []
+    let text = ""
+    let nb_word = 0
     conversation[0].text.map(segText => {
-      text += segText.segment + ""
+      segText.segment.split(/\s+/).map(seg => {
+        text += seg + " "
+        nb_word++
+        if (nb_word > MAX_WORD) {
+          documents.push(text)
+          text = ""
+          nb_word = 0
+        }
+      })
     })
+    if (text !== "") documents.push(text)
 
     const options = {
       headers: { accept: 'application/json' },
@@ -41,20 +50,13 @@ async function keywordExtract(req, res, next) {
             enableKeywordExtraction: true,
             serviceName: 'nlp-keyword-extraction',
 
-            // method: 'frequencies',
-            // methodConfig: { "threshold": 10 }
-
-            // method: 'topicrank',
-            // methodConfig: { phrase_count_threshold: 1 }
-
             method: 'textrank',
             methodConfig: { damping: 0.85, steps: 10 }
           }
         },
-        documents: [text]
+        documents: documents
       }
     }
-
 
     const job = await axios.post(`${process.env.NLP_SERVICES}/nlp`, options)
     let jobs = {
@@ -62,6 +64,7 @@ async function keywordExtract(req, res, next) {
       job_id: job.jobid,
       filter: {}
     }
+
 
     createJobInterval(process.env.NLP_SERVICES, conversation[0], jobs)
 

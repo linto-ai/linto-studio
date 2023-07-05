@@ -9,8 +9,6 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 const {
     ConversationIdRequire,
     ConversationNotFound,
-    ConversationMetadataRequire,
-    ConversationUnsupportedMediaType,
     ConversationError
 } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 

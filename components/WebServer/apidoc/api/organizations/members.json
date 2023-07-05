@@ -107,6 +107,65 @@
           "$ref": "#/components/responses/NotFound"
         }
       }
+    },
+    "delete": {
+      "tags": [
+        "organizations maintainer"
+      ],
+      "summary": "Remove all desired conversation from the organization",
+      "parameters": [{
+        "in": "path",
+        "name": "organizationId",
+        "type": "string",
+        "format": "uuid",
+        "required": true,
+        "description": "uuid string identifier for an organization"
+      }],
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "conversationsId": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "conversationsId"
+              ]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Message"
+                }
+              },
+              "example": {
+                "message": "Conversation has been deleted from the organization"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "415": {
+          "$ref": "#/components/responses/UnsupportedMediaType"
+        }
+      }
     }
   }
 }
