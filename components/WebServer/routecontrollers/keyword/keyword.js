@@ -50,8 +50,8 @@ async function keywordExtract(req, res, next) {
             enableKeywordExtraction: true,
             serviceName: 'nlp-keyword-extraction',
 
-            method: 'textrank',
-            methodConfig: { damping: 0.85, steps: 10 }
+            method: 'keybert',
+            methodConfig: { top_n : 1, diversity : 0.8 }
           }
         },
         documents: documents
@@ -64,7 +64,6 @@ async function keywordExtract(req, res, next) {
       job_id: job.jobid,
       filter: {}
     }
-
 
     createJobInterval(process.env.NLP_SERVICES, conversation[0], jobs)
 

@@ -4,13 +4,12 @@ const axios = require(`${process.cwd()}/lib/utility/axios`)
 const SttWrapper = require(`${process.cwd()}/components/WebServer/controllers/conversation/generator`)
 const { segmentNormalizeText } = require(`${process.cwd()}/components/WebServer/controllers/conversation/normalizeSegment`)
 
-const ConvoModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
+const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const DEFAULT_INTERVAL_TIMER = 1000 // 10 sec
 
 async function getResult(host, processing_job, job, conversation) {
     try {
-
         let url = `${host}/results/${job.result_id}`
 
         if (conversation.metadata.transcription.transcriptionConfig.enableNormalization) {
@@ -29,13 +28,39 @@ async function getResult(host, processing_job, job, conversation) {
             conversation = SttWrapper.transcriptionToConversation(normalizeTranscription, conversation)
             conversation.jobs.transcription = job
 
-            ConvoModel.updateConvOnTranscriptionResult(conversation._id, conversation)
+            model.conversations.updateConvOnTranscriptionResult(conversation._id, conversation)
         } else if (result && processing_job.type === 'keyword') {
             conversation.jobs.nlp.keyword = job
+            model.conversations.updateJob(conversation._id, conversation.jobs)
 
-            ConvoModel.updateKeyword(conversation._id, { ...conversation.nlp, ...result }, conversation.jobs)
+            const organizationId = conversation.organization.organizationId
+            const category = await model.categories.getHighlightCategories(conversation.organization.organizationId)
+            const categoryId = category[0]._id
+
+            let tagList = conversation.tags || []
+            for (let i in result.keyword_extraction) {
+                const keyword = result.keyword_extraction[i]
+                const key = Object.keys(keyword)[0]
+                const tag = await model.tags.getByOrgaId(organizationId, { name: key })
+
+                if (tag.length === 0 && keyword[key] > 0.5) { //if probability is higher than 0.6
+                    let result = await model.tags.create({
+                        name: key,
+                        categoryId: categoryId,
+                        organizationId: organizationId
+                    })
+                    tagList.push(result.insertedId.toString())
+                } else if (tag.length > 0) {
+                    tagList.push(tag[0]._id.toString())
+                }
+            }
+
+            // remove duplicate or null value from tagList
+            tagList = tagList.filter((item, index) => tagList.indexOf(item) === index && item !== null)
+
+            await model.conversations.updateTag(conversation._id, tagList)
+
         }
-
     } catch (err) {
         debug(`Error while getting transcription result: ${err}`)
         let job_status = {
@@ -90,7 +115,7 @@ function updateJobConversation(conversation, processing_job, job_info) {
         }
     }
 
-    ConvoModel.updateJob(id, conversation.jobs)
+    model.conversations.updateJob(id, conversation.jobs)
 }
 
 module.exports = { createJobInterval }
