@@ -35,7 +35,7 @@ async function getResult(host, processing_job, job, conversation) {
 
             const organizationId = conversation.organization.organizationId
             const category = await model.categories.getHighlightCategories(conversation.organization.organizationId)
-            const categoryId = category[0]._id
+            const categoryId = category[0]._id.toString()
 
             let tagList = conversation.tags || []
             for (let i in result.keyword_extraction) {

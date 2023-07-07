@@ -1,5 +1,6 @@
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:taxonomy:taxonomy')
 const model = require(`${process.cwd()}/lib/mongodb/models`)
+const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
 
 const organizationUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
 
@@ -104,6 +105,8 @@ async function generateCategoryFromTagList(tagsId, organizationId, search = {}) 
     if (!categories[categoryId]) {
       const category = (await model.categories.getById(categoryId))[0]
       if (category === undefined) continue
+      if (TYPE.desiredType(category.type, search.categoryType)) continue
+
       categories[categoryId] = {
         ...category,
         tags: [],

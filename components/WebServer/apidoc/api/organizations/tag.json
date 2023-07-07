@@ -128,6 +128,13 @@
           "required": false,
           "description": "CategoryId to search",
           "example": "5e9b1b9b0f9b2c0017b5f1b5"
+        },
+        {
+          "in": "query",
+          "name": "categoryType",
+          "required": false,
+          "description": "CategoryType to search",
+          "example": "highlight,keyword,conversation_metadata,conversation_text,commentary"
         }
       ],
       "responses": {
