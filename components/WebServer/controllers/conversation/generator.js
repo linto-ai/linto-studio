@@ -30,7 +30,6 @@ function initConversation(metadata, userId, job_id) {
         },
         tags: [],
         highlights: [],
-        keywords: [],
         speakers: [],
         text: [],
         metadata: {
