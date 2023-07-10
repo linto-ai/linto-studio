@@ -55,10 +55,19 @@ async function search(req) {
     tags = await model.search.tags.searchByName(req.params.organizationId, req.query.name)
 
     let categoriesList = {}
+    let ignoredList = []
     for (let tag of tags) {
+
+      if (ignoredList.includes(tag.categoryId)) continue // should skip if the category has already been ignored
+
       if (!categoriesList[tag.categoryId]) {
-        let category = await model.categories.getById(tag.categoryId)
-        categoriesList[tag.categoryId] = { ...category[0], tags: [] }
+        let category = (await model.categories.getById(tag.categoryId))[0]
+        if (!TYPE.desiredType(category.type, req.query.categoryType)) {
+          ignoredList.push(tag.categoryId)
+          continue  // should skip if the category is not the desired type
+        }
+
+        categoriesList[tag.categoryId] = { ...category, tags: [] }
       }
       categoriesList[tag.categoryId].tags.push(tag)
     }
@@ -99,18 +108,23 @@ async function generateCategoryFromTagList(tagsId, organizationId, search = {}) 
 
   const tags_list = await model.search.tags.searchTag(uniqueTagIds, organizationId, search.name)
 
+  let ignoredList = []
   for (const tag of tags_list) {
     const categoryId = tag.categoryId
 
+    if (ignoredList.includes(categoryId)) continue // should skip if the category has already been ignored
     if (!categories[categoryId]) {
       const category = (await model.categories.getById(categoryId))[0]
-      if (category === undefined) continue
-      if (TYPE.desiredType(category.type, search.categoryType)) continue
 
-      categories[categoryId] = {
-        ...category,
-        tags: [],
-        searchedTag: false
+      if (!TYPE.desiredType(category?.type, search.categoryType)) {
+        ignoredList.push(categoryId)
+        continue // should skip if the category is ignored
+      } else {
+        categories[categoryId] = {
+          ...category,
+          tags: [],
+          searchedTag: false
+        }
       }
     }
 

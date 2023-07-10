@@ -311,6 +311,13 @@
           "name": "expand",
           "required": false,
           "description": "Expand the result with their linked tags (only use for `explore` type)"
+        },
+        {
+          "in": "query",
+          "name": "categoryType",
+          "required": false,
+          "description": "CategoryType to search",
+          "example": "highlight,keyword,conversation_metadata,conversation_text,commentary"
         }
       ],
       "responses": {
