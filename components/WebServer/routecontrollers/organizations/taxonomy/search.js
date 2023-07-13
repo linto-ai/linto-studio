@@ -151,18 +151,23 @@ async function searchTag(req, res, next) {
     if (req.query.categoryId === undefined || req.query.tags === undefined) throw new OrganizationError('categoryId or tags are required')
     const categoryTags = await model.search.tags.getByCategory(req.query.categoryId)
 
-
     const userConversationsIds = (await organizationUtility
       .getUserConversationFromOrganization(req.payload.data.userId, req.params.organizationId))
       .map(conv => conv._id)
-    // Search for conversations based on tags and conversation access
 
-    const conversationsTags = (await model.search.conversations.getByIdsAndTag(userConversationsIds, req.query.tags)).flatMap(conv => conv.tags)
+    // Search for conversations based on tags and conversation access
+    const conversationsTags = (await model.search.conversations.getByIdsAndTag(userConversationsIds, req.query.tags))/*.flatMap(conv => conv.tags)*/
 
     let searchResult = []
+
     for (let tag of categoryTags) {
-      if (conversationsTags.includes(tag._id.toString())) {
-        searchResult.push(tag)
+      if (searchResult.includes(tag)) continue
+
+      for (let conv of conversationsTags) {
+        if (conv.tags.includes(tag._id.toString())){
+          searchResult.push(tag)
+          break
+        }
       }
     }
 
