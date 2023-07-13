@@ -32,7 +32,7 @@
     "example": {
       "_id": "5f9f9b9b7d1b424dccabc375",
       "name": "feelings",
-      "type": "keyword, conversation_text, conversation_metadata, commentaires, conversation_video",
+      "type": "keyword, highlight, conversation_text, conversation_metadata, commentaires, conversation_video",
       "organizationId": "63f4d9ed7d1b424dccabc375",
       "color": "#FFFFFF"
     }

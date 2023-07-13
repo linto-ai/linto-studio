@@ -1,14 +1,13 @@
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:keyword')
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
-
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 
 const { createJobInterval } = require(`${process.cwd()}/components/WebServer/controllers/jobsHandler`)
 
 const {
   KeywordError,
-  KeywordUnsupportedMediaType
+  KeywordMetadataRequire
 } = require(`${process.cwd()}/components/WebServer/error/exception/keyword`)
 
 const {
@@ -19,7 +18,14 @@ const MAX_WORD = 100
 
 async function keywordExtract(req, res, next) {
   try {
+    if (!req.body.endpoint) throw new KeywordMetadataRequire('endpoint param is require')
+    if (!req.body.serviceName) throw new KeywordMetadataRequire('serviceName param is require')
+    // if (!req.body.method) throw new KeywordMetadataRequire('method param is require')
+
     if (!req.params.conversationId) throw new ConversationIdRequire()
+    let service = process.env.GATEWAY_SERVICES + '/' + req.body.endpoint
+
+
     const conversation = await model.conversations.getById(req.params.conversationId)
     if (conversation.length !== 1) throw new ConversationNotFound()
 
@@ -48,9 +54,10 @@ async function keywordExtract(req, res, next) {
         nlpConfig: {
           keywordExtractionConfig: {
             enableKeywordExtraction: true,
-            serviceName: 'nlp-keyword-extraction',
+            serviceName: req.body.serviceName,
 
-            method: 'keybert',
+            // method: req.body.method,
+            method : 'keybert',
             methodConfig: { top_n : 1, diversity : 0.8 }
           }
         },
@@ -58,14 +65,14 @@ async function keywordExtract(req, res, next) {
       }
     }
 
-    const job = await axios.post(`${process.env.NLP_SERVICES}/nlp`, options)
+    const job = await axios.post(`${service +'/nlp'}`, options)
     let jobs = {
       type: 'keyword',
       job_id: job.jobid,
       filter: {}
     }
 
-    createJobInterval(process.env.NLP_SERVICES, conversation[0], jobs)
+    createJobInterval(service, conversation[0], jobs)
 
     res.status(201).send({
       message: 'A keyword job is currently being processed'

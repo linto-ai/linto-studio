@@ -9,8 +9,8 @@ module.exports = (webserver) => {
       path: '/conversations/:conversationId/keywords',
       method: 'post',
       requireAuth: true,
-      requireConversationReadAccess: true,
+      requireConversationWriteAccess: true,
       controller: keywordExtract
-    },
+    }
   ]
 }

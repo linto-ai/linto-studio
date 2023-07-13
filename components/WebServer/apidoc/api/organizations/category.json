@@ -316,8 +316,8 @@
           "in": "query",
           "name": "categoryType",
           "required": false,
-          "description": "CategoryType to search",
-          "example": "highlight,keyword,conversation_metadata,conversation_text,commentary"
+          "description": "CategoryType to search, this have the priority over the tags and categories parameters",
+          "example": "highlight,conversation_metadata,conversation_text,commentary"
         }
       ],
       "responses": {

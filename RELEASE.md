@@ -9,6 +9,7 @@
   - Manage the email checking on the module side
 - Handle default category on organization creation (highlights)
 - On keywords generation, handle the tag creation
+- Added highlight api 
 
 # 1.1.1
 - Added tags feature

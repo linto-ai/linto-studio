@@ -2,7 +2,6 @@ const debug = require('debug')('linto:conversation-manager:components:WebServer:
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
-const convUtility = require(`${process.cwd()}/components/WebServer/controllers/conversation/utility`)
 
 const RIGHT = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
