@@ -7,7 +7,7 @@ const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
 const category_template = {
   name: 'keyword',
   type: TYPE.HIGHLIGHT,
-  color: '#FFFFFF'
+  color: 'white'
 }
 
 module.exports = {
