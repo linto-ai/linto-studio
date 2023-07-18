@@ -233,7 +233,7 @@
       ],
       "responses": {
         "200": {
-          "description": "The list of services",
+          "description": "The list of turns matching the search criteria",
           "content": {
             "application/json": {
               "schema": {
