@@ -39,22 +39,23 @@ async function getResult(host, processing_job, job, conversation) {
 
             let tagList = conversation.tags || []
             for (let i in result.keyword_extraction) {
-                const keyword = result.keyword_extraction[i]
-                const key = Object.keys(keyword)[0]
-                const tag = await model.tags.getByOrgaId(organizationId, { name: key })
+                const keys = Object.keys(result.keyword_extraction[i])
 
-                if (tag.length === 0 && keyword[key] > 0.5) { //if probability is higher than 0.6
-                    let result = await model.tags.create({
-                        name: key,
-                        categoryId: categoryId,
-                        organizationId: organizationId
-                    })
-                    tagList.push(result.insertedId.toString())
-                } else if (tag.length > 0) {
-                    tagList.push(tag[0]._id.toString())
+                for (let i in keys) {
+                    let key = keys[i]
+                    const tag = await model.tags.getByOrgaId(organizationId, { name: key })
+                    if (tag.length === 0) { //if probability is higher than 0.6
+                        let result = await model.tags.create({
+                            name: key,
+                            categoryId: categoryId,
+                            organizationId: organizationId
+                        })
+                        tagList.push(result.insertedId.toString())
+                    } else if (tag.length > 0) {
+                        tagList.push(tag[0]._id.toString())
+                    }
                 }
             }
-
             // remove duplicate or null value from tagList
             tagList = tagList.filter((item, index) => tagList.indexOf(item) === index && item !== null)
 

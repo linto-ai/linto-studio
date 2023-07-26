@@ -34,16 +34,10 @@ async function keywordExtract(req, res, next) {
 
     let documents = []
     let text = ""
-    let nb_word = 0
+
     conversation[0].text.map(segText => {
       segText.segment.split(/\s+/).map(seg => {
         text += seg + " "
-        nb_word++
-        if (nb_word > MAX_WORD) {
-          documents.push(text)
-          text = ""
-          nb_word = 0
-        }
       })
     })
     if (text !== "") documents.push(text)
@@ -56,9 +50,14 @@ async function keywordExtract(req, res, next) {
             enableKeywordExtraction: true,
             serviceName: req.body.serviceName,
 
-            // method: req.body.method,
-            method : 'keybert',
-            methodConfig: { top_n : 1, diversity : 0.8 }
+            method: req.body.method,
+            // method : 'keybert',
+            // methodConfig: { top_n : 1, diversity : 0.8 }
+
+            method : 'frekeybert',
+            methodConfig: { top_n : 10, number_of_segments : 2 }
+
+            // methodConfig: req.body.methodConfig
           }
         },
         documents: documents
