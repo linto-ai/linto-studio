@@ -2,6 +2,7 @@ const { DocumentAttributes, DocumentBackgroundAttributes } = require('docx')
 const { use } = require('passport')
 
 const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:conversation:share`)
+const method_delete = 'DELETE'
 
 const conversationUtility = require(`${process.cwd()}/components/WebServer/controllers/conversation/utility`)
 
@@ -41,11 +42,11 @@ async function batchShareConversation(req, res, next) {
     //req.body.users is a json string, transform it to an object
     let users_list = JSON.parse(req.body.users)
 
-    await usersCheck(users_list) // Check and handle user creation if needed
+    await usersCheck(users_list, method) // Check and handle user creation if needed
     let user_updated = await updateConv(conversations, method, users_list, auth_user)  // Update the conversation with the new users rights
 
 
-    for(let user of users_list.users) {
+    for (let user of users_list.users) {
       delete user.magicId
     }
     //TODO: Send mail to users
@@ -75,7 +76,7 @@ async function updateConv(conversations, method, users_list, auth_user) {
         // TODO: Should store data that user can't modify the user right
       }
 
-      if (method === 'DELETE' || user.right === undefined)
+      if (method === method_delete || user.right === undefined)
         user.right = 0
 
       if (RIGHTS.validRight(user.right) === false) continue // skip if the right is not valid
@@ -95,7 +96,7 @@ async function updateConv(conversations, method, users_list, auth_user) {
         else conversation.sharedWithUsers[index].right = user.right
       }
 
-      user.rights.push(conversation._id)
+      user.conversations.push(conversation._id)
     }
     await model.conversations.update(conversation)
   }
@@ -106,28 +107,29 @@ async function updateConv(conversations, method, users_list, auth_user) {
   // in user.rights we can find where the user has been added, updated or delete
 }
 
-async function usersCheck(users_list) {
+async function usersCheck(users_list, method) {
+  let users = []
   for (let user of users_list.users) {
-    user.rights = []
+    user.conversations = []
 
     if (user.id === undefined) { // in case of user.email is used
       let u = await model.users.getByEmail(user.email)
       if (u.length === 0) {
-
+        if (method === method_delete) continue // skip the user on delete request, probably an error from the client
         u = await inviteNewUser(user.email)
         user.id = u.id
         user.magicId = u.magicId
-      }
-      else user.id = u[0]._id
+      } else user.id = u[0]._id
     } else {
 
       let u = await model.users.getById(user.id)
       if (u.length !== 0) {
         user.email = u[0].email
       }
-
     }
+    users.push(user)
   }
+  users_list.users = users
 }
 
 async function inviteNewUser(email) {
