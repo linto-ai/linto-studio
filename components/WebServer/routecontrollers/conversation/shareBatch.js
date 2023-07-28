@@ -45,11 +45,15 @@ async function batchShareConversation(req, res, next) {
     await usersCheck(users_list, method) // Check and handle user creation if needed
     let user_updated = await updateConv(conversations, method, users_list, auth_user)  // Update the conversation with the new users rights
 
-
+    const sharedBy = (await model.users.getById(auth_user.id))
     for (let user of users_list.users) {
-      delete user.magicId
+      if (user.magicId) {
+        await Mailing.conversationSharedNewUser(user.email, req, user.magicId, sharedBy[0].email)
+        delete user.magicId
+      } else {
+        await Mailing.multipleConversationRight(user, req, sharedBy[0].email, user.conversations)
+      }
     }
-    //TODO: Send mail to users
 
     res.status(200).send(user_updated)
   } catch (err) {
