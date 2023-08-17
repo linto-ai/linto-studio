@@ -37,7 +37,6 @@ async function batchShareConversation(req, res, next) {
     let conversations = await model.conversations.listConvFromAccess(conversationsIds, auth_user.id,
       auth_user.organizationId, auth_user.role, RIGHTS.READ, { _id: 1, text: 0, tags: 0, speakers: 0, metadata: 0, jobs: 0 })
 
-
     const method = req.method
     //req.body.users is a json string, transform it to an object
     let users_list = JSON.parse(req.body.users)
@@ -53,6 +52,9 @@ async function batchShareConversation(req, res, next) {
       } else {
         await Mailing.multipleConversationRight(user, req, sharedBy[0].email, user.conversations)
       }
+
+      if (user.private) delete user.email
+      delete user.private
     }
 
     res.status(200).send(user_updated)
@@ -118,6 +120,8 @@ async function usersCheck(users_list, method) {
 
     if (user.id === undefined) { // in case of user.email is used
       let u = await model.users.getByEmail(user.email)
+      user.private = u[0].private
+
       if (u.length === 0) {
         if (method === method_delete) continue // skip the user on delete request, probably an error from the client
         u = await inviteNewUser(user.email)
@@ -125,7 +129,6 @@ async function usersCheck(users_list, method) {
         user.magicId = u.magicId
       } else user.id = u[0]._id
     } else {
-
       let u = await model.users.getById(user.id)
       if (u.length !== 0) {
         user.email = u[0].email
