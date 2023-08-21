@@ -5,6 +5,7 @@ const {
     getConversation,
     getUsersByConversation,
     updateConversation,
+    getUsersByConversationList
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/conversation.js`)
 
 const {
@@ -15,6 +16,12 @@ const {
 module.exports = (webserver) => {
     return [
         /*Require Auth */
+        {
+            path: '/users',
+            method: 'post',
+            requireAuth: true,
+            controller: getUsersByConversationList
+        },
         {
             path: '/:conversationId',
             method: 'patch',

@@ -6,6 +6,9 @@ const userUtility = require(`${process.cwd()}/components/WebServer/controllers/u
 const { deleteFile, getStorageFolder, getAudioWaveformFolder } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
+const RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
+const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
+
 const {
     ConversationIdRequire,
     ConversationNotFound,
@@ -115,9 +118,31 @@ async function getUsersByConversation(req, res, next) {
     }
 }
 
+async function getUsersByConversationList(req, res, next) {
+    try {
+        let result = []
+        const conversationsIds = req.body.conversations.split(',')
+        for (const conversationId of conversationsIds) {
+            const conversation = await model.conversations.getById(conversationId)
+
+            let organization = await model.organizations.getById(conversation[0].organization.organizationId)
+            if (organization.length !== 1) throw new OrganizationNotFound()
+
+            const userId = req.payload.data.userId
+            const conversationUsers = await userUtility.getUsersListByConversation(userId, conversation[0], organization[0])
+            result.push({ conversationId, member: { ...conversationUsers } })
+        }
+        res.status(200).send(result)
+
+    } catch (err) {
+        next(err)
+    }
+}
+
 module.exports = {
     deleteConversation,
     getConversation,
     getUsersByConversation,
+    getUsersByConversationList,
     updateConversation,
 }
