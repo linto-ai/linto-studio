@@ -4,23 +4,18 @@ const {
     searchUser,
     createUser,
     getUserById,
+    getPersonalInfo,
     updateUser,
-    updateUserPassword,
     updateUserPicture,
     deleteUser,
-    recoverPassword,
+    recoveryAuth,
+    sendVerificationEmail
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/users/users.js`)
 
 const auth_middleware = require(`${process.cwd()}/components/WebServer/config/passport/local/middleware`)
 
-
 module.exports = (webserver) => {
-    return [{
-        path: '/',
-        method: 'get',
-        requireAuth: true,
-        controller: listUser
-    },
+    return [
     {
         path: '/',
         method: 'post',
@@ -29,31 +24,49 @@ module.exports = (webserver) => {
     },
     {
         path: '/',
+        method: 'get',
+        requireAuth: true,
+        controller: listUser
+    },
+    {
+        path: '/self',
+        method: 'get',
+        requireAuth: true,
+        controller: getPersonalInfo
+    },
+    {
+        path: '/self',
         method: 'delete',
         requireAuth: true,
         controller: deleteUser
     },
     {
-        path: '/',
+        path: '/self',
         method: 'put',
         requireAuth: true,
         controller: updateUser
     },
     {
-        path: '/password',
-        method: 'put',
-        requireAuth: true,
-        controller: [updateUserPassword, auth_middleware.authenticate]
-    },
-    {
-        path: '/picture',
+        path: '/self/picture',
         method: 'put',
         requireAuth: true,
         controller: updateUserPicture
     },
     {
-        path: '/search',
+        path: '/self/verify-email',
+        method: 'patch',
+        requireAuth: true,
+        controller: sendVerificationEmail
+    },
+    {
+        path: '/self/reset-password',
         method: 'post',
+        requireAuth: false,
+        controller: recoveryAuth
+    },
+    {
+        path: '/search',
+        method: 'get',
         requireAuth: true,
         controller: searchUser
     },
@@ -64,11 +77,5 @@ module.exports = (webserver) => {
         requireUserVisibility: true,
         controller: getUserById
     },
-    {
-      path: '/reset-password',
-      method: 'post',
-      requireAuth: false,
-      controller: recoverPassword
-    }
     ]
 }

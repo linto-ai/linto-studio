@@ -1,16 +1,12 @@
 const debug = require('debug')('linto:conversation-manager:router:api:organizations:organizations')
 const {
     createOrganization,
-    // listOrganization,
     listSelfOrganization,
-    searchOrganizationByName,
     getOrganization
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/organizations.js`)
 
 const {
-    // listSelfOrganization,
     listConversationFromOrganization,
-    updateSelfFromOrganization,
     leaveSelfFromOrganization
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/member.js`)
 
@@ -25,6 +21,13 @@ const {
     deleteOrganization
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/admin.js`)
 
+const {
+    transcribeReq
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/uploader/transcriptor.js`)
+
+const {
+    importConversation
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/uploader/import.js`)
 
 module.exports = (webserver) => {
     return [
@@ -37,13 +40,7 @@ module.exports = (webserver) => {
             controller: createOrganization
         },
         {
-            path: '/search',
-            method: 'post',
-            requireAuth: true,
-            controller: searchOrganizationByName
-        },
-        {
-            path: '/user',
+            path: '/',
             method: 'get',
             requireAuth: true,
             controller: listSelfOrganization
@@ -59,43 +56,52 @@ module.exports = (webserver) => {
         },
         {
             path: '/:organizationId/self',
-            method: 'patch',
-            requireAuth: true,
-            requireOrganizationMemberAccess: true,
-            controller: updateSelfFromOrganization
-        },
-        {
-            path: '/:organizationId/self',
             method: 'delete',
             requireAuth: true,
             requireOrganizationMemberAccess: true,
             controller: leaveSelfFromOrganization
         },
         {
-            path: '/:organizationId/conversation',
+            path: '/:organizationId/conversations',
             method: 'get',
             requireAuth: true,
             requireOrganizationMemberAccess: true,
             controller: listConversationFromOrganization
         },
 
+        /*Uploader right */
+        {
+            path: '/:organizationId/conversations/create',
+            method: 'post',
+            requireAuth: true,
+            requireOrganizationUploaderAccess: true,
+            controller: transcribeReq
+        },
+        {
+            path: '/:organizationId/conversations/import',
+            method: 'post',
+            requireAuth: true,
+            requireOrganizationUploaderAccess: true,
+            controller: importConversation
+        },
+
         /* Maintainer right*/
         {
-            path: '/:organizationId/user',
+            path: '/:organizationId/users',
             method: 'post',
             requireAuth: true,
             requireOrganizationMaintainerAccess: true,
             controller: addUserInOrganization
         },
         {
-            path: '/:organizationId/user',
+            path: '/:organizationId/users',
             method: 'patch',
             requireAuth: true,
             requireOrganizationMaintainerAccess: true,
             controller: updateUserFromOrganization
         },
         {
-            path: '/:organizationId/user',
+            path: '/:organizationId/users',
             method: 'delete',
             requireAuth: true,
             requireOrganizationMaintainerAccess: true,

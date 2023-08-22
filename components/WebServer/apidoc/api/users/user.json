@@ -4,7 +4,7 @@
       "tags": [
         "users"
       ],
-      "summary": "Create a new user",
+      "summary": "Create an user",
       "requestBody": {
         "content": {
           "multipart/form-data": {
@@ -21,6 +21,9 @@
                   "type": "string"
                 },
                 "lastname": {
+                  "type": "string"
+                },
+                "organizationName": {
                   "type": "string"
                 }
               },
@@ -51,6 +54,21 @@
             }
           }
         },
+        "400": {
+          "description": "Invalid email format or domain.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
         "409": {
           "$ref": "#/components/responses/Conflict"
         }
@@ -60,7 +78,7 @@
       "tags": [
         "users"
       ],
-      "summary": "Get all public users",
+      "summary": "List all users",
       "responses": {
         "200": {
           "description": "OK",
@@ -80,10 +98,38 @@
           "$ref": "#/components/responses/Unauthorized"
         }
       }
+    }
+
+  },
+  "/api/users/self/": {
+    "get": {
+      "tags": [
+        "users self"
+      ],
+      "summary": "Get connected user information",
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/UserFull"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
     },
     "put": {
       "tags": [
-        "users"
+        "users self"
       ],
       "summary": "Update the current connected user",
       "requestBody": {
@@ -95,14 +141,43 @@
                 "email": {
                   "type": "string"
                 },
-                "password": {
-                  "type": "string"
-                },
                 "firstname": {
                   "type": "string"
                 },
                 "lastname": {
                   "type": "string"
+                },
+                "accountNotifications": {
+                  "type": "object",
+                  "properties": {
+                    "updatePassword": {
+                      "type": "boolean"
+                    },
+                    "inviteAccount": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "emailNotifications": {
+                  "type": "object",
+                  "properties": {
+                    "conversations": {
+                      "type": "object",
+                      "properties": {
+                        "sharing": {
+                          "type": "boolean"
+                        }
+                      }
+                    },
+                    "organizations": {
+                      "type": "object",
+                      "properties": {
+                        "invite": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -136,7 +211,7 @@
     },
     "delete": {
       "tags": [
-        "users"
+        "users self"
       ],
       "summary": "Delete the current connected user",
       "responses": {
@@ -165,58 +240,12 @@
       }
     }
   },
-  "/api/users/password": {
+  "/api/users/self/picture": {
     "put": {
       "tags": [
-        "users"
+        "users self"
       ],
-      "summary": "Update user password",
-      "requestBody": {
-        "content": {
-          "multipart/form-data": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "newPassword": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "newPassword"
-              ]
-            }
-          }
-        }
-      },
-      "responses": {
-        "200": {
-          "description": "OK",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "message": {
-                    "type": "string",
-                    "example": "User password updated"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "401": {
-          "$ref": "#/components/responses/Unauthorized"
-        }
-      }
-    }
-  },
-  "/api/users/picture": {
-    "put": {
-      "tags": [
-        "users"
-      ],
-      "summary": "Update user picture",
+      "summary": "Update connected user picture",
       "requestBody": {
         "content": {
           "multipart/form-data": {
@@ -257,29 +286,53 @@
       }
     }
   },
+  "/api/users/self/verify-email": {
+    "patch": {
+      "tags": [
+        "users self"
+      ],
+      "summary": "Send a validation link to the user to verify email address ownership and set a magicId for 30 minutes.",
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
   "/api/users/search/": {
-    "post": {
+    "get": {
       "tags": [
         "users"
       ],
       "summary": "Search users information based on their firstname, lastname or email",
-      "requestBody": {
-        "content": {
-          "multipart/form-data": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "search": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "search"
-              ]
-            }
-          }
-        }
-      },
+      "parameters": [{
+        "name": "search",
+        "in": "path",
+        "description": "Search string",
+        "required": true,
+        "type": "string"
+      }],
       "responses": {
         "200": {
           "description": "OK",
@@ -294,6 +347,9 @@
               }
             }
           }
+        },
+        "204": {
+          "$ref": "#/components/responses/NoContent"
         },
         "401": {
           "$ref": "#/components/responses/Unauthorized"
@@ -329,6 +385,40 @@
               "schema": {
                 "type": "object",
                 "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/users/self/reset-password": {
+    "post": {
+      "tags": [
+        "users"
+      ],
+      "summary": "Send an authentication link to the user and set a magicId for 30 minutes.",
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  }
+                }
               }
             }
           }

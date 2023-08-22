@@ -1,0 +1,16 @@
+{
+  "CategorySearchType": {
+    "type": "string",
+    "nullable": false,
+    "enum": [
+      "explore",
+      "info",
+      "category"
+    ]
+  },
+  "example": {
+    "explore": "explore",
+    "info": "info",
+    "category": "category"
+  }
+}

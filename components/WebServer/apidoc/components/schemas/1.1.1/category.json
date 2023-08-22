@@ -1,0 +1,40 @@
+{
+  "Category": {
+    "type": "object",
+    "properties": {
+      "_id": {
+        "type": "string",
+        "description": "The category id"
+      },
+      "name": {
+        "type": "string",
+        "description": "The category name"
+      },
+      "color": {
+        "type": "string",
+        "description": "The category color"
+      },
+      "type": {
+        "type": "string",
+        "description": "The category type",
+        "enum": [
+          "keyword",
+          "conversation_metadata",
+          "conversation_text",
+          "commentary"
+        ]
+      },
+      "organizationId": {
+        "type": "string",
+        "description": "The organization id attached to the category"
+      }
+    },
+    "example": {
+      "_id": "5f9f9b9b7d1b424dccabc375",
+      "name": "feelings",
+      "type": "keyword, conversation_text, conversation_metadata, commentaires, conversation_video",
+      "organizationId": "63f4d9ed7d1b424dccabc375",
+      "color": "#FFFFFF"
+    }
+  }
+}

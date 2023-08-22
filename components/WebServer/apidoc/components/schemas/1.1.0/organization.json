@@ -1,0 +1,29 @@
+{
+  "Organization": {
+    "type": "object",
+    "properties": {
+      "_id": {
+        "type": "string",
+        "description": "The organization id"
+      },
+      "owner": {
+        "type": "string",
+        "description": "The user id of the owner of the organization"
+      },
+      "name": {
+        "type": "string",
+        "description": "The organization name"
+      },
+      "description": {
+        "type": "string",
+        "description": "The organization description"
+      }
+    },
+    "example": {
+      "_id": "634e6ab183f5db343dfc40d3",
+      "owner": "634e6ab183f5db343dfc40d2",
+      "name": "username@linagora.com",
+      "description": "Default user organization for username@linagora.com"
+    }
+  }
+}

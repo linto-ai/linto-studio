@@ -4,7 +4,7 @@ const { v4: uuidv4 } = require('uuid');
 const fs = require('fs')
 const path = require('path')
 
-const { transformAudio, mergeAudio, mergeChannel } = require(`${process.cwd()}/components/WebServer/controllers/files/transform`)
+const { transformAudio, mergeAudio, generateAudioWaveform, mergeChannel } = require(`${process.cwd()}/components/WebServer/controllers/files/transform`)
 
 /*
 ffmpeg -i in.whatever -vn -ar 16000 -ac 1 -b:a 96k out.mp3
@@ -57,8 +57,12 @@ async function storeFile(files, type = 'audio') {
             fs.writeFileSync(filePath, files.data)
 
             await transformAudio(filePath, output_audio)
-            deleteFile(filePath)
 
+            // Generate waveform json
+            // Write a JSON file in ../audiowaveform folder
+            await generateAudioWaveform(output_audio, fileName + '.json')
+
+            deleteFile(filePath)
             return {
                 filePath: `${process.env.VOLUME_AUDIO_PATH}/${fileName}.mp3`,
                 storageFilePath: output_audio,
@@ -75,16 +79,12 @@ function defaultPicture() {
     return `pictures/default.jpg`
 }
 
-// function deleteFile(filename, type) {
 function deleteFile(filePath) {
-
+  try {
     fs.unlinkSync(filePath)
-
-    //     if (type === 'picture') {
-    //         fs.unlinkSync(`${getStorageFolder()}/${getPictureFolder()}/${filename}`)
-    //     } else if (type === 'audio') {
-    //         fs.unlinkSync(`${getStorageFolder()}/${getAudioFolder()}/${filename}`)
-    //     }
+  } catch (error) {
+    debug('File not found to be deleted : ', filePath)
+  }
 }
 
 function getStorageFolder() {
@@ -99,4 +99,9 @@ function getAudioFolder() {
     return process.env.VOLUME_AUDIO_PATH
 }
 
-module.exports = { storeFile, defaultPicture, deleteFile, getStorageFolder, getPictureFolder, getAudioFolder }
+
+function getAudioWaveformFolder() {
+    return process.env.VOLUME_AUDIO_WAVEFORM_PATH
+}
+
+module.exports = { storeFile, defaultPicture, deleteFile, getStorageFolder, getPictureFolder, getAudioFolder, getAudioWaveformFolder }

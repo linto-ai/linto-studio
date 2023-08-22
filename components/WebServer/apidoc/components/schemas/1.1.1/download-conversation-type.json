@@ -1,0 +1,16 @@
+{
+  "DownloadConversationType": {
+    "type": "string",
+    "nullable": false,
+    "enum": [
+      "text",
+      "json",
+      "docx"
+    ]
+  },
+  "example": {
+    "text": "text",
+    "json": "json",
+    "docx": "docx"
+  }
+}

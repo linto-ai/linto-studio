@@ -1,58 +1,59 @@
 const debug = require('debug')('linto:conversation-manager:components:WebServer:controller:organizations:utility')
-const organizationModel = require(`${process.cwd()}/lib/mongodb/models/organizations`)
+const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const { OrganizationNotFound } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
-const ROLE = require(`${process.cwd()}/lib/dao/organization/roles`)
-
-
-async function getOrganization(organizationId) {
-    const organization = await organizationModel.getOrganizationById(organizationId)
-
-    if (organization.length !== 1) throw new OrganizationNotFound()
-    return {
-        ...organization[0],
-        organizationId: organization[0]._id.toString()
-    }
-}
+const RIGHT = require(`${process.cwd()}/lib/dao/conversation/rights`)
+const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 
 function countAdmin(organization, userId) {
     let adminCount = 0
     let isAdmin = false
-    let replaceOwner
     for (let oUser of organization.users) {
-        if (oUser.role === ROLE.ADMIN) adminCount++
-        if (oUser.userId === userId && oUser.role === ROLE.ADMIN) isAdmin = true
-        if (oUser.userId !== userId && oUser.role === ROLE.ADMIN) replaceOwner = oUser.userId
+        if (oUser.role === ROLES.ADMIN) adminCount++
+        if (oUser.userId === userId && oUser.role === ROLES.ADMIN) isAdmin = true
     }
 
     return {
+        userCount: organization.users.length,
         adminCount,
-        isAdmin,
-        replaceOwner
+        isAdmin
     }
 }
 
-async function canReadOrganization(organizationId, userId) {
-    const organization = await getOrganization(organizationId)
+async function getUserConversationFromOrganization(userId, organizationId) {
+    const organization = (await model.organizations.getByIdAndUser(organizationId, userId))[0]
+    if (!organization) throw new OrganizationError('You are not part of ' + organization.name)
 
-    if (organization.type === 'public') return true
-
-    for (let oUser of organization.users) {
-        if (oUser.userId === userId) return true
+    let userRole = ROLES.MEMBER
+    organization.users.map(oUser => {
+        if (oUser.userId === userId) {
+            userRole = oUser.role
+            return
+        }
+    })
+    const projection = {
+        speakers: 0,
+        keywords: 0,
+        highlights: 0
     }
-    return false
+    const conversations = await model.conversations.getByOrga(organizationId, projection)
+
+    let listConv = conversations.filter(conv => {
+        let access = conv.organization.customRights.find(customRight => (customRight.userId === userId))
+        if (access && RIGHT.hasRightAccess(access.right, RIGHT.READ)) {
+            return conv
+        } else if (!access && ROLES.hasRoleAccess(userRole, ROLES.MAINTAINER)) {
+            return conv
+        } else if (RIGHT.hasRightAccess(conv.organization.membersRight, RIGHT.READ)) {
+            return conv
+        }
+    }).filter(conv => conv !== undefined)
+
+    return listConv
 }
 
-async function checkOrganization(organizationId, userId) {
-    if (organizationId) {
-        const organization = await organizationModel.getOrganizationById(organizationId)
-        if (organization.length === 1) return organizationId
-    } else {
-        const organizations = await organizationModel.getPersonalOrganization(userId)
-        if (organizations[0]?._id) return organizations[0]._id.toString()
-    }
-    throw new OrganizationNotFound()
+module.exports = {
+    countAdmin,
+    getUserConversationFromOrganization
 }
-
-module.exports = { getOrganization, countAdmin, canReadOrganization, checkOrganization }

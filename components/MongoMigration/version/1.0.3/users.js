@@ -2,22 +2,22 @@ const debug = require('debug')(`linto:components:MongoMigration:controllers:vers
 
 const collections_name = 'users'
 
-let migration_update = {
-  "accountActivated" : true,
-  "authLink": {
-    "magicId": null,
-    "validityDate": null
+const migration_update = {
+  accountActivated: true,
+  authLink: {
+    magicId: null,
+    validityDate: null
   },
-  "accountNotifications": {
-    "updatePassword": false,
-    "inviteAccount": false,
+  accountNotifications: {
+    updatePassword: false,
+    inviteAccount: false,
   },
-  "emailNotifications": {
-    "conversations": {
-      "sharing": true
+  emailNotifications: {
+    conversations: {
+      sharing: true
     },
-    "organizations": {
-      "invite": false
+    organizations: {
+      invite: false
     }
   }
 }

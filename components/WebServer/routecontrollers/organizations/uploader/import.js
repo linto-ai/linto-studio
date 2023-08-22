@@ -3,9 +3,8 @@ const utf8 = require('utf8')
 
 
 const { addFileMetadataToConversation, initConversation } = require(`${process.cwd()}/components/WebServer/controllers/conversation/generator`)
-const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
 
-const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
+const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const CONVERSATION_RIGHT = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const { storeFile } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
@@ -56,7 +55,7 @@ async function importConv(req, res) {
 
     if (!conversation?.organization) {
       conversation.organization = {}
-      if (!conversation.organization?.organizationId) conversation.organization.organizationId = req.body.organizationId
+      if (!conversation.organization?.organizationId) conversation.organization.organizationId = req.params.organizationId
       if (!conversation.organization?.membersRight) conversation.organization.membersRight = CONVERSATION_RIGHT.READ + CONVERSATION_RIGHT.COMMENT
       if (!conversation.organization?.customRights) conversation.organization.customRights = []
     }
@@ -64,7 +63,7 @@ async function importConv(req, res) {
     conversation.owner = req.payload.data.userId
     await addFileToConv(conversation, req)
     setJobsDataToImport(conversation)
-    conversation = await conversationModel.createConversation(conversation)
+    conversation = await model.conversations.create(conversation)
 
     res.status(200).send({ message: 'Conversation imported' })
     return
@@ -97,7 +96,7 @@ async function importTranscription(req, res) {
   conversation = SttWrapper.transcriptionToConversation(normalizeTranscription, conversation)
   setJobsDataToImport(conversation)
 
-  const result = await conversationModel.createConversation(conversation)
+  const result = await model.conversations.create(conversation)
   if (result.insertedCount !== 1) throw new ConversationError()
 
   res.status(200).send({ message: 'Conversation imported' })
@@ -106,8 +105,13 @@ async function importTranscription(req, res) {
 
 async function importConversation(req, res, next) {
   try {
-    req.body.organizationId = await orgaUtility.checkOrganization(req.body.organizationId, req.payload.data.userId)
+    if (!req.params.organizationId) throw new ConversationMetadataRequire("organizationId param is required")
+
+    const organization = await model.organizations.getByIdAndUser(req.params.organizationId, req.payload.data.userId)
+    if (organization.length !== 1) throw new ConversationError(`Organization ${req.params.organizationId} not found`)
     req.body.userId = req.payload.data.userId
+    req.body.organizationId = req.params.organizationId
+
 
     if (req.query.type === 'conversation') await importConv(req, res)
     else if (req.query.type === 'transcription') await importTranscription(req, res)

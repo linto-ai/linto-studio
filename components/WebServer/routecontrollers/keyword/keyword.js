@@ -1,6 +1,7 @@
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:keyword')
 
-const conversationModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
+const model = require(`${process.cwd()}/lib/mongodb/models`)
+
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 
 const { createJobInterval } = require(`${process.cwd()}/components/WebServer/controllers/jobsHandler`)
@@ -22,7 +23,7 @@ async function keywordExtract(req, res, next) {
     if (process.env.NLP_METHOD.split(',').indexOf(req.body.method) === -1) throw new KeywordUnsupportedMediaType('Method is not supported')
 
     if (!req.params.conversationId) throw new ConversationIdRequire()
-    const conversation = await conversationModel.getConvoById(req.params.conversationId)
+    const conversation = await model.conversations.getById(req.params.conversationId)
     if (conversation.length !== 1) throw new ConversationNotFound()
 
 

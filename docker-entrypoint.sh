@@ -29,6 +29,7 @@ mkdir -p storages
 mkdir -p storages/audios
 mkdir -p storages/audios/original
 mkdir -p storages/pictures
+mkdir -p storages/audiowaveform
 
 cron
 

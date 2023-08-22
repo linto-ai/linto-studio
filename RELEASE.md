@@ -1,3 +1,27 @@
+# 1.1.2
+- Added pagination on conversation listing (shared and favorite)
+- Multiple optimisation
+- Handle tags for shared and favorite conversation listing
+- Update migration for memberRights string to int and new role
+- Add a new role : uploader
+- Refactoring some api path to handle new role
+- Fixing mailing
+  - Manage the email checking on the module side
+
+# 1.1.1
+- Added tags feature
+- Document creation now return their information
+- Refactoring of all search api to use the same query
+- All search api now can be used on the listing api
+- Updated API path
+- Updated Swagger documentation
+- Update MongoDB model with an update on the component MongoMigration
+- Added an docx download feature on conversation
+
+# 1.1.0
+- Mongo model update
+- Refactoring of mailing library
+
 # 1.0.3
 - Implementation of a migration system
   - Swagger schema match the database version

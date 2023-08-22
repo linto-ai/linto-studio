@@ -1,96 +1,5 @@
 {
-  "/api/organizations/{organizationId}/": {
-    "get": {
-      "tags": [
-        "organizations members"
-      ],
-      "summary": "Get an organization",
-      "parameters": [{
-        "in": "path",
-        "name": "organizationId",
-        "type": "string",
-        "format": "uuid",
-        "required": true,
-        "description": "uuid string identifier for an user"
-      }],
-      "responses": {
-        "200": {
-          "description": "OK",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "$ref": "#/components/schemas/organization"
-              }
-            }
-          }
-        },
-        "401": {
-          "$ref": "#/components/responses/Unauthorized"
-        },
-        "404": {
-          "$ref": "#/components/responses/NotFound"
-        }
-      }
-    }
-  },
   "/api/organizations/{organizationId}/self": {
-    "patch": {
-      "tags": [
-        "organizations members"
-      ],
-      "summary": "Update self from the requested organization",
-      "parameters": [{
-        "in": "path",
-        "name": "organizationId",
-        "type": "string",
-        "format": "uuid",
-        "required": true,
-        "description": "uuid string identifier for an organization"
-      }],
-      "requestBody": {
-        "content": {
-          "multipart/form-data": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "visibility": {
-                  "type": "string",
-                  "enum": [
-                    "public",
-                    "private"
-                  ]
-                }
-              }
-            }
-          }
-        }
-      },
-      "responses": {
-        "200": {
-          "content": {
-            "application/json": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "description": "Information"
-                }
-              },
-              "example": {
-                "message": "User updated from the organization"
-              }
-            }
-          }
-        },
-        "401": {
-          "$ref": "#/components/responses/Unauthorized"
-        },
-        "404": {
-          "$ref": "#/components/responses/NotFound"
-        }
-      }
-    },
     "delete": {
       "tags": [
         "organizations members"
@@ -133,20 +42,46 @@
       }
     }
   },
-  "/api/organizations/{organizationId}/conversation": {
+  "/api/organizations/{organizationId}/conversations": {
     "get": {
       "tags": [
         "organizations members"
       ],
-      "summary": "Get the conversation of the requested organization",
+      "summary": "Lists all conversations from an organization where the user have an access",
       "parameters": [{
-        "in": "path",
-        "name": "organizationId",
-        "type": "string",
-        "format": "uuid",
-        "required": true,
-        "description": "uuid string identifier for an organization"
-      }],
+          "in": "path",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an organization"
+        },
+        {
+          "in": "query",
+          "name": "filter",
+          "required": false,
+          "description": "Allow to filter some data (`notags`)",
+          "example": ""
+        },
+        {
+          "in": "query",
+          "name": "tags",
+          "required": false,
+          "description": "List of tags id to search for",
+          "example": "5e9b1b9b0f9b2c0017b5f1b5,5e9b1b9b0f9b2c0017b5f1b6,..."
+        }, {
+          "in": "query",
+          "name": "name",
+          "required": false,
+          "description": "Search for a conversation name"
+        },
+        {
+          "in": "query",
+          "name": "text",
+          "required": false,
+          "description": "Search for a text inside the conversation"
+        }
+      ],
       "responses": {
         "200": {
           "description": "OK",
@@ -161,6 +96,9 @@
               }
             }
           }
+        },
+        "204": {
+          "$ref": "#/components/responses/NoContent"
         },
         "401": {
           "$ref": "#/components/responses/Unauthorized"
