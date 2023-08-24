@@ -13,9 +13,12 @@ const RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 
 const {
-  ConversationIdRequire,
   ConversationMetadataRequire
 } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
+
+const {
+  OrganizationNotFound
+} = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
 async function batchShareConversation(req, res, next) {
   try {
@@ -47,10 +50,10 @@ async function batchShareConversation(req, res, next) {
     const sharedBy = (await model.users.getById(auth_user.id))
     for (let user of users_list.users) {
       if (user.magicId) {
-        await Mailing.conversationSharedNewUser(user.email, req, user.magicId, sharedBy[0].email)
+        Mailing.conversationSharedNewUser(user.email, req, user.magicId, sharedBy[0].email)
         delete user.magicId
       } else {
-        await Mailing.multipleConversationRight(user, req, sharedBy[0].email, user.conversations)
+        Mailing.multipleConversationRight(user, req, sharedBy[0].email, user.conversations)
       }
 
       if (user.private) delete user.email
