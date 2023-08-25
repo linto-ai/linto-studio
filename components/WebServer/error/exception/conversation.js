@@ -75,6 +75,19 @@ class ConversationShareAccessDenied extends Error {
   }
 }
 
+class ConversationDeleteAccessDenied extends Error {
+  constructor(message, err) {
+    super()
+    this.name = 'ConversationDeleteAccessDenied'
+    this.type = ExceptionType
+    this.status = '401'
+    if (message) this.message = message
+    else this.message = `User don't have delete access to the conversation`
+    if (err) this.err = err
+  }
+}
+
+
 class ConversationReadAccessDenied extends Error {
   constructor(message, err) {
     super()
@@ -158,6 +171,7 @@ module.exports = {
   ConversationUnsupportedMediaType,
   ConversationReadAccessDenied,
   ConversationWriteAccessDenied,
+  ConversationDeleteAccessDenied,
   ConversationShareAccessDenied,
   ConversationNotShared,
   ConversationIdRequire,
