@@ -51,7 +51,7 @@ module.exports = (webserver) => {
         },
         {
             path: '/:conversationId/download',
-            method: 'get',
+            method: 'post',
             requireAuth: true,
             requireConversationReadAccess: true,
             controller: downloadConversation
