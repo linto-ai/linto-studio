@@ -10,7 +10,6 @@ const { jsonToPlainText } = require('json-to-plain-text')
 
 const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
 
-
 const {
     ConversationIdRequire,
     ConversationNotFound,
@@ -80,7 +79,7 @@ async function downloadConversation(req, res, next) {
 
 async function prepareConversation(conversation, filter) {
     if (filter.speaker)
-    conversation.text = conversation.text.filter(turn => filter.speaker.includes(turn.speaker_id))
+        conversation.text = conversation.text.filter(turn => filter.speaker.includes(turn.speaker_id))
 
     if (filter.keyword) {
         keyword_list = filter.keyword.split(',')
@@ -125,6 +124,7 @@ async function prepareMetadata(conversation, metadata) {
 
             data.categories[category.name].tags.push(tag.name)
         }
+        if (Object.keys(data.categories).length === 0) delete data.categories
     }
 
 
@@ -195,16 +195,35 @@ async function generateDocx(conversation, metadata) {
     }
 
 
+    let targetPhrases = []
+    if (metadata.categories) {
+        for (let category in metadata.categories) {
+            if (metadata.categories[category].type === TYPE.HIGHLIGHT) {
+                metadata.categories[category].tags.map(tag => {
+                    targetPhrases.push(tag)
+                })
+            }
+        }
+    }
 
     paragraphs.push(generateHeading('Conversation'))
 
     conversation.text.map(turn => {
-        const segment = turn.segment.replace(/' /g, "'")
-
         let children = []
-        if (turn.stime) children.push(new TextRun({ text: `(${turn.stime} s - ${turn.etime}s) : `, italics: true }))
         if (metadata.speakers) children.push(new TextRun({ text: `${turn.speaker_name} : `, bold: true }))
-        children.push(new TextRun({ text: segment }))
+        if (turn.stime) children.push(new TextRun({ text: `(${turn.stime} s - ${turn.etime}s) : `, italics: true }))
+
+        if (targetPhrases.length === 0) {
+            children.push(new TextRun(turn.segment))
+        } else {
+            const phrasePattern = new RegExp(`\\b(${targetPhrases.join('|')})\\b`, 'ig')
+            const segments = turn.segment.split(phrasePattern)
+
+            for (const segment of segments) {
+                if (targetPhrases.some((phrase) => segment.toLowerCase().includes(phrase.toLowerCase()))) children.push(createHighlightedTextRun(segment))
+                else children.push(new TextRun(segment))
+            }
+        }
 
         paragraphs.push(
             new Paragraph({
@@ -276,6 +295,14 @@ function generateBulletParagraph(text, level) {
         bullet: {
             level
         },
+    })
+}
+
+
+function createHighlightedTextRun(text) {
+    return new TextRun({
+        text,
+        highlight: 'yellow',
     })
 }
 
