@@ -29,7 +29,7 @@ async function downloadConversation(req, res, next) {
         let metadata = {}
         if (req.body) {
             if (req.body.filter) conversation = await prepareConversation(conversation, req.body.filter)
-            if (conversation.text.length === 0) throw new ConversationError('No data to export')
+            if (conversation.text.length === 0) res.status(204).send()
 
             if (req.body.metadata) metadata = await prepareMetadata(conversation, req.body.metadata)
         }
