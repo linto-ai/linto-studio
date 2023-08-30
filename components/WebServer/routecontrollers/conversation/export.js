@@ -27,14 +27,11 @@ async function downloadConversation(req, res, next) {
 
         conversation = conversation[0]
         let metadata = {}
-        if (req.body.export) {
-            let body_request = JSON.parse(req.body.export)
-
-            if (body_request.filter) conversation = await prepareConversation(conversation, body_request.filter)
+        if (req.body) {
+            if (req.body.filter) conversation = await prepareConversation(conversation, req.body.filter)
             if (conversation.text.length === 0) throw new ConversationError('No data to export')
 
-
-            if (body_request.metadata) metadata = await prepareMetadata(conversation, body_request.metadata)
+            if (req.body.metadata) metadata = await prepareMetadata(conversation, req.body.metadata)
         }
 
 
@@ -54,9 +51,9 @@ async function downloadConversation(req, res, next) {
             })
             output += "\n\n"
             conversation.text.map(text => {
-                if (text.stime) output += ` ${text.stime} - ${text.etime} : `
                 if (metadata.speakers) output += `${text.speaker_name} : `
-                output += text.segment + "\n"
+                if (text.stime) output += `${text.stime} - ${text.etime} : `
+                output += text.segment + "\n\n"
             })
 
             res.setHeader('Content-Type', 'text/plain')
