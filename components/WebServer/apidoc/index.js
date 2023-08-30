@@ -15,5 +15,7 @@ module.exports = {
   ...require('./api/conversations/member.json'),
   ...require('./api/conversations/nlp.json'),
   ...require('./api/conversations/turn.json'),
-  ...require('./api/conversations/tag.json')
+  ...require('./api/conversations/tag.json'),
+  ...require('./api/conversations/highlight.json'),
+  ...require('./api/conversations/shared.json')
 }

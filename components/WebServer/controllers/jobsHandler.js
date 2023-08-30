@@ -4,43 +4,73 @@ const axios = require(`${process.cwd()}/lib/utility/axios`)
 const SttWrapper = require(`${process.cwd()}/components/WebServer/controllers/conversation/generator`)
 const { segmentNormalizeText } = require(`${process.cwd()}/components/WebServer/controllers/conversation/normalizeSegment`)
 
-const ConvoModel = require(`${process.cwd()}/lib/mongodb/models/conversations`)
+const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const DEFAULT_INTERVAL_TIMER = 1000 // 10 sec
 
 async function getResult(host, processing_job, job, conversation) {
     try {
         let url = `${host}/results/${job.result_id}`
+
         if (conversation.metadata.transcription.transcriptionConfig.enableNormalization) {
             url += '?convert_numbers=true'
         }
 
-        const options = {
+        const result = await axios.get(url, {
             headers: {
                 accept: 'application/json'
             }
-        }
-        const result = await axios.get(url, options)
+        })
 
         if (result && processing_job.type === 'transcription') {
             const normalizeTranscription = segmentNormalizeText(result, conversation.locale, processing_job.filter)
+
             conversation = SttWrapper.transcriptionToConversation(normalizeTranscription, conversation)
+            conversation.jobs.transcription = job
 
-            conversation.jobs.transcription.type = 'transcription'
-            ConvoModel.updateConvOnTranscriptionResult(conversation._id, conversation)
+            model.conversations.updateConvOnTranscriptionResult(conversation._id, conversation)
         } else if (result && processing_job.type === 'keyword') {
-            ConvoModel.updateKeyword(conversation._id, { ...conversation.keywords, ...result })
-        }
+            conversation.jobs.nlp.keyword = job
+            model.conversations.updateJob(conversation._id, conversation.jobs)
 
+            const organizationId = conversation.organization.organizationId
+            const category = await model.categories.getHighlightCategories(conversation.organization.organizationId)
+            const categoryId = category[0]._id.toString()
+
+            let tagList = conversation.tags || []
+            for (let i in result.keyword_extraction) {
+                const keys = Object.keys(result.keyword_extraction[i])
+
+                for (let i in keys) {
+                    let key = keys[i]
+                    const tag = await model.tags.getByOrgaId(organizationId, { name: key })
+                    if (tag.length === 0) { //if probability is higher than 0.6
+                        let result = await model.tags.create({
+                            name: key,
+                            categoryId: categoryId,
+                            organizationId: organizationId
+                        })
+                        tagList.push(result.insertedId.toString())
+                    } else if (tag.length > 0) {
+                        tagList.push(tag[0]._id.toString())
+                    }
+                }
+            }
+            // remove duplicate or null value from tagList
+            tagList = tagList.filter((item, index) => tagList.indexOf(item) === index && item !== null)
+
+            await model.conversations.updateTag(conversation._id, tagList)
+
+        }
     } catch (err) {
         debug(`Error while getting transcription result: ${err}`)
-
         let job_status = {
             ...job,
             state: 'error',
             err: err.message
         }
-        updateConversation(conversation, jobs_type, job_status)
+
+        updateJobConversation(conversation, processing_job, job_status)
     }
 }
 
@@ -54,14 +84,13 @@ async function createJobInterval(host, conversation, processing_job) {
             }
 
             if (job_info.state === 'done' && job_info.result_id) { //triger last request
-                conversation.jobs.transcription = job_info
                 getResult(host, processing_job, job_status, conversation)
 
-                debug('jobs done')
                 clearInterval(interval)
-            } else {
-                updateConversation(conversation, processing_job, job_status)
-            }
+                debug('jobs done')
+
+            } else updateJobConversation(conversation, processing_job, job_status)  // Jobs still running
+
         } catch (err) {
             let job_status = {
                 job_id: processing_job.job_id,
@@ -69,23 +98,25 @@ async function createJobInterval(host, conversation, processing_job) {
                 err: err.response.data
             }
 
-            updateConversation(conversation, processing_job, job_status)
+            updateJobConversation(conversation, processing_job, job_status)
             clearInterval(interval)
-            debug('Jobs error', err.response.data)
         }
     }, DEFAULT_INTERVAL_TIMER)
 }
 
-
-
-function updateConversation(conversation, processing_job, job_info) {
+function updateJobConversation(conversation, processing_job, job_info) {
     const id = conversation._id
+
     if (processing_job.type === 'transcription') {
         conversation.jobs.transcription = job_info
-    } else if (processing_job.type === 'keyword') {
-        conversation.jobs.keyword = job_info
+    } else {
+        if (conversation.jobs.nlp === undefined) conversation.jobs.nlp = {}
+        if (processing_job.type === 'keyword') {
+            conversation.jobs.nlp.keyword = job_info
+        }
     }
-    ConvoModel.updateJob(id, conversation.jobs)
+
+    model.conversations.updateJob(id, conversation.jobs)
 }
 
 module.exports = { createJobInterval }

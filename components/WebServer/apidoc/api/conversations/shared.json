@@ -1,0 +1,215 @@
+{
+  "/api/conversations/shared/tags": {
+    "get": {
+      "tags": [
+        "conversations"
+      ],
+      "summary": "List tags from favorites conversations of the connected user",
+      "parameters": [{
+        "in": "query",
+        "name": "tags",
+        "required": false,
+        "description": "List of tags id to filter for",
+        "example": "5e9b1b9b0f9b2c0017b5f1b5,5e9b1b9b0f9b2c0017b5f1b6,..."
+      }],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/CategoryWithTags"
+                }
+              }
+            }
+          }
+        },
+        "204": {
+          "$ref": "#/components/responses/NoContent"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/conversations/shared/access": {
+    "post": {
+      "tags": [
+        "conversations"
+      ],
+      "summary": "Add access to user from a conversation list",
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "conversations": {
+                  "type": "string",
+                  "description": "List of conversations id to share to give user access to",
+                  "example": "5e9b1b9b0f9b2c0017b5f1b5,5e9b1b9b0f9b2c0017b5f1b6,..."
+                },
+                "organizationId": {
+                  "type": "string",
+                  "description": "Organization id you working on",
+                  "example": "64522ab6fd98b64154a70dd3"
+                },
+                "users": {
+                  "description": "List of users id to share with their access level",
+                  "$ref": "#/components/schemas/UserShared"
+                }
+              }
+            },
+            "required": [
+              "conversations",
+              "users"
+            ]
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/UserSharedGiven"
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "patch": {
+      "tags": [
+        "conversations"
+      ],
+      "summary": "Update access to user from a conversation list",
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "conversations": {
+                  "type": "string",
+                  "description": "List of conversations id to share to give user access to",
+                  "example": "5e9b1b9b0f9b2c0017b5f1b5,5e9b1b9b0f9b2c0017b5f1b6,..."
+                },
+                "organizationId": {
+                  "type": "string",
+                  "description": "Organization id you working on",
+                  "example": "64522ab6fd98b64154a70dd3"
+                },
+                "users": {
+                  "description": "List of users id to share with their access level",
+                  "$ref": "#/components/schemas/UserShared"
+                }
+              }
+            },
+            "required": [
+              "conversations",
+              "users"
+            ]
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/UserSharedGiven"
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "conversations"
+      ],
+      "summary": "Remove access to user from a conversation list",
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "conversations": {
+                  "type": "string",
+                  "description": "List of conversations id to share to give user access to",
+                  "example": "5e9b1b9b0f9b2c0017b5f1b5,5e9b1b9b0f9b2c0017b5f1b6,..."
+                },
+                "organizationId": {
+                  "type": "string",
+                  "description": "Organization id you working on",
+                  "example": "64522ab6fd98b64154a70dd3"
+                },
+                "users": {
+                  "description": "List of users id to share with their access level",
+                  "$ref": "#/components/schemas/UserShared"
+                }
+              }
+            },
+            "required": [
+              "conversations",
+              "users"
+            ]
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/UserSharedGiven"
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  }
+}

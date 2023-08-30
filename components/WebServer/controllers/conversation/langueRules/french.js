@@ -11,8 +11,8 @@ function correctSegmentText(seg_text) {
   }
 }
 
-function simplePunctuation(seg_text, words) {
-  if (seg_text.lowercase.replace(/[,.]$/, '') === words.word) {
+function simplePunctuation(seg_text, words, loop_data) {
+  if (seg_text.lowercase.replace(/[.,"]/g, '') === words.word.toLowerCase()) {
     return {
       ...words,
       word: seg_text.original
@@ -21,13 +21,17 @@ function simplePunctuation(seg_text, words) {
 }
 
 function doublePunctuation(seg_text, words, loop_data) {
-  if (/[?!:;]$/.test(seg_text.lowercase)) {
+  if (/[?!:;«»]$/.test(seg_text.lowercase)) {
+
     let timestamp = 0
     if (loop_data.word_index !== 0) {
       timestamp = loop_data.words[loop_data.word_index - 1].end
     }
 
-    if (/[0-9a-zA-ZÀ-ÿ]/.test(seg_text.lowercase)) skip_words = 0
+    //count number if space in the segment
+    let spacesCount = (seg_text.lowercase.match(/ /g) || []).length
+
+    if (/[0-9a-zA-ZÀ-ÿ]/.test(seg_text.lowercase)) skip_words = spacesCount
     else skip_words = -1
 
     return {
@@ -56,6 +60,7 @@ function numberNormalize(seg_text, words, loop_data) {
   const regex_number = /.*[0-9].*/
 
   if (regex_number.test(seg_text.lowercase.replace(/[,.:]$/, ''))) {
+
     if (loop_data.segment_index + 1 > loop_data.segment.length - 1) {
       return {
         ...words,

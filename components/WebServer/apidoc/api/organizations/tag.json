@@ -21,9 +21,6 @@
                 "name": {
                   "type": "string"
                 },
-                "color": {
-                  "type": "string"
-                },
                 "categoryId": {
                   "type": "string"
                 }
@@ -89,7 +86,6 @@
               "example": [{
                 "id": "63f4d9ed7d1b424dccabc375",
                 "name": "Tag name",
-                "color": "#000000",
                 "categoryId": "640612ea3b471d4e48cc9bf3",
                 "organizationId": "5f4d9ed7d1b424dccabc372"
               }]
@@ -128,6 +124,13 @@
           "required": false,
           "description": "CategoryId to search",
           "example": "5e9b1b9b0f9b2c0017b5f1b5"
+        },
+        {
+          "in": "query",
+          "name": "categoryType",
+          "required": false,
+          "description": "CategoryType to search, this have the priority over the tags parameter",
+          "example": "highlight,conversation_metadata,conversation_text,commentary"
         }
       ],
       "responses": {
@@ -218,9 +221,6 @@
               "type": "object",
               "properties": {
                 "name": {
-                  "type": "string"
-                },
-                "color": {
                   "type": "string"
                 },
                 "categoryId": {

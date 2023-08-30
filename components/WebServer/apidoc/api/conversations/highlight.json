@@ -1,0 +1,101 @@
+{
+  "/api/conversations/{conversationId}/highlights": {
+    "get": {
+      "tags": [
+        "conversations tag"
+      ],
+      "summary": "List category of type highlights from a conversation",
+      "parameters": [{
+          "name": "conversationId",
+          "in": "path",
+          "description": "The conversation id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Category"
+                }
+              }
+            }
+          }
+        },
+        "204": {
+          "$ref": "#/components/responses/NoContent"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    },
+    "post": {
+      "tags": [
+        "conversations tag"
+      ],
+      "summary": "Add a tag of type highlights to a conversation",
+      "parameters": [{
+        "name": "conversationId",
+        "in": "path",
+        "description": "The conversation id",
+        "required": true,
+        "type": "string"
+      }],
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name"
+              ]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "description": "Tag added to conversation"
+                }
+              },
+              "example": {
+                "status": "OK"
+              }
+            }
+          }
+        },
+        "304": {
+          "$ref": "#/components/responses/NotModified"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "415": {
+          "$ref": "#/components/responses/UnsupportedMediaType"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  }
+}

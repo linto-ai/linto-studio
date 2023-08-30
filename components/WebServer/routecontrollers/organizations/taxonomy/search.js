@@ -1,5 +1,6 @@
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:taxonomy:taxonomy')
 const model = require(`${process.cwd()}/lib/mongodb/models`)
+const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
 
 const organizationUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
 
@@ -54,10 +55,19 @@ async function search(req) {
     tags = await model.search.tags.searchByName(req.params.organizationId, req.query.name)
 
     let categoriesList = {}
+    let ignoredList = []
     for (let tag of tags) {
+
+      if (ignoredList.includes(tag.categoryId)) continue // should skip if the category has already been ignored
+
       if (!categoriesList[tag.categoryId]) {
-        let category = await model.categories.getById(tag.categoryId)
-        categoriesList[tag.categoryId] = { ...category[0], tags: [] }
+        let category = (await model.categories.getById(tag.categoryId))[0]
+        if (!TYPE.desiredType(category.type, req.query.categoryType)) {
+          ignoredList.push(tag.categoryId)
+          continue  // should skip if the category is not the desired type
+        }
+
+        categoriesList[tag.categoryId] = { ...category, tags: [] }
       }
       categoriesList[tag.categoryId].tags.push(tag)
     }
@@ -98,16 +108,23 @@ async function generateCategoryFromTagList(tagsId, organizationId, search = {}) 
 
   const tags_list = await model.search.tags.searchTag(uniqueTagIds, organizationId, search.name)
 
+  let ignoredList = []
   for (const tag of tags_list) {
     const categoryId = tag.categoryId
 
+    if (ignoredList.includes(categoryId)) continue // should skip if the category has already been ignored
     if (!categories[categoryId]) {
       const category = (await model.categories.getById(categoryId))[0]
-      if (category === undefined) continue
-      categories[categoryId] = {
-        ...category,
-        tags: [],
-        searchedTag: false
+
+      if (!TYPE.desiredType(category?.type, search.categoryType)) {
+        ignoredList.push(categoryId)
+        continue // should skip if the category is ignored
+      } else {
+        categories[categoryId] = {
+          ...category,
+          tags: [],
+          searchedTag: false
+        }
       }
     }
 
@@ -134,18 +151,23 @@ async function searchTag(req, res, next) {
     if (req.query.categoryId === undefined || req.query.tags === undefined) throw new OrganizationError('categoryId or tags are required')
     const categoryTags = await model.search.tags.getByCategory(req.query.categoryId)
 
-
     const userConversationsIds = (await organizationUtility
       .getUserConversationFromOrganization(req.payload.data.userId, req.params.organizationId))
       .map(conv => conv._id)
-    // Search for conversations based on tags and conversation access
 
-    const conversationsTags = (await model.search.conversations.getByIdsAndTag(userConversationsIds, req.query.tags)).flatMap(conv => conv.tags)
+    // Search for conversations based on tags and conversation access
+    const conversationsTags = (await model.search.conversations.getByIdsAndTag(userConversationsIds, req.query.tags))/*.flatMap(conv => conv.tags)*/
 
     let searchResult = []
+
     for (let tag of categoryTags) {
-      if (conversationsTags.includes(tag._id.toString())) {
-        searchResult.push(tag)
+      if (searchResult.includes(tag)) continue
+
+      for (let conv of conversationsTags) {
+        if (conv.tags.includes(tag._id.toString())){
+          searchResult.push(tag)
+          break
+        }
       }
     }
 

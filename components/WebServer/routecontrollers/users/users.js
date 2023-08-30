@@ -45,7 +45,9 @@ async function createUser(req, res, next) {
         if (createdOrganization.insertedCount !== 1) {
             model.users.delete(createdUser.insertedId.toString())
             throw new UserError()
-        }
+        } else
+            model.categories.createDefaultCategories(createdOrganization.insertedId.toString())
+
 
         const mail_result = await Mailing.accountCreate(user.email, req, createdUser.ops[0].authLink.magicId)
         if (!mail_result) throw new NodemailerError()

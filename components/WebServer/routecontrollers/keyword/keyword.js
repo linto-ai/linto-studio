@@ -1,59 +1,77 @@
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:keyword')
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
-
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 
 const { createJobInterval } = require(`${process.cwd()}/components/WebServer/controllers/jobsHandler`)
 
-
 const {
   KeywordError,
-  KeywordUnsupportedMediaType
+  KeywordMetadataRequire
 } = require(`${process.cwd()}/components/WebServer/error/exception/keyword`)
 
 const {
   ConversationIdRequire,
 } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
+const MAX_WORD = 100
 
 async function keywordExtract(req, res, next) {
   try {
-    if (!req.body.method) throw new KeywordUnsupportedMediaType('Method is required')
-    if (process.env.NLP_METHOD.split(',').indexOf(req.body.method) === -1) throw new KeywordUnsupportedMediaType('Method is not supported')
+    if (!req.body.endpoint) throw new KeywordMetadataRequire('endpoint param is require')
+    if (!req.body.serviceName) throw new KeywordMetadataRequire('serviceName param is require')
+    // if (!req.body.method) throw new KeywordMetadataRequire('method param is require')
 
     if (!req.params.conversationId) throw new ConversationIdRequire()
+    let service = process.env.GATEWAY_SERVICES + '/' + req.body.endpoint
+
+
     const conversation = await model.conversations.getById(req.params.conversationId)
     if (conversation.length !== 1) throw new ConversationNotFound()
 
 
-    let text = ""
     if (!conversation[0].text) throw new KeywordError('Conversation has no text')
+
+    let documents = []
+    let text = ""
+
     conversation[0].text.map(segText => {
-      text += segText.segment + ""
+      segText.segment.split(/\s+/).map(seg => {
+        text += seg + " "
+      })
     })
+    if (text !== "") documents.push(text)
+
     const options = {
       headers: { accept: 'application/json' },
       data: {
         nlpConfig: {
           keywordExtractionConfig: {
             enableKeywordExtraction: true,
-            keywordExtractionParameters: { method: req.body.method }
+            serviceName: req.body.serviceName,
+
+            method: req.body.method,
+            // method : 'keybert',
+            // methodConfig: { top_n : 1, diversity : 0.8 }
+
+            method : 'frekeybert',
+            methodConfig: { top_n : 10, number_of_segments : 2 }
+
+            // methodConfig: req.body.methodConfig
           }
         },
-        text: text
+        documents: documents
       }
     }
 
-
-    const job = await axios.post(`${process.env.NLP_SERVICES}/nlp`, options)
+    const job = await axios.post(`${service +'/nlp'}`, options)
     let jobs = {
       type: 'keyword',
       job_id: job.jobid,
       filter: {}
-  }
+    }
 
-    createJobInterval(process.env.NLP_SERVICES, conversation[0], jobs)
+    createJobInterval(service, conversation[0], jobs)
 
     res.status(201).send({
       message: 'A keyword job is currently being processed'

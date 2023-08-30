@@ -1,3 +1,13 @@
+# 1.1.3
+- Refactoring some api path to handle new role
+- Fixing mailing
+  - Manage the email checking on the module side
+- Handle default category on organization creation (highlights)
+- On keywords generation, handle the tag creation
+- Added highlight api 
+- Added a batch support for action on conversation
+- 
+
 # 1.1.2
 - Added pagination on conversation listing (shared and favorite)
 - Multiple optimisation
@@ -7,6 +17,9 @@
 - Refactoring some api path to handle new role
 - Fixing mailing
   - Manage the email checking on the module side
+- Handle default category on organization creation (highlights)
+- On keywords generation, handle the tag creation
+- Added highlight api 
 
 # 1.1.1
 - Added tags feature

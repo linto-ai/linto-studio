@@ -13,7 +13,8 @@ const {
 const {
     addUserInOrganization,
     updateUserFromOrganization,
-    deleteUserFromOrganization
+    deleteUserFromOrganization,
+    deleteConversationFromOrganization
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/maintainer.js`)
 
 const {
@@ -106,6 +107,13 @@ module.exports = (webserver) => {
             requireAuth: true,
             requireOrganizationMaintainerAccess: true,
             controller: deleteUserFromOrganization
+        },
+        {
+            path: '/:organizationId/conversations',
+            method: 'delete',
+            requireAuth: true,
+            requireOrganizationMaintainerAccess: true,
+            controller: deleteConversationFromOrganization
         },
 
         /* Admin right*/

@@ -49,7 +49,7 @@ async function createCategory(req, res, next) {
     let category = await model.categories.getByOrgaId(req.params.organizationId, { name: req.body.name })
     if (category.length > 0) throw new CategoryConflict(`Conflict with category name ${req.body.name} already exist. Category id ${category[0]._id}`)
 
-    if (!req.body.color) req.body.color = '#FFFFFF'
+    if (!req.body.color) req.body.color = 'white'
     if (!req.body.type) throw new CategoryTypeNotDefined()
     else if (TYPE.checkValue(req.body.type) === false) throw new CategoryUnsupportedMediaType('Type not supported')
     req.body.organizationId = req.params.organizationId

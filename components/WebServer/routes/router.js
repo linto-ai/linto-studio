@@ -14,7 +14,7 @@ class Router {
         for (let level in routes) {
             for (let path in routes[level]) {
                 const route = routes[level][path]
-                const method = route.method
+                const methods = route.method.split(',')
                 if (process.env.DEV_DISABLE_AUTH === 'true') {
                     route.requireAuth = false
                     route.requireSession = false
@@ -52,18 +52,22 @@ class Router {
 
                 if (process.env.LOGGER_ENABLED === "true") middlewaresLoaded.push(nav_middlewares.logger)
 
-                webServer.express[method](
-                    level + route.path,
-                    middlewaresLoaded,
-                    (req, res, next) => {
-                        next();
-                    },
-                    ifHasElse(
-                        Array.isArray(route.controller),
-                        () => Object.values(route.controller),
-                        () => route.controller
+
+                methods.map(method => {
+                    webServer.express[method](
+                        level + route.path,
+                        middlewaresLoaded,
+                        (req, res, next) => {
+                            next();
+                        },
+                        ifHasElse(
+                            Array.isArray(route.controller),
+                            () => Object.values(route.controller),
+                            () => route.controller
+                        )
                     )
-                )
+                })
+
             }
         }
     }

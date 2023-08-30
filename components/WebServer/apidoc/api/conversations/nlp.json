@@ -1,5 +1,5 @@
 {
-  "/api/conversations/{conversationId}/keyword": {
+  "/api/nlp/conversations/{conversationId}/keywords": {
     "post": {
       "tags": ["conversation keyword"],
       "summary": "Add keywords to a conversation",
@@ -11,27 +11,6 @@
         "required": true,
         "description": "uuid string identifier for an conversation"
       }],
-      "requestBody": {
-        "content": {
-          "multipart/form-data": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "method": {
-                  "type": "string",
-                  "enum": [
-                    "textrank",
-                    "frequencies"
-                  ]
-                }
-              },
-              "required": [
-                "method"
-              ]
-            }
-          }
-        }
-      },
       "responses": {
         "201": {
           "description": "OK",

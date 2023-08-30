@@ -11,6 +11,7 @@ const {
   ConversationReadAccessDenied,
   ConversationWriteAccessDenied,
   ConversationShareAccessDenied,
+  ConversationDeleteAccessDenied,
   ConversationNotShared,
   ConversationIdRequire
 } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
@@ -26,7 +27,7 @@ module.exports = {
     await access(next, req.params.conversationId, req.payload.data.userId, false, CONVERSATION_RIGHTS.WRITE, ConversationWriteAccessDenied) // ORGA MAINTENER
   },
   asDeleteAccess: async (req, res, next) => {
-    await access(next, req.params.conversationId, req.payload.data.userId, true, CONVERSATION_RIGHTS.DELETE, ConversationReadAccessDenied) // ORGA MAINTENER
+    await access(next, req.params.conversationId, req.payload.data.userId, true, CONVERSATION_RIGHTS.DELETE, ConversationDeleteAccessDenied) // ORGA MAINTENER
   },
   asShareAccess: async (req, res, next) => {
     await access(next, req.params.conversationId, req.payload.data.userId, false, CONVERSATION_RIGHTS.SHARE, ConversationShareAccessDenied)

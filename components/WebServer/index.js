@@ -66,11 +66,16 @@ class WebServer extends Component {
         WebServerErrorHandler.init(this) // Manage error from controllers
 
         let api_host = 'localhost'
+        let base_path = '/'
         if (process.env.WEBSERVER_SWAGGER_HTTP_HOST) api_host = process.env.WEBSERVER_SWAGGER_HTTP_HOST
         if (process.env.WEBSERVER_HTTP_PORT) api_host += ':' + process.env.WEBSERVER_HTTP_PORT
-        if (process.env.WEBSERVER_SWAGGER_API_PATH) api_host += '/' + process.env.WEBSERVER_SWAGGER_API_PATH
+        // if (process.env.WEBSERVER_SWAGGER_API_PATH) api_host += '/' + process.env.WEBSERVER_SWAGGER_API_PATH
+        if (process.env.WEBSERVER_SWAGGER_API_PATH) base_path = '/' + process.env.WEBSERVER_SWAGGER_API_PATH
 
         swaggerDocument.definition.host = api_host
+        swaggerDocument.definition.basePath = base_path
+        swaggerDocument.definition.servers = [{ url: base_path }]
+
         swaggerDocument.definition.paths = require('./apidoc/index.js')
         swaggerDocument.definition.components = {
             ...swaggerDocument.definition.components,

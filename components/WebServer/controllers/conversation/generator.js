@@ -30,12 +30,11 @@ function initConversation(metadata, userId, job_id) {
         },
         tags: [],
         highlights: [],
-        keywords: [],
         speakers: [],
         text: [],
         metadata: {
             transcription: {
-                lang : metadata.lang,
+                lang: metadata.lang,
                 transcriptionConfig: transcriptionConfig
             },
             audio: {},
@@ -47,7 +46,8 @@ function initConversation(metadata, userId, job_id) {
                 job_id: job_id,
                 state: 'pending',
                 steps: {}
-            }
+            },
+            nlp: {}
         }
     }
 }

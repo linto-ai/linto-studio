@@ -1,8 +1,6 @@
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:tag:tag')
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
-const organizationUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
-
 const {
   TagError,
   TagConflict,

@@ -1,0 +1,52 @@
+{
+  "ExportRequest": {
+    "type": "object",
+    "properties": {
+      "metadata": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "boolean"
+          },
+          "tags": {
+            "type": "boolean"
+          },
+          "keyword": {
+            "type": "boolean"
+          },
+          "timestamp": {
+            "type": "boolean"
+          },
+          "speakers": {
+            "type": "boolean"
+          }
+        }
+      },
+      "filter": {
+        "type": "object",
+        "properties": {
+          "speaker": {
+            "type": "string"
+          },
+          "keyword": {
+            "type": "string"
+          }
+        }
+      }
+
+    },
+    "example": {
+      "metadata": {
+        "description": true,
+        "tags": true,
+        "keyword": true,
+        "timestamp": true,
+        "speakers": true
+      },
+      "filter": {
+        "speaker": "30a3fe1e-11a7-43d4-9c15-c35c8c6b1c3e",
+        "keyword": "64e8a025052fa6019472ef03,64e8a025052fa6019472ef04"
+      }
+    }
+  }
+}

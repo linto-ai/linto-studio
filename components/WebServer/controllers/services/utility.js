@@ -17,6 +17,10 @@ async function listSaasServices(scope) {
       services.push(transcription_service)
     }
 
+    for (const nlp_service of saas_service_info.nlp) {
+      services.push(nlp_service)
+    }
+
     return services
   } catch (err) {
     throw new ServiceError('Error while listing services')

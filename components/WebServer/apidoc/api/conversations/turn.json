@@ -211,5 +211,54 @@
         }
       }
     }
+  },
+  "/api/conversations/{conversationId}/turns/search": {
+    "get": {
+      "tags": ["conversation turn"],
+      "summary": "Search for a text in the conversation turns",
+      "parameters": [{
+          "in": "path",
+          "name": "conversationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an conversation"
+        },
+        {
+          "in": "query",
+          "name": "text",
+          "required": true,
+          "description": "Text to search in the conversation turns"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The list of turns matching the search criteria",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type" : "array",
+                "item" : {
+                  "type" : "string"
+                },
+                "example": [
+                  "turnId1",
+                  "turnId2"
+                ]
+              }
+            }
+          }
+        },
+        "204":{
+          "$ref": "#/components/responses/NoContent"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
   }
 }

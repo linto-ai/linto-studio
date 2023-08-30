@@ -4,11 +4,19 @@ const {
     addTurn,
     deleteTurn,
     updateTurn,
-    mergeTurn
+    mergeTurn,
+    search
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/turn.js`)
 
 module.exports = (webserver) => {
     return [
+        {
+            path: '/:conversationId/turns/search',
+            method: 'get',
+            requireAuth: true,
+            requireConversationReadAccess: true,
+            controller: search
+        },
         {
             path: '/:conversationId/turns/:turnId',
             method: 'post',

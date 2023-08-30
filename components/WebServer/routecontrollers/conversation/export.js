@@ -6,6 +6,10 @@ const fs = require("fs")
 const docx = require("docx")
 const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Bookmark } = docx
 
+const { jsonToPlainText } = require('json-to-plain-text')
+
+const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
+
 const {
     ConversationIdRequire,
     ConversationNotFound,
@@ -18,25 +22,46 @@ async function downloadConversation(req, res, next) {
         if (!req.params.conversationId) throw new ConversationIdRequire()
         if (!req.query.format) throw new ConversationMetadataRequire('format is required')
 
-        const conversation = await model.conversations.getById(req.params.conversationId)
+        let conversation = await model.conversations.getById(req.params.conversationId)
         if (conversation.length !== 1) throw new ConversationNotFound()
+
+        conversation = conversation[0]
+        let metadata = {}
+        if (req.body) {
+            if (req.body.filter) conversation = await prepareConversation(conversation, req.body.filter)
+            if (conversation.text.length === 0) res.status(204).send()
+
+            if (req.body.metadata) metadata = await prepareMetadata(conversation, req.body.metadata)
+        }
+
 
         let output = ""
         if (req.query.format === 'json') {
-            output = conversation[0].text
+            output = {
+                metadata: metadata,
+                text: conversation.text
+            }
+            res.setHeader('Content-Type', 'application/json')
             res.status(200).send(output)
         }
 
         else if (req.query.format === 'text') {
-            if (!conversation[0].text) throw new ConversationError('Conversation has no text')
-            conversation[0].text.map(text => {
-                output += text.segment + ""
+            output = jsonToPlainText(metadata, {
+                color: false,
             })
+            output += "\n\n"
+            conversation.text.map(text => {
+                if (metadata.speakers) output += `${text.speaker_name} : `
+                if (text.stime) output += `${text.stime} - ${text.etime} : `
+                output += text.segment + "\n\n"
+            })
+
+            res.setHeader('Content-Type', 'text/plain')
             res.status(200).send(output)
         }
 
         else if (req.query.format === 'docx') {
-            const file = await generateDocx(conversation[0], req.query.metadata)
+            const file = await generateDocx(conversation, metadata)
             res.setHeader('Content-Type', 'application/vnd.openxmlformats')
             res.setHeader('Content-disposition', 'attachment; filename=' + file.name);
             res.sendFile(file.path)
@@ -47,6 +72,78 @@ async function downloadConversation(req, res, next) {
     } catch (err) {
         next(err)
     }
+}
+
+async function prepareConversation(conversation, filter) {
+    if (filter.speaker)
+        conversation.text = conversation.text.filter(turn => filter.speaker.includes(turn.speaker_id))
+
+    if (filter.keyword) {
+        keyword_list = filter.keyword.split(',')
+        keyword_list = (await model.tags.getByIdList(keyword_list)).map(tag => tag.name)
+        conversation.text = conversation.text.filter(turn => keyword_list.some((keyword) => turn.segment.toLowerCase().includes(keyword)))
+    }
+    return conversation
+}
+
+async function prepareMetadata(conversation, metadata) {
+    let speakers = {}
+    let data = {
+        title: conversation.name,
+        description: conversation.description
+    }
+
+    if (metadata.title === false) delete data.title
+    if (metadata.description === false) data.description = conversation.description
+
+    if (metadata.speakers !== false) {
+        data.speakers = []
+        conversation.speakers.map(speaker => {
+            speakers[speaker.speaker_id] = speaker.speaker_name
+            data.speakers.push(speaker.speaker_name)
+        })
+    }
+
+    if (metadata.tags !== false || metadata.keyword !== false) {
+        data.categories = {}
+
+        let conv_tag = await model.tags.getByIdList(conversation.tags)
+        for (let tag of conv_tag) {
+            let category = await model.categories.getById(tag.categoryId)
+            if (!category) continue
+
+            category = category[0]
+            if (category.type === TYPE.HIGHLIGHT && metadata.keyword === false) continue
+            if (category.type === TYPE.CONVERSATION_METADATA && metadata.tags === false) continue
+
+            if (!data.categories[category.name])
+                data.categories[category.name] = { type: category.type, tags: [] }
+
+            data.categories[category.name].tags.push(tag.name)
+        }
+        if (Object.keys(data.categories).length === 0) delete data.categories
+    }
+
+
+    let text = conversation.text.map(turn => {
+        let update_turn = {
+            turn_id: turn.turn_id,
+            segment: turn.segment,
+        }
+        if (metadata.speakers !== false) {
+            update_turn.speaker_id = turn.speaker_id
+            update_turn.speaker_name = speakers[turn.speaker_id]
+        }
+        if (metadata.timestamp !== false) {
+            update_turn.stime = turn.words[0].stime
+            update_turn.etime = turn.words[turn.words.length - 1].etime
+        }
+        return update_turn
+    })
+
+    conversation.text = text
+
+    return data
 }
 
 async function generateDocx(conversation, metadata) {
@@ -60,26 +157,74 @@ async function generateDocx(conversation, metadata) {
 
     const paragraphs = []
 
-    paragraphs.push(new Paragraph({
-        text: conversation.name,
-        heading: HeadingLevel.TITLE,
-        alignment: AlignmentType.CENTER
-    }))
+
+    if (metadata.title) {
+        paragraphs.push(new Paragraph({
+            text: metadata.title,
+            heading: HeadingLevel.TITLE,
+            alignment: AlignmentType.CENTER
+        }))
+    }
+
+    paragraphs.push(generateLineBreak())
+    paragraphs.push(generateHeading('Metadata'))
+
+    if (metadata.description) {
+        paragraphs.push(generateHeading('Description', HeadingLevel.HEADING_2))
+        paragraphs.push(new Paragraph({ text: conversation.description }))
+    }
+
+    if (metadata.speakers) {
+        paragraphs.push(generateHeading('Speaker', HeadingLevel.HEADING_2))
+        conversation.speakers.map(speaker => {
+            paragraphs.push(generateBulletParagraph(speaker.speaker_name, 0))
+        })
+    }
+
+    if (metadata.categories) {
+        paragraphs.push(generateHeading('Categories', HeadingLevel.HEADING_2))
+        for (let category in metadata.categories) {
+            paragraphs.push(generateBulletParagraph(category + ' - type : ' + metadata.categories[category].type, 0))
+            metadata.categories[category].tags.map(tag => {
+                paragraphs.push(generateBulletParagraph(tag, 1))
+            })
+        }
+    }
+
+
+    let targetPhrases = []
+    if (metadata.categories) {
+        for (let category in metadata.categories) {
+            if (metadata.categories[category].type === TYPE.HIGHLIGHT) {
+                metadata.categories[category].tags.map(tag => {
+                    targetPhrases.push(tag)
+                })
+            }
+        }
+    }
 
     paragraphs.push(generateHeading('Conversation'))
 
     conversation.text.map(turn => {
-        const segment = turn.segment.replace(/' /g, "'")
-        const speakerName = conversation.speakers.find(speaker => speaker.speaker_id === turn.speaker_id).speaker_name
-        const timestamp = `(${Math.trunc(turn.words[0].stime)} s - ${Math.trunc(turn.words[turn.words.length - 1].etime)}s) `
+        let children = []
+        if (metadata.speakers) children.push(new TextRun({ text: `${turn.speaker_name} : `, bold: true }))
+        if (turn.stime) children.push(new TextRun({ text: `(${turn.stime} s - ${turn.etime}s) : `, italics: true }))
+
+        if (targetPhrases.length === 0) {
+            children.push(new TextRun(turn.segment))
+        } else {
+            const phrasePattern = new RegExp(`\\b(${targetPhrases.join('|')})\\b`, 'ig')
+            const segments = turn.segment.split(phrasePattern)
+
+            for (const segment of segments) {
+                if (targetPhrases.some((phrase) => segment.toLowerCase().includes(phrase.toLowerCase()))) children.push(createHighlightedTextRun(segment))
+                else children.push(new TextRun(segment))
+            }
+        }
 
         paragraphs.push(
             new Paragraph({
-                children: [
-                    new TextRun({ text: timestamp, italics: true }),
-                    new TextRun({ text: speakerName, bold: true }),
-                    new TextRun({ text: ` : ${segment}` })
-                ],
+                children
             })
         )
         paragraphs.push(new Paragraph({}))
@@ -147,6 +292,14 @@ function generateBulletParagraph(text, level) {
         bullet: {
             level
         },
+    })
+}
+
+
+function createHighlightedTextRun(text) {
+    return new TextRun({
+        text,
+        highlight: 'yellow',
     })
 }
 

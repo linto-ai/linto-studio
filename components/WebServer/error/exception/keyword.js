@@ -16,6 +16,18 @@ class KeywordError extends Error {
   }
 }
 
+class KeywordMetadataRequire extends Error {
+  constructor(message, err) {
+    super()
+    this.name = 'KeywordMetadataRequire'
+    this.type = ExceptionType
+    this.status = '400'
+    if (message) this.message = message
+    else this.message = 'Metadata was not provided.'
+    if (err) this.err = err
+  }
+}
+
 class KeywordUnsupportedMediaType extends Error {
   constructor(message, err) {
       super()
@@ -32,5 +44,6 @@ class KeywordUnsupportedMediaType extends Error {
 
 module.exports = {
   KeywordError,
+  KeywordMetadataRequire,
   KeywordUnsupportedMediaType
 }
