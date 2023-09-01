@@ -1,4 +1,5 @@
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:keyword')
+const FormData = require('form-data');
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const axios = require(`${process.cwd()}/lib/utility/axios`)
@@ -42,29 +43,9 @@ async function keywordExtract(req, res, next) {
     })
     if (text !== "") documents.push(text)
 
-    const options = {
-      headers: { accept: 'application/json' },
-      data: {
-        nlpConfig: {
-          keywordExtractionConfig: {
-            enableKeywordExtraction: true,
-            serviceName: req.body.serviceName,
+    let optionsForm = prepareForm(req, documents)
+    const job = await axios.postFormData(`${service + '/nlp'}`, optionsForm)
 
-            method: req.body.method,
-            // method : 'keybert',
-            // methodConfig: { top_n : 1, diversity : 0.8 }
-
-            method : 'frekeybert',
-            methodConfig: { top_n : 10, number_of_segments : 2 }
-
-            // methodConfig: req.body.methodConfig
-          }
-        },
-        documents: documents
-      }
-    }
-
-    const job = await axios.post(`${service +'/nlp'}`, options)
     let jobs = {
       type: 'keyword',
       job_id: job.jobid,
@@ -79,6 +60,31 @@ async function keywordExtract(req, res, next) {
   } catch (err) {
     next(err)
   }
+}
+
+function prepareForm(req, documents) {
+  const form = new FormData()
+  let nlpConfig = {
+    keywordExtractionConfig: {
+      enableKeywordExtraction: true,
+      serviceName: req.body.serviceName,
+      method: 'frekeybert',
+      methodConfig: { top_n: 10, number_of_segments: 2 }
+    }
+  }
+  form.append('nlpConfig', JSON.stringify(nlpConfig))
+  form.append('documents', JSON.stringify(documents))
+
+  let options = {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      accept: 'application/json'
+    },
+    formData: form,
+    encoding: null
+  }
+
+  return options
 }
 
 
