@@ -24,8 +24,12 @@ async function leaveSelfFromOrganization(req, res, next) {
         const data = orgaUtility.countAdmin(organization[0], userId)
         if (data.adminCount === 1 && data.isAdmin) throw new OrganizationForbidden('You cannot leave the organization because you are the last admin')
 
-        organization.users = organization.users.filter(oUser => oUser.userId !== userId)
-        const result = await model.organizations.update(organization)
+        let new_users_list = organization[0].users.filter(oUser => oUser.userId !== userId)
+
+        const result = await model.organizations.update({
+            _id: req.params.organizationId,
+            users: new_users_list
+        })
 
         if (result.matchedCount === 0) throw new OrganizationError()
 
@@ -45,7 +49,7 @@ async function listConversationFromOrganization(req, res, next) {
         if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
 
         const organization = (await model.organizations.getByIdAndUser(req.params.organizationId, userId))[0]
-        if (!organization) throw new OrganizationError('You are not part of ' + organization.name)    
+        if (!organization) throw new OrganizationError('You are not part of ' + organization.name)
 
         let userRole = ROLES.MEMBER
         organization.users.map(oUser => {
@@ -56,7 +60,7 @@ async function listConversationFromOrganization(req, res, next) {
         })
 
         let conversations = await model.conversations.listConvFromOrga(req.params.organizationId, userId, userRole, RIGHT.READ, req.query)
-        
+
         res.status(200).send(conversations)
     } catch (err) {
         next(err)
