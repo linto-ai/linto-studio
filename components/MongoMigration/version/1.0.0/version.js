@@ -1,14 +1,20 @@
 const debug = require('debug')(`linto:components:MongoMigration:controllers:version:1.0.0:version`)
 
-const previous_version = '1.0.0'
+const initDb = require(`${process.cwd()}/components/MongoMigration/controllers/migration/init`)
+const dropDb = require(`${process.cwd()}/components/MongoMigration/controllers/migration/drop`)
+
 const version = '1.0.0'
+
+const collectionName = 'version'
+
 
 module.exports = {
   async up(db) {
-    return db.collection('version').updateMany({}, { $set: { version: version } })
+    await initDb(db, collectionName)
+    await db.collection(collectionName).insertOne({ version: version })
   },
 
   async down(db) {
-    return db.collection('version').updateMany({}, { $set: { version: previous_version } })
+    await dropDb(db, collections_name)
   }
 }
