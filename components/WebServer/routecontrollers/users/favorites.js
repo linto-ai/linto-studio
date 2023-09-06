@@ -43,10 +43,14 @@ async function listFav(req, res, next) {
         else {
             let conv_favorite = []
             for (let favId of userFav[0].favorites) {
-                let conv = await conversationUtility.userAccess(req.payload.data.userId, favId)
-                // if access to the covnersation have been removed from the user we delete the conversation from the user favorite
-                if (conv) conv_favorite.push(conv._id)
-                else await model.favorites.deleteFav(req.payload.data.userId, favId)
+                const conversation = await model.conversations.getById(favId)
+                if (conversation.length !== 1) await model.favorites.deleteFav(req.payload.data.userId, favId)
+                else {
+                    let conv = await conversationUtility.userAccess(req.payload.data.userId, favId)
+                    // if access to the covnersation have been removed from the user we delete the conversation from the user favorite
+                    if (conv) conv_favorite.push(conv._id)
+                    else await model.favorites.deleteFav(req.payload.data.userId, favId)
+                }
             }
 
             let fav_conv = await model.conversations.listConvFromFavorite(conv_favorite, req.query)
