@@ -47,8 +47,8 @@ module.exports = {
 
       if (versionCollection.length === 0) {
         await db.createCollection('version')
-        await db.collection('version').insertOne({ version: desired_version })
         current_version = FIRST_VERSION
+        await db.collection('version').insertOne({ version: FIRST_VERSION })
       } else {
         current_version = (await db.collection('version').findOne()).version
       }
