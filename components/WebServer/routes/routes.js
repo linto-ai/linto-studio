@@ -18,7 +18,7 @@ module.exports = (webServer) => {
             ...require('./api/conversation/categories')(webServer),
             // ...require('./api/taxonomy/tag')(webServer),
         ],
-        "/api/conversations/taxonomy": require('./api/taxonomy/conversation')(webServer), // Keep that way until frontend catches up
+        "/api/taxonomy": require('./api/taxonomy/conversation')(webServer), // Keep that way until frontend catches up
         "/api/nlp": require('./api/nlp/nlp')(webServer),
         "/api/services": require('./api/service/services')(webServer, this),
         "/api": require('./api/media/media')(webServer),

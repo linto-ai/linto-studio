@@ -16,42 +16,42 @@ const {
 module.exports = (webserver) => {
   return [
     {
-      path: '/:conversationId/tags',
+      path: '/organizations/:organizationId/tags,/conversation/:conversationId/tags',
       method: 'get',
       requireAuth: true,
       requireReadTaxonomyAccess: true,
       controller: getOrganizationTags
     },
     {
-      path: '/:conversationId/categories',
+      path: '/organizations/:organizationId/categories,/conversation/:conversationId/categories',
       method: 'get',
       requireAuth: true,
       requireReadTaxonomyAccess: true,
       controller: getOrganizationCategory
     },
     {
-      path: '/:conversationId/categories',
+      path: '/organizations/:organizationId/categories,/conversation/:conversationId/categories',
       method: 'post',
       requireAuth: true,
       requireReadTaxonomyAccess: true,
       controller: createCategory
     },
     {
-      path: '/:conversationId/tags,/:conversationId/tags/:tagId',
+      path: '/conversation/:conversationId/tags,/:conversationId/tags/:tagId',
       method: 'patch',
       requireAuth: true,
       requireWriteTaxonomyAccess: true,
       controller: addTagToConversation
     },
     {
-      path: '/:conversationId/tags/:tagId',
+      path: '/conversation/:conversationId/tags/:tagId',
       method: 'delete',
       requireAuth: true,
       requireWriteTaxonomyAccess: true,
       controller: deleteTagFromConversation
     },
     {
-      path: '/:conversationId/highlights', 
+      path: '/conversation/:conversationId/highlights',
       method: 'post',
       requireAuth: true,
       requireConversationWriteAccess: true,

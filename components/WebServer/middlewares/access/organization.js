@@ -23,16 +23,12 @@ module.exports = {
         await access(req, next, req.params.organizationId, req.payload.data.userId, ROLES.MEMBER)
     },
     access: async (req, next, organizationId, userId, right) => {
-        debug("hi ?")
         await access(req, next, organizationId, userId, right)
     }
 }
 
 async function access(req, next, organizationId, userId, right) {
     try {
-        debug('Organization id is required')
-        debug(organizationId)
-
         if (!organizationId) {
             return next(new OrganizationUnsupportedMediaType())
         }

@@ -16,9 +16,6 @@ const {
   ConversationDeleteAccessDenied,
 } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
-// access: async (req, next, convId, userId, restricted, right, rightException) => {
-
-
 module.exports = {
   asReadTaxonomyAccess: async (req, res, next) => {
     if (req.params.conversationId) {
