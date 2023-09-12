@@ -18,25 +18,23 @@ const {
 
 module.exports = {
   asReadTaxonomyAccess: async (req, res, next) => {
-    if (req.params.conversationId) {
+    if (req.params.conversationId)
       await conversation.access(req, next, req.params.conversationId, req.payload.data.userId, false, CONVERSATION_RIGHTS.READ, ConversationReadAccessDenied) // ORGA MEMBER
-    } else if (req.params.organizationId) {
+    else if (req.params.organizationId)
       await organization.access(req, next, req.params.organizationId, req.payload.data.userId, ORGANIZATION_ROLES.MEMBER)
-    }
+
   },
   asWriteTaxonomyAccess: async (req, res, next) => {
-    if (req.params.conversationId) {
+    if (req.params.conversationId)
       await conversation.access(req, next, req.params.conversationId, req.payload.data.userId, false, CONVERSATION_RIGHTS.WRITE, ConversationReadAccessDenied) // ORGA MEMBER
-    } else if (req.params.organizationId) {
+    else if (req.params.organizationId)
       await organization.access(req, next, req.params.organizationId, req.payload.data.userId, ORGANIZATION_ROLES.MEMBER)
-    }
+
   },
   asDeleteTaxonomyAccess: async (req, res, next) => {
-    if (req.params.organizationId) {
+    if (req.params.organizationId)
       await organization.access(req, next, req.params.organizationId, req.payload.data.userId, ORGANIZATION_ROLES.MAINTAINER)
-    } else {
-      next(new ConversationDeleteAccessDenied('User don\'t have the right to delete conversation tags'))
-    }
+    else next(new ConversationDeleteAccessDenied('User don\'t have the right to delete conversation tags'))
   }
 }
 

@@ -1,7 +1,5 @@
 const debug = require('debug')('linto:conversation-manager:router:api:tag:tag')
 const {
-    getTag,
-    getTagByOrganization,
     createTag,
     updateTag,
     deleteTag,
@@ -22,27 +20,6 @@ module.exports = (webserver) => {
             requireOrganizationMemberAccess: true
         },
         {
-            path: '/',
-            method: 'get',
-            controller: getTagByOrganization,
-            requireAuth: true,
-            requireOrganizationMemberAccess: true
-        },
-        {
-            path: '/search',
-            method: 'get',
-            controller: searchTag,
-            requireAuth: true,
-            requireOrganizationMemberAccess: true
-        },
-        {
-            path: '/:tagId',
-            method: 'get',
-            controller: getTag,
-            requireAuth: true,
-            requireOrganizationMemberAccess: true
-        },
-        {
             path: '/:tagId',
             method: 'patch',
             controller: updateTag,
@@ -55,6 +32,14 @@ module.exports = (webserver) => {
             controller: deleteTag,
             requireAuth: true,
             requireOrganizationMaintainerAccess: true
-        }
+        },
+        {
+            path: '/search',
+            method: 'get',
+            controller: searchTag,
+            requireAuth: true,
+            requireOrganizationMemberAccess: true
+        },
+
     ]
 }

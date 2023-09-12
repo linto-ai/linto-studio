@@ -1,9 +1,6 @@
 const debug = require('debug')('linto:conversation-manager:router:api:taxonomy:conversation')
 
 const {
-  getOrganizationTags,
-  getOrganizationCategory,
-  createCategory,
   deleteTagFromConversation,
   addTagToConversation
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/taxonomy/conversation.js`)
@@ -16,42 +13,28 @@ const {
 module.exports = (webserver) => {
   return [
     {
-      path: '/organizations/:organizationId/tags,/conversation/:conversationId/tags',
-      method: 'get',
-      requireAuth: true,
-      requireReadTaxonomyAccess: true,
-      controller: getOrganizationTags
-    },
-    {
-      path: '/organizations/:organizationId/categories,/conversation/:conversationId/categories',
-      method: 'get',
-      requireAuth: true,
-      requireReadTaxonomyAccess: true,
-      controller: getOrganizationCategory
-    },
-    {
-      path: '/organizations/:organizationId/categories,/conversation/:conversationId/categories',
+      path: '/conversations/:conversationId/tags',
       method: 'post',
       requireAuth: true,
-      requireReadTaxonomyAccess: true,
-      controller: createCategory
-    },
-    {
-      path: '/conversation/:conversationId/tags,/:conversationId/tags/:tagId',
-      method: 'patch',
-      requireAuth: true,
-      requireWriteTaxonomyAccess: true,
+      requireConversationWriteAccess: true,
       controller: addTagToConversation
     },
     {
-      path: '/conversation/:conversationId/tags/:tagId',
+      path: '/conversations/:conversationId/tags,/conversations/:conversationId/tags/:tagId',
+      method: 'patch',
+      requireAuth: true,
+      requireConversationWriteAccess: true,
+      controller: addTagToConversation
+    },
+    {
+      path: '/conversations/:conversationId/tags/:tagId',
       method: 'delete',
       requireAuth: true,
-      requireWriteTaxonomyAccess: true,
+      requireConversationWriteAccess: true,
       controller: deleteTagFromConversation
     },
     {
-      path: '/conversation/:conversationId/highlights',
+      path: '/conversations/:conversationId/highlights',
       method: 'post',
       requireAuth: true,
       requireConversationWriteAccess: true,
