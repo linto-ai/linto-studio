@@ -83,11 +83,6 @@ async function getConversation(req, res, next) {
 
         const data = await conversationUtility.getUserRightFromConversation(req.payload.data.userId, conversation)
 
-        if (((await model.organizations.getByIdAndUser(conversation.organization.organizationId, req.payload.data.userId)).length) === 0) {
-            delete conversation.organization
-            delete conversation.sharedWithUsers
-        }
-
         res.status(200).send({
             ...conversation,
             userAccess: data.access,
