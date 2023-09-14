@@ -10,7 +10,7 @@ const {
 
 async function searchCategory(req, res, next) {
   try {
-    const organizationId = await getOrgaId(req)
+    const organizationId = await organizationUtility.getOrgaIdFromReq(req)
 
     let categoryList
     if (!req.query.type) throw new OrganizationError('Search type must be define')
@@ -149,21 +149,6 @@ async function generateCategoryFromTagList(tagsId, organizationId, search = {}) 
     searchResult.push(categories[categoryId])
   }
   return searchResult
-}
-
-async function getOrgaId(req) {
-  let organizationId = req.params.organizationId
-
-  if (organizationId === undefined) {
-    if (!req.params.conversationId) throw new ConversationIdRequire('Conversation id is required')
-
-    const conversation = await model.conversations.getById(req.params.conversationId)
-    if (conversation.length !== 1) throw new ConversationNotFound()
-
-    organizationId = conversation[0].organization.organizationId
-  }
-
-  return organizationId
 }
 
 module.exports = {

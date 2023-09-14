@@ -2,7 +2,6 @@ const debug = require('debug')('linto:conversation-manager:router:api:taxonomy:c
 
 const {
   getOrganizationTags,
-  searchTag,
   getTag
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/taxonomy/tag.js`)
 

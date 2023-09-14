@@ -2,7 +2,8 @@
 const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:conversation`)
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
-const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
+
+const organizationUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
 
 const {
   ConversationIdRequire,
@@ -67,7 +68,7 @@ async function addTagToConversation(req, res, next) {
   try {
 
     if (!req.params.conversationId) throw new ConversationIdRequire('Conversation id is required')
-    const organizationId = await getOrgaId(req)
+    const organizationId = await organizationUtility.getOrgaIdFromReq(req)
 
     const conversation = await model.conversations.getById(req.params.conversationId)
 
@@ -92,21 +93,6 @@ async function addTagToConversation(req, res, next) {
   } catch (err) {
     next(err)
   }
-}
-
-async function getOrgaId(req) {
-  let organizationId = req.params.organizationId
-
-  if (organizationId === undefined) {
-    if (!req.params.conversationId) throw new ConversationIdRequire('Conversation id is required')
-
-    const conversation = await model.conversations.getById(req.params.conversationId)
-    if (conversation.length !== 1) throw new ConversationNotFound()
-
-    organizationId = conversation[0].organization.organizationId
-  }
-
-  return organizationId
 }
 
 module.exports = {

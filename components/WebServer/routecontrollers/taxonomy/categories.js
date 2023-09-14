@@ -4,10 +4,7 @@ const debug = require('debug')(`linto:conversation-manager:components:WebServer:
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
 
-const {
-  ConversationIdRequire,
-  ConversationNotFound,
-} = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
+const organizationUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
 
 const {
   TagUnsupportedMediaType
@@ -21,7 +18,7 @@ const {
 
 async function createCategory(req, res, next) {
   try {
-    let organizationId = await getOrgaId(req)
+    let organizationId = await organizationUtility.getOrgaIdFromReq(req)
 
     let category = await model.categories.getByOrgaId(organizationId, { name: req.body.name })
 
@@ -43,7 +40,7 @@ async function createCategory(req, res, next) {
 
 async function getOrganizationCategory(req, res, next) {
   try {
-    const organizationId = await getOrgaId(req)
+    const organizationId = await organizationUtility.getOrgaIdFromReq(req)
 
     let searchQuery = {}
     if (req.query) {
@@ -76,21 +73,6 @@ async function getCategory(req, res, next) {
   } catch (err) {
     next(err)
   }
-}
-
-async function getOrgaId(req) {
-  let organizationId = req.params.organizationId
-
-  if (organizationId === undefined) {
-    if (!req.params.conversationId) throw new ConversationIdRequire('Conversation id is required')
-
-    const conversation = await model.conversations.getById(req.params.conversationId)
-    if (conversation.length !== 1) throw new ConversationNotFound()
-
-    organizationId = conversation[0].organization.organizationId
-  }
-
-  return organizationId
 }
 
 module.exports = {
