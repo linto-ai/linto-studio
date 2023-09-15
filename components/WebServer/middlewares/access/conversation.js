@@ -31,6 +31,9 @@ module.exports = {
   },
   asShareAccess: async (req, res, next) => {
     await access(next, req.params.conversationId, req.payload.data.userId, false, CONVERSATION_RIGHTS.SHARE, ConversationShareAccessDenied)
+  },
+  access: async (req, next, convId, userId, restricted, right, rightException) => {
+    return await access(next, convId, userId, restricted, right, rightException)
   }
 }
 

@@ -7,28 +7,6 @@ const {
   TagUnsupportedMediaType
 } = require(`${process.cwd()}/components/WebServer/error/exception/tag`)
 
-async function getTag(req, res, next) {
-  try {
-    let tag = await model.tags.getById(req.params.tagId)
-    if (tag.length === 0) res.status(204).send()
-    else res.status(200).send(tag[0])
-  } catch (err) {
-    next(err)
-  }
-}
-
-async function getTagByOrganization(req, res, next) {
-  try {
-    let tag = await model.tags.getByOrgaId(req.params.organizationId)
-
-    if (tag.length === 0) res.status(204).send()
-    else res.status(200).send(tag)
-
-  } catch (err) {
-    next(err)
-  }
-}
-
 async function createTag(req, res, next) {
   try {
     if (!req.body.name) throw new TagUnsupportedMediaType('name is required')
@@ -91,8 +69,6 @@ async function deleteTag(req, res, next) {
 
 
 module.exports = {
-  getTag,
-  getTagByOrganization,
   createTag,
   updateTag,
   deleteTag,

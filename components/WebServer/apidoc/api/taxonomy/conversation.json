@@ -1,8 +1,8 @@
 {
   "/api/conversations/{conversationId}/tags/{tagId}": {
-    "post": {
+    "patch": {
       "tags": [
-        "conversations tag"
+        "conversations taxonomy"
       ],
       "summary": "Add a tag to a conversation id",
       "parameters": [{
@@ -54,7 +54,7 @@
     },
     "delete": {
       "tags": [
-        "conversations tag"
+        "conversations taxonomy"
       ],
       "summary": "Delete a tag to a conversation id",
       "parameters": [{
@@ -82,6 +82,60 @@
                 "status": {
                   "type": "string",
                   "description": "Tag deleted from conversation"
+                }
+              },
+              "example": {
+                "status": "OK"
+              }
+            }
+          }
+        },
+        "304": {
+          "$ref": "#/components/responses/NotModified"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "415": {
+          "$ref": "#/components/responses/UnsupportedMediaType"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/conversations/{conversationId}/tags": {
+    "post": {
+      "tags": [
+        "conversations taxonomy"
+      ],
+      "summary": "Add a tag to a conversation id",
+      "parameters": [{
+          "name": "conversationId",
+          "in": "path",
+          "description": "The conversation id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "tagId",
+          "in": "path",
+          "description": "The tag id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "description": "Tag added to conversation"
                 }
               },
               "example": {

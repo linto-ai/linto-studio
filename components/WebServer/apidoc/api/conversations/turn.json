@@ -1,7 +1,9 @@
 {
   "/api/conversations/{conversationId}/turns/{turnId}": {
     "post": {
-      "tags": ["conversation turn"],
+      "tags": [
+        "conversations turn"
+      ],
       "summary": "Add a conversation turn after the indicated turnId",
       "parameters": [{
           "in": "path",
@@ -56,7 +58,9 @@
       }
     },
     "patch": {
-      "tags": ["conversation turn"],
+      "tags": [
+        "conversations turn"
+      ],
       "summary": "Update a conversation turn",
       "parameters": [{
           "in": "path",
@@ -111,7 +115,9 @@
       }
     },
     "delete": {
-      "tags": ["conversation turn"],
+      "tags": [
+        "conversations turn"
+      ],
       "summary": "Delete a conversation turn",
       "parameters": [{
           "in": "path",
@@ -159,7 +165,9 @@
   },
   "/api/conversations/{conversationId}/turns/{turnId}/merge/{direction}": {
     "patch": {
-      "tags": ["conversation turn"],
+      "tags": [
+        "conversations turn"
+      ],
       "summary": "Merge the indicated turn with the next or previous turn",
       "parameters": [{
           "in": "path",
@@ -200,8 +208,8 @@
             }
           }
         },
-        "304":{
-          "$ref":"#/components/responses/NotModified"
+        "304": {
+          "$ref": "#/components/responses/NotModified"
         },
         "401": {
           "$ref": "#/components/responses/Unauthorized"
@@ -214,7 +222,9 @@
   },
   "/api/conversations/{conversationId}/turns/search": {
     "get": {
-      "tags": ["conversation turn"],
+      "tags": [
+        "conversations turn"
+      ],
       "summary": "Search for a text in the conversation turns",
       "parameters": [{
           "in": "path",
@@ -237,9 +247,9 @@
           "content": {
             "application/json": {
               "schema": {
-                "type" : "array",
-                "item" : {
-                  "type" : "string"
+                "type": "array",
+                "item": {
+                  "type": "string"
                 },
                 "example": [
                   "turnId1",
@@ -249,7 +259,7 @@
             }
           }
         },
-        "204":{
+        "204": {
           "$ref": "#/components/responses/NoContent"
         },
         "401": {

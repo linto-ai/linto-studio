@@ -81,7 +81,7 @@ function transcriptionToConversation(transcript, conversation) {
             const text_segment = {
                 speaker_id: speaker.speaker_id,
                 turn_id: uuidv4(),
-                raw_segment: segment.raw_segment,
+                raw_segment: segment.raw_segment.toLowerCase(),
                 segment: segment.segment,
                 words: []
             }

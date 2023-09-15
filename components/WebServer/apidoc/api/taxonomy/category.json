@@ -1,14 +1,14 @@
 {
-  "/api/organizations/{organizationId}/categories": {
+  "/api/conversations/{conversationId}/categories": {
     "post": {
       "tags": [
-        "organization members"
+        "conversations taxonomy"
       ],
       "summary": "Create a category in an organization",
       "parameters": [{
-        "name": "organizationId",
+        "name": "conversationId",
         "in": "path",
-        "description": "Organization ID",
+        "description": "Conversation ID",
         "required": true,
         "type": "string"
       }],
@@ -73,9 +73,9 @@
     },
     "get": {
       "tags": [
-        "organization members"
+        "conversations taxonomy"
       ],
-      "summary": "Retrieve all categories from an organization",
+      "summary": "Retrieve all categories from an conversation organization",
       "parameters": [{
           "name": "organizationId",
           "in": "path",
@@ -116,16 +116,16 @@
       }
     }
   },
-  "/api/organizations/{organizationId}/categories/{categoryId}": {
+  "/api/conversations/{conversationId}/categories/{categoryId}": {
     "get": {
       "tags": [
-        "organization members"
+        "conversations taxonomy"
       ],
-      "summary": "Retrieve a categories information from an organization",
+      "summary": "Retrieve a categories from an conversation organization",
       "parameters": [{
-        "name": "organizationId",
+        "name": "conversationId",
         "in": "path",
-        "description": "Organization ID",
+        "description": "Conversation ID",
         "required": true,
         "type": "string"
       }, {
@@ -154,126 +154,18 @@
           "$ref": "#/components/responses/Unauthorized"
         }
       }
-    },
-    "patch": {
-      "tags": [
-        "organizations maintainers"
-      ],
-      "summary": "Update a categories from an organization",
-      "parameters": [{
-          "name": "organizationId",
-          "in": "path",
-          "description": "Organization ID",
-          "required": true,
-          "type": "string"
-        },
-        {
-          "name": "categoryId",
-          "in": "path",
-          "description": "categoryId ID",
-          "required": true,
-          "type": "string"
-        }
-      ],
-      "requestBody": {
-        "content": {
-          "multipart/form-data": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string"
-                },
-                "color": {
-                  "type": "string"
-                },
-                "type": {
-                  "type": "string",
-                  "enum": [
-                    "keyword",
-                    "conversation_metadata",
-                    "conversation_text",
-                    "commentary"
-                  ]
-                }
-              },
-              "required": []
-            }
-          }
-        }
-      },
-      "responses": {
-        "201": {
-          "description": "OK",
-          "content": {
-            "application/json": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "description": "Category updated"
-                }
-              },
-              "example": {
-                "message": "Category updated"
-              }
-            }
-          }
-        },
-        "401": {
-          "$ref": "#/components/responses/Unauthorized"
-        },
-        "409": {
-          "$ref": "#/components/responses/Conflict"
-        },
-        "415": {
-          "$ref": "#/components/responses/UnsupportedMediaType"
-        }
-      }
-    },
-    "delete": {
-      "tags": [
-        "organizations maintainers"
-      ],
-      "summary": "Delete a categories from an organization",
-      "parameters": [{
-          "name": "organizationId",
-          "in": "path",
-          "description": "Organization ID",
-          "required": true,
-          "type": "string"
-        },
-        {
-          "name": "categoryId",
-          "in": "path",
-          "description": "categoryId ID",
-          "required": true,
-          "type": "string"
-        }
-      ],
-      "responses": {
-        "204": {
-          "$ref": "#/components/responses/NoContent"
-        },
-        "401": {
-          "$ref": "#/components/responses/Unauthorized"
-        },
-        "404": {
-          "$ref": "#/components/responses/NotFound"
-        }
-      }
     }
   },
-  "/api/organizations/{organizationId}/categories/search": {
+  "/api/conversations/{conversationId}/categories/search": {
     "get": {
       "tags": [
-        "organization members"
+        "conversations taxonomy"
       ],
       "summary": "Search categories based on the specified research type",
       "parameters": [{
-          "name": "organizationId",
+          "name": "conversationId",
           "in": "path",
-          "description": "Organization ID",
+          "description": "Conversation ID",
           "required": true,
           "type": "string"
         },

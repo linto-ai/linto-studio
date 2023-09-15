@@ -1,7 +1,11 @@
 const debug = require('debug')('linto:conversation-manager:components:WebServer:controller:organizations:utility')
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
-const { OrganizationNotFound } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
+const { OrganizationNotFound, OrganizationError } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
+const {
+    ConversationIdRequire,
+    ConversationNotFound,
+} = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
 const RIGHT = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
@@ -53,7 +57,23 @@ async function getUserConversationFromOrganization(userId, organizationId) {
     return listConv
 }
 
+async function getOrgaIdFromReq(req) {
+    let organizationId = req.params.organizationId
+
+    if (organizationId === undefined) {
+        if (!req.params.conversationId) throw new ConversationIdRequire('Conversation id is required')
+
+        const conversation = await model.conversations.getById(req.params.conversationId)
+        if (conversation.length !== 1) throw new ConversationNotFound()
+
+        organizationId = conversation[0].organization.organizationId
+    }
+
+    return organizationId
+}
+
 module.exports = {
+    getOrgaIdFromReq,
     countAdmin,
     getUserConversationFromOrganization
 }

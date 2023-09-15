@@ -10,6 +10,12 @@ module.exports = (webServer) => {
         "/api/organizations": require('./api/organization/organizations')(webServer),
         "/api/organizations/:organizationId/categories": require('./api/organization/categories')(webServer),
         "/api/organizations/:organizationId/tags": require('./api/organization/tag')(webServer),
+        "/api": [
+            ...require('./api/taxonomy/categories')(webServer), // Keep that way until frontend catches up
+            ...require('./api/taxonomy/conversation')(webServer), // Keep that way until frontend catches up
+            ...require('./api/taxonomy/tag')(webServer), // Keep that way until frontend catches up
+            ...require('./api/media/media')(webServer),
+        ],
         "/api/conversations": [
             ...require('./api/conversation/share')(webServer),
             ...require('./api/conversation/conversations')(webServer),
@@ -19,6 +25,5 @@ module.exports = (webServer) => {
         ],
         "/api/nlp": require('./api/nlp/nlp')(webServer),
         "/api/services": require('./api/service/services')(webServer, this),
-        "/api": require('./api/media/media')(webServer),
     }
 }
