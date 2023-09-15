@@ -12,7 +12,7 @@ function mergeModule(modules, loadModule) {
     if (modules[key]) {
       modules[key] = {
         ...modules[key],
-        apidoc
+        ...apidoc
       }
     } else {
       modules[key] = apidoc
@@ -40,5 +40,12 @@ function loadModulesFromDirectory(directory) {
 }
 
 
-const allModules = loadModulesFromDirectory(mainDirectory)
-module.exports = allModules
+const jsonApiModules = loadModulesFromDirectory(mainDirectory)
+const sortedKeys = Object.keys(jsonApiModules).sort()
+
+const apiDoc = {}
+for (const key of sortedKeys) {
+  apiDoc[key] = jsonApiModules[key]
+}
+
+module.exports = apiDoc

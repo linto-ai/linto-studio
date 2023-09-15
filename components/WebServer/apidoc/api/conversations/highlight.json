@@ -2,7 +2,7 @@
   "/api/conversations/{conversationId}/highlights": {
     "get": {
       "tags": [
-        "conversations tag"
+        "conversations taxonomy"
       ],
       "summary": "List category of type highlights from a conversation",
       "parameters": [{
@@ -38,7 +38,7 @@
     },
     "post": {
       "tags": [
-        "conversations tag"
+        "conversations taxonomy"
       ],
       "summary": "Add a tag of type highlights to a conversation",
       "parameters": [{

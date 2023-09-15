@@ -2,7 +2,7 @@
   "/api/conversations/{conversationId}/tags": {
     "get": {
       "tags": [
-        "taxonomy"
+        "conversations taxonomy"
       ],
       "summary": "List all tags from the conversation organization",
       "parameters": [{
@@ -60,7 +60,7 @@
   "/api/conversations/{conversationId}/tags/{tagId}": {
     "get": {
       "tags": [
-        "taxonomy"
+        "conversations taxonomy"
       ],
       "summary": "Retrieve tag information",
       "parameters": [{

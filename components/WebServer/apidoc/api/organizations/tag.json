@@ -2,7 +2,7 @@
   "/api/organizations/{organizationId}/tags": {
     "post": {
       "tags": [
-        "organization tag"
+        "organization members"
       ],
       "summary": "Create a tag for an organization",
       "parameters": [{
@@ -64,7 +64,7 @@
     },
     "get": {
       "tags": [
-        "organization tag"
+        "organization members"
       ],
       "summary": "List all tags from an organization",
       "parameters": [{
@@ -101,7 +101,7 @@
   "/api/organizations/{organizationId}/tags/search": {
     "get": {
       "tags": [
-        "organization tag"
+        "organization members"
       ],
       "summary": "Retrieve tag information related between conversation",
       "parameters": [{
@@ -160,7 +160,7 @@
   "/api/organizations/{organizationId}/tags/{tagId}": {
     "get": {
       "tags": [
-        "organization tag"
+        "organization members"
       ],
       "summary": "Retrieve tag information",
       "parameters": [{
@@ -198,7 +198,7 @@
     },
     "patch": {
       "tags": [
-        "organization tag"
+        "organization members"
       ],
       "summary": "Update tag information",
       "parameters": [{
@@ -265,7 +265,7 @@
     },
     "delete": {
       "tags": [
-        "organization tag"
+        "organizations maintainers"
       ],
       "summary": "Delete tag information",
       "parameters": [{

@@ -1,4 +1,23 @@
 {
+  "UserNotFound": {
+    "description": "UserNotFound",
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "example": {
+            "error": {
+              "name": "UserNotFound",
+              "type": "auth",
+              "status": 401,
+              "message": "Invalid credentials"
+            }
+          }
+        }
+      }
+    }
+  },
+
   "Unauthorized": {
     "description": "Unauthorized",
     "content": {

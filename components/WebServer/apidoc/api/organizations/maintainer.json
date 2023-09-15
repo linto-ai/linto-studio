@@ -2,7 +2,7 @@
   "/api/organizations/{organizationId}/users": {
     "post": {
       "tags": [
-        "organizations maintainer"
+        "organizations maintainers"
       ],
       "summary": "Add a user with a specific role to the organization",
       "parameters": [{
@@ -71,7 +71,7 @@
     },
     "patch": {
       "tags": [
-        "organizations maintainer"
+        "organizations maintainers"
       ],
       "summary": "Update a user with a different role to the organization",
       "parameters": [{
@@ -137,7 +137,7 @@
     },
     "delete": {
       "tags": [
-        "organizations maintainer"
+        "organizations maintainers"
       ],
       "summary": "Remove a user from the organization",
       "parameters": [{
@@ -179,6 +179,67 @@
               },
               "example": {
                 "message": "User has been deleted from the organization"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "415": {
+          "$ref": "#/components/responses/UnsupportedMediaType"
+        }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/conversations": {
+    "delete": {
+      "tags": [
+        "organizations maintainers"
+      ],
+      "summary": "Remove all desired conversation from the organization",
+      "parameters": [{
+        "in": "path",
+        "name": "organizationId",
+        "type": "string",
+        "format": "uuid",
+        "required": true,
+        "description": "uuid string identifier for an organization"
+      }],
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "conversationsId": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "conversationsId"
+              ]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Message"
+                }
+              },
+              "example": {
+                "message": "Conversation has been deleted from the organization"
               }
             }
           }

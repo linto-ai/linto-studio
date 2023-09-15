@@ -2,7 +2,7 @@
   "/api/conversations/{conversationId}/tags/{tagId}": {
     "patch": {
       "tags": [
-        "conversations tag"
+        "conversations taxonomy"
       ],
       "summary": "Add a tag to a conversation id",
       "parameters": [{
@@ -54,7 +54,7 @@
     },
     "delete": {
       "tags": [
-        "conversations tag"
+        "conversations taxonomy"
       ],
       "summary": "Delete a tag to a conversation id",
       "parameters": [{
@@ -108,7 +108,7 @@
   "/api/conversations/{conversationId}/tags": {
     "post": {
       "tags": [
-        "conversations tag"
+        "conversations taxonomy"
       ],
       "summary": "Add a tag to a conversation id",
       "parameters": [{

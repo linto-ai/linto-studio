@@ -2,7 +2,7 @@
   "/api/conversations/{conversationId}/categories": {
     "post": {
       "tags": [
-        "taxonomy"
+        "conversations taxonomy"
       ],
       "summary": "Create a category in an organization",
       "parameters": [{
@@ -73,7 +73,7 @@
     },
     "get": {
       "tags": [
-        "taxonomy"
+        "conversations taxonomy"
       ],
       "summary": "Retrieve all categories from an conversation organization",
       "parameters": [{
@@ -119,7 +119,7 @@
   "/api/conversations/{conversationId}/categories/{categoryId}": {
     "get": {
       "tags": [
-        "organization category"
+        "conversations taxonomy"
       ],
       "summary": "Retrieve a categories from an conversation organization",
       "parameters": [{
@@ -159,7 +159,7 @@
   "/api/conversations/{conversationId}/categories/search": {
     "get": {
       "tags": [
-        "taxonomy"
+        "conversations taxonomy"
       ],
       "summary": "Search categories based on the specified research type",
       "parameters": [{

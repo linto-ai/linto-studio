@@ -1,7 +1,9 @@
 {
   "/api/nlp/conversations/{conversationId}/keywords": {
     "post": {
-      "tags": ["conversation keyword"],
+      "tags": [
+        "conversations nlp"
+      ],
       "summary": "Add keywords to a conversation",
       "parameters": [{
         "in": "path",
