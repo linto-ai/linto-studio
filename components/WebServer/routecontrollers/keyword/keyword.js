@@ -4,8 +4,6 @@ const FormData = require('form-data');
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 
-const { createJobInterval } = require(`${process.cwd()}/components/WebServer/controllers/jobsHandler`)
-
 const {
   KeywordError,
   KeywordMetadataRequire
@@ -15,27 +13,21 @@ const {
   ConversationIdRequire,
 } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
-const MAX_WORD = 100
-
 async function keywordExtract(req, res, next) {
   try {
     if (!req.body.endpoint) throw new KeywordMetadataRequire('endpoint param is require')
     if (!req.body.serviceName) throw new KeywordMetadataRequire('serviceName param is require')
-    // if (!req.body.method) throw new KeywordMetadataRequire('method param is require')
 
     if (!req.params.conversationId) throw new ConversationIdRequire()
     let service = process.env.GATEWAY_SERVICES + '/' + req.body.endpoint
 
-
     const conversation = await model.conversations.getById(req.params.conversationId)
     if (conversation.length !== 1) throw new ConversationNotFound()
 
-
-    if (!conversation[0].text) throw new KeywordError('Conversation has no text')
+    if (!conversation[0].text || conversation[0].text.length === 0) throw new KeywordError('Conversation has no text')
 
     let documents = []
     let text = ""
-
     conversation[0].text.map(segText => {
       segText.segment.split(/\s+/).map(seg => {
         text += seg + " "
@@ -44,15 +36,17 @@ async function keywordExtract(req, res, next) {
     if (text !== "") documents.push(text)
 
     let optionsForm = prepareForm(req, documents)
+
     const job = await axios.postFormData(`${service + '/nlp'}`, optionsForm)
 
-    let jobs = {
-      type: 'keyword',
+    conversation[0].jobs.keyword = {
       job_id: job.jobid,
-      filter: {}
+      endpoint: req.body.endpoint,
+      state: 'pending',
+      steps: {}
     }
 
-    createJobInterval(service, conversation[0], jobs)
+    await model.conversations.updateJob(req.params.conversationId, conversation[0].jobs)
 
     res.status(201).send({
       message: 'A keyword job is currently being processed'
