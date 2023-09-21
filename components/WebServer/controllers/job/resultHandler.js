@@ -46,10 +46,11 @@ async function handleKeywordResult(result, conversation) {
 }
 
 async function handleTranscriptionResult(result, conversation) {
+  conversation.text = [] // Force a refresh in case of multiple spam of requested result
   const normalizeTranscription = segmentNormalizeText(result, conversation.locale, conversation.metadata.normalize.filter)
 
   conversation = SttWrapper.transcriptionToConversation(normalizeTranscription, conversation)
-  model.conversations.updateConvOnTranscriptionResult(conversation._id.toString(), conversation)
+  await model.conversations.updateConvOnTranscriptionResult(conversation._id.toString(), conversation)
 }
 
 module.exports = { handleResult }
