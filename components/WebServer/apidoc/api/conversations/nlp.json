@@ -4,7 +4,7 @@
       "tags": [
         "conversations nlp"
       ],
-      "summary": "Add keywords to a conversation",
+      "summary": "Generate nlp keyword to a conversation",
       "parameters": [{
         "in": "path",
         "name": "conversationId",
@@ -13,6 +13,29 @@
         "required": true,
         "description": "uuid string identifier for an conversation"
       }],
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "endpoint": {
+                  "type": "string",
+                  "description": "Endpoint to use"
+                },
+                "serviceName": {
+                  "type": "string",
+                  "description": "Service name to use"
+                }
+              }
+            },
+            "required": [
+              "endpoint",
+              "serviceName"
+            ]
+          }
+        }
+      },
       "responses": {
         "201": {
           "description": "OK",

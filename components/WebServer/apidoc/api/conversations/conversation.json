@@ -5,8 +5,7 @@
         "conversations"
       ],
       "summary": "List all conversations that have been shared with the connected user",
-      "parameters": [
-        {
+      "parameters": [{
           "in": "query",
           "name": "size",
           "required": false,
@@ -126,11 +125,18 @@
               }
             }
           }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "500": {
+          "$ref": "#/components/responses/InternalServer"
         }
-      },
-      "401": {
-        "$ref": "#/components/responses/Unauthorized"
       }
+
     }
   },
   "/api/conversations/{conversationId}/media": {

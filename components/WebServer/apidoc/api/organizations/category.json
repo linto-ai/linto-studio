@@ -2,7 +2,7 @@
   "/api/organizations/{organizationId}/categories": {
     "post": {
       "tags": [
-        "organization members"
+        "organizations members"
       ],
       "summary": "Create a category in an organization",
       "parameters": [{
@@ -73,7 +73,7 @@
     },
     "get": {
       "tags": [
-        "organization members"
+        "organizations members"
       ],
       "summary": "Retrieve all categories from an organization",
       "parameters": [{
@@ -119,7 +119,7 @@
   "/api/organizations/{organizationId}/categories/{categoryId}": {
     "get": {
       "tags": [
-        "organization members"
+        "organizations members"
       ],
       "summary": "Retrieve a categories information from an organization",
       "parameters": [{
@@ -267,7 +267,7 @@
   "/api/organizations/{organizationId}/categories/search": {
     "get": {
       "tags": [
-        "organization members"
+        "organizations members"
       ],
       "summary": "Search categories based on the specified research type",
       "parameters": [{
