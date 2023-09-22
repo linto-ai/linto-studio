@@ -24,11 +24,16 @@ async function fetchJob(conv_id, conv_job) {
             try {
                 const host = `${process.env.GATEWAY_SERVICES}/${job.endpoint}`
                 const job_info = await axios.get(`${host}/job/${job.job_id}`)
-                const job_logs = await axios.get(`${host}/job-log/${job.job_id}`)
+                let job_logs = {}
+
+                if (job_info.state !== 'pending') {
+                    job_logs = await axios.get(`${host}/job-log/${job.job_id}`)
+                }
 
                 if (job_info.state === 'done' && job_info.result_id) {
                     await fetchResult(conv_id, { ...job, ...job_info })
                 }
+
                 return {
                     ...job,
                     ...job_info, // job_info can update job previous state, that's why it's after
