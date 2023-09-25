@@ -4,7 +4,7 @@ const initDb = require(`${process.cwd()}/components/MongoMigration/controllers/m
 const collectionName = 'users'
 
 module.exports = {
-  async up(debug) {
+  async up(db) {
     await initDb(db, collectionName)
   },
 
