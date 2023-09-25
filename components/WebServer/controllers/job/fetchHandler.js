@@ -4,11 +4,20 @@ const axios = require(`${process.cwd()}/lib/utility/axios`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const { handleResult } = require(`${process.cwd()}/components/WebServer/controllers/job/resultHandler`)
 
+async function fetchLogs(host, job) {
+    try {
+        return await axios.get(`${host}/job-log/${job.job_id}`)
+    } catch (err) {
+        debug(`Error while fetching job logs: ${err}`)
+        return  // A job doesn't exist all the time
+    }
+}
+
 async function fetchJob(conv_id, conv_job) {
     try {
         let job_queue = Object.keys(conv_job)
             .filter(key =>
-                // if job has no result_id but has job_id
+                // We just want to fetch job that are not done or error and have a job_id
                 !conv_job[key]?.result_id &&
                 conv_job[key]?.job_id &&
                 conv_job[key]?.state !== 'error'
@@ -21,32 +30,31 @@ async function fetchJob(conv_id, conv_job) {
         if (job_queue.length === 0) return
 
         job_queue = await Promise.all(job_queue.map(async job => {
+            let current_job = job
+            let logs
             try {
                 const host = `${process.env.GATEWAY_SERVICES}/${job.endpoint}`
                 const job_info = await axios.get(`${host}/job/${job.job_id}`)
-                let job_logs = {}
 
                 if (job_info.state !== 'pending') {
-                    job_logs = await axios.get(`${host}/job-log/${job.job_id}`)
+                    logs = await fetchLogs(host, job)
+                    logs !== undefined ? (current_job.job_logs = logs) : undefined
                 }
 
                 if (job_info.state === 'done' && job_info.result_id) {
                     await fetchResult(conv_id, { ...job, ...job_info })
                 }
 
-                return {
-                    ...job,
+                current_job = {
+                    ...current_job,
                     ...job_info, // job_info can update job previous state, that's why it's after
-                    job_logs
                 }
             }
             catch (err) {
-                return {
-                    ...job,
-                    state: 'error',
-                    job_logs: err.message
-                }
+                current_job.state = 'error'
+                logs !== undefined ? (current_job.job_logs = logs) : undefined
             }
+            return current_job
         }))
 
         await updateJobConversation(conv_id, conv_job, job_queue)
