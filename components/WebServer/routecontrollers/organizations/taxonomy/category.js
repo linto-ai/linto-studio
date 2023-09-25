@@ -38,6 +38,9 @@ async function deleteCategory(req, res, next) {
     let category = await model.categories.getById(req.params.categoryId)
     if (category.length === 0) throw new CategoryError('Category not found')
 
+    if (category[0].type === TYPE.HIGHLIGHT)
+      throw new CategoryError('Unable to delete a highlight category')
+
     //delete all tag with this categoryId
     let tags = await model.tags.getByOrgaId(req.params.organizationId, { categoryId: req.params.categoryId })
 
