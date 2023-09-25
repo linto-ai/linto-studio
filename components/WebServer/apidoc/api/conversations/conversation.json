@@ -99,6 +99,10 @@
                 "email": {
                   "type": "string",
                   "format": "email"
+                },
+                "right": {
+                  "type": "integer",
+                  "description": "Right of the user"
                 }
               },
               "required": [

@@ -6,8 +6,7 @@ const userUtility = require(`${process.cwd()}/components/WebServer/controllers/u
 const { deleteFile, getStorageFolder, getAudioWaveformFolder } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
-const RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
-const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
+const { fetchJob } = require(`${process.cwd()}/components/WebServer/controllers/job/fetchHandler`)
 
 const {
     ConversationIdRequire,
@@ -69,25 +68,28 @@ async function getConversation(req, res, next) {
     try {
         if (!req.params.conversationId) throw new ConversationIdRequire()
 
-        let conversation
+        let conversation = await model.conversations.getById(req.params.conversationId, ['jobs'])
+        if (conversation.length !== 1) throw new ConversationNotFound()
+
+        await fetchJob(req.params.conversationId, conversation[0].jobs)
+
+        let filter = []
         if (req?.query?.key) {
-            let filter = ['name', 'owner', 'organization', 'sharedWithUsers']
+            filter = ['name', 'owner', 'organization', 'sharedWithUsers', 'jobs']
 
             if (typeof req.query.key === 'string') filter.push(req.query.key)
             else filter.push(...req.query.key)
 
             conversation = await model.conversations.getById(req.params.conversationId, filter)
         } else conversation = await model.conversations.getById(req.params.conversationId)
-        if (conversation.length !== 1) throw new ConversationNotFound()
-        conversation = conversation[0]
-
-        const data = await conversationUtility.getUserRightFromConversation(req.payload.data.userId, conversation)
-
+        const data = await conversationUtility.getUserRightFromConversation(req.payload.data.userId, conversation[0])
         res.status(200).send({
-            ...conversation,
+            ...conversation[0],
             userAccess: data.access,
             personal: data.personal
         })
+
+
     } catch (err) {
         next(err)
     }

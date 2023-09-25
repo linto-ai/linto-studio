@@ -51,7 +51,7 @@ async function getOrganizationCategory(req, res, next) {
 
     let category = await model.categories.getByOrgaId(organizationId, searchQuery)
 
-    if (category.length === 0) res.status(204)
+    if (category.length === 0) res.status(204).send()
     res.status(200).send(category)
 
   } catch (err) {

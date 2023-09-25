@@ -85,7 +85,7 @@ async function searchUser(req, res, next) {
             return (find.length > 0)
         })
 
-        if (searchUser.length === 0) res.status(204).send()
+        if (userList.length === 0) res.status(204).send()
         else res.status(200).send(userList)
     } catch (err) {
         next(err)
