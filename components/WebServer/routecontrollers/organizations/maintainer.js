@@ -73,13 +73,18 @@ async function addUserInOrganization(req, res, next) {
     if (result.matchedCount === 0) throw new OrganizationError()
 
     const sharedUser = await model.users.getById(req.payload.data.userId)
-
     if (user.length === 0) {
       await Mailing.organizationAccountCreate(req.body.email, req, magicId, sharedUser[0].email, organization.name, req.params.organizationId)
     } else {
       user = await model.users.getById(user[0]._id, true)
       await Mailing.organizationInvite(user[0], req, sharedUser[0].email, organization.name, req.params.organizationId)
     }
+
+    const conversations = await model.conversations.getSharedConvFromOrga(req.params.organizationId, userId)
+    conversations.map(async conv => {
+      conv.sharedWithUsers = conv.sharedWithUsers.filter(u => u.userId !== userId)
+      await model.conversations.update(conv)
+    })
 
     res.status(201).send({
       message: req.body.email + ' has been added to the organization'
