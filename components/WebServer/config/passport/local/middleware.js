@@ -6,7 +6,6 @@ const passport = require('passport')
 const { expressjwt: jwt } = require("express-jwt")
 const jwtDecode = require('jwt-decode')
 
-const UsersModel = require(`${process.cwd()}/lib/mongodb/models/users`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const { MalformedToken, MultipleUserFound, InvalidCredential, UserNotFound } = require(`${process.cwd()}/components/WebServer/error/exception/auth`)
@@ -18,9 +17,10 @@ module.exports = {
     authenticate: (req, res, next) => {
         passport.authenticate('local', { session: false }, (err, user) => {
             if (err) {
-                res.status(err.status).json({ error: err })
-            } else if (!user) throw new InvalidCredential()
-            else {
+                next(err)
+            } else if (!user) {
+                throw new InvalidCredential()
+            } else {
                 res.status(200).json({
                     message: 'login success',
                     token: user.token.auth_token,
@@ -32,9 +32,10 @@ module.exports = {
     authenticate_reset: (req, res, next) => {
         passport.authenticate('local_magic_link', { session: false }, (err, user) => {
             if (err) {
-                res.status(err.status).json({ error: err })
-            } else if (!user) throw new InvalidCredential()
-            else {
+                next(err)
+            } else if (!user) {
+                throw new InvalidCredential()
+            } else {
                 res.status(200).json({
                     message: 'login success',
                     token: user.token.auth_token,

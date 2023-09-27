@@ -22,6 +22,18 @@
         "type": "string",
         "description": "User picture"
       },
+      "emailIsVerified":{
+        "type": "boolean",
+        "description": "User email validation status"
+      },
+      "verifiedEmail" : {
+        "type": "array",
+        "description": "User verified email",
+        "items": {
+          "type": "string",
+          "description": "Verified email list"
+        }
+      },
       "accountNotifications": {
         "type": "object",
         "description": "User account notifications",
@@ -43,6 +55,14 @@
       "private": {
         "type": "boolean",
         "description": "User private"
+      },
+      "favorites": {
+        "type": "array",
+        "description": "User favorites conversation",
+        "items": {
+          "type": "string",
+          "description": "Favorite conv ID"
+        }
       },
       "emailNotifications": {
         "type": "object",
@@ -77,6 +97,11 @@
       "firstname": "first",
       "lastname": "last",
       "img": "pictures/default.jpg",
+      "favorites": [],
+      "emailIsVerified": true,
+      "verifiedEmail": [
+        "studio@linagora.com"
+      ],
       "accountNotifications": {
         "updatePassword": false,
         "inviteAccount": false
