@@ -41,11 +41,10 @@ function generateUserToken(email, password, done) {
                 if (!user) return done(new UnableToGenerateKeyToken())
             }).catch(done)
 
-        return done(null, {
-            token: TokenGenerator(tokenData).token,
-        })
+        return done(null, TokenGenerator(tokenData))
     }).catch(done)
 }
+
 const STRATEGY_MAGIC_LINK = new LocalStrategy({
     usernameField: 'magicId',
     passwordField: 'psw',

@@ -10,9 +10,13 @@
               "type": "string",
               "example": "login success"
             },
-            "token": {
+            "auth_token": {
               "type": "string",
-              "example": "eyJhbGciOiJIUzI1N..."
+              "example": "eyJhbGciOiJIUzI1N4..."
+            },
+            "refresh_token": {
+              "type": "string",
+              "example": "eyJhbGciOiJIUzI1Nz..."
             },
             "userId": {
               "type": "string",
