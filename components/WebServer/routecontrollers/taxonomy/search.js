@@ -5,7 +5,8 @@ const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
 const organizationUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
 
 const {
-  OrganizationError
+  OrganizationError,
+  OrganizationForbidden
 } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
 async function searchCategory(req, res, next) {
@@ -19,7 +20,7 @@ async function searchCategory(req, res, next) {
 
       // Get a list of tags (and their category) with their linked tags from any conversation (tags, categories, name, expand)
     } else if (req.query.type === 'explore') {
-      if(req.params.conversationId !== undefined) throw new OrganizationError('Explore search cannot with shared conversation')
+      if(req.params.conversationId !== undefined) throw new OrganizationForbidden('Explore search is disable for shared conversation')
 
       if (req.query.tags === undefined) {
         categoryList = await search(req, organizationId)
