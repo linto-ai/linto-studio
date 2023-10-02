@@ -1,3 +1,5 @@
+const { query } = require('express')
+
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:taxonomy:taxonomy')
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
@@ -10,7 +12,7 @@ const {
 
 async function searchTag(req, res, next) {
   try {
-    if (req.query.categoryId === undefined || req.query.tags === undefined) throw new OrganizationError('categoryId or tags are required')
+    if (req.query.categoryId === undefined || req.query.tags === undefined) throw new OrganizationError('categoryId and tags are required')
     const categoryTags = await model.search.tags.getByCategory(req.query.categoryId)
 
     const userConversationsIds = (await organizationUtility
