@@ -8,10 +8,32 @@ const organizationUtility = require(`${process.cwd()}/components/WebServer/contr
 async function getOrganizationTags(req, res, next) {
   try {
     const organizationId = await organizationUtility.getOrgaIdFromReq(req)
-    let tag = await model.tags.getByOrgaId(organizationId)
 
-    if (tag.length === 0) res.status(204).send()
-    else res.status(200).send(tag)
+    let expand = req.query.expand
+    delete req.query.expand
+
+    let tags = await model.tags.getByOrgaId(organizationId, req.query)
+    if (tags.length === 0) res.status(204).send()
+    else if (expand === 'true') {
+      let ignoredList = []
+      let categoriesList = {}
+
+      for (let tag of tags) {
+        if (ignoredList.includes(tag.categoryId)) continue // should skip if the category has already been ignored
+
+        if (!categoriesList[tag.categoryId]) {
+          let category = (await model.categories.getById(tag.categoryId))[0]
+          categoriesList[tag.categoryId] = { ...category, tags: [] }
+        }
+        categoriesList[tag.categoryId].tags.push(tag)
+      }
+      let searchResult = []
+      for (let categoryId in categoriesList) {
+        searchResult.push(categoriesList[categoryId])
+      }
+      res.status(200).send(searchResult)
+    }
+    else res.status(200).send(tags)
 
   } catch (err) {
     next(err)

@@ -6,12 +6,20 @@
       ],
       "summary": "Create a category in an organization",
       "parameters": [{
-        "name": "conversationId",
-        "in": "path",
-        "description": "Conversation ID",
-        "required": true,
-        "type": "string"
-      }],
+          "name": "conversationId",
+          "in": "path",
+          "description": "Conversation ID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "in": "query",
+          "name": "name",
+          "required": false,
+          "description": "Filter by tag name",
+          "example": "tag name"
+        }
+      ],
       "requestBody": {
         "content": {
           "multipart/form-data": {
