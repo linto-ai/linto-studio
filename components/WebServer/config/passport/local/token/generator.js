@@ -31,6 +31,6 @@ function generateJWT(data, authSecret) {
                 data,
             }, authSecret + process.env.CM_REFRESH_SECRET + process.env.CM_JWT_SECRET, { algorithm: 'HS256', expiresIn: REFRESH_TOKEN_DAYS_TIME }
         ),
-        user_id: data.sessionId
+        user_id: data.userId
     }
 }

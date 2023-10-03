@@ -21,25 +21,30 @@ const STRATEGY = new LocalStrategy({
 passport.use('local', STRATEGY)
 
 async function generateUserToken(email, password, done) {
-    let users = await model.users.getTokenByEmail(email)
-    if (users.length === 1) user = users[0]
-    else if (users.length > 1) throw new MultipleUserFound()
-    else throw new UserNotFound()
+    try {
+        let users = await model.users.getTokenByEmail(email)
+        if (users.length === 1) user = users[0]
+        else if (users.length > 1) throw new MultipleUserFound()
+        else throw new UserNotFound()
 
-    if (!user.salt) throw new UnableToGenerateKeyToken()
-    if (!user || !validatePassword(password, user)) return done(new InvalidCredential())
+        if (!user.salt) throw new UnableToGenerateKeyToken()
+        if (!user || !validatePassword(password, user)) return done(new InvalidCredential())
 
-    const token_salt = randomstring.generate(12)
-    let token = await model.tokens.insert(user._id, token_salt)
+        const token_salt = randomstring.generate(12)
+        let token = await model.tokens.insert(user._id, token_salt)
 
-    let tokenData = { // Data stored in the token
-        salt: token_salt,
-        tokenId: token.insertedId,
-        email: user.email,
-        userId: user._id
+        let tokenData = { // Data stored in the token
+            salt: token_salt,
+            tokenId: token.insertedId,
+            email: user.email,
+            userId: user._id
+        }
+
+        return done(null, TokenGenerator(tokenData))
     }
-
-    return done(null, TokenGenerator(tokenData))
+    catch (err) {
+        done(err)
+    }
 }
 
 const STRATEGY_MAGIC_LINK = new LocalStrategy({
@@ -49,7 +54,8 @@ const STRATEGY_MAGIC_LINK = new LocalStrategy({
 passport.use('local_magic_link', STRATEGY_MAGIC_LINK)
 
 async function generateResetUserToken(magicId, psw, done) {
-    model.users.getByMagicId(magicId, true).then(users => {
+    try {
+        let users = await model.users.getByMagicId(magicId, true)
         if (users.length === 1) user = users[0]
         else if (users.length > 1) throw new MultipleUserFound()
         else throw new UserNotFound()
@@ -57,34 +63,31 @@ async function generateResetUserToken(magicId, psw, done) {
         if (!user) return done(new InvalidCredential())
         else if (!moment().isBefore(user.authLink.validityDate)) return done(new ExpiredLink()) // expired token
 
+        const token_salt = randomstring.generate(12)
+        let token = await model.tokens.insert(user._id, token_salt)
+
         let tokenData = { // Data stored in the token
-            salt: randomstring.generate(12),
-            sessionId: user._id,
+            salt: token_salt,
+            tokenId: token.insertedId,
             email: user.email,
             userId: user._id
         }
 
-        // Push email to verifiedEmail if it is not in the array
         let verifiedEmail = user.verifiedEmail
         if (verifiedEmail.indexOf(user.email) < 0) {
             verifiedEmail.push(user.email)
         }
 
-        model.users.update({
+        await model.users.update({
             _id: user._id,
-            keyToken: tokenData.salt,
             authLink: { magicId: null, validityDate: null },
             emailIsVerified: true,
             verifiedEmail
         })
-            .then(user => {
-                if (!user) return done(new UnableToGenerateKeyToken())
-            }).catch(done)
-
-        return done(null, {
-            token: TokenGenerator(tokenData).token,
-        })
-    }).catch(done)
+        return done(null, TokenGenerator(tokenData))
+    } catch (err) {
+        done(err)
+    }
 }
 
 

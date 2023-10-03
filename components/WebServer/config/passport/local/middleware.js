@@ -45,8 +45,7 @@ module.exports = {
             } else {
                 res.status(200).json({
                     message: 'login success',
-                    token: user.token.auth_token,
-                    userId: user.token.session_id.toString()
+                    ...user
                 })
             }
         })(req, res, next)
