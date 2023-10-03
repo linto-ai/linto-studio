@@ -59,7 +59,6 @@ module.exports = {
         }),
         (req, res, next) => {
             const tokenData = jwtDecode(req.headers.authorization.split(' ')[1])
-
             req.payload = {
                 data: {
                     userId: tokenData.data.userId
@@ -97,13 +96,16 @@ async function generateSecretFromHeaders(req, token, done) {
     try {
         if (!token?.payload?.data) throw new MalformedToken()
         const { headers: { authorization } } = req
+
         const userId = token.payload.data.userId
+        const tokenId = token.payload.data.tokenId
 
         if (authorization.split(' ')[0] === 'Bearer') {
-            const users = await model.users.getTokenById(userId)
-            if (users.length === 0) throw new UserNotFound()
-            else if (users.length !== 1) throw new MultipleUserFound()
-            else return users[0].keyToken + process.env.CM_JWT_SECRET
+            const users_token = await model.tokens.getTokenById(tokenId, userId)
+
+            if (users_token.length === 0) throw new UserNotFound()
+            else if (users_token.length !== 1) throw new MultipleUserFound()
+            else return users_token[0].salt + process.env.CM_JWT_SECRET
         }
 
     } catch (error) {
@@ -117,12 +119,14 @@ async function generateRefreshSecretFromHeaders(req, token, done) {
         if (!token?.payload?.data) throw new MalformedToken()
         const { headers: { authorization } } = req
         const userId = token.payload.data.userId
+        const tokenId = token.payload.data.tokenId
 
         if (authorization.split(' ')[0] === 'Bearer') {
-            const users = await model.users.getTokenById(userId)
-            if (users.length === 0) throw new UserNotFound()
-            else if (users.length !== 1) throw new MultipleUserFound()
-            else return users[0].keyToken + process.env.CM_REFRESH_SECRET + process.env.CM_JWT_SECRET
+            const users_token = await model.tokens.getTokenById(tokenId, userId)
+
+            if (users_token.length === 0) throw new UserNotFound()
+            else if (users_token.length !== 1) throw new MultipleUserFound()
+            else return users_token[0].salt + process.env.CM_REFRESH_SECRET + process.env.CM_JWT_SECRET
         }
     } catch (error) {
         console.error('generateRefreshSecretFromHeaders ERR:')

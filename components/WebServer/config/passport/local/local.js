@@ -17,32 +17,29 @@ const moment = require('moment')
 const STRATEGY = new LocalStrategy({
     usernameField: 'email',
     passwordField: 'password',
-}, (email, password, done) => generateUserToken(email, password, done))
+}, async (email, password, done) => generateUserToken(email, password, done))
 passport.use('local', STRATEGY)
 
-function generateUserToken(email, password, done) {
-    model.users.getTokenByEmail(email).then(users => {
-        if (users.length === 1) user = users[0]
-        else if (users.length > 1) throw new MultipleUserFound()
-        else throw new UserNotFound()
+async function generateUserToken(email, password, done) {
+    let users = await model.users.getTokenByEmail(email)
+    if (users.length === 1) user = users[0]
+    else if (users.length > 1) throw new MultipleUserFound()
+    else throw new UserNotFound()
 
-        if (!user.salt) throw new UnableToGenerateKeyToken()
+    if (!user.salt) throw new UnableToGenerateKeyToken()
+    if (!user || !validatePassword(password, user)) return done(new InvalidCredential())
 
-        if (!user || !validatePassword(password, user)) return done(new InvalidCredential())
-        let tokenData = { // Data stored in the token
-            salt: randomstring.generate(12),
-            sessionId: user._id,
-            email: user.email,
-            userId: user._id
-        }
+    const token_salt = randomstring.generate(12)
+    let token = await model.tokens.insert(user._id, token_salt)
 
-        model.users.update({ _id: user._id, keyToken: tokenData.salt })
-            .then(user => {
-                if (!user) return done(new UnableToGenerateKeyToken())
-            }).catch(done)
+    let tokenData = { // Data stored in the token
+        salt: token_salt,
+        tokenId: token.insertedId,
+        email: user.email,
+        userId: user._id
+    }
 
-        return done(null, TokenGenerator(tokenData))
-    }).catch(done)
+    return done(null, TokenGenerator(tokenData))
 }
 
 const STRATEGY_MAGIC_LINK = new LocalStrategy({

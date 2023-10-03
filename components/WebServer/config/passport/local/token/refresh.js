@@ -1,6 +1,5 @@
 const debug = require('debug')('linto:conversation-manager:components:webserver:config:auth:refresh')
 
-
 const jwtDecode = require('jwt-decode')
 
 const TokenGenerator = require('./generator')
@@ -8,23 +7,22 @@ const model = require(`${process.cwd()}/lib/mongodb/models/index`)
 
 const randomstring = require('randomstring')
 
-const { UnableToGenerateKeyToken } = require(`${process.cwd()}/components/WebServer/error/exception/auth`)
-
 
 module.exports = async function (refreshToken) {
-  let decodedToken = jwtDecode(refreshToken)
-  let user = await model.users.getById(decodedToken.data.userId.toString())
+  const decodedToken = jwtDecode(refreshToken)
 
-  if (user === undefined || user.length !== 1)
-    return undefined
-  user = user[0]
+  const userId = decodedToken.data.userId
+  model.tokens.delete(decodedToken.data.tokenId)
 
-  decodedToken.data.salt = randomstring.generate(12)
+  const token_salt = randomstring.generate(12)
+  let token = await model.tokens.insert(userId, token_salt)
 
-  await model.users.update({ _id: user._id, keyToken: decodedToken.data.salt })
-    .then(user => {
-      if (!user) return done(new UnableToGenerateKeyToken())
-    })
 
-  return TokenGenerator(decodedToken.data)
+  const tokenData = { // Data stored in the token
+    salt: token_salt,
+    tokenId: token.insertedId,
+    userId: userId,
+    email: decodedToken.data.email
+  }
+  return TokenGenerator(tokenData)
 }
