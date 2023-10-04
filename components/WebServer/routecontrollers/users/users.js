@@ -197,8 +197,8 @@ async function updateUserPicture(req, res, next) {
 
 async function logout(req, res, next) {
     try {
-        if (!req.payload.data && !req.payload.data.userId) throw new UserUnsupportedMediaType()
-        const result = await model.users.logout(req.payload.data.userId)
+        if (!req.payload.data && !req.payload.data.tokenId) throw new UserUnsupportedMediaType()
+        const result = await model.tokens.delete(req.payload.data.tokenId)
         if (result.matchedCount === 0) throw new UserError()
 
         res.status(200).send({ message: 'User has been disconnected' })

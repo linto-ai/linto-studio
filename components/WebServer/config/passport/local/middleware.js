@@ -60,7 +60,8 @@ module.exports = {
             const tokenData = jwtDecode(req.headers.authorization.split(' ')[1])
             req.payload = {
                 data: {
-                    userId: tokenData.data.userId
+                    userId: tokenData.data.userId,
+                    tokenId: tokenData.data.tokenId
                 }
             }
             next()
