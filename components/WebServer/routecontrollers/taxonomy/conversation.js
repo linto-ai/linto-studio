@@ -51,7 +51,7 @@ async function createTag(req, organizationId, next) {
     debug(tag)
 
     let category = await model.categories.getById(req.body.categoryId)
-    if (category.length === 0 || category.length === undefined) throw new TagError('categoryId not found')
+    if (category.length === 0 || category.length === undefined) throw new TagError('categoryId not found')
 
 
     req.body.organizationId = organizationId
@@ -73,13 +73,16 @@ async function addTagToConversation(req, res, next) {
     const conversation = await model.conversations.getById(req.params.conversationId)
 
     let tagId = req.params.tagId
-
-    if (req.body.name) {
-      tagId = await createTag(req, organizationId, next)
-      if(!tagId) throw new TagError('Error during the creation of the tag')
-    } else if (req.params.tagId) {
-      const tag = await model.tags.getById(tagId)
+    let tag
+    if (req.params.tagId) {
+      tag = await model.tags.getById(tagId)
       if (tag.length !== 1 || tag[0].organizationId !== conversation[0].organization.organizationId) throw new TagNotFound()
+
+    } else if (req.body.name) {
+      tagId = await createTag(req, organizationId, next)
+      if (!tagId) throw new TagError('Error during the creation of the tag')
+
+      tag = await model.tags.getById(tagId)
     } else throw new TagUnsupportedMediaType('Tag id or TagName is required')
 
     if (conversation[0].tags.includes(tagId)) {
@@ -87,7 +90,7 @@ async function addTagToConversation(req, res, next) {
     } else {
       let tagsList = [...conversation[0].tags, tagId]
       await model.conversations.updateTag(req.params.conversationId, tagsList)
-      res.status(200).json({ message: 'Tag added to conversation' })
+      return res.status(201).send(tag[0])
     }
 
   } catch (err) {

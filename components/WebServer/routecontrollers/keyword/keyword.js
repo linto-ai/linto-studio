@@ -63,7 +63,7 @@ function prepareForm(req, documents) {
       enableKeywordExtraction: true,
       serviceName: req.body.serviceName,
       method: 'frekeybert',
-      methodConfig: { top_n: 10, number_of_segments: 2 }
+      methodConfig: { top_n: 10 }
     }
   }
   form.append('nlpConfig', JSON.stringify(nlpConfig))

@@ -6,12 +6,27 @@
       ],
       "summary": "List all tags from the conversation organization",
       "parameters": [{
-        "name": "organizationId",
-        "in": "path",
-        "description": "Organization ID",
-        "required": true,
-        "type": "string"
-      }],
+          "name": "organizationId",
+          "in": "path",
+          "description": "Organization ID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "in": "query",
+          "name": "expand",
+          "required": false,
+          "description": "Enable the fecth of the tag category",
+          "example": "true || false"
+        },
+        {
+          "in": "query",
+          "name": "name",
+          "required": false,
+          "description": "Filter by tag name",
+          "example": "tag name"
+        }
+      ],
       "requestBody": {
         "content": {
           "multipart/form-data": {

@@ -20,6 +20,13 @@ module.exports = (webserver) => {
             requireOrganizationMemberAccess: true
         },
         {
+            path: '/search',
+            method: 'get',
+            controller: searchTag,
+            requireAuth: true,
+            requireOrganizationMemberAccess: true
+        },
+        {
             path: '/:tagId',
             method: 'patch',
             controller: updateTag,
@@ -32,14 +39,6 @@ module.exports = (webserver) => {
             controller: deleteTag,
             requireAuth: true,
             requireOrganizationMaintainerAccess: true
-        },
-        {
-            path: '/search',
-            method: 'get',
-            controller: searchTag,
-            requireAuth: true,
-            requireOrganizationMemberAccess: true
-        },
-
+        }
     ]
 }
