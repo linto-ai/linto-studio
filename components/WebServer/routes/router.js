@@ -35,6 +35,7 @@ class Router {
                 let middlewaresLoaded = []
                 // require passport auth (headers)
                 if (route.requireAuth) middlewaresLoaded.push(auth_middlewares.isAuthenticate)
+                if (route.requireRefresh) middlewaresLoaded.push(auth_middlewares.refresh_token)
 
                 // Conversation rights
                 if (route.requireConversationReadAccess) middlewaresLoaded.push(conversation_middlewares.asReadAccess) // require read access

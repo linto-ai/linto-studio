@@ -184,7 +184,7 @@
           "schema": {
             "$ref": "#/components/schemas/CategorySearchType"
           },
-          "description": "Research type:\n * `explore` - Get a list of tags (and their category) with their linked tags from any conversation (`tags`, `categories`, `name`, `expand`) \n * `info` - Retrieve information for all desired tags with their category information (`tags`, `name`) \n * `category` - Search for any category based on the provided name (`name`)\n "
+          "description": "Research type:\n * `explore` - Disabled for a conversation search \n * `info` - Retrieve information for all desired tags with their category information (`tags`, `name`) \n * `category` - Search for any category based on the provided name (`name`)\n "
         },
         {
           "in": "query",
@@ -240,6 +240,9 @@
         },
         "401": {
           "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
         }
       }
     }
