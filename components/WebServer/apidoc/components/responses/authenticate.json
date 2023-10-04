@@ -18,7 +18,7 @@
               "type": "string",
               "example": "eyJhbGciOiJIUzI1Nz..."
             },
-            "userId": {
+            "user_id": {
               "type": "string",
               "example": "634e6ab183f5db343dfc40d2"
             }
