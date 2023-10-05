@@ -22,7 +22,7 @@ async function searchCategory(req, res, next) {
 
       // Get a list of tags (and their category) with their linked tags from any conversation (tags, categories, name, expand)
     } else if (req.query.type === 'explore') {
-      if(req.params.conversationId !== undefined) throw new OrganizationForbidden('Explore search is disable for shared conversation')
+      if (req.params.conversationId !== undefined) throw new OrganizationForbidden('Explore search is disable for shared conversation')
 
 
       if (req.query.tags === undefined) {
@@ -69,17 +69,7 @@ async function search(req, organizationId) {
 
 async function explore(req, organizationId) {
   if (!req.query.tags) throw new OrganizationError('Tags is required')
-
-  const queryTags = req.query.tags.split(',')
-
-  const tagsId = (await organizationUtility
-    // get all the conversations of the user
-    .getUserConversationFromOrganization(req.payload.data.userId, organizationId))
-    // check if the conversation contains at least one of the tags
-    .filter(conv => conv.tags.some(tag => queryTags.includes(tag)))
-    // reduce to an array of tag ids
-    .flatMap(conv => conv.tags)
-
+  const tagsId = (await model.conversations.getTagByOrga(organizationId, req.query.tags)).flatMap(conv => conv.tags)
   return tagsId
 }
 

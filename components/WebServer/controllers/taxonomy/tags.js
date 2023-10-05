@@ -20,24 +20,20 @@ async function fetchTagData(tags, search) {
         ignoredList.push(tag.categoryId)
         continue  // should skip if the category is not the desired type
       }
-      categoriesList[tag.categoryId] = { ...category, tags: [], searchedTag: false }
+      categoriesList[tag.categoryId] = { ...category, tags: [] }
     }
-
 
     if (search.categories.includes(tag.categoryId) || search.expand === 'true') {
       categoriesList[tag.categoryId].tags.push(tag)
     } else if (search.tags.includes(tag._id.toString())) {
-      categoriesList[tag.categoryId].searchedTag = true
       categoriesList[tag.categoryId].tags.push(tag)
-    } else if (categoriesList[tag.categoryId] && categoriesList[tag.categoryId].searchedTag) {
+    } else if (categoriesList[tag.categoryId]) {
       categoriesList[tag.categoryId].tags.push(tag)
     }
   }
 
   let searchResult = []
   for (let categoryId in categoriesList) {
-    delete categoriesList[categoryId].searchedTag
-
     searchResult.push(categoriesList[categoryId])
   }
   return searchResult
