@@ -13,7 +13,8 @@ const {
 const {
   TagError,
   TagNotFound,
-  TagUnsupportedMediaType
+  TagUnsupportedMediaType,
+  TagConflict
 } = require(`${process.cwd()}/components/WebServer/error/exception/tag`)
 
 async function deleteTagFromConversation(req, res, next) {
@@ -46,9 +47,8 @@ async function createTag(req, organizationId, next) {
     if (!req.body.name) throw new TagUnsupportedMediaType('name is required')
     if (!req.body.categoryId) throw new TagUnsupportedMediaType('categoryId is required')
 
-    let tag = await model.tags.getByOrgaId(organizationId, { name: req.body.name })
+    let tag = await model.tags.getByOrgaId(organizationId, { name: req.body.name, categoryId: req.body.categoryId })
     if (tag.length > 0) return tag[0]._id.toString()
-    debug(tag)
 
     let category = await model.categories.getById(req.body.categoryId)
     if (category.length === 0 || category.length === undefined) throw new TagError('categoryId not found')
@@ -79,8 +79,14 @@ async function addTagToConversation(req, res, next) {
       if (tag.length !== 1 || tag[0].organizationId !== conversation[0].organization.organizationId) throw new TagNotFound()
 
     } else if (req.body.name) {
-      tagId = await createTag(req, organizationId, next)
-      if (!tagId) throw new TagError('Error during the creation of the tag')
+      let tag = await model.tags.getByOrgaId(organizationId, { name: req.body.name, categoryId: req.body.categoryId })
+
+      if (tag.length >= 2) throw new TagConflict('Multiple tags found, specify categoryId')
+      if (tag.length === 1) tagId = tag[0]._id.toString()
+      else {
+        tagId = await createTag(req, organizationId, next)
+        if (!tagId) throw new TagError('Error during the creation of the tag')
+      }
 
       tag = await model.tags.getById(tagId)
     } else throw new TagUnsupportedMediaType('Tag id or TagName is required')
