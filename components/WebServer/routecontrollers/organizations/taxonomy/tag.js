@@ -1,35 +1,11 @@
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:tag:tag')
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
-const organizationUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
-
 const {
   TagError,
   TagConflict,
   TagUnsupportedMediaType
 } = require(`${process.cwd()}/components/WebServer/error/exception/tag`)
-
-async function getTag(req, res, next) {
-  try {
-    let tag = await model.tags.getById(req.params.tagId)
-    if (tag.length === 0) res.status(204).send()
-    else res.status(200).send(tag[0])
-  } catch (err) {
-    next(err)
-  }
-}
-
-async function getTagByOrganization(req, res, next) {
-  try {
-    let tag = await model.tags.getByOrgaId(req.params.organizationId)
-
-    if (tag.length === 0) res.status(204).send()
-    else res.status(200).send(tag)
-
-  } catch (err) {
-    next(err)
-  }
-}
 
 async function createTag(req, res, next) {
   try {
@@ -93,8 +69,6 @@ async function deleteTag(req, res, next) {
 
 
 module.exports = {
-  getTag,
-  getTagByOrganization,
   createTag,
   updateTag,
   deleteTag,

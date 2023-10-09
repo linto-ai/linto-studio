@@ -91,7 +91,7 @@
         "type": "string",
         "format": "uuid",
         "required": true,
-        "description": "uuid string identifier for an conversation"
+        "description": "uuid string identifier for a conversation"
       }],
       "responses": {
         "201": {
@@ -103,7 +103,7 @@
                 "properties": {
                   "message": {
                     "type": "string",
-                    "example": "Conversationa dded to my favorites"
+                    "example": "Conversation added to favorites"
                   }
                 }
               }
@@ -132,7 +132,7 @@
         "type": "string",
         "format": "uuid",
         "required": true,
-        "description": "uuid string identifier for an conversation"
+        "description": "uuid string identifier for a conversation"
       }],
       "responses": {
         "200": {

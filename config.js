@@ -34,9 +34,6 @@ function configureDefaults() {
 
         process.env.GATEWAY_SERVICES = ifHas(process.env.GATEWAY_SERVICES, envdefault.GATEWAY_SERVICES)
 
-        process.env.NLP_SERVICES = ifHas(process.env.NLP_SERVICES, envdefault.NLP_SERVICES)
-        process.env.NLP_METHOD = ifHas(process.env.NLP_METHOD, envdefault.NLP_METHOD)
-
         // Storage folder for uploads
         process.env.VOLUME_FOLDER = 'storages'
         process.env.VOLUME_AUDIO_PATH = 'audios'

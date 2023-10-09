@@ -15,9 +15,15 @@ module.exports = (webServer) => {
             ...require('./api/conversation/conversations')(webServer),
             ...require('./api/conversation/turn')(webServer),
             ...require('./api/conversation/tag')(webServer),
+            ...require('./api/conversation/categories')(webServer),
         ],
-        "/api/nlp": require('./api/nlp/keyword')(webServer),
+        "/api": [
+            ...require('./api/taxonomy/categories')(webServer), // Keep that way until frontend catches up
+            ...require('./api/taxonomy/conversation')(webServer), // Keep that way until frontend catches up
+            ...require('./api/taxonomy/tag')(webServer), // Keep that way until frontend catches up
+            ...require('./api/media/media')(webServer),
+        ],
+        "/api/nlp": require('./api/nlp/nlp')(webServer),
         "/api/services": require('./api/service/services')(webServer, this),
-        "/api": require('./api/media/media')(webServer),
     }
 }

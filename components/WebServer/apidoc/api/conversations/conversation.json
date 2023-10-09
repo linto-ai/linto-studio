@@ -5,8 +5,7 @@
         "conversations"
       ],
       "summary": "List all conversations that have been shared with the connected user",
-      "parameters": [
-        {
+      "parameters": [{
           "in": "query",
           "name": "size",
           "required": false,
@@ -77,46 +76,6 @@
       }
     }
   },
-  "/api/conversations/shared/tags": {
-    "get": {
-      "tags": [
-        "conversations"
-      ],
-      "summary": "List tags from favorites conversations of the connected user",
-      "parameters": [{
-        "in": "query",
-        "name": "tags",
-        "required": false,
-        "description": "List of tags id to filter for",
-        "example": "5e9b1b9b0f9b2c0017b5f1b5,5e9b1b9b0f9b2c0017b5f1b6,..."
-      }],
-      "responses": {
-        "200": {
-          "description": "OK",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "$ref": "#/components/schemas/CategoryWithTags"
-                }
-              }
-            }
-          }
-        },
-        "204": {
-          "$ref": "#/components/responses/NoContent"
-        },
-        "401": {
-          "$ref": "#/components/responses/Unauthorized"
-        },
-        "404": {
-          "$ref": "#/components/responses/NotFound"
-        }
-      }
-    }
-  },
   "/api/conversations/{conversationId}/invite": {
     "post": {
       "tags": [
@@ -140,6 +99,10 @@
                 "email": {
                   "type": "string",
                   "format": "email"
+                },
+                "right": {
+                  "type": "integer",
+                  "description": "Right of the user"
                 }
               },
               "required": [
@@ -166,11 +129,18 @@
               }
             }
           }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "500": {
+          "$ref": "#/components/responses/InternalServer"
         }
-      },
-      "401": {
-        "$ref": "#/components/responses/Unauthorized"
       }
+
     }
   },
   "/api/conversations/{conversationId}/media": {

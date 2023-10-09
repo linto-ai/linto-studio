@@ -1,7 +1,7 @@
 const debug = require('debug')(`linto:components:MongoMigration:controllers:migration`)
 
 //read all folder in version 1
-const FIRST_VERSION = '1.0.0'
+const INIT_VERSION = '0.0.0'
 
 const fs = require('fs')
 const fsPromises = require('fs').promises
@@ -47,8 +47,8 @@ module.exports = {
 
       if (versionCollection.length === 0) {
         await db.createCollection('version')
-        await db.collection('version').insertOne({ version: desired_version })
-        current_version = FIRST_VERSION
+        current_version = INIT_VERSION
+        await db.collection('version').insertOne({ version: INIT_VERSION })
       } else {
         current_version = (await db.collection('version').findOne()).version
       }

@@ -2,7 +2,7 @@
   "/api/organizations/{organizationId}/tags": {
     "post": {
       "tags": [
-        "organization tag"
+        "organizations members"
       ],
       "summary": "Create a tag for an organization",
       "parameters": [{
@@ -19,9 +19,6 @@
               "type": "object",
               "properties": {
                 "name": {
-                  "type": "string"
-                },
-                "color": {
                   "type": "string"
                 },
                 "categoryId": {
@@ -67,16 +64,24 @@
     },
     "get": {
       "tags": [
-        "organization tag"
+        "organizations members"
       ],
       "summary": "List all tags from an organization",
       "parameters": [{
-        "name": "organizationId",
-        "in": "path",
-        "description": "Organization ID",
-        "required": true,
-        "type": "string"
-      }],
+          "name": "organizationId",
+          "in": "path",
+          "description": "Organization ID",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "in": "query",
+          "name": "expand",
+          "required": false,
+          "description": "Enable the fecth of the tag category",
+          "example": "true || false"
+        }
+      ],
       "responses": {
         "200": {
           "description": "OK",
@@ -89,7 +94,6 @@
               "example": [{
                 "id": "63f4d9ed7d1b424dccabc375",
                 "name": "Tag name",
-                "color": "#000000",
                 "categoryId": "640612ea3b471d4e48cc9bf3",
                 "organizationId": "5f4d9ed7d1b424dccabc372"
               }]
@@ -105,7 +109,7 @@
   "/api/organizations/{organizationId}/tags/search": {
     "get": {
       "tags": [
-        "organization tag"
+        "organizations members"
       ],
       "summary": "Retrieve tag information related between conversation",
       "parameters": [{
@@ -128,6 +132,13 @@
           "required": false,
           "description": "CategoryId to search",
           "example": "5e9b1b9b0f9b2c0017b5f1b5"
+        },
+        {
+          "in": "query",
+          "name": "categoryType",
+          "required": false,
+          "description": "CategoryType to search, this have the priority over the tags parameter",
+          "example": "highlight,conversation_metadata,conversation_text,commentary"
         }
       ],
       "responses": {
@@ -157,7 +168,7 @@
   "/api/organizations/{organizationId}/tags/{tagId}": {
     "get": {
       "tags": [
-        "organization tag"
+        "organizations members"
       ],
       "summary": "Retrieve tag information",
       "parameters": [{
@@ -195,7 +206,7 @@
     },
     "patch": {
       "tags": [
-        "organization tag"
+        "organizations members"
       ],
       "summary": "Update tag information",
       "parameters": [{
@@ -218,9 +229,6 @@
               "type": "object",
               "properties": {
                 "name": {
-                  "type": "string"
-                },
-                "color": {
                   "type": "string"
                 },
                 "categoryId": {
@@ -265,7 +273,7 @@
     },
     "delete": {
       "tags": [
-        "organization tag"
+        "organizations maintainers"
       ],
       "summary": "Delete tag information",
       "parameters": [{

@@ -1,8 +1,10 @@
 {
-  "/api/conversations/{conversationId}/keyword": {
+  "/api/nlp/conversations/{conversationId}/keywords": {
     "post": {
-      "tags": ["conversation keyword"],
-      "summary": "Add keywords to a conversation",
+      "tags": [
+        "conversations nlp"
+      ],
+      "summary": "Generate nlp keyword to a conversation",
       "parameters": [{
         "in": "path",
         "name": "conversationId",
@@ -17,18 +19,20 @@
             "schema": {
               "type": "object",
               "properties": {
-                "method": {
+                "endpoint": {
                   "type": "string",
-                  "enum": [
-                    "textrank",
-                    "frequencies"
-                  ]
+                  "description": "Endpoint to use"
+                },
+                "serviceName": {
+                  "type": "string",
+                  "description": "Service name to use"
                 }
-              },
-              "required": [
-                "method"
-              ]
-            }
+              }
+            },
+            "required": [
+              "endpoint",
+              "serviceName"
+            ]
           }
         }
       },

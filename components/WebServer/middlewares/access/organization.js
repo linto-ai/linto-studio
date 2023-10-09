@@ -21,6 +21,9 @@ module.exports = {
     },
     asMemberAccess: async (req, res, next) => {
         await access(req, next, req.params.organizationId, req.payload.data.userId, ROLES.MEMBER)
+    },
+    access: async (req, next, organizationId, userId, right) => {
+        await access(req, next, organizationId, userId, right)
     }
 }
 
@@ -37,7 +40,8 @@ async function access(req, next, organizationId, userId, right) {
                 .filter(user => user.userId === userId && ROLES.hasRoleAccess(user.role, right))
 
             if (isUserFound.length !== 0) {
-                req.userRole = isUserFound[0].role
+                if (req) req.userRole = isUserFound[0].role
+                
                 return next()
             } else return next(new OrganizationForbidden())
         }

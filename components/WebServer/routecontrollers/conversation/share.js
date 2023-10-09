@@ -1,4 +1,5 @@
 const { DocumentAttributes } = require('docx')
+const RIGHTS = require('../../../../lib/dao/conversation/rights')
 
 const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:conversation:share`)
 
@@ -38,8 +39,7 @@ async function getRightsByConversation(req, res, next) {
 async function updateConversationRights(req, res, next) {
   try {
     if (!req.params.conversationId) throw new ConversationIdRequire()
-    if (req.body.right === undefined || !req.params.userId) throw new ConversationMetadataRequire("rights or userId are require")
-    req.body.right = parseInt(req.body.right)
+    if (req.body.right === undefined || !req.params.userId) throw new ConversationMetadataRequire("UserId is require")
 
     let user = await model.users.getById(req.params.userId, true)
     if (user.length !== 1) throw new UserNotFound()
@@ -137,11 +137,11 @@ async function inviteNewUser(req, res, next) {
 
 async function inviteUserByEmail(req, res, next) {
   if (req.body.right) req.body.right = parseInt(req.body.right)
-  else req.body.right = 1
+  else req.body.right = RIGHTS.READ
 
   const user = await model.users.getByEmail(req.body.email)
   if (user.length === 1) {  // Share to an internal user
-    req.params.userId = user[0]._id
+    req.params.userId = user[0]._id.toString()
     updateConversationRights(req, res, next)
   } else {  // Share to an external user
     inviteNewUser(req, res, next)

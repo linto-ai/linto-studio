@@ -11,6 +11,8 @@ function* ruleSequenceGenerator(segments, lang) {
     let loop_data = {
       segment: segments.segment_array,
       words: segments.raw_words,
+      segment_index : 0,
+      word_index : 0
     }
 
     while (i < segments.segment_array.length) {

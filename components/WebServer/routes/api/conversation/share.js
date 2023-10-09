@@ -8,6 +8,10 @@ const { // Create conversation based on file
   listShareTags
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/share.js`)
 
+const { // Create conversation based on file
+  batchShareConversation,
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/shareBatch.js`)
+
 
 module.exports = (webserver) => {
   return [
@@ -45,6 +49,13 @@ module.exports = (webserver) => {
       requireAuth: true,
       requireConversationShareAccess: true,
       controller: inviteUserByEmail
+    },
+    {
+      path: '/shared/access',
+      method: 'post,patch,delete',
+      requireAuth: true,
+      // requireConversationShareAccess: true,
+      controller: batchShareConversation
     }
   ]
 }

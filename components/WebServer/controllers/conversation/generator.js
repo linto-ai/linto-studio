@@ -8,21 +8,19 @@ const mm = require('music-metadata')
 
 //Parse the stt transcription to for conversation mongodb model
 function initConversation(metadata, userId, job_id) {
-    let sharedWithUsers = []
-    if (metadata.sharedWithUsers) sharedWithUsers = metadata.sharedWithUsers
 
     let transcriptionConfig = metadata.transcriptionConfig
     try {
         transcriptionConfig = JSON.parse(metadata.transcriptionConfig)
     } catch (err) {
-        // Do nothing, already a json
     }
 
-    return {
+
+    let conversation = {
         name: metadata.name,
         description: metadata.description,
         owner: userId,
-        sharedWithUsers: sharedWithUsers,
+        sharedWithUsers: [],
         organization: {
             organizationId: metadata.organizationId,
             membersRight: metadata.membersRight,
@@ -30,14 +28,14 @@ function initConversation(metadata, userId, job_id) {
         },
         tags: [],
         highlights: [],
-        keywords: [],
         speakers: [],
         text: [],
         metadata: {
             transcription: {
-                lang : metadata.lang,
-                transcriptionConfig: transcriptionConfig
+                lang: metadata.lang,
+                transcriptionConfig: transcriptionConfig,
             },
+            normalize: { filter: {} },
             audio: {},
             file: {}
         },
@@ -46,10 +44,18 @@ function initConversation(metadata, userId, job_id) {
             transcription: {
                 job_id: job_id,
                 state: 'pending',
-                steps: {}
-            }
+                steps: {},
+                endpoint: metadata.endpoint,
+            },
+            keyword: {}
         }
     }
+
+    if (metadata.sharedWithUsers) conversation.sharedWithUsers = metadata.sharedWithUsers
+    if (metadata.segmentWordSize) conversation.metadata.normalize.filter.segmentWordSize = metadata.segmentWordSize
+    if (metadata.segmentCharSize) conversation.metadata.normalize.filter.segmentCharSize = metadata.segmentCharSize
+
+    return conversation
 }
 
 function transcriptionToConversation(transcript, conversation) {
@@ -81,7 +87,7 @@ function transcriptionToConversation(transcript, conversation) {
             const text_segment = {
                 speaker_id: speaker.speaker_id,
                 turn_id: uuidv4(),
-                raw_segment: segment.raw_segment,
+                raw_segment: segment.raw_segment.toLowerCase(),
                 segment: segment.segment,
                 words: []
             }

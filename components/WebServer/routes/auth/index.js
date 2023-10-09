@@ -16,7 +16,19 @@ module.exports = (webServer) => {
                     res.status(202).json(req.user)
                 }
             ]
-        }, {
+        },
+        {
+            path: '/refresh',
+            method: 'get',
+            requireRefresh: true,
+            controller: [
+                auth_middleware.refresh,
+                (req, res, next) => {
+                    res.status(202).json(req.user)
+                }
+            ]
+        },
+        {
             path: '/login/magic-link',
             method: 'post',
             requireAuth: false,

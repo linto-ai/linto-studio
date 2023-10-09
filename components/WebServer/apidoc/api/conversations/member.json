@@ -309,7 +309,7 @@
     }
   },
   "/api/conversations/{conversationId}/download": {
-    "get": {
+    "post": {
       "tags": [
         "conversations member"
       ],
@@ -330,17 +330,23 @@
             "$ref": "#/components/schemas/DownloadConversationType"
           },
           "description": "Dwonload type of media type:\n * `json` - Segment information with timestamp and speaker \n * `text` - Raw transcription \n * `docx` - Generate a .docx file to download\n "
-        },
-        {
-          "in": "query",
-          "name": "metadata",
-          "type" : "boolean",
-          "description": "If true, the metadata of the conversation will be included in the download for the `docx` format"
         }
       ],
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "$ref": "#/components/schemas/ExportRequest"
+            }
+          }
+        }
+      },
       "responses": {
         "200": {
           "description": "OK"
+        },
+        "204": {
+          "$ref": "#/components/responses/NoContent"
         },
         "401": {
           "$ref": "#/components/responses/Unauthorized"

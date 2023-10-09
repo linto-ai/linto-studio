@@ -1,19 +1,51 @@
-module.exports = {
-  ...require('./api/auth.json'),
-  ...require('./api/healthcheck.json'),
-  ...require('./api/services.json'),
-  ...require('./api/users/user.json'),
-  ...require('./api/users/favorite.json'),
-  ...require('./api/organizations/organizations.json'),
-  ...require('./api/organizations/members.json'),
-  ...require('./api/organizations/uploader.json'),
-  ...require('./api/organizations/maintainer.json'),
-  ...require('./api/organizations/admin.json'),
-  ...require('./api/organizations/category.json'),
-  ...require('./api/organizations/tag.json'),
-  ...require('./api/conversations/conversation.json'),
-  ...require('./api/conversations/member.json'),
-  ...require('./api/conversations/nlp.json'),
-  ...require('./api/conversations/turn.json'),
-  ...require('./api/conversations/tag.json')
+const debug = require('debug')(`linto:components:webserver:apidoc:index`)
+
+const fs = require('fs')
+const path = require('path')
+
+const mainDirectory = path.join(__dirname, 'api')
+
+function mergeModule(modules, loadModule) {
+  Object.keys(loadModule).forEach(function (key) {
+    let apidoc = loadModule[key]
+
+    if (modules[key]) {
+      modules[key] = {
+        ...modules[key],
+        ...apidoc
+      }
+    } else {
+      modules[key] = apidoc
+    }
+  })
+  return modules
 }
+
+function loadModulesFromDirectory(directory) {
+  let modules = {}
+
+  fs.readdirSync(directory).forEach((item) => {
+    const itemPath = path.join(directory, item)
+
+    if (fs.statSync(itemPath).isDirectory()) {
+      let loadModule = loadModulesFromDirectory(itemPath)
+      modules = mergeModule(modules, loadModule)
+
+    } else if (item.endsWith('.json')) {
+      modules = mergeModule(modules, require(itemPath))
+    }
+  })
+
+  return modules
+}
+
+
+const jsonApiModules = loadModulesFromDirectory(mainDirectory)
+const sortedKeys = Object.keys(jsonApiModules).sort()
+
+const apiDoc = {}
+for (const key of sortedKeys) {
+  apiDoc[key] = jsonApiModules[key]
+}
+
+module.exports = apiDoc

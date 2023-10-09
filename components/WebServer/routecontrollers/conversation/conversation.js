@@ -6,11 +6,11 @@ const userUtility = require(`${process.cwd()}/components/WebServer/controllers/u
 const { deleteFile, getStorageFolder, getAudioWaveformFolder } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
+const { fetchJob } = require(`${process.cwd()}/components/WebServer/controllers/job/fetchHandler`)
+
 const {
     ConversationIdRequire,
     ConversationNotFound,
-    ConversationMetadataRequire,
-    ConversationUnsupportedMediaType,
     ConversationError
 } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
@@ -68,30 +68,28 @@ async function getConversation(req, res, next) {
     try {
         if (!req.params.conversationId) throw new ConversationIdRequire()
 
-        let conversation
+        let conversation = await model.conversations.getById(req.params.conversationId, ['jobs'])
+        if (conversation.length !== 1) throw new ConversationNotFound()
+
+        await fetchJob(req.params.conversationId, conversation[0].jobs)
+
+        let filter = []
         if (req?.query?.key) {
-            let filter = ['name', 'owner', 'organization', 'sharedWithUsers']
+            filter = ['name', 'owner', 'organization', 'sharedWithUsers', 'jobs']
 
             if (typeof req.query.key === 'string') filter.push(req.query.key)
             else filter.push(...req.query.key)
 
             conversation = await model.conversations.getById(req.params.conversationId, filter)
         } else conversation = await model.conversations.getById(req.params.conversationId)
-        if (conversation.length !== 1) throw new ConversationNotFound()
-        conversation = conversation[0]
-
-        const data = await conversationUtility.getUserRightFromConversation(req.payload.data.userId, conversation)
-
-        if (((await model.organizations.getByIdAndUser(conversation.organization.organizationId, req.payload.data.userId)).length) === 0) {
-            delete conversation.organization
-            delete conversation.sharedWithUsers
-        }
-
+        const data = await conversationUtility.getUserRightFromConversation(req.payload.data.userId, conversation[0])
         res.status(200).send({
-            ...conversation,
+            ...conversation[0],
             userAccess: data.access,
             personal: data.personal
         })
+
+
     } catch (err) {
         next(err)
     }
@@ -117,9 +115,31 @@ async function getUsersByConversation(req, res, next) {
     }
 }
 
+async function getUsersByConversationList(req, res, next) {
+    try {
+        let result = []
+        const conversationsIds = req.body.conversations.split(',')
+        for (const conversationId of conversationsIds) {
+            const conversation = await model.conversations.getById(conversationId)
+
+            let organization = await model.organizations.getById(conversation[0].organization.organizationId)
+            if (organization.length !== 1) throw new OrganizationNotFound()
+
+            const userId = req.payload.data.userId
+            const conversationUsers = await userUtility.getUsersListByConversation(userId, conversation[0], organization[0])
+            result.push({ conversationId, member: { ...conversationUsers } })
+        }
+        res.status(200).send(result)
+
+    } catch (err) {
+        next(err)
+    }
+}
+
 module.exports = {
     deleteConversation,
     getConversation,
     getUsersByConversation,
+    getUsersByConversationList,
     updateConversation,
 }

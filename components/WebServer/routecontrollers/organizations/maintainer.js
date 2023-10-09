@@ -5,6 +5,8 @@ const Mailing = require(`${process.cwd()}/lib/mailer/mailing`)
 
 const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
 
+const { deleteFile, getStorageFolder, getAudioWaveformFolder } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
+
 const {
   OrganizationError,
   OrganizationUnsupportedMediaType,
@@ -14,11 +16,16 @@ const {
 } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
 const {
+  ConversationError
+} = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
+
+const {
   UserError,
 } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
 
-
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
+const RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
+
 
 async function addUserInOrganization(req, res, next) {
   try {
@@ -66,13 +73,18 @@ async function addUserInOrganization(req, res, next) {
     if (result.matchedCount === 0) throw new OrganizationError()
 
     const sharedUser = await model.users.getById(req.payload.data.userId)
-
     if (user.length === 0) {
       await Mailing.organizationAccountCreate(req.body.email, req, magicId, sharedUser[0].email, organization.name, req.params.organizationId)
     } else {
       user = await model.users.getById(user[0]._id, true)
       await Mailing.organizationInvite(user[0], req, sharedUser[0].email, organization.name, req.params.organizationId)
     }
+
+    const conversations = await model.conversations.getSharedConvFromOrga(req.params.organizationId, userId)
+    conversations.map(async conv => {
+      conv.sharedWithUsers = conv.sharedWithUsers.filter(u => u.userId !== userId)
+      await model.conversations.update(conv)
+    })
 
     res.status(201).send({
       message: req.body.email + ' has been added to the organization'
@@ -157,8 +169,55 @@ async function deleteUserFromOrganization(req, res, next) {
   }
 }
 
+async function deleteConversationFromOrganization(req, res, next) {
+  try {
+    if (!req.params.organizationId) throw new OrganizationUnsupportedMediaType()
+
+    let organization = await model.organizations.getById(req.params.organizationId)
+    if (organization.length === 0) throw new OrganizationNotFound()
+    else organization = organization[0]
+
+    if (!req.body.conversationsId) throw new OrganizationUnsupportedMediaType()
+    const convIds = req.body.conversationsId.split(',')
+    const userId = req.payload.data.userId
+
+    let conversations = await model.conversations.listConvFromConvIds(convIds, userId, ROLES.MAINTAINER, RIGHTS.DELETE, req.query)
+
+    conversations.list.map(async conv => {
+      const result = await model.conversations.delete(conv._id)
+      if (result.deletedCount !== 1) throw new ConversationError('Error when deleting conversation ', conv._id)
+
+      const audioFilename = conv.metadata.audio.filepath.split('/').pop()
+      const jsonFilename = audioFilename.split('.')[0] + '.json'
+      // delete audio file
+      deleteFile(`${getStorageFolder()}/${conv.metadata.audio.filepath}`)
+      // delete audiowaveform json file
+      deleteFile(`${getStorageFolder()}/${getAudioWaveformFolder()}/${jsonFilename}`)
+    })
+
+    //check if the conversation id from conversations is in the list of convIds
+    if (conversations.count === convIds.length) {
+      res.status(200).send({
+        message: 'Conversation has been deleted from the organization'
+      })
+    } else if (conversations.count === 0) {
+      throw new ConversationError(`Error when deleting conversation : ${convIds}`)
+    } else {
+      let message = 'Conversation has been deleted from the organization :'
+      conversations.list.map(c => { message += ' ' + c._id })
+
+      res.status(200).send({
+        message
+      })
+    }
+  } catch (err) {
+    next(err)
+  }
+}
+
 module.exports = {
   addUserInOrganization,
   updateUserFromOrganization,
-  deleteUserFromOrganization
+  deleteUserFromOrganization,
+  deleteConversationFromOrganization
 }

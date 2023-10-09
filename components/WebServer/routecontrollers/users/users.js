@@ -45,7 +45,9 @@ async function createUser(req, res, next) {
         if (createdOrganization.insertedCount !== 1) {
             model.users.delete(createdUser.insertedId.toString())
             throw new UserError()
-        }
+        } else
+            model.categories.createDefaultCategories(createdOrganization.insertedId.toString())
+
 
         const mail_result = await Mailing.accountCreate(user.email, req, createdUser.ops[0].authLink.magicId)
         if (!mail_result) throw new NodemailerError()
@@ -83,7 +85,7 @@ async function searchUser(req, res, next) {
             return (find.length > 0)
         })
 
-        if (searchUser.length === 0) res.status(204).send()
+        if (userList.length === 0) res.status(204).send()
         else res.status(200).send(userList)
     } catch (err) {
         next(err)
@@ -195,8 +197,8 @@ async function updateUserPicture(req, res, next) {
 
 async function logout(req, res, next) {
     try {
-        if (!req.payload.data && !req.payload.data.userId) throw new UserUnsupportedMediaType()
-        const result = await model.users.logout(req.payload.data.userId)
+        if (!req.payload.data && !req.payload.data.tokenId) throw new UserUnsupportedMediaType()
+        const result = await model.tokens.delete(req.payload.data.tokenId)
         if (result.matchedCount === 0) throw new UserError()
 
         res.status(200).send({ message: 'User has been disconnected' })

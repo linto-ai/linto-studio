@@ -180,9 +180,31 @@ async function mergeTurn(req, res, next) {
     }
 }
 
+async function search(req, res, next) {
+    try {
+        if (!req.params.conversationId) throw new ConversationIdRequire()
+        if (!req.query.text) throw new ConversationUnsupportedMediaType()
+
+        let turns = []
+        const conversation = await model.conversations.getById(req.params.conversationId)
+        if(conversation.length !== 1) throw new ConversationNotFound()
+
+        conversation[0].text.map(turn => {
+            if (turn.segment.toLowerCase().includes(req.query.text.toLowerCase()))
+                turns.push(turn.turn_id)
+        })
+        if (turns.length === 0) res.status(204).send()
+        else res.status(200).send(turns)
+
+    } catch (err) {
+        next(err)
+    }
+}
+
 module.exports = {
     addTurn,
     deleteTurn,
     updateTurn,
-    mergeTurn
+    mergeTurn,
+    search
 }

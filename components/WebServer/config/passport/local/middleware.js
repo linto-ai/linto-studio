@@ -6,10 +6,13 @@ const passport = require('passport')
 const { expressjwt: jwt } = require("express-jwt")
 const jwtDecode = require('jwt-decode')
 
-const UsersModel = require(`${process.cwd()}/lib/mongodb/models/users`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const { MalformedToken, MultipleUserFound, InvalidCredential, UserNotFound } = require(`${process.cwd()}/components/WebServer/error/exception/auth`)
+
+const randomstring = require('randomstring')
+const TokenGenerator = require('./token/generator')
+
 
 const refreshToken = require('./token/refresh')
 
@@ -18,27 +21,31 @@ module.exports = {
     authenticate: (req, res, next) => {
         passport.authenticate('local', { session: false }, (err, user) => {
             if (err) {
-                res.status(err.status).json({ error: err })
-            } else if (!user) throw new InvalidCredential()
-            else {
+                next(err)
+            } else if (!user) {
+                throw new InvalidCredential()
+            } else {
                 res.status(200).json({
                     message: 'login success',
-                    token: user.token.auth_token,
-                    userId: user.token.session_id.toString()
+                    ...user
                 })
             }
         })(req, res, next)
     },
+    refresh: async (req, res, next) => {
+        let token = await refreshToken(req.headers.authorization.split(' ')[1])
+        res.status(200).json(token)
+    },
     authenticate_reset: (req, res, next) => {
         passport.authenticate('local_magic_link', { session: false }, (err, user) => {
             if (err) {
-                res.status(err.status).json({ error: err })
-            } else if (!user) throw new InvalidCredential()
-            else {
+                next(err)
+            } else if (!user) {
+                throw new InvalidCredential()
+            } else {
                 res.status(200).json({
                     message: 'login success',
-                    token: user.token.auth_token,
-                    userId: user.token.session_id.toString()
+                    ...user
                 })
             }
         })(req, res, next)
@@ -51,10 +58,10 @@ module.exports = {
         }),
         (req, res, next) => {
             const tokenData = jwtDecode(req.headers.authorization.split(' ')[1])
-
             req.payload = {
                 data: {
-                    userId: tokenData.data.userId
+                    userId: tokenData.data.userId,
+                    tokenId: tokenData.data.tokenId
                 }
             }
             next()
@@ -67,9 +74,13 @@ module.exports = {
             getToken: getTokenFromHeaders,
         }),
         async (req, res, next) => {
-            const { headers: { authorization } } = req
-            let token = await refreshToken(authorization)
-            res.local = token
+            const tokenData = jwtDecode(req.headers.authorization.split(' ')[1])
+
+            req.payload = {
+                data: {
+                    userId: tokenData.data.userId
+                }
+            }
             next()
         }
     ]
@@ -85,13 +96,16 @@ async function generateSecretFromHeaders(req, token, done) {
     try {
         if (!token?.payload?.data) throw new MalformedToken()
         const { headers: { authorization } } = req
+
         const userId = token.payload.data.userId
+        const tokenId = token.payload.data.tokenId
 
         if (authorization.split(' ')[0] === 'Bearer') {
-            const users = await model.users.getTokenById(userId)
-            if (users.length === 0) throw new UserNotFound()
-            else if (users.length !== 1) throw new MultipleUserFound()
-            else return users[0].keyToken + process.env.CM_JWT_SECRET
+            const users_token = await model.tokens.getTokenById(tokenId, userId)
+
+            if (users_token.length === 0) throw new UserNotFound()
+            else if (users_token.length !== 1) throw new MultipleUserFound()
+            else return users_token[0].salt + process.env.CM_JWT_SECRET
         }
 
     } catch (error) {
@@ -100,20 +114,22 @@ async function generateSecretFromHeaders(req, token, done) {
     }
 }
 
-async function generateRefreshSecretFromHeaders(req, payload, done) {
+async function generateRefreshSecretFromHeaders(req, token, done) {
     try {
-        if (!payload || !payload.data) done(new MalformedToken())
-
+        if (!token?.payload?.data) throw new MalformedToken()
         const { headers: { authorization } } = req
+        const userId = token.payload.data.userId
+        const tokenId = token.payload.data.tokenId
+
         if (authorization.split(' ')[0] === 'Bearer') {
-            const users = model.users.getTokenById(payload.data.userId)
-            if (users.length === 0) done(new UserNotFound())
-            else if (users.length !== 1) done(new MultipleUserFound())
-            else done(null, users[0].keyToken + process.env.CM_REFRESH_SECRET)
+            const users_token = await model.tokens.getTokenById(tokenId, userId)
+
+            if (users_token.length === 0) throw new UserNotFound()
+            else if (users_token.length !== 1) throw new MultipleUserFound()
+            else return users_token[0].salt + process.env.CM_REFRESH_SECRET + process.env.CM_JWT_SECRET
         }
     } catch (error) {
         console.error('generateRefreshSecretFromHeaders ERR:')
         throw error
     }
-
 }

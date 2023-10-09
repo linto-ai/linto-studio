@@ -6,11 +6,11 @@ const {
 module.exports = (webserver) => {
   return [
     {
-      path: '/:conversationId/keyword',
+      path: '/conversations/:conversationId/keywords',
       method: 'post',
       requireAuth: true,
-      requireConversationReadAccess: true,
+      requireConversationWriteAccess: true,
       controller: keywordExtract
-    },
+    }
   ]
 }

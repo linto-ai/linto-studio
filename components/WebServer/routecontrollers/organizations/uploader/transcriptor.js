@@ -7,8 +7,6 @@ const { v4: uuidv4 } = require('uuid');
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
-const { createJobInterval } = require(`${process.cwd()}/components/WebServer/controllers/jobsHandler`)
-
 const { addFileMetadataToConversation, initConversation } = require(`${process.cwd()}/components/WebServer/controllers/conversation/generator`)
 const { storeFile } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 
@@ -61,7 +59,8 @@ async function transcribe(isSingleFile, req, res, next) {
     req.body.file_data = form_data.file_data
 
     const processing_job = await axios.postFormData(transcription_service, options)
-    await createConversationAndJobInterval(service, processing_job, req.body)
+
+    await createConversation(processing_job, req.body)
 
     res.status(201).send({
         message: 'A conversation is currently being processed'
@@ -109,24 +108,18 @@ async function prepareRequest(form, body, isSingleFile) {
     return options
 }
 
-async function createConversationAndJobInterval(service, processing_job, body) {
+async function createConversation(processing_job, body) {
     if (processing_job && processing_job.jobid) {
         let job = {
             type: 'transcription',
             job_id: processing_job.jobid,
             filter: {}
         }
-        if (body.segmentWordSize) job.filter.segmentWordSize = body.segmentWordSize
-        if (body.segmentCharSize) job.filter.segmentCharSize = body.segmentCharSize
-
         let conversation = initConversation(body, body.userId, job.job_id)
         conversation = await addFileMetadataToConversation(conversation, body.file_data)
 
         const result = await model.conversations.create(conversation)
         if (result.insertedCount !== 1) throw new ConversationError()
-
-        if (!conversation._id || !conversation?.jobs?.transcription?.job_id) throw new ConversationError()
-        createJobInterval(service, conversation, job)
 
         return conversation
     }
