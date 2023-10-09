@@ -79,7 +79,7 @@ async function addTagToConversation(req, res, next) {
       if (tag.length !== 1 || tag[0].organizationId !== conversation[0].organization.organizationId) throw new TagNotFound()
 
     } else if (req.body.name) {
-      let tag = await model.tags.getByOrgaId(organizationId, { name: req.body.name, categoryId: req.body.categoryId })
+      tag = await model.tags.getByOrgaId(organizationId, { name: req.body.name, categoryId: req.body.categoryId })
 
       if (tag.length >= 2) throw new TagConflict('Multiple tags found, specify categoryId')
       if (tag.length === 1) tagId = tag[0]._id.toString()
