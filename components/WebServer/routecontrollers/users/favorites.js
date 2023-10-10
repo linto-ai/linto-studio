@@ -3,6 +3,8 @@ const Mail = require('nodemailer/lib/mailer')
 const debug = require('debug')('linto:conversation-manager:components:WebServer:routecontrollers:users:favorite')
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
+const ORGANIZATION_ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
+
 const {
     UserError,
 } = require(`${process.cwd()}/components/WebServer/error/exception/users`)
@@ -46,7 +48,7 @@ async function listFav(req, res, next) {
                 const conversation = await model.conversations.getById(favId)
                 if (conversation.length !== 1) await model.favorites.deleteFav(req.payload.data.userId, favId)
                 else {
-                    let conv = await conversationUtility.userAccess(req.payload.data.userId, favId)
+                    let conv = await conversationUtility.userAccess(req.payload.data.userId, favId, ORGANIZATION_ROLES.MEMBER)
                     // if access to the covnersation have been removed from the user we delete the conversation from the user favorite
                     if (conv) conv_favorite.push(conv._id)
                     else await model.favorites.deleteFav(req.payload.data.userId, favId)
