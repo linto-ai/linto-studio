@@ -63,7 +63,7 @@ async function downloadConversation(req, res, next) {
         else if (req.query.format === 'docx') {
             const file = await generateDocx(conversation, metadata)
             res.setHeader('Content-Type', 'application/vnd.openxmlformats')
-            res.setHeader('Content-disposition', 'attachment; filename=' + file.name);
+            res.setHeader('Content-disposition', 'attachment; filename=' + file.name)
             res.sendFile(file.path)
         }
 
@@ -147,7 +147,9 @@ async function prepareMetadata(conversation, metadata) {
 }
 
 async function generateDocx(conversation, metadata) {
-    const outputFilePath = `/tmp/${conversation.name}.docx`;
+    conversation.name = conversation.name.replace(/[^a-zA-Z0-9 ]/g, "")
+
+    const outputFilePath = `/tmp/${conversation.name}.docx`
     const doc = new Document({
         creator: conversation.owner,
         title: conversation.name,
