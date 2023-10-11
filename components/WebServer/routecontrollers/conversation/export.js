@@ -135,8 +135,8 @@ async function prepareMetadata(conversation, metadata) {
             update_turn.speaker_name = speakers[turn.speaker_id]
         }
         if (metadata.timestamp !== false) {
-            update_turn.stime = turn.words[0].stime
-            update_turn.etime = turn.words[turn.words.length - 1].etime
+            update_turn.stime = secondsToHHMMSSWithDecimals(turn.words[0].stime)
+            update_turn.etime = secondsToHHMMSSWithDecimals(turn.words[turn.words.length - 1].etime)
         }
         return update_turn
     })
@@ -177,7 +177,9 @@ async function generateDocx(conversation, metadata) {
     }
 
     if (metadata.speakers) {
-        paragraphs.push(generateHeading('Speaker', HeadingLevel.HEADING_2))
+        if (conversation.speakers.length === 1) paragraphs.push(generateHeading('Speaker', HeadingLevel.HEADING_2))
+        else paragraphs.push(generateHeading('Speakers', HeadingLevel.HEADING_2))
+
         conversation.speakers.map(speaker => {
             paragraphs.push(generateBulletParagraph(speaker.speaker_name, 0))
         })
@@ -304,6 +306,15 @@ function createHighlightedTextRun(text) {
         highlight: 'yellow',
     })
 }
+
+function secondsToHHMMSSWithDecimals(totalSeconds) {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = (totalSeconds % 60).toFixed(2);
+
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds}`;
+}
+
 
 module.exports = {
     downloadConversation,
