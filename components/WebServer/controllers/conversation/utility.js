@@ -9,7 +9,7 @@ const { OrganizationNotFound } = require(`${process.cwd()}/components/WebServer/
 
 const conversation_projection = ['_id', 'name', 'description', 'owner', 'organization','metadata', 'locale', 'jobs', 'created', 'sharedWithUsers', 'last_update', 'tags']
 
-async function userAccess(userId, convId) {
+async function userAccess(userId, convId, desiredRole = ORGANIZATION_ROLES.MAINTAINER) {
     try {
         let conversation = await model.conversations.getById(convId, conversation_projection)
         if (conversation.length !== 1) throw new ConversationError('Conversation not found')
@@ -32,7 +32,7 @@ async function userAccess(userId, convId) {
             else if (customRight.userId === userId) return undefined
         }
 
-        if (ORGANIZATION_ROLES.hasRoleAccess(user[0].role, ORGANIZATION_ROLES.MAINTAINER)) return conversation
+        if (ORGANIZATION_ROLES.hasRoleAccess(user[0].role, desiredRole)) return conversation
         else return undefined
 
     } catch (err) {
