@@ -1,7 +1,7 @@
 const generator = require(`${process.cwd()}/components/WebServer/controllers/conversation/generator`)
 const { v4: uuidv4 } = require('uuid');
 
-const param_metadata = require('../../data/conversation/metadata.json')
+const param_metadata = require(`${process.cwd()}/tests/data/conversation/metadata.json`)
 
 describe('initialzation conversation', () => {
   let user_id, job_id

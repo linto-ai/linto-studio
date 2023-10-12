@@ -1,0 +1,59 @@
+{
+  "confidence": 0.9322335054848628,
+  "diarization_segments": [],
+  "raw_transcription": "partir de cent trente-cinq millions d' années",
+  "segments": [
+    {
+      "duration": 3476.67,
+      "end": 3477.06,
+      "raw_segment": "partir de cent trente-cinq millions d' années",
+      "segment": "partir de 135000000 d'années",
+      "spk_id": null,
+      "start": 0.39,
+      "words": [
+        {
+          "conf": 1.0,
+          "end": 675.12,
+          "start": 674.7,
+          "word": "partir"
+        },
+        {
+          "conf": 1.0,
+          "end": 675.2700000000001,
+          "start": 675.12,
+          "word": "de"
+        },
+        {
+          "conf": 1.0,
+          "end": 675.45,
+          "start": 675.2700000000001,
+          "word": "cent"
+        },
+        {
+          "conf": 1.0,
+          "end": 675.87,
+          "start": 675.45,
+          "word": "trente-cinq"
+        },
+        {
+          "conf": 1.0,
+          "end": 676.1700000000001,
+          "start": 675.87,
+          "word": "millions"
+        },
+        {
+          "conf": 1.0,
+          "end": 676.2600000000001,
+          "start": 676.1700000000001,
+          "word": "d'"
+        },
+        {
+          "conf": 0.981857,
+          "end": 676.59,
+          "start": 676.2600000000001,
+          "word": "années"
+        }
+      ]
+    }
+  ]
+}

@@ -11,7 +11,7 @@ describe('initialzation conversation', () => {
   let user_id, job_id, conversation_metadata
 
   beforeAll(async () => {
-    MOCK_TRANSCRIPTION_NO_PUNC = require('../../data/transcription/mock-trans-no-punc.json')
+    MOCK_TRANSCRIPTION_NO_PUNC = require(`${process.cwd()}/tests/data/transcription/unaltered/mock-trans-no-punc.json`)
     user_id = uuidv4()
     job_id = uuidv4()
     conversation_metadata = initConversation(param_metadata, user_id, job_id)

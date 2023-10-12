@@ -1,0 +1,3619 @@
+{
+  "speakers" : [ 
+      {
+          "speaker_id" : "82fcfaee-4a7e-44f1-ab57-bffd56e7cf78",
+          "speaker_name" : "spk2",
+          "stime" : 3.37,
+          "etime" : 10.13
+      }, 
+      {
+          "speaker_id" : "1e6fd51f-d529-4433-979c-8f530a8ea69f",
+          "speaker_name" : "spk1",
+          "stime" : 10.95,
+          "etime" : 29.93
+      }, 
+      {
+          "speaker_id" : "1dd4c468-61a8-4848-b00f-a899aef4f954",
+          "speaker_name" : "spk3",
+          "stime" : 811.6,
+          "etime" : 886.92
+      }, 
+      {
+          "speaker_id" : "7edcf97a-3097-4de9-a2cf-ada32bc4d6ca",
+          "speaker_name" : "spk4",
+          "stime" : 1093.43,
+          "etime" : 1120.41
+      }
+  ],
+  "text" : [{
+    "speaker_id" : "1e6fd51f-d529-4433-979c-8f530a8ea69f",
+    "turn_id" : "2d4dee4c-3cd1-48eb-abdc-167092e68544",
+    "raw_segment" : "le code a changé. il a du milieu des années 2010, et on va dire de manière très opportune, après cette déflagration qu'a été cette crise financière, bancaire, économique, il faut pour ces acteurs un moyen de se relégitimer. et quoi de mieux pour se relégitimer que de s'ancrer dans une perspective d'innovation technologique ? donc en fait, la blockchain, les cryptoactifs vont devenir une forme de viatique aussi pour ces grandes institutions bancaires et financières, pour montrer aux gens que oui, elles pensent au futur de la finance. et que d'ailleurs, elles sont très en pointe sur les tendances technologiques. et ça, on va dire que c'est un discours de communication destiné au grand public, parce qu'en fait, en réalité, à la tête de ces institutions, il y a quand même une forte défiance vis-à-vis de la crypto. on peut rappeler que warren buffett, qui est le grand classique du capitalisme financier américain, a beaucoup, beaucoup craché sur bitcoin en disant que c'était ridicule, que c'était improductif, dangereux, etc. tout en menant un certain nombre d'investissements dans des entreprises technologiques, des crypto-actifs. donc on va dire que c'est, je dirais, un impératif de communication un petit peu, un impératif d'image pour ces acteurs de la finance traditionnelle qui effectivement, très tôt, vont mettre en oeuvre des systèmes de blockchain. j.p. morgan a une blockchain, goldman sachs a une blockchain, en france, bnp paribas, société générale, tout le monde fait de la blockchain parce qu'en fait ça fait un peu cool de faire de la blockchain. et du point de vue de la cryptoéconomie qui effectivement est née, théoriquement, de cette défiance vis-à-vis du système bancaire et financier, c'est de l'ordre de la nécessité économique. parce qu'à un moment, il va falloir un peu se raccrocher au gros pour assurer un petit peu sa survie. donc en fait, dès le milieu des années 2010, on va avoir les capitaux afflués dans cette économie, dans cette crypto-économie, des capitaux qui sont ceux, beaucoup, de firmes d'investissement privé, les fameuses ventures capitalistes, qui vont ouvrir le robinet des milliards de dollars, ce qui va entretenir une forme de hype autour de ces entreprises, qui vont avoir par la suite la légitimité pour aller justement demander des crédits aux grandes banques, etc. ce qui n'a pas empêché, dès ce moment-là, les discours sur la supposée dissidence vis-à-vis du système de prospérer.",
+    "segment" : "Le code a changé. Il a du milieu des années 2010, et on va dire de manière très opportune, après cette déflagration qu'a été cette crise financière, bancaire, économique, il faut pour ces acteurs un moyen de se relégitimer. Et quoi de mieux pour se relégitimer que de s'ancrer dans une perspective d'innovation technologique ? Donc en fait, la blockchain, les cryptoactifs vont devenir une forme de viatique aussi pour ces grandes institutions bancaires et financières, pour montrer aux gens que oui, elles pensent au futur de la finance. et que d'ailleurs, elles sont très en pointe sur les tendances technologiques. Et ça, on va dire que c'est un discours de communication destiné au grand public, parce qu'en fait, en réalité, à la tête de ces institutions, il y a quand même une forte défiance vis-à-vis de la crypto. On peut rappeler que Warren Buffett, qui est le grand classique du capitalisme financier américain, a beaucoup, beaucoup craché sur Bitcoin en disant que c'était ridicule, que c'était improductif, dangereux, etc. tout en menant un certain nombre d'investissements dans des entreprises technologiques, des crypto-actifs. Donc on va dire que c'est, je dirais, un impératif de communication un petit peu, un impératif d'image pour ces acteurs de la finance traditionnelle qui effectivement, très tôt, vont mettre en oeuvre des systèmes de blockchain. J.P. Morgan a une blockchain, Goldman Sachs a une blockchain, en France, BNP Paribas, Société Générale, tout le monde fait de la blockchain parce qu'en fait ça fait un peu cool de faire de la blockchain. Et du point de vue de la cryptoéconomie qui effectivement est née, théoriquement, de cette défiance vis-à-vis du système bancaire et financier, c'est de l'ordre de la nécessité économique. Parce qu'à un moment, il va falloir un peu se raccrocher au gros pour assurer un petit peu sa survie. Donc en fait, dès le milieu des années 2010, on va avoir les capitaux afflués dans cette économie, dans cette crypto-économie, des capitaux qui sont ceux, beaucoup, de firmes d'investissement privé, les fameuses ventures capitalistes, qui vont ouvrir le robinet des 1000000000 de dollars, ce qui va entretenir une forme de hype autour de ces entreprises, qui vont avoir par la suite la légitimité pour aller justement demander des crédits aux grandes banques, etc. Ce qui n'a pas empêché, dès ce moment-là, les discours sur la supposée dissidence vis-à-vis du système de prospérer.",
+    "words" : [ 
+        {
+            "wid" : "1efbaa1e-89d6-49b0-8783-90c461325845",
+            "stime" : 1578.73,
+            "etime" : 1579.13,
+            "word" : "Le",
+            "confidence" : 0.58,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "91e8b10f-35a4-4eef-865c-19ea919c012f",
+            "stime" : 1579.13,
+            "etime" : 1579.41,
+            "word" : "code",
+            "confidence" : 0.75,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "8350758e-9fed-461f-ad85-cec732a193c5",
+            "stime" : 1579.41,
+            "etime" : 1579.59,
+            "word" : "a",
+            "confidence" : 0.99,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "cf0b9130-c72b-4db0-9270-11ede42907e8",
+            "stime" : 1579.59,
+            "etime" : 1580.01,
+            "word" : "changé.",
+            "confidence" : 0.93,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "1ecf0f37-9e45-4e62-85fa-1652b66d0dc5",
+            "stime" : 1581.39,
+            "etime" : 1581.79,
+            "word" : "Il",
+            "confidence" : 0.71,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "3a390838-ca3b-4af4-9c15-b49ea5b126c4",
+            "stime" : 1581.79,
+            "etime" : 1581.89,
+            "word" : "a",
+            "confidence" : 0.41,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "2657b714-ec4e-4b28-a916-2e021c17f394",
+            "stime" : 1581.89,
+            "etime" : 1582.01,
+            "word" : "du",
+            "confidence" : 0.87,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "1e4aa947-e0b6-45a6-9b55-fc36d172c312",
+            "stime" : 1582.01,
+            "etime" : 1582.19,
+            "word" : "milieu",
+            "confidence" : 0.85,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "1abf5bfb-d7a5-49a4-9e68-514a89edf17e",
+            "stime" : 1582.19,
+            "etime" : 1582.37,
+            "word" : "des",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "efe2339b-35df-4fc0-a300-d4a4f716fc0a",
+            "stime" : 1582.37,
+            "etime" : 1582.51,
+            "word" : "années",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "a025a834-3b3b-4d0c-9cf0-bf1052f2ec52",
+            "stime" : 1582.51,
+            "etime" : 1583.15,
+            "word" : "2010,",
+            "confidence" : 0.77,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "8dcd85f9-2c57-43a8-a702-3113a0000470",
+            "stime" : 1583.59,
+            "etime" : 1583.63,
+            "word" : "et",
+            "confidence" : 0.84,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "06f1e38b-15db-44f4-942c-f8161acb7b2a",
+            "stime" : 1583.63,
+            "etime" : 1583.71,
+            "word" : "on",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "52d86a81-ff34-4935-b789-aa508f4f9f2a",
+            "stime" : 1583.71,
+            "etime" : 1583.81,
+            "word" : "va",
+            "confidence" : 0.92,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "01e23f4d-a8c4-479d-a78c-c98ed6af9796",
+            "stime" : 1583.81,
+            "etime" : 1583.97,
+            "word" : "dire",
+            "confidence" : 0.89,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "b7e3c3ef-1f3f-486d-a2f5-0b497e6e3ba0",
+            "stime" : 1583.97,
+            "etime" : 1584.09,
+            "word" : "de",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "929c3589-3999-40b2-be8e-b66d90d18e52",
+            "stime" : 1584.09,
+            "etime" : 1584.29,
+            "word" : "manière",
+            "confidence" : 0.72,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "fed15629-864a-4a34-95b4-ed1eb36b7bac",
+            "stime" : 1584.29,
+            "etime" : 1584.57,
+            "word" : "très",
+            "confidence" : 0.86,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "ad5d6f6d-89bb-4d0c-8ce7-4cc883acfa7d",
+            "stime" : 1584.57,
+            "etime" : 1585.39,
+            "word" : "opportune,",
+            "confidence" : 0.83,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "e98ec9a2-1198-4ca1-8377-7ec1a6809aae",
+            "stime" : 1585.75,
+            "etime" : 1585.97,
+            "word" : "après",
+            "confidence" : 0.85,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "8dff1461-b8fc-411a-8900-b37c2762bb13",
+            "stime" : 1585.97,
+            "etime" : 1586.25,
+            "word" : "cette",
+            "confidence" : 0.84,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "ad8022f3-f8df-424e-a793-e8e59b2e53ba",
+            "stime" : 1586.25,
+            "etime" : 1586.97,
+            "word" : "déflagration",
+            "confidence" : 0.96,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "737aebc9-1d3e-495a-8c04-23c4639b40c8",
+            "stime" : 1586.97,
+            "etime" : 1587.21,
+            "word" : "qu'a",
+            "confidence" : 0.94,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "3722c78b-3429-4d63-ba5d-2dd9a221d9b4",
+            "stime" : 1587.21,
+            "etime" : 1587.35,
+            "word" : "été",
+            "confidence" : 0.68,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "205e58d6-66c5-425c-a833-30c6252f5f79",
+            "stime" : 1587.35,
+            "etime" : 1587.61,
+            "word" : "cette",
+            "confidence" : 0.82,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "1e4ce6b3-4301-4230-af50-bdfddcaabdd3",
+            "stime" : 1587.61,
+            "etime" : 1587.81,
+            "word" : "crise",
+            "confidence" : 0.72,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "e0df848b-ebad-40eb-8367-db29e5f3c468",
+            "stime" : 1587.81,
+            "etime" : 1588.55,
+            "word" : "financière,",
+            "confidence" : 0.96,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "417395fc-02ef-4071-bd1e-2f0941eae315",
+            "stime" : 1588.65,
+            "etime" : 1589.07,
+            "word" : "bancaire,",
+            "confidence" : 0.96,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "89de83b3-2027-41ff-b8df-f106c232a4a1",
+            "stime" : 1589.19,
+            "etime" : 1589.57,
+            "word" : "économique,",
+            "confidence" : 0.72,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "1a33276a-4c6f-4986-90df-c55cfd7de1ce",
+            "stime" : 1590.21,
+            "etime" : 1590.43,
+            "word" : "il",
+            "confidence" : 0.91,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "f4f54c36-588c-415f-b208-aad327a413a4",
+            "stime" : 1590.43,
+            "etime" : 1590.69,
+            "word" : "faut",
+            "confidence" : 0.84,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "e0a19375-4361-4f26-a564-9c301dbf001b",
+            "stime" : 1590.69,
+            "etime" : 1590.93,
+            "word" : "pour",
+            "confidence" : 0.74,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "fdabbe06-aa3b-491e-a37b-f2703e329432",
+            "stime" : 1590.93,
+            "etime" : 1591.13,
+            "word" : "ces",
+            "confidence" : 0.81,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "09395e0d-0072-4f26-bad4-45576e18e4d1",
+            "stime" : 1591.13,
+            "etime" : 1591.73,
+            "word" : "acteurs",
+            "confidence" : 0.83,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "62e11d6e-c53a-40cc-bef2-60f80365a3a4",
+            "stime" : 1591.73,
+            "etime" : 1592.35,
+            "word" : "un",
+            "confidence" : 0.72,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "afef190a-29d0-4971-8bd4-ee520a63cba5",
+            "stime" : 1592.35,
+            "etime" : 1592.49,
+            "word" : "moyen",
+            "confidence" : 0.79,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "2ce4b38c-0bff-4310-ad49-b5614f542f43",
+            "stime" : 1592.49,
+            "etime" : 1592.61,
+            "word" : "de",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "dee54fff-e327-4a9d-9e05-c9cda11b1b46",
+            "stime" : 1592.61,
+            "etime" : 1592.73,
+            "word" : "se",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "38e70436-5565-402e-a1f3-f083e4243f34",
+            "stime" : 1592.73,
+            "etime" : 1593.33,
+            "word" : "relégitimer.",
+            "confidence" : 0.86,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "b4116707-0f90-4ad6-ba9f-d18adeec5fe8",
+            "stime" : 1593.71,
+            "etime" : 1593.83,
+            "word" : "Et",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "2ac2a95f-89e3-4ed4-a85d-984dcddfc119",
+            "stime" : 1593.83,
+            "etime" : 1593.97,
+            "word" : "quoi",
+            "confidence" : 0.84,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "76f2e722-ccd3-48d7-bf43-f3207f056023",
+            "stime" : 1593.97,
+            "etime" : 1594.13,
+            "word" : "de",
+            "confidence" : 0.91,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "cefc7137-4ec1-4956-a3c3-cc9924926f9a",
+            "stime" : 1594.13,
+            "etime" : 1594.27,
+            "word" : "mieux",
+            "confidence" : 0.86,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "d501af19-4452-4bdc-acc1-cb4509790129",
+            "stime" : 1594.27,
+            "etime" : 1594.53,
+            "word" : "pour",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "16566647-27a1-485b-9eb1-310204f2ca3f",
+            "stime" : 1594.53,
+            "etime" : 1594.75,
+            "word" : "se",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "7a460645-e5b3-44a0-b773-871572363039",
+            "stime" : 1594.75,
+            "etime" : 1595.67,
+            "word" : "relégitimer",
+            "confidence" : 0.91,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "b7238ae0-1298-414c-90b6-8fdba7f94d5d",
+            "stime" : 1595.67,
+            "etime" : 1596.07,
+            "word" : "que",
+            "confidence" : 0.74,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "59c871b0-5f93-4aa7-9b83-382d7a3da9b2",
+            "stime" : 1596.07,
+            "etime" : 1596.71,
+            "word" : "de",
+            "confidence" : 0.89,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "77c5cbaf-a5af-43a4-93fe-18e10e393985",
+            "stime" : 1596.71,
+            "etime" : 1597.53,
+            "word" : "s'ancrer",
+            "confidence" : 0.97,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "dd309104-7b03-4b76-bad3-e48d10533642",
+            "stime" : 1597.53,
+            "etime" : 1597.73,
+            "word" : "dans",
+            "confidence" : 0.8,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "2603214b-a13c-4e64-92d5-68ecdecff97b",
+            "stime" : 1597.73,
+            "etime" : 1597.91,
+            "word" : "une",
+            "confidence" : 0.81,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "248912c5-ca88-4cdb-aae3-76416de67235",
+            "stime" : 1597.91,
+            "etime" : 1598.29,
+            "word" : "perspective",
+            "confidence" : 0.8,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "16f435f3-e726-405b-9904-915446c3e08b",
+            "stime" : 1598.29,
+            "etime" : 1598.93,
+            "word" : "d'innovation",
+            "confidence" : 0.97,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "ccdb5f1d-7c0d-426a-bf82-4acfa6944152",
+            "stime" : 1598.93,
+            "etime" : 1599.53,
+            "word" : "technologique",
+            "confidence" : 0.91,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "03f6fd9b-5fa4-4ae6-9723-f397d39f8d1a",
+            "stime" : 1600.15,
+            "etime" : 1600.15,
+            "word" : "?",
+            "confidence" : 1,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "99e864b8-eaaa-4988-a0a1-dfd50cbd6ff7",
+            "stime" : 1600.07,
+            "etime" : 1600.15,
+            "word" : "Donc",
+            "confidence" : 0.66,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "fae7f281-3a6f-4c8b-96ea-1411fe0f8a72",
+            "stime" : 1600.15,
+            "etime" : 1600.29,
+            "word" : "en",
+            "confidence" : 0.42,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "7491da87-e908-4025-9450-46e29a614949",
+            "stime" : 1600.29,
+            "etime" : 1600.41,
+            "word" : "fait,",
+            "confidence" : 0.89,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "c3f16380-1f44-4119-a59a-b8e6769224c5",
+            "stime" : 1600.47,
+            "etime" : 1600.57,
+            "word" : "la",
+            "confidence" : 0.91,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "b4173e4a-e08d-458d-b4bc-e6c756736336",
+            "stime" : 1600.57,
+            "etime" : 1600.95,
+            "word" : "blockchain,",
+            "confidence" : 0.71,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "2d6399be-3bfe-4df1-a229-4953cb66101b",
+            "stime" : 1601.43,
+            "etime" : 1601.53,
+            "word" : "les",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "d95f61f0-91b6-41bc-8198-511da147f31b",
+            "stime" : 1601.53,
+            "etime" : 1602.29,
+            "word" : "cryptoactifs",
+            "confidence" : 0.7,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "e9d47e06-1b14-4804-8e55-a3026d2454ad",
+            "stime" : 1602.29,
+            "etime" : 1602.83,
+            "word" : "vont",
+            "confidence" : 0.77,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "2b012420-b95c-4ef7-b67d-d5ce0bfcd950",
+            "stime" : 1602.83,
+            "etime" : 1603.13,
+            "word" : "devenir",
+            "confidence" : 0.8,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "b674d1a6-51c4-437f-ab48-67ad7dacf884",
+            "stime" : 1603.13,
+            "etime" : 1603.33,
+            "word" : "une",
+            "confidence" : 0.78,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "65e74b6d-c25a-4ed2-af97-b365b9f62308",
+            "stime" : 1603.33,
+            "etime" : 1603.49,
+            "word" : "forme",
+            "confidence" : 0.69,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "5c7ae92d-8f4d-4b1d-bcdf-b7dbf8e601ff",
+            "stime" : 1603.49,
+            "etime" : 1603.67,
+            "word" : "de",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "99924d40-5baf-4991-a69a-632defd13308",
+            "stime" : 1603.67,
+            "etime" : 1604.07,
+            "word" : "viatique",
+            "confidence" : 0.55,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "2914308f-ef2d-4b2f-888e-6ce7a3c3b50f",
+            "stime" : 1604.07,
+            "etime" : 1604.43,
+            "word" : "aussi",
+            "confidence" : 0.76,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "78670f31-dd7c-4d7b-9292-559fe8964756",
+            "stime" : 1604.43,
+            "etime" : 1604.63,
+            "word" : "pour",
+            "confidence" : 0.85,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "231f6b01-2a39-4375-a0f1-6f04f3357740",
+            "stime" : 1604.63,
+            "etime" : 1604.83,
+            "word" : "ces",
+            "confidence" : 0.87,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "f720df63-e415-4565-af58-371ceb0397a5",
+            "stime" : 1604.83,
+            "etime" : 1605.11,
+            "word" : "grandes",
+            "confidence" : 0.75,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "cef5831b-9c71-4c95-93d8-1b7e8bf87f17",
+            "stime" : 1605.11,
+            "etime" : 1605.55,
+            "word" : "institutions",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "e6110bd7-fccd-4704-8513-96d706926eb1",
+            "stime" : 1605.55,
+            "etime" : 1605.89,
+            "word" : "bancaires",
+            "confidence" : 0.92,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "962f0b08-14d5-4bc8-aaa7-2d20f795ebb6",
+            "stime" : 1605.89,
+            "etime" : 1606.01,
+            "word" : "et",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "d1640ee3-ac1a-49a8-aaef-febf0e96fe10",
+            "stime" : 1606.01,
+            "etime" : 1606.43,
+            "word" : "financières,",
+            "confidence" : 0.94,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "f4391acf-c1d6-4124-999a-93b13c678ed3",
+            "stime" : 1606.59,
+            "etime" : 1606.73,
+            "word" : "pour",
+            "confidence" : 0.89,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "cae45559-a727-4676-9ad2-41b5c8cc0eb8",
+            "stime" : 1606.73,
+            "etime" : 1607.03,
+            "word" : "montrer",
+            "confidence" : 0.75,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "b0815c89-4de1-4ebc-8106-1742768d00c7",
+            "stime" : 1607.03,
+            "etime" : 1607.19,
+            "word" : "aux",
+            "confidence" : 0.79,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "9da0522e-1250-4bea-abad-0cc565b9d03a",
+            "stime" : 1607.19,
+            "etime" : 1607.31,
+            "word" : "gens",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "49f5cf93-d24a-4b9e-aa55-43c443870b6b",
+            "stime" : 1607.31,
+            "etime" : 1607.49,
+            "word" : "que",
+            "confidence" : 0.82,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "e6a740bf-2c0a-4857-95ea-d721e20202f2",
+            "stime" : 1607.49,
+            "etime" : 1607.79,
+            "word" : "oui,",
+            "confidence" : 0.7,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "325aa72e-7c1d-4ca0-b0ee-356e2f531796",
+            "stime" : 1607.91,
+            "etime" : 1608.05,
+            "word" : "elles",
+            "confidence" : 0.82,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "e3f65379-64be-4d0c-b1de-f465d36573a4",
+            "stime" : 1608.05,
+            "etime" : 1608.27,
+            "word" : "pensent",
+            "confidence" : 0.94,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "fd7db251-e97b-41db-89f9-bc2cd1987bdd",
+            "stime" : 1608.27,
+            "etime" : 1608.41,
+            "word" : "au",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "7b583547-3351-4316-8f14-5d46c764d2e3",
+            "stime" : 1608.41,
+            "etime" : 1608.63,
+            "word" : "futur",
+            "confidence" : 0.95,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "73f9758e-2330-4d4b-a2e0-1d55cb4e40de",
+            "stime" : 1608.63,
+            "etime" : 1608.75,
+            "word" : "de",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "fc7e6965-4130-415d-bcd3-788cc5fb4b19",
+            "stime" : 1608.75,
+            "etime" : 1608.89,
+            "word" : "la",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "1b7f1707-6dc8-4cf3-b9c1-164a0dafe811",
+            "stime" : 1608.89,
+            "etime" : 1609.35,
+            "word" : "finance.",
+            "confidence" : 0.87,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "f228a0a7-44cd-43a7-ad67-23a577f362cd",
+            "stime" : 1609.75,
+            "etime" : 1610.07,
+            "word" : "et",
+            "confidence" : 0.57,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "d33a6aee-eb17-4c4e-8f41-70fc9b2d2f82",
+            "stime" : 1610.07,
+            "etime" : 1610.19,
+            "word" : "que",
+            "confidence" : 0.79,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "ffdb7e69-7618-4b30-902c-f1ca43b57c44",
+            "stime" : 1610.19,
+            "etime" : 1610.41,
+            "word" : "d'ailleurs,",
+            "confidence" : 0.91,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "cb0ff49f-e59d-4ff2-bf51-d2a940b09b10",
+            "stime" : 1610.53,
+            "etime" : 1610.55,
+            "word" : "elles",
+            "confidence" : 0.8,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "85289d76-b55d-4a8f-a926-08e5330f8343",
+            "stime" : 1610.55,
+            "etime" : 1610.71,
+            "word" : "sont",
+            "confidence" : 0.84,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "64204dd1-0c86-4225-92ef-d5365f7f45f2",
+            "stime" : 1610.71,
+            "etime" : 1610.99,
+            "word" : "très",
+            "confidence" : 0.89,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "5714b6fe-2f76-4d76-9e9e-3006fe2c78c2",
+            "stime" : 1610.99,
+            "etime" : 1611.19,
+            "word" : "en",
+            "confidence" : 0.89,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "226b7cc3-9fbd-4b3f-9b33-4ef71da807eb",
+            "stime" : 1611.19,
+            "etime" : 1611.41,
+            "word" : "pointe",
+            "confidence" : 0.78,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "370c74ec-ee5f-419c-a5ea-4d0002a1d982",
+            "stime" : 1611.41,
+            "etime" : 1611.53,
+            "word" : "sur",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "8ab7a61a-4f96-4eb5-aa11-47b765c9ab74",
+            "stime" : 1611.53,
+            "etime" : 1611.65,
+            "word" : "les",
+            "confidence" : 0.89,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "8e55ae38-26f8-47a1-8a9b-ac244c2fddce",
+            "stime" : 1611.65,
+            "etime" : 1611.91,
+            "word" : "tendances",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "5047433b-95e0-4c65-b061-fdc956a30c2a",
+            "stime" : 1611.91,
+            "etime" : 1612.55,
+            "word" : "technologiques.",
+            "confidence" : 0.92,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "4acf263a-3b8a-4c75-9752-262064c4a219",
+            "stime" : 1613.17,
+            "etime" : 1613.23,
+            "word" : "Et",
+            "confidence" : 0.78,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "116b8cb9-6607-4ff5-b656-4ee3d5fc39f3",
+            "stime" : 1613.23,
+            "etime" : 1613.41,
+            "word" : "ça,",
+            "confidence" : 0.76,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "c880d0c3-c58d-4fc0-b49b-38e4806f1e59",
+            "stime" : 1613.53,
+            "etime" : 1613.55,
+            "word" : "on",
+            "confidence" : 0.85,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "bf337c4a-af7a-4f02-a42f-2cf97f588dcf",
+            "stime" : 1613.55,
+            "etime" : 1613.59,
+            "word" : "va",
+            "confidence" : 0.89,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "9797484a-19c9-4b0f-8a7f-d10aff92e315",
+            "stime" : 1613.59,
+            "etime" : 1613.71,
+            "word" : "dire",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "abe52210-6dff-49ad-b1c2-d8c708ff9248",
+            "stime" : 1613.71,
+            "etime" : 1613.81,
+            "word" : "que",
+            "confidence" : 0.81,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "f2413bfc-fc9b-485c-98d7-267c01b09cf1",
+            "stime" : 1613.81,
+            "etime" : 1613.89,
+            "word" : "c'est",
+            "confidence" : 0.98,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "3ffc8491-6c1c-40ed-a9b2-4c2382aafa1a",
+            "stime" : 1613.89,
+            "etime" : 1614.03,
+            "word" : "un",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "7bba97d2-0fc4-48aa-b408-358045ec59fa",
+            "stime" : 1614.03,
+            "etime" : 1614.29,
+            "word" : "discours",
+            "confidence" : 0.89,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "af625e37-900d-461b-91ce-b69789521c98",
+            "stime" : 1614.29,
+            "etime" : 1614.45,
+            "word" : "de",
+            "confidence" : 0.91,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "1bbda7ad-9834-4911-bd94-b176fe7bf61c",
+            "stime" : 1614.45,
+            "etime" : 1615.05,
+            "word" : "communication",
+            "confidence" : 0.71,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "db4332c9-e5d2-49f8-ace4-f774ef0ee805",
+            "stime" : 1615.05,
+            "etime" : 1615.53,
+            "word" : "destiné",
+            "confidence" : 0.89,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "78c91416-cb9c-4803-9582-2df0f1932cfe",
+            "stime" : 1615.53,
+            "etime" : 1615.63,
+            "word" : "au",
+            "confidence" : 0.82,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "ccd8d593-7425-4108-a68a-23f92f62e8ba",
+            "stime" : 1615.63,
+            "etime" : 1615.77,
+            "word" : "grand",
+            "confidence" : 0.74,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "d721d873-f732-4b21-8805-a845e533f15e",
+            "stime" : 1615.77,
+            "etime" : 1616.13,
+            "word" : "public,",
+            "confidence" : 0.87,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "c6e7d938-62d9-452e-87af-49cfbef03a0b",
+            "stime" : 1616.53,
+            "etime" : 1616.73,
+            "word" : "parce",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "b0136889-0fbb-4d66-8cd2-15bc681408d3",
+            "stime" : 1616.73,
+            "etime" : 1616.91,
+            "word" : "qu'en",
+            "confidence" : 0.95,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "0a5166ae-0d05-4c28-84c1-82e4dfbcfe4b",
+            "stime" : 1616.91,
+            "etime" : 1617.03,
+            "word" : "fait,",
+            "confidence" : 0.56,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "9228ecd1-1f63-4a83-b4e7-86721e8d8476",
+            "stime" : 1617.15,
+            "etime" : 1617.23,
+            "word" : "en",
+            "confidence" : 0.89,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "3eb4014b-6e1b-4c10-ac56-682fc7cf53ac",
+            "stime" : 1617.23,
+            "etime" : 1617.65,
+            "word" : "réalité,",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "cdfd4d20-3790-4c5b-96d8-74c0e8de242a",
+            "stime" : 1617.75,
+            "etime" : 1617.83,
+            "word" : "à",
+            "confidence" : 0.89,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "9b92e302-bed1-448c-b9c0-ac2460a7adef",
+            "stime" : 1617.83,
+            "etime" : 1617.99,
+            "word" : "la",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "0c4fa1ac-6f5f-4bd7-982e-4169d05dfa45",
+            "stime" : 1617.99,
+            "etime" : 1618.13,
+            "word" : "tête",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "bc178384-3e64-46d9-b7eb-8dddb2b8b421",
+            "stime" : 1618.13,
+            "etime" : 1618.25,
+            "word" : "de",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "48547ad1-508e-4df2-bf08-7ee18cf7d719",
+            "stime" : 1618.25,
+            "etime" : 1618.43,
+            "word" : "ces",
+            "confidence" : 0.91,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "e3343c3f-1e6e-4d9e-9960-32986d30967f",
+            "stime" : 1618.43,
+            "etime" : 1618.87,
+            "word" : "institutions,",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "745fe6f3-7019-43a0-8486-88f7877b372b",
+            "stime" : 1618.99,
+            "etime" : 1619.07,
+            "word" : "il",
+            "confidence" : 0.89,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "cef81774-1066-4adf-8303-f0481fd11414",
+            "stime" : 1619.07,
+            "etime" : 1619.07,
+            "word" : "y",
+            "confidence" : 0.99,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "0065c95b-c268-41f0-80df-50795681585f",
+            "stime" : 1619.07,
+            "etime" : 1619.07,
+            "word" : "a",
+            "confidence" : 1,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "697e734d-7932-44d2-b557-c008a4febd55",
+            "stime" : 1619.07,
+            "etime" : 1619.17,
+            "word" : "quand",
+            "confidence" : 0.78,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "2c1d4c38-a14c-4407-82ca-533c23db1e9e",
+            "stime" : 1619.17,
+            "etime" : 1619.25,
+            "word" : "même",
+            "confidence" : 0.85,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "8b280b03-e64e-429b-b426-56a310459b3a",
+            "stime" : 1619.25,
+            "etime" : 1619.39,
+            "word" : "une",
+            "confidence" : 0.75,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "afd72de6-a1fc-4fc9-8c5a-0688fe2438c9",
+            "stime" : 1619.39,
+            "etime" : 1619.55,
+            "word" : "forte",
+            "confidence" : 0.78,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "7d8a7a3c-9481-4d81-a914-e5f9a0449d45",
+            "stime" : 1619.55,
+            "etime" : 1620.01,
+            "word" : "défiance",
+            "confidence" : 0.82,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "253dcc68-980b-4aad-9e47-11b0380ea42c",
+            "stime" : 1620.01,
+            "etime" : 1620.49,
+            "word" : "vis-à-vis",
+            "confidence" : 0.91,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "f41d8b0d-cb4d-41a5-bb04-6133046c3191",
+            "stime" : 1620.49,
+            "etime" : 1620.57,
+            "word" : "de",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "0fe77295-466d-4f14-b50f-c382326859cb",
+            "stime" : 1620.57,
+            "etime" : 1620.67,
+            "word" : "la",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "22685d62-2730-41ea-94c8-f8f4add069f3",
+            "stime" : 1620.67,
+            "etime" : 1620.91,
+            "word" : "crypto.",
+            "confidence" : 0.72,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "51487877-feee-4f3a-b59b-5878ed0b6e8b",
+            "stime" : 1621.09,
+            "etime" : 1621.15,
+            "word" : "On",
+            "confidence" : 0.91,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "4aa239c9-1bab-4b17-b9bb-fd4426674a78",
+            "stime" : 1621.15,
+            "etime" : 1621.31,
+            "word" : "peut",
+            "confidence" : 0.92,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "b0deb322-56ac-4708-9c53-af64f241ec27",
+            "stime" : 1621.31,
+            "etime" : 1622.49,
+            "word" : "rappeler",
+            "confidence" : 0.81,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "e3f80751-50c5-409a-9904-f5b86b7ab8c9",
+            "stime" : 1622.49,
+            "etime" : 1622.67,
+            "word" : "que",
+            "confidence" : 0.8,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "600718e9-f30d-4a68-8e22-cf653e6be80d",
+            "stime" : 1622.67,
+            "etime" : 1622.97,
+            "word" : "Warren",
+            "confidence" : 0.79,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "f5f1c34f-f4eb-447e-baa5-c3089cff7a82",
+            "stime" : 1622.97,
+            "etime" : 1623.43,
+            "word" : "Buffett,",
+            "confidence" : 0.83,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "3d733268-4b95-4a28-9351-d008c0b0e477",
+            "stime" : 1623.53,
+            "etime" : 1623.59,
+            "word" : "qui",
+            "confidence" : 0.79,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "afb3f9ea-9879-4f26-b6a2-8c389244cc98",
+            "stime" : 1623.59,
+            "etime" : 1623.67,
+            "word" : "est",
+            "confidence" : 0.78,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "8688d5db-80e1-4a7a-86cf-c1cff3058b6f",
+            "stime" : 1623.67,
+            "etime" : 1623.77,
+            "word" : "le",
+            "confidence" : 0.89,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "a3616643-6839-4e08-8636-e88a4157cbf1",
+            "stime" : 1623.77,
+            "etime" : 1623.95,
+            "word" : "grand",
+            "confidence" : 0.3,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "0fa059cb-377e-4cf2-a4f5-46ecb198f296",
+            "stime" : 1623.95,
+            "etime" : 1624.73,
+            "word" : "classique",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "0e7095fc-298b-4988-9656-fb8fb7151d57",
+            "stime" : 1624.73,
+            "etime" : 1624.87,
+            "word" : "du",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "39e8dfc4-7507-47a2-a615-793a2f2b8b02",
+            "stime" : 1624.87,
+            "etime" : 1625.29,
+            "word" : "capitalisme",
+            "confidence" : 0.93,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "8dd9df82-fedd-4a28-ad1c-0fdb73b52f88",
+            "stime" : 1625.29,
+            "etime" : 1625.73,
+            "word" : "financier",
+            "confidence" : 0.89,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "17997eaf-702e-4889-8d37-51ca6e6676d9",
+            "stime" : 1625.73,
+            "etime" : 1626.27,
+            "word" : "américain,",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "f6221011-1804-49b1-b97c-c94c59dae279",
+            "stime" : 1626.67,
+            "etime" : 1626.97,
+            "word" : "a",
+            "confidence" : 0.99,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "aefa376e-15da-4fc9-86fc-f363a0c864de",
+            "stime" : 1626.97,
+            "etime" : 1627.27,
+            "word" : "beaucoup,",
+            "confidence" : 0.7,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "3a3b6f4a-22d7-4019-8e97-567d8a515b57",
+            "stime" : 1627.33,
+            "etime" : 1627.61,
+            "word" : "beaucoup",
+            "confidence" : 0.77,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "992b5dae-c57c-4766-8890-784940bf3f3a",
+            "stime" : 1627.61,
+            "etime" : 1628.19,
+            "word" : "craché",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "c10b351d-e130-4772-b398-5be9e0d0a174",
+            "stime" : 1628.19,
+            "etime" : 1628.37,
+            "word" : "sur",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "39893a81-1acb-47c8-a592-4d4d9cb4f4e5",
+            "stime" : 1628.37,
+            "etime" : 1628.71,
+            "word" : "Bitcoin",
+            "confidence" : 0.76,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "175c4a45-78bb-4ce5-86cb-a94af96286a4",
+            "stime" : 1628.71,
+            "etime" : 1629.07,
+            "word" : "en",
+            "confidence" : 0.7,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "9ce379b4-59df-45c9-9be0-92ac33a866bf",
+            "stime" : 1629.07,
+            "etime" : 1629.31,
+            "word" : "disant",
+            "confidence" : 0.93,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "902761d2-4756-4da6-83b3-83838ed2d8f2",
+            "stime" : 1629.31,
+            "etime" : 1629.41,
+            "word" : "que",
+            "confidence" : 0.8,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "ffc002c0-e021-4623-96ac-2d5c55795be0",
+            "stime" : 1629.41,
+            "etime" : 1629.63,
+            "word" : "c'était",
+            "confidence" : 0.96,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "07626c0f-20ce-45ca-bcbd-5e74f5fe5464",
+            "stime" : 1629.63,
+            "etime" : 1630.29,
+            "word" : "ridicule,",
+            "confidence" : 0.86,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "5ad53d08-ad49-486c-ba16-9d0ad9fff1dd",
+            "stime" : 1630.41,
+            "etime" : 1630.47,
+            "word" : "que",
+            "confidence" : 0.82,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "68c983df-7778-4124-a9e9-2209fe0d9eec",
+            "stime" : 1630.47,
+            "etime" : 1630.73,
+            "word" : "c'était",
+            "confidence" : 0.96,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "b8ce97be-31f4-41cb-b335-696ed10274c3",
+            "stime" : 1630.73,
+            "etime" : 1631.99,
+            "word" : "improductif,",
+            "confidence" : 0.89,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "46fbb9c1-ccc7-4333-9e7f-d7283b2ab306",
+            "stime" : 1632.13,
+            "etime" : 1632.49,
+            "word" : "dangereux,",
+            "confidence" : 0.92,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "1c28bc16-6f66-460a-a928-92121fe1adef",
+            "stime" : 1632.57,
+            "etime" : 1632.81,
+            "word" : "etc.",
+            "confidence" : 0.83,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "c37bff56-7ea2-4acf-8fc5-13e07166190f",
+            "stime" : 1633.25,
+            "etime" : 1633.47,
+            "word" : "tout",
+            "confidence" : 0.41,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "83225d37-3c60-4312-b847-c5527a27c051",
+            "stime" : 1633.47,
+            "etime" : 1633.67,
+            "word" : "en",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "09665e91-5878-4f9f-8990-3e4844a5f53b",
+            "stime" : 1633.67,
+            "etime" : 1634.15,
+            "word" : "menant",
+            "confidence" : 0.93,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "ade998be-d220-4586-98ad-ba0c171a1adb",
+            "stime" : 1634.15,
+            "etime" : 1634.71,
+            "word" : "un",
+            "confidence" : 0.89,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "7005f69d-de4c-496a-a686-56108fbc52aa",
+            "stime" : 1634.71,
+            "etime" : 1634.95,
+            "word" : "certain",
+            "confidence" : 0.82,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "808f4b3d-00d9-4ba9-99f2-78eaaccedb47",
+            "stime" : 1634.95,
+            "etime" : 1635.11,
+            "word" : "nombre",
+            "confidence" : 0.75,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "e63d39be-3dfa-4947-ba2a-dcd618a6449f",
+            "stime" : 1635.11,
+            "etime" : 1635.89,
+            "word" : "d'investissements",
+            "confidence" : 0.93,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "04aa468b-5f9f-4ad2-ae9d-462240b41813",
+            "stime" : 1635.89,
+            "etime" : 1636.73,
+            "word" : "dans",
+            "confidence" : 0.8,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "e2a530d1-fb17-4ff0-a046-a34090cd9536",
+            "stime" : 1636.73,
+            "etime" : 1636.93,
+            "word" : "des",
+            "confidence" : 0.84,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "eda3a228-098f-4168-976e-26c0a0aacb8a",
+            "stime" : 1636.93,
+            "etime" : 1637.23,
+            "word" : "entreprises",
+            "confidence" : 0.89,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "cd485d38-f342-4bb2-8241-20a8adf2d616",
+            "stime" : 1637.23,
+            "etime" : 1637.73,
+            "word" : "technologiques,",
+            "confidence" : 0.92,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "b269110c-2f84-46e7-91a0-38ab5fcfa3d1",
+            "stime" : 1637.79,
+            "etime" : 1637.85,
+            "word" : "des",
+            "confidence" : 0.85,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "5a3e5e70-1ab5-4a96-a5c5-38adec15ccde",
+            "stime" : 1637.85,
+            "etime" : 1638.57,
+            "word" : "crypto-actifs.",
+            "confidence" : 0.66,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "6331c341-ea9f-4f8c-9653-69b85a110bd8",
+            "stime" : 1638.97,
+            "etime" : 1639.33,
+            "word" : "Donc",
+            "confidence" : 0.39,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "cb5584af-3b46-4710-904b-a9038e660977",
+            "stime" : 1639.33,
+            "etime" : 1639.51,
+            "word" : "on",
+            "confidence" : 0.72,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "06d17f09-7fb0-410f-8004-f8b9b5f21d8c",
+            "stime" : 1639.51,
+            "etime" : 1639.63,
+            "word" : "va",
+            "confidence" : 0.91,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "b4d9ffb5-fcf1-4001-8a61-42d41b41de2a",
+            "stime" : 1639.63,
+            "etime" : 1639.79,
+            "word" : "dire",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "126939c1-fa08-4847-985a-5e72445d4a3b",
+            "stime" : 1639.79,
+            "etime" : 1639.97,
+            "word" : "que",
+            "confidence" : 0.81,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "e2ab6240-b217-489c-bf84-fd3cc4e30690",
+            "stime" : 1639.97,
+            "etime" : 1640.35,
+            "word" : "c'est,",
+            "confidence" : 0.97,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "0bbb1168-baff-469d-be8b-5aeebe09498f",
+            "stime" : 1640.57,
+            "etime" : 1640.65,
+            "word" : "je",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "48fcf0bd-8873-43e5-9e38-e0428d107fe8",
+            "stime" : 1640.65,
+            "etime" : 1640.79,
+            "word" : "dirais,",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "28d3d91c-5cfc-4bbe-b846-d0548d548dc1",
+            "stime" : 1640.85,
+            "etime" : 1640.95,
+            "word" : "un",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "23403a28-e9c9-439b-bb3b-1386adf4f171",
+            "stime" : 1640.95,
+            "etime" : 1641.37,
+            "word" : "impératif",
+            "confidence" : 0.94,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "51dead18-5f07-48e6-9f7a-d874497d3cb7",
+            "stime" : 1641.37,
+            "etime" : 1641.53,
+            "word" : "de",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "a2855ede-8448-4b29-a5b7-750df9b32240",
+            "stime" : 1641.53,
+            "etime" : 1642.21,
+            "word" : "communication",
+            "confidence" : 0.68,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "7c0e2410-3552-4403-8142-398209d05dc1",
+            "stime" : 1642.21,
+            "etime" : 1642.47,
+            "word" : "un",
+            "confidence" : 0.48,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "3c633ed4-aaa4-49fb-b767-f8337a7e34d8",
+            "stime" : 1642.47,
+            "etime" : 1642.57,
+            "word" : "petit",
+            "confidence" : 0.75,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "977c6f51-64a5-4793-903b-00369e6b4766",
+            "stime" : 1642.57,
+            "etime" : 1642.71,
+            "word" : "peu,",
+            "confidence" : 0.7,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "833c433f-4e93-4261-bae2-8b8064c221e4",
+            "stime" : 1643.47,
+            "etime" : 1643.83,
+            "word" : "un",
+            "confidence" : 0.72,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "c453ac76-8746-4cc0-a5b3-d16a30fdafc2",
+            "stime" : 1643.83,
+            "etime" : 1644.19,
+            "word" : "impératif",
+            "confidence" : 0.94,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "f45c6628-9d58-446f-81b5-996f27f9750e",
+            "stime" : 1644.19,
+            "etime" : 1644.61,
+            "word" : "d'image",
+            "confidence" : 0.92,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "02352f82-9e71-4dff-8057-370cf16dc691",
+            "stime" : 1644.61,
+            "etime" : 1644.85,
+            "word" : "pour",
+            "confidence" : 0.82,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "9b1e163c-648d-4e50-8c1b-b54decf87a39",
+            "stime" : 1644.85,
+            "etime" : 1645.01,
+            "word" : "ces",
+            "confidence" : 0.86,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "7c2ca8e6-64a0-4401-b280-80eb0ccb17e0",
+            "stime" : 1645.01,
+            "etime" : 1645.25,
+            "word" : "acteurs",
+            "confidence" : 0.84,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "0ca39c60-4159-44f6-bf99-db951dbbd5eb",
+            "stime" : 1645.25,
+            "etime" : 1645.35,
+            "word" : "de",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "1054bdb1-b3bb-4c52-a2bf-4eaf4f0fbd50",
+            "stime" : 1645.35,
+            "etime" : 1645.43,
+            "word" : "la",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "f68fde97-0a84-477b-826f-bce5d8dea711",
+            "stime" : 1645.43,
+            "etime" : 1645.63,
+            "word" : "finance",
+            "confidence" : 0.87,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "b032f9a7-ea4a-4dd3-9b86-5f7c603d39c5",
+            "stime" : 1645.63,
+            "etime" : 1646.35,
+            "word" : "traditionnelle",
+            "confidence" : 0.82,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "483c2936-4b6d-4373-85eb-9377323845e5",
+            "stime" : 1646.35,
+            "etime" : 1646.93,
+            "word" : "qui",
+            "confidence" : 0.55,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "61f6b0c1-0897-43a0-8e2f-e10db2637b63",
+            "stime" : 1646.93,
+            "etime" : 1647.41,
+            "word" : "effectivement,",
+            "confidence" : 0.49,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "22a92f9c-071a-4238-bed9-0b79ce60c912",
+            "stime" : 1647.57,
+            "etime" : 1647.69,
+            "word" : "très",
+            "confidence" : 0.87,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "d5589ce2-984a-4554-b371-e34f8c7074d7",
+            "stime" : 1647.69,
+            "etime" : 1647.99,
+            "word" : "tôt,",
+            "confidence" : 0.92,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "fc4ff547-bdaf-40b6-8c41-0b8305995636",
+            "stime" : 1648.21,
+            "etime" : 1648.49,
+            "word" : "vont",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "2e3b9355-bc13-4702-ac97-d8885eb86e1a",
+            "stime" : 1648.49,
+            "etime" : 1649.87,
+            "word" : "mettre",
+            "confidence" : 0.74,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "276d8309-614f-422e-916c-0bd1d027edce",
+            "stime" : 1649.87,
+            "etime" : 1650.09,
+            "word" : "en",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "be838038-000a-4c10-a7fe-2efd6a9caf7c",
+            "stime" : 1650.09,
+            "etime" : 1650.35,
+            "word" : "oeuvre",
+            "confidence" : 0.74,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "8e654024-1f60-4b69-8b87-f5904a9b3db9",
+            "stime" : 1650.35,
+            "etime" : 1650.87,
+            "word" : "des",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "97cd9c47-c9bd-4e1b-8569-b86a28167966",
+            "stime" : 1650.87,
+            "etime" : 1651.59,
+            "word" : "systèmes",
+            "confidence" : 0.93,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "858116d5-236f-4fa5-983d-28c8403481f4",
+            "stime" : 1651.59,
+            "etime" : 1651.75,
+            "word" : "de",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "208a6695-18dc-453d-91bb-83b52d6878e3",
+            "stime" : 1651.75,
+            "etime" : 1652.17,
+            "word" : "blockchain.",
+            "confidence" : 0.63,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "5a0cc881-fb73-4de4-8f97-1cd5e69b5fb6",
+            "stime" : 1652.35,
+            "etime" : 1652.57,
+            "word" : "J.P.",
+            "confidence" : 0.66,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "9af158a0-84c5-4552-b6ee-f7509fe9e2ea",
+            "stime" : 1652.69,
+            "etime" : 1652.79,
+            "word" : "Morgan",
+            "confidence" : 0.65,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "ce4dadcc-11b4-4d45-83dc-81f7e960ff4b",
+            "stime" : 1652.79,
+            "etime" : 1653.03,
+            "word" : "a",
+            "confidence" : 0.83,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "6593cf04-260b-411b-afab-6dde685671a0",
+            "stime" : 1653.03,
+            "etime" : 1653.11,
+            "word" : "une",
+            "confidence" : 0.83,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "55c8a96a-22c4-492b-9076-a486f71dd339",
+            "stime" : 1653.11,
+            "etime" : 1653.45,
+            "word" : "blockchain,",
+            "confidence" : 0.81,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "9db18c33-79d2-4976-9ee2-bde52fe52f24",
+            "stime" : 1653.87,
+            "etime" : 1654.19,
+            "word" : "Goldman",
+            "confidence" : 0.99,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "c3510bfb-db84-4e94-9268-8cd54fbd659a",
+            "stime" : 1654.19,
+            "etime" : 1654.53,
+            "word" : "Sachs",
+            "confidence" : 0.92,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "4469fe21-23ad-494e-8060-570a8cf91b77",
+            "stime" : 1654.53,
+            "etime" : 1654.69,
+            "word" : "a",
+            "confidence" : 0.97,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "6aced4db-eed2-4fba-8296-ac1f1d907d02",
+            "stime" : 1654.69,
+            "etime" : 1654.77,
+            "word" : "une",
+            "confidence" : 0.85,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "53a10275-5119-4043-b344-16702e91338c",
+            "stime" : 1654.77,
+            "etime" : 1655.27,
+            "word" : "blockchain,",
+            "confidence" : 0.8,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "5d97e957-99a8-422d-bd68-952518a620ba",
+            "stime" : 1655.67,
+            "etime" : 1655.75,
+            "word" : "en",
+            "confidence" : 0.42,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "18819b00-0281-4037-97a3-484b24251df5",
+            "stime" : 1655.75,
+            "etime" : 1656.81,
+            "word" : "France,",
+            "confidence" : 0.91,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "b38183bc-f392-4d3a-8682-82a0ce532bfb",
+            "stime" : 1656.89,
+            "etime" : 1657.17,
+            "word" : "BNP",
+            "confidence" : 0.98,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "0c68ff5b-d84a-42e1-8f60-1c97ff9c8c01",
+            "stime" : 1657.17,
+            "etime" : 1657.63,
+            "word" : "Paribas,",
+            "confidence" : 0.81,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "82a50832-58f4-43aa-97e9-ca56ff84805f",
+            "stime" : 1657.81,
+            "etime" : 1658.15,
+            "word" : "Société",
+            "confidence" : 0.93,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "8144b16e-f863-49bf-966f-920e66f46c45",
+            "stime" : 1658.15,
+            "etime" : 1658.63,
+            "word" : "Générale,",
+            "confidence" : 0.93,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "b22f93e4-174f-42a0-91b8-ed43835f87d6",
+            "stime" : 1658.69,
+            "etime" : 1658.81,
+            "word" : "tout",
+            "confidence" : 0.83,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "1ee4a629-bc71-4849-8bae-0459c28a62de",
+            "stime" : 1658.81,
+            "etime" : 1658.91,
+            "word" : "le",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "2b93c514-abed-4ab4-94c9-c1ab784a1c4e",
+            "stime" : 1658.91,
+            "etime" : 1658.91,
+            "word" : "monde",
+            "confidence" : 0.76,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "05549468-bee2-4898-af8f-21450e8e782c",
+            "stime" : 1658.91,
+            "etime" : 1659.03,
+            "word" : "fait",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "d5446c11-ac7a-47e1-b931-620f3d2b47c1",
+            "stime" : 1659.03,
+            "etime" : 1659.13,
+            "word" : "de",
+            "confidence" : 0.89,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "344754f4-65b0-4f14-842d-1955c5cd7691",
+            "stime" : 1659.13,
+            "etime" : 1659.17,
+            "word" : "la",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "ffbbcb30-4a6d-4c49-9dfd-c1bf97a3a4fe",
+            "stime" : 1659.17,
+            "etime" : 1659.47,
+            "word" : "blockchain",
+            "confidence" : 0.75,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "3ee44124-fb94-4a7d-b866-e466b54a9f54",
+            "stime" : 1659.47,
+            "etime" : 1659.67,
+            "word" : "parce",
+            "confidence" : 0.7,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "daeda5b7-53b9-4662-9025-a9d842260f4c",
+            "stime" : 1659.67,
+            "etime" : 1659.79,
+            "word" : "qu'en",
+            "confidence" : 0.87,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "2950b3e8-3664-401e-b706-ed7af6d08ca5",
+            "stime" : 1659.79,
+            "etime" : 1659.87,
+            "word" : "fait",
+            "confidence" : 0.91,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "d165cf48-1855-4113-acca-19d4259b2efd",
+            "stime" : 1659.87,
+            "etime" : 1659.97,
+            "word" : "ça",
+            "confidence" : 0.47,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "8913c944-2e61-4adf-92b5-336d22020fa6",
+            "stime" : 1659.97,
+            "etime" : 1660.11,
+            "word" : "fait",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "ba69603e-2fdb-41b3-a4fe-0e5fdb256b63",
+            "stime" : 1660.11,
+            "etime" : 1660.25,
+            "word" : "un",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "57c8a148-d21c-471b-9922-61adc3f316b8",
+            "stime" : 1660.25,
+            "etime" : 1660.33,
+            "word" : "peu",
+            "confidence" : 0.84,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "03ae62fb-8750-40c9-b122-6d7f47b19b2b",
+            "stime" : 1660.33,
+            "etime" : 1660.53,
+            "word" : "cool",
+            "confidence" : 0.89,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "3ddd3e7b-7b13-4afe-bd5f-d2beac432f22",
+            "stime" : 1660.53,
+            "etime" : 1660.65,
+            "word" : "de",
+            "confidence" : 0.83,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "4ca46b53-051a-4e2f-ac19-e68508c9f03d",
+            "stime" : 1660.65,
+            "etime" : 1660.77,
+            "word" : "faire",
+            "confidence" : 0.81,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "d8be861d-fa8e-488d-8901-7f0f0ce4b04a",
+            "stime" : 1660.77,
+            "etime" : 1660.89,
+            "word" : "de",
+            "confidence" : 0.87,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "15dd1b34-b5f4-4a7e-9545-734cbfeec09f",
+            "stime" : 1660.89,
+            "etime" : 1660.91,
+            "word" : "la",
+            "confidence" : 0.91,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "94c57d0f-6dd6-4347-8fb9-9f148f0f890f",
+            "stime" : 1660.91,
+            "etime" : 1661.25,
+            "word" : "blockchain.",
+            "confidence" : 0.78,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "7d23f9b4-f4b7-4a6c-aca7-0a156239f379",
+            "stime" : 1662.15,
+            "etime" : 1662.31,
+            "word" : "Et",
+            "confidence" : 0.83,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "88b98096-fc0d-466e-8889-4ab6c9a065b8",
+            "stime" : 1662.31,
+            "etime" : 1662.43,
+            "word" : "du",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "912c7df5-2d54-4f34-9b5d-5b2c6dc35b07",
+            "stime" : 1662.43,
+            "etime" : 1662.61,
+            "word" : "point",
+            "confidence" : 0.87,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "1c628c31-d463-4dab-af93-53a9f9930fa0",
+            "stime" : 1662.61,
+            "etime" : 1662.75,
+            "word" : "de",
+            "confidence" : 0.86,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "7e959ca9-a8cc-4336-b5f5-a2d57311921c",
+            "stime" : 1662.75,
+            "etime" : 1662.83,
+            "word" : "vue",
+            "confidence" : 0.91,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "dbfe9dcf-ccb2-4ba8-ae26-97886beb2443",
+            "stime" : 1662.83,
+            "etime" : 1663.03,
+            "word" : "de",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "7e3bb1a2-71bb-45f8-8f20-221d0773cbe4",
+            "stime" : 1663.03,
+            "etime" : 1663.17,
+            "word" : "la",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "f56e7a8e-d352-4125-9fc6-f8ad3ced3fee",
+            "stime" : 1663.17,
+            "etime" : 1663.93,
+            "word" : "cryptoéconomie",
+            "confidence" : 0.75,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "ac48b888-b95e-42c6-956c-f527ec78a4c0",
+            "stime" : 1663.93,
+            "etime" : 1664.07,
+            "word" : "qui",
+            "confidence" : 0.58,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "2d40e1c9-c407-44a2-9a6a-59ee9ac3605d",
+            "stime" : 1664.07,
+            "etime" : 1664.53,
+            "word" : "effectivement",
+            "confidence" : 0.41,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "9a3fc2c2-0b0c-47de-a2fc-052b83899e65",
+            "stime" : 1664.53,
+            "etime" : 1664.71,
+            "word" : "est",
+            "confidence" : 0.71,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "037d45b2-197e-46b6-8ea7-7e1cf3384db0",
+            "stime" : 1664.71,
+            "etime" : 1665.77,
+            "word" : "née,",
+            "confidence" : 0.91,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "ebb0422e-1c9f-4b7f-ab32-828c4e241236",
+            "stime" : 1665.89,
+            "etime" : 1666.21,
+            "word" : "théoriquement,",
+            "confidence" : 0.91,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "b04f434d-f5e2-437a-bb4c-e16981da75a1",
+            "stime" : 1666.61,
+            "etime" : 1666.71,
+            "word" : "de",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "2408164c-602c-487b-a9a7-41a30f01a567",
+            "stime" : 1666.71,
+            "etime" : 1666.89,
+            "word" : "cette",
+            "confidence" : 0.8,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "67c8feea-e607-4b0b-bd67-ee684c194059",
+            "stime" : 1666.89,
+            "etime" : 1667.43,
+            "word" : "défiance",
+            "confidence" : 0.69,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "2a45189b-d69e-48f7-aab9-b008a5d72c02",
+            "stime" : 1667.43,
+            "etime" : 1667.77,
+            "word" : "vis-à-vis",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "89f5c743-1fad-42c8-a525-82b4bcb4e57f",
+            "stime" : 1667.77,
+            "etime" : 1667.95,
+            "word" : "du",
+            "confidence" : 0.91,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "0461832c-c698-4471-92d0-957ab3d96031",
+            "stime" : 1667.95,
+            "etime" : 1668.19,
+            "word" : "système",
+            "confidence" : 0.86,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "928714c4-fea5-4e4c-88a9-cb1dc6e521d2",
+            "stime" : 1668.19,
+            "etime" : 1668.45,
+            "word" : "bancaire",
+            "confidence" : 0.95,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "9ec2c2f3-6f25-4033-8d81-2aa0cf2553d2",
+            "stime" : 1668.45,
+            "etime" : 1668.59,
+            "word" : "et",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "bc71ef42-4088-40d3-8265-a68c5df7b317",
+            "stime" : 1668.59,
+            "etime" : 1669.11,
+            "word" : "financier,",
+            "confidence" : 0.81,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "4c110ada-941c-4125-90b1-9f286303d89a",
+            "stime" : 1669.81,
+            "etime" : 1670.09,
+            "word" : "c'est",
+            "confidence" : 0.97,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "59b20a97-55b7-4d65-b46a-30455d416cd7",
+            "stime" : 1670.09,
+            "etime" : 1670.31,
+            "word" : "de",
+            "confidence" : 0.82,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "f881ab74-bc17-4bae-a23d-7d2e07a9ab18",
+            "stime" : 1670.31,
+            "etime" : 1670.53,
+            "word" : "l'ordre",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "48ee2d97-8f30-4051-89b6-ef43d3e153a8",
+            "stime" : 1670.53,
+            "etime" : 1670.65,
+            "word" : "de",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "e5a07d0f-12c5-4ff0-a415-35ed1d2041fb",
+            "stime" : 1670.65,
+            "etime" : 1670.75,
+            "word" : "la",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "47725854-16a6-4c70-b250-605663010fcb",
+            "stime" : 1670.75,
+            "etime" : 1671.19,
+            "word" : "nécessité",
+            "confidence" : 0.94,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "98f13fe7-f638-42d2-95d6-063d8f15dde5",
+            "stime" : 1671.19,
+            "etime" : 1671.69,
+            "word" : "économique.",
+            "confidence" : 0.75,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "c8076712-42b5-4b5a-a7f1-19ea2cff9491",
+            "stime" : 1672.03,
+            "etime" : 1672.21,
+            "word" : "Parce",
+            "confidence" : 0.8,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "255b35f8-c512-499e-8dbf-cb7664affb64",
+            "stime" : 1672.21,
+            "etime" : 1672.37,
+            "word" : "qu'à",
+            "confidence" : 0.95,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "ac9548aa-a5c9-42ad-9f8b-625558f6d892",
+            "stime" : 1672.37,
+            "etime" : 1672.53,
+            "word" : "un",
+            "confidence" : 0.89,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "b77be748-5b47-4241-9a67-49ff5be0c4d6",
+            "stime" : 1672.53,
+            "etime" : 1672.71,
+            "word" : "moment,",
+            "confidence" : 0.93,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "0d719a18-bf26-4e9b-8c87-3c299ca7a2d3",
+            "stime" : 1673.01,
+            "etime" : 1673.17,
+            "word" : "il",
+            "confidence" : 0.91,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "c6177956-97fb-4055-9219-4fa644c5ae8b",
+            "stime" : 1673.17,
+            "etime" : 1673.29,
+            "word" : "va",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "137d100d-5a52-4bb3-b7f7-5d156378f394",
+            "stime" : 1673.29,
+            "etime" : 1673.67,
+            "word" : "falloir",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "bf6b3e40-bc0a-4bd2-88d5-32289dfa0531",
+            "stime" : 1673.67,
+            "etime" : 1673.91,
+            "word" : "un",
+            "confidence" : 0.84,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "3fe53261-68d7-42ba-b914-c86883e9e64d",
+            "stime" : 1673.91,
+            "etime" : 1674.03,
+            "word" : "peu",
+            "confidence" : 0.81,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "bbe0dbd0-28d3-4ec3-87b1-d964b555cc3d",
+            "stime" : 1674.03,
+            "etime" : 1674.31,
+            "word" : "se",
+            "confidence" : 0.91,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "ffdbbb83-bf8a-4454-8214-a0f3cd80c211",
+            "stime" : 1674.31,
+            "etime" : 1674.77,
+            "word" : "raccrocher",
+            "confidence" : 0.95,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "31191c4d-efe6-4144-8b73-7a7152ce978b",
+            "stime" : 1674.77,
+            "etime" : 1674.95,
+            "word" : "au",
+            "confidence" : 0.69,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "7f11d3ca-aa68-43b8-b603-999bf7569a89",
+            "stime" : 1674.95,
+            "etime" : 1675.27,
+            "word" : "gros",
+            "confidence" : 0.8,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "c0f65eca-bf4a-4342-b528-f5d88f993616",
+            "stime" : 1675.27,
+            "etime" : 1676.21,
+            "word" : "pour",
+            "confidence" : 0.84,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "dbd954a7-c19d-4907-b3f8-537a0f8efe2d",
+            "stime" : 1676.21,
+            "etime" : 1676.79,
+            "word" : "assurer",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "f021034c-2389-4822-8e30-9fee009459e6",
+            "stime" : 1676.79,
+            "etime" : 1676.93,
+            "word" : "un",
+            "confidence" : 0.87,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "79141eef-c777-4247-b336-05c6e46ba7c2",
+            "stime" : 1676.93,
+            "etime" : 1677.03,
+            "word" : "petit",
+            "confidence" : 0.73,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "9538f6ff-e4ae-4c41-a7a3-74f8cafb331a",
+            "stime" : 1677.03,
+            "etime" : 1677.11,
+            "word" : "peu",
+            "confidence" : 0.81,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "bd86fb1f-a9cc-48a2-84ae-bdd07524ff4f",
+            "stime" : 1677.11,
+            "etime" : 1677.27,
+            "word" : "sa",
+            "confidence" : 0.92,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "9b5b587f-78b9-4f8c-b8eb-af97b836926d",
+            "stime" : 1677.27,
+            "etime" : 1677.57,
+            "word" : "survie.",
+            "confidence" : 0.92,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "d56537c5-2ce1-4bad-833d-8db472b42af6",
+            "stime" : 1678.27,
+            "etime" : 1678.33,
+            "word" : "Donc",
+            "confidence" : 0.66,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "cb6381c7-c899-4e74-a4ae-30651b6b7803",
+            "stime" : 1678.33,
+            "etime" : 1678.51,
+            "word" : "en",
+            "confidence" : 0.49,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "d2f3a733-28e6-47be-bd41-d85c27089698",
+            "stime" : 1678.51,
+            "etime" : 1678.75,
+            "word" : "fait,",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "45e7666e-61cf-44aa-a8f0-bdbfe3cb3e71",
+            "stime" : 1679.15,
+            "etime" : 1679.29,
+            "word" : "dès",
+            "confidence" : 0.84,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "c590122a-db4b-406c-a12b-de9b9cb2890d",
+            "stime" : 1679.29,
+            "etime" : 1679.39,
+            "word" : "le",
+            "confidence" : 0.89,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "c7ac00d2-9722-4250-a69e-47956c841e45",
+            "stime" : 1679.39,
+            "etime" : 1679.57,
+            "word" : "milieu",
+            "confidence" : 0.89,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "abd5bcbd-bac7-4d3e-a7be-9d0f4cfdc980",
+            "stime" : 1679.57,
+            "etime" : 1679.75,
+            "word" : "des",
+            "confidence" : 0.92,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "8bb707f5-3959-4ef4-96dc-591ffaaee09b",
+            "stime" : 1679.75,
+            "etime" : 1679.89,
+            "word" : "années",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "f437345d-2f5c-4e80-b6c1-ff9afef74275",
+            "stime" : 1679.89,
+            "etime" : 1680.59,
+            "word" : "2010,",
+            "confidence" : 0.84,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "695d3878-197c-4124-813d-0a0ca747d509",
+            "stime" : 1680.75,
+            "etime" : 1680.87,
+            "word" : "on",
+            "confidence" : 0.89,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "37e9dcb6-2387-4d9d-b1af-2a7ed45d10e1",
+            "stime" : 1680.87,
+            "etime" : 1680.99,
+            "word" : "va",
+            "confidence" : 0.86,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "eec44e6e-924b-48d3-a2f2-1ec6baf92a96",
+            "stime" : 1680.99,
+            "etime" : 1681.19,
+            "word" : "avoir",
+            "confidence" : 0.66,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "e2659bb3-8340-4abe-a309-65c8a21477a7",
+            "stime" : 1681.19,
+            "etime" : 1681.37,
+            "word" : "les",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "d35c873c-df0c-45dc-b9f2-e4066465b227",
+            "stime" : 1681.37,
+            "etime" : 1681.89,
+            "word" : "capitaux",
+            "confidence" : 0.87,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "ac7d22b8-f887-4a32-83bb-5f1c7ef75d6c",
+            "stime" : 1681.89,
+            "etime" : 1682.53,
+            "word" : "afflués",
+            "confidence" : 0.96,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "ff3902ac-a5e2-4ecb-bac0-c9e3c55ae3ce",
+            "stime" : 1682.53,
+            "etime" : 1682.71,
+            "word" : "dans",
+            "confidence" : 0.82,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "b2cc8954-3cd8-4cee-a977-0db0f768a8c0",
+            "stime" : 1682.71,
+            "etime" : 1682.89,
+            "word" : "cette",
+            "confidence" : 0.8,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "78dc3808-b9ea-4289-88d6-da15f3c0fe8c",
+            "stime" : 1682.89,
+            "etime" : 1683.45,
+            "word" : "économie,",
+            "confidence" : 0.81,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "7eb34e54-7d7d-473d-91dc-5c284f616d43",
+            "stime" : 1683.59,
+            "etime" : 1683.69,
+            "word" : "dans",
+            "confidence" : 0.6,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "d9b44a36-a85b-41a6-ba2c-1d2d6e87d9d9",
+            "stime" : 1683.69,
+            "etime" : 1683.81,
+            "word" : "cette",
+            "confidence" : 0.78,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "5bc8b051-4e71-44fe-a4f7-b9ca4fc22c50",
+            "stime" : 1683.81,
+            "etime" : 1684.63,
+            "word" : "crypto-économie,",
+            "confidence" : 0.83,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "94505a32-272c-4566-848a-1aa1f8012b78",
+            "stime" : 1685.17,
+            "etime" : 1685.29,
+            "word" : "des",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "1dcb0b3d-4c12-49d9-9220-43e177704272",
+            "stime" : 1685.29,
+            "etime" : 1685.69,
+            "word" : "capitaux",
+            "confidence" : 0.83,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "0b79e02a-8af3-4f5a-8bcf-79969ca1fc1b",
+            "stime" : 1685.69,
+            "etime" : 1685.87,
+            "word" : "qui",
+            "confidence" : 0.79,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "dceedbb7-5414-45c3-a05e-ab4b308ea4b7",
+            "stime" : 1685.87,
+            "etime" : 1686.13,
+            "word" : "sont",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "789c0948-a5dd-4446-b475-822307beccd4",
+            "stime" : 1686.13,
+            "etime" : 1686.47,
+            "word" : "ceux,",
+            "confidence" : 0.79,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "124052a4-bdae-4431-87fd-0ad4dfce7ef6",
+            "stime" : 1686.87,
+            "etime" : 1686.93,
+            "word" : "beaucoup,",
+            "confidence" : 0.69,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "5a6b33d3-3c6f-4f8a-a5d4-a88d9d88ecfd",
+            "stime" : 1687.07,
+            "etime" : 1687.19,
+            "word" : "de",
+            "confidence" : 0.91,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "510bd2ba-8e32-4b9d-a603-2098344d7d33",
+            "stime" : 1687.19,
+            "etime" : 1687.77,
+            "word" : "firmes",
+            "confidence" : 0.68,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "b0026db6-fac0-48e5-8473-7262763e14ca",
+            "stime" : 1687.77,
+            "etime" : 1688.25,
+            "word" : "d'investissement",
+            "confidence" : 0.91,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "39050807-3897-40e9-886c-318e66f77c4c",
+            "stime" : 1688.25,
+            "etime" : 1688.61,
+            "word" : "privé,",
+            "confidence" : 0.72,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "76f9fab9-df36-4c3c-9259-f37285ea8c04",
+            "stime" : 1688.71,
+            "etime" : 1688.83,
+            "word" : "les",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "617354b9-bb7d-4d07-84c9-b7ef16080d81",
+            "stime" : 1688.83,
+            "etime" : 1689.05,
+            "word" : "fameuses",
+            "confidence" : 0.63,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "8aab1b38-4359-4a8d-b5c3-6291d204c2a0",
+            "stime" : 1689.05,
+            "etime" : 1689.35,
+            "word" : "ventures",
+            "confidence" : 0.89,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "d5591ac9-a9bc-4177-88b2-4ae470fe3e4a",
+            "stime" : 1689.35,
+            "etime" : 1690.03,
+            "word" : "capitalistes,",
+            "confidence" : 0.8,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "fd335448-ac99-423c-b367-d95fee36d65f",
+            "stime" : 1690.15,
+            "etime" : 1690.69,
+            "word" : "qui",
+            "confidence" : 0.81,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "da8f1ecc-70c4-4fb8-a0a1-4ba9ef6c49ae",
+            "stime" : 1690.69,
+            "etime" : 1690.91,
+            "word" : "vont",
+            "confidence" : 0.89,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "4c7da9f9-8ea2-40ca-b313-3820e84004b2",
+            "stime" : 1690.91,
+            "etime" : 1691.39,
+            "word" : "ouvrir",
+            "confidence" : 0.89,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "08cf8b63-8b29-456a-96ca-c25db80d1cff",
+            "stime" : 1691.39,
+            "etime" : 1691.59,
+            "word" : "le",
+            "confidence" : 0.91,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "157ad835-947e-482a-a582-511f19d1ace6",
+            "stime" : 1691.59,
+            "etime" : 1692.07,
+            "word" : "robinet",
+            "confidence" : 0.87,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "9772445f-b56b-46ed-b9b0-3457a107c73a",
+            "stime" : 1692.07,
+            "etime" : 1692.69,
+            "word" : "des",
+            "confidence" : 0.89,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "7571497c-b9aa-49f6-9a71-e0874c013aa9",
+            "stime" : 1692.69,
+            "etime" : 1693.11,
+            "word" : "1000000000",
+            "confidence" : 0.91,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "48747794-8eff-40e5-8a58-3954d20eb63d",
+            "stime" : 1693.11,
+            "etime" : 1693.29,
+            "word" : "de",
+            "confidence" : 0.91,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "b510c64c-3223-4ed2-a6dd-43a4def28fc1",
+            "stime" : 1693.29,
+            "etime" : 1693.65,
+            "word" : "dollars,",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "a06a6096-16dc-444a-a2fb-dae0c28cd8f0",
+            "stime" : 1694.17,
+            "etime" : 1694.33,
+            "word" : "ce",
+            "confidence" : 0.89,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "b480ed73-4853-4892-bb9c-63b9a46679fe",
+            "stime" : 1694.33,
+            "etime" : 1694.41,
+            "word" : "qui",
+            "confidence" : 0.77,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "39c1d4a8-795c-4bb8-9c3e-24c93349145a",
+            "stime" : 1694.41,
+            "etime" : 1694.59,
+            "word" : "va",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "aa80682d-f898-4df3-8d34-74d09f0d8fe0",
+            "stime" : 1694.59,
+            "etime" : 1695.09,
+            "word" : "entretenir",
+            "confidence" : 0.92,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "6a5348e1-e1a1-4aa0-9a09-81ae21bf0cb7",
+            "stime" : 1695.09,
+            "etime" : 1695.25,
+            "word" : "une",
+            "confidence" : 0.83,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "466ccd91-00e9-482c-8d62-60ff888ef916",
+            "stime" : 1695.25,
+            "etime" : 1695.43,
+            "word" : "forme",
+            "confidence" : 0.73,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "02af219d-9407-4c1f-97ba-9e82e93a400d",
+            "stime" : 1695.43,
+            "etime" : 1695.59,
+            "word" : "de",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "4d2422b1-9b09-4c6e-87a5-64acc2f8a3d1",
+            "stime" : 1695.59,
+            "etime" : 1695.87,
+            "word" : "hype",
+            "confidence" : 0.89,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "6e41e253-7fa9-48da-bc6e-a167078252e3",
+            "stime" : 1695.87,
+            "etime" : 1696.13,
+            "word" : "autour",
+            "confidence" : 0.94,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "30b9ae96-ee9f-40c6-a62d-16438e633767",
+            "stime" : 1696.13,
+            "etime" : 1696.27,
+            "word" : "de",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "35d7adb5-63d3-4e9a-a41f-3cb398c58bef",
+            "stime" : 1696.27,
+            "etime" : 1696.39,
+            "word" : "ces",
+            "confidence" : 0.89,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "90c537d4-1c04-4ecf-b67f-d7f7215ef78e",
+            "stime" : 1696.39,
+            "etime" : 1696.81,
+            "word" : "entreprises,",
+            "confidence" : 0.87,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "b0cc1351-3e08-4f6d-8b35-abe0d0371ce5",
+            "stime" : 1696.81,
+            "etime" : 1697.23,
+            "word" : "qui",
+            "confidence" : 0.18,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "346dd57c-a727-4005-bdc8-cd127d9d1a53",
+            "stime" : 1697.23,
+            "etime" : 1697.45,
+            "word" : "vont",
+            "confidence" : 0.91,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "ded0b82e-2331-4437-8086-8fed7c307d0b",
+            "stime" : 1697.45,
+            "etime" : 1697.91,
+            "word" : "avoir",
+            "confidence" : 0.85,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "2e58a98a-6299-4e2c-8a66-f4b15db8f219",
+            "stime" : 1697.91,
+            "etime" : 1698.07,
+            "word" : "par",
+            "confidence" : 0.81,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "7762322c-ec6a-40fe-b0fc-eae7d4bf835f",
+            "stime" : 1698.07,
+            "etime" : 1698.21,
+            "word" : "la",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "185728d2-a06a-4fcd-8267-39498b82d6c5",
+            "stime" : 1698.21,
+            "etime" : 1698.31,
+            "word" : "suite",
+            "confidence" : 0.85,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "fffc1452-6877-4f60-85d4-01ef80481abc",
+            "stime" : 1698.31,
+            "etime" : 1698.47,
+            "word" : "la",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "0058568e-2bce-4f2d-9db1-6d7e84b4fe44",
+            "stime" : 1698.47,
+            "etime" : 1699.13,
+            "word" : "légitimité",
+            "confidence" : 0.95,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "f428c655-d1af-48e0-89ed-0eb365d70358",
+            "stime" : 1699.13,
+            "etime" : 1699.43,
+            "word" : "pour",
+            "confidence" : 0.87,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "5db937fa-83ca-4217-8a8a-91614a31b878",
+            "stime" : 1699.43,
+            "etime" : 1699.81,
+            "word" : "aller",
+            "confidence" : 0.85,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "daf27650-b179-4a64-9146-5fd5f89b7d79",
+            "stime" : 1699.81,
+            "etime" : 1700.61,
+            "word" : "justement",
+            "confidence" : 0.57,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "d8c90269-f9c4-408c-9647-663e254f9b69",
+            "stime" : 1700.61,
+            "etime" : 1701.03,
+            "word" : "demander",
+            "confidence" : 0.57,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "7b5d5d0e-4463-43ad-8ad3-5e07cdea5e3f",
+            "stime" : 1701.03,
+            "etime" : 1701.23,
+            "word" : "des",
+            "confidence" : 0.86,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "cef05e0e-d607-4ca5-b32d-48c766f26005",
+            "stime" : 1701.23,
+            "etime" : 1701.67,
+            "word" : "crédits",
+            "confidence" : 0.95,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "1bdb9530-849d-4e02-b788-67a9ae0e1a5c",
+            "stime" : 1701.67,
+            "etime" : 1701.89,
+            "word" : "aux",
+            "confidence" : 0.78,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "a45cee89-90c2-4af2-b62b-fda4163d4cb0",
+            "stime" : 1701.89,
+            "etime" : 1702.09,
+            "word" : "grandes",
+            "confidence" : 0.78,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "063f2eb4-3c3d-456c-a71a-fbb97088910c",
+            "stime" : 1702.09,
+            "etime" : 1702.39,
+            "word" : "banques,",
+            "confidence" : 0.91,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "4b16ce3e-6ace-46a2-a648-57b7ae796e84",
+            "stime" : 1702.47,
+            "etime" : 1702.67,
+            "word" : "etc.",
+            "confidence" : 0.84,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "ba1ded83-8684-4bfc-9db3-5ce94316c3ca",
+            "stime" : 1703.17,
+            "etime" : 1703.47,
+            "word" : "Ce",
+            "confidence" : 0.93,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "4100337e-b0c8-4f77-b5b3-cb1597ea7fc5",
+            "stime" : 1703.47,
+            "etime" : 1703.57,
+            "word" : "qui",
+            "confidence" : 0.76,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "9b0d4b2f-d8fb-4ef7-852f-ce46e1745d28",
+            "stime" : 1703.57,
+            "etime" : 1703.73,
+            "word" : "n'a",
+            "confidence" : 1,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "8409335e-2b13-415b-853a-6c0cd50f4e44",
+            "stime" : 1703.73,
+            "etime" : 1703.91,
+            "word" : "pas",
+            "confidence" : 0.87,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "278909eb-f72b-4b67-8ea1-88e0f933e911",
+            "stime" : 1703.91,
+            "etime" : 1704.47,
+            "word" : "empêché,",
+            "confidence" : 0.93,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "73160fa8-217d-4327-8f30-fafa115011fd",
+            "stime" : 1704.81,
+            "etime" : 1705.25,
+            "word" : "dès",
+            "confidence" : 0.77,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "08856e07-0e0b-43f9-b14a-0fccb6469689",
+            "stime" : 1705.25,
+            "etime" : 1705.39,
+            "word" : "ce",
+            "confidence" : 0.91,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "dece56c1-933f-46a6-9907-8cb57ec1de38",
+            "stime" : 1705.39,
+            "etime" : 1705.71,
+            "word" : "moment-là,",
+            "confidence" : 0.85,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "d60300e6-61bc-4eff-81f5-25846723ed37",
+            "stime" : 1705.79,
+            "etime" : 1705.89,
+            "word" : "les",
+            "confidence" : 0.86,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "433425a6-41f1-4e2c-8313-7e6db59f7db2",
+            "stime" : 1705.89,
+            "etime" : 1706.29,
+            "word" : "discours",
+            "confidence" : 0.92,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "24e939e3-ad35-4f27-a651-c99c1f23dde2",
+            "stime" : 1706.29,
+            "etime" : 1706.55,
+            "word" : "sur",
+            "confidence" : 0.9,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "2a90c1a3-7fa0-4af9-b222-1be1b6802972",
+            "stime" : 1706.55,
+            "etime" : 1706.73,
+            "word" : "la",
+            "confidence" : 0.88,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "a0a43208-ef04-436e-882d-1f4a52ba5391",
+            "stime" : 1706.73,
+            "etime" : 1707.11,
+            "word" : "supposée",
+            "confidence" : 0.96,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "8cdd0e38-d324-487e-aaba-c8440e2d672a",
+            "stime" : 1707.11,
+            "etime" : 1707.67,
+            "word" : "dissidence",
+            "confidence" : 0.92,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "6ea1e107-9f04-4ebc-9c4e-fd3b2b6a3377",
+            "stime" : 1707.67,
+            "etime" : 1708.09,
+            "word" : "vis-à-vis",
+            "confidence" : 0.94,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "8297f1f3-9e47-4ae7-8c3b-caa79f21f669",
+            "stime" : 1708.09,
+            "etime" : 1708.27,
+            "word" : "du",
+            "confidence" : 0.91,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "d972ec01-1a54-4a8e-9f0f-12a949c6ab66",
+            "stime" : 1708.27,
+            "etime" : 1708.55,
+            "word" : "système",
+            "confidence" : 0.87,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "974b52a5-c9a0-41fb-889a-2c2c498a4fbd",
+            "stime" : 1708.55,
+            "etime" : 1708.71,
+            "word" : "de",
+            "confidence" : 0.86,
+            "highlights" : [],
+            "keywords" : []
+        }, 
+        {
+            "wid" : "719037dd-e838-40aa-95ec-0c8daa0e0e74",
+            "stime" : 1708.71,
+            "etime" : 1709.13,
+            "word" : "prospérer.",
+            "confidence" : 0.79,
+            "highlights" : [],
+            "keywords" : []
+        }
+    ]
+} ],
+  "locale" : "fr-FR"
+}

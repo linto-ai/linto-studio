@@ -1,0 +1,248 @@
+{
+  "confidence": 0.8275877956383695,
+  "raw_transcription": "Donc on va dire que c'est, je dirais, un impératif de communication un petit peu, un impératif d'image pour ces acteurs de la finance traditionnelle qui effectivement, très tôt, vont mettre en oeuvre des systèmes de blockchain. J.P. Morgan ",
+  "segments": [{
+    "duration": 130.39999999999986,
+    "end": 1709.1299999999999,
+    "raw_segment": "Donc on va dire que c'est, je dirais, un impératif de communication un petit peu, un impératif d'image pour ces acteurs de la finance traditionnelle qui effectivement, très tôt, vont mettre en oeuvre des systèmes de blockchain. J.P. Morgan ",
+    "segment": "Donc on va dire que c'est, je dirais, un impératif de communication un petit peu, un impératif d'image pour ces acteurs de la finance traditionnelle qui effectivement, très tôt, vont mettre en oeuvre des systèmes de blockchain. J.P. Morgan",
+    "spk_id": "spk1",
+    "start": 1578.73,
+    "words": [
+      {
+        "conf": 0.39,
+        "end": 1639.33,
+        "start": 1638.9699999999998,
+        "word": "Donc"
+      },
+      {
+        "conf": 0.72,
+        "end": 1639.51,
+        "start": 1639.33,
+        "word": "on"
+      },
+      {
+        "conf": 0.91,
+        "end": 1639.6299999999999,
+        "start": 1639.51,
+        "word": "va"
+      },
+      {
+        "conf": 0.88,
+        "end": 1639.79,
+        "start": 1639.6299999999999,
+        "word": "dire"
+      },
+      {
+        "conf": 0.81,
+        "end": 1639.9699999999998,
+        "start": 1639.79,
+        "word": "que"
+      },
+      {
+        "conf": 0.97,
+        "end": 1640.35,
+        "start": 1639.9699999999998,
+        "word": "c'est"
+      },
+      {
+        "conf": 0.9,
+        "end": 1640.6499999999999,
+        "start": 1640.57,
+        "word": "je"
+      },
+      {
+        "conf": 0.88,
+        "end": 1640.79,
+        "start": 1640.6499999999999,
+        "word": "dirais"
+      },
+      {
+        "conf": 0.9,
+        "end": 1640.9499999999998,
+        "start": 1640.85,
+        "word": "un"
+      },
+      {
+        "conf": 0.94,
+        "end": 1641.37,
+        "start": 1640.9499999999998,
+        "word": "impératif"
+      },
+      {
+        "conf": 0.9,
+        "end": 1641.53,
+        "start": 1641.37,
+        "word": "de"
+      },
+      {
+        "conf": 0.68,
+        "end": 1642.21,
+        "start": 1641.53,
+        "word": "communication"
+      },
+      {
+        "conf": 0.48,
+        "end": 1642.4699999999998,
+        "start": 1642.21,
+        "word": "un"
+      },
+      {
+        "conf": 0.75,
+        "end": 1642.57,
+        "start": 1642.4699999999998,
+        "word": "petit"
+      },
+      {
+        "conf": 0.7,
+        "end": 1642.71,
+        "start": 1642.57,
+        "word": "peu"
+      },
+      {
+        "conf": 0.72,
+        "end": 1643.83,
+        "start": 1643.4699999999998,
+        "word": "un"
+      },
+      {
+        "conf": 0.94,
+        "end": 1644.1899999999998,
+        "start": 1643.83,
+        "word": "impératif"
+      },
+      {
+        "conf": 0.92,
+        "end": 1644.61,
+        "start": 1644.1899999999998,
+        "word": "d'image"
+      },
+      {
+        "conf": 0.82,
+        "end": 1644.85,
+        "start": 1644.61,
+        "word": "pour"
+      },
+      {
+        "conf": 0.86,
+        "end": 1645.01,
+        "start": 1644.85,
+        "word": "ces"
+      },
+      {
+        "conf": 0.84,
+        "end": 1645.25,
+        "start": 1645.01,
+        "word": "acteurs"
+      },
+      {
+        "conf": 0.9,
+        "end": 1645.35,
+        "start": 1645.25,
+        "word": "de"
+      },
+      {
+        "conf": 0.9,
+        "end": 1645.4299999999998,
+        "start": 1645.35,
+        "word": "la"
+      },
+      {
+        "conf": 0.87,
+        "end": 1645.6299999999999,
+        "start": 1645.4299999999998,
+        "word": "finance"
+      },
+      {
+        "conf": 0.82,
+        "end": 1646.35,
+        "start": 1645.6299999999999,
+        "word": "traditionnelle"
+      },
+      {
+        "conf": 0.55,
+        "end": 1646.9299999999998,
+        "start": 1646.35,
+        "word": "qui"
+      },
+      {
+        "conf": 0.49,
+        "end": 1647.4099999999999,
+        "start": 1646.9299999999998,
+        "word": "effectivement"
+      },
+      {
+        "conf": 0.87,
+        "end": 1647.6899999999998,
+        "start": 1647.57,
+        "word": "très"
+      },
+      {
+        "conf": 0.92,
+        "end": 1647.9899999999998,
+        "start": 1647.6899999999998,
+        "word": "tôt"
+      },
+      {
+        "conf": 0.9,
+        "end": 1648.4899999999998,
+        "start": 1648.21,
+        "word": "vont"
+      },
+      {
+        "conf": 0.74,
+        "end": 1649.87,
+        "start": 1648.4899999999998,
+        "word": "mettre"
+      },
+      {
+        "conf": 0.9,
+        "end": 1650.09,
+        "start": 1649.87,
+        "word": "en"
+      },
+      {
+        "conf": 0.74,
+        "end": 1650.35,
+        "start": 1650.09,
+        "word": "oeuvre"
+      },
+      {
+        "conf": 0.88,
+        "end": 1650.87,
+        "start": 1650.35,
+        "word": "des"
+      },
+      {
+        "conf": 0.93,
+        "end": 1651.59,
+        "start": 1650.87,
+        "word": "systèmes"
+      },
+      {
+        "conf": 0.9,
+        "end": 1651.75,
+        "start": 1651.59,
+        "word": "de"
+      },
+      {
+        "conf": 0.63,
+        "end": 1652.1699999999998,
+        "start": 1651.75,
+        "word": "blockchain"
+      },
+      {
+        "conf": 0.66,
+        "end": 1652.57,
+        "start": 1652.35,
+        "word": "J.P"
+      },
+      {
+        "conf": 0.65,
+        "end": 1652.79,
+        "start": 1652.6899999999998,
+        "word": "Morgan"
+      }
+    ]
+  }]
+}

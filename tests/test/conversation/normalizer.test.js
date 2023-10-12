@@ -5,8 +5,8 @@ describe('initialzation conversation', () => {
   let MOCK_TRANSCRIPTION_NO_PUNC, MOCK_TRANSCRIPTION_PUNC
   let lang = 'fr-FR'
   beforeAll(async () => {
-    MOCK_TRANSCRIPTION_NO_PUNC = require('../../data/transcription/mock-trans-no-punc.json')
-    MOCK_TRANSCRIPTION_PUNC = require('../../data/transcription/mock-trans-punc.json')
+    MOCK_TRANSCRIPTION_NO_PUNC = require(`${process.cwd()}/tests/data/transcription/unaltered/mock-trans-no-punc.json`)
+    MOCK_TRANSCRIPTION_PUNC = require(`${process.cwd()}/tests/data/transcription/unaltered/mock-trans-punc.json`)
   })
 
   afterAll(async () => {
