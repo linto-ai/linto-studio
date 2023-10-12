@@ -20,6 +20,17 @@ function simplePunctuation(seg_text, words, loop_data) {
   }
 }
 
+// Reduced word j.c. need to be compared to j.c and not jc
+function diminutivePunctuation(seg_text, words, loop_data) {
+  if (seg_text.lowercase.replace(/\.$/, '') === words.word.toLowerCase()) {
+    return {
+      ...words,
+      word: seg_text.original
+    }
+  }
+}
+
+
 function doublePunctuation(seg_text, words, loop_data) {
   if (/[?!:;«»]$/.test(seg_text.lowercase)) {
 
@@ -27,7 +38,6 @@ function doublePunctuation(seg_text, words, loop_data) {
     if (loop_data.word_index !== 0) {
       timestamp = loop_data.words[loop_data.word_index - 1].end
     }
-
     //count number if space in the segment
     let spacesCount = (seg_text.lowercase.match(/ /g) || []).length
 
@@ -126,4 +136,20 @@ function notFound(segment_text, words) {
   return words
 }
 
-module.exports = [correctSegmentText, simplePunctuation, doublePunctuation, apostropheNormalize, numberNormalize, notFound]
+function lastWord(segment_text, words, loop_data) {
+  // In case of last word is a double punctuation,
+  // It can be desync with the words array depending of the transcription services
+  if (segment_text.lowercase.length === 1 && /[?!:;«»]$/.test(segment_text.lowercase)) {
+    return {
+      ...loop_data.words[loop_data.word_index - 2],
+      start: loop_data.words[loop_data.word_index - 2].end,
+      word: segment_text.original,
+    }
+  }
+  return undefined
+}
+
+module.exports = {
+  rules_sequences: [correctSegmentText, simplePunctuation, diminutivePunctuation, doublePunctuation, apostropheNormalize, numberNormalize, notFound],
+  rules: [correctSegmentText, simplePunctuation, diminutivePunctuation, doublePunctuation, apostropheNormalize, numberNormalize, notFound, lastWord]
+}
