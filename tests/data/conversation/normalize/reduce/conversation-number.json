@@ -1,0 +1,448 @@
+{
+  "locale": "fr-FR",
+  "speakers": [{
+      "speaker_id": "361cfc4a-0cf3-4310-99ee-8a298d0c86da",
+      "speaker_name": "speaker",
+      "stime": 0.39,
+      "etime": 3477.06
+  }],
+  "text": [{
+      "speaker_id": "361cfc4a-0cf3-4310-99ee-8a298d0c86da",
+      "turn_id": "930e0228-16d9-4250-aec0-243f6733e9f6",
+      "raw_segment": "parmi les plus grands réseaux du massif figurent ceux de l' alpe du granier et de la dent de crolles deux point quatre géologie les roches qui constituent la chartreuse ce fort par sédimentation à partir de cent trente-cinq millions d' années au cours du crétacé inférieur au fond de la téthys",
+      "segment": "Parmi les plus grands réseaux du massif figurent ceux de l'alpe du Granier et de la dent de Crolles, 2 point 4. Géologie, les roches qui constituent la Chartreuse, ce fort par sédimentation à partir de 135000000 d'années au cours du Crétacé inférieur, au fond de la Téthys",
+      "words": [{
+              "wid": "cf998853-3fc3-4f3c-8f54-88f110fae0cf",
+              "stime": 657.51,
+              "etime": 658.11,
+              "word": "Parmi",
+              "confidence": 1,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "ebfd3510-a409-4a6a-b110-639221279a8b",
+              "stime": 658.11,
+              "etime": 658.23,
+              "word": "les",
+              "confidence": 1,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "d75d52db-a6cf-472e-a349-81108d2c5c95",
+              "stime": 658.23,
+              "etime": 658.38,
+              "word": "plus",
+              "confidence": 1,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "ca876d6e-0048-4a61-8f75-a5c68cf32453",
+              "stime": 658.38,
+              "etime": 658.59,
+              "word": "grands",
+              "confidence": 0.934759,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "b19a6d0a-e6e7-47be-951c-c97f8a286734",
+              "stime": 658.59,
+              "etime": 658.92,
+              "word": "réseaux",
+              "confidence": 0.934759,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "5543708e-49e8-4254-a489-209f2d77d31a",
+              "stime": 658.92,
+              "etime": 659.01,
+              "word": "du",
+              "confidence": 1,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "548162fe-be7f-4e92-894d-97b4e4b37716",
+              "stime": 659.01,
+              "etime": 659.58,
+              "word": "massif",
+              "confidence": 0.994273,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "267c6b08-fa87-4be8-a4b2-18101ec94b21",
+              "stime": 659.82,
+              "etime": 660.27,
+              "word": "figurent",
+              "confidence": 0.934213,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "3077ab4d-7c58-4067-a32f-e085f9774b55",
+              "stime": 660.27,
+              "etime": 660.45,
+              "word": "ceux",
+              "confidence": 0.98846,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "b516c116-a39e-4137-84c2-01d7c10c6b00",
+              "stime": 660.45,
+              "etime": 660.6,
+              "word": "de",
+              "confidence": 1,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "456fb56a-abde-44bf-a96c-fd072ffe7fb6",
+              "stime": 660.6,
+              "etime": 661.02,
+              "word": "l'alpe",
+              "confidence": 0.96543,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "9f942395-bc60-4374-896d-78376472df7d",
+              "stime": 661.29,
+              "etime": 661.47,
+              "word": "du",
+              "confidence": 1,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "54a40fcf-cf13-48bb-ad55-ae1db47363f6",
+              "stime": 661.47,
+              "etime": 661.98,
+              "word": "Granier",
+              "confidence": 0.996078,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "90e9efa8-fc66-436d-b90e-0b51d1b3ef3f",
+              "stime": 662.25,
+              "etime": 662.4,
+              "word": "et",
+              "confidence": 0.876062,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "25363e14-3537-414e-97ad-4a65c69450b9",
+              "stime": 662.4,
+              "etime": 662.52,
+              "word": "de",
+              "confidence": 1,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "71383a01-b11d-41de-b775-f8fec571a99a",
+              "stime": 662.52,
+              "etime": 662.64,
+              "word": "la",
+              "confidence": 1,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "26250a02-91dc-457a-8790-a2a95eb834a5",
+              "stime": 662.64,
+              "etime": 662.82,
+              "word": "dent",
+              "confidence": 1,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "e9c93411-7948-491a-bbeb-520509932113",
+              "stime": 662.82,
+              "etime": 662.94,
+              "word": "de",
+              "confidence": 1,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "59a7c015-56d8-4685-998d-d2825f2f9402",
+              "stime": 662.94,
+              "etime": 663.45,
+              "word": "Crolles,",
+              "confidence": 1,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "766659d1-daac-430f-9b76-61e782aaeeb1",
+              "stime": 666,
+              "etime": 666.33,
+              "word": "2",
+              "confidence": 0.999958,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "cf772f45-4c36-4923-949f-e89de9a4a35e",
+              "stime": 666.33,
+              "etime": 666.57,
+              "word": "point",
+              "confidence": 0.989811,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "ae90cc70-a676-4ee7-a4db-f7f7cd9f3f05",
+              "stime": 666.57,
+              "etime": 667.08,
+              "word": "4.",
+              "confidence": 0.994233,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "4622a28b-5eef-479f-9cbc-ab89f15c684b",
+              "stime": 667.59,
+              "etime": 668.34,
+              "word": "Géologie,",
+              "confidence": 0.868782,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "e010e848-c9a0-4541-b20a-abe6215d15fb",
+              "stime": 670.05,
+              "etime": 670.41,
+              "word": "les",
+              "confidence": 1,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "27c0cdc8-4f50-4373-8124-9186fdc2afa5",
+              "stime": 670.41,
+              "etime": 670.95,
+              "word": "roches",
+              "confidence": 0.99863,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "1bfae12d-7a13-4d1b-bfef-aa9c5ee2565e",
+              "stime": 670.98,
+              "etime": 671.16,
+              "word": "qui",
+              "confidence": 1,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "b51a8a6c-0f39-4bf1-9ea9-c9168f7fb8fd",
+              "stime": 671.16,
+              "etime": 671.7,
+              "word": "constituent",
+              "confidence": 0.897339,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "554fa71c-2bf9-4f21-8c1e-a8b03ec04412",
+              "stime": 671.7,
+              "etime": 671.79,
+              "word": "la",
+              "confidence": 1,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "f7f5ccd0-4c04-442b-b70d-d79276f88e13",
+              "stime": 671.79,
+              "etime": 672.48,
+              "word": "Chartreuse,",
+              "confidence": 1,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "e5457f05-edda-43e1-81c4-7433daaeb605",
+              "stime": 672.78,
+              "etime": 673.05,
+              "word": "ce",
+              "confidence": 0.578796,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "03775ab1-f79b-480c-9703-528ac46aa0ca",
+              "stime": 673.05,
+              "etime": 673.38,
+              "word": "fort",
+              "confidence": 0.735319,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "4c55b017-c072-4638-ac63-fe3d81899ccf",
+              "stime": 673.38,
+              "etime": 673.59,
+              "word": "par",
+              "confidence": 0.993497,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "568adeea-f9fc-42d4-9e97-624ae37d9e1e",
+              "stime": 673.59,
+              "etime": 674.52,
+              "word": "sédimentation",
+              "confidence": 0.890889,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "48938377-80bf-4267-833f-7dbfd42a9dfe",
+              "stime": 674.58,
+              "etime": 674.7,
+              "word": "à",
+              "confidence": 0.942602,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "64d8bf02-185c-4abb-8565-839452053116",
+              "stime": 674.7,
+              "etime": 675.12,
+              "word": "partir",
+              "confidence": 1,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "78392392-0f1d-489e-a6ba-29ed607ee817",
+              "stime": 675.12,
+              "etime": 675.27,
+              "word": "de",
+              "confidence": 1,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "84c7bec9-b1d1-41c2-aa6b-f994a1eea248",
+              "stime": 675.27,
+              "etime": 676.17,
+              "word": "135000000",
+              "confidence": 1,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "00323d6a-f0be-4b2d-a5db-7ced6a45bf3a",
+              "stime": 676.17,
+              "etime": 676.26,
+              "word": "d'années",
+              "confidence": 1,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "1f5c870d-ab4c-4826-8cdf-e017bfaf4daf",
+              "stime": 677.01,
+              "etime": 677.13,
+              "word": "au",
+              "confidence": 1,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "cf5a708b-20b2-4fe1-b382-f661be3acfe8",
+              "stime": 677.13,
+              "etime": 677.4,
+              "word": "cours",
+              "confidence": 1,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "d3aacd50-3cff-4d69-92a5-6079fdc1c5f5",
+              "stime": 677.4,
+              "etime": 677.52,
+              "word": "du",
+              "confidence": 1,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "3302c2b8-795a-423a-823f-2ae3be8f1a84",
+              "stime": 677.52,
+              "etime": 678.09,
+              "word": "Crétacé",
+              "confidence": 1,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "30a11ede-b219-4a1d-a63c-44d3703dbf0f",
+              "stime": 678.09,
+              "etime": 678.81,
+              "word": "inférieur,",
+              "confidence": 1,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "653a899f-ae64-4f60-9508-7f8b3db395a8",
+              "stime": 679.17,
+              "etime": 679.29,
+              "word": "au",
+              "confidence": 0.98999,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "5da6a82a-9e4c-4ba9-a672-df200464c29f",
+              "stime": 679.29,
+              "etime": 679.5,
+              "word": "fond",
+              "confidence": 0.979503,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "0a55040b-8ac7-425e-90b8-48b2b5b6d9b8",
+              "stime": 679.5,
+              "etime": 679.65,
+              "word": "de",
+              "confidence": 1,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "4266fc40-6328-4afd-a295-3bd2a0834f84",
+              "stime": 679.65,
+              "etime": 679.77,
+              "word": "la",
+              "confidence": 1,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "c2cc736e-e076-4016-af6d-dc24e0a2f19e",
+              "stime": 679.77,
+              "etime": 680.19,
+              "word": "Téthys",
+              "confidence": 1,
+              "highlights": [],
+              "keywords": []
+          }
+      ]
+  }]
+}

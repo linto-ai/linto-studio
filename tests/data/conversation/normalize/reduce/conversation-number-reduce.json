@@ -1,0 +1,53 @@
+{
+  "locale": "fr-FR",
+  "speakers": [{
+      "speaker_id": "361cfc4a-0cf3-4310-99ee-8a298d0c86da",
+      "speaker_name": "speaker",
+      "stime": 0.39,
+      "etime": 3477.06
+  }],
+  "text": [{
+      "speaker_id": "361cfc4a-0cf3-4310-99ee-8a298d0c86da",
+      "turn_id": "930e0228-16d9-4250-aec0-243f6733e9f6",
+      "raw_segment": "partir de cent trente-cinq millions d' années ",
+      "segment": "partir de 135000000 d'années",
+      "words": [
+          {
+              "wid": "64d8bf02-185c-4abb-8565-839452053116",
+              "stime": 674.7,
+              "etime": 675.12,
+              "word": "partir",
+              "confidence": 1,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "78392392-0f1d-489e-a6ba-29ed607ee817",
+              "stime": 675.12,
+              "etime": 675.27,
+              "word": "de",
+              "confidence": 1,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "84c7bec9-b1d1-41c2-aa6b-f994a1eea248",
+              "stime": 675.27,
+              "etime": 676.17,
+              "word": "135000000",
+              "confidence": 1,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "00323d6a-f0be-4b2d-a5db-7ced6a45bf3a",
+              "stime": 676.17,
+              "etime": 676.59,
+              "word": "d'années",
+              "confidence": 1,
+              "highlights": [],
+              "keywords": []
+          }
+      ]
+  }]
+}

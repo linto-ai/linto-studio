@@ -1,0 +1,443 @@
+{
+  "confidence": 0.8275877956383695,
+  "raw_transcription": "Bizarre encore de parler d'irrationalité et d'affect pour une communauté qui s'est construite précisément contre la folie des marchés et qui a mis en avant les mathématiques parce que la crypto, ce sont des maths de haut de volée, qui a fait du code informatique le fondement de son modèle de transaction. Alors comment Anastasia explique-t-elle ces affects très puissants qui soudent la communauté pourtant hétérogène des bitcoiners ? Pas maintenant !",
+  "segments": [{
+      "duration": 23.019999999999982,
+      "end": 255.2,
+      "raw_segment": "Bizarre encore de parler d'irrationalité et d'affect pour une communauté qui s'est construite précisément contre la folie des marchés et qui a mis en avant les mathématiques parce que la crypto, ce sont des maths de haut de volée, qui a fait du code informatique le fondement de son modèle de transaction. Alors comment Anastasia explique-t-elle ces affects très puissants qui soudent la communauté pourtant hétérogène des bitcoiners ?",
+      "segment": "Bizarre encore de parler d'irrationalité et d'affect pour une communauté qui s'est construite précisément contre la folie des marchés et qui a mis en avant les mathématiques parce que la crypto, ce sont des maths de haut de volée, qui a fait du code informatique le fondement de son modèle de transaction. Alors comment Anastasia explique-t-elle ces affects très puissants qui soudent la communauté pourtant hétérogène des bitcoiners ?",
+      "spk_id": "spk2",
+      "start": 232.18,
+      "words": [{
+          "conf": 0.85,
+          "end": 232.66,
+          "start": 232.18,
+          "word": "Bizarre"
+        },
+        {
+          "conf": 0.68,
+          "end": 232.92,
+          "start": 232.66,
+          "word": "encore"
+        },
+        {
+          "conf": 0.72,
+          "end": 233.28,
+          "start": 232.92,
+          "word": "de"
+        },
+        {
+          "conf": 0.87,
+          "end": 233.52,
+          "start": 233.28,
+          "word": "parler"
+        },
+        {
+          "conf": 0.97,
+          "end": 234.66,
+          "start": 233.52,
+          "word": "d'irrationalité"
+        },
+        {
+          "conf": 0.89,
+          "end": 234.84,
+          "start": 234.66,
+          "word": "et"
+        },
+        {
+          "conf": 0.97,
+          "end": 235.36,
+          "start": 234.84,
+          "word": "d'affect"
+        },
+        {
+          "conf": 0.55,
+          "end": 235.72,
+          "start": 235.36,
+          "word": "pour"
+        },
+        {
+          "conf": 0.83,
+          "end": 235.9,
+          "start": 235.72,
+          "word": "une"
+        },
+        {
+          "conf": 0.77,
+          "end": 236.26,
+          "start": 235.9,
+          "word": "communauté"
+        },
+        {
+          "conf": 0.75,
+          "end": 236.42,
+          "start": 236.26,
+          "word": "qui"
+        },
+        {
+          "conf": 0.97,
+          "end": 236.56,
+          "start": 236.42,
+          "word": "s'est"
+        },
+        {
+          "conf": 0.95,
+          "end": 236.94,
+          "start": 236.56,
+          "word": "construite"
+        },
+        {
+          "conf": 0.85,
+          "end": 237.74,
+          "start": 236.94,
+          "word": "précisément"
+        },
+        {
+          "conf": 0.62,
+          "end": 238.28,
+          "start": 237.74,
+          "word": "contre"
+        },
+        {
+          "conf": 0.9,
+          "end": 238.54,
+          "start": 238.28,
+          "word": "la"
+        },
+        {
+          "conf": 0.93,
+          "end": 238.74,
+          "start": 238.54,
+          "word": "folie"
+        },
+        {
+          "conf": 0.9,
+          "end": 238.9,
+          "start": 238.74,
+          "word": "des"
+        },
+        {
+          "conf": 0.91,
+          "end": 239.24,
+          "start": 238.9,
+          "word": "marchés"
+        },
+        {
+          "conf": 0.58,
+          "end": 239.9,
+          "start": 239.24,
+          "word": "et"
+        },
+        {
+          "conf": 0.76,
+          "end": 240.0,
+          "start": 239.9,
+          "word": "qui"
+        },
+        {
+          "conf": 1.0,
+          "end": 240.12,
+          "start": 240.0,
+          "word": "a"
+        },
+        {
+          "conf": 0.87,
+          "end": 240.24,
+          "start": 240.12,
+          "word": "mis"
+        },
+        {
+          "conf": 0.89,
+          "end": 240.48,
+          "start": 240.24,
+          "word": "en"
+        },
+        {
+          "conf": 0.83,
+          "end": 240.82,
+          "start": 240.48,
+          "word": "avant"
+        },
+        {
+          "conf": 0.86,
+          "end": 241.24,
+          "start": 240.82,
+          "word": "les"
+        },
+        {
+          "conf": 0.95,
+          "end": 241.84,
+          "start": 241.24,
+          "word": "mathématiques"
+        },
+        {
+          "conf": 0.3,
+          "end": 242.1,
+          "start": 241.84,
+          "word": "parce"
+        },
+        {
+          "conf": 0.8,
+          "end": 242.34,
+          "start": 242.1,
+          "word": "que"
+        },
+        {
+          "conf": 0.83,
+          "end": 242.52,
+          "start": 242.34,
+          "word": "la"
+        },
+        {
+          "conf": 0.65,
+          "end": 242.82,
+          "start": 242.52,
+          "word": "crypto"
+        },
+        {
+          "conf": 0.9,
+          "end": 243.14,
+          "start": 243.08,
+          "word": "ce"
+        },
+        {
+          "conf": 0.82,
+          "end": 243.28,
+          "start": 243.14,
+          "word": "sont"
+        },
+        {
+          "conf": 0.86,
+          "end": 243.42,
+          "start": 243.28,
+          "word": "des"
+        },
+        {
+          "conf": 0.9,
+          "end": 243.6,
+          "start": 243.42,
+          "word": "maths"
+        },
+        {
+          "conf": 0.91,
+          "end": 243.8,
+          "start": 243.6,
+          "word": "de"
+        },
+        {
+          "conf": 0.64,
+          "end": 243.92,
+          "start": 243.8,
+          "word": "haut"
+        },
+        {
+          "conf": 0.68,
+          "end": 243.98,
+          "start": 243.92,
+          "word": "de"
+        },
+        {
+          "conf": 0.86,
+          "end": 244.2,
+          "start": 243.98,
+          "word": "volée"
+        },
+        {
+          "conf": 0.74,
+          "end": 244.98,
+          "start": 244.86,
+          "word": "qui"
+        },
+        {
+          "conf": 0.99,
+          "end": 245.06,
+          "start": 244.98,
+          "word": "a"
+        },
+        {
+          "conf": 0.88,
+          "end": 245.14,
+          "start": 245.06,
+          "word": "fait"
+        },
+        {
+          "conf": 0.89,
+          "end": 245.26,
+          "start": 245.14,
+          "word": "du"
+        },
+        {
+          "conf": 0.76,
+          "end": 245.4,
+          "start": 245.26,
+          "word": "code"
+        },
+        {
+          "conf": 0.81,
+          "end": 245.86,
+          "start": 245.4,
+          "word": "informatique"
+        },
+        {
+          "conf": 0.86,
+          "end": 246.12,
+          "start": 245.86,
+          "word": "le"
+        },
+        {
+          "conf": 0.94,
+          "end": 246.7,
+          "start": 246.12,
+          "word": "fondement"
+        },
+        {
+          "conf": 0.89,
+          "end": 246.98,
+          "start": 246.7,
+          "word": "de"
+        },
+        {
+          "conf": 0.86,
+          "end": 247.2,
+          "start": 246.98,
+          "word": "son"
+        },
+        {
+          "conf": 0.79,
+          "end": 247.52,
+          "start": 247.2,
+          "word": "modèle"
+        },
+        {
+          "conf": 0.86,
+          "end": 247.66,
+          "start": 247.52,
+          "word": "de"
+        },
+        {
+          "conf": 0.66,
+          "end": 248.04,
+          "start": 247.66,
+          "word": "transaction"
+        },
+        {
+          "conf": 0.86,
+          "end": 248.84,
+          "start": 248.7,
+          "word": "Alors"
+        },
+        {
+          "conf": 0.57,
+          "end": 249.08,
+          "start": 248.84,
+          "word": "comment"
+        },
+        {
+          "conf": 0.77,
+          "end": 249.62,
+          "start": 249.08,
+          "word": "Anastasia"
+        },
+        {
+          "conf": 0.92,
+          "end": 250.48,
+          "start": 249.62,
+          "word": "explique-t-elle"
+        },
+        {
+          "conf": 0.87,
+          "end": 250.72,
+          "start": 250.48,
+          "word": "ces"
+        },
+        {
+          "conf": 0.54,
+          "end": 251.0,
+          "start": 250.72,
+          "word": "affects"
+        },
+        {
+          "conf": 0.86,
+          "end": 251.38,
+          "start": 251.0,
+          "word": "très"
+        },
+        {
+          "conf": 0.91,
+          "end": 251.8,
+          "start": 251.38,
+          "word": "puissants"
+        },
+        {
+          "conf": 0.76,
+          "end": 252.0,
+          "start": 251.8,
+          "word": "qui"
+        },
+        {
+          "conf": 0.83,
+          "end": 252.24,
+          "start": 252.0,
+          "word": "soudent"
+        },
+        {
+          "conf": 0.91,
+          "end": 252.38,
+          "start": 252.24,
+          "word": "la"
+        },
+        {
+          "conf": 0.86,
+          "end": 252.78,
+          "start": 252.38,
+          "word": "communauté"
+        },
+        {
+          "conf": 0.41,
+          "end": 253.32,
+          "start": 252.78,
+          "word": "pourtant"
+        },
+        {
+          "conf": 0.96,
+          "end": 253.84,
+          "start": 253.32,
+          "word": "hétérogène"
+        },
+        {
+          "conf": 0.85,
+          "end": 254.56,
+          "start": 253.84,
+          "word": "des"
+        },
+        {
+          "conf": 0.63,
+          "end": 255.06,
+          "start": 254.56,
+          "word": "bitcoiners"
+        }
+      ]
+    },
+    {
+      "duration": 1.2799999999999727,
+      "end": 809.8399999999999,
+      "raw_segment": "Pas maintenant !",
+      "segment": "Pas maintenant !",
+      "spk_id": "spk1",
+      "start": 808.56,
+      "words": [{
+          "conf": 0.01,
+          "end": 808.72,
+          "start": 808.56,
+          "word": "Pas"
+        },
+        {
+          "conf": 0.65,
+          "end": 809.06,
+          "start": 808.72,
+          "word": "maintenant"
+        }
+      ]
+    }
+  ]
+}

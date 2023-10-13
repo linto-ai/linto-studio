@@ -1,0 +1,52 @@
+{
+  "confidence": 0.8275877956383695,
+  "raw_transcription": "hétérogène des bitcoiners ? Pas maintenant !",
+  "segments": [{
+    "duration": 12.508594000000016,
+    "end": 477.05859399999997,
+    "raw_segment": "objectivement n' que peu d' intérêt",
+    "segment": "objectivement n'que peu d ', intérêt ?",
+    "spk_id": "spk2",
+    "start": 464.54999999999995,
+    "words": [
+      {
+        "conf": 0.999979,
+        "end": 475.79992699999997,
+        "start": 474.958037,
+        "word": "objectivement"
+      },
+      {
+        "conf": 0.403278,
+        "end": 475.92591799999997,
+        "start": 475.86,
+        "word": "n'"
+      },
+      {
+        "conf": 0.997786,
+        "end": 476.37,
+        "start": 476.130088,
+        "word": "que"
+      },
+      {
+        "conf": 0.610079,
+        "end": 476.61,
+        "start": 476.49,
+        "word": "peu"
+      },
+      {
+        "conf": 1.0,
+        "end": 476.66999999999996,
+        "start": 476.61,
+        "word": "d'"
+      },
+      {
+        "conf": 0.887712,
+        "end": 477.05859399999997,
+        "start": 476.66999999999996,
+        "word": "intérêt"
+      }
+    ]
+  }
+
+  ]
+}

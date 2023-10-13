@@ -1,0 +1,55 @@
+{
+    "text": [{
+        "speaker_id": "d4f49e9a-6922-4c16-9432-f200615b3d22",
+        "turn_id": "3c15cf7e-703c-4d05-8d58-ee2184175b4c",
+        "raw_segment": "objectivement n' que peu d' intérêt",
+        "segment": "objectivement n'que peu d'intérêt ?",
+        "words": [{
+                "wid": "12085190-bd30-468f-9c05-e0e01454a539",
+                "stime": 474.958037,
+                "etime": 475.799927,
+                "word": "objectivement",
+                "confidence": 0.999979,
+                "highlights": [],
+                "keywords": []
+            },
+            {
+                "wid": "885150b8-632a-479e-b3c7-9e665056770c",
+                "stime": 475.86,
+                "etime": 476.37,
+                "word": "n'que",
+                "confidence": 0.700532,
+                "highlights": [],
+                "keywords": []
+            },
+            {
+                "wid": "262c8737-3197-4d5d-91b5-035db58a064b",
+                "stime": 476.49,
+                "etime": 476.61,
+                "word": "peu",
+                "confidence": 0.610079,
+                "highlights": [],
+                "keywords": []
+            },
+            {
+                "wid": "09548a80-e9c4-4921-94b6-f8b3d6763f92",
+                "stime": 476.61,
+                "etime": 477.058594,
+                "word": "d'intérêt",
+                "confidence": 1,
+                "highlights": [],
+                "keywords": []
+            },
+            {
+                "wid": "b6d4fd38-05cb-4d2c-b336-2e01b76bb55a",
+                "stime": 477.058594,
+                "etime": 477.058594,
+                "word": "?",
+                "confidence": 0.887712,
+                "highlights": [],
+                "keywords": []
+            }
+        ]
+    }],
+    "locale": "fr-FR"
+}

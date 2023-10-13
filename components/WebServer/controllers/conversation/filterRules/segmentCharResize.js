@@ -1,8 +1,5 @@
 const debug = require('debug')('linto:components:WebServer:controller:filterRules:segmentCharResize')
 
-
-// "segment_1" : "J'enregistre un nouvel agneau, 10508, et je parle avec la suite du segment 5303, et je continue à parler. Je",
-// "segment_2" : "Commence, un dernier serment, avec 10808, et je vais bien",
 module.exports = function (segments, segmentCharResize) {
   if (!segments || segments.length === 0) return segments
 

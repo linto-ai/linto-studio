@@ -1,0 +1,689 @@
+{
+  "speakers": [{
+      "speaker_id": "5a8c9000-4b09-4f7b-ad45-b666202c54e5",
+      "speaker_name": "spk2",
+      "stime": 3.37,
+      "etime": 10.13
+    },
+    {
+      "speaker_id": "be0c85d4-cc48-4d91-a13f-f46cc69d3fc8",
+      "speaker_name": "spk1",
+      "stime": 10.95,
+      "etime": 29.93
+    },
+    {
+      "speaker_id": "bf946085-8acf-408c-aa0e-51da2b61cadd",
+      "speaker_name": "spk3",
+      "stime": 811.6,
+      "etime": 886.92
+    },
+    {
+      "speaker_id": "3959d005-b990-48ff-ac65-26af8fdd9e2b",
+      "speaker_name": "spk4",
+      "stime": 1093.43,
+      "etime": 1120.41
+    }
+  ],
+  "text": [{
+    "speaker_id": "5a8c9000-4b09-4f7b-ad45-b666202c54e5",
+    "turn_id": "b690c6a5-5165-41dc-a432-a7a66b1ee541",
+    "raw_segment": "bizarre encore de parler d'irrationalité et d'affect pour une communauté qui s'est construite précisément contre la folie des marchés et qui a mis en avant les mathématiques parce que la crypto, ce sont des maths de haut de volée, qui a fait du code informatique le fondement de son modèle de transaction. alors comment anastasia explique-t-elle ces affects très puissants qui soudent la communauté pourtant hétérogène des bitcoiners ?",
+    "segment": "Bizarre encore de parler d'irrationalité et d'affect pour une communauté qui s'est construite précisément contre la folie des marchés et qui a mis en avant les mathématiques parce que la crypto, ce sont des maths de haut de volée, qui a fait du code informatique le fondement de son modèle de transaction. Alors comment Anastasia explique-t-elle ces affects très puissants qui soudent la communauté pourtant hétérogène des bitcoiners ?",
+    "words": [{
+        "wid": "33d9acea-5a23-4059-a088-1bcde081fb98",
+        "stime": 232.18,
+        "etime": 232.66,
+        "word": "Bizarre",
+        "confidence": 0.85,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "2cb51a8d-845e-41dc-8095-5290b1f28e2a",
+        "stime": 232.66,
+        "etime": 232.92,
+        "word": "encore",
+        "confidence": 0.68,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "b0d47f96-1479-4514-b674-7cbfb690e0b4",
+        "stime": 232.92,
+        "etime": 233.28,
+        "word": "de",
+        "confidence": 0.72,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "d6298a27-6210-4f0b-9060-3bf53baf38e7",
+        "stime": 233.28,
+        "etime": 233.52,
+        "word": "parler",
+        "confidence": 0.87,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "1d9d5dc0-3ed5-48bf-8a18-ab1791042df3",
+        "stime": 233.52,
+        "etime": 234.66,
+        "word": "d'irrationalité",
+        "confidence": 0.97,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "6b725c78-39f8-4869-a893-1ca07e0f5ded",
+        "stime": 234.66,
+        "etime": 234.84,
+        "word": "et",
+        "confidence": 0.89,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "9ccf9902-5993-46dd-9855-e8b3f794ca5d",
+        "stime": 234.84,
+        "etime": 235.36,
+        "word": "d'affect",
+        "confidence": 0.97,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "c20700f0-59d4-48f9-8d9d-5e41d4acb2e9",
+        "stime": 235.36,
+        "etime": 235.72,
+        "word": "pour",
+        "confidence": 0.55,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "bbbc4580-0e86-4f89-9b4d-55794357face",
+        "stime": 235.72,
+        "etime": 235.9,
+        "word": "une",
+        "confidence": 0.83,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "7f2f6531-7e9d-49cb-9a21-919f73541fa6",
+        "stime": 235.9,
+        "etime": 236.26,
+        "word": "communauté",
+        "confidence": 0.77,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "d30d95da-d519-48aa-8a22-b15c663e34c0",
+        "stime": 236.26,
+        "etime": 236.42,
+        "word": "qui",
+        "confidence": 0.75,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "716466c1-d1a6-4ebb-bd28-3c5081029c8a",
+        "stime": 236.42,
+        "etime": 236.56,
+        "word": "s'est",
+        "confidence": 0.97,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "16688917-f016-41a4-b547-1d02e4bd14a1",
+        "stime": 236.56,
+        "etime": 236.94,
+        "word": "construite",
+        "confidence": 0.95,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "ff6a60ce-8158-425b-b6a4-c5e9f9d88827",
+        "stime": 236.94,
+        "etime": 237.74,
+        "word": "précisément",
+        "confidence": 0.85,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "0574d3ef-38bc-4463-967e-4d8624cbf761",
+        "stime": 237.74,
+        "etime": 238.28,
+        "word": "contre",
+        "confidence": 0.62,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "67912d3f-97a8-44af-92e3-0229c7d875f8",
+        "stime": 238.28,
+        "etime": 238.54,
+        "word": "la",
+        "confidence": 0.9,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "f0021be0-8660-4000-a738-75e88a4e2704",
+        "stime": 238.54,
+        "etime": 238.74,
+        "word": "folie",
+        "confidence": 0.93,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "e348c995-f42b-4e0b-ae22-ab05ef656041",
+        "stime": 238.74,
+        "etime": 238.9,
+        "word": "des",
+        "confidence": 0.9,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "377852d6-01a0-4b31-a315-ac20e94cc918",
+        "stime": 238.9,
+        "etime": 239.24,
+        "word": "marchés",
+        "confidence": 0.91,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "d3c7f1a1-21fb-4a6b-bd43-afddf326610b",
+        "stime": 239.24,
+        "etime": 239.9,
+        "word": "et",
+        "confidence": 0.58,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "3a71a503-1aa1-498c-bb19-028d95cf863d",
+        "stime": 239.9,
+        "etime": 240,
+        "word": "qui",
+        "confidence": 0.76,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "6c24a9bb-5762-4034-a7ee-815d439ed418",
+        "stime": 240,
+        "etime": 240.12,
+        "word": "a",
+        "confidence": 1,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "d4b8748d-3522-4f1e-b6da-b9c6589871b6",
+        "stime": 240.12,
+        "etime": 240.24,
+        "word": "mis",
+        "confidence": 0.87,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "4fcda486-30b2-41e5-a966-c73e2063fd6d",
+        "stime": 240.24,
+        "etime": 240.48,
+        "word": "en",
+        "confidence": 0.89,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "9cb3a373-c618-4516-8ff6-b01b9e5577ed",
+        "stime": 240.48,
+        "etime": 240.82,
+        "word": "avant",
+        "confidence": 0.83,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "f1cbc998-c152-4a4f-ad63-a20b41b8d748",
+        "stime": 240.82,
+        "etime": 241.24,
+        "word": "les",
+        "confidence": 0.86,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "4d1d03ca-b1e4-4ca7-94c1-ed74c8deab34",
+        "stime": 241.24,
+        "etime": 241.84,
+        "word": "mathématiques",
+        "confidence": 0.95,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "70e3030f-6ca3-45cc-a36e-fe3f7ddc418f",
+        "stime": 241.84,
+        "etime": 242.1,
+        "word": "parce",
+        "confidence": 0.3,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "e4bb7b5a-1a43-46dd-a0a9-dcb4588dda33",
+        "stime": 242.1,
+        "etime": 242.34,
+        "word": "que",
+        "confidence": 0.8,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "87dd14b1-284c-40ce-8645-2182748bb9b6",
+        "stime": 242.34,
+        "etime": 242.52,
+        "word": "la",
+        "confidence": 0.83,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "c9129f4c-a75a-46e1-a1ce-84cbb13431cb",
+        "stime": 242.52,
+        "etime": 242.82,
+        "word": "crypto,",
+        "confidence": 0.65,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "f3308aeb-dec5-4498-a3e1-3564189db97b",
+        "stime": 243.08,
+        "etime": 243.14,
+        "word": "ce",
+        "confidence": 0.9,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "2feb834e-62c7-4fcd-8256-f20e83322933",
+        "stime": 243.14,
+        "etime": 243.28,
+        "word": "sont",
+        "confidence": 0.82,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "0e94cbf2-70f8-4f1c-b8b6-ff94e1815fea",
+        "stime": 243.28,
+        "etime": 243.42,
+        "word": "des",
+        "confidence": 0.86,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "88ae3125-b08e-4803-88e4-ea2bf99a777f",
+        "stime": 243.42,
+        "etime": 243.6,
+        "word": "maths",
+        "confidence": 0.9,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "618b497f-326e-47e7-80f5-6b83d2072181",
+        "stime": 243.6,
+        "etime": 243.8,
+        "word": "de",
+        "confidence": 0.91,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "0c3b2b26-fbef-49c2-a9e6-88177d2d2486",
+        "stime": 243.8,
+        "etime": 243.92,
+        "word": "haut",
+        "confidence": 0.64,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "1d28aaf7-7e55-47c7-895e-dd98dc3948aa",
+        "stime": 243.92,
+        "etime": 243.98,
+        "word": "de",
+        "confidence": 0.68,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "79b041e9-fb9b-4051-9879-4d5a1afc51e7",
+        "stime": 243.98,
+        "etime": 244.2,
+        "word": "volée,",
+        "confidence": 0.86,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "29f73445-ab1d-4b5a-acc2-7b54faae238f",
+        "stime": 244.86,
+        "etime": 244.98,
+        "word": "qui",
+        "confidence": 0.74,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "b7e11f54-eaad-4958-adbf-db60d29b9dc6",
+        "stime": 244.98,
+        "etime": 245.06,
+        "word": "a",
+        "confidence": 0.99,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "97444128-53e2-45fe-a103-8bccd2fadd07",
+        "stime": 245.06,
+        "etime": 245.14,
+        "word": "fait",
+        "confidence": 0.88,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "e725fbe0-028d-4906-aac9-57ceda985aec",
+        "stime": 245.14,
+        "etime": 245.26,
+        "word": "du",
+        "confidence": 0.89,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "ccecf1ae-6fd0-4ad5-bfb3-d538ccc95b8d",
+        "stime": 245.26,
+        "etime": 245.4,
+        "word": "code",
+        "confidence": 0.76,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "d77175c0-cc10-4f98-b43b-348ab225d212",
+        "stime": 245.4,
+        "etime": 245.86,
+        "word": "informatique",
+        "confidence": 0.81,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "f280fdda-d53c-4738-81b8-2fb92573352d",
+        "stime": 245.86,
+        "etime": 246.12,
+        "word": "le",
+        "confidence": 0.86,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "110b7884-b651-4d0e-80bb-dfb13a9c72f4",
+        "stime": 246.12,
+        "etime": 246.7,
+        "word": "fondement",
+        "confidence": 0.94,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "b1d39988-0bb8-401c-92ee-3c016ceed242",
+        "stime": 246.7,
+        "etime": 246.98,
+        "word": "de",
+        "confidence": 0.89,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "fc1d75bc-7948-4eaf-a26f-befc10feee32",
+        "stime": 246.98,
+        "etime": 247.2,
+        "word": "son",
+        "confidence": 0.86,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "b8a4aff8-087c-4407-88ad-804839636cef",
+        "stime": 247.2,
+        "etime": 247.52,
+        "word": "modèle",
+        "confidence": 0.79,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "36c0d08d-c8ec-45d5-a01a-cda5a3592505",
+        "stime": 247.52,
+        "etime": 247.66,
+        "word": "de",
+        "confidence": 0.86,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "63831027-9bed-4aeb-a063-1955de6962f8",
+        "stime": 247.66,
+        "etime": 248.04,
+        "word": "transaction.",
+        "confidence": 0.66,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "afd5f8b0-8670-4462-be92-a61cd34aad5a",
+        "stime": 248.7,
+        "etime": 248.84,
+        "word": "Alors",
+        "confidence": 0.86,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "e89a1945-4cc9-4250-8f3f-7ff25326cd93",
+        "stime": 248.84,
+        "etime": 249.08,
+        "word": "comment",
+        "confidence": 0.57,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "435b5a59-49ee-4846-a1fb-877419840115",
+        "stime": 249.08,
+        "etime": 249.62,
+        "word": "Anastasia",
+        "confidence": 0.77,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "1dd1b50f-d0a2-44fd-a8c7-578cb867bd81",
+        "stime": 249.62,
+        "etime": 250.48,
+        "word": "explique-t-elle",
+        "confidence": 0.92,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "9839e1ab-b38a-4e08-aa93-12a22121ce99",
+        "stime": 250.48,
+        "etime": 250.72,
+        "word": "ces",
+        "confidence": 0.87,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "108db4ef-06a9-48d1-81ae-acb5307eb3e6",
+        "stime": 250.72,
+        "etime": 251,
+        "word": "affects",
+        "confidence": 0.54,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "c8405ecf-9c13-4e1f-9132-4c58dacd3ba6",
+        "stime": 251,
+        "etime": 251.38,
+        "word": "très",
+        "confidence": 0.86,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "982d777b-d07e-48ac-b5b9-3ea0b5032b22",
+        "stime": 251.38,
+        "etime": 251.8,
+        "word": "puissants",
+        "confidence": 0.91,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "c37ecb20-01c8-4389-bf5a-30a97c54666b",
+        "stime": 251.8,
+        "etime": 252,
+        "word": "qui",
+        "confidence": 0.76,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "fc432e02-50e1-4386-b1c7-6e7b62cd99ce",
+        "stime": 252,
+        "etime": 252.24,
+        "word": "soudent",
+        "confidence": 0.83,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "b5070a6f-6372-49d6-b224-3817e030c800",
+        "stime": 252.24,
+        "etime": 252.38,
+        "word": "la",
+        "confidence": 0.91,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "82d5591d-1ec0-4bdf-b6bd-869d8d8f6c2e",
+        "stime": 252.38,
+        "etime": 252.78,
+        "word": "communauté",
+        "confidence": 0.86,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "3445b39e-3415-47fd-9dca-bf33d03659e1",
+        "stime": 252.78,
+        "etime": 253.32,
+        "word": "pourtant",
+        "confidence": 0.41,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "df878233-d52c-4e25-83f4-23d92ea09832",
+        "stime": 253.32,
+        "etime": 253.84,
+        "word": "hétérogène",
+        "confidence": 0.96,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "b80b65b4-a1ba-457b-b32b-0d9355a73ac6",
+        "stime": 253.84,
+        "etime": 254.56,
+        "word": "des",
+        "confidence": 0.85,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "77e4e8e5-cadd-41ab-85f6-ca3e1a460bce",
+        "stime": 254.56,
+        "etime": 255.06,
+        "word": "bitcoiners",
+        "confidence": 0.63,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "77e4e8e5-cadd-41ab-85f6-ca3e1a460bce",
+        "stime": 255.06,
+        "etime": 255.06,
+        "word": "?",
+        "confidence": 0.63,
+        "highlights": [],
+        "keywords": []
+      }
+    ]
+  }, {
+    "speaker_id": "be0c85d4-cc48-4d91-a13f-f46cc69d3fc8",
+    "turn_id": "4dee8a39-11fe-4197-9d5b-bf3657ce3ab7",
+    "raw_segment": "pas maintenant !",
+    "segment": "Pas maintenant !",
+    "words": [{
+        "wid": "c23c37a7-55ac-43cd-a7f3-403d61245426",
+        "stime": 808.56,
+        "etime": 808.72,
+        "word": "Pas",
+        "confidence": 0.01,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "b9a592e0-766a-4767-9b28-91b7cd861e95",
+        "stime": 808.72,
+        "etime": 809.06,
+        "word": "maintenant",
+        "confidence": 0.65,
+        "highlights": [],
+        "keywords": []
+      },
+      {
+        "wid": "b9a592e0-766a-4767-9b28-91b7cd861e95",
+        "stime": 809.06,
+        "etime": 809.06,
+        "word": "!",
+        "confidence": 0.65,
+        "highlights": [],
+        "keywords": []
+      }
+    ]
+  }],
+  "locale": "fr-FR"
+}

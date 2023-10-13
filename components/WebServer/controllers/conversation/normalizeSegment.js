@@ -11,8 +11,8 @@ function* ruleSequenceGenerator(segments, lang) {
     let loop_data = {
       segment: segments.segment_array,
       words: segments.raw_words,
-      segment_index : 0,
-      word_index : 0
+      segment_index: 0,
+      word_index: 0
     }
 
     while (i < segments.segment_array.length) {
@@ -47,6 +47,10 @@ function* ruleSequenceGenerator(segments, lang) {
         } else {
           yield seg_words
         }
+      } else if (segment_text !== undefined) { // Still one last word, can have a desync with raw_words
+        let last_word = rules.executeRulesByName(lang, 'lastWord', segment_text, undefined, loop_data)
+        if (last_word !== undefined)
+          yield last_word
       }
       i++
     }
@@ -56,10 +60,18 @@ function* ruleSequenceGenerator(segments, lang) {
 }
 
 
-function segmentNormalizeText(transcription, lang, filter) {
+function cleanSegment(segment) {
+  return segment.replace(' \', ', '\'')
+}
 
+function segmentNormalizeText(transcription, lang, filter = undefined) {
   if (transcription === undefined) throw new Error('Transcription was empty')
   else if (lang === undefined) throw new Error('Langue was empty')
+
+
+  for (let seg of transcription.segments) {
+    seg.segment = cleanSegment(seg.segment)
+  }
 
   transcription.segments.map(segments => {
     segments.raw_words = [...segments.words]

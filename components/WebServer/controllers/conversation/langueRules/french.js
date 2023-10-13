@@ -20,6 +20,17 @@ function simplePunctuation(seg_text, words, loop_data) {
   }
 }
 
+// Reduced word j.c. need to be compared to j.c and not jc
+function diminutivePunctuation(seg_text, words, loop_data) {
+  if (seg_text.lowercase.replace(/\.$/, '') === words.word.toLowerCase()) {
+    return {
+      ...words,
+      word: seg_text.original
+    }
+  }
+}
+
+
 function doublePunctuation(seg_text, words, loop_data) {
   if (/[?!:;«»]$/.test(seg_text.lowercase)) {
 
@@ -27,7 +38,6 @@ function doublePunctuation(seg_text, words, loop_data) {
     if (loop_data.word_index !== 0) {
       timestamp = loop_data.words[loop_data.word_index - 1].end
     }
-
     //count number if space in the segment
     let spacesCount = (seg_text.lowercase.match(/ /g) || []).length
 
@@ -60,8 +70,7 @@ function numberNormalize(seg_text, words, loop_data) {
   const regex_number = /.*[0-9].*/
 
   if (regex_number.test(seg_text.lowercase.replace(/[,.:]$/, ''))) {
-
-    if (loop_data.segment_index + 1 > loop_data.segment.length - 1) {
+    if (loop_data.segment_index + 1 > loop_data.segment.length - 1) { // in case of last word
       return {
         ...words,
         word: seg_text.original,
@@ -82,12 +91,17 @@ function numberNormalize(seg_text, words, loop_data) {
     if (!loop_data.segment[loop_data.segment_index + number_in_a_row_find]) // No next word, exit
       return
     let next_word_seg = correctSegmentText({ original: loop_data.segment[loop_data.segment_index + number_in_a_row_find] })
+
+    // Special case if the next word after the number is an apostrophe because of the linstt transcription
+    // Should not be case with the whisper transcription
+    if (next_word_seg.lowercase.includes('\'')) {
+      next_word_seg.fixed = next_word_seg.lowercase.split('\'')[0] + '\''
+    }
+
     let index = loop_data.word_index
     let confidences_scores = words.conf
-
     while (index < loop_data.words.length) {
-      if (next_word_seg.lowercase === loop_data.words[index].word) { // trigger exit loop
-
+      if (next_word_seg.lowercase === loop_data.words[index].word || (next_word_seg.fixed !== undefined && next_word_seg.fixed === loop_data.words[index].word)) { // trigger exit loop
         if (number_in_a_row_find > 1) { // if multiple number in a row
           let start = words.start
           let diff = (loop_data.words[index - 1].end - start) / number_in_a_row_find
@@ -114,7 +128,6 @@ function numberNormalize(seg_text, words, loop_data) {
             skip_words: index - loop_data.word_index
           }
         }
-
       }
       confidences_scores += loop_data.words[index].conf
       index++
@@ -126,4 +139,23 @@ function notFound(segment_text, words) {
   return words
 }
 
-module.exports = [correctSegmentText, simplePunctuation, doublePunctuation, apostropheNormalize, numberNormalize, notFound]
+//Should only be trigger on special case and last word
+function lastWord(segment_text, words, loop_data) {
+  // In case of last word is a double punctuation,
+  // It can be desync with the words array depending of the transcription services
+  if (segment_text.lowercase.length === 1 && /[?!:;«»]$/.test(segment_text.lowercase)) {
+    let last_word_index = loop_data.words.length - 1
+
+    return {
+      ...loop_data.words[last_word_index],
+      start: loop_data.words[last_word_index].end,
+      word: segment_text.original,
+    }
+  }
+  return undefined
+}
+
+module.exports = {
+  rules_sequences: [correctSegmentText, simplePunctuation, diminutivePunctuation, doublePunctuation, apostropheNormalize, numberNormalize, notFound],
+  rules: [correctSegmentText, simplePunctuation, diminutivePunctuation, doublePunctuation, apostropheNormalize, numberNormalize, notFound, lastWord]
+}
