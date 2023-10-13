@@ -60,10 +60,18 @@ function* ruleSequenceGenerator(segments, lang) {
 }
 
 
-function segmentNormalizeText(transcription, lang, filter = undefined) {
+function cleanSegment(segment) {
+  return segment.replace(' \', ', '\'')
+}
 
+function segmentNormalizeText(transcription, lang, filter = undefined) {
   if (transcription === undefined) throw new Error('Transcription was empty')
   else if (lang === undefined) throw new Error('Langue was empty')
+
+
+  for (let seg of transcription.segments) {
+    seg.segment = cleanSegment(seg.segment)
+  }
 
   transcription.segments.map(segments => {
     segments.raw_words = [...segments.words]

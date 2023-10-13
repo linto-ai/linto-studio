@@ -1,0 +1,398 @@
+{
+  "speakers" : [ 
+      {
+          "speaker_id" : "d4f49e9a-6922-4c16-9432-f200615b3d22",
+          "speaker_name" : "spk2",
+          "stime" : 3.66,
+          "etime" : 10.29
+      }, 
+      {
+          "speaker_id" : "98499483-08a6-4eba-b019-171574f137b6",
+          "speaker_name" : "spk1",
+          "stime" : 10.89,
+          "etime" : 30
+      }, 
+      {
+          "speaker_id" : "bef71ec7-5c53-4370-8c67-a1014d81c06a",
+          "speaker_name" : "spk3",
+          "stime" : 814.060664,
+          "etime" : 887.04
+      }, 
+      {
+          "speaker_id" : "78c62d22-ec3c-4487-8162-3cb2ce216d19",
+          "speaker_name" : "spk4",
+          "stime" : 1091.610004,
+          "etime" : 1124.458198
+      }
+  ],
+  "text" : [
+      {
+          "speaker_id" : "d4f49e9a-6922-4c16-9432-f200615b3d22",
+          "turn_id" : "3c15cf7e-703c-4d05-8d58-ee2184175b4c",
+          "raw_segment" : "ok on comprend mieux la nécessité d' entretenir la mythologie en effet mais quels sont les discours mobilisés pour inciter à faire rentrer dans les cryptomonnaies et dans le but de en particulier des gens qui objectivement n' que peu d' intérêt",
+          "segment" : "Ok, on comprend mieux la nécessité d'entretenir la mythologie, en effet, Mais quels sont les discours mobilisés pour inciter à faire rentrer dans les cryptomonnaies et dans le but de. En particulier, des gens qui objectivement n'que peu d'intérêt ?",
+          "words" : [ 
+              {
+                  "wid" : "10a32de7-bc24-406c-88f2-f44ed68416ae",
+                  "stime" : 464.55,
+                  "etime" : 464.82,
+                  "word" : "Ok,",
+                  "confidence" : 0.920383,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "ca4d3a84-162d-4f16-937f-537e4d43b3d0",
+                  "stime" : 465,
+                  "etime" : 465.09,
+                  "word" : "on",
+                  "confidence" : 0.996258,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "17b12ffb-9776-4217-a615-1459a7b42175",
+                  "stime" : 465.09,
+                  "etime" : 465.42,
+                  "word" : "comprend",
+                  "confidence" : 0.992532,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "5bd82230-c2f4-4460-8415-491fd32465b7",
+                  "stime" : 465.42,
+                  "etime" : 465.75,
+                  "word" : "mieux",
+                  "confidence" : 1,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "ca5c9efb-dc9a-4b7b-a5fc-2b668670356a",
+                  "stime" : 465.75,
+                  "etime" : 465.87,
+                  "word" : "la",
+                  "confidence" : 1,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "e287bfdd-3e87-4815-9846-b15a84b6465a",
+                  "stime" : 465.87,
+                  "etime" : 466.41,
+                  "word" : "nécessité",
+                  "confidence" : 1,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "a2021eb8-447d-4405-a2ed-9c12c013613a",
+                  "stime" : 466.41,
+                  "etime" : 466.89,
+                  "word" : "d'entretenir",
+                  "confidence" : 1,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "c1008935-6dc4-44a7-ab5a-79d591184cd0",
+                  "stime" : 466.89,
+                  "etime" : 466.98,
+                  "word" : "la",
+                  "confidence" : 1,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "2a8c2074-f464-44ed-8d61-9ec74f64f27c",
+                  "stime" : 466.98,
+                  "etime" : 467.46,
+                  "word" : "mythologie,",
+                  "confidence" : 0.987092,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "acdfb13e-34d0-4239-b9cf-a7b885f9ffbe",
+                  "stime" : 467.7,
+                  "etime" : 467.82,
+                  "word" : "en",
+                  "confidence" : 1,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "529b2b78-9e8e-4a8c-bd89-958f22b45008",
+                  "stime" : 467.82,
+                  "etime" : 468.089546,
+                  "word" : "effet,",
+                  "confidence" : 1,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "dac45fa6-e5d1-463f-bf6b-d7fa55796bca",
+                  "stime" : 468.69,
+                  "etime" : 468.84,
+                  "word" : "Mais",
+                  "confidence" : 1,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "592eb3b0-22e0-4de2-bf68-cc3a084adce4",
+                  "stime" : 468.84,
+                  "etime" : 469.02,
+                  "word" : "quels",
+                  "confidence" : 0.68635,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "a9e921d5-5028-44c1-bc09-703ac34b83bc",
+                  "stime" : 469.02,
+                  "etime" : 469.2,
+                  "word" : "sont",
+                  "confidence" : 1,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "4a349ad1-e302-4893-a2af-b6a0401574a2",
+                  "stime" : 469.2,
+                  "etime" : 469.29,
+                  "word" : "les",
+                  "confidence" : 1,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "60b37bce-5dcf-4a20-9a6f-294da30b3544",
+                  "stime" : 469.290117,
+                  "etime" : 469.68,
+                  "word" : "discours",
+                  "confidence" : 1,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "01e00557-5ed0-4b6a-a7b9-d42c1ced4f95",
+                  "stime" : 469.680308,
+                  "etime" : 470.25,
+                  "word" : "mobilisés",
+                  "confidence" : 0.419066,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "96cf6fc3-4ea8-402d-982f-7ace36b60fea",
+                  "stime" : 470.25,
+                  "etime" : 470.52,
+                  "word" : "pour",
+                  "confidence" : 1,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "a9a16d91-dfb4-40bd-b778-66d22ecb3ac4",
+                  "stime" : 470.52,
+                  "etime" : 470.91,
+                  "word" : "inciter",
+                  "confidence" : 1,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "df08ba70-9e77-4e72-a880-bfaa2fe91089",
+                  "stime" : 470.91,
+                  "etime" : 470.94,
+                  "word" : "à",
+                  "confidence" : 1,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "556ad417-5e77-4903-9325-b319cbc76d85",
+                  "stime" : 470.94,
+                  "etime" : 471.18,
+                  "word" : "faire",
+                  "confidence" : 1,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "877f622c-f27e-4ee1-9f28-3a63e5a48f61",
+                  "stime" : 471.18,
+                  "etime" : 471.57,
+                  "word" : "rentrer",
+                  "confidence" : 0.779062,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "452c3c61-dfb6-4434-8a79-b829917aaead",
+                  "stime" : 471.57,
+                  "etime" : 471.69,
+                  "word" : "dans",
+                  "confidence" : 1,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "aab30a52-374c-44ca-9a14-a81e432a86e7",
+                  "stime" : 471.690615,
+                  "etime" : 471.78,
+                  "word" : "les",
+                  "confidence" : 0.959749,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "a8aa5992-764b-4c5a-b5f3-8cfa2c069223",
+                  "stime" : 471.78,
+                  "etime" : 472.41,
+                  "word" : "cryptomonnaies",
+                  "confidence" : 0.913565,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "00699741-efad-4899-b134-49b4b31a9536",
+                  "stime" : 472.41,
+                  "etime" : 472.53,
+                  "word" : "et",
+                  "confidence" : 0.64898,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "b6910c9d-04f6-4b70-8a50-a6e142b0b1d3",
+                  "stime" : 472.53,
+                  "etime" : 472.65,
+                  "word" : "dans",
+                  "confidence" : 0.937361,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "a8fc7ef2-deb1-4e8d-bca5-1af8677a91c7",
+                  "stime" : 472.65,
+                  "etime" : 472.74,
+                  "word" : "le",
+                  "confidence" : 0.98299,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "a761fdc7-c968-4b61-956b-4db25db40587",
+                  "stime" : 472.74,
+                  "etime" : 472.833047,
+                  "word" : "but",
+                  "confidence" : 0.458962,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "ffba0195-bc6d-45df-884f-63d2c15113d2",
+                  "stime" : 472.833047,
+                  "etime" : 472.89,
+                  "word" : "de.",
+                  "confidence" : 0.335745,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "39b2b4cb-8eb8-4a81-be6a-3db67cca3fce",
+                  "stime" : 473.041904,
+                  "etime" : 473.1,
+                  "word" : "En",
+                  "confidence" : 0.977637,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "32bfe497-b48a-489b-b072-2e5b1284852d",
+                  "stime" : 473.1,
+                  "etime" : 473.73,
+                  "word" : "particulier,",
+                  "confidence" : 0.994495,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "66042348-cc77-4d73-ae51-7e804aafd694",
+                  "stime" : 474.03,
+                  "etime" : 474.18,
+                  "word" : "des",
+                  "confidence" : 1,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "2b52cb09-f5f3-4789-909c-781502b2b814",
+                  "stime" : 474.18,
+                  "etime" : 474.42,
+                  "word" : "gens",
+                  "confidence" : 1,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "4c03c386-b9f2-469d-8627-8e4fe4e5711f",
+                  "stime" : 474.42,
+                  "etime" : 474.66,
+                  "word" : "qui",
+                  "confidence" : 1,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "12085190-bd30-468f-9c05-e0e01454a539",
+                  "stime" : 474.958037,
+                  "etime" : 475.799927,
+                  "word" : "objectivement",
+                  "confidence" : 0.999979,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "885150b8-632a-479e-b3c7-9e665056770c",
+                  "stime" : 475.86,
+                  "etime" : 476.37,
+                  "word" : "n'que",
+                  "confidence" : 0.700532,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "262c8737-3197-4d5d-91b5-035db58a064b",
+                  "stime" : 476.49,
+                  "etime" : 476.61,
+                  "word" : "peu",
+                  "confidence" : 0.610079,
+                  "highlights" : [],
+                  "keywords" : []
+              }, 
+              {
+                  "wid" : "09548a80-e9c4-4921-94b6-f8b3d6763f92",
+                  "stime" : 476.61,
+                  "etime" : 477.058594,
+                  "word" : "d'intérêt",
+                  "confidence" : 1,
+                  "highlights" : [],
+                  "keywords" : []
+              },
+              {
+                  "wid": "b6d4fd38-05cb-4d2c-b336-2e01b76bb55a",
+                  "stime": 477.058594,
+                  "etime": 477.058594,
+                  "word": "?",
+                  "confidence": 0.887712,
+                  "highlights": [],
+                  "keywords": []
+              }
+          ]
+      } ],
+  "locale" : "fr-FR"
+}

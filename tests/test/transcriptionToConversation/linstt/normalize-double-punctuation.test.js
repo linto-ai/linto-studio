@@ -3,7 +3,7 @@ const debug = require('debug')('linto:tests:linstt:normalize-double-punctuation'
 const cp = require('utils-copy')
 const { segmentNormalizeText } = require(`${process.cwd()}/components/WebServer/controllers/conversation/normalizeSegment`)
 
-describe('normalize conversation segment from a reduced linstt transcription double punctuation rules', () => {
+describe('normalize conversation segment from a linstt transcription double punctuation rules', () => {
   let mock_transcription
   let conversation
   const LANG = 'fr-FR'

@@ -1,0 +1,268 @@
+{
+  "confidence": 0.8275877956383695,
+  "raw_transcription": "hétérogène des bitcoiners ? Pas maintenant !",
+  "segments": [{
+    "duration": 12.508594000000016,
+    "end": 477.05859399999997,
+    "raw_segment": "ok on comprend mieux la nécessité d' entretenir la mythologie en effet mais quels sont les discours mobilisés pour inciter à faire rentrer dans les cryptomonnaies et dans le but de en particulier des gens qui objectivement n' que peu d' intérêt",
+    "segment": "Ok, on comprend mieux la nécessité d'entretenir la mythologie, en effet, Mais quels sont les discours mobilisés pour inciter à faire rentrer dans les cryptomonnaies et dans le but de. En particulier, des gens qui objectivement n'que peu d ', intérêt ?",
+    "spk_id": "spk2",
+    "start": 464.54999999999995,
+    "words": [
+      {
+        "conf": 0.920383,
+        "end": 464.81999999999994,
+        "start": 464.54999999999995,
+        "word": "ok"
+      },
+      {
+        "conf": 0.996258,
+        "end": 465.09,
+        "start": 465.0,
+        "word": "on"
+      },
+      {
+        "conf": 0.992532,
+        "end": 465.41999999999996,
+        "start": 465.09,
+        "word": "comprend"
+      },
+      {
+        "conf": 1.0,
+        "end": 465.75,
+        "start": 465.41999999999996,
+        "word": "mieux"
+      },
+      {
+        "conf": 1.0,
+        "end": 465.87,
+        "start": 465.75,
+        "word": "la"
+      },
+      {
+        "conf": 1.0,
+        "end": 466.40999999999997,
+        "start": 465.87,
+        "word": "nécessité"
+      },
+      {
+        "conf": 1.0,
+        "end": 466.46999999999997,
+        "start": 466.40999999999997,
+        "word": "d'"
+      },
+      {
+        "conf": 1.0,
+        "end": 466.89,
+        "start": 466.46999999999997,
+        "word": "entretenir"
+      },
+      {
+        "conf": 1.0,
+        "end": 466.97999999999996,
+        "start": 466.89,
+        "word": "la"
+      },
+      {
+        "conf": 0.987092,
+        "end": 467.46,
+        "start": 466.97999999999996,
+        "word": "mythologie"
+      },
+      {
+        "conf": 1.0,
+        "end": 467.81999999999994,
+        "start": 467.69999999999993,
+        "word": "en"
+      },
+      {
+        "conf": 1.0,
+        "end": 468.089546,
+        "start": 467.81999999999994,
+        "word": "effet"
+      },
+      {
+        "conf": 1.0,
+        "end": 468.84,
+        "start": 468.68999999999994,
+        "word": "mais"
+      },
+      {
+        "conf": 0.68635,
+        "end": 469.02,
+        "start": 468.84,
+        "word": "quels"
+      },
+      {
+        "conf": 1.0,
+        "end": 469.19999999999993,
+        "start": 469.02,
+        "word": "sont"
+      },
+      {
+        "conf": 1.0,
+        "end": 469.28999999999996,
+        "start": 469.19999999999993,
+        "word": "les"
+      },
+      {
+        "conf": 1.0,
+        "end": 469.67999999999995,
+        "start": 469.290117,
+        "word": "discours"
+      },
+      {
+        "conf": 0.419066,
+        "end": 470.25,
+        "start": 469.68030799999997,
+        "word": "mobilisés"
+      },
+      {
+        "conf": 1.0,
+        "end": 470.52,
+        "start": 470.25,
+        "word": "pour"
+      },
+      {
+        "conf": 1.0,
+        "end": 470.90999999999997,
+        "start": 470.52,
+        "word": "inciter"
+      },
+      {
+        "conf": 1.0,
+        "end": 470.93999999999994,
+        "start": 470.90999999999997,
+        "word": "à"
+      },
+      {
+        "conf": 1.0,
+        "end": 471.17999999999995,
+        "start": 470.93999999999994,
+        "word": "faire"
+      },
+      {
+        "conf": 0.779062,
+        "end": 471.56999999999994,
+        "start": 471.17999999999995,
+        "word": "rentrer"
+      },
+      {
+        "conf": 1.0,
+        "end": 471.68999999999994,
+        "start": 471.56999999999994,
+        "word": "dans"
+      },
+      {
+        "conf": 0.959749,
+        "end": 471.78,
+        "start": 471.690615,
+        "word": "les"
+      },
+      {
+        "conf": 0.913565,
+        "end": 472.40999999999997,
+        "start": 471.78,
+        "word": "cryptomonnaies"
+      },
+      {
+        "conf": 0.64898,
+        "end": 472.53,
+        "start": 472.40999999999997,
+        "word": "et"
+      },
+      {
+        "conf": 0.937361,
+        "end": 472.65,
+        "start": 472.53,
+        "word": "dans"
+      },
+      {
+        "conf": 0.98299,
+        "end": 472.74,
+        "start": 472.65,
+        "word": "le"
+      },
+      {
+        "conf": 0.458962,
+        "end": 472.83304699999997,
+        "start": 472.74,
+        "word": "but"
+      },
+      {
+        "conf": 0.335745,
+        "end": 472.89,
+        "start": 472.83304699999997,
+        "word": "de"
+      },
+      {
+        "conf": 0.977637,
+        "end": 473.09999999999997,
+        "start": 473.04190399999993,
+        "word": "en"
+      },
+      {
+        "conf": 0.994495,
+        "end": 473.72999999999996,
+        "start": 473.09999999999997,
+        "word": "particulier"
+      },
+      {
+        "conf": 1.0,
+        "end": 474.17999999999995,
+        "start": 474.03,
+        "word": "des"
+      },
+      {
+        "conf": 1.0,
+        "end": 474.41999999999996,
+        "start": 474.17999999999995,
+        "word": "gens"
+      },
+      {
+        "conf": 1.0,
+        "end": 474.65999999999997,
+        "start": 474.41999999999996,
+        "word": "qui"
+      },
+      {
+        "conf": 0.999979,
+        "end": 475.79992699999997,
+        "start": 474.958037,
+        "word": "objectivement"
+      },
+      {
+        "conf": 0.403278,
+        "end": 475.92591799999997,
+        "start": 475.86,
+        "word": "n'"
+      },
+      {
+        "conf": 0.997786,
+        "end": 476.37,
+        "start": 476.130088,
+        "word": "que"
+      },
+      {
+        "conf": 0.610079,
+        "end": 476.61,
+        "start": 476.49,
+        "word": "peu"
+      },
+      {
+        "conf": 1.0,
+        "end": 476.66999999999996,
+        "start": 476.61,
+        "word": "d'"
+      },
+      {
+        "conf": 0.887712,
+        "end": 477.05859399999997,
+        "start": 476.66999999999996,
+        "word": "intérêt"
+      }
+    ]
+  }
+
+  ]
+}
