@@ -1,4 +1,4 @@
-const debug = require('debug')('linto:tests:linstt:normalize-bictoin-transription')
+const debug = require('debug')('linto:tests:linstt:normalize-number')
 
 const cp = require('utils-copy')
 const { segmentNormalizeText } = require(`${process.cwd()}/components/WebServer/controllers/conversation/normalizeSegment`)

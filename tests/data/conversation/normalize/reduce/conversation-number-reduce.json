@@ -42,18 +42,9 @@
           {
               "wid": "00323d6a-f0be-4b2d-a5db-7ced6a45bf3a",
               "stime": 676.17,
-              "etime": 676.26,
-              "word": "d'",
-              "confidence": 1,
-              "highlights": [],
-              "keywords": []
-          },
-          {
-              "wid": "01d5cb5d-9d74-41bb-98a1-42ac399530ec",
-              "stime": 676.26,
               "etime": 676.59,
-              "word": "années",
-              "confidence": 0.981857,
+              "word": "d'années",
+              "confidence": 1,
               "highlights": [],
               "keywords": []
           }

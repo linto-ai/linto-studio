@@ -348,17 +348,8 @@
               "wid": "00323d6a-f0be-4b2d-a5db-7ced6a45bf3a",
               "stime": 676.17,
               "etime": 676.26,
-              "word": "d'",
+              "word": "d'années",
               "confidence": 1,
-              "highlights": [],
-              "keywords": []
-          },
-          {
-              "wid": "01d5cb5d-9d74-41bb-98a1-42ac399530ec",
-              "stime": 676.26,
-              "etime": 676.59,
-              "word": "années",
-              "confidence": 0.981857,
               "highlights": [],
               "keywords": []
           },
@@ -393,7 +384,7 @@
               "wid": "3302c2b8-795a-423a-823f-2ae3be8f1a84",
               "stime": 677.52,
               "etime": 678.09,
-              "word": "crétacé",
+              "word": "Crétacé",
               "confidence": 1,
               "highlights": [],
               "keywords": []
@@ -402,7 +393,7 @@
               "wid": "30a11ede-b219-4a1d-a63c-44d3703dbf0f",
               "stime": 678.09,
               "etime": 678.81,
-              "word": "inférieur",
+              "word": "inférieur,",
               "confidence": 1,
               "highlights": [],
               "keywords": []
@@ -447,7 +438,7 @@
               "wid": "c2cc736e-e076-4016-af6d-dc24e0a2f19e",
               "stime": 679.77,
               "etime": 680.19,
-              "word": "téthys",
+              "word": "Téthys",
               "confidence": 1,
               "highlights": [],
               "keywords": []

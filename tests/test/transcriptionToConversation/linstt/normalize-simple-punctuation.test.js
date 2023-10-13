@@ -1,4 +1,4 @@
-const debug = require('debug')('linto:tests:linstt:normalize-bictoin-transription')
+const debug = require('debug')('linto:tests:linstt:normalize-simple-punctuation')
 
 const { segmentNormalizeText } = require(`${process.cwd()}/components/WebServer/controllers/conversation/normalizeSegment`)
 

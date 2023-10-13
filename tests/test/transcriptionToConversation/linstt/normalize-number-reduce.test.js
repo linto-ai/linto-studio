@@ -1,4 +1,4 @@
-const debug = require('debug')('linto:tests:linstt:normalize-bictoin-transription')
+const debug = require('debug')('linto:tests:linstt:normalize-number-reduce')
 
 const cp = require('utils-copy')
 const { segmentNormalizeText } = require(`${process.cwd()}/components/WebServer/controllers/conversation/normalizeSegment`)
@@ -21,10 +21,13 @@ describe('normalize conversation segment from a reduced linstt transcription for
     const normalizeTranscription = segmentNormalizeText(mock_transcription, LANG)
 
     normalizeTranscription.segments.map((segment, index_seg) => {
+      // debug(segment.words)
+      // debug(conversation.text[index_seg].words)
       expect(segment.segment).toEqual(conversation.text[index_seg].segment)
       expect(segment.words.length).toEqual(conversation.text[index_seg].words.length)
 
       segment.words.map((words, index_word) => {
+        debug(index_word)
         expect(words.word).toEqual(conversation.text[index_seg].words[index_word].word)
       })
     })
