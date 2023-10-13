@@ -139,13 +139,16 @@ function notFound(segment_text, words) {
   return words
 }
 
+//Should only be trigger on special case and last word
 function lastWord(segment_text, words, loop_data) {
   // In case of last word is a double punctuation,
   // It can be desync with the words array depending of the transcription services
   if (segment_text.lowercase.length === 1 && /[?!:;«»]$/.test(segment_text.lowercase)) {
+    let last_word_index = loop_data.words.length - 1
+
     return {
-      ...loop_data.words[loop_data.word_index - 2], // We know that loop_data.word_index -1 is empty
-      start: loop_data.words[loop_data.word_index - 2].end,
+      ...loop_data.words[last_word_index],
+      start: loop_data.words[last_word_index].end,
       word: segment_text.original,
     }
   }

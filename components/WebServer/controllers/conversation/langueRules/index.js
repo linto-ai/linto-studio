@@ -56,29 +56,6 @@ function executeRulesByName(lang, rule_name, segment_text, words, loop_data) {
   }
 }
 
-function executeLangLastRule(lang, segment_text, words, loop_data) {
-  const functionLangueArr = selectLang(lang).rules
-
-  for (let func of functionLangueArr) {
-    let res = {}
-    try {
-      res = func(segment_text, words, loop_data)
-    } catch (err) {
-      return undefined
-    }
-
-    // handle different rules
-    if (typeof res === 'object' && res.original !== undefined) {
-      segment_text = res
-    } else if (typeof res === 'object') {
-      return res
-    } else if (Array.isArray(res)) {
-      return res
-    }
-  }
-}
-
-
 module.exports = {
   selectLang,
   executeLangRule,
