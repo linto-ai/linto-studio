@@ -1,0 +1,330 @@
+{
+  "confidence": 0.9322335054848628,
+  "diarization_segments": [],
+  "raw_transcription": "parmi les plus grands réseaux du massif figurent ceux de l' alpe du granier et de la dent de crolles deux point quatre géologie les roches qui constituent la chartreuse ce fort par sédimentation à partir de cent trente-cinq millions d' années au cours du crétacé inférieur au fond de la téthys",
+  "segments": [
+    {
+      "duration": 3476.67,
+      "end": 3477.06,
+      "raw_segment": "parmi les plus grands réseaux du massif figurent ceux de l' alpe du granier et de la dent de crolles deux point quatre géologie les roches qui constituent la chartreuse ce fort par sédimentation à partir de cent trente-cinq millions d' années au cours du crétacé inférieur au fond de la téthys",
+      "segment": "Parmi les plus grands réseaux du massif figurent ceux de l'alpe du Granier et de la dent de Crolles, 2 point 4. Géologie, les roches qui constituent la Chartreuse, ce fort par sédimentation à partir de 135000000 d'années au cours du Crétacé inférieur, au fond de la Téthys",
+      "spk_id": null,
+      "start": 0.39,
+      "words": [
+
+        {
+          "conf": 1.0,
+          "end": 658.11,
+          "start": 657.51,
+          "word": "parmi"
+        },
+        {
+          "conf": 1.0,
+          "end": 658.23,
+          "start": 658.11,
+          "word": "les"
+        },
+        {
+          "conf": 1.0,
+          "end": 658.38,
+          "start": 658.23,
+          "word": "plus"
+        },
+        {
+          "conf": 0.934759,
+          "end": 658.59,
+          "start": 658.38,
+          "word": "grands"
+        },
+        {
+          "conf": 0.934759,
+          "end": 658.92,
+          "start": 658.59,
+          "word": "réseaux"
+        },
+        {
+          "conf": 1.0,
+          "end": 659.01,
+          "start": 658.92,
+          "word": "du"
+        },
+        {
+          "conf": 0.994273,
+          "end": 659.58,
+          "start": 659.01,
+          "word": "massif"
+        },
+        {
+          "conf": 0.934213,
+          "end": 660.27,
+          "start": 659.8199999999999,
+          "word": "figurent"
+        },
+        {
+          "conf": 0.98846,
+          "end": 660.45,
+          "start": 660.27,
+          "word": "ceux"
+        },
+        {
+          "conf": 1.0,
+          "end": 660.6,
+          "start": 660.45,
+          "word": "de"
+        },
+        {
+          "conf": 1.0,
+          "end": 660.66,
+          "start": 660.6,
+          "word": "l'"
+        },
+        {
+          "conf": 0.93086,
+          "end": 661.02,
+          "start": 660.66,
+          "word": "alpe"
+        },
+        {
+          "conf": 1.0,
+          "end": 661.47,
+          "start": 661.29,
+          "word": "du"
+        },
+        {
+          "conf": 0.996078,
+          "end": 661.98,
+          "start": 661.47,
+          "word": "granier"
+        },
+        {
+          "conf": 0.876062,
+          "end": 662.4,
+          "start": 662.25,
+          "word": "et"
+        },
+        {
+          "conf": 1.0,
+          "end": 662.52,
+          "start": 662.4,
+          "word": "de"
+        },
+        {
+          "conf": 1.0,
+          "end": 662.64,
+          "start": 662.52,
+          "word": "la"
+        },
+        {
+          "conf": 1.0,
+          "end": 662.8199999999999,
+          "start": 662.64,
+          "word": "dent"
+        },
+        {
+          "conf": 1.0,
+          "end": 662.9399999999999,
+          "start": 662.8199999999999,
+          "word": "de"
+        },
+        {
+          "conf": 1.0,
+          "end": 663.45,
+          "start": 662.9399999999999,
+          "word": "crolles"
+        },
+        {
+          "conf": 0.999958,
+          "end": 666.3299999999999,
+          "start": 666.0,
+          "word": "deux"
+        },
+        {
+          "conf": 0.989811,
+          "end": 666.5699999999999,
+          "start": 666.3299999999999,
+          "word": "point"
+        },
+        {
+          "conf": 0.994233,
+          "end": 667.0799999999999,
+          "start": 666.5699999999999,
+          "word": "quatre"
+        },
+        {
+          "conf": 0.868782,
+          "end": 668.3399999999999,
+          "start": 667.5899999999999,
+          "word": "géologie"
+        },
+        {
+          "conf": 1.0,
+          "end": 670.4100000000001,
+          "start": 670.0500000000001,
+          "word": "les"
+        },
+        {
+          "conf": 0.99863,
+          "end": 670.95,
+          "start": 670.4100000000001,
+          "word": "roches"
+        },
+        {
+          "conf": 1.0,
+          "end": 671.1600000000001,
+          "start": 670.98,
+          "word": "qui"
+        },
+        {
+          "conf": 0.897339,
+          "end": 671.7,
+          "start": 671.1600000000001,
+          "word": "constituent"
+        },
+        {
+          "conf": 1.0,
+          "end": 671.7900000000001,
+          "start": 671.7,
+          "word": "la"
+        },
+        {
+          "conf": 1.0,
+          "end": 672.48,
+          "start": 671.7900000000001,
+          "word": "chartreuse"
+        },
+        {
+          "conf": 0.578796,
+          "end": 673.0500000000001,
+          "start": 672.7800000000001,
+          "word": "ce"
+        },
+        {
+          "conf": 0.735319,
+          "end": 673.3800000000001,
+          "start": 673.0500000000001,
+          "word": "fort"
+        },
+        {
+          "conf": 0.993497,
+          "end": 673.59,
+          "start": 673.3800000000001,
+          "word": "par"
+        },
+        {
+          "conf": 0.890889,
+          "end": 674.5200000000001,
+          "start": 673.59,
+          "word": "sédimentation"
+        },
+        {
+          "conf": 0.942602,
+          "end": 674.7,
+          "start": 674.58,
+          "word": "à"
+        },
+        {
+          "conf": 1.0,
+          "end": 675.12,
+          "start": 674.7,
+          "word": "partir"
+        },
+        {
+          "conf": 1.0,
+          "end": 675.2700000000001,
+          "start": 675.12,
+          "word": "de"
+        },
+        {
+          "conf": 1.0,
+          "end": 675.45,
+          "start": 675.2700000000001,
+          "word": "cent"
+        },
+        {
+          "conf": 1.0,
+          "end": 675.87,
+          "start": 675.45,
+          "word": "trente-cinq"
+        },
+        {
+          "conf": 1.0,
+          "end": 676.1700000000001,
+          "start": 675.87,
+          "word": "millions"
+        },
+        {
+          "conf": 1.0,
+          "end": 676.2600000000001,
+          "start": 676.1700000000001,
+          "word": "d'"
+        },
+        {
+          "conf": 0.981857,
+          "end": 676.59,
+          "start": 676.2600000000001,
+          "word": "années"
+        },
+        {
+          "conf": 1.0,
+          "end": 677.1300000000001,
+          "start": 677.0100000000001,
+          "word": "au"
+        },
+        {
+          "conf": 1.0,
+          "end": 677.4000000000001,
+          "start": 677.1300000000001,
+          "word": "cours"
+        },
+        {
+          "conf": 1.0,
+          "end": 677.5200000000001,
+          "start": 677.4000000000001,
+          "word": "du"
+        },
+        {
+          "conf": 1.0,
+          "end": 678.09,
+          "start": 677.5200000000001,
+          "word": "crétacé"
+        },
+        {
+          "conf": 1.0,
+          "end": 678.8100000000001,
+          "start": 678.09,
+          "word": "inférieur"
+        },
+        {
+          "conf": 0.98999,
+          "end": 679.2900000000001,
+          "start": 679.1700000000001,
+          "word": "au"
+        },
+        {
+          "conf": 0.979503,
+          "end": 679.5,
+          "start": 679.2900000000001,
+          "word": "fond"
+        },
+        {
+          "conf": 1.0,
+          "end": 679.6500000000001,
+          "start": 679.5,
+          "word": "de"
+        },
+        {
+          "conf": 1.0,
+          "end": 679.7700000000001,
+          "start": 679.6500000000001,
+          "word": "la"
+        },
+        {
+          "conf": 1.0,
+          "end": 680.19,
+          "start": 679.7700000000001,
+          "word": "téthys"
+        }
+      ]
+    }
+  ]
+}

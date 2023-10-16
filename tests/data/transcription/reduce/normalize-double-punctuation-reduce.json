@@ -1,0 +1,54 @@
+{
+  "confidence": 0.8275877956383695,
+  "raw_transcription": "hétérogène des bitcoiners ? Pas maintenant !",
+  "segments": [{
+      "duration": 23.019999999999982,
+      "end": 255.2,
+      "raw_segment": "hétérogène des bitcoiners ?",
+      "segment": "hétérogène des bitcoiners ?",
+      "spk_id": "spk2",
+      "start": 232.18,
+      "words": [
+        {
+          "conf": 0.96,
+          "end": 253.84,
+          "start": 253.32,
+          "word": "hétérogène"
+        },
+        {
+          "conf": 0.85,
+          "end": 254.56,
+          "start": 253.84,
+          "word": "des"
+        },
+        {
+          "conf": 0.63,
+          "end": 255.06,
+          "start": 254.56,
+          "word": "bitcoiners"
+        }
+      ]
+    },
+    {
+      "duration": 1.2799999999999727,
+      "end": 809.8399999999999,
+      "raw_segment": "Pas maintenant !",
+      "segment": "Pas maintenant !",
+      "spk_id": "spk1",
+      "start": 808.56,
+      "words": [{
+          "conf": 0.01,
+          "end": 808.72,
+          "start": 808.56,
+          "word": "Pas"
+        },
+        {
+          "conf": 0.65,
+          "end": 809.06,
+          "start": 808.72,
+          "word": "maintenant"
+        }
+      ]
+    }
+  ]
+}

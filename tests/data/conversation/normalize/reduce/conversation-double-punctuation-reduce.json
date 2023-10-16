@@ -1,0 +1,105 @@
+{
+  "speakers": [{
+          "speaker_id": "5a8c9000-4b09-4f7b-ad45-b666202c54e5",
+          "speaker_name": "spk2",
+          "stime": 3.37,
+          "etime": 10.13
+      },
+      {
+          "speaker_id": "be0c85d4-cc48-4d91-a13f-f46cc69d3fc8",
+          "speaker_name": "spk1",
+          "stime": 10.95,
+          "etime": 29.93
+      },
+      {
+          "speaker_id": "bf946085-8acf-408c-aa0e-51da2b61cadd",
+          "speaker_name": "spk3",
+          "stime": 811.6,
+          "etime": 886.92
+      },
+      {
+          "speaker_id": "3959d005-b990-48ff-ac65-26af8fdd9e2b",
+          "speaker_name": "spk4",
+          "stime": 1093.43,
+          "etime": 1120.41
+      }
+  ],
+  "text": [{
+      "speaker_id": "5a8c9000-4b09-4f7b-ad45-b666202c54e5",
+      "turn_id": "b690c6a5-5165-41dc-a432-a7a66b1ee541",
+      "raw_segment": "hétérogène des bitcoiners ?",
+      "segment": "hétérogène des bitcoiners ?",
+      "words": [
+          {
+              "wid": "df878233-d52c-4e25-83f4-23d92ea09832",
+              "stime": 253.32,
+              "etime": 253.84,
+              "word": "hétérogène",
+              "confidence": 0.96,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "b80b65b4-a1ba-457b-b32b-0d9355a73ac6",
+              "stime": 253.84,
+              "etime": 254.56,
+              "word": "des",
+              "confidence": 0.85,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "77e4e8e5-cadd-41ab-85f6-ca3e1a460bce",
+              "stime": 254.56,
+              "etime": 255.06,
+              "word": "bitcoiners",
+              "confidence": 0.63,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+            "wid": "77e4e8e5-cadd-41ab-85f6-ca3e1a460bce",
+            "stime": 255.06,
+            "etime": 255.06,
+            "word": "?",
+            "confidence": 0.63,
+            "highlights": [],
+            "keywords": []
+          }
+      ]
+  }, {
+      "speaker_id": "be0c85d4-cc48-4d91-a13f-f46cc69d3fc8",
+      "turn_id": "4dee8a39-11fe-4197-9d5b-bf3657ce3ab7",
+      "raw_segment": "pas maintenant !",
+      "segment": "Pas maintenant !",
+      "words": [{
+              "wid": "c23c37a7-55ac-43cd-a7f3-403d61245426",
+              "stime": 808.56,
+              "etime": 808.72,
+              "word": "Pas",
+              "confidence": 0.01,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+              "wid": "b9a592e0-766a-4767-9b28-91b7cd861e95",
+              "stime": 808.72,
+              "etime": 809.06,
+              "word": "maintenant",
+              "confidence": 0.65,
+              "highlights": [],
+              "keywords": []
+          },
+          {
+            "wid": "b9a592e0-766a-4767-9b28-91b7cd861e95",
+            "stime": 809.06,
+            "etime": 809.06,
+            "word": "!",
+            "confidence": 0.65,
+            "highlights": [],
+            "keywords": []
+          }
+      ]
+  }],
+  "locale": "fr-FR"
+}
