@@ -123,23 +123,23 @@ async function updateUser(req, res, next) {
         if (!(req.body.email || req.body.firstname || req.body.lastname || req.body.accountNotifications ||
             req.body.emailNotifications || req.body.private !== undefined || req.body.password)) throw new UserUnsupportedMediaType()
 
-        const myUser = await model.users.getById(req.payload.data.userId)
+        const myUser = await model.users.getById(req.payload.data.userId, true)
         if (myUser.length !== 1) throw new UserNotFound()
         let user = myUser[0]
 
         if (req.body.email) {
             const userMail = await model.users.getByEmail(req.body.email)
 
-            if (userMail.length !== 0) {
-                if (userMail[0]._id.toString() !== user._id.toString())
-                    throw new UserConflict("Email already used")
-            }
+            if (userMail.length !== 0 && userMail[0]._id.toString() !== user._id.toString())
+                throw new UserConflict("Email already used")
 
-            user.emailIsVerified = false
-            user.email = req.body.email
 
-            if (userMail.length === 1) {
-                user.emailIsVerified = true
+            if (user.email !== req.body.email) {
+                if (!user.verifiedEmail.includes(user.email) && user.emailIsVerified) {
+                    user.verifiedEmail.push(user.email)
+                }
+                user.email = req.body.email
+                user.emailIsVerified = false
             }
         }
         if (req.body.firstname) user.firstname = req.body.firstname
