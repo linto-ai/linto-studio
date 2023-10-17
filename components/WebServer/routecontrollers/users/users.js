@@ -6,6 +6,8 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
 
 const Mailing = require(`${process.cwd()}/lib/mailer/mailing`)
+const validator = require(`${process.cwd()}/lib/dao/schema/emailNotification`)
+
 const { storeFile, defaultPicture, deleteFile, getStorageFolder, getAudioWaveformFolder } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 
 const {
@@ -153,17 +155,17 @@ async function updateUser(req, res, next) {
             }
         }
         if (req.body.emailNotifications) {
-            for (let keyParent of Object.keys(req.body.emailNotifications)) {
-                for (let keyChild of Object.keys(req.body.emailNotifications[keyParent])) {
-                    user.emailNotifications[keyParent][keyChild] = req.body.emailNotifications[keyParent][keyChild]
-                }
+            let emailNotifications = req.body.emailNotifications
+            if(typeof emailNotifications !== 'object') emailNotifications = JSON.parse(emailNotifications)
+            if(validator(req.body.emailNotifications)){
+                user.emailNotifications = emailNotifications
             }
         }
 
         const result = await model.users.update(user)
         if (result.matchedCount === 0) throw new UserError()
         else if (result.modifiedCount === 1) res.status(200).send({ message: 'User updated' })
-        else res.status(200).send({ message: 'No modification to user' })
+        else res.status(304).send()
     } catch (err) {
         next(err)
     }
