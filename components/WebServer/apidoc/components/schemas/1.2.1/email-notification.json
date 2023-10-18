@@ -1,0 +1,54 @@
+{
+  "EmailNotification": {
+    "type": "object",
+    "properties": {
+      "conversations": {
+        "type": "object",
+        "properties": {
+          "share": {
+            "type": "object",
+            "properties": {
+              "add": {
+                "type": "boolean"
+              },
+              "update": {
+                "type": "boolean"
+              },
+              "delete": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      },
+      "organizations": {
+        "type": "object",
+        "properties": {
+          "add": {
+            "type": "boolean"
+          },
+          "delete": {
+            "type": "boolean"
+          },
+          "update": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  },
+  "example": {
+    "conversations": {
+      "share": {
+        "add": true,
+        "update": true,
+        "delete": true
+      }
+    },
+    "organizations": {
+      "add": true,
+      "delete": true,
+      "update": true
+    }
+  }
+}

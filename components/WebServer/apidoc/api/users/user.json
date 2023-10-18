@@ -160,22 +160,21 @@
                 },
                 "emailNotifications": {
                   "type": "object",
-                  "properties": {
+                  "schema": {
+                    "$ref": "#/components/schemas/EmailNotifications"
+                  },
+                  "example": {
                     "conversations": {
-                      "type": "object",
-                      "properties": {
-                        "sharing": {
-                          "type": "boolean"
-                        }
+                      "share": {
+                        "add": true,
+                        "update": true,
+                        "delete": true
                       }
                     },
                     "organizations": {
-                      "type": "object",
-                      "properties": {
-                        "invite": {
-                          "type": "boolean"
-                        }
-                      }
+                      "add": true,
+                      "delete": true,
+                      "update": true
                     }
                   }
                 }
@@ -200,6 +199,9 @@
               }
             }
           }
+        },
+        "304": {
+          "$ref": "#/components/responses/NotModified"
         },
         "401": {
           "$ref": "#/components/responses/Unauthorized"

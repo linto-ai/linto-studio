@@ -1,0 +1,30 @@
+{
+  "type": "object",
+  "properties": {
+    "conversations": {
+      "type": "object",
+      "properties": {
+        "share": {
+          "type": "object",
+          "properties": {
+            "add": { "type": "boolean" },
+            "update": { "type": "boolean" },
+            "delete": { "type": "boolean" }
+          },
+          "required": ["add", "update", "delete"]
+        }
+      },
+      "required": ["share"]
+    },
+    "organizations": {
+      "type": "object",
+      "properties": {
+        "add": { "type": "boolean" },
+        "update": { "type": "boolean" },
+        "delete": { "type": "boolean" }
+      },
+      "required": ["add", "update", "delete"]
+    }
+  },
+  "required": ["conversations", "organizations"]
+}
