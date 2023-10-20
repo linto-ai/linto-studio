@@ -1,0 +1,54 @@
+{
+  "confidence": 0.997021,
+  "diarization_segments": [],
+  "raw_transcription": "un deux trois un deux trois",
+  "segments": [
+    {
+      "duration": 1.8587239999999998,
+      "end": 2.908724,
+      "raw_segment": "un deux trois un deux trois",
+      "segment": "1 2 3. 1 2 3.",
+      "spk_id": null,
+      "start": 1.05,
+      "words": [
+        {
+          "conf": 0.993992,
+          "end": 1.23,
+          "start": 1.05,
+          "word": "un"
+        },
+        {
+          "conf": 0.994197,
+          "end": 1.5,
+          "start": 1.23031,
+          "word": "deux"
+        },
+        {
+          "conf": 0.993937,
+          "end": 1.95,
+          "start": 1.5,
+          "word": "trois"
+        },
+        {
+          "conf": 1.0,
+          "end": 2.16,
+          "start": 2.01,
+          "word": "un"
+        },
+        {
+          "conf": 1.0,
+          "end": 2.37,
+          "start": 2.16,
+          "word": "deux"
+        },
+        {
+          "conf": 1.0,
+          "end": 2.908724,
+          "start": 2.37,
+          "word": "trois"
+        }
+      ]
+    }
+  ],
+  "transcription_result": "1 2 3. 1 2 3."
+}

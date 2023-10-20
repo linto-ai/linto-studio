@@ -33,7 +33,6 @@ function diminutivePunctuation(seg_text, words, loop_data) {
 
 function doublePunctuation(seg_text, words, loop_data) {
   if (/[?!:;«»]$/.test(seg_text.lowercase)) {
-
     let timestamp = 0
     if (loop_data.word_index !== 0) {
       timestamp = loop_data.words[loop_data.word_index - 1].end
@@ -68,8 +67,8 @@ function apostropheNormalize(seg_text, words, loop_data) {
 
 function numberNormalize(seg_text, words, loop_data) {
   const regex_number = /.*[0-9].*/
-
   if (regex_number.test(seg_text.lowercase.replace(/[,.:]$/, ''))) {
+
     if (loop_data.segment_index + 1 > loop_data.segment.length - 1) { // in case of last word
       return {
         ...words,
@@ -79,16 +78,20 @@ function numberNormalize(seg_text, words, loop_data) {
 
     let seg_number = []
     let number_in_a_row_find = 0
-
+    let end_segment = false
     while (loop_data.segment_index + number_in_a_row_find < loop_data.segment.length) {
       if (regex_number.test(loop_data.segment[loop_data.segment_index + number_in_a_row_find].replace(/[,.:]$/, ''))) {
+        if (loop_data.segment[loop_data.segment_index + number_in_a_row_find + 1] === undefined)  // If the last number find don't have any word after
+          end_segment = true
 
         seg_number.push(loop_data.segment[loop_data.segment_index + number_in_a_row_find])
         number_in_a_row_find++
       } else break
     }
 
-    if (!loop_data.segment[loop_data.segment_index + number_in_a_row_find]) // No next word, exit
+    if (number_in_a_row_find > 1 && loop_data.segment[loop_data.segment_index + number_in_a_row_find] === undefined) {
+      number_in_a_row_find = number_in_a_row_find - 1
+    } else if (!loop_data.segment[loop_data.segment_index + number_in_a_row_find]) // No next word, exit
       return
     let next_word_seg = correctSegmentText({ original: loop_data.segment[loop_data.segment_index + number_in_a_row_find] })
 
@@ -101,7 +104,13 @@ function numberNormalize(seg_text, words, loop_data) {
     let index = loop_data.word_index
     let confidences_scores = words.conf
     while (index < loop_data.words.length) {
-      if (next_word_seg.lowercase === loop_data.words[index].word || (next_word_seg.fixed !== undefined && next_word_seg.fixed === loop_data.words[index].word)) { // trigger exit loop
+      if (
+        next_word_seg.lowercase === loop_data.words[index].word // Break loop, next word is not a number
+        || (next_word_seg.fixed !== undefined && next_word_seg.fixed === loop_data.words[index].word) // In can of fixed segment match word
+        || end_segment // in case of number in row and nothing after, end_segment can't be at false if we have x number in row
+      ) { // trigger exit loop
+
+
         if (number_in_a_row_find > 1) { // if multiple number in a row
           let start = words.start
           let diff = (loop_data.words[index - 1].end - start) / number_in_a_row_find
@@ -114,7 +123,8 @@ function numberNormalize(seg_text, words, loop_data) {
               end: start + diff,
               conf: confidences_scores / (number_in_a_row_find + 1),
               go_to_segment: loop_data.segment_index + number_in_a_row_find - 1,
-              skip_words: index - loop_data.word_index - number_in_a_row_find + 1
+              skip_words: index - loop_data.word_index - number_in_a_row_find + 1,
+              segment_done: end_segment
             })
             start += diff
           }

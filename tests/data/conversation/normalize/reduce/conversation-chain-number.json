@@ -1,0 +1,54 @@
+{
+  "text" : [ 
+      {
+          "speaker_id" : "7d830eff-0917-48f3-8bae-cd3132b09dc1",
+          "turn_id" : "9bcd2eff-5b63-4e20-9ca6-ce45ed20cdce",
+          "raw_segment" : "un deux trois un deux trois",
+          "segment" : "1 2 3. 1 2 3.",
+          "words" : [ 
+              {
+                  "wid" : "08970207-17b3-4459-806c-6c701ba88c95",
+                  "stime" : 1.05,
+                  "etime" : 1.23,
+                  "word" : "1",
+                  "confidence" : 0.993992
+              }, 
+              {
+                  "wid" : "82030cdb-df24-4fc5-a439-07d293fc9d27",
+                  "stime" : 1.23031,
+                  "etime" : 1.5,
+                  "word" : "2",
+                  "confidence" : 0.994197
+              }, 
+              {
+                  "wid" : "0fa419fe-f999-4e0b-871c-67defc713d45",
+                  "stime" : 1.5,
+                  "etime" : 1.95,
+                  "word" : "3.",
+                  "confidence" : 0.993937
+              }, 
+              {
+                  "wid" : "f5d1cb1c-ac81-44db-afbd-04b259c677af",
+                  "stime" : 2.01,
+                  "etime" : 2.16,
+                  "word" : "1",
+                  "confidence" : 1
+              }, 
+              {
+                  "wid" : "8a29773f-e50a-4e67-aa45-ddb7f41584a5",
+                  "stime" : 2.16,
+                  "etime" : 2.37,
+                  "word" : "2",
+                  "confidence" : 1
+              }, 
+              {
+                  "wid" : "2a4e3f4a-a58e-4e0b-80e0-f2e083370b0f",
+                  "stime" : 2.37,
+                  "etime" : 2.908724,
+                  "word" : "3.",
+                  "confidence" : 1
+              }
+          ]
+      }
+  ]
+}
