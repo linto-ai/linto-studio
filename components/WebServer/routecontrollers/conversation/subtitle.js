@@ -12,22 +12,22 @@ const {
 const maxCharsPerSegment = 80
 const maxCharsPerSegmentWithoutPunctuation = maxCharsPerSegment + 20
 
-function splitSubtitles_wip(conv) {
-  const segments = []
+function splitSubtitles(conv) {
+  const subtitle = []
   let words = []
   let stime, etime
 
   let segment = ""
 
-
   conv.text.map(conv_seg => {
     for (let i = 0; i < conv_seg.words.length; i++) {
       const word = conv_seg.words[i].word
 
-      if (segment === "" || segment === " ") {
+      if (segment === "" || segment === " ") { // On new subtitle segment
         stime = conv_seg.words[i].stime
-        words = [] //reset on ne segment
+        words = []
       }
+
       words.push(conv_seg.words[i])
       segment += word + " "
       etime = conv_seg.words[i].etime
@@ -37,6 +37,7 @@ function splitSubtitles_wip(conv) {
         let lastwords = []
         if (segment.length >= maxCharsPerSegment) {
           const word_segment = segment.split(" ")
+
           while (segment.length >= maxCharsPerSegment) {
             lastwords.push(word_segment.pop())
             segment = word_segment.join(" ").trim()
@@ -45,45 +46,44 @@ function splitSubtitles_wip(conv) {
           const splited_segment = word_segment.join(" ").trim()
           const new_words = words.splice(0, splited_segment.split(' ').length)
 
-          segments.push({ text: splited_segment, stime, etime: new_words[new_words.length - 1].etime, turn_id: conv_seg.turn_id, words: new_words })
+          subtitle.push({ text: splited_segment, stime, etime: new_words[new_words.length - 1].etime, turn_id: conv_seg.turn_id, words: new_words })
           segment = lastwords.reverse().join(" ")
           stime = words[0].stime
           // force cut on punctuation mark if segment reaches maxCharsPerSegment / 2
         }
         if (segment.length >= maxCharsPerSegment / 2 && PUNCTUATION_REGEX.test(word)) {
-          segments.push({ text: segment.trim(), stime, etime, turn_id: conv_seg.turn_id, words })
+          subtitle.push({ text: segment.trim(), stime, etime, turn_id: conv_seg.turn_id, words })
           segment = " " // Allow to add the last segment 
         }
       }
 
-      // What to do if no ponctuation
       if (segment.length > maxCharsPerSegmentWithoutPunctuation) {
         // Should not stop on composed word, will add the next word
-        if (COMPOSE_WORD_REGEX.test(conv_seg.words[i].word)) {  
+        if (COMPOSE_WORD_REGEX.test(conv_seg.words[i].word)) {
           i++
           words.push(conv_seg.words[i])
           segment += conv_seg.words[i].word + " "
           etime = conv_seg.words[i].etime
         }
-        segments.push({ text: segment.trim(), stime, etime, turn_id: conv_seg.turn_id, words })
+        subtitle.push({ text: segment.trim(), stime, etime, turn_id: conv_seg.turn_id, words })
         segment = " "
       }
     }
 
-    if (segment.length > 0) segments.push({ text: segment.trim(), stime, etime, turn_id: conv_seg.turn_id, words })
+    if (segment.length > 0) subtitle.push({ text: segment.trim(), stime, etime, turn_id: conv_seg.turn_id, words })
   })
-  return segments
+  return subtitle
 }
 
 function secondsToSRT(seconds) {
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const remainingSeconds = (seconds % 3600) % 60;
-  const milliseconds = Math.round((remainingSeconds - Math.floor(remainingSeconds)) * 1000);
+  const hours = Math.floor(seconds / 3600)
+  const minutes = Math.floor((seconds % 3600) / 60)
+  const remainingSeconds = (seconds % 3600) % 60
+  const milliseconds = Math.round((remainingSeconds - Math.floor(remainingSeconds)) * 1000)
 
-  const formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(Math.floor(remainingSeconds)).padStart(2, '0')},${String(milliseconds).padStart(3, '0')}`;
+  const formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(Math.floor(remainingSeconds)).padStart(2, '0')},${String(milliseconds).padStart(3, '0')}`
 
-  return formattedTime;
+  return formattedTime
 }
 
 function generateSrt(subtitle_data) {
@@ -103,7 +103,7 @@ async function generateSubtitle(req, res, next) {
     const conversationId = req.params.conversationId
     const conversation = await model.conversations.getById(conversationId)
 
-    let subtitle = splitSubtitles_wip(conversation[0])
+    let subtitle = splitSubtitles(conversation[0])
     if (req.query.type === 'srt') {
       const srt = generateSrt(subtitle)
       res.status(200).send(srt)
