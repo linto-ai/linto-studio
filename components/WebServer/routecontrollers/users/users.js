@@ -6,6 +6,8 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
 
 const Mailing = require(`${process.cwd()}/lib/mailer/mailing`)
+const validator = require(`${process.cwd()}/lib/dao/schema/emailNotification`)
+
 const { storeFile, defaultPicture, deleteFile, getStorageFolder, getAudioWaveformFolder } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 
 const {
@@ -123,23 +125,23 @@ async function updateUser(req, res, next) {
         if (!(req.body.email || req.body.firstname || req.body.lastname || req.body.accountNotifications ||
             req.body.emailNotifications || req.body.private !== undefined || req.body.password)) throw new UserUnsupportedMediaType()
 
-        const myUser = await model.users.getById(req.payload.data.userId)
+        const myUser = await model.users.getById(req.payload.data.userId, true)
         if (myUser.length !== 1) throw new UserNotFound()
         let user = myUser[0]
 
         if (req.body.email) {
             const userMail = await model.users.getByEmail(req.body.email)
 
-            if (userMail.length !== 0) {
-                if (userMail[0]._id.toString() !== user._id.toString())
-                    throw new UserConflict("Email already used")
-            }
+            if (userMail.length !== 0 && userMail[0]._id.toString() !== user._id.toString())
+                throw new UserConflict("Email already used")
 
-            user.emailIsVerified = false
-            user.email = req.body.email
 
-            if (userMail.length === 1) {
-                user.emailIsVerified = true
+            if (user.email !== req.body.email) {
+                if (!user.verifiedEmail.includes(user.email) && user.emailIsVerified) {
+                    user.verifiedEmail.push(user.email)
+                }
+                user.email = req.body.email
+                user.emailIsVerified = false
             }
         }
         if (req.body.firstname) user.firstname = req.body.firstname
@@ -153,17 +155,17 @@ async function updateUser(req, res, next) {
             }
         }
         if (req.body.emailNotifications) {
-            for (let keyParent of Object.keys(req.body.emailNotifications)) {
-                for (let keyChild of Object.keys(req.body.emailNotifications[keyParent])) {
-                    user.emailNotifications[keyParent][keyChild] = req.body.emailNotifications[keyParent][keyChild]
-                }
+            let emailNotifications = req.body.emailNotifications
+            if(typeof emailNotifications !== 'object') emailNotifications = JSON.parse(emailNotifications)
+            if(validator(req.body.emailNotifications)){
+                user.emailNotifications = emailNotifications
             }
         }
 
         const result = await model.users.update(user)
         if (result.matchedCount === 0) throw new UserError()
         else if (result.modifiedCount === 1) res.status(200).send({ message: 'User updated' })
-        else res.status(200).send({ message: 'No modification to user' })
+        else res.status(304).send()
     } catch (err) {
         next(err)
     }

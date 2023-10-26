@@ -4,8 +4,6 @@ const { use } = require('passport')
 const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:conversation:share`)
 const method_delete = 'DELETE'
 
-const conversationUtility = require(`${process.cwd()}/components/WebServer/controllers/conversation/utility`)
-
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const Mailing = require(`${process.cwd()}/lib/mailer/mailing`)

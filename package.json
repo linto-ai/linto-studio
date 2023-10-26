@@ -7,8 +7,7 @@
         "start": "NODE_ENV=production node app.js",
         "start-debug": "NODE_ENV=development DEBUG=app/* node app.js",
         "start-dev": "DEBUG=linto* NODE_ENV=development nodemon app.js",
-        "test": "jest",
-        "test:current": "jest -- conversationGenerator"
+        "test": "jest"
     },
     "nodemonConfig": {
         "ignore": [
@@ -32,6 +31,7 @@
         "form-data": "^4.0.0",
         "fs": "0.0.1-security",
         "json-to-plain-text": "^1.1.2",
+        "jsonschema": "^1.4.1",
         "jsonwebtoken": "^8.5.1",
         "jwt-decode": "^3.1.2",
         "moment": "^2.29.1",

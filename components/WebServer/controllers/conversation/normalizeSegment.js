@@ -37,13 +37,18 @@ function* ruleSequenceGenerator(segments, lang) {
         if (Array.isArray(seg_words)) {
           i = seg_words[0].go_to_segment
           word_skip_count += seg_words[0].skip_words
+          let segment_done = false  // Allow to dodge an overlap for some end segment when number are in a row
 
           for (let word of seg_words) {
-            delete word.go_to_segment
-            delete word.skip_words
+            if (word.segment_done) segment_done = true
 
+            delete word.go_to_segment
+            delete word.segment_done
+            delete word.skip_words
             yield word
           }
+          if (segment_done) break
+
         } else {
           yield seg_words
         }
