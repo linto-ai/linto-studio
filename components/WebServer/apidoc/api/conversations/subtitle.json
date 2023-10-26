@@ -1,0 +1,92 @@
+{
+  "/api/conversations/{conversationId}/subtitle": {
+    "get": {
+      "tags": [
+        "conversations member"
+      ],
+      "summary": "Generate subtitle for a conversation",
+      "parameters": [{
+          "in": "path",
+          "name": "conversationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an conversation"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Subtitle "
+                }
+              },
+              "example": [{
+                "text": "Quand il ...",
+                "stime": 3.66,
+                "etime": 6.21,
+                "turn_id": "a71b1f01-442e-44cf-926b-98a85e85628e",
+                "words": [{
+                  "wid": "a85243b5-d8ac-4b17-a5da-dd8289de4d04",
+                  "stime": 3.66,
+                  "etime": 3.87,
+                  "word": "Quand",
+                  "confidence": 0.961068,
+                  "highlights": [],
+                  "keywords": []
+                }]
+              }]
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/conversations/{conversationId}/subtitle?type=srt": {
+    "get": {
+      "tags": [
+        "conversations member"
+      ],
+      "summary": "Generate srt format for a conversation",
+      "parameters": [{
+          "in": "path",
+          "name": "conversationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an conversation"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "text/plain": {
+              "schema" :{
+                "type" : "string",
+                "example" : "1\n00:15:47,850 --> 00:15:53,730\nDe par le volume\n\n2\n00:15:53,730 --> 00:15:56,520\nle fait ..."
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  }
+}
