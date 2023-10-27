@@ -12,6 +12,14 @@
           "format": "uuid",
           "required": true,
           "description": "uuid string identifier for an conversation"
+        },
+        {
+          "in": "path",
+          "name": "segmentCharSize",
+          "type": "integer",
+          "format": "uuid",
+          "required": false,
+          "description": "Allow to define a subtitle segment size by character length"
         }
       ],
       "responses": {
@@ -66,6 +74,14 @@
           "format": "uuid",
           "required": true,
           "description": "uuid string identifier for an conversation"
+        },
+        {
+          "in": "path",
+          "name": "segmentCharSize",
+          "type": "integer",
+          "format": "uuid",
+          "required": false,
+          "description": "Allow to define a subtitle segment size by character length"
         }
       ],
       "responses": {
@@ -73,9 +89,9 @@
           "description": "OK",
           "content": {
             "text/plain": {
-              "schema" :{
-                "type" : "string",
-                "example" : "1\n00:15:47,850 --> 00:15:53,730\nDe par le volume\n\n2\n00:15:53,730 --> 00:15:56,520\nle fait ..."
+              "schema": {
+                "type": "string",
+                "example": "1\n00:15:47,850 --> 00:15:53,730\nDe par le volume\n\n2\n00:15:53,730 --> 00:15:56,520\nle fait ..."
               }
             }
           }

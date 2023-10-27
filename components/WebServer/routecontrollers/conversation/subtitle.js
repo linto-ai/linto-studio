@@ -10,9 +10,12 @@ const {
 } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
 const maxCharsPerSegment = 80
-const maxCharsPerSegmentWithoutPunctuation = maxCharsPerSegment + 20
 
-function splitSubtitles(conv) {
+function splitSubtitles(conv, query) {
+  let segmentCharSize = maxCharsPerSegment
+  if (query.segmentCharSize) segmentCharSize = parseInt(query.segmentCharSize)
+
+  const maxCharsPerSegmentWithoutPunctuation = segmentCharSize + 20
   const subtitle = []
   let words = []
   let stime, etime
@@ -35,10 +38,10 @@ function splitSubtitles(conv) {
       // on punctuation mark, split the segment if it's too long
       if (PUNCTUATION_REGEX.test(word)) {
         let lastwords = []
-        if (segment.length >= maxCharsPerSegment) {
+        if (segment.length >= segmentCharSize) {
           const word_segment = segment.split(" ")
 
-          while (segment.length >= maxCharsPerSegment) {
+          while (segment.length >= segmentCharSize) {
             lastwords.push(word_segment.pop())
             segment = word_segment.join(" ").trim()
           }
@@ -48,10 +51,12 @@ function splitSubtitles(conv) {
 
           subtitle.push({ text: splited_segment, stime, etime: new_words[new_words.length - 1].etime, turn_id: conv_seg.turn_id, words: new_words })
           segment = lastwords.reverse().join(" ")
-          stime = words[0].stime
+
+          stime = words[0] ? words[0].stime : conv_seg.words[i].stime
+
           // force cut on punctuation mark if segment reaches maxCharsPerSegment / 2
         }
-        if (segment.length >= maxCharsPerSegment / 2 && PUNCTUATION_REGEX.test(word)) {
+        if (segment.length >= segmentCharSize / 2 && PUNCTUATION_REGEX.test(word)) {
           subtitle.push({ text: segment.trim(), stime, etime, turn_id: conv_seg.turn_id, words })
           segment = " " // Allow to add the last segment 
         }
@@ -103,7 +108,7 @@ async function generateSubtitle(req, res, next) {
     const conversationId = req.params.conversationId
     const conversation = await model.conversations.getById(conversationId)
 
-    let subtitle = splitSubtitles(conversation[0])
+    let subtitle = splitSubtitles(conversation[0], req.query)
     if (req.query.type === 'srt') {
       const srt = generateSrt(subtitle)
       res.status(200).send(srt)
