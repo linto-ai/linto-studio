@@ -34,21 +34,16 @@
                   "description": "Subtitle "
                 }
               },
-              "example": [{
-                "text": "Quand il ...",
-                "stime": 3.66,
-                "etime": 6.21,
-                "turn_id": "a71b1f01-442e-44cf-926b-98a85e85628e",
-                "words": [{
-                  "wid": "a85243b5-d8ac-4b17-a5da-dd8289de4d04",
+              "example": {
+                "segmentCharSize": 80,
+                "subtitle": [{
+                  "text": "Quand il ...",
                   "stime": 3.66,
-                  "etime": 3.87,
-                  "word": "Quand",
-                  "confidence": 0.961068,
-                  "highlights": [],
-                  "keywords": []
+                  "etime": 6.21,
+                  "turn_id": "a71b1f01-442e-44cf-926b-98a85e85628e"
                 }]
-              }]
+              }
+
             }
           }
         },
