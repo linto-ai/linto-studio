@@ -9,10 +9,17 @@ const {
   ConversationUnsupportedMediaType,
 } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
-const maxCharsPerSegment = 80
-const maxCharsPerSegmentWithoutPunctuation = maxCharsPerSegment + 20
+const MAX_CHAR_PER_SEGMENT = 80
+const MIN_CHAR_PER_SEGMENT = 20
 
-function splitSubtitles(conv) {
+function splitSubtitles(conv, query) {
+  let segmentCharSize = MAX_CHAR_PER_SEGMENT
+  if (query.segmentCharSize) segmentCharSize = parseInt(query.segmentCharSize)
+
+  if(segmentCharSize <= MIN_CHAR_PER_SEGMENT)
+    segmentCharSize = MIN_CHAR_PER_SEGMENT
+
+  const segmentMaxSize = segmentCharSize + 20
   const subtitle = []
   let words = []
   let stime, etime
@@ -35,10 +42,10 @@ function splitSubtitles(conv) {
       // on punctuation mark, split the segment if it's too long
       if (PUNCTUATION_REGEX.test(word)) {
         let lastwords = []
-        if (segment.length >= maxCharsPerSegment) {
+        if (segment.length >= segmentCharSize) {
           const word_segment = segment.split(" ")
 
-          while (segment.length >= maxCharsPerSegment) {
+          while (segment.length >= segmentCharSize) {
             lastwords.push(word_segment.pop())
             segment = word_segment.join(" ").trim()
           }
@@ -46,33 +53,38 @@ function splitSubtitles(conv) {
           const splited_segment = word_segment.join(" ").trim()
           const new_words = words.splice(0, splited_segment.split(' ').length)
 
-          subtitle.push({ text: splited_segment, stime, etime: new_words[new_words.length - 1].etime, turn_id: conv_seg.turn_id, words: new_words })
+          subtitle.push({ text: splited_segment, stime, etime: new_words[new_words.length - 1].etime, turn_id: conv_seg.turn_id })
           segment = lastwords.reverse().join(" ")
-          stime = words[0].stime
+
+          stime = words[0] ? words[0].stime : conv_seg.words[i].stime
+
           // force cut on punctuation mark if segment reaches maxCharsPerSegment / 2
         }
-        if (segment.length >= maxCharsPerSegment / 2 && PUNCTUATION_REGEX.test(word)) {
-          subtitle.push({ text: segment.trim(), stime, etime, turn_id: conv_seg.turn_id, words })
+        if (segment.length >= segmentCharSize / 2 && PUNCTUATION_REGEX.test(word)) {
+          subtitle.push({ text: segment.trim(), stime, etime, turn_id: conv_seg.turn_id })
           segment = " " // Allow to add the last segment 
         }
       }
 
-      if (segment.length > maxCharsPerSegmentWithoutPunctuation) {
+      if (segment.length > segmentMaxSize) {
         // Should not stop on composed word, will add the next word
         if (COMPOSE_WORD_REGEX.test(conv_seg.words[i].word)) {
           i++
-          words.push(conv_seg.words[i])
           segment += conv_seg.words[i].word + " "
           etime = conv_seg.words[i].etime
         }
-        subtitle.push({ text: segment.trim(), stime, etime, turn_id: conv_seg.turn_id, words })
+        subtitle.push({ text: segment.trim(), stime, etime, turn_id: conv_seg.turn_id })
         segment = " "
       }
     }
 
-    if (segment.length > 0) subtitle.push({ text: segment.trim(), stime, etime, turn_id: conv_seg.turn_id, words })
+    if (segment.length > 0) subtitle.push({ text: segment.trim(), stime, etime, turn_id: conv_seg.turn_id })
   })
-  return subtitle
+
+  return {
+    segmentCharSize,
+    subtitle
+  }
 }
 
 function secondsToSRT(seconds) {
@@ -103,12 +115,12 @@ async function generateSubtitle(req, res, next) {
     const conversationId = req.params.conversationId
     const conversation = await model.conversations.getById(conversationId)
 
-    let subtitle = splitSubtitles(conversation[0])
+    let subtitles = splitSubtitles(conversation[0], req.query)
     if (req.query.type === 'srt') {
-      const srt = generateSrt(subtitle)
+      const srt = generateSrt(subtitles.subtitle)
       res.status(200).send(srt)
     } else {
-      res.status(200).json(subtitle)
+      res.status(200).json(subtitles)
     }
   } catch (err) {
     next(err)

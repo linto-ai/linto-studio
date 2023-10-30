@@ -12,6 +12,14 @@
           "format": "uuid",
           "required": true,
           "description": "uuid string identifier for an conversation"
+        },
+        {
+          "in": "path",
+          "name": "segmentCharSize",
+          "type": "integer",
+          "format": "uuid",
+          "required": false,
+          "description": "Allow to define a subtitle segment size by character length"
         }
       ],
       "responses": {
@@ -26,21 +34,16 @@
                   "description": "Subtitle "
                 }
               },
-              "example": [{
-                "text": "Quand il ...",
-                "stime": 3.66,
-                "etime": 6.21,
-                "turn_id": "a71b1f01-442e-44cf-926b-98a85e85628e",
-                "words": [{
-                  "wid": "a85243b5-d8ac-4b17-a5da-dd8289de4d04",
+              "example": {
+                "segmentCharSize": 80,
+                "subtitle": [{
+                  "text": "Quand il ...",
                   "stime": 3.66,
-                  "etime": 3.87,
-                  "word": "Quand",
-                  "confidence": 0.961068,
-                  "highlights": [],
-                  "keywords": []
+                  "etime": 6.21,
+                  "turn_id": "a71b1f01-442e-44cf-926b-98a85e85628e"
                 }]
-              }]
+              }
+
             }
           }
         },
@@ -66,6 +69,14 @@
           "format": "uuid",
           "required": true,
           "description": "uuid string identifier for an conversation"
+        },
+        {
+          "in": "path",
+          "name": "segmentCharSize",
+          "type": "integer",
+          "format": "uuid",
+          "required": false,
+          "description": "Allow to define a subtitle segment size by character length"
         }
       ],
       "responses": {
@@ -73,9 +84,9 @@
           "description": "OK",
           "content": {
             "text/plain": {
-              "schema" :{
-                "type" : "string",
-                "example" : "1\n00:15:47,850 --> 00:15:53,730\nDe par le volume\n\n2\n00:15:53,730 --> 00:15:56,520\nle fait ..."
+              "schema": {
+                "type": "string",
+                "example": "1\n00:15:47,850 --> 00:15:53,730\nDe par le volume\n\n2\n00:15:53,730 --> 00:15:56,520\nle fait ..."
               }
             }
           }
