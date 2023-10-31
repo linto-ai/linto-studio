@@ -16,6 +16,7 @@ module.exports = (webServer) => {
             ...require('./api/conversation/turn')(webServer),
             ...require('./api/conversation/tag')(webServer),
             ...require('./api/conversation/categories')(webServer),
+            ...require('./api/conversation/subtitle')(webServer),
         ],
         "/api": [
             ...require('./api/taxonomy/categories')(webServer), // Keep that way until frontend catches up

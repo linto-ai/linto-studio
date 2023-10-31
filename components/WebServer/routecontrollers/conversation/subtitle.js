@@ -1,4 +1,4 @@
-const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:categories`)
+const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:subtitle`)
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
@@ -16,7 +16,7 @@ function splitSubtitles(conv, query) {
   let segmentCharSize = MAX_CHAR_PER_SEGMENT
   if (query.segmentCharSize) segmentCharSize = parseInt(query.segmentCharSize)
 
-  if(segmentCharSize <= MIN_CHAR_PER_SEGMENT)
+  if (segmentCharSize <= MIN_CHAR_PER_SEGMENT)
     segmentCharSize = MIN_CHAR_PER_SEGMENT
 
   const segmentMaxSize = segmentCharSize + 20
@@ -81,8 +81,23 @@ function splitSubtitles(conv, query) {
     if (segment.length > 0) subtitle.push({ text: segment.trim(), stime, etime, turn_id: conv_seg.turn_id })
   })
 
+
+  let numberOfLines = 1
+  if (query.numberOfLines !== undefined) {
+    numberOfLines = parseInt(query.numberOfLines)
+
+    if (!isNaN(numberOfLines) && numberOfLines > 1) {
+      subtitle.map(subtitle => {
+        subtitle.text = splitStringIntoLines(subtitle.text, numberOfLines)
+      })
+    }
+  }
+
   return {
-    segmentCharSize,
+    generate_settings: {
+      segmentCharSize,
+      numberOfLines,
+    },
     subtitle
   }
 }
@@ -109,18 +124,75 @@ function generateSrt(subtitle_data) {
   return srt
 }
 
+function splitStringIntoLines(inputString, numberOfLines) {
+  const words = inputString.split(/[\s]+/) // Split the string at spaces, periods, commas, semicolons, exclamation marks, and question marks.
+  const lineCount = Math.min(numberOfLines, words.length); // Ensure numberOfLines is not greater than the number of words.
+  const wordsPerLine = Math.ceil(words.length / lineCount)
+  const lines = []
+
+  for (let i = 0; i < lineCount; i++) {
+    const startIndex = i * wordsPerLine
+    const endIndex = startIndex + wordsPerLine
+    const line = words.slice(startIndex, endIndex).join(' ')
+    lines.push(line)
+  }
+
+  // Do we want the string or the array ??
+  return lines.join('\n')
+  // return lines
+}
+
 async function generateSubtitle(req, res, next) {
   try {
     if (!req.params.conversationId) throw new ConversationUnsupportedMediaType('Conversation id is required')
     const conversationId = req.params.conversationId
+
     const conversation = await model.conversations.getById(conversationId)
+    const conv_subtitle = await model.conversationSubtitles.getById(conversationId)
+
+    let conv = conversation[0]
 
     let subtitles = splitSubtitles(conversation[0], req.query)
+    if (conv_subtitle.length > 0) {
+      subtitles._id = conv._id
+
+      await model.conversationSubtitles.update(subtitles)
+    } else {
+      subtitles = {
+        ...subtitles,
+        _id: conv._id,
+        name: conv.name,
+        description: conv.description,
+        owner: conv.owner,
+        metadata: conv.metadata
+      }
+      await model.conversationSubtitles.create(subtitles)
+    }
+
     if (req.query.type === 'srt') {
       const srt = generateSrt(subtitles.subtitle)
       res.status(200).send(srt)
+    } else res.status(200).json(subtitles)
+
+  } catch (err) {
+    next(err)
+  }
+}
+
+async function getSubtitle(req, res, next) {
+  try {
+    const conversationId = req.params.conversationId
+    const conv_subtitle = await model.conversationSubtitles.getById(conversationId)
+
+    if (conv_subtitle.length === 0) { // If no subtitle exist, we generate it the first time
+      await generateSubtitle(req, res, next)
     } else {
-      res.status(200).json(subtitles)
+      if (req.query.type === 'srt') {
+        const srt = generateSrt(conv_subtitle[0].subtitle)
+        res.status(200).send(srt)
+      } else {
+        res.status(200).json(conv_subtitle[0])
+      }
     }
   } catch (err) {
     next(err)
@@ -131,4 +203,5 @@ async function generateSubtitle(req, res, next) {
 
 module.exports = {
   generateSubtitle,
+  getSubtitle
 }

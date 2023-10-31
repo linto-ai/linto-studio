@@ -46,7 +46,7 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
 
         for (const oUser of conversation.organization.customRights) {
             let orgaUser = organization_members.find(u => u._id.toString() === oUser.userId)
-            orgaUser.right = oUser.right
+            if (orgaUser) orgaUser.right = oUser.right
         }
 
         return {
