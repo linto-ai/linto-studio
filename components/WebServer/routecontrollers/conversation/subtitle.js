@@ -138,8 +138,6 @@ function splitStringIntoLines(inputString, numberOfLines) {
     lines.push(line)
   }
 
-  // Do we want the string or the array ??
-  // return lines.join('\n')
   return lines
 }
 

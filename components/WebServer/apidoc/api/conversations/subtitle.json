@@ -109,7 +109,7 @@
       "tags": [
         "conversations member"
       ],
-      "summary": "Get the srt subtitle of the conversation",
+      "summary": "Get the srt subtitle of the conversation, generate it if no subtitle exist yet",
       "parameters": [{
           "in": "path",
           "name": "conversationId",
@@ -161,7 +161,7 @@
       "tags": [
         "conversations member"
       ],
-      "summary": "Get the srt subtitle of the conversation",
+      "summary": "Get the srt subtitle of the conversation, generate it if no subtitle exist yet",
       "parameters": [{
           "in": "path",
           "name": "conversationId",
@@ -176,7 +176,7 @@
           "type": "integer",
           "format": "uuid",
           "required": false,
-          "description": "Allow to define a subtitle segment size by character length"
+          "description": "Allow to define a subtitle segment size by character length (used only if subtitle are not yet generated)"
         },
         {
           "in": "path",
@@ -184,7 +184,7 @@
           "type": "integer",
           "format": "uuid",
           "required": false,
-          "description": "Allow to define the number of line of each subtitle, default : 1 "
+          "description": "Allow to define the number of line of each subtitle, default : 1 (used only if subtitle are not yet generated)"
         }
       ],
       "responses": {
