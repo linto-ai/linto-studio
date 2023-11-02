@@ -1,0 +1,379 @@
+{
+  "ConversationSubtitle": {
+    "type": "object",
+    "properties": {
+      "generate_settings": {
+        "type": "object",
+        "properties": {
+          "segmentCharSize": {
+            "type": "integer"
+          },
+          "numberOfLines": {
+            "type": "integer"
+          }
+        }
+      },
+      "subtitle": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "text": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "stime": {
+              "type": "number"
+            },
+            "etime": {
+              "type": "number"
+            },
+            "turn_id": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "_id": {
+        "type": "string"
+      },
+      "name": {
+        "type": "string"
+      },
+      "description": {
+        "type": "string"
+      },
+      "owner": {
+        "type": "string"
+      },
+      "metadata": {
+        "type": "object",
+        "properties": {
+          "transcription": {
+            "type": "object",
+            "properties": {
+              "lang": {
+                "type": "string"
+              },
+              "transcriptionConfig": {
+                "type": "object",
+                "properties": {
+                  "punctuationConfig": {
+                    "type": "object",
+                    "properties": {
+                      "enablePunctuation": {
+                        "type": "boolean"
+                      },
+                      "serviceName": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "diarizationConfig": {
+                    "type": "object",
+                    "properties": {
+                      "enableDiarization": {
+                        "type": "boolean"
+                      },
+                      "numberOfSpeaker": {
+                        "type": "integer"
+                      },
+                      "maxNumberOfSpeaker": {
+                        "type": "integer"
+                      },
+                      "serviceName": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "enableNormalization": {
+                    "type": "boolean"
+                  },
+                  "vadConfig": {
+                    "type": "object",
+                    "properties": {
+                      "enableVAD": {
+                        "type": "boolean"
+                      },
+                      "methodName": {
+                        "type": "string"
+                      },
+                      "minDuration": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                }
+              },
+              "confidence": {
+                "type": "number"
+              }
+            }
+          },
+          "normalize": {
+            "type": "object",
+            "properties": {
+              "filter": {
+                "type": "object",
+                "properties": {
+                  "segmentCharSize": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "audio": {
+            "type": "object",
+            "properties": {
+              "filename": {
+                "type": "string"
+              },
+              "duration": {
+                "type": "number"
+              },
+              "mimetype": {
+                "type": "string"
+              },
+              "filepath": {
+                "type": "string"
+              }
+            }
+          },
+          "file": {
+            "type": "object",
+            "properties": {
+              "format": {
+                "type": "object",
+                "properties": {
+                  "tagTypes": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "trackInfo": {
+                    "type": "array"
+                  },
+                  "lossless": {
+                    "type": "boolean"
+                  },
+                  "container": {
+                    "type": "string"
+                  },
+                  "codec": {
+                    "type": "string"
+                  },
+                  "sampleRate": {
+                    "type": "integer"
+                  },
+                  "numberOfChannels": {
+                    "type": "integer"
+                  },
+                  "bitrate": {
+                    "type": "integer"
+                  },
+                  "codecProfile": {
+                    "type": "string"
+                  },
+                  "duration": {
+                    "type": "number"
+                  }
+                }
+              },
+              "quality": {
+                "type": "object",
+                "properties": {
+                  "warnings": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "common": {
+                "type": "object",
+                "properties": {
+                  "track": {
+                    "type": "object",
+                    "properties": {
+                      "no": {
+                        "type": "string"
+                      },
+                      "of": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "disk": {
+                    "type": "object",
+                    "properties": {
+                      "no": {
+                        "type": "string"
+                      },
+                      "of": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "movementIndex": {
+                    "type": "object"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "album": {
+                    "type": "string"
+                  },
+                  "artists": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "artist": {
+                    "type": "string"
+                  },
+                  "copyright": {
+                    "type": "string"
+                  },
+                  "encodedby": {
+                    "type": "string"
+                  },
+                  "genre": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "year": {
+                    "type": "integer"
+                  },
+                  "date": {
+                    "type": "string"
+                  },
+                  "encodersettings": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "example": {
+    "generate_settings": {
+      "segmentCharSize": 80,
+      "numberOfLines": 1
+    },
+    "subtitle": [{
+      "text": [
+        "Quand il y a quelques mois, j'ai interrogé étant Zuckerman,"
+      ],
+      "stime": 3.66,
+      "etime": 6.21,
+      "turn_id": "a71b1f01-442e-44cf-926b-98a85e85628e"
+    }],
+    "_id": "65294f6245538e464dfbb3b3",
+    "name": "conv_name.mp3",
+    "description": "",
+    "owner": "64522ab0fd98b64154a70dd0",
+    "metadata": {
+      "transcription": {
+        "lang": "fr-FR",
+        "transcriptionConfig": {
+          "punctuationConfig": {
+            "enablePunctuation": true,
+            "serviceName": "nlp-french-punctuation-recasepunc"
+          },
+          "diarizationConfig": {
+            "enableDiarization": true,
+            "numberOfSpeaker": 4,
+            "maxNumberOfSpeaker": 8,
+            "serviceName": "stt-diarization-simple"
+          },
+          "enableNormalization": true,
+          "vadConfig": {
+            "enableVAD": true,
+            "methodName": "WebRTC",
+            "minDuration": 0
+          }
+        },
+        "confidence": 0.9255436721664945
+      },
+      "normalize": {
+        "filter": {
+          "segmentCharSize": "2000"
+        }
+      },
+      "audio": {
+        "filename": "conv_name.mp3",
+        "duration": 3293.172,
+        "mimetype": "audio/mpeg",
+        "filepath": "audios/fcc04377-05e2-41d5-918e-6a1382c94e94.mp3"
+      },
+      "file": {
+        "format": {
+          "tagTypes": [
+            "ID3v2.4"
+          ],
+          "trackInfo": [],
+          "lossless": false,
+          "container": "MPEG",
+          "codec": "MPEG 2 Layer 3",
+          "sampleRate": 16000,
+          "numberOfChannels": 1,
+          "bitrate": 96000,
+          "codecProfile": "CBR",
+          "duration": 3293.172
+        },
+        "quality": {
+          "warnings": [{
+              "message": "Invalid ID3v2.4 frame-header-ID: "
+            },
+            {
+              "message": "id3v2.4 header has empty tag type="
+            }
+          ]
+        },
+        "common": {
+          "track": {
+            "no": null,
+            "of": null
+          },
+          "disk": {
+            "no": null,
+            "of": null
+          },
+          "movementIndex": {},
+          "title": "Au fait, à qui profite le Bitcoin ?",
+          "album": "Le code a changé",
+          "artists": [
+            "Radio France"
+          ],
+          "artist": "Radio France",
+          "copyright": "Radio France",
+          "encodedby": "Radio France",
+          "genre": [
+            "Podcast"
+          ],
+          "year": 2023,
+          "date": "2023-09-12",
+          "encodersettings": "Lavf58.20.100"
+        }
+      }
+    },
+    "created": "2023-11-02T15:26:31+01:00",
+    "last_update": "2023-11-02T15:26:31+01:00"
+  }
+}

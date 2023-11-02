@@ -7,6 +7,7 @@ const COMPOSE_WORD_REGEX = /['-]/
 
 const {
   ConversationUnsupportedMediaType,
+  ConversationNotFound
 } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
 const MAX_CHAR_PER_SEGMENT = 80
@@ -53,7 +54,7 @@ function splitSubtitles(conv, query) {
           const splited_segment = word_segment.join(" ").trim()
           const new_words = words.splice(0, splited_segment.split(' ').length)
 
-          subtitle.push({ text: splited_segment, stime, etime: new_words[new_words.length - 1].etime, turn_id: conv_seg.turn_id })
+          subtitle.push({ text: [splited_segment], stime, etime: new_words[new_words.length - 1].etime, turn_id: conv_seg.turn_id })
           segment = lastwords.reverse().join(" ")
 
           stime = words[0] ? words[0].stime : conv_seg.words[i].stime
@@ -61,7 +62,7 @@ function splitSubtitles(conv, query) {
           // force cut on punctuation mark if segment reaches maxCharsPerSegment / 2
         }
         if (segment.length >= segmentCharSize / 2 && PUNCTUATION_REGEX.test(word)) {
-          subtitle.push({ text: segment.trim(), stime, etime, turn_id: conv_seg.turn_id })
+          subtitle.push({ text: [segment.trim()], stime, etime, turn_id: conv_seg.turn_id })
           segment = " " // Allow to add the last segment 
         }
       }
@@ -73,12 +74,12 @@ function splitSubtitles(conv, query) {
           segment += conv_seg.words[i].word + " "
           etime = conv_seg.words[i].etime
         }
-        subtitle.push({ text: segment.trim(), stime, etime, turn_id: conv_seg.turn_id })
+        subtitle.push({ text: [segment.trim()], stime, etime, turn_id: conv_seg.turn_id })
         segment = " "
       }
     }
 
-    if (segment.length > 0) subtitle.push({ text: segment.trim(), stime, etime, turn_id: conv_seg.turn_id })
+    if (segment.length > 0) subtitle.push({ text: [segment.trim()], stime, etime, turn_id: conv_seg.turn_id })
   })
 
 
@@ -88,7 +89,7 @@ function splitSubtitles(conv, query) {
 
     if (!isNaN(numberOfLines) && numberOfLines > 1) {
       subtitle.map(subtitle => {
-        subtitle.text = splitStringIntoLines(subtitle.text, numberOfLines)
+        subtitle.text = splitStringIntoLines(subtitle.text[0], numberOfLines)
       })
     }
   }
@@ -119,7 +120,7 @@ function generateSrt(subtitle_data) {
   subtitle_data.map(subtitle => {
     srt += srt_index++ + '\n'
     srt += secondsToSRT(subtitle.stime) + ' --> ' + secondsToSRT(subtitle.etime) + '\n'
-    srt += subtitle.text + '\n\n'
+    srt += subtitle.text.join('\n') + '\n\n'
   })
   return srt
 }
@@ -138,8 +139,8 @@ function splitStringIntoLines(inputString, numberOfLines) {
   }
 
   // Do we want the string or the array ??
-  return lines.join('\n')
-  // return lines
+  // return lines.join('\n')
+  return lines
 }
 
 async function generateSubtitle(req, res, next) {
@@ -150,24 +151,21 @@ async function generateSubtitle(req, res, next) {
     const conversation = await model.conversations.getById(conversationId)
     const conv_subtitle = await model.conversationSubtitles.getById(conversationId)
 
+    if (conversation.length !== 1) throw new ConversationNotFound()
     let conv = conversation[0]
 
     let subtitles = splitSubtitles(conversation[0], req.query)
-    if (conv_subtitle.length > 0) {
-      subtitles._id = conv._id
-
-      await model.conversationSubtitles.update(subtitles)
-    } else {
-      subtitles = {
-        ...subtitles,
-        _id: conv._id,
-        name: conv.name,
-        description: conv.description,
-        owner: conv.owner,
-        metadata: conv.metadata
-      }
-      await model.conversationSubtitles.create(subtitles)
+    subtitles = {
+      ...subtitles,
+      _id: conv._id,  // Make sur to use the conversation id
+      name: conv.name,
+      description: conv.description,
+      owner: conv.owner,
+      metadata: conv.metadata
     }
+
+    if (conv_subtitle.length > 0) await model.conversationSubtitles.update(subtitles)
+    else await model.conversationSubtitles.create(subtitles)
 
     if (req.query.type === 'srt') {
       const srt = generateSrt(subtitles.subtitle)
