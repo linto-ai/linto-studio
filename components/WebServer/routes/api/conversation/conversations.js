@@ -60,13 +60,6 @@ module.exports = (webserver) => {
             requireAuth: true,
             requireConversationReadAccess: true,
             controller: downloadConversation
-        },
-        {
-            path: '/:conversationId/subtitle',
-            method: 'get',
-            requireAuth: true,
-            requireConversationReadAccess: true,
-            controller: generateSubtitle
         }
     ]
 }
