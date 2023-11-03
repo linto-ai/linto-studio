@@ -1,0 +1,107 @@
+{
+    "speakers": [{
+            "speaker_id": "245cc91e-0011-42bd-9216-e3eefd856b27",
+            "speaker_name": "spk1",
+            "stime": 4.5,
+            "etime": 320.069004
+        }
+    ],
+    "text": [{
+        "speaker_id": "245cc91e-0011-42bd-9216-e3eefd856b27",
+        "turn_id": "f0ac96e6-ad67-44ba-b06d-29a18f009e98",
+        "raw_segment": "partant du constat qu' aujourd' hui dans un pays comme la france les trois quarts des plus de quinze ans",
+        "segment": "Partant du constat qu'aujourd'hui, dans un pays comme la France, les 3 quarts des plus de 15 ans",
+        "words": [{
+                "stime": 274.2,
+                "etime": 274.68,
+                "word": "Partant"
+            },
+            {
+                "stime": 274.71,
+                "etime": 274.86,
+                "word": "du"
+            },
+            {
+                "stime": 274.86,
+                "etime": 275.22,
+                "word": "constat"
+            },
+            {
+                "stime": 275.22,
+                "etime": 275.61,
+                "word": "qu'aujourd'hui,"
+            },
+            {
+                "stime": 275.97,
+                "etime": 276.21,
+                "word": "dans"
+            },
+            {
+                "stime": 276.21,
+                "etime": 276.3,
+                "word": "un"
+            },
+            {
+                "stime": 276.3,
+                "etime": 276.81,
+                "word": "pays"
+            },
+            {
+                "stime": 276.87,
+                "etime": 277.11,
+                "word": "comme"
+            },
+            {
+                "stime": 277.11,
+                "etime": 277.2,
+                "word": "la"
+            },
+            {
+                "stime": 277.2,
+                "etime": 277.68,
+                "word": "France,"
+            },
+            {
+                "stime": 277.8,
+                "etime": 277.68,
+                "word": "les"
+            },
+            {
+                "stime": 277.68,
+                "etime": 278.1,
+                "word": "3"
+            },
+            {
+                "stime": 278.1,
+                "etime": 278.4,
+                "word": "quarts"
+            },
+            {
+                "stime": 278.4,
+                "etime": 278.52,
+                "word": "des"
+            },
+            {
+                "stime": 278.52,
+                "etime": 278.76,
+                "word": "plus"
+            },
+            {
+                "stime": 278.76,
+                "etime": 278.91,
+                "word": "de"
+            },
+            {
+                "stime": 278.91,
+                "etime": 279.33,
+                "word": "15",
+                "confidence": 1
+            },
+            {
+                "stime": 279.33,
+                "etime": 279.6,
+                "word": "ans"
+            }
+        ]
+    }]
+}

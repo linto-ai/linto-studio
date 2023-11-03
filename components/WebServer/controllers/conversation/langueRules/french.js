@@ -60,7 +60,7 @@ function apostropheNormalize(seg_text, words, loop_data) {
       word: seg_text.original,
       end: loop_data.words[loop_data.word_index].end,
       conf: (words.conf + loop_data.words[loop_data.word_index].conf) / 2,
-      skip_words: 1
+      skip_words: seg_text.original.split('\'').length - 1  // Sometime we have multiple ', same rule apply x time
     }
   }
 }
