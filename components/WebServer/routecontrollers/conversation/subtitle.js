@@ -181,7 +181,7 @@ async function getSubtitle(req, res, next) {
     const conv_subtitle = await model.conversationSubtitles.getById(conversationId)
 
     if (conv_subtitle.length === 0) { // If no subtitle exist, we generate it the first time
-      await generateSubtitle(req, res, next)
+      throw new ConversationNotFound()
     } else {
       if (req.query.type === 'srt') {
         const srt = generateSrt(conv_subtitle[0].subtitle)

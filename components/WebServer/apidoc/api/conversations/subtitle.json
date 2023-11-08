@@ -109,7 +109,7 @@
       "tags": [
         "conversations member"
       ],
-      "summary": "Get the srt subtitle of the conversation, generate it if no subtitle exist yet",
+      "summary": "Get the subtitle of the conversation",
       "parameters": [{
           "in": "path",
           "name": "conversationId",
@@ -117,22 +117,6 @@
           "format": "uuid",
           "required": true,
           "description": "uuid string identifier for an conversation"
-        },
-        {
-          "in": "path",
-          "name": "segmentCharSize",
-          "type": "integer",
-          "format": "uuid",
-          "required": false,
-          "description": "Allow to define a subtitle segment size by character length"
-        },
-        {
-          "in": "path",
-          "name": "numberOfLines",
-          "type": "integer",
-          "format": "uuid",
-          "required": false,
-          "description": "Allow to define the number of line of each subtitle, default : 1 "
         }
       ],
       "responses": {
@@ -161,7 +145,7 @@
       "tags": [
         "conversations member"
       ],
-      "summary": "Get the srt subtitle of the conversation, generate it if no subtitle exist yet",
+      "summary": "Get the srt subtitle of the conversation",
       "parameters": [{
           "in": "path",
           "name": "conversationId",
@@ -169,22 +153,6 @@
           "format": "uuid",
           "required": true,
           "description": "uuid string identifier for an conversation"
-        },
-        {
-          "in": "path",
-          "name": "segmentCharSize",
-          "type": "integer",
-          "format": "uuid",
-          "required": false,
-          "description": "Allow to define a subtitle segment size by character length (used only if subtitle are not yet generated)"
-        },
-        {
-          "in": "path",
-          "name": "numberOfLines",
-          "type": "integer",
-          "format": "uuid",
-          "required": false,
-          "description": "Allow to define the number of line of each subtitle, default : 1 (used only if subtitle are not yet generated)"
         }
       ],
       "responses": {

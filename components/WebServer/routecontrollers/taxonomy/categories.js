@@ -49,10 +49,22 @@ async function getOrganizationCategory(req, res, next) {
       }
     }
 
-    let category = await model.categories.getByOrgaId(organizationId, searchQuery)
+
+
+    let category = await model.categories.getByOrgaId(organizationId)
 
     if (category.length === 0) res.status(204).send()
-    res.status(200).send(category)
+    else {
+
+      if (req.query.expand === 'true') {
+        for (let i = 0; i < category.length; i++) {
+          const tags = await model.search.tags.getByCategory(category[i]._id.toString())
+          category[i].tags = tags
+        }
+      }
+      res.status(200).send(category)
+
+    }
 
   } catch (err) {
     next(err)
