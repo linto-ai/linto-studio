@@ -1,0 +1,41 @@
+{
+  "Screen": {
+    "type": "object",
+    "properties": {
+      "stime": {
+        "type": "number",
+        "example": 0.24
+      },
+      "etime": {
+        "type": "number",
+        "example": 2.46
+      },
+      "ref": {
+        "type": "string",
+        "example": "2"
+      },
+      "turn_id": {
+        "type": "string",
+        "example": "a71b1f01-442e-44cf-926b-98a85e85628e"
+      },
+      "screen_id": {
+        "type": "string",
+        "example": "19691872-1a57-47d7-9df6-c249ea7304a4"
+      },
+      "text": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "example": "word"
+        }
+      },
+      "words": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "$ref": "#/components/schemas/Word"
+        }
+      }
+    }
+  }
+}

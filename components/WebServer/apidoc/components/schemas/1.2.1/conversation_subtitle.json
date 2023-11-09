@@ -13,27 +13,12 @@
           }
         }
       },
-      "subtitle": {
+      "screen": {
         "type": "array",
+
         "items": {
           "type": "object",
-          "properties": {
-            "text": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "stime": {
-              "type": "number"
-            },
-            "etime": {
-              "type": "number"
-            },
-            "turn_id": {
-              "type": "string"
-            }
-          }
+          "$ref": "#/components/schemas/Word"
         }
       },
       "_id": {
@@ -276,7 +261,7 @@
       "segmentCharSize": 80,
       "numberOfLines": 1
     },
-    "subtitle": [{
+    "screen": [{
       "text": [
         "Quand il y a quelques mois, j'ai interrogé étant Zuckerman,"
       ],

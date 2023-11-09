@@ -175,6 +175,135 @@
         }
       }
     }
+  },
+  "/api/conversations/subtitle/{conversationId}/screen/{screenId}": {
+    "delete": {
+      "tags": [
+        "conversations member"
+      ],
+      "summary": "Remove the screen id requested",
+      "parameters": [{
+          "in": "path",
+          "name": "conversationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an conversation"
+        },
+        {
+          "in": "path",
+          "name": "screenId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for the screen"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "patch": {
+      "tags": [
+        "conversations member"
+      ],
+      "summary": "Update the screen id requested",
+      "parameters": [{
+          "in": "path",
+          "name": "conversationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an conversation"
+        },
+        {
+          "in": "path",
+          "name": "screenId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for the screen"
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json" :{
+            "schema": {
+              "$ref": "#/components/schemas/Screen"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "post": {
+      "tags": [
+        "conversations member"
+      ],
+      "summary": "Add a screen after or before the selected screen id",
+      "parameters": [{
+          "in": "path",
+          "name": "conversationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an conversation"
+        },
+        {
+          "in": "path",
+          "name": "screenId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for the screen"
+        },
+        {
+          "in": "query",
+          "name": "placement",
+          "type": "string",
+          "required": false,
+          "value" : "after",
+          "description": "Allow to selection if the screen will go after or before the selected screen. Can have the value `after` or `before` (default value `after`)"
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json" :{
+            "schema": {
+              "$ref": "#/components/schemas/Screen"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
   }
-
 }
