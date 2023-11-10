@@ -212,9 +212,15 @@
           "description": "OK",
           "content": {
             "application/json": {
-              "schema": {
-                "type": "object",
-                "$ref": "#/components/schemas/ConversationSubtitle"
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Information about the conversation processus"
+                }
+              },
+              "example": {
+                "message": "Subtitle has been deleted"
               }
             }
           }
