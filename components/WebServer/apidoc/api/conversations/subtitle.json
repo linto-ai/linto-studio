@@ -1,5 +1,5 @@
 {
-  "/api/conversations/subtitle/{conversationId}/generate": {
+  "/api/conversations/{conversationId}/subtitle/generate": {
     "get": {
       "tags": [
         "conversations member"
@@ -51,7 +51,45 @@
       }
     }
   },
-  "/api/conversations/subtitle{conversationId}/generate?type=srt": {
+  "/api/conversations/{conversationId}/subtitle/versions": {
+    "get": {
+      "tags": [
+        "conversations member"
+      ],
+      "summary": "Generate subtitle for a conversation",
+      "parameters": [{
+        "in": "path",
+        "name": "conversationId",
+        "type": "string",
+        "format": "uuid",
+        "required": true,
+        "description": "uuid string identifier for an conversation"
+      }],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/ConversationSubtitle"
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/conversations/{conversationId}/subtitle/generate?type=srt": {
     "get": {
       "tags": [
         "conversations member"
@@ -104,7 +142,7 @@
     }
   },
 
-  "/api/conversations/subtitle/{conversationId}": {
+  "/api/conversations/{conversationId}/subtitle/{subtitleId}": {
     "get": {
       "tags": [
         "conversations member"
@@ -117,6 +155,14 @@
           "format": "uuid",
           "required": true,
           "description": "uuid string identifier for an conversation"
+        },
+        {
+          "in": "path",
+          "name": "subtitleId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for the subtitle"
         }
       ],
       "responses": {
@@ -138,9 +184,114 @@
           "$ref": "#/components/responses/NotFound"
         }
       }
+    },
+    "delete": {
+      "tags": [
+        "conversations member"
+      ],
+      "summary": "Delete the subtitle",
+      "parameters": [{
+          "in": "path",
+          "name": "conversationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an conversation"
+        },
+        {
+          "in": "path",
+          "name": "subtitleId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for the subtitle"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/ConversationSubtitle"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "patch": {
+      "tags": [
+        "conversations member"
+      ],
+      "summary": "Update the subtitle of a conversation",
+      "parameters": [{
+          "in": "path",
+          "name": "conversationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an conversation"
+        },
+        {
+          "in": "path",
+          "name": "subtitleId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for the subtitle"
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ConversationSubtitle"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Information about the conversation processus"
+                }
+              },
+              "example": {
+                "message": "Subtitle updated"
+              }
+            }
+          }
+        },
+        "304": {
+          "$ref": "#/components/responses/NotModified"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "500": {
+          "$ref": "#/components/responses/InternalServer"
+        }
+      }
     }
   },
-  "/api/conversations/subtitle/{conversationId}?type=srt": {
+  "/api/conversations/{conversationId}/subtitle/{subtitleId}?type=srt": {
     "get": {
       "tags": [
         "conversations member"
@@ -153,6 +304,14 @@
           "format": "uuid",
           "required": true,
           "description": "uuid string identifier for an conversation"
+        },
+        {
+          "in": "path",
+          "name": "subtitleId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for the subtitle"
         }
       ],
       "responses": {
@@ -176,7 +335,7 @@
       }
     }
   },
-  "/api/conversations/subtitle/{conversationId}/screen/{screenId}": {
+  "/api/conversations/{conversationId}/subtitle/{subtitleId}/screen/{screenId}": {
     "delete": {
       "tags": [
         "conversations member"
@@ -189,6 +348,14 @@
           "format": "uuid",
           "required": true,
           "description": "uuid string identifier for an conversation"
+        },
+        {
+          "in": "path",
+          "name": "subtitleId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for the subtitle"
         },
         {
           "in": "path",
@@ -226,6 +393,14 @@
         },
         {
           "in": "path",
+          "name": "subtitleId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for the subtitle"
+        },
+        {
+          "in": "path",
           "name": "screenId",
           "type": "string",
           "format": "uuid",
@@ -235,7 +410,7 @@
       ],
       "requestBody": {
         "content": {
-          "application/json" :{
+          "application/json": {
             "schema": {
               "$ref": "#/components/schemas/Screen"
             }
@@ -245,6 +420,9 @@
       "responses": {
         "200": {
           "description": "OK"
+        },
+        "304": {
+          "$ref": "#/components/responses/NotModified"
         },
         "401": {
           "$ref": "#/components/responses/Unauthorized"
@@ -269,6 +447,14 @@
         },
         {
           "in": "path",
+          "name": "subtitleId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for the subtitle"
+        },
+        {
+          "in": "path",
           "name": "screenId",
           "type": "string",
           "format": "uuid",
@@ -280,13 +466,13 @@
           "name": "placement",
           "type": "string",
           "required": false,
-          "value" : "after",
+          "value": "after",
           "description": "Allow to selection if the screen will go after or before the selected screen. Can have the value `after` or `before` (default value `after`)"
         }
       ],
       "requestBody": {
         "content": {
-          "application/json" :{
+          "application/json": {
             "schema": {
               "$ref": "#/components/schemas/Screen"
             }

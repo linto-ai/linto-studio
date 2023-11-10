@@ -165,6 +165,59 @@ class TurnNotFound extends Error {
   }
 }
 
+/******************************
+ **********Subtitle************
+ ******************************/
+
+
+ class SubtitleError extends Error {
+  constructor(message, err) {
+    super()
+    this.name = 'SubtitleError'
+    this.type = ExceptionType
+    this.status = '400'
+    if (message) this.message = message
+    else this.message = 'Error during the operation'
+    if (err) this.err = err
+  }
+}
+
+class SubtitleUnsupportedMediaType extends Error {
+  constructor(message, err) {
+    super()
+    this.name = 'SubtitleUnsupportedMediaType'
+    this.type = ExceptionType
+    this.status = '415'
+    if (message) this.message = message
+    else this.message = 'Parameter is not supported'
+    if (err) this.err = err
+  }
+}
+
+class SubtitleMaxVersion extends Error {
+  constructor(message, err) {
+    super()
+    this.name = 'SubtitleMaxVersion'
+    this.type = ExceptionType
+    this.status = '415'
+    if (message) this.message = message
+    else this.message = 'The number of subtitle version for that conversion is reach'
+    if (err) this.err = err
+  }
+}
+
+class SubtitleNotFound extends Error {
+  constructor(message, err) {
+    super()
+    this.name = 'SubtitleNotFound'
+    this.type = ExceptionType
+    this.status = '404'
+    if (message) this.message = message
+    else this.message = 'Requested subtitle not found'
+    if (err) this.err = err
+  }
+}
+
 module.exports = {
   ConversationNoFileUploaded,
   ConversationMetadataRequire,
@@ -178,5 +231,9 @@ module.exports = {
   ConversationError,
   ConversationNotFound,
   TurnIdRequire,
-  TurnNotFound
+  TurnNotFound,
+  SubtitleUnsupportedMediaType,
+  SubtitleError,
+  SubtitleMaxVersion,
+  SubtitleNotFound
 }

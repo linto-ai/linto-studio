@@ -5,7 +5,10 @@ const {
     getSubtitle,
     deleteScreen,
     updateScreen,
-    addScreen
+    addScreen,
+    listVersion,
+    updateSubtitle,
+    deleteSubtitle
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/subtitle.js`)
 
 
@@ -14,39 +17,60 @@ module.exports = (webserver) => {
     return [
         /*Require Auth */
         {
-            path: '/subtitle/:conversationId/generate',
+            path: '/:conversationId/subtitle/generate',
             method: 'get',
             requireAuth: true,
             requireConversationWriteAccess: true,
             controller: generateSubtitle
         },
         {
-            path: '/subtitle/:conversationId/screen/:screenId',
+            path: '/:conversationId/subtitle/versions',
+            method: 'get',
+            requireAuth: true,
+            requireConversationReadAccess: true,
+            controller: listVersion
+        },
+        {
+            path: '/:conversationId/subtitle/:subtitleId/screen/:screenId',
             method: 'delete',
             requireAuth: true,
             requireConversationWriteAccess: true,
             controller: deleteScreen
         },
         {
-            path: '/subtitle/:conversationId/screen/:screenId',
+            path: '/:conversationId/subtitle/:subtitleId/screen/:screenId',
             method: 'patch',
             requireAuth: true,
             requireConversationWriteAccess: true,
             controller: updateScreen
         },
         {
-            path: '/subtitle/:conversationId/screen/:screenId',
+            path: '/:conversationId/subtitle/:subtitleId/screen/:screenId',
             method: 'post',
             requireAuth: true,
             requireConversationWriteAccess: true,
             controller: addScreen
         },
         {
-            path: '/subtitle/:conversationId',
+            path: '/:conversationId/subtitle/:subtitleId',
             method: 'get',
             requireAuth: true,
             requireConversationReadAccess: true,
             controller: getSubtitle
+        },
+        {
+            path: '/:conversationId/subtitle/:subtitleId',
+            method: 'patch',
+            requireAuth: true,
+            requireConversationReadAccess: true,
+            controller: updateSubtitle
+        },
+        {
+            path: '/:conversationId/subtitle/:subtitleId',
+            method: 'delete',
+            requireAuth: true,
+            requireConversationReadAccess: true,
+            controller: deleteSubtitle
         }
     ]
 }

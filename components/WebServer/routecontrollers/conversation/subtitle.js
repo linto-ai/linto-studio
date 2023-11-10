@@ -8,8 +8,11 @@ const COMPOSE_WORD_REGEX = /['-]/
 const { v4: uuidv4 } = require('uuid')
 
 const {
-  ConversationUnsupportedMediaType,
-  ConversationNotFound
+  ConversationNotFound,
+  SubtitleUnsupportedMediaType,
+  SubtitleError,
+  SubtitleMaxVersion,
+  SubtitleNotFound
 } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
 const MAX_CHAR_PER_SEGMENT = 80
@@ -167,27 +170,36 @@ function splitStringIntoLines(inputString, numberOfLines) {
 
 async function generateSubtitle(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationUnsupportedMediaType('Conversation id is required')
+    if (!req.params.conversationId) throw new SubtitleUnsupportedMediaType('Conversation id is required')
+    if (!req.query.version) throw new SubtitleUnsupportedMediaType('Version name is require')
+
     const conversationId = req.params.conversationId
 
     const conversation = await model.conversations.getById(conversationId)
-    const conv_subtitle = await model.conversationSubtitles.getById(conversationId)
+    const version_number = await model.conversationSubtitles.getByConvId(conversationId, { _id: 1 })
 
     if (conversation.length !== 1) throw new ConversationNotFound()
-    let conv = conversation[0]
+    else if ((version_number.length + 1) > parseInt(process.env.MAX_SUBTITLE_VERSION)) throw new SubtitleMaxVersion()
+
+    const conv = conversation[0]
+    const conv_subtitle = await model.conversationSubtitles.getByConvIdAndVersion(conversationId, req.query.version)
+
 
     let subtitles = splitSubtitles(conversation[0], req.query)
     subtitles = {
       ...subtitles,
-      _id: conv._id,  // Make sur to use the conversation id
+      conv_id: conv._id,  // Make sur to use the conversation id
       name: conv.name,
+      version: req.query.version,
       description: conv.description,
       owner: conv.owner,
-      metadata: conv.metadata
+      metadata: conv.metadata,
     }
 
-    if (conv_subtitle.length > 0) await model.conversationSubtitles.update(subtitles)
-    else await model.conversationSubtitles.create(subtitles)
+    if (conv_subtitle.length > 0) {
+      subtitles._id = conv_subtitle[0]._id
+      await model.conversationSubtitles.update(subtitles)
+    } else await model.conversationSubtitles.create(subtitles)
 
     if (req.query.type === 'srt') {
       const srt = generateSrt(subtitles.screens)
@@ -201,11 +213,10 @@ async function generateSubtitle(req, res, next) {
 
 async function getSubtitle(req, res, next) {
   try {
-    const conversationId = req.params.conversationId
-    const conv_subtitle = await model.conversationSubtitles.getById(conversationId)
+    const conv_subtitle = await model.conversationSubtitles.getById(req.params.subtitleId)
 
     if (conv_subtitle.length === 0) { // If no subtitle exist, we generate it the first time
-      throw new ConversationNotFound()
+      throw new SubtitleNotFound()
     } else {
       if (req.query.type === 'srt') {
         const srt = generateSrt(conv_subtitle[0].screens)
@@ -221,15 +232,15 @@ async function getSubtitle(req, res, next) {
 
 async function updateScreen(req, res, next) {
   try {
-    if (!req.params.conversationId || !req.params.screenId) throw new ConversationUnsupportedMediaType
-    const conv_subtitle = await model.conversationSubtitles.getById(req.params.conversationId)
+    if (!req.params.subtitleId || !req.params.screenId) throw new SubtitleUnsupportedMediaType()
+    const conv_subtitle = await model.conversationSubtitles.getById(req.params.subtitleId)
 
     if (conv_subtitle.length === 0) { // If no subtitle exist, we generate it the first time
-      throw new ConversationNotFound()
+      throw new SubtitleNotFound()
     } else {
-      if (typeof req.body !== 'object' && !req.body.turn_id) throw new ConversationUnsupportedMediaType
+      if (typeof req.body !== 'object' && !req.body.turn_id) throw new SubtitleUnsupportedMediaType()
 
-      let result = await model.conversationSubtitles.updateScreen(req.params.conversationId, req.params.screenId, req.body)
+      let result = await model.conversationSubtitles.updateScreen(req.params.subtitleId, req.params.screenId, req.body)
       if (result.result && result.result.nModified === 1) res.status(200).send()
       else res.status(304).send()
     }
@@ -240,13 +251,13 @@ async function updateScreen(req, res, next) {
 
 async function addScreen(req, res, next) {
   try {
-    if (!req.params.conversationId || !req.params.screenId) throw new ConversationUnsupportedMediaType
-    const conv_subtitle = await model.conversationSubtitles.getById(req.params.conversationId)
+    if (!req.params.subtitleId || !req.params.screenId) throw new SubtitleUnsupportedMediaType()
+    const conv_subtitle = await model.conversationSubtitles.getById(req.params.subtitleId)
 
     if (conv_subtitle.length === 0) { // If no subtitle exist, we generate it the first time
-      throw new ConversationNotFound()
+      throw new SubtitleNotFound()
     } else {
-      if (typeof req.body !== 'object' && !req.body.turn_id) throw new ConversationUnsupportedMediaType
+      if (typeof req.body !== 'object' && !req.body.turn_id) throw new SubtitleUnsupportedMediaType()
 
       let position = conv_subtitle[0].screens.reduce((index, screen, currentIndex) => {
         return screen.screen_id === req.params.screenId ? currentIndex : index
@@ -257,7 +268,7 @@ async function addScreen(req, res, next) {
 
       req.body.screen_id = uuidv4()
 
-      let result = await model.conversationSubtitles.addScreen(req.params.conversationId, req.params.screenId, req.body, position)
+      let result = await model.conversationSubtitles.addScreen(req.params.subtitleId, req.params.screenId, req.body, position)
       if (result.result && result.result.nModified === 1) res.status(200).send()
       else res.status(304).send()
     }
@@ -268,13 +279,13 @@ async function addScreen(req, res, next) {
 
 async function deleteScreen(req, res, next) {
   try {
-    if (!req.params.conversationId || !req.params.screenId) throw new ConversationUnsupportedMediaType
-    const conv_subtitle = await model.conversationSubtitles.getById(req.params.conversationId)
+    if (!req.params.subtitleId || !req.params.screenId) throw new SubtitleUnsupportedMediaType()
+    const conv_subtitle = await model.conversationSubtitles.getById(req.params.subtitleId)
 
     if (conv_subtitle.length === 0) { // If no subtitle exist, we generate it the first time
-      throw new ConversationNotFound()
+      throw new SubtitleNotFound()
     } else {
-      let result = await model.conversationSubtitles.deleteScreen(req.params.conversationId, req.params.screenId)
+      let result = await model.conversationSubtitles.deleteScreen(req.params.subtitleId, req.params.screenId)
       if (result.result && result.result.nModified === 1) res.status(200).send()
       else res.status(304).send()
     }
@@ -283,13 +294,78 @@ async function deleteScreen(req, res, next) {
   }
 }
 
+async function listVersion(req, res, next) {
+  try {
+    const conv_subtitle = await model.conversationSubtitles.getByConvId(req.params.conversationId)
+
+    if (conv_subtitle.length === 0) { // If no subtitle exist, we generate it the first time
+      throw new ConversationNotFound()
+    } else {
+      let result = conv_subtitle.map(subtitle => {
+        return {
+          _id: subtitle._id,
+          conv_id: subtitle.conv_id,
+          name: subtitle.name,
+          version: subtitle.version
+        }
+      })
+
+      res.status(200).json(result)
+    }
+  } catch (err) {
+    next(err)
+  }
+}
+
+async function updateSubtitle(req, res, next) {
+  try {
+    const conv_subtitle = await model.conversationSubtitles.getById(req.params.subtitleId)
+    if (conv_subtitle.length !== 1) throw new SubtitleNotFound()
+
+    const subtitle = {
+      _id: req.params.subtitleId,
+      ...req.body
+    }
+
+    const result = await model.conversationSubtitles.update(subtitle)
+    if (result.matchedCount === 0) throw new SubtitleError()
+
+    res.status(200).send({
+      message: 'Subtitle updated'
+    })
+
+  } catch (err) {
+    next(err)
+  }
+}
+
+async function deleteSubtitle(req, res, next) {
+  try {
+    const conv_subtitle = await model.conversationSubtitles.getById(req.params.subtitleId)
+    if (conv_subtitle.length !== 1) throw new SubtitleNotFound()
+    
+    const result = await model.conversationSubtitles.delete(req.params.subtitleId)
+    if (result.deletedCount !== 1) throw new SubtitleError('Error when deleting subtitle')
+
+    res.status(200).send({
+      message: 'Subtitle has been deleted'
+    })
+  }
+  catch (err) {
+    next(err)
+  }
+}
+
 
 
 
 module.exports = {
+  listVersion,
   generateSubtitle,
   getSubtitle,
   updateScreen,
   deleteScreen,
-  addScreen
+  addScreen,
+  updateSubtitle,
+  deleteSubtitle
 }
