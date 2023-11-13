@@ -28,6 +28,14 @@
           "format": "uuid",
           "required": false,
           "description": "Allow to define the number of line of each subtitle, default : 1 "
+        },
+        {
+          "in": "path",
+          "name": "version",
+          "type": "integer",
+          "format": "uuid",
+          "required": false,
+          "description": "Name of the version"
         }
       ],
       "responses": {
@@ -74,7 +82,7 @@
                 "type": "array",
                 "items": {
                   "type": "object",
-                  "$ref": "#/components/schemas/ConversationSubtitle"
+                  "$ref": "#/components/schemas/ConvSubtitleVersion"
                 }
               }
             }
@@ -118,6 +126,14 @@
           "format": "uuid",
           "required": false,
           "description": "Allow to define the number of line of each subtitle, default : 1 "
+        },
+        {
+          "in": "path",
+          "name": "version",
+          "type": "integer",
+          "format": "uuid",
+          "required": false,
+          "description": "Name of the version"
         }
       ],
       "responses": {

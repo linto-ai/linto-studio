@@ -18,7 +18,7 @@
 
         "items": {
           "type": "object",
-          "$ref": "#/components/schemas/Word"
+          "$ref": "#/components/schemas/Screen"
         }
       },
       "_id": {
