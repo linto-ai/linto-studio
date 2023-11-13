@@ -198,10 +198,7 @@ async function generateSubtitle(req, res, next) {
       await model.conversationSubtitles.update(subtitles)
     } else await model.conversationSubtitles.create(subtitles)
 
-    if (req.query.type === 'srt') {
-      const srt = generateSrt(subtitles.screens)
-      res.status(201).send(srt)
-    } else res.status(201).json(subtitles)
+    res.status(201).json(subtitles)
 
   } catch (err) {
     next(err)
