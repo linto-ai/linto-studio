@@ -24,6 +24,9 @@
       "_id": {
         "type": "string"
       },
+      "conv_id": {
+        "type": "string"
+      },
       "conv_name": {
         "type": "string"
       },
@@ -46,6 +49,7 @@
       "turn_id": "a71b1f01-442e-44cf-926b-98a85e85628e"
     }],
     "_id": "65294f6245538e464dfbb3b3",
+    "conv_id": "75294f6245538e464dfbb3b3",
     "conv_name": "conv_name",
     "created": "2023-11-02T15:26:31+01:00",
     "last_update": "2023-11-02T15:26:31+01:00"
