@@ -73,7 +73,7 @@ async function getConversation(req, res, next) {
 
         await fetchJob(req.params.conversationId, conversation[0].jobs)
 
-        if (req?.query && Object.keys(req.query).length > 0) {
+        if (req?.query?.key && typeof req.query.key === 'string') {
             const projectionValue = req.query.projection && /^\d+$/.test(req.query.projection) ? parseInt(req.query.projection, 10) : 1;
             let filter = ['name', 'owner', 'organization', 'sharedWithUsers', 'jobs']
 
