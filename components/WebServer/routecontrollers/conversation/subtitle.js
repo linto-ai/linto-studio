@@ -1,6 +1,8 @@
 const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:subtitle`)
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
+const validator = require(`${process.cwd()}/lib/dao/schema/validator`)
+
 
 const PUNCTUATION_REGEX = /[,.!?]/
 const COMPOSE_WORD_REGEX = /['-]/
@@ -26,7 +28,7 @@ function splitSubtitles(conv, query) {
     screenCharSize = MIN_CHAR_PER_SEGMENT
 
   const segmentMaxSize = screenCharSize + 20
-  const subtitle = []
+  let subtitle = []
   let words = []
   let stime, etime
 
@@ -91,6 +93,8 @@ function splitSubtitles(conv, query) {
     }
   })
 
+  subtitle = subtitle.filter(element => element !== undefined)
+
 
   let screenLines = 1
   if (query.screenLines !== undefined) {
@@ -124,6 +128,8 @@ function generateScreen(text, stime, etime, id, words) {
   if (Array.isArray(text)) {
     screen.text = segment.trim()
   } else screen.text = [text.trim()]
+
+  if (screen.text[0] === ' ' || screen.text[0] === '') return undefined
 
   screen.words = words
 
@@ -234,6 +240,9 @@ async function updateScreen(req, res, next) {
     } else {
       if (typeof req.body !== 'object' && !req.body.turn_id) throw new SubtitleUnsupportedMediaType()
 
+      req.body.screen_id = req.params.screenId
+      if (!validator(req.body, 'screen')) throw new SubtitleUnsupportedMediaType('Screen format is not valid')
+
       let result = await model.conversationSubtitles.updateScreen(req.params.subtitleId, req.params.screenId, req.body)
       if (result.result && result.result.nModified === 1) res.status(200).send()
       else res.status(304).send()
@@ -261,6 +270,7 @@ async function addScreen(req, res, next) {
       else position += 1
 
       req.body.screen_id = uuidv4()
+      if (!validator(req.body, 'screen')) throw new SubtitleUnsupportedMediaType('Screen format is not valid')
 
       let result = await model.conversationSubtitles.addScreen(req.params.subtitleId, req.params.screenId, req.body, position)
       if (result.result && result.result.nModified === 1) res.status(200).send()

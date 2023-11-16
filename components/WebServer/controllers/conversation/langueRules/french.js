@@ -35,8 +35,12 @@ function doublePunctuation(seg_text, words, loop_data) {
   if (/[?!:;«»]$/.test(seg_text.lowercase)) {
     let timestamp = 0
     if (loop_data.word_index !== 0) {
-      timestamp = loop_data.words[loop_data.word_index - 1].end
+      // diff between segment position and current location for the TS
+      let timestamp_position = loop_data.word_index !== loop_data.segment_index ? loop_data.word_index - loop_data.segment_index : 1
+
+      timestamp = loop_data.words[loop_data.word_index - timestamp_position].start
     }
+
     //count number if space in the segment
     let spacesCount = (seg_text.lowercase.match(/ /g) || []).length
 
