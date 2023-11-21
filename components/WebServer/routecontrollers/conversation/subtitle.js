@@ -7,6 +7,7 @@ const validator = require(`${process.cwd()}/lib/dao/schema/validator`)
 const PUNCTUATION_REGEX = /[,.!?]/
 const COMPOSE_WORD_REGEX = /['-]/
 
+const { duration } = require('moment')
 const { v4: uuidv4 } = require('uuid')
 
 const {
@@ -21,8 +22,14 @@ const MAX_CHAR_PER_SEGMENT = 80
 const MIN_CHAR_PER_SEGMENT = 20
 
 function splitSubtitles(conv, query) {
-  let screenCharSize = MAX_CHAR_PER_SEGMENT
+  let screenCharSize = undefined
+  let maxDuration = undefined
+
+  if (query.maxDuration) maxDuration = parseInt(query.maxDuration)
   if (query.screenCharSize) screenCharSize = parseInt(query.screenCharSize)
+
+  if (!maxDuration && !screenCharSize)
+    screenCharSize = MAX_CHAR_PER_SEGMENT
 
   if (screenCharSize <= MIN_CHAR_PER_SEGMENT)
     screenCharSize = MIN_CHAR_PER_SEGMENT
@@ -46,11 +53,12 @@ function splitSubtitles(conv, query) {
       words.push(conv_seg.words[i])
       segment += word + " "
       etime = conv_seg.words[i].etime
+      segmentDuration = etime - stime
 
       // on punctuation mark, split the segment if it's too long
       if (PUNCTUATION_REGEX.test(word)) {
         let lastwords = []
-        if (segment.length >= screenCharSize) {
+        if (segment.length >= screenCharSize || (!!maxDuration && segmentDuration > maxDuration)) {
           const word_segment = segment.split(" ")
 
           while (segment.length >= screenCharSize) {
@@ -68,13 +76,13 @@ function splitSubtitles(conv, query) {
 
           // force cut on punctuation mark if segment reaches maxCharsPerSegment / 2
         }
-        if (segment.length >= screenCharSize / 2 && PUNCTUATION_REGEX.test(word)) {
+        if ((segment.length >= screenCharSize / 2 || (!!maxDuration && segmentDuration > maxDuration)) && PUNCTUATION_REGEX.test(word)) {
           subtitle.push(generateScreen(segment, stime, etime, conv_seg.turn_id, words))
           segment = " " // Allow to add the last segment 
         }
       }
 
-      if (segment.length > segmentMaxSize) {
+      if (segment.length > segmentMaxSize || (!!maxDuration && segmentDuration > maxDuration)) {
         // Should not stop on composed word, will add the next word
         if (COMPOSE_WORD_REGEX.test(conv_seg.words[i].word)) {
           i++
@@ -87,6 +95,7 @@ function splitSubtitles(conv, query) {
       }
     }
 
+    //last part of the segment
     if (segment.length > 0) {
       subtitle.push(generateScreen(segment, stime, etime, conv_seg.turn_id, words))
       segment = ""
