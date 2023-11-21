@@ -15,9 +15,7 @@ let init = function (webserver) {
 
     webserver.express.use(function (err, req, res, next) {
         if (err) debug(err)
-
         if (customException.indexOf(err.name) > -1) {
-
             if (err.err) debug(err.err)
             res.status(err.status).send({ message: err.message })
             return

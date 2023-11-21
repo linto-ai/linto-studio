@@ -33,6 +33,7 @@ function configureDefaults() {
         process.env.AXIOS_SIZE_FILE_MAX = ifHas(process.env.AXIOS_SIZE_FILE_MAX, envdefault.AXIOS_SIZE_FILE_MAX)
 
         process.env.GATEWAY_SERVICES = ifHas(process.env.GATEWAY_SERVICES, envdefault.GATEWAY_SERVICES)
+        process.env.MAX_SUBTITLE_VERSION = ifHas(process.env.MAX_SUBTITLE_VERSION, envdefault.MAX_SUBTITLE_VERSION)
 
         // Storage folder for uploads
         process.env.VOLUME_FOLDER = 'storages'

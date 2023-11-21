@@ -12,7 +12,24 @@
         "format": "uuid",
         "required": true,
         "description": "uuid string identifier for an conversation"
-      }],
+      },
+      {
+        "in": "query",
+        "name": "key",
+        "type": "string",
+        "required": false,
+        "example" : "tags,metadata",
+        "description": "Allow to filter key"
+      },
+      {
+        "in": "query",
+        "name": "projection",
+        "type": "integer",
+        "required": false,
+        "example": 1,
+        "description": "Allow to search or not the key filter `0` or `1` (default 1)"
+      }
+    ],
       "responses": {
         "200": {
           "description": "OK",

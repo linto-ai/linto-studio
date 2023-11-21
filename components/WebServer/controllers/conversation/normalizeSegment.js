@@ -45,12 +45,14 @@ function* ruleSequenceGenerator(segments, lang) {
             delete word.go_to_segment
             delete word.segment_done
             delete word.skip_words
+            loop_data.last_endtime = word.end
             yield word
           }
           if (segment_done) break
 
         } else {
           yield seg_words
+          loop_data.last_endtime = seg_words.end
         }
       } else if (segment_text !== undefined) { // Still one last word, can have a desync with raw_words
         let last_word = rules.executeRulesByName(lang, 'lastWord', segment_text, undefined, loop_data)

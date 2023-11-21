@@ -1,27 +1,41 @@
 const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:subtitle`)
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
+const validator = require(`${process.cwd()}/lib/dao/schema/validator`)
+
 
 const PUNCTUATION_REGEX = /[,.!?]/
 const COMPOSE_WORD_REGEX = /['-]/
 
+const { duration } = require('moment')
+const { v4: uuidv4 } = require('uuid')
+
 const {
-  ConversationUnsupportedMediaType,
-  ConversationNotFound
+  ConversationNotFound,
+  SubtitleUnsupportedMediaType,
+  SubtitleError,
+  SubtitleMaxVersion,
+  SubtitleNotFound
 } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
 const MAX_CHAR_PER_SEGMENT = 80
 const MIN_CHAR_PER_SEGMENT = 20
 
 function splitSubtitles(conv, query) {
-  let segmentCharSize = MAX_CHAR_PER_SEGMENT
-  if (query.segmentCharSize) segmentCharSize = parseInt(query.segmentCharSize)
+  let screenCharSize = undefined
+  let maxDuration = undefined
 
-  if (segmentCharSize <= MIN_CHAR_PER_SEGMENT)
-    segmentCharSize = MIN_CHAR_PER_SEGMENT
+  if (query.maxDuration) maxDuration = parseInt(query.maxDuration)
+  if (query.screenCharSize) screenCharSize = parseInt(query.screenCharSize)
 
-  const segmentMaxSize = segmentCharSize + 20
-  const subtitle = []
+  if (!maxDuration && !screenCharSize)
+    screenCharSize = MAX_CHAR_PER_SEGMENT
+
+  if (screenCharSize <= MIN_CHAR_PER_SEGMENT)
+    screenCharSize = MIN_CHAR_PER_SEGMENT
+
+  const segmentMaxSize = screenCharSize + 20
+  let subtitle = []
   let words = []
   let stime, etime
 
@@ -39,14 +53,15 @@ function splitSubtitles(conv, query) {
       words.push(conv_seg.words[i])
       segment += word + " "
       etime = conv_seg.words[i].etime
+      segmentDuration = etime - stime
 
       // on punctuation mark, split the segment if it's too long
       if (PUNCTUATION_REGEX.test(word)) {
         let lastwords = []
-        if (segment.length >= segmentCharSize) {
+        if (segment.length >= screenCharSize || (!!maxDuration && segmentDuration > maxDuration)) {
           const word_segment = segment.split(" ")
 
-          while (segment.length >= segmentCharSize) {
+          while (segment.length >= screenCharSize) {
             lastwords.push(word_segment.pop())
             segment = word_segment.join(" ").trim()
           }
@@ -54,53 +69,80 @@ function splitSubtitles(conv, query) {
           const splited_segment = word_segment.join(" ").trim()
           const new_words = words.splice(0, splited_segment.split(' ').length)
 
-          subtitle.push({ text: [splited_segment], stime, etime: new_words[new_words.length - 1].etime, turn_id: conv_seg.turn_id })
+          subtitle.push(generateScreen(splited_segment, stime, new_words[new_words.length - 1].etime, conv_seg.turn_id, new_words))
           segment = lastwords.reverse().join(" ")
 
           stime = words[0] ? words[0].stime : conv_seg.words[i].stime
 
           // force cut on punctuation mark if segment reaches maxCharsPerSegment / 2
         }
-        if (segment.length >= segmentCharSize / 2 && PUNCTUATION_REGEX.test(word)) {
-          subtitle.push({ text: [segment.trim()], stime, etime, turn_id: conv_seg.turn_id })
+        if ((segment.length >= screenCharSize / 2 || (!!maxDuration && segmentDuration > maxDuration)) && PUNCTUATION_REGEX.test(word)) {
+          subtitle.push(generateScreen(segment, stime, etime, conv_seg.turn_id, words))
           segment = " " // Allow to add the last segment 
         }
       }
 
-      if (segment.length > segmentMaxSize) {
+      if (segment.length > segmentMaxSize || (!!maxDuration && segmentDuration > maxDuration)) {
         // Should not stop on composed word, will add the next word
         if (COMPOSE_WORD_REGEX.test(conv_seg.words[i].word)) {
           i++
+          words.push(conv_seg.words[i]) // maybe this have not to be there
           segment += conv_seg.words[i].word + " "
           etime = conv_seg.words[i].etime
         }
-        subtitle.push({ text: [segment.trim()], stime, etime, turn_id: conv_seg.turn_id })
+        subtitle.push(generateScreen(segment, stime, etime, conv_seg.turn_id, words))
         segment = " "
       }
     }
 
-    if (segment.length > 0) subtitle.push({ text: [segment.trim()], stime, etime, turn_id: conv_seg.turn_id })
+    //last part of the segment
+    if (segment.length > 0) {
+      subtitle.push(generateScreen(segment, stime, etime, conv_seg.turn_id, words))
+      segment = ""
+    }
   })
 
+  subtitle = subtitle.filter(element => element !== undefined)
 
-  let numberOfLines = 1
-  if (query.numberOfLines !== undefined) {
-    numberOfLines = parseInt(query.numberOfLines)
 
-    if (!isNaN(numberOfLines) && numberOfLines > 1) {
+  let screenLines = 1
+  if (query.screenLines !== undefined) {
+    screenLines = parseInt(query.screenLines)
+
+    if (!isNaN(screenLines) && screenLines > 1) {
       subtitle.map(subtitle => {
-        subtitle.text = splitStringIntoLines(subtitle.text[0], numberOfLines)
+        subtitle.text = splitStringIntoLines(subtitle.text[0], screenLines)
       })
     }
   }
 
   return {
     generate_settings: {
-      segmentCharSize,
-      numberOfLines,
+      screenCharSize,
+      screenLines,
     },
-    subtitle
+    screens: subtitle
   }
+}
+
+function generateScreen(text, stime, etime, id, words) {
+  //genere sid here
+  let screen = {
+    stime,
+    etime,
+    turn_id: id,
+    screen_id: uuidv4(),
+  }
+
+  if (Array.isArray(text)) {
+    screen.text = segment.trim()
+  } else screen.text = [text.trim()]
+
+  if (screen.text[0] === ' ' || screen.text[0] === '') return undefined
+
+  screen.words = words
+
+  return screen
 }
 
 function secondsToSRT(seconds) {
@@ -125,9 +167,9 @@ function generateSrt(subtitle_data) {
   return srt
 }
 
-function splitStringIntoLines(inputString, numberOfLines) {
+function splitStringIntoLines(inputString, screenLines) {
   const words = inputString.split(/[\s]+/) // Split the string at spaces, periods, commas, semicolons, exclamation marks, and question marks.
-  const lineCount = Math.min(numberOfLines, words.length); // Ensure numberOfLines is not greater than the number of words.
+  const lineCount = Math.min(screenLines, words.length); // Ensure numbescreenLinesrOfLines is not greater than the number of words.
   const wordsPerLine = Math.ceil(words.length / lineCount)
   const lines = []
 
@@ -143,32 +185,35 @@ function splitStringIntoLines(inputString, numberOfLines) {
 
 async function generateSubtitle(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationUnsupportedMediaType('Conversation id is required')
+    if (!req.params.conversationId) throw new SubtitleUnsupportedMediaType('Conversation id is required')
+    if (!req.body.version) throw new SubtitleUnsupportedMediaType('Version name is require')
+
     const conversationId = req.params.conversationId
 
     const conversation = await model.conversations.getById(conversationId)
-    const conv_subtitle = await model.conversationSubtitles.getById(conversationId)
+    const version_number = await model.conversationSubtitles.getByConvId(conversationId, { _id: 1 })
 
     if (conversation.length !== 1) throw new ConversationNotFound()
-    let conv = conversation[0]
+    else if ((version_number.length + 1) > parseInt(process.env.MAX_SUBTITLE_VERSION)) throw new SubtitleMaxVersion()
 
-    let subtitles = splitSubtitles(conversation[0], req.query)
+    const conv = conversation[0]
+    const conv_subtitle = await model.conversationSubtitles.getByConvIdAndVersion(conversationId, req.body.version)
+
+
+    let subtitles = splitSubtitles(conversation[0], req.body)
     subtitles = {
       ...subtitles,
-      _id: conv._id,  // Make sur to use the conversation id
-      name: conv.name,
-      description: conv.description,
-      owner: conv.owner,
-      metadata: conv.metadata
+      conv_id: conv._id,
+      conv_name: conv.name,
+      version: req.body.version,
     }
 
-    if (conv_subtitle.length > 0) await model.conversationSubtitles.update(subtitles)
-    else await model.conversationSubtitles.create(subtitles)
+    if (conv_subtitle.length > 0) {
+      subtitles._id = conv_subtitle[0]._id
+      await model.conversationSubtitles.update(subtitles)
+    } else await model.conversationSubtitles.create(subtitles)
 
-    if (req.query.type === 'srt') {
-      const srt = generateSrt(subtitles.subtitle)
-      res.status(200).send(srt)
-    } else res.status(200).json(subtitles)
+    res.status(201).json(subtitles)
 
   } catch (err) {
     next(err)
@@ -177,14 +222,13 @@ async function generateSubtitle(req, res, next) {
 
 async function getSubtitle(req, res, next) {
   try {
-    const conversationId = req.params.conversationId
-    const conv_subtitle = await model.conversationSubtitles.getById(conversationId)
+    const conv_subtitle = await model.conversationSubtitles.getById(req.params.subtitleId)
 
     if (conv_subtitle.length === 0) { // If no subtitle exist, we generate it the first time
-      throw new ConversationNotFound()
+      throw new SubtitleNotFound()
     } else {
       if (req.query.type === 'srt') {
-        const srt = generateSrt(conv_subtitle[0].subtitle)
+        const srt = generateSrt(conv_subtitle[0].screens)
         res.status(200).send(srt)
       } else {
         res.status(200).json(conv_subtitle[0])
@@ -195,9 +239,172 @@ async function getSubtitle(req, res, next) {
   }
 }
 
+async function updateScreen(req, res, next) {
+  try {
+    if (!req.params.subtitleId || !req.params.screenId) throw new SubtitleUnsupportedMediaType()
+    const conv_subtitle = await model.conversationSubtitles.getById(req.params.subtitleId)
+
+    if (conv_subtitle.length === 0) { // If no subtitle exist, we generate it the first time
+      throw new SubtitleNotFound()
+    } else {
+      if (typeof req.body !== 'object' && !req.body.turn_id) throw new SubtitleUnsupportedMediaType()
+
+      req.body.screen_id = req.params.screenId
+      if (!validator(req.body, 'screen')) throw new SubtitleUnsupportedMediaType('Screen format is not valid')
+
+      let result = await model.conversationSubtitles.updateScreen(req.params.subtitleId, req.params.screenId, req.body)
+      if (result.result && result.result.nModified === 1) res.status(200).send()
+      else res.status(304).send()
+    }
+  } catch (err) {
+    next(err)
+  }
+}
+
+async function addScreen(req, res, next) {
+  try {
+    if (!req.params.subtitleId || !req.params.screenId) throw new SubtitleUnsupportedMediaType()
+    const conv_subtitle = await model.conversationSubtitles.getById(req.params.subtitleId)
+
+    if (conv_subtitle.length === 0) { // If no subtitle exist, we generate it the first time
+      throw new SubtitleNotFound()
+    } else {
+      if (typeof req.body !== 'object' && !req.body.turn_id) throw new SubtitleUnsupportedMediaType()
+
+      let position = conv_subtitle[0].screens.reduce((index, screen, currentIndex) => {
+        return screen.screen_id === req.params.screenId ? currentIndex : index
+      }, 0)
+
+      if (req.query.placement === 'before') position -= 1
+      else position += 1
+
+      req.body.screen_id = uuidv4()
+      if (!validator(req.body, 'screen')) throw new SubtitleUnsupportedMediaType('Screen format is not valid')
+
+      let result = await model.conversationSubtitles.addScreen(req.params.subtitleId, req.params.screenId, req.body, position)
+      if (result.result && result.result.nModified === 1) res.status(200).send()
+      else res.status(304).send()
+    }
+  } catch (err) {
+    next(err)
+  }
+}
+
+async function deleteScreen(req, res, next) {
+  try {
+    if (!req.params.subtitleId || !req.params.screenId) throw new SubtitleUnsupportedMediaType()
+    const conv_subtitle = await model.conversationSubtitles.getById(req.params.subtitleId)
+
+    if (conv_subtitle.length === 0) { // If no subtitle exist, we generate it the first time
+      throw new SubtitleNotFound()
+    } else {
+      let result = await model.conversationSubtitles.deleteScreen(req.params.subtitleId, req.params.screenId)
+      if (result.result && result.result.nModified === 1) res.status(200).send()
+      else res.status(304).send()
+    }
+  } catch (err) {
+    next(err)
+  }
+}
+
+async function listVersion(req, res, next) {
+  try {
+    const conv_subtitle = await model.conversationSubtitles.getByConvId(req.params.conversationId)
+
+    if (conv_subtitle.length === 0) { // If no subtitle exist, we generate it the first time
+      res.status(204).send()
+    } else {
+      let result = conv_subtitle.map(subtitle => {
+        return {
+          _id: subtitle._id,
+          conv_id: subtitle.conv_id,
+          name: subtitle.name,
+          version: subtitle.version
+        }
+      })
+
+      res.status(200).json(result)
+    }
+  } catch (err) {
+    next(err)
+  }
+}
+
+async function updateSubtitle(req, res, next) {
+  try {
+    const conv_subtitle = await model.conversationSubtitles.getById(req.params.subtitleId)
+    if (conv_subtitle.length !== 1) throw new SubtitleNotFound()
+
+    const subtitle = {
+      _id: req.params.subtitleId,
+      ...req.body
+    }
+
+    const result = await model.conversationSubtitles.update(subtitle)
+    if (result.matchedCount === 0) throw new SubtitleError()
+
+    res.status(200).send({
+      message: 'Subtitle updated'
+    })
+
+  } catch (err) {
+    next(err)
+  }
+}
+
+async function deleteSubtitle(req, res, next) {
+  try {
+    const conv_subtitle = await model.conversationSubtitles.getById(req.params.subtitleId)
+    if (conv_subtitle.length !== 1) throw new SubtitleNotFound()
+
+    const result = await model.conversationSubtitles.delete(req.params.subtitleId)
+    if (result.deletedCount !== 1) throw new SubtitleError('Error when deleting subtitle')
+
+    res.status(200).send({
+      message: 'Subtitle has been deleted'
+    })
+  }
+  catch (err) {
+    next(err)
+  }
+}
+
+async function copySubtitle(req, res, next) {
+  try {
+
+    if (!req.params.subtitleId || !req.body.version) throw new SubtitleUnsupportedMediaType()
+
+    const subtitle_to_copy = await model.conversationSubtitles.getById(req.params.subtitleId)
+    if (subtitle_to_copy.length !== 1) throw new SubtitleNotFound()
+
+    const conv_copy = await model.conversationSubtitles.getByConvIdAndVersion(req.params.conversationId, req.body.version)
+    if (conv_copy.length === 1) throw new SubtitleError('Version name already exist')
+
+    let subtitle = {
+      ...subtitle_to_copy[0],
+      version: req.body.version
+    }
+    delete subtitle._id
+    await model.conversationSubtitles.create(subtitle)
+    res.status(201).send({
+      message: 'A copy of the subtitle has been created'
+    })
+
+  } catch (err) {
+    next(err)
+  }
+}
+
 
 
 module.exports = {
+  listVersion,
   generateSubtitle,
-  getSubtitle
+  getSubtitle,
+  updateScreen,
+  deleteScreen,
+  addScreen,
+  updateSubtitle,
+  deleteSubtitle,
+  copySubtitle
 }
