@@ -23,12 +23,12 @@ const MIN_CHAR_PER_SEGMENT = 20
 
 function splitSubtitles(conv, query) {
   let screenCharSize = undefined
-  let maxDuration = undefined
+  let screenMaxDuration = undefined
 
-  if (query.maxDuration) maxDuration = parseInt(query.maxDuration)
+  if (query.screenMaxDuration) screenMaxDuration = parseInt(query.screenMaxDuration)
   if (query.screenCharSize) screenCharSize = parseInt(query.screenCharSize)
 
-  if (!maxDuration && !screenCharSize)
+  if (!screenMaxDuration && !screenCharSize)
     screenCharSize = MAX_CHAR_PER_SEGMENT
 
   if (screenCharSize <= MIN_CHAR_PER_SEGMENT)
@@ -58,7 +58,7 @@ function splitSubtitles(conv, query) {
       // on punctuation mark, split the segment if it's too long
       if (PUNCTUATION_REGEX.test(word)) {
         let lastwords = []
-        if (segment.length >= screenCharSize || (!!maxDuration && segmentDuration > maxDuration)) {
+        if (segment.length >= screenCharSize || (!!screenMaxDuration && segmentDuration > screenMaxDuration)) {
           const word_segment = segment.split(" ")
 
           while (segment.length >= screenCharSize) {
@@ -76,13 +76,13 @@ function splitSubtitles(conv, query) {
 
           // force cut on punctuation mark if segment reaches maxCharsPerSegment / 2
         }
-        if ((segment.length >= screenCharSize / 2 || (!!maxDuration && segmentDuration > maxDuration)) && PUNCTUATION_REGEX.test(word)) {
+        if ((segment.length >= screenCharSize / 2 || (!!screenMaxDuration && segmentDuration > screenMaxDuration)) && PUNCTUATION_REGEX.test(word)) {
           subtitle.push(generateScreen(segment, stime, etime, conv_seg.turn_id, words))
           segment = " " // Allow to add the last segment 
         }
       }
 
-      if (segment.length > segmentMaxSize || (!!maxDuration && segmentDuration > maxDuration)) {
+      if (segment.length > segmentMaxSize || (!!screenMaxDuration && segmentDuration > screenMaxDuration)) {
         // Should not stop on composed word, will add the next word
         if (COMPOSE_WORD_REGEX.test(conv_seg.words[i].word)) {
           i++

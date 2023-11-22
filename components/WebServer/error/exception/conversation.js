@@ -199,9 +199,9 @@ class SubtitleMaxVersion extends Error {
     super()
     this.name = 'SubtitleMaxVersion'
     this.type = ExceptionType
-    this.status = '415'
+    this.status = '403'
     if (message) this.message = message
-    else this.message = 'The number of subtitle version for that conversion is reach'
+    else this.message = 'The number of subtitle versions for that conversion has reached its limit.'
     if (err) this.err = err
   }
 }
