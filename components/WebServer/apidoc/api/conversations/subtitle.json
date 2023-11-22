@@ -294,7 +294,7 @@
               "type": "object",
               "properties": {
                 "version": {
-                  "description": "Newer version name who will be create",
+                  "description": "Newer version name that will be created.",
                   "example": "conv-1.0"
                 }
               }

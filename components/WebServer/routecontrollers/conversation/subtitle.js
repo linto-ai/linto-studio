@@ -385,10 +385,14 @@ async function copySubtitle(req, res, next) {
       version: req.body.version
     }
     delete subtitle._id
-    await model.conversationSubtitles.create(subtitle)
-    res.status(201).send({
-      message: 'A copy of the subtitle has been created'
-    })
+    const result = await model.conversationSubtitles.create(subtitle)
+
+    if (result.insertedId) {
+      res.status(201).send({
+        _id: result.insertedId.toString(),
+        message: 'A copy of the subtitle has been created'
+      })
+    } else res.status(304)
 
   } catch (err) {
     next(err)

@@ -46,6 +46,14 @@ async function searchCategory(req, res, next) {
       categoryList = await notags(organizationId)
     }
 
+
+    if (req.query.expand === 'true') {
+      for (let i = 0; i < categoryList.length; i++) {
+        const tags = await model.search.tags.getByCategory(categoryList[i]._id.toString())
+        categoryList[i].tags = tags
+      }
+    }
+
     if (categoryList.length === 0) res.status(204).send()
     else res.status(200).send(categoryList)
 
@@ -63,7 +71,7 @@ async function notags(organizationId) {
   const tagsList = await model.tags.getByOrgaId(organizationId) // Get all tag from an organisation
   let categoryTags = [...new Set(tagsList.map(tag => tag.categoryId))]  // Fetch category
   const objectIds = categoryTags.map(stringId => model.tags.getObjectId(stringId))
-  return await model.categories.getByOrgaId(organizationId, {_id: { $nin: objectIds }})
+  return await model.categories.getByOrgaId(organizationId, { _id: { $nin: objectIds } })
 }
 
 async function search(req, organizationId) {
