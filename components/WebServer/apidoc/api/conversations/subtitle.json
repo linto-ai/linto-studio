@@ -25,9 +25,9 @@
                   "description": "Number of character for a screen",
                   "example": "80"
                 },
-                "maxDuration": {
+                "screenMaxDuration": {
                   "type": "integer",
-                  "description": "Max duration for a screen",
+                  "description": "Max duration for a screen in second",
                   "example": "5"
                 },
                 "screenLines": {
