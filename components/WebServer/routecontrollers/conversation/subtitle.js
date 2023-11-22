@@ -145,15 +145,17 @@ function generateScreen(text, stime, etime, id, words) {
   return screen
 }
 
-function secondsToSRT(seconds) {
+function secondsToSRT(seconds, type = 'srt') {
   const hours = Math.floor(seconds / 3600)
   const minutes = Math.floor((seconds % 3600) / 60)
   const remainingSeconds = (seconds % 3600) % 60
   const milliseconds = Math.round((remainingSeconds - Math.floor(remainingSeconds)) * 1000)
 
-  const formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(Math.floor(remainingSeconds)).padStart(2, '0')},${String(milliseconds).padStart(3, '0')}`
+  if (type === 'srt')
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(Math.floor(remainingSeconds)).padStart(2, '0')},${String(milliseconds).padStart(3, '0')}`
 
-  return formattedTime
+  //otherwise vtt format  
+  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(Math.floor(remainingSeconds)).padStart(2, '0')}.${String(milliseconds).padStart(3, '0')}`
 }
 
 function generateSrt(subtitle_data) {
@@ -161,10 +163,22 @@ function generateSrt(subtitle_data) {
   let srt_index = 1
   subtitle_data.map(subtitle => {
     srt += srt_index++ + '\n'
-    srt += secondsToSRT(subtitle.stime) + ' --> ' + secondsToSRT(subtitle.etime) + '\n'
+    srt += secondsToSRT(subtitle.stime, 'srt') + ' --> ' + secondsToSRT(subtitle.etime, 'srt') + '\n'
     srt += subtitle.text.join('\n') + '\n\n'
   })
   return srt
+}
+
+function generateVtt(subtitle_data) {
+  let vtt = 'WEBVTT\n\n'
+  subtitle_data.map(subtitle => {
+    vtt += secondsToSRT(subtitle.stime, 'vtt') + ' --> ' + secondsToSRT(subtitle.etime, 'vtt') + '\n'
+    subtitle.text.map(text => {
+      vtt += '- ' + text + '\n'
+    })
+    vtt += '\n'
+  })
+  return vtt
 }
 
 function splitStringIntoLines(inputString, screenLines) {
@@ -230,6 +244,9 @@ async function getSubtitle(req, res, next) {
       if (req.query.type === 'srt') {
         const srt = generateSrt(conv_subtitle[0].screens)
         res.status(200).send(srt)
+      } if (req.query.type === 'vtt') {
+        const vtt = generateVtt(conv_subtitle[0].screens)
+        res.status(200).send(vtt)
       } else {
         res.status(200).json(conv_subtitle[0])
       }

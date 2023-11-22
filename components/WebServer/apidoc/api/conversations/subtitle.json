@@ -375,6 +375,50 @@
       }
     }
   },
+  "/api/conversations/{conversationId}/subtitle/{subtitleId}?type=vtt": {
+    "get": {
+      "tags": [
+        "conversations subtitle member"
+      ],
+      "summary": "Get the vtt subtitle of the conversation",
+      "parameters": [{
+          "in": "path",
+          "name": "conversationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an conversation"
+        },
+        {
+          "in": "path",
+          "name": "subtitleId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for the subtitle"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "text/plain": {
+              "schema": {
+                "type": "string",
+                "example": "WEBVTT\n\n00:00:03.660 --> 00:00:04.650\n- Quand il y\n- a quelques mois,..."
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
   "/api/conversations/{conversationId}/subtitle/{subtitleId}/screen/{screenId}": {
     "delete": {
       "tags": [
