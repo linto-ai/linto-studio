@@ -1,0 +1,78 @@
+{
+  "segments": [{
+    "duration": 1227.6,
+    "end": 1228.9099999999999,
+    "raw_segment": "de la Méditerranée avec… Des trois Gibraltars. Des trois Gibraltars. Ok,",
+    "segment": "de la Méditerranée avec… Des 3 Gibraltars. Des 3 Gibraltars. Ok,",
+    "spk_id": "spk1",
+    "start": 1.31,
+    "words": [{
+        "conf": 0.88,
+        "end": 107.87,
+        "start": 107.78999999999999,
+        "word": "de"
+      },
+      {
+        "conf": 0.89,
+        "end": 107.95,
+        "start": 107.87,
+        "word": "la"
+      },
+      {
+        "conf": 0.97,
+        "end": 108.53,
+        "start": 107.95,
+        "word": "Méditerranée"
+      },
+      {
+        "conf": 0.59,
+        "end": 109.00999999999999,
+        "start": 108.53,
+        "word": "avec"
+      },
+      {
+        "conf": 0.35,
+        "end": 109.77,
+        "start": 109.63,
+        "word": "Des"
+      },
+      {
+        "conf": 0.69,
+        "end": 109.93,
+        "start": 109.77,
+        "word": "trois"
+      },
+      {
+        "conf": 0.8,
+        "end": 110.31,
+        "start": 109.93,
+        "word": "Gibraltars"
+      },
+      {
+        "conf": 0.49,
+        "end": 110.49000000000001,
+        "start": 110.37,
+        "word": "Des"
+      },
+      {
+        "conf": 0.81,
+        "end": 110.61,
+        "start": 110.49000000000001,
+        "word": "trois"
+      },
+      {
+        "conf": 0.92,
+        "end": 111.09,
+        "start": 110.61,
+        "word": "Gibraltars"
+      },
+      {
+        "conf": 0.76,
+        "end": 111.87,
+        "start": 111.59,
+        "word": "Ok"
+      }
+    ]
+
+  }]
+}

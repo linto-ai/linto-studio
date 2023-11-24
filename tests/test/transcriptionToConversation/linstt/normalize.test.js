@@ -3,7 +3,7 @@ const debug = require('debug')('linto:tests:linstt:normalize-double-apostrophe-r
 const cp = require('utils-copy')
 const { segmentNormalizeText } = require(`${process.cwd()}/components/WebServer/controllers/conversation/normalizeSegment`)
 
-describe('normalize conversation segment from a reduced linstt transcription with an apostrophe rules', () => {
+describe('normalize conversation segment from a reduced linstt transcription', () => {
   let mock_transcription
   let conversation
   const LANG = 'fr-FR'
@@ -127,6 +127,28 @@ describe('normalize conversation segment from a reduced linstt transcription wit
   it('segment with no filter and rules of simple punctuation (normalize-simple-punctuation)', () => {
     mock_transcription = require(`${process.cwd()}/tests/data/transcription/reduce/normalize-simple-punctuation.json`)
     conversation = require(`${process.cwd()}/tests/data/conversation/normalize/reduce/conversation-simple-punctuation.json`)
+
+    const normalizeTranscription = segmentNormalizeText(mock_transcription, LANG)
+    normalizeTranscription.segments.map((segment, index_seg) => {
+      testNormalize(conversation, segment, index_seg)
+    })
+    testTimeStamp(normalizeTranscription)
+  })
+
+  it('segment with a special character "…"', () => {
+    mock_transcription = require(`${process.cwd()}/tests/data/transcription/reduce/normalize-special-character.json`)
+    conversation = require(`${process.cwd()}/tests/data/conversation/normalize/reduce/conversation-special-character.json`)
+
+    const normalizeTranscription = segmentNormalizeText(mock_transcription, LANG)
+    normalizeTranscription.segments.map((segment, index_seg) => {
+      testNormalize(conversation, segment, index_seg)
+    })
+    testTimeStamp(normalizeTranscription)
+  })
+
+  it('segment where number have an number error on normlize', () => {
+    mock_transcription = require(`${process.cwd()}/tests/data/transcription/reduce/normalize-number-skip.json`)
+    conversation = require(`${process.cwd()}/tests/data/conversation/normalize/reduce/conversation-number-skip.json`)
 
     const normalizeTranscription = segmentNormalizeText(mock_transcription, LANG)
     normalizeTranscription.segments.map((segment, index_seg) => {

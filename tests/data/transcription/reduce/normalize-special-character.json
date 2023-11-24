@@ -1,0 +1,47 @@
+{
+  "segments": [{
+    "duration": 1227.6,
+    "end": 1228.9099999999999,
+    "raw_segment": "Ça, c'est… Est-ce que c'est l'embouchure",
+    "segment": "Ça, c'est… Est-ce que c'est l'embouchure",
+    "spk_id": "spk1",
+    "start": 1.31,
+    "words": [{
+        "conf": 0.58,
+        "end": 106.17,
+        "start": 105.89,
+        "word": "Ça"
+      },
+      {
+        "conf": 0.84,
+        "end": 107.05,
+        "start": 106.35,
+        "word": "c'est"
+      },
+      {
+        "conf": 0.79,
+        "end": 107.27,
+        "start": 107.05,
+        "word": "Est-ce"
+      },
+      {
+        "conf": 0.77,
+        "end": 107.33,
+        "start": 107.27,
+        "word": "que"
+      },
+      {
+        "conf": 0.97,
+        "end": 107.43,
+        "start": 107.33,
+        "word": "c'est"
+      },
+      {
+        "conf": 0.94,
+        "end": 107.78999999999999,
+        "start": 107.43,
+        "word": "l'embouchure"
+      }
+    ]
+  }]
+}

@@ -12,7 +12,7 @@ function correctSegmentText(seg_text) {
 }
 
 function simplePunctuation(seg_text, words, loop_data) {
-  if (seg_text.lowercase.replace(/[.,"]/g, '') === words.word.toLowerCase()) {
+  if (seg_text.lowercase.replace(/[.,…"]/g, '') === words.word.toLowerCase()) {
     return {
       ...words,
       word: seg_text.original
@@ -106,11 +106,10 @@ function numberNormalize(seg_text, words, loop_data) {
     let confidences_scores = words.conf
     while (index < loop_data.words.length) {
       if (
-        next_word_seg.lowercase === loop_data.words[index].word // Break loop, next word is not a number
+        next_word_seg.lowercase === loop_data.words[index].word.toLowerCase() // Break loop, next word is not a number
         || (next_word_seg.fixed !== undefined && next_word_seg.fixed === loop_data.words[index].word) // In can of fixed segment match word
         || end_segment // in case of number in row and nothing after, end_segment can't be at false if we have x number in row
       ) { // trigger exit loop
-
 
         if (number_in_a_row_find > 1) { // if multiple number in a row
           let start = words.start
