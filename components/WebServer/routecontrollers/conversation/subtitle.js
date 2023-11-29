@@ -336,7 +336,8 @@ async function listVersion(req, res, next) {
           _id: subtitle._id,
           conv_id: subtitle.conv_id,
           name: subtitle.name,
-          version: subtitle.version
+          version: subtitle.version,
+          generate_settings : subtitle.generate_settings
         }
       })
 

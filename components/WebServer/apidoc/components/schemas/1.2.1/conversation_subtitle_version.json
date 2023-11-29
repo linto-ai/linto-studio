@@ -17,6 +17,18 @@
       "version": {
         "type": "string",
         "example": "version 1.0"
+      },
+      "generate_settings": {
+        "type": "object",
+        "properties": {
+          "screenCharSize": {
+            "type": "integer",
+            "example" : "80"
+          },
+          "screenLines": {
+            "example" : "2"
+          }
+        }
       }
     }
   }
