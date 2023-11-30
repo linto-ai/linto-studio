@@ -156,8 +156,18 @@ describe('normalize conversation segment from a reduced linstt transcription', (
     })
     testTimeStamp(normalizeTranscription)
   })
-})
 
+  it("segment with no filter and special character (normalize-special-dash)", () => {
+    mock_transcription = require(`${process.cwd()}/tests/data/transcription/reduce/normalize-special-dash.json`)
+    conversation = require(`${process.cwd()}/tests/data/conversation/normalize/reduce/conversation-special-dash.json`)
+
+    const normalizeTranscription = segmentNormalizeText(mock_transcription, LANG)
+    normalizeTranscription.segments.map((segment, index_seg) => {
+      testNormalize(conversation, segment, index_seg)
+    })
+    testTimeStamp(normalizeTranscription)
+  })
+})
 
 function testNormalize(conversation, segment, index_seg) {
   expect(segment.segment).toEqual(conversation.text[index_seg].segment)

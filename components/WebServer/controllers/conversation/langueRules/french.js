@@ -32,7 +32,7 @@ function diminutivePunctuation(seg_text, words, loop_data) {
 
 
 function doublePunctuation(seg_text, words, loop_data) {
-  if (/[?!:;«»]$/.test(seg_text.lowercase)) {
+  if (/[?!:;«»–]$/.test(seg_text.lowercase)) {
     let timestamp = 0
 
     if (loop_data.last_endtime !== undefined) timestamp = loop_data.last_endtime
