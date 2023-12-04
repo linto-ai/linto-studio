@@ -9,6 +9,7 @@ const {
     listVersion,
     updateSubtitle,
     deleteSubtitle,
+    deleteManySubtitle,
     copySubtitle
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/subtitle.js`)
 
@@ -17,20 +18,6 @@ const {
 module.exports = (webserver) => {
     return [
         /*Require Auth */
-        {
-            path: '/:conversationId/subtitle/generate',
-            method: 'post',
-            requireAuth: true,
-            requireConversationWriteAccess: true,
-            controller: generateSubtitle
-        },
-        {
-            path: '/:conversationId/subtitle/versions',
-            method: 'get',
-            requireAuth: true,
-            requireConversationReadAccess: true,
-            controller: listVersion
-        },
         {
             path: '/:conversationId/subtitle/:subtitleId/screen/:screenId',
             method: 'delete',
@@ -79,6 +66,28 @@ module.exports = (webserver) => {
             requireAuth: true,
             requireConversationReadAccess: true,
             controller: deleteSubtitle
-        }
+        },
+        {
+            path: '/:conversationId/subtitle',
+            method: 'delete',
+            requireAuth: true,
+            requireConversationReadAccess: true,
+            controller: deleteManySubtitle
+        },
+        {
+            path: '/:conversationId/subtitle',
+            method: 'post',
+            requireAuth: true,
+            requireConversationWriteAccess: true,
+            controller: generateSubtitle
+        },
+        {
+            path: '/:conversationId/subtitle',
+            method: 'get',
+            requireAuth: true,
+            requireConversationReadAccess: true,
+            controller: listVersion
+        },
+
     ]
 }

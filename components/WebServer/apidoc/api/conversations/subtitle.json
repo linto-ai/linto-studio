@@ -1,11 +1,10 @@
 {
-  "/api/conversations/{conversationId}/subtitle/generate": {
+  "/api/conversations/{conversationId}/subtitle": {
     "post": {
-      "tags": [
-        "conversations subtitle member"
-      ],
+      "tags": ["conversations subtitle member"],
       "summary": "Generate subtitle for a conversation",
-      "parameters": [{
+      "parameters": [
+        {
           "in": "path",
           "name": "conversationId",
           "type": "string",
@@ -41,9 +40,7 @@
                 }
               }
             },
-            "required": [
-              "version"
-            ]
+            "required": ["version"]
           }
         }
       },
@@ -66,22 +63,20 @@
           "$ref": "#/components/responses/NotFound"
         }
       }
-    }
-  },
-  "/api/conversations/{conversationId}/subtitle/versions": {
+    },
     "get": {
-      "tags": [
-        "conversations subtitle member"
+      "tags": ["conversations subtitle member"],
+      "summary": "List all subtitle version from a conversation",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "conversationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an conversation"
+        }
       ],
-      "summary": "Generate subtitle for a conversation",
-      "parameters": [{
-        "in": "path",
-        "name": "conversationId",
-        "type": "string",
-        "format": "uuid",
-        "required": true,
-        "description": "uuid string identifier for an conversation"
-      }],
       "responses": {
         "200": {
           "description": "OK",
@@ -107,15 +102,61 @@
           "$ref": "#/components/responses/NotFound"
         }
       }
+    },
+    "delete": {
+      "tags": ["conversations subtitle member"],
+      "summary": "Delete subtitle",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "conversationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an conversation"
+        },
+        {
+          "in": "query",
+          "name": "subtitleId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "List of uuid string to remove separated with a , "
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Information about the conversation processus"
+                }
+              },
+              "example": {
+                "message": "Subtitle has been deleted"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
     }
   },
   "/api/conversations/{conversationId}/subtitle/{subtitleId}": {
     "get": {
-      "tags": [
-        "conversations subtitle member"
-      ],
+      "tags": ["conversations subtitle member"],
       "summary": "Get the subtitle of the conversation",
-      "parameters": [{
+      "parameters": [
+        {
           "in": "path",
           "name": "conversationId",
           "type": "string",
@@ -153,11 +194,10 @@
       }
     },
     "delete": {
-      "tags": [
-        "conversations subtitle member"
-      ],
+      "tags": ["conversations subtitle member"],
       "summary": "Delete the subtitle",
-      "parameters": [{
+      "parameters": [
+        {
           "in": "path",
           "name": "conversationId",
           "type": "string",
@@ -201,11 +241,10 @@
       }
     },
     "patch": {
-      "tags": [
-        "conversations subtitle member"
-      ],
+      "tags": ["conversations subtitle member"],
       "summary": "Update the subtitle of a conversation",
-      "parameters": [{
+      "parameters": [
+        {
           "in": "path",
           "name": "conversationId",
           "type": "string",
@@ -266,11 +305,10 @@
   },
   "/api/conversations/{conversationId}/subtitle/{subtitleId}/copy": {
     "post": {
-      "tags": [
-        "conversations subtitle member"
-      ],
+      "tags": ["conversations subtitle member"],
       "summary": "Copy the desired subtitle to a new version",
-      "parameters": [{
+      "parameters": [
+        {
           "in": "path",
           "name": "conversationId",
           "type": "string",
@@ -299,9 +337,7 @@
                 }
               }
             },
-            "required": [
-              "version"
-            ]
+            "required": ["version"]
           }
         }
       },
@@ -333,11 +369,10 @@
   },
   "/api/conversations/{conversationId}/subtitle/{subtitleId}?type=srt": {
     "get": {
-      "tags": [
-        "conversations subtitle member"
-      ],
+      "tags": ["conversations subtitle member"],
       "summary": "Get the srt subtitle of the conversation",
-      "parameters": [{
+      "parameters": [
+        {
           "in": "path",
           "name": "conversationId",
           "type": "string",
@@ -377,11 +412,10 @@
   },
   "/api/conversations/{conversationId}/subtitle/{subtitleId}?type=vtt": {
     "get": {
-      "tags": [
-        "conversations subtitle member"
-      ],
+      "tags": ["conversations subtitle member"],
       "summary": "Get the vtt subtitle of the conversation",
-      "parameters": [{
+      "parameters": [
+        {
           "in": "path",
           "name": "conversationId",
           "type": "string",
@@ -421,11 +455,10 @@
   },
   "/api/conversations/{conversationId}/subtitle/{subtitleId}/screen/{screenId}": {
     "delete": {
-      "tags": [
-        "conversations subtitle member"
-      ],
+      "tags": ["conversations subtitle member"],
       "summary": "Remove the screen id requested",
-      "parameters": [{
+      "parameters": [
+        {
           "in": "path",
           "name": "conversationId",
           "type": "string",
@@ -463,11 +496,10 @@
       }
     },
     "patch": {
-      "tags": [
-        "conversations subtitle member"
-      ],
+      "tags": ["conversations subtitle member"],
       "summary": "Update the screen id requested",
-      "parameters": [{
+      "parameters": [
+        {
           "in": "path",
           "name": "conversationId",
           "type": "string",
@@ -517,11 +549,10 @@
       }
     },
     "post": {
-      "tags": [
-        "conversations subtitle member"
-      ],
+      "tags": ["conversations subtitle member"],
       "summary": "Add a screen after or before the selected screen id",
-      "parameters": [{
+      "parameters": [
+        {
           "in": "path",
           "name": "conversationId",
           "type": "string",

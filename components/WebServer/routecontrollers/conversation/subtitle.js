@@ -337,7 +337,7 @@ async function listVersion(req, res, next) {
           conv_id: subtitle.conv_id,
           name: subtitle.name,
           version: subtitle.version,
-          generate_settings : subtitle.generate_settings
+          generate_settings: subtitle.generate_settings
         }
       })
 
@@ -387,6 +387,22 @@ async function deleteSubtitle(req, res, next) {
   }
 }
 
+async function deleteManySubtitle(req, res, next) {
+  try {
+    if (!req.query.subtitleId) throw new SubtitleUnsupportedMediaType()
+    const idsToRemove = req.query.subtitleId.split(',')
+    const result = await model.conversationSubtitles.deleteMany(idsToRemove)
+
+    if (result.deletedCount === 0) throw new SubtitleError('No subtitles were deleted.')
+
+    res.status(200).send({
+      message: 'Subtitles deleted successfully.'
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
 async function copySubtitle(req, res, next) {
   try {
 
@@ -428,5 +444,6 @@ module.exports = {
   addScreen,
   updateSubtitle,
   deleteSubtitle,
+  deleteManySubtitle,
   copySubtitle
 }
