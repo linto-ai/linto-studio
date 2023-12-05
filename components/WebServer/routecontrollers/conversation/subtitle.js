@@ -218,6 +218,7 @@ async function generateSubtitle(req, res, next) {
     subtitles = {
       ...subtitles,
       conv_id: conv._id,
+      orga_id : conv.organization.organizationId,
       conv_name: conv.name,
       version: req.body.version,
     }
@@ -390,6 +391,7 @@ async function deleteSubtitle(req, res, next) {
 async function deleteManySubtitle(req, res, next) {
   try {
     if (!req.query.subtitleId) throw new SubtitleUnsupportedMediaType()
+
     const idsToRemove = req.query.subtitleId.split(',')
     const result = await model.conversationSubtitles.deleteMany(idsToRemove)
 

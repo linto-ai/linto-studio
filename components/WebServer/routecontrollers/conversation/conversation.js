@@ -33,6 +33,10 @@ async function deleteConversation(req, res, next) {
         // delete audiowaveform json file
         deleteFile(`${getStorageFolder()}/${getAudioWaveformFolder()}/${jsonFilename}`)
 
+        // delete also all subtitle related to that conversation
+        await model.conversationSubtitles.deleteAllFromConv(req.params.conversationId)
+
+
         res.status(200).send({
             message: 'Conversation has been deleted'
         })

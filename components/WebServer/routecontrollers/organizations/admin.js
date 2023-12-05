@@ -60,11 +60,14 @@ async function deleteOrganization(req, res, next) {
       } catch (err) {
         debug(`file not found ${getStorageFolder()}/${conv.metadata.audio.filepath}`)
       }
-
     })
+    //delete all subtitle from that organization
+    await model.conversationSubtitles.deleteAllFromOrga(organization._id.toString())
 
     const result = await model.organizations.delete(organization._id.toString())
     if (result.deletedCount !== 1) throw new OrganizationError('Error when deleting organization')
+
+
 
     res.status(200).send({
       message: 'Organization has been deleted'
