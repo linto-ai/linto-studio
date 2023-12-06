@@ -53,6 +53,12 @@ async function getOrganizationCategory(req, res, next) {
 
     let category = await model.categories.getByOrgaId(organizationId)
 
+    if (req.query.type) {
+      if (TYPE.checkValue(req.query.type))
+        category = category.filter(cat => cat.type === req.query.type)
+      else throw new CategoryTypeNotDefined()
+    }
+
     if (category.length === 0) res.status(204).send()
     else {
 
