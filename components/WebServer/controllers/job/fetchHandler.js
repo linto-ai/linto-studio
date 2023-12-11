@@ -34,9 +34,9 @@ async function fetchJob(conv_id, conv_job) {
             let logs
             try {
                 const host = `${process.env.GATEWAY_SERVICES}/${job.endpoint}`
-                const job_info = await axios.get(`${host}/job/${job.job_id}`)
+                let job_info = await axios.get(`${host}/job/${job.job_id}`)
 
-                if (job_info.state !== 'pending') {
+                if (job_info.state === 'error') {
                     logs = await fetchLogs(host, job)
                     logs !== undefined ? (current_job.job_logs = logs) : undefined
                 }
