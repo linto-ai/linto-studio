@@ -1,3 +1,15 @@
+# 1.3.0
+- Introduced a new feature: Subtitle API
+  - Enables the generation of subtitles with customizable settings such as screen size, screen lines, etc.
+  - Supports the generation of SRT, VTT, and Studio formats.
+- Added DOCX conversion export functionality.
+- Improved user notification handling via email.
+- Implemented a validator for a fixed structure.
+- Included multiple tests for normalization.
+- Various fixes made to the API.
+- Modified to fetch 'jobs_log' only in the event of a job error.
+- Several minor fixes.
+
 # 1.2.0
 - Manage multiple auth
 - Added refresh token
