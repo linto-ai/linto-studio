@@ -1,0 +1,38 @@
+//User Menu
+@media (max-width: 1300px) {
+  #user-menu {
+    .select__head {
+      width: auto;
+      border-radius: 15px;
+
+      .select__head__icon {
+        margin: 0;
+        height: 30px;
+        width: 30px;
+      }
+      .select__head__label {
+        display: none;
+      }
+      .small-arrow-down {
+        display: none;
+      }
+    }
+
+    &.open {
+      .select__head {
+        border-radius: 15px 15px 0 0;
+      }
+      .select__list__inner,
+      .select__list__section {
+        border-radius: 0px;
+      }
+      .select__list__section:last-child .select__list__item:last-child {
+        border-radius: 0px;
+      }
+    }
+  }
+
+  #main-create-conv-button .label {
+    //display: none;
+  }
+}

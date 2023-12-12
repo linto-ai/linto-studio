@@ -1,0 +1,86 @@
+import CONVERSATION_FORMATS from "../const/conversationFormat.js"
+import { bus } from "../main.js"
+import { workerConnect } from "../tools/worker-message.js"
+import { genericConversationMixin } from "./genericConversation.js"
+
+export const conversationMixin = {
+  mixins: [genericConversationMixin],
+  methods: {
+    workerConnect(conversationId, token, userId) {
+      workerConnect(
+        conversationId,
+        token,
+        userId,
+        CONVERSATION_FORMATS.transcription,
+      )
+    },
+    async specificWorkerOnMessage(event) {
+      switch (event.data.action) {
+        case "speaker_name_updated":
+          this.updateSpeakerName(
+            event.data.params.value.speaker_id,
+            event.data.params.value.speaker_name,
+          )
+          bus.$emit("conversation_user_update", { ...event.data.params })
+          break
+        case "turn_speaker_update":
+          this.updateSpeakerTurn(
+            event.data.params.turnId,
+            event.data.params.value,
+          )
+          bus.$emit("turn_speaker_update", event.data.params)
+          break
+        case "words_updated":
+          bus.$emit("words_updated", {
+            ...event.data.params,
+          })
+          this.conversation.text[event.data.params.turnIndex].words =
+            event.data.params.value
+          break
+        case "segment_updated":
+          bus.$emit("segment_updated", {
+            ...event.data.params,
+          })
+          if (event.data.params.origin === "websocket")
+            bus.$emit("update_field", {
+              ...event.data.params,
+              flag: `conversationTurn/${event.data.params.turnId}`,
+            })
+          break
+        case "turn_list_updated":
+          this.updateConversationTurns(event.data.params)
+          bus.$emit("refresh_spk_timebox", {})
+          break
+        case "speaker_list_updated":
+          this.conversation.speakers = event.data.params.value
+          break
+        case "keywords_update":
+          this.conversation.jobs.nlp = {
+            keyword: event.data.params.job ?? { state: "pending" },
+          }
+          this.conversation.keywords = event.data.params.keywords
+          bus.$emit("refresh_keywords", {})
+          break
+        //this.status = event.data.params.state
+        default:
+          break
+      }
+    },
+    updateConversationTurns(events) {
+      this.conversation.text = events.value
+      setTimeout(() => {
+        bus.$emit("refresh_spk_timebox", {})
+      }, 200)
+    },
+    updateSpeakerName(speakerId, speakerName) {
+      this.conversation.speakers.find(
+        (spk) => spk.speaker_id === speakerId,
+      ).speaker_name = speakerName
+    },
+    updateSpeakerTurn(turnId, speakerId) {
+      this.conversation.text.find(
+        (turn) => turn.turn_id === turnId,
+      ).speaker_id = speakerId
+    },
+  },
+}

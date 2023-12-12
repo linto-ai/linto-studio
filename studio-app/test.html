@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>WebSocket demo</title>
+    <style type="text/css">
+        body {
+            font-family: "Courier New", sans-serif;
+        }
+
+        .buttons {
+            font-size: 34ps;
+            display: flex;
+            justify-content: center;
+        }
+
+        .button {
+            line-height: 1;
+            padding: 10px;
+            margin: 2rem;
+            border: medium solid;
+            min-height: 1em;
+            min-width: 1em;
+            cursor: pointer;
+            user-select: none;
+        }
+
+
+        .stop {
+            color: red;
+        }
+
+        .start {
+            color: green;
+        }
+
+        .partial {
+            min-width: 2em;
+        }
+
+        .text,
+        .partial {
+            font-size: 30px;
+        }
+
+        .result {
+            background-color: blanchedalmond;
+            border-color: black;
+            border-width: 5px;
+            border-style: solid;
+            padding: 10px;
+            font-size: 24px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="buttons">
+        <div class="start button">Start Streaming</div>
+        <div class="stop button">Stop</div>
+    </div>
+    <div class="partial"></div>
+    <div class="text">
+        <ul></ul>
+    </div>
+    <pre class="result"></pre>
+    <script>
+        var start = document.querySelector('.start'),
+            stop = document.querySelector('.stop'),
+            partial = document.querySelector('.partial'),
+            text = document.querySelector('.text ul'),
+            result = document.querySelector('.result'),
+            websocket = new WebSocket("wss://api.linto.ai/stt-ru-streaming/streaming");
+        result.style.visibility = "hidden";
+        start.onclick = function (event) {
+            navigator.getUserMedia({ audio: true }, initializeRecorder, function (a, b, c) {
+                console.log(a, b, c);
+            });
+            websocket.send('{"config": {"sample_rate":16000}}');
+        }
+        stop.onclick = function (event) {
+            mediaStream.getAudioTracks()[0].stop();
+            audio_context.close();
+            websocket.send('{"eof" : 1}');
+        }
+        websocket.onmessage = function (event) {
+            data = JSON.parse(event.data);
+            console.log(data)
+            if ('partial' in data) {
+                partial.textContent = data.partial;
+            } else if ('text' in data && !('words' in data)) {
+                var li = document.createElement('li');
+                li.textContent = data.text;
+                text.appendChild(li);
+            } else if ('words' in data) {
+                console.log(data)
+                result.innerHTML = JSON.stringify(data, null, 4);
+                result.style.visibility = "visible";
+            } else if ('eod' in data) {
+                websocket.close();
+            } else {
+                console.error("unsupported event", data);
+            }
+        };
+    </script>
+    <script>
+        // audio functions
+        function initializeRecorder(stream) {
+            // https://stackoverflow.com/a/42360902/466693
+            mediaStream = stream;
+
+            // get sample rate
+            audio_context = new AudioContext({ sampleRate: 16000 });
+
+            var audioInput = audio_context.createMediaStreamSource(stream);
+
+            console.log("Created media stream.");
+
+            var bufferSize = 8192;
+            // record only 1 channel
+            var recorder = audio_context.createScriptProcessor(bufferSize, 1, 1);
+            // specify the processing function
+            recorder.onaudioprocess = recorderProcess;
+            // connect stream to our recorder
+            audioInput.connect(recorder);
+            // connect our recorder to the previous destination
+            recorder.connect(audio_context.destination);
+        }
+        function recorderProcess(e) {
+            var left = e.inputBuffer.getChannelData(0);
+            websocket.send(convertFloat32ToInt16(left));
+        }
+        function convertFloat32ToInt16(buffer) {
+            l = buffer.length;
+            buf = new Int16Array(l);
+            while (l--) {
+                buf[l] = Math.min(1, buffer[l]) * 0x7FFF;
+            }
+            return buf.buffer;
+        }
+    </script>
+</body>
+
+</html>

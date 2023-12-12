@@ -1,0 +1,30 @@
+{
+  "audio": {
+    "samplingRate": 16000,
+    "encoding": 2,
+    "channels": 1
+  },
+  "streamingAsr": {
+    "fr": {
+      "uri": "wss://api.linto.ai/stt-french-streaming/streaming",
+      "auth": ""
+    },
+    "gb": {
+      "uri": "wss://api.linto.ai/stt-us-streaming/streaming",
+      "auth": ""
+    },
+    "ru": {
+      "uri": "wss://api.linto.ai/stt-ru-streaming/streaming",
+      "auth": ""
+    }
+  },
+  "lintoAPI": {
+    "domains": [
+      {
+        "label": "Official server",
+        "domain": "studio.linto.app"
+      }
+    ],
+    "apiPath": "cm-api/"
+  }
+}

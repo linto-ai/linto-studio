@@ -1,0 +1,29 @@
+.conversation-status,
+.conversation-status-error {
+  padding: 2rem 0;
+}
+
+.conversation-status .illustration {
+  max-height: 300px;
+}
+
+.conversation-status-line {
+  width: 100%;
+}
+
+.conversation-status-line > * {
+  width: 100%;
+}
+
+.conversation-status-error .illustration {
+  max-height: 150px;
+}
+
+.conversation-status-error .error-log {
+  background-color: white;
+  padding: 1rem;
+  border: var(--border-block);
+  box-shadow: var(--shadow-block);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}

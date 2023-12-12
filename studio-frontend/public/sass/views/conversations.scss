@@ -1,0 +1,38 @@
+.conversation-actions {
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.conversation-header {
+  border-bottom: var(--divider);
+  margin-bottom: 20px;
+}
+
+button#conversation-share {
+  &.active {
+    background-color: var(--text-primary);
+    .label {
+      color: #fff;
+    }
+  }
+}
+
+#conversation-share-container {
+  position: relative;
+  justify-content: center;
+}
+
+.conversation-dates {
+  font-size: 12px;
+  font-style: italic;
+  padding: 0 0 10px 0;
+  //margin-top: -15px;
+}
+
+.conversation-line {
+  &.error {
+    .conversation-line--name > * {
+      color: var(--red-chart) !important;
+    }
+  }
+}

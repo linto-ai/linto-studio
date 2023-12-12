@@ -1,0 +1,24 @@
+.orga-info {
+  display: inline-block;
+  margin-bottom: 10px;
+  &.title {
+    font-size: 22px;
+    font-weight: 500;
+  }
+  &.description {
+    font-size: 15px;
+    font-style: italic;
+  }
+  &.visibility {
+    font-size: 15px;
+    font-style: italic;
+  }
+}
+
+.invite-user-button {
+  margin-bottom: var(--tiny-gap);
+}
+
+.invite-user-list {
+  width: 420px;
+}

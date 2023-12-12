@@ -1,0 +1,12 @@
+.error-page {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+}
+
+.error-page a {
+  text-decoration: underline;
+}
