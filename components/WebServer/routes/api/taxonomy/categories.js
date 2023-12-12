@@ -10,13 +10,6 @@ const {
   searchCategory
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/taxonomy/search.js`)
 
-
-const {
-  listConvCategoryByHighlight
-} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/categories.js`)
-
-
-
 module.exports = (webserver) => {
   return [
     {
@@ -46,13 +39,6 @@ module.exports = (webserver) => {
       controller: getCategory,
       requireAuth: true,
       requireReadTaxonomyAccess: true
-    },
-    {
-      path: '/:conversationId/categories/highlights',
-      method: 'get',
-      requireAuth: true,
-      requireConversationWriteAccess: true,
-      controller: listConvCategoryByHighlight
     }
   ]
 }

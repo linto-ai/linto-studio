@@ -17,8 +17,9 @@ async function searchCategory(req, res, next) {
 
     let categoryList
     if (!req.query.type) throw new OrganizationError('Search type must be define')
-    else if (req.query.type !== 'explore' && req.query.type !== 'info' && req.query.type !== 'category') {
-      throw new OrganizationError('Search type must be explore, info or search')
+    const validTypes = ['explore', 'info', 'category', 'notags']
+    if (!validTypes.includes(req.query.type)) {
+      throw new OrganizationError('Search type must be explore, info, search or notags')
 
       // Get a list of tags (and their category) with their linked tags from any conversation (tags, categories, name, expand)
     } else if (req.query.type === 'explore') {
@@ -41,6 +42,16 @@ async function searchCategory(req, res, next) {
     } else if (req.query.type === 'category') {
       if (req.query.name === undefined) throw new OrganizationError('name is required for category search')
       else categoryList = await model.search.categories.getByOrgaIdAndName(organizationId, req.query.name)
+    } else if (req.query.type === 'notags') {
+      categoryList = await notags(organizationId)
+    }
+
+
+    if (req.query.expand === 'true') {
+      for (let i = 0; i < categoryList.length; i++) {
+        const tags = await model.search.tags.getByCategory(categoryList[i]._id.toString())
+        categoryList[i].tags = tags
+      }
     }
 
     if (categoryList.length === 0) res.status(204).send()
@@ -54,6 +65,13 @@ async function searchCategory(req, res, next) {
 function info(req) {
   if (!req.query.tags) throw new OrganizationError('Tags are required')
   return req.query.tags.split(',')
+}
+
+async function notags(organizationId) {
+  const tagsList = await model.tags.getByOrgaId(organizationId) // Get all tag from an organisation
+  let categoryTags = [...new Set(tagsList.map(tag => tag.categoryId))]  // Fetch category
+  const objectIds = categoryTags.map(stringId => model.tags.getObjectId(stringId))
+  return await model.categories.getByOrgaId(organizationId, { _id: { $nin: objectIds } })
 }
 
 async function search(req, organizationId) {

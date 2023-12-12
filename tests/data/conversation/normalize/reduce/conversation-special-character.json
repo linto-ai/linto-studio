@@ -1,0 +1,48 @@
+{
+    "_id": "655f5198fd00302cedd4e417",
+    "name": "my_conv_test",
+    "text": [{
+        "speaker_id": "793aaef7-cae0-47a8-bfeb-439863302030",
+        "turn_id": "0a4cf38d-41d6-4bb0-a5ae-79ee8578c5f0",
+        "raw_segment": "ça, c'est… est-ce que c'est l'embouchure",
+        "segment": "Ça, c'est… Est-ce que c'est l'embouchure",
+        "words": [{
+                "wid": "64af1ad8-7cbb-45b0-bbd8-3d2f7b043d8d",
+                "stime": 105.89,
+                "etime": 106.17,
+                "word": "Ça,"
+            },
+            {
+                "wid": "f871cc0a-6f94-494c-aff2-e86fcc506852",
+                "stime": 106.35,
+                "etime": 107.27,
+                "word": "c'est…"
+            },
+            {
+                "wid": "f871cc0a-6f94-494c-aff2-e86fcc506852",
+                "stime": 107.29,
+                "etime": 107.28,
+                "word": "Est-ce"
+            },
+
+            {
+                "wid": "25a523dc-60b2-4268-9798-20081b2d0bbb",
+                "stime": 107.30,
+                "etime": 107.33,
+                "word": "que"
+            },
+            {
+                "wid": "a96220d2-dcaa-49dc-81fc-7aa19ea7c41c",
+                "stime": 107.33,
+                "etime": 107.43,
+                "word": "c'est"
+            },
+            {
+                "wid": "51af3777-e423-4e9f-a0bc-9577a31538c0",
+                "stime": 107.43,
+                "etime": 107.79,
+                "word": "l'embouchure"
+            }
+        ]
+    }]
+}

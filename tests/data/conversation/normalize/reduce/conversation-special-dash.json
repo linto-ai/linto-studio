@@ -1,0 +1,237 @@
+{
+  "text": [
+    {
+      "speaker_id": "b850d1d9-4e37-475b-986e-d679ab8834d3",
+      "turn_id": "d8f0332d-f5ec-4c9b-be60-030d9370065a",
+      "raw_segment": "je ne m'étais pas beaucoup contredit ce qui n'est pas le cas des gens en général c'est un enjeu de fiabilité parmi les étapes",
+      "segment": "je ne m'étais pas beaucoup contredit, ce qui n'est pas le cas des gens en général. – C'est un enjeu de fiabilité. Parmi les étapes",
+      "words": [
+        {
+          "wid": "1513d2f5-2e4b-47f9-80ed-60306c380bb0",
+          "stime": 903.77,
+          "etime": 903.81,
+          "word": "je",
+          "confidence": 0.9,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "21b039f6-98d9-485b-8248-551440e55485",
+          "stime": 903.81,
+          "etime": 903.85,
+          "word": "ne",
+          "confidence": 0.51,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "28a06ee1-8920-4058-b514-0c76ef8bec84",
+          "stime": 903.85,
+          "etime": 903.97,
+          "word": "m'étais",
+          "confidence": 0.95,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "8ae74548-b58e-47b9-a4f4-256dfa04f554",
+          "stime": 903.97,
+          "etime": 904.13,
+          "word": "pas",
+          "confidence": 0.87,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "ed2766c1-3ea6-46b0-9287-df42d954d08b",
+          "stime": 904.13,
+          "etime": 904.3299999999999,
+          "word": "beaucoup",
+          "confidence": 0.53,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "143c78b5-930e-4f46-bdac-546738f1081a",
+          "stime": 904.3299999999999,
+          "etime": 904.77,
+          "word": "contredit,",
+          "confidence": 0.76,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "184304db-1ceb-479f-a88b-2e29a04e8fa0",
+          "stime": 904.87,
+          "etime": 905.0699999999999,
+          "word": "ce",
+          "confidence": 0.74,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "08ff8b51-8a02-4d07-b481-f9ff5b381759",
+          "stime": 905.0699999999999,
+          "etime": 905.15,
+          "word": "qui",
+          "confidence": 0.76,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "4b2e9f16-b160-4b4f-a1d2-40e7eca0952f",
+          "stime": 905.15,
+          "etime": 905.21,
+          "word": "n'est",
+          "confidence": 0.96,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "7d805d40-b2fe-4118-94f8-bc4c42ef60a8",
+          "stime": 905.21,
+          "etime": 905.31,
+          "word": "pas",
+          "confidence": 0.89,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "708fdbc7-3b7f-4068-8c06-c22782b4168d",
+          "stime": 905.31,
+          "etime": 905.43,
+          "word": "le",
+          "confidence": 0.89,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "cd61fd51-f585-43eb-8daa-a08a0f56b97d",
+          "stime": 905.43,
+          "etime": 905.55,
+          "word": "cas",
+          "confidence": 0.89,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "caf4e164-4313-497d-8615-22af39c00432",
+          "stime": 905.55,
+          "etime": 906.03,
+          "word": "des",
+          "confidence": 0.76,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "0cc17b60-b31d-4d1c-b511-3816ce5f0be0",
+          "stime": 906.03,
+          "etime": 906.23,
+          "word": "gens",
+          "confidence": 0.88,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "9bb299a1-a6be-42d8-9811-5d87afb5d655",
+          "stime": 906.23,
+          "etime": 906.51,
+          "word": "en",
+          "confidence": 0.1,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "2a6aff01-5cdc-4a43-b944-c1b1f4e94564",
+          "stime": 906.51,
+          "etime": 906.51,
+          "word": "général.",
+          "confidence": 0.32,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "63bbd645-03a9-4179-856c-e82ba394c4e2",
+          "stime": 906.51,
+          "etime": 906.51,
+          "word": "–",
+          "confidence": 1,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "6c1f2fcb-3ae9-4f13-9bc0-3034b23771ea",
+          "stime": 906.5699999999999,
+          "etime": 906.5699999999999,
+          "word": "C'est",
+          "confidence": 0.89,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "02d59334-820a-441a-9e5b-06d2cc92bb21",
+          "stime": 906.5699999999999,
+          "etime": 906.5699999999999,
+          "word": "un",
+          "confidence": 0.89,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "ac705661-a0fe-4b65-94a9-a024d2cf0bc2",
+          "stime": 906.5699999999999,
+          "etime": 906.73,
+          "word": "enjeu",
+          "confidence": 0.94,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "199dca9d-42c7-4767-a69f-128f6e65588c",
+          "stime": 906.73,
+          "etime": 906.85,
+          "word": "de",
+          "confidence": 0.89,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "a7b08a7b-418c-47dc-b45e-510a94a4e16c",
+          "stime": 906.85,
+          "etime": 907.29,
+          "word": "fiabilité.",
+          "confidence": 0.93,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "6bc874a9-f808-4c23-b701-1e1ce380994b",
+          "stime": 907.49,
+          "etime": 907.73,
+          "word": "Parmi",
+          "confidence": 0.95,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "06b3c8b4-50ea-4230-afcf-4f5aeb52ed2e",
+          "stime": 907.73,
+          "etime": 907.85,
+          "word": "les",
+          "confidence": 0.81,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "49b38fa0-eafa-4807-a126-5d0b402d7bc1",
+          "stime": 907.85,
+          "etime": 908.01,
+          "word": "étapes",
+          "confidence": 0.92,
+          "highlights": [],
+          "keywords": []
+        }
+      ]
+    }
+  ]
+}

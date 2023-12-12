@@ -49,10 +49,28 @@ async function getOrganizationCategory(req, res, next) {
       }
     }
 
-    let category = await model.categories.getByOrgaId(organizationId, searchQuery)
+
+
+    let category = await model.categories.getByOrgaId(organizationId)
+
+    if (req.query.type) {
+      if (TYPE.checkValue(req.query.type))
+        category = category.filter(cat => cat.type === req.query.type)
+      else throw new CategoryTypeNotDefined()
+    }
 
     if (category.length === 0) res.status(204).send()
-    res.status(200).send(category)
+    else {
+
+      if (req.query.expand === 'true') {
+        for (let i = 0; i < category.length; i++) {
+          const tags = await model.search.tags.getByCategory(category[i]._id.toString())
+          category[i].tags = tags
+        }
+      }
+      res.status(200).send(category)
+
+    }
 
   } catch (err) {
     next(err)

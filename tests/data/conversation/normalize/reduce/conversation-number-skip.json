@@ -1,0 +1,108 @@
+{
+    "text": [{
+        "speaker_id": "311b6124-25a9-456b-ab31-03024d6d8727",
+        "turn_id": "32b8b1fb-27a1-45cc-b2a1-ae902e3059c5",
+        "raw_segment": "de la méditerranée avec… des trois gibraltars. des trois gibraltars. ok,",
+        "segment": "de la Méditerranée avec… Des 3 Gibraltars. Des 3 Gibraltars. Ok,",
+        "words": [
+            {
+                "wid": "ab8621ee-33c6-4299-b528-6b9487d3a313",
+                "end": 107.87,
+                "start": 107.78,
+                "word": "de",
+                "confidence": 0.97,
+                "highlights": [],
+                "keywords": []
+            },{
+                "wid": "cb8621ee-33c6-4299-b528-6b9487d3a313",
+                "end": 107.95,
+                "start": 107.87,
+                "word": "la",
+                "confidence": 0.97,
+                "highlights": [],
+                "keywords": []
+            },
+            {
+                "wid": "bb8621ee-33c6-4299-b528-6b9487d3a313",
+                "stime": 107.95,
+                "etime": 108.53,
+                "word": "Méditerranée",
+                "confidence": 0.97,
+                "highlights": [],
+                "keywords": []
+            },
+            {
+                "wid": "f94501b5-8644-4070-891c-a0096cafd63a",
+                "stime": 108.53,
+                "etime": 109.01,
+                "word": "avec…",
+                "confidence": 0.59,
+                "highlights": [],
+                "keywords": []
+            },
+            {
+                "wid": "03034b65-a42e-478d-b345-d1a2c781d0ae",
+                "stime": 109.63,
+                "etime": 109.77,
+                "word": "Des",
+                "confidence": 0.35,
+                "highlights": [],
+                "keywords": []
+            },
+            {
+                "wid": "d6423692-86eb-48bd-84a2-93e63f87dc62",
+                "stime": 109.77,
+                "etime": 109.93,
+                "word": "3",
+                "confidence": 0.69,
+                "highlights": [],
+                "keywords": []
+            },
+            {
+                "wid": "3d13fff2-6899-4e09-a737-3734c93aead2",
+                "stime": 109.93,
+                "etime": 110.31,
+                "word": "Gibraltars.",
+                "confidence": 0.8,
+                "highlights": [],
+                "keywords": []
+            },
+            {
+                "wid": "9177cb8e-358a-4691-965d-d845bb8b789e",
+                "stime": 110.37,
+                "etime": 110.49,
+                "word": "Des",
+                "confidence": 0.49,
+                "highlights": [],
+                "keywords": []
+            },
+            {
+                "wid": "ddfc97b3-9479-4279-b65e-ad84167208e3",
+                "stime": 110.49,
+                "etime": 110.61,
+                "word": "3",
+                "confidence": 0.81,
+                "highlights": [],
+                "keywords": []
+            },
+            {
+                "wid": "7f9589b5-37e5-41e7-882d-8aff1205804b",
+                "stime": 110.61,
+                "etime": 111.09,
+                "word": "Gibraltars.",
+                "confidence": 0.92,
+                "highlights": [],
+                "keywords": []
+            },
+            {
+                "wid": "864b84f2-e499-422a-8fef-77993f314e50",
+                "stime": 111.59,
+                "etime": 111.87,
+                "word": "Ok,",
+                "confidence": 0.76,
+                "highlights": [],
+                "keywords": []
+            }
+        ]
+    }]
+}

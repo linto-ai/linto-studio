@@ -1,0 +1,158 @@
+{
+  "segments": [
+    {
+      "duration": 1576.67,
+      "end": 1577.98,
+      "raw_segment": "je ne m'étais pas beaucoup contredit, ce qui n'est pas le cas des gens en général. – C'est un enjeu de fiabilité. Parmi les étapes",
+      "segment": "je ne m'étais pas beaucoup contredit, ce qui n'est pas le cas des gens en général. – C'est un enjeu de fiabilité. Parmi les étapes",
+      "spk_id": null,
+      "start": 1.31,
+      "words": [
+        {
+          "conf": 0.9,
+          "end": 903.81,
+          "start": 903.77,
+          "word": "je"
+        },
+        {
+          "conf": 0.51,
+          "end": 903.85,
+          "start": 903.81,
+          "word": "ne"
+        },
+        {
+          "conf": 0.95,
+          "end": 903.97,
+          "start": 903.85,
+          "word": "m'étais"
+        },
+        {
+          "conf": 0.87,
+          "end": 904.13,
+          "start": 903.97,
+          "word": "pas"
+        },
+        {
+          "conf": 0.53,
+          "end": 904.3299999999999,
+          "start": 904.13,
+          "word": "beaucoup"
+        },
+        {
+          "conf": 0.76,
+          "end": 904.77,
+          "start": 904.3299999999999,
+          "word": "contredit"
+        },
+        {
+          "conf": 0.74,
+          "end": 905.0699999999999,
+          "start": 904.87,
+          "word": "ce"
+        },
+        {
+          "conf": 0.76,
+          "end": 905.15,
+          "start": 905.0699999999999,
+          "word": "qui"
+        },
+        {
+          "conf": 0.96,
+          "end": 905.21,
+          "start": 905.15,
+          "word": "n'est"
+        },
+        {
+          "conf": 0.89,
+          "end": 905.31,
+          "start": 905.21,
+          "word": "pas"
+        },
+        {
+          "conf": 0.89,
+          "end": 905.43,
+          "start": 905.31,
+          "word": "le"
+        },
+        {
+          "conf": 0.89,
+          "end": 905.55,
+          "start": 905.43,
+          "word": "cas"
+        },
+        {
+          "conf": 0.76,
+          "end": 906.03,
+          "start": 905.55,
+          "word": "des"
+        },
+        {
+          "conf": 0.88,
+          "end": 906.23,
+          "start": 906.03,
+          "word": "gens"
+        },
+        {
+          "conf": 0.1,
+          "end": 906.51,
+          "start": 906.23,
+          "word": "en"
+        },
+        {
+          "conf": 0.32,
+          "end": 906.51,
+          "start": 906.51,
+          "word": "général"
+        },
+        {
+          "conf": 0.89,
+          "end": 906.5699999999999,
+          "start": 906.5699999999999,
+          "word": "C'est"
+        },
+        {
+          "conf": 0.89,
+          "end": 906.5699999999999,
+          "start": 906.5699999999999,
+          "word": "un"
+        },
+        {
+          "conf": 0.94,
+          "end": 906.73,
+          "start": 906.5699999999999,
+          "word": "enjeu"
+        },
+        {
+          "conf": 0.89,
+          "end": 906.85,
+          "start": 906.73,
+          "word": "de"
+        },
+        {
+          "conf": 0.93,
+          "end": 907.29,
+          "start": 906.85,
+          "word": "fiabilité"
+        },
+        {
+          "conf": 0.95,
+          "end": 907.73,
+          "start": 907.49,
+          "word": "Parmi"
+        },
+        {
+          "conf": 0.81,
+          "end": 907.85,
+          "start": 907.73,
+          "word": "les"
+        },
+        {
+          "conf": 0.92,
+          "end": 908.01,
+          "start": 907.85,
+          "word": "étapes"
+        }
+      ]
+    }
+  ]
+}

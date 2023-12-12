@@ -20,7 +20,8 @@ async function updateOrganization(req, res, next) {
     organization = organization[0]
 
     const isOrgaFound = await model.organizations.getByName(req.body.name)
-    if (isOrgaFound.length === 1) throw new OrganizationConflict('Organization name already exists')
+    if (isOrgaFound.length === 1 && organization._id.toString() !== isOrgaFound[0]._id.toString())
+      throw new OrganizationConflict('Organization name already exists')
 
     if (req.body.token) organization.token = req.body.token
     if (req.body.description) organization.description = req.body.description
@@ -60,11 +61,14 @@ async function deleteOrganization(req, res, next) {
       } catch (err) {
         debug(`file not found ${getStorageFolder()}/${conv.metadata.audio.filepath}`)
       }
-
     })
+    //delete all subtitle from that organization
+    await model.conversationSubtitles.deleteAllFromOrga(organization._id.toString())
 
     const result = await model.organizations.delete(organization._id.toString())
     if (result.deletedCount !== 1) throw new OrganizationError('Error when deleting organization')
+
+
 
     res.status(200).send({
       message: 'Organization has been deleted'

@@ -1,41 +1,5 @@
 {
   "/api/conversations/{conversationId}/highlights": {
-    "get": {
-      "tags": [
-        "conversations taxonomy"
-      ],
-      "summary": "List category of type highlights from a conversation",
-      "parameters": [{
-          "name": "conversationId",
-          "in": "path",
-          "description": "The conversation id",
-          "required": true,
-          "type": "string"
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "OK",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "$ref": "#/components/schemas/Category"
-                }
-              }
-            }
-          }
-        },
-        "204": {
-          "$ref": "#/components/responses/NoContent"
-        },
-        "401": {
-          "$ref": "#/components/responses/Unauthorized"
-        }
-      }
-    },
     "post": {
       "tags": [
         "conversations taxonomy"

@@ -1,0 +1,134 @@
+{
+  "confidence": 0.9210118665828894,
+  "diarization_segments": [],
+  "raw_transcription": "partant du constat qu' aujourd' hui dans un pays comme la france les trois quarts des plus de quinze ans",
+  "segments": [{
+    "duration": 315.569004,
+    "end": 320.069004,
+    "raw_segment": "partant du constat qu' aujourd' hui dans un pays comme la france les trois quarts des plus de quinze ans",
+    "segment": "Partant du constat qu'aujourd'hui, dans un pays comme la France, les 3 quarts des plus de 15 ans",
+    "spk_id": "spk1",
+    "start": 4.5,
+    "words": [{
+        "conf": 0.935756,
+        "end": 274.68,
+        "start": 274.2,
+        "word": "partant"
+      },
+      {
+        "conf": 1.0,
+        "end": 274.86,
+        "start": 274.71,
+        "word": "du"
+      },
+      {
+        "conf": 1.0,
+        "end": 275.22,
+        "start": 274.86,
+        "word": "constat"
+      },
+      {
+        "conf": 1.0,
+        "end": 275.31,
+        "start": 275.22,
+        "word": "qu'"
+      },
+      {
+        "conf": 1.0,
+        "end": 275.61,
+        "start": 275.31,
+        "word": "aujourd'"
+      },
+      {
+        "conf": 1.0,
+        "end": 275.76,
+        "start": 275.61,
+        "word": "hui"
+      },
+      {
+        "conf": 1.0,
+        "end": 276.21,
+        "start": 275.97,
+        "word": "dans"
+      },
+      {
+        "conf": 1.0,
+        "end": 276.3,
+        "start": 276.21,
+        "word": "un"
+      },
+      {
+        "conf": 1.0,
+        "end": 276.81,
+        "start": 276.3,
+        "word": "pays"
+      },
+      {
+        "conf": 1.0,
+        "end": 277.11,
+        "start": 276.87,
+        "word": "comme"
+      },
+      {
+        "conf": 1.0,
+        "end": 277.2,
+        "start": 277.11,
+        "word": "la"
+      },
+      {
+        "conf": 1.0,
+        "end": 277.68,
+        "start": 277.2,
+        "word": "france"
+      },
+      {
+        "conf": 1.0,
+        "end": 277.8,
+        "start": 277.68,
+        "word": "les"
+      },
+      {
+        "conf": 0.872892,
+        "end": 278.1,
+        "start": 277.8,
+        "word": "trois"
+      },
+      {
+        "conf": 0.862884,
+        "end": 278.4,
+        "start": 278.1,
+        "word": "quarts"
+      },
+      {
+        "conf": 0.993941,
+        "end": 278.52,
+        "start": 278.4,
+        "word": "des"
+      },
+      {
+        "conf": 1.0,
+        "end": 278.76,
+        "start": 278.52,
+        "word": "plus"
+      },
+      {
+        "conf": 1.0,
+        "end": 278.91,
+        "start": 278.76,
+        "word": "de"
+      },
+      {
+        "conf": 1.0,
+        "end": 279.33,
+        "start": 278.91,
+        "word": "quinze"
+      },
+      {
+        "conf": 0.990639,
+        "end": 279.6,
+        "start": 279.33,
+        "word": "ans"
+      }
+    ]
+  }]
+}

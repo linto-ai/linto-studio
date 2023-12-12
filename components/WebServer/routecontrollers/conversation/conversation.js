@@ -33,6 +33,10 @@ async function deleteConversation(req, res, next) {
         // delete audiowaveform json file
         deleteFile(`${getStorageFolder()}/${getAudioWaveformFolder()}/${jsonFilename}`)
 
+        // delete also all subtitle related to that conversation
+        await model.conversationSubtitles.deleteAllFromConv(req.params.conversationId)
+
+
         res.status(200).send({
             message: 'Conversation has been deleted'
         })
@@ -73,14 +77,23 @@ async function getConversation(req, res, next) {
 
         await fetchJob(req.params.conversationId, conversation[0].jobs)
 
-        let filter = []
-        if (req?.query?.key) {
-            filter = ['name', 'owner', 'organization', 'sharedWithUsers', 'jobs']
+        if (req?.query?.key && typeof req.query.key === 'string') {
+            const projectionValue = req.query.projection && /^\d+$/.test(req.query.projection) ? parseInt(req.query.projection, 10) : 1;
+            let filter = ['name', 'owner', 'organization', 'sharedWithUsers', 'jobs']
 
-            if (typeof req.query.key === 'string') filter.push(req.query.key)
-            else filter.push(...req.query.key)
+            let projection = {}
+            req.query.key.split(',').map(key => {
+                if (!projection.hasOwnProperty(key)) {
+                    projection[key] = projectionValue
+                }
+            })
 
-            conversation = await model.conversations.getById(req.params.conversationId, filter)
+            filter.forEach(field => {
+                if (projectionValue === 1) projection[field] = 1
+                else delete projection[field]
+            })
+
+            conversation = await model.conversations.getByIdWithFilter(req.params.conversationId, projection)
         } else conversation = await model.conversations.getById(req.params.conversationId)
         const data = await conversationUtility.getUserRightFromConversation(req.payload.data.userId, conversation[0])
         res.status(200).send({

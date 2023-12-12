@@ -12,7 +12,7 @@ function correctSegmentText(seg_text) {
 }
 
 function simplePunctuation(seg_text, words, loop_data) {
-  if (seg_text.lowercase.replace(/[.,"]/g, '') === words.word.toLowerCase()) {
+  if (seg_text.lowercase.replace(/[.,…"]/g, '') === words.word.toLowerCase()) {
     return {
       ...words,
       word: seg_text.original
@@ -32,11 +32,12 @@ function diminutivePunctuation(seg_text, words, loop_data) {
 
 
 function doublePunctuation(seg_text, words, loop_data) {
-  if (/[?!:;«»]$/.test(seg_text.lowercase)) {
+  if (/[?!:;«»–]$/.test(seg_text.lowercase)) {
     let timestamp = 0
-    if (loop_data.word_index !== 0) {
-      timestamp = loop_data.words[loop_data.word_index - 1].end
-    }
+
+    if (loop_data.last_endtime !== undefined) timestamp = loop_data.last_endtime
+    else if (loop_data.word_index !== 0) timestamp = loop_data.words[loop_data.word_index - 1].start
+
     //count number if space in the segment
     let spacesCount = (seg_text.lowercase.match(/ /g) || []).length
 
@@ -60,7 +61,7 @@ function apostropheNormalize(seg_text, words, loop_data) {
       word: seg_text.original,
       end: loop_data.words[loop_data.word_index].end,
       conf: (words.conf + loop_data.words[loop_data.word_index].conf) / 2,
-      skip_words: 1
+      skip_words: seg_text.original.split('\'').length - 1  // Sometime we have multiple ', same rule apply x time
     }
   }
 }
@@ -105,11 +106,10 @@ function numberNormalize(seg_text, words, loop_data) {
     let confidences_scores = words.conf
     while (index < loop_data.words.length) {
       if (
-        next_word_seg.lowercase === loop_data.words[index].word // Break loop, next word is not a number
+        next_word_seg.lowercase === loop_data.words[index].word.toLowerCase() // Break loop, next word is not a number
         || (next_word_seg.fixed !== undefined && next_word_seg.fixed === loop_data.words[index].word) // In can of fixed segment match word
         || end_segment // in case of number in row and nothing after, end_segment can't be at false if we have x number in row
       ) { // trigger exit loop
-
 
         if (number_in_a_row_find > 1) { // if multiple number in a row
           let start = words.start

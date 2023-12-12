@@ -6,7 +6,7 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
 
 const Mailing = require(`${process.cwd()}/lib/mailer/mailing`)
-const validator = require(`${process.cwd()}/lib/dao/schema/emailNotification`)
+const validator = require(`${process.cwd()}/lib/dao/schema/validator`)
 
 const { storeFile, defaultPicture, deleteFile, getStorageFolder, getAudioWaveformFolder } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 
@@ -156,8 +156,8 @@ async function updateUser(req, res, next) {
         }
         if (req.body.emailNotifications) {
             let emailNotifications = req.body.emailNotifications
-            if(typeof emailNotifications !== 'object') emailNotifications = JSON.parse(emailNotifications)
-            if(validator(req.body.emailNotifications)){
+            if (typeof emailNotifications !== 'object') emailNotifications = JSON.parse(emailNotifications)
+            if (validator(req.body.emailNotifications, 'emailNotification')) {
                 user.emailNotifications = emailNotifications
             }
         }

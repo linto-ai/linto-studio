@@ -12,6 +12,11 @@ const {
     downloadConversation,
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/export.js`)
 
+const {
+    generateSubtitle,
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/subtitle.js`)
+
+
 
 module.exports = (webserver) => {
     return [
