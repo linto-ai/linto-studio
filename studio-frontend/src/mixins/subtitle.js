@@ -1,5 +1,6 @@
 import CONVERSATION_FORMATS from "../const/conversationFormat.js"
 import { bus } from "../main.js"
+import { ScreenList } from "../models/screenList.js"
 import { workerConnect } from "../tools/worker-message.js"
 import { genericConversationMixin } from "./genericConversation.js"
 
@@ -18,31 +19,7 @@ export const subtitleMixin = {
       if (newVal) {
         let arr = this.subtitleObj?.screens
         if (arr) {
-          let screens = new Map()
-          for (let [i, screen] of arr.entries()) {
-            screens.set(screen.screen_id, {
-              screen: screen,
-              prev: i > 0 ? arr[i - 1].screen_id : null,
-              next: i < arr.length - 1 ? arr[i + 1].screen_id : null,
-            })
-          }
-          let res = { first: arr[0].screen_id, screens: screens }
-          res[Symbol.iterator] = function () {
-            let currentId = this.first
-            let currentScreen = this.screens.get(currentId)
-            return {
-              next: () => {
-                if (currentScreen) {
-                  let value = currentScreen
-                  currentId = currentScreen.next
-                  currentScreen = this.screens.get(currentId)
-                  return { value: value, done: false }
-                }
-                return { done: true }
-              },
-            }
-          }
-          this.screens = res
+          this.screens = ScreenList.from(arr)
         }
       }
     },

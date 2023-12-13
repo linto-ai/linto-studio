@@ -6,7 +6,7 @@
         :audioDuration="audio.duration"
         :screens="blocks.screens"></VideoPlayer>
       <div id="screen-list" class="flex1" :key="blockKey">
-        <div v-for="block in blocks" :key="block.screen_id">
+        <div v-for="(block, index) in blocks" :key="block.screen.screen_id">
           <SubtitleEditorBlock
             :userInfo="userInfo"
             :canEdit="canEdit"
@@ -29,6 +29,8 @@ import { bus } from "../main.js"
 import SubtitleEditorBlock from "./SubtitleEditorBlock.vue"
 import SubtitlePlayer from "@/components/SubtitlePlayer.vue"
 import VideoPlayer from "./VideoPlayer.vue"
+import { ScreenList } from "../models/screenList.js"
+
 export default {
   props: {
     canEdit: {
@@ -44,7 +46,7 @@ export default {
       required: true,
     },
     blocks: {
-      type: Object,
+      type: ScreenList,
       required: true,
     },
   },

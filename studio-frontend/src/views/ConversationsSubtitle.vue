@@ -147,11 +147,11 @@ export default {
       }
     },
     screenUpdate(screen_id, stime, etime) {
-      let block = this.screens?.screens.get(screen_id)
+      let block = this.screens?.get(screen_id)
       if (block) {
         block.screen.stime = stime
         block.screen.etime = etime
-        this.screens.screens.set(screen_id, block)
+        this.screens.set(screen_id, block)
         workerSendMessage("update_screen", {
           screen: block.screen,
         })

@@ -32,12 +32,13 @@ import { playerMixin } from "@/mixins/player.js"
 import WaveSurfer from "wavesurfer.js"
 import RegionsPlugin from "../../node_modules/wavesurfer.js/dist/plugins/regions.js"
 import TimelinePlugin from "../../node_modules/wavesurfer.js/dist/plugins/timeline.js"
-import { workerSendMessage } from "../tools/worker-message"
+import { ScreenList } from "../models/screenList"
+
 export default {
   mixins: [playerMixin],
   props: {
     blocks: {
-      type: Object,
+      type: ScreenList,
       required: true,
     },
     canEdit: {
@@ -51,7 +52,7 @@ export default {
   },
   data() {
     return {
-      zoom: 60,
+      zoom: 130,
       blocksSettings: new Map(),
     }
   },
@@ -157,7 +158,7 @@ export default {
         })
         this.regionsPlugin.on("region-updated", (region) => {
           const screenId = region.id
-          const currentBlock = this.blocks.screens.get(screenId)
+          const currentBlock = this.blocks.get(screenId)
           const current = this.blocksSettings.get(screenId)
           let drag = region.start != current.start && region.end != current.end
           current.start = region.start
@@ -183,7 +184,7 @@ export default {
           }
           current.start = Math.round(current.start * 1000) / 1000
           current.end = Math.round(current.end * 1000) / 1000
-          let screen = this.blocks.screens.get(screenId).screen
+          let screen = this.blocks.get(screenId).screen
           if (screen.stime !== current.start || screen.etime !== current.end) {
             this.$emit("blockUpdate", screenId, current.start, current.end)
           }
