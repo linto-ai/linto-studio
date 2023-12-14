@@ -36,7 +36,7 @@ def performBuildForFile(changedFiles, version) {
 
     if (changedFiles.contains('studio-dashboard')) {
         echo 'Files in studio-dashboard path are modified. Running specific build steps for studio-dashboard...'
-        buildDockerfile('studio-websocket/Dockerfile', 'studio-websocket', version)
+        buildDockerfile('studio-websocket/Dockerfile', 'studio-dashboard', version)
     }
 }
 

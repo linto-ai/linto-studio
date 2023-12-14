@@ -6,26 +6,26 @@ WEBSERVER_SWAGGER_HTTP_HOST=localhost
 WEBSERVER_SWAGGER_API_PATH=cm-api
 
 # Mongo
-DB_HOST=localhost
+DB_HOST=studio-mongo
 DB_PORT=27017
-DB_REQUIRE_LOGIN=true
-DB_USER=root
-DB_PASS=example
+# DB_REQUIRE_LOGIN=true
+# DB_USER=root
+# DB_PASS=example
 DB_NAME=conversations
 
 # Request a specific version of the database (optional)
-DB_MIGRATION_TARGET=1.2.0
+DB_MIGRATION_TARGET=1.2.1
 
 # STT Config
-GATEWAY_SERVICES=https://alpha.api.linto.ai
+GATEWAY_SERVICES=<gateway_service_host>
 
 # NLP Service
 NLP_SERVICES=<nlp_service_host>
 NLP_METHOD=frequencies,textrank
 
 # Cross domain accessibility
-CORS_ENABLED=false
-CORS_API_WHITELIST=
+CORS_ENABLED=true
+CORS_API_WHITELIST=http://localhost
 
 # Express settings
 EXPRESS_SIZE_FILE_MAX=500mb

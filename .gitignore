@@ -1,3 +1,6 @@
+# Other 
+docker-optional/mongo-database/
+
 # API
 **/node_modules
 ./database
