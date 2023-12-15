@@ -8,9 +8,6 @@ WEBSERVER_SWAGGER_API_PATH=cm-api
 # Mongo
 DB_HOST=studio-mongo
 DB_PORT=27017
-# DB_REQUIRE_LOGIN=true
-# DB_USER=root
-# DB_PASS=example
 DB_NAME=conversations
 
 # Request a specific version of the database (optional)
