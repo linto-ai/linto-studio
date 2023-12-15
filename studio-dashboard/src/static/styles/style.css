@@ -1,0 +1,62 @@
+body {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 10px;
+}
+
+h1 {
+  color: black;
+}
+
+#pagination {
+  display: flex;
+  justify-content: space-between;
+}
+
+#pagination > div {
+  width: 150px;
+}
+
+.card {
+  border: 1px solid #5b5b66;
+  display: inline-block;
+  padding: 1rem 2rem;
+  border-radius: 5px;
+  text-align: center;
+  margin: 1rem;
+}
+
+.card--body {
+  font-size: 2rem;
+}
+
+.stat {
+  margin: 1rem;
+}
+
+#main-page {
+  display: flex;
+}
+
+#main-page__users {
+  flex: 1;
+}
+
+#main-page__organisations {
+  width: 300px;
+}
+
+.inline-flex {
+  display: flex;
+  gap: 1em;
+}
+
+a[selected="selected"] {
+  color: black;
+}
+
+@media only screen and (max-width: 1200px) {
+  .userIdColumn {
+    display: none;
+  }
+}

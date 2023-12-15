@@ -1,0 +1,137 @@
+<template>
+  <div>
+    <div class="login-form-container flex col">
+      <img src="/img/linto-studio-logo.svg" class="login-logo" />
+      <div>
+        <LocalSwitcher></LocalSwitcher>
+      </div>
+
+      <form id="app-login" class="flex col" @submit="handleForm">
+        <h2 class="login-title">{{ $t("login.title") }}</h2>
+        <div class="form-field flex col">
+          <label for="email" class="form-label">{{
+            $t("login.email_label")
+          }}</label>
+          <input
+            id="email"
+            type="text"
+            v-model="email.value"
+            autocomplete="username"
+            :class="email.error !== null ? 'error' : ''"
+            ref="email"
+            @change="testEmail()" />
+          <span class="error-field" v-if="email.error !== null">{{
+            email.error
+          }}</span>
+        </div>
+        <div class="form-field flex col">
+          <label for="password" class="form-label">{{
+            $t("login.password_label")
+          }}</label>
+          <input
+            id="password"
+            type="password"
+            v-model="password.value"
+            autocomplete="current-password"
+            :class="password.error !== null ? 'error' : ''"
+            @change="testPasswordEmpty()" />
+          <span class="error-field" v-if="password.error !== null">{{
+            password.error
+          }}</span>
+        </div>
+        <div class="form-field flex row">
+          <button class="btn green" type="submit">
+            <span class="label">{{ $t("login.login_button") }}</span>
+            <span class="icon apply"></span>
+          </button>
+        </div>
+        <router-link to="/reset-password" class="toggle-login-link">{{
+          $t("login.recover_password")
+        }}</router-link>
+        <div class="form-field" v-if="formError !== null">
+          <span class="form-error">{{ formError }}</span>
+        </div>
+      </form>
+
+      <router-link to="/create-account" class="toggle-login-link">{{
+        $t("login.create_account_button")
+      }}</router-link>
+    </div>
+  </div>
+</template>
+<script>
+import LocalSwitcher from "@/components/LocalSwitcher.vue"
+import { apiLoginUser } from "../api/user"
+export default {
+  data() {
+    return {
+      email: {
+        value: "",
+        error: null,
+        valid: false,
+      },
+      password: {
+        value: "",
+        error: null,
+        valid: false,
+      },
+      formError: null,
+    }
+  },
+  mounted() {
+    this.$refs.email.focus()
+  },
+  computed: {
+    formValid() {
+      return this.email.valid && this.password.valid
+    },
+  },
+  methods: {
+    async handleForm(event) {
+      event?.preventDefault()
+      try {
+        this.formError = null
+        this.testEmail()
+        this.testPasswordEmpty()
+
+        if (this.formValid) {
+          let login = await apiLoginUser(this.email.value, this.password.value)
+          if (login.status === "success") {
+            console.log("lg", login.data)
+            this.setCookie("userId", login.data.user_id, 7)
+            this.setCookie("authToken", login.data.auth_token, 7)
+            this.setCookie("refreshToken", login.data.refresh_token, 14)
+            this.setCookie("cm_orga_scope", "")
+
+            if (this.$route?.query?.next) {
+              window.location.href = this.$route?.query?.next
+            } else {
+              window.location.href = "/"
+            }
+          } else {
+            throw login
+          }
+        }
+      } catch (error) {
+        if (process.env.VUE_APP_DEBUG === "true") {
+          console.error(error)
+        }
+        this.formError =
+          error?.error?.response?.data?.error?.message ||
+          "An error has occured, please try again later"
+      }
+      return false
+    },
+    testEmail() {
+      return this.$options.filters.testEmail(this.email)
+    },
+    testPasswordEmpty() {
+      return this.$options.filters.testFieldEmpty(this.password)
+    },
+    setCookie(name, value, exdays) {
+      return this.$options.filters.setCookie(name, value, exdays)
+    },
+  },
+  components: { LocalSwitcher },
+}
+</script>

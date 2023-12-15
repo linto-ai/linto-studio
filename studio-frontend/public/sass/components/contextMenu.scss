@@ -1,0 +1,55 @@
+.context-menu {
+  position: fixed;
+  z-index: 99;
+  background-color: var(--background-primary);
+  box-shadow: var(--shadow-block);
+  border: var(--border-block);
+  padding: var(--small-gap);
+  width: 300px;
+}
+
+.context-menu__element {
+  position: relative;
+}
+
+.context-menu__element:hover {
+  color: var(--text-secondary) !important;
+}
+
+.context-menu__element .context-menu {
+  position: absolute;
+}
+
+.context-menu__element .context-menu[positionVertical="bottom"] {
+  top: 0rem !important;
+  bottom: auto !important;
+}
+
+.context-menu__element .context-menu[positionVertical="top"] {
+  bottom: calc(-0.5rem - 1px) !important;
+  top: auto !important;
+}
+
+.context-menu__element .context-menu[positionHorizontal="left"] {
+  right: calc(100% + 0.75rem) !important;
+  left: auto !important;
+}
+
+.context-menu__element .context-menu[positionHorizontal="right"] {
+  left: calc(100% + 0.75rem) !important;
+  right: auto !important;
+}
+
+.context-menu__action[selected] {
+  background-color: var(--text-secondary);
+  color: var(--primary-contrast);
+
+  .icon {
+    background-color: var(--primary-contrast);
+  }
+
+  &:hover {
+    background-color: var(--text-secondary);
+    color: var(--primary-contrast);
+  }
+}

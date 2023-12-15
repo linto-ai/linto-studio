@@ -1,0 +1,239 @@
+<template>
+  <MainContent sidebar>
+    <!-- TODO: put in a component?-->
+    <template v-slot:breadcrumb-actions>
+      <div class="flex align-center gap-small">
+        <button class="red-border btn" @click="clickDeleteConvButton">
+          <span class="icon trash"></span>
+          <span class="label">{{
+            $tc("conversation.delete_mutltiple", selectedConversationsSize)
+          }}</span>
+        </button>
+        <ConversationShareMultiple
+          :currentOrganizationScope="currentOrganizationScope"
+          :userInfo="userInfo"
+          :selectedConversations="selectedConversations" />
+      </div>
+    </template>
+
+    <ModalDeleteConversations
+      v-if="displayDeleteModal"
+      :conversationsCount="selectedConversationsSize"
+      :conversationsInError="conversationsInError"
+      @on-cancel="closeDeleteModal"
+      @on-confirm="deleteConversations" />
+
+    <ExploreModalVue
+      :value="selectedTags"
+      :current-organization-scope="currentOrganizationScope"
+      :categories="tagCategoriesUnionSelectedtags"
+      :loading-categories="loadingCategoriesUnion"
+      v-if="showExploreModal"
+      @apply="applyFilters"
+      @cancel="closeExploreModal" />
+
+    <template v-slot:sidebar>
+      <div class="sidebar-divider"></div>
+
+      <SidebarTagList
+        :selected-tags="selectedTags"
+        :custom-filters="customFilters"
+        @addSearchCriterion="openExploreModal"
+        @onUpdateSelectedTags="onUpdateSelectedTags"
+        @onUpdateCustomFilters="onUpdateCustomFilters"></SidebarTagList>
+    </template>
+
+    <section class="flex col flex1 gap-small reset-overflows">
+      <!-- title -->
+      <h2>
+        {{ $t("explore.subtitle") }}
+      </h2>
+      <!-- search -->
+
+      <!-- List -->
+      <ConversationList
+        :loading="loadingConversations"
+        :conversations="conversations"
+        :currentOrganizationScope="currentOrganizationScope"
+        :error="error"
+        :selectable="true"
+        :selectedConversations="selectedConversations"
+        :selectedConversationsSize="selectedConversationsSize"
+        @onSelectConversation="onSelectConversation">
+        <template v-slot:list-header
+          ><ConversationListSearch
+            @searchInConversationsTitle="onSearchInConversationsTitle"
+            @searchInConversationsText="onSearchInConversationsText"
+        /></template>
+      </ConversationList>
+
+      <!-- pagination -->
+      <Pagination
+        v-model="currentPageNb"
+        :pages="totalPagesNumber"
+        class="pagination--sticky"
+        v-if="totalPagesNumber > 1 && !error" />
+    </section>
+  </MainContent>
+</template>
+<script>
+import { Fragment } from "vue-fragment"
+import { bus } from "@/main.js"
+import { apiSearchTagsById, apiCategoriesTree } from "@/api/tag.js"
+import {
+  apiGetConversationsByTags,
+  apiGetConversationsByOrganization,
+} from "@/api/conversation.js"
+import { debounceMixin } from "@/mixins/debounce"
+import { conversationListOrgaMixin } from "@/mixins/conversationListOrga.js"
+
+import TagCategoryBox from "@/components/TagCategoryBox.vue"
+import ConversationList from "@/components/ConversationList.vue"
+import Tag from "@/components/Tag.vue"
+import MainContent from "@/components/MainContent.vue"
+import ExploreModalVue from "@/components/ExploreModal.vue"
+import { extractTagsFromCategoryTree } from "../tools/extractTagsFromCategoryTree"
+import SidebarTagList from "../components/SidebarTagList.vue"
+import ConversationListSearch from "../components/ConversationListSearch.vue"
+import Pagination from "../components/Pagination.vue"
+import ModalDeleteConversations from "@/components/ModalDeleteConversations.vue"
+import ConversationShareMultiple from "@/components/ConversationShareMultiple.vue"
+export default {
+  mixins: [debounceMixin, conversationListOrgaMixin],
+  props: {
+    userInfo: { type: Object, required: true },
+    currentOrganizationScope: { type: String, required: true },
+    currentOrgaPersonal: { type: Boolean, required: true },
+  },
+  data() {
+    return {
+      loadingConversations: true,
+      conversations: [],
+      customFiltersKey: "exploreCustomFilters",
+      selectedTagsKey: "exploreSelectedTags",
+      showExploreModal: false,
+      loadingCategoriesUnion: true,
+      error: null,
+    }
+  },
+  async mounted() {
+    this.selectedTags = await this.getSelectedTags()
+    // this.showExploreModal =
+    //   this.selectedTags.length == 0 &&
+    //   Object.keys(this.customFilters).length == 0
+    this.fetchConversations()
+    this.queryCategoriesUnionSelectedtag()
+  },
+  methods: {
+    async apiSearchConversations() {
+      let res
+      //this.totalElementsNumber = 0
+      this.loadingConversations = true
+      if (
+        (!this.selectedTags || this.selectedTags.length == 0) &&
+        !this.customFilters?.textConversation?.value &&
+        !this.customFilters?.titleConversation?.value
+      ) {
+        res = await apiGetConversationsByOrganization(
+          this.currentOrganizationScope,
+          this.currentPageNb
+        )
+      } else {
+        res = await apiGetConversationsByTags(
+          this.currentOrganizationScope,
+          this.selectedTags.map((tag) => tag._id),
+          this.customFilters?.textConversation?.value,
+          this.customFilters?.titleConversation?.value,
+          this.currentPageNb
+        )
+      }
+      this.loadingConversations = false
+      this.totalElementsNumber = res?.count || 0
+      return res?.list || []
+    },
+    async fetchConversations() {
+      try {
+        this.conversations = await this.debouncedSearch(
+          this.apiSearchConversations.bind(this),
+          this.searchTextInConversations
+        )
+      } catch (error) {
+        this.conversations = []
+        this.loadingConversations = false
+        console.error("request error", error)
+        this.error = error
+      }
+
+      if (this.conversations.length == 0 && this.currentPageNb > 0) {
+        this.currentPageNb = 0
+      }
+    },
+    async getSelectedTags() {
+      const tagsFromStorage = JSON.parse(
+        localStorage.getItem("exploreSelectedTags")
+      )
+      if (
+        localStorage.getItem("exploreSelectedTags") &&
+        tagsFromStorage.length > 0
+      ) {
+        // check if tag exists by querying the API
+        const tagTreeFromApi = await apiSearchTagsById(
+          this.currentOrganizationScope,
+          tagsFromStorage.map((t) => t._id),
+          "organization_metadata"
+        )
+        const tags = extractTagsFromCategoryTree(tagTreeFromApi)
+        return tags
+      }
+      return []
+    },
+    async queryCategoriesUnionSelectedtag() {
+      this.loadingCategoriesUnion = true
+
+      const metadata_cat = await apiCategoriesTree(
+        this.currentOrganizationScope,
+        this.selectedTags.map((tag) => tag._id),
+        this.selectedTags.map((tag) => tag.categoryId),
+        "conversation_metadata"
+      )
+
+      // const highlight_cat = await apiCategoriesTree(
+      //   this.currentOrganizationScope,
+      //   this.selectedTags.map((tag) => tag._id),
+      //   this.selectedTags.map((tag) => tag.categoryId),
+      //   "highlight"
+      // )
+
+      this.tagCategoriesUnionSelectedtags = metadata_cat
+      this.loadingCategoriesUnion = false
+    },
+    async verifyTags(tags) {
+      const tagTreeFromApi = await apiSearchTagsById(
+        this.currentOrganizationScope,
+        tagsFromStorage.map((t) => t._id),
+        "organization"
+      )
+      return extractTagsFromCategoryTree(tagTreeFromApi)
+    },
+  },
+  watch: {
+    currentOrganizationScope() {
+      //this.fetchConversations()
+      this.queryCategoriesUnionSelectedtag()
+    },
+  },
+  components: {
+    MainContent,
+    Fragment,
+    TagCategoryBox,
+    ConversationList,
+    Tag,
+    ExploreModalVue,
+    SidebarTagList,
+    ConversationListSearch,
+    Pagination,
+    ModalDeleteConversations,
+    ConversationShareMultiple,
+  },
+}
+</script>
