@@ -1,4 +1,4 @@
-# Conversation Manager
+# LinTO Studio API
 Transcription / summarization / annotation interface for recorded audio files 
 
 ## Run project

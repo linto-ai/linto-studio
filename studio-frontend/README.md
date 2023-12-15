@@ -1,4 +1,4 @@
-# Conversation manager — Front-End
+# LinTO Studio Frontend
 
 Transcription / summarization / annotation interface for recorded audio files with sharing and live collaborative edition.
 

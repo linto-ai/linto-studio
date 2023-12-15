@@ -43,7 +43,7 @@ def performBuildForFile(changedFiles, version) {
 pipeline {
     agent any
     environment {
-        DOCKER_HUB_REPO = "linto-studio/"
+        DOCKER_HUB_REPO = "linto-studio"
         DOCKER_HUB_CRED = 'harbor-jenkins-robot'
         VERSION = ''
     }

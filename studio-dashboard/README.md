@@ -1,4 +1,4 @@
-# Dashboard
+# LinTO Studio Dashboard
 
 ## configuration (env variables)
 
