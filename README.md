@@ -15,8 +15,8 @@ Ensure you have the following prerequisites before beginning the installation pr
 
 Then you can clone the project
 ```bash
-    git clone https://github.com/linto-ai/platform-conversation-manager.
-    cd platform-conversation-manager
+    git clone https://github.com/linto-ai/linto-studio
+    cd linto-studio
 ```
 
 Two possible ways to work with LinTO Studio: We highly recommend using the Docker version, which is much simpler to use and comes pre-configured. 
