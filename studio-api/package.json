@@ -1,8 +1,17 @@
 {
-    "name": "linto-platform-conversation-manager",
-    "version": "1.3.0",
+    "name": "linto-studio-api",
+    "version": "1.4.0",
     "description": "Transcription, summarization, annotation interface for recorded audio files ",
     "main": "app.js",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/linto-ai/linto-studio.git"
+    },
+    "author": "",
+    "bugs": {
+        "url": "https://github.com/linto-ai/linto-studio/issues"
+    },
+    "homepage": "https://github.com/linto-ai/linto-studio#README",
     "scripts": {
         "start": "NODE_ENV=production node app.js",
         "start-debug": "NODE_ENV=development DEBUG=app/* node app.js",
