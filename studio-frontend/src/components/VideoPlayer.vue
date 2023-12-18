@@ -64,15 +64,15 @@ export default {
     }
   },
   mounted() {
-    bus.$on("screen-enter", this.handleScreenEntre)
+    bus.$on("screen-enter", this.handleScreenEnter)
     bus.$on("screen-leave", this.handleScreenLeave)
   },
   beforeDestroy() {
-    bus.$off("screen-enter", this.handleScreenEntre)
+    bus.$off("screen-enter", this.handleScreenEnter)
     bus.$off("screen-leave", this.handleScreenLeave)
   },
   methods: {
-    handleScreenEntre(screen_id) {
+    handleScreenEnter(screen_id) {
       const screen = this.screens.get(screen_id).screen
       let elem = this.$refs["screen-container"]
       elem.innerHTML = ""

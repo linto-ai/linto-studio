@@ -7,13 +7,13 @@
       :state="state"
       @playPause="playPause">
       <div class="flex flex1 justify-end align-center gap-small">
-        <label class="no-margin" for="player-zoom">Zoom: </label>
         <input
-          id="player-zoom"
+          id="player-seekbar"
           type="range"
-          min="50"
-          max="150"
-          v-model="zoom" />
+          min="0"
+          :max="duration"
+          v-model="currentTime"
+          @input="seekFromBar" />
       </div>
     </AppPlayerHeader>
     <div
@@ -33,6 +33,7 @@ import WaveSurfer from "wavesurfer.js"
 import RegionsPlugin from "../../node_modules/wavesurfer.js/dist/plugins/regions.js"
 import TimelinePlugin from "../../node_modules/wavesurfer.js/dist/plugins/timeline.js"
 import { ScreenList } from "../models/screenList"
+import { timeToHMS } from "../tools/timeToHMS"
 
 export default {
   mixins: [playerMixin],
@@ -52,14 +53,8 @@ export default {
   },
   data() {
     return {
-      zoom: 130,
       blocksSettings: new Map(),
     }
-  },
-  watch: {
-    zoom(newValue) {
-      this?.player?.zoom(newValue)
-    },
   },
   async mounted() {
     await this.initAudioPlayer()
@@ -78,6 +73,9 @@ export default {
     bus.$off("player_set_time")
   },
   methods: {
+    seekFromBar(e) {
+      this.seekTo(e.target.value)
+    },
     formatScreen(keyValuePair) {
       let res = {}
       for (const [key, value] of Object.entries(keyValuePair)) {
@@ -133,7 +131,7 @@ export default {
           this.playerLoading = false
         })
         this.player.once("decode", () => {
-          this.player.zoom(this.zoom)
+          this.player.zoom(130)
           setTimeout(this.initBlocks, 1)
           this.regionsReady = true
         })
@@ -149,12 +147,12 @@ export default {
         })
 
         this.player.on("timeupdate", (time) => {
-          bus.$emit("player-audioprocess", time)
           this.currentTime = time
+          bus.$emit("player-audioprocess", time)
         })
         this.regionsPlugin.on("region-clicked", (region, e) => {
           e.stopPropagation()
-          region.play()
+          this.seekTo(region.start)
         })
         this.regionsPlugin.on("region-updated", (region) => {
           const screenId = region.id
@@ -194,9 +192,11 @@ export default {
           })
         })
         this.regionsPlugin.on("region-in", (region) => {
+          region.element.part.add("playing")
           bus.$emit("screen-enter", region.id)
         })
         this.regionsPlugin.on("region-out", (region) => {
+          region.element.part.remove("playing")
           bus.$emit("screen-leave", region.id)
         })
       } catch (error) {
@@ -208,18 +208,14 @@ export default {
       this.blocksSettings.clear()
       for (let screen of this.blocks) {
         let block = screen.screen
-        let content = document.createElement("div")
-        for (let lineText of block.text) {
-          let line = document.createElement("div")
-          line.innerText = lineText
-          content.append(line)
-        }
+        let ms = Math.floor((block.stime - Math.floor(block.stime)) * 100)
+        let time = timeToHMS(block.stime) + "." + ms
         let region = {
           id: block.screen_id,
           start: block.stime,
           end: block.etime,
           minLength: Math.min(1, block.etime - block.stime),
-          content: content,
+          content: `${time}`,
           resize: this.canEdit,
           drag: this.canEdit,
           color: "#FFF",
