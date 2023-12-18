@@ -1,0 +1,35 @@
+{
+  "name": "linto-studio-dashboard",
+  "version": "1.0.1",
+  "description": "",
+  "main": "src/app.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon -e js,html src/app.js",
+    "start": "node src/app.js",
+    "lint": "eslint --ext .js --ignore-path .gitignore --fix src",
+    "test:lint": "eslint --ext .js src",
+    "format": "prettier src/  --write",
+    "test:format": "prettier src/ --list-different"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/linto-ai/linto-studio.git"
+  },
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/linto-ai/linto-studio/issues"
+  },
+  "homepage": "https://github.com/linto-ai/linto-studio#README",
+  "devDependencies": {
+    "eslint": "^8.23.0",
+    "nodemon": "^2.0.20",
+    "prettier": "^2.7.1"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "mongodb": "^4.13.0",
+    "nunjucks": "^3.2.3"
+  }
+}

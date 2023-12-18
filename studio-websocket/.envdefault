@@ -1,0 +1,6 @@
+COMPONENTS=WebServer,Websocket
+WEBSERVER_HTTP_PORT=8002
+
+CONVO_API=http://localhost:8001/api
+WEBSERVER_WS_PATH=/ws
+WEBSOCKET_DEBUG=Websocket:*

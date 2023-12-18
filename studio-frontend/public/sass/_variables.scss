@@ -1,0 +1,101 @@
+$montserrat: "Montserrat", "Arial", "Helvetica", "verdana";
+
+$inputFocus: #f7faff;
+$yellowChart: #feb11d;
+$greenChart: #11977c;
+$greenLigth: #39d5b6;
+$redChart: #fe346e;
+$blueChart: #1c83d6;
+
+$primaryColor: $greenChart;
+$secondaryColor: $blueChart;
+$primaryContrast: #fff;
+
+body {
+  --text-primary: #333;
+  --text-secondary: #666;
+  --text-disabled: #ccc;
+
+  --background-primary: #fff;
+  --background-primary-with-small-opacity: rgba(255, 255, 255, 0.85);
+  --background-secondary: #f3f3f3;
+  --background-header: #fff;
+  --background-disabled: #f6f6f6;
+
+  --input-background: #f7faff;
+  --button-background-hover: #eee;
+
+  --border-button: 1px solid var(--text-secondary);
+  --border-button-flat: 1px solid var(--text-disabled);
+  --border-input: 1px solid var(--text-secondary);
+  --border-block: 1px solid var(--text-disabled);
+  --divider: 1px solid var(--text-disabled);
+
+  --input-focus: #f7faff;
+  --yellow-chart: #feb11d;
+  --green-chart: #11977c;
+  --green-ligth: #39d5b6;
+  --red-chart: #fe346e;
+  --blue-chart: #1c83d6;
+
+  --primary-color: var(--green-chart);
+  --secondary-color: var(--blue-chart);
+  --primary-contrast: #fff;
+
+  --tiny-gap: 0.25rem;
+  --small-gap: 0.5rem;
+  --medium-gap: 1rem;
+
+  --shadow-block: 0px 0px 8px 0 rgba(67, 76, 95, 0.15);
+  --shadow-block-left: 3px 0px 8px 0 rgba(67, 76, 95, 0.15);
+}
+
+html[data-theme="dark"] body {
+  --text-primary: #ccc;
+  --text-secondary: #aaa;
+  --text-disabled: #666;
+
+  --background-primary: #252525;
+  --background-primary-with-small-opacity: rgba(37, 37, 37, 0.85);
+  --background-secondary: #1a1a1a;
+  --background-disabled: #333;
+
+  --input-background: #1a1a1a;
+  --button-background-hover: #333;
+
+  --background-header: #252525;
+
+  --shadow-block: 0px 0px 8px 0 rgb(0, 0, 0, 0.5);
+  --shadow-block-left: 3px 0px 8px 0 rgb(0, 0, 0, 0.5);
+
+  --input-focus: #0c0c0c;
+  --blue-chart: #479ae4;
+  --green-chart: #139177;
+  --red-chart: #c42653;
+}
+
+// @media (prefers-color-scheme: dark) {
+//   body {
+//     --text-primary: #ccc;
+//     --text-secondary: #aaa;
+//     --text-disabled: #666;
+
+//     --background-primary: #252525;
+//     --background-primary-with-small-opacity: rgba(37, 37, 37, 0.85);
+//     --background-secondary: #1a1a1a;
+//     --background-disabled: #333;
+
+//     --input-background: #1a1a1a;
+//     --button-background-hover: #333;
+
+//     --background-header: #252525;
+
+//     --shadow-block: 0px 0px 8px 0 rgb(0, 0, 0, 0.7);
+//     --shadow-block-left: 3px 0px 8px 0 rgb(0, 0, 0, 0.7);
+
+//     --input-focus: #0c0c0c;
+//     --blue-chart: #479ae4;
+//     --green-chart: #139177;
+//     --red-chart: #c42653;
+//   }
+// }

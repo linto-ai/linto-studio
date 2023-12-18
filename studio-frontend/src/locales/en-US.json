@@ -1,0 +1,555 @@
+{
+  "accoustic": {
+    "standard": "Regular"
+  },
+  "breadcrumb": {
+    "conversations": "Medias",
+    "create": "Upload media",
+    "createOrganization": "Create an organization",
+    "favorite": "{name} favorites",
+    "shared": "{name} guest medias",
+    "overview": "Overview",
+    "transcription": "Transcription",
+    "settings": "{organization} Settings",
+    "userSettings": "Profile settings",
+    "media": "{organization} medias",
+    "tagsSettings": "{organization} tags"
+  },
+  "conversation": {
+    "acoustic_label": "Acoustic",
+    "acoustic": {
+      "generic": "All devices and microphones",
+      "phone": "Phone"
+    },
+    "add_tag": "Add a tag",
+    "add_search_criterion": "Add a search criterion",
+    "apply_filters": "Appliquer les filtres",
+    "add_to_favorites": "Add to favorites",
+    "audio_file_too_big": "The audio file is too big. The maximum size is 1GB.",
+    "remove_from_favorites": "Remove from favorites",
+    "organization_members": "Organization members",
+    "grant_organization_members": "Grant organization member access",
+    "audio_file_upload_label_multiple": "Choose one or multiple files...",
+    "audio_file_upload_label": "Choose a file...",
+    "back_conversation_button": "Media overview",
+    "close_editor": "Close editor",
+    "close_publish": "Close",
+    "close_overview": "Close overview",
+    "return_to_editor": "Return to editor",
+    "publish_document": "Publish document",
+    "conversation_creation_button": {
+      "create": "Start transcription",
+      "sending": "Sending...",
+      "retry": "Retry upload"
+    },
+    "conversation_creation_loading": "Uploading audio. This can take several minutes.",
+    "conversation_creation_loading_multiple": "Uploading audio {count} of {total}. This can take several minutes.",
+    "conversation_creation_error_multiple_unknown": "An error occurred while uploading {total} audio files. {count} have already been uploaded. try again later.",
+    "conversation_is_locked_by": "The media is locked by",
+    "conversation_need_reload": " The media has been modified by an other user, reload the page to edit it.",
+    "conversation_overview_title": "Media overview",
+    "conversation_transcription_title": "Transcription",
+    "conversations_list_title": "Médias",
+    "create": "Upload media",
+    "created_label": "Created",
+    "created": "Created at : {date}",
+    "creation_success_message": "Media successfully imported",
+    "default_value_speakers_list": "All speakers",
+    "delete": "Delete",
+    "delete_mutltiple": "Delete a media | Delete {count} medias",
+    "delete_modal": {
+      "title": "Delete a media",
+      "content": "Are you sure you want to delete permanently the media \"{name}\" ?",
+      "button": "Delete media"
+    },
+    "delete_modal_multiple": {
+      "title": "Delete one media | Delete {count} medias",
+      "content": "Are you sure you want to delete permanently one media | Are you sure you want to delete permanently {count} medias ?",
+      "button": "Delete one media | Delete {count} medias"
+    },
+    "delete_modal_multiple_error": {
+      "title": "Some medias cannot be deleted",
+      "content": "{count} media cannot be deleted | {count} medias cannot be deleted. No media will be deleted.",
+      "button": "ok"
+    },
+    "delete_error_message": "An error occurred while deleting the media | An error occurred while deleting {count} medias",
+    "delete_success_message": "Media successfully deleted | {count} medias successfully deleted",
+    "delete_modal_multiple_empty": {
+      "title": "No medias selected",
+      "content": "Please select at least one media to delete",
+      "button": "ok"
+    },
+    "description_description": "A short text describing the context of the media",
+    "description_label": "Description",
+    "description_title": "Sharing parameter",
+    "duration_label": "Duration",
+    "duration": "Duration {duration}",
+    "error": {
+      "creation_unknown": "Error: please try again later",
+      "form_invalid": "Error: please check the form",
+      "loading_upload_message": "Uploading audio. This can take several minutes"
+    },
+    "export": {
+      "title": "Export",
+      "json": "Export JSON",
+      "txt": "Export TXT",
+      "docx": "Export DOCX",
+      "vtt": "Export VTT",
+      "srt": "Export SRT"
+    },
+    "export_json_button": "Export JSON",
+    "filter_speakers_label": "Filter",
+    "highlights_label": "Highlights",
+    "information_label": "Global information",
+    "keyword_list": {
+      "title": "keywords",
+      "error": {
+        "description": "An error has occurred.",
+        "button": "Retry"
+      },
+      "none": {
+        "button": "Generate keywords"
+      },
+      "loading": {
+        "description": "Generating keywords..."
+      }
+    },
+    "language_description": "Select the transcription language for the media file",
+    "language_label": "Language",
+    "loading_detail_title": "Loading media details.",
+    "loading_transcription_title": "Loading transcription.",
+    "loading_list_title": "Loading medias.",
+    "loading_audio_file": "Loading audio file",
+    "media": {
+      "duration_label_inline": "Duration : ",
+      "file_description": "allows you to upload a media file to be transcripted (audio or video)",
+      "file_label": "File",
+      "file_label_inline": "File : ",
+      "microphone_description": "allows you to record an audio file directly from your microphone",
+      "microphone_label": "Microphone",
+      "microphone_label_inline": "Microphone : ",
+      "replay_label": "Replay",
+      "type_label": "Source",
+      "no_file": "No file"
+    },
+    "media_error": "Please add an audio",
+    "media_label": "Media",
+    "media_title": "Upload your files or record your voice",
+    "members_right_description": "By default, organization members cannot access the media. Check this option to grant access to organization members and select them default rights on the media (read, write, ...)",
+    "members_right_label": "Grant organization member access",
+    "members_right_txt": {
+      "read": "Read",
+      "write": "Write",
+      "none": "No access",
+      "share": "Share",
+      "delete": "Delete",
+      "comment": "Comment",
+      "full_rights": "Full rights",
+      "mutiple_values": "Multiple values"
+    },
+    "model_quality_label": "Model quality",
+    "model_quality": {
+      "high": "High",
+      "low": "Low",
+      "medium": "Medium"
+    },
+    "my_rights_label": "My rights",
+    "name_description": "The title of your media",
+    "name_label": "Title",
+    "number_of_conversations_selected": "0 media selected | 1 media selected | {count} medias selected",
+    "no_search_criterion": "No search criterion",
+    "open_overview": "Media overview",
+    "open_editor": "Edit transcription",
+    "open_subtitles": "Edit subtitles",
+    "open_publish": "Publish",
+    "organization_description": "Choose the organization scope of your media",
+    "organization_label": "Organization",
+    "owner_label": "Owner",
+    "record": "Record",
+    "recording": "Recording...",
+    "search_criterions": "Search criterions",
+    "search_placeholder": "Search a media",
+    "shared_by_label": "Shared by",
+    "shared_with_label": "Shared with",
+    "speakers_button": "Speakers",
+    "status": {
+      "preprocessing": "Preprocessing",
+      "transcription": "Transcription",
+      "diarization": "Speakers split",
+      "punctuation": "Punctuation",
+      "postprocessing": "Postprocessing",
+      "error": "Error : an error has occured during processing the audio",
+      "unknown": "Unknown",
+      "pending": "The media is waiting to be processed."
+    },
+    "status_label": "Status",
+    "status_label_inline": "Status : ",
+    "status_page": {
+      "generic_title": "The media is being transcribed by LinTO",
+      "generic_description_line_1": "You can continue browsing the site. The page will refresh automatically when it has finished loading.",
+      "generic_description_line_2": "Depending on the size of the media, transcription can take dozens of minutes or even several hours.",
+      "return_to_medias_list_button": "Return to medias list",
+      "error_title": "An error has occured during processing the audio",
+      "error_log_label": "Here's some information:"
+    },
+    "transcription": {
+      "diarization_description": "Enable diarization and select the number of speakers",
+      "diarization_label_inline": "Speakers split : ",
+      "diarization_label": "Speakers split",
+      "number_of_speaker_label": "Number of speakers",
+      "normalization_description": "Enable normalization and replace text numbers by numbers",
+      "normalization_label_inline": "Normalization : ",
+      "punctuation_description": "Enable punctuation restitution",
+      "punctuation_label_inline": "Punctuation : ",
+      "punctuation_label": "Punctuation",
+      "punctuation_value_whisper": "Automatic. Handled by whisper model",
+      "speakers": "speakers",
+      "edit_speaker": "Edit speaker",
+      "add_speaker": "Add a speaker",
+      "speaker_name": "Speaker name",
+      "player_error": "An error has occured while initializing player."
+    },
+    "transcription_label": "Transcription",
+    "transcription_service_description": "Choose the transcription service to use",
+    "transcription_service_label": "Transcription service",
+    "transcription_service_error": "Please select a transcription service",
+    "transcription_service_title": "Select the transcription service",
+    "transcription_settings_label": "Transcription settings",
+    "transcription_service_list_empty": "No transcription service available",
+    "turn_sync_error_title": "The turn is not well synchronized",
+    "update_information_button": "Update information",
+    "update_information_done_notif": "Information updated",
+    "update_information_error_notif": "An error has occured while updating information",
+    "update_label": "Updated",
+    "updated": "Last update : {date}",
+    "no_conversation_found": "No medias found",
+    "transcription_help": {
+      "help_button_label": "Help",
+      "edit_speaker_title": "Edit speakers",
+      "edit_speaker_content": "To change the speaker for a given turn, click on the speaker name. This will open a drop-down menu with the following options:",
+      "edit_speaker_content_list": "To change the name for the current turn only, click directly on the desired name or click on “Add a speaker” to add a new speaker. | To change the name for the current turn only, click directly on the desired name.",
+      "edit_transcript_title": "Edit the transcript",
+      "edit_transcript_content": "To edit the transcript, simply click on the word to place your cursor and start typing. | The audio player will automatically jump to the part of the audio in which that word was uttered.",
+      "split_turn_title": "Split turns",
+      "split_turn_content": "To split an existing turn into two separate turns, place your cursor where you would like to create the new turn and press \"Enter\" (<span class=\"txt-icon key-enter\"></span>). Note that the new turn will still be attributed to the original speaker.",
+      "merge_turn_title": "Merge turns",
+      "merge_turn_content": "Click on the \"merge\" button (<span class=\"txt-icon key-merge\"></span>) to merge two turns.",
+      "filter_speaker_title": "Filter transcription by speaker",
+      "filter_speaker_content": "You can filter the transcription by speaker by selecting a speaker name from the drop-down \"Filter\" menu just above the transcript. When a speaker is selected, the transcript editor will only show turns from that speaker and the audio player will only play audio associated with those turns. ",
+      "audio_player_shortcut_title": "Audio player / Keyboard shortcuts",
+      "audio_player_shortcut_content": "You can control the audio player by using standard player buttons and/or the following shortcuts:",
+      "audio_player_shortcut_list1": "\"Space\" (<span class=\"txt-icon key-space\"></span>) : <i>Play / Pause</i>",
+      "audio_player_shortcut_list2": "\"CTRL + \"Right arrow\" (<span class=\"txt-icon key-ctrl\"></span> + <span class=\"txt-icon key-right-arrow\"></span>) : <i>Move forward 60 seconds</i>",
+      "audio_player_shortcut_list3": "\"ALT\" + \"Right arrow\" (<span class=\"txt-icon key-alt\"></span> + <span class=\"txt-icon key-right-arrow\"></span>) : <i>Move forward 10 seconds</i>",
+      "audio_player_shortcut_list4": "\"SHIFT\" + \"Right arrow\" (<span class=\"txt-icon key-shift\"></span> + <span class=\"txt-icon key-right-arrow\"></span>) : <i>Move forward 3 seconds</i>",
+      "audio_player_shortcut_list5": "\"CTRL + \"Left  arrow\" (<span class=\"txt-icon key-ctrl\"></span> + <span class=\"txt-icon key-left-arrow\"></span>) : <i>Move backward 60 seconds</i>",
+      "audio_player_shortcut_list6": "\"ALT\" + \"Left  arrow\" (<span class=\"txt-icon key-alt\"></span> + <span class=\"txt-icon key-left-arrow\"></span>) : <i>Move backward 10 seconds</i>",
+      "audio_player_shortcut_list7": "\"SHIFT\" + \"Left  arrow\" (<span class=\"txt-icon key-shift\"></span> + <span class=\"txt-icon key-left-arrow\"></span>) : <i>Move backward 3 seconds</i>"
+    },
+    "transcription_saving_notif": "Saving media...",
+    "websocket_error_content": "Document update failed, save your change and reload the page.",
+    "websocket_error_title": "Syncronisation error.",
+    "subtitles": {
+      "drop_video": "Drag and drop your vidéo file here",
+      "not_available": "No subtitles available",
+      "available": "Available subtitles",
+      "generate_subs": "Generate Subtitles",
+      "generate": "Generate",
+      "version_name": "Subtitle version name",
+      "max_char_length": "Max character length for each screen",
+      "max_char_length_short": "Characters per screen",
+      "max_lines": "Number of lines per screen",
+      "max_lines_short": "Lines per screen",
+      "max_duration": "Max duration of a screen",
+      "copy_label": "Copy subtitles version",
+      "delete_label": "Delete subtitle versions",
+      "delete_no_selection": "Please select at least one version to delete",
+      "delete_no_selection_label": "No versions selected",
+      "delete_description": "Are you sure you want to delete {n} subtitle version?",
+      "copy": "Copy",
+      "delete": "Delete"
+    }
+  },
+  "droparea": {
+    "openFileExplorer": "or choose from the file explorer",
+    "error": {
+      "tooManyFiles": "Multiple files given when only one was expected",
+      "wrongFormat": "One or multiple files are not valid"
+    }
+  },
+  "createaccount": {
+    "personal_button": "Next",
+    "create_account_button": "Create an account",
+    "email_label": "Email",
+    "email_verification_text": "You have just received an email to validate your account. Click on the verification link to start using Linto Studio.",
+    "email_verification_title": "Congratulations, a Linto Studio account has been associated with your email address !",
+    "first_name_label": "First name",
+    "image_label": "Image (.png, .jpg) :",
+    "last_name_label": "Last name",
+    "password_confirmation_label": "Password confirmation",
+    "password_label": "Password",
+    "picture_upload_label": "Upload a picture",
+    "picture_selected": "One picture selected",
+    "signin_button": "Sign in",
+    "personal_title": "Create an account",
+    "organization_title": "Name your organization",
+    "organization_description": "Create and share your transcripts, invite collaborators within organizations.",
+    "organization_name_label": "One last step : please name your first organization, you can create others later"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "bug_report": "Report a bug or an issue",
+    "server_error": {
+      "title": "The operation is currently unavailable.",
+      "subtitle": "We are working on it, please try again later."
+    }
+  },
+  "global": {
+    "disabled": "disabled",
+    "enabled": "enabled",
+    "this_field_is_required": "This field is required"
+  },
+  "inbox": {
+    "title": "Inbox",
+    "subtitle": "Your recently uploaded medias lands here. Use “Upload media” or {appLink} to feed this."
+  },
+  "explore": {
+    "subtitle": "Search and discover insights on transcribed media using meaningful semantics",
+    "search_text_label": "Search text",
+    "search_text_in_title": "Search \"{text}\" in title",
+    "search_text_in_content": "Search \"{text}\" in transcription",
+    "no_categories_modal": "There are no tags. Start tagging your media in the Inbox tab.",
+    "link_to_inbox": "Go to Inbox"
+  },
+  "favorites": {
+    "title": "Favorites medias",
+    "subtitle": "Your favorite media lands here."
+  },
+  "invite_user": {
+    "button": "Invite user",
+    "search_label": "Search user",
+    "add_user": "Add user",
+    "pending": "Pending",
+    "invite": "Invite"
+  },
+  "sharedWithTab": {
+    "title": "Medias shared with me",
+    "subtitle": "All medias shared with you outside an organisation seat here"
+  },
+  "share_menu": {
+    "conversation_error_title": "Some conversations cannot be shared",
+    "no_conversation_selected_title": "No conversation selected",
+    "no_conversation_selected_content": "Please select at least one conversation to share.",
+    "button": "share",
+    "search_label": "Invite user",
+    "user_not_found": "User not found",
+    "organization_members": "Organization members",
+    "external_members": "External users",
+    "invite_user_button": "Invite user"
+  },
+  "lang": {
+    "en": "English",
+    "fr": "French"
+  },
+  "login": {
+    "create_account_button": "Create an account",
+    "email_label": "Email :",
+    "login_button": "login",
+    "password_label": "Password :",
+    "title": "Sign in",
+    "recover_password": "Forgot your password?",
+    "recover_password_btn_label": "Send recovery link",
+    "recover_password_detail": "Please fill in your email address for us to send you a recovery link."
+  },
+  "manage_tags": {
+    "subtitle": "Move tags between categories or edit attributes",
+    "create_category_button": "Create a category",
+    "create_category": {
+      "title": "Create category",
+      "name": "Name",
+      "save": "Save"
+    },
+    "edit_category_title": "Edit category",
+    "edit_category": {
+      "title": "Edit category \"{name}\"",
+      "category_name": "Name",
+      "category_color": "Color",
+      "save": "Save"
+    },
+    "edit_tag_title": "Edit tag",
+    "edit_tag": {
+      "title": "Edit tag \"{name}\"",
+      "name": "Name",
+      "save": "Save"
+    },
+    "delete_category_title": "Delete category",
+    "delete_category": {
+      "title": "Delete category \"{name}\"",
+      "description": "Are you sure you want to delete this category ?",
+      "action": "Delete"
+    },
+    "delete_tag_title": "Delete tag",
+    "delete_tag": {
+      "title": "Delete tag \"{name}\"",
+      "description": "{number} medias will be unlinked from this tag",
+      "action": "Delete"
+    }
+  },
+  "modal": {
+    "cancel": "Cancel",
+    "close_title": "Close modal"
+  },
+  "navigation": {
+    "account": {
+      "account_link": "My account",
+      "title": "User menu",
+      "avatar_title": "User avatar",
+      "logout": "Logout"
+    },
+    "conversation": {
+      "create": "Upload media",
+      "list": "Medias",
+      "title": "Medias",
+      "not_found": "No medias found",
+      "shared_with_me": "Shared with me",
+      "my_conversations": "Organization medias",
+      "create_no_rights_error": "You don't have the rights to create a media. Please contact your organization administrator."
+    },
+    "organisation": {
+      "aria_organisations_selector": "Organisations selector",
+      "create": "Create organization",
+      "setting": "Organization settings",
+      "title": "Organization"
+    },
+    "tabs": {
+      "inbox": "Recent medias",
+      "explore": "Explore",
+      "favorites": "Favorites",
+      "shared": "Shared with me",
+      "manage_tags": "Manage tags"
+    },
+    "home": "Return to main page"
+  },
+  "organisation": {
+    "add_member_description": "Use the search form to find users by their firstname, lastname or email address",
+    "add_member_label": "Add a member",
+    "delete_organization": "Delete organization",
+    "general_settings": "General settings",
+    "organization_users": "Organization users",
+    "create": {
+      "title": "Create organization",
+      "submit_label": "Create organization"
+    },
+    "description_description": "The description of your organization",
+    "description_label": "Description",
+    "my_workspace": "My workspace",
+    "name_description": "The name of your organization",
+    "name_label": "Name",
+    "update": {
+      "title": "Organization : {name}"
+    },
+    "update_button": "Update organization",
+    "user": {
+      "leave_button": "Leave organization",
+      "remove_button": "remove",
+      "remove_description": "Revoke member access to the organiztion",
+      "remove_label": "Remove",
+      "remove_label_inline": "\"Remove\" : ",
+      "role_description": "User organization role (Admin, Maintainer, Member)",
+      "role_label": "Role",
+      "role_label_inline": "\"Role\" : ",
+      "visibility_label": "Visibility"
+    },
+    "user_description": "User firstname, lastname, email and picture",
+    "user_label": "User",
+    "user_label_inline": "\"User\" : ",
+    "user_list_description": "The list of the organization users:",
+    "user_list_label": "Users list",
+    "user_not_found": "User not found",
+    "visibility": {
+      "private": "private",
+      "private_description": ": Avoid external users to search and list your organization",
+      "private_inline": "\"Private\" : ",
+      "public": "public",
+      "public_description": "Allows external users to search and list your organization",
+      "public_inline": "\"Public\" : "
+    },
+    "visibility_label": "Visibility",
+    "visibility_name": "Visibility"
+  },
+  "tags": {
+    "back_to_search": "Back to search",
+    "browse_categories": "Browse categories",
+    "no_tags": "No tags",
+    "search_tags_or_categories": "Search tags or categories",
+    "search_tags_or_categories_or_create_new_one": "Search tags, or type to create a new one",
+    "search_tags_with": "Search tags with",
+    "search_categories": "Search categories or create a new one",
+    "create_tag": "Create tag",
+    "manage_tags": "Manage tags",
+    "select_category_title": "Select category",
+    "create_category": "Create tag category {value}",
+    "done_create_tag": "Done",
+    "cancel_create_tag": "Cancel",
+    "tags": "Tags",
+    "categories": "Tag Categories",
+    "no_tags_found": "No tags found",
+    "no_categories_found": "No tag categories found",
+    "no_tags_in_category": "No tags in this category",
+    "remove_tag": "Remove tag",
+    "add_tags": "Add tags",
+    "create_a_tag": "Create a tag",
+    "empty_category": "category yet to define",
+    "define_category_button": "Create tag",
+    "select_tag_title": "Select this tag",
+    "new_tag_name": "Tag name",
+    "add_tag_to_conversation": "Add tag"
+  },
+  "usersettings": {
+    "change_password_label": "Change password",
+    "email_label": "Email",
+    "firstname_label": "Firstname",
+    "lastname_label": "Lastname",
+    "new_password_confirmation_label": "New password confirmation",
+    "new_password_label": "New password",
+    "personal_information": "Personal information",
+    "picture_label": "Picture",
+    "private_label": "Set profile private",
+    "profil_visibility": {
+      "title": "Profile visibility",
+      "label_private": "Private profile"
+    },
+    "title": "Profile settings",
+    "update_picture_button": "Update picture",
+    "update_password_button": "Update password",
+    "invite_account_notif": "Please fill in the form and create a password in order to complete the creation of your account",
+    "update_pswd_notif": "You recently requested a recovery link for your password. You might think about updating your password.",
+    "update_pswd_notif_dismiss_btn": "Dismiss",
+    "check_verify_email": "Please check your emails and click on the link we've sent to you in order to verify your email address.",
+    "verify_email_notif": "Please verify your email address",
+    "send_verification_link": "Send validation link",
+    "update_email_label": "Update email",
+    "share_notification_label": "Receive email notification when a media is shared to you",
+    "update_personal_information_button": "Update personal information",
+    "notifications": {
+      "title": "Notifications by email",
+      "conversations": {
+        "title": "Medias",
+        "add_label": "When a media is shared to you",
+        "del_label": "When a media is unshared to you",
+        "update_label": "When my media rights are updated"
+      },
+      "organizations": {
+        "title": "Organizations",
+        "add_label": "When I joined an organization",
+        "del_label": "When I left an organization",
+        "update_label": "When my organization role is updated"
+      },
+      "submit_button": "Update notifications"
+    }
+  },
+  "globalError": {
+    "auth_magic_link": "The authentication link as expired, please request again for an | authentication link",
+    "page_not_found": "The page is not found, or you don't have the rights to access it"
+  }
+}

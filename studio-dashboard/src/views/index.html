@@ -1,0 +1,109 @@
+{% extends "layout.html" %} {% block content %}
+<main id="main-page">
+  <aside id="main-page__organisations">
+    <h1>Organisations</h1>
+    <ul>
+      <li>
+        <a
+          href="/"
+          selected="
+            {%- if selectedOrgId == null -%}
+            {{'selected'}}
+            {%- endif %}"
+          >All organisations</a
+        >
+      </li>
+      {% for org in orgs %}
+      <li>
+        <a
+          href="/org/{{org._id}}/"
+          selected="
+            {%- if selectedOrgId == org._id.toString() -%}
+            {{'selected'}}
+            {%- endif %}"
+          >{{org.name}}</a
+        >
+      </li>
+      {% endfor %}
+    </ul>
+  </aside>
+  <section id="main-page__users">
+    <h1>Users</h1>
+    <div>
+      <form action="./">
+        <label for="emailSearch">Filter by Email</label>
+        <div class="inline-flex">
+          <input
+            type="text"
+            placeholder="john@example.com"
+            id="emailSearch"
+            name="email"
+            value="{{email}}" />
+          <input type="submit" value="Filter" />
+          {% if email != "" %}
+          <a href="./" class="button button-outline">Reset</a>
+          {%endif%}
+        </div>
+      </form>
+    </div>
+    <div class="row">
+      <div class="stat">
+        <strong>Total users:</strong>
+        <div>{{totalUsers}}</div>
+      </div>
+      <div class="stat">
+        <strong>Total external users:</strong>
+        <div>{{totalExternalUsers}}</div>
+      </div>
+      <div class="stat">
+        <strong>Total conversations:</strong>
+        <div>{{convCount}}</div>
+      </div>
+      <div class="stat">
+        <strong>Total duration:</strong>
+        <div>{{convDuration}}</div>
+      </div>
+    </div>
+    <strong></strong>
+    <table>
+      <thead>
+        <tr>
+          <th class="userIdColumn">ID</th>
+          <th>Email</th>
+          <th>Firstname</th>
+          <th>Lastname</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr>
+          <td class="userIdColumn">{{user._id}}</td>
+          <td>{{user.email}}</td>
+          <td>{{user.firstname}}</td>
+          <td>{{user.lastname}}</td>
+          <td><a href="/users/{{user._id}}">See more</a></td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="4">No users found</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div id="pagination">
+      <div>
+        {% if page > 1 %}
+        <a href="/?page={{page - 1}}">Previous page</a>
+        {% endif %}
+      </div>
+      <div>Page {{page}} / {{totalPage}}</div>
+      <div>
+        {% if page < totalPage %}
+        <a href="/?page={{page + 1}}">Next page</a>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+  <main>{% endblock %}</main>
+</main>

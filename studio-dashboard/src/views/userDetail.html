@@ -1,0 +1,30 @@
+{% extends "layout.html" %} {% block content %}
+<div>
+  <a href="/">Back to users</a>
+  <h1>{{user.firstname}} {{user.lastname}}</h1>
+</div>
+
+<button disabled>Impersonate</button>
+<h2>General informations</h2>
+<ul>
+  <li><strong>ID:</strong> {{user._id}}</li>
+  <li><strong>Email:</strong> {{user.email}}</li>
+  <li><strong>Total audio</strong> {{user.totalAudioDuration}}</li>
+</ul>
+
+<h2>Owned conversations</h2>
+<ul>
+  <li><strong>Owned conversation:</strong> {{user.ownedConversationCount}}</li>
+  <li><strong>Total audio:</strong> {{user.ownedConversationsDuration}}</li>
+</ul>
+<h2>Shared conversations</h2>
+<ul>
+  <li>
+    <strong>Shared conversation:</strong>
+    {{user.sharedWithConversationsCount}}
+  </li>
+  <li>
+    <strong>Total audio:</strong> {{user.sharedWithConversationsDuration}}
+  </li>
+</ul>
+{% endblock %}

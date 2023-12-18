@@ -1,0 +1,55 @@
+version: '3.7'
+
+services:
+  conversation-manager-mongo:
+    image: mongo:latest
+    env_file: .dockerenv
+    # volumes:
+    # - ./${VOLUME_FOLDER}/${VOLUME_DATABASE_PATH}/:/data/db
+    networks:
+      - internal
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./config/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - internal
+
+  conversation-manager-api:
+    build: .
+    container_name: conversation-manager-api
+    env_file: .dockerenv
+    environment:
+      - WEBSERVER_HTTP_PORT=80 #Match the expose Dockerfile, but docker-compose will use the WEBSERVER_HTTP_PORT .env settings
+      - DEBUG=${DEBUG}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./${VOLUME_FOLDER}/:/usr/src/app/conversation-manager/${VOLUME_FOLDER}/
+    command:
+      - --run-cmd=node app.js
+    # ports:
+      # - "8001:80"
+    networks:
+      - internal
+
+  # conversation-manager-front:
+  #   depends_on:
+  #     - "conversation-manager-api"
+  #   image: conversation-manager-front:latest
+  #   container_name: conversation-manager-front
+  #   env_file: .dockerenv
+  #   environment:
+  #     - INTERFACE_HTTP_PORT=8080 #Match the expose Dockerfile, but docker-compose will use the WEBSERVER_HTTP_PORT .env settings
+  #   ports:
+  #     - "8080:8080"
+  #   networks:
+  #     - internal
+
+networks:
+  internal:

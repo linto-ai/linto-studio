@@ -1,0 +1,250 @@
+<template>
+  <div id="conversation-audio-player">
+    <AppPlayerHeader
+      :playerError="playerError"
+      :currentTime="currentTimeHMS"
+      :duration="durationHMS"
+      :state="state"
+      @playPause="playPause">
+      <div class="flex flex1 justify-end align-center gap-small">
+        <label class="no-margin" for="player-zoom">Zoom: </label>
+        <input
+          id="player-zoom"
+          type="range"
+          min="50"
+          max="150"
+          v-model="zoom" />
+      </div>
+    </AppPlayerHeader>
+    <div
+      id="plater-waveform-container"
+      class="flex col flex1 fullwidth relative">
+      <Loading :background="true" v-if="!regionsReady"></Loading>
+      <div id="subtitle-player"></div>
+    </div>
+  </div>
+</template>
+<script>
+import { bus } from "../main.js"
+import AppPlayerHeader from "@/components/AppPlayerHeader.vue"
+import Loading from "@/components/Loading.vue"
+import { playerMixin } from "@/mixins/player.js"
+import WaveSurfer from "wavesurfer.js"
+import RegionsPlugin from "../../node_modules/wavesurfer.js/dist/plugins/regions.js"
+import TimelinePlugin from "../../node_modules/wavesurfer.js/dist/plugins/timeline.js"
+import { workerSendMessage } from "../tools/worker-message"
+export default {
+  mixins: [playerMixin],
+  props: {
+    blocks: {
+      type: Object,
+      required: true,
+    },
+    canEdit: {
+      type: Boolean,
+      required: true,
+    },
+    useVideo: {
+      type: HTMLVideoElement,
+      default: null,
+    },
+  },
+  data() {
+    return {
+      zoom: 60,
+      blocksSettings: new Map(),
+    }
+  },
+  watch: {
+    zoom(newValue) {
+      this?.player?.zoom(newValue)
+    },
+  },
+  async mounted() {
+    await this.initAudioPlayer()
+    bus.$on("refresh_screen", (data) => {
+      let region = this.getRegion(data.screenId)
+      this.refreshRegion(region, this.formatScreen(data.changes))
+    })
+    bus.$on("player_set_time", (data) => {
+      if (!this.instanceDestroyed) {
+        this.seekTo(data.stime + 0.001)
+      }
+    })
+  },
+  beforeDestroy() {
+    bus.$off("refresh_screen")
+    bus.$off("player_set_time")
+  },
+  methods: {
+    formatScreen(keyValuePair) {
+      let res = {}
+      for (const [key, value] of Object.entries(keyValuePair)) {
+        if (key === "stime") {
+          res.start = value
+        } else if (key === "etime") {
+          res.end = value
+        } else {
+          res[key] = value
+        }
+      }
+      return res
+    },
+    getRegion(screenId) {
+      return this.regionsPlugin
+        .getRegions()
+        .find((region) => region.id === screenId)
+    },
+    destroy() {
+      if (this.playerLoading) {
+        this.fetchController.abort()
+      }
+      this?.player?.destroy()
+      this.player = null
+      URL.revokeObjectURL(this.audioFile)
+    },
+    async initAudioPlayer() {
+      try {
+        if (!this.useVideo) {
+          await this.getAudioFile()
+        }
+        await this.getAudiowaveform()
+        this.player = WaveSurfer.create({
+          url: this.useVideo ? undefined : this.audioFile,
+          media: this.useVideo ? this.useVideo : undefined,
+          peaks: this.audiowaveform.length > 0 ? this.audiowaveform : null,
+          height: 70,
+          container: "#subtitle-player",
+          cursorColor: "red",
+          responsive: true,
+          normalize: true,
+          plugins: [RegionsPlugin.create(), TimelinePlugin.create()],
+          backend: "MediaElement",
+          fetchParams: this.fetchController.signal,
+        })
+
+        this.player.on("loading", () => {
+          this.playerLoading = true
+        })
+
+        this.player.on("ready", () => {
+          this.playerReady = true
+          this.playerLoading = false
+        })
+        this.player.once("decode", () => {
+          this.player.zoom(this.zoom)
+          setTimeout(this.initBlocks, 1)
+          this.regionsReady = true
+        })
+        this.player.on("play", () => {
+          this.state = "playing"
+        })
+        this.player.on("pause", () => {
+          this.state = "pause"
+        })
+        this.player.on("seeking", (time) => {
+          this.currentTime = time
+          bus.$emit("player-seek", this.currentTime)
+        })
+
+        this.player.on("timeupdate", (time) => {
+          bus.$emit("player-audioprocess", time)
+          this.currentTime = time
+        })
+        this.regionsPlugin.on("region-clicked", (region, e) => {
+          e.stopPropagation()
+          region.play()
+        })
+        this.regionsPlugin.on("region-updated", (region) => {
+          const screenId = region.id
+          const currentBlock = this.blocks.screens.get(screenId)
+          const current = this.blocksSettings.get(screenId)
+          let drag = region.start != current.start && region.end != current.end
+          current.start = region.start
+          current.end = region.end
+          if (currentBlock.prev) {
+            const prev = this.blocksSettings.get(currentBlock.prev)
+            if (current.start < prev.end) {
+              if (drag) {
+                current.end += prev.end - current.start + 0.01
+              }
+              current.start = prev.end + 0.01
+            }
+          }
+
+          if (currentBlock.next) {
+            const next = this.blocksSettings.get(currentBlock.next)
+            if (current.end > next.start) {
+              if (drag) {
+                current.start -= current.end - next.start + 0.01
+              }
+              current.end = next.start - 0.01
+            }
+          }
+          current.start = Math.round(current.start * 1000) / 1000
+          current.end = Math.round(current.end * 1000) / 1000
+          let screen = this.blocks.screens.get(screenId).screen
+          if (screen.stime !== current.start || screen.etime !== current.end) {
+            this.$emit("blockUpdate", screenId, current.start, current.end)
+          }
+          this.refreshRegion(region, {
+            start: current.start,
+            end: current.end,
+          })
+        })
+        this.regionsPlugin.on("region-in", (region) => {
+          bus.$emit("screen-enter", region.id)
+        })
+        this.regionsPlugin.on("region-out", (region) => {
+          bus.$emit("screen-leave", region.id)
+        })
+      } catch (error) {
+        console.log(error)
+        this.playerError = true
+      }
+    },
+    initBlocks() {
+      this.blocksSettings.clear()
+      for (let screen of this.blocks) {
+        let block = screen.screen
+        let content = document.createElement("div")
+        for (let lineText of block.text) {
+          let line = document.createElement("div")
+          line.innerText = lineText
+          content.append(line)
+        }
+        let region = {
+          id: block.screen_id,
+          start: block.stime,
+          end: block.etime,
+          minLength: Math.min(1, block.etime - block.stime),
+          content: content,
+          resize: this.canEdit,
+          drag: this.canEdit,
+          color: "#FFF",
+        }
+        this.blocksSettings.set(block.screen_id, region)
+      }
+      this.updateBlocks()
+    },
+    updateBlocks() {
+      this.regionsPlugin.clearRegions()
+      for (let [_, region] of this.blocksSettings) {
+        this.regionsPlugin.addRegion(region)
+      }
+    },
+    refreshRegion(region, changes) {
+      let screen = this.blocksSettings.get(region.id)
+      for (const [key, value] of Object.entries(changes)) {
+        region[key] = value
+        screen[key] = value
+      }
+      region.renderPosition()
+    },
+  },
+  components: {
+    Loading,
+    AppPlayerHeader,
+  },
+}
+</script>

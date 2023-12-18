@@ -1,0 +1,129 @@
+#conversation.subtitles {
+  padding: 0;
+}
+
+#subtitle-player ::part(region) {
+  height: 75% !important;
+  border: 1px solid black !important;
+  border-radius: 5px !important;
+  display: flex;
+  align-items: center;
+  background-color: var(--background-primary);
+}
+
+#subtitle-player ::part(region-content) {
+  padding: 0 !important;
+  margin: 0 0 0 6px !important;
+  overflow: hidden;
+  max-height: 100%;
+}
+
+.subtitle-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+#version-list {
+  max-width: calc(100% - 3rem);
+  width: 50rem;
+}
+
+.subtitle-list-item {
+  border: var(--border-block);
+  border-radius: 4px;
+  box-shadow: var(--shadow-block);
+  background-color: var(--background-primary);
+  margin: 0;
+  padding: 1rem;
+
+  & h3 {
+    padding: 0;
+    overflow: hidden;
+    & > a {
+      color: var(--blue-chart);
+      text-overflow: ellipsis;
+      max-width: 100%;
+      font-weight: inherit;
+    }
+  }
+
+  & .actions {
+    margin-left: 1rem;
+  }
+}
+
+.screen-timestamp {
+  font-family: Noto Sans Mono, monospace;
+}
+
+.screen {
+  // TODO: hover, ext...
+
+  &.playing {
+    background-color: var(--text-disabled);
+  }
+}
+
+#screen-list {
+  overflow-y: scroll;
+
+  & > div:first-child {
+    margin-top: 2rem;
+  }
+
+  & > div:last-child {
+    margin-bottom: 2rem;
+  }
+}
+
+#video-player {
+  margin: 5rem;
+  position: relative;
+
+  & .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+  }
+
+  & .video-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+    align-items: center;
+    & .video-content {
+      position: relative;
+      align-items: center;
+      max-width: 100%;
+      max-height: 100%;
+    }
+    & video,
+    img {
+      position: relative;
+      max-width: 100%;
+      max-height: 100%;
+    }
+  }
+}
+
+.screen-container {
+  position: absolute;
+  align-items: center;
+  bottom: 3rem;
+  left: 0;
+  width: 100%;
+  font-size: 1.2rem;
+  white-space: nowrap;
+
+  & .screen-line {
+    background: black;
+    color: white;
+    width: fit-content;
+  }
+}

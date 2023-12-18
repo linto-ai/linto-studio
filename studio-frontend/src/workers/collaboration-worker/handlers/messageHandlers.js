@@ -1,0 +1,317 @@
+import DiffMatchPatch from "diff-match-patch"
+import myersDiff from "myers-diff"
+import Debug from "debug"
+
+import { diffsToYDelta } from "../../../tools/diffsToYDelta"
+import { wordsDeltafromPlainDiff } from "../../../tools/wordsDeltaFromPlainDiffV2"
+import { applyDeltaOnYArray } from "../../../tools/applyDeltaOnYArray"
+import { divideTurn } from "../../../tools/divideTurn"
+import { Conversation } from "../models/conversations"
+import { mergeTurn } from "../../../tools/mergeTurn"
+import { diffArrays } from "diff"
+
+const dmp = new DiffMatchPatch()
+const debugWorker = Debug("Worker:debug")
+const debugturnEditText = Debug("Worker:debug:turn:EditText")
+const debugturnInsertParagraph = Debug("Worker:debug:turn:InsertParagraph")
+const debugturnMergeParagraph = Debug("Worker:debug:turn:MergeParagraph")
+const debugAddSpeaker = Debug("Worker:debug:Speaker:AddSpeaker")
+const debugEditSpeaker = Debug("Worker:debug:Speaker:EditSpeaker")
+const debugEditRight = Debug("Worker:debug:right")
+const debugEditScreen = Debug("Worker:debug:screen:EditScreen")
+
+function getYdelta(ydocElem, newValue) {
+  let diff = dmp.diff_main(ydocElem, newValue)
+  return diffsToYDelta(diff)
+}
+
+function findTurnIndex(turns, turnId) {
+  return turns.findIndex((turn) => turn.turn_id === turnId)
+}
+
+function findScreenIndex(screens, screenId) {
+  return screens.findIndex((screen) => screen.screen_id === screenId)
+}
+
+// When updating/adding a speaker, check if the updated speaker still have turns
+function cleanSpeakers(rootDoc, currentSpeakerId) {
+  const turns = rootDoc.getArray("text").toJSON()
+  const prevSpkTurns = turns.find(
+    (turn) => turn.speaker_id === currentSpeakerId
+  )
+  if (prevSpkTurns == undefined) {
+    const delIndex = rootDoc
+      .getArray("speakers")
+      .toJSON()
+      .findIndex((spk) => spk.speaker_id === currentSpeakerId)
+    rootDoc.getArray("speakers").delete(delIndex, 1)
+  }
+}
+
+export function updateConversationTitle(params, conversationId, rootDoc) {
+  const { conversationName } = params
+  const yDelta = getYdelta(rootDoc.getText("name").toString(), conversationName)
+
+  rootDoc.transact(() => {
+    rootDoc.getText("name").applyDelta(yDelta)
+  }, "conversation_name")
+}
+
+export function updateConversationDescription(params, conversationId, rootDoc) {
+  const { conversationDescription } = params
+  const yDelta = getYdelta(
+    rootDoc.getText("description").toString(),
+    conversationDescription
+  )
+
+  rootDoc.transact(() => {
+    rootDoc.getText("description").applyDelta(yDelta)
+  }, "conversation_description")
+}
+
+export function updateConversationSpeakerName(params, conversationId, rootDoc) {
+  const { newSpeakerName, speakerId } = params
+  let spkIndex = rootDoc
+    .getArray("speakers")
+    .toJSON()
+    .findIndex((spk) => spk.speaker_id === speakerId)
+
+  const yDelta = getYdelta(
+    rootDoc.getArray("speakers").get(spkIndex).get("speaker_name").toString(),
+    newSpeakerName
+  )
+
+  rootDoc.transact(() => {
+    rootDoc
+      .getArray("speakers")
+      .get(spkIndex)
+      .get("speaker_name")
+      .applyDelta(yDelta)
+    debugEditSpeaker(
+      "Update speaker_name '%s' on speaker %s",
+      newSpeakerName,
+      spkIndex
+    )
+  }, "conversation_speaker_name")
+}
+
+export function turnEditText(params, conversationId, rootDoc, syllabic) {
+  const { turnId, newText, oldText, words } = params
+
+  if (oldText.trim() == newText.trim()) {
+    return
+  }
+  debugturnEditText("oldText (trimed) >%s<", oldText.trim(), words)
+  debugturnEditText("newText (trimed) >%s<", newText.trim())
+
+  const splitText = newText.split(" ").map((word) => ({ word: word.trim() }))
+  const diff = diffArrays(
+    words.filter((w) => w.word !== ""),
+    splitText,
+    {
+      comparator: (a, b) => a.word === b.word,
+    }
+  )
+
+  const wordObjDelta = wordsDeltafromPlainDiff(splitText, words, diff, syllabic)
+
+  const index = findTurnIndex(rootDoc.getArray("text").toJSON(), turnId)
+
+  debugturnEditText("wordObjDelta %o", wordObjDelta)
+
+  rootDoc.transact(() => {
+    applyDeltaOnYArray(
+      rootDoc.getArray("text").get(index).get("words"),
+      wordObjDelta
+    )
+    debugturnEditText("WordObjDelta applied")
+
+    const wordsObj = rootDoc.getArray("text").get(index).get("words").toJSON()
+    let newSeg = ""
+    for (let word of wordsObj) {
+      if (word.word !== " " && word.word !== "") newSeg += word.word + " "
+    }
+    const deltaSegment = getYdelta(
+      rootDoc.getArray("text").get(index).get("segment").toString(),
+      newSeg.trim()
+    )
+    debugturnEditText("deltaSegment %o", deltaSegment)
+
+    rootDoc.getArray("text").get(index).get("segment").applyDelta(deltaSegment)
+    debugturnEditText("DeltaSegment applied")
+  }, "conversation_text")
+}
+
+export function turnInsertParagraph(params, conversationId, rootDoc, syllabic) {
+  const { turnId, textBefore, textAfter, turn } = params
+
+  const index = findTurnIndex(rootDoc.getArray("text").toJSON(), turnId)
+  debugturnInsertParagraph("textBefore >%s<", textBefore.trim())
+  debugturnInsertParagraph("textAfter >%s<", textAfter.trim())
+  debugturnInsertParagraph("turn to cut %o", turn)
+  const newTurns = divideTurn(
+    turn,
+    textBefore.trim(),
+    textAfter.trim(),
+    syllabic
+  )
+  debugturnInsertParagraph("newTurns %o at index %s", newTurns, index)
+
+  const newYturns = newTurns.map((turn) => Conversation.formatYturn(turn))
+  const delta = [{ retain: index }, { delete: 1 }, { insert: newYturns }]
+
+  rootDoc.transact(() => {
+    applyDeltaOnYArray(rootDoc.getArray("text"), delta)
+    debugturnInsertParagraph("Applied delta")
+  }, "conversation_insert_paragraph")
+}
+
+export function turnMergeParagraph(params, conversationId, rootDoc, syllabic) {
+  const { startTurn, endTurn, indexEnd } = params
+
+  debugturnMergeParagraph("startTurn %o", startTurn)
+  debugturnMergeParagraph("endTurn %o", endTurn)
+
+  const mergedTurn = mergeTurn(startTurn, endTurn, syllabic)
+  debugturnMergeParagraph("mergedTurn %o", mergedTurn)
+
+  const delta = [
+    { retain: indexEnd - 1 },
+    { delete: 2 },
+    { insert: [Conversation.formatYturn(mergedTurn)] },
+  ]
+
+  rootDoc.transact(() => {
+    applyDeltaOnYArray(rootDoc.getArray("text"), delta)
+    debugturnMergeParagraph("Applied delta")
+  }, "conversation_merge_paragraph")
+}
+
+export function turnEditSpeaker(params, conversationId, rootDoc) {
+  const { turnId, newSpeakerId } = params
+
+  const turnIndex = findTurnIndex(rootDoc.getArray("text").toJSON(), turnId)
+
+  rootDoc.transact(() => {
+    debugEditSpeaker("Update speaker_id %s on turn %s", newSpeakerId, turnIndex)
+    debugEditSpeaker("Text %o", rootDoc.getArray("text").get(turnIndex))
+
+    // Get current speaker Id
+    const currentSpeakerId = rootDoc
+      .getArray("text")
+      .get(turnIndex)
+      .get("speaker_id")
+
+    rootDoc.getArray("text").get(turnIndex).set("speaker_id", newSpeakerId)
+
+    // Check if updated speakers still have turns
+    cleanSpeakers(rootDoc, currentSpeakerId)
+  }, "conversation_edit_speaker")
+}
+
+export function updateSubtitleScreen(params, rootDoc) {
+  const { screen } = params
+  const screenIndex = findScreenIndex(
+    rootDoc.getArray("screens").toJSON(),
+    screen.screen_id
+  )
+
+  rootDoc.transact(() => {
+    debugEditScreen(
+      `update screen ${screen.screen_id} with new timestamp: ${screen.stime} - ${screen.etime}`
+    )
+    rootDoc.getArray("screens").get(screenIndex).set("stime", screen.stime)
+    rootDoc.getArray("screens").get(screenIndex).set("etime", screen.etime)
+  }, "subtitle_edit_screen_timestamp")
+}
+
+export function updateConversationAddSpeaker(params, conversationId, rootDoc) {
+  const { turnId, speakerName } = params
+  let yspeaker = Conversation.createSpeaker(speakerName)
+  debugAddSpeaker("Add speaker '%s'", speakerName)
+  const turnIndex = findTurnIndex(rootDoc.getArray("text").toJSON(), turnId)
+
+  rootDoc.transact(() => {
+    rootDoc.getArray("speakers").push([yspeaker])
+    debugAddSpeaker("Push speaker")
+
+    // Get current speaker Id
+    const currentSpeakerId = rootDoc
+      .getArray("text")
+      .get(turnIndex)
+      .get("speaker_id")
+
+    rootDoc
+      .getArray("text")
+      .get(turnIndex)
+      .set("speaker_id", yspeaker.get("speaker_id"))
+
+    debugAddSpeaker(
+      "Update speaker_id %s on turn %s",
+      yspeaker?.get("speaker_id"),
+      turnIndex
+    )
+
+    // Check if updated speakers still have turns
+    cleanSpeakers(rootDoc, currentSpeakerId)
+  }, "conversation_add_speaker")
+}
+
+export function updateUsersRights(event, socket, userToken) {
+  let payload = {
+    conversationId: event.data.params.conversationId,
+    userId: event.data.params.userId,
+    right: event.data.params.right,
+    userToken,
+  }
+  debugEditRight("%s", payload)
+  socket.emit("update_users_rights", payload)
+}
+
+export function updateOrganizationRight(params, conversationId, rootDoc) {
+  debugEditRight("membersRight: %s", params)
+  rootDoc.transact(() => {
+    rootDoc.getMap("organization").set("membersRight", params)
+  }, "conversation_update_organization")
+}
+
+export function focusField(event, conversationId, socket) {
+  if (event.data.params?.field && event.data.params?.userId) {
+    socket.emit("focus_field", { ...event.data.params, conversationId })
+  }
+}
+
+export function unfocusField(event, conversationId, socket) {
+  socket.emit("unfocus_field", { ...event.data.params, conversationId })
+}
+
+export function fetchKeywords(userToken, conversationId, socket) {
+  socket.emit("fetch_keywords", { userToken, conversationId })
+}
+
+export function fetchSubtitles(userToken, conversationId, subtitleId, socket) {
+  socket.emit("get_subtitles", { userToken, conversationId, subtitleId })
+}
+
+export function generateSubtitles(userToken, conversationId, data, socket) {
+  socket.emit("generate_subtitles", { userToken, conversationId, data })
+}
+
+export function copySubtitles(
+  userToken,
+  conversationId,
+  subtitleId,
+  data,
+  socket
+) {
+  socket.emit("copy_subtitles", { userToken, conversationId, subtitleId, data })
+}
+
+export function deleteSubtitles(
+  userToken,
+  conversationId,
+  subtitleIds,
+  socket
+) {
+  socket.emit("delete_subtitles", { userToken, conversationId, subtitleIds })
+}
