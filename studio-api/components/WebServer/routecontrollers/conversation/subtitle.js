@@ -84,7 +84,7 @@ function splitSubtitles(conv, query) {
 
       if (segment.length > segmentMaxSize || (!!screenMaxDuration && segmentDuration > screenMaxDuration)) {
         // Should not stop on composed word, will add the next word
-        if (COMPOSE_WORD_REGEX.test(conv_seg.words[i].word)) {
+        if (COMPOSE_WORD_REGEX.test(conv_seg.words[i].word) && conv_seg.words[i + 1] !== undefined ) {
           i++
           words.push(conv_seg.words[i]) // maybe this have not to be there
           segment += conv_seg.words[i].word + " "
@@ -218,15 +218,19 @@ async function generateSubtitle(req, res, next) {
     subtitles = {
       ...subtitles,
       conv_id: conv._id,
-      orga_id : conv.organization.organizationId,
+      orga_id: conv.organization.organizationId,
       conv_name: conv.name,
       version: req.body.version,
     }
 
+    let result
     if (conv_subtitle.length > 0) {
       subtitles._id = conv_subtitle[0]._id
-      await model.conversationSubtitles.update(subtitles)
-    } else await model.conversationSubtitles.create(subtitles)
+      result = await model.conversationSubtitles.update(subtitles)
+    } else{
+      result = await model.conversationSubtitles.create(subtitles)
+      subtitles._id = result.insertedId.toString()
+    } 
 
     res.status(201).json(subtitles)
 
