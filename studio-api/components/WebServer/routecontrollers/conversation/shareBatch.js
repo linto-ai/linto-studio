@@ -121,14 +121,16 @@ async function usersCheck(users_list, method) {
 
     if (user.id === undefined) { // in case of user.email is used
       let u = await model.users.getByEmail(user.email)
-      user.private = u[0].private
 
       if (u.length === 0) {
         if (method === method_delete) continue // skip the user on delete request, probably an error from the client
         u = await inviteNewUser(user.email)
         user.id = u.id
         user.magicId = u.magicId
-      } else user.id = u[0]._id
+      } else {
+        user.private = u[0].private
+        user.id = u[0]._id
+      }
     } else {
       let u = await model.users.getById(user.id)
       if (u.length !== 0) {
