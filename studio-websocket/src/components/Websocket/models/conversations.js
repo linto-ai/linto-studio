@@ -9,7 +9,7 @@ import {
 } from "../request/index.js"
 import { v4 as uuidv4 } from "uuid"
 import Debug from "debug"
-import { Job } from "./job.js"
+import { Job, jobTrapper } from "./job.js"
 
 import { handleTextChange } from "./conversations/textHandler.js"
 import { handleSpeakerChange } from "./conversations/speakerHandler.js"
@@ -104,6 +104,8 @@ export class Conversation {
     this.callbacks = new Map()
     this.userTokenIndexedByTransactionName = new Map()
     this.id = conversationObj ? conversationObj._id : uuidv4()
+
+    this.jobs = new Proxy(this, jobTrapper)
 
     this.watchProperties = [
       this.ydoc.getArray("speakers"),
@@ -298,6 +300,12 @@ export class Conversation {
     this.obj.keywords = keywords
   }
 
+  setJobs(key, job) {
+    if (!this.obj.jobs) this.obj.jobs = {}
+
+    this.obj.jobs[key] = job
+  }
+  
   initYjsFromObj(conversationObj) {
     this.ydoc.transact(() => {
       this.initSpeakers(conversationObj.speakers)
