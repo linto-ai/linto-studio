@@ -14,7 +14,6 @@ import {
   turnEditSpeaker,
   updateConversationAddSpeaker,
   updateOrganizationRight,
-  fetchKeywords,
   fetchSubtitles,
   generateSubtitles,
   copySubtitles,
@@ -157,9 +156,6 @@ onmessage = (event) => {
     case "unfocus_field":
       unfocusField(event, conversationId, socket)
       break
-    case "fetch_keywords":
-      fetchKeywords(userToken, conversationId, socket)
-      break
     case "get_subtitle":
       fetchSubtitles(
         userToken,
@@ -196,6 +192,12 @@ onmessage = (event) => {
     case "update_screen":
       updateSubtitleScreen(event.data.params, subtitle.getYdoc())
       break
+    case "fetch_hightlight":
+      socket.emit('fetch_hightlight', {
+        userToken,
+        conversationId,
+      })
+    break
     default:
       break
   }

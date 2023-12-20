@@ -87,7 +87,6 @@ import {
 import { debounceMixin } from "@/mixins/debounce"
 import { conversationListOrgaMixin } from "@/mixins/conversationListOrga.js"
 
-import TagCategoryBox from "@/components/TagCategoryBox.vue"
 import ConversationList from "@/components/ConversationList.vue"
 import Tag from "@/components/Tag.vue"
 import MainContent from "@/components/MainContent.vue"
@@ -225,7 +224,6 @@ export default {
   components: {
     MainContent,
     Fragment,
-    TagCategoryBox,
     ConversationList,
     Tag,
     ExploreModalVue,

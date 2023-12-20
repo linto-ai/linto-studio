@@ -1,7 +1,7 @@
 <template>
   <aside class="organization-sidebar flex col gap-medium">
-    <div style="padding-left: 1rem !important">
-      <h3 class="fullwidth no-padding" v-if="organizationPage">
+    <div style="padding-left: 1rem !important" v-if="organizationPage">
+      <h3 class="fullwidth no-padding" >
         {{ currentOrganization.name }}
       </h3>
     </div>

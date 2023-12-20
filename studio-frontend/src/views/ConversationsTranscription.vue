@@ -6,7 +6,10 @@
     :error="error"
     sidebar>
     <template v-slot:sidebar>
-      <KeywordList :conversation="conversation" />
+      <HighlightsList
+        v-if="status === 'done'"
+        :conversation="conversation"
+        :conversationId="conversation._id" />
     </template>
 
     <template v-slot:breadcrumb-actions>
@@ -59,14 +62,13 @@ import UserInfoInline from "@/components/UserInfoInline.vue"
 import AppEditor from "@/components/AppEditor.vue"
 import ErrorView from "./Error.vue"
 import MainContentConversation from "../components/MainContentConversation.vue"
-import KeywordList from "../components/KeywordList.vue"
+import HighlightsList from "../components/HighlightsList.vue"
 import MenuToolbox from "../components/MenuToolbox.vue"
 
 export default {
   mixins: [conversationMixin],
   data() {
     return {
-      conversationId: "",
       filterSpeakers: "default",
       helperVisible: false,
       status: null,
@@ -161,7 +163,7 @@ export default {
     AppEditor,
     ErrorView,
     MainContentConversation,
-    KeywordList,
+    HighlightsList,
     MenuToolbox,
   },
 }

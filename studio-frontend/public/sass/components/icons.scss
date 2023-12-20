@@ -186,6 +186,9 @@
   &.sun {
     @include maskImage("../public/img/sun.svg");
   }
+  &.ai {
+    @include maskImage("../public/img/AI.svg");
+  }
 }
 
 .icon.small {

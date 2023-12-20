@@ -13,3 +13,15 @@ export async function apiGetTranscriptionService(lang, notif) {
     (service) => service.language === lang
   )
 }
+
+export async function apiGetNlpService(notif) {
+  const getHighlightsService = await sendRequest(
+    `${BASE_API}/services`,
+    { method: "get" },
+    {},
+    notif
+  )
+  return (getHighlightsService?.data ?? []).filter(
+    (service) => service.scope.indexOf("nlp") !== -1
+  )
+}

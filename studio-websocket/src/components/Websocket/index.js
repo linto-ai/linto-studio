@@ -76,7 +76,7 @@ export default class Websocket extends Component {
           unfocusField(data.conversationId, data.userId, socket, true)
         })
 
-        socket.on("fetch_keywords", (data) => {
+        socket.on("fetch_hightlight", (data) => {
           debug("fetch_keywords event received")
           keywordController.bind(socket)(data)
         })
@@ -217,6 +217,7 @@ export default class Websocket extends Component {
 
     socket.join(`conversation/${conversationId}`)
 
+    console.log('yop yop')
     jobTranscriptionController(
       conversation,
       conversationId,
