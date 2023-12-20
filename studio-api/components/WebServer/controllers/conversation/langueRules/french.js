@@ -153,7 +153,7 @@ function notFound(segment_text, words) {
 function lastWord(segment_text, words, loop_data) {
   // In case of last word is a double punctuation,
   // It can be desync with the words array depending of the transcription services
-  if (segment_text.lowercase.length === 1 && /[?!:;«»]$/.test(segment_text.lowercase)) {
+  if (segment_text.lowercase.length === 1 && /[?!:;«»–—]$/.test(segment_text.lowercase)) {
     let last_word_index = loop_data.words.length - 1
 
     return {
