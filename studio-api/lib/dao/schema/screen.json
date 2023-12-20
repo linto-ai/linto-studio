@@ -11,10 +11,6 @@
       "type": "string",
       "format": "uuid"
     },
-    "screen_id": {
-      "type": "string",
-      "format": "uuid"
-    },
     "text": {
       "type": "array",
       "items": {
