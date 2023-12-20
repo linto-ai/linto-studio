@@ -315,3 +315,12 @@ export function deleteSubtitles(
 ) {
   socket.emit("delete_subtitles", { userToken, conversationId, subtitleIds })
 }
+
+export function addScreen(userToken, conversationId, subtitleId, data, socket) {
+  socket.emit("add_screen", {
+    userToken,
+    conversationId,
+    subtitleId,
+    screenData: data,
+  })
+}

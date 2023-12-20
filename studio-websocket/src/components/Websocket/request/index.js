@@ -302,6 +302,23 @@ export async function updateScreen(
   )
 }
 
+export async function addScreen(
+  conversationId,
+  subtitleId,
+  screenId,
+  placement,
+  payload,
+  userToken
+) {
+  return await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/subtitle/${subtitleId}/screen/${screenId}?placement=${placement}`,
+    { method: "post" },
+    payload,
+    null,
+    userToken
+  )
+}
+
 export async function updateTurn(conversationId, turnId, payload, userToken) {
   return await sendRequest(
     `${BASE_API}/conversations/${conversationId}/turns/${turnId}`,

@@ -85,9 +85,7 @@ export default {
       bus.$emit("player_set_time", { stime })
     },
     addScreens(leftScreenId, rightScreenId) {
-      console.log(
-        "adding a new screen between " + leftScreenId + " and " + rightScreenId
-      )
+      this.$emit("addScreen", leftScreenId, rightScreenId)
     },
     mergeScreens(leftScreenId, rightScreenId) {
       console.log("merging screens " + leftScreenId + " and " + rightScreenId)

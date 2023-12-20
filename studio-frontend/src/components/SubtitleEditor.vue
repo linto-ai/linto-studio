@@ -14,7 +14,10 @@
         </div>
       </div>
     </div>
-    <ScreenEditor :screens="blocks" :can-edit="canEdit"></ScreenEditor>
+    <ScreenEditor
+      :screens="blocks"
+      :can-edit="canEdit"
+      @addScreen="addScreen"></ScreenEditor>
     <SubtitlePlayer
       :key="playerKey"
       :conversationId="conversation._id"
@@ -79,6 +82,13 @@ export default {
     },
     blockUpdate(screen_id, stime, etime) {
       this.$emit("screenUpdate", screen_id, stime, etime)
+    },
+    addScreen(leftScreenId, rightScreenId) {
+      if (leftScreenId) {
+        this.$emit("addScreen", leftScreenId)
+      } else {
+        this.$emit("addScreen", rightScreenId, false)
+      }
     },
     handleScreenEnter(screenId) {
       let screen = document.getElementById(screenId)

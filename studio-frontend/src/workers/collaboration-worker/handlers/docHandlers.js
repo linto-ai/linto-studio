@@ -335,6 +335,7 @@ function sendScreenUpdateToView(sendMessage, subtitle, events, transaction) {
   for (const event of events) {
     if (event.changes.added.size > 0) {
       // TODO: screen added
+      console.log(event.path)
     } else if (event.changes.deleted.size > 0) {
       // TODO: screen deleted
     } else {

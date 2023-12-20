@@ -54,7 +54,6 @@ export const subtitleMixin = {
           this.deleteVersions(event.data.params)
           break
         case "screen_update":
-          console.log("only reciever")
           this.updateScreen(
             event.data.params.screenId,
             event.data.params.changes
