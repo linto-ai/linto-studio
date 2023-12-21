@@ -236,7 +236,9 @@ export class Subtitle {
       // add 1 to the index if screen created after
       let index = findScreenIndex(this.getScreens(), screen_id) + after
       this.ydoc.transact(() => {
-        this.ydoc.getArray("screens").insert(index, [newScreen])
+        this.ydoc
+          .getArray("screens")
+          .insert(index, [Subtitle.formatScreen(newScreen)])
       }, transactionName)
     } catch (error) {
       console.log(error)
