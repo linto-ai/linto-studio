@@ -41,6 +41,10 @@ export default {
       type: Object,
       required: true,
     },
+    isInitiallySelected: {
+      type: Boolean,
+      required: true,
+    },
   },
   data() {
     return {
@@ -64,6 +68,17 @@ export default {
       )
       return timeToHMS(this.screen.etime) + "." + ms
     },
+  },
+  mounted() {
+    if (this.isInitiallySelected) {
+      let domElem = document.getElementById(this.screen.screen_id)
+      domElem.classList.add("playing")
+      domElem.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        inline: "center",
+      })
+    }
   },
   methods: {
     handleClick() {

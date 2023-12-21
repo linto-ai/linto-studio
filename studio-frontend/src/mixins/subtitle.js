@@ -59,6 +59,9 @@ export const subtitleMixin = {
             event.data.params.changes
           )
           break
+        case "add_screen":
+          this.createScreen(event.data.params)
+          break
         default:
           break
       }
@@ -72,6 +75,11 @@ export const subtitleMixin = {
           screen[key] = value
         }
       }
+    },
+    createScreen(data) {
+      let { after, screenId, newScreen } = data
+      this.screens.add(screenId, newScreen, after)
+      bus.$emit("add_screen", { newScreen })
     },
     deleteFromArray(elem, array) {
       let index = array.findIndex((e) => e === elem)

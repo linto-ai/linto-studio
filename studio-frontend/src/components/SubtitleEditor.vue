@@ -5,12 +5,15 @@
         @videoLoaded="setVideo"
         :audioDuration="audio.duration"
         :screens="blocks.screens"></VideoPlayer>
-      <div id="screen-list" class="flex1" :key="blockKey">
+      <div id="screen-list" class="flex1" :key="blocks.size">
         <div v-for="block in blocks" :key="block.screen.screen_id">
           <SubtitleEditorBlock
             :userInfo="userInfo"
             :canEdit="canEdit"
-            :block="block"></SubtitleEditorBlock>
+            :block="block"
+            :is-initially-selected="
+              block.screen.screen_id === playingScreen
+            "></SubtitleEditorBlock>
         </div>
       </div>
     </div>
@@ -57,9 +60,9 @@ export default {
   },
   data() {
     return {
-      blockKey: 0,
       useVideo: null,
       playerKey: true,
+      playingScreen: null,
     }
   },
   computed: {
@@ -93,6 +96,7 @@ export default {
     handleScreenEnter(screenId) {
       let screen = document.getElementById(screenId)
       if (screen) {
+        this.playingScreen = screenId
         screen.classList.add("playing")
         screen.scrollIntoView({
           behavior: "smooth",
@@ -104,6 +108,9 @@ export default {
     handleScreenLeave(screenId) {
       let screen = document.getElementById(screenId)
       if (screen) {
+        if (this.playingScreen === screenId) {
+          this.playingScreen = null
+        }
         screen.classList.remove("playing")
       }
     },

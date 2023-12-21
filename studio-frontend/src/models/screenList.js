@@ -42,6 +42,36 @@ export class ScreenList {
   }
 
   set(screenId, screen) {
-    this.screens.set(screenId, screen)
+    if (this.screens.has(screenId)) {
+      this.screens.set(screenId, screen)
+    }
+  }
+
+  add(screenId, newScreen, after) {
+    let addedScreen = {
+      prev: null,
+      next: null,
+      screen: newScreen,
+    }
+    let target = this.get(screenId)
+
+    if (after) {
+      addedScreen.prev = screenId
+      addedScreen.next = target.next
+      if (target.next) {
+        this.get(target.next).prev = newScreen.screen_id
+      }
+      target.next = newScreen.screen_id
+    } else {
+      addedScreen.prev = target.prev
+      addedScreen.next = screenId
+      if (target.prev) {
+        this.get(target.prev).next = newScreen.screen_id
+      }
+      target.prev = newScreen.screen_id
+    }
+
+    this.screens.set(newScreen.screen_id, addedScreen)
+    this.size++
   }
 }

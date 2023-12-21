@@ -67,6 +67,9 @@ export default {
         this.seekTo(data.stime + 0.001)
       }
     })
+    bus.$on("add_screen", (data) => {
+      this.addScreen(data.newScreen)
+    })
   },
   beforeDestroy() {
     bus.$off("refresh_screen")
@@ -204,22 +207,25 @@ export default {
         this.playerError = true
       }
     },
+    createRegion(screen) {
+      let ms = Math.floor((screen.stime - Math.floor(screen.stime)) * 100)
+      let time = timeToHMS(screen.stime) + "." + ms
+      return {
+        id: screen.screen_id,
+        start: screen.stime,
+        end: screen.etime,
+        minLength: Math.min(1, screen.etime - screen.stime),
+        content: `${time}`,
+        resize: this.canEdit,
+        drag: this.canEdit,
+        color: "#FFF",
+      }
+    },
     initBlocks() {
       this.blocksSettings.clear()
       for (let screen of this.blocks) {
         let block = screen.screen
-        let ms = Math.floor((block.stime - Math.floor(block.stime)) * 100)
-        let time = timeToHMS(block.stime) + "." + ms
-        let region = {
-          id: block.screen_id,
-          start: block.stime,
-          end: block.etime,
-          minLength: Math.min(1, block.etime - block.stime),
-          content: `${time}`,
-          resize: this.canEdit,
-          drag: this.canEdit,
-          color: "#FFF",
-        }
+        let region = this.createRegion(block)
         this.blocksSettings.set(block.screen_id, region)
       }
       this.updateBlocks()
@@ -230,12 +236,21 @@ export default {
         this.regionsPlugin.addRegion(region)
       }
     },
+    addScreen(screen) {
+      let region = this.createRegion(screen)
+      this.blocksSettings.set(screen.screen_id, region)
+      this.regionsPlugin.addRegion(region)
+    },
     refreshRegion(region, changes) {
       let screen = this.blocksSettings.get(region.id)
       for (const [key, value] of Object.entries(changes)) {
         region[key] = value
         screen[key] = value
       }
+      let ms = Math.floor((screen.start - Math.floor(screen.start)) * 100)
+      let time = timeToHMS(screen.start) + "." + ms
+      screen.content = `${time}`
+      region.setContent(`${time}`)
       region.renderPosition()
     },
   },

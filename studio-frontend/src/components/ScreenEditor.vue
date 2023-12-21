@@ -67,19 +67,24 @@ export default {
     bus.$off("screen-enter", this.handleScreenEnter)
   },
   data() {
-    let selected = this.screens.get(this.screens.first)
     return {
-      selectedScreen: selected.screen,
-      prev: null,
-      next: this.screens.get(selected.next)?.screen,
+      currentScreen: this.screens.get(this.screens.first),
     }
+  },
+  computed: {
+    selectedScreen() {
+      return this.currentScreen.screen
+    },
+    prev() {
+      return this.screens.get(this.currentScreen.prev)?.screen
+    },
+    next() {
+      return this.screens.get(this.currentScreen.next)?.screen
+    },
   },
   methods: {
     handleScreenEnter(screen_id) {
-      let selected = this.screens.get(screen_id)
-      this.selectedScreen = selected.screen
-      this.prev = this.screens.get(selected.prev)?.screen
-      this.next = this.screens.get(selected.next)?.screen
+      this.currentScreen = this.screens.get(screen_id)
     },
     seekTo(stime) {
       bus.$emit("player_set_time", { stime })

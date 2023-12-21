@@ -334,10 +334,17 @@ function sendTurnSpeakerUpdate(
 function sendScreenUpdateToView(sendMessage, subtitle, events, transaction) {
   for (const event of events) {
     if (event.changes.added.size > 0) {
-      // TODO: screen added
-      console.log(event.path)
+      if (event.path.length > 0) {
+        // TODO: split screen
+      } else {
+        sendScreenAddToView(sendMessage, subtitle, event)
+      }
     } else if (event.changes.deleted.size > 0) {
-      // TODO: screen deleted
+      if (event.path.length > 0) {
+        // TODO: merge screen
+      } else {
+        // TODO: screen deleted
+      }
     } else {
       // screen update
       let screen = subtitle.getScreen(event.path[0])
@@ -352,4 +359,22 @@ function sendScreenUpdateToView(sendMessage, subtitle, events, transaction) {
       })
     }
   }
+}
+
+function sendScreenAddToView(sendMessage, subtitle, event) {
+  let delta = event.changes.delta
+  let after = true
+  let screenId = ""
+
+  if (delta[0].retain) {
+    let index = delta[0].retain - 1
+    screenId = subtitle.getScreen(index).screen_id
+  } else {
+    // insert at 0 => insert new screen before the current 1st screen
+    after = false
+    screenId = subtitle.getScreen(1).screen_id
+  }
+  let newScreen = delta[1]?.insert ? delta[1].insert[0] : delta[0].insert[0]
+
+  sendMessage("add_screen", { after, screenId, newScreen: newScreen.toJSON() })
 }
