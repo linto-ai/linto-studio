@@ -74,7 +74,7 @@ export default {
       let domElem = document.getElementById(this.screen.screen_id)
       domElem.classList.add("playing")
       domElem.scrollIntoView({
-        behavior: "smooth",
+        behavior: "instant",
         block: "center",
         inline: "center",
       })
