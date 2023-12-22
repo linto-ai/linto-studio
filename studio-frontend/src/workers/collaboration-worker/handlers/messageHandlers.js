@@ -225,6 +225,31 @@ export function updateSubtitleScreen(params, rootDoc) {
   }, "subtitle_edit_screen_timestamp")
 }
 
+export function mergeSubtitleScreens(params, rootDoc) {
+  const { keptScreenId, deletedScreenId } = params
+  let screens = rootDoc.getArray("screens")
+  const keptScreenIndex = findScreenIndex(screens.toJSON(), keptScreenId)
+  const deletedScreenIndex = findScreenIndex(screens.toJSON(), deletedScreenId)
+
+  let keptScreen = screens.get(keptScreenIndex)
+  let deletedScreen = screens.get(deletedScreenIndex)
+
+  rootDoc.transact(() => {
+    debugEditScreen(`merge screen ${deletedScreenId} into ${keptScreenId}`)
+
+    keptScreen.get("text").push(deletedScreen.get("text"))
+    keptScreen.get("words").push(deletedScreen.get("words"))
+
+    if (deletedScreenIndex > keptScreenIndex) {
+      keptScreen.set("etime", deletedScreen.get("etime"))
+    } else {
+      keptScreen.set("stime", deletedScreen.get("stime"))
+    }
+
+    screens.delete(deletedScreenIndex, 1)
+  }, "subtitle_merge_screens")
+}
+
 export function updateConversationAddSpeaker(params, conversationId, rootDoc) {
   const { turnId, speakerName } = params
   let yspeaker = Conversation.createSpeaker(speakerName)

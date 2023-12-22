@@ -53,22 +53,22 @@ export function sendTextUpdateToViewWrapper(sendMessage, conversation) {
 
 export function sendScreenUpdateToViewWrapper(sendMessage, subtitle) {
   return (YtextEvent, transaction) => {
-    if (transaction.origin === "websocket") {
-      sendScreenUpdateToView(sendMessage, subtitle, YtextEvent, transaction)
-    }
+    sendScreenUpdateToView(sendMessage, subtitle, YtextEvent, transaction)
   }
 }
 
 function sendDocUpdateToWebsocket(origin, socket, dataId, userToken) {
-  // Merge all binary deltas
   debugSendDocUpdate("Merge updates")
   let isSubtitle = origin.startsWith("subtitle")
 
+  // Merge all binary deltas
   let mergedDelta = isSubtitle
     ? Subtitle.mergeUpdates(tmpBinaryDelta)
     : Conversation.mergeUpdates(tmpBinaryDelta)
   // Reset Temporary binary delta
   tmpBinaryDelta = []
+  // NOTE: remove this condition
+  if (origin === "subtitle_merge_screens") return
   // Send binary delta to worker
   debugSendDocUpdate("Send binary delta to worker")
   socket.emit(`${isSubtitle ? "screen" : "conversation"}_update`, {
@@ -333,35 +333,51 @@ function sendTurnSpeakerUpdate(
 
 function sendScreenUpdateToView(sendMessage, subtitle, events, transaction) {
   for (const event of events) {
+    console.log(event.path)
+    console.log(event.changes)
     if (event.changes.added.size > 0) {
       if (event.path.length > 0) {
         // TODO: split screen
       } else {
-        sendScreenAddToView(sendMessage, subtitle, event)
+        sendScreenAddToView(sendMessage, subtitle, event, transaction.origin)
       }
     } else if (event.changes.deleted.size > 0) {
       if (event.path.length > 0) {
         // TODO: merge screen
+        console.log("Merge !")
       } else {
         // TODO: screen deleted
       }
     } else {
       // screen update
-      let screen = subtitle.getScreen(event.path[0])
-      let screenId = screen.screen_id
-      let changes = {}
-      for (const [key, _] of event.changes.keys) {
-        changes[key] = screen[key]
-      }
-      sendMessage("screen_update", {
-        screenId: screenId,
-        changes: changes,
-      })
+      sendScreenUpdateTimeStampToView(
+        sendMessage,
+        subtitle,
+        event,
+        transaction.origin
+      )
     }
   }
 }
 
-function sendScreenAddToView(sendMessage, subtitle, event) {
+function sendScreenUpdateTimeStampToView(sendMessage, subtitle, event, origin) {
+  if (origin !== "websocket") return
+
+  let screen = subtitle.getScreen(event.path[0])
+  let screenId = screen.screen_id
+  let changes = {}
+  for (const [key, _] of event.changes.keys) {
+    changes[key] = screen[key]
+  }
+  sendMessage("screen_update", {
+    screenId: screenId,
+    changes: changes,
+  })
+}
+
+function sendScreenAddToView(sendMessage, subtitle, event, origin) {
+  if (origin !== "websocket") return
+
   let delta = event.changes.delta
   let after = true
   let screenId = ""

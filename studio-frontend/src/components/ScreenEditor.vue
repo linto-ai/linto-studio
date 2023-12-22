@@ -93,7 +93,11 @@ export default {
       this.$emit("addScreen", leftScreenId, rightScreenId)
     },
     mergeScreens(leftScreenId, rightScreenId) {
-      console.log("merging screens " + leftScreenId + " and " + rightScreenId)
+      if (leftScreenId === this.selectedScreen.screen_id) {
+        this.$emit("mergeScreens", leftScreenId, rightScreenId)
+      } else {
+        this.$emit("mergeScreens", rightScreenId, leftScreenId)
+      }
     },
   },
   components: {

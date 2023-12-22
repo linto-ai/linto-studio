@@ -20,6 +20,7 @@
     <ScreenEditor
       :screens="blocks"
       :can-edit="canEdit"
+      @mergeScreens="mergeScreens"
       @addScreen="addScreen"></ScreenEditor>
     <SubtitlePlayer
       :key="playerKey"
@@ -85,6 +86,9 @@ export default {
     },
     blockUpdate(screen_id, stime, etime) {
       this.$emit("screenUpdate", screen_id, stime, etime)
+    },
+    mergeScreens(keptScreenId, deletedScreenId) {
+      this.$emit("mergeScreen", keptScreenId, deletedScreenId)
     },
     addScreen(leftScreenId, rightScreenId) {
       if (leftScreenId) {

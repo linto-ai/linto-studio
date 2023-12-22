@@ -49,6 +49,7 @@
       :blocks="screens"
       :canEdit="userRights.hasRightAccess(userRight, userRights.WRITE)"
       @screenUpdate="screenUpdate"
+      @mergeScreen="mergeScreen"
       @addScreen="addScreen">
     </SubtitleEditor>
   </MainContentConversation>
@@ -156,6 +157,22 @@ export default {
         this.screens.set(screen_id, block)
         workerSendMessage("update_screen", {
           screen: block.screen,
+        })
+      }
+    },
+    mergeScreen(keptScreenId, deletedScreenId) {
+      let keptScreen = this.screens.get(keptScreenId)
+      if (
+        keptScreen.next === deletedScreenId ||
+        keptScreen.prev === deletedScreenId
+      ) {
+        workerSendMessage("merge_screens", { keptScreenId, deletedScreenId })
+      } else {
+        bus.$emit("app_notif", {
+          status: "error",
+          message: "Connot merge two non-consecutive screens",
+          timout: null,
+          redirect: false,
         })
       }
     },
