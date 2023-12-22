@@ -98,10 +98,10 @@ class Mailing {
         return await this.sendMail(TYPE.ACCOUNT_CREATE_INVITE_ORGANIZATION, { email, origin }, { origin, magicId, sharedByEmail, orgaName, organizationId })
     }
 
-    async conversationSharedNewUser(email, origin, magicId, sharedByEmail) {
+    async conversationSharedNewUser(email, origin, magicId, sharedByEmail, conversationId) {
         if (typeof origin === 'object') origin = this.exctractRequestOrigin(origin)
 
-        return await this.sendMail(TYPE.SHARE_CONVERSATION_EXTERNAL, { email, origin }, { origin, magicId, sharedByEmail })
+        return await this.sendMail(TYPE.SHARE_CONVERSATION_EXTERNAL, { email, origin }, { origin, magicId, sharedByEmail, conversationId })
     }
 
     /*
