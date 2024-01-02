@@ -167,6 +167,28 @@ describe('normalize conversation segment from a reduced linstt transcription', (
     })
     testTimeStamp(normalizeTranscription)
   })
+
+  it('segment with no filter and rules of apostrophe (normalize-double-punctuation-first)', () => {
+    mock_transcription = require(`${process.cwd()}/tests/data/transcription/reduce/normalize-double-punctuation-first.json`)
+    conversation = require(`${process.cwd()}/tests/data/conversation/normalize/reduce/conversation-double-punctuation-first`)
+
+    const normalizeTranscription = segmentNormalizeText(mock_transcription, LANG)
+    normalizeTranscription.segments.map((segment, index_seg) => {
+      testNormalize(conversation, segment, index_seg)
+    })
+    testTimeStamp(normalizeTranscription)
+  })
+
+  it('segment with no filter and rules of apostrophe (normalize-special-underscore)', () => {
+    mock_transcription = require(`${process.cwd()}/tests/data/transcription/reduce/normalize-special-underscore.json`)
+    conversation = require(`${process.cwd()}/tests/data/conversation/normalize/reduce/conversation-special-underscore`)
+
+    const normalizeTranscription = segmentNormalizeText(mock_transcription, LANG)
+    normalizeTranscription.segments.map((segment, index_seg) => {
+      testNormalize(conversation, segment, index_seg)
+    })
+    testTimeStamp(normalizeTranscription)
+  })
 })
 
 function testNormalize(conversation, segment, index_seg) {

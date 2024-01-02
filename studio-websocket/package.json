@@ -1,5 +1,5 @@
 {
-  "name": "platform-conversation-manager-websocket",
+  "name": "linto-studio-websocket",
   "version": "1.4.0",
   "description": "Websocker server for the conversation manager.",
   "main": "src/app.js",
@@ -16,14 +16,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/linto-ai/platform-conversation-manager-websocket.git"
+    "url": "git+https://github.com/linto-ai/linto-studio.git"
   },
   "author": "",
   "license": "GNU AFFERO GPLV3",
   "bugs": {
-    "url": "https://github.com/linto-ai/platform-conversation-manager-websocket/issues"
+    "url": "https://github.com/linto-ai/linto-studio/issues"
   },
-  "homepage": "https://github.com/linto-ai/platform-conversation-manager-websocket#readme",
+  "homepage": "https://github.com/linto-ai/linto-studio#README",
   "ava": {
     "files": [
       "src/**/test/**/*",

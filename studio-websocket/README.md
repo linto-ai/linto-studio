@@ -1,4 +1,4 @@
-# Conversation manager websocket server
+# LinTO Studio Websocket
 
 This is the websocket part of the conversation manager, it handles collaborative edition. It's needed by the frontend https://github.com/linto-ai/platform-conversation-manager-front
 

@@ -195,16 +195,12 @@ class UsersModel extends MongoModel {
                     validityDate
                 }
             }
-            if (payload?.accountNotifications?.inviteAccount && payload?.accountNotifications?.updatePassword) {
-                mutableElements = {
-                    authLink: {
-                        magicId,
-                        validityDate
-                    },
-                    accountNotifications: {
-                        inviteAccount: payload.accountNotifications.inviteAccount,
-                        updatePassword: payload.accountNotifications.updatePassword
-                    }
+
+            if (payload.accountNotifications) {
+                // in case accountNotifications is define, but the necessary key are not provided, we set then to false by default
+                mutableElements.accountNotifications = {
+                    inviteAccount: payload.accountNotifications.inviteAccount || false,
+                    updatePassword: payload.accountNotifications.updatePassword || false
                 }
             }
 

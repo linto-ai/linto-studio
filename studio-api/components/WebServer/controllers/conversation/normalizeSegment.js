@@ -85,6 +85,10 @@ function segmentNormalizeText(transcription, lang, filter = undefined) {
     segments.words = []
     segments.segment_array = segments.segment.split(' ')
 
+    if (segments.segment_array.length > 0 && segments.segment_array[0] === '') {
+      segments.segment_array.shift()
+    }
+
     for (let words_sequence of ruleSequenceGenerator(segments, lang, filter)) {
       segments.words.push(words_sequence)
     }

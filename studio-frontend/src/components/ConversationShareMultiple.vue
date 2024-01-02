@@ -66,7 +66,7 @@
             <button
               type="submit"
               class="btn green"
-              :disabled="this.searchMemberValue.valid ? null : true">
+              :disabled="isValidEmail ? null : true">
               <span class="label">{{
                 $t("share_menu.invite_user_button")
               }}</span>
@@ -215,6 +215,9 @@ export default {
         },
       ]
     },
+    isValidEmail() {
+      return this.searchMemberValue.value.indexOf("@") > 0
+    }
   },
   watch: {
     async showShareList() {
@@ -256,7 +259,19 @@ export default {
 
       return false
     },
-    inviteUser() {},
+    async inviteUser(event) {
+      event.preventDefault()
+      const convIds = Array.from(this.selectedConversations.values()).map(c => c._id)
+      let res = await apiUpdateMultipleUsersInMultipleConversations(
+        convIds,
+        [{email: this.searchMemberValue.value, "right": 1}],
+        this.currentOrganizationScope,
+        {
+          message: this.$t("share_menu.user_has_been_invited"),
+        }
+      )
+      return false
+    },
     async updateUserRights(user, newRight) {
       // todo: websocket update (until then, other users will have to reload the page)
       if (this.usersLoading?.[user._id]) return

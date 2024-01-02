@@ -1,5 +1,5 @@
 {
-  "name": "saas-conversation-manager-dashboard",
+  "name": "linto-studio-dashboard",
   "version": "1.0.1",
   "description": "",
   "main": "src/app.js",
@@ -14,13 +14,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/linto-ai/saas-conversation-manager-dashboard.git"
+    "url": "git+https://github.com/linto-ai/linto-studio.git"
   },
   "author": "",
   "bugs": {
-    "url": "https://github.com/linto-ai/saas-conversation-manager-dashboard/issues"
+    "url": "https://github.com/linto-ai/linto-studio/issues"
   },
-  "homepage": "https://github.com/linto-ai/saas-conversation-manager-dashboard#readme",
+  "homepage": "https://github.com/linto-ai/linto-studio#README",
   "devDependencies": {
     "eslint": "^8.23.0",
     "nodemon": "^2.0.20",

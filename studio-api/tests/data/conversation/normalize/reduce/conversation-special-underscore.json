@@ -1,0 +1,57 @@
+{
+  "text": [
+    {
+      "speaker_id": "0601ba35-a3bb-4567-890c-bfb5d5e89023",
+      "turn_id": "e0b8f761-07bf-449c-9dd5-b0722ecd172f",
+      "raw_segment": "— c'est paritaire ? —",
+      "segment": "— C'est paritaire ? —",
+      "words": [
+        {
+          "wid": "44cb0c93-d457-4370-8830-a5f78bccdffd",
+          "stime": 3344.08,
+          "etime": 3344.08,
+          "word": "—",
+          "confidence": 1,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "3026e500-5aa1-430a-bfee-61a5cedc1bb6",
+          "stime": 3344.08,
+          "etime": 3344.46,
+          "word": "C'est",
+          "confidence": 0.96,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "4cc24e85-9ed8-4afe-a726-75f796525c17",
+          "stime": 3344.46,
+          "etime": 3345.2200000000003,
+          "word": "paritaire",
+          "confidence": 0.87,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "bfc9031d-19d5-405c-a3e6-c137ba334313",
+          "stime": 3345.2200000000003,
+          "etime": 3345.2200000000003,
+          "word": "?",
+          "confidence": 0.87,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "44cb0c93-d457-4370-8830-a5f78bccdffd",
+          "stime": 3346.08,
+          "etime": 3346.08,
+          "word": "—",
+          "confidence": 1,
+          "highlights": [],
+          "keywords": []
+        }
+      ]
+    }
+  ]
+}

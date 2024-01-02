@@ -345,7 +345,8 @@
     "user_not_found": "User not found",
     "organization_members": "Organization members",
     "external_members": "External users",
-    "invite_user_button": "Invite user"
+    "invite_user_button": "Invite user",
+    "user_has_been_invited": "User has been invited"
   },
   "lang": {
     "en": "English",

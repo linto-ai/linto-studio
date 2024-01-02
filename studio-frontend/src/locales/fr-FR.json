@@ -342,7 +342,8 @@
     "search_label": "Invitez un utilisateur",
     "user_not_found": "L'utilisateur n'existe pas",
     "organization_members": "Membres de l'organisation",
-    "external_members": "Utilisateurs externes"
+    "external_members": "Utilisateurs externes",
+    "user_has_been_invited": "L'utilisateur a été invité"
   },
   "lang": {
     "en": "Anglais",

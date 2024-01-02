@@ -1,0 +1,26 @@
+{
+  "segments": [
+    {
+      "duration": 2.300000000000182,
+      "end": 3346.26,
+      "raw_segment": "— C'est paritaire ? —",
+      "segment": "— C'est paritaire ? —",
+      "spk_id": "spk2",
+      "start": 3343.96,
+      "words": [
+        {
+          "conf": 0.96,
+          "end": 3344.46,
+          "start": 3344.08,
+          "word": "C'est"
+        },
+        {
+          "conf": 0.87,
+          "end": 3345.2200000000003,
+          "start": 3344.46,
+          "word": "paritaire"
+        }
+      ]
+    }
+  ]
+}

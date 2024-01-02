@@ -32,7 +32,7 @@ function diminutivePunctuation(seg_text, words, loop_data) {
 
 
 function doublePunctuation(seg_text, words, loop_data) {
-  if (/[?!:;«»–]$/.test(seg_text.lowercase)) {
+  if (/[?!:;«»–—]$/.test(seg_text.lowercase)) {
     let timestamp = 0
 
     if (loop_data.last_endtime !== undefined) timestamp = loop_data.last_endtime
@@ -153,7 +153,7 @@ function notFound(segment_text, words) {
 function lastWord(segment_text, words, loop_data) {
   // In case of last word is a double punctuation,
   // It can be desync with the words array depending of the transcription services
-  if (segment_text.lowercase.length === 1 && /[?!:;«»]$/.test(segment_text.lowercase)) {
+  if (segment_text.lowercase.length === 1 && /[?!:;«»–—]$/.test(segment_text.lowercase)) {
     let last_word_index = loop_data.words.length - 1
 
     return {
