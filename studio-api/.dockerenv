@@ -22,7 +22,7 @@ NLP_METHOD=frequencies,textrank
 
 # Cross domain accessibility
 CORS_ENABLED=true
-CORS_API_WHITELIST=http://localhost
+CORS_API_WHITELIST=http://localhost:8003
 
 # Express settings
 EXPRESS_SIZE_FILE_MAX=500mb
