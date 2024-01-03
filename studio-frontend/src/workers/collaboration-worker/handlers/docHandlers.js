@@ -332,32 +332,67 @@ function sendTurnSpeakerUpdate(
 }
 
 function sendScreenUpdateToView(sendMessage, subtitle, events, transaction) {
+  let updateScreen = false,
+    mergeScreen = false,
+    splitScreen = false,
+    addScreen = false,
+    deleteScreen = false
   for (const event of events) {
-    console.log(event.path)
-    console.log(event.changes)
-    if (event.changes.added.size > 0) {
-      if (event.path.length > 0) {
-        // TODO: split screen
-      } else {
-        sendScreenAddToView(sendMessage, subtitle, event, transaction.origin)
-      }
+    // console.log(event.path)
+    // console.log(event.changes)
+    if (event.path.length > 0) {
+      updateScreen = true
+    } else if (event.changes.added.size > 0) {
+      addScreen = true
     } else if (event.changes.deleted.size > 0) {
-      if (event.path.length > 0) {
-        // TODO: merge screen
-        console.log("Merge !")
-      } else {
-        // TODO: screen deleted
-      }
+      deleteScreen = true
+    }
+    mergeScreen = deleteScreen && updateScreen
+    splitScreen = addScreen && updateScreen
+  }
+
+  // console.log("merge: " + mergeScreen)
+  // console.log("delete: " + deleteScreen)
+  // console.log("split: " + splitScreen)
+  // console.log("add: " + addScreen)
+  // console.log("update: " + updateScreen)
+
+  if (mergeScreen) sendScreenMergeToView(sendMessage, subtitle, events)
+  else if (deleteScreen) console.log("deleted")
+  else if (splitScreen) console.log("split")
+  else if (addScreen)
+    sendScreenAddToView(sendMessage, subtitle, events[0], transaction.origin)
+  else if (updateScreen)
+    sendScreenUpdateTimeStampToView(
+      sendMessage,
+      subtitle,
+      events[0],
+      transaction.origin
+    )
+}
+
+function sendScreenMergeToView(sendMessage, subtitle, events) {
+  let modifiedScreenId = ""
+  let modifiedIndex = -1
+  let deletedIndex = -1
+  for (const event of events) {
+    if (event.path.length > 0) {
+      let screen = subtitle.getScreen(event.path[0])
+      modifiedScreenId = screen.screen_id
+      modifiedIndex = event.path[0]
     } else {
-      // screen update
-      sendScreenUpdateTimeStampToView(
-        sendMessage,
-        subtitle,
-        event,
-        transaction.origin
-      )
+      for (const delta of event.changes.delta) {
+        if (delta.retain) deletedIndex = delta.retain
+      }
     }
   }
+
+  let deleteAfter = deletedIndex === modifiedIndex + 1
+
+  sendMessage("merge_screen", {
+    screenId: modifiedScreenId,
+    deleteAfter,
+  })
 }
 
 function sendScreenUpdateTimeStampToView(sendMessage, subtitle, event, origin) {

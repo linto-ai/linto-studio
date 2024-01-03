@@ -60,6 +60,7 @@ export default {
     await this.initAudioPlayer()
     bus.$on("refresh_screen", (data) => {
       let region = this.getRegion(data.screenId)
+      console.log(region)
       this.refreshRegion(region, this.formatScreen(data.changes))
     })
     bus.$on("player_set_time", (data) => {
@@ -70,10 +71,20 @@ export default {
     bus.$on("add_screen", (data) => {
       this.addScreen(data.newScreen)
     })
+    bus.$on("merge_screen", (data) => {
+      let { screenId, deletedId } = data
+      this.deleteScreen(deletedId)
+      let target = this.blocks.get(screenId)
+
+      this.deleteScreen(screenId)
+      this.addScreen(target.screen)
+    })
   },
   beforeDestroy() {
     bus.$off("refresh_screen")
     bus.$off("player_set_time")
+    bus.$off("add_screen")
+    bus.$off("merge_screen")
   },
   methods: {
     seekFromBar(e) {
@@ -199,7 +210,7 @@ export default {
           bus.$emit("screen-enter", region.id)
         })
         this.regionsPlugin.on("region-out", (region) => {
-          region.element.part.remove("playing")
+          region.element?.part?.remove("playing")
           bus.$emit("screen-leave", region.id)
         })
       } catch (error) {
@@ -235,6 +246,12 @@ export default {
       for (let [_, region] of this.blocksSettings) {
         this.regionsPlugin.addRegion(region)
       }
+    },
+    deleteScreen(screenId) {
+      console.log(screenId)
+      let region = this.getRegion(screenId)
+      this.blocksSettings.delete(screenId)
+      region.remove()
     },
     addScreen(screen) {
       let region = this.createRegion(screen)

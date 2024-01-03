@@ -1,5 +1,6 @@
 version: '3.5'
 
+services:
   studio-mongo:
     container_name: studio-mongo
     image: mongo:latest

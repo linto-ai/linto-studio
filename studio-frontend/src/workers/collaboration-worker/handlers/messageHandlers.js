@@ -237,12 +237,15 @@ export function mergeSubtitleScreens(params, rootDoc) {
   rootDoc.transact(() => {
     debugEditScreen(`merge screen ${deletedScreenId} into ${keptScreenId}`)
 
-    keptScreen.get("text").push(deletedScreen.get("text"))
-    keptScreen.get("words").push(deletedScreen.get("words"))
-
     if (deletedScreenIndex > keptScreenIndex) {
+      keptScreen.get("text").push(deletedScreen.get("text"))
+      keptScreen.get("words").push(deletedScreen.get("words"))
+
       keptScreen.set("etime", deletedScreen.get("etime"))
     } else {
+      keptScreen.get("text").insert(0, deletedScreen.get("text"))
+      keptScreen.get("words").insert(0, deletedScreen.get("words"))
+
       keptScreen.set("stime", deletedScreen.get("stime"))
     }
 

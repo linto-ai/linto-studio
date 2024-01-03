@@ -74,4 +74,52 @@ export class ScreenList {
     this.screens.set(newScreen.screen_id, addedScreen)
     this.size++
   }
+
+  merge(screenId, deleteAfter) {
+    let target = this.get(screenId)
+    let screenToDelete
+    if (deleteAfter) {
+      screenToDelete = this.get(target.next)
+
+      target.screen.text = target.screen.text.concat(screenToDelete.screen.text)
+      target.screen.words = target.screen.words.concat(
+        screenToDelete.screen.words
+      )
+
+      target.screen.etime = screenToDelete.screen.etime
+    } else {
+      screenToDelete = this.get(target.prev)
+
+      target.screen.text = screenToDelete.screen.text.concat(target.screen.text)
+      target.screen.words = screenToDelete.screen.words.concat(
+        target.screen.words
+      )
+
+      target.screen.stime = screenToDelete.screen.stime
+    }
+
+    return this.delete(screenToDelete.screen.screen_id)
+  }
+
+  delete(screenId) {
+    let target = this.get(screenId)
+
+    let prev = this.get(target.prev)
+    let next = this.get(target.next)
+    if (prev) {
+      // general case
+      prev.next = target.next
+      if (next) {
+        // end of list
+        next.prev = target.prev
+      }
+    } else if (next) {
+      // start of list
+      next.prev = target.prev
+    }
+
+    this.screens.delete(screenId)
+    this.size--
+    return screenId
+  }
 }
