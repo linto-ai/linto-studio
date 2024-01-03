@@ -50,6 +50,7 @@ export async function apiGetAllCategories(
   type = "conversation_metadata",
   scope = "organization",
   expand = false,
+  possess = false,
   notif = null
 ) {
   if (scope === "organization") {
@@ -59,6 +60,7 @@ export async function apiGetAllCategories(
       {
         type,
         expand,
+        possess,
       },
       notif
     )
@@ -70,6 +72,7 @@ export async function apiGetAllCategories(
       {
         type,
         expand,
+        possess,
       },
       notif
     )

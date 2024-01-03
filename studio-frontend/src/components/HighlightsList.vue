@@ -62,6 +62,7 @@ export default {
         this.conversationId,
         "highlight",
         "conversation",
+        true,
         true
       )
       this.hightlightsCategories = req
