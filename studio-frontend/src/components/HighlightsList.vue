@@ -2,11 +2,16 @@
   <div class="highlights-list">
     <h2 class="center-text">IA insight</h2>
     <TagCategoryBoxHighlight
+      v-if="!loading"
       v-for="cat of hightlightsCategories"
       :key="cat._id"
       :category="cat"
       :job="getJobsFromService(cat.name)"
       :conversationId="conversationId"></TagCategoryBoxHighlight>
+    <div v-if="loading" class="center-text small-padding">
+      <div>Querying Ai services</div>
+      <span class="icon loading"></span>
+    </div>
   </div>
 </template>
 <script>
@@ -62,7 +67,7 @@ export default {
       this.hightlightsCategories = req
     },
     getJobsFromService(name) {
-      return this.jobs?.name || null
+      return this.jobs[name] || null
     },
   },
   components: { Fragment, TagCategoryBoxHighlight },

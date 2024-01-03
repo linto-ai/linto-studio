@@ -193,11 +193,13 @@ onmessage = (event) => {
       updateSubtitleScreen(event.data.params, subtitle.getYdoc())
       break
     case "fetch_hightlight":
-      socket.emit('fetch_hightlight', {
+      socket.emit("fetch_hightlight", {
         userToken,
         conversationId,
+        serviceScope: event.data.params.serviceScope,
+        categoryName: event.data.params.categoryName,
       })
-    break
+      break
     default:
       break
   }
@@ -205,7 +207,7 @@ onmessage = (event) => {
 
 function disconnect() {
   shouldDisconnect = true
-  socket.disconnect()
+  if (socket) socket?.disconnect()
   if (conversation !== null) {
     conversation.destroy()
   }

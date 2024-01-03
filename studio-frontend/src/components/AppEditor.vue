@@ -145,13 +145,24 @@ export default {
       this.speakersTurnsTimebox = this.getSpkTimebox()
       bus.$emit("refresh_audio_regions", this.speakersTurnsTimebox)
     })
+    bus.$on("player-ready", this.playerReady.bind(this))
   },
   beforeDestroy() {
     bus.$off("player-audioprocess")
     bus.$off("player-seek")
     bus.$off("refresh_spk_timebox")
+    bus.$off("player-ready")
   },
   methods: {
+    playerReady() {
+      let editorCurrentTime = localStorage.getItem("editorCurrentTime")
+      if (editorCurrentTime) {
+        editorCurrentTime = JSON.parse(editorCurrentTime)
+        if (editorCurrentTime.conversationId === this.conversationId) {
+          bus.$emit("player_set_time", { stime: editorCurrentTime.time })
+        }
+      }
+    },
     getSpkTimebox() {
       let spkTimebox = []
       for (let turn of this.turns) {
@@ -226,6 +237,12 @@ export default {
           break
         }
       }
+
+      // save to localStorage
+      localStorage.setItem(
+        "editorCurrentTime",
+        JSON.stringify({ time, conversationId: this.conversationId })
+      )
     },
     mergeTurns(index) {
       const baseTurn = this.turns.find((turn) => turn.turn_id === index)

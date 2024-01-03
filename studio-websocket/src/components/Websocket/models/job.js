@@ -1,9 +1,14 @@
 import { getJobs } from "../request/index.js"
 
 export class Job {
-  constructor(key, conversationId, updateJobFunction, conversationValue = null) {
+  constructor(
+    key,
+    conversationId,
+    updateJobFunction,
+    conversationValue = null
+  ) {
     this.key = key
-    this.state = "pending"
+    this.state = "not_started"
     this.steps = []
     this.logs = ""
     this.updateJobFunction = updateJobFunction
@@ -38,11 +43,10 @@ export class Job {
     return {
       state: this.state,
       steps: this.steps,
-      logs: this.logs
+      logs: this.logs,
     }
   }
 }
-
 
 export const jobTrapper = {
   get: function (target, prop, receiver) {

@@ -186,6 +186,7 @@ export default {
         this.player.on("ready", () => {
           this.playerReady = true
           this.playerLoading = false
+          bus.$emit("player-ready")
         })
         this.player.once("decode", () => {
           this.initRegions()

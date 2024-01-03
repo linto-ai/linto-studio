@@ -15,6 +15,7 @@ import Conversations from "./models/conversations.js"
 import SubtitleHelper from "./models/subtitles.js"
 import { version } from "os"
 import updateSubtitlesController from "./controllers/updateSubtitlesController.js"
+import hightLightController from "./controllers/highLightController.js"
 
 const info = Debug("Websocket:info")
 const debug = Debug("Websocket:debug:websocket")
@@ -78,7 +79,7 @@ export default class Websocket extends Component {
 
         socket.on("fetch_hightlight", (data) => {
           debug("fetch_keywords event received")
-          keywordController.bind(socket)(data)
+          hightLightController.bind(socket)(data)
         })
 
         socket.on("get_subtitles", async (data) => {
@@ -217,7 +218,6 @@ export default class Websocket extends Component {
 
     socket.join(`conversation/${conversationId}`)
 
-    console.log('yop yop')
     jobTranscriptionController(
       conversation,
       conversationId,

@@ -4,17 +4,16 @@
     scope="conversation"
     :scopeId="conversationId"
     :selectable="false"
-    :fixed="empty"
-    >
+    :fixed="empty">
     <template v-slot:content-just-before-title="slotProps">
       <span class="icon ai"></span>
     </template>
 
     <template v-slot:content-after-title="slotProps">
-      <button class="green" @click="generateKeyword" v-if="!loading">
+      <button class="green" @click="generateKeyword" v-if="!loading && empty">
         <span class="icon plus"></span>
       </button>
-      <span class="icon loading" v-else></span>
+      <span class="icon loading" v-else-if="loading"></span>
     </template>
   </TagCategoryBox>
 </template>
@@ -32,7 +31,7 @@ export default {
   },
   data() {
     return {
-      loading: false
+      loading: false,
     }
   },
   computed: {
@@ -43,14 +42,17 @@ export default {
   mounted() {},
   methods: {
     generateKeyword() {
-      if(this.loading) {
+      if (this.loading) {
         return
       }
       console.log(this.category)
       this.loading = true
-      workerSendMessage('fetch_hightlight', {scope: category.scope})
-      console.log('generate keyword')
-    }
+      workerSendMessage("fetch_hightlight", {
+        serviceScope: this.category.scope,
+        categoryName: this.category.name,
+      })
+      console.log("generate keyword")
+    },
   },
   components: { Fragment, TagCategoryBox },
 }

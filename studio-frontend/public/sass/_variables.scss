@@ -38,6 +38,8 @@ body {
   --red-chart: #fe346e;
   --blue-chart: #1c83d6;
 
+  --bg-highlight: #fff5a4;
+
   --primary-color: var(--green-chart);
   --secondary-color: var(--blue-chart);
   --primary-contrast: #fff;
@@ -72,6 +74,8 @@ html[data-theme="dark"] body {
   --blue-chart: #479ae4;
   --green-chart: #139177;
   --red-chart: #c42653;
+
+  --bg-highlight: #484211;
 }
 
 // @media (prefers-color-scheme: dark) {
