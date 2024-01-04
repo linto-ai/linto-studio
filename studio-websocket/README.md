@@ -1,6 +1,6 @@
 # LinTO Studio Websocket
 
-This is the websocket part of the conversation manager, it handles collaborative edition.
+This is the websocket part of LinTO Studio, it handles collaborative edition.
 
 ## Installation
 

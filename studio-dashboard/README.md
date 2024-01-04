@@ -1,6 +1,6 @@
 # LinTO Studio Dashboard
 
-Statistics dashboard for Linto Studio. Lists user, organisations, and number of medias uploaded.
+Statistics dashboard for LinTO Studio. Lists user, organisations, and number of medias uploaded.
 
 ## Configuration (env variables)
 
