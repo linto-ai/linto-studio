@@ -18,7 +18,7 @@ services:
     env_file: ./studio-api/.dockerenv
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ./studio-api/${VOLUME_FOLDER}/:/usr/src/app/conversation-manager/${VOLUME_FOLDER}/
+      - ./storages/studio-api/:/usr/src/app/conversation-manager/storages/
     command:
       - --run-cmd=node app.js
     ports:

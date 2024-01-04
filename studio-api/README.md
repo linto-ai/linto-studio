@@ -1,25 +1,24 @@
 # LinTO Studio API
-Transcription / summarization / annotation interface for recorded audio files 
+Transcription / summarization / annotation api for recorded audio files 
 
 ## Run project
 ### 1/ clone project and install dependencies
 ```bash
-git clone git@github.com:linto-ai/platform-conversation-manager.git
-cd platform-conversation-manager
-npm install
+  git clone https://github.com/linto-ai/linto-studio
+  cd linto-studio/studio-api
+  npm install
 ```
 ### 2/ Set Docker environment variables
-Duplicate *".envdefault"* file to create *".dockerenv"* file
+Duplicate *".envdefault"* file to create *".env"* file
 ```bash
-cp .envdefault .dockerenv
+cp .envdefault .env
 ```
-
 Set up your environment variables by editing *".dockerenv"*
 
 ### 3/ Run the project
 Run the following command to start the project
 ```bash
-node app.js
+  node app.js
 ```
 
 ## Migration
