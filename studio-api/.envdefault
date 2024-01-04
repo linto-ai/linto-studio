@@ -17,7 +17,7 @@ DB_NAME=conversations
 DB_MIGRATION_TARGET=1.2.0
 
 # STT Config
-GATEWAY_SERVICES=https://alpha.api.linto.ai
+GATEWAY_SERVICES=https://api.linto.ai
 
 # NLP Service
 NLP_SERVICES=<nlp_service_host>

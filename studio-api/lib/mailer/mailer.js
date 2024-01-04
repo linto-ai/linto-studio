@@ -2,7 +2,7 @@ const debug = require('debug')('linto:lib:Mailer:mailer')
 const nodemailer = require("nodemailer")
 const { MailError } = require('./../error/customErrors')
 const transporter = nodemailer.createTransport({
-  
+
   host: process.env.SMTP_HOST,
   port: process.env.SMTP_PORT,
   secure: process.env.SMTP_SECURE, // true for 465, false for other ports
@@ -25,6 +25,11 @@ class Mailer {
   }
 
   static async sendMail(mail_payload) {
+    if (process.env.SMTP_HOST === '') {
+      debug('SMTP wasn\'t define, mailing disable')
+      return true
+    }
+
     try {
       if (Mailer.connected === false) {
         Mailer.connected = await Mailer.checkConnection()
