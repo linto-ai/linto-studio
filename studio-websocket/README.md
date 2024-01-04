@@ -1,24 +1,23 @@
 # LinTO Studio Websocket
 
-This is the websocket part of the conversation manager, it handles collaborative edition. It's needed by the frontend https://github.com/linto-ai/platform-conversation-manager-front
+This is the websocket part of the conversation manager, it handles collaborative edition.
 
-## 1/ Clone project and install dependencies
+## Installation
+
+### Install dependencies
 
 ```bash
-cd your/project/path
-git clone git@github.com:linto-ai/platform-conversation-manager-websocket.git
-cd platform-conversation-manager-websocket
-npm i
+npm install
 ```
 
-## 2/ Setup environnement variables
+### Setup environnement variables
 
 - WEBSERVER_HTTP_PORT: listening port for the websocket server
-- CONVO_API: url of the Conversation manager api (see https://github.com/linto-ai/platform-conversation-manager)
+- CONVO_API: url where studio-api is listening
 - WEBSERVER_WS_PATH: path where socket.io will listen (default to /socket.io)
 
-## 3/ Run without docker
+### Run
 
 ```bash
-npm run dev
+npm run start
 ```
