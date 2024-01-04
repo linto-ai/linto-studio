@@ -1,4 +1,4 @@
-import { updateScreen } from "../../request/index.js"
+import { updateScreen, updateSubtitle } from "../../request/index.js"
 
 export async function handleScreenChange(
   yEvent,
@@ -8,14 +8,11 @@ export async function handleScreenChange(
   userToken
 ) {
   if (transaction.origin === "websocket") return true
-
-  if (yEvent.length === 1 && yEvent[0].path.length === 0) {
-    // TODO: update all screens
-    return true
+  if (yEvent.length > 1) {
+    return await updateAllScreens(yEvent, conversationId, subtitleId, userToken)
   } else {
     return await updateSingleScreen(
       yEvent,
-      transaction,
       conversationId,
       subtitleId,
       userToken
@@ -23,9 +20,19 @@ export async function handleScreenChange(
   }
 }
 
+async function updateAllScreens(yEvent, conversationId, subtitleId, userToken) {
+  let update = await updateSubtitle(
+    conversationId,
+    subtitleId,
+    { screens: yEvent[0].currentTarget.toJSON() },
+    userToken
+  )
+
+  return update.status === "success"
+}
+
 async function updateSingleScreen(
   yEvent,
-  transaction,
   conversationId,
   subtitleId,
   userToken

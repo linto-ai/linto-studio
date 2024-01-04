@@ -55,6 +55,10 @@ export class ScreenList {
     }
     let target = this.get(screenId)
 
+    if (target.prev === null && !after) {
+      this.first = newScreen.screen_id
+    }
+
     if (after) {
       addedScreen.prev = screenId
       addedScreen.next = target.next
@@ -106,6 +110,11 @@ export class ScreenList {
 
     let prev = this.get(target.prev)
     let next = this.get(target.next)
+
+    if (target.prev === null) {
+      this.first = target.next
+    }
+
     if (prev) {
       // general case
       prev.next = target.next

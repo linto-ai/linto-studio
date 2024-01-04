@@ -319,6 +319,36 @@ export async function addScreen(
   )
 }
 
+export async function deleteScreen(
+  conversationId,
+  subtitleId,
+  screenId,
+  userToken
+) {
+  return await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/subtitle/${subtitleId}/screen/${screenId}`,
+    { method: "delete" },
+    null,
+    null,
+    userToken
+  )
+}
+
+export async function updateSubtitle(
+  conversationId,
+  subtitleId,
+  payload,
+  userToken
+) {
+  return await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/subtitle/${subtitleId}`,
+    { method: "patch" },
+    payload,
+    null,
+    userToken
+  )
+}
+
 export async function updateTurn(conversationId, turnId, payload, userToken) {
   return await sendRequest(
     `${BASE_API}/conversations/${conversationId}/turns/${turnId}`,
