@@ -1,8 +1,13 @@
 <h1 align="center">LinTO Studio</h1>
 
-<h4 align="center">Open Source AI driven recording, transcription and media management solution</h4>
+<h4 align="center">Open Source AI driven recording, transcription and media management solution
+<br/>
+<a href="https://studio.linto.app" target="_blank" rel="noopener noreferrer">Demo</a> •
+<a href="https://linto.app" target="_blank" rel="noopener noreferrer">Get the android application  </a>
+</h4>
 
-![screenshot of linto.app](doc/Studio.jpg)
+![screenshot of linto.app](doc/Studio.png)
+
 
 ## Features
 
