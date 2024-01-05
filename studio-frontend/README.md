@@ -1,28 +1,18 @@
 # LinTO Studio Frontend
 
-Transcription / summarization / annotation interface for recorded audio files with sharing and live collaborative edition.
-
-![screenshot](./public/img/Screenshot.png)
-
-**Try it** on https://convos.linto.ai
+Main web interface for LinTO Studio.
 
 ## Installation
 
-### 1/ Deploy the backend and the websocket service
+You need studio-api and studio-websocket running.
 
-- https://github.com/linto-ai/platform-conversation-manager
-- https://github.com/linto-ai/platform-conversation-manager-websocket
-
-### 2/ Clone project and install dependencies
+### Install dependencies
 
 ```bash
-  cd your/project/path
-  git clone git@github.com:linto-ai/platform-conversation-manager-front.git
-  cd platform-conversation-manager-front
   npm install
 ```
 
-### 3/ Setup environnement variables
+### Setup environnement variables
 
 Copy _.envTemplate_ file as _.env_
 

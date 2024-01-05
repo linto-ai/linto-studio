@@ -5,11 +5,7 @@ services:
     container_name: studio-mongo
     image: mongo:latest
     volumes:
-      - ./docker-optional/mongo-database/:/data/db
-    ports:
-      - 27017:27017
-    expose:
-      - "27017"
+      - ./storages/mongo-database/:/data/db
     networks:
       - internal
 
@@ -22,28 +18,13 @@ services:
     env_file: ./studio-api/.dockerenv
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ./studio-api/${VOLUME_FOLDER}/:/usr/src/app/conversation-manager/${VOLUME_FOLDER}/
+      - ./storages/studio-api/:/usr/src/app/conversation-manager/storages/
     command:
       - --run-cmd=node app.js
     ports:
       - "8001:80"
     networks:
       - internal
-
-  studio-frontend:
-    container_name: studio-frontend
-    image : linto-studio/studio-frontend
-    build:
-      context: ./studio-frontend
-      dockerfile: Dockerfile
-    env_file: ./studio-frontend/.dockerenv
-    command:
-      - --build
-    ports:
-      - "80:80"
-    networks:
-      - internal
-
 
   studio-websocket:
     container_name: studio-websocket
@@ -57,6 +38,20 @@ services:
     networks:
       - internal
 
+  studio-frontend:
+    container_name: studio-frontend
+    image : linto-studio/studio-frontend
+    build:
+      context: ./studio-frontend
+      dockerfile: Dockerfile
+    env_file: ./studio-frontend/.dockerenv
+    command:
+      - --build
+    ports:
+      - "8003:80"
+    networks:
+      - internal
+
   studio-dashboard:
     container_name: studio-dashboard
     image : linto-studio/studio-dashboard
@@ -65,7 +60,7 @@ services:
       dockerfile: Dockerfile
     env_file: ./studio-dashboard/.dockerenv
     ports:
-      - "8081:80"
+      - "8004:80"
     networks:
       - internal
 
