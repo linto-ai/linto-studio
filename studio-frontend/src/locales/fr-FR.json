@@ -86,7 +86,8 @@
     "duration": "Durée: {duration}",
     "error": {
       "creation_unknown": "Erreur: veuillez réessayer plus tard",
-      "form_invalid": "Erreur: veuillez vérifier les champs du formulaire"
+      "form_invalid": "Erreur: veuillez vérifier les champs du formulaire",
+      "no_audio_file": "Erreur: vous devez ajouter un fichier audio"
     },
     "export": {
       "title": "Télécharger",

@@ -87,7 +87,8 @@
     "error": {
       "creation_unknown": "Error: please try again later",
       "form_invalid": "Error: please check the form",
-      "loading_upload_message": "Uploading audio. This can take several minutes"
+      "loading_upload_message": "Uploading audio. This can take several minutes",
+      "no_audio_file": "Error: you did not upload any audio file"
     },
     "export": {
       "title": "Export",
