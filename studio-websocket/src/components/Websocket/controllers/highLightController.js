@@ -1,11 +1,16 @@
+import Debug from "debug"
 import Conversations from "../models/conversations.js"
+import { apiGenerateKeywords } from "../request/index.js"
 import { v4 as uuidv4 } from "uuid"
+
+const debug = Debug("Websocket:debug:hightLightController")
 
 export default async function hightLightController(
   { conversationId, userToken, serviceScope, categoryName },
   io
 ) {
-  let conversation = Conversations.getById(data.conversationId)
+  let conversation = Conversations.getById(conversationId)
+
   if (!conversation) {
     this.emit("error")
   }
@@ -15,41 +20,60 @@ export default async function hightLightController(
     conversationId,
     userToken,
     io,
+    this,
     serviceScope,
     categoryName
   )
 }
 
-function highLightFetchJob(
+async function highLightFetchJob(
   conversation,
   conversationId,
   userToken,
   io,
+  socket,
   serviceScope,
   categoryName
 ) {
   try {
     const room = `conversation/${conversationId}`
-    const job = conversation.jobs["transcription"]
-    if (job.state && job.state != "started" && job.state != "pending") {
+    const job = conversation.jobs[categoryName]
+    if (
+      job.state &&
+      job.state != "started" &&
+      job.state != "pending" &&
+      job.state != "not_started"
+    ) {
       debug("Job done")
     } else {
+      if (job.state == "not_started") {
+        // TODO: generalize for all highlight types
+        let res = await apiGenerateKeywords(conversationId, userToken)
+        if (res.status == "error") {
+          socket.emit("error")
+        }
+      }
+
       job.fetchJob(userToken)
       setTimeout(
         () =>
-          updateConversationController(
+          highLightFetchJob(
             conversation,
             conversationId,
             userToken,
-            io
+            io,
+            socket,
+            serviceScope,
+            categoryName
           ),
         3000
       )
-      io.to(room).emit("job_transcription_update", {
-        ...conversation.jobs["transcription"].toJSON(),
+      io.to(room).emit("hightlight_update", {
+        ...conversation.jobs[categoryName].toJSON(),
       })
     }
   } catch (error) {
-    this.emit("error")
+    console.error(error)
+    socket.emit("error")
   }
 }

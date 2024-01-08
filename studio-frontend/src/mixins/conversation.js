@@ -11,7 +11,7 @@ export const conversationMixin = {
         conversationId,
         token,
         userId,
-        CONVERSATION_FORMATS.transcription,
+        CONVERSATION_FORMATS.transcription
       )
     },
     async specificWorkerOnMessage(event) {
@@ -19,14 +19,14 @@ export const conversationMixin = {
         case "speaker_name_updated":
           this.updateSpeakerName(
             event.data.params.value.speaker_id,
-            event.data.params.value.speaker_name,
+            event.data.params.value.speaker_name
           )
           bus.$emit("conversation_user_update", { ...event.data.params })
           break
         case "turn_speaker_update":
           this.updateSpeakerTurn(
             event.data.params.turnId,
-            event.data.params.value,
+            event.data.params.value
           )
           bus.$emit("turn_speaker_update", event.data.params)
           break
@@ -61,7 +61,11 @@ export const conversationMixin = {
           this.conversation.keywords = event.data.params.keywords
           bus.$emit("refresh_keywords", {})
           break
-        //this.status = event.data.params.state
+        case "hightlight_update":
+          const categoryName = event.data.params.categoryName
+          this.conversation.jobs[categoryName] = { ...event.data.params.job }
+          bus.$emit("hightlight_update", { categoryName })
+          break
         default:
           break
       }
@@ -74,12 +78,12 @@ export const conversationMixin = {
     },
     updateSpeakerName(speakerId, speakerName) {
       this.conversation.speakers.find(
-        (spk) => spk.speaker_id === speakerId,
+        (spk) => spk.speaker_id === speakerId
       ).speaker_name = speakerName
     },
     updateSpeakerTurn(turnId, speakerId) {
       this.conversation.text.find(
-        (turn) => turn.turn_id === turnId,
+        (turn) => turn.turn_id === turnId
       ).speaker_id = speakerId
     },
   },

@@ -193,6 +193,7 @@ onmessage = (event) => {
       updateSubtitleScreen(event.data.params, subtitle.getYdoc())
       break
     case "fetch_hightlight":
+      console.log("send fetch_hightlight", conversationId)
       socket.emit("fetch_hightlight", {
         userToken,
         conversationId,
@@ -314,6 +315,11 @@ function setSocketListeners(socket) {
   socket.on("keywords_update", (data) => {
     debugJobsWorker("Websocket event 'keywords_update'")
     sendMessage("keywords_update", data)
+  })
+
+  socket.on("hightlight_update", (data) => {
+    debugJobsWorker("Websocket event 'hightlight_update'")
+    sendMessage("hightlight_update", data)
   })
 
   socket.on("subtitles_loaded", (data) => {

@@ -28,6 +28,8 @@ export class Job {
 
     if (!job) return
 
+    if (Object.keys(job).length === 0) return
+
     this.state = job.state
     this.steps = job.steps
     this.logs = job.job_logs
@@ -40,6 +42,7 @@ export class Job {
   }
 
   toJSON() {
+    console.log("toJSON", this)
     return {
       state: this.state,
       steps: this.steps,

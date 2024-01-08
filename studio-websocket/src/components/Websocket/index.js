@@ -79,7 +79,7 @@ export default class Websocket extends Component {
 
         socket.on("fetch_hightlight", (data) => {
           debug("fetch_keywords event received")
-          hightLightController.bind(socket)(data)
+          hightLightController.bind(socket)(data, this.app.io)
         })
 
         socket.on("get_subtitles", async (data) => {
