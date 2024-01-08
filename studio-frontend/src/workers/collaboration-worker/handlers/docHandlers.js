@@ -67,8 +67,6 @@ function sendDocUpdateToWebsocket(origin, socket, dataId, userToken) {
     : Conversation.mergeUpdates(tmpBinaryDelta)
   // Reset Temporary binary delta
   tmpBinaryDelta = []
-  // NOTE: remove this condition
-  if (origin === "subtitle_merge_screens") return
   // Send binary delta to worker
   debugSendDocUpdate("Send binary delta to worker")
   socket.emit(`${isSubtitle ? "screen" : "conversation"}_update`, {
