@@ -1,9 +1,17 @@
 {
-  "name": "conversation-manager-frontend",
+  "name": "linto-studio-frontend",
   "author": "Romain Lopez <rlopez@linagora.com>",
   "description": "This is LinTO Studio web interface",
   "version": "1.4.0",
   "license": "GNU AFFERO GPLV3",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/linto-ai/linto-studio.git"
+  },
+  "bugs": {
+    "url": "https://github.com/linto-ai/linto-studio/issues"
+  },
+  "homepage": "https://github.com/linto-ai/linto-studio#README",
   "type": "module",
   "scripts": {
     "serve-local": "vue-cli-service serve --mode=local",

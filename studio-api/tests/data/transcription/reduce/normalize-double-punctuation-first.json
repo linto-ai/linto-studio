@@ -1,0 +1,96 @@
+{
+	"segments": [		{
+			"duration": 9.700000000000003,
+			"end": 71.92,
+			"raw_segment": "? Ah, c'est comme ça, ici ? Disons que ça se joue entre 3.000 et 9.000.",
+			"segment": " ? Ah, c'est comme ça, ici ? Disons que ça se joue entre 3.000 et 9.000.",
+			"spk_id": "spk1",
+			"start": 62.22,
+			"words": [
+				{
+					"conf": 0.23,
+					"end": 62.9,
+					"start": 62.68,
+					"word": "Ah"
+				},
+				{
+					"conf": 0.97,
+					"end": 63.02,
+					"start": 62.94,
+					"word": "c'est"
+				},
+				{
+					"conf": 0.71,
+					"end": 63.18,
+					"start": 63.02,
+					"word": "comme"
+				},
+				{
+					"conf": 0.84,
+					"end": 63.36,
+					"start": 63.18,
+					"word": "ça"
+				},
+				{
+					"conf": 0.81,
+					"end": 63.62,
+					"start": 63.4,
+					"word": "ici"
+				},
+				{
+					"conf": 0.78,
+					"end": 68.64,
+					"start": 68.24,
+					"word": "Disons"
+				},
+				{
+					"conf": 0.82,
+					"end": 69.04,
+					"start": 68.64,
+					"word": "que"
+				},
+				{
+					"conf": 0.71,
+					"end": 69.8,
+					"start": 69.04,
+					"word": "ça"
+				},
+				{
+					"conf": 0.74,
+					"end": 69.96,
+					"start": 69.8,
+					"word": "se"
+				},
+				{
+					"conf": 0.81,
+					"end": 70.16,
+					"start": 69.96,
+					"word": "joue"
+				},
+				{
+					"conf": 0.73,
+					"end": 70.48,
+					"start": 70.16,
+					"word": "entre"
+				},
+				{
+					"conf": 0.51,
+					"end": 71.2,
+					"start": 70.48,
+					"word": "3.000"
+				},
+				{
+					"conf": 0.92,
+					"end": 71.36,
+					"start": 71.2,
+					"word": "et"
+				},
+				{
+					"conf": 1.0,
+					"end": 71.92,
+					"start": 71.36,
+					"word": "9.000"
+				}
+			]
+		}]
+}

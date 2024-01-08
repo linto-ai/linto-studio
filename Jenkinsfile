@@ -1,10 +1,10 @@
-def buildDockerfile(dockerfilePath, image_name, version) {
-    echo "Building Dockerfile at ${dockerfilePath} for ${image_name}... with version ${version}"
+def buildDockerfile(folder_name, version) {
+    echo "Building Dockerfile at ${folder_name}/Dockerfile for ${folder_name}... with version ${version}"
 
     // Build Docker image using the specified Dockerfile
     script {
-        def completeImageName = "${env.DOCKER_HUB_REPO}/${image_name}" // Concatenate repo with image_name
-        def image = docker.build(completeImageName, "-f ${dockerfilePath} .")
+        def completeImageName = "${env.DOCKER_HUB_REPO}/${folder_name}" // Concatenate repo with image name
+        def image = docker.build(completeImageName, "-f ${folder_name}/Dockerfile ./${folder_name}")
 
         echo "Prepare to release newer version ${completeImageName}:${version}"
         docker.withRegistry('https://registry.linto.ai', env.DOCKER_HUB_CRED) {
@@ -18,34 +18,34 @@ def buildDockerfile(dockerfilePath, image_name, version) {
     }
 }
 
+// For linto studio, the folder name have the same name of the docker image
 def performBuildForFile(changedFiles, version) {
     if (changedFiles.contains('studio-api')) {
         echo 'Files in studio-api path are modified. Running specific build steps for studio-api...'
-        buildDockerfile('studio-api/Dockerfile', 'studio-api', version)
+        buildDockerfile('studio-api', version)
     }
 
     if (changedFiles.contains('studio-frontend')) {
         echo 'Files in studio-frontend path are modified. Running specific build steps for studio-frontend...'
-        buildDockerfile('studio-frontend/Dockerfile', 'studio-frontend', version)
+        buildDockerfile('studio-frontend', version)
     }
 
     if (changedFiles.contains('studio-websocket')) {
         echo 'Files in studio-websocket path are modified. Running specific build steps for studio-websocket...'
-        buildDockerfile('studio-websocket/Dockerfile', 'studio-websocket', version)
+        buildDockerfile('studio-websocket', version)
     }
 
     if (changedFiles.contains('studio-dashboard')) {
         echo 'Files in studio-dashboard path are modified. Running specific build steps for studio-dashboard...'
-        buildDockerfile('studio-websocket/Dockerfile', 'studio-websocket', version)
+        buildDockerfile('studio-dashboard', version)
     }
 }
 
 pipeline {
     agent any
     environment {
-        DOCKER_HUB_REPO = "linto-studio/"
+        DOCKER_HUB_REPO = "linto-studio"
         DOCKER_HUB_CRED = 'harbor-jenkins-robot'
-        VERSION = ''
     }
 
     stages {
@@ -57,14 +57,13 @@ pipeline {
                 echo 'Publishing latest'
                 script {
                     def changedFiles = sh(returnStdout: true, script: 'git diff --name-only HEAD^ HEAD').trim()
-                    echo "My changed files: ${changedFiles}"
                     
-                    VERSION = sh(
+                    version = sh(
                         returnStdout: true, 
                         script: "awk -v RS='' '/#/ {print; exit}' RELEASE.md | head -1 | sed 's/#//' | sed 's/ //'"
                     ).trim()
                     
-                    performBuildForFile(changedFiles, VERSION)
+                    performBuildForFile(changedFiles, version)
                 }
             }
         }
@@ -77,10 +76,8 @@ pipeline {
                 echo 'Publishing unstable'
                 script {
                     def changedFiles = sh(returnStdout: true, script: 'git diff --name-only HEAD^ HEAD').trim()
-                    echo "My changed files: ${changedFiles}"
 
-                    VERSION = 'latest-unstable'
-                    performBuildForFile(changedFiles, VERSION)
+                    performBuildForFile(changedFiles, 'latest-unstable')
                 }
             }
         }

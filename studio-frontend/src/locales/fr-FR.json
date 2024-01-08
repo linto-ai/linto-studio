@@ -86,7 +86,8 @@
     "duration": "Durée: {duration}",
     "error": {
       "creation_unknown": "Erreur: veuillez réessayer plus tard",
-      "form_invalid": "Erreur: veuillez vérifier les champs du formulaire"
+      "form_invalid": "Erreur: veuillez vérifier les champs du formulaire",
+      "no_audio_file": "Erreur: vous devez ajouter un fichier audio"
     },
     "export": {
       "title": "Télécharger",
@@ -342,7 +343,8 @@
     "search_label": "Invitez un utilisateur",
     "user_not_found": "L'utilisateur n'existe pas",
     "organization_members": "Membres de l'organisation",
-    "external_members": "Utilisateurs externes"
+    "external_members": "Utilisateurs externes",
+    "user_has_been_invited": "L'utilisateur a été invité"
   },
   "lang": {
     "en": "Anglais",

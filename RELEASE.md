@@ -1,4 +1,4 @@
-# 1.3.1
+# 1.4.0
 
 - Merge conversation-manager to one repository
 - Rename conversation-manager to linto-studio

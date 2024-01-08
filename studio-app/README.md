@@ -1,8 +1,5 @@
 # LinTO.app
 
-LinTO recorder app
-- Supports Android for now
-- Web platform doable, check todos
-- IOS support --> no clue
+LinTO studio companion application built in flutter.
 
-## Early stage
+To date, the application is only compatible with **Android**. Web and IOS is probably doable, but the code should be adapted.
