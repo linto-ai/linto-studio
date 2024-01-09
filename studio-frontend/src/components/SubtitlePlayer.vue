@@ -218,15 +218,28 @@ export default {
         this.playerError = true
       }
     },
+    createRegionContent(time) {
+      let content = document.createElement("div")
+      let startText = document.createElement("div")
+      startText.innerText = this.$t("conversation.subtitles.screens.start")
+      startText.style.fontSize = "0.7rem"
+      let timeContent = document.createElement("div")
+      timeContent.innerText = `${time}`
+
+      content.append(startText)
+      content.append(timeContent)
+      return content
+    },
     createRegion(screen) {
       let ms = Math.floor((screen.stime - Math.floor(screen.stime)) * 100)
-      let time = timeToHMS(screen.stime) + "." + ms
+      let time = timeToHMS(screen.stime, true) + "." + ms
+      let content = this.createRegionContent(time)
       return {
         id: screen.screen_id,
         start: screen.stime,
         end: screen.etime,
         minLength: Math.min(1, screen.etime - screen.stime),
-        content: `${time}`,
+        content: content,
         resize: this.canEdit,
         drag: this.canEdit,
         color: "#FFF",
@@ -265,9 +278,10 @@ export default {
         screen[key] = value
       }
       let ms = Math.floor((screen.start - Math.floor(screen.start)) * 100)
-      let time = timeToHMS(screen.start) + "." + ms
-      screen.content = `${time}`
-      region.setContent(`${time}`)
+      let time = timeToHMS(screen.start, true) + "." + ms
+      let content = this.createRegionContent(time)
+      screen.content = content
+      region.setContent(content)
       region.renderPosition()
     },
   },

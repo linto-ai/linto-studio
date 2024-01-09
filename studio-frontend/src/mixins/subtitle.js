@@ -60,7 +60,7 @@ export const subtitleMixin = {
           )
           break
         case "add_screen":
-          this.createScreen(event.data.params)
+          this.screenAdd(event.data.params)
           break
         case "merge_screen":
           this.screenMerge(event.data.params)
@@ -79,13 +79,11 @@ export const subtitleMixin = {
         }
       }
     },
-    screenMerge(data) {
-      let { screenId, deleteAfter } = data
+    screenMerge({ screenId, deleteAfter }) {
       let deletedId = this.screens.merge(screenId, deleteAfter)
       bus.$emit("merge_screen", { screenId, deletedId })
     },
-    createScreen(data) {
-      let { after, screenId, newScreen } = data
+    screenAdd({ after, screenId, newScreen }) {
       this.screens.add(screenId, newScreen, after)
       bus.$emit("add_screen", { newScreen })
     },

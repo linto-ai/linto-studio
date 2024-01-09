@@ -79,10 +79,10 @@ export class ScreenList {
     this.size++
   }
 
-  merge(screenId, deleteAfter) {
+  merge(screenId, mergeWithNextSCreen) {
     let target = this.get(screenId)
     let screenToDelete
-    if (deleteAfter) {
+    if (mergeWithNextSCreen) {
       screenToDelete = this.get(target.next)
 
       target.screen.text = target.screen.text.concat(screenToDelete.screen.text)

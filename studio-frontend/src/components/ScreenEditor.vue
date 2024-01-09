@@ -2,7 +2,9 @@
   <div class="flex gap-small" id="screen-editor">
     <div class="flex1">
       <div v-if="prev" @click="seekTo(prev.stime)">
-        <div class="form-label">Previous screen</div>
+        <div class="form-label">
+          {{ $t("conversation.subtitles.screens.previous_screen") }}
+        </div>
         <div class="screen-preview">
           <p v-for="line of prev.text">
             {{ line }}
@@ -18,7 +20,9 @@
       @merge="mergeScreens"></ScreenActions>
     <div class="flex1">
       <div>
-        <div class="form-label">Current screen</div>
+        <div class="form-label">
+          {{ $t("conversation.subtitles.screens.current_screen") }}
+        </div>
         <div class="screen-preview current">
           <p v-for="line of selectedScreen.text">
             {{ line }}
@@ -34,7 +38,9 @@
       @merge="mergeScreens"></ScreenActions>
     <div class="flex1">
       <div v-if="next" @click="seekTo(next.stime)">
-        <div class="form-label">Next screen</div>
+        <div class="form-label">
+          {{ $t("conversation.subtitles.screens.next_screen") }}
+        </div>
         <div class="screen-preview">
           <p v-for="line of next.text">
             {{ line }}
