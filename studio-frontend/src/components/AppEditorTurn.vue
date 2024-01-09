@@ -483,7 +483,7 @@ export default {
             const stime = wordElement?.getAttribute("data-stime")
             if (stime) bus.$emit("player_set_time", { stime })
             this.closeEditorToolbox()
-            this.focused = true
+            this.focused = this.canEdit
             this.contentEditable = this.canEdit
             const wordCharIndex = this.getWordCharIndex(
               target,
