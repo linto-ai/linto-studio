@@ -7,6 +7,8 @@ export default async function addScreenController(data, io) {
     let subtitle = SubtitleHelper.getById(subtitleId)
     let placement = screenData.after ? "after" : "before"
 
+    // TODO: handle edge case when resize/add/merge/split happen when adding a screen
+
     let newScreen = await addScreen(
       conversationId,
       subtitleId,
@@ -20,7 +22,6 @@ export default async function addScreenController(data, io) {
       screenData.newScreen.screen_id = newScreen.data._id
       subtitle.addScreen(screenData, (binaryDelta) => {
         let room = `subtitle/${subtitleId}`
-        console.log("send to room " + room)
         io.to(room).emit("subtitle_updated", {
           origin: "subtitle_screen_added",
           delta: binaryDelta,
