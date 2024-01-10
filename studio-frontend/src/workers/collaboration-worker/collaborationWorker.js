@@ -20,6 +20,8 @@ import {
   copySubtitles,
   deleteSubtitles,
   updateSubtitleScreen,
+  addScreen,
+  mergeSubtitleScreens,
 } from "./handlers/messageHandlers.js"
 
 import { Conversation } from "./models/conversations.js"
@@ -195,6 +197,18 @@ onmessage = (event) => {
       break
     case "update_screen":
       updateSubtitleScreen(event.data.params, subtitle.getYdoc())
+      break
+    case "merge_screens":
+      mergeSubtitleScreens(event.data.params, subtitle.getYdoc())
+      break
+    case "add_screen":
+      addScreen(
+        userToken,
+        conversationId,
+        subtitleId,
+        event.data.params,
+        socket
+      )
       break
     default:
       break

@@ -267,7 +267,13 @@
       "delete_no_selection_label": "Pas de version selectionné",
       "delete_description": "Êtes-vous sûr de vouloir supprimer {n} versions de sous-titres ?",
       "copy": "Copier",
-      "delete": "Supprimer"
+      "delete": "Supprimer",
+      "screens": {
+        "start": "Début :",
+        "current_screen": "Ecran actuel",
+        "previous_screen": "Ecran précédant",
+        "next_screen": "Ecran suivant"
+      }
     }
   },
   "droparea": {

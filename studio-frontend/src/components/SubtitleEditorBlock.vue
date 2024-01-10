@@ -1,7 +1,7 @@
 <template>
   <div :class="['turn-container', focused ? 'focused' : '']">
     <div
-      class="flex row screen"
+      class="flex screen"
       @click="handleClick($event)"
       :id="screen.screen_id">
       <div class="conversation-speaker flex screen-timestamp">
@@ -41,6 +41,10 @@ export default {
       type: Object,
       required: true,
     },
+    isInitiallySelected: {
+      type: Boolean,
+      required: true,
+    },
   },
   data() {
     return {
@@ -54,16 +58,27 @@ export default {
     },
     stime() {
       let ms = Math.floor(
-        (this.screen.stime - Math.floor(this.screen.stime)) * 100,
+        (this.screen.stime - Math.floor(this.screen.stime)) * 100
       )
       return timeToHMS(this.screen.stime) + "." + ms
     },
     etime() {
       let ms = Math.floor(
-        (this.screen.etime - Math.floor(this.screen.etime)) * 100,
+        (this.screen.etime - Math.floor(this.screen.etime)) * 100
       )
       return timeToHMS(this.screen.etime) + "." + ms
     },
+  },
+  mounted() {
+    if (this.isInitiallySelected) {
+      let domElem = document.getElementById(this.screen.screen_id)
+      domElem.classList.add("playing")
+      domElem.scrollIntoView({
+        behavior: "instant",
+        block: "center",
+        inline: "center",
+      })
+    }
   },
   methods: {
     handleClick() {

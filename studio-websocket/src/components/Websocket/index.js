@@ -13,8 +13,8 @@ import keywordController from "./controllers/keywordController.js"
 
 import Conversations from "./models/conversations.js"
 import SubtitleHelper from "./models/subtitles.js"
-import { version } from "os"
 import updateSubtitlesController from "./controllers/updateSubtitlesController.js"
+import addScreenController from "./controllers/addScreenController.js"
 
 const info = Debug("Websocket:info")
 const debug = Debug("Websocket:debug:websocket")
@@ -149,6 +149,9 @@ export default class Websocket extends Component {
         socket.on("screen_update", (data) => {
           debug("screen_update received")
           updateSubtitlesController.bind(socket)(data)
+        })
+        socket.on("add_screen", (data) => {
+          addScreenController.bind(socket)(data, this.app.io)
         })
       } catch (error) {
         info("Error in websocket connection")

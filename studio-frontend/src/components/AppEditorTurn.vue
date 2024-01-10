@@ -102,7 +102,7 @@
           class="turn-action-btn"
           @click="mergeTurn"
           data-info="Fusionner les tours">
-          <span class="icon"></span>
+          <span class="icon icon-merge"></span>
         </button>
       </div>
     </div>

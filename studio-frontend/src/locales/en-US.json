@@ -268,7 +268,13 @@
       "delete_no_selection_label": "No versions selected",
       "delete_description": "Are you sure you want to delete {n} subtitle version?",
       "copy": "Copy",
-      "delete": "Delete"
+      "delete": "Delete",
+      "screens": {
+        "start": "Start:",
+        "current_screen": "Current screen",
+        "previous_screen": "Previous screen",
+        "next_screen": "Next screen"
+      }
     }
   },
   "droparea": {
