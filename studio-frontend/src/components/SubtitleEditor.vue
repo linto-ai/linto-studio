@@ -17,19 +17,21 @@
         </div>
       </div>
     </div>
-    <ScreenEditor
-      :screens="blocks"
-      :can-edit="canEdit"
-      @mergeScreens="mergeScreens"
-      @addScreen="addScreen"></ScreenEditor>
-    <SubtitlePlayer
-      :key="playerKey"
-      :conversationId="conversation._id"
-      :audio="audio"
-      :blocks="blocks"
-      :canEdit="canEdit"
-      :useVideo="useVideo"
-      @blockUpdate="blockUpdate"></SubtitlePlayer>
+    <div id="subtitle-editor">
+      <ScreenEditor
+        :screens="blocks"
+        :can-edit="canEdit"
+        @mergeScreens="mergeScreens"
+        @addScreen="addScreen"></ScreenEditor>
+      <SubtitlePlayer
+        :key="playerKey"
+        :conversationId="conversation._id"
+        :audio="audio"
+        :blocks="blocks"
+        :canEdit="canEdit"
+        :useVideo="useVideo"
+        @blockUpdate="blockUpdate"></SubtitlePlayer>
+    </div>
   </div>
 </template>
 <script>

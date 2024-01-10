@@ -1,7 +1,7 @@
 <template>
   <div id="video-player" class="flex1">
     <div class="video-container flex col justify-center">
-      <div class="video-content flex col justify-content">
+      <div class="video-content flex col justify-center">
         <video
           v-if="videoLoaded"
           ref="videoPreview"

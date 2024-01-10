@@ -1,5 +1,13 @@
 <template>
-  <div id="conversation-audio-player">
+  <div
+    id="conversation-audio-player"
+    class="conversation-audio-player--subtitle">
+    <div
+      id="player-waveform-container"
+      class="flex col flex1 fullwidth relative">
+      <Loading :background="true" v-if="!regionsReady"></Loading>
+      <div id="subtitle-player"></div>
+    </div>
     <AppPlayerHeader
       :playerError="playerError"
       :currentTime="currentTimeHMS"
@@ -16,12 +24,6 @@
           @input="seekFromBar" />
       </div>
     </AppPlayerHeader>
-    <div
-      id="plater-waveform-container"
-      class="flex col flex1 fullwidth relative">
-      <Loading :background="true" v-if="!regionsReady"></Loading>
-      <div id="subtitle-player"></div>
-    </div>
   </div>
 </template>
 <script>

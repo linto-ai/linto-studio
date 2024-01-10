@@ -20,7 +20,7 @@
       @merge="mergeScreens"></ScreenActions>
     <div class="flex1">
       <div>
-        <div class="form-label">
+        <div class="form-label" id="current-screen-label">
           {{ $t("conversation.subtitles.screens.current_screen") }}
         </div>
         <div class="screen-preview current">
