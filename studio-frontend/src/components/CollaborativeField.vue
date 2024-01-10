@@ -240,7 +240,10 @@ export default {
         text.slice(0, currentCursorPosition).match(/\s\s+/g) || []
       ).reduce((acc, cur) => acc + cur.length - 1, 0)
 
-      const textWithoutDoubleSpace = text.replace(/\s\s+/g, " ").trim()
+      const textWithoutDoubleSpace = text
+        .replace(/\s\s+/g, " ")
+        .replace(/[\n\r]/g, " ") //.trim()
+
       inputField.target.innerText = textWithoutDoubleSpace
       this.$emit("contentUpdate", textWithoutDoubleSpace)
       this.setCursorPos(currentCursorPosition - numberOfSpaceToRemove)
@@ -269,13 +272,19 @@ export default {
       this.isMovingCursor = true
       this.$nextTick(() => {
         const element = document.getElementById(this.flag)
-        const selection = window.getSelection()
+        try {
+          const selection = window.getSelection()
 
-        if (selection) {
-          selection.collapse(element.childNodes[0], newIndex)
+          if (selection) {
+            this.debug("move cursor to", newIndex)
+            selection.collapse(element.childNodes[0], newIndex)
+          }
+        } catch (error) {
+          console.error(error)
+        } finally {
+          element.focus()
+          this.isMovingCursor = false
         }
-        element.focus()
-        this.isMovingCursor = false
       })
     },
     setCursorFromWordIndex(wordIndex, wordCharIndex) {

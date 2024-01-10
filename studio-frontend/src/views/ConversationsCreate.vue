@@ -214,6 +214,12 @@ export default {
     },
     async createConversation(event) {
       event?.preventDefault()
+
+      if (this.audioFiles.length === 0) {
+        this.formError = this.$i18n.t("conversation.error.no_audio_file")
+        return
+      }
+
       if (this.formState === "available") {
         if (this.testFields()) {
           this.formError = null
@@ -226,7 +232,7 @@ export default {
           while (this.audioFiles.length > 0) {
             audioFileIndex++
 
-            const { value: convName, file } = this.audioFiles.shift()
+            const { value: convName, file } = this.audioFiles[0]
 
             bus.$emit("app_notif", {
               status: "loading",
@@ -257,12 +263,11 @@ export default {
             )
 
             if (!conversationHasBeenCreated) {
-              // TODO, display error like "2 of 3 files have been uploaded, 1 failed"
               this.emitError(
                 this.$i18n.t(
                   "conversation.conversation_creation_error_multiple_unknown",
                   {
-                    count: audioFileIndex,
+                    count: audioFileIndex - 1,
                     total: total,
                   }
                 )
@@ -273,6 +278,7 @@ export default {
               this.formState = "available"
               return
             }
+            this.audioFiles.shift()
           }
 
           if (this.audioFiles.length === 0) {

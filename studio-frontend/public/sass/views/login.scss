@@ -23,7 +23,7 @@
   width: 100%;
   max-width: 300px;
   padding: 30px 40px;
-  background-color: #fff;
+  background-color: var(--primary-contrast);
   margin: 20px 0;
   @include borderRadius(3px);
   border: var(--border-block);
