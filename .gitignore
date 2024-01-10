@@ -4,7 +4,7 @@
 **/.env
 
 # Other 
-docker-optional/mongo-database/
+storages
 
 # API
 ./database
@@ -53,7 +53,7 @@ migrate_working_dir/
 .packages
 .pub-cache/
 .pub/
-/build/
+build/
 
 # Symbolication related
 app.*.symbols

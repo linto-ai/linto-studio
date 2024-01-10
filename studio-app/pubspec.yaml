@@ -43,11 +43,7 @@ dependencies:
   permission_handler: ^10.2.0
   event: ^2.1.2
   go_router: ^12.0.0
-  just_audio:
-    git:
-      url: https://github.com/linto-ai/just_audio
-      path: just_audio/
-      ref: fix/mp3-exact-seek
+  just_audio: ^0.9.36
   share_plus: ^7.1.0
   universal_platform: ^1.0.0+1
   flutter_launcher_icons: ^0.13.1
