@@ -49,20 +49,15 @@
           :data-index="index"
           :data-stime="word.stime"
           :data-etime="word.etime">
+          <AppEditorToolbox
+            v-if="
+              wordsSelected.length > 0 && wordsSelected[0].wid === word.wid
+            "></AppEditorToolbox>
           <span class="word_content">{{ word.word }}</span>
           <span class="word_space">
             {{ " " }}
           </span>
         </span>
-        <AppEditorToolbox
-          v-if="editorToolbox.display"
-          @close="closeEditorToolbox"
-          :turnId="turnId"
-          :stime="editorToolbox.stime"
-          :style="{
-            top: editorToolbox.top - 40 + 'px',
-            left: editorToolbox.left + 'px',
-          }"></AppEditorToolbox>
       </div>
 
       <CollaborativeField
@@ -471,12 +466,13 @@ export default {
     },
     handleClick(e) {
       const target = e.target
+      const selection = window.getSelection()
+      console.log(target)
       if (
         target.classList.contains("word") ||
         target.classList.contains("word_space") ||
         target.classList.contains("word_content")
       ) {
-        const selection = window.getSelection()
         if (selection.type == "Caret") {
           const wordElement = this.getParentWord(target)
           if (wordElement) {
@@ -499,26 +495,13 @@ export default {
         }
       }
 
-      //this.compareSelection(selection) // To set clickWordIndex
-      // if (!isSelection) {
-      //   // simple click
-      //   if (target.classList.contains("word_content")) {
-      //   }
-      //   if (target.classList.contains("word")) {
-      //     const stime = target?.getAttribute("data-stime")
-      //     if (stime) bus.$emit("player_set_time", { stime })
-      //     this.closeEditorToolbox()
-      //     this.focused = true
-      //     this.contentEditable = this.canEdit
-      //     this.cursorPosition = {
-      //       wordIndex: this.clickWordIndex,
-      //       wordCharIndex: firstChar,
-      //     }
-      //   }
-      // } else {
-      //   // selection
-      //   this.selectWord(target)
-      // }
+      if (target.classList.contains("turn")) {
+        console.log("start selection", selection.type)
+        if (selection.type == "Range") {
+          this.selectWord()
+        }
+        // selection
+      }
     },
     getWordCharIndex(target, wordElement, selection) {
       let firstChar = 0
@@ -536,7 +519,7 @@ export default {
         return this.getParentWord(node.parentElement)
       }
     },
-    compareSelection(selection) {
+    getSelectedWordsFromDomSelection(selection) {
       let firstWord = selection?.anchorNode
       let lastWord = selection?.focusNode
       let firstSpan = null
@@ -584,49 +567,27 @@ export default {
       }
       return { wordsSelected, firstWord, lastWord }
     },
-    selectWord(target) {
+    selectWord() {
       this.resetWordSelected()
-      let selection = window.getSelection()
-      let compareWords = this.compareSelection(selection)
-      if (compareWords.wordsSelected.length > 0) {
-        let left = 0
-        let top = 0
-        if (compareWords.wordsSelected.length > 1) {
-          let firstWord = compareWords.firstWord
-          let firstSpan = null
-          if (firstWord.nodeName === "#text") {
-            firstSpan = firstWord.parentElement
-          }
-          if (firstSpan) {
-            left = firstSpan.offsetLeft - 5
-            top = firstSpan.offsetTop - 5
-          }
-        } else {
-          // Force selection of the target/clicked word on simple click
-          left = target.offsetLeft - 5
-          top = target.offsetTop - 5
-        }
-        for (let word of compareWords.wordsSelected) {
-          this.wordsSelected.push(word?.wid)
-        }
-        this.editorToolbox = {
-          left: left,
-          top: top,
-          display: true,
-          stime: compareWords.wordsSelected[0]?.stime,
-        }
+      let domSelection = window.getSelection()
+      let selection = this.getSelectedWordsFromDomSelection(domSelection)
+      console.log("selectWord:", selection)
+      const startRange = selection.firstWord
+      const endRange = selection.lastWord
+      window
+        .getSelection()
+        .setBaseAndExtent(startRange, 0, endRange, endRange.length)
 
-        if (
-          target.classList.contains("turn") ||
-          target.classList.contains("word")
-        ) {
-          const startRange = compareWords.firstWord
-          const endRange = compareWords.lastWord
-          window
-            .getSelection()
-            .setBaseAndExtent(startRange, 1, endRange, endRange.length)
-        }
-      }
+      this.wordsSelected = selection.wordsSelected
+      // if (
+      //   target.classList.contains("turn") ||
+      //   target.classList.contains("word")
+      // ) {
+
+      // }
+    },
+    resetWordSelected() {
+      this.wordsSelected = []
     },
     findIndexWithoutEmptyWords(words, callback) {
       let index = -1
@@ -639,13 +600,6 @@ export default {
         }
       }
       return -1
-    },
-    resetWordSelected() {
-      if (this.wordsSelected.length > 0) {
-        const selection = window.getSelection()
-        this.wordsSelected = []
-        this.closeEditorToolbox()
-      }
     },
     closeEditorToolbox() {
       this.editorToolbox.display = false
