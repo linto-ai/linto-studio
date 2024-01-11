@@ -187,7 +187,7 @@ async function search(req, res, next) {
 
         let turns = []
         const conversation = await model.conversations.getById(req.params.conversationId)
-        if(conversation.length !== 1) throw new ConversationNotFound()
+        if (conversation.length !== 1) throw new ConversationNotFound()
 
         conversation[0].text.map(turn => {
             if (turn.segment.toLowerCase().includes(req.query.text.toLowerCase()))
