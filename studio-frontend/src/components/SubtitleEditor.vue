@@ -19,8 +19,12 @@
     </div>
     <div id="subtitle-editor">
       <ScreenEditor
+        :user-info="userInfo"
         :screens="blocks"
         :can-edit="canEdit"
+        :conversation-id="conversation._id"
+        :conversation-users="conversationUsers"
+        :users-connected="usersConnected"
         @mergeScreens="mergeScreens"
         @addScreen="addScreen"></ScreenEditor>
       <SubtitlePlayer
@@ -59,6 +63,15 @@ export default {
     blocks: {
       type: ScreenList,
       required: true,
+    },
+    conversationUsers: {
+      type: Array,
+      required: true,
+      default: () => [],
+    },
+    usersConnected: {
+      type: Array,
+      default: () => [],
     },
   },
   data() {

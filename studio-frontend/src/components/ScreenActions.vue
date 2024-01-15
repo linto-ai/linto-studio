@@ -7,12 +7,12 @@
       @click="() => $emit('merge', leftScreenId, rightScreenId)">
       <span class="icon icon-merge"></span>
     </button>
-    <!-- <button -->
-    <!--   class="turn-action-btn" -->
-    <!--   data-info="Fusionner les tours" -->
-    <!--   @click="() => $emit('add', leftScreenId, rightScreenId)"> -->
-    <!--   <span class="icon icon-add"></span> -->
-    <!-- </button> -->
+    <button
+      class="turn-action-btn"
+      data-info="Fusionner les tours"
+      @click="() => $emit('add', leftScreenId, rightScreenId)">
+      <span class="icon icon-add"></span>
+    </button>
   </div>
 </template>
 <script>

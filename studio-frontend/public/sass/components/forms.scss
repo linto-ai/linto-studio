@@ -84,6 +84,17 @@ input.speaker-toolbox-input {
     }
   }
 
+  &.screen-preview {
+    &,
+    &:focus,
+    &:active {
+      outline: none !important;
+      box-shadow: none !important;
+      font-size: 15px !important;
+      line-height: inherit;
+    }
+  }
+
   &.fullwidth {
     max-width: initial;
   }

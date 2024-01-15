@@ -79,7 +79,6 @@
 }
 
 .screen {
-  // TODO: hover, ext...
   border: 1px solid transparent;
   padding-right: 0.25rem;
 
@@ -98,7 +97,8 @@
 
 .screen-preview {
   padding: 0 0.25rem;
-  height: calc(3em + 1.75rem);
+  box-sizing: border-box;
+  height: calc(3em + 1.75rem + 2px);
   overflow: auto;
 
   &.current {
@@ -106,7 +106,8 @@
     border-radius: 3px;
   }
 
-  p {
+  p,
+  div {
     margin: 0.25rem 0;
   }
 }

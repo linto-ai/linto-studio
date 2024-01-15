@@ -46,6 +46,7 @@ import { workerSendMessage } from "../tools/worker-message.js"
 import { calculCursorPos } from "../tools/calculCursorPos.js"
 import { bus } from "../main.js"
 import { Throttle } from "../tools/throttle.js"
+import createMultiLineContent from "../tools/createMultiLineContent.js"
 
 export default {
   props: {
@@ -65,6 +66,7 @@ export default {
     turnWords: { type: Array, required: false },
     cursorPosition: { type: Object, required: false },
     disabledEnter: { type: Boolean, required: false, default: () => true },
+    enableMultiLine: { type: Boolean, required: false, default: () => false },
   },
   data() {
     const throttleObject = new Throttle()
@@ -99,6 +101,7 @@ export default {
     }
 
     this.currentValue = this.startValue
+    console.log(this.currentValue)
   },
   beforeDestroy() {
     bus.$off("update_field")
@@ -127,15 +130,19 @@ export default {
       },
       set(value) {
         this._currentValue = value
-        document.getElementById(this.flag).innerText = value
+        let contentContainer = document.getElementById(this.flag)
+        if (this.enableMultiLine) {
+          contentContainer.innerHTML = ""
+          for (const line of createMultiLineContent(value)) {
+            contentContainer.append(line)
+          }
+        } else {
+          contentContainer.innerText = value
+        }
       },
     },
   },
   watch: {
-    focused(data) {
-      if (data) {
-      }
-    },
     cursorPosition(data) {
       if (data && data.wordIndex != null && data.wordCharIndex != null) {
         this.setCursorFromWordIndex(data.wordIndex, data.wordCharIndex)
@@ -229,22 +236,21 @@ export default {
       if (this.flag.indexOf("speakerName") > -1) {
         flag = "speakerName"
       }
-
       this.$emit("input", e)
     },
     removeDoubleSpace(inputField) {
       let text = inputField.target.innerText
       let currentCursorPosition = window.getSelection().anchorOffset
-
       const numberOfSpaceToRemove = (
         text.slice(0, currentCursorPosition).match(/\s\s+/g) || []
       ).reduce((acc, cur) => acc + cur.length - 1, 0)
 
-      const textWithoutDoubleSpace = text
-        .replace(/\s\s+/g, " ")
-        .replace(/[\n\r]/g, " ") //.trim()
+      let textWithoutDoubleSpace = text.replace(/\s\s+/g, " ")
+      if (!this.enableMultiLine) {
+        textWithoutDoubleSpace = textWithoutDoubleSpace.replace(/[\n\r]/g, " ") //.trim()
+      }
 
-      inputField.target.innerText = textWithoutDoubleSpace
+      this.currentValue = textWithoutDoubleSpace
       this.$emit("contentUpdate", textWithoutDoubleSpace)
       this.setCursorPos(currentCursorPosition - numberOfSpaceToRemove)
     },
