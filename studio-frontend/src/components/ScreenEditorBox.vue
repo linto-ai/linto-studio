@@ -98,7 +98,7 @@ export default {
       this.focused = true
     },
     handleBlur() {
-      // this.focused = false
+      this.focused = false
     },
     handleContentUpdate(e) {
       // console.log(e)

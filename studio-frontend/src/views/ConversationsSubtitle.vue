@@ -106,17 +106,8 @@ export default {
       return this.subtitleVersions.find((elem) => elem._id === this.subtitleId)
         ?.version
     },
-    versionList() {
-      let action = []
-      for (const version of this.subtitleVersions) {
-        action.push({
-          value: version._id,
-          text: version.version,
-        })
-      }
-      return {
-        action: action,
-      }
+    versionSettings() {
+      return this.subtitleObj.generate_settings
     },
     versionList() {
       let action = []
@@ -164,7 +155,17 @@ export default {
     },
     mergeScreen(keptScreenId, deletedScreenId) {
       let keptScreen = this.screens.get(keptScreenId)
-      if (
+      let deletedScreen = this.screens.get(deletedScreenId)
+      let newLineNumber =
+        keptScreen.screen.text.length + deletedScreen.screen.text.length
+      if (newLineNumber > this.versionSettings.screenLines) {
+        bus.$emit("app_notif", {
+          status: "error",
+          message: `You cannot have more than ${this.versionSettings.screenLines} lines on a screen`,
+          timout: null,
+          redirect: false,
+        })
+      } else if (
         keptScreen.next === deletedScreenId ||
         keptScreen.prev === deletedScreenId
       ) {

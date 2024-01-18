@@ -170,7 +170,11 @@ export default {
         userId: this.userId,
       })
       const selection = window.getSelection()
-      if (selection.type === "Caret" && this.focused === true) {
+      if (
+        selection.type === "Caret" &&
+        this.focused === true &&
+        !this.enableMultiLine
+      ) {
         this.getWordFromPlainText(selection)
       }
 
