@@ -188,6 +188,7 @@ export default {
       cursorPosition: {
         wordIndex: null,
         wordCharIndex: null,
+        lineIndex: 0,
       },
       highlights: {
         keywords: [],
@@ -494,6 +495,7 @@ export default {
             this.cursorPosition = {
               wordIndex: wordElement.getAttribute("data-index"),
               wordCharIndex: wordCharIndex,
+              lineIndex: 0,
             }
           }
         }

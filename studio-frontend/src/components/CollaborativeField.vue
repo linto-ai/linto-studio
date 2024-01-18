@@ -47,6 +47,7 @@ import { calculCursorPos } from "../tools/calculCursorPos.js"
 import { bus } from "../main.js"
 import { Throttle } from "../tools/throttle.js"
 import createMultiLineContent from "../tools/createMultiLineContent.js"
+import formatCollaborativeText from "../tools/formatCollaborativeText.js"
 
 export default {
   props: {
@@ -95,13 +96,13 @@ export default {
       this.$nextTick(() => {
         this.setCursorFromWordIndex(
           this.cursorPosition.wordIndex,
-          this.cursorPosition.wordCharIndex
+          this.cursorPosition.wordCharIndex,
+          this.cursorPosition.lineIndex
         )
       })
     }
 
     this.currentValue = this.startValue
-    console.log(this.currentValue)
   },
   beforeDestroy() {
     bus.$off("update_field")
@@ -145,7 +146,11 @@ export default {
   watch: {
     cursorPosition(data) {
       if (data && data.wordIndex != null && data.wordCharIndex != null) {
-        this.setCursorFromWordIndex(data.wordIndex, data.wordCharIndex)
+        this.setCursorFromWordIndex(
+          data.wordIndex,
+          data.wordCharIndex,
+          data.lineIndex
+        )
       }
     },
   },
@@ -232,27 +237,25 @@ export default {
         this.removeDoubleSpace(e)
       }
 
-      let flag = this.flag
-      if (this.flag.indexOf("speakerName") > -1) {
-        flag = "speakerName"
-      }
       this.$emit("input", e)
     },
+
     removeDoubleSpace(inputField) {
-      let text = inputField.target.innerText
       let currentCursorPosition = window.getSelection().anchorOffset
-      const numberOfSpaceToRemove = (
-        text.slice(0, currentCursorPosition).match(/\s\s+/g) || []
-      ).reduce((acc, cur) => acc + cur.length - 1, 0)
+      let initialLineIndex = this.getLineIndex()
 
-      let textWithoutDoubleSpace = text.replace(/\s\s+/g, " ")
-      if (!this.enableMultiLine) {
-        textWithoutDoubleSpace = textWithoutDoubleSpace.replace(/[\n\r]/g, " ") //.trim()
-      }
+      let { formatedText, lineIndex, cursorPosition } = formatCollaborativeText(
+        inputField.target,
+        currentCursorPosition,
+        initialLineIndex,
+        this.enableMultiLine
+      )
 
-      this.currentValue = textWithoutDoubleSpace
-      this.$emit("contentUpdate", textWithoutDoubleSpace)
-      this.setCursorPos(currentCursorPosition - numberOfSpaceToRemove)
+      console.log(lineIndex, cursorPosition)
+
+      this.currentValue = formatedText
+      this.$emit("contentUpdate", formatedText)
+      this.setCursorPos(cursorPosition, lineIndex)
     },
     applyChangesFromWorker(data) {
       if (
@@ -268,13 +271,15 @@ export default {
     },
     toggleCursorPos(delta, value) {
       this.isMovingCursor = true
-      let baseIndex = window.getSelection().anchorOffset
+      const selection = window.getSelection()
+      let baseIndex = selection.anchorOffset
+      const lineIndex = this.getLineIndex()
       let newIndex = calculCursorPos(baseIndex, delta)
       this.currentValue = value
       this.$emit("contentUpdate", value)
-      this.setCursorPos(newIndex)
+      this.setCursorPos(newIndex, lineIndex)
     },
-    setCursorPos(newIndex) {
+    setCursorPos(newIndex, lineIndex) {
       this.isMovingCursor = true
       this.$nextTick(() => {
         const element = document.getElementById(this.flag)
@@ -283,22 +288,37 @@ export default {
 
           if (selection) {
             this.debug("move cursor to", newIndex)
-            selection.collapse(element.childNodes[0], newIndex)
+            let node
+            if (this.enableMultiLine) {
+              node = element.childNodes[lineIndex].firstChild
+            } else {
+              node = element.childNodes[0]
+            }
+            selection.collapse(node, newIndex)
           }
         } catch (error) {
           console.error(error)
         } finally {
-          element.focus()
+          if (this.enableMultiLine) {
+            element.childNodes[lineIndex].focus()
+          } else {
+            element.focus()
+          }
           this.isMovingCursor = false
         }
       })
     },
-    setCursorFromWordIndex(wordIndex, wordCharIndex) {
-      const el = document.getElementById(this.flag)
+    setCursorFromWordIndex(wordIndex, wordCharIndex, lineIndex) {
+      let el
+      if (this.enableMultiLine) {
+        el = document.getElementById(this.flag).childNodes[lineIndex]
+      } else {
+        el = document.getElementById(this.flag)
+      }
       if (!!el) {
-        let text = el.innerHTML
+        let text = el.innerText
         let charIndex = this.getWordCharIndex(text, wordIndex)
-        this.setCursorPos(charIndex + wordCharIndex - 1)
+        this.setCursorPos(charIndex + wordCharIndex - 1, lineIndex)
       }
     },
     getWordCharIndex(text, index) {
@@ -314,6 +334,21 @@ export default {
         charIndex += splitText[i].length + 1
       }
       return charIndex
+    },
+    getLineIndex() {
+      if (!this.enableMultiLine) return 0
+
+      let currentLine = window.getSelection().anchorNode
+      if (currentLine.childNodes.length === 0) {
+        currentLine = currentLine.parentNode
+      }
+      let lineIndex = 0
+      currentLine = currentLine.previousSibling
+      while (currentLine) {
+        lineIndex++
+        currentLine = currentLine.previousSibling
+      }
+      return lineIndex
     },
   },
 }

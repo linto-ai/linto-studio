@@ -28,7 +28,8 @@
       :cursor-position="cursorPosition"
       :disabled-enter="false"
       :enable-multi-line="true"
-      @blur="handleBlur">
+      @blur="handleBlur"
+      @input="handleContentUpdate">
     </CollaborativeField>
   </div>
 </template>
@@ -77,6 +78,7 @@ export default {
       cursorPosition: {
         wordIndex: 0,
         wordCharIndex: 0,
+        lineIndex: 0,
       },
     }
   },
@@ -97,6 +99,9 @@ export default {
     },
     handleBlur() {
       // this.focused = false
+    },
+    handleContentUpdate(e) {
+      // console.log(e)
     },
   },
 

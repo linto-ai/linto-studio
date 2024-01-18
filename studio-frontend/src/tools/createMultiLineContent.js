@@ -4,7 +4,7 @@ export default function createMultiLineContent(text) {
 
   for (let line of textLines) {
     let elem = document.createElement("div")
-    elem.innerText = line
+    elem.innerText = line === "" ? "\n" : line
     lines.push(elem)
   }
 
