@@ -63,7 +63,8 @@ export const conversationMixin = {
           break
         case "hightlight_update":
           const categoryName = event.data.params.categoryName
-          this.conversation.jobs[categoryName] = { ...event.data.params.job }
+          const job = event.data.params.job
+          this.conversation.jobs[categoryName] = { ...job }
           bus.$emit("hightlight_update", { categoryName })
           break
         default:

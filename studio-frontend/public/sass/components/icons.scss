@@ -201,6 +201,11 @@
   height: 1.5rem;
 }
 
+.icon.large {
+  width: 2rem;
+  height: 2rem;
+}
+
 .txt-icon {
   display: inline-block;
   width: 30px;
@@ -243,4 +248,8 @@
 img.icon {
   object-fit: contain;
   background: transparent;
+}
+
+img.icon[black] {
+  filter: grayscale(100%);
 }

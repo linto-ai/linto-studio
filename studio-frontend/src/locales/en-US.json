@@ -2,6 +2,13 @@
   "accoustic": {
     "standard": "Regular"
   },
+  "app_editor_highlights_modal": {
+    "description": "Pick the language processing tools you want to use. You can choose multiple options.",
+    "generate_button": "Start generation",
+    "loading_services": "Querying AI language services...",
+    "erase_msg": "Previous data will be overwritten",
+    "ia_title": "AI insights"
+  },
   "breadcrumb": {
     "conversations": "Medias",
     "create": "Upload media",

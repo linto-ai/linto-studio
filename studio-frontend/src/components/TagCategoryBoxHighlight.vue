@@ -1,5 +1,7 @@
 <template>
   <TagCategoryBox
+    v-if="!empty"
+    :key="reload"
     :category="category"
     scope="conversation"
     :scopeId="conversationId"
@@ -10,10 +12,10 @@
     </template>
 
     <template v-slot:content-after-title="slotProps">
-      <button class="green" @click="generateKeyword" v-if="!loading && empty">
+      <!-- <button class="green" @click="generateKeyword" v-if="!loading && empty">
         <span class="icon plus"></span>
-      </button>
-      <span class="icon loading" v-else-if="loading"></span>
+      </button> -->
+      <span class="icon loading" v-if="loading"></span>
     </template>
   </TagCategoryBox>
 </template>
@@ -31,28 +33,45 @@ export default {
   },
   data() {
     return {
-      loading: false,
+      reload: false,
     }
+  },
+  watch: {
+    job: {
+      handler: function (val, oldVal) {
+        const status = val.state
+        if (status === "done") {
+          this.reload = !this.reload
+        }
+      },
+      deep: true,
+    },
   },
   computed: {
     empty() {
-      return this.category.tags.length === 0
+      return this.category.tags.length === 0 && !this.loading
+    },
+    loading() {
+      const status = this.job?.state
+      return (
+        status === "running" || status === "pending" || status === "started"
+      )
     },
   },
   mounted() {},
   methods: {
-    generateKeyword() {
-      if (this.loading) {
-        return
-      }
-      console.log(this.category)
-      this.loading = true
-      workerSendMessage("fetch_hightlight", {
-        serviceScope: this.category.scope,
-        categoryName: this.category.name,
-      })
-      console.log("generate keyword")
-    },
+    // generateKeyword() {
+    //   if (this.loading) {
+    //     return
+    //   }
+    //   console.log(this.category)
+    //   this.loading = true
+    //   workerSendMessage("fetch_hightlight", {
+    //     serviceScope: this.category.scope,
+    //     categoryName: this.category.name,
+    //   })
+    //   console.log("generate keyword")
+    // },
   },
   components: { Fragment, TagCategoryBox },
 }

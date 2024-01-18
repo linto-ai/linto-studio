@@ -99,6 +99,7 @@ export default {
       if (this.playerLoading) {
         this.fetchController.abort()
       }
+      this?.player?.unAll()
       this?.player?.destroy()
       this.player = null
       URL.revokeObjectURL(this.audioFile)

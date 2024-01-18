@@ -2,6 +2,13 @@
   "accoustic": {
     "standard": "Standard"
   },
+  "app_editor_highlights_modal": {
+    "description": "Sélectionnez les outils linguistiques de votre choix. Vous pouvez en choisir plusieurs.",
+    "generate_button": "Démarrer la génération",
+    "loading_services": "Chargement des services en cours...",
+    "erase_msg": "Les données précedentes seront écrasées",
+    "ia_title": "Outils linguistiques"
+  },
   "breadcrumb": {
     "conversations": "Conversations",
     "create": "Importer un media",

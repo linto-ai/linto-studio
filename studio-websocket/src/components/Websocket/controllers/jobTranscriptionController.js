@@ -15,10 +15,10 @@ export default async function jobTranscriptionController(
 ) {
   const room = `conversation/${conversationId}`
   const job = conversation.jobs["transcription"]
-  if (job.state && job.state != "started" && job.state != "pending") {
+  if (job.state && (job.state === "done" || job.state === "error")) {
     debug("Job done")
   } else {
-    job.fetchJob(userToken)
+    await job.fetchJob(userToken)
     setTimeout(
       () =>
         jobTranscriptionController(conversation, conversationId, userToken, io),

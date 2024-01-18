@@ -1,6 +1,6 @@
 <template>
   <fieldset
-    class="service-box flex col"
+    class="flex col"
     :selected="selected"
     role="option"
     aria-selected="selected"

@@ -9,6 +9,11 @@ export default async function hightLightController(
   { conversationId, userToken, serviceScope, categoryName },
   io
 ) {
+  if (!categoryName) {
+    return
+  }
+  console.log("categoryName", categoryName)
+
   let conversation = Conversations.getById(conversationId)
 
   if (!conversation) {
@@ -22,7 +27,8 @@ export default async function hightLightController(
     io,
     this,
     serviceScope,
-    categoryName
+    categoryName,
+    true
   )
 }
 
@@ -33,28 +39,44 @@ async function highLightFetchJob(
   io,
   socket,
   serviceScope,
-  categoryName
+  categoryName,
+  erase = false
 ) {
   try {
     const room = `conversation/${conversationId}`
     const job = conversation.jobs[categoryName]
     if (
+      !erase &&
       job.state &&
       job.state != "started" &&
       job.state != "pending" &&
       job.state != "not_started"
     ) {
-      debug("Job done")
+      io.to(room).emit("hightlight_update", {
+        job: conversation.jobs[categoryName].toJSON(),
+        categoryName,
+      })
     } else {
-      if (job.state == "not_started") {
+      if (
+        job.state == "not_started" ||
+        (erase && (job.state == "done" || job.state == "error"))
+      ) {
         // TODO: generalize for all highlight types
-        let res = await apiGenerateKeywords(conversationId, userToken)
-        if (res.status == "error") {
-          socket.emit("error")
+        switch (categoryName) {
+          case "keyword":
+            let res = await apiGenerateKeywords(conversationId, userToken)
+            if (res.status == "error") {
+              socket.emit("error")
+              return
+            }
+            break
+          default:
+            debug("No job to start for", categoryName)
+            return
         }
       }
 
-      job.fetchJob(userToken)
+      await job.fetchJob(userToken)
       setTimeout(
         () =>
           highLightFetchJob(
@@ -69,7 +91,8 @@ async function highLightFetchJob(
         3000
       )
       io.to(room).emit("hightlight_update", {
-        ...conversation.jobs[categoryName].toJSON(),
+        job: conversation.jobs[categoryName].toJSON(),
+        categoryName,
       })
     }
   } catch (error) {

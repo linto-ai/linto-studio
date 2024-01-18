@@ -11,10 +11,10 @@
 }
 
 .modal {
-  width: 100%;
+  width: calc(100% - 4rem);
   max-width: 960px;
   background: var(--background-primary);
-  padding: 20px;
+  padding: 1rem;
   max-height: calc(100% - 4rem);
   @include boxShadow(0, 2px, 4px, 0, rgba(0, 0, 0, 0.3));
   @include borderRadius(3px);
@@ -25,6 +25,10 @@
 
   &.modal--full-height {
     height: 100%;
+  }
+
+  &.modal--highlights {
+    width: fit-content;
   }
 }
 

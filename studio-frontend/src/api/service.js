@@ -1,3 +1,4 @@
+import nextServices from "../const/nextServices"
 import { sendRequest } from "../tools/sendRequest"
 
 const BASE_API = process.env.VUE_APP_CONVO_API
@@ -21,7 +22,10 @@ export async function apiGetNlpService(notif) {
     {},
     notif
   )
-  return (getHighlightsService?.data ?? []).filter(
-    (service) => service.scope.indexOf("nlp") !== -1
-  )
+
+  const res = (getHighlightsService?.data ?? [])
+    .filter((service) => service.scope.indexOf("nlp") !== -1)
+    .concat(nextServices)
+
+  return res
 }
