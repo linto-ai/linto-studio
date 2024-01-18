@@ -34,7 +34,7 @@ module.exports = (webserver) => {
       controller: deleteTagFromConversation
     },
     {
-      path: '/conversations/:conversationId/highlights',
+      path: '/conversations/:conversationId/turns/:turnId/highlights',
       method: 'post',
       requireAuth: true,
       requireConversationWriteAccess: true,

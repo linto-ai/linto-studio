@@ -27,7 +27,6 @@ function initConversation(metadata, userId, job_id) {
             customRights: []
         },
         tags: [],
-        highlights: [],
         speakers: [],
         text: [],
         metadata: {
@@ -98,9 +97,7 @@ function transcriptionToConversation(transcript, conversation) {
                     stime: word.start,
                     etime: word.end,
                     word: word.word,
-                    confidence: word.conf,
-                    highlights: [],
-                    keywords: []
+                    confidence: word.conf
                 })
             })
             conversation.text.push(text_segment)

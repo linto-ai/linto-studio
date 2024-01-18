@@ -88,39 +88,48 @@ async function deleteTag(req, res, next) {
 
 async function addHighlight(req, res, next) {
   try {
-    if (!req.params.conversationId) throw new ConversationUnsupportedMediaType('Conversation id is required')
-    if (!req.body.categoryId) throw new ConversationUnsupportedMediaType('CategoryId is required')
-    if (!req.body.name) throw new ConversationUnsupportedMediaType('Name is required')
-
+    if (!req.params.conversationId) throw new ConversationIdRequire()
     const conversation = await model.conversations.getById(req.params.conversationId)
     if (conversation.length !== 1) throw new ConversationNotFound()
+
     const organizationId = conversation[0].organization.organizationId
+    let tagId = req.body.tagId
 
-    const category = await model.categories.getByIdAndType(req.body.categoryId, organizationId, TYPE.HIGHLIGHT)
-    if (category.length !== 1) throw new CategoryNotFound()
+    if (tagId) {
+      const tag = await model.tags.getById(tagId)
+      if (tag.length === 0) throw new TagNotFound()
 
-    if(category[0].name === 'keyword') throw new CategoryError('Unable to use this category')
+    } else if (req.body.tagName && req.body.categoryId) {
+      const tag = await model.tags.getByOrgaId(organizationId, { name: req.body.tagName, categoryId: req.body.categoryId })
 
-    let tag = await model.tags.getByOrgaId(req.params.organizationId, { name: req.body.name })
-    if (tag.length > 0) throw new TagConflict(`Conflict with tag name ${req.body.name} already exist. Tag id : ${tag[0]._id}`)
+      if (tag.length === 0) {
+        const result = await model.tags.create({ name: req.body.tagName, organizationId, categoryId: req.body.categoryId })
+        tagId = result.insertedId.toString()
 
-    const result = await model.tags.create({ name: req.body.name, organizationId: req.params.organizationId, categoryId: req.body.categoryId })
+      } else tagId = tag[0]._id.toString()
+    } else throw new TagError('No tag requested')
 
-    if (result.insertedCount !== 1) throw new TagError('Error during the creation of the tag')
-    if (conversation[0].tags.includes(result.insertedId.toString())) {
-      res.status(304).send('Nothing to update')
-    } else {
-      let tagsList = [...conversation[0].tags, result.insertedId.toString()]
+    const updateTurn = conversation[0].text.find((turn) => turn.turn_id === req.params.turnId)
+    if (updateTurn.length === 0) res.status(204).send()
 
+    const wordsArray = req.body.wordId.split(',')
+    updateTurn.words.forEach((word) => {
+      if (wordsArray.includes(word.wid.toString())) word.highlight = tagId
+    })
+
+    if (!conversation[0].tags.includes(tagId)) {
+      let tagsList = [...conversation[0].tags, tagId]
       await model.conversations.updateTag(req.params.conversationId, tagsList)
-      res.status(200).json({ message: 'Tag added to conversation' })
     }
+    const result = await model.conversations.updateTurn(req.params.conversationId, [updateTurn])
+
+    if (result.insertedCount !== 1) res.status(204).send()
+    res.status(200).send()
 
   } catch (err) {
     next(err)
   }
 }
-
 
 module.exports = {
   addTag,
