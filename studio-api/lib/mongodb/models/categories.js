@@ -16,7 +16,7 @@ class CategoryModel extends MongoModel {
             scope: 'nlp-keyword',
             organizationId,
             type: TYPE.HIGHLIGHT,
-            color: 'white'
+            color: 'deep-purple'
         }
         return await this.create(category)
     }
