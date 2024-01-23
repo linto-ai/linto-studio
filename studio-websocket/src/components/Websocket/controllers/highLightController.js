@@ -6,13 +6,12 @@ import { v4 as uuidv4 } from "uuid"
 const debug = Debug("Websocket:debug:hightLightController")
 
 export default async function hightLightController(
-  { conversationId, userToken, serviceScope, categoryName },
+  { conversationId, userToken, serviceScope, categoryName, categoryId },
   io
 ) {
-  if (!categoryName) {
+  if (!categoryName || !conversationId || !userToken) {
     return
   }
-  console.log("categoryName", categoryName)
 
   let conversation = Conversations.getById(conversationId)
 
@@ -28,6 +27,7 @@ export default async function hightLightController(
     this,
     serviceScope,
     categoryName,
+    categoryId,
     true
   )
 }
@@ -40,22 +40,14 @@ async function highLightFetchJob(
   socket,
   serviceScope,
   categoryName,
+  categoryId,
   erase = false
 ) {
   try {
     const room = `conversation/${conversationId}`
     const job = conversation.jobs[categoryName]
-    if (
-      !erase &&
-      job.state &&
-      job.state != "started" &&
-      job.state != "pending" &&
-      job.state != "not_started"
-    ) {
-      io.to(room).emit("hightlight_update", {
-        job: conversation.jobs[categoryName].toJSON(),
-        categoryName,
-      })
+    if (!erase && job.state && (job.state == "done" || job.state == "error")) {
+      debug("Job done", job.state, "for", categoryName)
     } else {
       if (
         job.state == "not_started" ||
@@ -74,6 +66,9 @@ async function highLightFetchJob(
             debug("No job to start for", categoryName)
             return
         }
+      } else if (erase) {
+        debug("No job to erase for", categoryName)
+        return
       }
 
       await job.fetchJob(userToken)
@@ -86,13 +81,15 @@ async function highLightFetchJob(
             io,
             socket,
             serviceScope,
-            categoryName
+            categoryName,
+            categoryId
           ),
         3000
       )
       io.to(room).emit("hightlight_update", {
         job: conversation.jobs[categoryName].toJSON(),
         categoryName,
+        categoryId,
       })
     }
   } catch (error) {

@@ -193,12 +193,12 @@ onmessage = (event) => {
       updateSubtitleScreen(event.data.params, subtitle.getYdoc())
       break
     case "fetch_hightlight":
-      console.log("send fetch_hightlight", conversationId)
       socket.emit("fetch_hightlight", {
         userToken,
         conversationId,
         serviceScope: event.data.params.serviceScope,
         categoryName: event.data.params.categoryName,
+        categoryId: event.data.params.categoryId,
       })
       break
     default:

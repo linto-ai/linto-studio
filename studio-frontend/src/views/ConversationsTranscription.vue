@@ -9,6 +9,7 @@
       <HighlightsList
         v-if="status === 'done'"
         :conversation="conversation"
+        :hightlightsCategories="hightlightsCategories"
         :conversationId="conversation._id" />
     </template>
 
@@ -45,6 +46,7 @@
         :turnPages="turnPages"
         :turns="turns"
         :canEdit="userRights.hasRightAccess(userRight, userRights.WRITE)"
+        :hightlightsCategories="hightlightsCategories"
         ref="editor"
         v-if="status === 'done'"></AppEditor>
     </div>

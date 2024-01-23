@@ -7,7 +7,9 @@
     "generate_button": "Start generation",
     "loading_services": "Querying AI language services...",
     "erase_msg": "Previous data will be overwritten",
-    "ia_title": "AI insights"
+    "ia_title": "AI insights",
+    "no_highlights_first_line": "No hightlights.",
+    "no_highlights_second_line": "Power up your media by generating AI insights."
   },
   "breadcrumb": {
     "conversations": "Medias",

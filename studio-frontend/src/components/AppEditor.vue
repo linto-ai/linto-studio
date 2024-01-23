@@ -14,7 +14,7 @@
             :userInfo="userInfo"
             :canEdit="canEdit"
             :conversationIsFiltered="conversationIsFiltered"
-            :keywords="keywords"
+            :hightlightsCategories="hightlightsCategories"
             :lastTurn="
               turns.findIndex((t) => t.turn_id === turn.turn_id) ===
               turns.length - 1
@@ -83,6 +83,10 @@ export default {
     noPlayer: {
       type: Boolean,
       default: false,
+    },
+    hightlightsCategories: {
+      type: Array,
+      required: true,
     },
   },
   data() {

@@ -64,6 +64,7 @@ export default {
             service.alreadyGenerated = true
           }
           service.categoryName = category.name
+          service.categoryId = category._id
           finalList.push(service)
         }
       }

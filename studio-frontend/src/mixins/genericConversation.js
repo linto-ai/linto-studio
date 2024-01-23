@@ -22,6 +22,7 @@ export const genericConversationMixin = {
       conversationId: "",
       userRight: 0,
       error: false,
+      hightlightsCategories: [],
     }
   },
   async created() {

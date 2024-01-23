@@ -2,11 +2,13 @@ import CONVERSATION_FORMATS from "../const/conversationFormat.js"
 import { bus } from "../main.js"
 import { workerConnect } from "../tools/worker-message.js"
 import { genericConversationMixin } from "./genericConversation.js"
+import { apiGetAllCategories } from "../api/tag.js"
 
 export const conversationMixin = {
   mixins: [genericConversationMixin],
   methods: {
     workerConnect(conversationId, token, userId) {
+      this.fetchHightlightsCategories(conversationId)
       workerConnect(
         conversationId,
         token,
@@ -65,6 +67,9 @@ export const conversationMixin = {
           const categoryName = event.data.params.categoryName
           const job = event.data.params.job
           this.conversation.jobs[categoryName] = { ...job }
+          if (job.state === "done") {
+            this.fetchHightlightsCategories(this.conversationId)
+          }
           bus.$emit("hightlight_update", { categoryName })
           break
         default:
@@ -86,6 +91,16 @@ export const conversationMixin = {
       this.conversation.text.find(
         (turn) => turn.turn_id === turnId
       ).speaker_id = speakerId
+    },
+    async fetchHightlightsCategories(conversationId) {
+      const req = await apiGetAllCategories(
+        conversationId,
+        "highlight",
+        "conversation",
+        true,
+        true
+      )
+      this.hightlightsCategories = req
     },
   },
 }

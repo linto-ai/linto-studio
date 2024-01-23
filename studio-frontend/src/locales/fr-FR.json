@@ -7,7 +7,9 @@
     "generate_button": "Démarrer la génération",
     "loading_services": "Chargement des services en cours...",
     "erase_msg": "Les données précedentes seront écrasées",
-    "ia_title": "Outils linguistiques"
+    "ia_title": "Outils linguistiques",
+    "no_highlights_first_line": "Pas de hightlights.",
+    "no_highlights_second_line": "Boostez votre contenu grâce à nos outils linguistiques propulsés à l'IA."
   },
   "breadcrumb": {
     "conversations": "Conversations",

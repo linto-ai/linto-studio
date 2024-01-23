@@ -155,7 +155,7 @@ export default {
     lastTurn: {
       type: Boolean,
     },
-    keywords: {
+    hightlightsCategories: {
       type: Array,
       default: () => [],
     },
@@ -184,10 +184,7 @@ export default {
         wordIndex: null,
         wordCharIndex: null,
       },
-      highlights: {
-        keywords: [],
-        search: [],
-      },
+      highlightsRanges: {}, // {cat_name: [range1, ranges2], ...}
       splitting: false,
       localText: "",
     }
@@ -279,16 +276,21 @@ export default {
         this.plainText = this.segment
       }
     },
-    "highlights.keywords"(data, oldData) {
+    hightlightsCategories(data, oldData) {
       if (data.length > 0) {
-        data.forEach(this.highlightRange)
+        this.displayHighlights()
       }
     },
-    keywords(data) {
-      if (data.length > 0) {
-        this.computeKeywordsRangeInText()
-      }
-    },
+    // "highlights.keywords"(data, oldData) {
+    //   if (data.length > 0) {
+    //     data.forEach(this.highlightRange)
+    //   }
+    // },
+    // keywords(data) {
+    //   if (data.length > 0) {
+    //     this.computeKeywordsRangeInText()
+    //   }
+    // },
   },
   mounted() {
     this.setSpeakerName()
@@ -333,7 +335,7 @@ export default {
       }
     })
 
-    this.computeKeywordsRangeInText()
+    this.displayHighlights()
     this.localText = this.segment
   },
   beforeDestroy() {
@@ -344,22 +346,49 @@ export default {
     bus.$off("speaker_name_updated")
   },
   methods: {
-    computeKeywordsRangeInText() {
-      const ranges = findExpressionInWordsList(
-        this.keywords,
-        this.words,
-        (k) => k.name,
-        (w) => w.word
-      )
-      this.highlights.keywords = ranges.map(this.plainRangeToDomRange)
+    displayHighlights() {
+      // first unhighlight all
+      Object.keys(this.highlightsRanges).forEach((catName) => {
+        if (!this.highlightsRanges[catName]) return
+
+        this.highlightsRanges[catName].forEach((range) => {
+          this.unhighlightRange(range)
+        })
+      })
+
+      // then highlight all
+      for (let hightlightCat of this.hightlightsCategories) {
+        let ranges = findExpressionInWordsList(
+          hightlightCat.tags,
+          this.words,
+          (k) => k.name,
+          (w) => w.word
+        )
+
+        let domRanges = ranges.map(this.plainRangeToDomRange) //save it to don't compute it again
+
+        this.highlightsRanges[hightlightCat.name] = domRanges
+        domRanges.forEach((range) => {
+          this.highlightRange(range, hightlightCat.color)
+        })
+      }
     },
+    // computeKeywordsRangeInText() {
+    //   const ranges = findExpressionInWordsList(
+    //     this.keywords,
+    //     this.words,
+    //     (k) => k.name,
+    //     (w) => w.word
+    //   )
+    //   this.highlights.keywords = ranges.map(this.plainRangeToDomRange)
+    // },
     plainRangeToDomRange(plainRange) {
       const domRange = new Range()
       domRange.setStartBefore(this.$refs.turn.children.item(plainRange.start))
       domRange.setEndAfter(this.$refs.turn.children.item(plainRange.end))
       return domRange
     },
-    async highlightRange(range) {
+    async highlightRange(range, color = "yellow") {
       await nextTick()
       let { startContainer, endContainer, startOffset, endOffset } = range
       let startWord = startContainer.children.item(startOffset)
@@ -367,11 +396,29 @@ export default {
 
       if (!endWord) {
         startWord.setAttribute("highlighted", "true")
+        startWord.classList.add(`background-${color}-100`)
         return
       }
 
       do {
         startWord.setAttribute("highlighted", "true")
+        startWord.classList.add(`background-${color}-100`)
+        startWord = startWord.nextSibling
+      } while (startWord !== endWord)
+    },
+    async unhighlightRange(range) {
+      await nextTick()
+      let { startContainer, endContainer, startOffset, endOffset } = range
+      let startWord = startContainer.children.item(startOffset)
+      let endWord = endContainer.children.item(endOffset)
+
+      if (!endWord) {
+        startWord.removeAttribute("highlighted")
+        return
+      }
+
+      do {
+        startWord.removeAttribute("highlighted")
         startWord = startWord.nextSibling
       } while (startWord !== endWord)
     },

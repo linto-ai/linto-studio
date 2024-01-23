@@ -1,11 +1,14 @@
 <template>
   <div class="highlights-list flex col gap-medium">
-    <h3
-      class="center-text flex align-center highlights-list__title"
+    <h2
+      v-if="!loading"
+      class="flex align-center highlights-list__title gap-small"
       @click="openHighlightModal">
-      <span>{{ $t("app_editor_highlights_modal.ia_title") }}</span>
-      <span class="icon medium settings"></span>
-    </h3>
+      <span class="flex1">{{
+        $t("app_editor_highlights_modal.ia_title")
+      }}</span>
+      <span class="icon medium edit"></span>
+    </h2>
     <!-- <button class="green" @click="openHighlightModal" v-if="!loading">
       <span class="icon add"></span>
       <span class="label"></span>
@@ -24,6 +27,13 @@
       :category="cat"
       :job="getJobsFromService(cat.name)"
       :conversationId="conversationId"></TagCategoryBoxHighlight>
+    <div
+      v-if="nonEmptyCategories.length == 0 && !loading && jobsList.length == 0"
+      class="center-text">
+      {{ $t("app_editor_highlights_modal.no_highlights_first_line") }}
+      <br />
+      {{ $t("app_editor_highlights_modal.no_highlights_second_line") }}
+    </div>
     <div v-if="loading" class="center-text small-padding">
       <!-- <div>Querying Ai services</div> -->
       <div>{{ $t("app_editor_highlights_modal.loading_services") }}</div>
@@ -34,7 +44,6 @@
 <script>
 import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
-import { apiGetAllCategories } from "../api/tag.js"
 import { apiGetNlpService } from "../api/service.js"
 import TagCategoryBoxHighlight from "./TagCategoryBoxHighlight.vue"
 import AppEditorHighLightModal from "./AppEditorHighLightModal.vue"
@@ -50,43 +59,49 @@ export default {
       type: Object,
       required: true,
     },
+    hightlightsCategories: {
+      type: Array,
+      required: true,
+    },
   },
   data() {
     return {
       services: [],
-      hightlightsCategories: [],
       loading: true,
       showHighlightModal: false,
     }
   },
   async mounted() {
     await this.getServices()
-    await this.getHightlightsCategories()
     this.loading = false
   },
   beforeDestroy() {},
   computed: {
     jobs() {
-      return this.conversation?.jobs || {}
+      return this.conversation?.jobs
+    },
+    jobsList() {
+      let res = Object.keys(this.jobs).filter(
+        (key) =>
+          this.jobs[key].state &&
+          this.jobs[key].state != "error" &&
+          key != "transcription"
+      )
+      console.log("jobsList", res, this.jobs)
+      return res
     },
     getJobsFromService() {
       return (name) => this.jobs[name] || null
+    },
+    nonEmptyCategories() {
+      if (!this.hightlightsCategories) return []
+      return this.hightlightsCategories.filter((cat) => cat.tags.length > 0)
     },
   },
   methods: {
     async getServices() {
       const req = await apiGetNlpService()
       this.services = req
-    },
-    async getHightlightsCategories() {
-      const req = await apiGetAllCategories(
-        this.conversationId,
-        "highlight",
-        "conversation",
-        true,
-        true
-      )
-      this.hightlightsCategories = req
     },
     openHighlightModal() {
       this.showHighlightModal = true
@@ -99,6 +114,7 @@ export default {
         workerSendMessage("fetch_hightlight", {
           serviceScope: "", //service.scope,
           categoryName: service.categoryName,
+          categoryId: service.categoryId,
         })
       }
       this.closeHighlightModal()
