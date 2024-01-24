@@ -48,7 +48,9 @@
       :userInfo="userInfo"
       :blocks="screens"
       :canEdit="userRights.hasRightAccess(userRight, userRights.WRITE)"
-      @screenUpdate="screenUpdate">
+      @screenUpdate="screenUpdate"
+      @mergeScreen="mergeScreen"
+      @addScreen="addScreen">
     </SubtitleEditor>
   </MainContentConversation>
 </template>
@@ -59,6 +61,7 @@ import { apiGetFileFromConversationSubtitle } from "../api/conversation.js"
 import MainContentConversation from "../components/MainContentConversation.vue"
 import SubtitleEditor from "@/components/SubtitleEditor.vue"
 import CustomSelect from "@/components/CustomSelect.vue"
+import { bus } from "../main"
 export default {
   mixins: [subtitleMixin],
   data() {
@@ -147,17 +150,65 @@ export default {
       }
     },
     screenUpdate(screen_id, stime, etime) {
-      let block = this.screens?.screens.get(screen_id)
+      let block = this.screens?.get(screen_id)
       if (block) {
         block.screen.stime = stime
         block.screen.etime = etime
-        this.screens.screens.set(screen_id, block)
+        this.screens.set(screen_id, block)
         workerSendMessage("update_screen", {
           screen: block.screen,
         })
       }
     },
-
+    mergeScreen(keptScreenId, deletedScreenId) {
+      let keptScreen = this.screens.get(keptScreenId)
+      if (
+        keptScreen.next === deletedScreenId ||
+        keptScreen.prev === deletedScreenId
+      ) {
+        workerSendMessage("merge_screens", { keptScreenId, deletedScreenId })
+      } else {
+        bus.$emit("app_notif", {
+          status: "error",
+          message: "Connot merge two non-consecutive screens",
+          timout: null,
+          redirect: false,
+        })
+      }
+    },
+    addScreen(screen_id, after = true) {
+      let stime, etime
+      let currentScreen = this.screens.get(screen_id)
+      let audio = this.conversation.metadata.audio
+      if (after) {
+        let next = this.screens.get(currentScreen.next)
+        stime = currentScreen.screen.etime
+        etime = next?.screen.stime || audio.duration + 0.01
+      } else {
+        let prev = this.screens.get(currentScreen.prev)
+        stime = prev?.screen.etime || -0.01
+        etime = currentScreen.screen.stime
+      }
+      stime += 0.01
+      etime -= 0.01
+      if (etime - stime < 0.1) {
+        bus.$emit("app_notif", {
+          status: "error",
+          message: "Not enough place to create a new screen",
+          timout: null,
+          redirect: false,
+        })
+      } else {
+        let newScreen = {
+          stime,
+          etime,
+          text: [],
+          words: [],
+          turn_id: currentScreen.screen.turn_id,
+        }
+        workerSendMessage("add_screen", { after, screen_id, newScreen })
+      }
+    },
     loadNewSubtitles(id) {
       if (id !== this.subtitleId) {
         this.$router.push({

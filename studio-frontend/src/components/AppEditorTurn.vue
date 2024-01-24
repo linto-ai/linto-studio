@@ -97,7 +97,7 @@
           class="turn-action-btn"
           @click="mergeTurn"
           data-info="Fusionner les tours">
-          <span class="icon"></span>
+          <span class="icon icon-merge"></span>
         </button>
       </div>
     </div>
@@ -526,7 +526,7 @@ export default {
             const stime = wordElement?.getAttribute("data-stime")
             if (stime) bus.$emit("player_set_time", { stime })
             this.closeEditorToolbox()
-            this.focused = true
+            this.focused = this.canEdit
             this.contentEditable = this.canEdit
             const wordCharIndex = this.getWordCharIndex(
               target,

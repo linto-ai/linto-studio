@@ -2,8 +2,25 @@
   padding: 0;
 }
 
+#subtitle-editor {
+  box-shadow: 0px 0px 16px 0 rgba(67, 76, 95, 0.75);
+}
+
+#conversation-audio-player.conversation-audio-player--subtitle {
+  border-top: none;
+}
+
+#player-seekbar {
+  width: 100%;
+  margin-left: 1rem;
+}
+
+#subtitle-player ::part(scroll) {
+  overflow: hidden !important;
+}
+
 #subtitle-player ::part(region) {
-  height: 75% !important;
+  height: fit-content !important;
   border: 1px solid black !important;
   border-radius: 5px !important;
   display: flex;
@@ -11,11 +28,16 @@
   background-color: var(--background-primary);
 }
 
+#subtitle-player ::part(playing) {
+  border-color: red !important;
+}
+
 #subtitle-player ::part(region-content) {
-  padding: 0 !important;
-  margin: 0 0 0 6px !important;
+  padding: 0 0 0 1rem !important;
+  margin: 0 !important;
   overflow: hidden;
   max-height: 100%;
+  flex: 1;
 }
 
 .subtitle-list {
@@ -58,14 +80,44 @@
 
 .screen {
   // TODO: hover, ext...
+  border: 1px solid transparent;
+  padding-right: 0.25rem;
 
   &.playing {
-    background-color: var(--text-disabled);
+    background-color: var(--background-secondary);
+    border-radius: 10px;
+    border: 1px solid var(--green-chart);
   }
+}
+
+#screen-editor {
+  margin: 0 auto 1rem auto;
+  padding: 0.5rem 1rem 0 1rem;
+  border-top: var(--border-button);
+}
+
+.screen-preview {
+  padding: 0 0.25rem;
+  height: calc(3em + 1.75rem);
+  overflow: auto;
+
+  &.current {
+    border: 1px solid var(--green-chart);
+    border-radius: 3px;
+  }
+
+  p {
+    margin: 0.25rem 0;
+  }
+}
+
+#current-screen-label {
+  color: var(--green-chart);
 }
 
 #screen-list {
   overflow-y: scroll;
+  padding-right: 1rem;
 
   & > div:first-child {
     margin-top: 2rem;
@@ -77,7 +129,7 @@
 }
 
 #video-player {
-  margin: 5rem;
+  margin: 5rem 5rem 1rem 5rem;
   position: relative;
 
   & .overlay {
@@ -100,8 +152,8 @@
     & .video-content {
       position: relative;
       align-items: center;
-      max-width: 100%;
-      max-height: 100%;
+      width: 100%;
+      height: 100%;
     }
     & video,
     img {
@@ -119,11 +171,11 @@
   left: 0;
   width: 100%;
   font-size: 1.2rem;
-  white-space: nowrap;
 
   & .screen-line {
-    background: black;
     color: white;
     width: fit-content;
+    text-align: center;
+    background: black;
   }
 }
