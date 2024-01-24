@@ -11,6 +11,9 @@
     "no_highlights_first_line": "Pas de hightlights.",
     "no_highlights_second_line": "Boostez votre contenu grâce à nos outils linguistiques propulsés à l'IA."
   },
+  "highlights_name": {
+    "keyword": "Mots clés"
+  },
   "breadcrumb": {
     "conversations": "Conversations",
     "create": "Importer un media",

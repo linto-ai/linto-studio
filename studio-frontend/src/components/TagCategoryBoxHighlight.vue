@@ -2,7 +2,7 @@
   <TagCategoryBox
     v-if="!empty"
     :key="reload"
-    :category="category"
+    :category="_category"
     scope="conversation"
     :scopeId="conversationId"
     :selectable="false"
@@ -57,9 +57,23 @@ export default {
         status === "running" || status === "pending" || status === "started"
       )
     },
+    _category() {
+      return {
+        ...this.category,
+        name: this.getName(this.category.scope) ?? this.category.name,
+      }
+    },
   },
   mounted() {},
   methods: {
+    getName(scope) {
+      switch (scope) {
+        case "nlp-keyword":
+          return this.$t("highlights_name.keyword")
+        default:
+          return null
+      }
+    },
     // generateKeyword() {
     //   if (this.loading) {
     //     return

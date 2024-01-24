@@ -11,6 +11,9 @@
     "no_highlights_first_line": "No hightlights.",
     "no_highlights_second_line": "Power up your media by generating AI insights."
   },
+  "highlights_name": {
+    "keyword": "Keywords"
+  },
   "breadcrumb": {
     "conversations": "Medias",
     "create": "Upload media",
