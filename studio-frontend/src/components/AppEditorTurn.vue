@@ -184,7 +184,7 @@ export default {
         wordIndex: null,
         wordCharIndex: null,
       },
-      highlightsRanges: {}, // {cat_name: [range1, ranges2], ...}
+      highlightsRanges: {}, // {cat_name: {ranges:[range1, ranges2], color: 'color'}, ...}
       splitting: false,
       localText: "",
     }
@@ -346,16 +346,11 @@ export default {
     bus.$off("speaker_name_updated")
   },
   methods: {
-    displayHighlights() {
+    async displayHighlights() {
       // first unhighlight all
-      Object.keys(this.highlightsRanges).forEach((catName) => {
-        if (!this.highlightsRanges[catName]) return
+      await this.unHighLightAllText()
 
-        this.highlightsRanges[catName].forEach((range) => {
-          this.unhighlightRange(range)
-        })
-      })
-
+      this.highlightsRanges = {}
       // then highlight all
       for (let hightlightCat of this.hightlightsCategories) {
         let ranges = findExpressionInWordsList(
@@ -367,12 +362,43 @@ export default {
 
         let domRanges = ranges.map(this.plainRangeToDomRange) //save it to don't compute it again
 
-        this.highlightsRanges[hightlightCat.name] = domRanges
-        domRanges.forEach((range) => {
-          this.highlightRange(range, hightlightCat.color)
-        })
+        this.highlightsRanges[hightlightCat._id] = {
+          ranges: domRanges,
+          color: hightlightCat.color,
+        }
+        // domRanges.forEach((range) => {
+        //   this.highlightRange(range, hightlightCat.color)
+        // })
       }
+
+      await this.hightLightAllText()
     },
+    async hightLightAllText() {
+      await nextTick()
+      Object.keys(this.highlightsRanges).forEach((catName) => {
+        if (!this.highlightsRanges[catName]) return
+        if (!this.highlightsRanges[catName].ranges) return
+
+        this.highlightsRanges[catName].ranges.forEach((range) => {
+          this.highlightRange(range, this.highlightsRanges[catName].color)
+        })
+      })
+    },
+    async unHighLightAllText() {
+      await nextTick()
+      Object.keys(this.highlightsRanges).forEach((catName) => {
+        if (!this.highlightsRanges[catName]) return
+        if (!this.highlightsRanges[catName].ranges) return
+        try {
+          this.highlightsRanges[catName].ranges.forEach((range) => {
+            this.unhighlightRange(range)
+          })
+        } catch (e) {
+          this.debug("Error while unhighlighting", this.turnId)
+        }
+      })
+    },
+
     // computeKeywordsRangeInText() {
     //   const ranges = findExpressionInWordsList(
     //     this.keywords,
@@ -388,8 +414,7 @@ export default {
       domRange.setEndAfter(this.$refs.turn.children.item(plainRange.end))
       return domRange
     },
-    async highlightRange(range, color = "yellow") {
-      await nextTick()
+    highlightRange(range, color = "yellow") {
       let { startContainer, endContainer, startOffset, endOffset } = range
       let startWord = startContainer.children.item(startOffset)
       let endWord = endContainer.children.item(endOffset)
@@ -406,10 +431,10 @@ export default {
         startWord = startWord.nextSibling
       } while (startWord !== endWord)
     },
-    async unhighlightRange(range) {
-      await nextTick()
+    unhighlightRange(range) {
       let { startContainer, endContainer, startOffset, endOffset } = range
       let startWord = startContainer.children.item(startOffset)
+
       let endWord = endContainer.children.item(endOffset)
 
       if (!endWord) {
@@ -431,11 +456,6 @@ export default {
         this.speakerColor = speaker.color
       }
     },
-    async hightLightText() {
-      await nextTick()
-      this.computeKeywordsRangeInText()
-    },
-
     customBlur() {
       this.contentEditable = false
     },
@@ -508,13 +528,12 @@ export default {
           words: this.words,
           index: this.index,
         })
-        this.hightLightText()
+        this.displayHighlights()
       }
     },
     handleClick(e) {
       const target = e.target
       const selection = window.getSelection()
-      console.log(target)
       if (
         target.classList.contains("word") ||
         target.classList.contains("word_space") ||
@@ -545,7 +564,7 @@ export default {
       if (target.classList.contains("turn")) {
         console.log("start selection", selection.type)
         if (selection.type == "Range") {
-          this.selectWord()
+          //this.selectWord()
         }
         // selection
       }
