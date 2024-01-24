@@ -25,6 +25,9 @@
       v-for="cat of hightlightsCategories"
       :key="cat._id"
       :category="cat"
+      :show="hightlightsCategoriesVisibility[cat._id]"
+      @hide-category="(id) => $emit('hide-category', id)"
+      @show-category="(id) => $emit('show-category', id)"
       :job="getJobsFromService(cat.name)"
       :conversationId="conversationId"></TagCategoryBoxHighlight>
     <div
@@ -61,6 +64,10 @@ export default {
     },
     hightlightsCategories: {
       type: Array,
+      required: true,
+    },
+    hightlightsCategoriesVisibility: {
+      type: Object,
       required: true,
     },
   },

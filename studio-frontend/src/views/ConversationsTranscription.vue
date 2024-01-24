@@ -10,6 +10,9 @@
         v-if="status === 'done'"
         :conversation="conversation"
         :hightlightsCategories="hightlightsCategories"
+        :hightlightsCategoriesVisibility="hightlightsCategoriesVisibility"
+        @hide-category="onHideCategory"
+        @show-category="onShowCategory"
         :conversationId="conversation._id" />
     </template>
 
@@ -47,6 +50,7 @@
         :turns="turns"
         :canEdit="userRights.hasRightAccess(userRight, userRights.WRITE)"
         :hightlightsCategories="hightlightsCategories"
+        :hightlightsCategoriesVisibility="hightlightsCategoriesVisibility"
         ref="editor"
         v-if="status === 'done'"></AppEditor>
     </div>
@@ -74,6 +78,7 @@ export default {
       filterSpeakers: "default",
       helperVisible: false,
       status: null,
+      hightlightsCategoriesVisibility: {}, // { category_id: true/false }
     }
   },
   watch: {
@@ -89,9 +94,6 @@ export default {
     dataLoaded(newVal, oldVal) {
       if (newVal) {
         this.status = this.computeStatus(this.conversation?.jobs?.transcription)
-        // if (this.status !== "done") {
-        //   this.$router.push(`/interface/conversations/${this.conversation._id}`)
-        // }
       }
     },
   },
@@ -154,6 +156,18 @@ export default {
     },
     closeHelper() {
       this.helperVisible = false
+    },
+    onHideCategory(categoryId) {
+      this.hightlightsCategoriesVisibility = {
+        ...this.hightlightsCategoriesVisibility,
+        [categoryId]: false,
+      }
+    },
+    onShowCategory(categoryId) {
+      this.hightlightsCategoriesVisibility = {
+        ...this.hightlightsCategoriesVisibility,
+        [categoryId]: true,
+      }
     },
   },
   components: {

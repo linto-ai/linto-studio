@@ -16,6 +16,14 @@
         <span class="icon plus"></span>
       </button> -->
       <span class="icon loading" v-if="loading"></span>
+      <span
+        class="icon show"
+        v-if="!loading && !empty && show"
+        @click="hideCategory"></span>
+      <span
+        class="icon hide"
+        v-if="!loading && !empty && !show"
+        @click="showCategory"></span>
     </template>
   </TagCategoryBox>
 </template>
@@ -30,6 +38,7 @@ export default {
     category: { type: Object, required: true },
     conversationId: { type: String, required: true },
     job: { type: Object, required: false },
+    show: { type: Boolean, required: false },
   },
   data() {
     return {
@@ -74,18 +83,14 @@ export default {
           return null
       }
     },
-    // generateKeyword() {
-    //   if (this.loading) {
-    //     return
-    //   }
-    //   console.log(this.category)
-    //   this.loading = true
-    //   workerSendMessage("fetch_hightlight", {
-    //     serviceScope: this.category.scope,
-    //     categoryName: this.category.name,
-    //   })
-    //   console.log("generate keyword")
-    // },
+    showCategory(e) {
+      this.$emit("show-category", this.category._id)
+      e.stopPropagation()
+    },
+    hideCategory(e) {
+      this.$emit("hide-category", this.category._id)
+      e.stopPropagation()
+    },
   },
   components: { Fragment, TagCategoryBox },
 }

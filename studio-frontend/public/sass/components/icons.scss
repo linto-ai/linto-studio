@@ -189,6 +189,12 @@
   &.ai {
     @include maskImage("../public/img/AI.svg");
   }
+  &.hide {
+    @include maskImage("../public/img/eye-off.svg");
+  }
+  &.show {
+    @include maskImage("../public/img/eye.svg");
+  }
 }
 
 .icon.small {

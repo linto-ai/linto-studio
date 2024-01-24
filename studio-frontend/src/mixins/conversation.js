@@ -7,8 +7,11 @@ import { apiGetAllCategories } from "../api/tag.js"
 export const conversationMixin = {
   mixins: [genericConversationMixin],
   methods: {
-    workerConnect(conversationId, token, userId) {
-      this.fetchHightlightsCategories(conversationId)
+    async workerConnect(conversationId, token, userId) {
+      await this.fetchHightlightsCategories(conversationId)
+      for (const cat of this.hightlightsCategories) {
+        this.hightlightsCategoriesVisibility[cat._id] = true
+      }
       workerConnect(
         conversationId,
         token,

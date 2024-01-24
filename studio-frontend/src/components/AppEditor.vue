@@ -15,6 +15,7 @@
             :canEdit="canEdit"
             :conversationIsFiltered="conversationIsFiltered"
             :hightlightsCategories="hightlightsCategories"
+            :hightlightsCategoriesVisibility="hightlightsCategoriesVisibility"
             :lastTurn="
               turns.findIndex((t) => t.turn_id === turn.turn_id) ===
               turns.length - 1
@@ -86,6 +87,10 @@ export default {
     },
     hightlightsCategories: {
       type: Array,
+      required: true,
+    },
+    hightlightsCategoriesVisibility: {
+      type: Object,
       required: true,
     },
   },

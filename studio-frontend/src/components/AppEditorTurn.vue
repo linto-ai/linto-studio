@@ -159,6 +159,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    hightlightsCategoriesVisibility: {
+      type: Object,
+      default: () => ({}),
+    },
   },
   data() {
     return {
@@ -281,16 +285,12 @@ export default {
         this.displayHighlights()
       }
     },
-    // "highlights.keywords"(data, oldData) {
-    //   if (data.length > 0) {
-    //     data.forEach(this.highlightRange)
-    //   }
-    // },
-    // keywords(data) {
-    //   if (data.length > 0) {
-    //     this.computeKeywordsRangeInText()
-    //   }
-    // },
+    hightlightsCategoriesVisibility: {
+      handler(data, oldData) {
+        this.displayHighlights()
+      },
+      deep: true,
+    },
   },
   mounted() {
     this.setSpeakerName()
@@ -348,6 +348,7 @@ export default {
   methods: {
     async displayHighlights() {
       // first unhighlight all
+      await nextTick()
       await this.unHighLightAllText()
 
       this.highlightsRanges = {}
@@ -375,22 +376,24 @@ export default {
     },
     async hightLightAllText() {
       await nextTick()
-      Object.keys(this.highlightsRanges).forEach((catName) => {
-        if (!this.highlightsRanges[catName]) return
-        if (!this.highlightsRanges[catName].ranges) return
+      Object.keys(this.highlightsRanges).forEach((categoryId) => {
+        if (!this.hightlightsCategoriesVisibility[categoryId]) return
 
-        this.highlightsRanges[catName].ranges.forEach((range) => {
-          this.highlightRange(range, this.highlightsRanges[catName].color)
+        if (!this.highlightsRanges[categoryId]) return
+        if (!this.highlightsRanges[categoryId].ranges) return
+
+        this.highlightsRanges[categoryId].ranges.forEach((range) => {
+          this.highlightRange(range, this.highlightsRanges[categoryId].color)
         })
       })
     },
     async unHighLightAllText() {
       await nextTick()
-      Object.keys(this.highlightsRanges).forEach((catName) => {
-        if (!this.highlightsRanges[catName]) return
-        if (!this.highlightsRanges[catName].ranges) return
+      Object.keys(this.highlightsRanges).forEach((categoryId) => {
+        if (!this.highlightsRanges[categoryId]) return
+        if (!this.highlightsRanges[categoryId].ranges) return
         try {
-          this.highlightsRanges[catName].ranges.forEach((range) => {
+          this.highlightsRanges[categoryId].ranges.forEach((range) => {
             this.unhighlightRange(range)
           })
         } catch (e) {
@@ -439,11 +442,21 @@ export default {
 
       if (!endWord) {
         startWord.removeAttribute("highlighted")
+        startWord.classList.remove(
+          ...Array.from(startWord.classList).filter((c) =>
+            c.startsWith("background-")
+          )
+        )
         return
       }
 
       do {
         startWord.removeAttribute("highlighted")
+        startWord.classList.remove(
+          ...Array.from(startWord.classList).filter((c) =>
+            c.startsWith("background-")
+          )
+        )
         startWord = startWord.nextSibling
       } while (startWord !== endWord)
     },
