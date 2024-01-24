@@ -13,6 +13,7 @@
         :hightlightsCategoriesVisibility="hightlightsCategoriesVisibility"
         @hide-category="onHideCategory"
         @show-category="onShowCategory"
+        @delete-tag="onDeleteTag"
         :conversationId="conversation._id" />
     </template>
 
@@ -54,6 +55,13 @@
         ref="editor"
         v-if="status === 'done'"></AppEditor>
     </div>
+
+    <ModalDeleteTagHighlight
+      v-if="showDeleteModal"
+      :conversationId="conversationId"
+      :tag="tagToDelete"
+      @on-cancel="onCancelDeleteTag"
+      @on-confirm="onConfirmDeleteTag" />
   </MainContentConversation>
 </template>
 <script>
@@ -70,6 +78,7 @@ import ErrorView from "./Error.vue"
 import MainContentConversation from "../components/MainContentConversation.vue"
 import HighlightsList from "../components/HighlightsList.vue"
 import MenuToolbox from "../components/MenuToolbox.vue"
+import ModalDeleteTagHighlight from "../components/ModalDeleteTagHighlight.vue"
 
 export default {
   mixins: [conversationMixin],
@@ -78,7 +87,8 @@ export default {
       filterSpeakers: "default",
       helperVisible: false,
       status: null,
-      hightlightsCategoriesVisibility: {}, // { category_id: true/false }
+      showDeleteModal: false,
+      tagToDelete: null,
     }
   },
   watch: {
@@ -169,6 +179,16 @@ export default {
         [categoryId]: true,
       }
     },
+    onDeleteTag(tag) {
+      this.tagToDelete = tag
+      this.showDeleteModal = true
+    },
+    onCancelDeleteTag() {
+      this.showDeleteModal = false
+    },
+    onConfirmDeleteTag() {
+      this.showDeleteModal = false
+    },
   },
   components: {
     ConversationShare,
@@ -181,6 +201,7 @@ export default {
     MainContentConversation,
     HighlightsList,
     MenuToolbox,
+    ModalDeleteTagHighlight,
   },
 }
 </script>

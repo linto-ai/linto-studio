@@ -9,7 +9,10 @@
     "erase_msg": "Previous data will be overwritten",
     "ia_title": "AI insights",
     "no_highlights_first_line": "No hightlights.",
-    "no_highlights_second_line": "Power up your media by generating AI insights."
+    "no_highlights_second_line": "Power up your media by generating AI insights.",
+    "delete_tag_modal": {
+      "content": "Are you sure you want to delete this tag ?"
+    }
   },
   "highlights_name": {
     "keyword": "Keywords"

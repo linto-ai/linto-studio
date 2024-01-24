@@ -131,6 +131,12 @@ export default {
     "category.name"() {
       this.displayedCategory.name = this.category.name
     },
+    "category.color"() {
+      this.displayedCategory.color = this.category.color
+    },
+    "category.tags"() {
+      this.displayedCategory.tags = this.category.tags
+    },
   },
   methods: {
     dragOver(e) {
@@ -168,7 +174,7 @@ export default {
         .classList.remove("drag-over")
     },
     async toggleOpen() {
-      if(this.fixed) return
+      if (this.fixed) return
       if (this.loading) return
       this.loading = true
       if (!this.open && this.tagsList.length === 0) {

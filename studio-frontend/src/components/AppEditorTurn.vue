@@ -433,6 +433,8 @@ export default {
         startWord.classList.add(`background-${color}-100`)
         startWord = startWord.nextSibling
       } while (startWord !== endWord)
+
+      endWord.previousSibling.setAttribute("highlighted--last-word", "true")
     },
     unhighlightRange(range) {
       let { startContainer, endContainer, startOffset, endOffset } = range
@@ -452,6 +454,7 @@ export default {
 
       do {
         startWord.removeAttribute("highlighted")
+        startWord.removeAttribute("highlighted--last-word")
         startWord.classList.remove(
           ...Array.from(startWord.classList).filter((c) =>
             c.startsWith("background-")

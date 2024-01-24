@@ -16,6 +16,7 @@ import SubtitleHelper from "./models/subtitles.js"
 import updateSubtitlesController from "./controllers/updateSubtitlesController.js"
 import hightLightController from "./controllers/highLightController.js"
 import addScreenController from "./controllers/addScreenController.js"
+import { apiDeleteTagFromConversation } from "./request/index.js"
 
 const info = Debug("Websocket:info")
 const debug = Debug("Websocket:debug:websocket")
@@ -153,6 +154,24 @@ export default class Websocket extends Component {
         })
         socket.on("add_screen", (data) => {
           addScreenController.bind(socket)(data, this.app.io)
+        })
+        socket.on("remove_tag_from_conversation", (data) => {
+          debug("remove_tag_from_conversation received")
+          const room = `conversation/${data.conversationId}`
+
+          let res = apiDeleteTagFromConversation(
+            data.conversationId,
+            data.tagId,
+            data.userToken
+          )
+          if (res.status === "error") {
+            this.app.io.to(room).emit("api_error", res.data)
+          } else {
+            this.app.io.to(room).emit("tag_removed_from_conversation", {
+              conversationId: data.conversationId,
+              tagId: data.tagId,
+            })
+          }
         })
       } catch (error) {
         info("Error in websocket connection")

@@ -206,6 +206,14 @@ onmessage = (event) => {
     case "merge_screens":
       mergeSubtitleScreens(event.data.params, subtitle.getYdoc())
       break
+    case "remove_tag_from_conversation":
+      socket.emit("remove_tag_from_conversation", {
+        userToken,
+        conversationId,
+        tagId: event.data.params.tagId,
+        conversationId: event.data.params.conversationId,
+      })
+      break
     case "add_screen":
       addScreen(
         userToken,
@@ -334,6 +342,11 @@ function setSocketListeners(socket) {
   socket.on("hightlight_update", (data) => {
     debugJobsWorker("Websocket event 'hightlight_update'")
     sendMessage("hightlight_update", data)
+  })
+
+  socket.on("tag_removed_from_conversation", (data) => {
+    debugJobsWorker("Websocket event 'tag_removed_from_conversation'")
+    sendMessage("tag_removed_from_conversation", data)
   })
 
   socket.on("subtitles_loaded", (data) => {

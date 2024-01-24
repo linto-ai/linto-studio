@@ -9,7 +9,10 @@
     "erase_msg": "Les données précedentes seront écrasées",
     "ia_title": "Outils linguistiques",
     "no_highlights_first_line": "Pas de hightlights.",
-    "no_highlights_second_line": "Boostez votre contenu grâce à nos outils linguistiques propulsés à l'IA."
+    "no_highlights_second_line": "Boostez votre contenu grâce à nos outils linguistiques propulsés à l'IA.",
+    "delete_tag_modal": {
+      "content": "Êtes vous sur de vouloir supprimer l'étiquette?"
+    }
   },
   "highlights_name": {
     "keyword": "Mots clés"

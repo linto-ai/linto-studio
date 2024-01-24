@@ -25,6 +25,12 @@
         v-if="!loading && !empty && !show"
         @click="showCategory"></span>
     </template>
+
+    <template v-slot:content-after-tag="slotProps">
+      <button class="transparent" @click="deleteTag(slotProps)">
+        <span class="icon trash"></span>
+      </button>
+    </template>
   </TagCategoryBox>
 </template>
 <script>
@@ -32,6 +38,7 @@ import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
 import TagCategoryBox from "./TagCategoryBox.vue"
 import { workerSendMessage } from "../tools/worker-message.js"
+import ModalDeleteTagHighlight from "./ModalDeleteTagHighlight.vue"
 
 export default {
   props: {
@@ -91,7 +98,19 @@ export default {
       this.$emit("hide-category", this.category._id)
       e.stopPropagation()
     },
+
+    deleteTag({ tag }) {
+      this.$emit("delete-tag", tag)
+    },
+    closeDeleteModal() {
+      this.showDeleteModal = false
+    },
+    showDeleteModalAction(tag) {
+      console.log("showDeleteModalAction", tag)
+      this.tagToDelete = tag
+      this.showDeleteModal = true
+    },
   },
-  components: { Fragment, TagCategoryBox },
+  components: { Fragment, TagCategoryBox, ModalDeleteTagHighlight },
 }
 </script>

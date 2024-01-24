@@ -45,6 +45,7 @@ import AppEditorTurn from "@/components/AppEditorTurn.vue"
 import AppEditorPlayer from "@/components/AppEditorPlayer.vue"
 import AppEditorPagination from "@/components/Pagination.vue"
 import { workerSendMessage } from "../tools/worker-message.js"
+import ModalDeleteTagHighlight from "./ModalDeleteTagHighlight.vue"
 
 export default {
   props: {
@@ -285,6 +286,7 @@ export default {
     AppEditorTurn,
     AppEditorPlayer,
     AppEditorPagination,
+    ModalDeleteTagHighlight,
   },
 }
 </script>

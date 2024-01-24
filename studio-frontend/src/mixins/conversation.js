@@ -6,6 +6,11 @@ import { apiGetAllCategories } from "../api/tag.js"
 
 export const conversationMixin = {
   mixins: [genericConversationMixin],
+  data() {
+    return {
+      hightlightsCategoriesVisibility: {}, // { category_id: true/false }
+    }
+  },
   methods: {
     async workerConnect(conversationId, token, userId) {
       await this.fetchHightlightsCategories(conversationId)
@@ -74,6 +79,9 @@ export const conversationMixin = {
             this.fetchHightlightsCategories(this.conversationId)
           }
           bus.$emit("hightlight_update", { categoryName })
+          break
+        case "tag_removed_from_conversation":
+          this.fetchHightlightsCategories(this.conversationId)
           break
         default:
           break
