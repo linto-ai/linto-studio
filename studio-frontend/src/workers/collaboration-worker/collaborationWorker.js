@@ -202,6 +202,7 @@ onmessage = (event) => {
         categoryName: event.data.params.categoryName,
         categoryId: event.data.params.categoryId,
       })
+      break
     case "merge_screens":
       mergeSubtitleScreens(event.data.params, subtitle.getYdoc())
       break
