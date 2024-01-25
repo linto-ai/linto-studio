@@ -1,3 +1,7 @@
+# 1.4.0
+- Added An hightlight API
+- Change the default keyword category color
+
 # 1.3.0
 - Introduced a new feature: Subtitle API
   - Enables the generation of subtitles with customizable settings such as screen size, screen lines, etc.

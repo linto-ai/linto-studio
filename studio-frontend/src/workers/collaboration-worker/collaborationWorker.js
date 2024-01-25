@@ -14,7 +14,6 @@ import {
   turnEditSpeaker,
   updateConversationAddSpeaker,
   updateOrganizationRight,
-  fetchKeywords,
   fetchSubtitles,
   generateSubtitles,
   copySubtitles,
@@ -159,9 +158,6 @@ onmessage = (event) => {
     case "unfocus_field":
       unfocusField(event, conversationId, socket)
       break
-    case "fetch_keywords":
-      fetchKeywords(userToken, conversationId, socket)
-      break
     case "get_subtitle":
       fetchSubtitles(
         userToken,
@@ -198,8 +194,25 @@ onmessage = (event) => {
     case "update_screen":
       updateSubtitleScreen(event.data.params, subtitle.getYdoc())
       break
+    case "fetch_hightlight":
+      socket.emit("fetch_hightlight", {
+        userToken,
+        conversationId,
+        serviceScope: event.data.params.serviceScope,
+        categoryName: event.data.params.categoryName,
+        categoryId: event.data.params.categoryId,
+      })
+      break
     case "merge_screens":
       mergeSubtitleScreens(event.data.params, subtitle.getYdoc())
+      break
+    case "remove_tag_from_conversation":
+      socket.emit("remove_tag_from_conversation", {
+        userToken,
+        conversationId,
+        tagId: event.data.params.tagId,
+        conversationId: event.data.params.conversationId,
+      })
       break
     case "add_screen":
       addScreen(
@@ -217,7 +230,7 @@ onmessage = (event) => {
 
 function disconnect() {
   shouldDisconnect = true
-  socket.disconnect()
+  if (socket) socket?.disconnect()
   if (conversation !== null) {
     conversation.destroy()
   }
@@ -324,6 +337,16 @@ function setSocketListeners(socket) {
   socket.on("keywords_update", (data) => {
     debugJobsWorker("Websocket event 'keywords_update'")
     sendMessage("keywords_update", data)
+  })
+
+  socket.on("hightlight_update", (data) => {
+    debugJobsWorker("Websocket event 'hightlight_update'")
+    sendMessage("hightlight_update", data)
+  })
+
+  socket.on("tag_removed_from_conversation", (data) => {
+    debugJobsWorker("Websocket event 'tag_removed_from_conversation'")
+    sendMessage("tag_removed_from_conversation", data)
   })
 
   socket.on("subtitles_loaded", (data) => {

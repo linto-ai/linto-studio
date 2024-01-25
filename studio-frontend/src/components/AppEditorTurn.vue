@@ -49,20 +49,15 @@
           :data-index="index"
           :data-stime="word.stime"
           :data-etime="word.etime">
+          <AppEditorToolbox
+            v-if="
+              wordsSelected.length > 0 && wordsSelected[0].wid === word.wid
+            "></AppEditorToolbox>
           <span class="word_content">{{ word.word }}</span>
           <span class="word_space">
             {{ " " }}
           </span>
         </span>
-        <AppEditorToolbox
-          v-if="editorToolbox.display"
-          @close="closeEditorToolbox"
-          :turnId="turnId"
-          :stime="editorToolbox.stime"
-          :style="{
-            top: editorToolbox.top - 40 + 'px',
-            left: editorToolbox.left + 'px',
-          }"></AppEditorToolbox>
       </div>
 
       <CollaborativeField
@@ -160,9 +155,13 @@ export default {
     lastTurn: {
       type: Boolean,
     },
-    keywords: {
+    hightlightsCategories: {
       type: Array,
       default: () => [],
+    },
+    hightlightsCategoriesVisibility: {
+      type: Object,
+      default: () => ({}),
     },
   },
   data() {
@@ -189,10 +188,7 @@ export default {
         wordIndex: null,
         wordCharIndex: null,
       },
-      highlights: {
-        keywords: [],
-        search: [],
-      },
+      highlightsRanges: {}, // {cat_name: {ranges:[range1, ranges2], color: 'color'}, ...}
       splitting: false,
       localText: "",
     }
@@ -284,15 +280,16 @@ export default {
         this.plainText = this.segment
       }
     },
-    "highlights.keywords"(data, oldData) {
+    hightlightsCategories(data, oldData) {
       if (data.length > 0) {
-        data.forEach(this.highlightRange)
+        this.displayHighlights()
       }
     },
-    keywords(data) {
-      if (data.length > 0) {
-        this.computeKeywordsRangeInText()
-      }
+    hightlightsCategoriesVisibility: {
+      handler(data, oldData) {
+        this.displayHighlights()
+      },
+      deep: true,
     },
   },
   mounted() {
@@ -338,7 +335,7 @@ export default {
       }
     })
 
-    this.computeKeywordsRangeInText()
+    this.displayHighlights()
     this.localText = this.segment
   },
   beforeDestroy() {
@@ -349,34 +346,120 @@ export default {
     bus.$off("speaker_name_updated")
   },
   methods: {
-    computeKeywordsRangeInText() {
-      const ranges = findExpressionInWordsList(
-        this.keywords,
-        this.words,
-        (k) => k.name,
-        (w) => w.word
-      )
-      this.highlights.keywords = ranges.map(this.plainRangeToDomRange)
+    async displayHighlights() {
+      // first unhighlight all
+      await nextTick()
+      await this.unHighLightAllText()
+
+      this.highlightsRanges = {}
+      // then highlight all
+      for (let hightlightCat of this.hightlightsCategories) {
+        let ranges = findExpressionInWordsList(
+          hightlightCat.tags,
+          this.words,
+          (k) => k.name,
+          (w) => w.word
+        )
+
+        let domRanges = ranges.map(this.plainRangeToDomRange) //save it to don't compute it again
+
+        this.highlightsRanges[hightlightCat._id] = {
+          ranges: domRanges,
+          color: hightlightCat.color,
+        }
+        // domRanges.forEach((range) => {
+        //   this.highlightRange(range, hightlightCat.color)
+        // })
+      }
+
+      await this.hightLightAllText()
     },
+    async hightLightAllText() {
+      await nextTick()
+      Object.keys(this.highlightsRanges).forEach((categoryId) => {
+        if (!this.hightlightsCategoriesVisibility[categoryId]) return
+
+        if (!this.highlightsRanges[categoryId]) return
+        if (!this.highlightsRanges[categoryId].ranges) return
+
+        this.highlightsRanges[categoryId].ranges.forEach((range) => {
+          this.highlightRange(range, this.highlightsRanges[categoryId].color)
+        })
+      })
+    },
+    async unHighLightAllText() {
+      await nextTick()
+      Object.keys(this.highlightsRanges).forEach((categoryId) => {
+        if (!this.highlightsRanges[categoryId]) return
+        if (!this.highlightsRanges[categoryId].ranges) return
+        try {
+          this.highlightsRanges[categoryId].ranges.forEach((range) => {
+            this.unhighlightRange(range)
+          })
+        } catch (e) {
+          this.debug("Error while unhighlighting", this.turnId)
+        }
+      })
+    },
+
+    // computeKeywordsRangeInText() {
+    //   const ranges = findExpressionInWordsList(
+    //     this.keywords,
+    //     this.words,
+    //     (k) => k.name,
+    //     (w) => w.word
+    //   )
+    //   this.highlights.keywords = ranges.map(this.plainRangeToDomRange)
+    // },
     plainRangeToDomRange(plainRange) {
       const domRange = new Range()
       domRange.setStartBefore(this.$refs.turn.children.item(plainRange.start))
       domRange.setEndAfter(this.$refs.turn.children.item(plainRange.end))
       return domRange
     },
-    async highlightRange(range) {
-      await nextTick()
+    highlightRange(range, color = "yellow") {
       let { startContainer, endContainer, startOffset, endOffset } = range
       let startWord = startContainer.children.item(startOffset)
       let endWord = endContainer.children.item(endOffset)
 
       if (!endWord) {
         startWord.setAttribute("highlighted", "true")
+        startWord.classList.add(`background-${color}-100`)
         return
       }
 
       do {
         startWord.setAttribute("highlighted", "true")
+        startWord.classList.add(`background-${color}-100`)
+        startWord = startWord.nextSibling
+      } while (startWord !== endWord)
+
+      endWord.previousSibling.setAttribute("highlighted--last-word", "true")
+    },
+    unhighlightRange(range) {
+      let { startContainer, endContainer, startOffset, endOffset } = range
+      let startWord = startContainer.children.item(startOffset)
+
+      let endWord = endContainer.children.item(endOffset)
+
+      if (!endWord) {
+        startWord.removeAttribute("highlighted")
+        startWord.classList.remove(
+          ...Array.from(startWord.classList).filter((c) =>
+            c.startsWith("background-")
+          )
+        )
+        return
+      }
+
+      do {
+        startWord.removeAttribute("highlighted")
+        startWord.removeAttribute("highlighted--last-word")
+        startWord.classList.remove(
+          ...Array.from(startWord.classList).filter((c) =>
+            c.startsWith("background-")
+          )
+        )
         startWord = startWord.nextSibling
       } while (startWord !== endWord)
     },
@@ -389,11 +472,6 @@ export default {
         this.speakerColor = speaker.color
       }
     },
-    async hightLightText() {
-      await nextTick()
-      this.computeKeywordsRangeInText()
-    },
-
     customBlur() {
       this.contentEditable = false
     },
@@ -466,17 +544,17 @@ export default {
           words: this.words,
           index: this.index,
         })
-        this.hightLightText()
+        this.displayHighlights()
       }
     },
     handleClick(e) {
       const target = e.target
+      const selection = window.getSelection()
       if (
         target.classList.contains("word") ||
         target.classList.contains("word_space") ||
         target.classList.contains("word_content")
       ) {
-        const selection = window.getSelection()
         if (selection.type == "Caret") {
           const wordElement = this.getParentWord(target)
           if (wordElement) {
@@ -499,26 +577,13 @@ export default {
         }
       }
 
-      //this.compareSelection(selection) // To set clickWordIndex
-      // if (!isSelection) {
-      //   // simple click
-      //   if (target.classList.contains("word_content")) {
-      //   }
-      //   if (target.classList.contains("word")) {
-      //     const stime = target?.getAttribute("data-stime")
-      //     if (stime) bus.$emit("player_set_time", { stime })
-      //     this.closeEditorToolbox()
-      //     this.focused = true
-      //     this.contentEditable = this.canEdit
-      //     this.cursorPosition = {
-      //       wordIndex: this.clickWordIndex,
-      //       wordCharIndex: firstChar,
-      //     }
-      //   }
-      // } else {
-      //   // selection
-      //   this.selectWord(target)
-      // }
+      if (target.classList.contains("turn")) {
+        console.log("start selection", selection.type)
+        if (selection.type == "Range") {
+          //this.selectWord()
+        }
+        // selection
+      }
     },
     getWordCharIndex(target, wordElement, selection) {
       let firstChar = 0
@@ -536,7 +601,7 @@ export default {
         return this.getParentWord(node.parentElement)
       }
     },
-    compareSelection(selection) {
+    getSelectedWordsFromDomSelection(selection) {
       let firstWord = selection?.anchorNode
       let lastWord = selection?.focusNode
       let firstSpan = null
@@ -584,49 +649,27 @@ export default {
       }
       return { wordsSelected, firstWord, lastWord }
     },
-    selectWord(target) {
+    selectWord() {
       this.resetWordSelected()
-      let selection = window.getSelection()
-      let compareWords = this.compareSelection(selection)
-      if (compareWords.wordsSelected.length > 0) {
-        let left = 0
-        let top = 0
-        if (compareWords.wordsSelected.length > 1) {
-          let firstWord = compareWords.firstWord
-          let firstSpan = null
-          if (firstWord.nodeName === "#text") {
-            firstSpan = firstWord.parentElement
-          }
-          if (firstSpan) {
-            left = firstSpan.offsetLeft - 5
-            top = firstSpan.offsetTop - 5
-          }
-        } else {
-          // Force selection of the target/clicked word on simple click
-          left = target.offsetLeft - 5
-          top = target.offsetTop - 5
-        }
-        for (let word of compareWords.wordsSelected) {
-          this.wordsSelected.push(word?.wid)
-        }
-        this.editorToolbox = {
-          left: left,
-          top: top,
-          display: true,
-          stime: compareWords.wordsSelected[0]?.stime,
-        }
+      let domSelection = window.getSelection()
+      let selection = this.getSelectedWordsFromDomSelection(domSelection)
+      console.log("selectWord:", selection)
+      const startRange = selection.firstWord
+      const endRange = selection.lastWord
+      window
+        .getSelection()
+        .setBaseAndExtent(startRange, 0, endRange, endRange.length)
 
-        if (
-          target.classList.contains("turn") ||
-          target.classList.contains("word")
-        ) {
-          const startRange = compareWords.firstWord
-          const endRange = compareWords.lastWord
-          window
-            .getSelection()
-            .setBaseAndExtent(startRange, 1, endRange, endRange.length)
-        }
-      }
+      this.wordsSelected = selection.wordsSelected
+      // if (
+      //   target.classList.contains("turn") ||
+      //   target.classList.contains("word")
+      // ) {
+
+      // }
+    },
+    resetWordSelected() {
+      this.wordsSelected = []
     },
     findIndexWithoutEmptyWords(words, callback) {
       let index = -1
@@ -639,13 +682,6 @@ export default {
         }
       }
       return -1
-    },
-    resetWordSelected() {
-      if (this.wordsSelected.length > 0) {
-        const selection = window.getSelection()
-        this.wordsSelected = []
-        this.closeEditorToolbox()
-      }
     },
     closeEditorToolbox() {
       this.editorToolbox.display = false

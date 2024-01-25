@@ -25,7 +25,7 @@ export const subtitleMixin = {
     },
   },
   methods: {
-    workerConnect(conversationId, token, userId) {
+    async workerConnect(conversationId, token, userId) {
       workerConnect(
         conversationId,
         token,

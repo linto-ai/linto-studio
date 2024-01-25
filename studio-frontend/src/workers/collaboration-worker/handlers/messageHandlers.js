@@ -313,10 +313,6 @@ export function unfocusField(event, conversationId, socket) {
   socket.emit("unfocus_field", { ...event.data.params, conversationId })
 }
 
-export function fetchKeywords(userToken, conversationId, socket) {
-  socket.emit("fetch_keywords", { userToken, conversationId })
-}
-
 export function fetchSubtitles(userToken, conversationId, subtitleId, socket) {
   socket.emit("get_subtitles", { userToken, conversationId, subtitleId })
 }

@@ -77,7 +77,7 @@
       </button>
 
       <ContextMenu v-if="state == STATES.BROWSE_CATEGORY" name="browse cats">
-        <TagCategoryBox
+        <TagCategoryBoxSelectable
           v-for="category of allCategories"
           :key="category._id"
           :category="category"
@@ -105,6 +105,7 @@
 
 <script>
 import { Fragment } from "vue-fragment"
+
 import { bus } from "../main.js"
 import {
   apiCreateCategory,
@@ -118,6 +119,7 @@ import Tag from "./Tag.vue"
 import TagCategoryBox from "./TagCategoryBox.vue"
 import ContextMenu from "./ContextMenu.vue"
 import DropDownAddTagCreate from "./DropDownAddTagCreate.vue"
+import TagCategoryBoxSelectable from "./TagCategoryBoxSelectable.vue"
 
 const STATES = {
   SEARCH_TAG: 1,
@@ -246,6 +248,7 @@ export default {
     ContextMenu,
     ContextMenu,
     DropDownAddTagCreate,
+    TagCategoryBoxSelectable,
   },
 }
 </script>

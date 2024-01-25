@@ -6,7 +6,6 @@ import Conversations from "../models/conversations.js"
 const jobsFetcher = {}
 
 const debug = Debug("Websocket:debug:jobTranscriptionController")
-const debugJob = Debug("Websocket:debug:jobTranscriptionController:jobFetcher")
 
 export default async function jobTranscriptionController(
   conversation,
@@ -14,37 +13,19 @@ export default async function jobTranscriptionController(
   userToken,
   io
 ) {
-  if (!jobsFetcher[conversationId]) {
-    debug("No job fetched yet")
-    jobsFetcher[conversationId] = true
-    fetchJob(conversation, conversationId, userToken, io)
-  }
-}
-
-async function fetchJob(conversation, conversationId, userToken, io) {
-  const currentState = conversation.transcriptionJob?.state
   const room = `conversation/${conversationId}`
-
-  debugJob("currentState", currentState)
-
-  if (currentState == "started" || currentState == "pending") {
-    await conversation.transcriptionJob.fetchJob(userToken)
+  const job = conversation.jobs["transcription"]
+  if (job.state && (job.state === "done" || job.state === "error")) {
+    debug("Job done")
+  } else {
+    await job.fetchJob(userToken)
     setTimeout(
-      () => fetchJob(conversation, conversationId, userToken, io),
+      () =>
+        jobTranscriptionController(conversation, conversationId, userToken, io),
       3000
     )
-
-    const state = conversation.transcriptionJob?.state
-    const steps = conversation.transcriptionJob?.steps
-    const logs = conversation.transcriptionJob?.logs
-
-    io.to(room).emit("job_transcription_update", { state, steps })
-
-    if (state && state != "started" && state != "pending") {
-      debug("Job done")
-
-      await Conversations.requestConversation(conversationId, userToken)
-      io.to(room).emit("job_transcription_update", { state, steps, logs })
-    }
+    io.to(room).emit("job_transcription_update", {
+      ...conversation.jobs["transcription"].toJSON(),
+    })
   }
 }

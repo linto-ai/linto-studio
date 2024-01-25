@@ -16,28 +16,17 @@
         <span
           class="flex1 flex align-center gap-small"
           :class="[colorTextCategory]">
+          <slot name="content-just-before-title"></slot>
           <span>
             {{ displayedCategory.name }}
-            <span v-if="displayedCategory.type == 'highlight'">
+            <!-- <span v-if="displayedCategory.type == 'highlight'">
               {{ "(Highlight)" }}</span
-            >
+            > -->
           </span>
-
-          <button
-            class="transparent inline"
-            @click="editCategory"
-            :title="$t('tags.edit_category_title')">
-            <span class="icon edit" v-if="editable"></span>
-          </button>
-          <button
-            class="transparent inline"
-            @click="deleteCategory"
-            :title="$t('tags.delete_category_title')">
-            <span class="icon trash" v-if="editable"></span>
-          </button>
+          <slot name="content-just-after-title"></slot>
         </span>
-
-        <span class="icon" :class="iconClass"></span>
+        <slot name="content-after-title"></slot>
+        <span class="icon" :class="iconClass" v-if="!fixed"></span>
       </h3>
     </header>
     <ul class="category-box__tag-list flex col" v-if="open">
@@ -55,56 +44,16 @@
             :editable="editable"
             :color="category.color" />
         </label>
-        <SwitchInput
-          v-if="selectable"
-          :id="`${id}-${tag._id}`"
-          name="tag"
-          :value="isTagSelected(tag._id)"
-          @input="switchSelectedTag($event, tag)" />
-        <button
-          v-if="addable"
-          @click="selectTag(tag)"
-          class="only-border"
-          :id="`${id}-${tag._id}`">
-          <span class="icon add"></span>
-          <span class="label">{{ $t("tags.add_tag_to_conversation") }}</span>
-        </button>
-        <button
-          class="transparent inline"
-          @click="editTag(tag)"
-          :title="$t('tags.edit_tag_title')">
-          <span class="icon edit" v-if="editable"></span>
-        </button>
-        <button
-          class="transparent inline"
-          @click="deleteTag(tag)"
-          :title="$t('tags.delete_tag_title')">
-          <span class="icon trash" v-if="editable"></span>
-        </button>
+
+        <slot name="content-after-tag" v-bind:tag="tag"></slot>
       </li>
       <div v-if="tagsList.length === 0 && showCategoryName">
         <span class="category-box__no-tag">{{
           $t("tags.no_tags_in_category")
         }}</span>
       </div>
-      <div class="flex" v-if="editable && !addingTag">
-        <button class="transparent fullwidth" @click="startAddingTag">
-          <span class="icon add"></span>
-          <span class="label">{{ $t("tags.create_a_tag") }}</span>
-        </button>
-      </div>
-      <div
-        class="flex align-bottom"
-        v-if="addingTag"
-        style="padding-top: 0.5rem">
-        <FormInput
-          :field="newTagName"
-          v-model="newTagName.value"
-          class="flex1"
-          withConfirmation
-          @on-cancel="cancelAddingTag"
-          @on-confirm="addNewTag" />
-      </div>
+
+      <slot name="content-after-tag-list"></slot>
     </ul>
   </div>
 </template>
@@ -122,28 +71,26 @@ import {
 } from "../api/tag"
 import EMPTY_FIELD from "../const/emptyField"
 
-import SwitchInput from "./SwitchInput.vue"
 import Tag from "./Tag.vue"
-import FormInput from "./FormInput.vue"
 
 export default {
   props: {
+    value: { type: Array, required: false, default: () => [] },
     category: { type: Object, required: true },
-    value: { type: Array, required: true },
     scope: { type: String, required: true }, // "organization" or "conversation"
     scopeId: { type: String, required: true },
     startOpen: { type: Boolean, default: false },
     showCategoryName: { type: Boolean, default: true },
     linkedTags: { type: Array, default: () => [] },
+    hiddenSelectedTags: { type: Boolean, default: false },
     editable: { type: Boolean, default: false },
-    selectable: { type: Boolean, default: true },
-    addable: { type: Boolean, default: false },
+    id: { type: String, default: () => uuidv4() },
+    fixed: { type: Boolean, default: false },
   },
   data() {
     return {
       loading: false,
       displayedCategory: this.category,
-      id: uuidv4(),
       open: this.startOpen,
       newTagName: {
         ...EMPTY_FIELD,
@@ -156,7 +103,7 @@ export default {
     bus.$on("tag-category-changed", this.updateCategory)
   },
   beforeDestroy() {
-    bus.$off("tag-category-changed")
+    bus.$off("tag-category-changed", this.updateCategory)
   },
   computed: {
     iconClass() {
@@ -166,7 +113,8 @@ export default {
     tagsList() {
       const tags =
         this.displayedCategory?.tags ?? this.displayedCategory?.tag ?? []
-      if (!this.addable) {
+
+      if (!this.hiddenSelectedTags) {
         return tags
       } else {
         return tags.filter((tag) => !this.value.find((t) => t._id === tag._id))
@@ -183,13 +131,14 @@ export default {
     "category.name"() {
       this.displayedCategory.name = this.category.name
     },
+    "category.color"() {
+      this.displayedCategory.color = this.category.color
+    },
+    "category.tags"() {
+      this.displayedCategory.tags = this.category.tags
+    },
   },
   methods: {
-    editCategory(event) {
-      this.$emit("edit")
-      event.stopPropagation()
-      event.preventDefault()
-    },
     dragOver(e) {
       e.preventDefault()
       e.stopPropagation()
@@ -198,7 +147,7 @@ export default {
         .classList.add("drag-over")
     },
     async drop(e) {
-      if (scope === "conversation") return
+      if (this.scope === "conversation") return
       document
         .getElementById(`${this.id}-${this.category._id}`)
         .classList.remove("drag-over")
@@ -224,23 +173,8 @@ export default {
         .getElementById(`${this.id}-${this.category._id}`)
         .classList.remove("drag-over")
     },
-    isTagSelected(tagIdToSearch) {
-      return this.value.find((tag) => tag._id == tagIdToSearch) != null
-    },
-    switchSelectedTag(selected, tag) {
-      if (selected) {
-        this.selectTag(tag)
-      } else {
-        this.unSelectTag(tag)
-      }
-    },
-    unSelectTag(tag) {
-      this.$emit("unSelectTag", tag)
-    },
-    selectTag(tag) {
-      this.$emit("selectTag", tag, this.category)
-    },
     async toggleOpen() {
+      if (this.fixed) return
       if (this.loading) return
       this.loading = true
       if (!this.open && this.tagsList.length === 0) {
@@ -274,50 +208,7 @@ export default {
         this.fetchTags()
       }
     },
-    editTag(tag) {
-      this.$emit("edit-tag", tag)
-    },
-    deleteTag(tag) {
-      this.$emit("delete-tag", tag)
-    },
-    deleteCategory(event) {
-      this.$emit("delete-category", this.category)
-      event.stopPropagation()
-      event.preventDefault()
-    },
-    startAddingTag() {
-      this.addingTag = true
-    },
-    cancelAddingTag() {
-      this.addingTag = false
-      this.newTagName = {
-        ...EMPTY_FIELD,
-        label: this.$t("tags.new_tag_name"),
-      }
-    },
-    async addNewTag() {
-      if (this.newTagName.value === "") return
-      const res = await apiCreateTag(
-        this.scopeId,
-        this.newTagName.value,
-        this.category._id,
-        "organization"
-      )
-      if (res.status == "error") {
-        this.newTagName.error = "error"
-      } else {
-        this.addTag({
-          ...res,
-          color: this.category.color,
-          categoryName: this.displayedCategory.name,
-        })
-        this.cancelAddingTag()
-      }
-    },
-    addTag(tag) {
-      this.displayedCategory.tags.push(tag)
-    },
   },
-  components: { Fragment, SwitchInput, Tag, FormInput },
+  components: { Fragment, Tag },
 }
 </script>

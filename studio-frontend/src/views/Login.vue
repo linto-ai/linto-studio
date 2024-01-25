@@ -97,7 +97,6 @@ export default {
         if (this.formValid) {
           let login = await apiLoginUser(this.email.value, this.password.value)
           if (login.status === "success") {
-            console.log("lg", login.data)
             this.setCookie("userId", login.data.user_id, 7)
             this.setCookie("authToken", login.data.auth_token, 7)
             this.setCookie("refreshToken", login.data.refresh_token, 14)

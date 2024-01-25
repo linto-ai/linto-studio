@@ -3,8 +3,12 @@
     <div
       aria-modal="true"
       aria-labelledby="modal-title"
-      class="modal flex col gap-medium"
-      :class="{ 'modal--small': small, 'modal--full-height': fullHeight }"
+      class="modal flex col"
+      :class="{
+        'modal--small': small,
+        'modal--full-height': fullHeight,
+        [customModalClass]: true,
+      }"
       v-click-outside="close">
       <div class="modal-header flex row align-center">
         <span class="title flex1" id="modal-title">{{ title }}</span>
@@ -37,6 +41,7 @@ export default {
     fullHeight: { type: Boolean, default: false },
     customClassButton: { type: Object, default: () => ({}) },
     noApply: { type: Boolean, default: false },
+    customModalClass: { type: String, default: "" },
   },
   mounted() {
     document.onkeydown = (e) => {

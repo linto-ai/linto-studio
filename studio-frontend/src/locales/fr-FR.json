@@ -2,6 +2,21 @@
   "accoustic": {
     "standard": "Standard"
   },
+  "app_editor_highlights_modal": {
+    "description": "Sélectionnez les outils linguistiques de votre choix. Vous pouvez en choisir plusieurs.",
+    "generate_button": "Démarrer la génération",
+    "loading_services": "Chargement des services en cours...",
+    "erase_msg": "Les données précedentes seront écrasées",
+    "ia_title": "Outils linguistiques",
+    "no_highlights_first_line": "Pas de hightlights.",
+    "no_highlights_second_line": "Boostez votre contenu grâce à nos outils linguistiques propulsés à l'IA.",
+    "delete_tag_modal": {
+      "content": "Êtes vous sur de vouloir supprimer l'étiquette?"
+    }
+  },
+  "highlights_name": {
+    "keyword": "Mots clés"
+  },
   "breadcrumb": {
     "conversations": "Conversations",
     "create": "Importer un media",

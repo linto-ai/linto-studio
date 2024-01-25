@@ -118,7 +118,6 @@ import UserInfoInline from "@/components/UserInfoInline.vue"
 import AppEditor from "@/components/AppEditor.vue"
 import ErrorView from "./Error.vue"
 import MainContentConversation from "../components/MainContentConversation.vue"
-import KeywordList from "../components/KeywordList.vue"
 import MenuToolbox from "../components/MenuToolbox.vue"
 import CustomSelect from "../components/CustomSelect.vue"
 
@@ -267,7 +266,6 @@ export default {
     AppEditor,
     ErrorView,
     MainContentConversation,
-    KeywordList,
     MenuToolbox,
     CustomSelect,
   },
