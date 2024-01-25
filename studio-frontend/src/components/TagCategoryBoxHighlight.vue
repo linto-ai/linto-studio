@@ -106,7 +106,6 @@ export default {
       this.showDeleteModal = false
     },
     showDeleteModalAction(tag) {
-      console.log("showDeleteModalAction", tag)
       this.tagToDelete = tag
       this.showDeleteModal = true
     },
