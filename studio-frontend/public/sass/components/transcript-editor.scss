@@ -251,6 +251,25 @@ $selectedWord: #0057f5;
 
 /* Toolbox */
 
+.conversation-highlight-toolbox {
+  position: absolute;
+  width: auto;
+  bottom: 1.5rem;
+  left: 0;
+  background: #fff;
+  z-index: 10;
+  display: none;
+  width: 15rem;
+  padding: 0.5rem;
+  border: var(--border-block);
+  box-shadow: var(--shadow-block);
+  display: none;
+}
+
+.word[highlighted]:hover .conversation-highlight-toolbox {
+  display: inline-block;
+}
+
 #conversation-toolbox {
   position: absolute;
   width: auto;

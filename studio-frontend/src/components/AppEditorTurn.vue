@@ -110,8 +110,9 @@ import CollaborativeField from "@/components/CollaborativeField.vue"
 import AppEditorSpkToolbox from "@/components/AppEditorSpkToolbox.vue"
 import AppEditorToolbox from "@/components/AppEditorToolbox.vue"
 import findExpressionInWordsList from "@/tools/findExpressionInWordsList.js"
-import { ref, nextTick } from "vue"
+import Vue, { ref, nextTick } from "vue"
 import { segmentIsCoherentWithWords } from "@/tools/segmentIsCoherentWithWords.js"
+import AppEditorHighlightDescToolbox from "./AppEditorHighlightDescToolbox.vue"
 
 export default {
   props: {
@@ -365,11 +366,8 @@ export default {
 
         this.highlightsRanges[hightlightCat._id] = {
           ranges: domRanges,
-          color: hightlightCat.color,
+          category: hightlightCat,
         }
-        // domRanges.forEach((range) => {
-        //   this.highlightRange(range, hightlightCat.color)
-        // })
       }
 
       await this.hightLightAllText()
@@ -383,7 +381,7 @@ export default {
         if (!this.highlightsRanges[categoryId].ranges) return
 
         this.highlightsRanges[categoryId].ranges.forEach((range) => {
-          this.highlightRange(range, this.highlightsRanges[categoryId].color)
+          this.highlightRange({ ...this.highlightsRanges[categoryId], range })
         })
       })
     },
@@ -394,30 +392,31 @@ export default {
         if (!this.highlightsRanges[categoryId].ranges) return
         try {
           this.highlightsRanges[categoryId].ranges.forEach((range) => {
-            this.unhighlightRange(range)
+            this.unhighlightRange({
+              ...this.highlightsRanges[categoryId],
+              range,
+            })
           })
         } catch (e) {
           this.debug("Error while unhighlighting", this.turnId)
         }
       })
     },
-
-    // computeKeywordsRangeInText() {
-    //   const ranges = findExpressionInWordsList(
-    //     this.keywords,
-    //     this.words,
-    //     (k) => k.name,
-    //     (w) => w.word
-    //   )
-    //   this.highlights.keywords = ranges.map(this.plainRangeToDomRange)
-    // },
     plainRangeToDomRange(plainRange) {
       const domRange = new Range()
       domRange.setStartBefore(this.$refs.turn.children.item(plainRange.start))
       domRange.setEndAfter(this.$refs.turn.children.item(plainRange.end))
+      domRange._tag = plainRange.expressionObject
       return domRange
     },
-    highlightRange(range, color = "yellow") {
+    highlightRange({ range, category }) {
+      // AppEditorHighlightDescToolbox
+      const color = category.color || "yellow"
+      var toolbox = Vue.extend(AppEditorHighlightDescToolbox)
+      var toolboxComponent = new toolbox({
+        i18n: this.$i18n,
+        propsData: { tag: range._tag, category },
+      }).$mount()
       let { startContainer, endContainer, startOffset, endOffset } = range
       let startWord = startContainer.children.item(startOffset)
       let endWord = endContainer.children.item(endOffset)
@@ -425,18 +424,20 @@ export default {
       if (!endWord) {
         startWord.setAttribute("highlighted", "true")
         startWord.classList.add(`background-${color}-100`)
+        startWord.appendChild(toolboxComponent.$el)
         return
       }
 
       do {
         startWord.setAttribute("highlighted", "true")
         startWord.classList.add(`background-${color}-100`)
+        startWord.appendChild(toolboxComponent.$el)
         startWord = startWord.nextSibling
       } while (startWord !== endWord)
 
       endWord.previousSibling.setAttribute("highlighted--last-word", "true")
     },
-    unhighlightRange(range) {
+    unhighlightRange({ range }) {
       let { startContainer, endContainer, startOffset, endOffset } = range
       let startWord = startContainer.children.item(startOffset)
 
@@ -699,6 +700,7 @@ export default {
     CollaborativeField,
     AppEditorSpkToolbox,
     AppEditorToolbox,
+    AppEditorHighlightDescToolbox,
   },
 }
 </script>
