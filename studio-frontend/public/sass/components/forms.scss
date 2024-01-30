@@ -322,6 +322,10 @@ input[type="search"] {
   margin: 0px;
 }
 
+.service-box__title {
+  height: 32px;
+}
+
 .service-box[alreadygenerated] .service-box__title .icon.apply {
   background-color: var(--primary-color);
 }
@@ -338,7 +342,13 @@ input[type="search"] {
   display: flex;
 }
 
+.service-box label:hover,
+fieldset[role="listbox"].selectable:hover {
+  border-color: var(--green-chart);
+}
+
 fieldset[role="listbox"] {
+  padding: 1rem;
   border-radius: 4px;
   border: var(--border-block);
   box-shadow: var(--shadow-block);

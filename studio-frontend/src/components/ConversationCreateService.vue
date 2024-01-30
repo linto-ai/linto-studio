@@ -1,16 +1,21 @@
 <template>
+  <!-- TODO: Merge with serviceBox component ? -->
   <fieldset
-    class="flex col"
+    @click="select"
+    class="flex col selectable"
     :selected="selected"
     role="option"
     aria-selected="selected"
     :id="`service-${value.name}`">
     <!-- add a form tag all around ?-->
     <!-- <legend class="h3">{{ value.name }}</legend> -->
-    <h3 style="padding: 0.25rem 0" class="h3">
-      {{ description }}
-    </h3>
-    <div class="form-field flex col">
+    <h4 class="flex align-center service-box__title">
+      <!-- <span class="icon apply" v-if="alreadyGenerated"></span> -->
+      <span class="flex1">{{ description }}</span>
+      <!-- <img class="icon large" :src="icon" :black="disabled" /> -->
+    </h4>
+
+    <div class="form-field flex col small-padding-top">
       <div>
         <b>{{ $t("conversation.acoustic_label") }}:</b>
         {{ acoustic_value[value.accoustic] }}
@@ -83,11 +88,6 @@
         min="0" />
     </div>
     <div class="flex1"></div>
-    <div class="form-field flex col">
-      <button @click="select" :disabled="selected" class="black">
-        {{ selected ? "Already selected" : "Select the service" }}
-      </button>
-    </div>
   </fieldset>
 </template>
 <script>
