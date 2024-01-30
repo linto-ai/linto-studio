@@ -22,13 +22,14 @@ export const genericConversationMixin = {
       conversationId: "",
       userRight: 0,
       error: false,
+      hightlightsCategories: [],
     }
   },
   async created() {
     this.debug("Creating generic conversation component")
     this.conversationId = this.$route.params.conversationId
     this.fetchUserRight()
-    this.workerConnect(
+    await this.workerConnect(
       this.conversationId,
       this.userInfo.token,
       this.userInfo._id

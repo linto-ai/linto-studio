@@ -4,7 +4,7 @@
       "tags": [
         "conversations taxonomy"
       ],
-      "summary": "Add a tag of type highlights to a conversation",
+      "summary": "Add a tag of type highlights to a words",
       "parameters": [{
         "name": "conversationId",
         "in": "path",
@@ -18,13 +18,26 @@
             "schema": {
               "type": "object",
               "properties": {
-                "name": {
-                  "type": "string"
+                "wordId": {
+                  "type": "string",
+                  "description": "Word to which highlights will be added. If multiple words are involved, separate them with a comma.",
+                  "example": "a92b8d10-58ae-43af-a0c1-d6bed413d9a5,0fa30f98-a4e2-4d56-8e1a-b0618ddb4473"
+                },
+                "tagId": {
+                  "type": "string",
+                  "description": "Highlights to add to the specified word.",
+                  "example": "6570975391aec9344f295502"
+                },
+                "tagName": {
+                  "type": "string",
+                  "description": "Highlights to create. (not require when tagId provided)",
+                  "example": "2"
+                },
+                "categoryId": {
+                  "description": "CategoryId to add the new tag. Should be provided only when tagName is present.",
+                  "example": "6570974a91aec9344f295500"
                 }
-              },
-              "required": [
-                "name"
-              ]
+              }
             }
           }
         }
@@ -46,6 +59,9 @@
               }
             }
           }
+        },
+        "204": {
+          "$ref": "#/components/responses/NoContent"
         },
         "304": {
           "$ref": "#/components/responses/NotModified"

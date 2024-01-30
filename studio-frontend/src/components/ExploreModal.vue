@@ -37,7 +37,7 @@
         class="flex wrap align-top gap-medium flex1"
         v-if="!loadingCategories">
         <div class="flex wrap align-top gap-medium">
-          <TagCategoryBox
+          <TagCategoryBoxSelectable
             v-for="category of categories"
             :startOpen="!!category.tags && category.tags.length > 0"
             :key="category._id"
@@ -68,7 +68,7 @@
 <script>
 import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
-import TagCategoryBox from "@/components/TagCategoryBox.vue"
+import TagCategoryBoxSelectable from "@/components/TagCategoryBoxSelectable.vue"
 import Loading from "./Loading.vue"
 import TagSearch from "./TagSearch.vue"
 import ModalNew from "./ModalNew.vue"
@@ -125,6 +125,12 @@ export default {
       )
     },
   },
-  components: { Fragment, TagCategoryBox, Loading, TagSearch, Modal: ModalNew },
+  components: {
+    Fragment,
+    TagCategoryBoxSelectable,
+    Loading,
+    TagSearch,
+    Modal: ModalNew,
+  },
 }
 </script>

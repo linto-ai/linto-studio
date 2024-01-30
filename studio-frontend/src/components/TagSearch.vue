@@ -10,7 +10,7 @@
     <div v-else-if="search != ''">
       <div class="dropDown-section">
         <div class="form-label">{{ $t("tags.tags") }}</div>
-        <TagCategoryBox
+        <TagCategoryBoxSelectable
           v-for="category of mergedTags"
           :key="category._id"
           :category="category"
@@ -48,7 +48,7 @@ import { mergeArrayOnId } from "@/tools/mergeArrayOnId"
 import Loading from "./Loading.vue"
 import SwitchInput from "./SwitchInput.vue"
 import Tag from "./Tag.vue"
-import TagCategoryBox from "./TagCategoryBox.vue"
+import TagCategoryBoxSelectable from "./TagCategoryBoxSelectable.vue"
 
 export default {
   props: {
@@ -156,8 +156,6 @@ export default {
         })
         // don't display categories that have no tags left
         .filter((catTags) => catTags.tags && catTags.tags.length > 0)
-
-      console.log("mergedTags", this.mergedTags)
     },
     async fetchAllCategories() {
       this.loading = true
@@ -176,6 +174,6 @@ export default {
     },
   },
 
-  components: { Fragment, Loading, SwitchInput, Tag, TagCategoryBox },
+  components: { Fragment, Loading, SwitchInput, Tag, TagCategoryBoxSelectable },
 }
 </script>

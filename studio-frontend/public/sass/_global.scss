@@ -43,6 +43,12 @@ h3,
   color: var(--text-primary);
 }
 
+h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
 .flex {
   display: flex;
   &.col {
@@ -133,6 +139,10 @@ h3,
 
 .relative {
   position: relative;
+}
+
+.selectable {
+  cursor: pointer;
 }
 
 table {

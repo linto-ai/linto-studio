@@ -44,6 +44,8 @@ async function sendRequest(url, params, data, headers, userToken) {
   }
 }
 
+// TODO: prefix all functions with "api"
+
 export async function getConversationById(conversationId, userToken) {
   return await sendRequest(
     `${BASE_API}/conversations/${conversationId}?key=text&projection=0`,
@@ -354,6 +356,20 @@ export async function updateTurn(conversationId, turnId, payload, userToken) {
     `${BASE_API}/conversations/${conversationId}/turns/${turnId}`,
     { method: "patch" },
     payload,
+    null,
+    userToken
+  )
+}
+
+export async function apiDeleteTagFromConversation(
+  conversationId,
+  tagId,
+  userToken
+) {
+  return await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/tags/${tagId}`,
+    { method: "delete" },
+    {},
     null,
     userToken
   )

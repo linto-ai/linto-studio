@@ -81,7 +81,7 @@
       padding: 0.5rem 2rem;
       background-color: var(--background-primary);
       z-index: 3;
-      border-bottom: 1px solid var(--text-disabled);
+      border-bottom: var(--divider);
       box-shadow: var(--shadow-block);
     }
   }

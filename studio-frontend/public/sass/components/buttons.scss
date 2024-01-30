@@ -75,6 +75,10 @@ button,
     height: 1.25rem;
     //margin: 0 5px;
   }
+
+  .icon:last-child {
+    margin:0;
+  }
   &.transparent {
     background-color: transparent;
     text-decoration: underline;

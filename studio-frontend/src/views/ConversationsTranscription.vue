@@ -6,7 +6,15 @@
     :error="error"
     sidebar>
     <template v-slot:sidebar>
-      <KeywordList :conversation="conversation" />
+      <HighlightsList
+        v-if="status === 'done'"
+        :conversation="conversation"
+        :hightlightsCategories="hightlightsCategories"
+        :hightlightsCategoriesVisibility="hightlightsCategoriesVisibility"
+        @hide-category="onHideCategory"
+        @show-category="onShowCategory"
+        @delete-tag="onDeleteTag"
+        :conversationId="conversation._id" />
     </template>
 
     <template v-slot:breadcrumb-actions>
@@ -42,9 +50,18 @@
         :turnPages="turnPages"
         :turns="turns"
         :canEdit="userRights.hasRightAccess(userRight, userRights.WRITE)"
+        :hightlightsCategories="hightlightsCategories"
+        :hightlightsCategoriesVisibility="hightlightsCategoriesVisibility"
         ref="editor"
         v-if="status === 'done'"></AppEditor>
     </div>
+
+    <ModalDeleteTagHighlight
+      v-if="showDeleteModal"
+      :conversationId="conversationId"
+      :tag="tagToDelete"
+      @on-cancel="onCancelDeleteTag"
+      @on-confirm="onConfirmDeleteTag" />
   </MainContentConversation>
 </template>
 <script>
@@ -59,17 +76,19 @@ import UserInfoInline from "@/components/UserInfoInline.vue"
 import AppEditor from "@/components/AppEditor.vue"
 import ErrorView from "./Error.vue"
 import MainContentConversation from "../components/MainContentConversation.vue"
-import KeywordList from "../components/KeywordList.vue"
+import HighlightsList from "../components/HighlightsList.vue"
 import MenuToolbox from "../components/MenuToolbox.vue"
+import ModalDeleteTagHighlight from "../components/ModalDeleteTagHighlight.vue"
 
 export default {
   mixins: [conversationMixin],
   data() {
     return {
-      conversationId: "",
       filterSpeakers: "default",
       helperVisible: false,
       status: null,
+      showDeleteModal: false,
+      tagToDelete: null,
     }
   },
   watch: {
@@ -85,9 +104,6 @@ export default {
     dataLoaded(newVal, oldVal) {
       if (newVal) {
         this.status = this.computeStatus(this.conversation?.jobs?.transcription)
-        // if (this.status !== "done") {
-        //   this.$router.push(`/interface/conversations/${this.conversation._id}`)
-        // }
       }
     },
   },
@@ -151,6 +167,28 @@ export default {
     closeHelper() {
       this.helperVisible = false
     },
+    onHideCategory(categoryId) {
+      this.hightlightsCategoriesVisibility = {
+        ...this.hightlightsCategoriesVisibility,
+        [categoryId]: false,
+      }
+    },
+    onShowCategory(categoryId) {
+      this.hightlightsCategoriesVisibility = {
+        ...this.hightlightsCategoriesVisibility,
+        [categoryId]: true,
+      }
+    },
+    onDeleteTag(tag) {
+      this.tagToDelete = tag
+      this.showDeleteModal = true
+    },
+    onCancelDeleteTag() {
+      this.showDeleteModal = false
+    },
+    onConfirmDeleteTag() {
+      this.showDeleteModal = false
+    },
   },
   components: {
     ConversationShare,
@@ -161,8 +199,9 @@ export default {
     AppEditor,
     ErrorView,
     MainContentConversation,
-    KeywordList,
+    HighlightsList,
     MenuToolbox,
+    ModalDeleteTagHighlight,
   },
 }
 </script>

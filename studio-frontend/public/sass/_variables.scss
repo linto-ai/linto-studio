@@ -14,7 +14,8 @@ $primaryContrast: #fff;
 body {
   --text-primary: #333;
   --text-secondary: #666;
-  --text-disabled: #ccc;
+  --text-disabled: #aaa;
+  --small-contrast: #ccc;
 
   --background-primary: #fff;
   --background-primary-with-small-opacity: rgba(255, 255, 255, 0.85);
@@ -26,10 +27,10 @@ body {
   --button-background-hover: #eee;
 
   --border-button: 1px solid var(--text-secondary);
-  --border-button-flat: 1px solid var(--text-disabled);
+  --border-button-flat: 1px solid var(--small-contrast);
   --border-input: 1px solid var(--text-secondary);
-  --border-block: 1px solid var(--text-disabled);
-  --divider: 1px solid var(--text-disabled);
+  --border-block: 1px solid var(--small-contrast);
+  --divider: 1px solid var(--small-contrast);
 
   --input-focus: #f7faff;
   --yellow-chart: #feb11d;
@@ -37,6 +38,8 @@ body {
   --green-ligth: #39d5b6;
   --red-chart: #fe346e;
   --blue-chart: #1c83d6;
+
+  --bg-highlight: #fff5a4;
 
   --primary-color: var(--green-chart);
   --secondary-color: var(--blue-chart);
@@ -54,6 +57,7 @@ html[data-theme="dark"] body {
   --text-primary: #ccc;
   --text-secondary: #aaa;
   --text-disabled: #666;
+  --small-contrast: #666;
 
   --background-primary: #252525;
   --background-primary-with-small-opacity: rgba(37, 37, 37, 0.85);
@@ -73,6 +77,7 @@ html[data-theme="dark"] body {
   --green-chart: #139177;
   --red-chart: #c42653;
 
+  --bg-highlight: #484211;
   --primary-contrast: #000;
 }
 
