@@ -35,23 +35,14 @@ class TagModel extends MongoModel {
         }
     }
 
-    async getMetadata(conversationId, tagId /*, projection, filter = undefined*/) {
+    async getMetadata(conversationId, tagId) {
         try {
             let query = {
-                "conversationId": conversationId,
+                "conversationId": conversationId
             }
-            if (conversationId) query.tagId = tagId
+            if (tagId) query.tagId = tagId
 
-            // if (!projection) {
-            //     projection = {
-            //         text: 0,
-            //         speakers: 0,
-            //         keywords: 0,
-            //         highlights: 0
-            //     }
-            // }
             return await this.mongoRequest(query)
-            // return await this.mongoRequest(query, projection)
         } catch (err) {
             console.error(err)
             return err

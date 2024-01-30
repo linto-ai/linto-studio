@@ -13,7 +13,7 @@ const {
 
 async function getConvMetadata(req, res, next) {
   try {
-    let metadata = model.metadata.getMetadata(req.params.conversationId)
+    const metadata = await model.metadata.getMetadata(req.params.conversationId)
 
     res.status(200).send(metadata)
   } catch (err) {
@@ -23,7 +23,7 @@ async function getConvMetadata(req, res, next) {
 
 async function getTagMetadata(req, res, next) {
   try {
-    let metadata = model.metadata.getMetadata(req.params.conversationId, req.params.tagId)
+    const metadata = await model.metadata.getMetadata(req.params.conversationId, req.params.tagId)
 
     res.status(200).send(metadata)
   } catch (err) {
