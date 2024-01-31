@@ -134,7 +134,15 @@ export default {
           cursorColor: "red",
           responsive: true,
           normalize: true,
-          plugins: [RegionsPlugin.create(), TimelinePlugin.create()],
+          plugins: [
+            RegionsPlugin.create(),
+            TimelinePlugin.create({
+              formatTimeCallback: (seconds, pxPerSec) => {
+                return timeToHMS(seconds)
+              },
+              primaryLabelInterval: 2,
+            }),
+          ],
           backend: "MediaElement",
           fetchParams: this.fetchController.signal,
         })
@@ -222,16 +230,15 @@ export default {
       }
     },
     createRegionContent(time) {
-      let content = document.createElement("div")
-      let startText = document.createElement("div")
-      startText.innerText = this.$t("conversation.subtitles.screens.start")
-      startText.style.fontSize = "0.7rem"
-      let timeContent = document.createElement("div")
-      timeContent.innerText = `${time}`
-
-      content.append(startText)
-      content.append(timeContent)
-      return content
+      // let content = document.createElement("div")
+      // let startText = document.createElement("div")
+      // startText.innerText = this.$t("conversation.subtitles.screens.start")
+      // startText.style.fontSize = "0.7rem"
+      // let timeContent = document.createElement("div")
+      // timeContent.innerText = `${time}`
+      // content.append(startText)
+      // content.append(timeContent)
+      // return content
     },
     createRegion(screen) {
       let ms = Math.floor((screen.stime - Math.floor(screen.stime)) * 100)

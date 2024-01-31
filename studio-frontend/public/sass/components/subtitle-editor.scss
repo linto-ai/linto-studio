@@ -4,10 +4,12 @@
 
 #subtitle-editor {
   box-shadow: 0px 0px 16px 0 rgba(67, 76, 95, 0.75);
+  background-color: var(--background-secondary);
 }
 
 #conversation-audio-player.conversation-audio-player--subtitle {
   border-top: none;
+  background-color: var(--background-secondary);
 }
 
 #player-seekbar {
@@ -21,15 +23,17 @@
 
 #subtitle-player ::part(region) {
   height: fit-content !important;
-  border: 1px solid black !important;
+  border: 1px solid var(--secondary-color) !important;
   border-radius: 5px !important;
   display: flex;
   align-items: center;
-  background-color: var(--background-primary);
+  background-color: var(--player-region-background) !important;
+  height: 70px !important;
 }
 
 #subtitle-player ::part(playing) {
-  border-color: red !important;
+  border-color: var(--primary-color) !important;
+  background-color: var(--player-region-background-playing) !important;
 }
 
 #subtitle-player ::part(region-content) {
@@ -83,9 +87,10 @@
   padding-right: 0.25rem;
 
   &.playing {
-    background-color: var(--background-secondary);
-    border-radius: 10px;
-    border: 1px solid var(--green-chart);
+    // background-color: var(--background-secondary);
+    // border-radius: 10px;
+    // border: 1px solid var(--green-chart);
+    color: var(--primary-color);
   }
 }
 
@@ -95,6 +100,17 @@
   border-top: var(--border-button);
 }
 
+.turn-actions button {
+  border-radius: 8px;
+  height: 2.5rem;
+  width: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: navajowhite;
+  background-color: var(--text-secondary);
+}
+
 .screen-preview {
   padding: 0 0.25rem;
   box-sizing: border-box;
@@ -102,8 +118,9 @@
   overflow: auto;
 
   &.current {
-    border: 1px solid var(--green-chart);
+    border: 2px solid var(--green-chart);
     border-radius: 3px;
+    background-color: var(--background-primary);
   }
 
   p,
