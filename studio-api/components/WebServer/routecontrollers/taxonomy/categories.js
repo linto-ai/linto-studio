@@ -60,6 +60,10 @@ async function getOrganizationCategory(req, res, next) {
       else throw new CategoryTypeNotDefined()
     }
 
+    let metadata = []
+    if (req.query.expand === "true")
+      metadata = await model.metadata.getMetadata(req.params.conversationId)
+
     if (category.length === 0) res.status(204).send()
     else {
       let tag_filter
@@ -81,6 +85,19 @@ async function getOrganizationCategory(req, res, next) {
             )
             category[i].tags = tags_filtered
           } else category[i].tags = tags
+
+          if (metadata.length > 0) {
+            category[i].tags.map(tag => {
+
+              const matchingMetadata = metadata
+                .filter(meta => meta.tagId === tag._id.toString())
+                .map(({ _id, schema, value }) => ({ _id, schema, value }))
+              tag.metadata = matchingMetadata
+
+
+              return tag
+            })
+          }
         }
       }
       res.status(200).send(category)
