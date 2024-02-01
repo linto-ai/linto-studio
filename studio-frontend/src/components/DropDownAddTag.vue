@@ -23,7 +23,7 @@
           style="width: 100%; text-align: left"
           @click="searchTags">
           <span class="icon search"></span>
-          <span class="label flex1"
+          <span class="label flex1 text-cut"
             >{{ $t("tags.search_tags_with") }} "{{ searchValueForTag }}"</span
           >
           <span class="icon right-arrow"></span>
@@ -51,7 +51,7 @@
           style="width: 100%; text-align: left"
           @click="createTag">
           <span class="icon new"></span>
-          <span class="label flex1 flex gap-small align-bottom">
+          <span class="label flex1 flex gap-small align-bottom text-cut">
             {{ $t("tags.create_tag") }} "{{ searchValueForTag }}"
           </span>
           <span class="icon right-arrow"></span>
