@@ -50,10 +50,9 @@
           :data-stime="word.stime"
           :data-etime="word.etime">
           <AppEditorToolbox
+            v-if="wordsSelected.length > 0 && wordsSelected[0].wid === word.wid"
             :conversationId="conversationId"
-            v-if="
-              wordsSelected.length > 0 && wordsSelected[0].wid === word.wid
-            "></AppEditorToolbox>
+            @selectTag="handleNewHighlight"></AppEditorToolbox>
           <span class="word_content">{{ word.word }}</span>
           <span class="word_space">
             {{ " " }}
@@ -376,6 +375,13 @@ export default {
     handleContentUpdate: _handleContentUpdate,
     handleSpeakerClick: _handleSpeakerClick,
     setSpeakerName: _setSpeakerName,
+    handleNewHighlight(tag) {
+      this.$emit("newHighlight", {
+        tag,
+        wordsSelected: [...this.wordsSelected],
+      })
+      this.resetWordSelected()
+    },
     plainRangeToDomRange(plainRange) {
       const domRange = new Range()
       domRange.setStartBefore(this.$refs.turn.children.item(plainRange.start))
@@ -404,7 +410,7 @@ export default {
       domRange.setStartBefore(startRange)
       domRange.setEndAfter(endRange)
       this.selectedRange = domRange
-      this.highlightRange(
+      await this.highlightRange(
         { range: this.selectedRange, category: { color: "blue" } },
         false
       )

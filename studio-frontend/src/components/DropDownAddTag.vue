@@ -61,6 +61,7 @@
             :tagValue="searchValueForTag"
             :conversationId="conversationId"
             :selectedCategory="selectedCategory"
+            :searchCategoryType="searchCategoryType"
             @done="done"
             v-model="selectedCategory"></DropDownAddTagCreate>
         </ContextMenu>
@@ -133,7 +134,7 @@ export default {
   props: {
     menuPosition: { type: String, default: "right" },
     conversationId: { type: String, required: true },
-    value: { type: Array, required: true }, // tags
+    value: { type: Array, required: false, default: () => [] }, // tags
     searchCategoryType: { type: String, default: "conversation_metadata" },
   },
   data() {
@@ -183,14 +184,14 @@ export default {
       const res = await apiCreateCategory(
         this.conversationId,
         name,
-        "conversation_metadata",
+        this.searchCategoryType,
         "conversation",
         null
       )
 
       if (res.status == "error") {
+        console.error(res)
       } else {
-        console.log(res)
         this.selectCategory(res)
         this.done()
       }

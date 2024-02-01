@@ -34,6 +34,7 @@
       :search="searchValueForCategory"
       :conversationId="conversationId"
       :reload="reloadCategoryList"
+      :categoryType="searchCategoryType"
       v-model="_selectedCategory" />
   </div>
 </template>
@@ -47,6 +48,7 @@ export default {
     tagValue: { type: String, required: true },
     conversationId: { type: String, required: false },
     selectedCategory: { type: Object, required: false },
+    searchCategoryType: { type: String, default: "conversation_metadata" },
   },
   data() {
     return {

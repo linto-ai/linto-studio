@@ -84,6 +84,7 @@ export async function apiGetCategoryById(
   scopeId,
   categoryId,
   scope = "organization",
+  metadata = false,
   notif
 ) {
   if (scope === "organization") {
@@ -99,7 +100,9 @@ export async function apiGetCategoryById(
     const requestRes = await sendRequest(
       `${BASE_API}/conversations/${scopeId}/categories/${categoryId}`,
       { method: "get" },
-      {},
+      {
+        metadata,
+      },
       notif
     )
 

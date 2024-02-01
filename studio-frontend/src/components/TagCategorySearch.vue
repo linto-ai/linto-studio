@@ -108,7 +108,7 @@ export default {
       if (!newSearch) {
         this.searchedCategories = await apiGetAllCategories(
           this.conversationId,
-          "conversation_metadata",
+          this.categoryType,
           "conversation"
         )
       } else {

@@ -1,29 +1,17 @@
 import Vue from "vue"
 import AppEditorHighlightDescToolbox from "@/components/AppEditorHighlightDescToolbox.vue"
 
-export default function highlightRange(
+export default async function highlightRange(
   { range, category },
   isFromHighlight = true
 ) {
   // AppEditorHighlightDescToolbox
   const color = category.color || "yellow"
-
-  if (isFromHighlight) {
-    var toolbox = Vue.extend(AppEditorHighlightDescToolbox)
-    var toolboxComponent = new toolbox({
-      i18n: this.$i18n,
-      propsData: { tag: range._tag, category },
-    }).$mount()
-  }
+  let toolboxComponent = null
+  var toolbox = Vue.extend(AppEditorHighlightDescToolbox)
 
   let { startContainer, endContainer, startOffset, endOffset } = range
-  console.log(
-    "highlightRange",
-    startContainer,
-    endContainer,
-    startOffset,
-    endOffset
-  )
+
   let startWord = startContainer.children.item(startOffset)
   let endWord = endContainer.children.item(endOffset)
 
@@ -31,7 +19,13 @@ export default function highlightRange(
     startWord.setAttribute("highlighted", "true")
     startWord.classList.add(`background-${color}-100`)
     if (isFromHighlight) {
-      startWord.appendChild(toolboxComponent.$el)
+      startWord.appendChild(
+        new toolbox({
+          i18n: this.$i18n,
+          propsData: { tag: range._tag, category },
+        }).$mount().$el
+      )
+      await Vue.nextTick()
     }
     return
   }
@@ -40,7 +34,13 @@ export default function highlightRange(
     startWord.setAttribute("highlighted", "true")
     startWord.classList.add(`background-${color}-100`)
     if (isFromHighlight) {
-      startWord.appendChild(toolboxComponent.$el)
+      startWord.appendChild(
+        new toolbox({
+          i18n: this.$i18n,
+          propsData: { tag: range._tag, category },
+        }).$mount().$el
+      )
+      //await Vue.nextTick()
     }
     startWord = startWord.nextSibling
   } while (startWord !== endWord)

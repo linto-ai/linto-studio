@@ -20,7 +20,8 @@
               turns.findIndex((t) => t.turn_id === turn.turn_id) ===
               turns.length - 1
             "
-            @mergeTurns="mergeTurns" />
+            @mergeTurns="mergeTurns"
+            @newHighlight="$emit('newHighlight', $event)" />
         </div>
       </div>
     </div>

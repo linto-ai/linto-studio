@@ -8,6 +8,7 @@
     :startOpen="startOpen"
     :showCategoryName="showCategoryName"
     :linkedTags="linkedTags"
+    :withMetadata="true"
     :hiddenSelectedTags="addable">
     <template v-slot:content-after-tag="slotProps">
       <SwitchInput

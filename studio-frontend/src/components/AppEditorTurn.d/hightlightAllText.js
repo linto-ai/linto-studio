@@ -8,8 +8,8 @@ export default async function hightLightAllText() {
     if (!this.highlightsRanges[categoryId]) return
     if (!this.highlightsRanges[categoryId].ranges) return
 
-    this.highlightsRanges[categoryId].ranges.forEach((range) => {
-      this.highlightRange({ ...this.highlightsRanges[categoryId], range })
+    this.highlightsRanges[categoryId].ranges.forEach(async (range) => {
+      await this.highlightRange({ ...this.highlightsRanges[categoryId], range })
     })
   })
 }

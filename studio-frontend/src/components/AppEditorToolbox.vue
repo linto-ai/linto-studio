@@ -5,7 +5,7 @@
     <DropDownAddTag
       :conversationId="conversationId"
       searchCategoryType="highlight"
-      v-model="selectedTags"></DropDownAddTag>
+      @selectTag="selectTag"></DropDownAddTag>
     <!-- tag selector -->
   </div>
 </template>
@@ -17,12 +17,12 @@ export default {
   props: {
     conversationId: { type: String, required: true },
   },
-  data() {
-    return {
-      selectedTags: [],
-    }
+  // data() {},
+  methods: {
+    selectTag(tag) {
+      this.$emit("selectTag", tag)
+    },
   },
-  methods: {},
   components: { DropDownAddTag },
 }
 </script>

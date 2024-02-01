@@ -86,6 +86,7 @@ export default {
     editable: { type: Boolean, default: false },
     id: { type: String, default: () => uuidv4() },
     fixed: { type: Boolean, default: false },
+    withMetadata: { type: Boolean, default: false },
   },
   data() {
     return {
@@ -199,7 +200,8 @@ export default {
         this.displayedCategory = await apiGetCategoryById(
           this.scopeId,
           this.category._id,
-          this.scope
+          this.scope,
+          this.withMetadata
         )
       }
     },
