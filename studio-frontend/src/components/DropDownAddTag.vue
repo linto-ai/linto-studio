@@ -37,7 +37,8 @@
             :selectable="false"
             :withCategories="false"
             addable
-            :conversationId="conversationId">
+            :conversationId="conversationId"
+            :searchCategoryType="searchCategoryType">
           </TagSearch>
         </ContextMenu>
       </div>
@@ -104,6 +105,7 @@
 </template>
 
 <script>
+// could be rename tagSelector or something like that
 import { Fragment } from "vue-fragment"
 
 import { bus } from "../main.js"
@@ -131,7 +133,8 @@ export default {
   props: {
     menuPosition: { type: String, default: "right" },
     conversationId: { type: String, required: true },
-    value: { type: Array, required: true }, //tags
+    value: { type: Array, required: true }, // tags
+    searchCategoryType: { type: String, default: "conversation_metadata" },
   },
   data() {
     return {
@@ -233,7 +236,7 @@ export default {
       this.loading = true
       this.allCategories = await apiGetAllCategories(
         this.conversationId,
-        "conversation_metadata",
+        this.searchCategoryType,
         "conversation"
       )
       this.loading = false
