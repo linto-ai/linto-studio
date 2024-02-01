@@ -12,6 +12,7 @@
           v-model="searchValueForTag"
           id="dropdown-search-tags"
           autocomplete="off"
+          @keydown="keydown"
           class="fullwidth" />
       </div>
 
@@ -167,6 +168,9 @@ export default {
     },
   },
   methods: {
+    keydown(e) {
+      e.stopPropagation()
+    },
     createTag() {
       this.state = STATES.CREATE_TAG
     },

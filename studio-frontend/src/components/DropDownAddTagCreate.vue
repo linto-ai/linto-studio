@@ -28,6 +28,7 @@
         type="search"
         v-model="searchValueForCategory"
         class="fullwidth"
+        @keydown="keydown"
         id="dropdown-search-categories" />
     </div>
     <TagCategorySearch
@@ -78,6 +79,9 @@ export default {
   methods: {
     done() {
       this.$emit("done", this.searchValueForCategory)
+    },
+    keydown(event) {
+      event.stopPropagation()
     },
   },
   components: { Fragment, TagCategorySearch, Tag },

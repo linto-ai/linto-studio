@@ -2,6 +2,8 @@ export default function unhighlightRange({ range }) {
   let { startContainer, endContainer, startOffset, endOffset } = range
   let startWord = startContainer.children.item(startOffset)
 
+  if (!startWord) return
+
   let endWord = endContainer.children.item(endOffset)
 
   if (!endWord) {
@@ -23,5 +25,5 @@ export default function unhighlightRange({ range }) {
       )
     )
     startWord = startWord.nextSibling
-  } while (startWord !== endWord)
+  } while (startWord !== endWord && startWord)
 }
