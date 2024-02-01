@@ -1,6 +1,6 @@
 <template>
   <div class="text-toolbox">
-    <h4>Ajouter un highlight sur le texte</h4>
+    <h4>{{ $t("conversation.highlight_toolbox.title") }}</h4>
     <!-- category selector -->
     <DropDownAddTag
       :conversationId="conversationId"

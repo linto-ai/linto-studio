@@ -117,7 +117,8 @@
     "filter_speakers_label": "Filter",
     "highlights_label": "Highlights",
     "highlight_toolbox": {
-      "no-metadata": "No metadata"
+      "no-metadata": "No metadata",
+      "title": "Add an highlight"
     },
     "information_label": "Global information",
     "keyword_list": {

@@ -116,7 +116,8 @@
     "filter_speakers_label": "Filtrer les locuteurs",
     "highlights_label": "Highlights",
     "highlight_toolbox": {
-      "no-metadata": "Aucune meta-données"
+      "no-metadata": "Aucune meta-données",
+      "title": "Ajouter une annotation sur le texte"
     },
     "information_label": "Informations générales",
     "keyword_list": {
