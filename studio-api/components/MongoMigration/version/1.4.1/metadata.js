@@ -1,4 +1,4 @@
-const debug = require('debug')(`linto:components:MongoMigration:controllers:version:1.4.0:metadata`)
+const debug = require('debug')(`linto:components:MongoMigration:controllers:version:1.4.1:metadata`)
 
 const collections_name = 'metadata'
 

@@ -1,3 +1,6 @@
+# 1.4.1
+- Added metadata api 
+
 # 1.4.0
 - Added An hightlight API
 - Change the default keyword category color

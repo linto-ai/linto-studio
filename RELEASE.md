@@ -1,3 +1,7 @@
+# 1.4.1
+
+- Added metadata 
+
 # 1.4.0
 
 - Merge conversation-manager to one repository
