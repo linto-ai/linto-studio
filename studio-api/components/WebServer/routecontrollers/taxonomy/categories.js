@@ -114,6 +114,21 @@ async function getCategory(req, res, next) {
     else {
       const tags = await model.search.tags.getByCategory(req.params.categoryId)
       category[0].tags = tags
+      if (req.query.metadata === "true") {
+        const metadata = await model.metadata.getMetadata(req.params.conversationId)
+        if (metadata.length > 0) {
+          category[0].tags.map(tag => {
+  
+            const matchingMetadata = metadata
+              .filter(meta => meta.tagId === tag._id.toString())
+              .map(({ _id, schema, value }) => ({ _id, schema, value }))
+            tag.metadata = matchingMetadata
+  
+  
+            return tag
+          })
+        }
+      }
 
       res.status(200).send(category[0])
     }

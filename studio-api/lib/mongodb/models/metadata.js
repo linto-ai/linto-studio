@@ -78,6 +78,18 @@ class TagModel extends MongoModel {
             return error
         }
     }
+
+    async deleteMetadataFromTag(tagId) {
+        try {
+            const query = {
+                tagId: tagId
+            }
+            return await this.mongoDeleteMany(query)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
 }
 
 module.exports = new TagModel()
