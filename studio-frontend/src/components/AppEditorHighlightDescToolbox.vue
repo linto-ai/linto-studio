@@ -2,7 +2,7 @@
   <div class="conversation-highlight-toolbox text-toolbox">
     <h3 :class="[colorTextCategory]">{{ categoryName }}</h3>
     <!-- <p>{{ $t("conversation.highlight_toolbox.no-metadata") }}</p> -->
-    <p>{{ tag.name }}</p>
+    <p class="conversation-highlight-toolbox__content">{{ tag.name }}</p>
   </div>
 </template>
 <script>
