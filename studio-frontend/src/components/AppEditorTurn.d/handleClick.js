@@ -3,6 +3,7 @@ import { bus } from "@/main.js"
 export default function handleClick(e) {
   const target = e.target
   const selection = window.getSelection()
+  console.log("target", target)
   if (
     target.classList.contains("word") ||
     target.classList.contains("word_space") ||
@@ -28,10 +29,13 @@ export default function handleClick(e) {
         }
       }
     }
+
+    if (selection.type == "Range") {
+      this.selectWord()
+    }
   }
 
   if (target.classList.contains("turn")) {
-    console.log("start selection", selection.type)
     if (selection.type == "Range") {
       this.selectWord()
     }
