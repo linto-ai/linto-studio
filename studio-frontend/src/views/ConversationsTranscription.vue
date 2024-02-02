@@ -211,6 +211,8 @@ export default {
         endId: wordsSelected[wordsSelected.length - 1].wid,
       })
 
+      this.hightlightsCategoriesVisibility[tag.categoryId] = true
+
       if (post) {
         await apiPostMetadata(this.conversationId, tag._id, "words", {
           range_id: ranges,
