@@ -12,6 +12,7 @@
           v-model="searchValueForTag"
           id="dropdown-search-tags"
           autocomplete="off"
+          @keydown="keydown"
           class="fullwidth" />
       </div>
 
@@ -22,7 +23,7 @@
           style="width: 100%; text-align: left"
           @click="searchTags">
           <span class="icon search"></span>
-          <span class="label flex1"
+          <span class="label flex1 text-cut"
             >{{ $t("tags.search_tags_with") }} "{{ searchValueForTag }}"</span
           >
           <span class="icon right-arrow"></span>
@@ -37,7 +38,8 @@
             :selectable="false"
             :withCategories="false"
             addable
-            :conversationId="conversationId">
+            :conversationId="conversationId"
+            :searchCategoryType="searchCategoryType">
           </TagSearch>
         </ContextMenu>
       </div>
@@ -49,7 +51,7 @@
           style="width: 100%; text-align: left"
           @click="createTag">
           <span class="icon new"></span>
-          <span class="label flex1 flex gap-small align-bottom">
+          <span class="label flex1 flex gap-small align-bottom text-cut">
             {{ $t("tags.create_tag") }} "{{ searchValueForTag }}"
           </span>
           <span class="icon right-arrow"></span>
@@ -60,6 +62,7 @@
             :tagValue="searchValueForTag"
             :conversationId="conversationId"
             :selectedCategory="selectedCategory"
+            :searchCategoryType="searchCategoryType"
             @done="done"
             v-model="selectedCategory"></DropDownAddTagCreate>
         </ContextMenu>
@@ -86,6 +89,7 @@
           scope="conversation"
           :startOpen="false"
           addable
+          :possess="possess"
           :selectable="false"
           @selectTag="selectTag"
           @unSelectTag="unSelectTag" />
@@ -104,6 +108,7 @@
 </template>
 
 <script>
+// could be rename tagSelector or something like that
 import { Fragment } from "vue-fragment"
 
 import { bus } from "../main.js"
@@ -131,7 +136,9 @@ export default {
   props: {
     menuPosition: { type: String, default: "right" },
     conversationId: { type: String, required: true },
-    value: { type: Array, required: true }, //tags
+    value: { type: Array, required: false, default: () => [] }, // tags
+    searchCategoryType: { type: String, default: "conversation_metadata" },
+    possess: { type: Boolean, default: false },
   },
   data() {
     return {
@@ -163,6 +170,9 @@ export default {
     },
   },
   methods: {
+    keydown(e) {
+      e.stopPropagation()
+    },
     createTag() {
       this.state = STATES.CREATE_TAG
     },
@@ -180,14 +190,14 @@ export default {
       const res = await apiCreateCategory(
         this.conversationId,
         name,
-        "conversation_metadata",
+        this.searchCategoryType,
         "conversation",
         null
       )
 
       if (res.status == "error") {
+        console.error(res)
       } else {
-        console.log(res)
         this.selectCategory(res)
         this.done()
       }
@@ -233,8 +243,10 @@ export default {
       this.loading = true
       this.allCategories = await apiGetAllCategories(
         this.conversationId,
-        "conversation_metadata",
-        "conversation"
+        this.searchCategoryType,
+        "conversation",
+        false,
+        this.possess
       )
       this.loading = false
     },

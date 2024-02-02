@@ -60,6 +60,7 @@ export default {
     addable: { type: Boolean, default: false },
     selectable: { type: Boolean, default: true },
     withCategories: { type: Boolean, default: true },
+    searchCategoryType: { type: String, default: "conversation_metadata" },
   },
   mixins: [debounceMixin],
   data() {
@@ -91,7 +92,7 @@ export default {
         return apiSearchTags(
           this.conversationId,
           search,
-          "conversation_metadata",
+          this.searchCategoryType,
           "conversation",
           signal
         )
@@ -99,7 +100,7 @@ export default {
         return apiSearchTags(
           this.currentOrganizationScope,
           search,
-          "conversation_metadata",
+          this.searchCategoryType,
           "organization",
           signal
         )

@@ -39,6 +39,7 @@ import { bus } from "../main.js"
 import TagCategoryBox from "./TagCategoryBox.vue"
 import { workerSendMessage } from "../tools/worker-message.js"
 import ModalDeleteTagHighlight from "./ModalDeleteTagHighlight.vue"
+import CATEGORY_NAME_FROM_SCOPE from "../const/categoryNameFromScope.js"
 
 export default {
   props: {
@@ -76,19 +77,17 @@ export default {
     _category() {
       return {
         ...this.category,
-        name: this.getName(this.category.scope) ?? this.category.name,
+        name: this.getName(this.category.scope),
       }
     },
   },
   mounted() {},
   methods: {
     getName(scope) {
-      switch (scope) {
-        case "nlp-keyword":
-          return this.$t("highlights_name.keyword")
-        default:
-          return null
-      }
+      return (
+        CATEGORY_NAME_FROM_SCOPE((key) => this.$i18n.t(key))[scope] ??
+        this.category.name
+      )
     },
     showCategory(e) {
       this.$emit("show-category", this.category._id)

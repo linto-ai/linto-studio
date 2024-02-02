@@ -28,12 +28,14 @@
         type="search"
         v-model="searchValueForCategory"
         class="fullwidth"
+        @keydown="keydown"
         id="dropdown-search-categories" />
     </div>
     <TagCategorySearch
       :search="searchValueForCategory"
       :conversationId="conversationId"
       :reload="reloadCategoryList"
+      :categoryType="searchCategoryType"
       v-model="_selectedCategory" />
   </div>
 </template>
@@ -47,6 +49,7 @@ export default {
     tagValue: { type: String, required: true },
     conversationId: { type: String, required: false },
     selectedCategory: { type: Object, required: false },
+    searchCategoryType: { type: String, default: "conversation_metadata" },
   },
   data() {
     return {
@@ -76,6 +79,9 @@ export default {
   methods: {
     done() {
       this.$emit("done", this.searchValueForCategory)
+    },
+    keydown(event) {
+      event.stopPropagation()
     },
   },
   components: { Fragment, TagCategorySearch, Tag },

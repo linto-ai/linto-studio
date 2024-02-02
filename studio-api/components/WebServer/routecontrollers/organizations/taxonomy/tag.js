@@ -58,6 +58,8 @@ async function deleteTag(req, res, next) {
     const result = await model.tags.delete(req.params.tagId)
     if (result.deletedCount !== 1) throw new TagError('Error during the deletion of the tag')
 
+
+    await model.metadata.deleteMetadataFromTag(req.params.tagId)  // delete all related metadata from that tag
     // Delete tag from all the conversations
     let conv_del_res = await model.conversations.deleteTag(req.params.organizationId, req.params.tagId)
 

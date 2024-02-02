@@ -8,6 +8,8 @@
     :startOpen="startOpen"
     :showCategoryName="showCategoryName"
     :linkedTags="linkedTags"
+    :withMetadata="true"
+    :possess="possess"
     :hiddenSelectedTags="addable">
     <template v-slot:content-after-tag="slotProps">
       <SwitchInput
@@ -47,6 +49,7 @@ export default {
     linkedTags: { type: Array, default: () => [] },
     selectable: { type: Boolean, default: true },
     addable: { type: Boolean, default: false },
+    possess: { type: Boolean, default: false },
   },
   data() {
     return {

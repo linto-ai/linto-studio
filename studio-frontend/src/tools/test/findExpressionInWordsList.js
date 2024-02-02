@@ -6,14 +6,18 @@ test("find a single word in a list of words", (t) => {
   let expressionsList = ["world"]
   let wordsList = ["hello", "world", "how", "are", "you"]
   let rangesList = findExpressionInWordsList(expressionsList, wordsList)
-  t.deepEqual(rangesList, [{ start: 1, end: 1, expression: "world" }])
+  t.deepEqual(rangesList, [
+    { start: 1, end: 1, expression: "world", expressionObject: "world" },
+  ])
 })
 
 test("find a multiple word expression in a list of words", (t) => {
   let expressionsList = ["how are"]
   let wordsList = ["hello", "world", "how", "are", "you"]
   let rangesList = findExpressionInWordsList(expressionsList, wordsList)
-  t.deepEqual(rangesList, [{ start: 2, end: 3, expression: "how are" }])
+  t.deepEqual(rangesList, [
+    { start: 2, end: 3, expression: "how are", expressionObject: "how are" },
+  ])
 })
 
 test("find two 'multiple word expression' in a list of words", (t) => {
@@ -21,8 +25,13 @@ test("find two 'multiple word expression' in a list of words", (t) => {
   let wordsList = ["hello", "world", "how", "are", "you", "my", "friend"]
   let rangesList = findExpressionInWordsList(expressionsList, wordsList)
   t.deepEqual(rangesList, [
-    { start: 2, end: 3, expression: "how are" },
-    { start: 5, end: 6, expression: "my friend" },
+    { start: 2, end: 3, expression: "how are", expressionObject: "how are" },
+    {
+      start: 5,
+      end: 6,
+      expression: "my friend",
+      expressionObject: "my friend",
+    },
   ])
 })
 
@@ -41,9 +50,24 @@ test("find multiple word expression in a list of words with expression repetitio
   ]
   let rangesList = findExpressionInWordsList(expressionsList, wordsList)
   t.deepEqual(rangesList, [
-    { start: 2, end: 3, expression: "my friend" },
-    { start: 4, end: 6, expression: "how are you" },
-    { start: 7, end: 8, expression: "my friend" },
+    {
+      start: 2,
+      end: 3,
+      expression: "my friend",
+      expressionObject: "my friend",
+    },
+    {
+      start: 4,
+      end: 6,
+      expression: "how are you",
+      expressionObject: "how are you",
+    },
+    {
+      start: 7,
+      end: 8,
+      expression: "my friend",
+      expressionObject: "my friend",
+    },
   ])
 })
 
@@ -51,7 +75,14 @@ test("find expression if there is some words repetition", (t) => {
   let expressionsList = ["my friend"]
   let wordsList = ["hello", "world", "how", "are", "you", "my", "my", "friend"]
   let rangesList = findExpressionInWordsList(expressionsList, wordsList)
-  t.deepEqual(rangesList, [{ start: 6, end: 7, expression: "my friend" }])
+  t.deepEqual(rangesList, [
+    {
+      start: 6,
+      end: 7,
+      expression: "my friend",
+      expressionObject: "my friend",
+    },
+  ])
 })
 
 test("find expression and ignore punctuation", (t) => {
@@ -59,8 +90,18 @@ test("find expression and ignore punctuation", (t) => {
   let wordsList = ["hello", "world,", "how", "are", "you,", "my", "friend."]
   let rangesList = findExpressionInWordsList(expressionsList, wordsList)
   t.deepEqual(rangesList, [
-    { start: 2, end: 4, expression: "how are you" },
-    { start: 5, end: 6, expression: "my friend" },
+    {
+      start: 2,
+      end: 4,
+      expression: "how are you",
+      expressionObject: "how are you",
+    },
+    {
+      start: 5,
+      end: 6,
+      expression: "my friend",
+      expressionObject: "my friend",
+    },
   ])
 })
 
@@ -82,13 +123,26 @@ test("use custom getter to access word value", (t) => {
     (word) => word.value
   )
   t.deepEqual(rangesList, [
-    { start: 2, end: 4, expression: "how are you" },
-    { start: 5, end: 6, expression: "my friend" },
+    {
+      start: 2,
+      end: 4,
+      expression: "how are you",
+      expressionObject: "how are you",
+    },
+    {
+      start: 5,
+      end: 6,
+      expression: "my friend",
+      expressionObject: "my friend",
+    },
   ])
 })
 
 test("use custom getter to access expression value", (t) => {
-  let expressionsList = [{ value: "how are you" }, { value: "my friend" }]
+  let expressionsList = [
+    { value: "how are you", color: "green" },
+    { value: "my friend" },
+  ]
   let wordsList = ["hello", "world", "how", "are", "you", "my", "friend"]
   let rangesList = findExpressionInWordsList(
     expressionsList,
@@ -96,7 +150,17 @@ test("use custom getter to access expression value", (t) => {
     (expr) => expr.value
   )
   t.deepEqual(rangesList, [
-    { start: 2, end: 4, expression: "how are you" },
-    { start: 5, end: 6, expression: "my friend" },
+    {
+      start: 2,
+      end: 4,
+      expression: "how are you",
+      expressionObject: { value: "how are you", color: "green" },
+    },
+    {
+      start: 5,
+      end: 6,
+      expression: "my friend",
+      expressionObject: { value: "my friend" },
+    },
   ])
 })

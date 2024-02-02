@@ -52,6 +52,7 @@
         :canEdit="userRights.hasRightAccess(userRight, userRights.WRITE)"
         :hightlightsCategories="hightlightsCategories"
         :hightlightsCategoriesVisibility="hightlightsCategoriesVisibility"
+        @newHighlight="handleNewHighlight"
         ref="editor"
         v-if="status === 'done'"></AppEditor>
     </div>
@@ -65,20 +66,23 @@
   </MainContentConversation>
 </template>
 <script>
-import ConversationShare from "@/components/ConversationShare.vue"
-import TranscriptionHelper from "@/components/TranscriptionHelper.vue"
 import moment from "moment"
-import { conversationMixin } from "../mixins/conversation.js"
+
+import { conversationMixin } from "@/mixins/conversation.js"
 
 import Loading from "@/components/Loading.vue"
 import Modal from "@/components/Modal.vue"
 import UserInfoInline from "@/components/UserInfoInline.vue"
 import AppEditor from "@/components/AppEditor.vue"
+import MainContentConversation from "@/components/MainContentConversation.vue"
+import HighlightsList from "@/components/HighlightsList.vue"
+import MenuToolbox from "@/components/MenuToolbox.vue"
+import ModalDeleteTagHighlight from "@/components/ModalDeleteTagHighlight.vue"
+import ConversationShare from "@/components/ConversationShare.vue"
+import TranscriptionHelper from "@/components/TranscriptionHelper.vue"
 import ErrorView from "./Error.vue"
-import MainContentConversation from "../components/MainContentConversation.vue"
-import HighlightsList from "../components/HighlightsList.vue"
-import MenuToolbox from "../components/MenuToolbox.vue"
-import ModalDeleteTagHighlight from "../components/ModalDeleteTagHighlight.vue"
+
+import { apiPostMetadata, apiUpdateMetadata } from "@/api/metadata.js"
 
 export default {
   mixins: [conversationMixin],
@@ -188,6 +192,39 @@ export default {
     },
     onConfirmDeleteTag() {
       this.showDeleteModal = false
+    },
+    async handleNewHighlight({ tag, wordsSelected }) {
+      const metadata = (tag.metadata ?? []).filter((m) => m.schema == "words")
+      let post = false
+      let ranges = []
+      let metadataId = null
+
+      if (metadata.length == 0) {
+        post = true
+      } else {
+        ranges = metadata[0]?.value?.range_id ?? []
+        metadataId = metadata[0]._id
+      }
+
+      ranges.push({
+        startId: wordsSelected[0].wid,
+        endId: wordsSelected[wordsSelected.length - 1].wid,
+      })
+
+      this.hightlightsCategoriesVisibility[tag.categoryId] = true
+
+      if (post) {
+        await apiPostMetadata(this.conversationId, tag._id, "words", {
+          range_id: ranges,
+        })
+      } else {
+        await apiUpdateMetadata(this.conversationId, tag._id, metadataId, {
+          range_id: ranges,
+        })
+      }
+
+      // reload highlights ?
+      this.fetchHightlightsCategories(this.conversationId)
     },
   },
   components: {

@@ -1,0 +1,273 @@
+{
+  "/api/conversations/{conversationId}/metadata": {
+    "get": {
+      "tags": ["taxonomy metadata"],
+      "summary": "Get all metadata for a conversation",
+      "parameters": [
+        {
+          "name": "conversationId",
+          "in": "path",
+          "description": "Unique identifier for the conversation.",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Metadata"
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/conversations/{conversationId}/tags/{tagId}/metadata": {
+    "post": {
+      "tags": ["taxonomy metadata"],
+      "summary": "Create a metadata associated with a specific conversation and tag combination.",
+      "parameters": [
+        {
+          "name": "conversationId",
+          "in": "path",
+          "description": "Unique identifier for the conversation.",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "tagId",
+          "in": "path",
+          "description": "Unique identifier for the tag.",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "schema": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              },
+              "required": ["schema", "value"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Created",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Metadata"
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "415": {
+          "$ref": "#/components/responses/UnsupportedMediaType"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "get": {
+      "tags": ["taxonomy metadata"],
+      "summary": "Retrieve metadata associated with a specific conversation and tag combination.",
+      "parameters": [
+        {
+          "name": "conversationId",
+          "in": "path",
+          "description": "Unique identifier for the conversation.",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "tagId",
+          "in": "path",
+          "description": "Unique identifier for the tag.",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Metadata"
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/conversations/{conversationId}/tags/{tagId}/metadata/{metadataId}": {
+    "patch": {
+      "tags": ["taxonomy metadata"],
+      "summary": "Update a metadata",
+      "parameters": [
+        {
+          "name": "conversationId",
+          "in": "path",
+          "description": "Unique identifier for the conversation.",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "tagId",
+          "in": "path",
+          "description": "Unique identifier for the tag.",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "tagId",
+          "in": "path",
+          "description": "Unique identifier for the tag.",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "schema": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              },
+              "required": ["schema", "value"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Message"
+                }
+              },
+              "example": {
+                "message": "Metadata updated"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "415": {
+          "$ref": "#/components/responses/UnsupportedMediaType"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "delete": {
+      "tags": ["taxonomy metadata"],
+      "summary": "Delete a metadata",
+      "parameters": [
+        {
+          "name": "conversationId",
+          "in": "path",
+          "description": "Unique identifier for the conversation.",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "tagId",
+          "in": "path",
+          "description": "Unique identifier for the tag.",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "metadataId",
+          "in": "path",
+          "description": "Unique identifier for the metadata.",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Message"
+                }
+              },
+              "example": {
+                "message": "Metadata deleted"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  }
+}

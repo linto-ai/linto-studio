@@ -86,6 +86,8 @@ export default {
     editable: { type: Boolean, default: false },
     id: { type: String, default: () => uuidv4() },
     fixed: { type: Boolean, default: false },
+    withMetadata: { type: Boolean, default: false },
+    possess: { type: Boolean, default: false },
   },
   data() {
     return {
@@ -188,7 +190,10 @@ export default {
         const tags = await apiGetTagsFromCategory(
           this.scopeId,
           this.category._id,
-          this.linkedTags.map((t) => t._id),
+          {
+            linkedTags: this.linkedTags.map((t) => t._id),
+            possess: this.possess,
+          },
           this.scope
         )
         this.displayedCategory = {
@@ -199,7 +204,8 @@ export default {
         this.displayedCategory = await apiGetCategoryById(
           this.scopeId,
           this.category._id,
-          this.scope
+          this.scope,
+          { metadata: this.withMetadata, possess: this.possess }
         )
       }
     },
