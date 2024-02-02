@@ -289,7 +289,6 @@ export async function apiCreateTag(
 
     return requestRes.data
   } else {
-    console.log(name)
     const requestRes = await sendRequest(
       `${BASE_API}/conversations/${scopeId}/tags`,
       { method: "post" },

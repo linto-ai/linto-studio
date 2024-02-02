@@ -224,7 +224,7 @@ export default {
       }
 
       // reload highlights ?
-      this.fetchHightlightsCategories(this.conversationId)
+      await this.fetchHightlightsCategories(this.conversationId)
     },
   },
   components: {

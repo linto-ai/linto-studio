@@ -9,6 +9,7 @@ export default async function hightLightAllText() {
     if (!this.highlightsRanges[categoryId].ranges) return
 
     this.highlightsRanges[categoryId].ranges.forEach(async (range) => {
+      if (!range) return
       await this.highlightRange({ ...this.highlightsRanges[categoryId], range })
     })
   })

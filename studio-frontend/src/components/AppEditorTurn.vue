@@ -383,11 +383,15 @@ export default {
       this.resetWordSelected()
     },
     plainRangeToDomRange(plainRange) {
-      const domRange = new Range()
-      domRange.setStartBefore(this.$refs.turn.children.item(plainRange.start))
-      domRange.setEndAfter(this.$refs.turn.children.item(plainRange.end))
-      domRange._tag = plainRange.expressionObject
-      return domRange
+      try {
+        const domRange = new Range()
+        domRange.setStartBefore(this.$refs.turn.children.item(plainRange.start))
+        domRange.setEndAfter(this.$refs.turn.children.item(plainRange.end))
+        domRange._tag = plainRange.expressionObject
+        return domRange
+      } catch (error) {
+        return null
+      }
     },
     customBlur() {
       this.contentEditable = false
