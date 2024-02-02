@@ -52,6 +52,12 @@ async function createMetadata(req, res, next) {
     const result = await model.metadata.create(req.body)
     if (result.insertedCount !== 1) throw new MetadataError('Error during the creation of the metadata')
 
+    const conversation = await model.conversations.getById(req.params.conversationId)
+    if (!conversation[0].tags.includes(req.params.tagId)) {
+      let tagsList = [...conversation[0].tags, req.params.tagId]
+      await model.conversations.updateTag(req.params.conversationId, tagsList)
+    }
+
     const metadata_created = await model.tags.getById(result.insertedId.toString())
     req.body._id = result.insertedId.toString()
 
