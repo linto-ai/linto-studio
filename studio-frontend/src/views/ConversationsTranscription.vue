@@ -83,6 +83,7 @@ import TranscriptionHelper from "@/components/TranscriptionHelper.vue"
 import ErrorView from "./Error.vue"
 
 import { apiPostMetadata, apiUpdateMetadata } from "@/api/metadata.js"
+import { nextTick } from "vue"
 
 export default {
   mixins: [conversationMixin],
@@ -211,8 +212,6 @@ export default {
         endId: wordsSelected[wordsSelected.length - 1].wid,
       })
 
-      this.hightlightsCategoriesVisibility[tag.categoryId] = true
-
       if (post) {
         await apiPostMetadata(this.conversationId, tag._id, "words", {
           range_id: ranges,
@@ -225,6 +224,8 @@ export default {
 
       // reload highlights ?
       await this.fetchHightlightsCategories(this.conversationId)
+      await nextTick()
+      this.hightlightsCategoriesVisibility[tag.categoryId] = true
     },
   },
   components: {

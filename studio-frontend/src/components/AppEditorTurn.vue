@@ -428,6 +428,7 @@ export default {
       this.wordsSelected = []
       if (this.selectedRange) {
         this.unhighlightRange({ range: this.selectedRange })
+        this.displayHighlights()
       }
     },
     findIndexWithoutEmptyWords(words, callback) {
