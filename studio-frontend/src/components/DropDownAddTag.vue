@@ -89,6 +89,7 @@
           scope="conversation"
           :startOpen="false"
           addable
+          :possess="possess"
           :selectable="false"
           @selectTag="selectTag"
           @unSelectTag="unSelectTag" />
@@ -137,6 +138,7 @@ export default {
     conversationId: { type: String, required: true },
     value: { type: Array, required: false, default: () => [] }, // tags
     searchCategoryType: { type: String, default: "conversation_metadata" },
+    possess: { type: Boolean, default: false },
   },
   data() {
     return {
@@ -242,7 +244,9 @@ export default {
       this.allCategories = await apiGetAllCategories(
         this.conversationId,
         this.searchCategoryType,
-        "conversation"
+        "conversation",
+        false,
+        this.possess
       )
       this.loading = false
     },

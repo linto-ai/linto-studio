@@ -399,7 +399,6 @@ export default {
       let selection = this.getSelectedWordsFromDomSelection(domSelection)
       const startRange = selection.firstWord
       const endRange = selection.lastWord
-      console.log(startRange, endRange)
       window
         .getSelection()
         .setBaseAndExtent(startRange, 0, endRange, endRange.length)

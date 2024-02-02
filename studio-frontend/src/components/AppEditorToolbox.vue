@@ -5,6 +5,7 @@
     <DropDownAddTag
       :conversationId="conversationId"
       searchCategoryType="highlight"
+      :possess="true"
       @selectTag="selectTag"></DropDownAddTag>
     <!-- tag selector -->
   </div>

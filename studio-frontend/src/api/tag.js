@@ -84,7 +84,7 @@ export async function apiGetCategoryById(
   scopeId,
   categoryId,
   scope = "organization",
-  metadata = false,
+  { metadata = false, possess = false },
   notif
 ) {
   if (scope === "organization") {
@@ -102,6 +102,7 @@ export async function apiGetCategoryById(
       { method: "get" },
       {
         metadata,
+        possess,
       },
       notif
     )
@@ -144,7 +145,7 @@ export async function apiGetTagsById(orgaId, tagId, notif) {
 export async function apiGetTagsFromCategory(
   scopeId,
   categoryId,
-  linkedTags,
+  { linkedTags = [], possess = false },
   scope = "organization",
   notif
 ) {
@@ -155,7 +156,7 @@ export async function apiGetTagsFromCategory(
       {
         categoryId,
         tags: linkedTags.toString(),
-        categoryType: "conversation_metadata",
+        possess,
       },
       notif
     )
@@ -167,7 +168,7 @@ export async function apiGetTagsFromCategory(
       {
         categoryId,
         tags: linkedTags.toString(),
-        categoryType: "conversation_metadata",
+        possess,
       },
       notif
     )
