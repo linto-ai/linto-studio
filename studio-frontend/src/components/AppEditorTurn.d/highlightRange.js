@@ -1,4 +1,4 @@
-import Vue from "vue"
+import Vue, { h } from "vue"
 import AppEditorHighlightDescToolbox from "@/components/AppEditorHighlightDescToolbox.vue"
 
 export default async function highlightRange(
@@ -8,7 +8,6 @@ export default async function highlightRange(
   // AppEditorHighlightDescToolbox
   const color = category.color || "yellow"
   let toolboxComponent = null
-  var toolbox = Vue.extend(AppEditorHighlightDescToolbox)
 
   let { startContainer, endContainer, startOffset, endOffset } = range
 
@@ -16,34 +15,54 @@ export default async function highlightRange(
   let endWord = endContainer.children.item(endOffset)
 
   if (!endWord) {
-    startWord.setAttribute("highlighted", "true")
-    startWord.classList.add(`background-${color}-100`)
-    if (isFromHighlight) {
-      startWord.appendChild(
-        new toolbox({
-          i18n: this.$i18n,
-          propsData: { tag: range._tag, category },
-        }).$mount().$el
-      )
-      await Vue.nextTick()
-    }
+    highlightWord(
+      startWord,
+      color,
+      range,
+      category,
+      isFromHighlight,
+      this.$i18n
+    )
     return
   }
 
   do {
-    startWord.setAttribute("highlighted", "true")
-    startWord.classList.add(`background-${color}-100`)
-    if (isFromHighlight) {
-      startWord.appendChild(
-        new toolbox({
-          i18n: this.$i18n,
-          propsData: { tag: range._tag, category },
-        }).$mount().$el
-      )
-      //await Vue.nextTick()
-    }
+    highlightWord(
+      startWord,
+      color,
+      range,
+      category,
+      isFromHighlight,
+      this.$i18n
+    )
     startWord = startWord.nextSibling
   } while (startWord !== endWord)
 
   endWord.previousSibling.setAttribute("highlighted--last-word", "true")
+}
+
+function highlightWord(
+  word,
+  color,
+  range,
+  category,
+  isFromHighlight = true,
+  i18n
+) {
+  const wordHasToolbox = word.querySelector(
+    ".conversation-highlight-toolbox.text-toolbox"
+  )
+
+  word.setAttribute("highlighted", "true")
+  word.classList.add(`background-${color}-100`)
+
+  if (isFromHighlight && !wordHasToolbox) {
+    var toolbox = Vue.extend(AppEditorHighlightDescToolbox)
+    word.appendChild(
+      new toolbox({
+        i18n,
+        propsData: { tag: range._tag, category },
+      }).$mount().$el
+    )
+  }
 }
