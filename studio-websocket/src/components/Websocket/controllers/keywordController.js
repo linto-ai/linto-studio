@@ -3,7 +3,7 @@ import Debug from "debug"
 import Conversations from "../models/conversations.js"
 import {
   apiGetKeywords,
-  getJobs,
+  apiGetJobs,
   apiGenerateKeywords,
 } from "../request/index.js"
 
@@ -44,7 +44,7 @@ export default async function keywordController({ conversationId, userToken }) {
 
 async function fetchJob(conversation, conversationId, userToken, socket) {
   // check if job is not done
-  const jobs = await getJobs(conversationId, userToken)
+  const jobs = await apiGetJobs(conversationId, userToken)
   debugJob("Feched jobs:")
   debugJob(jobs)
   const orgaId = conversation.getOrganizationId()

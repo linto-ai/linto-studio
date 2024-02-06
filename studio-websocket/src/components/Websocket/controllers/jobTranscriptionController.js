@@ -1,10 +1,5 @@
 import Debug from "debug"
 
-import { getJobs } from "../request/index.js"
-import Conversations from "../models/conversations.js"
-
-const jobsFetcher = {}
-
 const debug = Debug("Websocket:debug:jobTranscriptionController")
 
 export default async function jobTranscriptionController(

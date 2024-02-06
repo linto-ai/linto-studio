@@ -1,4 +1,4 @@
-import { getJobs } from "../request/index.js"
+import { apiGetJobs } from "../request/index.js"
 
 export class Job {
   constructor(
@@ -34,7 +34,7 @@ export class Job {
   }
 
   async fetchJob(userToken) {
-    const jobs = await getJobs(this.conversationId, userToken)
+    const jobs = await apiGetJobs(this.conversationId, userToken)
     this.setFromConversation(jobs)
     this.updateJobFunction(this.key, jobs[this.key])
   }

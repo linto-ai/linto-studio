@@ -225,6 +225,7 @@ export default class Websocket extends Component {
 
     if (conversationFormat === CONVERSATION_FORMATS.transcription) {
       await conversation.loadText(userToken)
+      await conversation.loadSpeakers(userToken)
     } else {
       await conversation.loadSubtitleVersions(userToken)
     }

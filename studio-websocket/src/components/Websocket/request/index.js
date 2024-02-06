@@ -78,7 +78,7 @@ export async function getSubtitleListByConversationId(
   return versionsRes.data || []
 }
 
-export async function deleteConversation(conversationId, userToken) {
+export async function apiDeleteConversation(conversationId, userToken) {
   return await sendRequest(
     `${BASE_API}/conversations/${conversationId}`,
     { method: "delete" },
@@ -89,7 +89,11 @@ export async function deleteConversation(conversationId, userToken) {
   )
 }
 
-export async function updateConversation(conversationId, payload, userToken) {
+export async function apiUpdateConversation(
+  conversationId,
+  payload,
+  userToken
+) {
   return await sendRequest(
     `${BASE_API}/conversations/${conversationId}`,
     { method: "patch" },
@@ -115,7 +119,7 @@ export async function updateUserRightInConversation(
   )
 }
 
-export async function getJobs(conversationId, userToken) {
+export async function apiGetJobs(conversationId, userToken) {
   const res = await sendRequest(
     `${BASE_API}/conversations/${conversationId}?key=jobs`,
     { method: "get" },
@@ -127,7 +131,7 @@ export async function getJobs(conversationId, userToken) {
   else return res.data.jobs
 }
 
-export async function getRights(conversationId, userToken) {
+export async function apiGetRights(conversationId, userToken) {
   return await sendRequest(
     `${BASE_API}/conversations/${conversationId}?key=sharedWithUsers,owner`,
     { method: "get" },
@@ -147,9 +151,19 @@ export async function getConversationNameAndDesc(conversationId, userToken) {
   )
 }
 
-export async function getConversationText(conversationId, userToken) {
+export async function apiGetConversationText(conversationId, userToken) {
   return await sendRequest(
     `${BASE_API}/conversations/${conversationId}?key=text`,
+    { method: "get" },
+    null,
+    null,
+    userToken
+  )
+}
+
+export async function apiGetConversationSpeakers(conversationId, userToken) {
+  return await sendRequest(
+    `${BASE_API}/conversations/${conversationId}?key=speakers`,
     { method: "get" },
     null,
     null,

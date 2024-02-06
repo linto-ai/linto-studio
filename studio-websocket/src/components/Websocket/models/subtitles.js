@@ -3,7 +3,7 @@ import {
   copySubtitlesBySubtitleId,
   deleteSubtitlesByIds,
   generateSubtitlesByConversationId,
-  getRights,
+  apiGetRights,
   getSubtitleById,
   getSubtitleListByConversationId,
 } from "../request/index.js"
@@ -56,7 +56,7 @@ export default class SubtitleHelper {
   }
 
   static async getRights(conversationId, userToken) {
-    let rights = await getRights(conversationId, userToken)
+    let rights = await apiGetRights(conversationId, userToken)
     if (rights.status == "success") {
       return rights
     } else {
