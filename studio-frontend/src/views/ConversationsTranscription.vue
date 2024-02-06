@@ -225,7 +225,10 @@ export default {
       // reload highlights ?
       await this.fetchHightlightsCategories(this.conversationId)
       await nextTick()
-      this.hightlightsCategoriesVisibility[tag.categoryId] = true
+      this.hightlightsCategoriesVisibility = {
+        ...this.hightlightsCategoriesVisibility,
+        [tag.categoryId]: true,
+      }
     },
   },
   components: {
