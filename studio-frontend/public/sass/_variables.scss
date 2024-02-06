@@ -50,6 +50,7 @@ body {
   --medium-gap: 1rem;
 
   --shadow-block: 0px 0px 8px 0 rgba(67, 76, 95, 0.15);
+  --shadow-block-selected: 0px 0px 20px 0 rgba(67, 76, 95, 0.5);
   --shadow-block-left: 3px 0px 8px 0 rgba(67, 76, 95, 0.15);
 }
 
@@ -70,6 +71,7 @@ html[data-theme="dark"] body {
   --background-header: #252525;
 
   --shadow-block: 0px 0px 8px 0 rgb(0, 0, 0, 0.5);
+  --shadow-block-selected: 0px 0px 20px 0 rgb(0, 0, 0, 0.7);
   --shadow-block-left: 3px 0px 8px 0 rgb(0, 0, 0, 0.5);
 
   --input-focus: #0c0c0c;
