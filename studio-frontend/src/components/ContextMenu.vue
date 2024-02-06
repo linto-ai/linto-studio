@@ -49,7 +49,8 @@ export default {
       widthContent: 0,
       heightContainer: 0,
       widthContainer: 0,
-      contentY: 0,
+      contentYBottom: 0,
+      contentYTop: 0,
       contentX: 0,
       resizeObserverContent: null,
       resizeObserverContainer: null,
@@ -63,21 +64,7 @@ export default {
       "context-menu__element"
     )
 
-    if (this.first) {
-      this.contentYTop = this._topRelativeParent.getBoundingClientRect().top
-      this.contentYBottom =
-        this._topRelativeParent.getBoundingClientRect().top +
-        this._topRelativeParent.getBoundingClientRect().height
-      this.contentX = this._topRelativeParent.getBoundingClientRect().left
-    } else {
-      this.contentYTop = relativeParent.getBoundingClientRect().top
-      this.contentYBottom =
-        relativeParent.getBoundingClientRect().top +
-        relativeParent.getBoundingClientRect().height
-      this.contentX =
-        relativeParent.getBoundingClientRect().left +
-        relativeParent.getBoundingClientRect().width
-    }
+    this.computeElementPosition()
 
     this.initObserverContent()
     this.initObserverContainer()
@@ -152,6 +139,7 @@ export default {
         function (entries) {
           this.heightContent = this.$refs.content.clientHeight
           this.widthContent = this.$refs.content.clientWidth
+          this.computeElementPosition()
         }.bind(this)
       )
 
@@ -176,10 +164,29 @@ export default {
         function (entries) {
           this.heightContainer = this.container.clientHeight
           this.widthContainer = this.container.clientWidth
+          this.computeElementPosition()
         }.bind(this)
       )
 
       this.resizeObserverContainer.observe(this.container)
+    },
+    computeElementPosition() {
+      // TODO: see https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API to update current position when scrolling
+      if (this.first) {
+        console.log(this._topRelativeParent.getBoundingClientRect())
+        this.contentYTop = this._topRelativeParent.getBoundingClientRect().top
+        this.contentYBottom =
+          this._topRelativeParent.getBoundingClientRect().bottom
+        this.contentX = this._topRelativeParent.getBoundingClientRect().left
+      } else {
+        this.contentYTop = relativeParent.getBoundingClientRect().top
+        this.contentYBottom =
+          relativeParent.getBoundingClientRect().top +
+          relativeParent.getBoundingClientRect().height
+        this.contentX =
+          relativeParent.getBoundingClientRect().left +
+          relativeParent.getBoundingClientRect().width
+      }
     },
   },
   components: { Fragment },

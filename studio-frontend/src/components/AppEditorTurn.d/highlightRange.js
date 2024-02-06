@@ -49,9 +49,7 @@ function highlightWord(
   isFromHighlight = true,
   i18n
 ) {
-  const wordHasToolbox = word.querySelector(
-    ".conversation-highlight-toolbox.text-toolbox"
-  )
+  const wordHasToolbox = word.querySelector(".conversation-highlight-toolbox")
 
   word.setAttribute("highlighted", "true")
   word.classList.add(`background-${color}-100`)
