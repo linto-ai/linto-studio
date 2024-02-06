@@ -56,13 +56,14 @@ function highlightWord(
   word.setAttribute("highlighted", "true")
   word.classList.add(`background-${color}-100`)
 
+  let toolboxDiv = document.createElement("div")
+  toolboxDiv.style.display = "inline"
+  word.appendChild(toolboxDiv)
   if (isFromHighlight && !wordHasToolbox) {
     var toolbox = Vue.extend(AppEditorHighlightDescToolbox)
-    word.appendChild(
-      new toolbox({
-        i18n,
-        propsData: { tag: range._tag, category },
-      }).$mount().$el
-    )
+    new toolbox({
+      i18n,
+      propsData: { tag: range._tag, category },
+    }).$mount(toolboxDiv)
   }
 }

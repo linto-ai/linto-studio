@@ -10,7 +10,7 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-
+import findParentByClass from "../tools/findParentByClass"
 import { bus } from "../main.js"
 
 export default {
@@ -23,11 +23,19 @@ export default {
       type: Number,
       default: 0,
     },
+    topRelativeParent: {
+      type: HTMLElement,
+      default: null,
+    },
     container: {
       type: HTMLElement,
       default: () => {
         return document.getElementById("app")
       },
+    },
+    first: {
+      type: Boolean,
+      default: false,
     },
     name: {
       type: String,
@@ -40,24 +48,42 @@ export default {
       widthContent: 0,
       heightContainer: 0,
       widthContainer: 0,
-      observerContent: null,
-      observerContainer: null,
       contentY: 0,
       contentX: 0,
+      resizeObserverContent: null,
+      resizeObserverContainer: null,
     }
   },
   mounted() {
+    //await this.$nextTick()
     this.heightContent = this.$refs.content.clientHeight
-    const relativeParent = this.findParentByClass(
+    const relativeParent = findParentByClass(
       this.$refs.content,
       "context-menu__element"
     )
-    this.contentY = relativeParent.getBoundingClientRect().top
-    this.contentX =
-      relativeParent.getBoundingClientRect().left +
-      relativeParent.getBoundingClientRect().width
+
+    if (this.first) {
+      this.contentYTop = this._topRelativeParent.getBoundingClientRect().top
+      this.contentYBottom =
+        this._topRelativeParent.getBoundingClientRect().top +
+        this._topRelativeParent.getBoundingClientRect().height
+      this.contentX = this._topRelativeParent.getBoundingClientRect().left
+    } else {
+      this.contentYTop = relativeParent.getBoundingClientRect().top
+      this.contentYBottom =
+        relativeParent.getBoundingClientRect().top +
+        relativeParent.getBoundingClientRect().height
+      this.contentX =
+        relativeParent.getBoundingClientRect().left +
+        relativeParent.getBoundingClientRect().width
+    }
+
     this.initObserverContent()
     this.initObserverContainer()
+  },
+  beforeDestroy() {
+    this.resizeObserverContent?.disconnect()
+    this.resizeObserverContainer?.disconnect()
   },
   computed: {
     style() {
@@ -72,7 +98,7 @@ export default {
           res["bottom"] = `${this.heightContainer - this.y}px`
           break
         case "bottom":
-          res["top"] = `${this.y}px`
+          res["top"] = `${this.YpositionBottom}px`
           break
       }
 
@@ -81,7 +107,7 @@ export default {
           res["right"] = `1rem`
           break
         case "right":
-          res["left"] = `${this.x}px`
+          res["left"] = `${this.Xposition}px`
           break
       }
 
@@ -92,7 +118,7 @@ export default {
         return "hidden"
       }
 
-      if (this.heightContent + this.Yposition > this.heightContainer) {
+      if (this.heightContent + this.YpositionBottom > this.heightContainer) {
         return "top"
       }
 
@@ -103,51 +129,56 @@ export default {
         return "left"
       return "right"
     },
-    Yposition() {
-      return this.y || this.contentY || 0
+    YpositionTop() {
+      return this.y || this.contentYTop || 0
+    },
+    YpositionBottom() {
+      return this.y || this.contentYBottom || 0
     },
     Xposition() {
       return this.x || this.contentX || 0
     },
+    _topRelativeParent() {
+      return (
+        this.topRelativeParent ||
+        findParentByClass(this.$refs.content, "popover-parent")
+      )
+    },
   },
   methods: {
     initObserverContent() {
-      this.observerContent = new MutationObserver(
-        function (mutations) {
+      this.resizeObserverContent = new ResizeObserver(
+        function (entries) {
           this.heightContent = this.$refs.content.clientHeight
           this.widthContent = this.$refs.content.clientWidth
         }.bind(this)
       )
 
-      this.observerContent.observe(this.$refs.content, {
-        attributes: true,
-        childList: true,
-        characterData: true,
-        subtree: true,
-      })
+      this.resizeObserverContent.observe(this.$refs.content)
+
+      // this.observerContent = new MutationObserver(
+      //   function (mutations) {
+      //     this.heightContent = this.$refs.content.clientHeight
+      //     this.widthContent = this.$refs.content.clientWidth
+      //   }.bind(this)
+      // )
+
+      // this.observerContent.observe(this.$refs.content, {
+      //   attributes: true,
+      //   childList: true,
+      //   characterData: true,
+      //   subtree: true,
+      // })
     },
     initObserverContainer() {
-      this.observerContainer = new MutationObserver(
-        function (mutations) {
+      this.resizeObserverContainer = new ResizeObserver(
+        function (entries) {
           this.heightContainer = this.container.clientHeight
           this.widthContainer = this.container.clientWidth
         }.bind(this)
       )
 
-      this.observerContainer.observe(this.container, {
-        attributes: true,
-        childList: true,
-        characterData: true,
-        subtree: true,
-      })
-    },
-    findParentByClass(el, className) {
-      while (
-        (el = el.parentElement) &&
-        !el.classList.contains(className) &&
-        el.tagName !== "BODY"
-      );
-      return el
+      this.resizeObserverContainer.observe(this.container)
     },
   },
   components: { Fragment },

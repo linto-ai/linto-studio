@@ -1,13 +1,19 @@
 <template>
-  <div class="conversation-highlight-toolbox text-toolbox">
-    <h3 :class="[colorTextCategory]">{{ categoryName }}</h3>
-    <!-- <p>{{ $t("conversation.highlight_toolbox.no-metadata") }}</p> -->
-    <p class="conversation-highlight-toolbox__content">{{ tag.name }}</p>
-  </div>
+  <ContextMenu
+    name="highlight-toolbox"
+    first
+    class="conversation-highlight-toolbox">
+    <div class="context-menu__element">
+      <h3 :class="[colorTextCategory]">{{ categoryName }}</h3>
+      <p class="conversation-highlight-toolbox__content">{{ tag.name }}</p>
+    </div>
+  </ContextMenu>
 </template>
 <script>
 import CATEGORY_NAME_FROM_SCOPE from "../const/categoryNameFromScope"
 import { bus } from "../main.js"
+
+import ContextMenu from "./ContextMenu.vue"
 
 export default {
   props: {
@@ -32,5 +38,6 @@ export default {
     },
   },
   methods: {},
+  components: { ContextMenu },
 }
 </script>

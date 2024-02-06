@@ -43,7 +43,7 @@
         v-click-outside="resetWordSelected">
         <span
           v-for="(word, index) of nonEmptyWords"
-          class="word"
+          class="word popover-parent"
           :key="word.wid"
           :id="word.wid"
           :data-index="index"
