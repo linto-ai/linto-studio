@@ -48,7 +48,7 @@ async function batchShareConversation(req, res, next) {
     const sharedBy = (await model.users.getById(auth_user.id))
     for (let user of users_list.users) {
       if (user.magicId) {
-        Mailing.conversationSharedNewUser(user.email, req, user.magicId, sharedBy[0].email)
+        Mailing.conversationSharedNewUser(user.email, req, user.magicId, sharedBy[0].email, req.body.conversations)
         delete user.magicId
       } else {
         Mailing.multipleConversationRight(user, req, sharedBy[0].email, user.conversations)

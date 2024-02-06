@@ -282,7 +282,7 @@ input[type="search"] {
 }
 
 .form--highlights {
-  width: calc(3 * 276px + 1rem);
+  width: calc(3 * 278px + 1rem);
 }
 
 .service-box {
@@ -302,8 +302,8 @@ input[type="search"] {
   width: 15rem;
   display: inline-flex;
 
-  padding: 1rem;
-  margin: 1px;
+  padding: calc(1rem + 2px);
+  margin: 0px;
 }
 
 .service-box > input {
@@ -314,12 +314,20 @@ input[type="search"] {
   background-color: var(--background-disabled);
   color: var(--text-disabled);
   cursor: not-allowed;
+  border: var(--border-block) !important;
 }
 
-.service-box > input:checked + label {
+.service-box > input:checked + label,
+fieldset[role="listbox"][selected="selected"] {
   border-color: var(--green-chart);
-  border-width: 2px;
+  border-width: 3px;
+  legend {
+    color: var(--green-chart);
+  }
   margin: 0px;
+  box-shadow: var(--shadow-block-selected);
+  background-color: #28998314;
+  padding: 1rem;
 }
 
 .service-box__title {
@@ -352,15 +360,7 @@ fieldset[role="listbox"] {
   border-radius: 4px;
   border: var(--border-block);
   box-shadow: var(--shadow-block);
-  margin: 1px;
-  &[selected="selected"] {
-    border-color: var(--green-chart);
-    border-width: 2px;
-    legend {
-      color: var(--green-chart);
-    }
-    margin: 0px;
-  }
+  margin: 2px;
 
   legend {
     float: left;

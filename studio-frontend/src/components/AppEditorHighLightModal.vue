@@ -55,20 +55,23 @@ export default {
       let servicesListCopy = [...this.servicesList]
       let finalList = []
       for (let category of this.hightlightsCategories) {
-        let index = servicesListCopy.findIndex((service) =>
-          service.scope.indexOf(category.scope)
-        )
-        if (index !== -1) {
-          var service = servicesListCopy.splice(index, 1)[0]
-          if (category.tags && category.tags.length > 0) {
-            service.alreadyGenerated = true
+        if (category.scope) {
+          let index = servicesListCopy.findIndex((service) =>
+            service.scope.indexOf(category.scope)
+          )
+          if (index !== -1) {
+            var service = servicesListCopy.splice(index, 1)[0]
+            if (category.tags && category.tags.length > 0) {
+              service.alreadyGenerated = true
+            }
+            service.categoryName = category.name
+            service.categoryId = category._id
+            finalList.push(service)
           }
-          service.categoryName = category.name
-          service.categoryId = category._id
-          finalList.push(service)
         }
       }
       finalList = finalList.concat(servicesListCopy)
+      console.log("finalList", finalList)
       return finalList
     },
   },

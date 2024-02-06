@@ -120,8 +120,7 @@ async function inviteNewUser(req, res, next) {
       // Share converation to created user
       const sharedBy = await model.users.getById(req.payload.data.userId)
       if (sharedBy.length !== 1) throw new UserNotFound()
-
-      await Mailing.conversationSharedNewUser(email, req, magicId, sharedBy[0].email)
+      await Mailing.conversationSharedNewUser(email, req, magicId, sharedBy[0].email, req.params.conversationId)
 
       await model.conversations.addSharedUser(req.params.conversationId, { userId, sharedBy: req.payload.data.userId, right: 1 })
     }
