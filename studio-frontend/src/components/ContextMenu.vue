@@ -1,4 +1,5 @@
 <template>
+  <!-- TODO: use api popover https://developer.mozilla.org/fr/docs/Web/API/Popover_API/Using -->
   <div
     class="context-menu"
     :style="style"
