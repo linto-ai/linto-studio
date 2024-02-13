@@ -59,10 +59,6 @@ export default {
   mounted() {
     //await this.$nextTick()
     this.heightContent = this.$refs.content.clientHeight
-    const relativeParent = findParentByClass(
-      this.$refs.content,
-      "context-menu__element"
-    )
 
     this.computeElementPosition()
 
@@ -171,14 +167,17 @@ export default {
       this.resizeObserverContainer.observe(this.container)
     },
     computeElementPosition() {
+      const relativeParent = findParentByClass(
+        this.$refs.content,
+        "context-menu__element"
+      )
       // TODO: see https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API to update current position when scrolling
       if (this.first) {
-        console.log(this._topRelativeParent.getBoundingClientRect())
         this.contentYTop = this._topRelativeParent.getBoundingClientRect().top
         this.contentYBottom =
           this._topRelativeParent.getBoundingClientRect().bottom
         this.contentX = this._topRelativeParent.getBoundingClientRect().left
-      } else {
+      } else if (relativeParent) {
         this.contentYTop = relativeParent.getBoundingClientRect().top
         this.contentYBottom =
           relativeParent.getBoundingClientRect().top +
@@ -186,6 +185,10 @@ export default {
         this.contentX =
           relativeParent.getBoundingClientRect().left +
           relativeParent.getBoundingClientRect().width
+      } else {
+        this.contentYTop = this.y || 0
+        this.contentYBottom = this.y || 0
+        this.contentX = this.x || 0
       }
     },
   },

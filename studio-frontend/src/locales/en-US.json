@@ -118,7 +118,14 @@
     "highlights_label": "Highlights",
     "highlight_toolbox": {
       "no-metadata": "No metadata",
-      "title": "Add an highlight"
+      "title": "Add an highlight",
+      "button-add-metadata": "Add metadata",
+      "add_metadata_modal": {
+        "title": "Add metadata",
+        "description": "Select which metadata you want to add",
+        "button_first": "Add metadata",
+        "placeholder": "select a metadata type first"
+      }
     },
     "information_label": "Global information",
     "keyword_list": {

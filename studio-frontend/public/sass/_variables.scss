@@ -19,6 +19,7 @@ body {
 
   --background-primary: #fff;
   --background-primary-with-small-opacity: rgba(255, 255, 255, 0.85);
+  --background-primary-with-blur: rgba(255, 255, 255, 0.4);
   --background-secondary: #f3f3f3;
   --background-header: #fff;
   --background-disabled: #f6f6f6;
@@ -62,6 +63,7 @@ html[data-theme="dark"] body {
 
   --background-primary: #252525;
   --background-primary-with-small-opacity: rgba(37, 37, 37, 0.85);
+  --background-primary-with-blur: rgba(37, 37, 37, 0.4);
   --background-secondary: #1a1a1a;
   --background-disabled: #333;
 

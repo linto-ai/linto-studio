@@ -126,6 +126,7 @@ import _handleClick from "@/components/AppEditorTurn.d/handleClick.js"
 import _handleContentUpdate from "@/components/AppEditorTurn.d/handleContentUpdate.js"
 import _handleSpeakerClick from "@/components/AppEditorTurn.d/handleSpeakerClick.js"
 import _setSpeakerName from "@/components/AppEditorTurn.d/setSpeakerName.js"
+import AppEditorMetadataModal from "./AppEditorMetadataModal.vue"
 
 export default {
   props: {
@@ -349,7 +350,6 @@ export default {
         bus.$emit("refresh_spk_timebox", {})
       }
     })
-
     this.displayHighlights()
     this.localText = this.segment
   },
@@ -385,8 +385,10 @@ export default {
     plainRangeToDomRange(plainRange) {
       try {
         const domRange = new Range()
+
         domRange.setStartBefore(this.$refs.turn.children.item(plainRange.start))
-        domRange.setEndAfter(this.$refs.turn.children.item(plainRange.end))
+        domRange.setEndBefore(this.$refs.turn.children.item(plainRange.end))
+
         domRange._tag = plainRange.expressionObject
         return domRange
       } catch (error) {
@@ -408,10 +410,18 @@ export default {
         .setBaseAndExtent(startRange, 0, endRange, endRange.length)
 
       this.wordsSelected = selection.wordsSelected
-
+      console.log(selection, endRange)
       const domRange = new Range()
       domRange.setStartBefore(startRange)
-      domRange.setEndAfter(endRange)
+      //domRange.setEndAfter(endRange.getElementsByClassName("word_content")[0])
+      if (endRange.nextSibling) {
+        domRange.setEndBefore(endRange)
+      } else {
+        domRange.setEnd(
+          endRange.parentNode,
+          endRange.parentNode.childNodes.length - 1
+        )
+      }
       this.selectedRange = domRange
       await this.highlightRange(
         { range: this.selectedRange, category: { color: "blue" } },
@@ -458,6 +468,7 @@ export default {
     CollaborativeField,
     AppEditorSpkToolbox,
     AppEditorToolbox,
+    AppEditorMetadataModal,
   },
 }
 </script>

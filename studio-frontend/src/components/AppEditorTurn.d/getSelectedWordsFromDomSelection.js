@@ -1,6 +1,7 @@
 export default function getSelectedWordsFromDomSelection(selection) {
   let firstWord = this.getParentWord(selection?.anchorNode)
   let lastWord = this.getParentWord(selection?.focusNode)
+
   let firstSpan = null
   let lastSpan = null
   let wordsSelected = []
@@ -33,5 +34,6 @@ export default function getSelectedWordsFromDomSelection(selection) {
     }
     this.clickWordIndex = firstWordIndex
   }
+
   return { wordsSelected, firstWord, lastWord }
 }

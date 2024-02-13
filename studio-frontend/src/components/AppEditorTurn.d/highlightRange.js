@@ -13,8 +13,8 @@ export default async function highlightRange(
 
   let startWord = startContainer.children.item(startOffset)
   let endWord = endContainer.children.item(endOffset)
-
-  if (!endWord) {
+  //console.log("start", startWord, "end", endWord)
+  if (!endWord || startWord === endWord) {
     highlightWord(
       startWord,
       color,
@@ -23,22 +23,24 @@ export default async function highlightRange(
       isFromHighlight,
       this.$i18n
     )
-    return
+    startWord.setAttribute("highlighted--last-word", "true")
+  } else {
+    do {
+      highlightWord(
+        startWord,
+        color,
+        range,
+        category,
+        isFromHighlight,
+        this.$i18n
+      )
+      startWord = startWord.nextSibling
+    } while (startWord !== endWord)
+    highlightWord(endWord, color, range, category, isFromHighlight, this.$i18n)
+    endWord.setAttribute("highlighted--last-word", "true")
   }
 
-  do {
-    highlightWord(
-      startWord,
-      color,
-      range,
-      category,
-      isFromHighlight,
-      this.$i18n
-    )
-    startWord = startWord.nextSibling
-  } while (startWord !== endWord)
-
-  endWord.previousSibling.setAttribute("highlighted--last-word", "true")
+  //highlightWord(startWord, color, range, category, isFromHighlight, this.$i18n)
 }
 
 function highlightWord(
@@ -59,9 +61,13 @@ function highlightWord(
   word.appendChild(toolboxDiv)
   if (isFromHighlight && !wordHasToolbox) {
     var toolbox = Vue.extend(AppEditorHighlightDescToolbox)
+    // find how to listen to the event, workaround for now is to use the global event bus
     new toolbox({
       i18n,
-      propsData: { tag: range._tag, category },
+      propsData: {
+        tag: range._tag,
+        category,
+      },
     }).$mount(toolboxDiv)
   }
 }

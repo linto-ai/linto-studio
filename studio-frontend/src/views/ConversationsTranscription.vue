@@ -63,10 +63,19 @@
       :tag="tagToDelete"
       @on-cancel="onCancelDeleteTag"
       @on-confirm="onConfirmDeleteTag" />
+
+    <AppEditorMetadataModal
+      v-if="showMetadataModal"
+      @on-cancel="cancelMetadata"
+      @on-confirm="setMetadata" />
   </MainContentConversation>
 </template>
 <script>
 import moment from "moment"
+import { nextTick } from "vue"
+
+import { bus } from "../main.js"
+import { apiPostMetadata, apiUpdateMetadata } from "@/api/metadata.js"
 
 import { conversationMixin } from "@/mixins/conversation.js"
 
@@ -80,10 +89,8 @@ import MenuToolbox from "@/components/MenuToolbox.vue"
 import ModalDeleteTagHighlight from "@/components/ModalDeleteTagHighlight.vue"
 import ConversationShare from "@/components/ConversationShare.vue"
 import TranscriptionHelper from "@/components/TranscriptionHelper.vue"
+import AppEditorMetadataModal from "@/components/AppEditorMetadataModal.vue"
 import ErrorView from "./Error.vue"
-
-import { apiPostMetadata, apiUpdateMetadata } from "@/api/metadata.js"
-import { nextTick } from "vue"
 
 export default {
   mixins: [conversationMixin],
@@ -94,7 +101,18 @@ export default {
       status: null,
       showDeleteModal: false,
       tagToDelete: null,
+      showMetadataModal: false,
+      metadataModalData: null,
     }
+  },
+  mounted() {
+    bus.$on("open-metadata-modal", (data) => {
+      this.showMetadataModal = true
+      this.metadataModalData = data
+    })
+  },
+  beforeDestroy() {
+    bus.$off("open-metadata-modal")
   },
   watch: {
     "conversation.speakers"(newVal, oldVal) {
@@ -166,6 +184,25 @@ export default {
     },
   },
   methods: {
+    cancelMetadata() {
+      this.showMetadataModal = false
+    },
+    async setMetadata(fields, schema) {
+      this.showMetadataModal = false
+      console.log("set-metadata", fields, schema, this.metadataModalData)
+      apiPostMetadata(
+        this.conversationId,
+        this.metadataModalData.tag._id,
+        schema.name,
+        fields.reduce(
+          (obj, field) => ({ ...obj, [field.key]: field.value }),
+          {}
+        )
+      )
+      // Todo: only update the right metadata
+      await this.fetchHightlightsCategories(this.conversationId)
+      //bus.$emit("set-metadata", fields)
+    },
     showHelper() {
       this.helperVisible = true
     },
@@ -243,6 +280,7 @@ export default {
     HighlightsList,
     MenuToolbox,
     ModalDeleteTagHighlight,
+    AppEditorMetadataModal,
   },
 }
 </script>
