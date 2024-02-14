@@ -38,8 +38,10 @@
             :selectable="false"
             :withCategories="false"
             addable
+            :possess="possess"
             :conversationId="conversationId"
-            :searchCategoryType="searchCategoryType">
+            :searchCategoryType="searchCategoryType"
+            :categoriesList="categoriesList">
           </TagSearch>
         </ContextMenu>
       </div>
@@ -63,6 +65,7 @@
             :conversationId="conversationId"
             :selectedCategory="selectedCategory"
             :searchCategoryType="searchCategoryType"
+            :categoriesList="categoriesList"
             @done="done"
             v-model="selectedCategory"></DropDownAddTagCreate>
         </ContextMenu>
@@ -139,6 +142,7 @@ export default {
     value: { type: Array, required: false, default: () => [] }, // tags
     searchCategoryType: { type: String, default: "conversation_metadata" },
     possess: { type: Boolean, default: false },
+    categoriesList: { type: Array, required: false, default: null }, // if define, search will be done on this list instead of fetching from server
   },
   data() {
     return {
@@ -148,7 +152,7 @@ export default {
       selectedCategory: null,
       reloadTagList: false,
       reloadCategoryList: false,
-      allCategories: [],
+      allCategories: this.categoriesList || [],
     }
   },
   mounted() {
@@ -241,6 +245,13 @@ export default {
     async browseCategories() {
       this.state = STATES.BROWSE_CATEGORY
       this.loading = true
+      if (this.categoriesList !== null) {
+        console.log("->2", this.categoriesList)
+        this.allCategories = this.categoriesList
+        this.loading = false
+        return
+      }
+
       this.allCategories = await apiGetAllCategories(
         this.conversationId,
         this.searchCategoryType,

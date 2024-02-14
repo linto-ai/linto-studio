@@ -54,6 +54,7 @@ export default {
       default: "conversation_metadata",
       required: false,
     },
+    categoriesList: { type: Array, required: false, default: null }, // if define, search will be done on this list instead of fetching from server
   },
   mixins: [debounceMixin],
   data() {
@@ -106,6 +107,14 @@ export default {
     async fetchSearchResult(newSearch) {
       this.loading = true
       if (!newSearch) {
+        if (this.categoriesList !== null) {
+          this.searchedCategories = this.categoriesList.filter((category) =>
+            category.name.includes(newSearch)
+          )
+          this.loading = false
+          return
+        }
+
         this.searchedCategories = await apiGetAllCategories(
           this.conversationId,
           this.categoryType,

@@ -124,8 +124,9 @@
         "title": "Add metadata",
         "description": "Select which metadata you want to add",
         "button_first": "Add metadata",
-        "placeholder": "select a metadata type first"
-      }
+        "placeholder": "Select a metadata type"
+      },
+      "comment": "Commentaire"
     },
     "information_label": "Global information",
     "keyword_list": {

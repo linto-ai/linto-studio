@@ -9,6 +9,7 @@
       :conversationId="conversationId"
       searchCategoryType="highlight"
       :possess="true"
+      :categoriesList="categoriesList"
       @selectTag="selectTag"></DropDownAddTag>
   </ContextMenu>
   <!-- tag selector -->
@@ -21,6 +22,7 @@ import DropDownAddTag from "./DropDownAddTag.vue"
 export default {
   props: {
     conversationId: { type: String, required: true },
+    categoriesList: { type: Array, required: false, default: null }, // if define, search will be done on this list instead of fetching from server
   },
   // data() {},
   methods: {

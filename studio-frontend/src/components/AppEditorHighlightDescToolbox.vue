@@ -12,7 +12,7 @@
           :color="category.color" />
       </div>
 
-      <p v-if="metadatas.length === 0">
+      <!-- <p v-if="metadatas.length === 0">
         {{ $t("conversation.highlight_toolbox.no-metadata") }}
       </p>
 
@@ -20,20 +20,15 @@
         v-else
         v-for="metadata of metadatas"
         :is="metadatasComponents[metadata.schema]"
-        :metadata="metadata" />
-      <!-- <h4>{{ metadata.schema }}</h4>
-        <LabeledValue
-          v-for="(value, key) in metadata.value"
-          :key="key"
-          :label="key"
-          :value="value" /> -->
+        :metadata="metadata"
+        :conversationId="conversationId" />
 
       <button class="btn green" @click="clickAddMetadata">
         <span class="icon plus"></span>
         <span class="label">{{
           $t("conversation.highlight_toolbox.button-add-metadata")
         }}</span>
-      </button>
+      </button> -->
     </div>
 
     <!-- <AppEditorMetadataModal

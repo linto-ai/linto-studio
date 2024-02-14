@@ -1,6 +1,6 @@
 export const formsMixin = {
   methods: {
-    testFields({ fieldsToTest = this.fields, autoContains = false }) {
+    testFields({ fieldsToTest = this.fields, autoContains = false } = {}) {
       this.debug("testing fields %o", fieldsToTest)
       console.log("fieldsToTest", fieldsToTest)
       return fieldsToTest.every((fieldName) => {

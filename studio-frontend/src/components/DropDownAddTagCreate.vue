@@ -36,6 +36,7 @@
       :conversationId="conversationId"
       :reload="reloadCategoryList"
       :categoryType="searchCategoryType"
+      :categoriesList="categoriesList"
       v-model="_selectedCategory" />
   </div>
 </template>
@@ -50,6 +51,7 @@ export default {
     conversationId: { type: String, required: false },
     selectedCategory: { type: Object, required: false },
     searchCategoryType: { type: String, default: "conversation_metadata" },
+    categoriesList: { type: Array, required: false, default: null }, // if define, search will be done on this list instead of fetching from server
   },
   data() {
     return {

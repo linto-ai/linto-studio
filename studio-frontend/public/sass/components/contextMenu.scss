@@ -1,8 +1,8 @@
 .context-menu {
   position: fixed;
   z-index: 999;
-  background-color: var(--background-primary-with-blur);
-  backdrop-filter: blur(50px);
+  background-color: var(--background-primary);
+  //backdrop-filter: blur(50px);
   box-shadow: var(--shadow-block-selected);
   border: var(--border-block);
   padding: var(--small-gap);

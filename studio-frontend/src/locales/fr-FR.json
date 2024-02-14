@@ -122,8 +122,10 @@
       "add_metadata_modal": {
         "title": "Ajouter une métadonnée",
         "description": "Sélectionnez le type de métadonnée que vous souhaitez ajouter",
-        "button_first": "Continuer"
-      }
+        "button_first": "Continuer",
+        "placeholder": "Selectionnez un type de métadonnée"
+      },
+      "comment": "Commentaire"
     },
     "information_label": "Informations générales",
     "keyword_list": {

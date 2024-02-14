@@ -111,7 +111,7 @@ export const conversationMixin = {
         true,
         true
       )
-      this.hightlightsCategories = req
+      this.hightlightsCategories = req.filter((cat) => cat.tags.length > 0)
     },
   },
 }

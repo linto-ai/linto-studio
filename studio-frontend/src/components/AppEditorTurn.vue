@@ -52,6 +52,7 @@
           <AppEditorToolbox
             v-if="wordsSelected.length > 0 && wordsSelected[0].wid === word.wid"
             :conversationId="conversationId"
+            :categoriesList="hightlightsCategories"
             @selectTag="handleNewHighlight"></AppEditorToolbox>
           <span class="word_content">{{ word.word }}</span>
           <span class="word_space">
@@ -410,7 +411,6 @@ export default {
         .setBaseAndExtent(startRange, 0, endRange, endRange.length)
 
       this.wordsSelected = selection.wordsSelected
-      console.log(selection, endRange)
       const domRange = new Range()
       domRange.setStartBefore(startRange)
       //domRange.setEndAfter(endRange.getElementsByClassName("word_content")[0])
