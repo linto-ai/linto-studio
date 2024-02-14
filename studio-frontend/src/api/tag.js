@@ -339,7 +339,8 @@ export async function apiSearchTags(
   scopeId,
   name,
   categoryType,
-  scope = "organization",
+
+  { scope = "organization", possess = false },
   signal,
   notif
 ) {
@@ -364,6 +365,7 @@ export async function apiSearchTags(
         expand: "true",
         name,
         categoryType,
+        possess,
       },
       notif
     )

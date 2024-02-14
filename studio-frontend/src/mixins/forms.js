@@ -1,19 +1,31 @@
 export const formsMixin = {
   methods: {
-    testFields(fieldsToTest = this.fields) {
+    testFields({ fieldsToTest = this.fields, autoContains = false } = {}) {
       this.debug("testing fields %o", fieldsToTest)
+      console.log("fieldsToTest", fieldsToTest)
       return fieldsToTest.every((fieldName) => {
-        const res = this.testSingleField(this[fieldName])
-        this.debug("field %s is valid: %s", fieldName, res)
-        return res
+        if (!autoContains) {
+          const res = this.testSingleField(this[fieldName])
+          this.debug("field %s is valid: %s", fieldName, res)
+          return res
+        } else {
+          const res = this.testSingleField(fieldName)
+          this.debug("field %s is valid: %s", fieldName, res)
+          return res
+        }
       })
     },
     testSingleField(field) {
+      console.log("field", field)
       if (typeof field === "object" && field.length !== undefined) {
         return field.every((field) => this.testSingleField(field))
       }
 
       // maybe check if testField is a function and display warning if not
+      if (field.required && !field.value) {
+        field.error = this.$i18n.t("global.this_field_is_required")
+        return false
+      }
 
       if (!field.testField) {
         return true

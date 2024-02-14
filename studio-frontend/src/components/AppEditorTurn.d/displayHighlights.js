@@ -56,7 +56,7 @@ function metadataRangeToDomRange(range) {
   try {
     let domRange = new Range()
     domRange.setStartBefore(document.getElementById(range.startId))
-    domRange.setEndAfter(document.getElementById(range.endId))
+    domRange.setEndBefore(document.getElementById(range.endId))
     domRange._tag = range.tag
     return domRange
   } catch (e) {

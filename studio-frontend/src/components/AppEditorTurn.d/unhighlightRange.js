@@ -6,7 +6,7 @@ export default function unhighlightRange({ range }) {
 
   let endWord = endContainer.children.item(endOffset)
 
-  if (!endWord) {
+  if (!endWord || startWord === endWord) {
     startWord.removeAttribute("highlighted")
     startWord.classList.remove(
       ...Array.from(startWord.classList).filter((c) =>
@@ -14,16 +14,21 @@ export default function unhighlightRange({ range }) {
       )
     )
     return
+  } else {
+    do {
+      unhighlightWord(startWord)
+      startWord = startWord.nextSibling
+    } while (startWord !== endWord)
+    unhighlightWord(endWord)
   }
 
-  do {
-    startWord.removeAttribute("highlighted")
-    startWord.removeAttribute("highlighted--last-word")
-    startWord.classList.remove(
-      ...Array.from(startWord.classList).filter((c) =>
-        c.startsWith("background-")
-      )
-    )
-    startWord = startWord.nextSibling
-  } while (startWord !== endWord && startWord)
+  //unhighlightWord(startWord)
+}
+
+function unhighlightWord(word) {
+  word.removeAttribute("highlighted")
+  word.removeAttribute("highlighted--last-word")
+  word.classList.remove(
+    ...Array.from(word.classList).filter((c) => c.startsWith("background-"))
+  )
 }

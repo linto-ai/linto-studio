@@ -116,8 +116,16 @@
     "filter_speakers_label": "Filtrer les locuteurs",
     "highlights_label": "Highlights",
     "highlight_toolbox": {
-      "no-metadata": "Aucune meta-données",
-      "title": "Ajouter une annotation sur le texte"
+      "no-metadata": "Aucune métadonnée",
+      "title": "Ajouter une annotation sur le texte",
+      "button-add-metadata": "Ajouter une métadonnée",
+      "add_metadata_modal": {
+        "title": "Ajouter une métadonnée",
+        "description": "Sélectionnez le type de métadonnée que vous souhaitez ajouter",
+        "button_first": "Continuer",
+        "placeholder": "Selectionnez un type de métadonnée"
+      },
+      "comment": "Commentaire"
     },
     "information_label": "Informations générales",
     "keyword_list": {
