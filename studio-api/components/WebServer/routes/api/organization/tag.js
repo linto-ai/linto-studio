@@ -8,7 +8,7 @@ const {
 
 const {
     searchTag
-} = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/taxonomy/search.js`)
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/taxonomy/tags/search.js`)
 
 
 module.exports = (webserver) => {

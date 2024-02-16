@@ -59,6 +59,23 @@ class CategoryModel extends MongoModel {
         }
     }
 
+    async searchByScopeAndName(scopeId, name) {
+        try {
+            let query = {
+                scopeId: scopeId,
+                name: {
+                    $regex: name,
+                    $options: 'i'
+                }
+            }
+
+            return await this.mongoRequest(query)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
     async getByScopeAndName(scopeId, name, type = undefined) {
         try {
             let query = {

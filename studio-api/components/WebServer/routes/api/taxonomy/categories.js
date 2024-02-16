@@ -12,7 +12,7 @@ const {
 
 const {
   searchCategory
-} = require(`${process.cwd()}/components/WebServer/routecontrollers/taxonomy/search.js`)
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/taxonomy/categories/search.js`)
 
 module.exports = (webserver) => {
   return [

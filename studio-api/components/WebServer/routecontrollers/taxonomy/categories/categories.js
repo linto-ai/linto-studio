@@ -16,26 +16,29 @@ const {
 async function createCategory(req, res, next) {
   try {
     // Determine the scope id based on the request path req.params.conversationId or req.params.organizationId
-    const scopeId = req.params.conversationId || req.params.organizationId
-    if (!scopeId) throw new CategoryError('No scopeId found in the request')
-
 
     if (!TYPE.checkValue(req.body.type)) {
       throw new CategoryUnsupportedMediaTypepeNotDefined("Type not supported")
     }
 
-    const category = await model.categories.getByScopeAndName(scopeId, req.body.name, req.body.type)
+    let scopeId = req.params.conversationId || req.params.organizationId
 
-    if (category.length > 0) {
-      throw new CategoryConflict(`Conflict with category name ${req.body.name} already exist. Category id ${category[0]._id}`)
-    } if (TYPE.desiredType(TYPE.HIGHLIGHT, req.body.type)) {
+    if (req.params.conversationId) {
       const conversation = await model.conversations.getById(scopeId)
       if (conversation.length === 0) throw new CategoryError('Conversation not found')
-    } else if (TYPE.desiredType(TYPE.LABEL, req.body.type)) {
+
+      if (TYPE.desiredType(TYPE.LABEL, req.body.type)) {
+        scopeId = conversation[0].organization.organizationId.toString()
+      }
+    } else if (req.params.organizationId) {
       const organization = await model.organizations.getById(scopeId)
       if (organization.length === 0) throw new CategoryError('Organization not found')
-    } else {
-      throw new CategoryError('Type not supported')
+    }
+
+
+    const category = await model.categories.getByScopeAndName(scopeId, req.body.name, req.body.type)
+    if (category.length > 0) {
+      throw new CategoryConflict(`Conflict with category name ${req.body.name} already exist. Category id ${category[0]._id}`)
     }
 
     if (!req.body.color) req.body.color = DEFAULT_COLOT
@@ -87,14 +90,14 @@ async function updateCategory(req, res, next) {
     if (category.length === 0) throw new CategoryError('Category not found')
 
     //Check if desired update category name already exist with the body type required
-    if(req.body.type && !TYPE.checkValue(req.body.type)) throw new CategoryUnsupportedMediaTypepeNotDefined("Type not supported")
-    else if(req.body.type) category[0].type = req.body.type
+    if (req.body.type && !TYPE.checkValue(req.body.type)) throw new CategoryUnsupportedMediaTypepeNotDefined("Type not supported")
+    else if (req.body.type) category[0].type = req.body.type
 
-    if(req.body.color) category[0].color = req.body.color
-    if(req.body.name) category[0].name = req.body.name
+    if (req.body.color) category[0].color = req.body.color
+    if (req.body.name) category[0].name = req.body.name
 
     let category_name = await model.categories.getByScopeAndName(category[0].scopeId, req.body.name, req.body.type)
-    if(category_name.length === 1 && category_name[0]._id.toString() !== req.params.categoryId) throw new CategoryConflict(`Conflict with category name ${req.body.name} already exist. Category id ${category_name[0]._id}`)
+    if (category_name.length === 1 && category_name[0]._id.toString() !== req.params.categoryId) throw new CategoryConflict(`Conflict with category name ${req.body.name} already exist. Category id ${category_name[0]._id}`)
     if (category_name.length > 1) throw new CategoryConflict(`Conflict with category name ${req.body.name} already exist. Category id ${category_name[0]._id}`)
 
     const result = await model.categories.update(category[0])
