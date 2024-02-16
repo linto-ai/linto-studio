@@ -8,7 +8,7 @@ const {
 module.exports = (webserver) => {
   return [
     {
-      path: '/conversations/:conversationId/tags',
+      path: '/conversations/:conversationId/tags,/conversations/:conversationId/tags/:tagId',
       method: 'post',
       requireAuth: true,
       requireConversationWriteAccess: true,

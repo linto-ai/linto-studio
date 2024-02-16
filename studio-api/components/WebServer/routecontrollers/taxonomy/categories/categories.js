@@ -5,12 +5,7 @@ const debug = require("debug")(
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
 
-const organizationUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
 const DEFAULT_COLOT = 'white'
-
-const {
-  TagUnsupportedMediaType,
-} = require(`${process.cwd()}/components/WebServer/error/exception/tag`)
 
 const {
   CategoryUnsupportedMediaTypepeNotDefined,
