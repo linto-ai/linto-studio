@@ -47,24 +47,26 @@ class CategoryModel extends MongoModel {
         }
     }
 
-    async getByOrgaId(id, querySearch) {
+    async getByScope(id) {
         try {
             let query = {
-                organizationId: id
+                scopeId: id
+            }
+            return await this.mongoRequest(query)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
+    async getByScopeAndName(scopeId, name, type = undefined) {
+        try {
+            let query = {
+                scopeId: scopeId,
+                name: name
             }
 
-            if (querySearch) {
-                query = {
-                    ...query,
-                    ...querySearch
-                }
-                if (querySearch.name !== undefined) {
-                    query.name = {
-                        $regex: querySearch.name,
-                        $options: 'i'
-                    }
-                }
-            }
+            if (type) query.type = type
 
             return await this.mongoRequest(query)
         } catch (error) {
@@ -98,6 +100,34 @@ class CategoryModel extends MongoModel {
             }
             return await this.mongoDelete(query)
 
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
+/*OBSOLETE STUFF  */
+
+    async getByOrgaId(id, querySearch) {
+        try {
+            let query = {
+                organizationId: id
+            }
+
+            if (querySearch) {
+                query = {
+                    ...query,
+                    ...querySearch
+                }
+                if (querySearch.name !== undefined) {
+                    query.name = {
+                        $regex: querySearch.name,
+                        $options: 'i'
+                    }
+                }
+            }
+
+            return await this.mongoRequest(query)
         } catch (error) {
             console.error(error)
             return error

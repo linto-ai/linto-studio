@@ -37,6 +37,19 @@ class TagModel extends MongoModel {
         }
     }
 
+    async getTagByCategory(categoryId) {
+        try {
+            let query = {
+                categoryId: categoryId,
+            }
+            return await this.mongoRequest(query)
+        }
+        catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
     async getByIdList(idList) {
         try {
             if (idList.length === 0) return []
@@ -57,24 +70,15 @@ class TagModel extends MongoModel {
         }
     }
 
-    async getByOrgaId(idOrga, search) {
+    async getTagByCategoryAndName(categoryId, name) {
         try {
             let query = {
-                organizationId: idOrga
+                categoryId: categoryId,
+                name: name
             }
-
-            if (search) {
-                for (let key in search) {
-                    if (!tags_key.includes(key)) continue
-                    query[key] = {
-                        $regex: search[key],
-                        $options: 'i'
-                    }
-                }
-            }
-
             return await this.mongoRequest(query)
-        } catch (error) {
+        }
+        catch (error) {
             console.error(error)
             return error
         }
@@ -109,6 +113,32 @@ class TagModel extends MongoModel {
             return error
         }
     }
+
+    /*TODO: Obsolete function reworking require*/
+
+    async getByOrgaId(idOrga, search) {
+        try {
+            let query = {
+                organizationId: idOrga
+            }
+
+            if (search) {
+                for (let key in search) {
+                    if (!tags_key.includes(key)) continue
+                    query[key] = {
+                        $regex: search[key],
+                        $options: 'i'
+                    }
+                }
+            }
+
+            return await this.mongoRequest(query)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
 }
 
 module.exports = new TagModel()

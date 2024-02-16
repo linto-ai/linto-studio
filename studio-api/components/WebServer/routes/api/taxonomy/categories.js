@@ -2,9 +2,13 @@ const debug = require('debug')('linto:conversation-manager:router:api:taxonomy:c
 
 const {
   getOrganizationCategory,
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/taxonomy/categories.js`)
+
+const {
+  // getOrganizationCategory,
   createCategory,
   getCategory
-} = require(`${process.cwd()}/components/WebServer/routecontrollers/taxonomy/categories.js`)
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/taxonomy/categories/categories.js`)
 
 const {
   searchCategory

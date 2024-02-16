@@ -1,19 +1,16 @@
 const TYPE = Object.freeze({
   "HIGHLIGHT": 'highlight',
-  "CONVERSATION_METADATA": 'conversation_metadata',
-  "CONVERSATION_TEXT": 'conversation_text',
-  "COMMENTARY": 'commentary',
+  "LABEL": 'label',
 
   // check if the type is valid
-  checkValue: (type) => (type === TYPE.HIGHLIGHT || type === TYPE.CONVERSATION_METADATA || type === TYPE.CONVERSATION_TEXT || type === TYPE.COMMENTARY),
-  desiredType: (type, categoryType) => {
+  checkValue: (type) => (type === TYPE.HIGHLIGHT || type === TYPE.LABEL),
+  desiredType: (type, desiredType) => {
     switch (true) {
       case type === undefined: return false
-      case categoryType === undefined: return true
-      case type === TYPE.HIGHLIGHT && categoryType.includes(TYPE.HIGHLIGHT):
-      case type === TYPE.CONVERSATION_METADATA && categoryType.includes(TYPE.CONVERSATION_METADATA):
-      case type === TYPE.CONVERSATION_TEXT && categoryType.includes(TYPE.CONVERSATION_TEXT):
-      case type === TYPE.COMMENTARY && categoryType.includes(TYPE.COMMENTARY):
+      case desiredType === undefined: return true
+      case type === TYPE.HIGHLIGHT && desiredType.includes(TYPE.HIGHLIGHT):
+        return true
+      case type === TYPE.LABEL && desiredType.includes(TYPE.LABEL):
         return true
       default:
         return false

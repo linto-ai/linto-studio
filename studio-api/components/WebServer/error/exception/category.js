@@ -51,6 +51,18 @@ class CategoryConflict extends Error {
   }
 }
 
+class CategoryUnsupportedMediaTypepeNotDefined extends Error {
+  constructor(message, err) {
+    super()
+    this.name = 'CategoryUnsupportedMediaTypepeNotDefined'
+    this.type = ExceptionType
+    this.status = '415'
+    if (message) this.message = message
+    else this.message = `Category unsupported media type`
+    if (err) this.err = err
+  }
+}
+
 class CategoryNotFound extends Error {
   constructor(message, err) {
     super()
@@ -64,6 +76,7 @@ class CategoryNotFound extends Error {
 }
 
 module.exports = {
+  CategoryUnsupportedMediaTypepeNotDefined,
   CategoryTypeNotDefined,
   CategoryTypeNotValid,
   CategoryConflict,
