@@ -33,9 +33,9 @@ async function listShareTags(req, res, next) {
         for (const categoryId in categories) {
             searchResult.push(categories[categoryId])
         }
+
         if (searchResult.length === 0) res.status(204).send()
         else res.status(200).send(searchResult)
-
     } catch (err) {
         next(err)
     }

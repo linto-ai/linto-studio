@@ -540,7 +540,7 @@ class ConvoModel extends MongoModel {
 
             if (filter.tags) {
                 query.tags = {
-                    $in: filter.tags.split(',')
+                    $all: filter.tags.split(',')
                 }
             }
 
