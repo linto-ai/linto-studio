@@ -11,9 +11,12 @@ const {
   OrganizationForbidden
 } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
+// OK http://dev.linto.local:8001/api/conversations/65cf830bd3729d7ba7301820/categories/search?type=info&tags=65cf29f54085a42485e41f72,65cf2e9d3ee51a278d870243,65cf8345d3729d7ba7301822
+// KO http://dev.linto.local:8001/api/conversations/65cf830bd3729d7ba7301820/categories/search?type=info&tags=65cf29f54085a42485e41f72,65cf2e9d3ee51a278d870243,65cf8345d3729d7ba7301822
+
+
 async function searchCategory(req, res, next) {
   try {
-
     const scopeId = await organizationUtility.getOrgaIdFromReq(req)
     let categoryList = []
     if (!req.query.type && !SEARCH_TYPE.includes(req.query.type)) {
@@ -41,49 +44,6 @@ async function searchCategory(req, res, next) {
     }
     else if (req.query.type === 'notags') {
       categoryList = await model.categories.getByScope(scopeId)
-    }
-
-
-    if (req.query.expand === 'true') {
-      for (let i = 0; i < categoryList.length; i++) {
-        const tags = await model.search.tags.getByCategory(categoryList[i]._id.toString())
-        categoryList[i].tags = tags
-      }
-    }
-
-    if (categoryList.length === 0) res.status(204).send()
-    else res.status(200).send(categoryList)
-
-  } catch (err) {
-    next(err)
-  }
-}
-
-async function searchCategoryBackup(req, res, next) {
-  try {
-    const organizationId = await organizationUtility.getOrgaIdFromReq(req)
-    let categoryList
-
-    if (!req.query.type && !SEARCH_TYPE.includes(req.query.type)) {
-      throw new OrganizationError('Search type must be explore, info, search or notags')
-
-      // Get a list of tags (and their category) with their linked tags from any conversation (tags, categories, name, expand)
-    } else if (req.query.type === 'explore') {
-      if (req.params.conversationId !== undefined) throw new OrganizationForbidden('Explore search is disable for shared conversation')
-
-
-      if (req.query.tags === undefined) {
-        categoryList = await search(req, organizationId)
-      } else {
-        const tagsId = await explore(req, organizationId)
-        categoryList = await generateCategoryFromTagList(tagsId, organizationId, req.query)
-      }
-
-    } else if (req.query.type === 'category') {
-      if (req.query.name === undefined) throw new OrganizationError('name is required for category search')
-      else categoryList = await model.search.categories.getByOrgaIdAndName(organizationId, req.query.name)
-    } else if (req.query.type === 'notags') {
-      categoryList = await notags(organizationId)
     }
 
 
