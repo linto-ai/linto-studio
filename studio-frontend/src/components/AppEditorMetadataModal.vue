@@ -15,7 +15,7 @@
             $t("conversation.highlight_toolbox.add_metadata_modal.description")
           }}</label>
 
-          <select name="pets" id="metadata-type" v-model="selectedSchema">
+          <select name="metadata" id="metadata-type" v-model="selectedSchema">
             <option
               v-for="(schema, key) in schemas"
               :value="key"

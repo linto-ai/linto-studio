@@ -10,6 +10,7 @@ export default async function hightLightController(
   io
 ) {
   if (!categoryName || !conversationId || !userToken) {
+    debug("Missing parameters")
     return
   }
 

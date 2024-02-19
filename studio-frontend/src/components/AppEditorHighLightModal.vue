@@ -70,7 +70,9 @@ export default {
           }
         }
       }
-      finalList = finalList.concat(servicesListCopy)
+      finalList = finalList.concat(
+        servicesListCopy.map((s) => ({ ...s, disabled: true }))
+      )
       console.log("finalList", finalList)
       return finalList
     },

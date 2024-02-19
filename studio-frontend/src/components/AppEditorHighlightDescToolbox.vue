@@ -12,6 +12,10 @@
           :color="category.color" />
       </div>
 
+      <!-- tabs bar (fixed on top)-->
+      <!-- <Tabs :tabs="metadataTabs" v-model="selectedTab" /> -->
+      <!-- metadata list -->
+
       <!-- <p v-if="metadatas.length === 0">
         {{ $t("conversation.highlight_toolbox.no-metadata") }}
       </p>
@@ -45,6 +49,7 @@ import ContextMenu from "./ContextMenu.vue"
 import LabeledValue from "./LabeledValue.vue"
 import Tag from "./Tag.vue"
 import MetadataComment from "./MetadataComment.vue"
+import Tabs from "./Tabs.vue"
 
 export default {
   props: {
@@ -64,6 +69,19 @@ export default {
     //console.log(metadatasComponents[metadata.schema])
     return {
       metadatasComponents,
+      metadataTabs: [
+        {
+          name: "comment",
+          //label: "Comment",
+          img: "/img/We10X-icon-theme/kate.svg",
+        },
+        {
+          name: "person",
+          //label: "Person",
+          img: "/img/We10X-icon-theme/calendar.svg",
+        },
+      ],
+      selectedTab: null,
     }
   },
   computed: {
@@ -93,6 +111,6 @@ export default {
       e.preventDefault()
     },
   },
-  components: { ContextMenu, Tag, LabeledValue, MetadataComment },
+  components: { ContextMenu, Tag, LabeledValue, MetadataComment, Tabs },
 }
 </script>

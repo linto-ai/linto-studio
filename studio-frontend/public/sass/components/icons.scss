@@ -195,6 +195,12 @@
   &.show {
     @include maskImage("../public/img/eye.svg");
   }
+  &.location {
+    @include maskImage("../public/img/location.svg");
+  }
+  &.calendar {
+    @include maskImage("../public/img/calendar.svg");
+  }
 }
 
 .icon.small {

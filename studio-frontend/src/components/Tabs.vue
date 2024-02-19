@@ -11,8 +11,9 @@
         :id="tab.id ? tab.id : undefined"
         :aria-controls="tab.ariaControl ? tab.ariaControl : undefined"
         @click="$emit('input', tab.name)">
-        <span class="icon" :class="tab.icon"></span>
-        <span class="tab__label">{{ tab.label }}</span>
+        <span class="icon" v-if="tab.icon" :class="tab.icon"></span>
+        <img v-else-if="tab.img" :src="tab.img" class="icon large" />
+        <span class="tab__label" v-if="tab.label">{{ tab.label }}</span>
       </div>
     </div>
     <div class="tabs-content-divider"></div>
