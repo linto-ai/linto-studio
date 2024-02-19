@@ -1,12 +1,14 @@
 <template>
   <!-- TODO: use api popover https://developer.mozilla.org/fr/docs/Web/API/Popover_API/Using -->
   <div
-    class="context-menu"
+    class="context-menu flex col"
     :style="style"
     ref="content"
     :positionHorizontal="positionMenuHorizontal"
     :positionVertical="positionMenuVertical">
-    <slot></slot>
+    <div :class="{ 'overflow-vertical-auto': overflow }">
+      <slot></slot>
+    </div>
   </div>
 </template>
 <script>
@@ -41,6 +43,11 @@ export default {
     name: {
       type: String,
       default: () => "context-menu-" + Math.floor(Math.random() * 1000000000),
+    },
+    // this prop works only for last context-menu in the chain else next context-menu will be hidden
+    overflow: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
