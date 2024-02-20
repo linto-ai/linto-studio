@@ -1,6 +1,7 @@
 const TYPE = Object.freeze({
   "HIGHLIGHT": 'highlight',
-  "LABEL": 'label',
+  // "LABEL": 'label',
+  "LABEL": 'conversation_metadata',
 
   // check if the type is valid
   checkValue: (type) => (type === TYPE.HIGHLIGHT || type === TYPE.LABEL),

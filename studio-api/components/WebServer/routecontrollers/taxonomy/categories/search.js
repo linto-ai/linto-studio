@@ -4,23 +4,19 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 const organizationUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
 const tagsUtility = require(`${process.cwd()}/components/WebServer/controllers/taxonomy/tags`)
 
-const SEARCH_TYPE = ['explore', 'info', 'category', 'notags']
+const SEARCH_TYPE = ['explore', 'info', 'category']
 
 const {
   OrganizationError,
   OrganizationForbidden
 } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
-// OK http://dev.linto.local:8001/api/conversations/65cf830bd3729d7ba7301820/categories/search?type=info&tags=65cf29f54085a42485e41f72,65cf2e9d3ee51a278d870243,65cf8345d3729d7ba7301822
-// KO http://dev.linto.local:8001/api/conversations/65cf830bd3729d7ba7301820/categories/search?type=info&tags=65cf29f54085a42485e41f72,65cf2e9d3ee51a278d870243,65cf8345d3729d7ba7301822
-
-
 async function searchCategory(req, res, next) {
   try {
     const scopeId = await organizationUtility.getOrgaIdFromReq(req)
     let categoryList = []
     if (!req.query.type && !SEARCH_TYPE.includes(req.query.type)) {
-      throw new OrganizationError('Search type must be explore, info, search or notags')
+      throw new OrganizationError('Search type must be explore, info or category')
     } else if (req.query.type === 'explore') {
       if (req.params.conversationId !== undefined) throw new OrganizationForbidden('Explore search is disable for shared conversation')
 
@@ -42,10 +38,6 @@ async function searchCategory(req, res, next) {
       if (req.query.name === undefined) throw new OrganizationError('name is required for category search')
       else categoryList = await model.categories.searchByScopeAndName(scopeId, req.query.name)
     }
-    else if (req.query.type === 'notags') {
-      categoryList = await model.categories.getByScope(scopeId)
-    }
-
 
     if (req.query.expand === 'true') {
       for (let i = 0; i < categoryList.length; i++) {
@@ -67,12 +59,6 @@ function info(req) {
   return req.query.tags.split(',')
 }
 
-async function notags(organizationId) {
-  const tagsList = await model.tags.getByOrgaId(organizationId) // Get all tag from an organisation
-  let categoryTags = [...new Set(tagsList.map(tag => tag.categoryId))]  // Fetch category
-  const objectIds = categoryTags.map(stringId => model.tags.getObjectId(stringId))
-  return await model.categories.getByOrgaId(organizationId, { _id: { $nin: objectIds } })
-}
 
 async function search(req, categoryList) {
 

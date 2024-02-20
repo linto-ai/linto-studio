@@ -50,16 +50,22 @@ class TagModel extends MongoModel {
         }
     }
 
-    async getByIdList(idList) {
+    async getByIdList(idList, name = undefined) {
         try {
             if (idList.length === 0) return []
             else if (typeof idList[0] === 'string') {
                 idList = idList.map(id => this.getObjectId(id))
             }
 
-            const query = {
+            let query = {
                 "_id": {
                     $in: idList
+                }
+            }
+            if (name) {
+                query.name = {
+                    $regex: name,
+                    $options: 'i'
                 }
             }
 
@@ -113,32 +119,6 @@ class TagModel extends MongoModel {
             return error
         }
     }
-
-    /*TODO: Obsolete function reworking require*/
-
-    async getByOrgaId(idOrga, search) {
-        try {
-            let query = {
-                organizationId: idOrga
-            }
-
-            if (search) {
-                for (let key in search) {
-                    if (!tags_key.includes(key)) continue
-                    query[key] = {
-                        $regex: search[key],
-                        $options: 'i'
-                    }
-                }
-            }
-
-            return await this.mongoRequest(query)
-        } catch (error) {
-            console.error(error)
-            return error
-        }
-    }
-
 }
 
 module.exports = new TagModel()

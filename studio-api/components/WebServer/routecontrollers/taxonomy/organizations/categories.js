@@ -9,11 +9,6 @@ const {
     CategoryError,
 } = require(`${process.cwd()}/components/WebServer/error/exception/category`)
 
-
-// http://dev.linto.local:8001/api/organizations/65673f7d9b1fa24f87aed9ca/categories?type=conversation_metadata&expand=false&possess=false
-// http://dev.linto.local:8001/api/conversations/65b8cec1cfaada211e2d9f39/categories?type=conversation_metadata&expand=false&possess=false
-
-
 async function getOrganizationCategory(req, res, next) {
     try {
         let scopeId = req.params.organizationId || req.params.conversationId
@@ -28,6 +23,7 @@ async function getOrganizationCategory(req, res, next) {
         if (category.length === 0) return res.status(204).send()
 
         // how to do the possess part with only the scopeId ?
+        let metadata = []
 
         if (req.query.expand === 'true') {
             let tag_filter
@@ -36,9 +32,8 @@ async function getOrganizationCategory(req, res, next) {
                 if (conversation.length === 0) throw new CategoryError('Conversation not found')
                 tag_filter = conversation[0].tags
 
-                // let metadata = []
-                // if (req.query.expand === "true")
-                //     metadata = await model.metadata.getMetadata(scopeId)
+                if (req.query.expand === "true")
+                    metadata = await model.metadata.getMetadata(scopeId)
             }
 
             // Get all the tags of the list of categories based of their id
@@ -53,18 +48,18 @@ async function getOrganizationCategory(req, res, next) {
                     category[i].tags = tags_filtered
                 } else category[i].tags = tags
 
-                //         if (metadata.length > 0) {
-                //             category[i].tags.map(tag => {
+                if (metadata.length > 0) {
+                    category[i].tags.map(tag => {
 
-                //                 const matchingMetadata = metadata
-                //                     .filter(meta => meta.tagId === tag._id.toString())
-                //                     .map(({ _id, schema, value }) => ({ _id, schema, value }))
-                //                 tag.metadata = matchingMetadata
+                        const matchingMetadata = metadata
+                            .filter(meta => meta.tagId === tag._id.toString())
+                            .map(({ _id, schema, value }) => ({ _id, schema, value }))
+                        tag.metadata = matchingMetadata
 
 
-                //                 return tag
-                //             })
-                //         }
+                        return tag
+                    })
+                }
             }
         }
         res.status(200).send(category)

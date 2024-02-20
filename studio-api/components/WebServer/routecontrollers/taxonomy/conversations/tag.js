@@ -2,6 +2,7 @@
 const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:conversation`)
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
+const tagsUtility = require(`${process.cwd()}/components/WebServer/controllers/taxonomy/tags`)
 
 const {
     ConversationIdRequire,
@@ -12,7 +13,6 @@ const {
     TagError,
     TagNotFound,
     TagUnsupportedMediaType,
-    TagConflict
 } = require(`${process.cwd()}/components/WebServer/error/exception/tag`)
 
 async function removeTagFromConversation(req, res, next) {
@@ -50,7 +50,7 @@ async function addTagToConversation(req, res, next) {
 
         let tag
         let tagId = req.params.tagId
-        
+
         if (tagId) {
             tag = await model.tags.getById(req.params.tagId)
             if (tag.length !== 1) throw new TagNotFound()
@@ -61,14 +61,14 @@ async function addTagToConversation(req, res, next) {
                 tag = tag_search
             } else {
                 let category = await model.categories.getById(req.body.categoryId)
-                if(category.length === 0 || category.length === undefined) throw new TagError('categoryId not found')
-    
+                if (category.length === 0 || category.length === undefined) throw new TagError('categoryId not found')
+
                 const result = await model.tags.create(req.body)
                 if (result.insertedCount !== 1) throw new TagError('Error during the creation of the tag')
                 tagId = result.insertedId.toString()
                 tag = await model.tags.getById(tagId)
             }
-        }else {
+        } else {
             throw new TagUnsupportedMediaType('Tag id or name and categoryId is required')
         }
 
@@ -88,8 +88,29 @@ async function addTagToConversation(req, res, next) {
     }
 }
 
+async function getTagByConv(req, res, next) {
+    try {
+        const conversation = await model.conversations.getById(req.params.conversationId)
+        if (conversation.length !== 1) throw new ConversationNotFound()
+
+        const tags = await model.tags.getByIdList(conversation[0].tags, req.query.name)
+
+        if (tags.length === 0) {
+            res.status(204).send()
+        } else if (req.query.expand === 'true') {
+            let categories = await tagsUtility.expandTags(tags, req.query.categoryType)
+            res.status(200).send(categories)
+        } else {
+            res.status(200).send(tags)
+        }
+    } catch (err) {
+        next(err)
+    }
+}
+
 
 module.exports = {
     addTagToConversation,
     removeTagFromConversation,
+    getTagByConv
 }
