@@ -3,6 +3,7 @@ const debug = require('debug')(`linto:conversation-manager:components:WebServer:
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const tagsUtility = require(`${process.cwd()}/components/WebServer/controllers/taxonomy/tags`)
+const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
 
 const {
     ConversationIdRequire,
@@ -93,15 +94,29 @@ async function getTagByConv(req, res, next) {
         const conversation = await model.conversations.getById(req.params.conversationId)
         if (conversation.length !== 1) throw new ConversationNotFound()
 
-        const tags = await model.tags.getByIdList(conversation[0].tags, req.query.name)
+        let list
 
-        if (tags.length === 0) {
+        if (TYPE.desiredType(TYPE.LABEL, req.query.categoryType)) {
+            const organizationId = conversation[0].organization.organizationId.toString()
+            let category_list = await model.categories.getByScope(organizationId)
+            let categoryId_list = category_list.map(category => category._id.toString())
+
+            list = await model.tags.getTagByCategoryList(categoryId_list, req.query.name)
+
+            if (req.query.expand === 'true') {
+                list = await tagsUtility.expandTags(list, req.query.categoryType)
+            }
+
+        } else if (TYPE.desiredType(TYPE.HIGHLIGHT, req.query.categoryType)) {
+            list = await model.tags.getByIdList(conversation[0].tags, req.query.name)
+            if (req.query.expand === 'true') {
+                list = await tagsUtility.expandTags(list, req.query.categoryType)
+            }
+        }
+        if (list.length === 0) {
             res.status(204).send()
-        } else if (req.query.expand === 'true') {
-            let categories = await tagsUtility.expandTags(tags, req.query.categoryType)
-            res.status(200).send(categories)
         } else {
-            res.status(200).send(tags)
+            res.status(200).send(list)
         }
     } catch (err) {
         next(err)

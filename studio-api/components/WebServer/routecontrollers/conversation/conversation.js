@@ -35,6 +35,11 @@ async function deleteConversation(req, res, next) {
 
         // delete also all subtitle related to that conversation
         await model.conversationSubtitles.deleteAllFromConv(req.params.conversationId)
+        const categoryList = await model.categories.getByScope(req.params.conversationId)
+        for (const category of categoryList) {
+          model.categories.delete(category._id)
+          model.tags.deleteAllFromCategory(category._id.toString())
+        }
 
 
         res.status(200).send({

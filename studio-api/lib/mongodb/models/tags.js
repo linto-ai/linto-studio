@@ -50,6 +50,27 @@ class TagModel extends MongoModel {
         }
     }
 
+    async getTagByCategoryList(categoryIdList, name = undefined) {
+        try {
+            let query = {
+                categoryId: {
+                    $in: categoryIdList
+                }
+            }
+            if (name) {
+                query.name = {
+                    $regex: name,
+                    $options: 'i'
+                }
+            }
+            return await this.mongoRequest(query)
+        }
+        catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
     async getByIdList(idList, name = undefined) {
         try {
             if (idList.length === 0) return []
@@ -114,6 +135,19 @@ class TagModel extends MongoModel {
             }
             return await this.mongoDelete(query)
 
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
+
+    async deleteAllFromCategory(categoryId) {
+        try {
+            const query = {
+                categoryId: categoryId
+            }
+            return await this.mongoDeleteMany(query)
         } catch (error) {
             console.error(error)
             return error
