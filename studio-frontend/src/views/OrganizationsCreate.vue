@@ -106,8 +106,8 @@
         </div>-->
         <div class="flex row">
           <button class="btn green" type="submit" :disabled="buttonDisabled">
-            <span class="label">{{ formSubmitLabel }}</span>
             <span class="icon apply"></span>
+            <span class="label">{{ formSubmitLabel }}</span>
           </button>
         </div>
       </form>
@@ -213,10 +213,7 @@ export default {
               description: this.orgaDescription.value,
               users,
             }
-            let req = await apiCreateOrganisation(payload, {
-              timeout: 3000,
-              redirect: false,
-            })
+            let req = await apiCreateOrganisation(payload)
 
             if (req.status === "success") {
               this.formState = req.status
@@ -224,19 +221,43 @@ export default {
               bus.$emit("set_organization_scope", {
                 organizationId: newOrganizationId,
               })
+              bus.$emit("app_notif", {
+                status: "success",
+                message: this.$i18n.t("organisation.create.success_message"),
+                redirect: false,
+              })
             } else if (req.status === "error") {
-              this.formState = req.status
-              this.resetForm()
+              this.handleError(req)
             }
           } catch (error) {
             if (process.env.VUE_APP_DEBUG === "true") {
               console.error(error)
             }
-            this.resetForm()
+            this.handleError()
           }
         }
       }
       return false
+    },
+    handleError(req) {
+      switch (req?.error?.response?.status) {
+        case 409:
+          bus.$emit("app_notif", {
+            status: "error",
+            message: this.$i18n.t("organisation.create.error_already_exists"),
+            redirect: false,
+          })
+
+          break
+        default:
+          bus.$emit("app_notif", {
+            status: "error",
+            message: this.$i18n.t("organisation.create.error_message"),
+            redirect: false,
+          })
+      }
+      this.formState = "available"
+      this.resetForm()
     },
     addToMembers(user) {
       this.orgaMembersIds.push(user._id)

@@ -473,7 +473,10 @@
     "organization_users": "Organization users",
     "create": {
       "title": "Create organization",
-      "submit_label": "Create organization"
+      "submit_label": "Create organization",
+      "success_message": "Organization successfully created",
+      "error_already_exists": "An organization with this name already exists",
+      "error_message": "An error occurred while creating the organization"
     },
     "description_description": "The description of your organization",
     "description_label": "Description",
