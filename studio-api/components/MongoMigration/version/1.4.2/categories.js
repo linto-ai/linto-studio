@@ -8,6 +8,6 @@ module.exports = {
   },
 
   async down(db) {
-    db.collection('yourCollectionName').updateMany({}, { $rename: { 'scopeId': 'organizationId' } });
+    db.collection(collections_name).updateMany({}, { $rename: { 'scopeId': 'organizationId' } });
   }
 }
