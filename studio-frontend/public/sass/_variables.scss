@@ -1,4 +1,5 @@
 $montserrat: "Montserrat", "Arial", "Helvetica", "verdana";
+$luciole: "Luciole", "Arial", "Helvetica", "verdana";
 
 $inputFocus: #f7faff;
 $yellowChart: #feb11d;
@@ -12,6 +13,7 @@ $secondaryColor: $blueChart;
 $primaryContrast: #fff;
 
 body {
+  --text-vertical-center-offset: 1px;
   --text-primary: #333;
   --text-secondary: #666;
   --text-disabled: #aaa;

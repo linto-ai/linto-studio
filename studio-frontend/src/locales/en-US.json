@@ -31,7 +31,7 @@
     "tagsSettings": "{organization} tags"
   },
   "conversation": {
-    "acoustic_label": "Acoustic",
+    "acoustic_label": "Acoustic:",
     "acoustic": {
       "generic": "All devices and microphones",
       "phone": "Phone"
@@ -143,7 +143,7 @@
       }
     },
     "language_description": "Select the transcription language for the media file",
-    "language_label": "Language",
+    "language_label": "Language: ",
     "loading_detail_title": "Loading media details.",
     "loading_transcription_title": "Loading transcription.",
     "loading_list_title": "Loading medias.",
@@ -175,7 +175,7 @@
       "full_rights": "Full rights",
       "mutiple_values": "Multiple values"
     },
-    "model_quality_label": "Model quality",
+    "model_quality_label": "Model quality:",
     "model_quality": {
       "high": "High",
       "low": "Low",

@@ -1,0 +1,36 @@
+/** =================== Luciole =================== **/
+
+/** Luciole normal **/
+@font-face {
+  font-family: "Luciole";
+  font-weight: 500;
+  font-style: normal;
+  src: url("Luciole-Regular.ttf") format("truetype");
+}
+
+/** Luciole normal-Italic **/
+
+@font-face {
+  font-family: "Luciole";
+  font-weight: 500;
+  font-style: italic;
+  src: url("Luciole-Regular-Italic.ttf") format("truetype");
+}
+
+/** Luciole bold **/
+
+@font-face {
+  font-family: "Luciole";
+  font-weight: 600;
+  font-style: normal;
+  src: url("Luciole-Bold.ttf") format("truetype");
+}
+
+/** Luciole bold-Italic **/
+
+@font-face {
+  font-family: "Luciole";
+  font-weight: 600;
+  font-style: italic;
+  src: url("Luciole-Bold-Italic.ttf") format("truetype");
+}

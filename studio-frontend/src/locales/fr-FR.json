@@ -31,7 +31,7 @@
     "tagsSettings": "Tags de {organization}"
   },
   "conversation": {
-    "acoustic_label": "Acoustique",
+    "acoustic_label": "Acoustique :",
     "acoustic": {
       "generic": "Tout appareils et microphones",
       "phone": "Téléphone"
@@ -142,7 +142,7 @@
       }
     },
     "language_description": "Sélectionnez la langue dans laquelle sera transcrit le fichier",
-    "language_label": "Langage",
+    "language_label": "Langage :",
     "loading_detail_title": "Chargement du detail du média.",
     "loading_transcription_title": "Chargement de la transcription.",
     "loading_list_title": "Chargement des médias",
@@ -174,7 +174,7 @@
       "full_rights": "Tous les droits",
       "mutiple": "Plusieurs valeurs"
     },
-    "model_quality_label": "Qualité du modèle",
+    "model_quality_label": "Qualité du modèle :",
     "model_quality": {
       "high": "Haute",
       "medium": "Moyenne",
@@ -241,7 +241,7 @@
     "transcription_service_label": "Service de transcription",
     "transcription_service_error": "Veuillez sélectionner un service de transcription",
     "transcription_service_title": "Choissisez le service de transcription",
-    "transcription_settings_label": "Paramètre de transcription",
+    "transcription_settings_label": "Paramètres de transcription",
     "transcription_service_list_empty": "Aucun service de transcription disponible",
     "turn_sync_error_title": "Le tour de parole n'est pas synchronisé correctement",
     "update_information_button": "Mettre à jour les informations",
