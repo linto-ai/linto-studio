@@ -469,6 +469,11 @@
     "add_member_description": "Use the search form to find users by their firstname, lastname or email address",
     "add_member_label": "Add a member",
     "delete_organization": "Delete organization",
+    "delete_modal": {
+      "title": "Delete organization",
+      "content": "Are you sure you want to delete the organization \"{name}\" ? This action cannot be undone. All the organization medias will be deleted."
+    },
+    "delete_error_message": "An error occurred while deleting the organization",
     "general_settings": "General settings",
     "organization_users": "Organization users",
     "create": {
@@ -480,6 +485,11 @@
     },
     "description_description": "The description of your organization",
     "description_label": "Description",
+    "leave_modal": {
+      "title": "Leave organization",
+      "content": "Are you sure you want to leave the organization \"{name}\" ?"
+    },
+    "leave_error_message": "An error occurred while leaving the organization",
     "my_workspace": "My workspace",
     "name_description": "The name of your organization",
     "name_label": "Name",

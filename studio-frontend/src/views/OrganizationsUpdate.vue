@@ -10,6 +10,7 @@
           v-if="isAdmin"
           @click="deleteOrganization()"
           class="btn red-border">
+          <span class="icon trash"></span>
           <span class="label">{{
             $t("organisation.delete_organization")
           }}</span>
@@ -38,7 +39,7 @@
           :field="orgaDescription"
           v-model="orgaDescription.value" />
         <labeled-value
-          v-else
+          v-else-if="orgaDescription.value !== ''"
           class="form-field flex col"
           :label="$t('organisation.description_label')"
           :value="orgaDescription.value" />
@@ -137,33 +138,50 @@
       </div>
     </section>
 
-    <Modal></Modal>
+    <ModalDeleteOrganization
+      v-if="displayDeleteModal"
+      :currentOrganization="currentOrganization"
+      :currentOrganizationScope="currentOrganizationScope"
+      @on-confirm="closeDeleteModal"
+      @on-cancel="closeDeleteModal" />
+
+    <ModalLeaveOrganization
+      v-if="displayLeaveModal"
+      :currentOrganization="currentOrganization"
+      :currentOrganizationScope="currentOrganizationScope"
+      @on-confirm="closeLeaveModal"
+      @on-cancel="closeLeaveModal" />
   </MainContent>
 </template>
 <script>
 import { bus } from "../main.js"
-import Modal from "@/components/Modal.vue"
+
+import {
+  apiAddUserToOrganisation,
+  apiUpdateUserRoleInOrganisation,
+} from "@/api/user.js"
+import { apiUpdateOrganisation } from "@/api/organisation.js"
+
+import { formsMixin } from "@/mixins/forms.js"
+import { orgaRoleMixin } from "@/mixins/orgaRole.js"
+
+import EMPTY_FIELD from "@/const/emptyField"
+
+import { setCookie } from "@/tools/setCookie"
+import { testName } from "@/tools/fields/testName"
+import { testContent } from "@/tools/fields/testContent"
+import { sortArray } from "@/tools/sortList.js"
+
+import OrganizationUpdateHelper from "@/components/OrganizationUpdateHelper.vue"
+import FormInput from "@/components/FormInput.vue"
+import UserInfoInline from "@/components/UserInfoInline.vue"
+import UserInvite from "@/components/UserInvite.vue"
+import ModalDeleteOrganization from "@/components/ModalDeleteOrganization.vue"
+import ModalLeaveOrganization from "@/components/ModalLeaveOrganization.vue"
 import SearchUsersListComponent from "@/components/SearchUsersList.vue"
 import ArrayHeader from "@/components/ArrayHeader.vue"
 import LabeledValue from "@/components/LabeledValue.vue"
 import MainContent from "@/components/MainContent.vue"
-import {
-  apiAddUserToOrganisation,
-  apiUpdateUserRoleInOrganisation,
-} from "../api/user.js"
-import { apiUpdateOrganisation } from "../api/organisation.js"
-import { sortArray } from "../tools/sortList.js"
-import { formsMixin } from "@/mixins/forms.js"
-import EMPTY_FIELD from "@/const/emptyField"
-import { orgaRoleMixin } from "@/mixins/orgaRole.js"
-
-import OrganizationUpdateHelper from "@/components/OrganizationUpdateHelper.vue"
-import Breadcrumb from "../components/Breadcrumb.vue"
-import FormInput from "../components/FormInput.vue"
-import { testName } from "../tools/fields/testName"
-import { testContent } from "../tools/fields/testContent"
-import UserInfoInline from "../components/UserInfoInline.vue"
-import UserInvite from "../components/UserInvite.vue"
 
 export default {
   mixins: [formsMixin, orgaRoleMixin],
@@ -215,6 +233,8 @@ export default {
       sortListKey: "user",
       helperVisible: false,
       usersEmailPending: [],
+      displayDeleteModal: false,
+      displayLeaveModal: false,
     }
   },
   computed: {
@@ -249,14 +269,21 @@ export default {
       this.helperVisible = false
     },
     async deleteOrganization() {
-      bus.$emit("show_modal", {
-        title: "delete organization",
-        content:
-          "Are you sure you want to delete this organization? This action cannot be undone and will delete all conversations.",
-        actionBtnLabel: "Delete",
-        actionName: "delete_organization",
-        organizationId: this.organizationId,
-      })
+      this.displayDeleteModal = true
+    },
+    closeDeleteModal(apiRes) {
+      if (apiRes) {
+        if (apiRes.status === "success") {
+          setCookie("cm_orga_scope", "")
+          window.location.href = "/"
+        } else {
+          bus.$emit("app_notif", {
+            status: "error",
+            message: this.$i18n.t("organisation.delete_error_message"),
+          })
+        }
+      }
+      this.displayDeleteModal = false
     },
     sortBy(key) {
       if (key === this.sortListKey) {
@@ -306,13 +333,21 @@ export default {
       this.orgaMembers.splice(memberIndex, 1)
     },
     leaveOrganization() {
-      bus.$emit("show_modal", {
-        title: "Leave organization",
-        content: `Are you sure you want to leave the organization "${this.currentOrganization.name}"`,
-        actionBtnLabel: "Leave organization",
-        actionName: "leave_organization",
-        organization: this.currentOrganization,
-      })
+      this.displayLeaveModal = true
+    },
+    closeLeaveModal(apiRes) {
+      if (apiRes) {
+        if (apiRes.status === "success") {
+          setCookie("cm_orga_scope", "")
+          window.location.href = "/"
+        } else {
+          bus.$emit("app_notif", {
+            status: "error",
+            message: this.$i18n.t("organisation.leave_error_message"),
+          })
+        }
+      }
+      this.displayLeaveModal = false
     },
     imgFullPath(imgPath) {
       return process.env.VUE_APP_PUBLIC_MEDIA + "/" + imgPath
@@ -361,7 +396,6 @@ export default {
     },
   },
   components: {
-    Modal,
     SearchUsersListComponent,
     ArrayHeader,
     LabeledValue,
@@ -370,6 +404,8 @@ export default {
     FormInput,
     UserInfoInline,
     UserInvite,
+    ModalDeleteOrganization,
+    ModalLeaveOrganization,
   },
 }
 </script>

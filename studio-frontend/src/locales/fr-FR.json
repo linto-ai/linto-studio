@@ -249,7 +249,7 @@
     "update_information_error_notif": "Une erreur s'est produite lors de la mise à jour des informations",
     "update_label": "Mise à jour",
     "updated": "Dernière mise à jour: {date}",
-    "no_conversation_found": "Aucun média trouvée",
+    "no_conversation_found": "Aucun média trouvé",
     "transcription_help": {
       "help_button_label": "Aide",
       "edit_speaker_title": "édition des locuteurs",
@@ -462,6 +462,12 @@
     "add_member_description": "Utilisez le champ de recherche pour chercher des utilisateurs par leur prénom, nom ou adresse électronique",
     "add_member_label": "Ajouter un utilisateur",
     "delete_organization": "Supprimer l'organisation",
+    "delete_modal": {
+      "title": "Supprimer l'organisation",
+      "content": "Êtes vous sur de vouloir supprimer l'organisation \"{name}\" ? Cette action ne peut être annulée et supprimera tout les médias.",
+      "action": "Supprimer"
+    },
+    "delete_error_message": "Une erreur s'est produite lors de la suppression de l'organisation",
     "general_settings": "Réglages",
     "organization_users": "Utilisateurs de l'organisation",
     "create": {
@@ -473,6 +479,12 @@
     },
     "description_description": "Description de l'organisation",
     "description_label": "Description",
+    "leave_modal": {
+      "title": "Quitter l'organisation",
+      "content": "Êtes vous sur de vouloir quitter l'organisation \"{name}\" ?",
+      "action": "Quitter"
+    },
+    "leave_error_message": "Une erreur s'est produite",
     "my_workspace": "Mon espace de travail",
     "name_description": "Nom de l'organisation",
     "name_label": "Nom",
