@@ -6,7 +6,7 @@ const {
   createMetadata,
   deleteMetadata,
   updateMetadata
-} = require(`${process.cwd()}/components/WebServer/routecontrollers/taxonomy/metadata.js`)
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/taxonomy/metadatas/metadata.js`)
 
 module.exports = (webserver) => {
   return [

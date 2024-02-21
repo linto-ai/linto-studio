@@ -51,14 +51,31 @@ class TagModel extends MongoModel {
         }
     }
 
-    async searchTag(idList, orgaId, name = ".") {
+    async searchTagByCategory(categoryList, name = ".") {
+        try {
+            const query = {
+                "categoryId": {
+                    $in: categoryList
+                },
+                "name": {
+                    $regex: name,
+                    $options: 'i'
+                },
+            }
+            return await this.mongoRequest(query)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
+    async searchTag(idList, name = ".") {
         try {
             idList = idList.map(id => {
                 if (typeof id === 'string') return this.getObjectId(id)
                 else return
             })
             const query = {
-                organizationId: orgaId,
                 "_id": {
                     $in: idList
                 },

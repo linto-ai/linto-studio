@@ -1,13 +1,14 @@
 const debug = require('debug')('linto:conversation-manager:router:api:tag:tag')
+
 const {
     createTag,
     updateTag,
     deleteTag,
-} = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/taxonomy/tag.js`)
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/taxonomy/tags/tag.js`)
 
 const {
     searchTag
-} = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/taxonomy/search.js`)
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/taxonomy/tags/search.js`)
 
 
 module.exports = (webserver) => {

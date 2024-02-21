@@ -14,7 +14,6 @@ module.exports = (webServer) => {
             ...require('./api/conversation/share')(webServer),
             ...require('./api/conversation/conversations')(webServer),
             ...require('./api/conversation/turn')(webServer),
-            ...require('./api/conversation/tag')(webServer),
             ...require('./api/conversation/subtitle')(webServer),
         ],
         "/api": [
