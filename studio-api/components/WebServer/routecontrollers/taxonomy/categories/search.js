@@ -5,6 +5,7 @@ const organizationUtility = require(`${process.cwd()}/components/WebServer/contr
 const tagsUtility = require(`${process.cwd()}/components/WebServer/controllers/taxonomy/tags`)
 
 const SEARCH_TYPE = ['explore', 'info', 'category']
+const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
 
 const {
   OrganizationError,
@@ -13,13 +14,16 @@ const {
 
 async function searchCategory(req, res, next) {
   try {
-    const scopeId = await organizationUtility.getOrgaIdFromReq(req)
+
+    const scopeId = (TYPE.desiredType(TYPE.HIGHLIGHT, req.query.categoryType) && req.query.type === 'category')
+      ? req.params.conversationId
+      : await organizationUtility.getOrgaIdFromReq(req);
+
     let categoryList = []
     if (!req.query.type && !SEARCH_TYPE.includes(req.query.type)) {
       throw new OrganizationError('Search type must be explore, info or category')
     } else if (req.query.type === 'explore') {
       if (req.params.conversationId !== undefined) throw new OrganizationForbidden('Explore search is disable for shared conversation')
-
 
       if (req.query.tags === undefined) {
         category = await model.categories.getByScope(scopeId)
@@ -32,9 +36,11 @@ async function searchCategory(req, res, next) {
       }
       //  Retrieve information for all desired tags with their category information (tags, name)
     } else if (req.query.type === 'info') { // Get a list of tags (and their category) with their linked tags from any conversation
+
       const tagsId = info(req)
       categoryList = await generateCategoryFromTagList(tagsId, req.query)
     } else if (req.query.type === 'category') {
+
       if (req.query.name === undefined) throw new OrganizationError('name is required for category search')
       else categoryList = await model.categories.searchByScopeAndName(scopeId, req.query.name)
     }
