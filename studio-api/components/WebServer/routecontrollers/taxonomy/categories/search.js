@@ -14,7 +14,6 @@ const {
 
 async function searchCategory(req, res, next) {
   try {
-
     const scopeId = (TYPE.desiredType(TYPE.HIGHLIGHT, req.query.categoryType) && req.query.type === 'category')
       ? req.params.conversationId
       : await organizationUtility.getOrgaIdFromReq(req);
@@ -67,13 +66,9 @@ function info(req) {
 
 
 async function search(req, categoryList) {
-
-  if (req.query.name === undefined) throw new OrganizationError('name or tags is required')
-  else {
-    let tags = []
-    tags = await model.search.tags.searchTagByCategory(categoryList, req.query.name)
-    return await tagsUtility.fetchTagData(tags, req.query)
-  }
+  let tags = []
+  tags = await model.search.tags.searchTagByCategory(categoryList, req.query.name)
+  return await tagsUtility.fetchTagData(tags, req.query)
 }
 
 async function explore(req, organizationId) {
