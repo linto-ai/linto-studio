@@ -18,6 +18,7 @@
         :type="type"
         :disabled="disabled"
         :id="id"
+        :autocomplete="autocomplete"
         ref="input"
         v-model="value"
         @change="($event) => $emit('change', $event)"
@@ -106,6 +107,9 @@ export default {
   computed: {
     type() {
       return this.field.type || "text"
+    },
+    autocomplete() {
+      return this.field.autocomplete || null
     },
   },
   watch: {

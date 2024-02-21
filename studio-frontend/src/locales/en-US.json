@@ -465,13 +465,21 @@
     },
     "home": "Return to main page"
   },
+  "no_orga": {
+    "title": "Discover LinTO Studio again",
+    "subtitle": "Create an organization to create and share your transcriptions.",
+    "label": "Name your organization, you can create others later",
+    "create": "Create an organization",
+    "creating": "Creating organization..."
+  },
   "organisation": {
     "add_member_description": "Use the search form to find users by their firstname, lastname or email address",
     "add_member_label": "Add a member",
     "delete_organization": "Delete organization",
     "delete_modal": {
       "title": "Delete organization",
-      "content": "Are you sure you want to delete the organization \"{name}\" ? This action cannot be undone. All the organization medias will be deleted."
+      "content": "Are you sure you want to delete the organization \"{name}\" ? This action cannot be undone. All the organization medias will be deleted.",
+      "action": "Delete"
     },
     "delete_error_message": "An error occurred while deleting the organization",
     "general_settings": "General settings",
@@ -487,7 +495,8 @@
     "description_label": "Description",
     "leave_modal": {
       "title": "Leave organization",
-      "content": "Are you sure you want to leave the organization \"{name}\" ?"
+      "content": "Are you sure you want to leave the organization \"{name}\" ?",
+      "action": "Leave"
     },
     "leave_error_message": "An error occurred while leaving the organization",
     "my_workspace": "My workspace",

@@ -458,6 +458,13 @@
     },
     "home": "Retour à l'accueil"
   },
+  "no_orga": {
+    "title": "Redécouvrez LinTO Studio",
+    "subtitle": "Créez une organisation pour réaliser et partager vos transcriptions.",
+    "label": "Nommez votre organisation, vous pourrez en créer d'autres par la suite",
+    "create": "Créer une organisation",
+    "creating": "Création de l'organisation en cours..."
+  },
   "organisation": {
     "add_member_description": "Utilisez le champ de recherche pour chercher des utilisateurs par leur prénom, nom ou adresse électronique",
     "add_member_label": "Ajouter un utilisateur",
