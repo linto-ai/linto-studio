@@ -125,6 +125,8 @@ async function deleteCategory(req, res, next) {
     const tagsId = tags.map(tag => tag._id.toString())
     let conv_del_res = await model.conversations.deleteTag(req.params.organizationId, tagsId)
 
+
+    await model.tags.deleteAllFromCategory(req.params.categoryId)
     const result = await model.categories.delete(req.params.categoryId)
     if (result.deletedCount !== 1) throw new CategoryError('Error during the deletion of the category')
 
