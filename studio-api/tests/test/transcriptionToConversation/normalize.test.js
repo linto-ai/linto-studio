@@ -189,6 +189,17 @@ describe('normalize conversation segment from a reduced linstt transcription', (
     })
     testTimeStamp(normalizeTranscription)
   })
+
+  it('segment with a weird apostrophe in is segment (normalize-space-after-word)', () => {
+    mock_transcription = require(`${process.cwd()}/tests/data/transcription/reduce/normalize-apostrophe-space.json`)
+    conversation = require(`${process.cwd()}/tests/data/conversation/normalize/reduce/conversation-apostrophe-space`)
+
+    const normalizeTranscription = segmentNormalizeText(mock_transcription, LANG)
+    normalizeTranscription.segments.map((segment, index_seg) => {
+      testNormalize(conversation, segment, index_seg)
+    })
+    testTimeStamp(normalizeTranscription)
+  })
 })
 
 function testNormalize(conversation, segment, index_seg) {
