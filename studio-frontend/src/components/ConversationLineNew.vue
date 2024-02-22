@@ -122,6 +122,7 @@
               v-click-outside="closeDropDown"
               :conversationId="conversation._id"
               :value="tags"
+              @close="closeDropDown"
               @selectTag="selectTag"
               @unSelectTag="unSelectTag"></DropDownAddTag>
           </ContextMenu>
@@ -195,6 +196,8 @@ export default {
     }
   },
   mounted() {
+    console.log(this.conversation.name)
+    console.log(this.conversation.tags)
     if (this.displayTags) this.loadTags()
   },
   computed: {

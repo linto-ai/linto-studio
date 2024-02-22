@@ -220,20 +220,30 @@ export async function apiCategoriesTree(
   signal,
   notif
 ) {
-  if (!tagsIds || tagsIds.length === 0)
-    return apiGetAllCategories(orgaId, categoryType, notif)
+  let requestRes
+  if (!tagsIds || tagsIds.length === 0) {
+    requestRes = await sendRequest(
+      `${BASE_API}/organizations/${orgaId}/categories/search`,
+      { method: "get", signal },
+      {
+        type: "explore",
+        categoryType,
+      },
+      notif
+    )
+  } else {
+    requestRes = await sendRequest(
+      `${BASE_API}/organizations/${orgaId}/categories/search`,
+      { method: "get", signal },
+      {
+        type: "explore",
+        tags: tagsIds.toString(),
+        categoryType,
+      },
+      notif
+    )
+  }
 
-  const requestRes = await sendRequest(
-    `${BASE_API}/organizations/${orgaId}/categories/search`,
-    { method: "get", signal },
-    {
-      type: "explore",
-      tags: tagsIds.toString(),
-      //categories: categoriesIds.toString(),
-      categoryType,
-    },
-    notif
-  )
   return requestRes?.data || []
 }
 

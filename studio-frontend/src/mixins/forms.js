@@ -2,7 +2,6 @@ export const formsMixin = {
   methods: {
     testFields({ fieldsToTest = this.fields, autoContains = false } = {}) {
       this.debug("testing fields %o", fieldsToTest)
-      console.log("fieldsToTest", fieldsToTest)
       return fieldsToTest.every((fieldName) => {
         if (!autoContains) {
           const res = this.testSingleField(this[fieldName])
@@ -16,7 +15,6 @@ export const formsMixin = {
       })
     },
     testSingleField(field) {
-      console.log("field", field)
       if (typeof field === "object" && field.length !== undefined) {
         return field.every((field) => this.testSingleField(field))
       }

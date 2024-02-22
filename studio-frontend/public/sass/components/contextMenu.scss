@@ -7,7 +7,7 @@
   border: var(--border-block);
   padding: var(--small-gap);
   width: 300px;
-  max-height: 50vh;
+  max-height: calc(50vh - 1rem);
 }
 
 .context-menu__element {
