@@ -354,13 +354,6 @@ export default {
     this.displayHighlights()
     this.localText = this.segment
   },
-  beforeDestroy() {
-    bus.$off("conversation_user_update")
-    bus.$off("words_updated")
-    bus.$off("segment_updated")
-    bus.$off("turn_speaker_update")
-    bus.$off("speaker_name_updated")
-  },
   methods: {
     displayHighlights: _displayHighlights,
     highlightRange: _highlightRange,
