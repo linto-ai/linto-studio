@@ -196,9 +196,9 @@ export default {
     }
   },
   mounted() {
-    console.log(this.conversation.name)
-    console.log(this.conversation.tags)
-    if (this.displayTags) this.loadTags()
+    this.$nextTick(() => {
+      if (this.displayTags) this.loadTags()
+    })
   },
   computed: {
     userInfo() {
