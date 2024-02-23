@@ -405,26 +405,25 @@
       "name": "Name",
       "save": "Save"
     },
-    "edit_category_title": "Edit category",
     "edit_category": {
       "title": "Edit category \"{name}\"",
       "category_name": "Name",
       "category_color": "Color",
       "save": "Save"
     },
-    "edit_tag_title": "Edit tag",
+
     "edit_tag": {
       "title": "Edit tag \"{name}\"",
       "name": "Name",
       "save": "Save"
     },
-    "delete_category_title": "Delete category",
+
     "delete_category": {
       "title": "Delete category \"{name}\"",
       "description": "Are you sure you want to delete this category ?",
       "action": "Delete"
     },
-    "delete_tag_title": "Delete tag",
+
     "delete_tag": {
       "title": "Delete tag \"{name}\"",
       "description": "{number} medias will be unlinked from this tag",
@@ -561,7 +560,11 @@
     "define_category_button": "Create tag",
     "select_tag_title": "Select this tag",
     "new_tag_name": "Tag name",
-    "add_tag_to_conversation": "Add tag"
+    "add_tag_to_conversation": "Add tag",
+    "edit_tag_title": "Edit tag",
+    "edit_category_title": "Edit category",
+    "delete_category_title": "Delete category",
+    "delete_tag_title": "Delete tag"
   },
   "usersettings": {
     "change_password_label": "Change password",
