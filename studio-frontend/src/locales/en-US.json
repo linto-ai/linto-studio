@@ -380,7 +380,8 @@
     "organization_members": "Organization members",
     "external_members": "External users",
     "invite_user_button": "Invite user",
-    "user_has_been_invited": "User has been invited"
+    "user_has_been_invited": "User has been invited",
+    "user_right_updated": "User rights have been updated"
   },
   "lang": {
     "en": "English",

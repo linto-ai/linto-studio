@@ -377,7 +377,8 @@
     "user_not_found": "L'utilisateur n'existe pas",
     "organization_members": "Membres de l'organisation",
     "external_members": "Utilisateurs externes",
-    "user_has_been_invited": "L'utilisateur a été invité"
+    "user_has_been_invited": "L'utilisateur a été invité",
+    "user_right_updated": "Les droits de l'utilisateur ont été mis à jour"
   },
   "lang": {
     "en": "Anglais",
