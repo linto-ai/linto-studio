@@ -34,6 +34,8 @@
 
 .tag__value__main {
   padding-right: 1rem;
+  position: relative;
+  top: var(--text-vertical-center-offset);
 }
 
 .tag__triangle:before {

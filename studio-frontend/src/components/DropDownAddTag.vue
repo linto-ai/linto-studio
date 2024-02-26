@@ -28,7 +28,10 @@
           >
           <span class="icon right-arrow"></span>
         </button>
-        <ContextMenu v-if="state == STATES.SEARCH_TAG" name="tag-search">
+        <ContextMenu
+          v-if="state == STATES.SEARCH_TAG"
+          name="tag-search"
+          overflow>
           <TagSearch
             :value="value"
             @selectTag="selectTag"
@@ -59,7 +62,7 @@
           <span class="icon right-arrow"></span>
         </button>
 
-        <ContextMenu v-if="state == STATES.CREATE_TAG">
+        <ContextMenu v-if="state == STATES.CREATE_TAG" overflow>
           <DropDownAddTagCreate
             :tagValue="searchValueForTag"
             :conversationId="conversationId"
@@ -82,7 +85,10 @@
         <span class="icon right-arrow"></span>
       </button>
 
-      <ContextMenu v-if="state == STATES.BROWSE_CATEGORY" name="browse cats">
+      <ContextMenu
+        v-if="state == STATES.BROWSE_CATEGORY"
+        name="browse cats"
+        overflow>
         <TagCategoryBoxSelectable
           v-for="category of allCategories"
           :key="category._id"

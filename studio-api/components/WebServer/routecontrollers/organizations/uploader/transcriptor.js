@@ -121,6 +121,9 @@ async function createConversation(processing_job, body) {
         const result = await model.conversations.create(conversation)
         if (result.insertedCount !== 1) throw new ConversationError()
 
+        //TODO: temporary workaround to create default categories
+        await model.categories.createDefaultCategories('keyword', result.insertedId.toString())
+
         return conversation
     }
 }

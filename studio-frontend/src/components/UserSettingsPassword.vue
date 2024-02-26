@@ -112,13 +112,14 @@ export default {
         bus.$emit("user_settings_update", {})
       }
     },
-    async dismissForgottenPswdNotif() {
-      await this.updateUserInfo({
+    async dismissForgottenPswdNotif(e) {
+      await apiUpdateUserInfo({
         accountNotifications: {
           updatePassword: false,
         },
       })
       bus.$emit("user_settings_update", {})
+      e.preventDefault()
     },
   },
   components: { Fragment },

@@ -7,7 +7,7 @@ const JOBS = require(`${process.cwd()}/lib/dao/conversation/jobs.js`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 async function handleResult(result, job, conversation) {
-  
+
   if (result && job.type === JOBS.TRANSCRIPTION)
     await handleTranscriptionResult(result, conversation)
 
@@ -17,9 +17,14 @@ async function handleResult(result, job, conversation) {
 }
 
 async function handleKeywordResult(result, conversation) {
-  const organizationId = conversation.organization.organizationId
-  const category = await model.categories.getHighlightCategories(conversation.organization.organizationId)
-  const categoryId = category[0]._id.toString()
+  const category = await model.categories.searchByScopeAndName(conversation._id.toString(), 'keyword')
+  let categoryId = ''
+
+  if (category.length === 0) {
+    let result = await model.categories.createDefaultCategories('keyword', conversation._id.toString())
+    categoryId = result.insertedId.toString()
+  } else if (category.length === 1) categoryId = category[0]._id.toString()
+  else throw new Error('Multiple category found for the same scope')
 
   let tagList = conversation.tags || []
   for (let i in result.keyword_extraction) {
@@ -27,12 +32,11 @@ async function handleKeywordResult(result, conversation) {
 
     for (let i in keys) {
       let key = keys[i]
-      const tag = await model.tags.getByOrgaId(organizationId, { name: key })
+      const tag = await model.tags.getTagByCategoryAndName(categoryId, { name: key })
       if (tag.length === 0) { //if probability is higher than 0.6
         let result = await model.tags.create({
           name: key,
-          categoryId: categoryId,
-          organizationId: organizationId
+          categoryId: categoryId
         })
         tagList.push(result.insertedId.toString())
       } else if (tag.length > 0) {

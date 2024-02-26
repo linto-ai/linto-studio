@@ -132,6 +132,18 @@ export default {
       this.editCategoryValue = category
       this.modalCategoryIsOpen = true
     },
+    editCategory({ name, color }) {
+      this.modalCategoryIsOpen = false
+      this.categories = this.categories.map((category) => {
+        if (category._id === this.editCategoryValue._id) {
+          category.name = name
+          category.color = color
+        }
+        return category
+      })
+      this.editCategoryValue = null
+      //this.queryCategories()
+    },
     updateCategoryValue(newCategory) {
       this.categories = this.categories.map((category) => {
         if (category._id === newCategory._id) {

@@ -83,6 +83,9 @@ function segmentNormalizeText(transcription, lang, filter = undefined) {
   transcription.segments.map(segments => {
     segments.raw_words = [...segments.words]
     segments.words = []
+
+    // Removing space after an apostrophe from a LinSTT transcription service
+    segments.segment = segments.segment.replace(/' /g, "'")
     segments.segment_array = segments.segment.split(' ')
 
     if (segments.segment_array.length > 0 && segments.segment_array[0] === '') {

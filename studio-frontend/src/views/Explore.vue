@@ -178,8 +178,7 @@ export default {
         // check if tag exists by querying the API
         const tagTreeFromApi = await apiSearchTagsById(
           this.currentOrganizationScope,
-          tagsFromStorage.map((t) => t._id),
-          "organization_metadata"
+          tagsFromStorage.map((t) => t._id)
         )
         const tags = extractTagsFromCategoryTree(tagTreeFromApi)
         return tags

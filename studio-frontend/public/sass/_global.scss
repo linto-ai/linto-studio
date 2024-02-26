@@ -1,5 +1,5 @@
 body {
-  font-family: $montserrat;
+  font-family: $luciole;
   //font-family: "Architects Daughter", cursive;
   font-size: 15px;
   color: var(--text-primary);
@@ -261,14 +261,24 @@ li:last-child {
   color: white;
   text-align: center;
   border-radius: 1em;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .badge__content {
   vertical-align: middle;
+  position: relative;
+  top: var(--text-vertical-center-offset);
 }
 
 .reset-overflows {
   overflow: visible;
   white-space: normal;
   min-height: auto;
+}
+
+.overflow-vertical-auto {
+  overflow-y: auto;
 }

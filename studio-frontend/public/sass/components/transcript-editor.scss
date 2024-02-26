@@ -96,7 +96,10 @@ $selectedWord: #0057f5;
   display: flex;
   justify-content: flex-end;
   font-size: 14px;
-  width: 140px;
+  position: relative;
+  top: var(--text-vertical-center-offset);
+
+  //width: 140px;
 }
 
 /* TRANSCRIPTION EDITOR */

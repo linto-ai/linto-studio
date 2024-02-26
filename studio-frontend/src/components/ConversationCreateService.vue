@@ -17,15 +17,15 @@
 
     <div class="form-field flex col small-padding-top">
       <div>
-        <b>{{ $t("conversation.acoustic_label") }}:</b>
+        <label>{{ $t("conversation.acoustic_label") }}</label>
         {{ acoustic_value[value.accoustic] }}
       </div>
       <div>
-        <b>{{ $t("conversation.language_label") }}:</b>
+        <label>{{ $t("conversation.language_label") }}</label>
         {{ languages[value.language] }}
       </div>
       <div>
-        <b>{{ $t("conversation.model_quality_label") }}:</b>
+        <label>{{ $t("conversation.model_quality_label") }}</label>
         {{ audio_quality_value[value.model_quality] }}
       </div>
     </div>

@@ -217,7 +217,7 @@ export default {
     },
     isValidEmail() {
       return this.searchMemberValue.value.indexOf("@") > 0
-    }
+    },
   },
   watch: {
     async showShareList() {
@@ -261,15 +261,18 @@ export default {
     },
     async inviteUser(event) {
       event.preventDefault()
-      const convIds = Array.from(this.selectedConversations.values()).map(c => c._id)
-      let res = await apiUpdateMultipleUsersInMultipleConversations(
+      const convIds = Array.from(this.selectedConversations.values()).map(
+        (c) => c._id
+      )
+      let res = await apiUpdateMultipleUsersInMultipleConversations(
         convIds,
-        [{email: this.searchMemberValue.value, "right": 1}],
+        [{ email: this.searchMemberValue.value, right: 1 }],
         this.currentOrganizationScope,
         {
           message: this.$t("share_menu.user_has_been_invited"),
         }
       )
+      await this.resetSearch()
       return false
     },
     async updateUserRights(user, newRight) {
@@ -296,8 +299,15 @@ export default {
         null
       )
 
-      if (res.error) {
+      if (res.status === "success") {
+        bus.$emit("app_notif", {
+          status: "success",
+          message: this.$t("share_menu.user_right_updated"),
+          redirect: false,
+        })
+        await this.resetSearch()
       } else {
+        console.error("error", res)
       }
 
       this.$set(this.usersLoading, user._id, false)
@@ -328,6 +338,10 @@ export default {
     },
     canUpdateRights(user) {
       return true // TODO
+    },
+    async resetSearch() {
+      await this.loadUsersRights()
+      this.searchMemberValue.value = ""
     },
   },
   components: {

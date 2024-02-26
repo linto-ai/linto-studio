@@ -112,6 +112,8 @@ label,
 .form-field-checkbox .form-label {
   display: inline-block;
   margin-bottom: 0;
+  position: relative;
+  top: var(--text-vertical-center-offset);
 }
 
 .form-value {

@@ -37,16 +37,56 @@ class TagModel extends MongoModel {
         }
     }
 
-    async getByIdList(idList) {
+    async getTagByCategory(categoryId) {
+        try {
+            let query = {
+                categoryId: categoryId,
+            }
+            return await this.mongoRequest(query)
+        }
+        catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
+    async getTagByCategoryList(categoryIdList, name = undefined) {
+        try {
+            let query = {
+                categoryId: {
+                    $in: categoryIdList
+                }
+            }
+            if (name) {
+                query.name = {
+                    $regex: name,
+                    $options: 'i'
+                }
+            }
+            return await this.mongoRequest(query)
+        }
+        catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
+    async getByIdList(idList, name = undefined) {
         try {
             if (idList.length === 0) return []
             else if (typeof idList[0] === 'string') {
                 idList = idList.map(id => this.getObjectId(id))
             }
 
-            const query = {
+            let query = {
                 "_id": {
                     $in: idList
+                }
+            }
+            if (name) {
+                query.name = {
+                    $regex: name,
+                    $options: 'i'
                 }
             }
 
@@ -57,24 +97,15 @@ class TagModel extends MongoModel {
         }
     }
 
-    async getByOrgaId(idOrga, search) {
+    async getTagByCategoryAndName(categoryId, name) {
         try {
             let query = {
-                organizationId: idOrga
+                categoryId: categoryId,
+                name: name
             }
-
-            if (search) {
-                for (let key in search) {
-                    if (!tags_key.includes(key)) continue
-                    query[key] = {
-                        $regex: search[key],
-                        $options: 'i'
-                    }
-                }
-            }
-
             return await this.mongoRequest(query)
-        } catch (error) {
+        }
+        catch (error) {
             console.error(error)
             return error
         }
@@ -104,6 +135,19 @@ class TagModel extends MongoModel {
             }
             return await this.mongoDelete(query)
 
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
+
+    async deleteAllFromCategory(categoryId) {
+        try {
+            const query = {
+                categoryId: categoryId
+            }
+            return await this.mongoDeleteMany(query)
         } catch (error) {
             console.error(error)
             return error

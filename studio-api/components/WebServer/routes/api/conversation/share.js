@@ -4,9 +4,13 @@ const { // Create conversation based on file
   getRightsByConversation,
   updateConversationRights,
   listSharedConversation,
-  inviteUserByEmail,
-  listShareTags
+  inviteUserByEmail
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/share.js`)
+
+const { // Create conversation based on file
+  listShareTags
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/taxonomy/conversations/share.js`)
+
 
 const { // Create conversation based on file
   batchShareConversation,

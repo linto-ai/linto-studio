@@ -9,7 +9,6 @@ module.exports = {
   favorites : require('./favorites.js'),
   tokens : require('./tokens.js'),
   search : {
-    categories : require('./search/categories.js'),
     conversations : require('./search/conversations.js'),
     tags : require('./search/tags.js')
   }

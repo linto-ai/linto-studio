@@ -1,3 +1,9 @@
+# 1.4.2
+- Refactored Taxonomy API:
+  - Added a scope for category
+  - Cleaned and optimized code
+  - Reworked category / type to manage highlight and conversation_metadata type
+
 # 1.4.1
 - Added metadata api 
 
