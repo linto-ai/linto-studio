@@ -14,7 +14,6 @@ class CategoryModel extends MongoModel {
         const category = {
             name: name,
             scope : 'nlp-'+name,
-            scope: 'nlp-keyword',
             scopeId : scopeId,
             type: TYPE.HIGHLIGHT,
             color: 'deep-purple'

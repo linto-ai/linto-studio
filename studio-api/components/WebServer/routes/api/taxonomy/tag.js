@@ -12,7 +12,7 @@ const {
 module.exports = (webserver) => {
   return [
     {
-      path: '/conversations/:conversationId/tags',
+      path: '/organizations/:organizationId/tags,/conversations/:conversationId/tags',
       method: 'get',
       controller: getTagByConv,
       requireAuth: true,

@@ -91,14 +91,19 @@ async function addTagToConversation(req, res, next) {
 
 async function getTagByConv(req, res, next) {
     try {
-        const conversation = await model.conversations.getById(req.params.conversationId)
-        if (conversation.length !== 1) throw new ConversationNotFound()
-
         let list
 
-        if (TYPE.desiredType(TYPE.LABEL, req.query.categoryType)) {
-            const organizationId = conversation[0].organization.organizationId.toString()
-            let category_list = await model.categories.getByScope(organizationId)
+        if (TYPE.desiredType(TYPE.LABEL, req.query.categoryType) || req.params.organizationId) {
+            let category_list
+            if (req.params.organizationId) {
+                category_list = await model.categories.getByScope(req.params.organizationId)
+            } else {
+                const conversation = await model.conversations.getById(req.params.conversationId)
+                if (conversation.length !== 1) throw new ConversationNotFound()
+
+                const organizationId = conversation[0].organization.organizationId.toString()
+                category_list = await model.categories.getByScope(organizationId)
+            }
             let categoryId_list = category_list.map(category => category._id.toString())
 
             list = await model.tags.getTagByCategoryList(categoryId_list, req.query.name)
@@ -108,6 +113,9 @@ async function getTagByConv(req, res, next) {
             }
 
         } else if (TYPE.desiredType(TYPE.HIGHLIGHT, req.query.categoryType)) {
+            const conversation = await model.conversations.getById(req.params.conversationId)
+            if (conversation.length !== 1) throw new ConversationNotFound()
+
             list = await model.tags.getByIdList(conversation[0].tags, req.query.name)
             if (req.query.expand === 'true') {
                 list = await tagsUtility.expandTags(list, req.query.categoryType)
