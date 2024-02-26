@@ -74,11 +74,6 @@ export default {
   data() {
     return {}
   },
-  watch: {
-    conversations() {
-      console.log("conversations", this.conversations)
-    },
-  },
   mounted() {},
   computed: {},
   methods: {

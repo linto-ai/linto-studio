@@ -71,7 +71,6 @@ export default {
         }
       }
       finalList = finalList.concat(servicesListCopy)
-      console.log("finalList", finalList)
       return finalList
     },
   },

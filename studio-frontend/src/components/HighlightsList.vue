@@ -93,6 +93,7 @@ export default {
         (key) =>
           this.jobs[key].state &&
           this.jobs[key].state != "error" &&
+          this.jobs[key].state != "done" &&
           key != "transcription"
       )
       return res
