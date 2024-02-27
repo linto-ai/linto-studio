@@ -7,7 +7,7 @@ module.exports = {
   async up(db) {
     const conversations = await db.collection(collections_name).find({}).toArray()
     conversations.forEach(async (conv) => {
-      let category = await db.collection('categories').findOne({ scopeId: conv._id, type: 'highlight', name: 'keyword' })
+      let category = await db.collection('categories').findOne({ scopeId: conv._id.toString(), type: 'highlight', name: 'keyword' })
       if (!category) {
         const dateTime = moment().format()
 
