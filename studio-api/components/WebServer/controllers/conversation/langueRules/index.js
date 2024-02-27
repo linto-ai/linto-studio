@@ -1,10 +1,14 @@
 const debug = require('debug')('linto:components:WebServer:controller:langueRules')
 
 const frFr = require('./french')
+const enUs = require('./english')
+
 
 function selectLang(lang) {
-  if (lang === 'fr-FR')
+  if (lang.includes('fr-'))
     return frFr
+  else if (lang.includes('en-'))
+    return enUs
   return undefined
 }
 
