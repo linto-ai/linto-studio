@@ -126,7 +126,8 @@ export default {
       audio_quality_value: AUDIO_QUALITY((key) => this.$i18n.t(key)),
       languages: {
         "fr-FR": this.$i18n.t("lang.fr"),
-        "en-EN": this.$i18n.t("lang.en"),
+        "en-US": this.$i18n.t("lang.en"),
+        en_GB: this.$i18n.t("lang.en"),
       },
     }
   },

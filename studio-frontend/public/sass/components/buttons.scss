@@ -29,6 +29,10 @@ a,
   }
 }
 
+.btn.wrap > .label {
+  white-space: normal;
+}
+
 a {
   font-weight: 500;
   &:hover {
