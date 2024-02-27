@@ -159,7 +159,7 @@ export default {
       },
       conversationLanguage: {
         ...EMPTY_FIELD,
-        value: "fr-FR",
+        value: "fr",
         valid: true,
       },
       organizationMemberAccess: true,
@@ -169,8 +169,8 @@ export default {
       formState: "available",
       helperVisible: false,
       languages: [
-        { value: "fr-FR", label: this.$i18n.t("lang.fr") },
-        { value: "en-EN", label: this.$i18n.t("lang.en") },
+        { value: "fr", label: this.$i18n.t("lang.fr") },
+        { value: "en", label: this.$i18n.t("lang.en") },
       ],
       formError: null,
     }

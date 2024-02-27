@@ -3,6 +3,23 @@ import { sendRequest } from "../tools/sendRequest"
 
 const BASE_API = process.env.VUE_APP_CONVO_API
 
+function getLangCode(lang) {
+  const lang_code = {
+    en: "en-US",
+    fr: "fr-FR",
+  }
+
+  if (!lang_code[lang]) {
+    throw new Error("Language not supported")
+  }
+
+  return lang_code[lang]
+}
+const lang_code_alias = {
+  en: ["en-US", "en-GB", "en-AU", "en-CA", "en-IN", "en-NZ", "en-ZA"],
+  fr: ["fr-FR", "fr-CA", "fr-BE", "fr-CH"],
+}
+
 export async function apiGetTranscriptionService(lang, notif) {
   const getTranscriptionService = await sendRequest(
     `${BASE_API}/services`,
@@ -10,9 +27,14 @@ export async function apiGetTranscriptionService(lang, notif) {
     {},
     notif
   )
-  return (getTranscriptionService?.data ?? []).filter(
-    (service) => service.language === lang
-  )
+
+  try {
+    return getTranscriptionService?.data.filter(
+      (service) => lang_code_alias[lang].indexOf(service.language) !== -1
+    )
+  } catch (e) {
+    return []
+  }
 }
 
 export async function apiGetNlpService(notif) {
