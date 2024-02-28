@@ -38,6 +38,10 @@
   top: var(--text-vertical-center-offset);
 }
 
+.tag__value__main:first-letter {
+  text-transform: uppercase;
+}
+
 .tag__triangle:before {
   content: "";
   position: absolute;
