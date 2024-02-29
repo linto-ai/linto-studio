@@ -83,13 +83,14 @@ function transcriptionToConversation(transcript, conversation) {
                 conversation.speakers.push(speaker)
             } else speaker = speaker[0]
 
-            const text_segment = {
+            let text_segment = {
                 speaker_id: speaker.speaker_id,
                 turn_id: uuidv4(),
                 raw_segment: segment.raw_segment.toLowerCase(),
                 segment: segment.segment,
                 words: []
             }
+            if(segment.language) text_segment.language = segment.language
 
             segment.words.map(word => {
                 text_segment.words.push({

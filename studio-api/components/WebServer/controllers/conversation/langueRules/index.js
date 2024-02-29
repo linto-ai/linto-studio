@@ -2,14 +2,19 @@ const debug = require('debug')('linto:components:WebServer:controller:langueRule
 
 const frFr = require('./french')
 const enUs = require('./english')
-
+const ruleless = require('./ruleless')
 
 function selectLang(lang) {
-  if (lang.includes('fr-'))
-    return frFr
-  else if (lang.includes('en-'))
-    return enUs
-  return undefined
+  if (lang !== undefined) {
+    const langPrefix = lang.split('-')[0]
+    const languageMap = {
+      'fr': frFr,
+      'en': enUs
+    }
+    return languageMap[langPrefix] || ruleless
+  }
+
+  return ruleless
 }
 
 function executeLangRule(lang, segment_text, words, loop_data) {
