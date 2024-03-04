@@ -3,6 +3,9 @@
   - Added a scope for category
   - Cleaned and optimized code
   - Reworked category / type to manage highlight and conversation_metadata type
+- Normalization feature
+  - Support for english transcription
+  - Handle segment language support
 
 # 1.4.1
 - Added metadata api 

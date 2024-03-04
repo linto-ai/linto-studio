@@ -1,4 +1,4 @@
-const debug = require('debug')('linto:components:WebServer:controller:langueRules:english')
+const debug = require('debug')('linto:components:WebServer:controller:langueRules:french')
 
 function correctSegmentText(seg_text) {
   let fixed_segment_text = seg_text.original
@@ -43,6 +43,18 @@ function doublePunctuation(seg_text, words, loop_data) {
   }
 }
 
+function apostropheNormalize(seg_text, words, loop_data) {
+  if (seg_text.lowercase.includes('\'') && seg_text.lowercase.includes(words.word)) {
+    return {
+      ...words,
+      word: seg_text.original,
+      end: loop_data.words[loop_data.word_index].end,
+      conf: (words.conf + loop_data.words[loop_data.word_index].conf) / 2,
+      skip_words: seg_text.original.split('\'').length - 1  // Sometime we have multiple ', same rule apply x time
+    }
+  }
+}
+
 function notFound(segment_text, words) {
   return words
 }
@@ -63,8 +75,7 @@ function lastWord(segment_text, words, loop_data) {
   return undefined
 }
 
-
 module.exports = {
-  rules_sequences: [correctSegmentText, simplePunctuation, doublePunctuation, notFound],
-  rules: [correctSegmentText, simplePunctuation, doublePunctuation, notFound, lastWord]
+  rules_sequences: [correctSegmentText, simplePunctuation, doublePunctuation, apostropheNormalize, notFound],
+  rules: [correctSegmentText, simplePunctuation, doublePunctuation, apostropheNormalize, notFound, lastWord]
 }
