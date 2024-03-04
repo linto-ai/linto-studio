@@ -72,7 +72,7 @@ async function doMigration(versionStep, db, step) {
     if (step === 'up')
       console.log(`Migration ${step} to version ${versionStep}`)
     else
-      console.log(`Migration ${step} to version ${versionStep}`)
+      console.log(`Migration ${step} from version ${versionStep}`)
 
 
     for (let j = 0; j < migrationFiles.length; j++) {

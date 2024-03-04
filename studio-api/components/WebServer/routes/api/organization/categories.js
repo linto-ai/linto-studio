@@ -2,7 +2,7 @@ const debug = require('debug')('linto:conversation-manager:router:api:tag:catego
 const {
     updateCategory,
     deleteCategory,
-} = require(`${process.cwd()}/components/WebServer/routecontrollers/organizations/taxonomy/category.js`)
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/taxonomy/categories/categories.js`)
 
 
 

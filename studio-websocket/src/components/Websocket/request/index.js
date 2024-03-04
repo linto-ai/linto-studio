@@ -44,6 +44,8 @@ async function sendRequest(url, params, data, headers, userToken) {
   }
 }
 
+// TODO: prefix all functions with "api"
+
 export async function getConversationById(conversationId, userToken) {
   return await sendRequest(
     `${BASE_API}/conversations/${conversationId}?key=text&projection=0`,
@@ -76,7 +78,7 @@ export async function getSubtitleListByConversationId(
   return versionsRes.data || []
 }
 
-export async function deleteConversation(conversationId, userToken) {
+export async function apiDeleteConversation(conversationId, userToken) {
   return await sendRequest(
     `${BASE_API}/conversations/${conversationId}`,
     { method: "delete" },
@@ -87,7 +89,11 @@ export async function deleteConversation(conversationId, userToken) {
   )
 }
 
-export async function updateConversation(conversationId, payload, userToken) {
+export async function apiUpdateConversation(
+  conversationId,
+  payload,
+  userToken
+) {
   return await sendRequest(
     `${BASE_API}/conversations/${conversationId}`,
     { method: "patch" },
@@ -113,7 +119,7 @@ export async function updateUserRightInConversation(
   )
 }
 
-export async function getJobs(conversationId, userToken) {
+export async function apiGetJobs(conversationId, userToken) {
   const res = await sendRequest(
     `${BASE_API}/conversations/${conversationId}?key=jobs`,
     { method: "get" },
@@ -125,7 +131,7 @@ export async function getJobs(conversationId, userToken) {
   else return res.data.jobs
 }
 
-export async function getRights(conversationId, userToken) {
+export async function apiGetRights(conversationId, userToken) {
   return await sendRequest(
     `${BASE_API}/conversations/${conversationId}?key=sharedWithUsers,owner`,
     { method: "get" },
@@ -145,9 +151,19 @@ export async function getConversationNameAndDesc(conversationId, userToken) {
   )
 }
 
-export async function getConversationText(conversationId, userToken) {
+export async function apiGetConversationText(conversationId, userToken) {
   return await sendRequest(
     `${BASE_API}/conversations/${conversationId}?key=text`,
+    { method: "get" },
+    null,
+    null,
+    userToken
+  )
+}
+
+export async function apiGetConversationSpeakers(conversationId, userToken) {
+  return await sendRequest(
+    `${BASE_API}/conversations/${conversationId}?key=speakers`,
     { method: "get" },
     null,
     null,
@@ -302,11 +318,72 @@ export async function updateScreen(
   )
 }
 
+export async function addScreen(
+  conversationId,
+  subtitleId,
+  screenId,
+  placement,
+  payload,
+  userToken
+) {
+  return await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/subtitle/${subtitleId}/screen/${screenId}?placement=${placement}`,
+    { method: "post" },
+    payload,
+    null,
+    userToken
+  )
+}
+
+export async function deleteScreen(
+  conversationId,
+  subtitleId,
+  screenId,
+  userToken
+) {
+  return await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/subtitle/${subtitleId}/screen/${screenId}`,
+    { method: "delete" },
+    null,
+    null,
+    userToken
+  )
+}
+
+export async function updateSubtitle(
+  conversationId,
+  subtitleId,
+  payload,
+  userToken
+) {
+  return await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/subtitle/${subtitleId}`,
+    { method: "patch" },
+    payload,
+    null,
+    userToken
+  )
+}
+
 export async function updateTurn(conversationId, turnId, payload, userToken) {
   return await sendRequest(
     `${BASE_API}/conversations/${conversationId}/turns/${turnId}`,
     { method: "patch" },
     payload,
+    null,
+    userToken
+  )
+}
+
+export async function apiDeleteTagFromConversation(
+  conversationId,
+  tagId,
+  userToken
+) {
+  return await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/tags/${tagId}`,
+    { method: "delete" },
+    {},
     null,
     userToken
   )

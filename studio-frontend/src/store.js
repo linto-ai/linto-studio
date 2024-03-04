@@ -168,10 +168,12 @@ export default new Vuex.Store({
         state.userOrganizations.findIndex((org) => org._id === orgaCookie) >= 0
       ) {
         return orgaCookie
-      } else {
+      } else if (state.userOrganizations.length > 0) {
         let target = state.userOrganizations[0]
         setCookie("cm_orga_scope", target._id, 7)
         return target._id
+      } else {
+        throw "No organization found"
       }
     },
     getUserRoleInOrganization: (state) => () => {

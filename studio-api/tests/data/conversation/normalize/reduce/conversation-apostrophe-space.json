@@ -1,0 +1,168 @@
+{
+
+	"text": [
+	  {
+		"speaker_id": "99eaa7e8-0e61-42bb-a0fa-95539f722d7d",
+		"turn_id": "1c779e4e-fa8d-4311-896c-986a39939ff8",
+		"raw_segment": "bonjour je vais donner quelques chiffres hum deux cinq et je vais en donner encore d' autres huit douze un petit dernier dix mille",
+		"segment": "bonjour je vais donner quelques chiffres hum 2 5 et je vais en donner encore d'autres 8 12 un petit dernier 10000",
+		"words": [
+		  {
+			"wid": "7b1e4d2f-5398-4dd0-a185-8b4d4fb49a3c",
+			"stime": 0.33,
+			"etime": 0.96,
+			"word": "bonjour",
+			"confidence": 1
+		  },
+		  {
+			"wid": "191d5ddd-21f3-4580-8ce1-a0119634c292",
+			"stime": 1.17,
+			"etime": 1.44,
+			"word": "je",
+			"confidence": 1
+		  },
+		  {
+			"wid": "81957f9a-f994-4e1c-ac50-4ee505f64c77",
+			"stime": 1.44,
+			"etime": 1.74,
+			"word": "vais",
+			"confidence": 1
+		  },
+		  {
+			"wid": "df05e225-b9cc-4667-b871-880b749e4733",
+			"stime": 1.95,
+			"etime": 2.37,
+			"word": "donner",
+			"confidence": 1
+		  },
+		  {
+			"wid": "ee8fbfed-67b8-4be0-bea1-0354ab0b1bc5",
+			"stime": 2.37,
+			"etime": 2.67,
+			"word": "quelques",
+			"confidence": 1
+		  },
+		  {
+			"wid": "4a6fe41c-1b38-436e-b8b9-d1ac32b3f58f",
+			"stime": 2.67,
+			"etime": 3.18,
+			"word": "chiffres",
+			"confidence": 1
+		  },
+		  {
+			"wid": "4dd8cf38-69b2-4c01-b67f-2d1bab7f31e9",
+			"stime": 3.93,
+			"etime": 4.2,
+			"word": "hum",
+			"confidence": 0.741715
+		  },
+		  {
+			"wid": "e4408182-d85d-401b-9297-96cb476805b2",
+			"stime": 5.159999999999999,
+			"etime": 6.164999999999999,
+			"word": "2",
+			"confidence": 0.512065
+		  },
+		  {
+			"wid": "b70e7125-84cd-4bd6-9ca8-de1b895aa605",
+			"stime": 6.164999999999999,
+			"etime": 7.17,
+			"word": "5",
+			"confidence": 0.512065
+		  },
+		  {
+			"wid": "ad4a6018-020c-4d63-a6a5-42eb0612a923",
+			"stime": 8.07,
+			"etime": 8.189027,
+			"word": "et",
+			"confidence": 0.979562
+		  },
+		  {
+			"wid": "1567ad93-2793-412b-9365-ad619522f868",
+			"stime": 8.189027,
+			"etime": 8.37,
+			"word": "je",
+			"confidence": 1
+		  },
+		  {
+			"wid": "afa7f2fb-104d-4252-b7ba-1e1c1290ff96",
+			"stime": 8.37,
+			"etime": 8.52,
+			"word": "vais",
+			"confidence": 0.884393
+		  },
+		  {
+			"wid": "4b26a041-eab4-4eaf-b1c7-88d43a674162",
+			"stime": 8.52,
+			"etime": 8.61,
+			"word": "en",
+			"confidence": 0.970572
+		  },
+		  {
+			"wid": "66244cff-7db0-4b60-8c80-b1e769fb6134",
+			"stime": 8.61,
+			"etime": 8.879999999999999,
+			"word": "donner",
+			"confidence": 0.950819
+		  },
+		  {
+			"wid": "ad5ef8c7-1a8a-44d4-9d79-64c83cfa0303",
+			"stime": 8.879999999999999,
+			"etime": 9.209989,
+			"word": "encore",
+			"confidence": 0.606164
+		  },
+		  {
+			"wid": "76d55fa9-ffb6-405a-a219-0f41f6ca4a6e",
+			"stime": 9.270078999999999,
+			"etime": 9.54,
+			"word": "d'autres",
+			"confidence": 0.913143
+		  },
+		  {
+			"wid": "b34f87dd-d9b9-421b-a885-63bd41ea5e0e",
+			"stime": 9.93,
+			"etime": 11.1,
+			"word": "8",
+			"confidence": 0.6666666666666666
+		  },
+		  {
+			"wid": "688f806e-b1ea-4329-8ddc-7bf0a7660bee",
+			"stime": 11.1,
+			"etime": 12.27,
+			"word": "12",
+			"confidence": 0.6666666666666666
+		  },
+		  {
+			"wid": "1b908943-eb0b-4cb6-bf32-9e69a8e059ae",
+			"stime": 13.32,
+			"etime": 13.47,
+			"word": "un",
+			"confidence": 1
+		  },
+		  {
+			"wid": "9284c03a-ae89-4d50-98fc-a68c2c574b74",
+			"stime": 13.47,
+			"etime": 13.77,
+			"word": "petit",
+			"confidence": 1
+		  },
+		  {
+			"wid": "506ec8df-185d-4780-93a9-c837b2604d2d",
+			"stime": 13.77,
+			"etime": 14.31,
+			"word": "dernier",
+			"confidence": 1
+		  },
+		  {
+			"wid": "402d7fac-76bd-4f30-8968-6569d01eebf3",
+			"stime": 15.51,
+			"etime": 15.78,
+			"word": "10000",
+			"confidence": 1
+		  }
+		]
+	  }
+	]
+  }
+  

@@ -13,8 +13,7 @@ const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
 const {
     ConversationIdRequire,
     ConversationNotFound,
-    ConversationMetadataRequire,
-    ConversationError
+    ConversationMetadataRequire
 } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
 async function downloadConversation(req, res, next) {
@@ -114,7 +113,7 @@ async function prepareMetadata(conversation, metadata) {
 
             category = category[0]
             if (category.type === TYPE.HIGHLIGHT && metadata.keyword === false) continue
-            if (category.type === TYPE.CONVERSATION_METADATA && metadata.tags === false) continue
+            if (category.type === TYPE.LABEL && metadata.tags === false) continue
 
             if (!data.categories[category.name])
                 data.categories[category.name] = { type: category.type, tags: [] }

@@ -1,3 +1,19 @@
+# 1.4.2
+- Refactored Taxonomy API:
+  - Added a scope for category
+  - Cleaned and optimized code
+  - Reworked category / type to manage highlight and conversation_metadata type
+- Normalization feature
+  - Support for english transcription
+  - Handle segment language support
+
+# 1.4.1
+- Added metadata api 
+
+# 1.4.0
+- Added An hightlight API
+- Change the default keyword category color
+
 # 1.3.0
 - Introduced a new feature: Subtitle API
   - Enables the generation of subtitles with customizable settings such as screen size, screen lines, etc.

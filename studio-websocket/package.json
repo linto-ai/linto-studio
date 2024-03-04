@@ -10,7 +10,9 @@
     "lint": "eslint --ext .js --ignore-path .gitignore --fix src",
     "test:lint": "eslint --ext .js src",
     "format": "prettier src/  --write",
-    "test:format": "prettier src/ --list-different"
+    "test:format": "prettier src/ --list-different",
+    "test": "TEST=true ava",
+    "test:coverage": "TEST=true c8 --all --reporter=html ava"
   },
   "repository": {
     "type": "git",
@@ -22,7 +24,17 @@
     "url": "https://github.com/linto-ai/linto-studio/issues"
   },
   "homepage": "https://github.com/linto-ai/linto-studio#README",
+  "ava": {
+    "files": [
+      "src/**/test/**/*",
+      "!node_modules"
+    ],
+    "extensions": {
+      "js": true
+    }
+  },
   "devDependencies": {
+    "ava": "^6.0.1",
     "eslint": "^8.23.0",
     "nodemon": "^2.0.20",
     "prettier": "^2.7.1"

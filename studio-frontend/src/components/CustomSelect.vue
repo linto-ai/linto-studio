@@ -28,6 +28,10 @@
       </span>
     </button>
     <!-- Menu list-->
+    <!--  
+      TODO: refactore with contextMenu component ? 
+      TODO: else use popover api: https://developer.mozilla.org/fr/docs/Web/API/Popover_API/Using
+    -->
     <div class="select__list" v-if="showList">
       <div
         class="select__list__inner flex col"

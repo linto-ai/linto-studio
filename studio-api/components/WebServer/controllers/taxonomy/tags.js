@@ -39,5 +39,19 @@ async function fetchTagData(tags, search) {
   return searchResult
 }
 
+async function expandTags(tagsList, type) {
+  let categories = {}
+  for (let tag of tagsList) {
+    if (!categories[tag.categoryId]) {
+      let category = (await model.categories.getById(tag.categoryId))[0]
+      if (category?.type === type || type === undefined) {
+        categories[tag.categoryId] = { ...category, tags: [] }
+      }
+    }
+    if (categories[tag.categoryId]) categories[tag.categoryId].tags.push(tag)
+  }
+  return Object.values(categories)
+}
 
-module.exports = { fetchTagData }
+
+module.exports = { fetchTagData, expandTags }

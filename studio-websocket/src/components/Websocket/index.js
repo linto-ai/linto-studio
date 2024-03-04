@@ -13,8 +13,10 @@ import keywordController from "./controllers/keywordController.js"
 
 import Conversations from "./models/conversations.js"
 import SubtitleHelper from "./models/subtitles.js"
-import { version } from "os"
 import updateSubtitlesController from "./controllers/updateSubtitlesController.js"
+import hightLightController from "./controllers/highLightController.js"
+import addScreenController from "./controllers/addScreenController.js"
+import { apiDeleteTagFromConversation } from "./request/index.js"
 
 const info = Debug("Websocket:info")
 const debug = Debug("Websocket:debug:websocket")
@@ -76,9 +78,9 @@ export default class Websocket extends Component {
           unfocusField(data.conversationId, data.userId, socket, true)
         })
 
-        socket.on("fetch_keywords", (data) => {
+        socket.on("fetch_hightlight", (data) => {
           debug("fetch_keywords event received")
-          keywordController.bind(socket)(data)
+          hightLightController.bind(socket)(data, this.app.io)
         })
 
         socket.on("get_subtitles", async (data) => {
@@ -150,6 +152,27 @@ export default class Websocket extends Component {
           debug("screen_update received")
           updateSubtitlesController.bind(socket)(data)
         })
+        socket.on("add_screen", (data) => {
+          addScreenController.bind(socket)(data, this.app.io)
+        })
+        socket.on("remove_tag_from_conversation", (data) => {
+          debug("remove_tag_from_conversation received")
+          const room = `conversation/${data.conversationId}`
+
+          let res = apiDeleteTagFromConversation(
+            data.conversationId,
+            data.tagId,
+            data.userToken
+          )
+          if (res.status === "error") {
+            this.app.io.to(room).emit("api_error", res.data)
+          } else {
+            this.app.io.to(room).emit("tag_removed_from_conversation", {
+              conversationId: data.conversationId,
+              tagId: data.tagId,
+            })
+          }
+        })
       } catch (error) {
         info("Error in websocket connection")
         info(error)
@@ -202,6 +225,7 @@ export default class Websocket extends Component {
 
     if (conversationFormat === CONVERSATION_FORMATS.transcription) {
       await conversation.loadText(userToken)
+      await conversation.loadSpeakers(userToken)
     } else {
       await conversation.loadSubtitleVersions(userToken)
     }

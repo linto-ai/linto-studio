@@ -49,6 +49,8 @@ export async function apiGetAllCategories(
   scopeId,
   type = "conversation_metadata",
   scope = "organization",
+  expand = false,
+  possess = false,
   notif = null
 ) {
   if (scope === "organization") {
@@ -57,6 +59,8 @@ export async function apiGetAllCategories(
       { method: "get" },
       {
         type,
+        expand,
+        possess,
       },
       notif
     )
@@ -67,6 +71,8 @@ export async function apiGetAllCategories(
       { method: "get" },
       {
         type,
+        expand,
+        possess,
       },
       notif
     )
@@ -78,6 +84,7 @@ export async function apiGetCategoryById(
   scopeId,
   categoryId,
   scope = "organization",
+  { metadata = false, possess = false },
   notif
 ) {
   if (scope === "organization") {
@@ -93,7 +100,10 @@ export async function apiGetCategoryById(
     const requestRes = await sendRequest(
       `${BASE_API}/conversations/${scopeId}/categories/${categoryId}`,
       { method: "get" },
-      {},
+      {
+        metadata,
+        possess,
+      },
       notif
     )
 
@@ -135,7 +145,7 @@ export async function apiGetTagsById(orgaId, tagId, notif) {
 export async function apiGetTagsFromCategory(
   scopeId,
   categoryId,
-  linkedTags,
+  { linkedTags = [], possess = false },
   scope = "organization",
   notif
 ) {
@@ -146,7 +156,7 @@ export async function apiGetTagsFromCategory(
       {
         categoryId,
         tags: linkedTags.toString(),
-        categoryType: "conversation_metadata",
+        possess,
       },
       notif
     )
@@ -158,7 +168,7 @@ export async function apiGetTagsFromCategory(
       {
         categoryId,
         tags: linkedTags.toString(),
-        categoryType: "conversation_metadata",
+        possess,
       },
       notif
     )
@@ -210,20 +220,30 @@ export async function apiCategoriesTree(
   signal,
   notif
 ) {
-  if (!tagsIds || tagsIds.length === 0)
-    return apiGetAllCategories(orgaId, categoryType, notif)
+  let requestRes
+  if (!tagsIds || tagsIds.length === 0) {
+    requestRes = await sendRequest(
+      `${BASE_API}/organizations/${orgaId}/categories/search`,
+      { method: "get", signal },
+      {
+        type: "explore",
+        categoryType,
+      },
+      notif
+    )
+  } else {
+    requestRes = await sendRequest(
+      `${BASE_API}/organizations/${orgaId}/categories/search`,
+      { method: "get", signal },
+      {
+        type: "explore",
+        tags: tagsIds.toString(),
+        categoryType,
+      },
+      notif
+    )
+  }
 
-  const requestRes = await sendRequest(
-    `${BASE_API}/organizations/${orgaId}/categories/search`,
-    { method: "get", signal },
-    {
-      type: "explore",
-      tags: tagsIds.toString(),
-      //categories: categoriesIds.toString(),
-      categoryType,
-    },
-    notif
-  )
   return requestRes?.data || []
 }
 
@@ -279,7 +299,6 @@ export async function apiCreateTag(
 
     return requestRes.data
   } else {
-    console.log(name)
     const requestRes = await sendRequest(
       `${BASE_API}/conversations/${scopeId}/tags`,
       { method: "post" },
@@ -330,7 +349,8 @@ export async function apiSearchTags(
   scopeId,
   name,
   categoryType,
-  scope = "organization",
+
+  { scope = "organization", possess = false },
   signal,
   notif
 ) {
@@ -355,6 +375,7 @@ export async function apiSearchTags(
         expand: "true",
         name,
         categoryType,
+        possess,
       },
       notif
     )

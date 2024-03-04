@@ -225,6 +225,34 @@ export function updateSubtitleScreen(params, rootDoc) {
   }, "subtitle_edit_screen_timestamp")
 }
 
+export function mergeSubtitleScreens(params, rootDoc) {
+  const { keptScreenId, deletedScreenId } = params
+  let screens = rootDoc.getArray("screens")
+  const keptScreenIndex = findScreenIndex(screens.toJSON(), keptScreenId)
+  const deletedScreenIndex = findScreenIndex(screens.toJSON(), deletedScreenId)
+
+  let keptScreen = screens.get(keptScreenIndex)
+  let deletedScreen = screens.get(deletedScreenIndex)
+
+  rootDoc.transact(() => {
+    debugEditScreen(`merge screen ${deletedScreenId} into ${keptScreenId}`)
+
+    if (deletedScreenIndex > keptScreenIndex) {
+      keptScreen.get("text").push(deletedScreen.get("text"))
+      keptScreen.get("words").push(deletedScreen.get("words"))
+
+      keptScreen.set("etime", deletedScreen.get("etime"))
+    } else {
+      keptScreen.get("text").insert(0, deletedScreen.get("text"))
+      keptScreen.get("words").insert(0, deletedScreen.get("words"))
+
+      keptScreen.set("stime", deletedScreen.get("stime"))
+    }
+
+    screens.delete(deletedScreenIndex, 1)
+  }, "subtitle_merge_screens")
+}
+
 export function updateConversationAddSpeaker(params, conversationId, rootDoc) {
   const { turnId, speakerName } = params
   let yspeaker = Conversation.createSpeaker(speakerName)
@@ -285,10 +313,6 @@ export function unfocusField(event, conversationId, socket) {
   socket.emit("unfocus_field", { ...event.data.params, conversationId })
 }
 
-export function fetchKeywords(userToken, conversationId, socket) {
-  socket.emit("fetch_keywords", { userToken, conversationId })
-}
-
 export function fetchSubtitles(userToken, conversationId, subtitleId, socket) {
   socket.emit("get_subtitles", { userToken, conversationId, subtitleId })
 }
@@ -314,4 +338,13 @@ export function deleteSubtitles(
   socket
 ) {
   socket.emit("delete_subtitles", { userToken, conversationId, subtitleIds })
+}
+
+export function addScreen(userToken, conversationId, subtitleId, data, socket) {
+  socket.emit("add_screen", {
+    userToken,
+    conversationId,
+    subtitleId,
+    screenData: data,
+  })
 }

@@ -1,6 +1,6 @@
 import {
   updateTurn as apiUpdateTurn,
-  updateConversation as apiUpdateConversation,
+  apiUpdateConversation,
 } from "../../request/index.js"
 
 export async function handleTextChange(

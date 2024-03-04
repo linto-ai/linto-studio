@@ -6,7 +6,7 @@
     :actionBtnLabel="$t('conversation.apply_filters')"
     fullHeight
     v-if="modalOpen">
-    <div class="flex col gap-medium">
+    <div class="flex col gap-medium flex1">
       <div
         v-if="withSearch"
         class="form-field flex col small-padding no-margin no-padding"
@@ -37,9 +37,9 @@
         class="flex wrap align-top gap-medium flex1"
         v-if="!loadingCategories">
         <div class="flex wrap align-top gap-medium">
-          <TagCategoryBox
+          <TagCategoryBoxSelectable
             v-for="category of categories"
-            :startOpen="!!category.tags && category.tags.length > 0"
+            :startOpen="false"
             :key="category._id"
             :value="selectedTags"
             @selectTag="selectTag"
@@ -68,7 +68,7 @@
 <script>
 import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
-import TagCategoryBox from "@/components/TagCategoryBox.vue"
+import TagCategoryBoxSelectable from "@/components/TagCategoryBoxSelectable.vue"
 import Loading from "./Loading.vue"
 import TagSearch from "./TagSearch.vue"
 import ModalNew from "./ModalNew.vue"
@@ -125,6 +125,12 @@ export default {
       )
     },
   },
-  components: { Fragment, TagCategoryBox, Loading, TagSearch, Modal: ModalNew },
+  components: {
+    Fragment,
+    TagCategoryBoxSelectable,
+    Loading,
+    TagSearch,
+    Modal: ModalNew,
+  },
 }
 </script>

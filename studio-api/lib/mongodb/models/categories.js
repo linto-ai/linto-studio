@@ -10,13 +10,13 @@ class CategoryModel extends MongoModel {
         super('categories') // define name of 'users' collection elsewhere?
     }
 
-    async createDefaultCategories(organizationId) {
+    async createDefaultCategories(name, scopeId) {
         const category = {
-            name: 'keyword',
-            scope: 'nlp-keyword',
-            organizationId,
+            name: name,
+            scope : 'nlp-'+name,
+            scopeId : scopeId,
             type: TYPE.HIGHLIGHT,
-            color: 'white'
+            color: 'deep-purple'
         }
         return await this.create(category)
     }
@@ -47,24 +47,43 @@ class CategoryModel extends MongoModel {
         }
     }
 
-    async getByOrgaId(id, querySearch) {
+    async getByScope(id) {
         try {
             let query = {
-                organizationId: id
+                scopeId: id
+            }
+            return await this.mongoRequest(query)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
+    async searchByScopeAndName(scopeId, name) {
+        try {
+            let query = {
+                scopeId: scopeId,
+                name: {
+                    $regex: name,
+                    $options: 'i'
+                }
             }
 
-            if (querySearch) {
-                query = {
-                    ...query,
-                    ...querySearch
-                }
-                if (querySearch.name !== undefined) {
-                    query.name = {
-                        $regex: querySearch.name,
-                        $options: 'i'
-                    }
-                }
+            return await this.mongoRequest(query)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
+    async getByScopeAndName(scopeId, name, type = undefined) {
+        try {
+            let query = {
+                scopeId: scopeId,
+                name: name
             }
+
+            if (type) query.type = type
 
             return await this.mongoRequest(query)
         } catch (error) {
@@ -98,46 +117,6 @@ class CategoryModel extends MongoModel {
             }
             return await this.mongoDelete(query)
 
-        } catch (error) {
-            console.error(error)
-            return error
-        }
-    }
-
-    async getHighlightCategories(organizationId) {
-        try {
-            let query = {
-                organizationId,
-                type: TYPE.HIGHLIGHT
-            }
-            return await this.mongoRequest(query)
-        } catch (error) {
-            console.error(error)
-            return error
-        }
-    }
-
-    async getByIdAndType(categoryId, organizationId, type) {
-        try {
-            let query = {
-                _id: this.getObjectId(categoryId),
-                organizationId,
-                type: type
-            }
-            return await this.mongoRequest(query)
-        } catch (error) {
-            console.error(error)
-            return error
-        }
-    }
-
-    async getByOrgaIdAndType(organizationId, type) {
-        try {
-            let query = {
-                organizationId,
-                type: type
-            }
-            return await this.mongoRequest(query)
         } catch (error) {
             console.error(error)
             return error

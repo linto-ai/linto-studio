@@ -48,7 +48,7 @@ async function batchShareConversation(req, res, next) {
     const sharedBy = (await model.users.getById(auth_user.id))
     for (let user of users_list.users) {
       if (user.magicId) {
-        Mailing.conversationSharedNewUser(user.email, req, user.magicId, sharedBy[0].email)
+        Mailing.conversationSharedNewUser(user.email, req, user.magicId, sharedBy[0].email, req.body.conversations)
         delete user.magicId
       } else {
         Mailing.multipleConversationRight(user, req, sharedBy[0].email, user.conversations)
@@ -121,14 +121,16 @@ async function usersCheck(users_list, method) {
 
     if (user.id === undefined) { // in case of user.email is used
       let u = await model.users.getByEmail(user.email)
-      user.private = u[0].private
 
       if (u.length === 0) {
         if (method === method_delete) continue // skip the user on delete request, probably an error from the client
         u = await inviteNewUser(user.email)
         user.id = u.id
         user.magicId = u.magicId
-      } else user.id = u[0]._id
+      } else {
+        user.private = u[0].private
+        user.id = u[0]._id
+      }
     } else {
       let u = await model.users.getById(user.id)
       if (u.length !== 0) {

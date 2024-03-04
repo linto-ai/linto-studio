@@ -14,12 +14,14 @@
             :userInfo="userInfo"
             :canEdit="canEdit"
             :conversationIsFiltered="conversationIsFiltered"
-            :keywords="keywords"
+            :hightlightsCategories="hightlightsCategories"
+            :hightlightsCategoriesVisibility="hightlightsCategoriesVisibility"
             :lastTurn="
               turns.findIndex((t) => t.turn_id === turn.turn_id) ===
               turns.length - 1
             "
-            @mergeTurns="mergeTurns" />
+            @mergeTurns="mergeTurns"
+            @newHighlight="$emit('newHighlight', $event)" />
         </div>
       </div>
     </div>
@@ -44,6 +46,7 @@ import AppEditorTurn from "@/components/AppEditorTurn.vue"
 import AppEditorPlayer from "@/components/AppEditorPlayer.vue"
 import AppEditorPagination from "@/components/Pagination.vue"
 import { workerSendMessage } from "../tools/worker-message.js"
+import ModalDeleteTagHighlight from "./ModalDeleteTagHighlight.vue"
 
 export default {
   props: {
@@ -83,6 +86,14 @@ export default {
     noPlayer: {
       type: Boolean,
       default: false,
+    },
+    hightlightsCategories: {
+      type: Array,
+      required: true,
+    },
+    hightlightsCategoriesVisibility: {
+      type: Object,
+      required: true,
     },
   },
   data() {
@@ -145,13 +156,31 @@ export default {
       this.speakersTurnsTimebox = this.getSpkTimebox()
       bus.$emit("refresh_audio_regions", this.speakersTurnsTimebox)
     })
+    bus.$on("player-ready", this.playerReady.bind(this))
   },
   beforeDestroy() {
     bus.$off("player-audioprocess")
     bus.$off("player-seek")
     bus.$off("refresh_spk_timebox")
+    bus.$off("player-ready")
+
+    // turns event (should be in this component instead of appeditorturn, because of merge and split which trigger beforeDestroy on appeditorturn)
+    bus.$off("conversation_user_update")
+    bus.$off("words_updated")
+    bus.$off("segment_updated")
+    bus.$off("turn_speaker_update")
+    bus.$off("speaker_name_updated")
   },
   methods: {
+    playerReady() {
+      let editorCurrentTime = localStorage.getItem("editorCurrentTime")
+      if (editorCurrentTime) {
+        editorCurrentTime = JSON.parse(editorCurrentTime)
+        if (editorCurrentTime.conversationId === this.conversationId) {
+          bus.$emit("player_set_time", { stime: editorCurrentTime.time })
+        }
+      }
+    },
     getSpkTimebox() {
       let spkTimebox = []
       for (let turn of this.turns) {
@@ -226,6 +255,12 @@ export default {
           break
         }
       }
+
+      // save to localStorage
+      localStorage.setItem(
+        "editorCurrentTime",
+        JSON.stringify({ time, conversationId: this.conversationId })
+      )
     },
     mergeTurns(index) {
       const baseTurn = this.turns.find((turn) => turn.turn_id === index)
@@ -259,6 +294,7 @@ export default {
     AppEditorTurn,
     AppEditorPlayer,
     AppEditorPagination,
+    ModalDeleteTagHighlight,
   },
 }
 </script>

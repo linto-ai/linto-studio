@@ -1,0 +1,156 @@
+{
+  "text": [
+    {
+      "speaker_id": "893dccfb-7fdd-491f-a83b-41f9f3d17812",
+      "turn_id": "a6c1b37d-5cea-4823-bcdc-668d9770d5c1",
+      "raw_segment": "? ah, c'est comme ça, ici ? disons que ça se joue entre 3.000 et 9.000.",
+      "segment": " ? Ah, c'est comme ça, ici ? Disons que ça se joue entre 3.000 et 9.000.",
+      "words": [
+        {
+          "wid": "649553ef-0454-468d-89d1-723b4dc8db0c",
+          "stime": 60.68,
+          "etime": 61.9,
+          "word": "?",
+          "confidence": 0.23,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "649553ef-0454-468d-89d1-723b4dc8db0c",
+          "stime": 62.68,
+          "etime": 62.9,
+          "word": "Ah,",
+          "confidence": 0.23,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "a1c1103e-f51d-4085-9b65-a2dbf7ce2756",
+          "stime": 62.94,
+          "etime": 63.02,
+          "word": "c'est",
+          "confidence": 0.97,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "6b6f660f-2b6b-469b-bba0-aef85895ad38",
+          "stime": 63.02,
+          "etime": 63.18,
+          "word": "comme",
+          "confidence": 0.71,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "8cba0ed8-851f-4e6e-8604-3cad6f912801",
+          "stime": 63.18,
+          "etime": 63.36,
+          "word": "ça,",
+          "confidence": 0.84,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "b91aa088-30d9-4d06-9820-e01119fcf47b",
+          "stime": 63.4,
+          "etime": 63.62,
+          "word": "ici",
+          "confidence": 0.81,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "bab7e4ae-1c9b-4c52-8f73-f91ecb352517",
+          "stime": 63.62,
+          "etime": 63.62,
+          "word": "?",
+          "confidence": 1,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "9f1efbe9-c93c-48fe-9239-58c6197914e3",
+          "stime": 68.24,
+          "etime": 68.64,
+          "word": "Disons",
+          "confidence": 0.78,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "6425c234-4196-421e-98ae-d1d55a9bbfd2",
+          "stime": 68.64,
+          "etime": 69.04,
+          "word": "que",
+          "confidence": 0.82,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "5932fc33-5b2e-4baa-b261-a07667d5a698",
+          "stime": 69.04,
+          "etime": 69.8,
+          "word": "ça",
+          "confidence": 0.71,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "2c4fff5d-01b8-4a6f-93d1-2dcd204f9018",
+          "stime": 69.8,
+          "etime": 69.96,
+          "word": "se",
+          "confidence": 0.74,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "03d7496d-eada-4705-8410-09692985b0e4",
+          "stime": 69.96,
+          "etime": 70.16,
+          "word": "joue",
+          "confidence": 0.81,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "c1606b71-165a-4a8c-938a-69d29a1ac63a",
+          "stime": 70.16,
+          "etime": 70.48,
+          "word": "entre",
+          "confidence": 0.73,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "b8447701-7c6a-446d-a7de-b0f1a925aaf2",
+          "stime": 70.48,
+          "etime": 71.2,
+          "word": "3.000",
+          "confidence": 0.51,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "a00652b5-0fdf-4e91-9a55-c7c038a786f1",
+          "stime": 71.2,
+          "etime": 71.36,
+          "word": "et",
+          "confidence": 0.92,
+          "highlights": [],
+          "keywords": []
+        },
+        {
+          "wid": "79ee1bba-e4e4-4586-832c-3a28817af0dd",
+          "stime": 71.36,
+          "etime": 71.92,
+          "word": "9.000.",
+          "confidence": 1,
+          "highlights": [],
+          "keywords": []
+        }
+      ]
+    }
+  ]
+}

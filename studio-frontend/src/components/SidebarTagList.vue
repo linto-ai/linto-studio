@@ -40,9 +40,9 @@
       <div class="flex col gap-small" v-else>
         <div>{{ $t("conversation.no_search_criterion") }}</div>
       </div>
-      <button class="btn transparent no-padding" style="width: 100%">
+      <button class="btn transparent no-padding wrap" style="width: 100%">
         <span class="icon add"></span>
-        <span @click="addSearchCriterion">{{
+        <span class="label" @click="addSearchCriterion">{{
           $t("conversation.add_search_criterion")
         }}</span>
       </button>

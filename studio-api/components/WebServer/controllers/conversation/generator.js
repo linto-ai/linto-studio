@@ -27,7 +27,6 @@ function initConversation(metadata, userId, job_id) {
             customRights: []
         },
         tags: [],
-        highlights: [],
         speakers: [],
         text: [],
         metadata: {
@@ -84,13 +83,14 @@ function transcriptionToConversation(transcript, conversation) {
                 conversation.speakers.push(speaker)
             } else speaker = speaker[0]
 
-            const text_segment = {
+            let text_segment = {
                 speaker_id: speaker.speaker_id,
                 turn_id: uuidv4(),
                 raw_segment: segment.raw_segment.toLowerCase(),
                 segment: segment.segment,
                 words: []
             }
+            if(segment.language) text_segment.language = segment.language
 
             segment.words.map(word => {
                 text_segment.words.push({
@@ -98,9 +98,7 @@ function transcriptionToConversation(transcript, conversation) {
                     stime: word.start,
                     etime: word.end,
                     word: word.word,
-                    confidence: word.conf,
-                    highlights: [],
-                    keywords: []
+                    confidence: word.conf
                 })
             })
             conversation.text.push(text_segment)

@@ -117,6 +117,7 @@ export default {
       if (this.playerLoading) {
         this.fetchController.abort() // Cancel the audio file loading process.
       }
+      this?.player?.unAll()
       this?.player?.destroy()
       this.player = null
       URL.revokeObjectURL(this.audioFile)
@@ -186,8 +187,10 @@ export default {
         this.player.on("ready", () => {
           this.playerReady = true
           this.playerLoading = false
+          bus.$emit("player-ready")
         })
         this.player.once("decode", () => {
+          //if (!this.player) return
           this.initRegions()
           this.regionsReady = true
           if (this.regionsPlugin?.regions?.length > 0) {

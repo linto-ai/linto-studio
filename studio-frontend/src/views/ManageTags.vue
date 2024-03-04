@@ -15,17 +15,14 @@
         </button>
       </div>
       <div class="flex wrap align-top gap-medium justify-center">
-        <TagCategoryBox
+        <TagCategoryBoxEditable
           v-for="category of categories"
           :startOpen="!!category.tags && category.tags.length > 0"
           :key="category._id"
           :value="selectedTags"
           :category="category"
-          :scopeId="currentOrganizationScope"
-          scope="organization"
+          :organizationId="currentOrganizationScope"
           :editable="isAtLeastMaintainer"
-          :selectable="false"
-          @input="($event) => $emit('input', $event)"
           @edit="modalCategoryOpenHandler(category)"
           @edit-tag="modalTagOpenHandler"
           @delete-tag="modalDeleteTagOpenHandler"
@@ -87,7 +84,7 @@ import { apiGetAllCategories } from "@/api/tag.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 
 import MainContent from "@/components/MainContent.vue"
-import TagCategoryBox from "@/components/TagCategoryBox.vue"
+import TagCategoryBoxEditable from "@/components/TagCategoryBoxEditable.vue"
 import Loading from "@/components/Loading.vue"
 import ModalEditCategory from "../components/ModalEditCategory.vue"
 import ModalEditTag from "../components/ModalEditTag.vue"
@@ -146,6 +143,14 @@ export default {
       })
       this.editCategoryValue = null
       //this.queryCategories()
+    },
+    updateCategoryValue(newCategory) {
+      this.categories = this.categories.map((category) => {
+        if (category._id === newCategory._id) {
+          return newCategory
+        }
+        return category
+      })
     },
     modalCategoryCloseHandler() {
       this.modalCategoryIsOpen = false
@@ -207,12 +212,12 @@ export default {
     Fragment,
     MainContent,
     Loading,
-    TagCategoryBox,
     ModalEditCategory,
     ModalEditTag,
     ModalDeleteTag,
     ModalDeleteCategory,
     ModalCreateCategory,
+    TagCategoryBoxEditable,
   },
 }
 </script>

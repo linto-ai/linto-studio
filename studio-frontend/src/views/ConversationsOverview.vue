@@ -76,7 +76,6 @@ import { conversationMixin } from "../mixins/conversation.js"
 import { debounceMixin } from "../mixins/debounce.js"
 import { workerSendMessage } from "../tools/worker-message.js"
 import MainContentConversation from "../components/MainContentConversation.vue"
-import KeywordList from "../components/KeywordList.vue"
 import ConversationStatus from "../components/ConversationStatus.vue"
 import ConversationStatusError from "../components/ConversationStatusError.vue"
 import { timeToHMS } from "../tools/timeToHMS"
@@ -151,7 +150,6 @@ export default {
     Loading,
     ErrorView,
     MainContentConversation,
-    KeywordList,
     ConversationStatus,
     ConversationStatusError,
     ConversationOverviewMainInfos,

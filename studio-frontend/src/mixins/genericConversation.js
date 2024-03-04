@@ -22,16 +22,17 @@ export const genericConversationMixin = {
       conversationId: "",
       userRight: 0,
       error: false,
+      hightlightsCategories: [],
     }
   },
   async created() {
     this.debug("Creating generic conversation component")
     this.conversationId = this.$route.params.conversationId
     this.fetchUserRight()
-    this.workerConnect(
+    await this.workerConnect(
       this.conversationId,
       this.userInfo.token,
-      this.userInfo._id,
+      this.userInfo._id
     )
     // Load conversation by asking worker
     EditorWorker.worker.onmessage = async (event) => {
@@ -54,7 +55,7 @@ export const genericConversationMixin = {
           this.conversationLoaded = true
           this.$store.commit(
             "SET_CURRENT_CONVERSATION_NAME",
-            this.conversation.name,
+            this.conversation.name
           )
           break
         case "title_updated":
@@ -146,14 +147,14 @@ export const genericConversationMixin = {
     async dispatchConversationUsers() {
       this.conversationUsersLoaded = await this.$options.filters.dispatchStore(
         "getUsersByConversationId",
-        { conversationId: this.conversationId },
+        { conversationId: this.conversationId }
       )
     },
     async getAudioFile() {
       if (this.audioFile === "") {
         let req = await apiGetAudioFileFromConversation(
           this.conversationId,
-          false,
+          false
         )
         if (req?.status === "success") {
           console.log(req.data)

@@ -183,7 +183,7 @@ async function deleteConversationFromOrganization(req, res, next) {
 
     let conversations = await model.conversations.listConvFromConvIds(convIds, userId, ROLES.MAINTAINER, RIGHTS.DELETE, req.query)
 
-    conversations.list.map(async conv => {
+    for (let conv of conversations.list) {
       const result = await model.conversations.delete(conv._id)
       if (result.deletedCount !== 1) throw new ConversationError('Error when deleting conversation ', conv._id)
 
@@ -193,9 +193,15 @@ async function deleteConversationFromOrganization(req, res, next) {
       deleteFile(`${getStorageFolder()}/${conv.metadata.audio.filepath}`)
       // delete audiowaveform json file
       deleteFile(`${getStorageFolder()}/${getAudioWaveformFolder()}/${jsonFilename}`)
-    })
 
-    //check if the conversation id from conversations is in the list of convIds
+      await model.conversationSubtitles.deleteAllFromConv(conv._id.toString())
+      const categoryList = await model.categories.getByScope(conv._id.toString())
+      for (const category of categoryList) {
+        model.categories.delete(category._id)
+        model.tags.deleteAllFromCategory(category._id.toString())
+      }
+    }
+
     if (conversations.count === convIds.length) {
       res.status(200).send({
         message: 'Conversation has been deleted from the organization'

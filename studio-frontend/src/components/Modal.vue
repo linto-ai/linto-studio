@@ -88,7 +88,8 @@ export default {
           await this.deleteOrganization()
           break
         default:
-          this.emit("apply")
+          this.$emit("apply")
+          this.modalShow = false
           break
       }
     },

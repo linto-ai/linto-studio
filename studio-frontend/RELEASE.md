@@ -1,3 +1,13 @@
+# 1.4.2
+
+_2024_02_26_
+
+- Multiple fix
+- QoL improvement
+  - New font : Luciole
+  - Implement new nlp service generation (selection menu)
+- Prepare next feature hightlights
+
 # 1.4.0
 
 _2023_12_12_

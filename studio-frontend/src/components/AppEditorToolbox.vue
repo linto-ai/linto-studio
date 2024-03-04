@@ -1,36 +1,35 @@
 <template>
-  <div id="conversation-toolbox" :class="['flex', 'row']">
-    <button
-      class="toolbox-btn-play toolbox-btn"
-      @click="playFromWord($event)"></button>
-    <button class="toolbox-btn toolbox-btn-close" @click="close()"></button>
-  </div>
+  <!-- category selector -->
+
+  <ContextMenu name="main-tag-menu" first>
+    <div class="context-menu__element">
+      <h4>{{ $t("conversation.highlight_toolbox.title") }}</h4>
+    </div>
+    <DropDownAddTag
+      :conversationId="conversationId"
+      searchCategoryType="highlight"
+      :possess="true"
+      :categoriesList="categoriesList"
+      @selectTag="selectTag"></DropDownAddTag>
+  </ContextMenu>
+  <!-- tag selector -->
 </template>
 <script>
 import { bus } from "../main.js"
+import ContextMenu from "./ContextMenu.vue"
+import DropDownAddTag from "./DropDownAddTag.vue"
 
 export default {
   props: {
-    turnId: {
-      type: String,
-      required: true,
-    },
-    stime: {
-      type: Number,
-      required: true,
-    },
+    conversationId: { type: String, required: true },
+    categoriesList: { type: Array, required: false, default: null }, // if define, search will be done on this list instead of fetching from server
   },
+  // data() {},
   methods: {
-    close() {
-      this.$emit("close")
-      window.getSelection().removeAllRanges()
-    },
-    playFromWord(e) {
-      e.preventDefault()
-      e.stopPropagation()
-      bus.$emit("play-from-word", { stime: this.stime })
-      this.close()
+    selectTag(tag) {
+      this.$emit("selectTag", tag)
     },
   },
+  components: { DropDownAddTag, ContextMenu },
 }
 </script>

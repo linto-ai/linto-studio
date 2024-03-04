@@ -112,6 +112,8 @@ label,
 .form-field-checkbox .form-label {
   display: inline-block;
   margin-bottom: 0;
+  position: relative;
+  top: var(--text-vertical-center-offset);
 }
 
 .form-value {
@@ -281,19 +283,86 @@ input[type="search"] {
   }
 }
 
-fieldset[role="listbox"] {
+.form--highlights {
+  width: calc(3 * 278px + 1rem);
+}
+
+.service-box {
+  font-size: 14px;
+}
+
+.service-box label p {
+  font-size: 14px;
+  margin-bottom: 0;
+}
+
+.service-box label {
   border-radius: 4px;
   border: var(--border-block);
   box-shadow: var(--shadow-block);
-  margin: 1px;
-  &[selected="selected"] {
-    border-color: var(--green-chart);
-    border-width: 2px;
-    legend {
-      color: var(--green-chart);
-    }
-    margin: 0px;
+
+  width: 15rem;
+  display: inline-flex;
+
+  padding: calc(1rem + 2px);
+  margin: 0px;
+}
+
+.service-box > input {
+  display: none;
+}
+
+.service-box > input[disabled] + label {
+  background-color: var(--background-disabled);
+  color: var(--text-disabled);
+  cursor: not-allowed;
+  border: var(--border-block) !important;
+}
+
+.service-box > input:checked + label,
+fieldset[role="listbox"][selected="selected"] {
+  border-color: var(--green-chart);
+  border-width: 3px;
+  legend {
+    color: var(--green-chart);
   }
+  margin: 0px;
+  box-shadow: var(--shadow-block-selected);
+  background-color: #28998314;
+  padding: 1rem;
+}
+
+.service-box__title {
+  height: 32px;
+}
+
+.service-box[alreadygenerated] .service-box__title .icon.apply {
+  background-color: var(--primary-color);
+}
+
+.service-box[alreadygenerated] .service-box__title {
+  color: var(--primary-color);
+}
+
+.service-box[alreadygenerated] label .service-box__erase-msg {
+  display: none;
+}
+
+.service-box[alreadygenerated] > input:checked + label .service-box__erase-msg {
+  display: flex;
+}
+
+.service-box label:hover,
+fieldset[role="listbox"].selectable:hover {
+  border-color: var(--green-chart);
+}
+
+fieldset[role="listbox"] {
+  padding: 1rem;
+  border-radius: 4px;
+  border: var(--border-block);
+  box-shadow: var(--shadow-block);
+  margin: 2px;
 
   legend {
     float: left;

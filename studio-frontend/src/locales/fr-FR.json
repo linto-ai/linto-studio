@@ -2,6 +2,21 @@
   "accoustic": {
     "standard": "Standard"
   },
+  "app_editor_highlights_modal": {
+    "description": "Sélectionnez les outils linguistiques de votre choix. Vous pouvez en choisir plusieurs.",
+    "generate_button": "Démarrer la génération",
+    "loading_services": "Chargement des services en cours...",
+    "erase_msg": "Les données précedentes seront écrasées",
+    "ia_title": "Outils linguistiques",
+    "no_highlights_first_line": "Pas d'annotations.",
+    "no_highlights_second_line": "Améliorez votre contenu grâce aux outils linguistiques propulsés à l'IA.",
+    "delete_tag_modal": {
+      "content": "Êtes vous sur de vouloir supprimer l'étiquette?"
+    }
+  },
+  "highlights_name": {
+    "keyword": "Mots clés"
+  },
   "breadcrumb": {
     "conversations": "Conversations",
     "create": "Importer un media",
@@ -16,7 +31,7 @@
     "tagsSettings": "Tags de {organization}"
   },
   "conversation": {
-    "acoustic_label": "Acoustique",
+    "acoustic_label": "Acoustique :",
     "acoustic": {
       "generic": "Tout appareils et microphones",
       "phone": "Téléphone"
@@ -86,7 +101,8 @@
     "duration": "Durée: {duration}",
     "error": {
       "creation_unknown": "Erreur: veuillez réessayer plus tard",
-      "form_invalid": "Erreur: veuillez vérifier les champs du formulaire"
+      "form_invalid": "Erreur: veuillez vérifier les champs du formulaire",
+      "no_audio_file": "Erreur: vous devez ajouter un fichier audio"
     },
     "export": {
       "title": "Télécharger",
@@ -99,6 +115,18 @@
     "export_json_button": "Exporter en JSON",
     "filter_speakers_label": "Filtrer les locuteurs",
     "highlights_label": "Highlights",
+    "highlight_toolbox": {
+      "no-metadata": "Aucune métadonnée",
+      "title": "Ajouter une annotation sur le texte",
+      "button-add-metadata": "Ajouter une métadonnée",
+      "add_metadata_modal": {
+        "title": "Ajouter une métadonnée",
+        "description": "Sélectionnez le type de métadonnée que vous souhaitez ajouter",
+        "button_first": "Continuer",
+        "placeholder": "Selectionnez un type de métadonnée"
+      },
+      "comment": "Commentaire"
+    },
     "information_label": "Informations générales",
     "keyword_list": {
       "title": "Mots clés",
@@ -114,7 +142,7 @@
       }
     },
     "language_description": "Sélectionnez la langue dans laquelle sera transcrit le fichier",
-    "language_label": "Langage",
+    "language_label": "Langage :",
     "loading_detail_title": "Chargement du detail du média.",
     "loading_transcription_title": "Chargement de la transcription.",
     "loading_list_title": "Chargement des médias",
@@ -146,7 +174,7 @@
       "full_rights": "Tous les droits",
       "mutiple": "Plusieurs valeurs"
     },
-    "model_quality_label": "Qualité du modèle",
+    "model_quality_label": "Qualité du modèle :",
     "model_quality": {
       "high": "Haute",
       "medium": "Moyenne",
@@ -213,7 +241,7 @@
     "transcription_service_label": "Service de transcription",
     "transcription_service_error": "Veuillez sélectionner un service de transcription",
     "transcription_service_title": "Choissisez le service de transcription",
-    "transcription_settings_label": "Paramètre de transcription",
+    "transcription_settings_label": "Paramètres de transcription",
     "transcription_service_list_empty": "Aucun service de transcription disponible",
     "turn_sync_error_title": "Le tour de parole n'est pas synchronisé correctement",
     "update_information_button": "Mettre à jour les informations",
@@ -221,7 +249,7 @@
     "update_information_error_notif": "Une erreur s'est produite lors de la mise à jour des informations",
     "update_label": "Mise à jour",
     "updated": "Dernière mise à jour: {date}",
-    "no_conversation_found": "Aucun média trouvée",
+    "no_conversation_found": "Aucun média trouvé",
     "transcription_help": {
       "help_button_label": "Aide",
       "edit_speaker_title": "édition des locuteurs",
@@ -266,7 +294,13 @@
       "delete_no_selection_label": "Pas de version selectionné",
       "delete_description": "Êtes-vous sûr de vouloir supprimer {n} versions de sous-titres ?",
       "copy": "Copier",
-      "delete": "Supprimer"
+      "delete": "Supprimer",
+      "screens": {
+        "start": "Début :",
+        "current_screen": "Ecran actuel",
+        "previous_screen": "Ecran précédant",
+        "next_screen": "Ecran suivant"
+      }
     }
   },
   "droparea": {
@@ -342,7 +376,9 @@
     "search_label": "Invitez un utilisateur",
     "user_not_found": "L'utilisateur n'existe pas",
     "organization_members": "Membres de l'organisation",
-    "external_members": "Utilisateurs externes"
+    "external_members": "Utilisateurs externes",
+    "user_has_been_invited": "L'utilisateur a été invité",
+    "user_right_updated": "Les droits de l'utilisateur ont été mis à jour"
   },
   "lang": {
     "en": "Anglais",
@@ -423,18 +459,40 @@
     },
     "home": "Retour à l'accueil"
   },
+  "no_orga": {
+    "title": "Redécouvrez LinTO Studio",
+    "subtitle": "Créez une organisation pour réaliser et partager vos transcriptions.",
+    "label": "Nommez votre organisation, vous pourrez en créer d'autres par la suite",
+    "create": "Créer une organisation",
+    "creating": "Création de l'organisation en cours..."
+  },
   "organisation": {
     "add_member_description": "Utilisez le champ de recherche pour chercher des utilisateurs par leur prénom, nom ou adresse électronique",
     "add_member_label": "Ajouter un utilisateur",
     "delete_organization": "Supprimer l'organisation",
+    "delete_modal": {
+      "title": "Supprimer l'organisation",
+      "content": "Êtes vous sur de vouloir supprimer l'organisation \"{name}\" ? Cette action ne peut être annulée et supprimera tout les médias.",
+      "action": "Supprimer"
+    },
+    "delete_error_message": "Une erreur s'est produite lors de la suppression de l'organisation",
     "general_settings": "Réglages",
     "organization_users": "Utilisateurs de l'organisation",
     "create": {
       "title": "Créer une organisation",
-      "submit_label": "Créer l'organisation"
+      "submit_label": "Créer l'organisation",
+      "success_message": "L'organisation a été créée avec succès",
+      "error_already_exists": "Une organisation avec ce nom existe déjà",
+      "error_message": "Une erreur s'est produite lors de la création de l'organisation"
     },
     "description_description": "Description de l'organisation",
     "description_label": "Description",
+    "leave_modal": {
+      "title": "Quitter l'organisation",
+      "content": "Êtes vous sur de vouloir quitter l'organisation \"{name}\" ?",
+      "action": "Quitter"
+    },
+    "leave_error_message": "Une erreur s'est produite",
     "my_workspace": "Mon espace de travail",
     "name_description": "Nom de l'organisation",
     "name_label": "Nom",

@@ -28,13 +28,13 @@ class PlayerManager {
 
   Future<void> _initPlayer() async {
     if (conversation.mediaFile == null) {
-      // using a hack in just_audio lib to enable exact sync: see https://github.com/linto-ai/linto.app/issues/2
-      // and https://github.com/linto-ai/just_audio
+      const extractorOptions = AndroidExtractorOptions(mp3Flags: AndroidExtractorOptions.flagMp3EnableIndexSeeking);
       _myPlayer.setAudioSource(ProgressiveAudioSource(
           Uri.parse(conversation.mediaUri),
           headers: {
             "Authorization": "Bearer ${Config().getToken()}"
           },
+          options: const ProgressiveAudioSourceOptions(androidExtractorOptions: extractorOptions)
       ));
     } else {
       _myPlayer.setFilePath(conversation.mediaFile!.path);

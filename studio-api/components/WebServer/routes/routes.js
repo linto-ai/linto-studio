@@ -14,7 +14,6 @@ module.exports = (webServer) => {
             ...require('./api/conversation/share')(webServer),
             ...require('./api/conversation/conversations')(webServer),
             ...require('./api/conversation/turn')(webServer),
-            ...require('./api/conversation/tag')(webServer),
             ...require('./api/conversation/subtitle')(webServer),
         ],
         "/api": [
@@ -22,6 +21,7 @@ module.exports = (webServer) => {
             ...require('./api/taxonomy/conversation')(webServer), // Keep that way until frontend catches up
             ...require('./api/taxonomy/tag')(webServer), // Keep that way until frontend catches up
             ...require('./api/media/media')(webServer),
+            ...require('./api/taxonomy/metadata')(webServer),
         ],
         "/api/nlp": require('./api/nlp/nlp')(webServer),
         "/api/services": require('./api/service/services')(webServer, this),

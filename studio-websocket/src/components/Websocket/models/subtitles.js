@@ -3,7 +3,7 @@ import {
   copySubtitlesBySubtitleId,
   deleteSubtitlesByIds,
   generateSubtitlesByConversationId,
-  getRights,
+  apiGetRights,
   getSubtitleById,
   getSubtitleListByConversationId,
 } from "../request/index.js"
@@ -11,6 +11,8 @@ import Debug from "debug"
 import { Job } from "./job.js"
 import Conversations from "./conversations.js"
 import { handleScreenChange } from "./conversations/screenHandler.js"
+import { v4 as uuidv4 } from "uuid"
+import findScreenIndex from "../tools/findScreenIndex.js"
 
 const debug = Debug("Websocket:debug:models:subtitles")
 
@@ -54,7 +56,7 @@ export default class SubtitleHelper {
   }
 
   static async getRights(conversationId, userToken) {
-    let rights = await getRights(conversationId, userToken)
+    let rights = await apiGetRights(conversationId, userToken)
     if (rights.status == "success") {
       return rights
     } else {
@@ -153,8 +155,7 @@ export class Subtitle {
     this.users = []
     this.undoManagers = new Map()
     this.obj = subtitleObj ? subtitleObj : {}
-    this.userTokenIndexedByTransactionName = new Map()
-    this.callbacks = new Map()
+    this.transactionInfos = new Map()
 
     this.watchProperties = [this.ydoc.getArray("screens")]
 
@@ -169,26 +170,41 @@ export class Subtitle {
   }
 
   observeChange() {
+    this.getYdoc().on("update", (binaryDelta, origin) => {
+      if (origin === "websocket" || origin === "undo") return
+
+      let transactInfo = this.transactionInfos.get(origin)
+      if (transactInfo.needDelta) {
+        this.updateObj("screens", this.getScreens())
+        transactInfo.callback(binaryDelta)
+      }
+    })
+
     this.getYdoc()
       .getArray("screens")
       .observeDeep(async (yTextEvent, transaction) => {
         if (transaction.origin === "websocket" || transaction.origin === "undo")
           return
 
-        const status = await handleScreenChange(
-          yTextEvent,
-          transaction,
-          this.getObj().conv_id,
-          this.getObj()._id,
-          this.userTokenIndexedByTransactionName.get(transaction.origin)
-        )
+        let transactInfo = this.transactionInfos.get(transaction.origin)
+        if (transactInfo.needDelta) return
+
+        const status = transactInfo.userToken
+          ? await handleScreenChange(
+              yTextEvent,
+              transaction,
+              this.getObj().conv_id,
+              this.getObj()._id,
+              transactInfo.userToken
+            )
+          : true
 
         if (status) {
           this.updateObj("screens", this.getScreens())
-          this.callbacks.get(transaction.origin)(status)
+          transactInfo.callback(status)
         } else {
           this.undo(transaction.origin)
-          this.callbacks.get(transaction.origin)(status)
+          transactInfo.callback(status)
         }
       })
   }
@@ -209,6 +225,26 @@ export class Subtitle {
     }
   }
 
+  addScreen(screenData, callback) {
+    let transactionName = uuidv4()
+
+    this.transactionInfos.set(transactionName, { callback, needDelta: true })
+
+    try {
+      let { after, screen_id, newScreen } = screenData
+
+      // add 1 to the index if screen created after
+      let index = findScreenIndex(this.getScreens(), screen_id) + after
+      this.ydoc.transact(() => {
+        this.ydoc
+          .getArray("screens")
+          .insert(index, [Subtitle.formatScreen(newScreen)])
+      }, transactionName)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   applyBinaryDelta(
     binaryDelta,
     transactionName,
@@ -220,8 +256,7 @@ export class Subtitle {
       this.createUndoManager(transactionName)
     }
 
-    this.userTokenIndexedByTransactionName.set(transactionName, userToken)
-    this.callbacks.set(transactionName, callback)
+    this.transactionInfos.set(transactionName, { callback, userToken })
 
     try {
       this.ydoc.transact(() => {

@@ -87,7 +87,6 @@ import {
 import { debounceMixin } from "@/mixins/debounce"
 import { conversationListOrgaMixin } from "@/mixins/conversationListOrga.js"
 
-import TagCategoryBox from "@/components/TagCategoryBox.vue"
 import ConversationList from "@/components/ConversationList.vue"
 import Tag from "@/components/Tag.vue"
 import MainContent from "@/components/MainContent.vue"
@@ -179,8 +178,7 @@ export default {
         // check if tag exists by querying the API
         const tagTreeFromApi = await apiSearchTagsById(
           this.currentOrganizationScope,
-          tagsFromStorage.map((t) => t._id),
-          "organization_metadata"
+          tagsFromStorage.map((t) => t._id)
         )
         const tags = extractTagsFromCategoryTree(tagTreeFromApi)
         return tags
@@ -225,7 +223,6 @@ export default {
   components: {
     MainContent,
     Fragment,
-    TagCategoryBox,
     ConversationList,
     Tag,
     ExploreModalVue,

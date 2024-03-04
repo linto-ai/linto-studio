@@ -1,0 +1,159 @@
+{
+	"segments": [
+		{
+			"duration": 15.959846,
+			"end": 16.289846,
+			"raw_segment": "bonjour je vais donner quelques chiffres hum deux cinq et je vais en donner encore d' autres huit douze un petit dernier dix mille",
+			"segment": "bonjour je vais donner quelques chiffres hum 2 5 et je vais en donner encore d' autres 8 12 un petit dernier 10000",
+			"spk_id": null,
+			"start": 0.33,
+			"words": [
+				{
+					"conf": 1.0,
+					"end": 0.96,
+					"start": 0.33,
+					"word": "bonjour"
+				},
+				{
+					"conf": 1.0,
+					"end": 1.44,
+					"start": 1.17,
+					"word": "je"
+				},
+				{
+					"conf": 1.0,
+					"end": 1.74,
+					"start": 1.44,
+					"word": "vais"
+				},
+				{
+					"conf": 1.0,
+					"end": 2.37,
+					"start": 1.95,
+					"word": "donner"
+				},
+				{
+					"conf": 1.0,
+					"end": 2.67,
+					"start": 2.37,
+					"word": "quelques"
+				},
+				{
+					"conf": 1.0,
+					"end": 3.18,
+					"start": 2.67,
+					"word": "chiffres"
+				},
+				{
+					"conf": 0.741715,
+					"end": 4.2,
+					"start": 3.93,
+					"word": "hum"
+				},
+				{
+					"conf": 0.536195,
+					"end": 5.54986,
+					"start": 5.159999999999999,
+					"word": "deux"
+				},
+				{
+					"conf": 1.0,
+					"end": 7.17,
+					"start": 6.4799999999999995,
+					"word": "cinq"
+				},
+				{
+					"conf": 0.979562,
+					"end": 8.189027,
+					"start": 8.07,
+					"word": "et"
+				},
+				{
+					"conf": 1.0,
+					"end": 8.37,
+					"start": 8.189027,
+					"word": "je"
+				},
+				{
+					"conf": 0.884393,
+					"end": 8.52,
+					"start": 8.37,
+					"word": "vais"
+				},
+				{
+					"conf": 0.970572,
+					"end": 8.61,
+					"start": 8.52,
+					"word": "en"
+				},
+				{
+					"conf": 0.950819,
+					"end": 8.879999999999999,
+					"start": 8.61,
+					"word": "donner"
+				},
+				{
+					"conf": 0.606164,
+					"end": 9.209989,
+					"start": 8.879999999999999,
+					"word": "encore"
+				},
+				{
+					"conf": 0.99713,
+					"end": 9.270078999999999,
+					"start": 9.209999999999999,
+					"word": "d'"
+				},
+				{
+					"conf": 0.913143,
+					"end": 9.54,
+					"start": 9.270078999999999,
+					"word": "autres"
+				},
+				{
+					"conf": 1.0,
+					"end": 10.5,
+					"start": 9.93,
+					"word": "huit"
+				},
+				{
+					"conf": 1.0,
+					"end": 12.27,
+					"start": 11.49,
+					"word": "douze"
+				},
+				{
+					"conf": 1.0,
+					"end": 13.47,
+					"start": 13.32,
+					"word": "un"
+				},
+				{
+					"conf": 1.0,
+					"end": 13.77,
+					"start": 13.47,
+					"word": "petit"
+				},
+				{
+					"conf": 1.0,
+					"end": 14.31,
+					"start": 13.77,
+					"word": "dernier"
+				},
+				{
+					"conf": 1.0,
+					"end": 15.78,
+					"start": 15.51,
+					"word": "dix"
+				},
+				{
+					"conf": 0.990784,
+					"end": 16.289846,
+					"start": 15.78,
+					"word": "mille"
+				}
+			]
+		}
+	],
+	"transcription_result": "bonjour je vais donner quelques chiffres hum 2 5 et je vais en donner encore d' autres 8 12 un petit dernier 10000"
+}

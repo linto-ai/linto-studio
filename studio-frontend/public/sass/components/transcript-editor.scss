@@ -96,7 +96,10 @@ $selectedWord: #0057f5;
   display: flex;
   justify-content: flex-end;
   font-size: 14px;
-  width: 140px;
+  position: relative;
+  top: var(--text-vertical-center-offset);
+
+  //width: 140px;
 }
 
 /* TRANSCRIPTION EDITOR */
@@ -120,6 +123,7 @@ $selectedWord: #0057f5;
     box-sizing: border-box;
     line-height: 1.5em;
     font-size: 15px;
+    font-family: luciole;
   }
 
   .collab-input {
@@ -162,6 +166,7 @@ $selectedWord: #0057f5;
   }
 }
 .word {
+  position: relative;
   @include transition(all 0.2s ease);
   &.playing .word_content {
     background: var(--primary-color) !important;
@@ -179,8 +184,13 @@ $selectedWord: #0057f5;
     // padding: 0 0.5em;
     // border: 1px solid rgb(29, 175, 146);
     // border-radius: 4px;
-    background-color: #ffef6a9c;
+    //background-color: var(--bg-highlight);
   }
+
+  &[highlighted--last-word] .word_space {
+    background-color: var(--background-primary) !important;
+  }
+
   word-break: break-word;
 
   // &:after {
@@ -245,12 +255,41 @@ $selectedWord: #0057f5;
 
 /* Toolbox */
 
+.conversation-highlight-toolbox {
+  display: none;
+}
+
+.conversation-highlight-toolbox.context-menu {
+  width: auto;
+}
+
+.conversation-highlight-toolbox__content {
+  text-align: center;
+  font-weight: 800;
+}
+
+.text-toolbox {
+  position: absolute;
+  width: auto;
+  bottom: 1.5rem;
+  left: 0;
+  background: #fff;
+  z-index: 10;
+  width: 300px; //15rem
+  padding: 0.5rem;
+  border: var(--border-block);
+  box-shadow: var(--shadow-block);
+}
+
+.word[highlighted]:hover .conversation-highlight-toolbox {
+  display: block;
+}
+
 #conversation-toolbox {
   position: absolute;
-  top: 0;
-  left: 0;
   width: auto;
-  height: 40px;
+  bottom: 1.5rem;
+  left: 0;
   background: #fff;
   z-index: 10;
 }
@@ -363,7 +402,6 @@ $selectedWord: #0057f5;
 .turn-actions {
   align-items: center;
   justify-items: center;
-  height: 30px;
 
   .turn-action-btn {
     width: 26px;
@@ -380,7 +418,12 @@ $selectedWord: #0057f5;
       margin: 0;
       height: 22px;
       width: 22px;
+    }
+    .icon-merge {
       @include maskImage("../public/img/merge-turn.svg");
+    }
+    .icon-add {
+      @include maskImage("../public/img/add.svg");
     }
   }
 }

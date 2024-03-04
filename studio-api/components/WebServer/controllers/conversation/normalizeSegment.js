@@ -68,7 +68,7 @@ function* ruleSequenceGenerator(segments, lang) {
 
 
 function cleanSegment(segment) {
-  return segment.replace(' \', ', '\'')
+  return segment.replace(' \', ', '\'').replace(/' /g, "'")
 }
 
 function segmentNormalizeText(transcription, lang, filter = undefined) {
@@ -83,7 +83,15 @@ function segmentNormalizeText(transcription, lang, filter = undefined) {
   transcription.segments.map(segments => {
     segments.raw_words = [...segments.words]
     segments.words = []
+
+    // Removing space after an apostrophe from a LinSTT transcription service
     segments.segment_array = segments.segment.split(' ')
+
+    if (segments.language) lang = segments.language
+
+    if (segments.segment_array.length > 0 && segments.segment_array[0] === '') {
+      segments.segment_array.shift()
+    }
 
     for (let words_sequence of ruleSequenceGenerator(segments, lang, filter)) {
       segments.words.push(words_sequence)
@@ -98,8 +106,8 @@ function segmentNormalizeText(transcription, lang, filter = undefined) {
     filtered_transcription.segments = filtered_segment
 
     return filtered_transcription
-  } else
-    return transcription
+  }
+  return transcription
 }
 
 module.exports = {

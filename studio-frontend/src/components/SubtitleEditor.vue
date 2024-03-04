@@ -5,23 +5,33 @@
         @videoLoaded="setVideo"
         :audioDuration="audio.duration"
         :screens="blocks.screens"></VideoPlayer>
-      <div id="screen-list" class="flex1" :key="blockKey">
-        <div v-for="block in blocks" :key="block.screen_id">
+      <div id="screen-list" class="flex1" :key="blocks.size">
+        <div v-for="block in blocks" :key="block.screen.screen_id">
           <SubtitleEditorBlock
             :userInfo="userInfo"
             :canEdit="canEdit"
-            :block="block"></SubtitleEditorBlock>
+            :block="block"
+            :is-initially-selected="
+              block.screen.screen_id === playingScreen
+            "></SubtitleEditorBlock>
         </div>
       </div>
     </div>
-    <SubtitlePlayer
-      :key="playerKey"
-      :conversationId="conversation._id"
-      :audio="audio"
-      :blocks="blocks"
-      :canEdit="canEdit"
-      :useVideo="useVideo"
-      @blockUpdate="blockUpdate"></SubtitlePlayer>
+    <div id="subtitle-editor">
+      <ScreenEditor
+        :screens="blocks"
+        :can-edit="canEdit"
+        @mergeScreens="mergeScreens"
+        @addScreen="addScreen"></ScreenEditor>
+      <SubtitlePlayer
+        :key="playerKey"
+        :conversationId="conversation._id"
+        :audio="audio"
+        :blocks="blocks"
+        :canEdit="canEdit"
+        :useVideo="useVideo"
+        @blockUpdate="blockUpdate"></SubtitlePlayer>
+    </div>
   </div>
 </template>
 <script>
@@ -29,6 +39,9 @@ import { bus } from "../main.js"
 import SubtitleEditorBlock from "./SubtitleEditorBlock.vue"
 import SubtitlePlayer from "@/components/SubtitlePlayer.vue"
 import VideoPlayer from "./VideoPlayer.vue"
+import { ScreenList } from "../models/screenList.js"
+import ScreenEditor from "./ScreenEditor.vue"
+
 export default {
   props: {
     canEdit: {
@@ -44,15 +57,15 @@ export default {
       required: true,
     },
     blocks: {
-      type: Object,
+      type: ScreenList,
       required: true,
     },
   },
   data() {
     return {
-      blockKey: 0,
       useVideo: null,
       playerKey: true,
+      playingScreen: null,
     }
   },
   computed: {
@@ -76,9 +89,20 @@ export default {
     blockUpdate(screen_id, stime, etime) {
       this.$emit("screenUpdate", screen_id, stime, etime)
     },
+    mergeScreens(keptScreenId, deletedScreenId) {
+      this.$emit("mergeScreen", keptScreenId, deletedScreenId)
+    },
+    addScreen(leftScreenId, rightScreenId) {
+      if (leftScreenId) {
+        this.$emit("addScreen", leftScreenId)
+      } else {
+        this.$emit("addScreen", rightScreenId, false)
+      }
+    },
     handleScreenEnter(screenId) {
       let screen = document.getElementById(screenId)
       if (screen) {
+        this.playingScreen = screenId
         screen.classList.add("playing")
         screen.scrollIntoView({
           behavior: "smooth",
@@ -90,6 +114,9 @@ export default {
     handleScreenLeave(screenId) {
       let screen = document.getElementById(screenId)
       if (screen) {
+        if (this.playingScreen === screenId) {
+          this.playingScreen = null
+        }
         screen.classList.remove("playing")
       }
     },
@@ -98,6 +125,7 @@ export default {
     SubtitleEditorBlock,
     SubtitlePlayer,
     VideoPlayer,
+    ScreenEditor,
   },
 }
 </script>
