@@ -1,7 +1,8 @@
 button,
-a {
+a,
+.btn {
   cursor: pointer;
-  display: inline-block;
+  display: inline-flex;
   margin: 0;
   color: var(--text-primary);
   font-family: inherit;
@@ -28,6 +29,10 @@ a {
   }
 }
 
+.btn.wrap > .label {
+  white-space: normal;
+}
+
 a {
   font-weight: 500;
   &:hover {
@@ -49,7 +54,8 @@ button,
   font-weight: 500;
   border: var(--border-button-flat);
   background-color: var(--background-secondary);
-
+  //display: flex;
+  align-items: center;
   &.inline {
     display: inline-flex;
     padding: 0;
@@ -66,7 +72,10 @@ button,
   & > .label {
     //@include transition(all 0.2s ease);
     font-size: 14px;
-    line-height: 20px;
+    position: relative;
+    top: var(--text-vertical-center-offset);
+    flex: 1;
+    //line-height: 20px;
   }
   .icon {
     @include transition(all 0.2s ease);
@@ -76,8 +85,13 @@ button,
     //margin: 0 5px;
   }
 
+  .small-arrow-down {
+    position: relative;
+    top: var(--text-vertical-center-offset);
+  }
+
   .icon:last-child {
-    margin:0;
+    margin: 0;
   }
   &.transparent {
     background-color: transparent;

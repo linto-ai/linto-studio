@@ -44,12 +44,12 @@ import {
 } from "@/api/tag.js"
 import { debounceMixin } from "@/mixins/debounce"
 import { mergeArrayOnId } from "@/tools/mergeArrayOnId"
+import filterTagsOnCategoryList from "@/tools/filterTagsOnCategoryList"
 
 import Loading from "./Loading.vue"
 import SwitchInput from "./SwitchInput.vue"
 import Tag from "./Tag.vue"
 import TagCategoryBoxSelectable from "./TagCategoryBoxSelectable.vue"
-
 export default {
   props: {
     search: { type: String, default: "" },
@@ -59,7 +59,11 @@ export default {
     reload: { type: Boolean, default: false },
     addable: { type: Boolean, default: false },
     selectable: { type: Boolean, default: true },
+
     withCategories: { type: Boolean, default: true },
+    searchCategoryType: { type: String, default: "conversation_metadata" },
+    possess: { type: Boolean, default: false },
+    categoriesList: { type: Array, required: false, default: null }, // if define, search will be done on this list instead of fetching from server
   },
   mixins: [debounceMixin],
   data() {
@@ -87,42 +91,54 @@ export default {
   },
   methods: {
     apiSearchTags(search, signal) {
+      if (this.categoriesList !== null) {
+        return Promise.resolve(
+          filterTagsOnCategoryList(this.categoriesList, search)
+        )
+      }
+
       if (this.conversationId) {
         return apiSearchTags(
           this.conversationId,
           search,
-          "conversation_metadata",
-          "conversation",
+          this.searchCategoryType,
+          { scope: "conversation", possess: this.possess },
           signal
         )
       } else {
         return apiSearchTags(
           this.currentOrganizationScope,
           search,
-          "conversation_metadata",
-          "organization",
+          this.searchCategoryType,
+          { scope: "organization" },
           signal
         )
       }
     },
     apiSearchCategories(search, signal) {
+      if (this.categoriesList !== null) {
+        return Promise.resolve(
+          filterTagsOnCategoryList(this.categoriesList, search)
+        )
+      }
+
       if (this.conversationId) {
         return apiSearchCategories(
           this.conversationId,
           search,
           "conversation_metadata",
-          "conversation",
-          signal
-        )
-      } else {
-        return apiSearchCategories(
-          this.currentOrganizationScope,
-          search,
-          "conversation_metadata",
-          "organization",
+          { scope: "conversation", possess: this.possess },
           signal
         )
       }
+
+      return apiSearchCategories(
+        this.currentOrganizationScope,
+        search,
+        "conversation_metadata",
+        { scope: "organization" },
+        signal
+      )
     },
     async fetchSearchResult(newSearch) {
       if (newSearch === "") {

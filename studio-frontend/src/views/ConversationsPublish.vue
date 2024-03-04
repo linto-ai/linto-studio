@@ -96,6 +96,8 @@
         :turns="turns"
         :canEdit="false"
         :noPlayer="true"
+        :hightlightsCategories="[]"
+        :hightlightsCategoriesVisibility="{}"
         ref="editor"
         v-if="status === 'done'"></AppEditor>
     </div>

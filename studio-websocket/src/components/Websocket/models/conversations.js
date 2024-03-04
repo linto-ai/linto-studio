@@ -3,9 +3,10 @@ import {
   apiGetKeywords,
   getConversationById,
   getConversationNameAndDesc,
-  getConversationText,
-  getRights,
+  apiGetConversationText,
+  apiGetRights,
   getSubtitleListByConversationId,
+  apiGetConversationSpeakers,
 } from "../request/index.js"
 import { v4 as uuidv4 } from "uuid"
 import Debug from "debug"
@@ -86,7 +87,7 @@ export default class Conversations {
   }
 
   static async getRights(conversationId, userToken) {
-    let rights = await getRights(conversationId, userToken)
+    let rights = await apiGetRights(conversationId, userToken)
     if (rights.status == "success") {
       return rights
     } else {
@@ -305,7 +306,7 @@ export class Conversation {
 
     this.obj.jobs[key] = job
   }
-  
+
   initYjsFromObj(conversationObj) {
     this.ydoc.transact(() => {
       this.initSpeakers(conversationObj.speakers)
@@ -315,8 +316,15 @@ export class Conversation {
 
   async loadText(userToken) {
     if (this.ydoc.getArray("text").length === 0) {
-      let text = await getConversationText(this.id, userToken)
+      let text = await apiGetConversationText(this.id, userToken)
       this.initText(text.data.text)
+    }
+  }
+
+  async loadSpeakers(userToken) {
+    if (this.ydoc.getArray("speakers").length === 0) {
+      let speakers = await apiGetConversationSpeakers(this.id, userToken)
+      this.initSpeakers(speakers.data.speakers)
     }
   }
 
@@ -362,12 +370,15 @@ export class Conversation {
 
   initSpeakers(speakers) {
     try {
-      for (let spk of speakers) {
-        let ySpk = { ...spk, speaker_name: new Y.Text() }
-        ySpk.speaker_name.insert(0, spk.speaker_name)
-        let yspeaker = new Y.Map(Object.entries(ySpk))
-        this.ydoc.getArray("speakers").push([yspeaker])
-      }
+      this.obj["speakers"] = speakers
+      this.ydoc.transact(() => {
+        for (let spk of speakers) {
+          let ySpk = { ...spk, speaker_name: new Y.Text() }
+          ySpk.speaker_name.insert(0, spk.speaker_name)
+          let yspeaker = new Y.Map(Object.entries(ySpk))
+          this.ydoc.getArray("speakers").push([yspeaker])
+        }
+      }, "websocket")
     } catch (error) {
       console.error(error)
     }

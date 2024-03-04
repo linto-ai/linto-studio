@@ -1,5 +1,5 @@
 body {
-  font-family: $montserrat;
+  font-family: "noto sans";
   //font-family: "Architects Daughter", cursive;
   font-size: 15px;
   color: var(--text-primary);
@@ -41,6 +41,7 @@ h3,
   font-weight: normal;
   padding: 0 0 5px 0;
   color: var(--text-primary);
+  //text-transform: capitalize;
 }
 
 h4 {
@@ -169,7 +170,7 @@ li:last-child {
 }
 
 .small-text {
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .small-margin {
@@ -260,14 +261,24 @@ li:last-child {
   color: white;
   text-align: center;
   border-radius: 1em;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .badge__content {
   vertical-align: middle;
+  position: relative;
+  top: var(--text-vertical-center-offset);
 }
 
 .reset-overflows {
   overflow: visible;
   white-space: normal;
   min-height: auto;
+}
+
+.overflow-vertical-auto {
+  overflow-y: auto;
 }

@@ -24,7 +24,12 @@ export default function findExpressionInWordsList(
       let expression = expressionToString(expressionsList[j])
       let expressionWords = expression.split(" ")
       if (compareWithoutPunctuation(word, expression)) {
-        rangesList.push({ start: i, end: i, expression: expression })
+        rangesList.push({
+          start: i,
+          end: i,
+          expression: expression,
+          expressionObject: expressionsList[j],
+        })
         continue
       } else if (
         compareWithoutPunctuation(
@@ -41,6 +46,7 @@ export default function findExpressionInWordsList(
             start: indexOfWordStartingWithExpression[j],
             end: i,
             expression: expression,
+            expressionObject: expressionsList[j],
           })
           counterInExpressions[j] = 0
           indexOfWordStartingWithExpression[j] = -1

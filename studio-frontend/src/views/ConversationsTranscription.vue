@@ -52,6 +52,7 @@
         :canEdit="userRights.hasRightAccess(userRight, userRights.WRITE)"
         :hightlightsCategories="hightlightsCategories"
         :hightlightsCategoriesVisibility="hightlightsCategoriesVisibility"
+        @newHighlight="handleNewHighlight"
         ref="editor"
         v-if="status === 'done'"></AppEditor>
     </div>
@@ -62,23 +63,34 @@
       :tag="tagToDelete"
       @on-cancel="onCancelDeleteTag"
       @on-confirm="onConfirmDeleteTag" />
+
+    <AppEditorMetadataModal
+      v-if="showMetadataModal"
+      @on-cancel="cancelMetadata"
+      @on-confirm="setMetadata" />
   </MainContentConversation>
 </template>
 <script>
-import ConversationShare from "@/components/ConversationShare.vue"
-import TranscriptionHelper from "@/components/TranscriptionHelper.vue"
 import moment from "moment"
-import { conversationMixin } from "../mixins/conversation.js"
+import { nextTick } from "vue"
+
+import { bus } from "../main.js"
+import { apiPostMetadata, apiUpdateMetadata } from "@/api/metadata.js"
+
+import { conversationMixin } from "@/mixins/conversation.js"
 
 import Loading from "@/components/Loading.vue"
 import Modal from "@/components/Modal.vue"
 import UserInfoInline from "@/components/UserInfoInline.vue"
 import AppEditor from "@/components/AppEditor.vue"
+import MainContentConversation from "@/components/MainContentConversation.vue"
+import HighlightsList from "@/components/HighlightsList.vue"
+import MenuToolbox from "@/components/MenuToolbox.vue"
+import ModalDeleteTagHighlight from "@/components/ModalDeleteTagHighlight.vue"
+import ConversationShare from "@/components/ConversationShare.vue"
+import TranscriptionHelper from "@/components/TranscriptionHelper.vue"
+import AppEditorMetadataModal from "@/components/AppEditorMetadataModal.vue"
 import ErrorView from "./Error.vue"
-import MainContentConversation from "../components/MainContentConversation.vue"
-import HighlightsList from "../components/HighlightsList.vue"
-import MenuToolbox from "../components/MenuToolbox.vue"
-import ModalDeleteTagHighlight from "../components/ModalDeleteTagHighlight.vue"
 
 export default {
   mixins: [conversationMixin],
@@ -89,7 +101,18 @@ export default {
       status: null,
       showDeleteModal: false,
       tagToDelete: null,
+      showMetadataModal: false,
+      metadataModalData: null,
     }
+  },
+  mounted() {
+    bus.$on("open-metadata-modal", (data) => {
+      this.showMetadataModal = true
+      this.metadataModalData = data
+    })
+  },
+  beforeDestroy() {
+    bus.$off("open-metadata-modal")
   },
   watch: {
     "conversation.speakers"(newVal, oldVal) {
@@ -161,6 +184,25 @@ export default {
     },
   },
   methods: {
+    cancelMetadata() {
+      this.showMetadataModal = false
+    },
+    async setMetadata(fields, schema) {
+      this.showMetadataModal = false
+      console.log("set-metadata", fields, schema, this.metadataModalData)
+      apiPostMetadata(
+        this.conversationId,
+        this.metadataModalData.tag._id,
+        schema.name,
+        fields.reduce(
+          (obj, field) => ({ ...obj, [field.key]: field.value }),
+          {}
+        )
+      )
+      // Todo: only update the right metadata
+      await this.fetchHightlightsCategories(this.conversationId)
+      //bus.$emit("set-metadata", fields)
+    },
     showHelper() {
       this.helperVisible = true
     },
@@ -189,6 +231,42 @@ export default {
     onConfirmDeleteTag() {
       this.showDeleteModal = false
     },
+    async handleNewHighlight({ tag, wordsSelected }) {
+      const metadata = (tag.metadata ?? []).filter((m) => m.schema == "words")
+      let post = false
+      let ranges = []
+      let metadataId = null
+
+      if (metadata.length == 0) {
+        post = true
+      } else {
+        ranges = metadata[0]?.value?.range_id ?? []
+        metadataId = metadata[0]._id
+      }
+
+      ranges.push({
+        startId: wordsSelected[0].wid,
+        endId: wordsSelected[wordsSelected.length - 1].wid,
+      })
+
+      if (post) {
+        await apiPostMetadata(this.conversationId, tag._id, "words", {
+          range_id: ranges,
+        })
+      } else {
+        await apiUpdateMetadata(this.conversationId, tag._id, metadataId, {
+          range_id: ranges,
+        })
+      }
+
+      // reload highlights ?
+      await this.fetchHightlightsCategories(this.conversationId)
+      await nextTick()
+      this.hightlightsCategoriesVisibility = {
+        ...this.hightlightsCategoriesVisibility,
+        [tag.categoryId]: true,
+      }
+    },
   },
   components: {
     ConversationShare,
@@ -202,6 +280,7 @@ export default {
     HighlightsList,
     MenuToolbox,
     ModalDeleteTagHighlight,
+    AppEditorMetadataModal,
   },
 }
 </script>

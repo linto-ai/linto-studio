@@ -1,4 +1,4 @@
-import { updateConversation as apiUpdateConversation } from "../../request/index.js"
+import { apiUpdateConversation } from "../../request/index.js"
 
 export async function handleSpeakerChange(
   yEvent,

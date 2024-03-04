@@ -1,5 +1,5 @@
 <template>
-  <div id="app" v-if="dataLoaded">
+  <div id="app" v-if="dataLoaded || noOrganization">
     <div id="app-view" class="flex col flex1">
       <!-- HEADER -->
       <keep-alive>
@@ -7,6 +7,7 @@
           name="AppHeader"
           v-if="!editorView"
           :currentOrganizationScope="currentOrganizationScope"
+          :noOrganization="noOrganization"
           :userInfo="userInfo"
           :userOrganizations="userOrganizations"
           :currentOrganization="currentOrganization"></router-view>
@@ -15,12 +16,15 @@
         <!-- MAIN VIEW -->
         <!-- <loading-overlay></loading-overlay> -->
         <router-view
+          v-if="!noOrganization"
           :userInfo="userInfo"
           :currentOrganizationScope="currentOrganizationScope"
           :userOrganizations="userOrganizations"
           :currentOrgaPersonal="currentOrgaPersonal"
           :currentOrganization="currentOrganization"
           :key="resetKey"></router-view>
+
+        <NoOrganizationComponent v-else />
       </div>
       <ErrorView v-else />
 
@@ -41,7 +45,7 @@ import LoadingOverlay from "@/components/LoadingOverlay.vue"
 import ErrorView from "./views/Error.vue"
 import Loading from "./components/Loading.vue"
 import PUBLIC_ROUTES from "./const/publicRoutes.js"
-
+import NoOrganizationComponent from "./views/NoOrganization.vue"
 export default {
   data() {
     return {
@@ -52,6 +56,7 @@ export default {
       convosLoaded: false,
       error: false,
       resetKey: 0,
+      noOrganization: false,
     }
   },
   mounted() {
@@ -121,8 +126,14 @@ export default {
     },
     currentOrganizationScope() {
       if (this.userOrgasLoaded) {
-        const orgaScopeId = this.$store.getters.getCurrentOrganizationScope()
-        return orgaScopeId
+        try {
+          const orgaScopeId = this.$store.getters.getCurrentOrganizationScope()
+          return orgaScopeId
+        } catch (error) {
+          console.error("err: ", error)
+          this.noOrganization = true
+          return null
+        }
       }
       return null
     },
@@ -168,17 +179,26 @@ export default {
       }
     },
     async dispatchUserOrganizations() {
-      this.userOrgasLoaded = await this.$options.filters.dispatchStore(
-        "getUserOrganizations"
-      )
-      const orgaScopeId = this.$store.getters.getCurrentOrganizationScope()
-      await this.$store.dispatch("getCurrentOrganizationById", orgaScopeId)
+      try {
+        this.userOrgasLoaded = await this.$options.filters.dispatchStore(
+          "getUserOrganizations"
+        )
+        const orgaScopeId = this.$store.getters.getCurrentOrganizationScope()
+        await this.$store.dispatch("getCurrentOrganizationById", orgaScopeId)
+      } catch (error) {
+        console.error("err: ", error)
+        return
+      }
     },
   },
   components: {
     LoadingOverlay,
     Loading,
     ErrorView,
+    NoOrganizationComponent,
+  },
+  errorCaptured(error) {
+    console.log("-------->", error)
   },
 }
 </script>

@@ -20,7 +20,8 @@
               turns.findIndex((t) => t.turn_id === turn.turn_id) ===
               turns.length - 1
             "
-            @mergeTurns="mergeTurns" />
+            @mergeTurns="mergeTurns"
+            @newHighlight="$emit('newHighlight', $event)" />
         </div>
       </div>
     </div>
@@ -162,6 +163,13 @@ export default {
     bus.$off("player-seek")
     bus.$off("refresh_spk_timebox")
     bus.$off("player-ready")
+
+    // turns event (should be in this component instead of appeditorturn, because of merge and split which trigger beforeDestroy on appeditorturn)
+    bus.$off("conversation_user_update")
+    bus.$off("words_updated")
+    bus.$off("segment_updated")
+    bus.$off("turn_speaker_update")
+    bus.$off("speaker_name_updated")
   },
   methods: {
     playerReady() {

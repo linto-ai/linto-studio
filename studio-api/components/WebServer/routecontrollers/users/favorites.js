@@ -54,7 +54,6 @@ async function listFav(req, res, next) {
                     else await model.favorites.deleteFav(req.payload.data.userId, favId)
                 }
             }
-
             let fav_conv = await model.conversations.listConvFromFavorite(conv_favorite, req.query)
             fav_conv.list = await conversationUtility.getUserRightByShare(req.payload.data.userId, fav_conv.list)
 
@@ -69,7 +68,6 @@ async function listFav(req, res, next) {
 async function listFavTags(req, res, next) {
     try {
         const userFav = await model.favorites.listFav(req.payload.data.userId)
-
         if (userFav.length === 0) res.status(204).send()
         else {
             let listConv = await model.search.conversations.getByIdsAndTag(userFav[0].favorites, req.query.tags)
@@ -89,7 +87,6 @@ async function listFavTags(req, res, next) {
                     categories[categoryId] = {
                         ...category,
                         tags: [],
-                        searchedTag: false
                     }
                 }
                 categories[categoryId].tags.push(tag)
@@ -97,7 +94,6 @@ async function listFavTags(req, res, next) {
 
             let searchResult = []
             for (const categoryId in categories) {
-                delete categories[categoryId].searchedTag
                 searchResult.push(categories[categoryId])
             }
 

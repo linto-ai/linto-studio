@@ -116,29 +116,27 @@ class ConvoModel extends MongoModel {
                 }
             }
 
-            if (filter.name) {
+            if (filter?.name) {
                 query.name = {
                     $regex: filter.name,
                     $options: 'i'
                 }
             }
 
-            if (filter.description) {
+            if (filter?.description) {
                 query.description = {
                     $regex: filter.description,
                     $options: 'i'
                 }
             }
-            if (filter.tags) {
+            if (filter?.tags) {
                 filter.tags = filter.tags.split(',')
                 query.tags = {
-                    $elemMatch: {
-                        $in: filter.tags
-                    }
+                    $all : filter.tags
                 }
             }
 
-            if (filter.text) {
+            if (filter?.text) {
                 query['text.raw_segment'] = {
                     $regex: filter.text,
                     $options: 'i'
@@ -542,7 +540,7 @@ class ConvoModel extends MongoModel {
 
             if (filter.tags) {
                 query.tags = {
-                    $in: filter.tags.split(',')
+                    $all: filter.tags.split(',')
                 }
             }
 

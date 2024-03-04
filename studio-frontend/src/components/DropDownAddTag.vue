@@ -12,6 +12,7 @@
           v-model="searchValueForTag"
           id="dropdown-search-tags"
           autocomplete="off"
+          @keydown="keydown"
           class="fullwidth" />
       </div>
 
@@ -22,12 +23,15 @@
           style="width: 100%; text-align: left"
           @click="searchTags">
           <span class="icon search"></span>
-          <span class="label flex1"
+          <span class="label flex1 text-cut"
             >{{ $t("tags.search_tags_with") }} "{{ searchValueForTag }}"</span
           >
           <span class="icon right-arrow"></span>
         </button>
-        <ContextMenu v-if="state == STATES.SEARCH_TAG" name="tag-search">
+        <ContextMenu
+          v-if="state == STATES.SEARCH_TAG"
+          name="tag-search"
+          overflow>
           <TagSearch
             :value="value"
             @selectTag="selectTag"
@@ -37,7 +41,10 @@
             :selectable="false"
             :withCategories="false"
             addable
-            :conversationId="conversationId">
+            :possess="possess"
+            :conversationId="conversationId"
+            :searchCategoryType="searchCategoryType"
+            :categoriesList="categoriesList">
           </TagSearch>
         </ContextMenu>
       </div>
@@ -49,17 +56,19 @@
           style="width: 100%; text-align: left"
           @click="createTag">
           <span class="icon new"></span>
-          <span class="label flex1 flex gap-small align-bottom">
+          <span class="label flex1 flex gap-small align-bottom text-cut">
             {{ $t("tags.create_tag") }} "{{ searchValueForTag }}"
           </span>
           <span class="icon right-arrow"></span>
         </button>
 
-        <ContextMenu v-if="state == STATES.CREATE_TAG">
+        <ContextMenu v-if="state == STATES.CREATE_TAG" overflow>
           <DropDownAddTagCreate
             :tagValue="searchValueForTag"
             :conversationId="conversationId"
             :selectedCategory="selectedCategory"
+            :searchCategoryType="searchCategoryType"
+            :categoriesList="categoriesList"
             @done="done"
             v-model="selectedCategory"></DropDownAddTagCreate>
         </ContextMenu>
@@ -76,7 +85,10 @@
         <span class="icon right-arrow"></span>
       </button>
 
-      <ContextMenu v-if="state == STATES.BROWSE_CATEGORY" name="browse cats">
+      <ContextMenu
+        v-if="state == STATES.BROWSE_CATEGORY"
+        name="browse cats"
+        overflow>
         <TagCategoryBoxSelectable
           v-for="category of allCategories"
           :key="category._id"
@@ -86,6 +98,7 @@
           scope="conversation"
           :startOpen="false"
           addable
+          :possess="possess"
           :selectable="false"
           @selectTag="selectTag"
           @unSelectTag="unSelectTag" />
@@ -104,6 +117,7 @@
 </template>
 
 <script>
+// could be rename tagSelector or something like that
 import { Fragment } from "vue-fragment"
 
 import { bus } from "../main.js"
@@ -131,7 +145,10 @@ export default {
   props: {
     menuPosition: { type: String, default: "right" },
     conversationId: { type: String, required: true },
-    value: { type: Array, required: true }, //tags
+    value: { type: Array, required: false, default: () => [] }, // tags
+    searchCategoryType: { type: String, default: "conversation_metadata" },
+    possess: { type: Boolean, default: false },
+    categoriesList: { type: Array, required: false, default: null }, // if define, search will be done on this list instead of fetching from server
   },
   data() {
     return {
@@ -141,7 +158,7 @@ export default {
       selectedCategory: null,
       reloadTagList: false,
       reloadCategoryList: false,
-      allCategories: [],
+      allCategories: this.categoriesList || [],
     }
   },
   mounted() {
@@ -163,6 +180,9 @@ export default {
     },
   },
   methods: {
+    keydown(e) {
+      e.stopPropagation()
+    },
     createTag() {
       this.state = STATES.CREATE_TAG
     },
@@ -180,14 +200,14 @@ export default {
       const res = await apiCreateCategory(
         this.conversationId,
         name,
-        "conversation_metadata",
+        this.searchCategoryType,
         "conversation",
         null
       )
 
       if (res.status == "error") {
+        console.error(res)
       } else {
-        console.log(res)
         this.selectCategory(res)
         this.done()
       }
@@ -231,10 +251,19 @@ export default {
     async browseCategories() {
       this.state = STATES.BROWSE_CATEGORY
       this.loading = true
+      if (this.categoriesList !== null) {
+        console.log("->2", this.categoriesList)
+        this.allCategories = this.categoriesList
+        this.loading = false
+        return
+      }
+
       this.allCategories = await apiGetAllCategories(
         this.conversationId,
-        "conversation_metadata",
-        "conversation"
+        this.searchCategoryType,
+        "conversation",
+        false,
+        this.possess
       )
       this.loading = false
     },

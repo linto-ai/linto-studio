@@ -15,7 +15,7 @@
       v-if="conversations && conversations.length > 0">
       <ConversationLine
         v-for="conv of conversations"
-        :key="conv._id + conv.last_update"
+        :key="conv._id + conv.last_update + conv.tags.length"
         :currentOrganizationScope="currentOrganizationScope"
         :conversation="conv"
         :pageSharedWith="pageSharedWith"

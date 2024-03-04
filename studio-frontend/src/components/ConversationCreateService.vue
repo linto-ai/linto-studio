@@ -17,15 +17,15 @@
 
     <div class="form-field flex col small-padding-top">
       <div>
-        <b>{{ $t("conversation.acoustic_label") }}:</b>
+        <label>{{ $t("conversation.acoustic_label") }}</label>
         {{ acoustic_value[value.accoustic] }}
       </div>
       <div>
-        <b>{{ $t("conversation.language_label") }}:</b>
+        <label>{{ $t("conversation.language_label") }}</label>
         {{ languages[value.language] }}
       </div>
       <div>
-        <b>{{ $t("conversation.model_quality_label") }}:</b>
+        <label>{{ $t("conversation.model_quality_label") }}</label>
         {{ audio_quality_value[value.model_quality] }}
       </div>
     </div>
@@ -126,7 +126,8 @@ export default {
       audio_quality_value: AUDIO_QUALITY((key) => this.$i18n.t(key)),
       languages: {
         "fr-FR": this.$i18n.t("lang.fr"),
-        "en-EN": this.$i18n.t("lang.en"),
+        "en-US": this.$i18n.t("lang.en"),
+        en_GB: this.$i18n.t("lang.en"),
       },
     }
   },

@@ -1,0 +1,72 @@
+/** =================== Bitter =================== **/
+
+/** Bitter light **/
+
+@font-face {
+  font-family: "BitterPro";
+  font-weight: 300;
+  font-style: normal;
+  src: url("BitterPro-Light.ttf") format("truetype");
+}
+
+/** Bitter thin **/
+
+@font-face {
+  font-family: "BitterPro";
+  font-weight: 100;
+  font-style: normal;
+  src: url("BitterPro-Thin.ttf") format("truetype");
+}
+
+/** Bitter thin-Italic **/
+
+@font-face {
+  font-family: "BitterPro";
+  font-weight: 100;
+  font-style: italic;
+  src: url("BitterPro-ThinItalic.ttf") format("truetype");
+}
+
+/** Bitter light-Italic **/
+
+@font-face {
+  font-family: "BitterPro";
+  font-weight: 300;
+  font-style: italic;
+  src: url("BitterPro-LightItalic.ttf") format("truetype");
+}
+
+/** Bitter normal **/
+@font-face {
+  font-family: "BitterPro";
+  font-weight: 400;
+  font-style: normal;
+  src: url("BitterPro-Regular.ttf") format("truetype");
+}
+
+/** Bitter normal-Italic **/
+
+@font-face {
+  font-family: "BitterPro";
+  font-weight: 400;
+  font-style: italic;
+  src: url("BitterPro-Italic.ttf") format("truetype");
+}
+
+/** Bitter bold **/
+
+@font-face {
+  font-family: "BitterPro";
+  font-weight: 600;
+  font-style: normal;
+  src: url("BitterPro-Bold.ttf") format("truetype");
+}
+
+/** Bitter bold-Italic **/
+
+@font-face {
+  font-family: "BitterPro";
+  font-weight: 600;
+  font-style: italic;
+  src: url("BitterPro-BoldItalic.ttf") format("truetype");
+}

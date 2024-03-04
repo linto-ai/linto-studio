@@ -7,7 +7,7 @@
           canEdit ? '' : 'disabled',
           'flex1',
         ]"
-        @click="handleSpeakerCkick($event)"
+        @click="handleSpeakerClick($event)"
         :style="`color: ${speakerColor};`">
         {{
           speakerName.length > 12
@@ -43,16 +43,17 @@
         v-click-outside="resetWordSelected">
         <span
           v-for="(word, index) of nonEmptyWords"
-          class="word"
+          class="word popover-parent"
           :key="word.wid"
           :id="word.wid"
           :data-index="index"
           :data-stime="word.stime"
           :data-etime="word.etime">
           <AppEditorToolbox
-            v-if="
-              wordsSelected.length > 0 && wordsSelected[0].wid === word.wid
-            "></AppEditorToolbox>
+            v-if="wordsSelected.length > 0 && wordsSelected[0].wid === word.wid"
+            :conversationId="conversationId"
+            :categoriesList="hightlightsCategories"
+            @selectTag="handleNewHighlight"></AppEditorToolbox>
           <span class="word_content">{{ word.word }}</span>
           <span class="word_space">
             {{ " " }}
@@ -109,9 +110,24 @@ import { workerSendMessage } from "../tools/worker-message.js"
 import CollaborativeField from "@/components/CollaborativeField.vue"
 import AppEditorSpkToolbox from "@/components/AppEditorSpkToolbox.vue"
 import AppEditorToolbox from "@/components/AppEditorToolbox.vue"
-import findExpressionInWordsList from "@/tools/findExpressionInWordsList.js"
-import { ref, nextTick } from "vue"
+import Vue, { ref, nextTick } from "vue"
 import { segmentIsCoherentWithWords } from "@/tools/segmentIsCoherentWithWords.js"
+
+import _displayHighlights from "@/components/AppEditorTurn.d/displayHighlights.js"
+import _highlightRange from "@/components/AppEditorTurn.d/highlightRange.js"
+import _unhighlightRange from "@/components/AppEditorTurn.d/unhighlightRange.js"
+import _hightlightAllText from "@/components/AppEditorTurn.d/hightlightAllText.js"
+import _unHighlightAllText from "@/components/AppEditorTurn.d/unHighlightAllText.js"
+import _getParentWord from "@/components/AppEditorTurn.d/getParentWord.js"
+import _getSelectedWordsFromDomSelection from "@/components/AppEditorTurn.d/getSelectedWordsFromDomSelection.js"
+import _getWordCharIndex from "@/components/AppEditorTurn.d/getWordCharIndex.js"
+import _handleBlur from "@/components/AppEditorTurn.d/handleBlur.js"
+import _handleChange from "@/components/AppEditorTurn.d/handleChange.js"
+import _handleClick from "@/components/AppEditorTurn.d/handleClick.js"
+import _handleContentUpdate from "@/components/AppEditorTurn.d/handleContentUpdate.js"
+import _handleSpeakerClick from "@/components/AppEditorTurn.d/handleSpeakerClick.js"
+import _setSpeakerName from "@/components/AppEditorTurn.d/setSpeakerName.js"
+import AppEditorMetadataModal from "./AppEditorMetadataModal.vue"
 
 export default {
   props: {
@@ -189,7 +205,8 @@ export default {
         wordCharIndex: null,
         lineIndex: 0,
       },
-      highlightsRanges: {}, // {cat_name: {ranges:[range1, ranges2], color: 'color'}, ...}
+      highlightsRanges: {}, // {cat_name: {ranges:[range1, ranges2], color: 'color'}, ...},
+      selectedRange: null,
       splitting: false,
       localText: "",
     }
@@ -272,7 +289,7 @@ export default {
       return segmentIsCoherentWithWords(this.segment, this.words)
     },
     isLocalTextSync() {
-      return this.localText === this.segment
+      return this.localText.trim() === this.segment
     },
   },
   watch: {
@@ -335,327 +352,52 @@ export default {
         bus.$emit("refresh_spk_timebox", {})
       }
     })
-
     this.displayHighlights()
     this.localText = this.segment
   },
-  beforeDestroy() {
-    bus.$off("conversation_user_update")
-    bus.$off("words_updated")
-    bus.$off("segment_updated")
-    bus.$off("turn_speaker_update")
-    bus.$off("speaker_name_updated")
-  },
   methods: {
-    async displayHighlights() {
-      // first unhighlight all
-      await nextTick()
-      await this.unHighLightAllText()
-
-      this.highlightsRanges = {}
-      // then highlight all
-      for (let hightlightCat of this.hightlightsCategories) {
-        let ranges = findExpressionInWordsList(
-          hightlightCat.tags,
-          this.words,
-          (k) => k.name,
-          (w) => w.word
-        )
-
-        let domRanges = ranges.map(this.plainRangeToDomRange) //save it to don't compute it again
-
-        this.highlightsRanges[hightlightCat._id] = {
-          ranges: domRanges,
-          color: hightlightCat.color,
-        }
-        // domRanges.forEach((range) => {
-        //   this.highlightRange(range, hightlightCat.color)
-        // })
-      }
-
-      await this.hightLightAllText()
-    },
-    async hightLightAllText() {
-      await nextTick()
-      Object.keys(this.highlightsRanges).forEach((categoryId) => {
-        if (!this.hightlightsCategoriesVisibility[categoryId]) return
-
-        if (!this.highlightsRanges[categoryId]) return
-        if (!this.highlightsRanges[categoryId].ranges) return
-
-        this.highlightsRanges[categoryId].ranges.forEach((range) => {
-          this.highlightRange(range, this.highlightsRanges[categoryId].color)
-        })
+    displayHighlights: _displayHighlights,
+    highlightRange: _highlightRange,
+    unhighlightRange: _unhighlightRange,
+    hightlightAllText: _hightlightAllText,
+    unHighlightAllText: _unHighlightAllText,
+    getParentWord: _getParentWord,
+    getSelectedWordsFromDomSelection: _getSelectedWordsFromDomSelection,
+    getWordCharIndex: _getWordCharIndex,
+    handleBlur: _handleBlur,
+    handleChange: _handleChange,
+    handleClick: _handleClick,
+    handleContentUpdate: _handleContentUpdate,
+    handleSpeakerClick: _handleSpeakerClick,
+    setSpeakerName: _setSpeakerName,
+    handleNewHighlight(tag) {
+      this.$emit("newHighlight", {
+        tag,
+        wordsSelected: [...this.wordsSelected],
       })
+      this.resetWordSelected()
     },
-    async unHighLightAllText() {
-      await nextTick()
-      Object.keys(this.highlightsRanges).forEach((categoryId) => {
-        if (!this.highlightsRanges[categoryId]) return
-        if (!this.highlightsRanges[categoryId].ranges) return
-        try {
-          this.highlightsRanges[categoryId].ranges.forEach((range) => {
-            this.unhighlightRange(range)
-          })
-        } catch (e) {
-          this.debug("Error while unhighlighting", this.turnId)
-        }
-      })
-    },
-
-    // computeKeywordsRangeInText() {
-    //   const ranges = findExpressionInWordsList(
-    //     this.keywords,
-    //     this.words,
-    //     (k) => k.name,
-    //     (w) => w.word
-    //   )
-    //   this.highlights.keywords = ranges.map(this.plainRangeToDomRange)
-    // },
     plainRangeToDomRange(plainRange) {
-      const domRange = new Range()
-      domRange.setStartBefore(this.$refs.turn.children.item(plainRange.start))
-      domRange.setEndAfter(this.$refs.turn.children.item(plainRange.end))
-      return domRange
-    },
-    highlightRange(range, color = "yellow") {
-      let { startContainer, endContainer, startOffset, endOffset } = range
-      let startWord = startContainer.children.item(startOffset)
-      let endWord = endContainer.children.item(endOffset)
+      try {
+        const domRange = new Range()
 
-      if (!endWord) {
-        startWord.setAttribute("highlighted", "true")
-        startWord.classList.add(`background-${color}-100`)
-        return
-      }
+        domRange.setStartBefore(this.$refs.turn.children.item(plainRange.start))
+        domRange.setEndBefore(this.$refs.turn.children.item(plainRange.end))
 
-      do {
-        startWord.setAttribute("highlighted", "true")
-        startWord.classList.add(`background-${color}-100`)
-        startWord = startWord.nextSibling
-      } while (startWord !== endWord)
-
-      endWord.previousSibling.setAttribute("highlighted--last-word", "true")
-    },
-    unhighlightRange(range) {
-      let { startContainer, endContainer, startOffset, endOffset } = range
-      let startWord = startContainer.children.item(startOffset)
-
-      let endWord = endContainer.children.item(endOffset)
-
-      if (!endWord) {
-        startWord.removeAttribute("highlighted")
-        startWord.classList.remove(
-          ...Array.from(startWord.classList).filter((c) =>
-            c.startsWith("background-")
-          )
-        )
-        return
-      }
-
-      do {
-        startWord.removeAttribute("highlighted")
-        startWord.removeAttribute("highlighted--last-word")
-        startWord.classList.remove(
-          ...Array.from(startWord.classList).filter((c) =>
-            c.startsWith("background-")
-          )
-        )
-        startWord = startWord.nextSibling
-      } while (startWord !== endWord)
-    },
-    setSpeakerName() {
-      const speaker = this.speakers.find(
-        (speaker) => speaker.speaker_id === this.speakerId
-      )
-      if (speaker) {
-        this.speakerName = speaker.speaker_name
-        this.speakerColor = speaker.color
+        domRange._tag = plainRange.expressionObject
+        return domRange
+      } catch (error) {
+        return null
       }
     },
     customBlur() {
       this.contentEditable = false
     },
-
-    handleSpeakerCkick(e) {
-      e.preventDefault()
-      if (this.canEdit) {
-        this.displaySpeakerToolbox = !this.displaySpeakerToolbox
-      }
-    },
-
-    handleContentUpdate(content) {
-      if (content === this.localText) {
-        return
-      }
-      if (!content) {
-        return
-      }
-
-      this.localText = content
-    },
-    handleChange(e) {
-      this.debug(
-        "Turn edition by '%s' with %s",
-        e.inputType,
-        e.target.innerText
-      )
-      if (!e.inputType) {
-        return
-      }
-
-      if (e.inputType === "insertParagraph") {
-        this.splitting = true
-        workerSendMessage("turn_insert_paragraph", {
-          turnId: this.turnId,
-          textBefore:
-            e.target.childNodes[0]?.innerText ||
-            e.target.childNodes[0]?.textContent,
-          textAfter:
-            e.target.childNodes[1].innerText ||
-            e.target.childNodes[1]?.textContent,
-          turn: this.localTurnData,
-          index: this.index,
-        })
-        this.contentEditable = false
-        this.disabled = true
-      } else {
-        if (e.target.innerText.trim().length > 0) {
-          workerSendMessage("turn_edit_text", {
-            turnId: this.turnId,
-            newText: e.target.innerText,
-            oldText: this.segment,
-            words: this.words,
-            index: this.index,
-          })
-        }
-      }
-    },
-    handleBlur(e) {
-      this.focused = false
-      this.contentEditable = false
-      if (this.splitting) {
-        this.splitting = false
-        return
-      } else {
-        workerSendMessage("turn_edit_text", {
-          turnId: this.turnId,
-          newText: e.target.innerText,
-          oldText: this.segment,
-          words: this.words,
-          index: this.index,
-        })
-        this.displayHighlights()
-      }
-    },
-    handleClick(e) {
-      const target = e.target
-      const selection = window.getSelection()
-      if (
-        target.classList.contains("word") ||
-        target.classList.contains("word_space") ||
-        target.classList.contains("word_content")
-      ) {
-        if (selection.type == "Caret") {
-          const wordElement = this.getParentWord(target)
-          if (wordElement) {
-            const stime = wordElement?.getAttribute("data-stime")
-            if (stime) bus.$emit("player_set_time", { stime })
-            this.closeEditorToolbox()
-            this.focused = this.canEdit
-            this.contentEditable = this.canEdit
-            const wordCharIndex = this.getWordCharIndex(
-              target,
-              wordElement,
-              selection
-            )
-
-            this.cursorPosition = {
-              wordIndex: wordElement.getAttribute("data-index"),
-              wordCharIndex: wordCharIndex,
-              lineIndex: 0,
-            }
-          }
-        }
-      }
-
-      if (target.classList.contains("turn")) {
-        console.log("start selection", selection.type)
-        if (selection.type == "Range") {
-          //this.selectWord()
-        }
-        // selection
-      }
-    },
-    getWordCharIndex(target, wordElement, selection) {
-      let firstChar = 0
-      if (target.classList.contains("word_space")) {
-        firstChar = wordElement.innerText.length - 1
-      } else if (target.classList.contains("word_content")) {
-        firstChar = selection.anchorOffset
-      }
-      return firstChar
-    },
-    getParentWord(node) {
-      if (node.classList.contains("word")) {
-        return node
-      } else {
-        return this.getParentWord(node.parentElement)
-      }
-    },
-    getSelectedWordsFromDomSelection(selection) {
-      let firstWord = selection?.anchorNode
-      let lastWord = selection?.focusNode
-      let firstSpan = null
-      let lastSpan = null
-      let wordsSelected = []
-      if (firstWord && lastWord) {
-        if (firstWord.nodeName === "#text") {
-          firstSpan = firstWord.parentElement.parentElement
-        }
-        if (lastWord.nodeName === "#text") {
-          lastSpan = lastWord.parentElement.parentElement
-        }
-        let firstSpanId = firstSpan?.getAttribute("id")
-        let lastSpanId = lastSpan?.getAttribute("id")
-
-        let firstWordIndex = this.findIndexWithoutEmptyWords(
-          this.words,
-          (word) => {
-            return word?.wid === firstSpanId
-          }
-        )
-        // Click on a word
-        if (firstSpanId === lastSpanId) {
-          wordsSelected = [this.words.find((word) => word?.wid === firstSpanId)]
-        }
-
-        // Selection of multiple words
-        else {
-          let lastWordIndex = this.words.findIndex(
-            (word) => word?.wid === lastSpanId
-          )
-          // Selection from left to right
-          if (firstWordIndex < lastWordIndex) {
-            wordsSelected = this.words.slice(firstWordIndex, lastWordIndex + 1)
-          }
-          // Selection from right to left
-          else {
-            wordsSelected = this.words.slice(lastWordIndex, firstWordIndex + 1)
-            const tmplastWord = lastWord
-            lastWord = firstWord
-            firstWord = tmplastWord
-          }
-        }
-        this.clickWordIndex = firstWordIndex
-      }
-      return { wordsSelected, firstWord, lastWord }
-    },
-    selectWord() {
+    async selectWord() {
       this.resetWordSelected()
+      await nextTick()
       let domSelection = window.getSelection()
       let selection = this.getSelectedWordsFromDomSelection(domSelection)
-      console.log("selectWord:", selection)
       const startRange = selection.firstWord
       const endRange = selection.lastWord
       window
@@ -663,6 +405,22 @@ export default {
         .setBaseAndExtent(startRange, 0, endRange, endRange.length)
 
       this.wordsSelected = selection.wordsSelected
+      const domRange = new Range()
+      domRange.setStartBefore(startRange)
+      //domRange.setEndAfter(endRange.getElementsByClassName("word_content")[0])
+      if (endRange.nextSibling) {
+        domRange.setEndBefore(endRange)
+      } else {
+        domRange.setEnd(
+          endRange.parentNode,
+          endRange.parentNode.childNodes.length - 1
+        )
+      }
+      this.selectedRange = domRange
+      await this.highlightRange(
+        { range: this.selectedRange, category: { color: "blue" } },
+        false
+      )
       // if (
       //   target.classList.contains("turn") ||
       //   target.classList.contains("word")
@@ -672,6 +430,10 @@ export default {
     },
     resetWordSelected() {
       this.wordsSelected = []
+      if (this.selectedRange) {
+        this.unhighlightRange({ range: this.selectedRange })
+        this.displayHighlights()
+      }
     },
     findIndexWithoutEmptyWords(words, callback) {
       let index = -1
@@ -692,7 +454,6 @@ export default {
     closeSpkToolbox() {
       this.displaySpeakerToolbox = false
     },
-
     mergeTurn() {
       this.$emit("mergeTurns", this.turnId)
     },
@@ -701,6 +462,7 @@ export default {
     CollaborativeField,
     AppEditorSpkToolbox,
     AppEditorToolbox,
+    AppEditorMetadataModal,
   },
 }
 </script>

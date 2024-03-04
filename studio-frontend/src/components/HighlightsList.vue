@@ -93,9 +93,9 @@ export default {
         (key) =>
           this.jobs[key].state &&
           this.jobs[key].state != "error" &&
+          this.jobs[key].state != "done" &&
           key != "transcription"
       )
-      console.log("jobsList", res, this.jobs)
       return res
     },
     getJobsFromService() {

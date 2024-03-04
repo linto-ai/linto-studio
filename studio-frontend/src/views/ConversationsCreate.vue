@@ -96,6 +96,8 @@
   </MainContent>
 </template>
 <script>
+import debounce from "debounce"
+
 import { bus } from "@/main.js"
 import { apiGetTranscriptionService } from "@/api/service"
 import { apiCreateConversation } from "@/api/conversation"
@@ -104,6 +106,7 @@ import { testFieldEmpty } from "@/tools/fields/testEmpty.js"
 import { testService } from "@/tools/fields/testService.js"
 
 import { formsMixin } from "@/mixins/forms.js"
+import { debounceMixin } from "@/mixins/debounce"
 
 import ConversationHelper from "@/components/ConversationHelper.vue"
 import ConversationCreateAudio from "@/components/ConversationCreateAudio.vue"
@@ -114,7 +117,7 @@ import RIGHTS_LIST from "@/const/rigthsList"
 import EMPTY_FIELD from "@/const/emptyField"
 
 export default {
-  mixins: [formsMixin],
+  mixins: [formsMixin, debounceMixin],
   props: {
     userInfo: {
       type: Object,
@@ -159,7 +162,7 @@ export default {
       },
       conversationLanguage: {
         ...EMPTY_FIELD,
-        value: "fr-FR",
+        value: "fr",
         valid: true,
       },
       organizationMemberAccess: true,
@@ -169,10 +172,11 @@ export default {
       formState: "available",
       helperVisible: false,
       languages: [
-        { value: "fr-FR", label: this.$i18n.t("lang.fr") },
-        { value: "en-EN", label: this.$i18n.t("lang.en") },
+        { value: "fr", label: this.$i18n.t("lang.fr") },
+        { value: "en", label: this.$i18n.t("lang.en") },
       ],
       formError: null,
+      debounceGetTranscriptionService: debounce(this.initTranscriptionList, 30),
     }
   },
   async created() {
@@ -182,6 +186,12 @@ export default {
   watch: {
     "conversationLanguage.value"(value) {
       this.initTranscriptionList()
+    },
+    "$i18n.locale": {
+      handler(value) {
+        this.conversationLanguage.value = value.split("-")[0]
+      },
+      immediate: true,
     },
   },
   computed: {
@@ -199,13 +209,18 @@ export default {
     closeHelper() {
       this.helperVisible = false
     },
+    getTranscriptionList(lang, signal) {
+      return apiGetTranscriptionService(lang, signal)
+    },
     async initTranscriptionList() {
       this.transcriptionService.loading = true
       this.transcriptionService.value = null
-      const transcriptionService = await apiGetTranscriptionService(
-        this.conversationLanguage.value,
-        null
+
+      const transcriptionService = await this.debouncedSearch(
+        this.getTranscriptionList.bind(this),
+        this.conversationLanguage.value
       )
+
       if (transcriptionService) {
         this.transcriptionService.list = [...transcriptionService]
         this.transcriptionService.loading = false

@@ -1,4 +1,9 @@
 $montserrat: "Montserrat", "Arial", "Helvetica", "verdana";
+$luciole: "Luciole", "Arial", "Helvetica", "verdana";
+$lato: "Lato", "Arial", "Helvetica", "verdana";
+$rubik: "Rubik", "Arial", "Helvetica", "verdana";
+$ubuntu: "Ubuntu", "Arial", "Helvetica", "verdana";
+$bitter: "BitterPro", "Arial", "Helvetica", "verdana";
 
 $inputFocus: #f7faff;
 $yellowChart: #feb11d;
@@ -12,6 +17,7 @@ $secondaryColor: $blueChart;
 $primaryContrast: #fff;
 
 body {
+  --text-vertical-center-offset: 0px;
   --text-primary: #333;
   --text-secondary: #666;
   --text-disabled: #aaa;
@@ -19,6 +25,7 @@ body {
 
   --background-primary: #fff;
   --background-primary-with-small-opacity: rgba(255, 255, 255, 0.85);
+  --background-primary-with-blur: rgba(255, 255, 255, 0.4);
   --background-secondary: #f3f3f3;
   --background-header: #fff;
   --background-disabled: #f6f6f6;
@@ -53,6 +60,7 @@ body {
   --medium-gap: 1rem;
 
   --shadow-block: 0px 0px 8px 0 rgba(67, 76, 95, 0.15);
+  --shadow-block-selected: 0px 0px 20px 0 rgba(67, 76, 95, 0.5);
   --shadow-block-left: 3px 0px 8px 0 rgba(67, 76, 95, 0.15);
 }
 
@@ -64,6 +72,7 @@ html[data-theme="dark"] body {
 
   --background-primary: #252525;
   --background-primary-with-small-opacity: rgba(37, 37, 37, 0.85);
+  --background-primary-with-blur: rgba(37, 37, 37, 0.4);
   --background-secondary: #1a1a1a;
   --background-disabled: #333;
 
@@ -73,6 +82,7 @@ html[data-theme="dark"] body {
   --background-header: #252525;
 
   --shadow-block: 0px 0px 8px 0 rgb(0, 0, 0, 0.5);
+  --shadow-block-selected: 0px 0px 20px 0 rgb(0, 0, 0, 0.7);
   --shadow-block-left: 3px 0px 8px 0 rgb(0, 0, 0, 0.5);
 
   --input-focus: #0c0c0c;

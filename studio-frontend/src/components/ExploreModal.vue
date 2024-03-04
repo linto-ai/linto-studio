@@ -6,7 +6,7 @@
     :actionBtnLabel="$t('conversation.apply_filters')"
     fullHeight
     v-if="modalOpen">
-    <div class="flex col gap-medium">
+    <div class="flex col gap-medium flex1">
       <div
         v-if="withSearch"
         class="form-field flex col small-padding no-margin no-padding"
@@ -39,7 +39,7 @@
         <div class="flex wrap align-top gap-medium">
           <TagCategoryBoxSelectable
             v-for="category of categories"
-            :startOpen="!!category.tags && category.tags.length > 0"
+            :startOpen="false"
             :key="category._id"
             :value="selectedTags"
             @selectTag="selectTag"

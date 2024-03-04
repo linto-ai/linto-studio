@@ -1,6 +1,13 @@
 @charset "utf-8";
 
-@import "../public/fonts/Montserrat/Montserrat.css";
+//@import "../public/fonts/Montserrat/Montserrat.css";
+@import "../public/fonts/luciole/Luciole.css";
+//@import "../public/fonts/Lato/lato.css";
+@import "../public/fonts/Rubik/rubik.css";
+@import "../public/fonts/Ubuntu/ubuntu.css";
+@import "../public/fonts/Bitter/Bitter.css";
+@import "../public/fonts/Noto_Sans/noto.css";
+
 @import "./_mixin.scss";
 @import "./_variables.scss";
 @import "./_material-colors-variables.scss";
@@ -45,6 +52,7 @@
 @import "./components/subtitle-editor.scss";
 @import "./components/droparea.scss";
 @import "./components/highlights-list.scss";
+@import "./components/modal-metadata.scss";
 
 @import "./views/app-mobile.scss";
 

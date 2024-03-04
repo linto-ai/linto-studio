@@ -1,0 +1,35 @@
+{
+  "type": "object",
+  "properties": {
+    "tagId": {
+      "type": "string"
+    },
+    "conversationId": {
+      "type": "string"
+    },
+    "schema": {
+      "type": "string"
+    },
+    "value": {
+      "type": "object"
+    },
+    "createdBy": {
+      "type": "string"
+    },
+    "created": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_update": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "tagId",
+    "conversationId",
+    "schema",
+    "value",
+    "createdBy"
+  ]
+}

@@ -1,7 +1,7 @@
 <template>
   <Fragment>
     <div class="dropDown-section flex col gap-small">
-      <div v-if="search">
+      <div v-if="search && !foundExactCategorie">
         <input
           type="radio"
           :id="`${searchId}-custom`"
@@ -54,6 +54,7 @@ export default {
       default: "conversation_metadata",
       required: false,
     },
+    categoriesList: { type: Array, required: false, default: null }, // if define, search will be done on this list instead of fetching from server
   },
   mixins: [debounceMixin],
   data() {
@@ -61,6 +62,7 @@ export default {
       searchedCategories: [],
       searchId: uuidv4(),
       loading: false,
+      foundExactCategorie: null,
     }
   },
   mounted() {
@@ -72,7 +74,6 @@ export default {
         return this.value
       },
       set: function (value) {
-        console.log(value)
         // Communicate the change to parent component so that selectedValue can be updated
         this.$emit("input", value)
       },
@@ -83,12 +84,17 @@ export default {
       this.fetchSearchResult(newSearch)
       this.selectedCategory = { name: newSearch }
     },
-    /*selectedCategory: function (newCategory, oldCategory) {
-      console.log(newCategory)
-      if (newCategory) {
-        this.$emit("input", newCategory)
-      }
-    },*/
+    searchedCategories: {
+      handler(newCategories, oldCategories) {
+        this.foundExactCategorie = newCategories.find(
+          (category) => category.name === this.search
+        )
+        if (this.foundExactCategorie) {
+          this.selectedCategory = this.foundExactCategorie
+        }
+      },
+      deep: true,
+    },
     reload() {
       this.fetchSearchResult(this.search)
     },
@@ -106,9 +112,17 @@ export default {
     async fetchSearchResult(newSearch) {
       this.loading = true
       if (!newSearch) {
+        if (this.categoriesList !== null) {
+          this.searchedCategories = this.categoriesList.filter((category) =>
+            category.name.includes(newSearch)
+          )
+          this.loading = false
+          return
+        }
+
         this.searchedCategories = await apiGetAllCategories(
           this.conversationId,
-          "conversation_metadata",
+          this.categoryType,
           "conversation"
         )
       } else {

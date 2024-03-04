@@ -11,7 +11,7 @@
     cursor: pointer;
     display: flex;
     margin: 1px;
-    font-weight: 600;
+    font-weight: normal;
   }
 
   .tab[selected],
@@ -22,4 +22,9 @@
       background-color: var(--primary-color);
     }
   }
+}
+
+.tab__label {
+  position: relative;
+  top: var(--text-vertical-center-offset);
 }

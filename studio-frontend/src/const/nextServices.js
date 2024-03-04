@@ -17,7 +17,7 @@ const services = [
     },
     //icon: "/img/We10X-icon-theme/calendar.svg",
     disabled: true,
-    scope: ["nlp", "api"],
+    scope: ["nlp", "api", "date"],
     endpoints: [
       {
         endpoint: "/nlp-keyword-extraction",
@@ -46,7 +46,7 @@ const services = [
       type: "decision",
     },
     disabled: true,
-    scope: ["nlp", "api"],
+    scope: ["nlp", "api", "decision"],
     endpoints: [
       {
         endpoint: "/nlp-keyword-extraction",
