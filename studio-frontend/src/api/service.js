@@ -20,12 +20,12 @@ const lang_code_alias = {
   fr: ["fr-FR", "fr-CA", "fr-BE", "fr-CH"],
 }
 
-export async function apiGetTranscriptionService(lang, notif) {
+export async function apiGetTranscriptionService(lang, signal) {
   const getTranscriptionService = await sendRequest(
     `${BASE_API}/services`,
-    { method: "get" },
+    { method: "get", signal },
     {},
-    notif
+    null
   )
 
   try {
