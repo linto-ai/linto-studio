@@ -1,3 +1,7 @@
+# 1.4.2
+
+- Support english language for the transcription
+
 # 1.4.1
 
 - Added metadata 
