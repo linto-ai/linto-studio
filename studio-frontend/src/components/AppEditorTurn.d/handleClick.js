@@ -30,14 +30,13 @@ export default function handleClick(e) {
     }
 
     if (selection.type == "Range") {
-      //this.selectWord()
+      this.selectWord()
     }
   }
 
   if (target.classList.contains("turn")) {
     if (selection.type == "Range") {
-      //this.selectWord()
+      this.selectWord()
     }
-    // selection
   }
 }
