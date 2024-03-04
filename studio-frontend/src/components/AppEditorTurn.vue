@@ -288,7 +288,7 @@ export default {
       return segmentIsCoherentWithWords(this.segment, this.words)
     },
     isLocalTextSync() {
-      return this.localText === this.segment
+      return this.localText.trim() === this.segment
     },
   },
   watch: {
