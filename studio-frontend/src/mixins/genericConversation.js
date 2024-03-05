@@ -157,7 +157,6 @@ export const genericConversationMixin = {
           false
         )
         if (req?.status === "success") {
-          console.log(req.data)
           this.audioFile = URL.createObjectURL(req.data)
         }
       } else {
