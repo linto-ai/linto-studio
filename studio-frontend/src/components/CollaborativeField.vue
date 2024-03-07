@@ -209,7 +209,17 @@ export default {
       this.$emit("keyup", e)
     },
     keydown(e) {
-      if (e.key === "Enter" && (this.disabledEnter || e.shiftKey)) {
+      if (e.key === "Enter") {
+        if (this.disabledEnter || e.shiftKey) {
+          e.preventDefault()
+          return
+        }
+        const cursorPosition = window.getSelection().anchorOffset
+        this.$emit("enter", {
+          e,
+          cursorPosition,
+          currentValue: this.currentValue,
+        })
         e.preventDefault()
       } else if (this.isMovingCursor) {
         e.preventDefault()
