@@ -243,6 +243,7 @@
     "transcription_service_title": "Choissisez le service de transcription",
     "transcription_settings_label": "Paramètres de transcription",
     "transcription_service_list_empty": "Aucun service de transcription disponible",
+    "turn_cant_merge": "Le nombre de caractères est trop élevé pour fusionner les tours de parole",
     "turn_sync_error_title": "Le tour de parole n'est pas synchronisé correctement",
     "update_information_button": "Mettre à jour les informations",
     "update_information_done_notif": "Les informations ont été mises à jour",
