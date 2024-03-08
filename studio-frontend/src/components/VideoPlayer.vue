@@ -1,17 +1,19 @@
 <template>
   <div id="video-player" class="flex1">
-    <div class="video-container flex col justify-center">
-      <div class="video-content flex col justify-center">
-        <video
-          v-if="videoLoaded"
-          ref="videoPreview"
-          id="videoPreview"
-          controls
-          :src="videoUrl"></video>
-        <img v-else src="/img/subtitle_default.svg" alt="" />
-        <div
-          class="screen-container flex col justify-center"
-          ref="screen-container"></div>
+    <div class="video-container">
+      <div class="video-content flex justify-center">
+        <div id="video" class="flex justify-center">
+          <video
+            v-if="videoLoaded"
+            ref="video-preview"
+            id="video-preview"
+            controls
+            :src="videoUrl"></video>
+          <img v-else src="/img/subtitle_default.svg" alt="" />
+          <div
+            class="screen-container flex col justify-center"
+            ref="screen-container"></div>
+        </div>
       </div>
     </div>
     <div class="flex col overlay" v-if="!videoLoaded">
@@ -52,7 +54,7 @@ export default {
     videoLoaded(val) {
       if (val) {
         this.$nextTick(() => {
-          this.videoElem = this.$refs["videoPreview"]
+          this.videoElem = this.$refs["video-preview"]
           this.$emit("videoLoaded", this.videoElem)
         })
       }

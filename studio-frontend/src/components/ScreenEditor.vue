@@ -1,16 +1,16 @@
 <template>
   <div class="flex gap-small" id="screen-editor">
     <div class="flex1">
-      <div v-if="prev" @click="seekTo(prev.stime)">
-        <div class="form-label">
-          {{ $t("conversation.subtitles.screens.previous_screen") }}
-        </div>
-        <div class="screen-preview">
-          <p v-for="line of prev.text">
-            {{ line }}
-          </p>
-        </div>
-      </div>
+      <ScreenEditorBox
+        :user-info="userInfo"
+        :label="$t('conversation.subtitles.screens.previous_screen')"
+        :screen="prev"
+        :can-edit="canEdit"
+        :conversation-id="conversationId"
+        :conversation-users="conversationUsers"
+        :users-connected="usersConnected"
+        @click="seekTo(prev.stime)">
+      </ScreenEditorBox>
     </div>
     <ScreenActions
       :left-screen-id="prev?.screen_id"
@@ -19,16 +19,16 @@
       @add="addScreens"
       @merge="mergeScreens"></ScreenActions>
     <div class="flex1">
-      <div>
-        <div class="form-label" id="current-screen-label">
-          {{ $t("conversation.subtitles.screens.current_screen") }}
-        </div>
-        <div class="screen-preview current">
-          <p v-for="line of selectedScreen.text">
-            {{ line }}
-          </p>
-        </div>
-      </div>
+      <ScreenEditorBox
+        :user-info="userInfo"
+        :label="$t('conversation.subtitles.screens.current_screen')"
+        :screen="selectedScreen"
+        :can-edit="canEdit"
+        is-current
+        :conversation-id="conversationId"
+        :conversation-users="conversationUsers"
+        :users-connected="usersConnected">
+      </ScreenEditorBox>
     </div>
     <ScreenActions
       :left-screen-id="selectedScreen.screen_id"
@@ -37,16 +37,16 @@
       @add="addScreens"
       @merge="mergeScreens"></ScreenActions>
     <div class="flex1">
-      <div v-if="next" @click="seekTo(next.stime)">
-        <div class="form-label">
-          {{ $t("conversation.subtitles.screens.next_screen") }}
-        </div>
-        <div class="screen-preview">
-          <p v-for="line of next.text">
-            {{ line }}
-          </p>
-        </div>
-      </div>
+      <ScreenEditorBox
+        :user-info="userInfo"
+        :label="$t('conversation.subtitles.screens.next_screen')"
+        :screen="next"
+        :can-edit="canEdit"
+        :conversation-id="conversationId"
+        :conversation-users="conversationUsers"
+        :users-connected="usersConnected"
+        @click="seekTo(next.stime)">
+      </ScreenEditorBox>
     </div>
   </div>
 </template>
@@ -54,9 +54,14 @@
 import { ScreenList } from "../models/screenList"
 import { bus } from "../main.js"
 import ScreenActions from "./ScreenActions.vue"
+import ScreenEditorBox from "./ScreenEditorBox.vue"
 
 export default {
   props: {
+    userInfo: {
+      type: Object,
+      required: true,
+    },
     screens: {
       type: ScreenList,
       required: true,
@@ -64,6 +69,19 @@ export default {
     canEdit: {
       type: Boolean,
       required: true,
+    },
+    conversationId: {
+      type: String,
+      required: true,
+    },
+    conversationUsers: {
+      type: Array,
+      required: true,
+      default: () => [],
+    },
+    usersConnected: {
+      type: Array,
+      default: () => [],
     },
   },
   mounted() {
@@ -108,6 +126,7 @@ export default {
   },
   components: {
     ScreenActions,
+    ScreenEditorBox,
   },
 }
 </script>

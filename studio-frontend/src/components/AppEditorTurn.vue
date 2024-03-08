@@ -96,10 +96,10 @@
       <div class="turn-actions flex row">
         <button
           v-if="!lastTurn && canEdit"
-          class="turn-action-btn"
+          class="turn-action-btn black"
           @click="mergeTurn"
           data-info="Fusionner les tours">
-          <span class="icon icon-merge"></span>
+          <span class="icon merge"></span>
         </button>
       </div>
     </div>
@@ -205,6 +205,7 @@ export default {
       cursorPosition: {
         wordIndex: null,
         wordCharIndex: null,
+        lineIndex: 0,
       },
       highlightsRanges: {}, // {cat_name: {ranges:[range1, ranges2], color: 'color'}, ...},
       selectedRange: null,
