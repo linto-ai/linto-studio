@@ -9,6 +9,7 @@ WEBSERVER_SWAGGER_API_PATH=cm-api
 DB_HOST=studio-mongo
 DB_PORT=27017
 DB_NAME=conversations
+DB_REQUIRE_LOGIN=false
 
 # Request a specific version of the database (optional)
 DB_MIGRATION_TARGET=1.4.2
