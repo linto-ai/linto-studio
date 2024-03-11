@@ -1,0 +1,19 @@
+.speaker-filter-item {
+}
+
+.speaker-filter-item label::first-letter {
+  text-transform: uppercase;
+}
+
+.publish-turn-list {
+  width: 800px;
+  margin: auto;
+  box-shadow: var(--shadow-block);
+  padding: 1rem;
+  background-color: white;
+  border-radius: 8px;
+}
+
+.publish-turn-list-container {
+  background-color: #8080802e;
+}

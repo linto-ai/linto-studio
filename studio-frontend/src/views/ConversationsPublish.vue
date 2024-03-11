@@ -4,10 +4,49 @@
     :status="status"
     :dataLoaded="dataLoaded"
     :error="error"
-    sidebar>
+    :sidebar="false">
     <template v-slot:sidebar>
       <div style="margin: 0 1rem">
-        <h2>Template</h2>
+        <!-- <section>
+          <h3 for="template-format-list">Choissisez le format à exporter</h3>
+          <CustomSelect
+            id="template-format-list"
+            valueText="Verbatim"
+            value="default"
+            aria-label="Template"
+            :options="{
+              actions: [{ value: 'default', text: 'Verbatim' }],
+            }"
+            @input="exportConv"></CustomSelect>
+        </section> -->
+        <section>
+          <h3 for="template-format-list">Filtrez les locuteurs</h3>
+          <div
+            v-for="speaker of conversation.speakers"
+            class="flex speaker-filter-item"
+            style="margin: 0.25rem 0rem">
+            <label
+              :for="'filter-speaker-' + speaker.speaker_id"
+              class="flex1"
+              >{{ speaker.speaker_name }}</label
+            >
+            <SwitchInput
+              :checkboxValue="speaker.speaker_id"
+              v-model="filterSpeakers"
+              :id="'filter-speaker-' + speaker.speaker_id"
+              name="filter-speakers"
+              style="margin-right: 0.5rem" />
+            <!-- <input
+              type="checkbox"
+              :id="'filter-speaker-' + speaker.speaker_id"
+              name="filter-speakers"
+              :value="speaker.speaker_id"
+              v-model="filterSpeakers" /> -->
+          </div>
+        </section>
+      </div>
+      <!-- <div style="margin: 0 1rem">
+        <h3>Choissisez le format à exporter</h3>
         <CustomSelect
           valueText="default"
           value="default"
@@ -16,7 +55,7 @@
             actions: [{ value: 'default', text: $t('default') }],
           }"
           @input="exportConv"></CustomSelect>
-        <h2>Filters</h2>
+        <h3>Filtrez les locuteurs</h3>
         <fieldset>
           <legend>Speakers</legend>
           <div v-for="speaker of conversation.speakers">
@@ -43,7 +82,7 @@
             <label :for="'filter-tag-' + tag._id">{{ tag.name }}</label>
           </div>
         </fieldset>
-      </div>
+      </div> -->
     </template>
 
     <template v-slot:breadcrumb-actions>
@@ -85,8 +124,30 @@
       </div>
     </template>
 
-    <div class="flex flex1">
-      <AppEditor
+    <div class="publish-turn-list-container flex col">
+      <Tabs
+        v-model="activeTab"
+        :tabs="[
+          {
+            name: 'verbatim',
+            label: 'Verbatim',
+            icon: 'text',
+          },
+          {
+            name: 'summary',
+            label: 'Résumé automatique',
+            icon: 'text',
+            disabled: true,
+          },
+          // {
+          //   name: 'truc muche',
+          //   label: 'truc muche',
+          //   icon: 'text',
+          //   disabled: true,
+          // },
+        ]"></Tabs>
+      <div class="publish-turn-list">
+        <!-- <AppEditor
         :conversation="conversation"
         :usersConnected="usersConnected"
         :conversationUsers="conversationUsers"
@@ -99,7 +160,10 @@
         :hightlightsCategories="[]"
         :hightlightsCategoriesVisibility="{}"
         ref="editor"
-        v-if="status === 'done'"></AppEditor>
+        v-if="status === 'done'"></AppEditor> -->
+        <h2>Transcription</h2>
+        <PublishTurn v-for="turn of turns" :turn="turn" />
+      </div>
     </div>
   </MainContentConversation>
 </template>
@@ -122,6 +186,9 @@ import ErrorView from "./Error.vue"
 import MainContentConversation from "../components/MainContentConversation.vue"
 import MenuToolbox from "../components/MenuToolbox.vue"
 import CustomSelect from "../components/CustomSelect.vue"
+import SwitchInput from "@/components/SwitchInput.vue"
+import PublishTurn from "../components/PublishTurn.vue"
+import Tabs from "../components/Tabs.vue"
 
 export default {
   mixins: [conversationMixin],
@@ -132,12 +199,16 @@ export default {
       helperVisible: false,
       status: null,
       filterTags: [],
+      activeTab: "verbatim",
     }
   },
   watch: {
     dataLoaded(newVal, oldVal) {
       if (newVal) {
         this.status = this.computeStatus(this.conversation?.jobs?.transcription)
+        this.filterSpeakers = this.conversation.speakers.map(
+          (speaker) => speaker.speaker_id
+        )
         if (this.status !== "done") {
           this.$router.push(`/interface/conversations/${this.conversation._id}`)
         }
@@ -270,6 +341,9 @@ export default {
     MainContentConversation,
     MenuToolbox,
     CustomSelect,
+    SwitchInput,
+    PublishTurn,
+    Tabs,
   },
 }
 </script>
