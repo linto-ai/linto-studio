@@ -71,7 +71,7 @@
       </div>
     </template>
 
-    <div class="publish-turn-list-container flex col">
+    <div class="publish-turn-list-container flex col" v-if="dataLoaded">
       <Tabs
         v-model="activeTab"
         :tabs="[
