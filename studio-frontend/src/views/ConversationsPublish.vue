@@ -102,8 +102,12 @@
         :hightlightsCategoriesVisibility="{}"
         ref="editor"
         v-if="status === 'done'"></AppEditor> -->
+        <h1>{{ conversation.name }}</h1>
         <h2>Transcription</h2>
-        <PublishTurn v-for="turn of turns" :turn="turn" />
+        <PublishTurn
+          v-for="turn of turns"
+          :turn="turn"
+          :speakerIndexedBySpeakerId="speakerIndexedBySpeakerId" />
       </div>
     </div>
   </MainContentConversation>
@@ -137,6 +141,7 @@ export default {
     return {
       conversationId: "",
       filterSpeakers: [],
+      speakerIndexedBySpeakerId: {},
       helperVisible: false,
       status: null,
       filterTags: [],
@@ -149,6 +154,13 @@ export default {
         this.status = this.computeStatus(this.conversation?.jobs?.transcription)
         this.filterSpeakers = this.conversation.speakers.map(
           (speaker) => speaker.speaker_id
+        )
+        this.speakerIndexedBySpeakerId = this.conversation.speakers.reduce(
+          (acc, speaker) => {
+            acc[speaker.speaker_id] = speaker
+            return acc
+          },
+          {}
         )
         if (this.status !== "done") {
           this.$router.push(`/interface/conversations/${this.conversation._id}`)
