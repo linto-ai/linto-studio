@@ -351,7 +351,8 @@
     "search_text_in_title": "Rechercher \"{text}\" dans le titre",
     "search_text_in_content": "Rechercher \"{text}\" dans la transcription",
     "no_categories_modal": "Il n'y a aucune étiquette. Commencez à étiqueter vos médias dans l'onglet Boîte de réception.",
-    "link_to_inbox": "Retourner à la boîte de réception"
+    "link_to_inbox": "Retourner à la boîte de réception",
+    "delete_conversation_button": "Supprimer des médias"
   },
   "favorites": {
     "title": "Médias favoris",
@@ -527,6 +528,19 @@
     },
     "visibility_label": "Visibilité",
     "visibility_name": "Visibilité"
+  },
+  "publish": {
+    "filter_title": {
+      "verbatim": "Options pour le verbatim",
+      "automatic_summary": "Options pour le résumé automatique"
+    },
+    "filter_speaker": {
+      "title": "Filtrer les locuteurs"
+    },
+    "tabs": {
+      "verbatim": "Verbatim",
+      "automatic_summary": "Résumé automatique"
+    }
   },
   "tags": {
     "back_to_search": "Retour à la recherche",

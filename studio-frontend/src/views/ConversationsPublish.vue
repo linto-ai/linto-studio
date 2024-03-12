@@ -4,23 +4,14 @@
     :status="status"
     :dataLoaded="dataLoaded"
     :error="error"
-    :sidebar="false">
+    :sidebar="true">
     <template v-slot:sidebar>
       <div style="margin: 0 1rem">
-        <!-- <section>
-          <h3 for="template-format-list">Choissisez le format à exporter</h3>
-          <CustomSelect
-            id="template-format-list"
-            valueText="Verbatim"
-            value="default"
-            aria-label="Template"
-            :options="{
-              actions: [{ value: 'default', text: 'Verbatim' }],
-            }"
-            @input="exportConv"></CustomSelect>
-        </section> -->
+        <h2>{{ $t("publish.filter_title.verbatim") }}</h2>
         <section>
-          <h3 for="template-format-list">Filtrez les locuteurs</h3>
+          <h3 for="template-format-list">
+            {{ $t("publish.filter_speaker.title") }}
+          </h3>
           <div
             v-for="speaker of conversation.speakers"
             class="flex speaker-filter-item"
@@ -36,53 +27,9 @@
               :id="'filter-speaker-' + speaker.speaker_id"
               name="filter-speakers"
               style="margin-right: 0.5rem" />
-            <!-- <input
-              type="checkbox"
-              :id="'filter-speaker-' + speaker.speaker_id"
-              name="filter-speakers"
-              :value="speaker.speaker_id"
-              v-model="filterSpeakers" /> -->
           </div>
         </section>
       </div>
-      <!-- <div style="margin: 0 1rem">
-        <h3>Choissisez le format à exporter</h3>
-        <CustomSelect
-          valueText="default"
-          value="default"
-          aria-label="Template"
-          :options="{
-            actions: [{ value: 'default', text: $t('default') }],
-          }"
-          @input="exportConv"></CustomSelect>
-        <h3>Filtrez les locuteurs</h3>
-        <fieldset>
-          <legend>Speakers</legend>
-          <div v-for="speaker of conversation.speakers">
-            <input
-              type="checkbox"
-              :id="'filter-speaker-' + speaker.speaker_id"
-              name="filter-speakers"
-              :value="speaker.speaker_id"
-              v-model="filterSpeakers" />
-            <label :for="'filter-speaker-' + speaker.speaker_id">{{
-              speaker.speaker_name
-            }}</label>
-          </div>
-        </fieldset>
-        <fieldset v-for="keywordCat of conversation.keywords">
-          <legend>Keywords</legend>
-          <div v-for="tag of keywordCat.tags">
-            <input
-              type="checkbox"
-              :id="'filter-tag-' + tag._id"
-              name="filter-tags"
-              :value="tag.name"
-              v-model="filterTags" />
-            <label :for="'filter-tag-' + tag._id">{{ tag.name }}</label>
-          </div>
-        </fieldset>
-      </div> -->
     </template>
 
     <template v-slot:breadcrumb-actions>
@@ -130,21 +77,15 @@
         :tabs="[
           {
             name: 'verbatim',
-            label: 'Verbatim',
+            label: $t('publish.tabs.verbatim'),
             icon: 'text',
           },
           {
             name: 'summary',
-            label: 'Résumé automatique',
+            label: $t('publish.tabs.automatic_summary'),
             icon: 'text',
             disabled: true,
           },
-          // {
-          //   name: 'truc muche',
-          //   label: 'truc muche',
-          //   icon: 'text',
-          //   disabled: true,
-          // },
         ]"></Tabs>
       <div class="publish-turn-list">
         <!-- <AppEditor
