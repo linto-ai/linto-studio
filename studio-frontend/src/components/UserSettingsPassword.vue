@@ -89,7 +89,6 @@ export default {
     },
 
     async updatePassword() {
-      console.log("yo")
       let req = await apiUpdateUserInfo(
         { password: this.newPassword.value },
         {

@@ -209,7 +209,27 @@ export default {
       this.$emit("keyup", e)
     },
     keydown(e) {
-      if (e.key === "Enter" && (this.disabledEnter || e.shiftKey)) {
+      // Prevent delete all content of a turn
+      // TODO: implement deleting turn if empty instead of preventing deletion
+      if (e.key === "Backspace" || e.key === "Delete") {
+        const text = document.getElementById(this.flag).innerText
+        if (text.length === 1) {
+          e.preventDefault()
+          return
+        }
+      }
+
+      if (e.key === "Enter") {
+        if (this.disabledEnter || e.shiftKey) {
+          e.preventDefault()
+          return
+        }
+        const cursorPosition = window.getSelection().anchorOffset
+        this.$emit("enter", {
+          e,
+          cursorPosition,
+          currentValue: this.currentValue,
+        })
         e.preventDefault()
       } else if (this.isMovingCursor) {
         e.preventDefault()

@@ -252,7 +252,6 @@ export default {
       this.state = STATES.BROWSE_CATEGORY
       this.loading = true
       if (this.categoriesList !== null) {
-        console.log("->2", this.categoriesList)
         this.allCategories = this.categoriesList
         this.loading = false
         return

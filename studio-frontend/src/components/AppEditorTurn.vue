@@ -77,6 +77,7 @@
         :turnWords="nonEmptyWords"
         :cursorPosition="cursorPosition"
         :disabledEnter="!isLocalTextSync"
+        @enter="handleEnter"
         @blur="handleBlur($event)"
         @contentUpdate="handleContentUpdate($event)"
         @input="handleChange($event)">
@@ -127,6 +128,7 @@ import _handleClick from "@/components/AppEditorTurn.d/handleClick.js"
 import _handleContentUpdate from "@/components/AppEditorTurn.d/handleContentUpdate.js"
 import _handleSpeakerClick from "@/components/AppEditorTurn.d/handleSpeakerClick.js"
 import _setSpeakerName from "@/components/AppEditorTurn.d/setSpeakerName.js"
+import _handleEnter from "@/components/AppEditorTurn.d/handleEnter.js"
 import AppEditorMetadataModal from "./AppEditorMetadataModal.vue"
 
 export default {
@@ -288,7 +290,7 @@ export default {
       return segmentIsCoherentWithWords(this.segment, this.words)
     },
     isLocalTextSync() {
-      return this.localText.trim() === this.segment
+      return this.localText.trim() === this.segment.trim()
     },
   },
   watch: {
@@ -369,6 +371,7 @@ export default {
     handleContentUpdate: _handleContentUpdate,
     handleSpeakerClick: _handleSpeakerClick,
     setSpeakerName: _setSpeakerName,
+    handleEnter: _handleEnter,
     handleNewHighlight(tag) {
       this.$emit("newHighlight", {
         tag,

@@ -274,12 +274,12 @@ export default {
       const baseTurnTextLength = baseTurn.segment.length
       const nextTurnTextLength = this.turns[baseTurnIndex + 1].segment.length
       const totalTextLenght = baseTurnTextLength + nextTurnTextLength
-      if (totalTextLenght >= process.env.VUE_APP_TURN_SIZE) {
+      if (totalTextLenght >= process.env.VUE_APP_TURN_SIZE * 2) {
         bus.$emit("app_notif", {
           status: "error",
-          message: "Too much characters, turns can't be merged",
-          timeout: 3000,
-          redirect: false,
+          message: this.$t("conversation.turn_cant_merge"),
+          //timeout: 3000,
+          //redirect: false,
         })
       } else {
         workerSendMessage("turn_merge_paragraph", {

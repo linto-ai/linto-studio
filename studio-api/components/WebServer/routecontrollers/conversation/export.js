@@ -25,14 +25,15 @@ async function downloadConversation(req, res, next) {
         if (conversation.length !== 1) throw new ConversationNotFound()
 
         conversation = conversation[0]
+
         let metadata = {}
+        metadata = await prepateData(conversation, metadata, req.query.format)
         if (req.body) {
             if (req.body.filter) conversation = await prepareConversation(conversation, req.body.filter)
             if (conversation.text.length === 0) res.status(204).send()
 
-            if (req.body.metadata) metadata = await prepareMetadata(conversation, req.body.metadata)
+            if (req.body.metadata) metadata = await prepareMetadata(conversation, req.body.metadata, metadata)
         }
-
 
         let output = ""
         if (req.query.format === 'json') {
@@ -85,23 +86,39 @@ async function prepareConversation(conversation, filter) {
     return conversation
 }
 
-async function prepareMetadata(conversation, metadata) {
+async function prepateData(conversation, data, format) {
+    data.title = conversation.name
+    if (conversation.description)
+        data.description = conversation.description
+
     let speakers = {}
-    let data = {
-        title: conversation.name,
-        description: conversation.description
-    }
 
-    if (metadata.title === false) delete data.title
-    if (metadata.description === false) data.description = conversation.description
+    data.speakers = []
+    conversation.speakers.map(speaker => {
+        speakers[speaker.speaker_id] = speaker.speaker_name
+        data.speakers.push(speaker.speaker_name)
+    })
 
-    if (metadata.speakers !== false) {
-        data.speakers = []
-        conversation.speakers.map(speaker => {
-            speakers[speaker.speaker_id] = speaker.speaker_name
-            data.speakers.push(speaker.speaker_name)
-        })
-    }
+    let secondsDecimals = 2
+    if (format === 'docx') secondsDecimals = 0
+
+    let text = conversation.text.map(turn => {
+        let update_turn = {
+            turn_id: turn.turn_id,
+            segment: turn.segment,
+        }
+        update_turn.speaker_id = turn.speaker_id
+        update_turn.speaker_name = speakers[turn.speaker_id]
+        update_turn.stime = secondsToHHMMSSWithDecimals(turn.words[0].stime, secondsDecimals)
+        update_turn.etime = secondsToHHMMSSWithDecimals(turn.words[turn.words.length - 1].etime, secondsDecimals)
+        return update_turn
+    })
+
+    conversation.text = text
+    return data
+}
+
+async function prepareMetadata(conversation, metadata, data) {
 
     if (metadata.tags !== false || metadata.keyword !== false) {
         data.categories = {}
@@ -124,28 +141,10 @@ async function prepareMetadata(conversation, metadata) {
     }
 
 
-    let text = conversation.text.map(turn => {
-        let update_turn = {
-            turn_id: turn.turn_id,
-            segment: turn.segment,
-        }
-        if (metadata.speakers !== false) {
-            update_turn.speaker_id = turn.speaker_id
-            update_turn.speaker_name = speakers[turn.speaker_id]
-        }
-        if (metadata.timestamp !== false) {
-            update_turn.stime = secondsToHHMMSSWithDecimals(turn.words[0].stime)
-            update_turn.etime = secondsToHHMMSSWithDecimals(turn.words[turn.words.length - 1].etime)
-        }
-        return update_turn
-    })
-
-    conversation.text = text
-
     return data
 }
 
-async function generateDocx(conversation, metadata) {
+async function generateDocx(conversation, metadata, show = {}) {
     conversation.name = conversation.name.replace(/[^a-zA-Z0-9 ]/g, "")
 
     const outputFilePath = `/tmp/${conversation.name}.docx`
@@ -158,24 +157,23 @@ async function generateDocx(conversation, metadata) {
 
     const paragraphs = []
 
-
-    if (metadata.title) {
-        paragraphs.push(new Paragraph({
-            text: metadata.title,
-            heading: HeadingLevel.TITLE,
-            alignment: AlignmentType.CENTER
-        }))
-    }
+    paragraphs.push(new Paragraph({
+        text: metadata.title,
+        heading: HeadingLevel.TITLE,
+        alignment: AlignmentType.CENTER
+    }))
 
     paragraphs.push(generateLineBreak())
-    paragraphs.push(generateHeading('Metadata'))
 
-    if (metadata.description) {
+    // We don't want to show metadata if there is nothing asked to show
+    if (Object.keys(show).length >= 1) paragraphs.push(generateHeading('Metadata'))
+
+    if (show?.description) {
         paragraphs.push(generateHeading('Description', HeadingLevel.HEADING_2))
         paragraphs.push(new Paragraph({ text: conversation.description }))
     }
 
-    if (metadata.speakers) {
+    if (show?.speakers) {
         if (conversation.speakers.length === 1) paragraphs.push(generateHeading('Speaker', HeadingLevel.HEADING_2))
         else paragraphs.push(generateHeading('Speakers', HeadingLevel.HEADING_2))
 
@@ -184,7 +182,7 @@ async function generateDocx(conversation, metadata) {
         })
     }
 
-    if (metadata.categories) {
+    if (show?.categories) {
         paragraphs.push(generateHeading('Categories', HeadingLevel.HEADING_2))
         for (let category in metadata.categories) {
             paragraphs.push(generateBulletParagraph(category + ' - type : ' + metadata.categories[category].type, 0))
@@ -194,9 +192,8 @@ async function generateDocx(conversation, metadata) {
         }
     }
 
-
     let targetPhrases = []
-    if (metadata.categories) {
+    if (show?.categories) {
         for (let category in metadata.categories) {
             if (metadata.categories[category].type === TYPE.HIGHLIGHT) {
                 metadata.categories[category].tags.map(tag => {
@@ -206,7 +203,7 @@ async function generateDocx(conversation, metadata) {
         }
     }
 
-    paragraphs.push(generateHeading('Conversation'))
+    paragraphs.push(generateHeading('Transcription'))
 
     conversation.text.map(turn => {
         let children = []
@@ -227,7 +224,8 @@ async function generateDocx(conversation, metadata) {
 
         paragraphs.push(
             new Paragraph({
-                children
+                children,
+                alignment: AlignmentType.JUSTIFIED
             })
         )
         paragraphs.push(new Paragraph({}))
@@ -306,12 +304,13 @@ function createHighlightedTextRun(text) {
     })
 }
 
-function secondsToHHMMSSWithDecimals(totalSeconds) {
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = (totalSeconds % 60).toFixed(2);
+function secondsToHHMMSSWithDecimals(totalSeconds, secondsDecimals = 0) {
+    const hours = Math.floor(totalSeconds / 3600)
+    const minutes = Math.floor((totalSeconds % 3600) / 60)
+    const seconds = (totalSeconds % 60).toFixed(secondsDecimals)
 
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds}`;
+    if (hours === 0) return `${minutes.toString().padStart(2, '0')}:${seconds}`
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds}`
 }
 
 
