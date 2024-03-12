@@ -4,7 +4,9 @@
       <div class="flex align-center gap-small">
         <button class="red-border btn" @click="clickDeleteConvButton">
           <span class="icon trash"></span>
-          <span class="label">{{ "Delete conversations" }}</span>
+          <span class="label">{{
+            $t("explore.delete_conversation_button")
+          }}</span>
         </button>
         <ConversationShareMultiple
           :currentOrganizationScope="currentOrganizationScope"

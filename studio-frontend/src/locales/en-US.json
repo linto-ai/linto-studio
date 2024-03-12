@@ -354,7 +354,8 @@
     "search_text_in_title": "Search \"{text}\" in title",
     "search_text_in_content": "Search \"{text}\" in transcription",
     "no_categories_modal": "There are no tags. Start tagging your media in the Inbox tab.",
-    "link_to_inbox": "Go to Inbox"
+    "link_to_inbox": "Go to Inbox",
+    "delete_conversation_button": "delete medias"
   },
   "favorites": {
     "title": "Favorites medias",
@@ -534,6 +535,19 @@
     },
     "visibility_label": "Visibility",
     "visibility_name": "Visibility"
+  },
+  "publish": {
+    "filter_title": {
+      "verbatim": "Verbatim options",
+      "automatic_summary": "Automatic summary options"
+    },
+    "filter_speaker": {
+      "title": "Filter by speaker"
+    },
+    "tabs": {
+      "verbatim": "Verbatim",
+      "automatic_summary": "Automatic summary"
+    }
   },
   "tags": {
     "back_to_search": "Back to search",

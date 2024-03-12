@@ -24,7 +24,7 @@
     position: relative;
     top: -1px;
     left: -1px;
-    background-color: white;
+    background-color: var(--background-primary);
   }
 
   input:checked + label {

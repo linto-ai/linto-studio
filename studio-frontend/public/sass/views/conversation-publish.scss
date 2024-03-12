@@ -1,0 +1,48 @@
+.speaker-filter-item {
+}
+
+.speaker-filter-item label::first-letter {
+  text-transform: uppercase;
+}
+
+.publish-turn-list {
+  //width: 800px;
+  width: 21cm;
+  margin: auto;
+  box-shadow: var(--shadow-block);
+  padding: 2cm;
+  box-sizing: border-box;
+  background-color: var(--background-primary);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+
+  h1 {
+    text-align: center;
+    border-bottom: 1px solid;
+    padding-bottom: 0.5cm;
+  }
+
+  h2 {
+    color: var(--blue-chart);
+  }
+}
+
+.publish-turn-list-container {
+  background-color: #8080802e;
+  overflow: auto;
+  padding: 5px;
+}
+
+.publish-turn {
+  font-family: $luciole;
+  margin-bottom: 1rem;
+  text-align: justify;
+}
+
+.publish-turn-speaker {
+  font-weight: bold;
+}
+
+.publish-turn-time {
+  font-style: italic;
+}

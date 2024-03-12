@@ -4,6 +4,7 @@
     v-click-outside="close"
     :class="showList ? 'open' : 'close'"
     :inline="inline"
+    :id="id"
     role="menu">
     <button
       @click="toggleMenu"
@@ -73,6 +74,7 @@ export default {
     badge: { type: Number, required: false },
     inline: { type: Boolean, default: false },
     buttonClass: { type: String, default: "" },
+    id: { type: String, default: null },
   },
   data() {
     return {
