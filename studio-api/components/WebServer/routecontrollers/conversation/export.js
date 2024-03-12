@@ -224,7 +224,8 @@ async function generateDocx(conversation, metadata, show = {}) {
 
         paragraphs.push(
             new Paragraph({
-                children
+                children,
+                alignment: AlignmentType.JUSTIFIED
             })
         )
         paragraphs.push(new Paragraph({}))
