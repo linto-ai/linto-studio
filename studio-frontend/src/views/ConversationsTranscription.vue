@@ -150,6 +150,9 @@ export default {
         )
         return filterTurns
       } else {
+        // TODO:
+        // some words can be empty so this rule is not enough check segment instead ?
+        // it breaks turn merge. So we need to fix it but empty turns should not be in the conversation.
         return this.conversation.text.filter((turn) => turn.words.length > 0)
       }
     },
@@ -163,7 +166,9 @@ export default {
       this.turns.forEach((turn, index) => {
         res[currentPage].push(turn)
         nbCaracters += turn.segment.length
-        if (nbCaracters > parseInt(process.env.VUE_APP_TURN_SIZE) * 2) {
+        if (
+          nbCaracters > parseInt(process.env.VUE_APP_MAX_CARACTERS_PER_PAGE)
+        ) {
           nbCaracters = 0
           nbTurns = 0
           currentPage += 1

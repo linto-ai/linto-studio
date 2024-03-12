@@ -244,6 +244,7 @@
     "transcription_service_title": "Select the transcription service",
     "transcription_settings_label": "Transcription settings",
     "transcription_service_list_empty": "No transcription service available",
+    "turn_cant_merge": "There are too many caracteres in the turn to merge it",
     "turn_sync_error_title": "The turn is not well synchronized",
     "update_information_button": "Update information",
     "update_information_done_notif": "Information updated",

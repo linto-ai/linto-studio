@@ -209,6 +209,16 @@ export default {
       this.$emit("keyup", e)
     },
     keydown(e) {
+      // Prevent delete all content of a turn
+      // TODO: implement deleting turn if empty instead of preventing deletion
+      if (e.key === "Backspace" || e.key === "Delete") {
+        const text = document.getElementById(this.flag).innerText
+        if (text.length === 1) {
+          e.preventDefault()
+          return
+        }
+      }
+
       if (e.key === "Enter") {
         if (this.disabledEnter || e.shiftKey) {
           e.preventDefault()
