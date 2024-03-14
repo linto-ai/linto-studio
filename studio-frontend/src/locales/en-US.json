@@ -230,7 +230,9 @@
       "punctuation_description": "Enable punctuation restitution",
       "punctuation_label_inline": "Punctuation : ",
       "punctuation_label": "Punctuation",
-      "punctuation_value_whisper": "Automatic. Handled by whisper model",
+      "punctuation_value_whisper": "Automatic.",
+      "punctuation_disabled": "Disabled",
+      "diarization_disabled": "Disabled",
       "speakers": "speakers",
       "edit_speaker": "Edit speaker",
       "add_speaker": "Add a speaker",
@@ -579,7 +581,8 @@
     "edit_tag_title": "Edit tag",
     "edit_category_title": "Edit category",
     "delete_category_title": "Delete category",
-    "delete_tag_title": "Delete tag"
+    "delete_tag_title": "Delete tag",
+    "error_creating_tag": "An error occurred while creating the tag"
   },
   "usersettings": {
     "change_password_label": "Change password",
