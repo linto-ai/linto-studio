@@ -35,43 +35,98 @@ async function downloadConversation(req, res, next) {
             if (req.body.metadata) metadata = await prepareMetadata(conversation, req.body.metadata, metadata)
         }
 
-        let output = ""
-        if (req.query.format === 'json') {
-            output = {
-                metadata: metadata,
-                text: conversation.text
-            }
-            res.setHeader('Content-Type', 'application/json')
-            res.status(200).send(output)
+        switch (req.query.format) {
+            case 'json':
+                await handleJsonFormat(res, metadata, conversation);
+                break;
+            case 'text':
+                await handleTextFormat(res, metadata, conversation);
+                break;
+            case 'docx':
+            case 'verbatim':
+                await handleDocxFormat(res, conversation, metadata);
+                break;
+            case 'crt':
+                break;
+            default:
+                await handleFormat(res, req.query.format, conversation, metadata);
+
+            // throw new ConversationMetadataRequire('Format not supported')
         }
-
-        else if (req.query.format === 'text') {
-            output = jsonToPlainText(metadata, {
-                color: false,
-            })
-            output += "\n\n"
-            conversation.text.map(text => {
-                if (metadata.speakers) output += `${text.speaker_name} : `
-                if (text.stime) output += `${text.stime} - ${text.etime} : `
-                output += text.segment + "\n\n"
-            })
-
-            res.setHeader('Content-Type', 'text/plain')
-            res.status(200).send(output)
-        }
-
-        else if (req.query.format === 'docx') {
-            const file = await generateDocx(conversation, metadata)
-            res.setHeader('Content-Type', 'application/vnd.openxmlformats')
-            res.setHeader('Content-disposition', 'attachment; filename=' + file.name)
-            res.sendFile(file.path)
-        }
-
-        else throw new ConversationMetadataRequire('Format not supported')
 
     } catch (err) {
         next(err)
     }
+}
+
+async function handleFormat(res, format, conversation, metadata) {
+    //we check if the format and conversationId exist in the collection conversationExport
+    let conversationExport = await model.conversationExport.getByConvAndFormat(conversation._id, format)
+    if (conversationExport.length === 0) {
+        let conversationExport = {
+            convId: conversation._id.toString(),
+            format: format,
+            status: "pending"
+        }
+        exportResult = await model.conversationExport.create(conversationExport)
+        conversationExport._id = exportResult.insertedId.toString()
+        //make an asyncrone timer of two minute then update that export to done
+        setTimeout(async () => {
+            conversationExport.status = "done"
+            //Give me a small json to add in data
+            conversationExport.data = { title: false, description: false, speakers: false, tags: false, keyword: false }
+            await model.conversationExport.update(conversationExport)
+            debug('done')
+        }, 5000)
+
+    } else {
+        //do we regenerate a new one if user ask, check if status is pending
+        if (conversationExport[0].status === "pending") {
+            //we regenerate the file
+        } else {
+            conversationExport = conversationExport[0]
+
+        }
+    }
+
+    res.status(200).send('ok')
+
+}
+
+async function handleJsonFormat(res, metadata, conversation) {
+    let output = {
+        metadata: metadata,
+        text: conversation.text
+    }
+
+    //we don't add metadata if json is empty
+    if (Object.keys(metadata).length === 0) delete output.metadata
+
+    debug(metadata)
+    res.setHeader('Content-Type', 'application/json')
+    res.status(200).send(output)
+}
+
+async function handleTextFormat(res, metadata, conversation) {
+    let output = jsonToPlainText(metadata, {
+        color: false,
+    })
+    output += "\n\n"
+    conversation.text.map(text => {
+        if (metadata.speakers) output += `${text.speaker_name} : `
+        if (text.stime) output += `${text.stime} - ${text.etime} : `
+        output += text.segment + "\n\n"
+    })
+
+    res.setHeader('Content-Type', 'text/plain')
+    res.status(200).send(output)
+}
+
+async function handleDocxFormat(res, conversation, metadata) {
+    const file = await generateDocx(conversation, metadata)
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats')
+    res.setHeader('Content-disposition', 'attachment; filename=' + file.name)
+    res.sendFile(file.path)
 }
 
 async function prepareConversation(conversation, filter) {
