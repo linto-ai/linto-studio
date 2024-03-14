@@ -1,4 +1,4 @@
-export function testContent(field, testEmpty = false) {
+export function testContent(field, t, testEmpty = false) {
   field.error = null
   field.valid = false
   field.value = field.value.trim()
