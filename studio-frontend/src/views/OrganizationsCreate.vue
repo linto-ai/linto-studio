@@ -209,7 +209,7 @@ export default {
               })
             }
             let payload = {
-              name: this.orgaName.value,
+              name: this.orgaName.value.trim(),
               description: this.orgaDescription.value,
               users,
             }

@@ -579,7 +579,8 @@
     "edit_tag_title": "Edit tag",
     "edit_category_title": "Edit category",
     "delete_category_title": "Delete category",
-    "delete_tag_title": "Delete tag"
+    "delete_tag_title": "Delete tag",
+    "error_creating_tag": "An error occurred while creating the tag"
   },
   "usersettings": {
     "change_password_label": "Change password",

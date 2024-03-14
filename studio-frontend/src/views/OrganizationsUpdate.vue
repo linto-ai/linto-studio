@@ -371,7 +371,7 @@ export default {
       event.preventDefault()
       if (this.testFields()) {
         let payload = {
-          name: this.orgaName.value,
+          name: this.orgaName.value.trim(),
           description: this.orgaDescription.value,
         }
 

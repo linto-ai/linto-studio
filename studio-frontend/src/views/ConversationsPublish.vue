@@ -106,6 +106,7 @@
         <h2>Transcription</h2>
         <PublishTurn
           v-for="turn of turns"
+          :key="turn.turn_id"
           :turn="turn"
           :speakerIndexedBySpeakerId="speakerIndexedBySpeakerId" />
       </div>
