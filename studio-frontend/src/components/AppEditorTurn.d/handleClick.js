@@ -29,13 +29,13 @@ export default function handleClick(e) {
       }
     }
 
-    if (selection.type == "Range") {
+    if (selection.type == "Range" && this.experimental_highlight) {
       this.selectWord()
     }
   }
 
   if (target.classList.contains("turn")) {
-    if (selection.type == "Range") {
+    if (selection.type == "Range" && this.experimental_highlight) {
       this.selectWord()
     }
   }
