@@ -8,6 +8,7 @@ const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Bookm
 
 const { jsonToPlainText } = require('json-to-plain-text')
 
+const openai = require(`${process.cwd()}/components/WebServer/controllers/openai/openai`)
 const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
 
 const {
@@ -46,12 +47,11 @@ async function downloadConversation(req, res, next) {
             case 'verbatim':
                 await handleDocxFormat(res, conversation, metadata);
                 break;
-            case 'crt':
+            case 'resume':
+                await handleResumeFormat(res, req.query, conversation, metadata);
                 break;
             default:
-                await handleFormat(res, req.query.format, conversation, metadata);
-
-            // throw new ConversationMetadataRequire('Format not supported')
+                throw new ConversationMetadataRequire('Format not supported')
         }
 
     } catch (err) {
@@ -59,38 +59,50 @@ async function downloadConversation(req, res, next) {
     }
 }
 
-async function handleFormat(res, format, conversation, metadata) {
+async function callOpenAI(query, conversation, metadata, conversationExport) {
+    openai.request(query, conversation, metadata, query)
+        .then(data => {
+            conversationExport.data = data
+            conversationExport.status = 'done'
+            model.conversationExport.update(conversationExport)
+        }).catch(err => {
+            console.error(err);
+        })
+}
+
+async function handleResumeFormat(res, query, conversation, metadata) {
     //we check if the format and conversationId exist in the collection conversationExport
-    let conversationExport = await model.conversationExport.getByConvAndFormat(conversation._id, format)
-    if (conversationExport.length === 0) {
-        let conversationExport = {
+    let conversationExport = await model.conversationExport.getByConvAndFormat(conversation._id, query.format)
+
+    if (query.regenerate === 'true' || conversationExport.length === 0) {
+        //If we are there with a conversationExport, it means that the user asked to regenerate the data
+        if (conversationExport.length !== 0) await model.conversationExport.delete(conversationExport[0]._id)
+
+        conversationExport = {
             convId: conversation._id.toString(),
-            format: format,
-            status: "pending"
+            format: query.format,
+            status: 'generating'
         }
         exportResult = await model.conversationExport.create(conversationExport)
         conversationExport._id = exportResult.insertedId.toString()
-        //make an asyncrone timer of two minute then update that export to done
-        setTimeout(async () => {
-            conversationExport.status = "done"
-            //Give me a small json to add in data
-            conversationExport.data = { title: false, description: false, speakers: false, tags: false, keyword: false }
-            await model.conversationExport.update(conversationExport)
-            debug('done')
-        }, 5000)
 
-    } else {
-        //do we regenerate a new one if user ask, check if status is pending
-        if (conversationExport[0].status === "pending") {
-            //we regenerate the file
+        //execute an api call that don't have to block the response and update the status when done
+        if (process.env.OPENAI_API_KEY === undefined) {
+            throw new Error('OPENAI_API_KEY is not defined')
         } else {
-            conversationExport = conversationExport[0]
-
+            callOpenAI(query, conversation, metadata, conversationExport)
         }
+        res.status(200).send({ status: 'generating' })
+    } else if (conversationExport[0].status === 'done') {
+        conversationExport = conversationExport[0]
+        
+        const file = await generateDocx(conversation, conversationExport.data)
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats')
+        res.setHeader('Content-disposition', 'attachment; filename=' + file.name)
+        res.sendFile(file.path)
+    } else {
+        res.status(200).send({ status: 'generating' })
     }
-
-    res.status(200).send('ok')
-
 }
 
 async function handleJsonFormat(res, metadata, conversation) {
@@ -102,7 +114,6 @@ async function handleJsonFormat(res, metadata, conversation) {
     //we don't add metadata if json is empty
     if (Object.keys(metadata).length === 0) delete output.metadata
 
-    debug(metadata)
     res.setHeader('Content-Type', 'application/json')
     res.status(200).send(output)
 }
@@ -123,7 +134,7 @@ async function handleTextFormat(res, metadata, conversation) {
 }
 
 async function handleDocxFormat(res, conversation, metadata) {
-    const file = await generateDocx(conversation, metadata)
+    const file = await generateTranscriptionDocx(conversation, metadata)
     res.setHeader('Content-Type', 'application/vnd.openxmlformats')
     res.setHeader('Content-disposition', 'attachment; filename=' + file.name)
     res.sendFile(file.path)
@@ -199,10 +210,8 @@ async function prepareMetadata(conversation, metadata, data) {
     return data
 }
 
-async function generateDocx(conversation, metadata, show = {}) {
-    conversation.name = conversation.name.replace(/[^a-zA-Z0-9 ]/g, "")
-
-    const outputFilePath = `/tmp/${conversation.name}.docx`
+function createDocx(conversation) {
+    const outputFilePath = `/tmp/${conversation.name.replace(/[^a-zA-Z0-9 ]/g, "")}.docx`
     const doc = new Document({
         creator: conversation.owner,
         title: conversation.name,
@@ -213,12 +222,44 @@ async function generateDocx(conversation, metadata, show = {}) {
     const paragraphs = []
 
     paragraphs.push(new Paragraph({
-        text: metadata.title,
+        text: conversation.name,
         heading: HeadingLevel.TITLE,
         alignment: AlignmentType.CENTER
     }))
-
     paragraphs.push(generateLineBreak())
+
+    return { doc, paragraphs, outputFilePath }
+}
+
+
+async function generateDocx(conversation, text) {
+    const { doc, paragraphs, outputFilePath } = createDocx(conversation)
+
+    paragraphs.push(generateHeading('Resume'))
+    paragraphs.push(
+        new Paragraph({
+            children: [new TextRun(text.message)],
+            alignment: AlignmentType.JUSTIFIED
+        })
+    )
+
+    doc.addSection({
+        properties: {},
+        children: paragraphs,
+    })
+
+    const buffer = await Packer.toBuffer(doc)
+    fs.writeFileSync(outputFilePath, buffer)
+    return {
+        path: outputFilePath,
+        name: conversation.name + '.docx'
+    }
+
+}
+
+
+async function generateTranscriptionDocx(conversation, metadata, show = {}) {
+    const { doc, paragraphs, outputFilePath } = createDocx(conversation)
 
     // We don't want to show metadata if there is nothing asked to show
     if (Object.keys(show).length >= 1) paragraphs.push(generateHeading('Metadata'))
