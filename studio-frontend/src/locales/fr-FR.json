@@ -172,7 +172,7 @@
       "delete": "Supprimer",
       "comment": "Commenter",
       "full_rights": "Tous les droits",
-      "mutiple": "Plusieurs valeurs"
+      "mutiple_values": "Plusieurs valeurs"
     },
     "model_quality_label": "Qualité du modèle :",
     "model_quality": {
