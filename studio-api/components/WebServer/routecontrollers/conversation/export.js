@@ -2,6 +2,7 @@ const debug = require('debug')(`linto:conversation-manager:components:WebServer:
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
+const libre = require('libreoffice-convert')
 const fs = require("fs")
 const docx = require("docx")
 const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Bookmark } = docx
@@ -38,18 +39,18 @@ async function downloadConversation(req, res, next) {
 
         switch (req.query.format) {
             case 'json':
-                await handleJsonFormat(res, metadata, conversation);
-                break;
+                await handleJsonFormat(res, metadata, conversation)
+                break
             case 'text':
-                await handleTextFormat(res, metadata, conversation);
-                break;
+                await handleTextFormat(res, metadata, conversation)
+                break
             case 'docx':
             case 'verbatim':
-                await handleDocxFormat(res, conversation, metadata);
-                break;
+                await handleDocxFormat(res, req.query, conversation, metadata)
+                break
             case 'resume':
-                await handleResumeFormat(res, req.query, conversation, metadata);
-                break;
+                await handleLLMFormat(res, req.query, conversation, metadata)
+                break
             default:
                 throw new ConversationMetadataRequire('Format not supported')
         }
@@ -66,11 +67,13 @@ async function callOpenAI(query, conversation, metadata, conversationExport) {
             conversationExport.status = 'done'
             model.conversationExport.update(conversationExport)
         }).catch(err => {
-            console.error(err);
+            conversationExport.status = 'error'
+            model.conversationExport.update(conversationExport)
+            console.error(err)
         })
 }
 
-async function handleResumeFormat(res, query, conversation, metadata) {
+async function handleLLMFormat(res, query, conversation, metadata) {
     //we check if the format and conversationId exist in the collection conversationExport
     let conversationExport = await model.conversationExport.getByConvAndFormat(conversation._id, query.format)
 
@@ -95,13 +98,23 @@ async function handleResumeFormat(res, query, conversation, metadata) {
         res.status(200).send({ status: 'generating' })
     } else if (conversationExport[0].status === 'done') {
         conversationExport = conversationExport[0]
-        
         const file = await generateDocx(conversation, conversationExport.data)
+        sendFileAsResponse(res, file, query.preview)
+    } else {
+        res.status(200).send({ status: 'generating' })
+    }
+}
+
+async function sendFileAsResponse(res, file, preview = false) {
+    if (preview === 'true') {
+        const pdf = await convertToPDF(file)
+        res.setHeader('Content-Type', 'application/pdf')
+        res.setHeader('Content-disposition', 'attachment; filename=' + file.name)
+        res.sendFile(pdf.path)
+    } else {
         res.setHeader('Content-Type', 'application/vnd.openxmlformats')
         res.setHeader('Content-disposition', 'attachment; filename=' + file.name)
         res.sendFile(file.path)
-    } else {
-        res.status(200).send({ status: 'generating' })
     }
 }
 
@@ -133,11 +146,9 @@ async function handleTextFormat(res, metadata, conversation) {
     res.status(200).send(output)
 }
 
-async function handleDocxFormat(res, conversation, metadata) {
+async function handleDocxFormat(res, query, conversation, metadata) {
     const file = await generateTranscriptionDocx(conversation, metadata)
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats')
-    res.setHeader('Content-disposition', 'attachment; filename=' + file.name)
-    res.sendFile(file.path)
+    sendFileAsResponse(res, file, query.preview)
 }
 
 async function prepareConversation(conversation, filter) {
@@ -208,6 +219,31 @@ async function prepareMetadata(conversation, metadata, data) {
 
 
     return data
+}
+
+async function convertToPDF(file) {
+    const enterData = fs.readFileSync(file.path)
+
+    // Convert it to .pdf format
+    const result = await new Promise((resolve, reject) => {
+        libre.convert(enterData, '.pdf', undefined, (err, done) => {
+            if (err) {
+                reject(err)
+            } else {
+                resolve(done)
+            }
+        })
+    })
+
+    // Write the .pdf file
+    const outputFilePath = `/tmp/${file.name.replace(/[^a-zA-Z0-9 ]/g, "")}.pdf`
+    fs.writeFileSync(outputFilePath, result)
+
+    // Return the path and name of the .pdf file
+    return {
+        path: outputFilePath,
+        name: `${file.name}.pdf`
+    }
 }
 
 function createDocx(conversation) {
