@@ -76,11 +76,14 @@ class SubtitleModel extends MongoModel {
         }
     }
 
-    async getByConvAndFormat(id, format) {
+    async getByConvAndFormat(id, format = undefined) {
         try {
-            const query = {
+            let query = {
                 convId: id.toString(),
-                format: format
+            }
+
+            if(format) {
+                query.format = format
             }
 
             return await this.mongoRequest(query)

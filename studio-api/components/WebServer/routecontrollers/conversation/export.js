@@ -18,6 +18,27 @@ const {
     ConversationMetadataRequire
 } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
+async function listExport(req, res, next) {
+    try {
+        if (!req.params.conversationId) throw new ConversationIdRequire()
+        let conversationExport = await model.conversationExport.getByConvAndFormat(req.params.conversationId)
+        if (conversationExport.length === 0) throw new ConversationNotFound()
+
+        let export_list = []
+        for(let status of conversationExport){
+            export_list.push({
+                _id : status._id.toString(),
+                format : status.format,
+                status : status.status
+            })
+        }
+
+        res.status(200).send(export_list)
+    } catch (error) {
+        next(error)
+    }
+}
+
 async function downloadConversation(req, res, next) {
     try {
         if (!req.params.conversationId) throw new ConversationIdRequire()
@@ -448,4 +469,5 @@ function secondsToHHMMSSWithDecimals(totalSeconds, secondsDecimals = 0) {
 
 module.exports = {
     downloadConversation,
+    listExport
 }
