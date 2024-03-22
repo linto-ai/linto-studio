@@ -346,7 +346,12 @@
     "this_field_is_required": "Ce champ est requis"
   },
   "inbox": {
-    "subtitle": "Vos médias récemment importés arrivent ici. Utilisez ”importer un media” ou {appLink} pour l'enrichir."
+    "subtitle": "Vos médias récemment importés arrivent ici. Utilisez ”importer un media” ou {appLink} pour l'enrichir.",
+    "sort": {
+      "created": "Ajout récent",
+      "last_update": "Dernière mise à jour",
+      "notags": "Sans tags"
+    }
   },
   "explore": {
     "subtitle": "Recherchez et découvrez des informations sur les médias transcrits avec de la sémantique",

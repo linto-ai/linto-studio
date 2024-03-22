@@ -22,31 +22,36 @@
       @on-confirm="deleteConversations" />
 
     <section class="flex col flex1 gap-small reset-overflows">
-      <i18n path="inbox.subtitle" tag="h2">
+      <InboxHeader v-model="selectedOption" />
+      <!-- <i18n path="inbox.subtitle" tag="h2">
         <a
           href="https://linto.app"
           style="vertical-align: text-top; text-decoration: underline"
           place="appLink"
           >linto.app</a
         >
-      </i18n>
+      </i18n> -->
       <ConversationList
         :conversations="conversations"
         :loading="loading"
         :currentOrganizationScope="currentOrganizationScope"
         :error="error"
         :selectable="true"
-        :selectedConversations="selectedConversations"
-        :selectedConversationsSize="selectedConversationsSize"
+        :selectedConversations="selectedConversationsList"
         @onSelectConversation="onSelectConversation" />
 
       <!-- pagination -->
+      <div class="bottom-list-sticky">
+        <Pagination
+          v-model="currentPageNb"
+          :pages="totalPagesNumber"
+          class="pagination--sticky"
+          v-if="totalPagesNumber > 1 && !error" />
 
-      <Pagination
-        v-model="currentPageNb"
-        :pages="totalPagesNumber"
-        class="pagination--sticky"
-        v-if="totalPagesNumber > 1 && !error" />
+        <SelectedConversationIndicator
+          v-if="selectedConversationsSize > 0"
+          :selectedConversationsSize="selectedConversationsSize" />
+      </div>
     </section>
   </MainContent>
 </template>
@@ -55,16 +60,20 @@
 import { bus } from "@/main.js"
 
 import { conversationListOrgaMixin } from "@/mixins/conversationListOrga.js"
+import { debounceMixin } from "@/mixins/debounce"
 
 import ConversationList from "@/components/ConversationList.vue"
 import MainContent from "@/components/MainContent.vue"
 import Pagination from "@/components/Pagination.vue"
 import ModalDeleteConversations from "@/components/ModalDeleteConversations.vue"
-import ConversationShareMultiple from "../components/ConversationShareMultiple.vue"
+import ConversationShareMultiple from "@/components/ConversationShareMultiple.vue"
 import { apiGetConversationsWithoutTagsByOrganization } from "@/api/conversation.js"
+import InboxHeader from "@/components/inboxHeader.vue"
+import SelectedConversationIndicator from "../components/SelectedConversationIndicator.vue"
+import { apiGetConversationsByOrganization } from "../api/conversation"
 
 export default {
-  mixins: [conversationListOrgaMixin],
+  mixins: [conversationListOrgaMixin, debounceMixin],
   props: {
     userInfo: { type: Object, required: true },
     currentOrganizationScope: { type: String, required: true },
@@ -75,22 +84,44 @@ export default {
       conversations: [],
       loading: false,
       error: null,
+      selectedOption: "created",
     }
   },
   mounted() {
     this.fetchConversations()
   },
+  watch: {
+    selectedOption(value) {
+      this.currentPageNb = 0
+      this.fetchConversations()
+    },
+  },
   computed: {},
   methods: {
+    async apiFetchConversations(search, signal) {
+      if (this.selectedOption == "notags") {
+        return await apiGetConversationsWithoutTagsByOrganization(
+          this.currentOrganizationScope,
+          this.currentPageNb
+        )
+      } else {
+        return await apiGetConversationsByOrganization(
+          this.currentOrganizationScope,
+          this.currentPageNb,
+          { sortField: this.selectedOption }
+        )
+      }
+    },
     async fetchConversations() {
       let res
       this.loading = true
       try {
-        res = await apiGetConversationsWithoutTagsByOrganization(
-          this.currentOrganizationScope,
-          this.currentPageNb
+        res = await this.debouncedSearch(
+          this.apiFetchConversations.bind(this),
+          this.selectedOption
         )
       } catch (error) {
+        console.error(error)
         this.error = error
       } finally {
         this.loading = false
@@ -108,6 +139,8 @@ export default {
     Pagination,
     ModalDeleteConversations,
     ConversationShareMultiple,
+    InboxHeader,
+    SelectedConversationIndicator,
   },
 }
 </script>

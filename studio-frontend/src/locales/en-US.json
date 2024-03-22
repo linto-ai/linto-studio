@@ -348,7 +348,12 @@
   },
   "inbox": {
     "title": "Inbox",
-    "subtitle": "Your recently uploaded medias lands here. Use “Upload media” or {appLink} to feed this."
+    "subtitle": "Your recently uploaded medias lands here. Use “Upload media” or {appLink} to feed this.",
+    "sort": {
+      "created": "Recently uploaded",
+      "last_update": "Last updated",
+      "notags": "Without tags"
+    }
   },
   "explore": {
     "subtitle": "Search and discover insights on transcribed media using meaningful semantics",

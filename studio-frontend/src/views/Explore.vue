@@ -57,8 +57,7 @@
         :currentOrganizationScope="currentOrganizationScope"
         :error="error"
         :selectable="true"
-        :selectedConversations="selectedConversations"
-        :selectedConversationsSize="selectedConversationsSize"
+        :selectedConversations="selectedConversationsList"
         @onSelectConversation="onSelectConversation">
         <template v-slot:list-header
           ><ConversationListSearch

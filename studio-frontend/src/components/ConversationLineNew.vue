@@ -1,11 +1,15 @@
 <template>
-  <li class="conversation-line-container" :selected="selected">
+  <li class="conversation-line-container">
     <input
       type="checkbox"
       class="conversation-line__checkbox"
+      :value="conversation._id"
       v-if="selectable"
-      v-model="checkboxValue" />
-    <div class="conversation-line relative flex col flex1" ref="line">
+      v-model="_selectedConversation" />
+    <div
+      class="conversation-line relative flex col flex1"
+      ref="line"
+      @click="selectLine">
       <header class="conversation-line__head flex row gap-medium align-center">
         <!--
       <div
@@ -176,7 +180,8 @@ export default {
     indexedTags: { type: Object, required: false }, // tags indexed by id, if not provided will be fetched
     tagsReadOnly: { type: Boolean, default: false },
     selectable: { type: Boolean, default: false },
-    selected: { type: Boolean, default: false },
+    //selected: { type: Boolean, default: false },
+    selectedConversations: { type: Array, default: () => [] },
   },
   data() {
     return {
@@ -187,7 +192,6 @@ export default {
       loadingTags: false,
       dropDownX: 0,
       dropDownY: 0,
-      checkboxValue: this.selected,
       descriptionIsEditing: false,
       descriptionFormData: {
         value: this.conversation.description || "",
@@ -297,24 +301,28 @@ export default {
     isFavorite() {
       return this.$store.getters.isFavoriteConversation(this.conversation._id)
     },
+    _selectedConversation: {
+      get() {
+        return this.selectedConversations
+      },
+      set(value) {
+        this.$emit("onSelect", {
+          value,
+          conversation: this.conversation,
+        })
+      },
+    },
   },
   watch: {
     tags: function (newTags, oldTags) {},
-    checkboxValue: function (newVal, oldVal) {
-      if (newVal !== oldVal) {
-        this.$emit("onSelect", {
-          value: newVal,
-          conversation: this.conversation,
-        })
-      }
-    },
-    selected: function (newVal, oldVal) {
-      if (newVal !== oldVal) {
-        this.checkboxValue = newVal
-      }
-    },
   },
   methods: {
+    selectLine() {
+      this.$emit("onSelect", {
+        value: null,
+        conversation: this.conversation,
+      })
+    },
     showDropDown(e) {
       this.dropDownVisible = true
 

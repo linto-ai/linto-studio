@@ -15,6 +15,7 @@ export const conversationListMixin = {
       totalElementsNumber: 0,
       currentPageNb: this.getCurrentPageNb(),
       selectedConversations: new Map(),
+      selectedConversationsList: [], // Array of selected conversations (more vuejs friendly than a map), used in the template. On refactor, remove the map and use only this array ?
       selectedConversationsSize: 0,
       displayDeleteModal: false,
       conversationsInError: [],
@@ -158,16 +159,22 @@ export const conversationListMixin = {
       const id = conversation._id
       this.selectedConversations.set(id, conversation)
       this.selectedConversationsSize = this.selectedConversations.size
+      this.selectedConversationsList = Array.from(
+        this.selectedConversations.keys()
+      )
     },
     unSelectConversation(id) {
       this.selectedConversations.delete(id)
       this.selectedConversationsSize = this.selectedConversations.size
+      this.selectedConversationsList = Array.from(
+        this.selectedConversations.keys()
+      )
     },
     onSelectConversation({ value, conversation }) {
       const id = conversation._id
       if (this.selectedConversations.has(id)) {
         this.unSelectConversation(id)
-      } else if (value) {
+      } else {
         this.selectConversation(conversation)
       }
     },
