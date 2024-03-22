@@ -9,7 +9,9 @@ const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Bookm
 
 const { jsonToPlainText } = require('json-to-plain-text')
 
-const openai = require(`${process.cwd()}/components/WebServer/controllers/openai/openai`)
+const openai = require(`${process.cwd()}/components/WebServer/controllers/llm/openai`)
+const mixtral = require(`${process.cwd()}/components/WebServer/controllers/llm/mixtral`)
+
 const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
 
 const {
@@ -25,11 +27,11 @@ async function listExport(req, res, next) {
         if (conversationExport.length === 0) throw new ConversationNotFound()
 
         let export_list = []
-        for(let status of conversationExport){
+        for (let status of conversationExport) {
             export_list.push({
-                _id : status._id.toString(),
-                format : status.format,
-                status : status.status
+                _id: status._id.toString(),
+                format: status.format,
+                status: status.status
             })
         }
 
@@ -39,7 +41,7 @@ async function listExport(req, res, next) {
     }
 }
 
-async function downloadConversation(req, res, next) {
+async function exportConversation(req, res, next) {
     try {
         if (!req.params.conversationId) throw new ConversationIdRequire()
         if (!req.query.format) throw new ConversationMetadataRequire('format is required')
@@ -94,6 +96,18 @@ async function callOpenAI(query, conversation, metadata, conversationExport) {
         })
 }
 
+async function callMixtralAPI(query, conversation, metadata, conversationExport) {
+    mixtral.request(query, conversation, metadata, query)
+        .then(data => {
+            conversationExport.data = data
+            conversationExport.status = 'done'
+            model.conversationExport.update(conversationExport)
+        }).catch(err => {
+            conversationExport.status = 'error'
+            model.conversationExport.update(conversationExport)
+        })
+}
+
 async function handleLLMFormat(res, query, conversation, metadata) {
     //we check if the format and conversationId exist in the collection conversationExport
     let conversationExport = await model.conversationExport.getByConvAndFormat(conversation._id, query.format)
@@ -110,12 +124,14 @@ async function handleLLMFormat(res, query, conversation, metadata) {
         exportResult = await model.conversationExport.create(conversationExport)
         conversationExport._id = exportResult.insertedId.toString()
 
-        //execute an api call that don't have to block the response and update the status when done
-        if (process.env.OPENAI_API_KEY === undefined) {
-            throw new Error('OPENAI_API_KEY is not defined')
-        } else {
+        if ((query.api === 'openai' && process.env.OPENAI_API_KEY !== undefined) || (query.api === undefined && process.env.OPENAI_API_KEY !== undefined)) {
             callOpenAI(query, conversation, metadata, conversationExport)
+        } else if ((query.api === 'mixtral' && process.env.MIXTRAL_API_HOST !== undefined) || (query.api === undefined && process.env.MIXTRAL_API_HOST !== undefined)) {
+            callMixtralAPI(query, conversation, metadata, conversationExport)
+        } else {
+            throw new Error('No API key found for OpenAI or Mixtral')
         }
+
         res.status(200).send({ status: 'generating' })
     } else if (conversationExport[0].status === 'done') {
         conversationExport = conversationExport[0]
@@ -468,6 +484,6 @@ function secondsToHHMMSSWithDecimals(totalSeconds, secondsDecimals = 0) {
 
 
 module.exports = {
-    downloadConversation,
+    exportConversation,
     listExport
 }

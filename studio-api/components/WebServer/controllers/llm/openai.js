@@ -1,4 +1,4 @@
-const debug = require('debug')(`linto:conversation-manager:components:WebServer:controllers:openai:openai`)
+const debug = require('debug')(`linto:conversation-manager:components:WebServer:controllers:llm:openai`)
 
 const OpenAI = require('openai')
 const openai = new OpenAI({
@@ -20,46 +20,33 @@ async function request(query, conversation, metadata) {
 
     let prompt = generatePrompt(query, conversation.locale)
     if (query.format === 'resume') {
-        return resume(conversation, metadata, prompt)
+        return resume(conversation, metadata, _prompt)
     }
 }
 
 function generatePrompt(query, lang) {
     if (query.prompt) return query.prompt + ' \n'
 
-    let lang_prompt = lang.includes('fr') ? DEFAULT_PROMPT.fr : DEFAULT_PROMPT.en
+    let prompt = lang.includes('fr') ? DEFAULT_PROMPT.fr : DEFAULT_PROMPT.en
     if (query.format === 'resume') {
-        if (lang === 'fr') return lang_prompt.resume
-        else return lang_prompt.resume
+        if (lang === 'fr') return prompt.resume
+        else return prompt.resume
     }
     return DEFAULT_PROMPT.en.resume
 }
 
-async function resume(conversation, metadata, initial_prompt) {
+async function resume(conversation, metadata, lang_prompt) {
     let prompt = await getTextFromConv(conversation, metadata)
-    let request_prompt = initial_prompt + prompt
+    let request_prompt = lang_prompt + prompt
     // the max token need to be an integer
     let request = {
         model: MODEL,
         messages: [{ role: 'user', content: request_prompt }],
-        // stream: true,
-        // max_tokens: parseInt(request_prompt.length / 5),
-        // temperature: 0.5,
-        // top_p: 1,
-        // n: 1,
-        // stop: '\n',
     }
     const chatCompletion = await openai.chat.completions.create(request)
     return {
         message: chatCompletion.choices[0]?.message?.content,
         full: chatCompletion // TODO: for debug purpose
-    }
-}
-
-async function test() {
-    console.log('processing')
-    return {
-        status: 'ok'
     }
 }
 
@@ -83,7 +70,5 @@ async function getTextFromConv(conversation, metadata) {
 }
 
 module.exports = {
-    request,
-    resume,
-    test
+    request
 }

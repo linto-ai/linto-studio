@@ -9,7 +9,7 @@ const {
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/conversation.js`)
 
 const {
-    downloadConversation,
+    exportConversation,
     listExport
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/export.js`)
 
@@ -54,10 +54,10 @@ module.exports = (webserver) => {
             method: 'post',
             requireAuth: true,
             requireConversationReadAccess: true,
-            controller: downloadConversation
+            controller: exportConversation
         },
         {
-            path: '/:conversationId/export',
+            path: '/:conversationId/export/list',
             method: 'get',
             requireAuth: true,
             requireConversationReadAccess: true,
