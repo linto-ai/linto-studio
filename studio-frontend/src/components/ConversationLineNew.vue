@@ -89,8 +89,10 @@
         class="conversation-line__description"
         @click="startDescriptionEdition"
         v-if="!descriptionIsEditing">
-        {{ description }}
-        <span class="icon edit" v-if="canEditConv" />
+        <span>{{ description }}</span>
+        <button v-if="canEditConv" class="transparent">
+          <span class="icon edit" />
+        </button>
       </div>
       <FormInput
         v-else
@@ -328,11 +330,13 @@ export default {
 
       this.dropDownY = e.clientY
       this.dropDownX = e.clientX
+
+      e.stopPropagation()
     },
     closeDropDown() {
       this.dropDownVisible = false
     },
-    toggleFavorite() {
+    toggleFavorite(e) {
       if (this.isFavorite) {
         this.$store.dispatch(
           "removeFavoriteConversation",
@@ -341,6 +345,7 @@ export default {
       } else {
         this.$store.dispatch("addFavoriteConversation", this.conversation)
       }
+      e.stopPropagation()
     },
     async loadTags() {
       this.loadingTags = true
@@ -352,8 +357,13 @@ export default {
       } else {
         allTags = await this.getTagsFromApi()
       }
-      this.tags = allTags.filter((tag) => tag.type == "conversation_metadata")
-      this.highlightedTags = allTags.filter((tag) => tag.type == "highlight")
+
+      this.tags = allTags.filter((tag) => {
+        return tag && tag.type == "conversation_metadata"
+      })
+      this.highlightedTags = allTags.filter(
+        (tag) => tag && tag.type == "highlight"
+      )
       this.originalTags = [...this.tags]
       this.loadingTags = false
     },
@@ -411,9 +421,11 @@ export default {
           break
       }
     },
-    startDescriptionEdition() {
+    startDescriptionEdition(e) {
       if (this.canEditConv) this.descriptionIsEditing = true
       else this.descriptionIsEditing = false
+
+      e.stopPropagation()
     },
     stopDescriptionEdition() {
       this.descriptionIsEditing = false

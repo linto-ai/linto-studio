@@ -34,11 +34,16 @@
         :currentOrganizationScope="currentOrganizationScope"
         :indexedTags="tagsDatabase"
         :error="error" />
-      <Pagination
-        v-model="currentPageNb"
-        :pages="totalPagesNumber"
-        class="pagination--sticky"
-        v-if="totalPagesNumber > 1 && !error" />
+      <div class="bottom-list-sticky">
+        <Pagination
+          v-model="currentPageNb"
+          :pages="totalPagesNumber"
+          class="pagination--sticky"
+          v-if="totalPagesNumber > 1 && !error" />
+        <SelectedConversationIndicator
+          v-if="selectedConversationsSize > 0"
+          :selectedConversationsSize="selectedConversationsSize" />
+      </div>
     </section>
   </MainContent>
 </template>
@@ -77,6 +82,16 @@ export default {
       customFiltersKey: "favoritesCustomFilters",
       selectedTagsKey: "favoritesSelectedTags",
       error: null,
+      selectedOption: "last_update",
+      options: {
+        sort: [
+          { value: "created", text: this.$i18n.t("inbox.sort.created") },
+          {
+            value: "last_update",
+            text: this.$i18n.t("inbox.sort.last_update"),
+          },
+        ],
+      },
     }
   },
   async mounted() {

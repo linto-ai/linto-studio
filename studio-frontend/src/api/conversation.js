@@ -14,9 +14,12 @@ export async function apiGetConversationsSharedWith(
   text,
   title,
   page,
-  pageSize = DEFAULT_PAGE_SIZE,
-  sortField = "last_update",
-  sortOrder = -1,
+  {
+    pageSize = DEFAULT_PAGE_SIZE,
+    sortField = "last_update",
+    sortOrder = -1,
+  } = {},
+
   notif
 ) {
   tag = tag || []
@@ -93,9 +96,7 @@ export async function apiGetConversationsByTags(
   text,
   title,
   page,
-  pageSize = DEFAULT_PAGE_SIZE,
-  sortField = "created",
-  sortOrder = -1,
+  { pageSize = DEFAULT_PAGE_SIZE, sortField = "created", sortOrder = -1 } = {},
   notif
 ) {
   const getConversations = await sendRequest(
@@ -207,7 +208,7 @@ export async function apiCountConversation(organizationScope, tag, notif) {
     null,
     null,
     1,
-    1
+    { pageSize: 1 }
   )
   return getConversations?.count || 0
 }

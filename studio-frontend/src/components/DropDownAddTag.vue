@@ -1,6 +1,6 @@
 <template>
   <!-- Tag panel -->
-  <div>
+  <div @click="clickPanel">
     <div class="context-menu__element">
       <div class="form-field flex col small-padding no-margin fullwidth">
         <label class="form-label fullwidth" for="dropdown-search-tags">
@@ -201,6 +201,9 @@ export default {
     },
   },
   methods: {
+    clickPanel(e) {
+      e.stopPropagation()
+    },
     keydown(e) {
       e.stopPropagation()
     },

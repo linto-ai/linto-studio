@@ -20,10 +20,7 @@
           :class="{ small: size == 'small' }"
           :title="$t('tags.remove_tag')" />
       </button>
-      <button
-        @click="$emit('delete')"
-        v-if="deletable"
-        class="transparent inline">
+      <button @click="deleteTag" v-if="deletable" class="transparent inline">
         <span
           class="icon trash"
           :class="{ small: size == 'small' }"
@@ -68,6 +65,10 @@ export default {
     dragStart(e) {
       e.dataTransfer.setData("tagId", this.tagId)
       e.dataTransfer.setData("categoryId", this.categoryId)
+    },
+    deleteTag(e) {
+      this.$emit("delete")
+      e.stopPropagation()
     },
   },
   components: { Fragment },

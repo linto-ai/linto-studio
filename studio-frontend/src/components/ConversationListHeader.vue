@@ -1,18 +1,11 @@
 <template>
   <div class="flex gap-medium align-center">
     <div class="flex col flex1">
-      <h2 class="flex1">Derniers médias</h2>
-      <i18n path="inbox.subtitle" tag="span">
-        <a
-          href="https://linto.app"
-          style="vertical-align: text-top; text-decoration: underline"
-          place="appLink"
-          >linto.app</a
-        >
-      </i18n>
+      <slot></slot>
     </div>
 
     <ConversationListSearch
+      v-if="withSearch"
       @searchInConversationsTitle="onSearchInConversationsTitle"
       @searchInConversationsText="onSearchInConversationsText" />
     <div class="form-field flex col">
@@ -33,19 +26,14 @@ import CustomSelect from "./CustomSelect.vue"
 export default {
   props: {
     value: { type: String, required: true },
+    withSearch: { type: Boolean, default: false },
+    options: {
+      type: Object,
+      required: true,
+    },
   },
   data() {
     return {
-      options: {
-        lang: [
-          { value: "created", text: this.$i18n.t("inbox.sort.created") },
-          {
-            value: "last_update",
-            text: this.$i18n.t("inbox.sort.last_update"),
-          },
-          { value: "notags", text: this.$i18n.t("inbox.sort.notags") },
-        ],
-      },
       //selectedOption: "fr-FR",
     }
   },
@@ -61,8 +49,12 @@ export default {
   },
   mounted() {},
   methods: {
-    onSearchInConversationsTitle(search) {},
-    onSearchInConversationsText(search) {},
+    onSearchInConversationsTitle(search) {
+      this.$emit("searchInConversationsTitle", search)
+    },
+    onSearchInConversationsText(search) {
+      this.$emit("searchInConversationsText", search)
+    },
   },
   components: { Fragment, ConversationListSearch, CustomSelect },
 }

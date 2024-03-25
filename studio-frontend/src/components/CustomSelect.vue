@@ -108,10 +108,12 @@ export default {
       this.showList = false
       this.$emit("input", value)
       e.preventDefault()
+      e.stopPropagation()
     },
     toggleMenu(e) {
       this.showList = !this.showList
       e.preventDefault()
+      e.stopPropagation()
     },
     close() {
       this.showList = false

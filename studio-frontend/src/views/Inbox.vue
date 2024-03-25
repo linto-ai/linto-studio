@@ -22,7 +22,17 @@
       @on-confirm="deleteConversations" />
 
     <section class="flex col flex1 gap-small reset-overflows">
-      <InboxHeader v-model="selectedOption" />
+      <ConversationListHeader v-model="selectedOption" :options="options">
+        <h2 class="flex1">{{ $t("inbox.title") }}</h2>
+        <i18n path="inbox.subtitle" tag="span">
+          <a
+            href="https://linto.app"
+            style="vertical-align: text-top; text-decoration: underline"
+            place="appLink"
+            >linto.app</a
+          >
+        </i18n>
+      </ConversationListHeader>
       <!-- <i18n path="inbox.subtitle" tag="h2">
         <a
           href="https://linto.app"
@@ -68,8 +78,8 @@ import Pagination from "@/components/Pagination.vue"
 import ModalDeleteConversations from "@/components/ModalDeleteConversations.vue"
 import ConversationShareMultiple from "@/components/ConversationShareMultiple.vue"
 import { apiGetConversationsWithoutTagsByOrganization } from "@/api/conversation.js"
-import InboxHeader from "@/components/inboxHeader.vue"
-import SelectedConversationIndicator from "../components/SelectedConversationIndicator.vue"
+import SelectedConversationIndicator from "@/components/SelectedConversationIndicator.vue"
+import ConversationListHeader from "@/components/ConversationListHeader.vue"
 import { apiGetConversationsByOrganization } from "../api/conversation"
 
 export default {
@@ -85,6 +95,16 @@ export default {
       loading: false,
       error: null,
       selectedOption: "created",
+      options: {
+        lang: [
+          { value: "created", text: this.$i18n.t("inbox.sort.created") },
+          {
+            value: "last_update",
+            text: this.$i18n.t("inbox.sort.last_update"),
+          },
+          { value: "notags", text: this.$i18n.t("inbox.sort.notags") },
+        ],
+      },
     }
   },
   mounted() {
@@ -93,6 +113,7 @@ export default {
   watch: {
     selectedOption(value) {
       this.currentPageNb = 0
+      this.resetSelectedConversations()
       this.fetchConversations()
     },
   },
@@ -139,7 +160,7 @@ export default {
     Pagination,
     ModalDeleteConversations,
     ConversationShareMultiple,
-    InboxHeader,
+    ConversationListHeader,
     SelectedConversationIndicator,
   },
 }

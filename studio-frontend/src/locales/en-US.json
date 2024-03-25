@@ -356,6 +356,7 @@
     }
   },
   "explore": {
+    "title": "Explore organizations medias",
     "subtitle": "Search and discover insights on transcribed media using meaningful semantics",
     "search_text_label": "Search text",
     "search_text_in_title": "Search \"{text}\" in title",

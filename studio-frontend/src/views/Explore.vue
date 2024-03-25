@@ -45,9 +45,20 @@
 
     <section class="flex col flex1 gap-small reset-overflows">
       <!-- title -->
-      <h2>
-        {{ $t("explore.subtitle") }}
-      </h2>
+      <ConversationListHeader
+        :options="options"
+        v-model="selectedOption"
+        with-search
+        @searchInConversationsTitle="onSearchInConversationsTitle"
+        @searchInConversationsText="onSearchInConversationsText">
+        <h2>
+          {{ $t("explore.title") }}
+        </h2>
+        <span>
+          {{ $t("explore.subtitle") }}
+        </span>
+      </ConversationListHeader>
+
       <!-- search -->
 
       <!-- List -->
@@ -59,19 +70,20 @@
         :selectable="true"
         :selectedConversations="selectedConversationsList"
         @onSelectConversation="onSelectConversation">
-        <template v-slot:list-header
-          ><ConversationListSearch
-            @searchInConversationsTitle="onSearchInConversationsTitle"
-            @searchInConversationsText="onSearchInConversationsText"
-        /></template>
       </ConversationList>
 
       <!-- pagination -->
-      <Pagination
-        v-model="currentPageNb"
-        :pages="totalPagesNumber"
-        class="pagination--sticky"
-        v-if="totalPagesNumber > 1 && !error" />
+      <div class="bottom-list-sticky">
+        <Pagination
+          v-model="currentPageNb"
+          :pages="totalPagesNumber"
+          class="pagination--sticky"
+          v-if="totalPagesNumber > 1 && !error" />
+
+        <SelectedConversationIndicator
+          v-if="selectedConversationsSize > 0"
+          :selectedConversationsSize="selectedConversationsSize" />
+      </div>
     </section>
   </MainContent>
 </template>
@@ -96,6 +108,9 @@ import ConversationListSearch from "../components/ConversationListSearch.vue"
 import Pagination from "../components/Pagination.vue"
 import ModalDeleteConversations from "@/components/ModalDeleteConversations.vue"
 import ConversationShareMultiple from "@/components/ConversationShareMultiple.vue"
+import SelectedConversationIndicator from "@/components/SelectedConversationIndicator.vue"
+import ConversationListHeader from "../components/ConversationListHeader.vue"
+
 export default {
   mixins: [debounceMixin, conversationListOrgaMixin],
   props: {
@@ -112,6 +127,16 @@ export default {
       showExploreModal: false,
       loadingCategoriesUnion: true,
       error: null,
+      selectedOption: "last_update",
+      options: {
+        sort: [
+          { value: "created", text: this.$i18n.t("inbox.sort.created") },
+          {
+            value: "last_update",
+            text: this.$i18n.t("inbox.sort.last_update"),
+          },
+        ],
+      },
     }
   },
   async mounted() {
@@ -134,7 +159,10 @@ export default {
       ) {
         res = await apiGetConversationsByOrganization(
           this.currentOrganizationScope,
-          this.currentPageNb
+          this.currentPageNb,
+          {
+            sortField: this.selectedOption,
+          }
         )
       } else {
         res = await apiGetConversationsByTags(
@@ -142,7 +170,10 @@ export default {
           this.selectedTags.map((tag) => tag._id),
           this.customFilters?.textConversation?.value,
           this.customFilters?.titleConversation?.value,
-          this.currentPageNb
+          this.currentPageNb,
+          {
+            sortField: this.selectedOption,
+          }
         )
       }
       this.loadingConversations = false
@@ -218,6 +249,9 @@ export default {
       //this.fetchConversations()
       this.queryCategoriesUnionSelectedtag()
     },
+    selectedOption() {
+      this.fetchConversations()
+    },
   },
   components: {
     MainContent,
@@ -230,6 +264,8 @@ export default {
     Pagination,
     ModalDeleteConversations,
     ConversationShareMultiple,
+    SelectedConversationIndicator,
+    ConversationListHeader,
   },
 }
 </script>

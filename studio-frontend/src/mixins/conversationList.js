@@ -178,6 +178,11 @@ export const conversationListMixin = {
         this.selectConversation(conversation)
       }
     },
+    resetSelectedConversations() {
+      this.selectedConversations.clear()
+      this.selectedConversationsSize = 0
+      this.selectedConversationsList = []
+    },
     clickDeleteConvButton() {
       this.conversationsInError = []
       if (this.conversationIsDeletable) {
