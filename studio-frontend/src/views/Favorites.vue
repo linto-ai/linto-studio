@@ -24,10 +24,18 @@
     </template>
 
     <section class="flex col flex1 gap-small reset-overflows">
-      <h2>{{ $t("favorites.subtitle") }}</h2>
-      <ConversationListSearch
+      <ConversationListHeader
+        :options="options"
+        v-model="selectedOption"
+        with-search
         @searchInConversationsTitle="onSearchInConversationsTitle"
-        @searchInConversationsText="onSearchInConversationsText" />
+        @searchInConversationsText="onSearchInConversationsText">
+        <h2>{{ $t("favorites.title") }}</h2>
+        <span>
+          {{ $t("favorites.subtitle") }}
+        </span>
+      </ConversationListHeader>
+
       <ConversationList
         :conversations="conversations"
         :loading="loading"
@@ -65,6 +73,7 @@ import SidebarTagList from "@/components/SidebarTagList.vue"
 import ExploreModalVue from "@/components/ExploreModal.vue"
 import ConversationListSearch from "@/components/ConversationListSearch.vue"
 import Pagination from "@/components/Pagination.vue"
+import ConversationListHeader from "@/components/ConversationListHeader.vue"
 
 export default {
   mixins: [debounceMixin, conversationListMixin],
@@ -102,6 +111,12 @@ export default {
     this.queryCategoriesUnionSelectedtag()
   },
   computed: {},
+  watch: {
+    selectedOption() {
+      this.fetchConversations()
+      this.queryCategoriesUnionSelectedtag()
+    },
+  },
   methods: {
     async fetchConversations() {
       let res
@@ -111,7 +126,8 @@ export default {
           this.selectedTags.map((tag) => tag._id),
           this.customFilters?.textConversation?.value,
           this.customFilters?.titleConversation?.value,
-          this.currentPageNb
+          this.currentPageNb,
+          { sortField: this.selectedOption }
         )
       } catch (error) {
         this.error = error
@@ -150,6 +166,7 @@ export default {
     ExploreModalVue,
     ConversationListSearch,
     Pagination,
+    ConversationListHeader,
   },
 }
 </script>

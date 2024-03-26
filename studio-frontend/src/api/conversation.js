@@ -125,9 +125,11 @@ export async function apiGetFavoritesConversations(
   text,
   title,
   page,
-  pageSize = DEFAULT_PAGE_SIZE,
-  sortField = "last_update",
-  sortOrder = -1,
+  {
+    pageSize = DEFAULT_PAGE_SIZE,
+    sortField = "last_update",
+    sortOrder = -1,
+  } = {},
   notif
 ) {
   tag = tag || []
