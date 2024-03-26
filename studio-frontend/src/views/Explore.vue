@@ -110,6 +110,7 @@ import ModalDeleteConversations from "@/components/ModalDeleteConversations.vue"
 import ConversationShareMultiple from "@/components/ConversationShareMultiple.vue"
 import SelectedConversationIndicator from "@/components/SelectedConversationIndicator.vue"
 import ConversationListHeader from "../components/ConversationListHeader.vue"
+import { apiGetConversationsWithoutTagsByOrganization } from "../api/conversation"
 
 export default {
   mixins: [debounceMixin, conversationListOrgaMixin],
@@ -130,11 +131,12 @@ export default {
       selectedOption: "last_update",
       options: {
         sort: [
-          { value: "created", text: this.$i18n.t("inbox.sort.created") },
           {
             value: "last_update",
             text: this.$i18n.t("inbox.sort.last_update"),
           },
+          { value: "created", text: this.$i18n.t("inbox.sort.created") },
+          { value: "notags", text: this.$i18n.t("inbox.sort.notags") },
         ],
       },
     }
@@ -152,7 +154,13 @@ export default {
       let res
       //this.totalElementsNumber = 0
       this.loadingConversations = true
-      if (
+
+      if (this.selectedOption == "notags") {
+        res = await apiGetConversationsWithoutTagsByOrganization(
+          this.currentOrganizationScope,
+          this.currentPageNb
+        )
+      } else if (
         (!this.selectedTags || this.selectedTags.length == 0) &&
         !this.customFilters?.textConversation?.value &&
         !this.customFilters?.titleConversation?.value

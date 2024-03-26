@@ -22,7 +22,10 @@
       @on-confirm="deleteConversations" />
 
     <section class="flex col flex1 gap-small reset-overflows">
-      <ConversationListHeader v-model="selectedOption" :options="options">
+      <ConversationListHeader
+        v-model="selectedOption"
+        :options="options"
+        :withSelector="false">
         <h2 class="flex1">{{ $t("inbox.title") }}</h2>
         <i18n path="inbox.subtitle" tag="span">
           <a

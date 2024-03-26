@@ -8,7 +8,7 @@
       v-if="withSearch"
       @searchInConversationsTitle="onSearchInConversationsTitle"
       @searchInConversationsText="onSearchInConversationsText" />
-    <div class="form-field flex col">
+    <div class="form-field flex col" v-if="withSelector">
       <label for="options-list">Trier par</label>
       <CustomSelect
         id="options-list"
@@ -31,6 +31,7 @@ export default {
       type: Object,
       required: true,
     },
+    withSelector: { type: Boolean, default: true },
   },
   data() {
     return {
