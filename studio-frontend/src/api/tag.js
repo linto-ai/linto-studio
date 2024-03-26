@@ -180,7 +180,7 @@ export async function apiSearchCategories(
   scopeId,
   name,
   categoryType,
-  scope = "organization",
+  { scope = "organization" } = {},
   signal,
   notif
 ) {

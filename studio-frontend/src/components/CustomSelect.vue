@@ -22,7 +22,7 @@
         :src="icon"
         :alt="iconText"
         class="icon select__head__icon" />
-      <span class="flex1 select__head__label label">{{ valueText }}</span>
+      <span class="flex1 select__head__label label">{{ _valueText }}</span>
       <span class="icon small-arrow-down"></span>
       <span class="badge" v-if="badge">
         <span class="badge__content">{{ badge }}</span>
@@ -64,7 +64,7 @@ import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
 export default {
   props: {
-    valueText: { required: true },
+    valueText: { required: false },
     value: { required: true },
     icon: { type: String, default: "" },
     iconText: { type: String, default: "" },
@@ -87,15 +87,33 @@ export default {
   beforeDestroy() {
     bus.$off("navigation", this.close)
   },
+  computed: {
+    _valueText() {
+      if (this.valueText) return this.valueText
+      else {
+        for (const sectionName in this.options) {
+          for (const option of this.options[sectionName]) {
+            if (option.value == this.value) {
+              return option.text
+            }
+          }
+        }
+      }
+
+      return ""
+    },
+  },
   methods: {
     onClickOption(e, value) {
       this.showList = false
       this.$emit("input", value)
       e.preventDefault()
+      e.stopPropagation()
     },
     toggleMenu(e) {
       this.showList = !this.showList
       e.preventDefault()
+      e.stopPropagation()
     },
     close() {
       this.showList = false

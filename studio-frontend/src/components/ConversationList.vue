@@ -3,12 +3,12 @@
     <div class="flex conversation-list-header align-bottom">
       <slot name="list-header"></slot>
       <!-- <input type="checkbox" title="select all" /> -->
-      <span class="conversation-list-header__number" v-if="selectable">{{
+      <!-- <span class="conversation-list-header__number" v-if="selectable">{{
         $tc(
           "conversation.number_of_conversations_selected",
           selectedConversationsSize
         )
-      }}</span>
+      }}</span> -->
     </div>
     <ul
       class="conversation-list flex col gap-medium flex1 reset-overflows"
@@ -23,8 +23,9 @@
         :tagsReadOnly="tagsReadOnly"
         :indexedTags="indexedTags"
         :selectable="selectable"
+        @clickOnTag="clickOnTag"
         @onSelect="onSelect"
-        :selected="selectedConversations.has(conv._id)" />
+        :selectedConversations="selectedConversations" />
     </ul>
     <div class="flex col align-center justify-center flex1" v-else>
       <h2 class="center-text">
@@ -67,8 +68,7 @@ export default {
     indexedTags: { type: Object, required: false }, // tags indexed by id, if not provided will be fetched
     tagsReadOnly: { type: Boolean, default: false },
     error: { type: Object, default: null },
-    selectedConversations: { type: Map, default: () => new Map() },
-    selectedConversationsSize: { type: Number, default: 0 },
+    selectedConversations: { type: Array, default: () => [] },
     selectable: { type: Boolean, default: false },
   },
   data() {
@@ -82,6 +82,9 @@ export default {
     },
     onSelect(e) {
       this.$emit("onSelectConversation", e)
+    },
+    clickOnTag(tag) {
+      this.$emit("clickOnTag", tag)
     },
   },
   components: {

@@ -348,9 +348,15 @@
   },
   "inbox": {
     "title": "Inbox",
-    "subtitle": "Your recently uploaded medias lands here. Use “Upload media” or {appLink} to feed this."
+    "subtitle": "Your recently uploaded medias lands here. Use “Upload media” or {appLink} to feed this.",
+    "sort": {
+      "created": "Recently uploaded",
+      "last_update": "Last updated",
+      "notags": "Without tags"
+    }
   },
   "explore": {
+    "title": "Explore organizations medias",
     "subtitle": "Search and discover insights on transcribed media using meaningful semantics",
     "search_text_label": "Search text",
     "search_text_in_title": "Search \"{text}\" in title",
@@ -463,7 +469,7 @@
       "title": "Organization"
     },
     "tabs": {
-      "inbox": "Recent medias",
+      "inbox": "Homepage",
       "explore": "Explore",
       "favorites": "Favorites",
       "shared": "Shared with me",

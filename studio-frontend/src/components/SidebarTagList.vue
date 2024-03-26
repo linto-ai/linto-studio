@@ -2,6 +2,9 @@
   <section class="organization-sidebar__current-filter sidebar__section">
     <h2 class="flex row">
       <span class="flex1">{{ $t("conversation.search_criterions") }}</span>
+      <button class="transparent" @click="resetFilters" v-if="hasFilters">
+        <span class="icon trash"></span>
+      </button>
       <!--<span class="icon options" @click="openExploreModal"></span>-->
     </h2>
 
@@ -71,6 +74,14 @@ export default {
     return {}
   },
   mounted() {},
+  computed: {
+    hasFilters() {
+      return (
+        this.selectedTags.length > 0 ||
+        Object.keys(this.customFilters).length > 0
+      )
+    },
+  },
   methods: {
     removeCustomFilter(filter) {
       const newValue = Object.assign({}, this.customFilters)
@@ -83,6 +94,10 @@ export default {
     },
     addSearchCriterion() {
       this.$emit("addSearchCriterion")
+    },
+    resetFilters() {
+      this.$emit("onUpdateSelectedTags", [])
+      this.$emit("onUpdateCustomFilters", {})
     },
   },
   components: { Fragment, Tag },
