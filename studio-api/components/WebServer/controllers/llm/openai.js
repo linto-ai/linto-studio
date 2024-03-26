@@ -20,19 +20,14 @@ async function request(query, conversation, metadata) {
 
     let prompt = generatePrompt(query, conversation.locale)
     if (query.format === 'resume') {
-        return resume(conversation, metadata, _prompt)
+        return resume(conversation, metadata, prompt.resume)
     }
 }
 
 function generatePrompt(query, lang) {
     if (query.prompt) return query.prompt + ' \n'
 
-    let prompt = lang.includes('fr') ? DEFAULT_PROMPT.fr : DEFAULT_PROMPT.en
-    if (query.format === 'resume') {
-        if (lang === 'fr') return prompt.resume
-        else return prompt.resume
-    }
-    return DEFAULT_PROMPT.en.resume
+    return lang.includes('fr') ? DEFAULT_PROMPT.fr : DEFAULT_PROMPT.en
 }
 
 async function resume(conversation, metadata, lang_prompt) {

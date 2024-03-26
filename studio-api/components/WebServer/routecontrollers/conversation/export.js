@@ -71,6 +71,9 @@ async function exportConversation(req, res, next) {
             case 'verbatim':
                 await handleDocxFormat(res, req.query, conversation, metadata)
                 break
+            case 'cri':
+            case 'cra':
+            case 'cred':
             case 'resume':
                 await handleLLMFormat(res, req.query, conversation, metadata)
                 break
