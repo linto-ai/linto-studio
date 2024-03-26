@@ -373,7 +373,8 @@
     "search_label": "Rechercher un utilisateur",
     "add_user": "Ajouter l'utilisateur",
     "pending": "En cours",
-    "invite": "Inviter"
+    "invite": "Inviter",
+    "inscription_disabled": "Les inscription et les invitations sont désactivées sur la plateforme"
   },
   "sharedWithTab": {
     "title": "Médias partagés avec moi",
@@ -389,7 +390,8 @@
     "organization_members": "Membres de l'organisation",
     "external_members": "Utilisateurs externes",
     "user_has_been_invited": "L'utilisateur a été invité",
-    "user_right_updated": "Les droits de l'utilisateur ont été mis à jour"
+    "user_right_updated": "Les droits de l'utilisateur ont été mis à jour",
+    "inscription_disabled": "Les inscription et les invitations sont désactivées sur la plateforme"
   },
   "lang": {
     "en": "Anglais",
