@@ -23,6 +23,7 @@
         :tagsReadOnly="tagsReadOnly"
         :indexedTags="indexedTags"
         :selectable="selectable"
+        @clickOnTag="clickOnTag"
         @onSelect="onSelect"
         :selectedConversations="selectedConversations" />
     </ul>
@@ -81,6 +82,9 @@ export default {
     },
     onSelect(e) {
       this.$emit("onSelectConversation", e)
+    },
+    clickOnTag(tag) {
+      this.$emit("clickOnTag", tag)
     },
   },
   components: {

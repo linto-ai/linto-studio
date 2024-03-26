@@ -2,8 +2,6 @@
   <MainContent sidebar>
     <ExploreModalVue
       :value="selectedTags"
-      @selectTag="selectTagFilter"
-      @unSelectTag="unSelectTagFilter"
       :with-search="false"
       :current-organization-scope="currentOrganizationScope"
       :categories="tagCategoriesUnionSelectedtags"
@@ -41,7 +39,8 @@
         :loading="loading"
         :currentOrganizationScope="currentOrganizationScope"
         :indexedTags="tagsDatabase"
-        :error="error" />
+        :error="error"
+        @clickOnTag="clickOnTag" />
       <div class="bottom-list-sticky">
         <Pagination
           v-model="currentPageNb"

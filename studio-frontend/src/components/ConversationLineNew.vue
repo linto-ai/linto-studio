@@ -113,7 +113,9 @@
             :categoryName="tag.categoryName"
             :color="tag.color"
             :deletable="canEditTag"
-            @delete="unSelectTag(tag)" />
+            @delete="unSelectTag(tag)"
+            clickable
+            @click="clickOnTag($event, tag)" />
         </span>
         <span v-if="tags.length === 0" @click="showDropDown">{{
           $t("tags.no_tags")
@@ -441,6 +443,10 @@ export default {
       })
       this.conversation.description = this.descriptionFormData.value
       this.stopDescriptionEdition()
+    },
+    clickOnTag(event, tag) {
+      event.stopPropagation()
+      this.$emit("clickOnTag", tag)
     },
   },
   components: {

@@ -69,8 +69,8 @@
         :error="error"
         :selectable="true"
         :selectedConversations="selectedConversationsList"
-        @onSelectConversation="onSelectConversation">
-      </ConversationList>
+        @onSelectConversation="onSelectConversation"
+        @clickOnTag="clickOnTag" />
 
       <!-- pagination -->
       <div class="bottom-list-sticky">

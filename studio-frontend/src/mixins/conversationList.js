@@ -155,6 +155,15 @@ export const conversationListMixin = {
     async unSelectTagFilter(tag) {
       this.selectedTags = this.selectedTags.filter((t) => t._id !== tag._id)
     },
+    clickOnTag(tag) {
+      if (this.selectedTags.find((t) => t._id === tag._id)) {
+        this.selectedTags = this.selectedTags.filter((t) => t._id !== tag._id)
+      } else {
+        this.selectedTags.push(tag)
+      }
+      this.fetchConversations()
+      this.queryCategoriesUnionSelectedtag()
+    },
     selectConversation(conversation) {
       const id = conversation._id
       this.selectedConversations.set(id, conversation)

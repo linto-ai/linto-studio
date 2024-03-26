@@ -11,8 +11,6 @@
 
     <ExploreModalVue
       :value="selectedTags"
-      @selectTag="selectTagFilter"
-      @unSelectTag="unSelectTagFilter"
       :current-organization-scope="currentOrganizationScope"
       :categories="tagCategoriesUnionSelectedtags"
       :loading-categories="loadingCategoriesUnion"
@@ -55,7 +53,8 @@
         @onSelectConversation="onSelectConversation"
         :pageSharedWith="true"
         :displayTags="true"
-        :error="error" />
+        :error="error"
+        @clickOnTag="clickOnTag" />
       <div class="bottom-list-sticky">
         <Pagination
           v-model="currentPageNb"
