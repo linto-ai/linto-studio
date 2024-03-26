@@ -53,9 +53,12 @@
         </div>
       </form>
 
-      <router-link to="/create-account" class="toggle-login-link">{{
-        $t("login.create_account_button")
-      }}</router-link>
+      <router-link
+        to="/create-account"
+        class="toggle-login-link"
+        v-if="enable_inscription"
+        >{{ $t("login.create_account_button") }}</router-link
+      >
     </div>
   </div>
 </template>
@@ -84,6 +87,9 @@ export default {
   computed: {
     formValid() {
       return this.email.valid && this.password.valid
+    },
+    enable_inscription() {
+      return process.env.VUE_APP_DISABLE_USER_CREATION !== "true"
     },
   },
   methods: {
