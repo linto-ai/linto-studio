@@ -195,6 +195,9 @@
   &.show {
     @include maskImage("../public/img/eye.svg");
   }
+  &.clear-history {
+    @include maskImage("../public/img/clear-history.svg");
+  }
 }
 
 .icon.small {

@@ -70,31 +70,14 @@ input:checked + .conversation-line {
   }
 }
 
-.conversation-line__dropDown {
-  border-radius: 4px;
-  width: 25rem;
-
-  .dropDown__actions {
-    background-color: transparent;
-    border: none;
-    text-decoration: underline;
-    padding: 0;
-    &.hover {
-      background-color: transparent;
-    }
-  }
-
-  .dropdown-header {
-    white-space: nowrap;
-    box-sizing: border-box;
-  }
-
-  .dropdown-footer {
-  }
-}
-
 .conversation-line__tags {
   flex-wrap: wrap;
+}
+
+input:checked + .conversation-line .conversation-line__open-with {
+  .select__head {
+    border: var(--border-button-flat) !important;
+  }
 }
 
 .organization-sidebar {

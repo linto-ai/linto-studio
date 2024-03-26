@@ -43,6 +43,7 @@
             {{ conversation.name }}
           </router-link>
           <CustomSelect
+            class="conversation-line__open-with"
             :valueText="$t('conversation.open_editor')"
             value="editor"
             aria-label="select how to open the conversation"

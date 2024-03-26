@@ -15,8 +15,8 @@
           :key="category._id"
           :category="category"
           :value="value"
-          :scopeId="conversationId"
-          scope="conversation"
+          :scopeId="scopeId"
+          scope="scope"
           :startOpen="true"
           :showCategoryName="false"
           :addable="addable"
@@ -74,6 +74,8 @@ export default {
       loading: false,
       searchId: uuidv4(),
       mergedTags: [],
+      scope: this.currentOrganizationScope ? "organization" : "conversation",
+      scopeId: this.currentOrganizationScope || this.conversationId,
     }
   },
   mounted() {

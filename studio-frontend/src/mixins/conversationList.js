@@ -143,6 +143,7 @@ export const conversationListMixin = {
     applyFilters(newSelectedTags) {
       this.selectedTags = newSelectedTags
       this.showExploreModal = false
+      this.resetSelectedConversations()
       this.fetchConversations()
     },
     async selectTagFilter(tag, category) {
@@ -161,6 +162,7 @@ export const conversationListMixin = {
       } else {
         this.selectedTags.push(tag)
       }
+      this.resetSelectedConversations()
       this.fetchConversations()
       this.queryCategoriesUnionSelectedtag()
     },
