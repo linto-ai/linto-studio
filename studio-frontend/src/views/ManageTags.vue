@@ -1,5 +1,5 @@
 <template>
-  <MainContent sidebar>
+  <MainContent sidebar box>
     <section
       class="flex col align-top gap-medium flex1"
       v-if="!loadingCategories">

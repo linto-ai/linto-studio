@@ -66,7 +66,12 @@
             <button
               type="submit"
               class="btn green"
-              :disabled="isValidEmail ? null : true">
+              :title="
+                enable_inscription
+                  ? null
+                  : $t('share_menu.inscription_disabled')
+              "
+              :disabled="isValidEmail && enable_inscription ? null : true">
               <span class="label">{{
                 $t("share_menu.invite_user_button")
               }}</span>
@@ -101,7 +106,6 @@
             :readOnly="!canUpdateRights(slotProps.user)"
             :isOwner="false" />
         </SearchUsersListComponent>
-
         <!-- User list of already add users -->
         <div
           class="flex col gap-small small-padding"
@@ -217,6 +221,9 @@ export default {
     },
     isValidEmail() {
       return this.searchMemberValue.value.indexOf("@") > 0
+    },
+    enable_inscription() {
+      return process.env.VUE_APP_DISABLE_USER_CREATION !== "true"
     },
   },
   watch: {

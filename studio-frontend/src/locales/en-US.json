@@ -368,7 +368,8 @@
     "search_label": "Search user",
     "add_user": "Add user",
     "pending": "Pending",
-    "invite": "Invite"
+    "invite": "Invite",
+    "inscription_disabled": "Registration and invitations are deactivated on the platform"
   },
   "sharedWithTab": {
     "title": "Medias shared with me",
@@ -385,7 +386,8 @@
     "external_members": "External users",
     "invite_user_button": "Invite user",
     "user_has_been_invited": "User has been invited",
-    "user_right_updated": "User rights have been updated"
+    "user_right_updated": "User rights have been updated",
+    "inscription_disabled": "Registration and invitations are deactivated on the platform"
   },
   "lang": {
     "en": "English",

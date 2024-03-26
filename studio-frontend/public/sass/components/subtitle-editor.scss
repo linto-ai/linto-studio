@@ -4,6 +4,7 @@
 
 #subtitle-editor {
   box-shadow: 0px 0px 16px 0 rgba(67, 76, 95, 0.75);
+  background-color: var(--background-primary);
 }
 
 #conversation-audio-player.conversation-audio-player--subtitle {
@@ -94,6 +95,7 @@
   margin: 0 auto 1rem auto;
   padding: 0.5rem 1rem 0 1rem;
   border-top: var(--border-button);
+  background-color: var(--background-primary);
 }
 
 .screen-preview {

@@ -28,7 +28,14 @@
             <button
               type="submit"
               class="btn green"
-              :disabled="this.searchMemberValue.valid ? null : true">
+              :title="
+                enable_inscription
+                  ? null
+                  : $t('invite_user.inscription_disabled')
+              "
+              :disabled="
+                this.searchMemberValue.valid && enable_inscription ? null : true
+              ">
               <span class="label">{{ $t("invite_user.invite") }}</span>
             </button>
           </div>
@@ -92,6 +99,11 @@ export default {
   watch: {
     "searchMemberValue.value"(value) {
       this.$options.filters.testEmail(this.searchMemberValue)
+    },
+  },
+  computed: {
+    enable_inscription() {
+      return process.env.VUE_APP_DISABLE_USER_CREATION !== "true"
     },
   },
   methods: {
