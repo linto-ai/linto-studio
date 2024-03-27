@@ -18,6 +18,11 @@ const {
   OrganizationNotFound
 } = require(`${process.cwd()}/components/WebServer/error/exception/organization`)
 
+const {
+  UserError,
+} = require(`${process.cwd()}/components/WebServer/error/exception/users`)
+
+
 async function batchShareConversation(req, res, next) {
   try {
     if (!req.body.conversations) throw new ConversationMetadataRequire('A conversations ids list is')
@@ -143,6 +148,7 @@ async function usersCheck(users_list, method) {
 }
 
 async function inviteNewUser(email) {
+  if(process.env.DISABLE_USER_CREATION === 'true') throw new UserError('User creation is disabled')
   const createdUser = await model.users.createExternal({ email })
 
   // Create new user personal organization

@@ -132,7 +132,7 @@ class ConvoModel extends MongoModel {
             if (filter?.tags) {
                 filter.tags = filter.tags.split(',')
                 query.tags = {
-                    $all : filter.tags
+                    $all: filter.tags
                 }
             }
 
@@ -429,8 +429,12 @@ class ConvoModel extends MongoModel {
                 ],
             }
 
-            if (filter.filter === 'notags') query.tags = { $size: 0 }
-            else if (filter.tags) {
+            if (filter.tags && filter.filter === 'notags') {
+                // notags rules don't apply for highlighs category
+                query.tags = {
+                    $nin: filter.tags
+                }
+            } else if (filter.tags) {
                 query.tags = {
                     $all: filter.tags.split(',')
                 }
@@ -458,7 +462,6 @@ class ConvoModel extends MongoModel {
             }
 
             return await this.mongoAggregatePaginate(query, projection, filter)
-
         } catch (error) {
             console.error(error)
             return error

@@ -1,5 +1,10 @@
 <template>
-  <div class="tag" :draggable="editable" @dragstart="dragStart">
+  <div
+    class="tag"
+    :clickable="clickable"
+    :draggable="editable"
+    @dragstart="dragStart"
+    @click="onClick">
     <div
       class="tag__category"
       v-if="categoryName"
@@ -20,10 +25,7 @@
           :class="{ small: size == 'small' }"
           :title="$t('tags.remove_tag')" />
       </button>
-      <button
-        @click="$emit('delete')"
-        v-if="deletable"
-        class="transparent inline">
+      <button @click="deleteTag" v-if="deletable" class="transparent inline">
         <span
           class="icon trash"
           :class="{ small: size == 'small' }"
@@ -48,6 +50,7 @@ export default {
     removable: { type: Boolean, required: false, default: false }, // add a cross to remove the tag
     deletable: { type: Boolean, required: false, default: false }, // add a trash to delete the tag
     editable: { type: Boolean, required: false, default: false },
+    clickable: { type: Boolean, required: false, default: false },
   },
   data() {
     return {
@@ -68,6 +71,13 @@ export default {
     dragStart(e) {
       e.dataTransfer.setData("tagId", this.tagId)
       e.dataTransfer.setData("categoryId", this.categoryId)
+    },
+    deleteTag(e) {
+      this.$emit("delete")
+      e.stopPropagation()
+    },
+    onClick(e) {
+      if (this.clickable) this.$emit("click", e)
     },
   },
   components: { Fragment },

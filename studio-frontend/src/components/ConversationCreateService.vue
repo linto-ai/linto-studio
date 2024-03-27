@@ -36,7 +36,9 @@
       <select
         v-model="punctuation.value"
         :id="`service-${value.name}-punctuation`">
-        <option value="disabled">Disabled</option>
+        <option value="disabled">
+          {{ $t("conversation.transcription.punctuation_disabled") }}
+        </option>
         <option
           v-for="punctuationService of value.sub_services.punctuation"
           :key="punctuationService.service_name"
@@ -59,7 +61,9 @@
         v-model="diarization.value"
         :id="`service-${value.name}-diarization`"
         v-if="!multiTrack">
-        <option value="disabled">Disabled</option>
+        <option value="disabled">
+          {{ $t("conversation.transcription.diarization_disabled") }}
+        </option>
         <option
           v-for="diarizationService of value.sub_services.diarization"
           :key="diarizationService.service_name"

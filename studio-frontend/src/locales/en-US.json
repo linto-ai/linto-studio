@@ -230,7 +230,9 @@
       "punctuation_description": "Enable punctuation restitution",
       "punctuation_label_inline": "Punctuation : ",
       "punctuation_label": "Punctuation",
-      "punctuation_value_whisper": "Automatic. Handled by whisper model",
+      "punctuation_value_whisper": "Automatic.",
+      "punctuation_disabled": "Disabled",
+      "diarization_disabled": "Disabled",
       "speakers": "speakers",
       "edit_speaker": "Edit speaker",
       "add_speaker": "Add a speaker",
@@ -346,9 +348,15 @@
   },
   "inbox": {
     "title": "Inbox",
-    "subtitle": "Your recently uploaded medias lands here. Use “Upload media” or {appLink} to feed this."
+    "subtitle": "Your recently uploaded medias lands here. Use “Upload media” or {appLink} to feed this.",
+    "sort": {
+      "created": "Recently uploaded",
+      "last_update": "Last updated",
+      "notags": "Without tags"
+    }
   },
   "explore": {
+    "title": "Explore organizations medias",
     "subtitle": "Search and discover insights on transcribed media using meaningful semantics",
     "search_text_label": "Search text",
     "search_text_in_title": "Search \"{text}\" in title",
@@ -366,7 +374,8 @@
     "search_label": "Search user",
     "add_user": "Add user",
     "pending": "Pending",
-    "invite": "Invite"
+    "invite": "Invite",
+    "inscription_disabled": "Registration and invitations are deactivated on the platform"
   },
   "sharedWithTab": {
     "title": "Medias shared with me",
@@ -383,7 +392,8 @@
     "external_members": "External users",
     "invite_user_button": "Invite user",
     "user_has_been_invited": "User has been invited",
-    "user_right_updated": "User rights have been updated"
+    "user_right_updated": "User rights have been updated",
+    "inscription_disabled": "Registration and invitations are deactivated on the platform"
   },
   "lang": {
     "en": "English",
@@ -459,7 +469,7 @@
       "title": "Organization"
     },
     "tabs": {
-      "inbox": "Recent medias",
+      "inbox": "Homepage",
       "explore": "Explore",
       "favorites": "Favorites",
       "shared": "Shared with me",
@@ -579,7 +589,8 @@
     "edit_tag_title": "Edit tag",
     "edit_category_title": "Edit category",
     "delete_category_title": "Delete category",
-    "delete_tag_title": "Delete tag"
+    "delete_tag_title": "Delete tag",
+    "error_creating_tag": "An error occurred while creating the tag"
   },
   "usersettings": {
     "change_password_label": "Change password",

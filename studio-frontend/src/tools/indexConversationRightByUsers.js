@@ -9,23 +9,58 @@ export function indexConversationRightByUsers(listOfconversationRights) {
     )
     organizationMembers = indexConversationRightSubKey(
       convRights.member.organization_members,
-      organizationMembers
+      organizationMembers,
+      true
     )
   }
+
+  const neededCount = listOfconversationRights.length
+
+  for (const [key, value] of externalMembers) {
+    if (value.count < neededCount) {
+      externalMembers.delete(key)
+    }
+    // remove count key
+    delete value.count
+  }
+
   return {
     external_members: externalMembers,
     organization_members: organizationMembers,
   }
 }
 
-function indexConversationRightSubKey(value, indexed) {
-  for (const user of value) {
-    if (indexed.has(user._id) && indexed.get(user._id)?.right != user.right) {
-      indexed.set(user._id, { ...user, right: -1 })
+function indexConversationRightSubKey(
+  usersList,
+  indexedUsers,
+  keepZero = false
+) {
+  for (const user of usersList) {
+    if (user.right === 0 && !keepZero) {
       continue
     }
 
-    indexed.set(user._id, user)
+    if (
+      indexedUsers.has(user._id) &&
+      indexedUsers.get(user._id)?.right != user.right
+    ) {
+      indexedUsers.set(user._id, {
+        ...user,
+        right: -1,
+        count: indexedUsers.get(user._id).count + 1,
+      })
+      continue
+    }
+
+    if (indexedUsers.has(user._id)) {
+      indexedUsers.set(user._id, {
+        ...user,
+        count: indexedUsers.get(user._id).count + 1,
+      })
+      continue
+    }
+
+    indexedUsers.set(user._id, { ...user, count: 1 })
   }
-  return indexed
+  return indexedUsers
 }

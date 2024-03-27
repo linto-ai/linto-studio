@@ -215,6 +215,11 @@ export default {
       state: "personal-information",
     }
   },
+  mounted() {
+    if (!this.enable_inscription) {
+      this.$router.push("/login")
+    }
+  },
   computed: {
     formValid() {
       if (!this.pictureSelected) {
@@ -238,6 +243,9 @@ export default {
     },
     pictureSelected() {
       return this.picture.value !== ""
+    },
+    enable_inscription() {
+      return process.env.VUE_APP_DISABLE_USER_CREATION !== "true"
     },
   },
 

@@ -15,6 +15,7 @@
   background-color: var(--background-primary);
   border-radius: 8px;
   margin-bottom: 1rem;
+  flex: 1;
 
   h1 {
     text-align: center;
@@ -31,6 +32,7 @@
   background-color: #8080802e;
   overflow: auto;
   padding: 5px;
+  flex: 1;
 }
 
 .publish-turn {

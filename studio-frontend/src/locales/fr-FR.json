@@ -172,7 +172,7 @@
       "delete": "Supprimer",
       "comment": "Commenter",
       "full_rights": "Tous les droits",
-      "mutiple": "Plusieurs valeurs"
+      "mutiple_values": "Plusieurs valeurs"
     },
     "model_quality_label": "Qualité du modèle :",
     "model_quality": {
@@ -229,7 +229,9 @@
       "punctuation_description": "Active la restitution de la ponctuation",
       "punctuation_label_inline": "Ponctuation : ",
       "punctuation_label": "Ponctuation",
-      "punctuation_value_whisper": "Automatique. Traité par le modèle Whisper",
+      "punctuation_value_whisper": "Automatique",
+      "punctuation_disabled": "Non",
+      "diarization_disabled": "Non",
       "speakers": "locuteurs",
       "edit_speaker": "Modifier locuteur",
       "add_speaker": "Ajouter un locuteur",
@@ -344,15 +346,22 @@
     "this_field_is_required": "Ce champ est requis"
   },
   "inbox": {
-    "subtitle": "Vos médias récemment importés arrivent ici. Utilisez ”importer un media” ou {appLink} pour l'enrichir."
+    "title": "Derniers médias",
+    "subtitle": "Vos médias récemment importés arrivent ici. Utilisez ”importer un media” ou {appLink} pour l'enrichir.",
+    "sort": {
+      "created": "Ajout récent",
+      "last_update": "Dernière mise à jour",
+      "notags": "Sans tags"
+    }
   },
   "explore": {
+    "title": "Explorer les médias de l'organisation",
     "subtitle": "Recherchez et découvrez des informations sur les médias transcrits avec de la sémantique",
     "search_text_label": "Rechercher du texte",
     "search_text_in_title": "Rechercher \"{text}\" dans le titre",
     "search_text_in_content": "Rechercher \"{text}\" dans la transcription",
-    "no_categories_modal": "Il n'y a aucune étiquette. Commencez à étiqueter vos médias dans l'onglet Boîte de réception.",
-    "link_to_inbox": "Retourner à la boîte de réception",
+    "no_categories_modal": "Il n'y a aucun tags. Commencez à étiqueter vos médias dans l'onglet Médias récents.",
+    "link_to_inbox": "Retourner aux médias récents",
     "delete_conversation_button": "Supprimer des médias"
   },
   "favorites": {
@@ -364,7 +373,8 @@
     "search_label": "Rechercher un utilisateur",
     "add_user": "Ajouter l'utilisateur",
     "pending": "En cours",
-    "invite": "Inviter"
+    "invite": "Inviter",
+    "inscription_disabled": "Les inscription et les invitations sont désactivées sur la plateforme"
   },
   "sharedWithTab": {
     "title": "Médias partagés avec moi",
@@ -380,7 +390,8 @@
     "organization_members": "Membres de l'organisation",
     "external_members": "Utilisateurs externes",
     "user_has_been_invited": "L'utilisateur a été invité",
-    "user_right_updated": "Les droits de l'utilisateur ont été mis à jour"
+    "user_right_updated": "Les droits de l'utilisateur ont été mis à jour",
+    "inscription_disabled": "Les inscription et les invitations sont désactivées sur la plateforme"
   },
   "lang": {
     "en": "Anglais",
@@ -453,11 +464,11 @@
       "title": "Organisation"
     },
     "tabs": {
-      "inbox": "Médias récents",
+      "inbox": "Accueil",
       "explore": "Explorer",
       "favorites": "Favoris",
       "shared": "Partages reçus",
-      "manage_tags": "Gérer les tags"
+      "manage_tags": "Administrer les tags de médias"
     },
     "home": "Retour à l'accueil"
   },
@@ -563,7 +574,7 @@
     "no_categories_found": "Aucune catégories de tags trouvées",
     "no_tags_in_category": "Aucun tags dans cette catégorie",
     "remove_tag": "Supprimer le tag",
-    "add_tags": "Ajouter des tags",
+    "add_tags": "Ajouter des tags au média",
     "create_a_tag": "Créer un tag",
     "empty_category": "catégorie à définir",
     "define_category_button": "Créer le tag",
@@ -573,7 +584,8 @@
     "delete_tag_title": "Supprimer le tag",
     "select_tag_title": "Sélectionner le tag",
     "new_tag_name": "Nom du tag",
-    "add_tag_to_conversation": "Ajouter le tag"
+    "add_tag_to_conversation": "Ajouter le tag",
+    "error_creating_tag": "Erreur lors de la création du tag"
   },
   "usersettings": {
     "change_password_label": "Modifier le mot de passe",

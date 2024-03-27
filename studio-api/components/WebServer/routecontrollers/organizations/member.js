@@ -59,6 +59,12 @@ async function listConversationFromOrganization(req, res, next) {
             }
         })
 
+        if(req.query.filter === 'notags'){
+            let categories = (await model.categories.getByScope(req.params.organizationId)).map(category => category._id.toString())
+            let tags = (await model.tags.getTagByCategoryList(categories)).map(tag => tag._id.toString())
+            req.query.tags = tags
+        }
+
         let conversations = await model.conversations.listConvFromOrga(req.params.organizationId, userId, userRole, RIGHT.READ, req.query)
 
         res.status(200).send(conversations)

@@ -44,6 +44,8 @@ async function addUserInOrganization(req, res, next) {
     let userId = null
     let magicId = null
     if (user.length === 0) {
+      if(process.env.DISABLE_USER_CREATION === 'true') throw new UserError('User creation is disabled')
+
       const createdUser = await model.users.createExternal({ email: req.body.email })
 
       // Create new user personal organization

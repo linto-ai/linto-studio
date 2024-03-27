@@ -74,15 +74,15 @@ test("index conversation right by users", (t) => {
           name: "name_2",
         },
       ],
-      [
-        "user3",
-        {
-          _id: "user3",
-          role: 0,
-          right: 23,
-          name: "name_3",
-        },
-      ],
+      // [
+      //   "user3",
+      //   {
+      //     _id: "user3",
+      //     role: 0,
+      //     right: 23,
+      //     name: "name_3",
+      //   },
+      // ],
     ]),
     organization_members: new Map(),
   })
