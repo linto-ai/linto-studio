@@ -19,6 +19,9 @@ DB_MIGRATION_TARGET=1.4.2
 # STT Config
 GATEWAY_SERVICES=https://api.linto.ai
 
+# LLM Config
+LLM_GATEWAY_SERVICES=
+
 # NLP Service
 NLP_SERVICES=<nlp_service_host>
 NLP_METHOD=frequencies,textrank

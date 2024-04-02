@@ -11,15 +11,10 @@ async function getSaasServices(req, res, next) {
   }
 }
 
-async function getWorkerServices(req, res, next) {
+async function getLlmServices(req, res, next) {
   try {
-    if (!this.app.components['WorkerWatcher']) {
-      res.status(404).send('WorkerWatcher component not properly loaded')
-
-    } else {
-      const services = await this.app.components['WorkerWatcher'].list()
-      res.status(200).send(services)
-    }
+    const services = await serviceUtility.listLlmServices()
+    res.status(200).send(services)
   } catch (err) {
     next(err)
   }
@@ -27,5 +22,5 @@ async function getWorkerServices(req, res, next) {
 
 module.exports = {
   getSaasServices,
-  getWorkerServices
+  getLlmServices
 }

@@ -2,15 +2,8 @@ const debug = require('debug')(`linto:conversation-manager:components:WebServer:
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
-const libre = require('libreoffice-convert')
-const fs = require("fs")
-const docx = require("docx")
-const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Bookmark } = docx
-
-const { jsonToPlainText } = require('json-to-plain-text')
-
-const openai = require(`${process.cwd()}/components/WebServer/controllers/llm/openai`)
-const mixtral = require(`${process.cwd()}/components/WebServer/controllers/llm/mixtral`)
+const docx = require(`${process.cwd()}/components/WebServer/controllers/export/docx`)
+const llm = require(`${process.cwd()}/components/WebServer/controllers/llm/index`)
 
 const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
 
@@ -69,13 +62,17 @@ async function exportConversation(req, res, next) {
                 break
             case 'docx':
             case 'verbatim':
-                await handleDocxFormat(res, req.query, conversation, metadata)
+                await handleVerbatimFormat(res, req.query, conversation, metadata)
                 break
             case 'cri':
+                await handleVerbatimFormat(res, req.query, conversation, metadata)
+                break
             case 'cra':
             case 'cred':
-            case 'resume':
-                await handleLLMFormat(res, req.query, conversation, metadata)
+                await handleLLMService(res, req.query, conversation, metadata)
+                break
+            case 'test':
+                await handleLLMService(res, req.query, conversation, metadata)
                 break
             default:
                 throw new ConversationMetadataRequire('Format not supported')
@@ -86,39 +83,24 @@ async function exportConversation(req, res, next) {
     }
 }
 
-async function callOpenAI(query, conversation, metadata, conversationExport) {
-    openai.request(query, conversation, metadata, query)
+async function callLlmAPI(query, conversation, metadata, conversationExport) {
+    llm.request(query, conversation, metadata)
         .then(data => {
             conversationExport.data = data
             conversationExport.status = 'done'
             model.conversationExport.update(conversationExport)
         }).catch(err => {
             conversationExport.status = 'error'
-            model.conversationExport.update(conversationExport)
-            console.error(err)
-        })
-}
-
-async function callMixtralAPI(query, conversation, metadata, conversationExport) {
-    mixtral.request(query, conversation, metadata, query)
-        .then(data => {
-            conversationExport.data = data
-            conversationExport.status = 'done'
-            model.conversationExport.update(conversationExport)
-        }).catch(err => {
-            conversationExport.status = 'error'
+            conversationExport.error = err.message
             model.conversationExport.update(conversationExport)
         })
 }
 
-async function handleLLMFormat(res, query, conversation, metadata) {
-    //we check if the format and conversationId exist in the collection conversationExport
+
+async function handleLLMService(res, query, conversation, metadata) {
     let conversationExport = await model.conversationExport.getByConvAndFormat(conversation._id, query.format)
-
     if (query.regenerate === 'true' || conversationExport.length === 0) {
-        //If we are there with a conversationExport, it means that the user asked to regenerate the data
         if (conversationExport.length !== 0) await model.conversationExport.delete(conversationExport[0]._id)
-
         conversationExport = {
             convId: conversation._id.toString(),
             format: query.format,
@@ -127,18 +109,11 @@ async function handleLLMFormat(res, query, conversation, metadata) {
         exportResult = await model.conversationExport.create(conversationExport)
         conversationExport._id = exportResult.insertedId.toString()
 
-        if ((query.api === 'openai' && process.env.OPENAI_API_KEY !== undefined) || (query.api === undefined && process.env.OPENAI_API_KEY !== undefined)) {
-            callOpenAI(query, conversation, metadata, conversationExport)
-        } else if ((query.api === 'mixtral' && process.env.MIXTRAL_API_HOST !== undefined) || (query.api === undefined && process.env.MIXTRAL_API_HOST !== undefined)) {
-            callMixtralAPI(query, conversation, metadata, conversationExport)
-        } else {
-            throw new Error('No API key found for OpenAI or Mixtral')
-        }
-
+        callLlmAPI(query, conversation, metadata, conversationExport)
         res.status(200).send({ status: 'generating' })
     } else if (conversationExport[0].status === 'done') {
         conversationExport = conversationExport[0]
-        const file = await generateDocx(conversation, conversationExport.data)
+        const file = await docx.generateDocxOnFormat(query.format, conversationExport)
         sendFileAsResponse(res, file, query.preview)
     } else {
         res.status(200).send({ status: 'generating' })
@@ -147,7 +122,7 @@ async function handleLLMFormat(res, query, conversation, metadata) {
 
 async function sendFileAsResponse(res, file, preview = false) {
     if (preview === 'true') {
-        const pdf = await convertToPDF(file)
+        const pdf = await docx.convertToPDF(file)
         res.setHeader('Content-Type', 'application/pdf')
         res.setHeader('Content-disposition', 'attachment; filename=' + file.name)
         res.sendFile(pdf.path)
@@ -186,8 +161,22 @@ async function handleTextFormat(res, metadata, conversation) {
     res.status(200).send(output)
 }
 
+async function handleVerbatimFormat(res, query, conversation, metadata) {
+    const text = await llm.generateText(conversation, metadata)
+    const conv = {
+        data: {
+            message: text
+        },
+        status: 'done',
+        convId: conversation._id,
+        format: 'cri'
+    }
+    const file = await docx.generateDocxOnFormat('cri', conv)
+    sendFileAsResponse(res, file, query.preview)
+}
+
 async function handleDocxFormat(res, query, conversation, metadata) {
-    const file = await generateTranscriptionDocx(conversation, metadata)
+    const file = await docx.generateTranscriptionDocx(conversation, metadata)
     sendFileAsResponse(res, file, query.preview)
 }
 
@@ -259,221 +248,6 @@ async function prepareMetadata(conversation, metadata, data) {
 
 
     return data
-}
-
-async function convertToPDF(file) {
-    const enterData = fs.readFileSync(file.path)
-
-    // Convert it to .pdf format
-    const result = await new Promise((resolve, reject) => {
-        libre.convert(enterData, '.pdf', undefined, (err, done) => {
-            if (err) {
-                reject(err)
-            } else {
-                resolve(done)
-            }
-        })
-    })
-
-    // Write the .pdf file
-    const outputFilePath = `/tmp/${file.name.replace(/[^a-zA-Z0-9 ]/g, "")}.pdf`
-    fs.writeFileSync(outputFilePath, result)
-
-    // Return the path and name of the .pdf file
-    return {
-        path: outputFilePath,
-        name: `${file.name}.pdf`
-    }
-}
-
-function createDocx(conversation) {
-    const outputFilePath = `/tmp/${conversation.name.replace(/[^a-zA-Z0-9 ]/g, "")}.docx`
-    const doc = new Document({
-        creator: conversation.owner,
-        title: conversation.name,
-        description: conversation.description,
-        sections: []
-    })
-
-    const paragraphs = []
-
-    paragraphs.push(new Paragraph({
-        text: conversation.name,
-        heading: HeadingLevel.TITLE,
-        alignment: AlignmentType.CENTER
-    }))
-    paragraphs.push(generateLineBreak())
-
-    return { doc, paragraphs, outputFilePath }
-}
-
-
-async function generateDocx(conversation, text) {
-    const { doc, paragraphs, outputFilePath } = createDocx(conversation)
-
-    paragraphs.push(generateHeading('Resume'))
-    paragraphs.push(
-        new Paragraph({
-            children: [new TextRun(text.message)],
-            alignment: AlignmentType.JUSTIFIED
-        })
-    )
-
-    doc.addSection({
-        properties: {},
-        children: paragraphs,
-    })
-
-    const buffer = await Packer.toBuffer(doc)
-    fs.writeFileSync(outputFilePath, buffer)
-    return {
-        path: outputFilePath,
-        name: conversation.name + '.docx'
-    }
-
-}
-
-
-async function generateTranscriptionDocx(conversation, metadata, show = {}) {
-    const { doc, paragraphs, outputFilePath } = createDocx(conversation)
-
-    // We don't want to show metadata if there is nothing asked to show
-    if (Object.keys(show).length >= 1) paragraphs.push(generateHeading('Metadata'))
-
-    if (show?.description) {
-        paragraphs.push(generateHeading('Description', HeadingLevel.HEADING_2))
-        paragraphs.push(new Paragraph({ text: conversation.description }))
-    }
-
-    if (show?.speakers) {
-        if (conversation.speakers.length === 1) paragraphs.push(generateHeading('Speaker', HeadingLevel.HEADING_2))
-        else paragraphs.push(generateHeading('Speakers', HeadingLevel.HEADING_2))
-
-        conversation.speakers.map(speaker => {
-            paragraphs.push(generateBulletParagraph(speaker.speaker_name, 0))
-        })
-    }
-
-    if (show?.categories) {
-        paragraphs.push(generateHeading('Categories', HeadingLevel.HEADING_2))
-        for (let category in metadata.categories) {
-            paragraphs.push(generateBulletParagraph(category + ' - type : ' + metadata.categories[category].type, 0))
-            metadata.categories[category].tags.map(tag => {
-                paragraphs.push(generateBulletParagraph(tag, 1))
-            })
-        }
-    }
-
-    let targetPhrases = []
-    if (show?.categories) {
-        for (let category in metadata.categories) {
-            if (metadata.categories[category].type === TYPE.HIGHLIGHT) {
-                metadata.categories[category].tags.map(tag => {
-                    targetPhrases.push(tag)
-                })
-            }
-        }
-    }
-
-    paragraphs.push(generateHeading('Transcription'))
-
-    conversation.text.map(turn => {
-        let children = []
-        if (metadata.speakers) children.push(new TextRun({ text: `${turn.speaker_name} : `, bold: true }))
-        if (turn.stime) children.push(new TextRun({ text: `(${turn.stime} s - ${turn.etime}s) : `, italics: true }))
-
-        if (targetPhrases.length === 0) {
-            children.push(new TextRun(turn.segment))
-        } else {
-            const phrasePattern = new RegExp(`\\b(${targetPhrases.join('|')})\\b`, 'ig')
-            const segments = turn.segment.split(phrasePattern)
-
-            for (const segment of segments) {
-                if (targetPhrases.some((phrase) => segment.toLowerCase().includes(phrase.toLowerCase()))) children.push(createHighlightedTextRun(segment))
-                else children.push(new TextRun(segment))
-            }
-        }
-
-        paragraphs.push(
-            new Paragraph({
-                children,
-                alignment: AlignmentType.JUSTIFIED
-            })
-        )
-        paragraphs.push(new Paragraph({}))
-    })
-
-    if (metadata === 'true') {
-        paragraphs.push(generateLineBreak())
-        paragraphs.push(generateHeading('Metadata'))
-
-        if (conversation.description) {
-            paragraphs.push(generateHeading('Description', HeadingLevel.HEADING_2))
-            paragraphs.push(new Paragraph({ text: conversation.description }))
-        }
-
-        paragraphs.push(generateHeading('Speaker', HeadingLevel.HEADING_2))
-        conversation.speakers.map(speaker => {
-            paragraphs.push(generateBulletParagraph(speaker.speaker_name, 0))
-        })
-
-        paragraphs.push(generateHeading('Transcription', HeadingLevel.HEADING_2))
-        paragraphs.push(generateBulletParagraph(`lang : ${conversation.locale}`, 0))
-        paragraphs.push(generateBulletParagraph(`result_id : ${conversation.jobs.transcription.result_id}`, 0))
-        paragraphs.push(generateBulletParagraph(`transcriptionConfig : ${JSON.stringify(conversation.metadata.transcription.transcriptionConfig)}`, 0))
-
-    }
-
-    const section = {
-        properties: {},
-        children: paragraphs,
-    }
-    doc.addSection(section)
-
-    const buffer = await Packer.toBuffer(doc)
-    fs.writeFileSync(outputFilePath, buffer)
-    return {
-        path: outputFilePath,
-        name: conversation.name + '.docx'
-    }
-}
-
-function generateLineBreak() {
-    return new Paragraph({
-        thematicBreak: true,
-    })
-}
-
-function generateHeading(text, headingLevel = HeadingLevel.HEADING_1, alignement = AlignmentType.LEFT) {
-
-    return new Paragraph({
-        heading: headingLevel,
-        alignment: alignement,
-        children: [
-            new Bookmark({
-                children: [
-                    new TextRun(text),
-                ]
-            })
-        ]
-    })
-}
-
-function generateBulletParagraph(text, level) {
-    return new Paragraph({
-        text: text,
-        bullet: {
-            level
-        },
-    })
-}
-
-
-function createHighlightedTextRun(text) {
-    return new TextRun({
-        text,
-        highlight: 'yellow',
-    })
 }
 
 function secondsToHHMMSSWithDecimals(totalSeconds, secondsDecimals = 0) {
