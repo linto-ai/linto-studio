@@ -21,11 +21,14 @@ async function listExport(req, res, next) {
 
         let export_list = []
         for (let status of conversationExport) {
-            export_list.push({
+            let export_conv = {
                 _id: status._id.toString(),
                 format: status.format,
-                status: status.status
-            })
+                status: status.status,
+                last_update: status.last_update,
+            }
+            if(status.status === 'error') export_conv.error = status.error
+            export_list.push(export_conv)
         }
 
         res.status(200).send(export_list)
