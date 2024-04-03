@@ -6,12 +6,34 @@
     :error="error"
     :sidebar="true">
     <template v-slot:sidebar>
-      <div style="margin: 0 1rem">
-        <h2>{{ $t("publish.filter_title.verbatim") }}</h2>
-        <section>
+      <div style="margin: 0 1rem" class="flex col">
+        <h2>{{ $t(`publish.filter_title.${activeTab}`) }}</h2>
+        <section v-if="isUpdated">
+          <div class="flex align-center gap-small">
+            <span class="icon done"></span>
+            <span>
+              {{ $t("publish.is_updated") }}
+            </span>
+          </div>
+        </section>
+        <section v-else class="flex col gap-medium">
+          <div class="flex align-center gap-small">
+            <span class="icon warning"></span>
+            <span>
+              {{ $t("publish.is_not_updated") }}
+            </span>
+          </div>
+          <button class="yellow fullwidth" @click="reloadPdf">
+            <span class="icon reload"></span>
+            <span class="label">{{ $t("publish.reload_document") }}</span>
+          </button>
+        </section>
+
+        <!-- <section v-if="conversation.speakers.length > 1">
           <h3 for="template-format-list">
             {{ $t("publish.filter_speaker.title") }}
           </h3>
+
           <div
             v-for="speaker of conversation.speakers"
             class="flex speaker-filter-item"
@@ -28,7 +50,7 @@
               name="filter-speakers"
               style="margin-right: 0.5rem" />
           </div>
-        </section>
+        </section> -->
       </div>
     </template>
 
@@ -58,12 +80,13 @@
           iconType="icon"
           icon="upload"
           value=""
+          :disabled="pdfStatus !== 'displayed'"
           aria-label="select how to open the conversation"
           :options="{
             actions: [
               { value: 'docx', text: $t('conversation.export.docx') },
-              { value: 'txt', text: $t('conversation.export.txt') },
-              { value: 'json', text: $t('conversation.export.json') },
+              // { value: 'txt', text: $t('conversation.export.txt') },
+              // { value: 'json', text: $t('conversation.export.json') },
             ],
           }"
           buttonClass="green"
@@ -71,37 +94,9 @@
       </div>
     </template>
 
-    <div class="publish-turn-list-container flex col" v-if="dataLoaded">
-      <Tabs
-        v-model="activeTab"
-        :tabs="[
-          {
-            name: 'verbatim',
-            label: $t('publish.tabs.verbatim'),
-            icon: 'text',
-          },
-          {
-            name: 'summary',
-            label: $t('publish.tabs.automatic_summary'),
-            icon: 'text',
-            disabled: true,
-          },
-        ]"></Tabs>
-      <div class="publish-turn-list">
-        <!-- <AppEditor
-        :conversation="conversation"
-        :usersConnected="usersConnected"
-        :conversationUsers="conversationUsers"
-        :userInfo="userInfo"
-        :filterSpeakers="filterSpeakers"
-        :turnPages="turnPages"
-        :turns="turns"
-        :canEdit="false"
-        :noPlayer="true"
-        :hightlightsCategories="[]"
-        :hightlightsCategoriesVisibility="{}"
-        ref="editor"
-        v-if="status === 'done'"></AppEditor> -->
+    <div class="publish-main-container flex col" v-if="dataLoaded">
+      <Tabs v-model="activeTab" :tabs="tabs" v-if="tabs"></Tabs>
+      <!-- <div class="publish-turn-list">
         <h1>{{ conversation.name }}</h1>
         <h2>Transcription</h2>
         <PublishTurn
@@ -109,7 +104,20 @@
           :key="turn.turn_id"
           :turn="turn"
           :speakerIndexedBySpeakerId="speakerIndexedBySpeakerId" />
-      </div>
+      </div> -->
+      <ConversationPublishContent
+        :status="pdfStatus"
+        :blobUrl="blobUrl"
+        :format="activeTab"
+        :conversationId="conversationId"
+        :conversation="conversation"
+        :filterSpeakers="filterSpeakers"
+        :service="selectedService"
+        :filterTags="filterTags" />
+      <!-- <component
+        :is="mainComponentName"
+        :conversation="conversation"
+        :conversationId="conversationId"></component> -->
     </div>
   </MainContentConversation>
 </template>
@@ -122,6 +130,7 @@ import {
   apiGetJsonFileFromConversation,
   apiGetTextFileFromConversation,
   apiGetDocxFileFromConversation,
+  apiGetGenericFileFromConversation,
 } from "../api/conversation.js"
 
 import Loading from "@/components/Loading.vue"
@@ -129,12 +138,17 @@ import Modal from "@/components/Modal.vue"
 import UserInfoInline from "@/components/UserInfoInline.vue"
 import AppEditor from "@/components/AppEditor.vue"
 import ErrorView from "./Error.vue"
-import MainContentConversation from "../components/MainContentConversation.vue"
-import MenuToolbox from "../components/MenuToolbox.vue"
-import CustomSelect from "../components/CustomSelect.vue"
+import MainContentConversation from "@/components/MainContentConversation.vue"
+import MenuToolbox from "@/components/MenuToolbox.vue"
+import CustomSelect from "@/components/CustomSelect.vue"
 import SwitchInput from "@/components/SwitchInput.vue"
-import PublishTurn from "../components/PublishTurn.vue"
-import Tabs from "../components/Tabs.vue"
+import PublishTurn from "@/components/PublishTurn.vue"
+import Tabs from "@/components/Tabs.vue"
+// import ConversationPublishVerbatim from "@/components/ConversationPublishVerbatim.vue"
+// import ConversationPublishCra from "@/components/ConversationPublishCra.vue"
+// import ConversationPublishCri from "@/components/ConversationPublishCri.vue"
+import ConversationPublishContent from "../components/ConversationPublishContent.vue"
+import { getLLMService, apiGetMetadataLLMService } from "@/api/service.js"
 
 export default {
   mixins: [conversationMixin],
@@ -144,10 +158,21 @@ export default {
       filterSpeakers: [],
       speakerIndexedBySpeakerId: {},
       helperVisible: false,
+      pdfStatus: null,
       status: null,
       filterTags: [],
-      activeTab: "verbatim",
+      activeTab: "docx",
+      loading: false,
+      blobUrl: null,
+      indexedFormat: {},
+      loadingServices: true,
+      metadataList: [],
     }
+  },
+  mounted() {
+    console.log("mounted")
+    this.getServices()
+    this.getMetadata()
   },
   watch: {
     dataLoaded(newVal, oldVal) {
@@ -168,10 +193,14 @@ export default {
         }
       }
     },
+    activeTab(newVal, oldVal) {
+      this.getMetadata()
+      this.getPdf()
+    },
   },
   computed: {
     dataLoaded() {
-      return this.conversationLoaded
+      return this.conversationLoaded && !this.loadingServices
     },
     conversationListRoute() {
       return { name: "inbox", hash: "#previous" }
@@ -181,32 +210,39 @@ export default {
         "YYYYMMDDHHmmss"
       )}`
     },
-    turns() {
-      if (!this.conversation) return []
-      return this.conversation.text.filter((turn) => {
-        if (turn.words.length > 0) {
-          // filter by speakers
-          if (
-            this.filterSpeakers.length == 0 ||
-            this.filterSpeakers.indexOf(turn.speaker_id) > -1
-          ) {
-            // filter by keywords
-            if (
-              this.filterTags.length == 0 ||
-              this.filterTags.some((keyword) =>
-                turn.segment.toLowerCase().includes(keyword)
-              )
-            )
-              return true
-          }
-        }
-
-        return false
-      })
+    mainComponentName() {
+      return `ConversationPublish${
+        this.activeTab.charAt(0).toUpperCase() + this.activeTab.slice(1)
+      }`
     },
-    turnPages() {
-      if (!this.turns) return []
-      return [[...this.turns]]
+    tabs() {
+      const res = Object.keys(this.indexedFormat).map((format) => {
+        return {
+          name: format,
+          label: this.$i18n.t(`publish.tabs.${format}`),
+          icon: "text",
+        }
+      })
+      if (res) {
+        this.activeTab = res[0].name
+      }
+      return res
+    },
+    selectedService() {
+      return this.indexedFormat[this.activeTab]?.services[0]?.name
+    },
+    isUpdated() {
+      const infoFormat = this.metadataList.find(
+        (item) => item.format === this.activeTab
+      )
+
+      if (infoFormat) {
+        console.log(infoFormat.last_update, this.conversation.last_update)
+        const format_last_update = new Date(infoFormat.last_update)
+        const conversation_last_update = new Date(this.conversation.last_update)
+        return format_last_update >= conversation_last_update
+      }
+      return true
     },
   },
   methods: {
@@ -257,10 +293,13 @@ export default {
       }
     },
     async exportDocx() {
-      let req = await apiGetDocxFileFromConversation(
+      let req = await apiGetGenericFileFromConversation(
         this.conversationId,
-        this.filterSpeakers,
-        this.filterTags
+        this.activeTab,
+        this.selectedService,
+        {
+          preview: false,
+        }
       )
 
       if (req?.status === "success") {
@@ -283,6 +322,77 @@ export default {
       link.click()
       URL.revokeObjectURL(link.href)
     },
+    async getServices() {
+      try {
+        let services = await getLLMService()
+        let res = {}
+
+        for (const service of services) {
+          for (const format of service.formats) {
+            if (res[format] === undefined) {
+              res[format] = {}
+            }
+            if (res[format]["services"] === undefined) {
+              res[format]["services"] = []
+            }
+            res[format]["services"].push({ name: service.serviceName })
+          }
+        }
+        this.indexedFormat = res
+      } catch (e) {
+        console.error(e)
+      } finally {
+        this.loadingServices = false
+        //this.getPdf()
+      }
+    },
+    async getPdf(regenerate = false) {
+      this.pdfStatus = "generating"
+      /*
+      this.filterSpeakers,
+        this.filterTags
+      */
+      const currentActiveTab = this.activeTab
+
+      let req = await apiGetGenericFileFromConversation(
+        this.conversationId,
+        this.activeTab,
+        this.selectedService,
+        {
+          preview: true,
+          regenerate,
+        }
+      )
+
+      if (this.activeTab !== currentActiveTab) {
+        return
+      }
+
+      if (req?.status === "success") {
+        // test if req.data as blob is json or not
+        if (req.data.type === "application/json") {
+          this.pdfStatus = JSON.parse(await req.data.text())?.status
+
+          if (this.pdfStatus === "generating") {
+            setTimeout(() => {
+              if (this.activeTab === currentActiveTab) this.getPdf()
+            }, 5000)
+          }
+        } else if (req.data.type === "application/pdf") {
+          this.blobUrl = URL.createObjectURL(req.data)
+          this.pdfStatus = "displayed"
+        } else {
+          this.pdfStatus = "error"
+        }
+      }
+      this.loading = false
+    },
+    reloadPdf() {
+      this.getPdf(true)
+    },
+    async getMetadata() {
+      this.metadataList = await apiGetMetadataLLMService(this.conversationId)
+    },
   },
   components: {
     ConversationShare,
@@ -298,6 +408,10 @@ export default {
     SwitchInput,
     PublishTurn,
     Tabs,
+    // ConversationPublishVerbatim,
+    // ConversationPublishCra,
+    // ConversationPublishCri,
+    ConversationPublishContent,
   },
 }
 </script>

@@ -11,6 +11,7 @@
       class="select__head flex row"
       :class="buttonClass"
       aria-haspopup="true"
+      :disabled="disabled"
       :aria-expanded="showList">
       <span
         v-if="icon && iconType == 'icon'"
@@ -75,6 +76,7 @@ export default {
     inline: { type: Boolean, default: false },
     buttonClass: { type: String, default: "" },
     id: { type: String, default: null },
+    disabled: { type: Boolean, default: false },
   },
   data() {
     return {
@@ -111,9 +113,10 @@ export default {
       e.stopPropagation()
     },
     toggleMenu(e) {
-      this.showList = !this.showList
       e.preventDefault()
       e.stopPropagation()
+      if (this.disabled) return
+      this.showList = !this.showList
     },
     close() {
       this.showList = false

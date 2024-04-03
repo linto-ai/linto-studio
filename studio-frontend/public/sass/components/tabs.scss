@@ -27,10 +27,10 @@
 .horizontal-tabs {
   width: fit-content;
   margin: auto;
-  margin: 1.5rem auto;
+  margin: 2rem auto;
   background-color: var(--background-primary);
   //padding: 0.75rem;
-  border-radius: 3rem;
+  border-radius: 8px;
   box-shadow: var(--shadow-block);
   position: relative;
 
@@ -39,14 +39,26 @@
   }
 }
 
+.horizontal-tabs .tab:first-child {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.horizontal-tabs .tab:last-child {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
 .horizontal-tabs .tab {
-  padding: 0.5rem 1rem;
+  padding: 1rem 1.5rem;
   cursor: pointer;
   display: flex;
+  justify-content: center;
   //margin: 1px;
   font-weight: normal;
-  border-radius: 3rem;
+
   transition: color 0.15s ease-in, background-color 0.15s ease-in;
+  min-width: 7rem;
 
   .icon {
     transition: color 0.15s ease-in, background-color 0.15s ease-in;
@@ -77,6 +89,7 @@
 .tab__label {
   position: relative;
   top: var(--text-vertical-center-offset);
+  text-align: center;
 }
 
 // .glider {

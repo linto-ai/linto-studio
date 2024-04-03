@@ -51,3 +51,33 @@ export async function apiGetNlpService(notif) {
 
   return res
 }
+
+export async function getLLMService() {
+  const req = await sendRequest(
+    `${BASE_API}/services/llm`,
+    { method: "get" },
+    {},
+    null
+  )
+
+  if (req.status === "success") {
+    return req.data
+  } else {
+    return []
+  }
+}
+
+export async function apiGetMetadataLLMService(conversationId) {
+  const req = await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/export/list`,
+    { method: "get" },
+    {},
+    null
+  )
+
+  if (req.status === "success") {
+    return req.data
+  } else {
+    return []
+  }
+}

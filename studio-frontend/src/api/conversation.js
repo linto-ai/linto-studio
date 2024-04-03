@@ -337,12 +337,11 @@ export async function apiGetTextFileFromConversation(
 
 export async function apiGetDocxFileFromConversation(
   conversationId,
-  speakers,
-  keywords,
+  { speakers = [], keywords = [], preview = false } = {},
   notif
 ) {
   return await sendRequest(
-    `${BASE_API}/conversations/${conversationId}/download?format=docx`,
+    `${BASE_API}/conversations/${conversationId}/download?format=docx&preview=${preview}`,
     { method: "post", responseType: "blob" },
     {
       filter: { speaker: speakers.join(","), keyword: keywords.join(",") },
@@ -354,6 +353,39 @@ export async function apiGetDocxFileFromConversation(
         speakers: true,
       },
     },
+    notif
+  )
+}
+
+export async function apiGetGenericFileFromConversation(
+  conversationId,
+  format,
+  service,
+  { speakers = [], keywords = [], preview = false, regenerate = false } = {},
+  notif
+) {
+  return await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/download?format=${format}&preview=${preview}&service=${service}&regenerate=${regenerate}`,
+    { method: "post", responseType: "blob" },
+    {
+      filter: { speaker: speakers.join(","), keyword: keywords.join(",") },
+      metadata: {
+        description: true,
+        tags: true,
+        keyword: true,
+        timestamp: true,
+        speakers: true,
+      },
+    },
+    notif
+  )
+}
+
+export async function apiGetStatusExport(conversationId, notif) {
+  return await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/export/list`,
+    { method: "get" },
+    {},
     notif
   )
 }
