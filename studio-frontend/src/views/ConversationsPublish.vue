@@ -7,7 +7,7 @@
     :sidebar="true">
     <template v-slot:sidebar>
       <div style="margin: 0 1rem" class="flex col">
-        <h2>{{ $t(`publish.filter_title.${activeTab}`) }}</h2>
+        <!-- <h2>{{ $t(`publish.filter_title.${activeTab}`) }}</h2> -->
         <section v-if="isUpdated">
           <div class="flex align-center gap-small">
             <span class="icon done"></span>
@@ -131,6 +131,7 @@ import {
   apiGetTextFileFromConversation,
   apiGetDocxFileFromConversation,
   apiGetGenericFileFromConversation,
+  apiGetConversationLastUpdate,
 } from "../api/conversation.js"
 
 import Loading from "@/components/Loading.vue"
@@ -167,10 +168,11 @@ export default {
       indexedFormat: {},
       loadingServices: true,
       metadataList: [],
+      conv_last_update: null,
     }
   },
   mounted() {
-    console.log("mounted")
+    this.getLastUpdate()
     this.getServices()
     this.getMetadata()
   },
@@ -194,7 +196,6 @@ export default {
       }
     },
     activeTab(newVal, oldVal) {
-      this.getMetadata()
       this.getPdf()
     },
   },
@@ -237,9 +238,8 @@ export default {
       )
 
       if (infoFormat) {
-        console.log(infoFormat.last_update, this.conversation.last_update)
         const format_last_update = new Date(infoFormat.last_update)
-        const conversation_last_update = new Date(this.conversation.last_update)
+        const conversation_last_update = new Date(this.conv_last_update)
         return format_last_update >= conversation_last_update
       }
       return true
@@ -364,6 +364,8 @@ export default {
         }
       )
 
+      await this.getMetadata()
+
       if (this.activeTab !== currentActiveTab) {
         return
       }
@@ -392,6 +394,11 @@ export default {
     },
     async getMetadata() {
       this.metadataList = await apiGetMetadataLLMService(this.conversationId)
+    },
+    async getLastUpdate() {
+      const res = await apiGetConversationLastUpdate(this.conversationId)
+
+      this.conv_last_update = res.last_update
     },
   },
   components: {
