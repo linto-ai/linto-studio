@@ -225,6 +225,16 @@ export async function apiGetConversationById(conversationId, notif) {
   return getConversation?.data
 }
 
+export async function apiGetConversationLastUpdate(conversationId, notif) {
+  const getConversation = await sendRequest(
+    `${BASE_API}/conversations/${conversationId}`,
+    { method: "get" },
+    { key: ["last_update"].toString() },
+    notif
+  )
+  return getConversation?.data
+}
+
 export async function apiDeleteConversation(conversationId, notif) {
   return await sendRequest(
     `${BASE_API}/conversations/${conversationId}`,
