@@ -6,7 +6,8 @@ const fs = require("fs")
 
 const libre = require('libreoffice-convert')
 const docx = require("docx")
-const { Document, Packer, Paragraph, TextRun, Column, HeadingLevel, AlignmentType, Bookmark, SectionType, Header, Footer, PageNumber, Table, TableRow, TableCell, Border } = docx
+const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType,
+    Bookmark, SectionType, Header, Footer, PageNumber, TabStopType } = docx
 
 
 async function generateDocxOnFormat(format, conversationExport, metadata) {
@@ -16,8 +17,8 @@ async function generateDocxOnFormat(format, conversationExport, metadata) {
         speakers: conversation[0].speakers.map(speaker => speaker.speaker_name + ' : ') //TODO: see with llm output
     }
 
-    if (format === 'cri') { // comptes rendus intégraux
-        return await generateCriDocx(conversationExport, metadata);
+    if (format === 'cri' || format === 'verbatim') { // comptes rendus intégraux
+        return await generateCriDocx(conversationExport, metadata, format)
     }
     else if (format === 'cra') { // comptes rendus analytiques 
         return await generateCraDocx(conversationExport, metadata)
@@ -84,13 +85,11 @@ async function generateDocx(conversation, text) {
 }
 
 
-async function generateCriDocx(conversation, metadata) {
-    const { doc, paragraphs, outputFilePath } = createDocx(metadata, 'cri')
+async function generateCriDocx(conversation, metadata, format) {
+    const { doc, paragraphs, outputFilePath } = createDocx(metadata, format)
 
     const paragraphs_content = []
 
-
-    paragraphs_content.push(generateHeading('COMPTE RENDU INTÉGRAL ', HeadingLevel.HEADING_1))
     processTurn(paragraphs_content, conversation, metadata)
 
     doc.addSection({
@@ -121,8 +120,6 @@ async function generateCraDocx(conversation, metadata) {
 
     const paragraphs_content = []
 
-
-    paragraphs_content.push(generateHeading('COMPTE RENDU Analytique ', HeadingLevel.HEADING_1))
     processTurn(paragraphs_content, conversation, metadata)
 
     doc.addSection({
@@ -131,7 +128,7 @@ async function generateCraDocx(conversation, metadata) {
         },
         children: paragraphs,
     })
-    doc.addSection({ ...generateHeaderCra(metadata.name), ...generateFooter() })
+    doc.addSection(generateFooter())
 
     doc.addSection({
         properties: {
@@ -143,7 +140,7 @@ async function generateCraDocx(conversation, metadata) {
                 equalWidth: true,
             },
         },
-        children: paragraphs_content,
+        children: paragraphs_content
     })
     return await writeFile(doc, metadata.name, outputFilePath)
 }
@@ -153,8 +150,6 @@ async function generateCredDocx(conversation, metadata) {
 
     const paragraphs_content = []
 
-
-    paragraphs_content.push(generateHeading('COMPTE RENDU rendu des commissions et des délégations', HeadingLevel.HEADING_1))
     processTurn(paragraphs_content, conversation, metadata)
 
     doc.addSection({
@@ -285,16 +280,16 @@ async function generateTranscriptionDocx(conversation, metadata, show = {}) {
 }
 
 function createDocx(conversation, format = undefined) {
-    let customTitle = undefined
+    let formatTitle = undefined
     switch (format) {
         case 'cri':
-            customTitle = 'texte pour le Compte Rendu Intégral - '
+            formatTitle = 'texte pour le Compte Rendu Intégral - '
             break
         case 'cra':
-            customTitle = 'texte pour le Compte Rendu Analytique  - '
+            formatTitle = 'texte pour le Compte Rendu Analytique  - '
             break
         case 'cred':
-            customTitle = 'texte pour le Compte rendu des commissions et des délégations  - '
+            formatTitle = 'texte pour le Compte rendu des commissions et des délégations  - '
             break
     }
 
@@ -307,9 +302,9 @@ function createDocx(conversation, format = undefined) {
     })
 
     const paragraphs = []
-    if (customTitle) {
+    if (formatTitle) {
         paragraphs.push(new Paragraph({
-            children: [new TextRun(customTitle)],
+            children: [new TextRun(formatTitle)],
             heading: HeadingLevel.TITLE,
             alignment: AlignmentType.CENTER
         }))
@@ -347,7 +342,7 @@ function processTurn(paragraphs_content, conversation, metadata) {
                     if (last_spk !== segment) {
                         children.push(createTextRun('\t' + segment, true))
                         last_spk = segment
-                    }else {
+                    } else {
                         children.push(createTextRun('\t'))
                     }
                 } else
@@ -357,9 +352,16 @@ function processTurn(paragraphs_content, conversation, metadata) {
 
         paragraphs_content.push(
             new Paragraph({
+                tabStops: [
+                    {
+                        type: TabStopType.LEFT,
+                        position: 300,
+                    },
+                ],
                 children,
                 rightToLeft: true,
-                alignment: AlignmentType.JUSTIFIED
+                alignment: AlignmentType.JUSTIFIED,
+
             })
         )
         paragraphs_content.push(new Paragraph({}))
