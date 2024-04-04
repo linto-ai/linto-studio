@@ -109,6 +109,7 @@
       "title": "Télécharger",
       "json": "Télécharger en JSON",
       "txt": "Télécharger en TXT",
+      "pdf": "Télécharger en PDF",
       "docx": "Télécharger en DOCX",
       "vtt": "Télécharger en VTT",
       "srt": "Télécharger en SRT"

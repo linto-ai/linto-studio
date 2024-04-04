@@ -80,11 +80,12 @@
           iconType="icon"
           icon="upload"
           value=""
-          :disabled="pdfStatus !== 'displayed'"
+          :disabled="pdfStatus !== 'displayed' || loadingDownload"
           aria-label="select how to open the conversation"
           :options="{
             actions: [
               { value: 'docx', text: $t('conversation.export.docx') },
+              { value: 'pdf', text: $t('conversation.export.pdf') },
               // { value: 'txt', text: $t('conversation.export.txt') },
               // { value: 'json', text: $t('conversation.export.json') },
             ],
@@ -170,6 +171,7 @@ export default {
       metadataList: [],
       conv_last_update: null,
       currentTabId: null,
+      loadingDownload: false,
     }
   },
   mounted() {
@@ -264,11 +266,15 @@ export default {
         case "json":
           this.exportJson()
           break
+        case "pdf":
+          this.exportPdf()
+          break
         default:
           break
       }
     },
     async exportJson() {
+      this.loadingDownload = true
       let req = await apiGetJsonFileFromConversation(
         this.conversationId,
         this.filterSpeakers,
@@ -281,8 +287,10 @@ export default {
           ".json"
         )
       }
+      this.loadingDownload = false
     },
     async exportText() {
+      this.loadingDownload = true
       let req = await apiGetTextFileFromConversation(
         this.conversationId,
         this.filterSpeakers,
@@ -292,8 +300,10 @@ export default {
       if (req?.status === "success") {
         this.exportFile(req.data, "text/plain", ".txt")
       }
+      this.loadingDownload = false
     },
     async exportDocx() {
+      this.loadingDownload = true
       let req = await apiGetGenericFileFromConversation(
         this.conversationId,
         this.activeTab,
@@ -306,6 +316,23 @@ export default {
       if (req?.status === "success") {
         this.exportBlobFile(req.data, ".docx")
       }
+      this.loadingDownload = false
+    },
+    async exportPdf() {
+      this.loadingDownload = true
+      let req = await apiGetGenericFileFromConversation(
+        this.conversationId,
+        this.activeTab,
+        this.selectedService,
+        {
+          preview: true,
+        }
+      )
+
+      if (req?.status === "success") {
+        this.exportBlobFile(req.data, ".pdf")
+      }
+      this.loadingDownload = false
     },
     exportBlobFile(blob, ext) {
       const file = URL.createObjectURL(blob)

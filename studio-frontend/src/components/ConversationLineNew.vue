@@ -323,7 +323,6 @@ export default {
   },
   methods: {
     selectLine(e) {
-      console.log(e)
       if (e.target.classList.contains("no-propagation")) return
       this.$emit("onSelect", {
         value: null,

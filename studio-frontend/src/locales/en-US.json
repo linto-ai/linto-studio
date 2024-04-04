@@ -112,7 +112,8 @@
       "txt": "Export TXT",
       "docx": "Export DOCX",
       "vtt": "Export VTT",
-      "srt": "Export SRT"
+      "srt": "Export SRT",
+      "pdf": "Export PDF"
     },
     "export_json_button": "Export JSON",
     "filter_speakers_label": "Filter",
