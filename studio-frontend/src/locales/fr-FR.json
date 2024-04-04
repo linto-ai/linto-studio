@@ -546,7 +546,7 @@
   "publish": {
     "filter_title": {
       "verbatim": "Options pour le verbatim",
-      "cri": "Options pour le compte rendu integral",
+      "cri": "Options pour le compte rendu intégral",
       "cra": "Options pour le compte rendu analytique",
       "cred": "Options pour le compte rendu des commissions et des délégations",
       "automatic_summary": "Options pour le résumé automatique"
