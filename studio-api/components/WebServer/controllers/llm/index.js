@@ -1,4 +1,6 @@
 const debug = require('debug')(`linto:conversation-manager:components:WebServer:controllers:llm:index`)
+const fs = require('fs')
+const FormData = require('form-data')
 
 async function generateText(conversation, metadata) {
     let prompt = ''
@@ -21,27 +23,39 @@ async function generateText(conversation, metadata) {
 
 async function request(query, conversation, metadata) {
     let content = await generateText(conversation, metadata)
-    return requestAPI(query, content)
+    const tempFileName = `file_${query.format}_${conversation._id}.txt`
+
+    return requestAPI(query, content, tempFileName)
 }
 
-async function requestAPI(query, content) {
+async function requestAPI(query, content, fileName) {
     if (process.env.LLM_GATEWAY_SERVICES === undefined) {
         throw new Error('LLM_GATEWAY_SERVICES is not defined')
     }
-    const host = process.env.LLM_GATEWAY_SERVICES
 
-    const response = await fetch(host + '/' + query.serviceName + '/llm', {
+    const fetch = await import('node-fetch')
+    let url = process.env.LLM_GATEWAY_SERVICES + '/services/' + query.serviceName + '/generate'
+
+    const tempFilePath = '/tmp/' + fileName
+    fs.writeFileSync(tempFilePath, content)
+
+    let formData = new FormData()
+    formData.append('format', JSON.stringify({ format: query.format }))
+    formData.append('file', fs.createReadStream(tempFilePath), { filename: fileName, contentType: 'text/plain' })
+
+    let options = {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            ...formData.getHeaders()
         },
-        body: JSON.stringify({
-            format: query.format,
-            content: content
-        })
-    })
+        body: formData
+    }
+    options.formData = formData
+
+    const response = await fetch.default(url, options)
 
     const result = await response.json()
+    fs.unlinkSync(tempFilePath)
     return {
         message: result.message,
         full: result

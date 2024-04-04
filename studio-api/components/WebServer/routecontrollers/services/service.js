@@ -13,8 +13,13 @@ async function getSaasServices(req, res, next) {
 
 async function getLlmServices(req, res, next) {
   try {
-    const services = await serviceUtility.listLlmServices()
-    res.status(200).send(services)
+    if (process.env.LLM_GATEWAY_SERVICES === '' || process.env.LLM_GATEWAY_SERVICES === undefined) {
+      res.status(200).send([])
+    } else {
+      const services = await serviceUtility.listLlmServices()
+      res.status(200).send(services)
+    }
+
   } catch (err) {
     next(err)
   }

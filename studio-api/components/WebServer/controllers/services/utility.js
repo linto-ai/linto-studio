@@ -32,9 +32,7 @@ async function listLlmServices() {
     const gateway_services = process.env.LLM_GATEWAY_SERVICES
     let services = []
 
-    // let host = gateway_services + '/services'
-    let host = gateway_services + '/llm'
-    debug(host)
+    let host = gateway_services + '/services'
     const llm_service_info = await axios.get(host)
 
     for (const service of llm_service_info) {
