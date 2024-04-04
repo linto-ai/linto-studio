@@ -1,9 +1,16 @@
 const debug = require('debug')(`linto:conversation-manager:components:WebServer:controllers:llm:openai`)
 
 const OpenAI = require('openai')
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY, // This is the default and can be omitted
-})
+let openai
+if (process.env.OPENAI_API_KEY) {
+    openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY, // This is the default and can be omitted
+    })
+} else {
+    openai = new OpenAI({
+        apiKey: '', // This is the default and can be omitted
+    })
+}
 
 const MODEL = 'gpt-4'
 const DEFAULT_PROMPT = {
