@@ -9,14 +9,9 @@ const {
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/conversation.js`)
 
 const {
-    downloadConversation,
+    exportConversation,
+    listExport
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/export.js`)
-
-const {
-    generateSubtitle,
-} = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/subtitle.js`)
-
-
 
 module.exports = (webserver) => {
     return [
@@ -59,7 +54,14 @@ module.exports = (webserver) => {
             method: 'post',
             requireAuth: true,
             requireConversationReadAccess: true,
-            controller: downloadConversation
+            controller: exportConversation
+        },
+        {
+            path: '/:conversationId/export/list',
+            method: 'get',
+            requireAuth: true,
+            requireConversationReadAccess: true,
+            controller: listExport
         }
     ]
 }

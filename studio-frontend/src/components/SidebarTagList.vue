@@ -2,9 +2,9 @@
   <section class="organization-sidebar__current-filter sidebar__section">
     <h2 class="flex row">
       <span class="flex1">{{ $t("conversation.search_criterions") }}</span>
-      <button class="transparent" @click="resetFilters" v-if="hasFilters">
+      <!-- <button class="transparent" @click="resetFilters" v-if="hasFilters">
         <span class="icon trash"></span>
-      </button>
+      </button> -->
       <!--<span class="icon options" @click="openExploreModal"></span>-->
     </h2>
 
@@ -43,10 +43,16 @@
       <div class="flex col gap-small" v-else>
         <div>{{ $t("conversation.no_search_criterion") }}</div>
       </div>
-      <button class="btn transparent no-padding wrap" style="width: 100%">
+      <button class="btn green wrap" style="width: 100%">
         <span class="icon add"></span>
         <span class="label" @click="addSearchCriterion">{{
           $t("conversation.add_search_criterion")
+        }}</span>
+      </button>
+      <button class="btn red wrap" style="width: 100%" :disabled="!hasFilters">
+        <span class="icon trash"></span>
+        <span class="label" @click="resetFilters">{{
+          $t("conversation.remove_all_filters")
         }}</span>
       </button>
     </div>

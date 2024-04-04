@@ -11,21 +11,24 @@
       class="select__head flex row"
       :class="buttonClass"
       aria-haspopup="true"
+      :disabled="disabled"
       :aria-expanded="showList">
       <span
         v-if="icon && iconType == 'icon'"
-        class="icon select__head__icon"
+        class="icon select__head__icon no-propagation"
         :class="icon"
         :title="iconText" />
       <img
         v-if="icon && iconType == 'img'"
         :src="icon"
         :alt="iconText"
-        class="icon select__head__icon" />
-      <span class="flex1 select__head__label label">{{ _valueText }}</span>
-      <span class="icon small-arrow-down"></span>
-      <span class="badge" v-if="badge">
-        <span class="badge__content">{{ badge }}</span>
+        class="icon select__head__icon no-propagation" />
+      <span class="flex1 select__head__label label no-propagation">{{
+        _valueText
+      }}</span>
+      <span class="icon small-arrow-down no-propagation"></span>
+      <span class="badge no-propagation" v-if="badge">
+        <span class="badge__content no-propagation">{{ badge }}</span>
       </span>
     </button>
     <!-- Menu list-->
@@ -75,6 +78,7 @@ export default {
     inline: { type: Boolean, default: false },
     buttonClass: { type: String, default: "" },
     id: { type: String, default: null },
+    disabled: { type: Boolean, default: false },
   },
   data() {
     return {
@@ -111,9 +115,10 @@ export default {
       e.stopPropagation()
     },
     toggleMenu(e) {
-      this.showList = !this.showList
       e.preventDefault()
-      e.stopPropagation()
+      //e.stopPropagation()
+      if (this.disabled) return
+      this.showList = !this.showList
     },
     close() {
       this.showList = false

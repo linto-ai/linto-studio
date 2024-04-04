@@ -38,6 +38,7 @@
     },
     "add_tag": "Add a tag",
     "add_search_criterion": "Add a search criterion",
+    "remove_all_filters": "Remove all filters",
     "apply_filters": "Appliquer les filtres",
     "add_to_favorites": "Add to favorites",
     "audio_file_too_big": "The audio file is too big. The maximum size is 1GB.",
@@ -111,7 +112,8 @@
       "txt": "Export TXT",
       "docx": "Export DOCX",
       "vtt": "Export VTT",
-      "srt": "Export SRT"
+      "srt": "Export SRT",
+      "pdf": "Export PDF"
     },
     "export_json_button": "Export JSON",
     "filter_speakers_label": "Filter",
@@ -549,6 +551,9 @@
   "publish": {
     "filter_title": {
       "verbatim": "Verbatim options",
+      "cri": "Full report options",
+      "cra": "Summary report options",
+      "cred": "Options for commission and delegation reports",
       "automatic_summary": "Automatic summary options"
     },
     "filter_speaker": {
@@ -556,8 +561,26 @@
     },
     "tabs": {
       "verbatim": "Verbatim",
+      "cri": "Full report",
+      "cra": "Summary report",
+      "cred": "Commission and delegation reports",
       "automatic_summary": "Automatic summary"
-    }
+    },
+    "generation_first_line": {
+      "verbatim": "Verbatim generation in progress...",
+      "cri": "Full report generation in progress...",
+      "cra": "Summary report generation in progress...",
+      "cred": "Commission and delegation report generation in progress..."
+    },
+    "error_first_line": {
+      "verbatim": "Error during verbatim generation",
+      "cri": "Error during full report generation",
+      "cra": "Error during summary report generation",
+      "cred": "Error during commission and delegation report generation"
+    },
+    "reload_document": "Regenerate the report",
+    "is_updated": "The report is up to date with the transcript ",
+    "is_not_updated": "The transcription has been updated. The report no longer reflects the latest changes."
   },
   "tags": {
     "back_to_search": "Back to search",

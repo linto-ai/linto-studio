@@ -300,8 +300,10 @@ class ConvoModel extends MongoModel {
             const query = {
                 _id: this.getObjectId(_id),
             }
+            const dateTime = moment().format()
             let mutableElements = {
-                text: [...text]
+                text: [...text],
+                last_update: dateTime
             }
 
             return await this.mongoUpdateOne(query, operator, mutableElements)

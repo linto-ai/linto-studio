@@ -200,10 +200,10 @@ button,
   }
   &.yellow {
     margin-right: 10px;
-    color: var(--yellow-chart);
+    background-color: var(--yellow-chart);
     border-color: var(--yellow-chart);
     .icon {
-      background-color: var(--yellow-chart);
+      //background-color: var(--yellow-chart);
       &.loading {
         margin: 0 5px;
       }

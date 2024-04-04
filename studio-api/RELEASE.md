@@ -1,3 +1,6 @@
+# 1.4.3
+- Update export
+
 # 1.4.2
 - Refactored Taxonomy API:
   - Added a scope for category

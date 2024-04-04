@@ -11,15 +11,15 @@ async function getSaasServices(req, res, next) {
   }
 }
 
-async function getWorkerServices(req, res, next) {
+async function getLlmServices(req, res, next) {
   try {
-    if (!this.app.components['WorkerWatcher']) {
-      res.status(404).send('WorkerWatcher component not properly loaded')
-
+    if (process.env.LLM_GATEWAY_SERVICES === '' || process.env.LLM_GATEWAY_SERVICES === undefined) {
+      res.status(200).send([])
     } else {
-      const services = await this.app.components['WorkerWatcher'].list()
+      const services = await serviceUtility.listLlmServices()
       res.status(200).send(services)
     }
+
   } catch (err) {
     next(err)
   }
@@ -27,5 +27,5 @@ async function getWorkerServices(req, res, next) {
 
 module.exports = {
   getSaasServices,
-  getWorkerServices
+  getLlmServices
 }
