@@ -556,20 +556,20 @@
     },
     "tabs": {
       "verbatim": "Verbatim",
-      "cri": "Compte rendu integral",
+      "cri": "Compte rendu intégral",
       "cra": "Compte rendu analytique",
       "cred": "Compte rendu des commissions et des délégations",
       "automatic_summary": "Résumé automatique"
     },
     "generation_first_line": {
       "verbatim": "Génération du verbatim en cours...",
-      "cri": "Génération du compte rendu integral en cours...",
+      "cri": "Génération du compte rendu intégral en cours...",
       "cra": "Génération du compte rendu analytique en cours...",
       "cred": "Génération du compte rendu des commissions et des délégations en cours..."
     },
     "error_first_line": {
       "verbatim": "Erreur lors de la génération du verbatim",
-      "cri": "Erreur lors de la génération du compte rendu integral",
+      "cri": "Erreur lors de la génération du compte rendu intégral",
       "cra": "Erreur lors de la génération du compte rendu analytique",
       "cred": "Erreur lors de la génération du compte rendu des commissions et des délégations"
     },
