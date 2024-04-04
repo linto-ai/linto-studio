@@ -169,6 +169,7 @@ export default {
       loadingServices: true,
       metadataList: [],
       conv_last_update: null,
+      currentTabId: null,
     }
   },
   mounted() {
@@ -348,11 +349,13 @@ export default {
     },
     async getPdf(regenerate = false) {
       this.pdfStatus = "generating"
+      // generate random id
+      this.currentTabId = Math.random()
       /*
       this.filterSpeakers,
         this.filterTags
       */
-      const currentActiveTab = this.activeTab
+      const currentActiveTab = this.currentTabId
 
       let req = await apiGetGenericFileFromConversation(
         this.conversationId,
@@ -366,7 +369,7 @@ export default {
 
       await this.getMetadata()
 
-      if (this.activeTab !== currentActiveTab) {
+      if (this.currentTabId !== currentActiveTab) {
         return
       }
 
@@ -377,7 +380,7 @@ export default {
 
           if (this.pdfStatus === "generating") {
             setTimeout(() => {
-              if (this.activeTab === currentActiveTab) this.getPdf()
+              if (this.currentTabId === currentActiveTab) this.getPdf()
             }, 5000)
           }
         } else if (req.data.type === "application/pdf") {
