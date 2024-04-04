@@ -240,12 +240,16 @@ export default {
     selectedService() {
       return this.indexedFormat[this.activeTab]?.services[0]?.name
     },
+    currentInfoFormat() {
+      return this.metadataList.find((item) => item.format === this.activeTab)
+    },
     isUpdated() {
-      const infoFormat = this.metadataList.find(
-        (item) => item.format === this.activeTab
-      )
+      const infoFormat = this.currentInfoFormat
 
       if (infoFormat) {
+        if (infoFormat.status === "error") {
+          return false
+        }
         const format_last_update = new Date(infoFormat.last_update)
         const conversation_last_update = new Date(this.conv_last_update)
         return format_last_update >= conversation_last_update
@@ -399,11 +403,15 @@ export default {
         }
       )
 
-      console.log("getPdf", req)
-
       await this.getMetadata()
 
       if (this.currentTabId !== currentActiveTab) {
+        return
+      }
+
+      if (this.currentInfoFormat && this.currentInfoFormat.status === "error") {
+        console.log("error", req)
+        this.pdfStatus = "error"
         return
       }
 

@@ -2,7 +2,7 @@
   <div class="flex1 flex">
     <object
       class="publish__pdf-wrapper"
-      v-if="status != 'generating' && blobUrl"
+      v-if="status === 'displayed' && blobUrl"
       :data="blobUrl"
       type="application/pdf"
       width="100%"
