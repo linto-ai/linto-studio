@@ -96,7 +96,10 @@
     </template>
 
     <div class="publish-main-container flex col" v-if="dataLoaded">
-      <Tabs v-model="activeTab" :tabs="tabs" v-if="tabs"></Tabs>
+      <Tabs
+        v-model="activeTab"
+        :tabs="tabs"
+        v-if="tabs && tabs.length > 0"></Tabs>
       <!-- <div class="publish-turn-list">
         <h1>{{ conversation.name }}</h1>
         <h2>Transcription</h2>
@@ -163,7 +166,7 @@ export default {
       pdfStatus: null,
       status: null,
       filterTags: [],
-      activeTab: "docx",
+      activeTab: "",
       loading: false,
       blobUrl: null,
       indexedFormat: {},
@@ -227,8 +230,10 @@ export default {
           icon: "text",
         }
       })
-      if (res) {
+      if (res && res.length > 0) {
         this.activeTab = res[0].name
+      } else {
+        this.activeTab = "verbatim"
       }
       return res
     },
@@ -394,6 +399,8 @@ export default {
         }
       )
 
+      console.log("getPdf", req)
+
       await this.getMetadata()
 
       if (this.currentTabId !== currentActiveTab) {
@@ -414,6 +421,7 @@ export default {
           this.blobUrl = URL.createObjectURL(req.data)
           this.pdfStatus = "displayed"
         } else {
+          console.log("error", req)
           this.pdfStatus = "error"
         }
       }
