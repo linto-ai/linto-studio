@@ -90,9 +90,9 @@
         class="conversation-line__description"
         @click="startDescriptionEdition"
         v-if="!descriptionIsEditing">
-        <span>{{ description }}</span>
-        <button v-if="canEditConv" class="transparent">
-          <span class="icon edit" />
+        <span class="no-propagation">{{ description }}</span>
+        <button v-if="canEditConv" class="transparent no-propagation">
+          <span class="icon edit no-propagation" />
         </button>
       </div>
       <FormInput
@@ -141,8 +141,8 @@
           v-if="canEditTag && !tagsReadOnly"
           @click="showDropDown"
           class="transparent inline">
-          <span class="icon add" />
-          <span class="label">{{ $t("tags.add_tags") }}</span>
+          <span class="icon add no-propagation" />
+          <span class="label no-propagation">{{ $t("tags.add_tags") }}</span>
         </button>
       </div>
       <!-- <div>
@@ -322,7 +322,9 @@ export default {
     tags: function (newTags, oldTags) {},
   },
   methods: {
-    selectLine() {
+    selectLine(e) {
+      console.log(e)
+      if (e.target.classList.contains("no-propagation")) return
       this.$emit("onSelect", {
         value: null,
         conversation: this.conversation,
@@ -334,7 +336,7 @@ export default {
       this.dropDownY = e.clientY
       this.dropDownX = e.clientX
 
-      e.stopPropagation()
+      //e.stopPropagation()
     },
     closeDropDown() {
       this.dropDownVisible = false
@@ -428,7 +430,7 @@ export default {
       if (this.canEditConv) this.descriptionIsEditing = true
       else this.descriptionIsEditing = false
 
-      e.stopPropagation()
+      //e.stopPropagation()
     },
     stopDescriptionEdition() {
       this.descriptionIsEditing = false
