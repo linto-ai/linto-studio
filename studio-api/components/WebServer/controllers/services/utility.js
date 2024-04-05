@@ -33,11 +33,9 @@ async function listLlmServices() {
     let services = []
 
     let host = gateway_services + '/services'
-    const llm_service_info = await axios.get(host)
 
-    for (const service of llm_service_info) {
-      services.push(service)
-    }
+    const llm_service_info = await axios.get(host)
+    services.push(llm_service_info)
 
     return services
   } catch (err) {
