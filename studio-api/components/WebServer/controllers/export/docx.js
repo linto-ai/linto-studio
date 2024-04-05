@@ -325,13 +325,15 @@ function processTurn(paragraphs_content, conversation, metadata) {
     const lines = conversation.data.message.split('\n')
 
     //TODO: WIP to clean
-    metadata.speakers = metadata.speakers.map(speaker => speaker.charAt(0).toUpperCase() + speaker.slice(1))
+    // metadata.speakers = metadata.speakers.map(speaker => speaker.charAt(0).toUpperCase() + speaker.slice(1))
+    metadata.speakers = metadata.speakers.flatMap(speaker => [
+        speaker, speaker.charAt(0).toUpperCase() + speaker.slice(1)
+    ])
 
     let last_spk = ''
     lines.map(turn => {
         let children = []
 
-        //TODO: WIP to clean
         if (turn.startsWith("- ")) {
             turn = turn.substring(2)
         } else if (turn.startsWith(" - ")) {
