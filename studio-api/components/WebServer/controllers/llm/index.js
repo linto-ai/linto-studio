@@ -80,22 +80,22 @@ async function requestAPI(query, content, fileName, conversationExport) {
 function generateBodyFormat(format) {
     if (format === 'cra') {
         return JSON.stringify({
-            maxGeneratedTokens: 1024,
-            temperature: 1,
+            maxGeneratedTokens: 4000,
+            temperature: 0,
             top_p: 0.95,
-            granularity_tokens: 200,
-            max_new_speeches: 4,
-            previous_new_summary_ratio: 0.5,
+            granularity_tokens: -1,
+            max_new_speeches: 3,
+            previous_new_summary_ratio: 0.2,
             format: "cra"
         })
     } else if (format === 'cred') {
         return JSON.stringify({
-            maxGeneratedTokens: 1024,
-            temperature: 1,
+            maxGeneratedTokens: 4000,
+            temperature: 0,
             top_p: 0.95,
-            granularity_tokens: 200,
-            max_new_speeches: 4,
-            previous_new_summary_ratio: 0.5,
+            granularity_tokens: -1,
+            max_new_speeches: 2,
+            previous_new_summary_ratio: 0,
             format: "cred"
         })
     }
@@ -131,15 +131,13 @@ async function pollingLlm(jobsId, conversationExport) {
                     clearInterval(intervalId)
                 }
             } catch (err) {
-                debug(err)
                 conversationExport.status = 'error'
                 if (err?.response?.data)
                     conversationExport.error = err.response.data
                 model.conversationExport.updateStatus(conversationExport)
                 clearInterval(intervalId)
             }
-
-        }, 60000);
+        }, 60000)
 
         setTimeout(() => {
             clearInterval(intervalId)
