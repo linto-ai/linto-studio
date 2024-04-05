@@ -39,6 +39,24 @@ class SubtitleModel extends MongoModel {
         }
     }
 
+    async updateStatus(payload){
+        try {
+            const operator = "$set"
+            const query = {
+                convId: payload.convId,
+                format: payload.format
+            }
+            const dateTime = moment().format()
+            payload.last_update = dateTime
+
+            let mutableElements = payload
+            return await this.mongoUpdateOne(query, operator, mutableElements)
+        } catch (error) {
+            console.error(error)
+            return error
+        }
+    }
+
     async delete(id) {
         try {
             const query = {

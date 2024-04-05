@@ -87,10 +87,10 @@ async function exportConversation(req, res, next) {
 }
 
 async function callLlmAPI(query, conversation, metadata, conversationExport) {
-    llm.request(query, conversation, metadata)
+    llm.request(query, conversation, metadata, conversationExport)
         .then(data => {
-            conversationExport.data = data
-            conversationExport.status = 'done'
+            conversationExport.jobId = data
+            conversationExport.status = 'processing'
             model.conversationExport.update(conversationExport)
         }).catch(err => {
             conversationExport.status = 'error'
@@ -107,19 +107,24 @@ async function handleLLMService(res, query, conversation, metadata) {
         conversationExport = {
             convId: conversation._id.toString(),
             format: query.format,
-            status: 'generating'
+            status: 'processing'
         }
         exportResult = await model.conversationExport.create(conversationExport)
         conversationExport._id = exportResult.insertedId.toString()
 
         callLlmAPI(query, conversation, metadata, conversationExport)
-        res.status(200).send({ status: 'generating' })
-    } else if (conversationExport[0].status === 'done') {
+        res.status(200).send({ status: 'processing' })
+    } else if (conversationExport[0].status === 'done' || conversationExport[0].status === 'complete') {
         conversationExport = conversationExport[0]
         const file = await docx.generateDocxOnFormat(query.format, conversationExport)
         sendFileAsResponse(res, file, query.preview)
     } else {
-        res.status(200).send({ status: 'generating' })
+        if(conversationExport[0].status === 'error' && conversationExport[0].error) {
+            res.status(400).send({ status: conversationExport[0].status, error: conversationExport[0].error})
+        }else {
+            // llm.pollingLlm(conversationExport[0].jobId, conversationExport[0])
+            res.status(200).send({ status: conversationExport[0].status })
+        }
     }
 }
 
