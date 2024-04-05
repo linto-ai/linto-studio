@@ -83,7 +83,7 @@ function generateBodyFormat(format) {
             maxGeneratedTokens: 4000,
             temperature: 0,
             top_p: 0.95,
-            granularity_tokens: -1,
+            granularity_tokens: 4000,
             max_new_speeches: 3,
             previous_new_summary_ratio: 0.2,
             format: "cra"
@@ -93,7 +93,7 @@ function generateBodyFormat(format) {
             maxGeneratedTokens: 4000,
             temperature: 0,
             top_p: 0.95,
-            granularity_tokens: -1,
+            granularity_tokens: 4000,
             max_new_speeches: 2,
             previous_new_summary_ratio: 0.1,
             format: "cred"
