@@ -232,7 +232,17 @@ export default {
       })
 
       if (res && res.length > 0) {
-        this.activeTab = res[0].name
+        const resWithCri = [
+          {
+            name: "cri",
+            label: this.$i18n.t(`publish.tabs.cri`),
+            icon: "text",
+          },
+          ...res,
+        ]
+
+        this.activeTab = resWithCri[0].name
+        return resWithCri
       } else {
         this.activeTab = "verbatim"
       }
@@ -424,7 +434,7 @@ export default {
           if (this.pdfStatus === "processing") {
             setTimeout(() => {
               if (this.currentTabId === currentActiveTab) this.getPdf()
-            }, 5000)
+            }, 30000)
           }
         } else if (req.data.type === "application/pdf") {
           this.blobUrl = URL.createObjectURL(req.data)
