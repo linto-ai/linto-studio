@@ -10,7 +10,7 @@
       <p>Unable to display PDF file</p>
     </object>
     <div
-      v-else-if="status === 'generating'"
+      v-else-if="status === 'processing'"
       class="flex col center-text publish-main__loading align-center flex1 justify-center">
       <h2 class="center-text">
         {{ $t(`publish.generation_first_line.${format}`) }}

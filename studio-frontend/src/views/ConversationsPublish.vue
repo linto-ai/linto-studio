@@ -230,6 +230,7 @@ export default {
           icon: "text",
         }
       })
+
       if (res && res.length > 0) {
         this.activeTab = res[0].name
       } else {
@@ -384,7 +385,7 @@ export default {
       }
     },
     async getPdf(regenerate = false) {
-      this.pdfStatus = "generating"
+      this.pdfStatus = "processing"
       // generate random id
       this.currentTabId = Math.random()
       /*
@@ -420,7 +421,7 @@ export default {
         if (req.data.type === "application/json") {
           this.pdfStatus = JSON.parse(await req.data.text())?.status
 
-          if (this.pdfStatus === "generating") {
+          if (this.pdfStatus === "processing") {
             setTimeout(() => {
               if (this.currentTabId === currentActiveTab) this.getPdf()
             }, 5000)
