@@ -95,7 +95,7 @@ function generateBodyFormat(format) {
             top_p: 0.95,
             granularity_tokens: -1,
             max_new_speeches: 2,
-            previous_new_summary_ratio: 0,
+            previous_new_summary_ratio: 0.1,
             format: "cred"
         })
     }
