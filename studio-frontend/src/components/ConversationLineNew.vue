@@ -20,12 +20,12 @@
       -->
         <div class="flex flex1 align-center gap-small">
           <span
-            class="icon star conversation-line__favorite"
+            class="icon star conversation-line__favorite no-propagation"
             v-if="!isFavorite"
             :title="$t('conversation.add_to_favorites')"
             @click="toggleFavorite"></span>
           <span
-            class="icon star-filled conversation-line__favorite"
+            class="icon star-filled conversation-line__favorite no-propagation"
             v-if="isFavorite"
             :title="$t('conversation.remove_from_favorites')"
             @click="toggleFavorite"></span>
@@ -39,7 +39,7 @@
           <router-link
             :title="conversation.name"
             :to="`/interface/conversations/${conversation._id}/transcription`"
-            class="conversation-line__title h3 no-padding">
+            class="conversation-line__title h3 no-padding no-propagation">
             {{ conversation.name }}
           </router-link>
           <CustomSelect
