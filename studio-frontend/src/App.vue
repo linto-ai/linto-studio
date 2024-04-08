@@ -197,9 +197,7 @@ export default {
     ErrorView,
     NoOrganizationComponent,
   },
-  errorCaptured(error) {
-    console.log("-------->", error)
-  },
+  errorCaptured(error) {},
 }
 </script>
 <style lang="scss">

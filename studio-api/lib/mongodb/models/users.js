@@ -42,6 +42,12 @@ class UsersModel extends MongoModel {
                     }
                 }
             }
+
+            if (process.env.SMTP_HOST === '') {
+                payload.emailIsVerified = true
+                payload.verifiedEmail.push(payload.email)
+            }
+            
             return await this.mongoInsert(payload)
         } catch (error) {
             console.error(error)

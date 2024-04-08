@@ -146,7 +146,6 @@ export default {
     },
     playFile(index, event) {
       event?.preventDefault()
-      console.log(this.value)
       const file = this.value[index].file
       this.stopFile()
       this.audio = new Audio(URL.createObjectURL(file))

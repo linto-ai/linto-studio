@@ -14,7 +14,15 @@
         </div>
         <slot name="breadcrumb-actions"></slot>
       </div>
-      <div class="flex col flex1 main__content" :fullwidth="fullwidthContent">
+      <div
+        :class="[
+          'flex',
+          'col',
+          'flex1',
+          'main__content',
+          customClass ? customClass : '',
+        ]"
+        :fullwidth="fullwidthContent">
         <slot></slot>
       </div>
     </main>
@@ -55,6 +63,10 @@ export default {
     fullwidthContent: {
       type: Boolean,
       default: false,
+    },
+    customClass: {
+      type: String,
+      default: "",
     },
   },
   data() {

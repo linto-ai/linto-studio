@@ -50,6 +50,7 @@ export const conversationListOrgaMixin = {
             ),
             timeout: null,
           })
+          this.currentPageNb = 0
           await this.fetchConversations()
         } else {
           bus.$emit("app_notif", {

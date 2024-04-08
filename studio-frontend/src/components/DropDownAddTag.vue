@@ -1,6 +1,6 @@
 <template>
   <!-- Tag panel -->
-  <div>
+  <div @click="clickPanel">
     <div class="context-menu__element">
       <div class="form-field flex col small-padding no-margin fullwidth">
         <label class="form-label fullwidth" for="dropdown-search-tags">
@@ -16,7 +16,7 @@
           class="fullwidth" />
       </div>
 
-      <div class="context-menu__element" v-if="searchValueForTag">
+      <div class="context-menu__element" v-if="cleanSearchValueForTag">
         <button
           class="transparent flex context-menu__action"
           :selected="state == STATES.SEARCH_TAG"
@@ -24,7 +24,9 @@
           @click="searchTags">
           <span class="icon search"></span>
           <span class="label flex1 text-cut"
-            >{{ $t("tags.search_tags_with") }} "{{ searchValueForTag }}"</span
+            >{{ $t("tags.search_tags_with") }} "{{
+              cleanSearchValueForTag
+            }}"</span
           >
           <span class="icon right-arrow"></span>
         </button>
@@ -36,7 +38,7 @@
             :value="value"
             @selectTag="selectTag"
             @unSelectTag="unSelectTag"
-            :search="searchValueForTag"
+            :search="cleanSearchValueForTag"
             :reload="reloadTagList"
             :selectable="false"
             :withCategories="false"
@@ -49,7 +51,7 @@
         </ContextMenu>
       </div>
 
-      <div class="context-menu__element" v-if="searchValueForTag">
+      <div class="context-menu__element" v-if="cleanSearchValueForTag">
         <button
           class="transparent flex align-center context-menu__action"
           :selected="state == STATES.CREATE_TAG"
@@ -57,14 +59,14 @@
           @click="createTag">
           <span class="icon new"></span>
           <span class="label flex1 flex gap-small align-bottom text-cut">
-            {{ $t("tags.create_tag") }} "{{ searchValueForTag }}"
+            {{ $t("tags.create_tag") }} "{{ cleanSearchValueForTag }}"
           </span>
           <span class="icon right-arrow"></span>
         </button>
 
         <ContextMenu v-if="state == STATES.CREATE_TAG" overflow>
           <DropDownAddTagCreate
-            :tagValue="searchValueForTag"
+            :tagValue="cleanSearchValueForTag"
             :conversationId="conversationId"
             :selectedCategory="selectedCategory"
             :searchCategoryType="searchCategoryType"
@@ -75,12 +77,13 @@
       </div>
     </div>
 
-    <div class="context-menu__element" v-if="!searchValueForTag">
+    <div class="context-menu__element" v-if="!cleanSearchValueForTag">
       <button
         class="transparent flex context-menu__action"
         :selected="state == STATES.BROWSE_CATEGORY"
         style="width: 100%; text-align: left"
         @click="browseCategories">
+        <span class="icon discover"></span>
         <span class="label flex1">{{ $t("tags.browse_categories") }}</span>
         <span class="icon right-arrow"></span>
       </button>
@@ -106,6 +109,17 @@
           {{ $t("tags.no_tags_found") }}
         </div>
       </ContextMenu>
+    </div>
+
+    <div
+      class="context-menu__element"
+      v-if="searchCategoryType == 'conversation_metadata'">
+      <router-link
+        :to="`/interface/tags/settings`"
+        class="btn transparent flex context-menu__action">
+        <span class="icon tag"></span>
+        <span class="label flex1">Administrer les tags de média</span>
+      </router-link>
     </div>
   </div>
 
@@ -173,13 +187,23 @@ export default {
     currentTagcategoryColor() {
       return this?.selectedCategory?.color ?? "white"
     },
+    cleanSearchValueForTag() {
+      return this.searchValueForTag.trim()
+    },
   },
   watch: {
-    searchValueForTag() {
-      this.state = STATES.SEARCH_TAG
+    cleanSearchValueForTag() {
+      if (this.cleanSearchValueForTag.length > 0) {
+        this.state = STATES.SEARCH_TAG
+      } else {
+        this.state = null
+      }
     },
   },
   methods: {
+    clickPanel(e) {
+      e.stopPropagation()
+    },
     keydown(e) {
       e.stopPropagation()
     },
@@ -227,12 +251,16 @@ export default {
 
       const res = await apiCreateTag(
         this.conversationId,
-        this.searchValueForTag,
+        this.cleanSearchValueForTag,
         this.selectedCategory._id,
         "conversation",
         null
       )
       if (res.status == "error") {
+        bus.$emit("app_notif", {
+          status: "error",
+          message: this.$t("tags.error_creating_tag"),
+        })
         // TODO: show error
       } else {
         this.selectTag(res, this.selectedCategory)
@@ -252,7 +280,6 @@ export default {
       this.state = STATES.BROWSE_CATEGORY
       this.loading = true
       if (this.categoriesList !== null) {
-        console.log("->2", this.categoriesList)
         this.allCategories = this.categoriesList
         this.loading = false
         return

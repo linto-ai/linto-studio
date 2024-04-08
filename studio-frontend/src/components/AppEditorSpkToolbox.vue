@@ -2,8 +2,12 @@
   <div
     :class="['spk-toolbox', 'flex', 'col']"
     @keydown="(e) => e.stopPropagation()">
+    <!-- TODO: use <form> and submit button for accessibility-->
     <!-- Add speaker form -->
-    <div v-if="showAddSpeakerForm" class="speaker-toolbox-form flex col">
+    <div
+      v-if="showAddSpeakerForm"
+      class="speaker-toolbox-form flex col"
+      @keydown="addSpeakerKeyDown">
       <div class="flex col">
         <span class="speaker-toolbox-input-label">{{
           $t("conversation.transcription.add_speaker")
@@ -33,7 +37,10 @@
     </div>
 
     <!-- Edit speaker form -->
-    <div v-else-if="showEditSpeakerForm" class="speaker-toolbox-form flex col">
+    <div
+      v-else-if="showEditSpeakerForm"
+      class="speaker-toolbox-form flex col"
+      @keydown="editSpeakerKeyDown">
       <div class="flex col">
         <span class="speaker-toolbox-input-label">{{
           $t("conversation.transcription.edit_speaker")
@@ -148,6 +155,16 @@ export default {
     }
   },
   methods: {
+    addSpeakerKeyDown(e) {
+      if (e.key === "Enter") {
+        this.addSpeaker()
+      }
+    },
+    editSpeakerKeyDown(e) {
+      if (e.key === "Enter") {
+        this.editSpeaker()
+      }
+    },
     toggleAddSpeaker() {
       this.showAddSpeakerForm = !this.showAddSpeakerForm
       // reset form

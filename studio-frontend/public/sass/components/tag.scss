@@ -32,6 +32,14 @@
   border-left: 0px;
 }
 
+.tag[clickable] .tag__value__main {
+  cursor: pointer;
+}
+
+.tag[clickable] .tag__value__main:hover {
+  text-decoration: underline;
+}
+
 .tag__value__main {
   padding-right: 1rem;
   position: relative;

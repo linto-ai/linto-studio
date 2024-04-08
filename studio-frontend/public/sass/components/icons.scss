@@ -198,6 +198,15 @@
   &.merge {
     @include maskImage("../public/img/link.svg");
   }
+  &.clear-history {
+    @include maskImage("../public/img/clear-history.svg");
+  }
+  &.reload {
+    @include maskImage("../public/img/reload.svg");
+  }
+  &.done {
+    @include maskImage("../public/img/state-done.svg");
+  }
 }
 
 .icon.small {

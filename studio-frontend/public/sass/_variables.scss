@@ -4,7 +4,9 @@ $lato: "Lato", "Arial", "Helvetica", "verdana";
 $rubik: "Rubik", "Arial", "Helvetica", "verdana";
 $ubuntu: "Ubuntu", "Arial", "Helvetica", "verdana";
 $bitter: "BitterPro", "Arial", "Helvetica", "verdana";
+$noto: "Noto Sans", "Arial", "Helvetica", "verdana";
 
+$mainFont: $noto;
 $inputFocus: #f7faff;
 $yellowChart: #feb11d;
 $greenChart: #11977c;
@@ -23,6 +25,7 @@ body {
   --text-disabled: #aaa;
   --small-contrast: #ccc;
 
+  --background-app: rgb(250, 250, 250);
   --background-primary: #fff;
   --background-primary-with-small-opacity: rgba(255, 255, 255, 0.85);
   --background-primary-with-blur: rgba(255, 255, 255, 0.4);
@@ -70,6 +73,7 @@ html[data-theme="dark"] body {
   --text-disabled: #666;
   --small-contrast: #666;
 
+  --background-app: rgb(48, 48, 48);
   --background-primary: #252525;
   --background-primary-with-small-opacity: rgba(37, 37, 37, 0.85);
   --background-primary-with-blur: rgba(37, 37, 37, 0.4);

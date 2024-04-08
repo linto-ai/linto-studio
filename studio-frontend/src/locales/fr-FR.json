@@ -11,7 +11,7 @@
     "no_highlights_first_line": "Pas d'annotations.",
     "no_highlights_second_line": "Améliorez votre contenu grâce aux outils linguistiques propulsés à l'IA.",
     "delete_tag_modal": {
-      "content": "Êtes vous sur de vouloir supprimer l'étiquette?"
+      "content": "Êtes vous sur de vouloir supprimer ce tag?"
     }
   },
   "highlights_name": {
@@ -38,6 +38,7 @@
     },
     "add_tag": "Ajouter un tag",
     "add_search_criterion": "Ajouter un critère de recherche",
+    "remove_all_filters": "Supprimer tous les filtres",
     "apply_filters": "Appliquer les filtres",
     "audio_file_too_big": "Le fichier audio est trop volumineux. La taille maximale autorisée est de 1Go.",
     "add_to_favorites": "Ajouter aux favoris",
@@ -108,6 +109,7 @@
       "title": "Télécharger",
       "json": "Télécharger en JSON",
       "txt": "Télécharger en TXT",
+      "pdf": "Télécharger en PDF",
       "docx": "Télécharger en DOCX",
       "vtt": "Télécharger en VTT",
       "srt": "Télécharger en SRT"
@@ -172,7 +174,7 @@
       "delete": "Supprimer",
       "comment": "Commenter",
       "full_rights": "Tous les droits",
-      "mutiple": "Plusieurs valeurs"
+      "mutiple_values": "Plusieurs valeurs"
     },
     "model_quality_label": "Qualité du modèle :",
     "model_quality": {
@@ -229,7 +231,9 @@
       "punctuation_description": "Active la restitution de la ponctuation",
       "punctuation_label_inline": "Ponctuation : ",
       "punctuation_label": "Ponctuation",
-      "punctuation_value_whisper": "Automatique. Traité par le modèle Whisper",
+      "punctuation_value_whisper": "Automatique",
+      "punctuation_disabled": "Non",
+      "diarization_disabled": "Non",
       "speakers": "locuteurs",
       "edit_speaker": "Modifier locuteur",
       "add_speaker": "Ajouter un locuteur",
@@ -243,6 +247,7 @@
     "transcription_service_title": "Choissisez le service de transcription",
     "transcription_settings_label": "Paramètres de transcription",
     "transcription_service_list_empty": "Aucun service de transcription disponible",
+    "turn_cant_merge": "Le nombre de caractères est trop élevé pour fusionner les tours de parole",
     "turn_sync_error_title": "Le tour de parole n'est pas synchronisé correctement",
     "update_information_button": "Mettre à jour les informations",
     "update_information_done_notif": "Les informations ont été mises à jour",
@@ -343,15 +348,23 @@
     "this_field_is_required": "Ce champ est requis"
   },
   "inbox": {
-    "subtitle": "Vos médias récemment importés arrivent ici. Utilisez ”importer un media” ou {appLink} pour l'enrichir."
+    "title": "Derniers médias",
+    "subtitle": "Vos médias récemment importés arrivent ici. Utilisez ”importer un media” ou {appLink} pour l'enrichir.",
+    "sort": {
+      "created": "Ajout récent",
+      "last_update": "Dernière mise à jour",
+      "notags": "Sans tags"
+    }
   },
   "explore": {
+    "title": "Explorer les médias de l'organisation",
     "subtitle": "Recherchez et découvrez des informations sur les médias transcrits avec de la sémantique",
     "search_text_label": "Rechercher du texte",
     "search_text_in_title": "Rechercher \"{text}\" dans le titre",
     "search_text_in_content": "Rechercher \"{text}\" dans la transcription",
-    "no_categories_modal": "Il n'y a aucune étiquette. Commencez à étiqueter vos médias dans l'onglet Boîte de réception.",
-    "link_to_inbox": "Retourner à la boîte de réception"
+    "no_categories_modal": "Il n'y a aucun tags. Commencez à étiqueter vos médias dans l'onglet Médias récents.",
+    "link_to_inbox": "Retourner aux médias récents",
+    "delete_conversation_button": "Supprimer des médias"
   },
   "favorites": {
     "title": "Médias favoris",
@@ -362,7 +375,8 @@
     "search_label": "Rechercher un utilisateur",
     "add_user": "Ajouter l'utilisateur",
     "pending": "En cours",
-    "invite": "Inviter"
+    "invite": "Inviter",
+    "inscription_disabled": "Les inscription et les invitations sont désactivées sur la plateforme"
   },
   "sharedWithTab": {
     "title": "Médias partagés avec moi",
@@ -378,7 +392,8 @@
     "organization_members": "Membres de l'organisation",
     "external_members": "Utilisateurs externes",
     "user_has_been_invited": "L'utilisateur a été invité",
-    "user_right_updated": "Les droits de l'utilisateur ont été mis à jour"
+    "user_right_updated": "Les droits de l'utilisateur ont été mis à jour",
+    "inscription_disabled": "Les inscription et les invitations sont désactivées sur la plateforme"
   },
   "lang": {
     "en": "Anglais",
@@ -395,7 +410,7 @@
     "recover_password_detail": "Saisissez votre adresse email sur laquelle sera envoyé un lien de récupération"
   },
   "manage_tags": {
-    "subtitle": "Déplacer les étiquettes entre les catégories ou modifiez les.",
+    "subtitle": "Déplacer les tags entre les catégories ou modifiez les.",
     "create_category_button": "Créer une catégorie",
     "create_category": {
       "title": "Créer une catégorie",
@@ -403,13 +418,13 @@
       "save": "Enregistrer"
     },
     "edit_category": {
-      "title": "Modifier la categorie \"{name}\"",
+      "title": "Modifier la catégorie \"{name}\"",
       "category_name": "Nom",
       "category_color": "Couleur",
       "save": "Enregistrer"
     },
     "edit_tag": {
-      "title": "Modifier l'étiquette \"{name}\"",
+      "title": "Modifier le tag \"{name}\"",
       "name": "Nom",
       "save": "Enregistrer"
     },
@@ -419,8 +434,8 @@
       "action": "Supprimer"
     },
     "delete_tag": {
-      "title": "Supprimer l'étiquette \"{name}\"",
-      "description": "{number} medias vont être dissociés de cette étiquette.",
+      "title": "Supprimer le tag \"{name}\"",
+      "description": "{number} medias vont être dissociés de ce tag.",
       "action": "Supprimer"
     }
   },
@@ -451,11 +466,11 @@
       "title": "Organisation"
     },
     "tabs": {
-      "inbox": "Médias récents",
+      "inbox": "Accueil",
       "explore": "Explorer",
       "favorites": "Favoris",
       "shared": "Partages reçus",
-      "manage_tags": "Gérer les étiquettes"
+      "manage_tags": "Administrer les tags de médias"
     },
     "home": "Retour à l'accueil"
   },
@@ -528,37 +543,72 @@
     "visibility_label": "Visibilité",
     "visibility_name": "Visibilité"
   },
+  "publish": {
+    "filter_title": {
+      "verbatim": "Options pour le verbatim",
+      "cri": "Options pour le compte rendu intégral",
+      "cra": "Options pour le compte rendu analytique",
+      "cred": "Options pour le compte rendu des commissions et des délégations",
+      "automatic_summary": "Options pour le résumé automatique"
+    },
+    "filter_speaker": {
+      "title": "Filtrer les locuteurs"
+    },
+    "tabs": {
+      "verbatim": "Verbatim",
+      "cri": "Compte rendu intégral",
+      "cra": "Compte rendu analytique",
+      "cred": "Compte rendu des commissions et des délégations",
+      "automatic_summary": "Résumé automatique"
+    },
+    "generation_first_line": {
+      "verbatim": "Génération du verbatim en cours...",
+      "cri": "Génération du compte rendu intégral en cours...",
+      "cra": "Génération du compte rendu analytique en cours...",
+      "cred": "Génération du compte rendu des commissions et des délégations en cours..."
+    },
+    "error_first_line": {
+      "verbatim": "Erreur lors de la génération du verbatim",
+      "cri": "Erreur lors de la génération du compte rendu intégral",
+      "cra": "Erreur lors de la génération du compte rendu analytique",
+      "cred": "Erreur lors de la génération du compte rendu des commissions et des délégations"
+    },
+    "reload_document": "Regénérer le document",
+    "is_updated": "Le compte rendu est à jour avec la transcription",
+    "is_not_updated": "La transcription a été mise à jour. Le compte rendu ne reflète plus les dernières modifications."
+  },
   "tags": {
     "back_to_search": "Retour à la recherche",
     "browse_categories": "Parcourir les catégories",
     "no_tags": "Aucun tags",
-    "search_tags_or_categories": "Rechercher des étiquettes ou des catégories",
-    "search_tags_or_categories_or_create_new_one": "Rechercher des étiquettes",
+    "search_tags_or_categories": "Rechercher des tags ou des catégories",
+    "search_tags_or_categories_or_create_new_one": "Rechercher des tags",
     "search_tags_with": "Rechercher des tags avec",
     "search_categories": "Rechercher ou nommer la catégorie",
     "create_tag": "Créer le tag",
-    "manage_tags": "Gérer les étiquettes",
+    "manage_tags": "Gérer les tags",
     "select_category_title": "Choisir une catégorie",
     "create_category": "Créer la catégorie {value}",
     "done_create_tag": "Valider",
     "cancel_create_tag": "Annuler",
-    "tags": "Étiquettes",
-    "categories": "Categories d'étiquettes",
-    "no_tags_found": "Aucune étiquettes trouvées",
-    "no_categories_found": "Aucune catégories d'étiquettes trouvées",
-    "no_tags_in_category": "Aucune étiquettes dans cette catégorie",
-    "remove_tag": "Supprimer l'étiquette",
-    "add_tags": "Ajouter des étiquettes",
-    "create_a_tag": "Créer une étiquette",
+    "tags": "Tags",
+    "categories": "Categories de tags",
+    "no_tags_found": "Aucun tags trouvées",
+    "no_categories_found": "Aucune catégories de tags trouvées",
+    "no_tags_in_category": "Aucun tags dans cette catégorie",
+    "remove_tag": "Supprimer le tag",
+    "add_tags": "Ajouter des tags au média",
+    "create_a_tag": "Créer un tag",
     "empty_category": "catégorie à définir",
     "define_category_button": "Créer le tag",
     "edit_category_title": "Modifier la categorie",
-    "edit_tag_title": "Modifier l'étiquette",
+    "edit_tag_title": "Modifier le tag",
     "delete_category_title": "Supprimer la catégorie",
-    "delete_tag_title": "Supprimer l'étiquette",
-    "select_tag_title": "Sélectionner l'étiquette",
-    "new_tag_name": "Nom de l'étiquette",
-    "add_tag_to_conversation": "Ajouter le tag"
+    "delete_tag_title": "Supprimer le tag",
+    "select_tag_title": "Sélectionner le tag",
+    "new_tag_name": "Nom du tag",
+    "add_tag_to_conversation": "Ajouter le tag",
+    "error_creating_tag": "Erreur lors de la création du tag"
   },
   "usersettings": {
     "change_password_label": "Modifier le mot de passe",

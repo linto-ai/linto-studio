@@ -41,10 +41,11 @@ function configureDefaults() {
         process.env.VOLUME_PROFILE_PICTURE_PATH = 'pictures'
         process.env.VOLUME_AUDIO_WAVEFORM_PATH = 'audiowaveform'
 
-
         // Passeport settings
         process.env.CM_JWT_SECRET = ifHas(process.env.CM_JWT_SECRET, envdefault.CM_JWT_SECRET)
         process.env.CM_REFRESH_SECRET = ifHas(process.env.CM_REFRESH_SECRET, envdefault.CM_REFRESH_SECRET)
+
+        process.env.DISABLE_USER_CREATION = ifHas(process.env.DISABLE_USER_CREATION, envdefault.DISABLE_USER_CREATION)
 
     } catch (e) {
         console.error(debug.namespace, e)

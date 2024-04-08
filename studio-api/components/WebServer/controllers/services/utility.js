@@ -27,5 +27,22 @@ async function listSaasServices(scope) {
   }
 }
 
+async function listLlmServices() {
+  try {
+    const gateway_services = process.env.LLM_GATEWAY_SERVICES
+    let services = []
 
-module.exports = { listSaasServices }
+    let host = gateway_services + '/services'
+
+    const llm_service_info = await axios.get(host)
+    services.push(llm_service_info)
+
+    return services
+  } catch (err) {
+    throw new ServiceError('Error while listing services')
+  }
+}
+
+
+
+module.exports = { listSaasServices, listLlmServices }

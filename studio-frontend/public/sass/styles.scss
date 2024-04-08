@@ -25,6 +25,7 @@
 @import "./views/conversation-status.scss";
 @import "./views/organizations.scss";
 @import "./views/error.scss";
+@import "./views/conversation-publish.scss";
 
 // Components
 @import "./components/app-header.scss";
@@ -53,6 +54,7 @@
 @import "./components/droparea.scss";
 @import "./components/highlights-list.scss";
 @import "./components/modal-metadata.scss";
+@import "./components/selected-conversation-indicator.scss";
 
 @import "./views/app-mobile.scss";
 

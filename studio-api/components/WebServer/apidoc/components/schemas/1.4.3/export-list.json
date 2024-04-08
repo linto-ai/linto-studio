@@ -1,0 +1,24 @@
+{
+  "ExportList": {
+    "type": "object",
+    "properties": {
+      "_id": {
+        "type": "string",
+        "example": "65b9072c05737d327fea2879"
+      },
+      "format": {
+        "type": "string",
+        "example": "resume"
+      },
+      "status": {
+        "type": "string",
+        "example": "done"
+      }
+    },
+    "example": {
+      "_id": "6601a1c8edf116daba1caad2",
+      "format": "resume",
+      "status": "done"
+    }
+  }
+}

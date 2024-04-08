@@ -2,11 +2,8 @@ const debug = require('debug')(`linto:conversation-manager:components:WebServer:
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
-const fs = require("fs")
-const docx = require("docx")
-const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Bookmark } = docx
-
-const { jsonToPlainText } = require('json-to-plain-text')
+const docx = require(`${process.cwd()}/components/WebServer/controllers/export/docx`)
+const llm = require(`${process.cwd()}/components/WebServer/controllers/llm/index`)
 
 const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
 
@@ -16,7 +13,31 @@ const {
     ConversationMetadataRequire
 } = require(`${process.cwd()}/components/WebServer/error/exception/conversation`)
 
-async function downloadConversation(req, res, next) {
+async function listExport(req, res, next) {
+    try {
+        if (!req.params.conversationId) throw new ConversationIdRequire()
+        let conversationExport = await model.conversationExport.getByConvAndFormat(req.params.conversationId)
+        if (conversationExport.length === 0) throw new ConversationNotFound()
+
+        let export_list = []
+        for (let status of conversationExport) {
+            let export_conv = {
+                _id: status._id.toString(),
+                format: status.format,
+                status: status.status,
+                last_update: status.last_update,
+            }
+            if(status.status === 'error') export_conv.error = status.error
+            export_list.push(export_conv)
+        }
+
+        res.status(200).send(export_list)
+    } catch (error) {
+        next(error)
+    }
+}
+
+async function exportConversation(req, res, next) {
     try {
         if (!req.params.conversationId) throw new ConversationIdRequire()
         if (!req.query.format) throw new ConversationMetadataRequire('format is required')
@@ -25,52 +46,146 @@ async function downloadConversation(req, res, next) {
         if (conversation.length !== 1) throw new ConversationNotFound()
 
         conversation = conversation[0]
+
         let metadata = {}
+        metadata = await prepateData(conversation, metadata, req.query.format)
         if (req.body) {
             if (req.body.filter) conversation = await prepareConversation(conversation, req.body.filter)
             if (conversation.text.length === 0) res.status(204).send()
 
-            if (req.body.metadata) metadata = await prepareMetadata(conversation, req.body.metadata)
+            if (req.body.metadata) metadata = await prepareMetadata(conversation, req.body.metadata, metadata)
         }
 
-
-        let output = ""
-        if (req.query.format === 'json') {
-            output = {
-                metadata: metadata,
-                text: conversation.text
-            }
-            res.setHeader('Content-Type', 'application/json')
-            res.status(200).send(output)
+        switch (req.query.format) {
+            case 'json':
+                await handleJsonFormat(res, metadata, conversation)
+                break
+            case 'text':
+                await handleTextFormat(res, metadata, conversation)
+                break
+            case 'docx':
+            case 'verbatim':
+                await handleVerbatimFormat(res, req.query, conversation, metadata)
+                break
+            case 'cri':
+                await handleVerbatimFormat(res, req.query, conversation, metadata)
+                break
+            case 'cra':
+            case 'cred':
+                await handleLLMService(res, req.query, conversation, metadata)
+                break
+            case 'test':
+                await handleLLMService(res, req.query, conversation, metadata)
+                break
+            default:
+                throw new ConversationMetadataRequire('Format not supported')
         }
-
-        else if (req.query.format === 'text') {
-            output = jsonToPlainText(metadata, {
-                color: false,
-            })
-            output += "\n\n"
-            conversation.text.map(text => {
-                if (metadata.speakers) output += `${text.speaker_name} : `
-                if (text.stime) output += `${text.stime} - ${text.etime} : `
-                output += text.segment + "\n\n"
-            })
-
-            res.setHeader('Content-Type', 'text/plain')
-            res.status(200).send(output)
-        }
-
-        else if (req.query.format === 'docx') {
-            const file = await generateDocx(conversation, metadata)
-            res.setHeader('Content-Type', 'application/vnd.openxmlformats')
-            res.setHeader('Content-disposition', 'attachment; filename=' + file.name)
-            res.sendFile(file.path)
-        }
-
-        else throw new ConversationMetadataRequire('Format not supported')
 
     } catch (err) {
         next(err)
     }
+}
+
+async function callLlmAPI(query, conversation, metadata, conversationExport) {
+    llm.request(query, conversation, metadata, conversationExport)
+        .then(data => {
+            conversationExport.jobId = data
+            conversationExport.status = 'processing'
+            model.conversationExport.update(conversationExport)
+        }).catch(err => {
+            conversationExport.status = 'error'
+            conversationExport.error = err.message
+            model.conversationExport.update(conversationExport)
+        })
+}
+
+
+async function handleLLMService(res, query, conversation, metadata) {
+    let conversationExport = await model.conversationExport.getByConvAndFormat(conversation._id, query.format)
+    if (query.regenerate === 'true' || conversationExport.length === 0) {
+        if (conversationExport.length !== 0) await model.conversationExport.delete(conversationExport[0]._id)
+        conversationExport = {
+            convId: conversation._id.toString(),
+            format: query.format,
+            status: 'processing'
+        }
+        exportResult = await model.conversationExport.create(conversationExport)
+        conversationExport._id = exportResult.insertedId.toString()
+
+        callLlmAPI(query, conversation, metadata, conversationExport)
+        res.status(200).send({ status: 'processing' })
+    } else if (conversationExport[0].status === 'done' || conversationExport[0].status === 'complete') {
+        conversationExport = conversationExport[0]
+        const file = await docx.generateDocxOnFormat(query.format, conversationExport)
+        sendFileAsResponse(res, file, query.preview)
+    } else {
+        if(conversationExport[0].status === 'error' && conversationExport[0].error) {
+            res.status(400).send({ status: conversationExport[0].status, error: conversationExport[0].error})
+        }else {
+            // llm.pollingLlm(conversationExport[0].jobId, conversationExport[0])
+            res.status(200).send({ status: conversationExport[0].status })
+        }
+    }
+}
+
+async function sendFileAsResponse(res, file, preview = false) {
+    if (preview === 'true') {
+        const pdf = await docx.convertToPDF(file)
+        res.setHeader('Content-Type', 'application/pdf')
+        res.setHeader('Content-disposition', 'attachment; filename=' + file.name)
+        res.sendFile(pdf.path)
+    } else {
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats')
+        res.setHeader('Content-disposition', 'attachment; filename=' + file.name)
+        res.sendFile(file.path)
+    }
+}
+
+async function handleJsonFormat(res, metadata, conversation) {
+    let output = {
+        metadata: metadata,
+        text: conversation.text
+    }
+
+    //we don't add metadata if json is empty
+    if (Object.keys(metadata).length === 0) delete output.metadata
+
+    res.setHeader('Content-Type', 'application/json')
+    res.status(200).send(output)
+}
+
+async function handleTextFormat(res, metadata, conversation) {
+    let output = jsonToPlainText(metadata, {
+        color: false,
+    })
+    output += "\n\n"
+    conversation.text.map(text => {
+        if (metadata.speakers) output += `${text.speaker_name} : `
+        if (text.stime) output += `${text.stime} - ${text.etime} : `
+        output += text.segment + "\n\n"
+    })
+
+    res.setHeader('Content-Type', 'text/plain')
+    res.status(200).send(output)
+}
+
+async function handleVerbatimFormat(res, query, conversation, metadata) {
+    const text = await llm.generateText(conversation, metadata)
+    const conv = {
+        data: {
+            message: text
+        },
+        status: 'done',
+        convId: conversation._id,
+        format: query.format
+    }
+    const file = await docx.generateDocxOnFormat(query.format, conv)
+    sendFileAsResponse(res, file, query.preview)
+}
+
+async function handleDocxFormat(res, query, conversation, metadata) {
+    const file = await docx.generateTranscriptionDocx(conversation, metadata)
+    sendFileAsResponse(res, file, query.preview)
 }
 
 async function prepareConversation(conversation, filter) {
@@ -85,23 +200,39 @@ async function prepareConversation(conversation, filter) {
     return conversation
 }
 
-async function prepareMetadata(conversation, metadata) {
+async function prepateData(conversation, data, format) {
+    data.title = conversation.name
+    if (conversation.description)
+        data.description = conversation.description
+
     let speakers = {}
-    let data = {
-        title: conversation.name,
-        description: conversation.description
-    }
 
-    if (metadata.title === false) delete data.title
-    if (metadata.description === false) data.description = conversation.description
+    data.speakers = []
+    conversation.speakers.map(speaker => {
+        speakers[speaker.speaker_id] = speaker.speaker_name
+        data.speakers.push(speaker.speaker_name)
+    })
 
-    if (metadata.speakers !== false) {
-        data.speakers = []
-        conversation.speakers.map(speaker => {
-            speakers[speaker.speaker_id] = speaker.speaker_name
-            data.speakers.push(speaker.speaker_name)
-        })
-    }
+    let secondsDecimals = 2
+    if (format === 'docx') secondsDecimals = 0
+
+    let text = conversation.text.map(turn => {
+        let update_turn = {
+            turn_id: turn.turn_id,
+            segment: turn.segment,
+        }
+        update_turn.speaker_id = turn.speaker_id
+        update_turn.speaker_name = speakers[turn.speaker_id]
+        update_turn.stime = secondsToHHMMSSWithDecimals(turn.words[0].stime, secondsDecimals)
+        update_turn.etime = secondsToHHMMSSWithDecimals(turn.words[turn.words.length - 1].etime, secondsDecimals)
+        return update_turn
+    })
+
+    conversation.text = text
+    return data
+}
+
+async function prepareMetadata(conversation, metadata, data) {
 
     if (metadata.tags !== false || metadata.keyword !== false) {
         data.categories = {}
@@ -124,197 +255,20 @@ async function prepareMetadata(conversation, metadata) {
     }
 
 
-    let text = conversation.text.map(turn => {
-        let update_turn = {
-            turn_id: turn.turn_id,
-            segment: turn.segment,
-        }
-        if (metadata.speakers !== false) {
-            update_turn.speaker_id = turn.speaker_id
-            update_turn.speaker_name = speakers[turn.speaker_id]
-        }
-        if (metadata.timestamp !== false) {
-            update_turn.stime = secondsToHHMMSSWithDecimals(turn.words[0].stime)
-            update_turn.etime = secondsToHHMMSSWithDecimals(turn.words[turn.words.length - 1].etime)
-        }
-        return update_turn
-    })
-
-    conversation.text = text
-
     return data
 }
 
-async function generateDocx(conversation, metadata) {
-    conversation.name = conversation.name.replace(/[^a-zA-Z0-9 ]/g, "")
+function secondsToHHMMSSWithDecimals(totalSeconds, secondsDecimals = 0) {
+    const hours = Math.floor(totalSeconds / 3600)
+    const minutes = Math.floor((totalSeconds % 3600) / 60)
+    const seconds = (totalSeconds % 60).toFixed(secondsDecimals)
 
-    const outputFilePath = `/tmp/${conversation.name}.docx`
-    const doc = new Document({
-        creator: conversation.owner,
-        title: conversation.name,
-        description: conversation.description,
-        sections: []
-    })
-
-    const paragraphs = []
-
-
-    if (metadata.title) {
-        paragraphs.push(new Paragraph({
-            text: metadata.title,
-            heading: HeadingLevel.TITLE,
-            alignment: AlignmentType.CENTER
-        }))
-    }
-
-    paragraphs.push(generateLineBreak())
-    paragraphs.push(generateHeading('Metadata'))
-
-    if (metadata.description) {
-        paragraphs.push(generateHeading('Description', HeadingLevel.HEADING_2))
-        paragraphs.push(new Paragraph({ text: conversation.description }))
-    }
-
-    if (metadata.speakers) {
-        if (conversation.speakers.length === 1) paragraphs.push(generateHeading('Speaker', HeadingLevel.HEADING_2))
-        else paragraphs.push(generateHeading('Speakers', HeadingLevel.HEADING_2))
-
-        conversation.speakers.map(speaker => {
-            paragraphs.push(generateBulletParagraph(speaker.speaker_name, 0))
-        })
-    }
-
-    if (metadata.categories) {
-        paragraphs.push(generateHeading('Categories', HeadingLevel.HEADING_2))
-        for (let category in metadata.categories) {
-            paragraphs.push(generateBulletParagraph(category + ' - type : ' + metadata.categories[category].type, 0))
-            metadata.categories[category].tags.map(tag => {
-                paragraphs.push(generateBulletParagraph(tag, 1))
-            })
-        }
-    }
-
-
-    let targetPhrases = []
-    if (metadata.categories) {
-        for (let category in metadata.categories) {
-            if (metadata.categories[category].type === TYPE.HIGHLIGHT) {
-                metadata.categories[category].tags.map(tag => {
-                    targetPhrases.push(tag)
-                })
-            }
-        }
-    }
-
-    paragraphs.push(generateHeading('Conversation'))
-
-    conversation.text.map(turn => {
-        let children = []
-        if (metadata.speakers) children.push(new TextRun({ text: `${turn.speaker_name} : `, bold: true }))
-        if (turn.stime) children.push(new TextRun({ text: `(${turn.stime} s - ${turn.etime}s) : `, italics: true }))
-
-        if (targetPhrases.length === 0) {
-            children.push(new TextRun(turn.segment))
-        } else {
-            const phrasePattern = new RegExp(`\\b(${targetPhrases.join('|')})\\b`, 'ig')
-            const segments = turn.segment.split(phrasePattern)
-
-            for (const segment of segments) {
-                if (targetPhrases.some((phrase) => segment.toLowerCase().includes(phrase.toLowerCase()))) children.push(createHighlightedTextRun(segment))
-                else children.push(new TextRun(segment))
-            }
-        }
-
-        paragraphs.push(
-            new Paragraph({
-                children
-            })
-        )
-        paragraphs.push(new Paragraph({}))
-    })
-
-    if (metadata === 'true') {
-        paragraphs.push(generateLineBreak())
-        paragraphs.push(generateHeading('Metadata'))
-
-        if (conversation.description) {
-            paragraphs.push(generateHeading('Description', HeadingLevel.HEADING_2))
-            paragraphs.push(new Paragraph({ text: conversation.description }))
-        }
-
-        paragraphs.push(generateHeading('Speaker', HeadingLevel.HEADING_2))
-        conversation.speakers.map(speaker => {
-            paragraphs.push(generateBulletParagraph(speaker.speaker_name, 0))
-        })
-
-        paragraphs.push(generateHeading('Transcription', HeadingLevel.HEADING_2))
-        paragraphs.push(generateBulletParagraph(`lang : ${conversation.locale}`, 0))
-        paragraphs.push(generateBulletParagraph(`result_id : ${conversation.jobs.transcription.result_id}`, 0))
-        paragraphs.push(generateBulletParagraph(`transcriptionConfig : ${JSON.stringify(conversation.metadata.transcription.transcriptionConfig)}`, 0))
-
-    }
-
-    const section = {
-        properties: {},
-        children: paragraphs,
-    }
-    doc.addSection(section)
-
-    const buffer = await Packer.toBuffer(doc)
-    fs.writeFileSync(outputFilePath, buffer)
-    return {
-        path: outputFilePath,
-        name: conversation.name + '.docx'
-    }
-}
-
-function generateLineBreak() {
-    return new Paragraph({
-        thematicBreak: true,
-    })
-}
-
-function generateHeading(text, headingLevel = HeadingLevel.HEADING_1, alignement = AlignmentType.LEFT) {
-
-    return new Paragraph({
-        heading: headingLevel,
-        alignment: alignement,
-        children: [
-            new Bookmark({
-                children: [
-                    new TextRun(text),
-                ]
-            })
-        ]
-    })
-}
-
-function generateBulletParagraph(text, level) {
-    return new Paragraph({
-        text: text,
-        bullet: {
-            level
-        },
-    })
-}
-
-
-function createHighlightedTextRun(text) {
-    return new TextRun({
-        text,
-        highlight: 'yellow',
-    })
-}
-
-function secondsToHHMMSSWithDecimals(totalSeconds) {
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = (totalSeconds % 60).toFixed(2);
-
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds}`;
+    if (hours === 0) return `${minutes.toString().padStart(2, '0')}:${seconds}`
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds}`
 }
 
 
 module.exports = {
-    downloadConversation,
+    exportConversation,
+    listExport
 }

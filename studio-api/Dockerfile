@@ -16,6 +16,8 @@ RUN apt-get install -y \
     libmad0-dev \
     libid3tag0-dev \ 
     libgd-dev
+    
+RUN apt update -y && apt install -y libreoffice --fix-missing
 
 WORKDIR /usr/src/app/conversation-manager
 COPY . /usr/src/app/conversation-manager

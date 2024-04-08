@@ -38,6 +38,7 @@
     },
     "add_tag": "Add a tag",
     "add_search_criterion": "Add a search criterion",
+    "remove_all_filters": "Remove all filters",
     "apply_filters": "Appliquer les filtres",
     "add_to_favorites": "Add to favorites",
     "audio_file_too_big": "The audio file is too big. The maximum size is 1GB.",
@@ -111,7 +112,8 @@
       "txt": "Export TXT",
       "docx": "Export DOCX",
       "vtt": "Export VTT",
-      "srt": "Export SRT"
+      "srt": "Export SRT",
+      "pdf": "Export PDF"
     },
     "export_json_button": "Export JSON",
     "filter_speakers_label": "Filter",
@@ -230,7 +232,9 @@
       "punctuation_description": "Enable punctuation restitution",
       "punctuation_label_inline": "Punctuation : ",
       "punctuation_label": "Punctuation",
-      "punctuation_value_whisper": "Automatic. Handled by whisper model",
+      "punctuation_value_whisper": "Automatic.",
+      "punctuation_disabled": "Disabled",
+      "diarization_disabled": "Disabled",
       "speakers": "speakers",
       "edit_speaker": "Edit speaker",
       "add_speaker": "Add a speaker",
@@ -244,6 +248,7 @@
     "transcription_service_title": "Select the transcription service",
     "transcription_settings_label": "Transcription settings",
     "transcription_service_list_empty": "No transcription service available",
+    "turn_cant_merge": "There are too many caracteres in the turn to merge it",
     "turn_sync_error_title": "The turn is not well synchronized",
     "update_information_button": "Update information",
     "update_information_done_notif": "Information updated",
@@ -345,15 +350,22 @@
   },
   "inbox": {
     "title": "Inbox",
-    "subtitle": "Your recently uploaded medias lands here. Use “Upload media” or {appLink} to feed this."
+    "subtitle": "Your recently uploaded medias lands here. Use “Upload media” or {appLink} to feed this.",
+    "sort": {
+      "created": "Recently uploaded",
+      "last_update": "Last updated",
+      "notags": "Without tags"
+    }
   },
   "explore": {
+    "title": "Explore organizations medias",
     "subtitle": "Search and discover insights on transcribed media using meaningful semantics",
     "search_text_label": "Search text",
     "search_text_in_title": "Search \"{text}\" in title",
     "search_text_in_content": "Search \"{text}\" in transcription",
     "no_categories_modal": "There are no tags. Start tagging your media in the Inbox tab.",
-    "link_to_inbox": "Go to Inbox"
+    "link_to_inbox": "Go to Inbox",
+    "delete_conversation_button": "delete medias"
   },
   "favorites": {
     "title": "Favorites medias",
@@ -364,7 +376,8 @@
     "search_label": "Search user",
     "add_user": "Add user",
     "pending": "Pending",
-    "invite": "Invite"
+    "invite": "Invite",
+    "inscription_disabled": "Registration and invitations are deactivated on the platform"
   },
   "sharedWithTab": {
     "title": "Medias shared with me",
@@ -381,7 +394,8 @@
     "external_members": "External users",
     "invite_user_button": "Invite user",
     "user_has_been_invited": "User has been invited",
-    "user_right_updated": "User rights have been updated"
+    "user_right_updated": "User rights have been updated",
+    "inscription_disabled": "Registration and invitations are deactivated on the platform"
   },
   "lang": {
     "en": "English",
@@ -457,7 +471,7 @@
       "title": "Organization"
     },
     "tabs": {
-      "inbox": "Recent medias",
+      "inbox": "Homepage",
       "explore": "Explore",
       "favorites": "Favorites",
       "shared": "Shared with me",
@@ -534,6 +548,40 @@
     "visibility_label": "Visibility",
     "visibility_name": "Visibility"
   },
+  "publish": {
+    "filter_title": {
+      "verbatim": "Verbatim options",
+      "cri": "Full report options",
+      "cra": "Summary report options",
+      "cred": "Options for commission and delegation reports",
+      "automatic_summary": "Automatic summary options"
+    },
+    "filter_speaker": {
+      "title": "Filter by speaker"
+    },
+    "tabs": {
+      "verbatim": "Verbatim",
+      "cri": "Full report",
+      "cra": "Summary report",
+      "cred": "Commission and delegation reports",
+      "automatic_summary": "Automatic summary"
+    },
+    "generation_first_line": {
+      "verbatim": "Verbatim generation in progress...",
+      "cri": "Full report generation in progress...",
+      "cra": "Summary report generation in progress...",
+      "cred": "Commission and delegation report generation in progress..."
+    },
+    "error_first_line": {
+      "verbatim": "Error during verbatim generation",
+      "cri": "Error during full report generation",
+      "cra": "Error during summary report generation",
+      "cred": "Error during commission and delegation report generation"
+    },
+    "reload_document": "Regenerate the report",
+    "is_updated": "The report is up to date with the transcript ",
+    "is_not_updated": "The transcription has been updated. The report no longer reflects the latest changes."
+  },
   "tags": {
     "back_to_search": "Back to search",
     "browse_categories": "Browse categories",
@@ -564,7 +612,8 @@
     "edit_tag_title": "Edit tag",
     "edit_category_title": "Edit category",
     "delete_category_title": "Delete category",
-    "delete_tag_title": "Delete tag"
+    "delete_tag_title": "Delete tag",
+    "error_creating_tag": "An error occurred while creating the tag"
   },
   "usersettings": {
     "change_password_label": "Change password",
