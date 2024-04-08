@@ -10,7 +10,7 @@ export async function sendRequest(url, params, data, notif, headers) {
     if (params.method === "get") {
       req = await axios.get(url, {
         ...params,
-        params: data,
+        params: { ...data, t: Date.now() },
         headers: {
           ...headers,
           Authorization: `Bearer ${userToken}`,

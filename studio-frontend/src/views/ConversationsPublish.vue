@@ -374,17 +374,12 @@ export default {
       try {
         let services = await getLLMService()
         let res = {}
-
         for (const service of services) {
-          for (const format of service.formats) {
-            if (res[format] === undefined) {
-              res[format] = {}
-            }
-            if (res[format]["services"] === undefined) {
-              res[format]["services"] = []
-            }
-            res[format]["services"].push({ name: service.serviceName })
+          const format = service.name
+          if (res[format] === undefined) {
+            res[format] = {}
           }
+          res[format]["services"] = service.flavor.map((flavor) => flavor.name)
         }
         this.indexedFormat = res
       } catch (e) {

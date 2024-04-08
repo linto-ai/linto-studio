@@ -375,7 +375,7 @@ export async function apiGetGenericFileFromConversation(
   notif
 ) {
   return await sendRequest(
-    `${BASE_API}/conversations/${conversationId}/download?format=${format}&preview=${preview}&serviceName=${service}&regenerate=${regenerate}`,
+    `${BASE_API}/conversations/${conversationId}/download?format=${format}&preview=${preview}&flavor=${service}&regenerate=${regenerate}`,
     { method: "post", responseType: "blob" },
     {
       filter: { speaker: speakers.join(","), keyword: keywords.join(",") },
