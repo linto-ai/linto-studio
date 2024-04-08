@@ -29,6 +29,8 @@
   align-items: center;
   background-color: var(--player-region-background) !important;
   height: 70px !important;
+  box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(0.5px);
 }
 
 #subtitle-player ::part(playing) {
