@@ -129,14 +129,17 @@ async function handleLLMService(res, query, conversation, metadata) {
 }
 
 async function sendFileAsResponse(res, file, preview = false) {
+    const validCharsRegex = /[a-zA-Z0-9-_]/g
+    let fileName = file.name.match(validCharsRegex).join('')
+
     if (preview === 'true') {
         const pdf = await docx.convertToPDF(file)
         res.setHeader('Content-Type', 'application/pdf')
-        res.setHeader('Content-disposition', 'attachment; filename=' + file.name)
+        res.setHeader('Content-disposition', 'attachment; filename=' + fileName)
         res.sendFile(pdf.path)
     } else {
         res.setHeader('Content-Type', 'application/vnd.openxmlformats')
-        res.setHeader('Content-disposition', 'attachment; filename=' + file.name)
+        res.setHeader('Content-disposition', 'attachment; filename=' + fileName)
         res.sendFile(file.path)
     }
 }
