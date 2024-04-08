@@ -177,9 +177,7 @@ async function handleTextFormat(res, metadata, conversation) {
 async function handleVerbatimFormat(res, query, conversation, metadata) {
     const text = await llm.generateText(conversation, metadata)
     const conv = {
-        data: {
-            message: text
-        },
+        data: text,
         status: 'done',
         convId: conversation._id,
         format: query.format
