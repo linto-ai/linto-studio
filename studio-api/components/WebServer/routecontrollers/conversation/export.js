@@ -25,6 +25,8 @@ async function listExport(req, res, next) {
                 _id: status._id.toString(),
                 format: status.format,
                 status: status.status,
+                jobId: status.jobId,
+                processing : status.processing,
                 last_update: status.last_update,
             }
             if(status.status === 'error') export_conv.error = status.error

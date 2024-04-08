@@ -38,15 +38,14 @@ async function requestAPI(query, content, fileName, conversationExport) {
     }
 
     const fetch = await import('node-fetch')
-    let url = process.env.LLM_GATEWAY_SERVICES + '/services/' + query.serviceName + '/generate'
+    let url = process.env.LLM_GATEWAY_SERVICES + '/services/' + query.format + '/generate'
 
     const tempFilePath = '/tmp/' + fileName
     fs.writeFileSync(tempFilePath, content)
 
     let formData = new FormData()
-    const requestFormat = generateBodyFormat(query.format)
 
-    formData.append('format', requestFormat)
+    formData.append('flavor', query.flavor)
     formData.append('file', fs.createReadStream(tempFilePath), { filename: fileName, contentType: 'text/plain' })
 
     let options = {
@@ -77,30 +76,6 @@ async function requestAPI(query, content, fileName, conversationExport) {
     return jobId
 }
 
-function generateBodyFormat(format) {
-    if (format === 'cra') {
-        return JSON.stringify({
-            maxGeneratedTokens: 4000,
-            temperature: 0,
-            top_p: 0.95,
-            granularity_tokens: 4000,
-            max_new_speeches: 3,
-            previous_new_summary_ratio: 0.2,
-            format: "cra"
-        })
-    } else if (format === 'cred') {
-        return JSON.stringify({
-            maxGeneratedTokens: 4000,
-            temperature: 0,
-            top_p: 0.95,
-            granularity_tokens: 4000,
-            max_new_speeches: 2,
-            previous_new_summary_ratio: 0.1,
-            format: "cred"
-        })
-    }
-}
-
 async function pollingLlm(jobsId, conversationExport) {
     try {
         if (process.env.LLM_GATEWAY_SERVICES === undefined) {
@@ -119,11 +94,15 @@ async function pollingLlm(jobsId, conversationExport) {
             try {
                 result = await axios.get(url, options)
                 conversationExport.status = result.data.status
-                if (result.data.status === 'complete') {
-                    conversationExport.data = { message: result.data.summarization }
+                if (result.data.status === 'complete' && result.data.message === 'success') {
+                    conversationExport.data = result.data.summarization
+                    conversationExport.processing = 'Processing 100%'
                     model.conversationExport.updateStatus(conversationExport)
                 } else if (result.data.status === 'error') {
                     conversationExport.data = result.data.message
+                    model.conversationExport.updateStatus(conversationExport)
+                } else if (result.data.status === 'queued') {
+                    conversationExport.processing = result.data.message
                     model.conversationExport.updateStatus(conversationExport)
                 }
 
@@ -137,7 +116,7 @@ async function pollingLlm(jobsId, conversationExport) {
                 model.conversationExport.updateStatus(conversationExport)
                 clearInterval(intervalId)
             }
-        }, 60000)
+        }, 30000)
 
         setTimeout(() => {
             clearInterval(intervalId)
