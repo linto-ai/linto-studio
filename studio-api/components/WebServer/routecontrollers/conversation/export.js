@@ -106,6 +106,8 @@ async function callLlmAPI(query, conversation, metadata, conversationExport) {
 
 
 async function handleLLMService(res, query, conversation, metadata) {
+    if(query.flavor === undefined) throw new ConversationMetadataRequire('flavor is required')
+
     let conversationExport = await model.conversationExport.getByConvAndFormat(conversation._id, query.format)
     if (query.regenerate === 'true' || conversationExport.length === 0) {
         if (conversationExport.length !== 0) await model.conversationExport.delete(conversationExport[0]._id)
