@@ -17,7 +17,10 @@ async function listExport(req, res, next) {
     try {
         if (!req.params.conversationId) throw new ConversationIdRequire()
         let conversationExport = await model.conversationExport.getByConvAndFormat(req.params.conversationId)
-        if (conversationExport.length === 0) throw new ConversationNotFound()
+        if (conversationExport.length === 0) {
+            res.status(204).send([])
+            return
+        }
 
         let export_list = []
         for (let status of conversationExport) {
