@@ -7,6 +7,9 @@ const llm = require(`${process.cwd()}/components/WebServer/controllers/llm/index
 
 const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
 
+const { jsonToPlainText } = require('json-to-plain-text')
+
+
 const {
     ConversationIdRequire,
     ConversationNotFound,
