@@ -9,7 +9,9 @@
 }
 
 .select[inline] .select__head {
-  border-color: transparent;
+  background-color: var(--input-background);
+  background-image: none;
+  padding: 0.3rem 0.6rem;
 }
 
 .select[inline] {
@@ -54,6 +56,7 @@
 
 .select__list__item {
   background-color: var(--background-primary);
+  background-image: none;
   text-align: left;
   border-radius: 0px;
   border: none;
