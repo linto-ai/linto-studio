@@ -91,7 +91,7 @@ function updateStatus(conversationExport, data) {
         conversationExport.processing = 'Processing 100%'
     } else if (status === 'error') {
         conversationExport.data = data.message
-    } else if (status === 'queued') {
+    } else if (status === 'queued' || status === 'processing') {
         conversationExport.processing = data.message
     }
     model.conversationExport.updateStatus(conversationExport)
