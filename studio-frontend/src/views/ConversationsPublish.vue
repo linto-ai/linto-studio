@@ -176,6 +176,7 @@ export default {
       conv_last_update: null,
       currentTabId: null,
       loadingDownload: false,
+      pdfPercentageIndexByFormat: {},
       pdfPercentage: 0,
     }
   },
@@ -399,6 +400,15 @@ export default {
       this.filterSpeakers,
         this.filterTags
       */
+      if (
+        this.pdfPercentageIndexByFormat[this.activeTab] === undefined ||
+        regenerate
+      ) {
+        this.pdfPercentageIndexByFormat[this.activeTab] = 0
+      }
+
+      this.pdfPercentage = this.pdfPercentageIndexByFormat[this.activeTab]
+
       const currentActiveTab = this.currentTabId
 
       let req = await apiGetGenericFileFromConversation(
@@ -427,7 +437,11 @@ export default {
         // test if req.data as blob is json or not
         if (req.data.type === "application/json") {
           this.pdfStatus = JSON.parse(await req.data.text())?.status
-          this.pdfPercentage = JSON.parse(await req.data.text())?.processing
+          this.pdfPercentageIndexByFormat[this.activeTab] = JSON.parse(
+            await req.data.text()
+          )?.processing
+          this.pdfPercentage = this.pdfPercentageIndexByFormat[this.activeTab]
+
           if (this.pdfStatus === "processing" || this.pdfStatus === "queued") {
             setTimeout(() => {
               if (this.currentTabId === currentActiveTab) this.getPdf()
@@ -440,6 +454,9 @@ export default {
           console.log("error", req)
           this.pdfStatus = "error"
         }
+      } else {
+        console.log("error", req)
+        this.pdfStatus = "error"
       }
       this.loading = false
     },
@@ -451,7 +468,6 @@ export default {
     },
     async getLastUpdate() {
       const res = await apiGetConversationLastUpdate(this.conversationId)
-
       this.conv_last_update = res.last_update
     },
   },
