@@ -117,6 +117,7 @@
         :conversation="conversation"
         :filterSpeakers="filterSpeakers"
         :service="selectedService"
+        :pdfPercentage="pdfPercentage"
         :filterTags="filterTags" />
       <!-- <component
         :is="mainComponentName"
@@ -175,6 +176,7 @@ export default {
       conv_last_update: null,
       currentTabId: null,
       loadingDownload: false,
+      pdfPercentage: 0,
     }
   },
   mounted() {
@@ -249,7 +251,7 @@ export default {
       return res
     },
     selectedService() {
-      return this.indexedFormat[this.activeTab]?.services[0]?.name
+      return this.indexedFormat[this.activeTab]?.services[0]
     },
     currentInfoFormat() {
       return this.metadataList.find((item) => item.format === this.activeTab)
@@ -425,8 +427,8 @@ export default {
         // test if req.data as blob is json or not
         if (req.data.type === "application/json") {
           this.pdfStatus = JSON.parse(await req.data.text())?.status
-
-          if (this.pdfStatus === "processing") {
+          this.pdfPercentage = JSON.parse(await req.data.text())?.processing
+          if (this.pdfStatus === "processing" || this.pdfStatus === "queued") {
             setTimeout(() => {
               if (this.currentTabId === currentActiveTab) this.getPdf()
             }, 30000)
