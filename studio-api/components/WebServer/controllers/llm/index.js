@@ -100,18 +100,19 @@ function updateStatus(conversationExport, data) {
 
 async function pollingLlm(jobsId, conversationExport) {
     try {
-        if (process.env.LLM_GATEWAY_SERVICES === undefined) {
-            throw new Error('LLM_GATEWAY_SERVICES is not defined')
-        }
-        const options = {
-            headers: {
-                Accept: 'application/json'
-            }
-        }
-
-        let url = process.env.LLM_GATEWAY_SERVICES + '/results/' + jobsId
-
         if (!intervals[jobsId]) {
+
+            if (process.env.LLM_GATEWAY_SERVICES === undefined) {
+                throw new Error('LLM_GATEWAY_SERVICES is not defined')
+            }
+            const options = {
+                headers: {
+                    Accept: 'application/json'
+                }
+            }
+
+            let url = process.env.LLM_GATEWAY_SERVICES + '/results/' + jobsId
+
             debug(`Create a polling for job ${jobsId}`)
             const intervalId = setInterval(async () => {
                 let result = {}
