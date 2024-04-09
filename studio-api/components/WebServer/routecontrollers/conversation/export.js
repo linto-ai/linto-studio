@@ -124,7 +124,7 @@ async function handleLLMService(res, query, conversation, metadata) {
         if(conversationExport[0].status === 'error' && conversationExport[0].error) {
             res.status(400).send({ status: conversationExport[0].status, error: conversationExport[0].error})
         }else {
-            // llm.pollingLlm(conversationExport[0].jobId, conversationExport[0])
+            llm.pollingLlm(conversationExport[0].jobId, conversationExport[0])
             res.status(200).send({ status: conversationExport[0].status })
         }
     }

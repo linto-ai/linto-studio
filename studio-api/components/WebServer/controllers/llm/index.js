@@ -4,6 +4,8 @@ const FormData = require('form-data')
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const axios = require('axios').default
 
+const intervals = {}
+
 
 async function generateText(conversation, metadata) {
     let prompt = ''
@@ -76,6 +78,26 @@ async function requestAPI(query, content, fileName, conversationExport) {
     return jobId
 }
 
+function clearJobInterval(jobsId, intervalId) {
+    delete intervals[jobsId];
+    clearInterval(intervalId);
+}
+
+function updateStatus(conversationExport, data) {
+    let status = data.status
+    conversationExport.status = status
+    if (status === 'complete' && data.message === 'success') {
+        conversationExport.data = data.summarization
+        conversationExport.processing = 'Processing 100%'
+    } else if (status === 'error') {
+        conversationExport.data = data.message
+    } else if (status === 'queued') {
+        conversationExport.processing = data.message
+    }
+    model.conversationExport.updateStatus(conversationExport)
+}
+
+
 async function pollingLlm(jobsId, conversationExport) {
     try {
         if (process.env.LLM_GATEWAY_SERVICES === undefined) {
@@ -89,38 +111,34 @@ async function pollingLlm(jobsId, conversationExport) {
 
         let url = process.env.LLM_GATEWAY_SERVICES + '/results/' + jobsId
 
-        const intervalId = setInterval(async () => {
-            let result = {}
-            try {
-                result = await axios.get(url, options)
-                conversationExport.status = result.data.status
-                if (result.data.status === 'complete' && result.data.message === 'success') {
-                    conversationExport.data = result.data.summarization
-                    conversationExport.processing = 'Processing 100%'
-                    model.conversationExport.updateStatus(conversationExport)
-                } else if (result.data.status === 'error') {
-                    conversationExport.data = result.data.message
-                    model.conversationExport.updateStatus(conversationExport)
-                } else if (result.data.status === 'queued') {
-                    conversationExport.processing = result.data.message
-                    model.conversationExport.updateStatus(conversationExport)
-                }
+        if (!intervals[jobsId]) {
+            debug(`Create a polling for job ${jobsId}`)
+            const intervalId = setInterval(async () => {
+                let result = {}
+                try {
+                    result = await axios.get(url, options)
+                    updateStatus(conversationExport, result.data)
 
-                if (result.data.status === 'complete' || result.data.status === 'error' || result.data.status === 'nojob') {
-                    clearInterval(intervalId)
-                }
-            } catch (err) {
-                conversationExport.status = 'error'
-                if (err?.response?.data)
-                    conversationExport.error = err.response.data
-                model.conversationExport.updateStatus(conversationExport)
-                clearInterval(intervalId)
-            }
-        }, 30000)
+                    if (['complete', 'error', 'nojob'].includes(result.data.status))
+                        clearJobInterval(jobsId, intervalId)
 
-        setTimeout(() => {
-            clearInterval(intervalId)
-        }, 60 * 60 * 1000)
+                } catch (err) {
+                    debug(err)
+                    conversationExport.status = 'error'
+
+                    if (err?.response?.data) conversationExport.error = err.response.data
+                    model.conversationExport.updateStatus(conversationExport)
+
+                    clearJobInterval(jobsId, intervalId)
+                }
+            }, 30000)
+
+            intervals[jobsId] = intervalId
+
+            setTimeout(() => {
+                clearJobInterval(jobsId, intervalId)
+            }, 60 * 60 * 1000)
+        } else debug(`Job ${jobsId} already polling`)
 
     } catch (err) {
         conversationExport.status = 'error'
