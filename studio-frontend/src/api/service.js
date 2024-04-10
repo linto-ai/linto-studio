@@ -76,7 +76,7 @@ export async function apiGetMetadataLLMService(conversationId) {
   )
 
   if (req.status === "success") {
-    return req.data
+    return req.data || []
   } else {
     return []
   }

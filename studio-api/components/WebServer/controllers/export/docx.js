@@ -322,13 +322,15 @@ function createDocx(conversation, format = undefined) {
 }
 
 function processTurn(paragraphs_content, conversation, metadata) {
-    const lines = conversation.data.message.split('\n')
+    const lines = conversation.data.split('\n')
 
     //TODO: WIP to clean
     // metadata.speakers = metadata.speakers.map(speaker => speaker.charAt(0).toUpperCase() + speaker.slice(1))
     metadata.speakers = metadata.speakers.flatMap(speaker => [
-        speaker, speaker.charAt(0).toUpperCase() + speaker.slice(1)
+        speaker, speaker.charAt(0).toUpperCase() + speaker.slice(1),
+        speaker.replace(' :', ':'), (speaker.charAt(0).toUpperCase() + speaker.slice(1)).replace(' :', ':')
     ])
+
 
     let last_spk = ''
     lines.map(turn => {

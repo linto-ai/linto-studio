@@ -4,6 +4,8 @@ const FormData = require('form-data')
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const axios = require('axios').default
 
+const intervals = {}
+
 
 async function generateText(conversation, metadata) {
     let prompt = ''
@@ -38,15 +40,14 @@ async function requestAPI(query, content, fileName, conversationExport) {
     }
 
     const fetch = await import('node-fetch')
-    let url = process.env.LLM_GATEWAY_SERVICES + '/services/' + query.serviceName + '/generate'
+    let url = process.env.LLM_GATEWAY_SERVICES + '/services/' + query.format + '/generate'
 
     const tempFilePath = '/tmp/' + fileName
     fs.writeFileSync(tempFilePath, content)
 
     let formData = new FormData()
-    const requestFormat = generateBodyFormat(query.format)
 
-    formData.append('format', requestFormat)
+    formData.append('flavor', query.flavor)
     formData.append('file', fs.createReadStream(tempFilePath), { filename: fileName, contentType: 'text/plain' })
 
     let options = {
@@ -77,71 +78,68 @@ async function requestAPI(query, content, fileName, conversationExport) {
     return jobId
 }
 
-function generateBodyFormat(format) {
-    if (format === 'cra') {
-        return JSON.stringify({
-            maxGeneratedTokens: 4000,
-            temperature: 0,
-            top_p: 0.95,
-            granularity_tokens: 4000,
-            max_new_speeches: 3,
-            previous_new_summary_ratio: 0.2,
-            format: "cra"
-        })
-    } else if (format === 'cred') {
-        return JSON.stringify({
-            maxGeneratedTokens: 4000,
-            temperature: 0,
-            top_p: 0.95,
-            granularity_tokens: 4000,
-            max_new_speeches: 2,
-            previous_new_summary_ratio: 0.1,
-            format: "cred"
-        })
-    }
+function clearJobInterval(jobsId, intervalId) {
+    delete intervals[jobsId];
+    clearInterval(intervalId);
 }
+
+function updateStatus(conversationExport, data) {
+    let status = data.status
+    conversationExport.status = status
+    if (status === 'complete' && data.message === 'success') {
+        conversationExport.data = data.summarization
+        conversationExport.processing = 'Processing 100%'
+    } else if (status === 'error') {
+        conversationExport.data = data.message
+    } else if (status === 'queued' || status === 'processing') {
+        conversationExport.processing = data.message
+    }
+    model.conversationExport.updateStatus(conversationExport)
+}
+
 
 async function pollingLlm(jobsId, conversationExport) {
     try {
-        if (process.env.LLM_GATEWAY_SERVICES === undefined) {
-            throw new Error('LLM_GATEWAY_SERVICES is not defined')
-        }
-        const options = {
-            headers: {
-                Accept: 'application/json'
+        if (!intervals[jobsId]) {
+
+            if (process.env.LLM_GATEWAY_SERVICES === undefined) {
+                throw new Error('LLM_GATEWAY_SERVICES is not defined')
             }
-        }
-
-        let url = process.env.LLM_GATEWAY_SERVICES + '/results/' + jobsId
-
-        const intervalId = setInterval(async () => {
-            let result = {}
-            try {
-                result = await axios.get(url, options)
-                conversationExport.status = result.data.status
-                if (result.data.status === 'complete') {
-                    conversationExport.data = { message: result.data.summarization }
-                    model.conversationExport.updateStatus(conversationExport)
-                } else if (result.data.status === 'error') {
-                    conversationExport.data = result.data.message
-                    model.conversationExport.updateStatus(conversationExport)
+            const options = {
+                headers: {
+                    Accept: 'application/json'
                 }
-
-                if (result.data.status === 'complete' || result.data.status === 'error' || result.data.status === 'nojob') {
-                    clearInterval(intervalId)
-                }
-            } catch (err) {
-                conversationExport.status = 'error'
-                if (err?.response?.data)
-                    conversationExport.error = err.response.data
-                model.conversationExport.updateStatus(conversationExport)
-                clearInterval(intervalId)
             }
-        }, 60000)
 
-        setTimeout(() => {
-            clearInterval(intervalId)
-        }, 60 * 60 * 1000)
+            let url = process.env.LLM_GATEWAY_SERVICES + '/results/' + jobsId
+
+            debug(`Create a polling for job ${jobsId}`)
+            const intervalId = setInterval(async () => {
+                let result = {}
+                try {
+                    result = await axios.get(url, options)
+                    updateStatus(conversationExport, result.data)
+
+                    if (['complete', 'error', 'nojob'].includes(result.data.status))
+                        clearJobInterval(jobsId, intervalId)
+
+                } catch (err) {
+                    debug(err)
+                    conversationExport.status = 'error'
+
+                    if (err?.response?.data) conversationExport.error = err.response.data
+                    model.conversationExport.updateStatus(conversationExport)
+
+                    clearJobInterval(jobsId, intervalId)
+                }
+            }, 30000)
+
+            intervals[jobsId] = intervalId
+
+            setTimeout(() => {
+                clearJobInterval(jobsId, intervalId)
+            }, 60 * 60 * 1000)
+        } else debug(`Job ${jobsId} already polling`)
 
     } catch (err) {
         conversationExport.status = 'error'

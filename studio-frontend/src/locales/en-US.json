@@ -578,6 +578,9 @@
       "cra": "Error during summary report generation",
       "cred": "Error during commission and delegation report generation"
     },
+    "queued": {
+      "title": "The report is waiting to be generated"
+    },
     "reload_document": "Regenerate the report",
     "is_updated": "The report is up to date with the transcript ",
     "is_not_updated": "The transcription has been updated. The report no longer reflects the latest changes."
