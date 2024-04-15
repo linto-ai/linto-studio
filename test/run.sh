@@ -10,6 +10,7 @@ function container_is_health() {
 }
 
 cd $(dirname "$0")
+
 ./start.sh
 
 
@@ -17,9 +18,8 @@ dockerNames=("studio-frontend-test" "studio-api-test" "studio-websocket-test")
 
 for dockerName in "${dockerNames[@]}"
 do
-  echo "waiting for $dockerName to be healthy"
   while ! container_is_health $dockerName; do
-    echo "waiting 5s"
+    echo "waiting 5s for" $dockerName "to be healthy"
     sleep 5
   done
 done

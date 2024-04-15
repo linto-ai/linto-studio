@@ -5,4 +5,4 @@ sudo rm -rf ./storages/
 sudo cp -R ./seed-storages/ ./storages/
 
 sleep 2
-docker-compose -f docker-compose.test.yml up --build -d
+docker compose up --build -d
