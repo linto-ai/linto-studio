@@ -4,6 +4,8 @@
     "cypress-real-events": "^1.12.0"
   },
   "scripts": {
-    "e2e:electron": "cypress run --browser electron"
+    "e2e:electron": "cypress run --browser electron",
+    "cy:first": "cypress run --browser electron --config-file cypress.first-user.config.js",
+    "cy:second": "cypress run --browser electron --config-file cypress.second-user.config.js"
   }
 }

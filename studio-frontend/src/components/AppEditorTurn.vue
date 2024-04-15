@@ -23,7 +23,7 @@
         :turnIndex="index"
         v-click-outside="closeSpkToolbox"></AppEditorSpkToolbox>
       <span
-        class="icon warning"
+        class="icon warning sync-error-icon"
         :title="$t('conversation.turn_sync_error_title')"
         v-if="isLocalTextSync && !segmentIsCoherentWithWords" />
     </div>

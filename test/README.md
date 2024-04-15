@@ -13,3 +13,5 @@ npm i
 ```
 ./run.sh
 ```
+
+To improve startup times, you can pre-build the front-end by copying `env/env-front` into the front directory and run `npm run build`
