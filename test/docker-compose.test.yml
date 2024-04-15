@@ -1,0 +1,56 @@
+version: "3.7"
+
+services:
+  studio-mongo-test:
+    container_name: studio-mongo-test
+    image: mongo:latest
+    volumes:
+      - ./storages/mongo-database/:/data/db
+    networks:
+      - internal
+
+  studio-api-test:
+    container_name: studio-api-test
+    image: linto-studio/studio-api
+    build:
+      context: ../studio-api
+      dockerfile: Dockerfile
+    env_file: ./env/env-api
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./storages/studio-api/:/usr/src/app/conversation-manager/storages/
+    command:
+      - --run-cmd=node app.js
+    ports:
+      - "8011:80"
+    networks:
+      - internal
+
+  studio-websocket-test:
+    container_name: studio-websocket-test
+    image: linto-studio/studio-websocket
+    build:
+      context: ../studio-websocket
+      dockerfile: Dockerfile
+    env_file: ./env/env-ws
+    ports:
+      - "8012:80"
+    networks:
+      - internal
+
+  studio-frontend-test:
+    container_name: studio-frontend-test
+    image: linto-studio/studio-frontend
+    build:
+      context: ../studio-frontend
+      dockerfile: Dockerfile
+    env_file: ./env/env-front
+    command:
+      - --build
+    ports:
+      - "8013:80"
+    networks:
+      - internal
+
+networks:
+  internal:

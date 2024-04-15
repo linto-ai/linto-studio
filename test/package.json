@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "cypress": "^13.7.2"
+  },
+  "scripts": {
+    "e2e:electron": "cypress run --browser electron"
+  }
+}
