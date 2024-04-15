@@ -22,17 +22,21 @@
 //
 //
 // -- This will overwrite an existing command --
-Cypress.Commands.overwrite("visit", (originalFn, url, options) => {
-  // set language to english by overwriting the Accept-Language header
-  const newOptions = Object.assign({}, options, {
-    onBeforeLoad(win) {
-      Object.defineProperty(win.navigator, "language", {
-        value: "fr-FR",
-      })
+// Cypress.Commands.overwrite("visit", (originalFn, url, options) => {
+//   // set language to english by overwriting the Accept-Language header
+//   const newOptions = Object.assign({}, options, {
+//     onBeforeLoad(win) {
+//       Object.defineProperty(win.navigator, "language", {
+//         value: "fr-FR",
+//       })
 
-      if (options && options.onBeforeLoad) options.onBeforeLoad(win)
-    },
-  })
+//       if (options && options.onBeforeLoad) options.onBeforeLoad(win)
+//     },
+//   })
 
-  return originalFn(url, newOptions)
+//   return originalFn(url, newOptions)
+// })
+
+Cypress.on("window:before:load", (window) => {
+  Object.defineProperty(window.navigator, "language", { value: "fr-FR" })
 })
