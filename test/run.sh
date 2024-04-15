@@ -19,8 +19,8 @@ dockerNames=("studio-frontend-test" "studio-api-test" "studio-websocket-test")
 for dockerName in "${dockerNames[@]}"
 do
   while ! container_is_health $dockerName; do
-    echo "waiting 5s for" $dockerName "to be healthy"
-    sleep 5
+    echo "waiting for" $dockerName "to be healthy"
+    sleep 1
   done
 done
 

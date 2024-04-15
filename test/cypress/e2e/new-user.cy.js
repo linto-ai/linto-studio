@@ -1,4 +1,4 @@
-describe("My First Test", () => {
+describe("New user", () => {
   it("Create an account", () => {
     cy.visit("http://127.0.0.1:8013/")
 
@@ -18,10 +18,7 @@ describe("My First Test", () => {
   })
 
   it("Login", () => {
-    cy.visit("http://127.0.0.1:8013/")
-    cy.get("#email").type("test@example.com")
-    cy.get("#password").type("password")
-    cy.get("button[type=submit]").click()
+    cy.login("test@example.com", "password")
     cy.contains("Aucun média trouvé")
   })
 

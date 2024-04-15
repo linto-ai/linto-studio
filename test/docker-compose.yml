@@ -25,6 +25,8 @@ services:
       - "8011:80"
     networks:
       - internal
+    healthcheck:
+      interval: 3s
 
   studio-websocket-test:
     container_name: studio-websocket-test
@@ -37,6 +39,8 @@ services:
       - "8012:80"
     networks:
       - internal
+    healthcheck:
+      interval: 3s
 
   studio-frontend-test:
     container_name: studio-frontend-test
@@ -45,12 +49,12 @@ services:
       context: ../studio-frontend
       dockerfile: Dockerfile
     env_file: ./env/env-front
-    command:
-      - --build
     ports:
       - "8013:80"
     networks:
       - internal
+    healthcheck:
+      interval: 1s
 
 networks:
   internal:

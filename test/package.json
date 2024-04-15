@@ -1,6 +1,7 @@
 {
   "devDependencies": {
-    "cypress": "^13.7.2"
+    "cypress": "^13.7.2",
+    "cypress-real-events": "^1.12.0"
   },
   "scripts": {
     "e2e:electron": "cypress run --browser electron"
