@@ -26,6 +26,8 @@ describe("Edition 2nd user", () => {
 
     cy.contains("Ça va très bimot4 mot5 mot6en depuis combien de temps ?")
 
-    cy.wait(150)
+    cy.wait(200)
+    cy.contains("Ça va très bimot4 mot5 mot6en depuis combien de temps ?")
+    cy.contains("Ça va trèmot1 mot2 mot3s bien.")
   })
 })

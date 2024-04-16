@@ -26,18 +26,9 @@ describe("Edition 1st user", () => {
 
     cy.contains("Ça va trèmot1 mot2 mot3s bien.")
 
-    cy.wait(150)
-    // cy.contains("recevons").first().realClick()
-
-    // cy.realType(" ")
-
-    // cy.contains("rece vons")
-
-    // cy.get(".organization-sidebar").click()
-
-    // cy.contains("rece vons")
-
-    // cy.get("sync-error-icon").should("not.exist")
+    cy.wait(200)
+    cy.contains("Ça va très bimot4 mot5 mot6en depuis combien de temps ?")
+    cy.contains("Ça va trèmot1 mot2 mot3s bien.")
   })
   // it("import a media", () => {
   //   cy.visit("http://127.0.0.1:8013/")
