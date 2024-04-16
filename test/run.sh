@@ -27,7 +27,30 @@ done
 # TODO: check docker healthy with a function
 echo "run tests"
 
-npm run e2e:electron
+case $1 in
+
+  collab)
+    sleep 1
+    npm run cy:collab
+    ;;
+
+  simple)
+    npm run e2e:electron
+    ;;
+
+  all)
+    npm run e2e:electron
+    sleep 1
+    npm run cy:collab
+    ;;
+
+  *)
+    npm run e2e:electron
+    sleep 1
+    npm run cy:collab
+    ;;
+esac
+
 ./stop.sh
 
 

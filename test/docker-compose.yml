@@ -1,5 +1,3 @@
-version: "3.7"
-
 services:
   studio-mongo-test:
     container_name: studio-mongo-test

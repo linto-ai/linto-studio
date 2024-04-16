@@ -13,6 +13,7 @@
 // Cypress.Commands.add('login', (email, password) => { ... })
 //
 //
+require("cypress-terminal-report/src/installLogsCollector")()
 
 Cypress.Commands.add("login", (email, password) => {
   cy.visit("http://127.0.0.1:8013/")
@@ -43,6 +44,25 @@ Cypress.Commands.add("login", (email, password) => {
 
 //   return originalFn(url, newOptions)
 // })
+
+Cypress.Commands.add("captureConsoleLogs", () => {
+  cy.on("window:console", (consoleMessage, ...args) => {
+    // Formatage du message de console
+    const log = `${consoleMessage.type}: ${consoleMessage.text}`
+
+    // Enregistrer le message de console dans un fichier
+    const fs = require("fs")
+    fs.appendFileSync("console.log.txt", `${log}\n`)
+  })
+  cy.on("window:debug", (consoleMessage, ...args) => {
+    // Formatage du message de console
+    const log = `${consoleMessage.type}: ${consoleMessage.text}`
+
+    // Enregistrer le message de console dans un fichier
+    const fs = require("fs")
+    fs.appendFileSync("debug.log.txt", `${log}\n`)
+  })
+})
 
 Cypress.on("window:before:load", (window) => {
   Object.defineProperty(window.navigator, "language", { value: "fr-FR" })

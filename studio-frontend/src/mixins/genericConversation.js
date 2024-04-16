@@ -36,7 +36,9 @@ export const genericConversationMixin = {
     )
     // Load conversation by asking worker
     EditorWorker.worker.onmessage = async (event) => {
-      this.debug("Message from worker: %s", event.data.action)
+      if (event.data.action !== "user_focus_field") {
+        this.debug("Message from worker: %s", event.data.action)
+      }
       switch (event.data.action) {
         case "error":
           this.error = true
@@ -85,6 +87,7 @@ export const genericConversationMixin = {
           break
         case "job_transcription_update":
           const transcriptionState = event.data.params?.state ?? "pending"
+          if (!this.conversation.jobs) this.conversation.jobs = {}
           this.conversation.jobs.transcription = {
             state: transcriptionState,
             steps: event.data.params.steps,
@@ -164,6 +167,7 @@ export const genericConversationMixin = {
       }
     },
     computeStatus(job) {
+      if (!job) return "pending"
       if (job.state === "done" || job.state === "error") {
         return job.state
       }

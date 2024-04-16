@@ -6,7 +6,7 @@ module.exports = defineConfig({
       require("cypress-terminal-report/src/installLogsPrinter")(on)
       // implement node event listeners here
     },
-    specPattern: ["cypress/collab/user1.cy.js"],
+    specPattern: ["cypress/collab/user3.cy.js"],
     video: true,
   },
 })

@@ -79,7 +79,13 @@ function connect(event) {
 }
 
 onmessage = (event) => {
-  debugWorker("Worker received message: %s", event.data.action)
+  if (
+    event.data.action !== "user_focus_field" &&
+    event.data.action !== "focus_field" &&
+    event.data.action !== "unfocus_field"
+  ) {
+    debugWorker("Worker received message: %s", event.data.action)
+  }
   switch (event.data?.action) {
     case "connect":
       connect(event)
@@ -320,7 +326,7 @@ function setSocketListeners(socket) {
   })
 
   socket.on(`user_focus_field`, (data) => {
-    debugFocusWorker("Websocket event 'user_focus_field'")
+    //debugFocusWorker("Websocket event 'user_focus_field'")
     sendMessage("user_focus_field", data)
   })
 
