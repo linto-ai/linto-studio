@@ -1,4 +1,6 @@
 #!/bin/bash
+export ELECTRON_ENABLE_LOGGING=1
+
 function container_is_health() {
   local container_name=$1
   local health_status=$(docker inspect --format='{{.State.Health.Status}}' $container_name)

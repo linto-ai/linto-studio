@@ -1,8 +1,4 @@
 describe("Edition 1st user", () => {
-  beforeEach(() => {
-    cy.captureConsoleLogs() // Capturer la sortie de la console avant chaque test
-  })
-
   it("edit turn", () => {
     cy.login("foo.bar@example.com", "password")
 

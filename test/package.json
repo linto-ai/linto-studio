@@ -2,14 +2,13 @@
   "devDependencies": {
     "concurrently": "^8.2.2",
     "cypress": "^13.7.2",
-    "cypress-real-events": "^1.12.0",
-    "cypress-terminal-report": "^6.0.1"
+    "cypress-real-events": "^1.12.0"
   },
   "scripts": {
-    "e2e:electron": "cypress run --browser electron",
-    "cy:first": "cypress run --browser electron --config-file cypress.first-user.config.js",
-    "cy:second": "cypress run --browser electron --config-file cypress.second-user.config.js",
-    "cy:third": "cypress run --browser electron --config-file cypress.third-user.config.js",
-    "cy:collab": "concurrently \"npm run cy:first\" \"npm run cy:second\" \"npm run cy:third\""
+    "e2e:electron": "cypress run --browser electron 2> log/test-log.txt",
+    "cy:first": "cypress run --browser electron --config-file cypress.first-user.config.js 2> log/first-user-log.txt",
+    "cy:second": "cypress run --browser electron --config-file cypress.second-user.config.js 2> log/second-user-log.txt",
+    "cy:third": "cypress run --browser electron --config-file cypress.third-user.config.js 2> log/third-user-log.txt",
+    "cy:collab": "concurrently \"npm run cy:first\" \"npm run cy:second \" \"npm run cy:third \""
   }
 }
