@@ -1,11 +1,11 @@
-import Debug from "debug"
 import { Conversation } from "../models/conversations.js"
 import { Subtitle } from "../models/subtitles.js"
 import debounce from "debounce"
+import { customDebug } from "../../../tools/customDebug"
 
-const debugSendDocUpdate = Debug("Worker:debug:send:docUpdate")
-const debugReceiveTurnUpdate = Debug("Worker:debug:receive:turnUpdate")
-const debugReceiveSpeakerUpdate = Debug("Worker:debug:receive:speakerUpdate")
+const debugSendDocUpdate = customDebug("Worker:debug:send:docUpdate")
+const debugReceiveTurnUpdate = customDebug("Worker:debug:receive:turnUpdate")
+const debugReceiveSpeakerUpdate = customDebug("Worker:debug:receive:speakerUpdate")
 
 let tmpBinaryDelta = []
 
@@ -68,7 +68,7 @@ function sendDocUpdateToWebsocket(origin, socket, dataId, userToken) {
   // Reset Temporary binary delta
   tmpBinaryDelta = []
   // Send binary delta to worker
-  debugSendDocUpdate("Send binary delta to worker")
+  debugSendDocUpdate("Send binary delta to WS")
   socket.emit(`${isSubtitle ? "screen" : "conversation"}_update`, {
     subtitleId: isSubtitle ? dataId : undefined,
     conversationId: !isSubtitle ? dataId : undefined,

@@ -1,3 +1,4 @@
 storages
 log/*.txt
 cypress/videos
+cypress/screenshots

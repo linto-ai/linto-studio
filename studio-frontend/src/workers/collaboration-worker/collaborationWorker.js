@@ -35,6 +35,7 @@ import {
   sendScreenUpdateToViewWrapper,
 } from "./handlers/docHandlers.js"
 
+import { customDebug } from "../../tools/customDebug.js"
 import SyllabicFR from "../../../public/js/syllabic/syllabicFR.js"
 import SyllabicEN from "../../../public/js/syllabic/syllabicEN.js"
 
@@ -50,11 +51,11 @@ let shouldDisconnect = false
 let syllabic = null
 let conversationFormat = null
 
-const infoWorker = Debug("Worker:info")
-const debugWorker = Debug("Worker:debug")
-const debugFocusWorker = Debug("Worker:debug:focus")
-const debugRightWorker = Debug("Worker:debug:right")
-const debugJobsWorker = Debug("Worker:debug:jobs")
+const infoWorker = customDebug("Worker:info")
+const debugWorker = customDebug("Worker:debug")
+const debugFocusWorker = customDebug("Worker:debug:focus")
+const debugRightWorker = customDebug("Worker:debug:right")
+const debugJobsWorker = customDebug("Worker:debug:jobs")
 
 Debug.enable(process.env.VUE_APP_DEBUG)
 

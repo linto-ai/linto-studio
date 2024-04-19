@@ -8,17 +8,19 @@ import { applyDeltaOnYArray } from "../../../tools/applyDeltaOnYArray"
 import { divideTurn } from "../../../tools/divideTurn"
 import { Conversation } from "../models/conversations"
 import { mergeTurn } from "../../../tools/mergeTurn"
+import { customDebug } from "../../../tools/customDebug"
 import { diffArrays } from "diff"
 
+
 const dmp = new DiffMatchPatch()
-const debugWorker = Debug("Worker:debug")
-const debugturnEditText = Debug("Worker:debug:turn:EditText")
-const debugturnInsertParagraph = Debug("Worker:debug:turn:InsertParagraph")
-const debugturnMergeParagraph = Debug("Worker:debug:turn:MergeParagraph")
-const debugAddSpeaker = Debug("Worker:debug:Speaker:AddSpeaker")
-const debugEditSpeaker = Debug("Worker:debug:Speaker:EditSpeaker")
-const debugEditRight = Debug("Worker:debug:right")
-const debugEditScreen = Debug("Worker:debug:screen:EditScreen")
+const debugWorker = customDebug("Worker:debug")
+const debugturnEditText = customDebug("Worker:debug:turn:EditText")
+const debugturnInsertParagraph = customDebug("Worker:debug:turn:InsertParagraph")
+const debugturnMergeParagraph = customDebug("Worker:debug:turn:MergeParagraph")
+const debugAddSpeaker = customDebug("Worker:debug:Speaker:AddSpeaker")
+const debugEditSpeaker = customDebug("Worker:debug:Speaker:EditSpeaker")
+const debugEditRight = customDebug("Worker:debug:right")
+const debugEditScreen = customDebug("Worker:debug:screen:EditScreen")
 
 function getYdelta(ydocElem, newValue) {
   let diff = dmp.diff_main(ydocElem, newValue)
