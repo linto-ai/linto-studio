@@ -1,5 +1,12 @@
 <template>
-  <div :class="['turn-container', 'flex', 'row', focused ? 'focused' : '']">
+  <div
+    :class="[
+      'turn-container',
+      'flex',
+      'row',
+      focused ? 'focused' : '',
+      locked ? 'locked' : '',
+    ]">
     <div class="conversation-speaker flex">
       <span
         :class="[
@@ -32,12 +39,11 @@
         <div class="turn-loading-bar" v-if="!isLocalTextSync"></div>
       </div>
       <div
-        v-if="!contentEditable || disabled || !canEdit"
+        v-if="!contentEditable || disabled || !canEdit || locked"
         :class="['turn', usersConnectedNames.length > 0 ? 'collab-active' : '']"
         :data-stime="stime"
         :data-etime="etime"
         :id="turnId"
-        :contenteditable="contentEditable"
         ref="turn"
         @click="handleClick($event)"
         v-click-outside="resetWordSelected">
@@ -86,11 +92,8 @@
       <div
         class="flex row user-connected-container align-center"
         ref="turn-users-connected">
-        <span
-          v-for="user in usersConnectedNames"
-          class="user-connected"
-          :key="user"
-          >{{ user }}
+        <span v-if="focusBy" class="user-connected">
+          {{ focusBy }}
         </span>
       </div>
       <div class="turn-actions flex row">
@@ -130,6 +133,7 @@ import _handleSpeakerClick from "@/components/AppEditorTurn.d/handleSpeakerClick
 import _setSpeakerName from "@/components/AppEditorTurn.d/setSpeakerName.js"
 import _handleEnter from "@/components/AppEditorTurn.d/handleEnter.js"
 import AppEditorMetadataModal from "./AppEditorMetadataModal.vue"
+import { getCookie } from "../tools/getCookie.js"
 
 export default {
   props: {
@@ -149,6 +153,10 @@ export default {
     usersConnected: {
       type: Array,
       default: () => [],
+    },
+    focusFields: {
+      type: Object,
+      required: true,
     },
     turnData: {
       type: Object,
@@ -268,22 +276,40 @@ export default {
     flag() {
       return "conversationTurn/" + this.turnId
     },
+    locked() {
+      const isFocus = this.focusFields?.[this.flag]
+      if (isFocus && isFocus.userToken !== getCookie("authToken")) {
+        return true
+      }
+      return false
+    },
+    focusBy() {
+      const isFocus = this.focusFields?.[this.flag]
+      if (isFocus) {
+        const user = this.conversationUsers.find(
+          (usr) => usr._id === isFocus.userId
+        )
+        return user.firstname + " " + user.lastname
+      }
+
+      return null
+    },
     usersConnectedNames() {
       let usersConnectedNames = []
-      if (this.conversationUsers && this.conversationUsers.length > 0) {
-        this.usersConnected.map((user) => {
-          if (user.inputField === this.flag) {
-            let userOnField = this.conversationUsers.find(
-              (usr) => usr._id === user.userId
-            )
-            if (userOnField) {
-              usersConnectedNames.push(
-                userOnField.firstname + " " + userOnField.lastname
-              )
-            }
-          }
-        })
-      }
+      // if (this.conversationUsers && this.conversationUsers.length > 0) {
+      //   this.usersConnected.map((user) => {
+      //     if (user.inputField === this.flag) {
+      //       let userOnField = this.conversationUsers.find(
+      //         (usr) => usr._id === user.userId
+      //       )
+      //       if (userOnField) {
+      //         usersConnectedNames.push(
+      //           userOnField.firstname + " " + userOnField.lastname
+      //         )
+      //       }
+      //     }
+      //   })
+      // }
       return usersConnectedNames
     },
     nonEmptyWords() {
@@ -312,6 +338,11 @@ export default {
         this.displayHighlights()
       },
       deep: true,
+    },
+    focusBy(data, oldData) {
+      if (oldData && oldData !== data) {
+        this.contentEditable = false
+      }
     },
   },
   mounted() {

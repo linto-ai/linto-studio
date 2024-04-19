@@ -124,6 +124,8 @@ $selectedWord: #0057f5;
     line-height: 1.5em;
     font-size: 15px;
     font-family: luciole;
+    border: 1px solid transparent;
+    border-radius: 5px;
   }
 
   .collab-input {
@@ -138,6 +140,11 @@ $selectedWord: #0057f5;
         background-color: #f2f2f2;
       }
     }
+  }
+
+  &.locked .turn {
+    background-color: var(--background-lock-turn);
+    border: var(--border-lock-turn);
   }
 }
 

@@ -1,31 +1,27 @@
 import EditorWorker from "../workers/collaboration-worker"
 
 export function workerSendMessage(action, params) {
-  EditorWorker.worker.postMessage({
-    action,
-    params,
-  })
+  EditorWorker.workerSingleton.sendMessage(action, params)
 }
 
 export function workerConnect(
   conversationId,
   userToken,
   userId,
-  conversationFormat,
+  conversationFormat
 ) {
-  EditorWorker.worker.postMessage({
-    action: "connect",
-    params: { conversationId, userToken, userId, conversationFormat },
-  })
+  EditorWorker.workerSingleton.connect(
+    conversationId,
+    userToken,
+    userId,
+    conversationFormat
+  )
 }
 
 export function workerDisconnect() {
-  EditorWorker.worker.postMessage({
-    action: "disconnect",
-    params: {},
-  })
+  EditorWorker.workerSingleton.getWorker().terminate()
 }
 
 export function workerListener() {
-  EditorWorker.worker.onmessage = (event) => {}
+  EditorWorker.workerSingleton.getWorker().onmessage = (event) => {}
 }

@@ -11,11 +11,12 @@ import { mergeTurn } from "../../../tools/mergeTurn"
 import { customDebug } from "../../../tools/customDebug"
 import { diffArrays } from "diff"
 
-
 const dmp = new DiffMatchPatch()
 const debugWorker = customDebug("Worker:debug")
 const debugturnEditText = customDebug("Worker:debug:turn:EditText")
-const debugturnInsertParagraph = customDebug("Worker:debug:turn:InsertParagraph")
+const debugturnInsertParagraph = customDebug(
+  "Worker:debug:turn:InsertParagraph"
+)
 const debugturnMergeParagraph = customDebug("Worker:debug:turn:MergeParagraph")
 const debugAddSpeaker = customDebug("Worker:debug:Speaker:AddSpeaker")
 const debugEditSpeaker = customDebug("Worker:debug:Speaker:EditSpeaker")
@@ -305,14 +306,22 @@ export function updateOrganizationRight(params, conversationId, rootDoc) {
   }, "conversation_update_organization")
 }
 
-export function focusField(event, conversationId, socket) {
+export function focusField(event, conversationId, socket, userToken) {
   if (event.data.params?.field && event.data.params?.userId) {
-    socket.emit("focus_field", { ...event.data.params, conversationId })
+    socket.emit("focus_field", {
+      ...event.data.params,
+      conversationId,
+      userToken,
+    })
   }
 }
 
-export function unfocusField(event, conversationId, socket) {
-  socket.emit("unfocus_field", { ...event.data.params, conversationId })
+export function unfocusField(event, conversationId, socket, userToken) {
+  socket.emit("unfocus_field", {
+    ...event.data.params,
+    conversationId,
+    userToken,
+  })
 }
 
 export function fetchSubtitles(userToken, conversationId, subtitleId, socket) {

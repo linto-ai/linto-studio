@@ -9,6 +9,7 @@
             :speakers="speakers"
             :index="turns.findIndex((turn) => turn.turn_id === turn.turn_id)"
             :usersConnected="usersConnected"
+            :focusFields="focusFields"
             :conversationId="conversationId"
             :conversationUsers="conversationUsers"
             :userInfo="userInfo"
@@ -92,6 +93,10 @@ export default {
       required: true,
     },
     hightlightsCategoriesVisibility: {
+      type: Object,
+      required: true,
+    },
+    focusFields: {
       type: Object,
       required: true,
     },

@@ -414,12 +414,12 @@ export class Conversation {
     this.obj = {}
   }
 
-  updateUsers(userId, inputField) {
-    this.users[userId].inputField = inputField
+  updateUsers(userId, inputField, userToken, callbackWhenTimeout) {
+    this.users[userId].addFocusField(inputField, userToken, callbackWhenTimeout)
   }
 
-  resetUsers(userId) {
-    if (this.users[userId]?.inputField) this.users[userId].inputField = null
+  resetUsers(userId, userToken) {
+    this.users[userId].removeFocusField(userToken)
   }
 
   getUsersList() {
@@ -427,10 +427,25 @@ export class Conversation {
     for (let userId in this.users) {
       usersList.push({
         userId: userId,
-        inputField: this.users[userId].inputField,
+        focusFieldsIndexedByUserToken:
+          this.users[userId].focusFieldsIndexedByUserToken,
       })
     }
     return usersList
+  }
+
+  getFocusFields() {
+    let focusFields = {}
+    for (let userId in this.users) {
+      for (let userToken in this.users[userId].focusFieldsIndexedByUserToken) {
+        let inputField =
+          this.users[userId].focusFieldsIndexedByUserToken[userToken]
+        if (inputField) {
+          focusFields[inputField] = { userId, userToken }
+        }
+      }
+    }
+    return focusFields
   }
 
   static formatYturn(turnObj) {
@@ -457,6 +472,27 @@ export class Conversation {
 export class User {
   constructor(userId) {
     this.userId = userId
-    this.inputField = null
+    this.focusFieldsIndexedByUserToken = {}
+    this.timeouts = {}
+    this.callbackWhenTimeout = {}
+  }
+
+  addFocusField(inputField, userToken, callbackWhenTimeout) {
+    this.focusFieldsIndexedByUserToken[userToken] = inputField
+    this.callbackWhenTimeout[userToken] = callbackWhenTimeout
+    this.refreshFocusField(userToken)
+  }
+
+  removeFocusField(userToken) {
+    this.focusFieldsIndexedByUserToken[userToken] = null
+    clearTimeout(this.timeouts[userToken])
+  }
+
+  refreshFocusField(userToken) {
+    if (this.timeouts[userToken]) clearTimeout(this.timeouts[userToken])
+    this.timeouts[userToken] = setTimeout(() => {
+      this.removeFocusField(userToken)
+      this.callbackWhenTimeout[userToken]()
+    }, 30000)
   }
 }

@@ -160,10 +160,10 @@ onmessage = (event) => {
       )
       break
     case "focus_field":
-      focusField(event, conversationId, socket)
+      focusField(event, conversationId, socket, userToken)
       break
     case "unfocus_field":
-      unfocusField(event, conversationId, socket)
+      unfocusField(event, conversationId, socket, userToken)
       break
     case "get_subtitle":
       fetchSubtitles(
@@ -247,6 +247,9 @@ function disconnect() {
   userToken = ""
   socket = null
   infoWorker("Worker stopped")
+  sendMessage({
+    action: "disconnected",
+  })
 }
 
 function setSocketListeners(socket) {
@@ -304,8 +307,9 @@ function setSocketListeners(socket) {
 
       // Set connected users
       let users = data.users
+      let focusFields = data.focusFields
       if (users?.length > 0) {
-        sendMessage("user_focus_field", { users: users })
+        sendMessage("user_focus_field", { users, focusFields })
       }
     } catch (error) {
       console.error(error)

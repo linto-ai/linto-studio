@@ -17,6 +17,7 @@ export const genericConversationMixin = {
       conversationLoaded: false,
       userId: getCookie("userId"),
       usersConnected: [],
+      focusFields: {},
       conversationUsersLoaded: false,
       conversation: null,
       conversationId: "",
@@ -35,7 +36,7 @@ export const genericConversationMixin = {
       this.userInfo._id
     )
     // Load conversation by asking worker
-    EditorWorker.worker.onmessage = async (event) => {
+    EditorWorker.workerSingleton.getWorker().onmessage = async (event) => {
       if (event.data.action !== "user_focus_field") {
         this.debug("Message from worker: %s", event.data.action)
       }
@@ -75,6 +76,7 @@ export const genericConversationMixin = {
           break
         case "user_focus_field":
           this.usersConnected = event.data.params.users
+          this.focusFields = event.data.params.focusFields
           break
         case "user_right_updated":
           await this.dispatchConversationUsers()
