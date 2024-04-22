@@ -14,6 +14,7 @@
       v-if="mainListingPage" />
     <!-- <span class="breadcrumb__element">{{ currentRoute.name }}</span> -->
     <router-link
+      id="upload-media-button"
       :title="createTitle"
       to="/interface/conversations/create"
       class="btn nav-link green no-shrink"

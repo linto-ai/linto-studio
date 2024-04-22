@@ -82,14 +82,7 @@
           value=""
           :disabled="pdfStatus !== 'displayed' || loadingDownload"
           aria-label="select how to open the conversation"
-          :options="{
-            actions: [
-              { value: 'docx', text: $t('conversation.export.docx') },
-              { value: 'pdf', text: $t('conversation.export.pdf') },
-              // { value: 'txt', text: $t('conversation.export.txt') },
-              // { value: 'json', text: $t('conversation.export.json') },
-            ],
-          }"
+          :options="optionsExport"
           buttonClass="green"
           @input="exportConv"></CustomSelect>
       </div>
@@ -117,6 +110,7 @@
         :conversation="conversation"
         :filterSpeakers="filterSpeakers"
         :service="selectedService"
+        :pdfPercentage="pdfPercentage"
         :filterTags="filterTags" />
       <!-- <component
         :is="mainComponentName"
@@ -175,6 +169,8 @@ export default {
       conv_last_update: null,
       currentTabId: null,
       loadingDownload: false,
+      pdfPercentageIndexByFormat: {},
+      pdfPercentage: 0,
     }
   },
   mounted() {
@@ -206,6 +202,33 @@ export default {
     },
   },
   computed: {
+    optionsExport() {
+      switch (this.activeTab) {
+        case "verbatim":
+        case "docx":
+        case "cri":
+          return {
+            actions: [
+              { value: "docx", text: this.$t("conversation.export.docx") },
+              { value: "pdf", text: this.$t("conversation.export.pdf") },
+              { value: "txt", text: this.$t("conversation.export.txt") },
+              { value: "json", text: this.$t("conversation.export.json") },
+            ],
+          }
+          break
+
+        default:
+          return {
+            actions: [
+              { value: "docx", text: this.$t("conversation.export.docx") },
+              { value: "pdf", text: this.$t("conversation.export.pdf") },
+              // { value: 'txt', text: $t('conversation.export.txt') },
+              // { value: 'json', text: $t('conversation.export.json') },
+            ],
+          }
+          break
+      }
+    },
     dataLoaded() {
       return this.conversationLoaded && !this.loadingServices
     },
@@ -249,7 +272,7 @@ export default {
       return res
     },
     selectedService() {
-      return this.indexedFormat[this.activeTab]?.services[0]?.name
+      return this.indexedFormat[this.activeTab]?.services[0]
     },
     currentInfoFormat() {
       return this.metadataList.find((item) => item.format === this.activeTab)
@@ -374,17 +397,12 @@ export default {
       try {
         let services = await getLLMService()
         let res = {}
-
         for (const service of services) {
-          for (const format of service.formats) {
-            if (res[format] === undefined) {
-              res[format] = {}
-            }
-            if (res[format]["services"] === undefined) {
-              res[format]["services"] = []
-            }
-            res[format]["services"].push({ name: service.serviceName })
+          const format = service.name
+          if (res[format] === undefined) {
+            res[format] = {}
           }
+          res[format]["services"] = service.flavor.map((flavor) => flavor.name)
         }
         this.indexedFormat = res
       } catch (e) {
@@ -402,6 +420,15 @@ export default {
       this.filterSpeakers,
         this.filterTags
       */
+      if (
+        this.pdfPercentageIndexByFormat[this.activeTab] === undefined ||
+        regenerate
+      ) {
+        this.pdfPercentageIndexByFormat[this.activeTab] = 0
+      }
+
+      this.pdfPercentage = this.pdfPercentageIndexByFormat[this.activeTab]
+
       const currentActiveTab = this.currentTabId
 
       let req = await apiGetGenericFileFromConversation(
@@ -430,8 +457,12 @@ export default {
         // test if req.data as blob is json or not
         if (req.data.type === "application/json") {
           this.pdfStatus = JSON.parse(await req.data.text())?.status
+          this.pdfPercentageIndexByFormat[this.activeTab] = JSON.parse(
+            await req.data.text()
+          )?.processing
+          this.pdfPercentage = this.pdfPercentageIndexByFormat[this.activeTab]
 
-          if (this.pdfStatus === "processing") {
+          if (this.pdfStatus === "processing" || this.pdfStatus === "queued") {
             setTimeout(() => {
               if (this.currentTabId === currentActiveTab) this.getPdf()
             }, 30000)
@@ -443,6 +474,9 @@ export default {
           console.log("error", req)
           this.pdfStatus = "error"
         }
+      } else {
+        console.log("error", req)
+        this.pdfStatus = "error"
       }
       this.loading = false
     },
@@ -454,7 +488,6 @@ export default {
     },
     async getLastUpdate() {
       const res = await apiGetConversationLastUpdate(this.conversationId)
-
       this.conv_last_update = res.last_update
     },
   },

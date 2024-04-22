@@ -48,22 +48,37 @@ a.underline {
 
 button,
 .btn {
-  padding: 5px 10px;
-  @include borderRadius(3px);
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
   font-size: 15px;
   font-weight: 500;
   border: var(--border-button-flat);
   background-color: var(--background-secondary);
+  background-image: var(--button-image-background);
   //display: flex;
   align-items: center;
+  position: relative;
   &.inline {
     display: inline-flex;
     padding: 0;
     flex-shrink: 0;
   }
 
+  &:before {
+    content: " ";
+    position: absolute;
+    z-index: -1;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    border: var(--border-button-glass);
+    border-radius: 3px;
+  }
+
   &:hover {
-    background-color: var(--button-background-hover);
+    //background-color: var(--button-background-hover);
+    background-image: none;
     text-decoration: none;
   }
   & > * {
@@ -95,6 +110,7 @@ button,
   }
   &.transparent {
     background-color: transparent;
+    background-image: none;
     text-decoration: underline;
     border: none;
     &:hover {
@@ -102,6 +118,9 @@ button,
       text-decoration: underline;
     }
 
+    &:before {
+      border: none;
+    }
     &[disabled] {
       background-color: transparent;
       text-decoration: underline;
@@ -115,6 +134,7 @@ button,
 
   &.only-border {
     background-color: transparent;
+    background-image: none;
     border: var(--border-button);
     &:hover {
       background-color: transparent;
@@ -125,6 +145,8 @@ button,
   &.green {
     background-color: var(--green-chart);
     border: 1px solid var(--green-chart);
+    background-image: none;
+    position: relative;
     .label {
       color: #fff;
     }
@@ -144,6 +166,7 @@ button,
   &.green-border {
     border: 1px solid var(--green-chart);
     background-color: var(--background-primary);
+    background-image: none;
     .label {
       color: var(--green-chart);
     }
@@ -162,6 +185,7 @@ button,
   }
   &.red {
     background-color: var(--red-chart);
+    background-image: none;
     border: 1px solid var(--red-chart);
     .label {
       color: var(--background-primary);
@@ -182,6 +206,7 @@ button,
   &.red-border {
     border: 1px solid var(--red-chart);
     background-color: var(--background-primary);
+    background-image: none;
     .label {
       color: var(--red-chart);
     }
@@ -190,6 +215,7 @@ button,
     }
     &:hover {
       background-color: var(--red-chart);
+      background-image: none;
       .icon {
         background-color: var(--background-primary);
       }
@@ -201,6 +227,7 @@ button,
   &.yellow {
     margin-right: 10px;
     background-color: var(--yellow-chart);
+    background-image: none;
     border-color: var(--yellow-chart);
     .icon {
       //background-color: var(--yellow-chart);
@@ -219,7 +246,9 @@ button,
 
   &.black {
     background-color: var(--text-primary);
+    background-image: none;
     color: var(--background-primary);
+    border: 1px solid var(--text-primary);
     .icon {
       background-color: var(--background-primary);
     }
@@ -252,5 +281,7 @@ button,
   &.btn--input-color {
     border: var(--border-input);
     background-color: var(--input-background);
+    background-image: none;
+    padding: 0.3rem 0.6rem;
   }
 }

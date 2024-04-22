@@ -7,6 +7,9 @@ const llm = require(`${process.cwd()}/components/WebServer/controllers/llm/index
 
 const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
 
+const { jsonToPlainText } = require('json-to-plain-text')
+
+
 const {
     ConversationIdRequire,
     ConversationNotFound,
@@ -17,7 +20,10 @@ async function listExport(req, res, next) {
     try {
         if (!req.params.conversationId) throw new ConversationIdRequire()
         let conversationExport = await model.conversationExport.getByConvAndFormat(req.params.conversationId)
-        if (conversationExport.length === 0) throw new ConversationNotFound()
+        if (conversationExport.length === 0) {
+            res.status(204).send([])
+            return
+        }
 
         let export_list = []
         for (let status of conversationExport) {
@@ -25,9 +31,11 @@ async function listExport(req, res, next) {
                 _id: status._id.toString(),
                 format: status.format,
                 status: status.status,
+                jobId: status.jobId,
+                processing: status.processing,
                 last_update: status.last_update,
             }
-            if(status.status === 'error') export_conv.error = status.error
+            if (status.status === 'error') export_conv.error = status.error
             export_list.push(export_conv)
         }
 
@@ -101,42 +109,48 @@ async function callLlmAPI(query, conversation, metadata, conversationExport) {
 
 
 async function handleLLMService(res, query, conversation, metadata) {
+    if(query.flavor === undefined) throw new ConversationMetadataRequire('flavor is required')
+
     let conversationExport = await model.conversationExport.getByConvAndFormat(conversation._id, query.format)
     if (query.regenerate === 'true' || conversationExport.length === 0) {
         if (conversationExport.length !== 0) await model.conversationExport.delete(conversationExport[0]._id)
         conversationExport = {
             convId: conversation._id.toString(),
             format: query.format,
-            status: 'processing'
+            status: 'processing',
+            processing: 'Processing 0%'
         }
         exportResult = await model.conversationExport.create(conversationExport)
         conversationExport._id = exportResult.insertedId.toString()
 
         callLlmAPI(query, conversation, metadata, conversationExport)
-        res.status(200).send({ status: 'processing' })
+        res.status(200).send({ status: 'processing', processing: 'Processing 0%' })
     } else if (conversationExport[0].status === 'done' || conversationExport[0].status === 'complete') {
         conversationExport = conversationExport[0]
         const file = await docx.generateDocxOnFormat(query.format, conversationExport)
         sendFileAsResponse(res, file, query.preview)
     } else {
-        if(conversationExport[0].status === 'error' && conversationExport[0].error) {
-            res.status(400).send({ status: conversationExport[0].status, error: conversationExport[0].error})
-        }else {
-            // llm.pollingLlm(conversationExport[0].jobId, conversationExport[0])
-            res.status(200).send({ status: conversationExport[0].status })
+        if (conversationExport[0].status === 'error' && conversationExport[0].error) {
+            res.status(400).send({ status: conversationExport[0].status, error: conversationExport[0].error })
+        } else {
+            llm.pollingLlm(conversationExport[0].jobId, conversationExport[0])
+            res.status(200).send({ status: conversationExport[0].status, processing: conversationExport[0].processing })
         }
     }
 }
 
 async function sendFileAsResponse(res, file, preview = false) {
+    const validCharsRegex = /[a-zA-Z0-9-_]/g
+    let fileName = file.name.match(validCharsRegex).join('')
+
     if (preview === 'true') {
         const pdf = await docx.convertToPDF(file)
         res.setHeader('Content-Type', 'application/pdf')
-        res.setHeader('Content-disposition', 'attachment; filename=' + file.name)
+        res.setHeader('Content-disposition', 'attachment; filename=' + fileName)
         res.sendFile(pdf.path)
     } else {
         res.setHeader('Content-Type', 'application/vnd.openxmlformats')
-        res.setHeader('Content-disposition', 'attachment; filename=' + file.name)
+        res.setHeader('Content-disposition', 'attachment; filename=' + fileName)
         res.sendFile(file.path)
     }
 }
@@ -172,9 +186,7 @@ async function handleTextFormat(res, metadata, conversation) {
 async function handleVerbatimFormat(res, query, conversation, metadata) {
     const text = await llm.generateText(conversation, metadata)
     const conv = {
-        data: {
-            message: text
-        },
+        data: text,
         status: 'done',
         convId: conversation._id,
         format: query.format

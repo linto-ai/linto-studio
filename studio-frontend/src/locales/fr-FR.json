@@ -573,6 +573,9 @@
       "cra": "Erreur lors de la génération du compte rendu analytique",
       "cred": "Erreur lors de la génération du compte rendu des commissions et des délégations"
     },
+    "queued": {
+      "title": "Le compte rendu est en attente de traitement"
+    },
     "reload_document": "Regénérer le document",
     "is_updated": "Le compte rendu est à jour avec la transcription",
     "is_not_updated": "La transcription a été mise à jour. Le compte rendu ne reflète plus les dernières modifications."

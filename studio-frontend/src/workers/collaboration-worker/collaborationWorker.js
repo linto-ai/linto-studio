@@ -35,6 +35,7 @@ import {
   sendScreenUpdateToViewWrapper,
 } from "./handlers/docHandlers.js"
 
+import { customDebug } from "../../tools/customDebug.js"
 import SyllabicFR from "../../../public/js/syllabic/syllabicFR.js"
 import SyllabicEN from "../../../public/js/syllabic/syllabicEN.js"
 
@@ -50,11 +51,11 @@ let shouldDisconnect = false
 let syllabic = null
 let conversationFormat = null
 
-const infoWorker = Debug("Worker:info")
-const debugWorker = Debug("Worker:debug")
-const debugFocusWorker = Debug("Worker:debug:focus")
-const debugRightWorker = Debug("Worker:debug:right")
-const debugJobsWorker = Debug("Worker:debug:jobs")
+const infoWorker = customDebug("Worker:info")
+const debugWorker = customDebug("Worker:debug")
+const debugFocusWorker = customDebug("Worker:debug:focus")
+const debugRightWorker = customDebug("Worker:debug:right")
+const debugJobsWorker = customDebug("Worker:debug:jobs")
 
 Debug.enable(process.env.VUE_APP_DEBUG)
 
@@ -79,7 +80,13 @@ function connect(event) {
 }
 
 onmessage = (event) => {
-  debugWorker("Worker received message: %s", event.data.action)
+  if (
+    event.data.action !== "user_focus_field" &&
+    event.data.action !== "focus_field" &&
+    event.data.action !== "unfocus_field"
+  ) {
+    debugWorker("Worker received message: %s", event.data.action)
+  }
   switch (event.data?.action) {
     case "connect":
       connect(event)
@@ -153,10 +160,10 @@ onmessage = (event) => {
       )
       break
     case "focus_field":
-      focusField(event, conversationId, socket)
+      focusField(event, conversationId, socket, userToken)
       break
     case "unfocus_field":
-      unfocusField(event, conversationId, socket)
+      unfocusField(event, conversationId, socket, userToken)
       break
     case "get_subtitle":
       fetchSubtitles(
@@ -240,6 +247,9 @@ function disconnect() {
   userToken = ""
   socket = null
   infoWorker("Worker stopped")
+  sendMessage({
+    action: "disconnected",
+  })
 }
 
 function setSocketListeners(socket) {
@@ -297,8 +307,9 @@ function setSocketListeners(socket) {
 
       // Set connected users
       let users = data.users
+      let focusFields = data.focusFields
       if (users?.length > 0) {
-        sendMessage("user_focus_field", { users: users })
+        sendMessage("user_focus_field", { users, focusFields })
       }
     } catch (error) {
       console.error(error)
@@ -320,7 +331,7 @@ function setSocketListeners(socket) {
   })
 
   socket.on(`user_focus_field`, (data) => {
-    debugFocusWorker("Websocket event 'user_focus_field'")
+    //debugFocusWorker("Websocket event 'user_focus_field'")
     sendMessage("user_focus_field", data)
   })
 

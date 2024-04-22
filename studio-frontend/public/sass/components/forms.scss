@@ -333,7 +333,7 @@ input[type="search"] {
 .service-box > input:checked + label,
 fieldset[role="listbox"][selected="selected"] {
   border-color: var(--green-chart);
-  border-width: 3px;
+  border-width: 2px;
   legend {
     color: var(--green-chart);
   }

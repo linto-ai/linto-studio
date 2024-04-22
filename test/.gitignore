@@ -1,0 +1,6 @@
+storages
+log/*.txt
+log*/*.txt
+
+cypress/videos
+cypress/screenshots

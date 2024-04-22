@@ -33,14 +33,22 @@ body {
   --background-header: #fff;
   --background-disabled: #f6f6f6;
 
+  --background-lock-turn: #e6e6e6;
+  --border-lock-turn: 1px solid #848484;
+
   --input-background: #f7faff;
   --button-background-hover: #eee;
+  --button-image-background: linear-gradient(
+    #fcfcfc,
+    var(--background-secondary)
+  );
 
   --border-button: 1px solid var(--text-secondary);
   --border-button-flat: 1px solid var(--small-contrast);
   --border-input: 1px solid var(--text-secondary);
   --border-block: 1px solid var(--small-contrast);
   --divider: 1px solid var(--small-contrast);
+  --border-button-glass: 1px solid rgba(255, 255, 255, 0.4);
 
   --input-focus: #f7faff;
   --yellow-chart: #feb11d;
@@ -80,8 +88,14 @@ html[data-theme="dark"] body {
   --background-secondary: #1a1a1a;
   --background-disabled: #333;
 
+  --border-button-glass: 1px solid #25252588;
+
   --input-background: #1a1a1a;
   --button-background-hover: #333;
+  --button-image-background: linear-gradient(
+    #1a1a1a,
+    var(--background-secondary)
+  );
 
   --background-header: #252525;
 

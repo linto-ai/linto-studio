@@ -55,6 +55,7 @@
 
       <router-link
         to="/create-account"
+        id="create-account-link"
         class="toggle-login-link"
         v-if="enable_inscription"
         >{{ $t("login.create_account_button") }}</router-link
