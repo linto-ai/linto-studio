@@ -103,17 +103,6 @@
   background-color: var(--background-primary);
 }
 
-.turn-actions button {
-  border-radius: 8px;
-  height: 2.5rem;
-  width: 2.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: navajowhite;
-  background-color: var(--text-secondary);
-}
-
 .screen-preview {
   padding: 0 0.25rem;
   box-sizing: border-box;
@@ -121,9 +110,9 @@
   overflow: auto;
 
   &.current {
-    border: 2px solid var(--green-chart);
+    border: 1px solid var(--green-chart);
     border-radius: 3px;
-    background-color: var(--background-primary);
+    background-color: var(--input-background);
   }
 
   p,

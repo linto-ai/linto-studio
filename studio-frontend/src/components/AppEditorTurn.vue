@@ -99,7 +99,7 @@
       <div class="turn-actions flex row">
         <button
           v-if="!lastTurn && canEdit"
-          class="turn-action-btn black"
+          class="centered-inline icon-only small black"
           @click="mergeTurn"
           data-info="Fusionner les tours">
           <span class="icon merge"></span>

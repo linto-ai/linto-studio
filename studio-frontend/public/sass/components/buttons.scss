@@ -92,6 +92,19 @@ button,
     flex: 1;
     //line-height: 20px;
   }
+
+  &.icon-only {
+    height: 2.5rem;
+    width: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &.icon-only.small {
+    height: 2rem;
+    width: 2rem;
+  }
   .icon {
     @include transition(all 0.2s ease);
     display: inline-block;
