@@ -3,6 +3,7 @@ let worker = new Worker(new URL("./collaborationWorker.js", import.meta.url), {
 })
 class WorkerSingleton {
   constructor() {
+    this.isTerminated = false
     // if worker is terminate create new worker
 
     if (WorkerSingleton.instance) {
@@ -29,14 +30,26 @@ class WorkerSingleton {
   // }
 
   sendMessage(action, params) {
-    this.worker.postMessage({
+    this.getWorker().postMessage({
       action,
       params,
     })
   }
 
+  terminate() {
+    this.isTerminated = true
+    this.getWorker().terminate()
+  }
+
   connect(conversationId, userToken, userId, conversationFormat) {
-    this.worker.postMessage({
+    if (this.isTerminated) {
+      this.worker = new Worker(
+        new URL("./collaborationWorker.js", import.meta.url),
+        { type: "module" }
+      )
+      this.isTerminated = false
+    }
+    this.getWorker().postMessage({
       action: "connect",
       params: { conversationId, userToken, userId, conversationFormat },
     })

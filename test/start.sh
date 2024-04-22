@@ -5,4 +5,4 @@ sudo rm -rf ./storages/
 sudo cp -R ./seed-storages/ ./storages/
 
 sleep 2
-docker compose up -d
+docker compose up -d --build

@@ -19,7 +19,7 @@ export function workerConnect(
 }
 
 export function workerDisconnect() {
-  EditorWorker.workerSingleton.getWorker().terminate()
+  EditorWorker.workerSingleton.terminate()
 }
 
 export function workerListener() {
