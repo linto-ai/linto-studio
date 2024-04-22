@@ -82,14 +82,7 @@
           value=""
           :disabled="pdfStatus !== 'displayed' || loadingDownload"
           aria-label="select how to open the conversation"
-          :options="{
-            actions: [
-              { value: 'docx', text: $t('conversation.export.docx') },
-              { value: 'pdf', text: $t('conversation.export.pdf') },
-              // { value: 'txt', text: $t('conversation.export.txt') },
-              // { value: 'json', text: $t('conversation.export.json') },
-            ],
-          }"
+          :options="optionsExport"
           buttonClass="green"
           @input="exportConv"></CustomSelect>
       </div>
@@ -209,6 +202,33 @@ export default {
     },
   },
   computed: {
+    optionsExport() {
+      switch (this.activeTab) {
+        case "verbatim":
+        case "docx":
+        case "cri":
+          return {
+            actions: [
+              { value: "docx", text: this.$t("conversation.export.docx") },
+              { value: "pdf", text: this.$t("conversation.export.pdf") },
+              { value: "txt", text: this.$t("conversation.export.txt") },
+              { value: "json", text: this.$t("conversation.export.json") },
+            ],
+          }
+          break
+
+        default:
+          return {
+            actions: [
+              { value: "docx", text: this.$t("conversation.export.docx") },
+              { value: "pdf", text: this.$t("conversation.export.pdf") },
+              // { value: 'txt', text: $t('conversation.export.txt') },
+              // { value: 'json', text: $t('conversation.export.json') },
+            ],
+          }
+          break
+      }
+    },
     dataLoaded() {
       return this.conversationLoaded && !this.loadingServices
     },
