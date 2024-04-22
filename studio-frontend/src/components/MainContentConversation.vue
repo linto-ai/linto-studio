@@ -22,7 +22,7 @@
     <conversationStatusError
       :conversation="conversation"></conversationStatusError>
   </div>
-  <div v-else-if="!error">
+  <div v-else-if="!error" id="conversation-is-loading">
     <Loading></Loading>
   </div>
   <div v-else>

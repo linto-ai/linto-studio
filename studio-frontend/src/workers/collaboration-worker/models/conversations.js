@@ -193,25 +193,6 @@ export class Conversation {
     this.obj = {}
   }
 
-  updateUsers(userId, inputField) {
-    this.users[userId].inputField = inputField
-  }
-
-  resetUsers(userId) {
-    this.users[userId].inputField = null
-  }
-
-  getUsersList() {
-    let usersList = []
-    for (let userId in this.users) {
-      usersList.push({
-        userId: userId,
-        inputField: this.users[userId].inputField,
-      })
-    }
-    return usersList
-  }
-
   static formatYturn(turnObj) {
     const ywords = Y.Array.from(turnObj.words)
     const ySegment = new Y.Text(turnObj.segment)

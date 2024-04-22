@@ -12,17 +12,18 @@ if [ ! -d "$DIR" ]; then
   npm run build
   rm -rf /usr/share/nginx/html/*
   cp -r ./dist/* /usr/share/nginx/html
+else 
+  echo "Directory ${DIR} exists, skipping build..."
+  cp -r ./dist/* /usr/share/nginx/html
 fi
 
 while [ "$1" != "" ]; do
   case $1 in
   --build)
-    if [ "$BACK_BUILD" = false ]; then
       printenv >.env
       npm run build
       rm -rf /usr/share/nginx/html/*
       cp -r ./dist/* /usr/share/nginx/html
-    fi
     ;;
   --skip)
     echo 'Skip startup param'

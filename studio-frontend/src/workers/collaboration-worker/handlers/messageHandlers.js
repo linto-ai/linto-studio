@@ -8,17 +8,20 @@ import { applyDeltaOnYArray } from "../../../tools/applyDeltaOnYArray"
 import { divideTurn } from "../../../tools/divideTurn"
 import { Conversation } from "../models/conversations"
 import { mergeTurn } from "../../../tools/mergeTurn"
+import { customDebug } from "../../../tools/customDebug"
 import { diffArrays } from "diff"
 
 const dmp = new DiffMatchPatch()
-const debugWorker = Debug("Worker:debug")
-const debugturnEditText = Debug("Worker:debug:turn:EditText")
-const debugturnInsertParagraph = Debug("Worker:debug:turn:InsertParagraph")
-const debugturnMergeParagraph = Debug("Worker:debug:turn:MergeParagraph")
-const debugAddSpeaker = Debug("Worker:debug:Speaker:AddSpeaker")
-const debugEditSpeaker = Debug("Worker:debug:Speaker:EditSpeaker")
-const debugEditRight = Debug("Worker:debug:right")
-const debugEditScreen = Debug("Worker:debug:screen:EditScreen")
+const debugWorker = customDebug("Worker:debug")
+const debugturnEditText = customDebug("Worker:debug:turn:EditText")
+const debugturnInsertParagraph = customDebug(
+  "Worker:debug:turn:InsertParagraph"
+)
+const debugturnMergeParagraph = customDebug("Worker:debug:turn:MergeParagraph")
+const debugAddSpeaker = customDebug("Worker:debug:Speaker:AddSpeaker")
+const debugEditSpeaker = customDebug("Worker:debug:Speaker:EditSpeaker")
+const debugEditRight = customDebug("Worker:debug:right")
+const debugEditScreen = customDebug("Worker:debug:screen:EditScreen")
 
 function getYdelta(ydocElem, newValue) {
   let diff = dmp.diff_main(ydocElem, newValue)
@@ -303,14 +306,22 @@ export function updateOrganizationRight(params, conversationId, rootDoc) {
   }, "conversation_update_organization")
 }
 
-export function focusField(event, conversationId, socket) {
+export function focusField(event, conversationId, socket, userToken) {
   if (event.data.params?.field && event.data.params?.userId) {
-    socket.emit("focus_field", { ...event.data.params, conversationId })
+    socket.emit("focus_field", {
+      ...event.data.params,
+      conversationId,
+      userToken,
+    })
   }
 }
 
-export function unfocusField(event, conversationId, socket) {
-  socket.emit("unfocus_field", { ...event.data.params, conversationId })
+export function unfocusField(event, conversationId, socket, userToken) {
+  socket.emit("unfocus_field", {
+    ...event.data.params,
+    conversationId,
+    userToken,
+  })
 }
 
 export function fetchSubtitles(userToken, conversationId, subtitleId, socket) {

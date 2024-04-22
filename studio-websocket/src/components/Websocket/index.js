@@ -60,22 +60,39 @@ export default class Websocket extends Component {
         socket.on("focus_field", (data) => {
           debug("focus_field event received")
           let conversation = Conversations.getById(data.conversationId)
-          conversation.updateUsers(data.userId, data.field)
-
-          socket.emit("user_focus_field", {
-            users: conversation.getUsersList(),
-          })
-
-          socket
-            .to(`conversation/${data.conversationId}`)
-            .emit("user_focus_field", {
+          let callback = () => {
+            socket.emit("user_focus_field", {
               users: conversation.getUsersList(),
+              focusFields: conversation.getFocusFields(),
             })
+
+            socket
+              .to(`conversation/${data.conversationId}`)
+              .emit("user_focus_field", {
+                users: conversation.getUsersList(),
+                focusFields: conversation.getFocusFields(),
+              })
+          }
+
+          conversation.updateUsers(
+            data.userId,
+            data.field,
+            data.userToken,
+            callback
+          )
+
+          callback()
         })
 
         socket.on("unfocus_field", (data) => {
           debug("unfocus_field event received")
-          unfocusField(data.conversationId, data.userId, socket, true)
+          unfocusField(
+            data.conversationId,
+            data.userId,
+            socket,
+            data.userToken,
+            true
+          )
         })
 
         socket.on("fetch_hightlight", (data) => {
@@ -233,6 +250,7 @@ export default class Websocket extends Component {
     socket.emit("load_conversation", {
       conversation: conversation.getObj(),
       users: conversation.getUsersList(),
+      focusFields: conversation.getFocusFields(),
       ydoc: conversation.encodeStateVector(),
     })
 
