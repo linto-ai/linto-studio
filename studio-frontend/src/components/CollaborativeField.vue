@@ -242,7 +242,7 @@ export default {
         this.$emit("enter", {
           e,
           cursorPosition,
-          currentValue: this.currentValue,
+          currentValue: document.getElementById(this.flag).innerText, //this.currentValue,
         })
         e.preventDefault()
       } else if (this.isMovingCursor) {
