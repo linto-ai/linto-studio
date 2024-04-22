@@ -1,5 +1,10 @@
 # 1.4.3
 - Update export
+- Handle llm
+  - Fetch running llm service with llm-gateway
+  - Handle summary generation with llm-gateway api
+  - Generate summary docx / pdf
+  - Added pdf preview
 
 # 1.4.2
 - Refactored Taxonomy API:
