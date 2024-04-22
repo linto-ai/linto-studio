@@ -11,7 +11,7 @@
 @import "./_mixin.scss";
 @import "./_variables.scss";
 @import "./_material-colors-variables.scss";
-
+@import "./_material-colors-variables-dark.scss";
 // Global
 @import "./_global.scss";
 @import "./_material-colors.scss";
@@ -54,6 +54,8 @@
 @import "./components/droparea.scss";
 @import "./components/highlights-list.scss";
 @import "./components/modal-metadata.scss";
+@import "./components/selected-conversation-indicator.scss";
+@import "./components/progress.scss";
 
 @import "./views/app-mobile.scss";
 

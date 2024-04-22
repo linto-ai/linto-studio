@@ -1,3 +1,17 @@
+# 1.4.3
+
+_2024_04_22_
+
+- Improve lock during turn edition
+- Improve publish interface
+  - PDF preview
+  - Display llm service for summary generation
+- Quality of Life
+  - Better media listing
+  - General design
+  - Dark theme improvement
+- Added frontend tests
+
 # 1.4.2
 
 _2024_02_26_

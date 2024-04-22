@@ -46,7 +46,7 @@ import { workerSendMessage } from "../tools/worker-message.js"
 import { calculCursorPos } from "../tools/calculCursorPos.js"
 import { bus } from "../main.js"
 import { Throttle } from "../tools/throttle.js"
-
+import { customDebug } from "../tools/customDebug.js"
 export default {
   props: {
     label: { default: () => false, required: true },
@@ -68,6 +68,7 @@ export default {
   },
   data() {
     const throttleObject = new Throttle()
+    const throttleObjectFocus = new Throttle()
     return {
       value: "",
       top: 0,
@@ -78,6 +79,12 @@ export default {
       focused: false,
       throttleObject: throttleObject,
       throttleUpdateField: throttleObject.createThrottle(this.updateField, 500),
+      throttleKeepFocus: throttleObjectFocus.createThrottle(
+        this.keepFocus,
+        15000
+      ),
+      debugCollaborativeField: customDebug("vue:debug:field"),
+      stackLetter: [],
     }
   },
   mounted() {
@@ -143,10 +150,17 @@ export default {
     },
   },
   methods: {
+    keepFocus() {
+      workerSendMessage("focus_field", {
+        field: this.flag,
+        userId: this.userId,
+      })
+    },
     handleInput(e) {
       this.$emit("contentUpdate", e?.target?.innerText)
       if (this.unThrottledInputEvent.indexOf(e.inputType) === -1) {
         this.throttleUpdateField(e)
+        this.throttleKeepFocus()
       } else {
         this.throttleObject.executeNow()
         return this.updateField(e)
@@ -228,10 +242,13 @@ export default {
         this.$emit("enter", {
           e,
           cursorPosition,
-          currentValue: this.currentValue,
+          currentValue: document.getElementById(this.flag).innerText, //this.currentValue,
         })
         e.preventDefault()
       } else if (this.isMovingCursor) {
+        if (e.key && e.key.length === "1") {
+          this.stackLetter.push(e.key)
+        }
         e.preventDefault()
       } else {
         this.handleFocus(e)
@@ -274,6 +291,11 @@ export default {
         data.conversationId === this.conversationId
       ) {
         if (this.focused) {
+          this.debugCollaborativeField(
+            "applyChangesFromWorker",
+            data.delta,
+            data.value
+          )
           this.toggleCursorPos(data.delta, data.value)
         } else {
           this.currentValue = data.value
@@ -284,6 +306,11 @@ export default {
       this.isMovingCursor = true
       let baseIndex = window.getSelection().anchorOffset
       let newIndex = calculCursorPos(baseIndex, delta)
+      this.debugCollaborativeField(
+        "new cursor position %n to %n",
+        baseIndex,
+        newIndex
+      )
       this.currentValue = value
       this.$emit("contentUpdate", value)
       this.setCursorPos(newIndex)
@@ -303,6 +330,8 @@ export default {
           console.error(error)
         } finally {
           element.focus()
+          document.execCommand("insertText", this.stackLetter.join(""))
+          this.stackLetter = []
           this.isMovingCursor = false
         }
       })

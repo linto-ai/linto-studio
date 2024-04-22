@@ -1,6 +1,7 @@
 import { bus } from "@/main.js"
 
 export default function handleClick(e) {
+  if (this.locked) return
   const target = e.target
   const selection = window.getSelection()
   if (

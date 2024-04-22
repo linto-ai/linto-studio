@@ -52,6 +52,7 @@
   font-size: 16px;
   color: var(--text-primary);
   background-color: transparent;
+  background-image: none;
   border: none;
   cursor: pointer;
   //line-height: 0;
@@ -69,10 +70,19 @@
   align-self: center;
 }
 
-.pagination--sticky {
+.bottom-list-sticky {
   position: sticky;
   bottom: 1rem;
   margin-top: 2rem;
+  z-index: 5;
+  height: 3rem;
+}
+
+.pagination--sticky {
+  width: fit-content;
+  position: absolute;
+  left: 0;
+  right: 0;
   margin-left: auto;
   margin-right: auto;
   padding: 0 2rem;
@@ -80,5 +90,4 @@
   box-shadow: var(--shadow-block);
   border-radius: 2rem;
   border: var(--divider);
-  z-index: 5;
 }

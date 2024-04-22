@@ -27,7 +27,7 @@
             <TagSearch
               :search="searchValueForTag"
               :currentOrganizationScope="currentOrganizationScope"
-              :value="selectedTags"
+              :value="value"
               @selectTag="selectTag"
               @unSelectTag="unSelectTag" />
           </div>

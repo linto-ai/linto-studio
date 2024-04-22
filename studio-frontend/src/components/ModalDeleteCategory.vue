@@ -13,10 +13,7 @@
 <script>
 import { Fragment } from "vue-fragment"
 
-import { bus } from "../main.js"
-import { apiDeleteTag } from "@/api/tag.js"
 import { formsMixin } from "@/mixins/forms.js"
-import { apiCountConversation } from "@/api/conversation.js"
 import { apiDeleteCategory } from "@/api/tag.js"
 import ModalNew from "./ModalNew.vue"
 export default {

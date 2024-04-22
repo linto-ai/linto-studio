@@ -1,5 +1,5 @@
 .tag {
-  color: black;
+  color: var(--text-primary);
   font-weight: 400;
   text-decoration: none !important;
   line-height: normal;
@@ -30,6 +30,14 @@
   margin-left: 1em;
   border: var(--border-button);
   border-left: 0px;
+}
+
+.tag[clickable] .tag__value__main {
+  cursor: pointer;
+}
+
+.tag[clickable] .tag__value__main:hover {
+  text-decoration: underline;
 }
 
 .tag__value__main {

@@ -44,6 +44,7 @@
       <AppEditor
         :conversation="conversation"
         :usersConnected="usersConnected"
+        :focusFields="focusFields"
         :conversationUsers="conversationUsers"
         :userInfo="userInfo"
         :filterSpeakers="filterSpeakers"

@@ -40,6 +40,7 @@ async function updateConversationRights(req, res, next) {
   try {
     if (!req.params.conversationId) throw new ConversationIdRequire()
     if (req.body.right === undefined || !req.params.userId) throw new ConversationMetadataRequire("UserId is require")
+    if (req.params.userId === req.payload.data.userId) throw new ConversationError("You can't change your own right")
 
     let user = await model.users.getById(req.params.userId, true)
     if (user.length !== 1) throw new UserNotFound()
@@ -102,6 +103,8 @@ async function updateConversationRights(req, res, next) {
 
 async function inviteNewUser(req, res, next) {
   try {
+    if(process.env.DISABLE_USER_CREATION === 'true') throw new UserError('User creation is disabled')
+
     const email = req.body.email
     const createdUser = await model.users.createExternal({ email })
 

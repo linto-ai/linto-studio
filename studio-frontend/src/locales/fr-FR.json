@@ -38,6 +38,7 @@
     },
     "add_tag": "Ajouter un tag",
     "add_search_criterion": "Ajouter un critère de recherche",
+    "remove_all_filters": "Supprimer tous les filtres",
     "apply_filters": "Appliquer les filtres",
     "audio_file_too_big": "Le fichier audio est trop volumineux. La taille maximale autorisée est de 1Go.",
     "add_to_favorites": "Ajouter aux favoris",
@@ -108,6 +109,7 @@
       "title": "Télécharger",
       "json": "Télécharger en JSON",
       "txt": "Télécharger en TXT",
+      "pdf": "Télécharger en PDF",
       "docx": "Télécharger en DOCX",
       "vtt": "Télécharger en VTT",
       "srt": "Télécharger en SRT"
@@ -172,7 +174,7 @@
       "delete": "Supprimer",
       "comment": "Commenter",
       "full_rights": "Tous les droits",
-      "mutiple": "Plusieurs valeurs"
+      "mutiple_values": "Plusieurs valeurs"
     },
     "model_quality_label": "Qualité du modèle :",
     "model_quality": {
@@ -346,9 +348,16 @@
     "this_field_is_required": "Ce champ est requis"
   },
   "inbox": {
-    "subtitle": "Vos médias récemment importés arrivent ici. Utilisez ”importer un media” ou {appLink} pour l'enrichir."
+    "title": "Derniers médias",
+    "subtitle": "Vos médias récemment importés arrivent ici. Utilisez ”importer un media” ou {appLink} pour l'enrichir.",
+    "sort": {
+      "created": "Ajout récent",
+      "last_update": "Dernière mise à jour",
+      "notags": "Sans tags"
+    }
   },
   "explore": {
+    "title": "Explorer les médias de l'organisation",
     "subtitle": "Recherchez et découvrez des informations sur les médias transcrits avec de la sémantique",
     "search_text_label": "Rechercher du texte",
     "search_text_in_title": "Rechercher \"{text}\" dans le titre",
@@ -366,7 +375,8 @@
     "search_label": "Rechercher un utilisateur",
     "add_user": "Ajouter l'utilisateur",
     "pending": "En cours",
-    "invite": "Inviter"
+    "invite": "Inviter",
+    "inscription_disabled": "Les inscription et les invitations sont désactivées sur la plateforme"
   },
   "sharedWithTab": {
     "title": "Médias partagés avec moi",
@@ -382,7 +392,8 @@
     "organization_members": "Membres de l'organisation",
     "external_members": "Utilisateurs externes",
     "user_has_been_invited": "L'utilisateur a été invité",
-    "user_right_updated": "Les droits de l'utilisateur ont été mis à jour"
+    "user_right_updated": "Les droits de l'utilisateur ont été mis à jour",
+    "inscription_disabled": "Les inscription et les invitations sont désactivées sur la plateforme"
   },
   "lang": {
     "en": "Anglais",
@@ -455,7 +466,7 @@
       "title": "Organisation"
     },
     "tabs": {
-      "inbox": "Médias récents",
+      "inbox": "Accueil",
       "explore": "Explorer",
       "favorites": "Favoris",
       "shared": "Partages reçus",
@@ -535,6 +546,9 @@
   "publish": {
     "filter_title": {
       "verbatim": "Options pour le verbatim",
+      "cri": "Options pour le compte rendu intégral",
+      "cra": "Options pour le compte rendu analytique",
+      "cred": "Options pour le compte rendu des commissions et des délégations",
       "automatic_summary": "Options pour le résumé automatique"
     },
     "filter_speaker": {
@@ -542,8 +556,29 @@
     },
     "tabs": {
       "verbatim": "Verbatim",
+      "cri": "Compte rendu intégral",
+      "cra": "Compte rendu analytique",
+      "cred": "Compte rendu des commissions et des délégations",
       "automatic_summary": "Résumé automatique"
-    }
+    },
+    "generation_first_line": {
+      "verbatim": "Génération du verbatim en cours...",
+      "cri": "Génération du compte rendu intégral en cours...",
+      "cra": "Génération du compte rendu analytique en cours...",
+      "cred": "Génération du compte rendu des commissions et des délégations en cours..."
+    },
+    "error_first_line": {
+      "verbatim": "Erreur lors de la génération du verbatim",
+      "cri": "Erreur lors de la génération du compte rendu intégral",
+      "cra": "Erreur lors de la génération du compte rendu analytique",
+      "cred": "Erreur lors de la génération du compte rendu des commissions et des délégations"
+    },
+    "queued": {
+      "title": "Le compte rendu est en attente de traitement"
+    },
+    "reload_document": "Regénérer le document",
+    "is_updated": "Le compte rendu est à jour avec la transcription",
+    "is_not_updated": "La transcription a été mise à jour. Le compte rendu ne reflète plus les dernières modifications."
   },
   "tags": {
     "back_to_search": "Retour à la recherche",

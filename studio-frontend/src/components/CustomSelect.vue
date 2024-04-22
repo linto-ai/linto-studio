@@ -11,21 +11,24 @@
       class="select__head flex row"
       :class="buttonClass"
       aria-haspopup="true"
+      :disabled="disabled"
       :aria-expanded="showList">
       <span
         v-if="icon && iconType == 'icon'"
-        class="icon select__head__icon"
+        class="icon select__head__icon no-propagation"
         :class="icon"
         :title="iconText" />
       <img
         v-if="icon && iconType == 'img'"
         :src="icon"
         :alt="iconText"
-        class="icon select__head__icon" />
-      <span class="flex1 select__head__label label">{{ valueText }}</span>
-      <span class="icon small-arrow-down"></span>
-      <span class="badge" v-if="badge">
-        <span class="badge__content">{{ badge }}</span>
+        class="icon select__head__icon no-propagation" />
+      <span class="flex1 select__head__label label no-propagation">{{
+        _valueText
+      }}</span>
+      <span class="icon small-arrow-down no-propagation"></span>
+      <span class="badge no-propagation" v-if="badge">
+        <span class="badge__content no-propagation">{{ badge }}</span>
       </span>
     </button>
     <!-- Menu list-->
@@ -64,7 +67,7 @@ import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
 export default {
   props: {
-    valueText: { required: true },
+    valueText: { required: false },
     value: { required: true },
     icon: { type: String, default: "" },
     iconText: { type: String, default: "" },
@@ -75,6 +78,7 @@ export default {
     inline: { type: Boolean, default: false },
     buttonClass: { type: String, default: "" },
     id: { type: String, default: null },
+    disabled: { type: Boolean, default: false },
   },
   data() {
     return {
@@ -87,15 +91,34 @@ export default {
   beforeDestroy() {
     bus.$off("navigation", this.close)
   },
+  computed: {
+    _valueText() {
+      if (this.valueText) return this.valueText
+      else {
+        for (const sectionName in this.options) {
+          for (const option of this.options[sectionName]) {
+            if (option.value == this.value) {
+              return option.text
+            }
+          }
+        }
+      }
+
+      return ""
+    },
+  },
   methods: {
     onClickOption(e, value) {
       this.showList = false
       this.$emit("input", value)
       e.preventDefault()
+      e.stopPropagation()
     },
     toggleMenu(e) {
-      this.showList = !this.showList
       e.preventDefault()
+      //e.stopPropagation()
+      if (this.disabled) return
+      this.showList = !this.showList
     },
     close() {
       this.showList = false

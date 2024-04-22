@@ -15,6 +15,7 @@ export const conversationListMixin = {
       totalElementsNumber: 0,
       currentPageNb: this.getCurrentPageNb(),
       selectedConversations: new Map(),
+      selectedConversationsList: [], // Array of selected conversations (more vuejs friendly than a map), used in the template. On refactor, remove the map and use only this array ?
       selectedConversationsSize: 0,
       displayDeleteModal: false,
       conversationsInError: [],
@@ -142,6 +143,7 @@ export const conversationListMixin = {
     applyFilters(newSelectedTags) {
       this.selectedTags = newSelectedTags
       this.showExploreModal = false
+      this.resetSelectedConversations()
       this.fetchConversations()
     },
     async selectTagFilter(tag, category) {
@@ -154,22 +156,43 @@ export const conversationListMixin = {
     async unSelectTagFilter(tag) {
       this.selectedTags = this.selectedTags.filter((t) => t._id !== tag._id)
     },
+    clickOnTag(tag) {
+      if (this.selectedTags.find((t) => t._id === tag._id)) {
+        this.selectedTags = this.selectedTags.filter((t) => t._id !== tag._id)
+      } else {
+        this.selectedTags.push(tag)
+      }
+      this.resetSelectedConversations()
+      this.fetchConversations()
+      this.queryCategoriesUnionSelectedtag()
+    },
     selectConversation(conversation) {
       const id = conversation._id
       this.selectedConversations.set(id, conversation)
       this.selectedConversationsSize = this.selectedConversations.size
+      this.selectedConversationsList = Array.from(
+        this.selectedConversations.keys()
+      )
     },
     unSelectConversation(id) {
       this.selectedConversations.delete(id)
       this.selectedConversationsSize = this.selectedConversations.size
+      this.selectedConversationsList = Array.from(
+        this.selectedConversations.keys()
+      )
     },
     onSelectConversation({ value, conversation }) {
       const id = conversation._id
       if (this.selectedConversations.has(id)) {
         this.unSelectConversation(id)
-      } else if (value) {
+      } else {
         this.selectConversation(conversation)
       }
+    },
+    resetSelectedConversations() {
+      this.selectedConversations.clear()
+      this.selectedConversationsSize = 0
+      this.selectedConversationsList = []
     },
     clickDeleteConvButton() {
       this.conversationsInError = []

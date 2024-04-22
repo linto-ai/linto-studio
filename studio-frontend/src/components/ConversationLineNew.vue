@@ -1,11 +1,15 @@
 <template>
-  <li class="conversation-line-container" :selected="selected">
+  <li class="conversation-line-container">
     <input
       type="checkbox"
       class="conversation-line__checkbox"
+      :value="conversation._id"
       v-if="selectable"
-      v-model="checkboxValue" />
-    <div class="conversation-line relative flex col flex1" ref="line">
+      v-model="_selectedConversation" />
+    <div
+      class="conversation-line relative flex col flex1"
+      ref="line"
+      @click="selectLine">
       <header class="conversation-line__head flex row gap-medium align-center">
         <!--
       <div
@@ -16,12 +20,12 @@
       -->
         <div class="flex flex1 align-center gap-small">
           <span
-            class="icon star conversation-line__favorite"
+            class="icon star conversation-line__favorite no-propagation"
             v-if="!isFavorite"
             :title="$t('conversation.add_to_favorites')"
             @click="toggleFavorite"></span>
           <span
-            class="icon star-filled conversation-line__favorite"
+            class="icon star-filled conversation-line__favorite no-propagation"
             v-if="isFavorite"
             :title="$t('conversation.remove_from_favorites')"
             @click="toggleFavorite"></span>
@@ -35,10 +39,11 @@
           <router-link
             :title="conversation.name"
             :to="`/interface/conversations/${conversation._id}/transcription`"
-            class="conversation-line__title h3 no-padding">
+            class="conversation-line__title h3 no-padding no-propagation">
             {{ conversation.name }}
           </router-link>
           <CustomSelect
+            class="conversation-line__open-with"
             :valueText="$t('conversation.open_editor')"
             value="editor"
             aria-label="select how to open the conversation"
@@ -85,8 +90,10 @@
         class="conversation-line__description"
         @click="startDescriptionEdition"
         v-if="!descriptionIsEditing">
-        {{ description }}
-        <span class="icon edit" v-if="canEditConv" />
+        <span class="no-propagation">{{ description }}</span>
+        <button v-if="canEditConv" class="transparent no-propagation">
+          <span class="icon edit no-propagation" />
+        </button>
       </div>
       <FormInput
         v-else
@@ -107,7 +114,9 @@
             :categoryName="tag.categoryName"
             :color="tag.color"
             :deletable="canEditTag"
-            @delete="unSelectTag(tag)" />
+            @delete="unSelectTag(tag)"
+            clickable
+            @click="clickOnTag($event, tag)" />
         </span>
         <span v-if="tags.length === 0" @click="showDropDown">{{
           $t("tags.no_tags")
@@ -132,8 +141,8 @@
           v-if="canEditTag && !tagsReadOnly"
           @click="showDropDown"
           class="transparent inline">
-          <span class="icon add" />
-          <span class="label">{{ $t("tags.add_tags") }}</span>
+          <span class="icon add no-propagation" />
+          <span class="label no-propagation">{{ $t("tags.add_tags") }}</span>
         </button>
       </div>
       <!-- <div>
@@ -176,7 +185,8 @@ export default {
     indexedTags: { type: Object, required: false }, // tags indexed by id, if not provided will be fetched
     tagsReadOnly: { type: Boolean, default: false },
     selectable: { type: Boolean, default: false },
-    selected: { type: Boolean, default: false },
+    //selected: { type: Boolean, default: false },
+    selectedConversations: { type: Array, default: () => [] },
   },
   data() {
     return {
@@ -187,7 +197,6 @@ export default {
       loadingTags: false,
       dropDownX: 0,
       dropDownY: 0,
-      checkboxValue: this.selected,
       descriptionIsEditing: false,
       descriptionFormData: {
         value: this.conversation.description || "",
@@ -297,34 +306,41 @@ export default {
     isFavorite() {
       return this.$store.getters.isFavoriteConversation(this.conversation._id)
     },
+    _selectedConversation: {
+      get() {
+        return this.selectedConversations
+      },
+      set(value) {
+        this.$emit("onSelect", {
+          value,
+          conversation: this.conversation,
+        })
+      },
+    },
   },
   watch: {
     tags: function (newTags, oldTags) {},
-    checkboxValue: function (newVal, oldVal) {
-      if (newVal !== oldVal) {
-        this.$emit("onSelect", {
-          value: newVal,
-          conversation: this.conversation,
-        })
-      }
-    },
-    selected: function (newVal, oldVal) {
-      if (newVal !== oldVal) {
-        this.checkboxValue = newVal
-      }
-    },
   },
   methods: {
+    selectLine(e) {
+      if (e.target.classList.contains("no-propagation")) return
+      this.$emit("onSelect", {
+        value: null,
+        conversation: this.conversation,
+      })
+    },
     showDropDown(e) {
       this.dropDownVisible = true
 
       this.dropDownY = e.clientY
       this.dropDownX = e.clientX
+
+      //e.stopPropagation()
     },
     closeDropDown() {
       this.dropDownVisible = false
     },
-    toggleFavorite() {
+    toggleFavorite(e) {
       if (this.isFavorite) {
         this.$store.dispatch(
           "removeFavoriteConversation",
@@ -333,6 +349,7 @@ export default {
       } else {
         this.$store.dispatch("addFavoriteConversation", this.conversation)
       }
+      e.stopPropagation()
     },
     async loadTags() {
       this.loadingTags = true
@@ -344,8 +361,13 @@ export default {
       } else {
         allTags = await this.getTagsFromApi()
       }
-      this.tags = allTags.filter((tag) => tag.type == "conversation_metadata")
-      this.highlightedTags = allTags.filter((tag) => tag.type == "highlight")
+
+      this.tags = allTags.filter((tag) => {
+        return tag && tag.type == "conversation_metadata"
+      })
+      this.highlightedTags = allTags.filter(
+        (tag) => tag && tag.type == "highlight"
+      )
       this.originalTags = [...this.tags]
       this.loadingTags = false
     },
@@ -403,9 +425,11 @@ export default {
           break
       }
     },
-    startDescriptionEdition() {
+    startDescriptionEdition(e) {
       if (this.canEditConv) this.descriptionIsEditing = true
       else this.descriptionIsEditing = false
+
+      //e.stopPropagation()
     },
     stopDescriptionEdition() {
       this.descriptionIsEditing = false
@@ -421,6 +445,10 @@ export default {
       })
       this.conversation.description = this.descriptionFormData.value
       this.stopDescriptionEdition()
+    },
+    clickOnTag(event, tag) {
+      event.stopPropagation()
+      this.$emit("clickOnTag", tag)
     },
   },
   components: {

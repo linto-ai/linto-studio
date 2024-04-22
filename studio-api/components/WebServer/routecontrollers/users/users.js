@@ -26,6 +26,8 @@ const { NodemailerError, NodemailerInvalidEmail } = require(`${process.cwd()}/co
 
 async function createUser(req, res, next) {
     try {
+        if(process.env.DISABLE_USER_CREATION === 'true') throw new UserError('User creation is disabled')
+
         const user = req.body
         let organizationName = req.body.organizationName
 

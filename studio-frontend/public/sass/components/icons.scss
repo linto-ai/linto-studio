@@ -195,6 +195,15 @@
   &.show {
     @include maskImage("../public/img/eye.svg");
   }
+  &.clear-history {
+    @include maskImage("../public/img/clear-history.svg");
+  }
+  &.reload {
+    @include maskImage("../public/img/reload.svg");
+  }
+  &.done {
+    @include maskImage("../public/img/state-done.svg");
+  }
 }
 
 .icon.small {
