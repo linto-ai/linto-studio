@@ -19,9 +19,7 @@
           {{ line }}
         </div>
       </div>
-      <!-- <CollaborativeField v-else> </CollaborativeField> -->
     </div>
-    <div class="flex row user-connected-container align-center"></div>
   </div>
 </template>
 <script>

@@ -5,6 +5,7 @@
 #subtitle-editor {
   box-shadow: 0px 0px 16px 0 rgba(67, 76, 95, 0.75);
   background-color: var(--background-primary);
+  z-index: 2;
 }
 
 #conversation-audio-player.conversation-audio-player--subtitle {
@@ -87,6 +88,7 @@
 .screen {
   border: 1px solid transparent;
   padding-right: 0.25rem;
+  font-family: $luciole;
 
   &.playing {
     // background-color: var(--background-secondary);
@@ -139,13 +141,16 @@
 #screen-list {
   overflow-y: scroll;
   padding-right: 1rem;
+  padding-left: 1rem;
+  background-color: var(--background-primary);
+  border-left: var(--border-block);
 
   & > div:first-child {
-    margin-top: 2rem;
+    margin-top: 1rem;
   }
 
   & > div:last-child {
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
   }
 }
 
