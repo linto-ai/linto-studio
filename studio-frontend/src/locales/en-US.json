@@ -283,6 +283,7 @@
     "websocket_error_content": "Document update failed, save your change and reload the page.",
     "websocket_error_title": "Syncronisation error.",
     "subtitles": {
+      "screen_is_empty": "The screen is empty",
       "drop_video": "Drag and drop your vidéo file here",
       "not_available": "No subtitles available",
       "available": "Available subtitles",

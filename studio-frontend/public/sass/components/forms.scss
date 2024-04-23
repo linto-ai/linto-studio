@@ -41,6 +41,8 @@ textarea,
 }
 
 textarea {
+  font-family: $mainFont;
+  font: inherit;
   height: 6rem;
 }
 input.speaker-toolbox-input {

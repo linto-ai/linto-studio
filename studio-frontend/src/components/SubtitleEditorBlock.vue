@@ -10,15 +10,16 @@
           {{ etime }}
         </span>
       </div>
-      <div v-if="!editing || !canEdit">
+
+      <div v-if="isempty" class="empty-screen-block flex1">
+        {{ $t("conversation.subtitles.screen_is_empty") }}
+      </div>
+      <div v-else class="flex1">
         <div v-for="line of screen.text">
-          <div>{{ line }}</div>
+          {{ line }}
         </div>
       </div>
       <!-- <CollaborativeField v-else> </CollaborativeField> -->
-      <div v-else>
-        <span>{{ screen.text }}</span>
-      </div>
     </div>
     <div class="flex row user-connected-container align-center"></div>
   </div>
@@ -67,6 +68,12 @@ export default {
         (this.screen.etime - Math.floor(this.screen.etime)) * 100
       )
       return timeToHMS(this.screen.etime) + "." + ms
+    },
+    isempty() {
+      return (
+        this.screen.text.length === 0 ||
+        this.screen.text.filter((line) => line.length > 0).length === 0
+      )
     },
   },
   mounted() {

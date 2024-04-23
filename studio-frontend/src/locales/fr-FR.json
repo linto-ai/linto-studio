@@ -282,6 +282,7 @@
     "websocket_error_content": "La mise à jour du document a echoué. Sauvegardez vos changement et actualisez la page.",
     "websocket_error_title": "Erreur de synchronisation.",
     "subtitles": {
+      "screen_is_empty": "L'écran est vide",
       "drop_video": "Glissez-déposez votre fichier vidéo ici",
       "not_available": "Aucun sous-titres disponibles",
       "available": "Sous-titres disponibles",
