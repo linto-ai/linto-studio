@@ -1,17 +1,43 @@
 <template>
   <div v-if="screen" @click="(e) => $emit('click', e)">
-    <div class="form-label" :id="isCurrent ? 'current-screen-label' : ''">
-      {{ label }}
+    <div class="flex">
+      <label
+        class="form-label flex1"
+        :id="isCurrent ? 'current-screen-label' : ''"
+        :for="flag">
+        {{ label }}
+      </label>
+
+      <div
+        class="flex row user-connected-container align-center"
+        ref="turn-users-connected">
+        <span v-if="focusBy" class="user-connected">
+          {{ focusBy }}
+        </span>
+      </div>
     </div>
     <div
-      v-if="!isCurrent || !canEdit || !focused"
-      :class="['screen-preview', isCurrent ? 'current' : '']"
-      @click="onCurrentScreenClick">
+      v-if="!isCurrent || !canEdit || locked"
+      :class="[
+        'screen-preview',
+        isCurrent ? 'current' : '',
+        locked ? 'locked' : '',
+      ]">
       <p v-for="line of screen.text">
         {{ line }}
       </p>
     </div>
-    <CollaborativeField
+    <textarea
+      v-else
+      wrap="off"
+      :id="flag"
+      @blur="handleBlur"
+      @input="throttleChange"
+      @focus="onCurrentScreenClick"
+      :class="['screen-preview', isCurrent ? 'current' : '', 'fullwidth']"
+      >{{ startValue }}
+    </textarea>
+    <!-- <CollaborativeField
       v-else
       :label="false"
       :startValue="startValue"
@@ -30,10 +56,14 @@
       :enable-multi-line="true"
       @blur="handleBlur"
       @input="handleContentUpdate">
-    </CollaborativeField>
+    </CollaborativeField> -->
   </div>
 </template>
 <script>
+import { getCookie } from "../tools/getCookie"
+import { workerSendMessage } from "../tools/worker-message"
+import { Throttle } from "../tools/throttle.js"
+
 import CollaborativeField from "./CollaborativeField.vue"
 
 export default {
@@ -71,8 +101,14 @@ export default {
       type: Array,
       default: () => [],
     },
+    focusFields: {
+      type: Object,
+      required: true,
+    },
   },
   data() {
+    const throttleObjectFocus = new Throttle()
+    const throttleObjectChange = new Throttle()
     return {
       focused: false,
       cursorPosition: {
@@ -80,11 +116,22 @@ export default {
         wordCharIndex: 0,
         lineIndex: 0,
       },
+      throttleKeepFocus: throttleObjectFocus.createThrottle(
+        this.keepFocus,
+        15000
+      ),
+      throttleChange: throttleObjectChange.createThrottle(
+        this.handleChange,
+        500
+      ),
     }
   },
   computed: {
+    screenId() {
+      return this.screen.screen_id
+    },
     flag() {
-      return `screen-${this.screen.screen_id}`
+      return `screen-${this.screenId}`
     },
     startValue() {
       return this.screen.text.join("\n")
@@ -92,19 +139,56 @@ export default {
     screenWords() {
       return this.screen.words.filter((word) => word.word !== "")
     },
+    locked() {
+      const isFocus = this.focusFields?.[this.flag]
+      if (isFocus && isFocus.userToken !== getCookie("authToken")) {
+        return true
+      }
+      return false
+    },
+    focusBy() {
+      const isFocus = this.focusFields?.[this.flag]
+      if (isFocus) {
+        const user = this.conversationUsers.find(
+          (usr) => usr._id === isFocus.userId
+        )
+        return user.firstname + " " + user.lastname
+      }
+
+      return null
+    },
   },
   methods: {
     onCurrentScreenClick() {
-      this.focused = true
+      //this.focused = true
+      // this.$nextTick(() => {
+      //   document.getElementById(this.flag).focus()
+      // })
+      workerSendMessage("focus_field", {
+        field: this.flag,
+        userId: this.userInfo._id,
+      })
+    },
+    keepFocus() {
+      workerSendMessage("keep_focus", {
+        field: this.flag,
+        userId: this.userInfo._id,
+      })
     },
     handleBlur() {
+      workerSendMessage("unfocus_field", {
+        field: this.flag,
+        userId: this.userInfo._id,
+      })
       this.focused = false
     },
-    handleContentUpdate(e) {
-      // console.log(e)
+    handleChange(e) {
+      workerSendMessage("screen_edit_text", {
+        screenId: this.screenId,
+        newText: e.target.value,
+      })
     },
   },
-
   components: {
     CollaborativeField,
   },

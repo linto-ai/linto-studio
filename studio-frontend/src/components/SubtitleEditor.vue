@@ -24,6 +24,7 @@
         :can-edit="canEdit"
         :conversation-id="conversation._id"
         :conversation-users="conversationUsers"
+        :focusFields="focusFields"
         :users-connected="usersConnected"
         @mergeScreens="mergeScreens"
         @addScreen="addScreen"></ScreenEditor>
@@ -72,6 +73,10 @@ export default {
     usersConnected: {
       type: Array,
       default: () => [],
+    },
+    focusFields: {
+      type: Object,
+      required: true,
     },
   },
   data() {

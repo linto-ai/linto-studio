@@ -115,6 +115,11 @@
     background-color: var(--input-background);
   }
 
+  &.locked {
+    background-color: var(--background-lock-turn);
+    border: var(--border-lock-turn);
+  }
+
   p,
   div {
     margin: 0.25rem 0;

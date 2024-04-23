@@ -8,6 +8,7 @@
         :can-edit="canEdit"
         :conversation-id="conversationId"
         :conversation-users="conversationUsers"
+        :focusFields="focusFields"
         :users-connected="usersConnected"
         @click="seekTo(prev.stime)">
       </ScreenEditorBox>
@@ -27,6 +28,7 @@
         is-current
         :conversation-id="conversationId"
         :conversation-users="conversationUsers"
+        :focusFields="focusFields"
         :users-connected="usersConnected">
       </ScreenEditorBox>
     </div>
@@ -44,6 +46,7 @@
         :can-edit="canEdit"
         :conversation-id="conversationId"
         :conversation-users="conversationUsers"
+        :focusFields="focusFields"
         :users-connected="usersConnected"
         @click="seekTo(next.stime)">
       </ScreenEditorBox>
@@ -82,6 +85,10 @@ export default {
     usersConnected: {
       type: Array,
       default: () => [],
+    },
+    focusFields: {
+      type: Object,
+      required: true,
     },
   },
   mounted() {

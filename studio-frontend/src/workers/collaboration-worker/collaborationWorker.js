@@ -13,12 +13,13 @@ import {
   turnMergeParagraph,
   turnEditSpeaker,
   updateConversationAddSpeaker,
+  updateSubtitleScreenText,
   updateOrganizationRight,
   fetchSubtitles,
   generateSubtitles,
   copySubtitles,
   deleteSubtitles,
-  updateSubtitleScreen,
+  updateSubtitleScreenTime,
   addScreen,
   mergeSubtitleScreens,
 } from "./handlers/messageHandlers.js"
@@ -199,8 +200,10 @@ onmessage = (event) => {
       )
       break
     case "update_screen":
-      updateSubtitleScreen(event.data.params, subtitle.getYdoc())
+      updateSubtitleScreenTime(event.data.params, subtitle.getYdoc())
       break
+    case "screen_edit_text":
+      updateSubtitleScreenText(event.data.params, subtitle.getYdoc())
     case "fetch_hightlight":
       socket.emit("fetch_hightlight", {
         userToken,

@@ -17,18 +17,6 @@ class WorkerSingleton {
     WorkerSingleton.instance = this
   }
 
-  // restart() {
-  //   this.worker.terminate()
-  //   this.worker = new Worker(
-  //     new URL("./collaborationWorker.js", import.meta.url),
-  //     { type: "module" }
-  //   )
-  // }
-
-  // getWorker() {
-  //   return this.worker
-  // }
-
   sendMessage(action, params) {
     this.getWorker().postMessage({
       action,

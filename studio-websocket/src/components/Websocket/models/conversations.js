@@ -419,7 +419,12 @@ export class Conversation {
   }
 
   resetUsers(userId, userToken) {
-    this.users[userId].removeFocusField(userToken)
+    const user = this.users?.[userId]
+    if (user) {
+      this.users[userId].removeFocusField(userToken)
+    } else {
+      console.error("ResetUsers: User not found", userId)
+    }
   }
 
   getUsersList() {

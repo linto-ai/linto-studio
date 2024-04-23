@@ -50,6 +50,7 @@
       :canEdit="userRights.hasRightAccess(userRight, userRights.WRITE)"
       :conversation-users="conversationUsers"
       :users-connected="usersConnected"
+      :focusFields="focusFields"
       @screenUpdate="screenUpdate"
       @mergeScreen="mergeScreen"
       @addScreen="addScreen">
