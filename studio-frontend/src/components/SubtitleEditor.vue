@@ -26,6 +26,7 @@
         :conversation-users="conversationUsers"
         :focusFields="focusFields"
         :users-connected="usersConnected"
+        @textUpdate="textUpdate"
         @mergeScreens="mergeScreens"
         @addScreen="addScreen"></ScreenEditor>
       <SubtitlePlayer
@@ -106,6 +107,9 @@ export default {
     },
     blockUpdate(screen_id, stime, etime) {
       this.$emit("screenUpdate", screen_id, stime, etime)
+    },
+    textUpdate(screenId, text) {
+      this.$emit("textUpdate", screenId, text)
     },
     mergeScreens(keptScreenId, deletedScreenId) {
       this.$emit("mergeScreen", keptScreenId, deletedScreenId)

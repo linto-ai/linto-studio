@@ -183,10 +183,7 @@ export default {
       this.focused = false
     },
     handleChange(e) {
-      workerSendMessage("screen_edit_text", {
-        screenId: this.screenId,
-        newText: e.target.value,
-      })
+      this.$emit("textUpdate", this.screenId, e.target.value)
     },
   },
   components: {

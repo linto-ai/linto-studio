@@ -29,7 +29,8 @@
         :conversation-id="conversationId"
         :conversation-users="conversationUsers"
         :focusFields="focusFields"
-        :users-connected="usersConnected">
+        :users-connected="usersConnected"
+        @textUpdate="textUpdate">
       </ScreenEditorBox>
     </div>
     <ScreenActions
@@ -129,6 +130,9 @@ export default {
       } else {
         this.$emit("mergeScreens", rightScreenId, leftScreenId)
       }
+    },
+    textUpdate(screenId, text) {
+      this.$emit("textUpdate", screenId, text)
     },
   },
   components: {

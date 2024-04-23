@@ -53,6 +53,7 @@
       :focusFields="focusFields"
       @screenUpdate="screenUpdate"
       @mergeScreen="mergeScreen"
+      @textUpdate="textUpdate"
       @addScreen="addScreen">
     </SubtitleEditor>
   </MainContentConversation>
@@ -221,6 +222,16 @@ export default {
             conversationId: this.conversation._id,
             subtitleId: id,
           },
+        })
+      }
+    },
+    textUpdate(screenId, text) {
+      let block = this.screens.get(screenId)
+      if (block) {
+        block.screen.text = text.split("\n").map((line) => line.trim())
+        workerSendMessage("screen_edit_text", {
+          screenId: screenId,
+          newText: text,
         })
       }
     },
