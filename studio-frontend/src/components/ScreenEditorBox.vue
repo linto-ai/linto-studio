@@ -1,13 +1,15 @@
 <template>
   <div v-if="screen" @click="(e) => $emit('click', e)">
-    <div class="flex">
+    <div class="flex align-center">
       <label
         class="form-label flex1"
         :id="isCurrent ? 'current-screen-label' : ''"
         :for="flag">
         {{ label }}
       </label>
-
+      <!-- <button class="red-border icon-only small">
+        <span class="icon trash"></span>
+      </button> -->
       <div
         class="flex row user-connected-container align-center"
         ref="turn-users-connected">
@@ -32,7 +34,8 @@
       wrap="off"
       :id="flag"
       @blur="handleBlur"
-      @input="throttleChange"
+      @input="onInput"
+      v-model="currentValue"
       @focus="onCurrentScreenClick"
       :class="['screen-preview', isCurrent ? 'current' : '', 'fullwidth']"
       >{{ startValue }}
@@ -109,6 +112,7 @@ export default {
   data() {
     const throttleObjectFocus = new Throttle()
     const throttleObjectChange = new Throttle()
+    console.log(this.screen)
     return {
       focused: false,
       cursorPosition: {
@@ -124,7 +128,16 @@ export default {
         this.handleChange,
         500
       ),
+      currentValue: this.screen.text.join("\n"),
     }
+  },
+  watch: {
+    screen: {
+      handler() {
+        this.currentValue = this.startValue
+      },
+      deep: true,
+    },
   },
   computed: {
     screenId() {
@@ -159,6 +172,10 @@ export default {
     },
   },
   methods: {
+    onInput() {
+      this.throttleKeepFocus()
+      this.throttleChange()
+    },
     onCurrentScreenClick() {
       //this.focused = true
       // this.$nextTick(() => {
@@ -182,8 +199,8 @@ export default {
       })
       this.focused = false
     },
-    handleChange(e) {
-      this.$emit("textUpdate", this.screenId, e.target.value)
+    handleChange(value) {
+      this.$emit("textUpdate", this.screenId, this.currentValue)
     },
   },
   components: {

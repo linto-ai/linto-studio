@@ -27,15 +27,18 @@
   </div>
 </template>
 <script>
-import { bus } from "../main.js"
-import AppPlayerHeader from "@/components/AppPlayerHeader.vue"
-import Loading from "@/components/Loading.vue"
-import { playerMixin } from "@/mixins/player.js"
+import Vue, { h } from "vue"
 import WaveSurfer from "wavesurfer.js"
 import RegionsPlugin from "../../node_modules/wavesurfer.js/dist/plugins/regions.js"
 import TimelinePlugin from "../../node_modules/wavesurfer.js/dist/plugins/timeline.js"
+
+import { bus } from "../main.js"
+import { playerMixin } from "@/mixins/player.js"
 import { ScreenList } from "../models/screenList"
 import { timeToHMS } from "../tools/timeToHMS"
+
+import AppPlayerHeader from "@/components/AppPlayerHeader.vue"
+import Loading from "@/components/Loading.vue"
 
 export default {
   mixins: [playerMixin],
@@ -230,19 +233,11 @@ export default {
       }
     },
     createRegionContent(time) {
-      // let content = document.createElement("div")
-      // let startText = document.createElement("div")
-      // startText.innerText = this.$t("conversation.subtitles.screens.start")
-      // startText.style.fontSize = "0.7rem"
-      // let timeContent = document.createElement("div")
-      // timeContent.innerText = `${time}`
-      // content.append(startText)
-      // content.append(timeContent)
-      // return content
+      // Custom content in each region
     },
     createRegion(screen) {
       let ms = Math.floor((screen.stime - Math.floor(screen.stime)) * 100)
-      let time = timeToHMS(screen.stime, true) + "." + ms
+      let time = timeToHMS(screen.stime, { stripZeros: true }) + "." + ms
       let content = this.createRegionContent(time)
       return {
         id: screen.screen_id,
@@ -288,7 +283,7 @@ export default {
         screen[key] = value
       }
       let ms = Math.floor((screen.start - Math.floor(screen.start)) * 100)
-      let time = timeToHMS(screen.start, true) + "." + ms
+      let time = timeToHMS(screen.start, { stripZeros: true }) + "." + ms
       let content = this.createRegionContent(time)
       screen.content = content
       region.setContent(content)

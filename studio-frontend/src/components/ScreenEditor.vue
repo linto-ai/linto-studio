@@ -2,6 +2,7 @@
   <div class="flex gap-small" id="screen-editor">
     <div class="flex1">
       <ScreenEditorBox
+        v-if="prev"
         :user-info="userInfo"
         :label="$t('conversation.subtitles.screens.previous_screen')"
         :screen="prev"
@@ -41,6 +42,7 @@
       @merge="mergeScreens"></ScreenActions>
     <div class="flex1">
       <ScreenEditorBox
+        v-if="next"
         :user-info="userInfo"
         :label="$t('conversation.subtitles.screens.next_screen')"
         :screen="next"

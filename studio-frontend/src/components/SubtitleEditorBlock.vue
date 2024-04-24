@@ -1,23 +1,23 @@
 <template>
-  <div :class="['turn-container', focused ? 'focused' : '']">
-    <div
-      class="flex screen"
-      @click="handleClick($event)"
-      :id="screen.screen_id">
-      <div class="conversation-speaker flex screen-timestamp">
-        <span class="conversation-speaker-name disabled flex1">
-          {{ stime }}<br />
-          {{ etime }}
-        </span>
+  <div
+    :class="['flex', focused ? 'focused' : '', 'screen']"
+    @click="handleClick($event)"
+    :id="screen.screen_id">
+    <div class="flex col screen-timestamp justify-center">
+      <div class="screen-timestamp-line">
+        {{ stime }}
       </div>
+      <div class="screen-timestamp-line">
+        {{ etime }}
+      </div>
+    </div>
 
-      <div v-if="isempty" class="empty-screen-block flex1">
-        {{ $t("conversation.subtitles.screen_is_empty") }}
-      </div>
-      <div v-else class="flex1">
-        <div v-for="line of screen.text">
-          {{ line }}
-        </div>
+    <div v-if="isempty" class="empty-screen-block flex1">
+      {{ $t("conversation.subtitles.screen_is_empty") }}
+    </div>
+    <div v-else class="flex1 flex col justify-center">
+      <div v-for="line of screen.text">
+        {{ line }}
       </div>
     </div>
   </div>
@@ -59,13 +59,19 @@ export default {
       let ms = Math.floor(
         (this.screen.stime - Math.floor(this.screen.stime)) * 100
       )
-      return timeToHMS(this.screen.stime) + "." + ms
+      return timeToHMS(this.screen.stime, {
+        stripHourZeros: true,
+        withCentisecond: true,
+      })
     },
     etime() {
       let ms = Math.floor(
         (this.screen.etime - Math.floor(this.screen.etime)) * 100
       )
-      return timeToHMS(this.screen.etime) + "." + ms
+      return timeToHMS(this.screen.etime, {
+        stripHourZeros: true,
+        withCentisecond: true,
+      })
     },
     isempty() {
       return (

@@ -83,18 +83,31 @@
 
 .screen-timestamp {
   font-family: Noto Sans Mono, monospace;
+  margin: 0.25rem 0;
+  width: 6rem;
+  margin-right: 2rem;
+}
+
+.screen-timestamp-line {
+  line-height: 1em;
+  text-align: right;
 }
 
 .screen {
   border: 1px solid transparent;
   padding-right: 0.25rem;
   font-family: $luciole;
+  background-color: var(--background-primary);
+  border: var(--border-block);
+  margin-bottom: 0.5rem;
+  padding: 0.25rem;
 
   &.playing {
     // background-color: var(--background-secondary);
     // border-radius: 10px;
     // border: 1px solid var(--green-chart);
     color: var(--primary-color);
+    border-color: var(--primary-color);
   }
 }
 
@@ -142,8 +155,8 @@
   overflow-y: scroll;
   padding-right: 1rem;
   padding-left: 1rem;
-  background-color: var(--background-primary);
-  border-left: var(--border-block);
+  // background-color: var(--background-primary);
+  // border-left: var(--border-block);
 
   & > div:first-child {
     margin-top: 1rem;
