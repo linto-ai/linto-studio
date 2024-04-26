@@ -216,6 +216,19 @@ button,
       }
     }
   }
+  &.hover-red {
+    &:hover {
+      background-color: var(--red-chart);
+      background-image: none;
+      border: 1px solid var(--red-chart);
+      .label {
+        color: var(--background-primary);
+      }
+      .icon {
+        background-color: var(--background-primary);
+      }
+    }
+  }
   &.red-border {
     border: 1px solid var(--red-chart);
     background-color: var(--background-primary);

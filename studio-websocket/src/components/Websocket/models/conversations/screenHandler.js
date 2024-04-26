@@ -39,6 +39,9 @@ async function updateSingleScreen(
 ) {
   let screenToUpdate = []
   for (const event of yEvent) {
+    if (event.changes.deleted.size > 0) {
+      return updateAllScreens(yEvent, conversationId, subtitleId, userToken)
+    }
     const screenIndex = event.path[0]
     const screen = event.currentTarget.get(screenIndex).toJSON()
     screenToUpdate.push(screen)

@@ -51,7 +51,8 @@
       :conversation-users="conversationUsers"
       :users-connected="usersConnected"
       :focusFields="focusFields"
-      @screenUpdate="screenUpdate"
+      @deleteScreen="deleteScreen"
+      @updateScreen="updateScreen"
       @mergeScreen="mergeScreen"
       @textUpdate="textUpdate"
       @addScreen="addScreen">
@@ -59,13 +60,16 @@
   </MainContentConversation>
 </template>
 <script>
+import { bus } from "../main"
+
+import { workerSendMessage } from "@/tools/worker-message.js"
+import { apiGetFileFromConversationSubtitle } from "@/api/conversation.js"
+
 import { subtitleMixin } from "@/mixins/subtitle.js"
-import { workerSendMessage } from "../tools/worker-message.js"
-import { apiGetFileFromConversationSubtitle } from "../api/conversation.js"
-import MainContentConversation from "../components/MainContentConversation.vue"
+
+import MainContentConversation from "@/components/MainContentConversation.vue"
 import SubtitleEditor from "@/components/SubtitleEditor.vue"
 import CustomSelect from "@/components/CustomSelect.vue"
-import { bus } from "../main"
 export default {
   mixins: [subtitleMixin],
   data() {
@@ -144,7 +148,7 @@ export default {
         link.click()
       }
     },
-    screenUpdate(screen_id, stime, etime) {
+    updateScreen(screen_id, stime, etime) {
       let block = this.screens?.get(screen_id)
       if (block) {
         block.screen.stime = stime
@@ -154,6 +158,10 @@ export default {
           screen: block.screen,
         })
       }
+    },
+    deleteScreen(screenId) {
+      this.screens.delete(screenId)
+      workerSendMessage("delete_screen", { screenId })
     },
     mergeScreen(keptScreenId, deletedScreenId) {
       let keptScreen = this.screens.get(keptScreenId)

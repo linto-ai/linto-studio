@@ -1,6 +1,12 @@
 <template>
   <div
-    :class="['flex', focused ? 'focused' : '', 'screen']"
+    :class="[
+      'flex',
+      focused ? 'focused' : '',
+      'screen',
+      'justify-center',
+      'align-center',
+    ]"
     @click="handleClick($event)"
     :id="screen.screen_id">
     <div class="flex col screen-timestamp justify-center">
@@ -20,6 +26,10 @@
         {{ line }}
       </div>
     </div>
+
+    <button :class="['icon-only', 'black', 'hover-red']" @click="deletescreen">
+      <span class="icon trash"></span>
+    </button>
   </div>
 </template>
 <script>
@@ -40,7 +50,7 @@ export default {
       type: Object,
       required: true,
     },
-    isInitiallySelected: {
+    isSelected: {
       type: Boolean,
       required: true,
     },
@@ -81,19 +91,35 @@ export default {
     },
   },
   mounted() {
-    if (this.isInitiallySelected) {
-      let domElem = document.getElementById(this.screen.screen_id)
-      domElem.classList.add("playing")
-      domElem.scrollIntoView({
-        behavior: "instant",
-        block: "center",
-        inline: "center",
-      })
-    }
+    this.updatePlayingState(this.isSelected)
   },
   methods: {
     handleClick() {
       bus.$emit("player_set_time", { stime: this.screen.stime })
+    },
+    deletescreen() {
+      this.$emit("delete")
+    },
+    updatePlayingState(newVal) {
+      let domElem = document.getElementById(this.screen.screen_id)
+      if (newVal) {
+        domElem.classList.add("playing")
+        domElem.scrollIntoView({
+          behavior: "instant",
+          block: "center",
+          inline: "center",
+        })
+      } else {
+        domElem.classList.remove("playing")
+      }
+    },
+  },
+  watch: {
+    isSelected: {
+      handler(newVal) {
+        this.updatePlayingState(newVal)
+      },
+      immediate: false,
     },
   },
   components: {

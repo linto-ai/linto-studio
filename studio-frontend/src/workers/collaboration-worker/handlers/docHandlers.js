@@ -358,8 +358,9 @@ function sendScreenUpdateToView(sendMessage, subtitle, events, transaction) {
   // console.log("update: " + updateScreen)
 
   if (mergeScreen) sendScreenMergeToView(sendMessage, subtitle, events)
-  else if (deleteScreen) console.log("deleted")
-  else if (splitScreen) console.log("split")
+  else if (deleteScreen) {
+    sendScreenDeleteToView(sendMessage, subtitle, events, transaction.origin)
+  } else if (splitScreen) console.log("split")
   else if (addScreen)
     sendScreenAddToView(sendMessage, subtitle, events[0], transaction.origin)
   else if (updateScreen)
@@ -369,6 +370,18 @@ function sendScreenUpdateToView(sendMessage, subtitle, events, transaction) {
       events[0],
       transaction.origin
     )
+}
+
+function sendScreenDeleteToView(sendMessage, subtitle, events) {
+  //if (origin !== "websocket") return
+
+  console.log("delete screen")
+  const delta = events[0].changes.delta
+  const index = delta[1]?.delete ? delta[0].retain : 0
+  const screenId = subtitle.getScreen(index).screen_id
+  sendMessage("screen_delete", {
+    screenId: screenId,
+  })
 }
 
 function sendScreenMergeToView(sendMessage, subtitle, events) {

@@ -22,6 +22,7 @@ import {
   updateSubtitleScreenTime,
   addScreen,
   mergeSubtitleScreens,
+  deleteSubtitleScreen,
 } from "./handlers/messageHandlers.js"
 
 import { Conversation } from "./models/conversations.js"
@@ -202,8 +203,12 @@ onmessage = (event) => {
     case "update_screen":
       updateSubtitleScreenTime(event.data.params, subtitle.getYdoc())
       break
+    case "delete_screen":
+      deleteSubtitleScreen(event.data.params.screenId, subtitle.getYdoc())
+      break
     case "screen_edit_text":
       updateSubtitleScreenText(event.data.params, subtitle.getYdoc())
+      break
     case "fetch_hightlight":
       socket.emit("fetch_hightlight", {
         userToken,

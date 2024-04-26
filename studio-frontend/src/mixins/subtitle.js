@@ -62,6 +62,10 @@ export const subtitleMixin = {
         case "add_screen":
           this.screenAdd(event.data.params)
           break
+        case "screen_delete":
+          console.log("screen_delete", event.data.params)
+          this.screenDelete(event.data.params) // todo : fix, two method are name the same
+          break
         case "merge_screen":
           this.screenMerge(event.data.params)
           break
@@ -78,6 +82,12 @@ export const subtitleMixin = {
           screen[key] = value
         }
       }
+    },
+    screenDelete({ screenId }) {
+      console.log("*------*")
+      console.log("deleteScreen", screenId)
+      this.screens.delete(screenId)
+      bus.$emit("delete_screen", { screenId })
     },
     screenMerge({ screenId, deleteAfter }) {
       let deletedId = this.screens.merge(screenId, deleteAfter)

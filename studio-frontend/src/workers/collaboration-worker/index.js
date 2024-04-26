@@ -4,7 +4,6 @@ let worker = new Worker(new URL("./collaborationWorker.js", import.meta.url), {
 class WorkerSingleton {
   constructor() {
     this.isTerminated = false
-    // if worker is terminate create new worker
 
     if (WorkerSingleton.instance) {
       return WorkerSingleton.instance

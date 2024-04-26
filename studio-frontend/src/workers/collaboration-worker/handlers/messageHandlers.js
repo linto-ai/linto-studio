@@ -238,7 +238,7 @@ export function updateSubtitleScreenText({ screenId, newText }, rootDoc) {
   }, "subtitle_edit_screen_text")
 }
 
-export function updateSubtitleScreenTime(params, rootDoc) {
+export function updateSubtitleScreenTime(params) {
   const { screen } = params
   const screenIndex = findScreenIndex(
     rootDoc.getArray("screens").toJSON(),
@@ -252,6 +252,18 @@ export function updateSubtitleScreenTime(params, rootDoc) {
     rootDoc.getArray("screens").get(screenIndex).set("stime", screen.stime)
     rootDoc.getArray("screens").get(screenIndex).set("etime", screen.etime)
   }, "subtitle_edit_screen_timestamp")
+}
+
+export function deleteSubtitleScreen(screenId, rootDoc) {
+  const screenIndex = findScreenIndex(
+    rootDoc.getArray("screens").toJSON(),
+    screenId
+  )
+
+  rootDoc.transact(() => {
+    debugEditScreen(`delete screen ${screenId}`)
+    rootDoc.getArray("screens").delete(screenIndex, 1)
+  }, "subtitle_delete_screen")
 }
 
 export function mergeSubtitleScreens(params, rootDoc) {

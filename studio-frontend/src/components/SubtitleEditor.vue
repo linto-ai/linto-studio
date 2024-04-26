@@ -11,7 +11,8 @@
             :userInfo="userInfo"
             :canEdit="canEdit"
             :block="block"
-            :is-initially-selected="
+            @delete="deleteScreen(block.screen.screen_id)"
+            :isSelected="
               block.screen.screen_id === playingScreen
             "></SubtitleEditorBlock>
         </div>
@@ -26,6 +27,7 @@
         :conversation-users="conversationUsers"
         :focusFields="focusFields"
         :users-connected="usersConnected"
+        :playingScreen="playingScreen"
         @textUpdate="textUpdate"
         @mergeScreens="mergeScreens"
         @addScreen="addScreen"></ScreenEditor>
@@ -84,7 +86,7 @@ export default {
     return {
       useVideo: null,
       playerKey: true,
-      playingScreen: null,
+      playingScreen: this.blocks.first,
     }
   },
   computed: {
@@ -106,10 +108,13 @@ export default {
       this.playerKey = !this.playerKey
     },
     blockUpdate(screen_id, stime, etime) {
-      this.$emit("screenUpdate", screen_id, stime, etime)
+      this.$emit("updateScreen", screen_id, stime, etime)
     },
     textUpdate(screenId, text) {
       this.$emit("textUpdate", screenId, text)
+    },
+    deleteScreen(screenId) {
+      this.$emit("deleteScreen", screenId)
     },
     mergeScreens(keptScreenId, deletedScreenId) {
       this.$emit("mergeScreen", keptScreenId, deletedScreenId)

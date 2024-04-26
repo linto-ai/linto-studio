@@ -93,21 +93,17 @@ export default {
       type: Object,
       required: true,
     },
-  },
-  mounted() {
-    bus.$on("screen-enter", this.handleScreenEnter)
-  },
-  beforeDestroy() {
-    bus.$off("screen-enter", this.handleScreenEnter)
-  },
-  data() {
-    return {
-      currentScreen: this.screens.get(this.screens.first),
-    }
+    playingScreen: {
+      type: String,
+      required: true,
+    },
   },
   computed: {
+    currentScreen() {
+      return this.screens.get(this.playingScreen)
+    },
     selectedScreen() {
-      return this.currentScreen.screen
+      return this.screens.get(this.playingScreen)?.screen
     },
     prev() {
       return this.screens.get(this.currentScreen.prev)?.screen
@@ -117,9 +113,6 @@ export default {
     },
   },
   methods: {
-    handleScreenEnter(screen_id) {
-      this.currentScreen = this.screens.get(screen_id)
-    },
     seekTo(stime) {
       bus.$emit("player_set_time", { stime })
     },
