@@ -64,7 +64,7 @@ export const subtitleMixin = {
           break
         case "screen_delete":
           console.log("screen_delete", event.data.params)
-          this.screenDelete(event.data.params) // todo : fix, two method are name the same
+          this.screenDeleteFromWebsocket(event.data.params)
           break
         case "merge_screen":
           this.screenMerge(event.data.params)
@@ -83,11 +83,8 @@ export const subtitleMixin = {
         }
       }
     },
-    screenDelete({ screenId }) {
-      console.log("*------*")
-      console.log("deleteScreen", screenId)
-      this.screens.delete(screenId)
-      bus.$emit("delete_screen", { screenId })
+    screenDeleteFromWebsocket({ delta }) {
+      this.screens.applyDelta(delta)
     },
     screenMerge({ screenId, deleteAfter }) {
       let deletedId = this.screens.merge(screenId, deleteAfter)

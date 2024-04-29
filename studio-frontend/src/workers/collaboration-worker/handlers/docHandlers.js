@@ -372,15 +372,11 @@ function sendScreenUpdateToView(sendMessage, subtitle, events, transaction) {
     )
 }
 
-function sendScreenDeleteToView(sendMessage, subtitle, events) {
-  //if (origin !== "websocket") return
-
-  console.log("delete screen")
+function sendScreenDeleteToView(sendMessage, subtitle, events, origin) {
+  if (origin !== "websocket") return
   const delta = events[0].changes.delta
-  const index = delta[1]?.delete ? delta[0].retain : 0
-  const screenId = subtitle.getScreen(index).screen_id
   sendMessage("screen_delete", {
-    screenId: screenId,
+    delta,
   })
 }
 
