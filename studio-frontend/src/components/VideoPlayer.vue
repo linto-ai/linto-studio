@@ -38,7 +38,7 @@ export default {
       required: true,
     },
     screens: {
-      type: Map,
+      type: Object,
       required: true,
     },
   },
@@ -75,7 +75,7 @@ export default {
   },
   methods: {
     handleScreenEnter(screen_id) {
-      const screen = this.screens.get(screen_id).screen
+      const screen = this.screens[screen_id].screen
       let elem = this.$refs["screen-container"]
       elem.innerHTML = ""
       for (let line of screen.text) {

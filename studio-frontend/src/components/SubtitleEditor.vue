@@ -13,7 +13,7 @@
             :block="block"
             @delete="deleteScreen(block.screen.screen_id)"
             :isSelected="
-              block.screen.screen_id === playingScreen
+              block.screen.screen_id === playingScreenId
             "></SubtitleEditorBlock>
         </div>
       </div>
@@ -27,7 +27,7 @@
         :conversation-users="conversationUsers"
         :focusFields="focusFields"
         :users-connected="usersConnected"
-        :playingScreen="playingScreen"
+        :playingScreen="playingScreenId"
         @textUpdate="textUpdate"
         @mergeScreens="mergeScreens"
         @addScreen="addScreen"></ScreenEditor>
@@ -86,7 +86,7 @@ export default {
     return {
       useVideo: null,
       playerKey: true,
-      playingScreen: this.blocks.first,
+      playingScreenId: this.blocks.first,
     }
   },
   computed: {
@@ -129,7 +129,7 @@ export default {
     handleScreenEnter(screenId) {
       let screen = document.getElementById(screenId)
       if (screen) {
-        this.playingScreen = screenId
+        this.playingScreenId = screenId
         screen.classList.add("playing")
         screen.scrollIntoView({
           behavior: "smooth",
@@ -139,13 +139,13 @@ export default {
       }
     },
     handleScreenLeave(screenId) {
-      let screen = document.getElementById(screenId)
-      if (screen) {
-        if (this.playingScreen === screenId) {
-          this.playingScreen = null
-        }
-        screen.classList.remove("playing")
-      }
+      // let screen = document.getElementById(screenId)
+      // if (screen) {
+      //   if (this.playingScreenId === screenId) {
+      //     this.playingScreenId = null
+      //   }
+      //   screen.classList.remove("playing")
+      // }
     },
   },
   components: {

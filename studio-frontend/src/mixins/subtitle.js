@@ -54,27 +54,27 @@ export const subtitleMixin = {
           this.deleteVersions(event.data.params)
           break
         case "screen_update":
-          this.updateScreen(
+          this.screenUpdateFromWebsocket(
             event.data.params.screenId,
             event.data.params.changes
           )
           break
         case "add_screen":
-          this.screenAdd(event.data.params)
+          this.screenAddFromWebsocket(event.data.params)
           break
         case "screen_delete":
           console.log("screen_delete", event.data.params)
           this.screenDeleteFromWebsocket(event.data.params)
           break
         case "merge_screen":
-          this.screenMerge(event.data.params)
+          this.screenMergeFromWebsocket(event.data.params)
           break
         default:
           break
       }
     },
-    updateScreen(screenId, changes) {
-      let screenObj = this.screens.screens.get(screenId)
+    screenUpdateFromWebsocket(screenId, changes) {
+      let screenObj = this.screens.get(screenId)
       if (screenObj) {
         bus.$emit("refresh_screen", { screenId, changes })
         let screen = screenObj.screen
@@ -86,11 +86,11 @@ export const subtitleMixin = {
     screenDeleteFromWebsocket({ delta }) {
       this.screens.applyDelta(delta)
     },
-    screenMerge({ screenId, deleteAfter }) {
+    screenMergeFromWebsocket({ screenId, deleteAfter }) {
       let deletedId = this.screens.merge(screenId, deleteAfter)
       bus.$emit("merge_screen", { screenId, deletedId })
     },
-    screenAdd({ after, screenId, newScreen }) {
+    screenAddFromWebsocket({ after, screenId, newScreen }) {
       this.screens.add(screenId, newScreen, after)
       bus.$emit("add_screen", { newScreen })
     },

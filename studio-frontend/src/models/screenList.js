@@ -1,6 +1,8 @@
+import { bus } from "../main.js"
+
 export class ScreenList {
   constructor() {
-    this.screens = new Map()
+    this.screens = {}
     this.size = 0
     this.first = null
   }
@@ -13,7 +15,7 @@ export class ScreenList {
         if (currentScreen) {
           let value = currentScreen
           currentId = currentScreen.next
-          currentScreen = this.screens.get(currentId)
+          currentScreen = this.screens[currentId]
           return { value: value, done: false }
         }
         return { done: true }
@@ -24,11 +26,11 @@ export class ScreenList {
   static from(screens) {
     let obj = new ScreenList()
     for (let [i, screen] of screens.entries()) {
-      obj.screens.set(screen.screen_id, {
+      obj.screens[screen.screen_id] = {
         screen: screen,
         prev: i > 0 ? screens[i - 1].screen_id : null,
         next: i < screens.length - 1 ? screens[i + 1].screen_id : null,
-      })
+      }
     }
     if (screens.length > 0) {
       obj.first = screens[0].screen_id
@@ -47,12 +49,12 @@ export class ScreenList {
   }
 
   get(screenId) {
-    return this.screens.get(screenId)
+    return this.screens[screenId]
   }
 
   set(screenId, screen) {
-    if (this.screens.has(screenId)) {
-      this.screens.set(screenId, screen)
+    if (screenId in this.screens) {
+      this.screens[screenId] = screen
     }
   }
 
@@ -85,7 +87,7 @@ export class ScreenList {
       target.prev = newScreen.screen_id
     }
 
-    this.screens.set(newScreen.screen_id, addedScreen)
+    this.screens[newScreen.screen_id] = addedScreen
     this.size++
   }
 
@@ -144,8 +146,9 @@ export class ScreenList {
       // start of list
       next.prev = target.prev
     }
-    this.screens.delete(screenId)
+    this.screens[screenId] = null
     this.size--
+    bus.$emit("delete_screen", { screenId })
     return screenId
   }
 

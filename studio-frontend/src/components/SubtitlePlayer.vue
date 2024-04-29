@@ -84,12 +84,16 @@ export default {
       this.deleteScreen(screenId)
       this.addScreen(target.screen)
     })
+    bus.$on("delete_screen", (data) => {
+      this.deleteScreen(data.screenId)
+    })
   },
   beforeDestroy() {
     bus.$off("refresh_screen")
     bus.$off("player_set_time")
     bus.$off("add_screen")
     bus.$off("merge_screen")
+    bus.$off("delete_screen")
   },
   methods: {
     seekFromBar(e) {
