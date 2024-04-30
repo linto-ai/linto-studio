@@ -93,23 +93,31 @@ export default {
       type: Object,
       required: true,
     },
-    playingScreen: {
+    previousScreenId: {
+      type: String,
+      required: false,
+    },
+    playingScreenId: {
       type: String,
       required: true,
+    },
+    nextScreenId: {
+      type: String,
+      required: false,
     },
   },
   computed: {
     currentScreen() {
-      return this.screens.get(this.playingScreen)
+      return this.screens.get(this.playingScreenId)
     },
     selectedScreen() {
-      return this.screens.get(this.playingScreen)?.screen
+      return this.screens.get(this.playingScreenId)?.screen
     },
     prev() {
-      return this.screens.get(this.currentScreen.prev)?.screen
+      return this.screens.get(this.previousScreenId)?.screen
     },
     next() {
-      return this.screens.get(this.currentScreen.next)?.screen
+      return this.screens.get(this.nextScreenId)?.screen
     },
   },
   methods: {

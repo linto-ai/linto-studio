@@ -238,7 +238,7 @@ export function updateSubtitleScreenText({ screenId, newText }, rootDoc) {
   }, "subtitle_edit_screen_text")
 }
 
-export function updateSubtitleScreenTime(params) {
+export function updateSubtitleScreenTime(params, rootDoc) {
   const { screen } = params
   const screenIndex = findScreenIndex(
     rootDoc.getArray("screens").toJSON(),

@@ -27,7 +27,9 @@
         :conversation-users="conversationUsers"
         :focusFields="focusFields"
         :users-connected="usersConnected"
-        :playingScreen="playingScreenId"
+        :previousScreenId="previousScreenId"
+        :playingScreenId="playingScreenId"
+        :nextScreenId="nextScreenId"
         @textUpdate="textUpdate"
         @mergeScreens="mergeScreens"
         @addScreen="addScreen"></ScreenEditor>
@@ -83,10 +85,13 @@ export default {
     },
   },
   data() {
+    const currentScreen = this.blocks.get(this.blocks.first)
     return {
       useVideo: null,
       playerKey: true,
       playingScreenId: this.blocks.first,
+      previousScreenId: null,
+      nextScreenId: currentScreen.next,
     }
   },
   computed: {
@@ -102,6 +107,30 @@ export default {
     bus.$off("screen-enter", this.handleScreenEnter)
     bus.$off("screen-leave", this.handleScreenLeave)
   },
+  watch: {
+    playingScreenId(id) {
+      this.previousScreenId = this.blocks.get(id).prev
+      this.nextScreenId = this.blocks.get(id).next
+    },
+    blocks: {
+      handler() {
+        if (!this.blocks.get(this.playingScreenId)) {
+          this.playingScreenId = this.nextScreenId
+        }
+
+        const currentScreen = this.blocks.get(this.playingScreenId)
+
+        if (!this.blocks.get(this.nextScreenId)) {
+          this.nextScreenId = currentScreen.next
+        }
+
+        if (!this.blocks.get(this.previousScreenId)) {
+          this.previousScreenId = currentScreen.prev
+        }
+      },
+      deep: true,
+    },
+  },
   methods: {
     setVideo(video) {
       this.useVideo = video
@@ -114,6 +143,9 @@ export default {
       this.$emit("textUpdate", screenId, text)
     },
     deleteScreen(screenId) {
+      // if (this.playingScreenId === screenId) {
+      //   this.playingScreenId = this.blocks.get(screenId).next
+      // }
       this.$emit("deleteScreen", screenId)
     },
     mergeScreens(keptScreenId, deletedScreenId) {
