@@ -171,7 +171,10 @@ export default {
       if (newLineNumber > this.versionSettings.screenLines) {
         bus.$emit("app_notif", {
           status: "error",
-          message: `You cannot have more than ${this.versionSettings.screenLines} lines on a screen`,
+          message: this.$i18n.t(
+            "conversation.subtitles.error.too_much_lines_to_merge",
+            { maxLines: this.versionSettings.screenLines }
+          ),
           timout: null,
           redirect: false,
         })
@@ -183,7 +186,9 @@ export default {
       } else {
         bus.$emit("app_notif", {
           status: "error",
-          message: "Connot merge two non-consecutive screens",
+          message: this.$i18n.t(
+            "conversation.subtitles.error.cannot_merge_non_consecutive_screens"
+          ),
           timout: null,
           redirect: false,
         })
@@ -207,7 +212,9 @@ export default {
       if (etime - stime < 0.1) {
         bus.$emit("app_notif", {
           status: "error",
-          message: "Not enough place to create a new screen",
+          message: this.$i18n.t(
+            "conversation.subtitles.error.no_enough_place_new_screen"
+          ),
           timout: null,
           redirect: false,
         })

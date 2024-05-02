@@ -306,6 +306,16 @@
         "current_screen": "Ecran actuel",
         "previous_screen": "Ecran précédant",
         "next_screen": "Ecran suivant"
+      },
+      "split_selection": {
+        "no_split": "Aucun découpage",
+        "split_over_two_lines": "Découper sur deux lignes",
+        "split_over_three_lines": "Découper sur trois lignes"
+      },
+      "error": {
+        "no_enough_place_new_screen": "Pas assez de place pour ajouter un nouvel écran",
+        "cannot_merge_non_consecutive_screens": "Impossible de fusionner des écrans non consécutifs",
+        "too_much_lines_to_merge": "Le nombre de ligne est limité à {maxLines} pour fusionner les écrans"
       }
     }
   },
