@@ -212,7 +212,33 @@ export function turnEditSpeaker(params, conversationId, rootDoc) {
   }, "conversation_edit_speaker")
 }
 
-export function updateSubtitleScreen(params, rootDoc) {
+export function updateSubtitleScreenText({ screenId, newText }, rootDoc) {
+  debugEditScreen(`update screen ${screenId} with new text: %s`, newText)
+  rootDoc.transact(() => {
+    const screenIndex = findScreenIndex(
+      rootDoc.getArray("screens").toJSON(),
+      screenId
+    )
+    let screen = rootDoc.getArray("screens").get(screenIndex)
+    const newlines = newText.toString().split("\n")
+    for (let i = 0; i < newlines.length; i++) {
+      switch (screen.get("text").get(i)) {
+        case newlines[i]:
+          continue
+          break
+        case undefined:
+          screen.get("text").insert(i, [newlines[i]])
+          break
+        default:
+          screen.get("text").delete(i, 1)
+          screen.get("text").insert(i, [newlines[i]])
+          break
+      }
+    }
+  }, "subtitle_edit_screen_text")
+}
+
+export function updateSubtitleScreenTime(params, rootDoc) {
   const { screen } = params
   const screenIndex = findScreenIndex(
     rootDoc.getArray("screens").toJSON(),
@@ -226,6 +252,18 @@ export function updateSubtitleScreen(params, rootDoc) {
     rootDoc.getArray("screens").get(screenIndex).set("stime", screen.stime)
     rootDoc.getArray("screens").get(screenIndex).set("etime", screen.etime)
   }, "subtitle_edit_screen_timestamp")
+}
+
+export function deleteSubtitleScreen(screenId, rootDoc) {
+  const screenIndex = findScreenIndex(
+    rootDoc.getArray("screens").toJSON(),
+    screenId
+  )
+  console.log("screenIndex", screenIndex)
+  rootDoc.transact(() => {
+    debugEditScreen(`delete screen ${screenId}`)
+    rootDoc.getArray("screens").delete(screenIndex, 1)
+  }, "subtitle_delete_screen")
 }
 
 export function mergeSubtitleScreens(params, rootDoc) {

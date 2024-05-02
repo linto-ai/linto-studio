@@ -41,6 +41,8 @@ textarea,
 }
 
 textarea {
+  font-family: $mainFont;
+  font: inherit;
   height: 6rem;
 }
 input.speaker-toolbox-input {
@@ -81,6 +83,17 @@ input.speaker-toolbox-input {
       outline: none !important;
       border: none !important;
       box-shadow: none !important;
+    }
+  }
+
+  &.screen-preview {
+    &,
+    &:focus,
+    &:active {
+      outline: none !important;
+      box-shadow: none !important;
+      font-size: 15px !important;
+      line-height: inherit;
     }
   }
 

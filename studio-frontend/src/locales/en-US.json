@@ -283,6 +283,7 @@
     "websocket_error_content": "Document update failed, save your change and reload the page.",
     "websocket_error_title": "Syncronisation error.",
     "subtitles": {
+      "screen_is_empty": "The screen is empty",
       "drop_video": "Drag and drop your vidéo file here",
       "not_available": "No subtitles available",
       "available": "Available subtitles",
@@ -306,6 +307,16 @@
         "current_screen": "Current screen",
         "previous_screen": "Previous screen",
         "next_screen": "Next screen"
+      },
+      "split_selection": {
+        "no_split": "No split",
+        "split_over_two_lines": "Split over two lines",
+        "split_over_three_lines": "Split over three lines"
+      },
+      "error": {
+        "no_enough_place_new_screen": "Not enough place to create a new screen",
+        "cannot_merge_non_consecutive_screens": "Cannot merge non consecutive screens",
+        "too_much_lines_to_merge": "Lines number is limited to {maxLines} lines"
       }
     }
   },

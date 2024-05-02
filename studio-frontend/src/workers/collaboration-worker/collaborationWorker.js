@@ -13,14 +13,16 @@ import {
   turnMergeParagraph,
   turnEditSpeaker,
   updateConversationAddSpeaker,
+  updateSubtitleScreenText,
   updateOrganizationRight,
   fetchSubtitles,
   generateSubtitles,
   copySubtitles,
   deleteSubtitles,
-  updateSubtitleScreen,
+  updateSubtitleScreenTime,
   addScreen,
   mergeSubtitleScreens,
+  deleteSubtitleScreen,
 } from "./handlers/messageHandlers.js"
 
 import { Conversation } from "./models/conversations.js"
@@ -199,7 +201,13 @@ onmessage = (event) => {
       )
       break
     case "update_screen":
-      updateSubtitleScreen(event.data.params, subtitle.getYdoc())
+      updateSubtitleScreenTime(event.data.params, subtitle.getYdoc())
+      break
+    case "delete_screen":
+      deleteSubtitleScreen(event.data.params.screenId, subtitle.getYdoc())
+      break
+    case "screen_edit_text":
+      updateSubtitleScreenText(event.data.params, subtitle.getYdoc())
       break
     case "fetch_hightlight":
       socket.emit("fetch_hightlight", {
