@@ -6,15 +6,36 @@
     :error="error"
     sidebar>
     <template v-slot:sidebar>
-      <HighlightsList
-        v-if="status === 'done'"
-        :conversation="conversation"
-        :hightlightsCategories="hightlightsCategories"
-        :hightlightsCategoriesVisibility="hightlightsCategoriesVisibility"
-        @hide-category="onHideCategory"
-        @show-category="onShowCategory"
-        @delete-tag="onDeleteTag"
-        :conversationId="conversation._id" />
+      <div>
+        <div class="form-field flex col medium-margin">
+          <label for="transcription-search">Rechercher</label>
+          <input
+            @keydown="($event) => $event.stopPropagation()"
+            type="search"
+            id="transcription-search"
+            v-model="transcriptionSearch" />
+          <div
+            v-if="numberFound"
+            class="flex small-padding-top gap-small align-center">
+            <span class="flex1">{{ numberFound }} found</span>
+            <button class="icon-only small" @click="previousResult">
+              <span class="icon previous"></span>
+            </button>
+            <button class="icon-only small" @click="nextResult">
+              <span class="icon next"></span>
+            </button>
+          </div>
+        </div>
+        <HighlightsList
+          v-if="status === 'done'"
+          :conversation="conversation"
+          :hightlightsCategories="hightlightsCategories"
+          :hightlightsCategoriesVisibility="hightlightsCategoriesVisibility"
+          @hide-category="onHideCategory"
+          @show-category="onShowCategory"
+          @delete-tag="onDeleteTag"
+          :conversationId="conversation._id" />
+      </div>
     </template>
 
     <template v-slot:breadcrumb-actions>
@@ -54,6 +75,7 @@
         :hightlightsCategories="hightlightsCategories"
         :hightlightsCategoriesVisibility="hightlightsCategoriesVisibility"
         @newHighlight="handleNewHighlight"
+        @foundExpression="onFoundExpression"
         ref="editor"
         v-if="status === 'done'"></AppEditor>
     </div>
@@ -104,6 +126,8 @@ export default {
       tagToDelete: null,
       showMetadataModal: false,
       metadataModalData: null,
+      transcriptionSearch: "",
+      numberFound: 0,
     }
   },
   mounted() {
@@ -128,6 +152,11 @@ export default {
     dataLoaded(newVal, oldVal) {
       if (newVal) {
         this.status = this.computeStatus(this.conversation?.jobs?.transcription)
+      }
+    },
+    transcriptionSearch(newVal, oldVal) {
+      if (newVal != oldVal) {
+        this.$refs.editor.searchInTranscription(newVal)
       }
     },
   },
@@ -190,6 +219,15 @@ export default {
     },
   },
   methods: {
+    onFoundExpression(number) {
+      this.numberFound = number
+    },
+    nextResult() {
+      this.$refs.editor.nextResultFound()
+    },
+    previousResult() {
+      this.$refs.editor.previousResultFound()
+    },
     cancelMetadata() {
       this.showMetadataModal = false
     },

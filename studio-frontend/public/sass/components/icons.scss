@@ -207,6 +207,13 @@
   &.done {
     @include maskImage("../public/img/state-done.svg");
   }
+  &.next {
+    @include maskImage("../public/img/next.svg");
+  }
+
+  &.previous {
+    @include maskImage("../public/img/previous.svg");
+  }
 }
 
 .icon.small {

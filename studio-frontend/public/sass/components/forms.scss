@@ -81,7 +81,7 @@ input.speaker-toolbox-input {
     &:focus,
     &:active {
       outline: none !important;
-      border: none !important;
+      border-color: transparent !important;
       box-shadow: none !important;
     }
   }

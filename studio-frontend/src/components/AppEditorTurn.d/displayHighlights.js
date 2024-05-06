@@ -1,6 +1,6 @@
 import { nextTick } from "vue"
 import findExpressionInWordsList from "@/tools/findExpressionInWordsList.js"
-import getWordsRangeFromTagMetadata from "../../tools/getWordsRangeFromTagMetadata"
+import getWordsRangeFromTagMetadata from "@/tools/getWordsRangeFromTagMetadata"
 
 export default async function displayHighlights() {
   // first unhighlight all

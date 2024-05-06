@@ -132,6 +132,8 @@ import _handleContentUpdate from "@/components/AppEditorTurn.d/handleContentUpda
 import _handleSpeakerClick from "@/components/AppEditorTurn.d/handleSpeakerClick.js"
 import _setSpeakerName from "@/components/AppEditorTurn.d/setSpeakerName.js"
 import _handleEnter from "@/components/AppEditorTurn.d/handleEnter.js"
+import _highlightSearchWord from "@/components/AppEditorTurn.d/highlightSearchWord.js"
+import _unHighlightSearchWord from "@/components/AppEditorTurn.d/unHighlightSearchWord.js"
 import AppEditorMetadataModal from "./AppEditorMetadataModal.vue"
 import { getCookie } from "../tools/getCookie.js"
 
@@ -188,6 +190,14 @@ export default {
     hightlightsCategoriesVisibility: {
       type: Object,
       default: () => ({}),
+    },
+    searchResult: {
+      type: Array,
+      default: () => [],
+    },
+    focusResultId: {
+      type: String,
+      default: "",
     },
   },
   data() {
@@ -324,6 +334,20 @@ export default {
     },
   },
   watch: {
+    searchResult(data, oldData) {
+      console.log("searchResult", data, oldData)
+      if (data.length > 0) {
+        this.displaySearchResult()
+      }
+      if (oldData.length > 0) {
+        this.hideListExpressionFound(oldData)
+      }
+    },
+    focusResultId(data, oldData) {
+      if (data) {
+        this.refreshSearchResult()
+      }
+    },
     contentEditable(data) {
       if (data) {
         this.plainText = this.segment
@@ -407,6 +431,35 @@ export default {
     handleSpeakerClick: _handleSpeakerClick,
     setSpeakerName: _setSpeakerName,
     handleEnter: _handleEnter,
+    highlightSearchWord: _highlightSearchWord,
+    unHighlightSearchWord: _unHighlightSearchWord,
+    displaySearchResult() {
+      this.searchResult.forEach((expression) => {
+        const domRange = this.plainRangeToDomRange(expression)
+        let iscurrent = expression.id === this.focusResultId
+        console.log("iscurrent", iscurrent, expression.id, this.focusResultId)
+        this.highlightRange(
+          { range: domRange, category: { color: "red" } },
+          {
+            functionToHighlightWord: this.highlightSearchWord,
+            functionArgs: [iscurrent],
+          }
+        )
+      })
+    },
+    hideListExpressionFound(searchResult) {
+      searchResult.forEach((expression) => {
+        const domRange = this.plainRangeToDomRange(expression)
+        this.unhighlightRange(
+          { range: domRange },
+          { functionToUnhighlightWord: this.unHighlightSearchWord }
+        )
+      })
+    },
+    refreshSearchResult() {
+      this.hideListExpressionFound(this.searchResult)
+      this.displaySearchResult()
+    },
     handleNewHighlight(tag) {
       this.$emit("newHighlight", {
         tag,
@@ -456,7 +509,7 @@ export default {
       this.selectedRange = domRange
       await this.highlightRange(
         { range: this.selectedRange, category: { color: "blue" } },
-        false
+        { functionArgs: [false] }
       )
       // if (
       //   target.classList.contains("turn") ||

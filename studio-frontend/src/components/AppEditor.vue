@@ -21,6 +21,8 @@
               turns.findIndex((t) => t.turn_id === turn.turn_id) ===
               turns.length - 1
             "
+            :searchResult="searchResultIndexedByTurn[turn.turn_id]"
+            :focusResultId="focusResultId"
             @mergeTurns="mergeTurns"
             @newHighlight="$emit('newHighlight', $event)" />
         </div>
@@ -43,11 +45,14 @@
 </template>
 <script>
 import { bus } from "../main.js"
+import uuidv4 from "uuid/v4.js"
+
 import AppEditorTurn from "@/components/AppEditorTurn.vue"
 import AppEditorPlayer from "@/components/AppEditorPlayer.vue"
 import AppEditorPagination from "@/components/Pagination.vue"
 import { workerSendMessage } from "../tools/worker-message.js"
 import ModalDeleteTagHighlight from "./ModalDeleteTagHighlight.vue"
+import findExpressionInWordsList from "@/tools/findExpressionInWordsList.js"
 
 export default {
   props: {
@@ -116,6 +121,9 @@ export default {
       ],
       speakersTurnsTimebox: [],
       currentPageNb: 0,
+      focusResultId: null,
+      searchResults: [],
+      focusResultIndex: null,
     }
   },
   computed: {
@@ -142,10 +150,28 @@ export default {
       }
       return keywordsTags
     },
+    searchResultIndexedByTurn() {
+      let searchResultIndexedByTurn = {}
+      for (let result of this.searchResults) {
+        if (!searchResultIndexedByTurn[result.turn_id]) {
+          searchResultIndexedByTurn[result.turn_id] = []
+        }
+        searchResultIndexedByTurn[result.turn_id].push(result)
+      }
+      return searchResultIndexedByTurn
+    },
   },
   watch: {
     filterSpeakers() {
       this.speakersTurnsTimebox = this.getSpkTimebox()
+    },
+    focusResultIndex(newIndex) {
+      if (newIndex === null) {
+        this.focusResultId = null
+      } else {
+        this.currentPageNb = this.searchResults[newIndex].page
+        this.focusResultId = this.searchResults[newIndex].id
+      }
     },
   },
   mounted() {
@@ -177,6 +203,65 @@ export default {
     bus.$off("speaker_name_updated")
   },
   methods: {
+    resetSearchResult() {
+      this.searchResultExpression = {}
+      this.focusResultId = null
+      this.searchResultId = []
+    },
+    searchInTranscription(search, localCurrentPageNb = 0) {
+      if (localCurrentPageNb === 0) {
+        this.resetSearchResult()
+      }
+
+      for (const turn of this.turnPages[localCurrentPageNb]) {
+        let wordsList = turn.words
+        let found = findExpressionInWordsList(
+          [search],
+          wordsList,
+          null,
+          (w) => {
+            return w.word
+          }
+        )
+
+        found.map((f) => {
+          f.id = uuidv4()
+          f.turn_id = turn.turn_id
+          f.page = localCurrentPageNb
+        })
+
+        this.searchResults = this.searchResults.concat(found)
+      }
+
+      if (localCurrentPageNb >= this.pages - 1) {
+        this.selectFirstResult()
+        this.$emit("foundExpression", this.searchResults.length)
+      } else {
+        this.searchInTranscription(search, localCurrentPageNb + 1)
+      }
+    },
+    selectFirstResult() {
+      if (this.searchResults.length === 0) {
+        this.focusResultIndex = null
+        this.focusResultId = null
+        return
+      }
+      this.focusResultIndex = 0
+    },
+    nextResultFound() {
+      if (this.focusResultIndex >= this.searchResults.length - 1) {
+        this.focusResultIndex = 0
+      } else {
+        this.focusResultIndex++
+      }
+    },
+    previousResultFound() {
+      if (this.focusResultIndex <= 0) {
+        this.focusResultIndex = this.searchResults.length - 1
+      } else {
+        this.focusResultIndex--
+      }
+    },
     playerReady() {
       let editorCurrentTime = localStorage.getItem("editorCurrentTime")
       if (editorCurrentTime) {
