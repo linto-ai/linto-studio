@@ -438,7 +438,6 @@ export default {
       this.searchResult.forEach((expression) => {
         const domRange = this.plainRangeToDomRange(expression)
         let iscurrent = expression.id === this.focusResultId
-        console.log("iscurrent", iscurrent, expression.id, this.focusResultId)
         this.highlightRange(
           { range: domRange, category: { color: "red" } },
           {

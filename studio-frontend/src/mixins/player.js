@@ -63,10 +63,14 @@ export const playerMixin = {
         this.state = "pause"
       }
     },
+    pause() {
+      this.player?.pause()
+      this.state = "pause"
+    },
     async getAudioFile() {
       let req = await apiGetAudioFileFromConversation(
         this.conversationId,
-        false,
+        false
       )
       if (req?.status === "success") {
         this.audioFile = URL.createObjectURL(req.data)
@@ -76,7 +80,7 @@ export const playerMixin = {
       try {
         let req = await apiGetAudioWaveFormFromConversation(
           this.conversationId,
-          false,
+          false
         )
         if (req.status === "success") {
           this.audiowaveform = req.data.data

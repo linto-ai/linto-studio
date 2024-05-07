@@ -47,14 +47,18 @@
 import { bus } from "../main.js"
 import uuidv4 from "uuid/v4.js"
 
+import { workerSendMessage } from "@/tools/worker-message.js"
+import findExpressionInWordsList from "@/tools/findExpressionInWordsList.js"
+
+import { debounceMixin } from "../mixins/debounce.js"
+
 import AppEditorTurn from "@/components/AppEditorTurn.vue"
 import AppEditorPlayer from "@/components/AppEditorPlayer.vue"
 import AppEditorPagination from "@/components/Pagination.vue"
-import { workerSendMessage } from "../tools/worker-message.js"
-import ModalDeleteTagHighlight from "./ModalDeleteTagHighlight.vue"
-import findExpressionInWordsList from "@/tools/findExpressionInWordsList.js"
+import ModalDeleteTagHighlight from "@/components/ModalDeleteTagHighlight.vue"
 
 export default {
+  mixins: [debounceMixin],
   props: {
     canEdit: {
       type: Boolean,
@@ -165,15 +169,6 @@ export default {
     filterSpeakers() {
       this.speakersTurnsTimebox = this.getSpkTimebox()
     },
-    focusResultIndex(newIndex) {
-      this.$emit("updateSelectedResult", newIndex)
-      if (newIndex === null) {
-        this.focusResultId = null
-      } else {
-        this.currentPageNb = this.searchResults[newIndex].page
-        this.focusResultId = this.searchResults[newIndex].id
-      }
-    },
   },
   mounted() {
     this.speakersTurnsTimebox = this.getSpkTimebox()
@@ -204,42 +199,58 @@ export default {
     bus.$off("speaker_name_updated")
   },
   methods: {
+    updateFocus() {
+      const newIndex = this.focusResultIndex
+      if (newIndex === null) {
+        this.focusResultId = null
+      } else {
+        this.currentPageNb = this.searchResults[newIndex].page
+        this.focusResultId = this.searchResults[newIndex].id
+      }
+      this.$emit("updateSelectedResult", newIndex)
+    },
     resetSearchResult() {
       this.searchResultExpression = {}
       this.focusResultId = null
       this.searchResultId = []
     },
-    searchInTranscription(search, localCurrentPageNb = 0) {
-      if (localCurrentPageNb === 0) {
-        this.resetSearchResult()
+    async searchInTranscription(search) {
+      this.resetSearchResult()
+      this.searchResults = await this.debouncedSearch(
+        this.searchInTranscriptionLocal.bind(this),
+        search
+      )
+      this.$emit("foundExpression", this.searchResults.length)
+      this.selectFirstResult()
+    },
+    searchInTranscriptionLocal(search) {
+      let results = []
+      for (
+        let localCurrentPageNb = 0;
+        localCurrentPageNb < this.pages;
+        localCurrentPageNb++
+      ) {
+        for (const turn of this.turnPages[localCurrentPageNb]) {
+          let wordsList = turn.words.filter((w) => w.word !== "")
+          let found = findExpressionInWordsList(
+            [search],
+            wordsList,
+            null,
+            (w) => {
+              return w.word
+            }
+          )
+
+          found.map((f) => {
+            f.id = uuidv4()
+            f.turn_id = turn.turn_id
+            f.page = localCurrentPageNb
+          })
+
+          results = results.concat(found)
+        }
       }
-
-      for (const turn of this.turnPages[localCurrentPageNb]) {
-        let wordsList = turn.words
-        let found = findExpressionInWordsList(
-          [search],
-          wordsList,
-          null,
-          (w) => {
-            return w.word
-          }
-        )
-
-        found.map((f) => {
-          f.id = uuidv4()
-          f.turn_id = turn.turn_id
-          f.page = localCurrentPageNb
-        })
-
-        this.searchResults = this.searchResults.concat(found)
-      }
-
-      if (localCurrentPageNb >= this.pages - 1) {
-        this.selectFirstResult()
-        this.$emit("foundExpression", this.searchResults.length)
-      } else {
-        this.searchInTranscription(search, localCurrentPageNb + 1)
-      }
+      return results
     },
     selectFirstResult() {
       if (this.searchResults.length === 0) {
@@ -248,6 +259,7 @@ export default {
         return
       }
       this.focusResultIndex = 0
+      this.updateFocus()
     },
     nextResultFound() {
       if (this.focusResultIndex >= this.searchResults.length - 1) {
@@ -255,6 +267,7 @@ export default {
       } else {
         this.focusResultIndex++
       }
+      this.updateFocus()
     },
     previousResultFound() {
       if (this.focusResultIndex <= 0) {
@@ -262,6 +275,7 @@ export default {
       } else {
         this.focusResultIndex--
       }
+      this.updateFocus()
     },
     playerReady() {
       let editorCurrentTime = localStorage.getItem("editorCurrentTime")

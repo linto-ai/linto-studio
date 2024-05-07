@@ -163,6 +163,7 @@ export default {
     },
     transcriptionSearch(newVal, oldVal) {
       if (newVal != oldVal) {
+        bus.$emit("player-pause")
         this.$refs.editor.searchInTranscription(newVal)
       }
     },
