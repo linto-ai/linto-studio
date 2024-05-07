@@ -29,6 +29,7 @@
       @hide-category="(id) => $emit('hide-category', id)"
       @show-category="(id) => $emit('show-category', id)"
       @delete-tag="(tag) => $emit('delete-tag', tag)"
+      @clickOnTag="(tag) => $emit('clickOnTag', tag)"
       :job="getJobsFromService(cat.name)"
       :conversationId="conversationId"></TagCategoryBoxHighlight>
     <div

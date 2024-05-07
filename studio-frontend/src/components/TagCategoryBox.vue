@@ -34,7 +34,10 @@
         class="flex align-bottom gap-small"
         v-for="tag of tagsList"
         :key="tag._id">
-        <label :for="`${id}-${tag._id}`" class="flex flex1 no-margin">
+        <label
+          :for="`${id}-${tag._id}`"
+          class="flex flex1 no-margin"
+          @click="$emit('clickOnTag', tag)">
           <Tag
             :title="$t('tags.select_tag_title')"
             :tagId="tag._id"

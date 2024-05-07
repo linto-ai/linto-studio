@@ -113,6 +113,7 @@ export default {
   data() {
     return {
       conversationId: this.conversation._id,
+      pageNumberOfEachWord: this.computePageNumberOfEachWord(this.turnPages),
       //speakers: this.conversation.speakers,
       currentTime: 0,
       spkColors: [
@@ -199,6 +200,36 @@ export default {
     bus.$off("speaker_name_updated")
   },
   methods: {
+    precomputeTagsMetadataWord() {
+      // todo
+    },
+    computePageNumberOfEachWord(turnPages) {
+      let pageNumberOfEachWord = {}
+      for (let i = 0; i < turnPages.length; i++) {
+        for (let turn of turnPages[i]) {
+          for (let word of turn.words) {
+            pageNumberOfEachWord[word.wid] = i
+          }
+        }
+      }
+      return pageNumberOfEachWord
+    },
+    goToRange(range) {
+      const startId = range.startId
+      const pageNumber = this.pageNumberOfEachWord[startId]
+      if (pageNumber !== undefined) {
+        this.currentPageNb = pageNumber
+        //scroll to the id
+        const element = document.getElementById(startId)
+        if (element) {
+          element.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+            inline: "center",
+          })
+        }
+      }
+    },
     updateFocus() {
       const newIndex = this.focusResultIndex
       if (newIndex === null) {

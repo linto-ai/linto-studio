@@ -335,7 +335,6 @@ export default {
   },
   watch: {
     searchResult(data, oldData) {
-      console.log("searchResult", data, oldData)
       if (data.length > 0) {
         this.displaySearchResults()
       }

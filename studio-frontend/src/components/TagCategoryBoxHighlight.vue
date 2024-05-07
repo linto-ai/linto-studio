@@ -6,7 +6,8 @@
     scope="conversation"
     :scopeId="conversationId"
     :selectable="false"
-    :fixed="empty">
+    :fixed="empty"
+    @clickOnTag="(tag) => $emit('clickOnTag', tag)">
     <template v-slot:content-just-before-title="slotProps">
       <span class="icon ai"></span>
     </template>
