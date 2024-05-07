@@ -337,15 +337,15 @@ export default {
     searchResult(data, oldData) {
       console.log("searchResult", data, oldData)
       if (data.length > 0) {
-        this.displaySearchResult()
+        this.displaySearchResults()
       }
       if (oldData.length > 0) {
-        this.hideListExpressionFound(oldData)
+        this.hideSearchResults(oldData)
       }
     },
     focusResultId(data, oldData) {
       if (data) {
-        this.refreshSearchResult()
+        this.refreshSearchResults()
       }
     },
     contentEditable(data) {
@@ -413,6 +413,7 @@ export default {
       }
     })
     this.displayHighlights()
+    this.displaySearchResults()
     this.localText = this.segment
   },
   methods: {
@@ -433,7 +434,7 @@ export default {
     handleEnter: _handleEnter,
     highlightSearchWord: _highlightSearchWord,
     unHighlightSearchWord: _unHighlightSearchWord,
-    displaySearchResult() {
+    displaySearchResults() {
       this.searchResult.forEach((expression) => {
         const domRange = this.plainRangeToDomRange(expression)
         let iscurrent = expression.id === this.focusResultId
@@ -447,18 +448,26 @@ export default {
         )
       })
     },
-    hideListExpressionFound(searchResult) {
+    hideSearchResults(searchResult) {
       searchResult.forEach((expression) => {
         const domRange = this.plainRangeToDomRange(expression)
+
+        if (domRange === null) {
+          return
+        }
+
         this.unhighlightRange(
           { range: domRange },
           { functionToUnhighlightWord: this.unHighlightSearchWord }
         )
       })
     },
-    refreshSearchResult() {
-      this.hideListExpressionFound(this.searchResult)
-      this.displaySearchResult()
+    refreshSearchResults() {
+      //nexttick to wait for the dom to be updated
+      this.$nextTick(() => {
+        this.hideSearchResults(this.searchResult)
+        this.displaySearchResults()
+      })
     },
     handleNewHighlight(tag) {
       this.$emit("newHighlight", {

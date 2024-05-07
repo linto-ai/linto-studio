@@ -17,7 +17,12 @@
           <div
             v-if="numberFound"
             class="flex small-padding-top gap-small align-center">
-            <span class="flex1">{{ numberFound }} found</span>
+            <span class="flex1"
+              >{{ selectedIndexResult + 1 }} /
+              {{
+                $tc("conversation.search_in_transcription.n_found", numberFound)
+              }}</span
+            >
             <button class="icon-only small" @click="previousResult">
               <span class="icon previous"></span>
             </button>
@@ -76,6 +81,7 @@
         :hightlightsCategoriesVisibility="hightlightsCategoriesVisibility"
         @newHighlight="handleNewHighlight"
         @foundExpression="onFoundExpression"
+        @updateSelectedResult="onUpdateSelectedResult"
         ref="editor"
         v-if="status === 'done'"></AppEditor>
     </div>
@@ -128,6 +134,7 @@ export default {
       metadataModalData: null,
       transcriptionSearch: "",
       numberFound: 0,
+      selectedIndexResult: 0,
     }
   },
   mounted() {
@@ -221,6 +228,9 @@ export default {
   methods: {
     onFoundExpression(number) {
       this.numberFound = number
+    },
+    onUpdateSelectedResult(number) {
+      this.selectedIndexResult = number
     },
     nextResult() {
       this.$refs.editor.nextResultFound()

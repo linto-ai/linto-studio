@@ -55,8 +55,16 @@ function divideTags(tags) {
 function metadataRangeToDomRange(range) {
   try {
     let domRange = new Range()
-    domRange.setStartBefore(document.getElementById(range.startId))
-    domRange.setEndBefore(document.getElementById(range.endId))
+
+    const startDomElement = document.getElementById(range.startId)
+    const endDomElement = document.getElementById(range.endId)
+
+    if (!startDomElement || !endDomElement) {
+      return null
+    }
+
+    domRange.setStartBefore(startDomElement)
+    domRange.setEndBefore(endDomElement)
     domRange._tag = range.tag
     return domRange
   } catch (e) {

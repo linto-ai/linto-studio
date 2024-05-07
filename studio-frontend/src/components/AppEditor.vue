@@ -166,6 +166,7 @@ export default {
       this.speakersTurnsTimebox = this.getSpkTimebox()
     },
     focusResultIndex(newIndex) {
+      this.$emit("updateSelectedResult", newIndex)
       if (newIndex === null) {
         this.focusResultId = null
       } else {

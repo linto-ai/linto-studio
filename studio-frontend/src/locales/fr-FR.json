@@ -198,6 +198,9 @@
     "recording": "Enregistrement...",
     "search_criterions": "Critères de recherche",
     "search_placeholder": "Rechercher un média",
+    "search_in_transcription": {
+      "n_found": "Aucune occurences | 1 occurences | {count} occurences"
+    },
     "shared_by_label": "Partagée par",
     "shared_with_label": "Partagée avec",
     "speakers_button": "Locuteurs",
@@ -220,6 +223,43 @@
       "return_to_medias_list_button": "Retourner à la liste des médias",
       "error_title": "Une erreur s'est produite lors du traitement de l'audio",
       "error_log_label": "Voici quelques informations:"
+    },
+    "subtitles": {
+      "screen_is_empty": "L'écran est vide",
+      "drop_video": "Glissez-déposez votre fichier vidéo ici",
+      "not_available": "Aucun sous-titres disponibles",
+      "available": "Sous-titres disponibles",
+      "generate_subs": "Générer des sous titres",
+      "generate": "Générer",
+      "version_name": "Nom de version des sous-titres",
+      "max_char_length": "Nombre de caractères maximum par écran",
+      "max_char_length_short": "Caractères par écran",
+      "max_lines": "Nombre de lignes par écran",
+      "max_lines_short": "Lignes par écran",
+      "max_duration": "Durée maximum d'un écran",
+      "copy_label": "Copier la version des sous-titres",
+      "delete_label": "Supprimer les versions de sous-titres",
+      "delete_no_selection": "Veuillez selectionner au moins une version à supprimer",
+      "delete_no_selection_label": "Pas de version selectionné",
+      "delete_description": "Êtes-vous sûr de vouloir supprimer {n} versions de sous-titres ?",
+      "copy": "Copier",
+      "delete": "Supprimer",
+      "screens": {
+        "start": "Début :",
+        "current_screen": "Ecran actuel",
+        "previous_screen": "Ecran précédant",
+        "next_screen": "Ecran suivant"
+      },
+      "split_selection": {
+        "no_split": "Aucun découpage",
+        "split_over_two_lines": "Découper sur deux lignes",
+        "split_over_three_lines": "Découper sur trois lignes"
+      },
+      "error": {
+        "no_enough_place_new_screen": "Pas assez de place pour ajouter un nouvel écran",
+        "cannot_merge_non_consecutive_screens": "Impossible de fusionner des écrans non consécutifs",
+        "too_much_lines_to_merge": "Le nombre de ligne est limité à {maxLines} pour fusionner les écrans"
+      }
     },
     "transcription": {
       "diarization_description": "Permet de sélectionner le nombre de locuteurs. Découpe le flux audio par locuteur",
@@ -280,44 +320,7 @@
     },
     "transcription_saving_notif": "Sauvegarde de la transcription...",
     "websocket_error_content": "La mise à jour du document a echoué. Sauvegardez vos changement et actualisez la page.",
-    "websocket_error_title": "Erreur de synchronisation.",
-    "subtitles": {
-      "screen_is_empty": "L'écran est vide",
-      "drop_video": "Glissez-déposez votre fichier vidéo ici",
-      "not_available": "Aucun sous-titres disponibles",
-      "available": "Sous-titres disponibles",
-      "generate_subs": "Générer des sous titres",
-      "generate": "Générer",
-      "version_name": "Nom de version des sous-titres",
-      "max_char_length": "Nombre de caractères maximum par écran",
-      "max_char_length_short": "Caractères par écran",
-      "max_lines": "Nombre de lignes par écran",
-      "max_lines_short": "Lignes par écran",
-      "max_duration": "Durée maximum d'un écran",
-      "copy_label": "Copier la version des sous-titres",
-      "delete_label": "Supprimer les versions de sous-titres",
-      "delete_no_selection": "Veuillez selectionner au moins une version à supprimer",
-      "delete_no_selection_label": "Pas de version selectionné",
-      "delete_description": "Êtes-vous sûr de vouloir supprimer {n} versions de sous-titres ?",
-      "copy": "Copier",
-      "delete": "Supprimer",
-      "screens": {
-        "start": "Début :",
-        "current_screen": "Ecran actuel",
-        "previous_screen": "Ecran précédant",
-        "next_screen": "Ecran suivant"
-      },
-      "split_selection": {
-        "no_split": "Aucun découpage",
-        "split_over_two_lines": "Découper sur deux lignes",
-        "split_over_three_lines": "Découper sur trois lignes"
-      },
-      "error": {
-        "no_enough_place_new_screen": "Pas assez de place pour ajouter un nouvel écran",
-        "cannot_merge_non_consecutive_screens": "Impossible de fusionner des écrans non consécutifs",
-        "too_much_lines_to_merge": "Le nombre de ligne est limité à {maxLines} pour fusionner les écrans"
-      }
-    }
+    "websocket_error_title": "Erreur de synchronisation."
   },
   "droparea": {
     "openFileExplorer": "ou choisissez depuis l'exploratieur de fichier",
