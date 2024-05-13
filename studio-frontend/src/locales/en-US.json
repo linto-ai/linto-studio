@@ -200,7 +200,8 @@
     "search_criterions": "Search criterions",
     "search_placeholder": "Search a media",
     "search_in_transcription": {
-      "n_found": "No occurrences | 1 occurrence | {count} occurrences"
+      "n_found": "No occurrences | 1 occurrence | {count} occurrences",
+      "exact_word_match": "Exact word match"
     },
     "shared_by_label": "Shared by",
     "shared_with_label": "Shared with",

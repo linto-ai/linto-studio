@@ -50,6 +50,7 @@ import uuidv4 from "uuid/v4.js"
 import { workerSendMessage } from "@/tools/worker-message.js"
 import findExpressionInWordsList from "@/tools/findExpressionInWordsList.js"
 import getWordsRangeFromTagMetadata from "@/tools/getWordsRangeFromTagMetadata.js"
+import findInSegment from "@/tools/findInSegment.js"
 
 import { debounceMixin } from "../mixins/debounce.js"
 
@@ -170,10 +171,9 @@ export default {
     tags() {
       // TODO: add form of debouncing so it's not called 2 times at the same time
       let res = {}
-      const words = this.conversation.text.reduce(
-        (acc, turn) => acc.concat(turn.words),
-        []
-      )
+      const words = this.conversation.text
+        .reduce((acc, turn) => acc.concat(turn.words), [])
+        .filter((w) => w.word !== "")
       for (let cat of this.hightlightsCategories) {
         for (let tag of cat.tags) {
           let ranges = getWordsRangeFromTagMetadata(tag)
@@ -242,11 +242,13 @@ export default {
           }
         }
       }
+
       return pageNumberOfEachWord
     },
     async goToRange(range) {
       const startId = range.startId
       const pageNumber = this.pageNumberOfEachWord[startId]
+
       if (pageNumber !== undefined) {
         this.currentPageNb = pageNumber
         //scroll to the id
@@ -266,6 +268,7 @@ export default {
       } else {
         //this.currentPageNb = this.searchResults[newIndex].page
         this.focusResultId = this.searchResults[newIndex].id
+
         this.goToRange(this.searchResults[newIndex])
       }
       this.$emit("updateSelectedResult", newIndex)
@@ -275,16 +278,19 @@ export default {
       this.focusResultId = null
       this.searchResultId = []
     },
-    async searchInTranscription(search) {
+    async searchInTranscription(search, exactMatching = false) {
       this.resetSearchResult()
       this.searchResults = await this.debouncedSearch(
         this.searchInTranscriptionLocal.bind(this),
-        search
+        { search, exactMatching }
       )
       this.$emit("foundExpression", this.searchResults.length)
       this.selectFirstResult()
     },
-    searchInTranscriptionLocal(search) {
+    searchInTranscriptionLocal({ search, exactMatching }) {
+      if (search.trim() === "") {
+        return []
+      }
       let results = []
       for (
         let localCurrentPageNb = 0;
@@ -293,14 +299,21 @@ export default {
       ) {
         for (const turn of this.turnPages[localCurrentPageNb]) {
           let wordsList = turn.words.filter((w) => w.word !== "")
-          let found = findExpressionInWordsList(
-            [search],
-            wordsList,
-            null,
-            (w) => {
-              return w.word
-            }
-          )
+
+          let found = []
+          if (!exactMatching) {
+            found = findInSegment(
+              wordsList.map((w) => w.word),
+              search
+            )
+          } else {
+            found = findExpressionInWordsList(
+              [search],
+              wordsList.map((w) => w.word),
+              null,
+              null
+            )
+          }
 
           found.map((f) => {
             f.id = uuidv4()

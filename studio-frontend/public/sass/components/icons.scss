@@ -214,6 +214,9 @@
   &.previous {
     @include maskImage("../public/img/previous.svg");
   }
+  &.equal {
+    @include maskImage("../public/img/equal.svg");
+  }
 }
 
 .icon.small {

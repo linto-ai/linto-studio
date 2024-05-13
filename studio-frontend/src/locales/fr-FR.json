@@ -199,7 +199,8 @@
     "search_criterions": "Critères de recherche",
     "search_placeholder": "Rechercher un média",
     "search_in_transcription": {
-      "n_found": "Aucune occurences | 1 occurences | {count} occurences"
+      "n_found": "Aucune occurences | 1 occurences | {count} occurences",
+      "exact_word_match": "Mot exact"
     },
     "shared_by_label": "Partagée par",
     "shared_with_label": "Partagée avec",

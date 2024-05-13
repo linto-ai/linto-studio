@@ -9,11 +9,24 @@
       <div>
         <div class="form-field flex col medium-margin">
           <label for="transcription-search">Rechercher</label>
-          <input
-            @keydown="($event) => $event.stopPropagation()"
-            type="search"
-            id="transcription-search"
-            v-model="transcriptionSearch" />
+          <div class="flex gap-small">
+            <input
+              class="flex1"
+              @keydown="($event) => $event.stopPropagation()"
+              type="search"
+              id="transcription-search"
+              v-model="transcriptionSearch" />
+            <button
+              :title="
+                $t('conversation.search_in_transcription.exact_word_match')
+              "
+              class="icon-only small only-border"
+              :class="{ 'green-border': exactMatching }"
+              @click="toggleExactMatching">
+              <span class="icon equal"></span>
+            </button>
+          </div>
+
           <div
             v-if="numberFound"
             class="flex small-padding-top gap-small align-center">
@@ -136,6 +149,7 @@ export default {
       transcriptionSearch: "",
       numberFound: 0,
       selectedIndexResult: 0,
+      exactMatching: false,
     }
   },
   mounted() {
@@ -165,7 +179,7 @@ export default {
     transcriptionSearch(newVal, oldVal) {
       if (newVal != oldVal) {
         bus.$emit("player-pause")
-        this.$refs.editor.searchInTranscription(newVal)
+        this.$refs.editor.searchInTranscription(newVal, this.exactMatching)
       }
     },
   },
@@ -325,6 +339,13 @@ export default {
         ...this.hightlightsCategoriesVisibility,
         [tag.categoryId]: true,
       }
+    },
+    toggleExactMatching() {
+      this.exactMatching = !this.exactMatching
+      this.$refs.editor.searchInTranscription(
+        this.transcriptionSearch,
+        this.exactMatching
+      )
     },
   },
   components: {
