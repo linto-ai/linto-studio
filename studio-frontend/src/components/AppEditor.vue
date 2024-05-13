@@ -130,7 +130,6 @@ export default {
       focusResultId: null,
       searchResults: [],
       focusResultIndex: null,
-      tags: {}, // {tagId: {name: 'tag_name', color: 'color', metadata, ranges}, ...}
       clickOnTags: {}, // {tagid: number of click}
     }
   },
@@ -168,17 +167,41 @@ export default {
       }
       return searchResultIndexedByTurn
     },
+    tags() {
+      // TODO: add form of debouncing so it's not called 2 times at the same time
+      let res = {}
+      const words = this.conversation.text.reduce(
+        (acc, turn) => acc.concat(turn.words),
+        []
+      )
+      for (let cat of this.hightlightsCategories) {
+        for (let tag of cat.tags) {
+          let ranges = getWordsRangeFromTagMetadata(tag)
+          if (!ranges || ranges.length == 0) {
+            ranges = findExpressionInWordsList(
+              [tag],
+              words,
+              (k) => k.name,
+              (w) => w.word
+            )
+
+            ranges.forEach((element) => {
+              element.startId = words[element.start].wid
+              element.endId = words[element.end].wid
+            })
+          }
+          res[tag._id] = {
+            ...tag,
+            ranges,
+          }
+        }
+      }
+      return res
+    },
   },
   watch: {
     filterSpeakers() {
       this.speakersTurnsTimebox = this.getSpkTimebox()
-    },
-    hightlightsCategories: {
-      handler() {
-        this.indexTags()
-      },
-      deep: true,
-      immediate: true,
     },
   },
   mounted() {
@@ -231,9 +254,7 @@ export default {
         const element = document.getElementById(startId)
         if (element) {
           element.scrollIntoView({
-            behavior: "smooth",
             block: "center",
-            inline: "center",
           })
         }
       }
@@ -243,8 +264,9 @@ export default {
       if (newIndex === null) {
         this.focusResultId = null
       } else {
-        this.currentPageNb = this.searchResults[newIndex].page
+        //this.currentPageNb = this.searchResults[newIndex].page
         this.focusResultId = this.searchResults[newIndex].id
+        this.goToRange(this.searchResults[newIndex])
       }
       this.$emit("updateSelectedResult", newIndex)
     },
@@ -284,6 +306,8 @@ export default {
             f.id = uuidv4()
             f.turn_id = turn.turn_id
             f.page = localCurrentPageNb
+            f.startId = wordsList[f.start].wid
+            f.endId = wordsList[f.end].wid
           })
 
           results = results.concat(found)
@@ -447,38 +471,6 @@ export default {
       }
 
       this.goToRange(ranges[this.clickOnTags[tag._id]])
-    },
-    indexTags() {
-      // TODO: add form of debouncing so it's not called 2 times at the same time
-      this.tags = {}
-      const words = this.conversation.text.reduce(
-        (acc, turn) => acc.concat(turn.words),
-        []
-      )
-      for (let cat of this.hightlightsCategories) {
-        for (let tag of cat.tags) {
-          let ranges = getWordsRangeFromTagMetadata(tag)
-          if (!ranges || ranges.length == 0) {
-            ranges = findExpressionInWordsList(
-              [tag],
-              words,
-              (k) => k.name,
-              (w) => w.word
-            )
-
-            ranges = ranges.map((r) => {
-              return {
-                startId: words[r.start].wid,
-                endId: words[r.end].wid,
-              }
-            })
-          }
-          this.tags[tag._id] = {
-            ...tag,
-            ranges,
-          }
-        }
-      }
     },
   },
   components: {

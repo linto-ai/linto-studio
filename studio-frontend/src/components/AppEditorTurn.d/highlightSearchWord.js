@@ -16,7 +16,5 @@ export default function highlightSearchWord(
   }
   if (iscurrent) {
     word.setAttribute("found-current-word", "true")
-    // scroll to the current word
-    word.scrollIntoView({ block: "center" })
   }
 }
