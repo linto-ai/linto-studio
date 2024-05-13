@@ -106,9 +106,9 @@ import { nextTick } from "vue"
 
 import { bus } from "../main.js"
 import { apiPostMetadata, apiUpdateMetadata } from "@/api/metadata.js"
+import findExpressionInWordsList from "@/tools/findExpressionInWordsList.js"
 
 import { conversationMixin } from "@/mixins/conversation.js"
-import getWordsRangeFromTagMetadata from "@/tools/getWordsRangeFromTagMetadata.js"
 import Loading from "@/components/Loading.vue"
 import Modal from "@/components/Modal.vue"
 import UserInfoInline from "@/components/UserInfoInline.vue"
@@ -136,7 +136,6 @@ export default {
       transcriptionSearch: "",
       numberFound: 0,
       selectedIndexResult: 0,
-      clickOnTags: {}, // {tagid: number of click}
     }
   },
   mounted() {
@@ -230,19 +229,7 @@ export default {
   },
   methods: {
     onClickOnTag(tag) {
-      const ranges = getWordsRangeFromTagMetadata(tag)
-
-      if (this.clickOnTags[tag._id] === undefined) {
-        this.clickOnTags[tag._id] = 0
-      } else {
-        this.clickOnTags[tag._id] += 1
-      }
-
-      if (this.clickOnTags[tag._id] >= ranges.length) {
-        this.clickOnTags[tag._id] = 0
-      }
-
-      this.$refs.editor.goToRange(ranges[this.clickOnTags[tag._id]])
+      this.$refs.editor.onClickOntag(tag._id)
     },
     onFoundExpression(number) {
       this.numberFound = number

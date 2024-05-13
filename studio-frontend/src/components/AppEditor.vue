@@ -49,6 +49,7 @@ import uuidv4 from "uuid/v4.js"
 
 import { workerSendMessage } from "@/tools/worker-message.js"
 import findExpressionInWordsList from "@/tools/findExpressionInWordsList.js"
+import getWordsRangeFromTagMetadata from "@/tools/getWordsRangeFromTagMetadata.js"
 
 import { debounceMixin } from "../mixins/debounce.js"
 
@@ -129,6 +130,8 @@ export default {
       focusResultId: null,
       searchResults: [],
       focusResultIndex: null,
+      tags: {}, // {tagId: {name: 'tag_name', color: 'color', metadata, ranges}, ...}
+      clickOnTags: {}, // {tagid: number of click}
     }
   },
   computed: {
@@ -170,6 +173,13 @@ export default {
     filterSpeakers() {
       this.speakersTurnsTimebox = this.getSpkTimebox()
     },
+    hightlightsCategories: {
+      handler() {
+        this.indexTags()
+      },
+      deep: true,
+      immediate: true,
+    },
   },
   mounted() {
     this.speakersTurnsTimebox = this.getSpkTimebox()
@@ -200,9 +210,6 @@ export default {
     bus.$off("speaker_name_updated")
   },
   methods: {
-    precomputeTagsMetadataWord() {
-      // todo
-    },
     computePageNumberOfEachWord(turnPages) {
       let pageNumberOfEachWord = {}
       for (let i = 0; i < turnPages.length; i++) {
@@ -214,12 +221,13 @@ export default {
       }
       return pageNumberOfEachWord
     },
-    goToRange(range) {
+    async goToRange(range) {
       const startId = range.startId
       const pageNumber = this.pageNumberOfEachWord[startId]
       if (pageNumber !== undefined) {
         this.currentPageNb = pageNumber
         //scroll to the id
+        await this.$nextTick()
         const element = document.getElementById(startId)
         if (element) {
           element.scrollIntoView({
@@ -423,6 +431,53 @@ export default {
           endTurn: this.turns[baseTurnIndex + 1],
           indexEnd: baseTurnIndex + 1,
         })
+      }
+    },
+    onClickOntag(tagId) {
+      const tag = this.tags[tagId]
+      const ranges = tag.ranges
+      if (this.clickOnTags[tag._id] === undefined) {
+        this.clickOnTags[tag._id] = 0
+      } else {
+        this.clickOnTags[tag._id] += 1
+      }
+
+      if (this.clickOnTags[tag._id] >= ranges.length) {
+        this.clickOnTags[tag._id] = 0
+      }
+
+      this.goToRange(ranges[this.clickOnTags[tag._id]])
+    },
+    indexTags() {
+      // TODO: add form of debouncing so it's not called 2 times at the same time
+      this.tags = {}
+      const words = this.conversation.text.reduce(
+        (acc, turn) => acc.concat(turn.words),
+        []
+      )
+      for (let cat of this.hightlightsCategories) {
+        for (let tag of cat.tags) {
+          let ranges = getWordsRangeFromTagMetadata(tag)
+          if (!ranges || ranges.length == 0) {
+            ranges = findExpressionInWordsList(
+              [tag],
+              words,
+              (k) => k.name,
+              (w) => w.word
+            )
+
+            ranges = ranges.map((r) => {
+              return {
+                startId: words[r.start].wid,
+                endId: words[r.end].wid,
+              }
+            })
+          }
+          this.tags[tag._id] = {
+            ...tag,
+            ranges,
+          }
+        }
       }
     },
   },
