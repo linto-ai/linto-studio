@@ -169,11 +169,11 @@ export default {
       return searchResultIndexedByTurn
     },
     tags() {
-      // TODO: add form of debouncing so it's not called 2 times at the same time
       let res = {}
       const words = this.conversation.text
         .reduce((acc, turn) => acc.concat(turn.words), [])
         .filter((w) => w.word !== "")
+      console.log("words", words)
       for (let cat of this.hightlightsCategories) {
         for (let tag of cat.tags) {
           let ranges = getWordsRangeFromTagMetadata(tag)

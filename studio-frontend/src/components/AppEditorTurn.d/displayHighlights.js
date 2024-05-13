@@ -16,7 +16,7 @@ export default async function displayHighlights() {
 
     let rangesFromText = findExpressionInWordsList(
       tagsWithoutRangeMetadata,
-      this.words,
+      this.words.filter((w) => w.word !== ""),
       (k) => k.name,
       (w) => w.word
     )
