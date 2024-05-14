@@ -175,6 +175,10 @@ $selectedWord: #0057f5;
 .word {
   position: relative;
   @include transition(all 0.2s ease);
+
+  &.selected .word_content {
+    border-bottom: 2px solid var(--material-yellow-800);
+  }
   //border-bottom: 2px solid transparent;
   &.playing .word_content {
     border-bottom: 2px solid var(--primary-color) !important;

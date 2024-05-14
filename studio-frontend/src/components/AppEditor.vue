@@ -469,7 +469,7 @@ export default {
         })
       }
     },
-    onClickOntag(tagId) {
+    nextHighlightSearch(tagId) {
       const tag = this.tags[tagId]
       const ranges = tag.ranges
       if (this.clickOnTags[tag._id] === undefined) {
@@ -483,6 +483,31 @@ export default {
       }
 
       this.goToRange(ranges[this.clickOnTags[tag._id]])
+      this.$emit("updateSelectedHighlight", {
+        tagId,
+        total: ranges.length,
+        current: this.clickOnTags[tag._id],
+      })
+    },
+    previousHighlightSearch(tagId) {
+      const tag = this.tags[tagId]
+      const ranges = tag.ranges
+      if (this.clickOnTags[tag._id] === undefined) {
+        this.clickOnTags[tag._id] = ranges.length - 1
+      } else {
+        this.clickOnTags[tag._id] -= 1
+      }
+
+      if (this.clickOnTags[tag._id] < 0) {
+        this.clickOnTags[tag._id] = ranges.length - 1
+      }
+
+      this.goToRange(ranges[this.clickOnTags[tag._id]])
+      this.$emit("updateSelectedHighlight", {
+        tagId,
+        total: ranges.length,
+        current: this.clickOnTags[tag._id],
+      })
     },
   },
   components: {

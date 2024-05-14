@@ -31,7 +31,11 @@
       @delete-tag="(tag) => $emit('delete-tag', tag)"
       @clickOnTag="(tag) => $emit('clickOnTag', tag)"
       :job="getJobsFromService(cat.name)"
-      :conversationId="conversationId"></TagCategoryBoxHighlight>
+      :conversationId="conversationId">
+      <template v-slot:content-under-tag="slotProps">
+        <slot name="content-under-tag" v-bind:tag="slotProps.tag"></slot>
+      </template>
+    </TagCategoryBoxHighlight>
     <div
       v-if="nonEmptyCategories.length == 0 && !loading && jobsList.length == 0"
       class="center-text">

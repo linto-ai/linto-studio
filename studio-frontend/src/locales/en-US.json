@@ -201,7 +201,8 @@
     "search_placeholder": "Search a media",
     "search_in_transcription": {
       "n_found": "No occurrences | 1 occurrence | {count} occurrences",
-      "exact_word_match": "Exact word match"
+      "exact_word_match": "Exact word match",
+      "clear_search": "Clear search"
     },
     "shared_by_label": "Shared by",
     "shared_with_label": "Shared with",

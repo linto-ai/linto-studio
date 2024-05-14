@@ -28,9 +28,12 @@
     </template>
 
     <template v-slot:content-after-tag="slotProps">
-      <button class="transparent" @click="deleteTag(slotProps)">
+      <button class="icon-only small transparent" @click="deleteTag(slotProps)">
         <span class="icon trash"></span>
       </button>
+    </template>
+    <template v-slot:content-under-tag="slotProps">
+      <slot name="content-under-tag" v-bind:tag="slotProps.tag"></slot>
     </template>
   </TagCategoryBox>
 </template>

@@ -25,24 +25,22 @@
               @click="toggleExactMatching">
               <span class="icon equal"></span>
             </button>
+            <button
+              v-if="transcriptionSearch"
+              :title="$t('conversation.search_in_transcription.clear_search')"
+              class="icon-only small only-border"
+              @click="resetSearch">
+              <span class="icon close"></span>
+            </button>
           </div>
 
-          <div
+          <SearchResultPaginator
+            class="small-padding-top"
             v-if="numberFound"
-            class="flex small-padding-top gap-small align-center">
-            <span class="flex1"
-              >{{ selectedIndexResult + 1 }} /
-              {{
-                $tc("conversation.search_in_transcription.n_found", numberFound)
-              }}</span
-            >
-            <button class="icon-only small" @click="previousResult">
-              <span class="icon previous"></span>
-            </button>
-            <button class="icon-only small" @click="nextResult">
-              <span class="icon next"></span>
-            </button>
-          </div>
+            :numberFound="numberFound"
+            :selectedIndexResult="selectedIndexResult"
+            @previousResult="previousResult"
+            @nextResult="nextResult" />
         </div>
         <HighlightsList
           v-if="status === 'done'"
@@ -53,7 +51,16 @@
           @show-category="onShowCategory"
           @delete-tag="onDeleteTag"
           @clickOnTag="onClickOnTag"
-          :conversationId="conversation._id" />
+          :conversationId="conversation._id">
+          <template v-slot:content-under-tag="slotProps">
+            <SearchResultPaginator
+              v-if="slotProps.tag._id === searchedHighlightId"
+              :numberFound="totalHighlightResult"
+              :selectedIndexResult="currentHighlightResult"
+              @previousResult="onPreviousHighlightSearch(slotProps.tag)"
+              @nextResult="onNextHighlightSearch(slotProps.tag)" />
+          </template>
+        </HighlightsList>
       </div>
     </template>
 
@@ -96,6 +103,7 @@
         @newHighlight="handleNewHighlight"
         @foundExpression="onFoundExpression"
         @updateSelectedResult="onUpdateSelectedResult"
+        @updateSelectedHighlight="onUpdateSelectedHighlight"
         ref="editor"
         v-if="status === 'done'"></AppEditor>
     </div>
@@ -134,6 +142,7 @@ import ConversationShare from "@/components/ConversationShare.vue"
 import TranscriptionHelper from "@/components/TranscriptionHelper.vue"
 import AppEditorMetadataModal from "@/components/AppEditorMetadataModal.vue"
 import ErrorView from "./Error.vue"
+import SearchResultPaginator from "@/components/SearchResultPaginator.vue"
 
 export default {
   mixins: [conversationMixin],
@@ -150,6 +159,9 @@ export default {
       numberFound: 0,
       selectedIndexResult: 0,
       exactMatching: false,
+      searchedHighlightId: null,
+      currentHighlightResult: 0,
+      totalHighlightResult: 0,
     }
   },
   mounted() {
@@ -243,7 +255,13 @@ export default {
   },
   methods: {
     onClickOnTag(tag) {
-      this.$refs.editor.onClickOntag(tag._id)
+      this.$refs.editor.nextHighlightSearch(tag._id)
+    },
+    onNextHighlightSearch(tag) {
+      this.$refs.editor.nextHighlightSearch(tag._id)
+    },
+    onPreviousHighlightSearch(tag) {
+      this.$refs.editor.previousHighlightSearch(tag._id)
     },
     onFoundExpression(number) {
       this.numberFound = number
@@ -347,6 +365,17 @@ export default {
         this.exactMatching
       )
     },
+    resetSearch() {
+      this.transcriptionSearch = ""
+      this.numberFound = 0
+      this.selectedIndexResult = 0
+      this.$refs.editor.searchInTranscription("")
+    },
+    onUpdateSelectedHighlight({ tagId, total, current }) {
+      this.searchedHighlightId = tagId
+      this.currentHighlightResult = current
+      this.totalHighlightResult = total
+    },
   },
   components: {
     ConversationShare,
@@ -361,6 +390,7 @@ export default {
     MenuToolbox,
     ModalDeleteTagHighlight,
     AppEditorMetadataModal,
+    SearchResultPaginator,
   },
 }
 </script>
