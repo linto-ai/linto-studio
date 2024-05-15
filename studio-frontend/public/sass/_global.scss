@@ -286,3 +286,7 @@ li:last-child {
 .overflow-vertical-auto {
   overflow-y: auto;
 }
+
+.reset-color {
+  color: var(--text-primary);
+}

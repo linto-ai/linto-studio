@@ -11,6 +11,12 @@
   font-family: $mainFont;
 }
 
+.context-menu__speaker {
+  position: absolute !important;
+  top: 1.3rem !important;
+  left: 0 !important;
+}
+
 .context-menu__element {
   position: relative;
 }
@@ -41,6 +47,16 @@
 .context-menu__element .context-menu[positionHorizontal="right"] {
   left: calc(100% + 0.75rem) !important;
   right: auto !important;
+}
+
+.context-menu__action {
+  width: 100%;
+}
+
+.context-menu__action .label {
+  text-align: left;
+  flex: 1;
+  white-space: normal;
 }
 
 .context-menu__action[selected] {

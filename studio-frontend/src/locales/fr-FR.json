@@ -206,6 +206,14 @@
     "shared_by_label": "Partagée par",
     "shared_with_label": "Partagée avec",
     "speakers_button": "Locuteurs",
+    "speaker_toolbox": {
+      "change_speaker_button": "Affecter un autre locuteur à ce tour de parole",
+      "edit_speaker_button": "Modifier le locuteur",
+      "edit_speaker_label": "Nom du locuteur",
+      "merge_speaker_button": "Fusionner \"{name}\" avec un autre locuteur",
+      "create_speaker_button": "Créer un nouveau locuteur",
+      "create_speaker_label": "Nom du locuteur"
+    },
     "status": {
       "preprocessing": "Pre-traitement",
       "transcription": "Transcription",

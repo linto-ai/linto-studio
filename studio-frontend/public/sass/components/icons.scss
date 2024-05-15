@@ -217,6 +217,12 @@
   &.equal {
     @include maskImage("../public/img/equal.svg");
   }
+  &.replace {
+    @include maskImage("../public/img/replace.svg");
+  }
+  &.merge2 {
+    @include maskImage("../public/img/merge.svg");
+  }
 }
 
 .icon.small {

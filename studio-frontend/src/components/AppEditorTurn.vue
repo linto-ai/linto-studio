@@ -13,6 +13,7 @@
           'conversation-speaker-name',
           canEdit ? '' : 'disabled',
           'flex1',
+          'popover-parent',
         ]"
         @click="handleSpeakerClick($event)"
         :style="`color: ${speakerColor};`">
@@ -21,14 +22,15 @@
             ? speakerName.substr(0, 12) + "..."
             : speakerName
         }}
+        <AppEditorSpkToolbox
+          v-if="displaySpeakerToolbox"
+          :speakers="speakers"
+          :speakerId="speakerId"
+          :turnId="turnId"
+          :turnIndex="index"
+          v-click-outside="closeSpkToolbox"></AppEditorSpkToolbox>
       </span>
-      <AppEditorSpkToolbox
-        v-if="displaySpeakerToolbox"
-        :speakers="speakers"
-        :speakerId="speakerId"
-        :turnId="turnId"
-        :turnIndex="index"
-        v-click-outside="closeSpkToolbox"></AppEditorSpkToolbox>
+
       <span
         class="icon warning sync-error-icon"
         :title="$t('conversation.turn_sync_error_title')"

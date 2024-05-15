@@ -207,6 +207,14 @@
     "shared_by_label": "Shared by",
     "shared_with_label": "Shared with",
     "speakers_button": "Speakers",
+    "speaker_toolbox": {
+      "change_speaker_button": "Assign another speaker to this turn",
+      "edit_speaker_button": "Edit the speaker",
+      "edit_speaker_label": "Speaker name",
+      "merge_speaker_button": "Merge \"{name}\" with another speaker",
+      "create_speaker_button": "Create a new speaker",
+      "create_speaker_label": "Speaker name"
+    },
     "status": {
       "preprocessing": "Preprocessing",
       "transcription": "Transcription",

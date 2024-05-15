@@ -1,6 +1,7 @@
 export function testFieldEmpty(field) {
   field.error = null
   field.valid = false
+  field.value = field.value.trim()
   if (field.value.length === 0) {
     field.error = "This field is required"
     field.valid = false

@@ -142,6 +142,7 @@ export default {
       } else if (e.key == "Escape") {
         this.cancel()
       }
+      e.stopPropagation()
     },
   },
   components: { Fragment, LabeledValue },
