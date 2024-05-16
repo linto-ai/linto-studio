@@ -74,10 +74,24 @@ export default {
         }
       }
     })
+
+    bus.$on("player-play", () => {
+      if (this.player) {
+        this.player.play()
+      }
+    })
+
+    bus.$on("player-pause", () => {
+      if (this.player) {
+        this.player.pause()
+      }
+    })
   },
   beforeDestroy() {
     bus.$off("refresh_audio_regions")
     bus.$off("player_set_time")
+    bus.$off("player-play")
+    bus.$off("player-pause")
   },
   computed: {
     currentTurn() {

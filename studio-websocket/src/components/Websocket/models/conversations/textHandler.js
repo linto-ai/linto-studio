@@ -13,7 +13,7 @@ export async function handleTextChange(
     return true
   }
 
-  if (yEvent.length == 1 && yEvent[0].path.length == 0) {
+  if ((yEvent.length == 1 && yEvent[0].path.length == 0) || yEvent.length > 1) {
     return await updateAllTurns(yEvent, transaction, conversationId, userToken)
   } else {
     return await updateSpeficTurns(

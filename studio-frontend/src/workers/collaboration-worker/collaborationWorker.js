@@ -12,6 +12,7 @@ import {
   turnInsertParagraph,
   turnMergeParagraph,
   turnEditSpeaker,
+  turnMergeSpeaker,
   updateConversationAddSpeaker,
   updateSubtitleScreenText,
   updateOrganizationRight,
@@ -122,6 +123,13 @@ onmessage = (event) => {
       break
     case "turn_edit_speaker":
       turnEditSpeaker(event.data.params, conversationId, conversation.getYdoc())
+      break
+    case "turn_merge_speaker":
+      turnMergeSpeaker(
+        event.data.params,
+        conversationId,
+        conversation.getYdoc()
+      )
       break
     case "update_conversation_title":
       updateConversationTitle(

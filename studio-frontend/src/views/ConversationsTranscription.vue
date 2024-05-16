@@ -6,15 +6,62 @@
     :error="error"
     sidebar>
     <template v-slot:sidebar>
-      <HighlightsList
-        v-if="status === 'done'"
-        :conversation="conversation"
-        :hightlightsCategories="hightlightsCategories"
-        :hightlightsCategoriesVisibility="hightlightsCategoriesVisibility"
-        @hide-category="onHideCategory"
-        @show-category="onShowCategory"
-        @delete-tag="onDeleteTag"
-        :conversationId="conversation._id" />
+      <div>
+        <div class="form-field flex col medium-margin">
+          <label for="transcription-search">Rechercher</label>
+          <div class="flex gap-small">
+            <input
+              class="flex1"
+              @keydown="($event) => $event.stopPropagation()"
+              type="search"
+              id="transcription-search"
+              v-model="transcriptionSearch" />
+            <button
+              :title="
+                $t('conversation.search_in_transcription.exact_word_match')
+              "
+              class="icon-only small only-border"
+              :class="{ 'green-border': exactMatching }"
+              @click="toggleExactMatching">
+              <span class="icon equal"></span>
+            </button>
+            <button
+              v-if="transcriptionSearch"
+              :title="$t('conversation.search_in_transcription.clear_search')"
+              class="icon-only small only-border"
+              @click="resetSearch">
+              <span class="icon close"></span>
+            </button>
+          </div>
+
+          <SearchResultPaginator
+            class="small-padding-top"
+            v-if="numberFound"
+            :numberFound="numberFound"
+            :selectedIndexResult="selectedIndexResult"
+            @previousResult="previousResult"
+            @nextResult="nextResult" />
+        </div>
+        <HighlightsList
+          v-if="status === 'done'"
+          :conversation="conversation"
+          :hightlightsCategories="hightlightsCategories"
+          :hightlightsCategoriesVisibility="hightlightsCategoriesVisibility"
+          @hide-category="onHideCategory"
+          @show-category="onShowCategory"
+          @delete-tag="onDeleteTag"
+          @clickOnTag="onClickOnTag"
+          :conversationId="conversation._id">
+          <template v-slot:content-under-tag="slotProps">
+            <SearchResultPaginator
+              v-if="slotProps.tag._id === searchedHighlightId"
+              :numberFound="totalHighlightResult"
+              :selectedIndexResult="currentHighlightResult"
+              @previousResult="onPreviousHighlightSearch(slotProps.tag)"
+              @nextResult="onNextHighlightSearch(slotProps.tag)" />
+          </template>
+        </HighlightsList>
+      </div>
     </template>
 
     <template v-slot:breadcrumb-actions>
@@ -54,6 +101,9 @@
         :hightlightsCategories="hightlightsCategories"
         :hightlightsCategoriesVisibility="hightlightsCategoriesVisibility"
         @newHighlight="handleNewHighlight"
+        @foundExpression="onFoundExpression"
+        @updateSelectedResult="onUpdateSelectedResult"
+        @updateSelectedHighlight="onUpdateSelectedHighlight"
         ref="editor"
         v-if="status === 'done'"></AppEditor>
     </div>
@@ -77,9 +127,9 @@ import { nextTick } from "vue"
 
 import { bus } from "../main.js"
 import { apiPostMetadata, apiUpdateMetadata } from "@/api/metadata.js"
+import findExpressionInWordsList from "@/tools/findExpressionInWordsList.js"
 
 import { conversationMixin } from "@/mixins/conversation.js"
-
 import Loading from "@/components/Loading.vue"
 import Modal from "@/components/Modal.vue"
 import UserInfoInline from "@/components/UserInfoInline.vue"
@@ -92,6 +142,7 @@ import ConversationShare from "@/components/ConversationShare.vue"
 import TranscriptionHelper from "@/components/TranscriptionHelper.vue"
 import AppEditorMetadataModal from "@/components/AppEditorMetadataModal.vue"
 import ErrorView from "./Error.vue"
+import SearchResultPaginator from "@/components/SearchResultPaginator.vue"
 
 export default {
   mixins: [conversationMixin],
@@ -104,6 +155,13 @@ export default {
       tagToDelete: null,
       showMetadataModal: false,
       metadataModalData: null,
+      transcriptionSearch: "",
+      numberFound: 0,
+      selectedIndexResult: 0,
+      exactMatching: false,
+      searchedHighlightId: null,
+      currentHighlightResult: 0,
+      totalHighlightResult: 0,
     }
   },
   mounted() {
@@ -128,6 +186,12 @@ export default {
     dataLoaded(newVal, oldVal) {
       if (newVal) {
         this.status = this.computeStatus(this.conversation?.jobs?.transcription)
+      }
+    },
+    transcriptionSearch(newVal, oldVal) {
+      if (newVal != oldVal) {
+        bus.$emit("player-pause")
+        this.$refs.editor.searchInTranscription(newVal, this.exactMatching)
       }
     },
   },
@@ -190,6 +254,27 @@ export default {
     },
   },
   methods: {
+    onClickOnTag(tag) {
+      this.$refs.editor.nextHighlightSearch(tag._id)
+    },
+    onNextHighlightSearch(tag) {
+      this.$refs.editor.nextHighlightSearch(tag._id)
+    },
+    onPreviousHighlightSearch(tag) {
+      this.$refs.editor.previousHighlightSearch(tag._id)
+    },
+    onFoundExpression(number) {
+      this.numberFound = number
+    },
+    onUpdateSelectedResult(number) {
+      this.selectedIndexResult = number
+    },
+    nextResult() {
+      this.$refs.editor.nextResultFound()
+    },
+    previousResult() {
+      this.$refs.editor.previousResultFound()
+    },
     cancelMetadata() {
       this.showMetadataModal = false
     },
@@ -273,6 +358,24 @@ export default {
         [tag.categoryId]: true,
       }
     },
+    toggleExactMatching() {
+      this.exactMatching = !this.exactMatching
+      this.$refs.editor.searchInTranscription(
+        this.transcriptionSearch,
+        this.exactMatching
+      )
+    },
+    resetSearch() {
+      this.transcriptionSearch = ""
+      this.numberFound = 0
+      this.selectedIndexResult = 0
+      this.$refs.editor.searchInTranscription("")
+    },
+    onUpdateSelectedHighlight({ tagId, total, current }) {
+      this.searchedHighlightId = tagId
+      this.currentHighlightResult = current
+      this.totalHighlightResult = total
+    },
   },
   components: {
     ConversationShare,
@@ -287,6 +390,7 @@ export default {
     MenuToolbox,
     ModalDeleteTagHighlight,
     AppEditorMetadataModal,
+    SearchResultPaginator,
   },
 }
 </script>

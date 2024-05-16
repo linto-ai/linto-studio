@@ -21,6 +21,8 @@
               turns.findIndex((t) => t.turn_id === turn.turn_id) ===
               turns.length - 1
             "
+            :searchResult="searchResultIndexedByTurn[turn.turn_id]"
+            :focusResultId="focusResultId"
             @mergeTurns="mergeTurns"
             @newHighlight="$emit('newHighlight', $event)" />
         </div>
@@ -43,13 +45,22 @@
 </template>
 <script>
 import { bus } from "../main.js"
+import uuidv4 from "uuid/v4.js"
+
+import { workerSendMessage } from "@/tools/worker-message.js"
+import findExpressionInWordsList from "@/tools/findExpressionInWordsList.js"
+import getWordsRangeFromTagMetadata from "@/tools/getWordsRangeFromTagMetadata.js"
+import findInSegment from "@/tools/findInSegment.js"
+
+import { debounceMixin } from "../mixins/debounce.js"
+
 import AppEditorTurn from "@/components/AppEditorTurn.vue"
 import AppEditorPlayer from "@/components/AppEditorPlayer.vue"
 import AppEditorPagination from "@/components/Pagination.vue"
-import { workerSendMessage } from "../tools/worker-message.js"
-import ModalDeleteTagHighlight from "./ModalDeleteTagHighlight.vue"
+import ModalDeleteTagHighlight from "@/components/ModalDeleteTagHighlight.vue"
 
 export default {
+  mixins: [debounceMixin],
   props: {
     canEdit: {
       type: Boolean,
@@ -104,6 +115,7 @@ export default {
   data() {
     return {
       conversationId: this.conversation._id,
+      pageNumberOfEachWord: this.computePageNumberOfEachWord(this.turnPages),
       //speakers: this.conversation.speakers,
       currentTime: 0,
       spkColors: [
@@ -116,6 +128,10 @@ export default {
       ],
       speakersTurnsTimebox: [],
       currentPageNb: 0,
+      focusResultId: null,
+      searchResults: [],
+      focusResultIndex: null,
+      clickOnTags: {}, // {tagid: number of click}
     }
   },
   computed: {
@@ -141,6 +157,45 @@ export default {
         keywordsTags.push(...cat.tags)
       }
       return keywordsTags
+    },
+    searchResultIndexedByTurn() {
+      let searchResultIndexedByTurn = {}
+      for (let result of this.searchResults) {
+        if (!searchResultIndexedByTurn[result.turn_id]) {
+          searchResultIndexedByTurn[result.turn_id] = []
+        }
+        searchResultIndexedByTurn[result.turn_id].push(result)
+      }
+      return searchResultIndexedByTurn
+    },
+    tags() {
+      let res = {}
+      const words = this.conversation.text
+        .reduce((acc, turn) => acc.concat(turn.words), [])
+        .filter((w) => w.word !== "")
+      for (let cat of this.hightlightsCategories) {
+        for (let tag of cat.tags) {
+          let ranges = getWordsRangeFromTagMetadata(tag)
+          if (!ranges || ranges.length == 0) {
+            ranges = findExpressionInWordsList(
+              [tag],
+              words,
+              (k) => k.name,
+              (w) => w.word
+            )
+
+            ranges.forEach((element) => {
+              element.startId = words[element.start].wid
+              element.endId = words[element.end].wid
+            })
+          }
+          res[tag._id] = {
+            ...tag,
+            ranges,
+          }
+        }
+      }
+      return res
     },
   },
   watch: {
@@ -177,6 +232,126 @@ export default {
     bus.$off("speaker_name_updated")
   },
   methods: {
+    computePageNumberOfEachWord(turnPages) {
+      let pageNumberOfEachWord = {}
+      for (let i = 0; i < turnPages.length; i++) {
+        for (let turn of turnPages[i]) {
+          for (let word of turn.words) {
+            pageNumberOfEachWord[word.wid] = i
+          }
+        }
+      }
+
+      return pageNumberOfEachWord
+    },
+    async goToRange(range) {
+      const startId = range.startId
+      const pageNumber = this.pageNumberOfEachWord[startId]
+
+      if (pageNumber !== undefined) {
+        this.currentPageNb = pageNumber
+        //scroll to the id
+        await this.$nextTick()
+        const element = document.getElementById(startId)
+        if (element) {
+          element.scrollIntoView({
+            block: "center",
+          })
+        }
+      }
+    },
+    updateFocus() {
+      const newIndex = this.focusResultIndex
+      if (newIndex === null) {
+        this.focusResultId = null
+      } else {
+        //this.currentPageNb = this.searchResults[newIndex].page
+        this.focusResultId = this.searchResults[newIndex].id
+
+        this.goToRange(this.searchResults[newIndex])
+      }
+      this.$emit("updateSelectedResult", newIndex)
+    },
+    resetSearchResult() {
+      this.searchResultExpression = {}
+      this.focusResultId = null
+      this.searchResultId = []
+    },
+    async searchInTranscription(search, exactMatching = false) {
+      this.resetSearchResult()
+      this.searchResults = await this.debouncedSearch(
+        this.searchInTranscriptionLocal.bind(this),
+        { search, exactMatching }
+      )
+      this.$emit("foundExpression", this.searchResults.length)
+      this.selectFirstResult()
+    },
+    searchInTranscriptionLocal({ search, exactMatching }) {
+      if (search.trim() === "") {
+        return []
+      }
+      let results = []
+      for (
+        let localCurrentPageNb = 0;
+        localCurrentPageNb < this.pages;
+        localCurrentPageNb++
+      ) {
+        for (const turn of this.turnPages[localCurrentPageNb]) {
+          let wordsList = turn.words.filter((w) => w.word !== "")
+
+          let found = []
+          if (!exactMatching) {
+            found = findInSegment(
+              wordsList.map((w) => w.word),
+              search
+            )
+          } else {
+            found = findExpressionInWordsList(
+              [search],
+              wordsList.map((w) => w.word),
+              null,
+              null
+            )
+          }
+
+          found.map((f) => {
+            f.id = uuidv4()
+            f.turn_id = turn.turn_id
+            f.page = localCurrentPageNb
+            f.startId = wordsList[f.start].wid
+            f.endId = wordsList[f.end].wid
+          })
+
+          results = results.concat(found)
+        }
+      }
+      return results
+    },
+    selectFirstResult() {
+      if (this.searchResults.length === 0) {
+        this.focusResultIndex = null
+        this.focusResultId = null
+        return
+      }
+      this.focusResultIndex = 0
+      this.updateFocus()
+    },
+    nextResultFound() {
+      if (this.focusResultIndex >= this.searchResults.length - 1) {
+        this.focusResultIndex = 0
+      } else {
+        this.focusResultIndex++
+      }
+      this.updateFocus()
+    },
+    previousResultFound() {
+      if (this.focusResultIndex <= 0) {
+        this.focusResultIndex = this.searchResults.length - 1
+      } else {
+        this.focusResultIndex--
+      }
+      this.updateFocus()
+    },
     playerReady() {
       let editorCurrentTime = localStorage.getItem("editorCurrentTime")
       if (editorCurrentTime) {
@@ -293,6 +468,46 @@ export default {
           indexEnd: baseTurnIndex + 1,
         })
       }
+    },
+    nextHighlightSearch(tagId) {
+      const tag = this.tags[tagId]
+      const ranges = tag.ranges
+      if (this.clickOnTags[tag._id] === undefined) {
+        this.clickOnTags[tag._id] = 0
+      } else {
+        this.clickOnTags[tag._id] += 1
+      }
+
+      if (this.clickOnTags[tag._id] >= ranges.length) {
+        this.clickOnTags[tag._id] = 0
+      }
+
+      this.goToRange(ranges[this.clickOnTags[tag._id]])
+      this.$emit("updateSelectedHighlight", {
+        tagId,
+        total: ranges.length,
+        current: this.clickOnTags[tag._id],
+      })
+    },
+    previousHighlightSearch(tagId) {
+      const tag = this.tags[tagId]
+      const ranges = tag.ranges
+      if (this.clickOnTags[tag._id] === undefined) {
+        this.clickOnTags[tag._id] = ranges.length - 1
+      } else {
+        this.clickOnTags[tag._id] -= 1
+      }
+
+      if (this.clickOnTags[tag._id] < 0) {
+        this.clickOnTags[tag._id] = ranges.length - 1
+      }
+
+      this.goToRange(ranges[this.clickOnTags[tag._id]])
+      this.$emit("updateSelectedHighlight", {
+        tagId,
+        total: ranges.length,
+        current: this.clickOnTags[tag._id],
+      })
     },
   },
   components: {

@@ -30,22 +30,25 @@
       </h3>
     </header>
     <ul class="category-box__tag-list flex col" v-if="open">
-      <li
-        class="flex align-bottom gap-small"
-        v-for="tag of tagsList"
-        :key="tag._id">
-        <label :for="`${id}-${tag._id}`" class="flex flex1 no-margin">
-          <Tag
-            :title="$t('tags.select_tag_title')"
-            :tagId="tag._id"
-            :value="tag.name"
-            :categoryId="tag.categoryId"
-            :categoryName="showCategoryName ? null : displayedCategory.name"
-            :editable="editable"
-            :color="category.color" />
-        </label>
+      <li class="flex col" v-for="tag of tagsList" :key="tag._id">
+        <div class="flex align-center gap-small">
+          <label
+            :for="`${id}-${tag._id}`"
+            class="flex flex1 no-margin"
+            @click="$emit('clickOnTag', tag)">
+            <Tag
+              :title="$t('tags.select_tag_title')"
+              :tagId="tag._id"
+              :value="tag.name"
+              :categoryId="tag.categoryId"
+              :categoryName="showCategoryName ? null : displayedCategory.name"
+              :editable="editable"
+              :color="category.color" />
+          </label>
 
-        <slot name="content-after-tag" v-bind:tag="tag"></slot>
+          <slot name="content-after-tag" v-bind:tag="tag"></slot>
+        </div>
+        <slot name="content-under-tag" v-bind:tag="tag"></slot>
       </li>
       <div v-if="tagsList.length === 0 && showCategoryName">
         <span class="category-box__no-tag">{{

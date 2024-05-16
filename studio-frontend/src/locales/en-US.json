@@ -199,9 +199,22 @@
     "recording": "Recording...",
     "search_criterions": "Search criterions",
     "search_placeholder": "Search a media",
+    "search_in_transcription": {
+      "n_found": "No occurrences | 1 occurrence | {count} occurrences",
+      "exact_word_match": "Exact word match",
+      "clear_search": "Clear search"
+    },
     "shared_by_label": "Shared by",
     "shared_with_label": "Shared with",
     "speakers_button": "Speakers",
+    "speaker_toolbox": {
+      "change_speaker_button": "Assign another speaker to this turn",
+      "edit_speaker_button": "Edit the speaker",
+      "edit_speaker_label": "Speaker name",
+      "merge_speaker_button": "Merge \"{name}\" with another speaker",
+      "create_speaker_button": "Create a new speaker",
+      "create_speaker_label": "Speaker name"
+    },
     "status": {
       "preprocessing": "Preprocessing",
       "transcription": "Transcription",
@@ -221,6 +234,43 @@
       "return_to_medias_list_button": "Return to medias list",
       "error_title": "An error has occured during processing the audio",
       "error_log_label": "Here's some information:"
+    },
+    "subtitles": {
+      "screen_is_empty": "The screen is empty",
+      "drop_video": "Drag and drop your vidéo file here",
+      "not_available": "No subtitles available",
+      "available": "Available subtitles",
+      "generate_subs": "Generate Subtitles",
+      "generate": "Generate",
+      "version_name": "Subtitle version name",
+      "max_char_length": "Max character length for each screen",
+      "max_char_length_short": "Characters per screen",
+      "max_lines": "Number of lines per screen",
+      "max_lines_short": "Lines per screen",
+      "max_duration": "Max duration of a screen",
+      "copy_label": "Copy subtitles version",
+      "delete_label": "Delete subtitle versions",
+      "delete_no_selection": "Please select at least one version to delete",
+      "delete_no_selection_label": "No versions selected",
+      "delete_description": "Are you sure you want to delete {n} subtitle version?",
+      "copy": "Copy",
+      "delete": "Delete",
+      "screens": {
+        "start": "Start:",
+        "current_screen": "Current screen",
+        "previous_screen": "Previous screen",
+        "next_screen": "Next screen"
+      },
+      "split_selection": {
+        "no_split": "No split",
+        "split_over_two_lines": "Split over two lines",
+        "split_over_three_lines": "Split over three lines"
+      },
+      "error": {
+        "no_enough_place_new_screen": "Not enough place to create a new screen",
+        "cannot_merge_non_consecutive_screens": "Cannot merge non consecutive screens",
+        "too_much_lines_to_merge": "Lines number is limited to {maxLines} lines"
+      }
     },
     "transcription": {
       "diarization_description": "Enable diarization and select the number of speakers",
@@ -281,44 +331,7 @@
     },
     "transcription_saving_notif": "Saving media...",
     "websocket_error_content": "Document update failed, save your change and reload the page.",
-    "websocket_error_title": "Syncronisation error.",
-    "subtitles": {
-      "screen_is_empty": "The screen is empty",
-      "drop_video": "Drag and drop your vidéo file here",
-      "not_available": "No subtitles available",
-      "available": "Available subtitles",
-      "generate_subs": "Generate Subtitles",
-      "generate": "Generate",
-      "version_name": "Subtitle version name",
-      "max_char_length": "Max character length for each screen",
-      "max_char_length_short": "Characters per screen",
-      "max_lines": "Number of lines per screen",
-      "max_lines_short": "Lines per screen",
-      "max_duration": "Max duration of a screen",
-      "copy_label": "Copy subtitles version",
-      "delete_label": "Delete subtitle versions",
-      "delete_no_selection": "Please select at least one version to delete",
-      "delete_no_selection_label": "No versions selected",
-      "delete_description": "Are you sure you want to delete {n} subtitle version?",
-      "copy": "Copy",
-      "delete": "Delete",
-      "screens": {
-        "start": "Start:",
-        "current_screen": "Current screen",
-        "previous_screen": "Previous screen",
-        "next_screen": "Next screen"
-      },
-      "split_selection": {
-        "no_split": "No split",
-        "split_over_two_lines": "Split over two lines",
-        "split_over_three_lines": "Split over three lines"
-      },
-      "error": {
-        "no_enough_place_new_screen": "Not enough place to create a new screen",
-        "cannot_merge_non_consecutive_screens": "Cannot merge non consecutive screens",
-        "too_much_lines_to_merge": "Lines number is limited to {maxLines} lines"
-      }
-    }
+    "websocket_error_title": "Syncronisation error."
   },
   "droparea": {
     "openFileExplorer": "or choose from the file explorer",

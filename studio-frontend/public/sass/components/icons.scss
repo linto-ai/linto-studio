@@ -207,6 +207,22 @@
   &.done {
     @include maskImage("../public/img/state-done.svg");
   }
+  &.next {
+    @include maskImage("../public/img/next.svg");
+  }
+
+  &.previous {
+    @include maskImage("../public/img/previous.svg");
+  }
+  &.equal {
+    @include maskImage("../public/img/equal.svg");
+  }
+  &.replace {
+    @include maskImage("../public/img/replace.svg");
+  }
+  &.merge2 {
+    @include maskImage("../public/img/merge.svg");
+  }
 }
 
 .icon.small {

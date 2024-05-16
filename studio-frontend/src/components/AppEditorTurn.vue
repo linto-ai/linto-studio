@@ -13,6 +13,7 @@
           'conversation-speaker-name',
           canEdit ? '' : 'disabled',
           'flex1',
+          'popover-parent',
         ]"
         @click="handleSpeakerClick($event)"
         :style="`color: ${speakerColor};`">
@@ -21,14 +22,15 @@
             ? speakerName.substr(0, 12) + "..."
             : speakerName
         }}
+        <AppEditorSpkToolbox
+          v-if="displaySpeakerToolbox"
+          :speakers="speakers"
+          :speakerId="speakerId"
+          :turnId="turnId"
+          :turnIndex="index"
+          v-click-outside="closeSpkToolbox"></AppEditorSpkToolbox>
       </span>
-      <AppEditorSpkToolbox
-        v-if="displaySpeakerToolbox"
-        :speakers="speakers"
-        :speakerId="speakerId"
-        :turnId="turnId"
-        :turnIndex="index"
-        v-click-outside="closeSpkToolbox"></AppEditorSpkToolbox>
+
       <span
         class="icon warning sync-error-icon"
         :title="$t('conversation.turn_sync_error_title')"
@@ -132,6 +134,8 @@ import _handleContentUpdate from "@/components/AppEditorTurn.d/handleContentUpda
 import _handleSpeakerClick from "@/components/AppEditorTurn.d/handleSpeakerClick.js"
 import _setSpeakerName from "@/components/AppEditorTurn.d/setSpeakerName.js"
 import _handleEnter from "@/components/AppEditorTurn.d/handleEnter.js"
+import _highlightSearchWord from "@/components/AppEditorTurn.d/highlightSearchWord.js"
+import _unHighlightSearchWord from "@/components/AppEditorTurn.d/unHighlightSearchWord.js"
 import AppEditorMetadataModal from "./AppEditorMetadataModal.vue"
 import { getCookie } from "../tools/getCookie.js"
 
@@ -188,6 +192,14 @@ export default {
     hightlightsCategoriesVisibility: {
       type: Object,
       default: () => ({}),
+    },
+    searchResult: {
+      type: Array,
+      default: () => [],
+    },
+    focusResultId: {
+      type: String,
+      default: "",
     },
   },
   data() {
@@ -324,6 +336,19 @@ export default {
     },
   },
   watch: {
+    searchResult(data, oldData) {
+      if (data.length > 0) {
+        this.displaySearchResults()
+      }
+      if (oldData.length > 0) {
+        this.hideSearchResults(oldData)
+      }
+    },
+    focusResultId(data, oldData) {
+      if (data) {
+        this.refreshSearchResults()
+      }
+    },
     contentEditable(data) {
       if (data) {
         this.plainText = this.segment
@@ -389,6 +414,7 @@ export default {
       }
     })
     this.displayHighlights()
+    this.displaySearchResults()
     this.localText = this.segment
   },
   methods: {
@@ -407,6 +433,42 @@ export default {
     handleSpeakerClick: _handleSpeakerClick,
     setSpeakerName: _setSpeakerName,
     handleEnter: _handleEnter,
+    highlightSearchWord: _highlightSearchWord,
+    unHighlightSearchWord: _unHighlightSearchWord,
+    displaySearchResults() {
+      this.searchResult.forEach((expression) => {
+        const domRange = this.plainRangeToDomRange(expression)
+        let iscurrent = expression.id === this.focusResultId
+        this.highlightRange(
+          { range: domRange, category: { color: "red" } },
+          {
+            functionToHighlightWord: this.highlightSearchWord,
+            functionArgs: [iscurrent],
+          }
+        )
+      })
+    },
+    hideSearchResults(searchResult) {
+      searchResult.forEach((expression) => {
+        const domRange = this.plainRangeToDomRange(expression)
+
+        if (domRange === null) {
+          return
+        }
+
+        this.unhighlightRange(
+          { range: domRange },
+          { functionToUnhighlightWord: this.unHighlightSearchWord }
+        )
+      })
+    },
+    refreshSearchResults() {
+      //nexttick to wait for the dom to be updated
+      this.$nextTick(() => {
+        this.hideSearchResults(this.searchResult)
+        this.displaySearchResults()
+      })
+    },
     handleNewHighlight(tag) {
       this.$emit("newHighlight", {
         tag,
@@ -456,7 +518,7 @@ export default {
       this.selectedRange = domRange
       await this.highlightRange(
         { range: this.selectedRange, category: { color: "blue" } },
-        false
+        { functionArgs: [false] }
       )
       // if (
       //   target.classList.contains("turn") ||

@@ -193,9 +193,8 @@ export function turnMergeParagraph(params, conversationId, rootDoc, syllabic) {
 export function turnEditSpeaker(params, conversationId, rootDoc) {
   const { turnId, newSpeakerId } = params
 
-  const turnIndex = findTurnIndex(rootDoc.getArray("text").toJSON(), turnId)
-
   rootDoc.transact(() => {
+    const turnIndex = findTurnIndex(rootDoc.getArray("text").toJSON(), turnId)
     debugEditSpeaker("Update speaker_id %s on turn %s", newSpeakerId, turnIndex)
     debugEditSpeaker("Text %o", rootDoc.getArray("text").get(turnIndex))
 
@@ -206,6 +205,28 @@ export function turnEditSpeaker(params, conversationId, rootDoc) {
       .get("speaker_id")
 
     rootDoc.getArray("text").get(turnIndex).set("speaker_id", newSpeakerId)
+
+    // Check if updated speakers still have turns
+    cleanSpeakers(rootDoc, currentSpeakerId)
+  }, "conversation_edit_speaker")
+}
+
+export function turnMergeSpeaker(params, conversationId, rootDoc) {
+  const { currentSpeakerId, newSpeakerId } = params
+
+  rootDoc.transact(() => {
+    // find all turn with currentSpeakerId and update speaker_id to newSpeakerId
+    const turns = rootDoc.getArray("text").toJSON()
+    const turnIndexes = turns.map((turn, index) =>
+      turn.speaker_id === currentSpeakerId ? index : -1
+    )
+
+    turnIndexes.forEach((index) => {
+      if (index !== -1) {
+        rootDoc.getArray("text").get(index).set("speaker_id", newSpeakerId)
+        debugEditSpeaker("Update speaker_id %s on turn %s", newSpeakerId, index)
+      }
+    })
 
     // Check if updated speakers still have turns
     cleanSpeakers(rootDoc, currentSpeakerId)
