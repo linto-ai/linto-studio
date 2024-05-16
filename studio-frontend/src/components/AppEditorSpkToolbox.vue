@@ -3,13 +3,15 @@
   <!-- Add speaker form -->
   <ContextMenu
     first
+    :x="1"
+    :y="18"
     name="speaker-menu"
     @keydown="stopPropagation"
     @click="stopPropagation"
     class="context-menu__speaker reset-color">
     <!-- -- -- Change speaker -- -- -->
 
-    <div class="context-menu__element">
+    <div class="context-menu__element" v-if="speakersList.length > 0">
       <button
         class="transparent flex context-menu__action wrap"
         :selected="state == STATES.CHANGE_SPEAKER"
@@ -77,7 +79,10 @@
 
     <!-- -- -- Merge speaker -- -- -->
 
-    <div class="context-menu__element" @click="enterMergeSpeaker">
+    <div
+      class="context-menu__element"
+      @click="enterMergeSpeaker"
+      v-if="speakersList.length > 0">
       <button
         class="transparent flex context-menu__action wrap"
         :selected="state == STATES.MERGE_SPEAKER"
@@ -108,7 +113,7 @@
 
     <!-- -- -- Create speaker -- -- -->
 
-    <div class="context-menu__element" @click="enterCreateSpeaker">
+    <div class="context-menu__element">
       <button
         class="transparent flex context-menu__action wrap"
         :selected="state == STATES.CREATE_SPEAKER"
