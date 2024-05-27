@@ -21,14 +21,21 @@ class Router {
 
                 if (process.env.DEV_DISABLE_AUTH === 'true') {
                     route.requireAuth = false
-                    route.requireSession = false
+                    route.requireConversationCommentAccess = false
+                    route.requireConversationDeleteAccess = false
                     route.requireConversationReadAccess = false
+                    route.requireConversationShareAccess = false
                     route.requireConversationWriteAccess = false
+                    route.requireDeleteTaxonomyAccess = false
                     route.requireOrganizationAdminAccess = false
+                    route.requireOrganizationGuestAccess = false
                     route.requireOrganizationMaintainerAccess = false
                     route.requireOrganizationMemberAccess = false
-                    route.requireOrganizationGuestAccess = false
+                    route.requireOrganizationUploaderAccess = false
+                    route.requireReadTaxonomyAccess = false
+                    route.requireSession = false
                     route.requireUserVisibility = false
+                    route.requireWriteTaxonomyAccess = false
                 }
 
                 //debug('Create route : ' + route.method + ' - ' + level + route.path)
@@ -80,6 +87,40 @@ class Router {
 
             }
         }
+    }
+
+
+    // TODO: what the use of that ?
+    waitAckSessionCreation(sessionId) {
+        return new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => {
+                reject(new Error(`Session creation timeout`));
+                this.removeListener(`session_ack_creation`, onSessionAckCreation);
+                this.removeListener(`session_reject_creation`, onSessionRejectCreation);
+            }, 10000);
+
+            const onSessionAckCreation = (ackSessionId) => {
+                if (ackSessionId === sessionId) {
+                    clearTimeout(timeout);
+                    resolve(sessionId);
+                    this.removeListener(`session_ack_creation`, onSessionAckCreation);
+                    this.removeListener(`session_reject_creation`, onSessionRejectCreation);
+                }
+            };
+
+            const onSessionRejectCreation = (payload) => {
+                payload = payload
+                if (payload.sessionId === sessionId) {
+                    clearTimeout(timeout);
+                    reject(new Error(payload.error));
+                    this.removeListener(`session_ack_creation`, onSessionAckCreation);
+                    this.removeListener(`session_reject_creation`, onSessionRejectCreation);
+                }
+            };
+
+            this.on(`session_ack_creation`, onSessionAckCreation);
+            this.on(`session_reject_creation`, onSessionRejectCreation);
+        });
     }
 }
 

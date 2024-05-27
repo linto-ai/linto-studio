@@ -4,13 +4,13 @@ const index = require('./index/init.js')
 let urlMongo = 'mongodb://'
 
 //user access
-if (process.env.DB_REQUIRE_LOGIN === "true")
-    urlMongo += process.env.DB_USER + ':' + process.env.DB_PASS + '@'
+if (process.env.DB_REQUIRE_LOGIN_MONGO === "true")
+    urlMongo += process.env.DB_USER_MONGO + ':' + process.env.DB_PASS_MONGO + '@'
 
-urlMongo += process.env.DB_HOST + ':' + process.env.DB_PORT + '/'
+urlMongo += process.env.DB_HOST_MONGO + ':' + process.env.DB_PORT_MONGO + '/'
 
-if (process.env.DB_REQUIRE_LOGIN === "true")
-    urlMongo += '?authSource=' + process.env.DB_NAME
+if (process.env.DB_REQUIRE_LOGIN_MONGO === "true")
+    urlMongo += '?authSource=' + process.env.DB_NAME_MONGO
 
 // Create an instance of a MongoDb client. Handle connection/close connection/reconnect/error
 class MongoDriver {
@@ -53,7 +53,7 @@ class MongoDriver {
                 console.error('> MongoDB ERROR unable to connect:', err.toString())
             } else {
                 console.log('> MongoDB : Connected')
-                MongoDriver.db = client.db(process.env.DB_NAME)
+                MongoDriver.db = client.db(process.env.DB_NAME_MONGO)
                 const mongoEvent = client.topology //??what is this??
 
                 index.createIndex(MongoDriver)

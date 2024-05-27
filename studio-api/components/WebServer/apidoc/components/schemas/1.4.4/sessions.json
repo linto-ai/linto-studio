@@ -1,0 +1,145 @@
+{
+    "SessionRequest": {
+        "type": "object",
+        "properties": {
+            "name": {
+                "type": "string"
+            },
+            "channels": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/components/schemas/ChannelRequest"
+                }
+            }
+        }
+    },
+    "SessionPaginationAnswer": {
+        "type": "object",
+        "properties": {
+            "sessions": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/components/schemas/SessionAnswer"
+                }
+            },
+            "totalItems": {
+                "type": "integer",
+                "description": "Total number of sessions matching the filters"
+            }
+        }
+    },
+    "SessionAnswer": {
+        "type": "object",
+        "properties": {
+            "id": {
+                "type": "string",
+                "format": "uuid"
+            },
+            "status": {
+                "type": "string",
+                "enum": [
+                    "pending_creation",
+                    "ready",
+                    "active",
+                    "errored",
+                    "terminated"
+                ]
+            },
+            "name": {
+                "type": "string"
+            },
+            "start_time": {
+                "type": "string",
+                "format": "date-time"
+            },
+            "end_time": {
+                "type": "string",
+                "format": "date-time"
+            },
+            "errorred_on": {
+                "type": "string",
+                "format": "date-time"
+            },
+            "channels": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/components/schemas/ChannelAnswer"
+                }
+            }
+        }
+    },
+    "ChannelRequest": {
+        "type": "object",
+        "properties": {
+            "name": {
+                "type": "string",
+                "description": "The name of the channel"
+            },
+            "transcriberProfileId": {
+                "type": "integer",
+                "description": "The id of the channel config"
+            }
+        }
+    },
+    "ChannelAnswer": {
+        "type": "object",
+        "properties": {
+            "transcriber_id": {
+                "type": "string",
+                "description": "The id of the transcriber that is currently transcribing this channel"
+            },
+            "name": {
+                "type": "string",
+                "description": "The name of the channel"
+            },
+            "languages": {
+                "type": "array",
+                "description": "The language of the channel as a BCP-47 language tag (fr-FR, en-US, ...) and endpoints"
+            },
+            "transcriberProfileId": {
+                "type": "integer",
+                "description": "The id of the channel config"
+            },
+            "stream_endpoint": {
+                "type": "string"
+            },
+            "stream_status": {
+                "type": "string",
+                "enum": [
+                    "active",
+                    "inactive",
+                    "errored"
+                ]
+            },
+            "transcriber_status": {
+                "type": "string",
+                "enum": [
+                    "ready",
+                    "streaming",
+                    "closed",
+                    "errored"
+                ]
+            },
+            "closed_captions": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "example": {
+                        "astart": "date-time",
+                        "start": 0.0,
+                        "end": 3.12,
+                        "text": "string"
+                    }
+                }
+            },
+            "closed_captions_live_delivery": {
+                "type": "string",
+                "description": "The WebSocket url of the live closed caption delivery"
+            },
+            "closed_captions_file_delivery": {
+                "type": "string",
+                "description": "The url of the closed caption file delivery API endpoint"
+            }
+        }
+    }
+}
