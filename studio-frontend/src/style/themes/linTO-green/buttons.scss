@@ -1,28 +1,3 @@
-button,
-.btn {
-  font-family: inherit;
-  text-decoration: none;
-  border: none;
-  &:focus,
-  &:active {
-    outline: none;
-  }
-  &:hover {
-    cursor: pointer;
-  }
-
-  &[disabled] {
-    cursor: not-allowed;
-    &:hover {
-      cursor: not-allowed;
-    }
-  }
-}
-
-.btn.wrap > .label {
-  white-space: normal;
-}
-
 a {
   font-weight: 500;
   &:hover {
@@ -42,11 +17,19 @@ button,
 .btn {
   padding: 0.4rem 0.8rem;
   border-radius: 4px;
+  font-family: inherit;
   font-size: 15px;
   font-weight: 500;
   border: var(--border-button-flat);
-  background-color: var(--background-secondary);
+  background-color: var(--button-background);
   background-image: var(--button-image-background);
+  color: var(--text-primary);
+  text-decoration: none;
+
+  &:focus,
+  &:active {
+    outline: none;
+  }
 
   &.inline {
     display: inline-flex;

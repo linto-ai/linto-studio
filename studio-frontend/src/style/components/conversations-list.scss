@@ -28,7 +28,7 @@ input[type="checkbox"].conversation-line__checkbox {
 
 input:checked + .conversation-line {
   border: 1px solid var(--primary-color);
-  background-color: rgba(40, 153, 131, 0.0784313725);
+  background-color: var(--selected-background);
 }
 
 .conversation-line {
@@ -48,7 +48,7 @@ input:checked + .conversation-line {
 }
 
 .conversation-line__title {
-  color: $secondaryColor;
+  color: var(--blue-chart);
   font-size: 1rem; // 16px
   flex-basis: fit-content;
 

@@ -20,7 +20,7 @@
         <slot></slot>
       </div>
       <div class="modal-footer flex row gap-small">
-        <button class="btn" @click="close()" v-if="cancelButton">
+        <button class="btn secondary" @click="close()" v-if="cancelButton">
           <span class="label">{{ $t("modal.cancel") }}</span>
         </button>
         <button :class="customClass" @click="apply" v-if="!noApply">

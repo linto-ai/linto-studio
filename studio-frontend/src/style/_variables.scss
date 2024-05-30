@@ -19,52 +19,32 @@ $secondaryColor: $blueChart;
 $primaryContrast: #fff;
 
 body {
-  --text-vertical-center-offset: 0px;
-  --text-primary: #333;
-  --text-secondary: #666;
-  --text-disabled: #aaa;
-  --small-contrast: #ccc;
+  --background-header: var(--background-primary);
 
-  --background-app: rgb(250, 250, 250);
-  --background-primary: #fff;
-  --background-primary-with-small-opacity: rgba(255, 255, 255, 0.85);
-  --background-primary-with-blur: rgba(255, 255, 255, 0.4);
-  --background-secondary: #f3f3f3;
-  --background-header: #fff;
+  --text-vertical-center-offset: 0px;
+
+  --text-primary: var(--dark-100);
+  --text-secondary: var(--dark-80);
+  --text-disabled: #aaa;
+  --small-contrast: var(--dark-60);
+
   --background-disabled: #f6f6f6;
 
   --background-lock-turn: #e6e6e6;
   --border-lock-turn: 1px solid #848484;
 
-  --input-background: #f7faff;
-  --button-background-hover: #eee;
-  --button-image-background: linear-gradient(
-    #fcfcfc,
-    var(--background-secondary)
-  );
-
-  --border-button: 1px solid var(--text-secondary);
-  --border-button-flat: 1px solid var(--small-contrast);
-  --border-input: 1px solid var(--text-secondary);
-  --border-block: 1px solid var(--small-contrast);
-  --divider: 1px solid var(--small-contrast);
-  --border-button-glass: 1px solid rgba(255, 255, 255, 0.4);
+  --border-button: 1px solid var(--dark-80);
+  --border-button-flat: 1px solid var(--neutral-60);
+  --border-input: 1px solid var(--dark-80);
+  --border-block: 1px solid var(--neutral-60);
+  --divider: 1px solid var(--neutral-60);
 
   --input-focus: #f7faff;
-  --yellow-chart: #feb11d;
-  --green-chart: #11977c;
-  --green-ligth: #39d5b6;
-  --red-chart: #fe346e;
-  --blue-chart: #1c83d6;
 
   --bg-highlight: #fff5a4;
 
-  --primary-color: var(--green-chart);
-  --secondary-color: var(--blue-chart);
   --player-region-background: #a4d6ff54;
   --player-region-background-playing: #39d5b655;
-
-  --primary-contrast: #fff;
 
   --tiny-gap: 0.25rem;
   --small-gap: 0.5rem;
@@ -75,65 +55,18 @@ body {
   --shadow-block-left: 3px 0px 8px 0 rgba(67, 76, 95, 0.15);
 }
 
+// @media (prefers-color-scheme: dark) {}
 html[data-theme="dark"] body {
-  --text-primary: #ccc;
-  --text-secondary: #aaa;
   --text-disabled: #666;
-  --small-contrast: #666;
-
-  --background-app: rgb(48, 48, 48);
-  --background-primary: #252525;
-  --background-primary-with-small-opacity: rgba(37, 37, 37, 0.85);
-  --background-primary-with-blur: rgba(37, 37, 37, 0.4);
-  --background-secondary: #1a1a1a;
   --background-disabled: #333;
 
   --border-button-glass: 1px solid #25252588;
-
-  --input-background: #1a1a1a;
-  --button-background-hover: #333;
-  --button-image-background: linear-gradient(
-    #1a1a1a,
-    var(--background-secondary)
-  );
-
-  --background-header: #252525;
-
   --shadow-block: 0px 0px 8px 0 rgb(0, 0, 0, 0.5);
   --shadow-block-selected: 0px 0px 20px 0 rgb(0, 0, 0, 0.7);
   --shadow-block-left: 3px 0px 8px 0 rgb(0, 0, 0, 0.5);
 
   --input-focus: #0c0c0c;
-  --blue-chart: #479ae4;
-  --green-chart: #139177;
-  --red-chart: #c42653;
 
   --bg-highlight: #484211;
   --primary-contrast: #000;
 }
-
-// @media (prefers-color-scheme: dark) {
-//   body {
-//     --text-primary: #ccc;
-//     --text-secondary: #aaa;
-//     --text-disabled: #666;
-
-//     --background-primary: #252525;
-//     --background-primary-with-small-opacity: rgba(37, 37, 37, 0.85);
-//     --background-secondary: #1a1a1a;
-//     --background-disabled: #333;
-
-//     --input-background: #1a1a1a;
-//     --button-background-hover: #333;
-
-//     --background-header: #252525;
-
-//     --shadow-block: 0px 0px 8px 0 rgb(0, 0, 0, 0.7);
-//     --shadow-block-left: 3px 0px 8px 0 rgb(0, 0, 0, 0.7);
-
-//     --input-focus: #0c0c0c;
-//     --blue-chart: #479ae4;
-//     --green-chart: #139177;
-//     --red-chart: #c42653;
-//   }
-// }

@@ -6,17 +6,18 @@ input[type="password"],
 select,
 textarea,
 .collab-input {
-  border: var(--border-input);
-  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--dark-80);
+  padding-inline: 1rem;
   max-width: 20rem;
   min-width: 10rem;
-  line-height: 20px;
-  font-size: 14px;
-  border-radius: 4px;
+  line-height: 28px;
+  font-size: 16px;
+  box-sizing: border-box;
+  border-radius: 2px;
   //@include transition(all 0.2s ease);
   background-color: var(--input-background);
   color: var(--text-primary);
-  height: 2rem;
+  height: 44px;
 
   &.error {
     border: 1px solid var(--red-chart);
@@ -99,5 +100,5 @@ fieldset[role="listbox"] {
 }
 
 .form-value {
-  height: 32px;
+  height: 44px;
 }

@@ -39,9 +39,6 @@
   width: auto;
   min-width: 100%;
 
-  background-color: #fff;
-  border: var(--border-button);
-
   @include blockShadow;
   &.left {
     left: auto;
@@ -55,8 +52,6 @@
 }
 
 .select__list__item {
-  background-color: var(--background-primary);
-  background-image: none;
   text-align: left;
   border-radius: 0px;
   border: none;
