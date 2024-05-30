@@ -66,7 +66,6 @@ async function listConversationFromOrganization(req, res, next) {
         }
 
         let conversations = await model.conversations.listConvFromOrga(req.params.organizationId, userId, userRole, RIGHT.READ, req.query)
-
         res.status(200).send(conversations)
     } catch (err) {
         next(err)

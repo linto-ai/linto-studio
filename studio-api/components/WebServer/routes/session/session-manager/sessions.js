@@ -66,7 +66,7 @@ module.exports = (webserver) => {
 
                 if (!session) {
                     return res.status(404).send('Session not found');
-                } else if (session.organizationId != req.params.organizationId + 1) {
+                } else if (session.organizationId != req.params.organizationId) {
                     return res.status(403).send('Forbidden');
                 }
                 res.json(session);

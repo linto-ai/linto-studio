@@ -37,8 +37,8 @@ async function deleteConversation(req, res, next) {
         await model.conversationSubtitles.deleteAllFromConv(req.params.conversationId)
         const categoryList = await model.categories.getByScope(req.params.conversationId)
         for (const category of categoryList) {
-          model.categories.delete(category._id)
-          model.tags.deleteAllFromCategory(category._id.toString())
+            model.categories.delete(category._id)
+            model.tags.deleteAllFromCategory(category._id.toString())
         }
 
 
@@ -77,10 +77,11 @@ async function getConversation(req, res, next) {
     try {
         if (!req.params.conversationId) throw new ConversationIdRequire()
 
-        let conversation = await model.conversations.getById(req.params.conversationId, ['jobs'])
+        let conversation = await model.conversations.getById(req.params.conversationId, ['jobs', 'type'])
         if (conversation.length !== 1) throw new ConversationNotFound()
 
-        await fetchJob(req.params.conversationId, conversation[0].jobs)
+        if (conversation[0].type.mode === 'canonical')
+            await fetchJob(req.params.conversationId, conversation[0].jobs)
 
         if (req?.query?.key && typeof req.query.key === 'string') {
             const projectionValue = req.query.projection && /^\d+$/.test(req.query.projection) ? parseInt(req.query.projection, 10) : 1;
