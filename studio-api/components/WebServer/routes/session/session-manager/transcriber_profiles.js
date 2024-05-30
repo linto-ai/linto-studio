@@ -30,6 +30,8 @@ module.exports = (webserver) => {
     return [{
         path: '/transcriber_profiles',
         method: 'get',
+        // requireAuth: true,
+        // requireOrganizationAdminAccess: true,
         controller: async (req, res, next) => {
             try {
                 const configs = await Model.TranscriberProfile.findAll();
@@ -41,6 +43,8 @@ module.exports = (webserver) => {
     }, {
         path: '/transcriber_profiles/:id',
         method: 'get',
+        // requireAuth: true,
+        // requireOrganizationAdminAccess: true,
         controller: async (req, res, next) => {
             try {
                 const config = await Model.TranscriberProfile.findByPk(req.params.id);
@@ -55,6 +59,8 @@ module.exports = (webserver) => {
     }, {
         path: '/transcriber_profiles',
         method: 'post',
+        // requireAuth: true,
+        // requireOrganizationAdminAccess: true,
         controller: async (req, res, next) => {
             try {
                 const validationResult = validateTranscriberProfile(req.body);
@@ -70,6 +76,8 @@ module.exports = (webserver) => {
     }, {
         path: '/transcriber_profiles/:id',
         method: 'put',
+        // requireAuth: true,
+        // requireOrganizationAdminAccess: true,
         controller: async (req, res, next) => {
             try {
                 const config = await Model.TranscriberProfile.findByPk(req.params.id);
@@ -89,6 +97,8 @@ module.exports = (webserver) => {
     }, {
         path: '/transcriber_profiles/:id',
         method: 'delete',
+        // requireAuth: true,
+        // requireOrganizationAdminAccess: true,
         controller: async (req, res, next) => {
             try {
                 const config = await Model.TranscriberProfile.findByPk(req.params.id);

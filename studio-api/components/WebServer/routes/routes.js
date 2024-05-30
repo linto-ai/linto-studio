@@ -26,6 +26,6 @@ module.exports = (webServer) => {
         "/api/nlp": require('./api/nlp/nlp')(webServer),
         "/api/services": require('./api/service/services')(webServer, this),
         ...(process.env.ENABLE_SESSION_API === "true" ? { "/api": require('./session/session-manager/index.js')(webServer) } : {}),
-        ...(process.env.ENABLE_SESSION_API === "true" ? { "/api/delivery": require('./session/delivery/index.js')(webServer) } : {}),
+        ...(process.env.ENABLE_SESSION_API === "true" ? { "/api/organizations/:organizationId/delivery": require('./session/delivery/index.js')(webServer) } : {}),
     }
 }

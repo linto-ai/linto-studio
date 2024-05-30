@@ -1,4 +1,4 @@
-const debug = require('debug')('delivery:webserver')
+const debug = require('debug')('linto:delivery:webserver')
 const axios = require('axios')
 const txtGenerator = require('./txt')
 const docGenerator = require('./doc')
@@ -20,7 +20,6 @@ module.exports = (webserver) => {
         requireAuth: false,
         controller: async (req, res, next) => {
             const type = req.params.type
-
             if (!Object.keys(fileGeneratorMapping).includes(type)) {
                 debug(`No export possible for ${type} type`)
             }
@@ -33,9 +32,7 @@ module.exports = (webserver) => {
                 debug("sessionId or transcriberId empty")
             }
 
-            debug(`Export ${type} file for sessionId: ${sessionId} transcriberId: ${transcriberId}`)
-
-            const url = `${process.env.DELIVERY_SESSION_URL}/v1/sessions/${sessionId}`
+            const url = `${process.env.DELIVERY_SESSION_URL}/api/sessions/${sessionId}`
 
             axios({
                 method: 'GET',
@@ -46,7 +43,7 @@ module.exports = (webserver) => {
             })
             .then(session => {
                 for (channel of session.channels) {
-                    if (channel.transcriber_id == transcriberId) {
+                    if ((channel.transcriber_id ?? channel.transcriberProfileId) == transcriberId) {
                         return [session, channel]
                     }
                 }

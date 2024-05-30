@@ -1,13 +1,19 @@
-const debug = require('debug')('session-api:router:api:transcriber_profiles')
+const debug = require('debug')('linto:session-api:router:api:transcriber_profiles')
 const { Model } = require("live-srt-lib")
 const { v4: uuidv4 } = require('uuid')
 const axios = require('axios')
 
+const {
+    storeSession
+} = require(`${process.cwd()}/components/WebServer/routecontrollers/session/conversation.js`)
+
 
 module.exports = (webserver) => {
     return [{
-        path: '/sessions/active',
+        path: '/organizations/:organizationId/sessions/active',
         method: 'get',
+        requireAuth: true,
+        requireOrganizationMemberAccess: true,
         controller: async (req, res, next) => {
             try {
                 const sessions = await Model.Session.findAll({
@@ -21,13 +27,16 @@ module.exports = (webserver) => {
             }
         }
     }, {
-        path: '/sessions/terminated',
+        path: '/organizations/:organizationId/sessions/terminated',
         method: 'get',
+        requireAuth: true,
+        requireOrganizationMemberAccess: true,
         controller: async (req, res, next) => {
             try {
                 const sessions = await Model.Session.findAll({
                     where: {
-                        status: 'terminated'
+                        status: 'terminated',
+                        organizationId: req.params.organizationId
                     }
                 });
                 res.json(sessions);
@@ -37,29 +46,70 @@ module.exports = (webserver) => {
         }
     },
     {
-        path: '/sessions/:id',
+        path: '/organizations/:organizationId/sessions/:id',
         method: 'get',
+        requireAuth: true,
+        requireOrganizationMemberAccess: true,
         controller: async (req, res, next) => {
             try {
                 const session = await Model.Session.findByPk(req.params.id, {
                     include: {
-                      model: Model.Channel,
-                      attributes: {
-                        exclude: ['id', 'sessionId']
-                      }
+                        model: Model.Channel,
+                        attributes: {
+                            exclude: ['id', 'sessionId']
+                        }
+                    },
+                    where: {    // This look like it's not working
+                        organizationId: req.params.organizationId
                     }
-                  });
+                });
+
                 if (!session) {
                     return res.status(404).send('Session not found');
+                } else if (session.organizationId != req.params.organizationId + 1) {
+                    return res.status(403).send('Forbidden');
                 }
                 res.json(session);
             } catch (err) {
                 next(err);
             }
         }
+    },
+    {
+        path: '/organizations/:organizationId/sessions/:id/store',
+        method: 'post',
+        requireAuth: true,
+        requireOrganizationAdminAccess: true,
+        controller: async (req, res, next) => {
+            try {
+                const session = await Model.Session.findByPk(req.params.id, {
+                    include: {
+                        model: Model.Channel,
+                        attributes: {
+                            exclude: ['id', 'sessionId']
+                        }
+                    }
+                });
+
+                if (!session) {
+                    return res.status(404).send('Session not found');
+                }
+
+                let conv = await storeSession(session)
+
+                res.json(conv);
+
+
+                // res.json(session);
+            } catch (err) {
+                next(err);
+            }
+        }
     }, {
-        path: '/sessions',
+        path: '/organizations/:organizationId/sessions',
         method: 'get',
+        requireAuth: true,
+        requireOrganizationMemberAccess: true,
         controller: async (req, res, next) => {
             const limit = req.query.limit ?? 10
             const offset = req.query.offset ?? 0
@@ -68,12 +118,14 @@ module.exports = (webserver) => {
 
             const statusList = req.query.status ? req.query.status.split(',') : null
             if (statusList) {
-                where.status = {[Model.Op.in]: statusList}
+                where.status = { [Model.Op.in]: statusList }
             }
 
             if (searchName) {
-                where.name = {[Model.Op.startsWith]: searchName}
+                where.name = { [Model.Op.startsWith]: searchName }
             }
+
+            where.organizationId = req.params.organizationId
 
             Model.Session.findAndCountAll({
                 limit: limit,
@@ -81,35 +133,39 @@ module.exports = (webserver) => {
                 include: {
                     model: Model.Channel,
                     attributes: {
-                      exclude: ['id', 'sessionId', 'closed_captions']
+                        exclude: ['id', 'sessionId', 'closed_captions']
                     }
                 },
                 where: where
             }).then(results => {
-                    res.json({
-                        sessions: results.rows,
-                        totalItems: results.count
-                    })
+                res.json({
+                    sessions: results.rows,
+                    totalItems: results.count
+                })
             }).catch(err => next(err))
         }
     }, {
-        path: '/sessions',
+        path: '/organizations/:organizationId/sessions',
         method: 'post',
+        requireAuth: true,
+        requireOrganizationAdminAccess: true,
         controller: async (req, res, next) => {
             try {
                 try {
                     const url = `${process.env.SESSION_SCHEDULER_URL}/v1/sessions`
-                    console.log(url)
+                    req.body.owner = req.payload.data.userId
+                    req.body.organizationId = req.params.organizationId
+
                     const response = await axios.post(url, req.body)
                     const sessionId = response.data.sessionId
                     const sessionWithChannels = await Model.Session.findByPk(sessionId, {
                         include: {
                             model: Model.Channel,
                             attributes: {
-                              exclude: ['id', 'sessionId']
+                                exclude: ['id', 'sessionId']
                             }
-                          }
-                      });
+                        }
+                    });
                     res.json(sessionWithChannels);
                 } catch (err) {
                     var msg = err.message
@@ -123,8 +179,10 @@ module.exports = (webserver) => {
             }
         }
     }, {
-        path: '/sessions/:id',
+        path: '/organizations/:organizationId/sessions/:id',
         method: 'delete',
+        requireAuth: true,
+        requireOrganizationAdminAccess: true,
         controller: async (req, res, next) => {
             try {
                 const session = await Model.Session.findByPk(req.params.id);
@@ -147,8 +205,10 @@ module.exports = (webserver) => {
             }
         }
     }, {
-        path: '/sessions/:id/start',
+        path: '/organizations/:organizationId/sessions/:id/start',
         method: 'put',
+        requireAuth: true,
+        requireOrganizationAdminAccess: true,
         controller: async (req, res, next) => {
             try {
                 const sessionId = req.params.id
@@ -177,8 +237,10 @@ module.exports = (webserver) => {
             }
         }
     }, {
-        path: '/sessions/:id/reset',
+        path: '/organizations/:organizationId/sessions/:id/reset',
         method: 'put',
+        requireAuth: true,
+        requireOrganizationAdminAccess: true,
         controller: async (req, res, next) => {
             try {
                 const sessionId = req.params.id
@@ -187,7 +249,7 @@ module.exports = (webserver) => {
                     return res.status(404).send('Session not found')
                 }
                 if (!['active', 'ready'].includes(session.status)) {
-                    res.status(400).json({ 'error': 'Session must be ready or active'})
+                    res.status(400).json({ 'error': 'Session must be ready or active' })
                     return
                 }
 
@@ -207,8 +269,10 @@ module.exports = (webserver) => {
             }
         }
     }, {
-        path: '/sessions/:id/stop',
+        path: '/organizations/:organizationId/sessions/:id/stop',
         method: 'put',
+        requireAuth: true,
+        requireOrganizationAdminAccess: true,
         controller: async (req, res, next) => {
             try {
                 const sessionId = req.params.id

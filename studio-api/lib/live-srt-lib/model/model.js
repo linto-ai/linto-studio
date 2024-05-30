@@ -47,7 +47,15 @@ const Session = sequelize.define('session', {
     errored_on: {
         type: DataTypes.ARRAY(DataTypes.JSON),
         allowNull: true
-    }
+    },
+    owner: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    organizationId: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
 });
 
 const Channel = sequelize.define('channel', {

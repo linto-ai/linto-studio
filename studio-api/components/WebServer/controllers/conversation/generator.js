@@ -1,7 +1,6 @@
 const debug = require('debug')('linto:components:WebServer:controller:generator')
 
 const { v4: uuidv4 } = require('uuid')
-const uuid = require('uuid')
 
 const fs = require('fs')
 const mm = require('music-metadata')
@@ -30,6 +29,7 @@ function initConversation(metadata, userId, job_id) {
         speakers: [],
         text: [],
         metadata: {
+            type : 'media',
             transcription: {
                 lang: metadata.lang,
                 transcriptionConfig: transcriptionConfig,
