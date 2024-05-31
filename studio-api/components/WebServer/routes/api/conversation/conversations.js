@@ -5,7 +5,8 @@ const {
     getConversation,
     getUsersByConversation,
     updateConversation,
-    getUsersByConversationList
+    getUsersByConversationList,
+    getChildConversation
 } = require(`${process.cwd()}/components/WebServer/routecontrollers/conversation/conversation.js`)
 
 const {
@@ -62,6 +63,13 @@ module.exports = (webserver) => {
             requireAuth: true,
             requireConversationReadAccess: true,
             controller: listExport
+        },
+        {
+            path: '/:conversationId/child',
+            method: 'get',
+            requireAuth: true,
+            requireConversationReadAccess: true,
+            controller: getChildConversation
         }
     ]
 }

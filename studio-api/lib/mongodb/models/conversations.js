@@ -4,7 +4,7 @@ const debug = require('debug')('linto:conversation-manager:models:mongodb:models
 const moment = require('moment')
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
-
+const TYPE = require (`${process.cwd()}/lib/dao/conversation/types`)
 class ConvoModel extends MongoModel {
 
     constructor() {
@@ -64,6 +64,24 @@ class ConvoModel extends MongoModel {
         }
     }
 
+    async getConversationFromList(ids) {
+        ids = ids.map(id => {
+            if (typeof id === 'string') return this.getObjectId(id)
+            else return id
+        })
+
+        let query = {
+            "_id": {
+                $in: ids
+            },
+        }
+
+        return await this.mongoRequest(query)
+    } catch(error) {
+        console.error(error)
+        return errorMonitor
+    }
+
     async getByIdWithFilter(convId, projection) {
         try {
             const query = {
@@ -104,7 +122,8 @@ class ConvoModel extends MongoModel {
                 speakers: 0,
                 keywords: 0,
                 highlights: 0,
-                "jobs.transcription.job_logs": 0
+                "jobs.transcription.job_logs": 0,
+                "type.mode": TYPE.CANONICAL
             }
 
             const query = {
@@ -154,7 +173,6 @@ class ConvoModel extends MongoModel {
     async getTagByOrga(idOrga, tags) {
         const query = {
             "organization.organizationId": idOrga.toString(),
-
         }
         if (tags) {
             tags = tags.split(',')
@@ -210,7 +228,8 @@ class ConvoModel extends MongoModel {
                     text: 0,
                     speakers: 0,
                     keywords: 0,
-                    highlights: 0
+                    highlights: 0,
+                    "type.mode": TYPE.CANONICAL
                 }
             }
             return await this.mongoRequest(query, projection)
@@ -224,6 +243,7 @@ class ConvoModel extends MongoModel {
         try {
             const query = {
                 "organization.organizationId": idOrga.toString(),
+                "type.mode": TYPE.CANONICAL,
                 "sharedWithUsers": {
                     $elemMatch: {
                         userId: idUser.toString(),
@@ -410,6 +430,7 @@ class ConvoModel extends MongoModel {
 
             let query = {
                 "organization.organizationId": organizationId.toString(),
+                "type.mode": TYPE.CANONICAL,
                 $or: [
                     {
                         "organization.customRights": {
@@ -480,7 +501,9 @@ class ConvoModel extends MongoModel {
             let query = {
                 "_id": {
                     $in: convIds
-                }, $or: [
+                },
+                "type.mode": TYPE.CANONICAL,
+                $or: [
                     {
                         "organization.customRights": {
                             $elemMatch: {
@@ -529,7 +552,8 @@ class ConvoModel extends MongoModel {
             let projection = {
                 page: 0,
                 text: 0,
-                "jobs.transcription.job_logs": 0
+                "jobs.transcription.job_logs": 0,
+                "type.mode": TYPE.CANONICAL,
             }
 
             convIds = convIds.map(id => {
@@ -581,6 +605,7 @@ class ConvoModel extends MongoModel {
                 "_id": {
                     $in: convIds
                 },
+                "type.mode": TYPE.CANONICAL,
                 $or: [
                     {
                         "sharedWithUsers": {

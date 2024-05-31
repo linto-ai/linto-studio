@@ -22,17 +22,21 @@ async function deleteConversation(req, res, next) {
         const conversation = await model.conversations.getById(req.params.conversationId)
         if (conversation.length !== 1) throw new ConversationNotFound()
 
+        conversation[0].type.child_conversations.map(async childId => {
+            await model.conversations.delete(childId)
+        })
         const result = await model.conversations.delete(req.params.conversationId)
         if (result.deletedCount !== 1) throw new ConversationError('Error when deleting conversation')
 
-        const audioFilename = conversation[0].metadata.audio.filepath.split('/').pop()
-        const jsonFilename = audioFilename.split('.')[0] + '.json'
+        if (conversation[0]?.metadata?.audio) {
+            const audioFilename = conversation[0].metadata.audio.filepath.split('/').pop()
+            const jsonFilename = audioFilename.split('.')[0] + '.json'
 
-        // delete audio file
-        deleteFile(`${getStorageFolder()}/${conversation[0].metadata.audio.filepath}`)
-        // delete audiowaveform json file
-        deleteFile(`${getStorageFolder()}/${getAudioWaveformFolder()}/${jsonFilename}`)
-
+            // delete audio file
+            deleteFile(`${getStorageFolder()}/${conversation[0].metadata.audio.filepath}`)
+            // delete audiowaveform json file
+            deleteFile(`${getStorageFolder()}/${getAudioWaveformFolder()}/${jsonFilename}`)
+        }
         // delete also all subtitle related to that conversation
         await model.conversationSubtitles.deleteAllFromConv(req.params.conversationId)
         const categoryList = await model.categories.getByScope(req.params.conversationId)
@@ -155,10 +159,28 @@ async function getUsersByConversationList(req, res, next) {
     }
 }
 
+async function getChildConversation(req, res, next) {
+    try {
+        if (!req.params.conversationId) throw new ConversationIdRequire()
+        const conversation = await model.conversations.getById(req.params.conversationId)
+        if (conversation.length !== 1) throw new ConversationNotFound()
+        if (conversation[0].type.mode === 'canonical') {
+            const childConversations = await model.conversations.getConversationFromList(conversation[0].type.child_conversations)
+            res.status(200).send(childConversations)
+        } else {
+            res.status(200).send([])
+        }
+    } catch (err) {
+        next(err)
+    }
+
+}
+
 module.exports = {
     deleteConversation,
     getConversation,
     getUsersByConversation,
     getUsersByConversationList,
     updateConversation,
+    getChildConversation
 }
