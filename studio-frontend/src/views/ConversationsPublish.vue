@@ -252,7 +252,7 @@ export default {
         )
         return {
           name: format,
-          label: description, //this.indexedFormat[format].description.fr,
+          label: description,
           icon: "text",
         }
       })
