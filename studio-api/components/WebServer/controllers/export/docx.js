@@ -17,18 +17,21 @@ async function generateDocxOnFormat(format, conversationExport, metadata) {
         speakers: conversation[0].speakers.map(speaker => speaker.speaker_name + ' : ') //TODO: see with llm output
     }
 
-    if (format === 'cri' || format === 'verbatim') { // comptes rendus intégraux
+    if (format === 'verbatim') { // comptes rendus intégraux
         return await generateCriDocx(conversationExport, metadata, format)
     }
     else if (format === 'cra') { // comptes rendus analytiques 
         return await generateCraDocx(conversationExport, metadata)
     }
     else if (format === 'cred') {
-        return await generateCredDocx(conversationExport, metadata)
+        return await generateDefaultDocx(conversationExport, metadata, format)
     }
     else {
-        throw new Error('Format not supported')
+        return await generateDefaultDocx(conversationExport, metadata, format)
     }
+    // else {
+    // throw new Error('Format not supported')
+    // }
 }
 
 
@@ -145,8 +148,8 @@ async function generateCraDocx(conversation, metadata) {
     return await writeFile(doc, metadata.name, outputFilePath)
 }
 
-async function generateCredDocx(conversation, metadata) {
-    const { doc, paragraphs, outputFilePath } = createDocx(metadata, 'cred')
+async function generateDefaultDocx(conversation, metadata, format) {
+    const { doc, paragraphs, outputFilePath } = createDocx(metadata, format)
 
     const paragraphs_content = []
 
@@ -290,6 +293,9 @@ function createDocx(conversation, format = undefined) {
             break
         case 'cred':
             formatTitle = 'texte pour le Compte rendu des commissions et des délégations  - '
+            break
+        default:
+            formatTitle = conversation.name
             break
     }
 
