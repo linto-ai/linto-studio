@@ -1,47 +1,51 @@
-@import "buttons.scss";
-@import "forms.scss";
-@import "tabs.scss";
-@import "select.scss";
-@import "text.scss";
+@layer base, theme;
 
-body {
-  --blue-chart: #3860ed;
+@layer theme {
+  @import "buttons.scss";
+  @import "forms.scss";
+  @import "tabs.scss";
+  @import "select.scss";
+  @import "text.scss";
 
-  --primary-color: #3860ed;
-  --primary-contrast: #fff;
+  body {
+    --blue-chart: #3860ed;
 
-  --secondary-color: #ffad33;
+    --primary-color: #3860ed;
+    --primary-contrast: #fff;
 
-  --dark-100: #26324b;
-  --dark-80: #546fa6;
-  --dark-60: #99aacc;
+    --secondary-color: #ffad33;
 
-  --neutral-100: #b9c5e9;
-  --neutral-80: #cdd5ef;
-  --neutral-60: #b9c5e9;
+    --dark-100: #26324b;
+    --dark-80: #546fa6;
+    --dark-60: #99aacc;
 
-  --background-app: rgb(250, 250, 250);
+    --neutral-100: #b9c5e9;
+    --neutral-80: #cdd5ef;
+    --neutral-60: #b9c5e9;
 
-  --background-primary: #fff;
-  --background-primary-with-small-opacity: rgba(255, 255, 255, 0.85);
+    --background-app: rgb(250, 250, 250);
 
-  --input-background: #f7faff;
+    --background-primary: #fff;
+    --background-primary-with-small-opacity: rgba(255, 255, 255, 0.85);
 
-  --selected-background: #f3f5fb;
-}
+    --input-background: #f7faff;
 
-html[data-theme="dark"] body {
-  --dark-100: #ccc;
-  --dark-80: #aaa;
-  --dark-60: #666;
+    --selected-background: #f3f5fb;
+  }
 
-  --background-app: rgb(48, 48, 48);
-  --background-primary: #252525;
-  --background-primary-with-small-opacity: rgba(37, 37, 37, 0.85);
+  html[data-theme="dark"] body {
+    --dark-100: #ccc;
+    --dark-80: #aaa;
+    --dark-60: #666;
 
-  --button-background: #1a1a1a;
-  --button-image-background: linear-gradient(#1a1a1a, #1a1a1a);
-  --button-background-hover: #333;
+    --background-app: rgb(48, 48, 48);
+    --background-primary: #252525;
+    --background-primary-with-small-opacity: rgba(37, 37, 37, 0.85);
 
-  --input-background: #1a1a1a;
+    --button-background: #1a1a1a;
+    --button-image-background: linear-gradient(#1a1a1a, #1a1a1a);
+    --button-background-hover: #333;
+
+    --input-background: #1a1a1a;
+  }
 }
