@@ -22,7 +22,7 @@ function configureDefaults() {
         process.env.DB_PASS_MONGO = ifHas(process.env.DB_PASS_MONGO, envdefault.DB_PASS_MONGO)
         process.env.DB_PORT_MONGO = ifHas(process.env.DB_PORT_MONGO, envdefault.DB_PORT_MONGO)
         process.env.DB_NAME_MONGO = ifHas(process.env.DB_NAME_MONGO, envdefault.DB_NAME_MONGO)
-        process.env.DB_REQUIRE_LOGIN = ifHas(process.env.DB_REQUIRE_LOGIN_MONGO, envdefault.DB_REQUIRE_LOGIN_MONGO)
+        process.env.DB_REQUIRE_LOGIN_MONGO = ifHas(process.env.DB_REQUIRE_LOGIN_MONGO, envdefault.DB_REQUIRE_LOGIN_MONGO)
 
         // Cross domain accessibility
         process.env.CORS_ENABLED = ifHas(process.env.CORS_ENABLED, envdefault.CORS_ENABLED)

@@ -44,7 +44,7 @@ async function addUserInOrganization(req, res, next) {
     let userId = null
     let magicId = null
     if (user.length === 0) {
-      if(process.env.DISABLE_USER_CREATION === 'true') throw new UserError('User creation is disabled')
+      if (process.env.DISABLE_USER_CREATION === 'true') throw new UserError('User creation is disabled')
 
       const createdUser = await model.users.createExternal({ email: req.body.email })
 
@@ -186,6 +186,10 @@ async function deleteConversationFromOrganization(req, res, next) {
     let conversations = await model.conversations.listConvFromConvIds(convIds, userId, ROLES.MAINTAINER, RIGHTS.DELETE, req.query)
 
     for (let conv of conversations.list) {
+      conv.type.child_conversations.map(async childId => {
+        await model.conversations.delete(childId)
+      })
+
       const result = await model.conversations.delete(conv._id)
       if (result.deletedCount !== 1) throw new ConversationError('Error when deleting conversation ', conv._id)
 

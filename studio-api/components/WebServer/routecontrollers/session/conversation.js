@@ -22,6 +22,7 @@ function initConversationMultiChannel(session, type = 'canonical') {
             channel_count: session.channels.length,
             child_conversations: []
         },
+        tags:[],
         jobs: {
             transcription: { state: 'done' },
             keyword: {}
@@ -53,6 +54,7 @@ function initCaptionsForConversation(sessionData) {
                 speakers: [],
                 text: [],
 
+                tags:[],
                 jobs: {
                     transcription: { state: 'done' },
                     keyword: {}

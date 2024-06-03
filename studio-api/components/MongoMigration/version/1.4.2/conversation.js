@@ -1,4 +1,4 @@
-const debug = require('debug')(`linto:components:MongoMigration:controllers:version:1.4.2:categories`)
+const debug = require('debug')(`linto:components:MongoMigration:controllers:version:1.4.2:conversation`)
 const moment = require('moment')
 
 const collections_name = 'conversations'
