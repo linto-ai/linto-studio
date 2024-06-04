@@ -4,7 +4,7 @@
       :title="$t('navigation.home')"
       to="/interface"
       class="flex row gap-small header-logo">
-      <img src="/img/linto-studio-logo.svg" style="height: 2rem" />
+      <img :src="logo" style="height: 3rem" />
       <h1 id="main-title" style="">Linto Studio</h1>
     </router-link>
     <!-- <router-link
@@ -43,6 +43,9 @@ export default {
   computed: {
     currentRoute() {
       return this.$route
+    },
+    logo() {
+      return `/img/${process.env.VUE_APP_LOGO}`
     },
   },
   components: {

@@ -201,5 +201,5 @@ export default {
 }
 </script>
 <style lang="scss">
-@import "../public/sass/styles.scss";
+@import "./style/style.scss";
 </style>

@@ -39,7 +39,7 @@
           <router-link
             :title="conversation.name"
             :to="`/interface/conversations/${conversation._id}/transcription`"
-            class="conversation-line__title h3 no-padding no-propagation">
+            class="conversation-line__title no-padding no-propagation">
             {{ conversation.name }}
           </router-link>
           <CustomSelect

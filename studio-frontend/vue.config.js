@@ -4,6 +4,7 @@ import { dirname } from "path"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
+const THEME = process.env.VUE_APP_THEME ?? "linTO-green"
 
 export default {
   configureWebpack: (config) => {
@@ -25,7 +26,14 @@ export default {
   pluginOptions: {
     "style-resources-loader": {
       preProcessor: "scss",
-      patterns: [path.resolve(__dirname, "./public/sass/styles.scss")],
+      //patterns: [path.resolve(__dirname, "./public/sass/styles.scss")],
+    },
+  },
+  css: {
+    loaderOptions: {
+      scss: {
+        additionalData: `@import "src/style/themes/${THEME}/style.scss";`,
+      },
     },
   },
 }

@@ -13,6 +13,7 @@
       <CustomSelect
         id="options-list"
         :options="options"
+        inline
         v-model="selectedOption"
         buttonClass="btn--input-color"></CustomSelect>
     </div>

@@ -9,7 +9,7 @@
     @drop="drop"
     :class="{ 'no-title': !showCategoryName }">
     <header class="category-box__header">
-      <h3
+      <h4
         class="flex row gap-small align-center"
         @click="toggleOpen"
         :class="{ 'no-padding': !open }">
@@ -27,7 +27,7 @@
         </span>
         <slot name="content-after-title"></slot>
         <span class="icon" :class="iconClass" v-if="!fixed"></span>
-      </h3>
+      </h4>
     </header>
     <ul class="category-box__tag-list flex col" v-if="open">
       <li class="flex col" v-for="tag of tagsList" :key="tag._id">
