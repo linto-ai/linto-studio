@@ -4,6 +4,8 @@ const conversationUtility = require(`${process.cwd()}/components/WebServer/contr
 const userUtility = require(`${process.cwd()}/components/WebServer/controllers/user/utility`)
 
 const { deleteFile, getStorageFolder, getAudioWaveformFolder } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
+const { updateChildConversation } = require(`${process.cwd()}/components/WebServer/controllers/conversation/child`)
+
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const { fetchJob } = require(`${process.cwd()}/components/WebServer/controllers/job/fetchHandler`)
@@ -22,9 +24,8 @@ async function deleteConversation(req, res, next) {
         const conversation = await model.conversations.getById(req.params.conversationId)
         if (conversation.length !== 1) throw new ConversationNotFound()
 
-        conversation[0].type.child_conversations.map(async childId => {
-            await model.conversations.delete(childId)
-        })
+        await updateChildConversation(conversation[0], 'DELETE')
+
         const result = await model.conversations.delete(req.params.conversationId)
         if (result.deletedCount !== 1) throw new ConversationError('Error when deleting conversation')
 

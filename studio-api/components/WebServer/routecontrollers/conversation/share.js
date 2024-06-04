@@ -1,13 +1,11 @@
-const { DocumentAttributes } = require('docx')
-const RIGHTS = require('../../../../lib/dao/conversation/rights')
-
 const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:conversation:share`)
 
-const conversationUtility = require(`${process.cwd()}/components/WebServer/controllers/conversation/utility`)
-
 const model = require(`${process.cwd()}/lib/mongodb/models`)
-
+const RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const Mailing = require(`${process.cwd()}/lib/mailer/mailing`)
+
+const conversationUtility = require(`${process.cwd()}/components/WebServer/controllers/conversation/utility`)
+const { updateChildConversationRight } = require(`${process.cwd()}/components/WebServer/controllers/conversation/child`)
 
 const {
   ConversationIdRequire,
@@ -91,6 +89,7 @@ async function updateConversationRights(req, res, next) {
     isInOrga.length === 0 ? conversation.sharedWithUsers = userRight : conversation.organization.customRights = userRight
 
     const result = await model.conversations.update(conversation)
+    await updateChildConversation(conversation, 'RIGHTS')
     if (result.matchedCount === 0) throw new ConversationError()
 
     res.status(200).send({

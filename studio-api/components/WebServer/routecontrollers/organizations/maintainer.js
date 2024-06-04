@@ -6,6 +6,7 @@ const Mailing = require(`${process.cwd()}/lib/mailer/mailing`)
 const orgaUtility = require(`${process.cwd()}/components/WebServer/controllers/organization/utility`)
 
 const { deleteFile, getStorageFolder, getAudioWaveformFolder } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
+const { updateChildConversation } = require(`${process.cwd()}/components/WebServer/controllers/conversation/child`)
 
 const {
   OrganizationError,
@@ -159,7 +160,6 @@ async function deleteUserFromOrganization(req, res, next) {
     const result = await model.organizations.update(organization)
     if (result.matchedCount === 0) throw new OrganizationError()
 
-
     user = await model.users.getById(req.body.userId, true)
     await Mailing.organizationDelete(user[0], req, organization.name)
 
@@ -186,19 +186,19 @@ async function deleteConversationFromOrganization(req, res, next) {
     let conversations = await model.conversations.listConvFromConvIds(convIds, userId, ROLES.MAINTAINER, RIGHTS.DELETE, req.query)
 
     for (let conv of conversations.list) {
-      conv.type.child_conversations.map(async childId => {
-        await model.conversations.delete(childId)
-      })
+      await updateChildConversation(conv, 'DELETE')
 
       const result = await model.conversations.delete(conv._id)
       if (result.deletedCount !== 1) throw new ConversationError('Error when deleting conversation ', conv._id)
 
-      const audioFilename = conv.metadata.audio.filepath.split('/').pop()
-      const jsonFilename = audioFilename.split('.')[0] + '.json'
-      // delete audio file
-      deleteFile(`${getStorageFolder()}/${conv.metadata.audio.filepath}`)
-      // delete audiowaveform json file
-      deleteFile(`${getStorageFolder()}/${getAudioWaveformFolder()}/${jsonFilename}`)
+      if (conversation[0]?.metadata?.audio) {
+        const audioFilename = conv.metadata.audio.filepath.split('/').pop()
+        const jsonFilename = audioFilename.split('.')[0] + '.json'
+        // delete audio file
+        deleteFile(`${getStorageFolder()}/${conv.metadata.audio.filepath}`)
+        // delete audiowaveform json file
+        deleteFile(`${getStorageFolder()}/${getAudioWaveformFolder()}/${jsonFilename}`)
+      }
 
       await model.conversationSubtitles.deleteAllFromConv(conv._id.toString())
       const categoryList = await model.categories.getByScope(conv._id.toString())
