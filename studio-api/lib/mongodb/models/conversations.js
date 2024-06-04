@@ -122,11 +122,11 @@ class ConvoModel extends MongoModel {
                 speakers: 0,
                 keywords: 0,
                 highlights: 0,
-                "jobs.transcription.job_logs": 0,
-                "type.mode": TYPE.CANONICAL
+                "jobs.transcription.job_logs": 0
             }
 
             const query = {
+                "type.mode": TYPE.CANONICAL,
                 "sharedWithUsers": {
                     $elemMatch: {
                         userId: idUser.toString(),
@@ -221,7 +221,8 @@ class ConvoModel extends MongoModel {
     async getByOrga(idOrga, projection) {
         try {
             const query = {
-                "organization.organizationId": idOrga.toString()
+                "organization.organizationId": idOrga.toString(),
+                "type.mode": TYPE.CANONICAL
             }
             if (!projection) {
                 projection = {
@@ -229,7 +230,6 @@ class ConvoModel extends MongoModel {
                     speakers: 0,
                     keywords: 0,
                     highlights: 0,
-                    "type.mode": TYPE.CANONICAL
                 }
             }
             return await this.mongoRequest(query, projection)
@@ -553,7 +553,6 @@ class ConvoModel extends MongoModel {
                 page: 0,
                 text: 0,
                 "jobs.transcription.job_logs": 0,
-                "type.mode": TYPE.CANONICAL,
             }
 
             convIds = convIds.map(id => {
@@ -564,7 +563,8 @@ class ConvoModel extends MongoModel {
             let query = {
                 "_id": {
                     $in: convIds
-                }
+                },
+                "type.mode": TYPE.CANONICAL
             }
 
             if (filter.tags) {
