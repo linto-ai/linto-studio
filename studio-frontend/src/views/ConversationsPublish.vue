@@ -120,8 +120,6 @@
   </MainContentConversation>
 </template>
 <script>
-import ConversationShare from "@/components/ConversationShare.vue"
-import TranscriptionHelper from "@/components/TranscriptionHelper.vue"
 import moment from "moment"
 import { conversationMixin } from "../mixins/conversation.js"
 import {
@@ -131,6 +129,9 @@ import {
   apiGetGenericFileFromConversation,
   apiGetConversationLastUpdate,
 } from "../api/conversation.js"
+import { getLLMService, apiGetMetadataLLMService } from "@/api/service.js"
+
+import getDescriptionByLanguage from "@/tools/getDescriptionByLanguage.js"
 
 import Loading from "@/components/Loading.vue"
 import Modal from "@/components/Modal.vue"
@@ -143,11 +144,9 @@ import CustomSelect from "@/components/CustomSelect.vue"
 import SwitchInput from "@/components/SwitchInput.vue"
 import PublishTurn from "@/components/PublishTurn.vue"
 import Tabs from "@/components/Tabs.vue"
-// import ConversationPublishVerbatim from "@/components/ConversationPublishVerbatim.vue"
-// import ConversationPublishCra from "@/components/ConversationPublishCra.vue"
-// import ConversationPublishCri from "@/components/ConversationPublishCri.vue"
-import ConversationPublishContent from "../components/ConversationPublishContent.vue"
-import { getLLMService, apiGetMetadataLLMService } from "@/api/service.js"
+import ConversationShare from "@/components/ConversationShare.vue"
+import TranscriptionHelper from "@/components/TranscriptionHelper.vue"
+import ConversationPublishContent from "@/components/ConversationPublishContent.vue"
 
 export default {
   mixins: [conversationMixin],
@@ -247,9 +246,13 @@ export default {
     },
     tabs() {
       const res = Object.keys(this.indexedFormat).map((format) => {
+        const description = getDescriptionByLanguage(
+          this.indexedFormat[format].description,
+          this.$i18n.locale
+        )
         return {
           name: format,
-          label: this.$i18n.t(`publish.tabs.${format}`),
+          label: description,
           icon: "text",
         }
       })
@@ -257,8 +260,8 @@ export default {
       if (res && res.length > 0) {
         const resWithCri = [
           {
-            name: "cri",
-            label: this.$i18n.t(`publish.tabs.cri`),
+            name: "verbatim",
+            label: this.$i18n.t(`publish.tabs.verbatim`),
             icon: "text",
           },
           ...res,
@@ -403,6 +406,7 @@ export default {
             res[format] = {}
           }
           res[format]["services"] = service.flavor.map((flavor) => flavor.name)
+          res[format]["description"] = service.description
         }
         this.indexedFormat = res
       } catch (e) {

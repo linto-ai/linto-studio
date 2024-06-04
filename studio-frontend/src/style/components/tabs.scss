@@ -1,0 +1,27 @@
+.tabs.col {
+  .tab {
+    cursor: pointer;
+    display: flex;
+  }
+}
+
+.horizontal-tabs {
+  * {
+    z-index: 2;
+  }
+
+  .tab {
+    cursor: pointer;
+    display: flex;
+
+    min-width: 7rem;
+
+    .tab__label::first-letter {
+      text-transform: uppercase;
+    }
+
+    .tab[aria-disabled] {
+      cursor: not-allowed;
+    }
+  }
+}

@@ -16,7 +16,6 @@
         <span class="tab__label">{{ tab.label }}</span>
       </div>
     </div>
-    <!-- <div class="tabs-content-divider"></div> -->
   </div>
 </template>
 <script>

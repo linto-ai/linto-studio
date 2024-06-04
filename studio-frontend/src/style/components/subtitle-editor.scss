@@ -10,7 +10,6 @@
 
 #conversation-audio-player.conversation-audio-player--subtitle {
   border-top: none;
-  //background-color: var(--background-secondary);
 }
 
 #player-seekbar {
@@ -103,7 +102,6 @@
   padding: 0.25rem;
 
   &.playing {
-    // background-color: var(--background-secondary);
     // border-radius: 10px;
     // border: 1px solid var(--green-chart);
     color: var(--primary-color);
