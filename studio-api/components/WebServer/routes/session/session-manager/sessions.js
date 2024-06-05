@@ -59,7 +59,7 @@ module.exports = (webserver) => {
                             exclude: ['id', 'sessionId']
                         }
                     },
-                    where: {    // This look like it's not working
+                    where: {
                         organizationId: req.params.organizationId
                     }
                 });
@@ -74,12 +74,9 @@ module.exports = (webserver) => {
                 next(err);
             }
         }
-    },
-    {
-        path: '/organizations/:organizationId/sessions/:id/store',
-        method: 'post',
-        requireAuth: true,
-        requireOrganizationAdminAccess: true,
+    }, {
+        path: '/sessions/:id/public',
+        method: 'get',
         controller: async (req, res, next) => {
             try {
                 const session = await Model.Session.findByPk(req.params.id, {
@@ -91,16 +88,11 @@ module.exports = (webserver) => {
                     }
                 });
 
+                //TODO: check if session is publicly open
                 if (!session) {
                     return res.status(404).send('Session not found');
                 }
-
-                let conv = await storeSession(session)
-
-                res.json(conv);
-
-
-                // res.json(session);
+                res.json(session)
             } catch (err) {
                 next(err);
             }
@@ -208,7 +200,7 @@ module.exports = (webserver) => {
         path: '/organizations/:organizationId/sessions/:id/start',
         method: 'put',
         requireAuth: true,
-        requireOrganizationAdminAccess: true,
+        requireOrganizationMaintainerAccess: true,
         controller: async (req, res, next) => {
             try {
                 const sessionId = req.params.id
@@ -240,7 +232,7 @@ module.exports = (webserver) => {
         path: '/organizations/:organizationId/sessions/:id/reset',
         method: 'put',
         requireAuth: true,
-        requireOrganizationAdminAccess: true,
+        requireOrganizationMaintainerAccess: true,
         controller: async (req, res, next) => {
             try {
                 const sessionId = req.params.id
@@ -272,7 +264,7 @@ module.exports = (webserver) => {
         path: '/organizations/:organizationId/sessions/:id/stop',
         method: 'put',
         requireAuth: true,
-        requireOrganizationAdminAccess: true,
+        requireOrganizationMaintainerAccess: true,
         controller: async (req, res, next) => {
             try {
                 const sessionId = req.params.id
@@ -285,10 +277,15 @@ module.exports = (webserver) => {
                     return
                 }
 
+
                 const url = `${process.env.SESSION_SCHEDULER_URL}/v1/sessions/${session.id}/stop`
                 try {
                     await axios.put(url)
-                    res.json(await Model.Session.findByPk(sessionId))
+
+                    const sessionTerminate = await Model.Session.findByPk(sessionId)
+                    await storeSession(sessionTerminate)
+
+                    res.json(sessionTerminate)
                 } catch (err) {
                     var msg = err.message
                     if (err.response && err.response.data) {
@@ -300,5 +297,39 @@ module.exports = (webserver) => {
                 next(err)
             }
         }
-    }];
+    },
+    {
+        path: '/organizations/:organizationId/sessions/:id/store',
+        method: 'post',
+        requireAuth: true,
+        requireOrganizationAdminAccess: true,
+        controller: async (req, res, next) => {
+            try {
+                const session = await Model.Session.findByPk(req.params.id, {
+                    include: {
+                        model: Model.Channel,
+                        attributes: {
+                            exclude: ['id', 'sessionId']
+                        }
+                    }
+                });
+
+                if (!session) {
+                    return res.status(404).send('Session not found');
+                }
+
+                let conv = await storeSession(session)
+
+                res.json(conv);
+
+
+                // res.json(session);
+            } catch (err) {
+                next(err);
+            }
+        }
+    }
+
+
+    ];
 };

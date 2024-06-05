@@ -3,6 +3,7 @@ const axios = require('axios')
 const txtGenerator = require('./txt')
 const docGenerator = require('./doc')
 const { srtGenerator, vttGenerator } = require('./subtitle')
+const { Model } = require("live-srt-lib")
 
 
 
@@ -17,7 +18,9 @@ module.exports = (webserver) => {
     return [{
         path: '/:type',
         method: 'get',
-        requireAuth: false,
+        requireAuth: true,
+        requireOrganizationMemberAccess: true,
+
         controller: async (req, res, next) => {
             const type = req.params.type
             if (!Object.keys(fileGeneratorMapping).includes(type)) {
@@ -32,14 +35,13 @@ module.exports = (webserver) => {
                 debug("sessionId or transcriberId empty")
             }
 
-            const url = `${process.env.DELIVERY_SESSION_URL}/api/sessions/${sessionId}`
-
-            axios({
-                method: 'GET',
-                url: url,
-            })
-            .then(response => {
-                return response.data
+            await Model.Session.findByPk(sessionId, {
+                include: {
+                    model: Model.Channel,
+                },
+                where: {
+                    organizationId: req.params.organizationId
+                }
             })
             .then(session => {
                 for (channel of session.channels) {
