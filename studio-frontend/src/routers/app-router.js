@@ -38,7 +38,6 @@ let router = new Router({
         AppNotif: false,
       },
     },
-
     {
       path: "/login",
       name: "login",
@@ -115,6 +114,16 @@ let router = new Router({
       meta: { mainListingPage: true },
     },
     {
+      path: "/interface/sessionsList",
+      name: "sessionsList",
+      components: {
+        default: () => import("../views/SessionsList.vue"),
+        ...defaultComponents,
+      },
+      props: defaultProps,
+      meta: { sessionListingPage: true },
+    },
+    {
       path: "/interface/favorites",
       name: "favorites",
       components: {
@@ -184,6 +193,15 @@ let router = new Router({
       name: "conversations publish",
       components: {
         default: () => import("../views/ConversationsPublish.vue"),
+        ...defaultComponents,
+      },
+      props: defaultProps,
+    },
+    {
+      path: "/interface/sessions/create",
+      name: "sessions create",
+      components: {
+        default: () => import("../views/SessionsCreate.vue"),
         ...defaultComponents,
       },
       props: defaultProps,
@@ -303,8 +321,9 @@ router.beforeEach(async (to, from, next) => {
           const conversationId = to.params.conversationId
           let userRight = 0
           // Check user rights on conversation
-          let getUserRight =
-            await apiGetUserRightFromConversation(conversationId)
+          let getUserRight = await apiGetUserRightFromConversation(
+            conversationId
+          )
           if (getUserRight) {
             userRight = getUserRight?.right
           }

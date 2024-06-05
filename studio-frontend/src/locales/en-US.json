@@ -389,7 +389,7 @@
     "search_text_in_content": "Search \"{text}\" in transcription",
     "no_categories_modal": "There are no tags. Start tagging your media in the Inbox tab.",
     "link_to_inbox": "Go to Inbox",
-    "delete_conversation_button": "delete medias"
+    "delete_conversation_button": "Delete medias"
   },
   "favorites": {
     "title": "Favorites medias",
@@ -488,6 +488,10 @@
       "my_conversations": "Organization medias",
       "create_no_rights_error": "You don't have the rights to create a media. Please contact your organization administrator."
     },
+    "session": {
+      "create": "New session",
+      "create_no_rights_error": "You don't have the rights to create a media. Please contact your organization administrator."
+    },
     "organisation": {
       "aria_organisations_selector": "Organisations selector",
       "create": "Create organization",
@@ -497,6 +501,7 @@
     "tabs": {
       "inbox": "Homepage",
       "explore": "Explore",
+      "sessions": "Live transcriptions",
       "favorites": "Favorites",
       "shared": "Shared with me",
       "manage_tags": "Manage tags"
@@ -641,6 +646,45 @@
     "delete_category_title": "Delete category",
     "delete_tag_title": "Delete tag",
     "error_creating_tag": "An error occurred while creating the tag"
+  },
+  "session": {
+    "create_page": {
+      "title": "Create a session",
+      "submit_label": "Create session",
+      "success_message": "Session successfully created",
+      "error_message": "An error occurred while creating the session",
+      "name_field": {
+        "label": "Session name"
+      },
+      "submit_button": "Create session"
+    },
+    "channels_list": {
+      "labels": {
+        "name": "Name",
+        "type": "Type",
+        "language": "Language",
+        "profile_name": "Profile name"
+      },
+      "title": "Channels linked to the session",
+      "add": "Add channels",
+      "remove": "Remove",
+      "empty": "No channels linked to the session",
+      "modal_add": {
+        "title": "Add channels",
+        "main_button": "Create 1 channel | Create {count} channels",
+        "loading_profiles": "Loading transcriptions profiles..."
+      }
+    },
+    "profile_selector": {
+      "title": "Selection of transcription profiles",
+      "labels": {
+        "selected": "Selected",
+        "type": "Type",
+        "name": "Name",
+        "description": "Description",
+        "languages": "Languages"
+      }
+    }
   },
   "usersettings": {
     "change_password_label": "Change password",
