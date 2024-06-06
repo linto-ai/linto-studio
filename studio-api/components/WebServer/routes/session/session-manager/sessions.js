@@ -17,32 +17,19 @@ const {
 
 module.exports = (webserver) => {
     return [{
-        path: '/organizations/:organizationId/sessions/active',
+        path: '/organizations/:organizationId/sessions/:status',
         method: 'get',
         requireAuth: true,
         requireOrganizationMemberAccess: true,
         controller: async (req, res, next) => {
             try {
+                //check if status is a valid status
+                if (!['pending_creation', 'ready', 'active', 'errored', 'terminated'].includes(req.params.status))
+                    throw new SessionError('The provided status does not exist')
+
                 const sessions = await Model.Session.findAll({
                     where: {
-                        status: 'active'
-                    }
-                });
-                res.json(sessions);
-            } catch (err) {
-                next(err);
-            }
-        }
-    }, {
-        path: '/organizations/:organizationId/sessions/terminated',
-        method: 'get',
-        requireAuth: true,
-        requireOrganizationMemberAccess: true,
-        controller: async (req, res, next) => {
-            try {
-                const sessions = await Model.Session.findAll({
-                    where: {
-                        status: 'terminated',
+                        status: req.params.status,
                         organizationId: req.params.organizationId
                     }
                 });

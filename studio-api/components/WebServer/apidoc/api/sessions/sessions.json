@@ -92,10 +92,10 @@
       }
     }
   },
-  "/api/organizations/{organizationId}/sessions/active": {
+  "/api/organizations/{organizationId}/sessions/{status}": {
     "get": {
       "tags": ["sessions"],
-      "summary": "Get all active sessions",
+      "summary": "List session by status",
       "parameters": [
         {
           "in": "path",
@@ -104,42 +104,19 @@
           "format": "uuid",
           "required": true,
           "description": "uuid string identifier for an organization"
+        },
+        {
+          "in": "path",
+          "name": "status",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/SessionStatus"
+          }
         }
       ],
       "responses": {
         "200": {
           "description": "The list of active sessions",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/SessionAnswer"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "/api/organizations/{organizationId}/sessions/terminated": {
-    "get": {
-      "tags": ["sessions"],
-      "summary": "Get all terminated sessions",
-      "parameters": [
-        {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "The list of terminated sessions",
           "content": {
             "application/json": {
               "schema": {
