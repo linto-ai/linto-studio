@@ -171,7 +171,7 @@ import { convRoleMixin } from "@/mixins/convRole.js"
 import Tag from "@/components/Tag.vue"
 import DropDownAddTag from "@/components/DropDownAddTag.vue"
 import CustomSelect from "@/components/CustomSelect.vue"
-import LabeledValueSmall from "./LabeledValueSmall.vue"
+import LabeledValueSmall from "@/components/LabeledValueSmall.vue"
 import FormInput from "@/components/FormInput.vue"
 import ContextMenu from "./ContextMenu.vue"
 

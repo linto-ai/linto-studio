@@ -1,11 +1,11 @@
 <template>
   <tr @click="selectProfile">
-    <td>
+    <td class="content-size">
       <input type="checkbox" :value="profile" v-model="selectedProfiles" />
     </td>
-    <td>
+    <td class="content-size">
       <img
-        class="icon"
+        class="icon medium"
         :src="type"
         :alt="alternativeTextForType"
         :title="alternativeTextForType" />

@@ -646,6 +646,17 @@
         "description": "Description",
         "languages": "Langues"
       }
+    },
+    "list_page": {
+      "tabs": {
+        "ongoing_sessions": "Sessions en cours",
+        "past_sessions": "Sessions passées",
+        "scheduled_sessions": "Sessions programmées"
+      },
+      "no_sessions": "Aucune session trouvée",
+      "planned_for": "Prévue pour",
+      "planned_undefined": "Non définie",
+      "started_at": "Commencée à"
     }
   },
   "tags": {

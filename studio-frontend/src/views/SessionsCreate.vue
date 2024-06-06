@@ -9,7 +9,7 @@
           <h1>{{ $t("session.create_page.title") }}</h1>
           <FormInput :field="name" v-model="name.value" />
         </section>
-        <section>
+        <section class="flex col gap-medium">
           <div class="flex row gap-medium">
             <h2 style="width: auto">
               {{ $t("session.channels_list.title") }}

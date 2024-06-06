@@ -207,6 +207,24 @@ let router = new Router({
       props: defaultProps,
     },
     {
+      path: "/interface/sessions/:sessionId",
+      name: "sessions live",
+      components: {
+        default: () => import("../views/SessionLive.vue"),
+        ...defaultComponents,
+      },
+      props: defaultProps,
+    },
+    {
+      path: "/interface/sessions/:sessionId/settings",
+      name: "sessions settings",
+      components: {
+        default: () => import("../views/SessionSettings.vue"),
+        ...defaultComponents,
+      },
+      props: defaultProps,
+    },
+    {
       path: "/interface/organizations/create",
       name: "organizations create",
       components: {

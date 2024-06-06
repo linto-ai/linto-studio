@@ -1,8 +1,8 @@
 <template>
   <tr>
-    <td>
+    <td class="content-size">
       <img
-        class="icon"
+        class="icon medium"
         :src="type"
         :alt="alternativeTextForType"
         :title="alternativeTextForType" />
@@ -12,7 +12,7 @@
       {{ profileName }}
     </td>
     <td>{{ languages }}</td>
-    <td>
+    <td class="content-size">
       <button class="btn red-border" @click="removeChannel" type="button">
         <span class="icon remove"></span>
         <span class="label">{{ $t("session.channels_list.remove") }}</span>

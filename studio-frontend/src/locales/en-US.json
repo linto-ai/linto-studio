@@ -684,6 +684,17 @@
         "description": "Description",
         "languages": "Languages"
       }
+    },
+    "list_page": {
+      "tabs": {
+        "ongoing_sessions": "Ongoing sessions",
+        "past_sessions": "Past sessions",
+        "scheduled_sessions": "Scheduled sessions"
+      },
+      "no_sessions": "No sessions found",
+      "planned_for": "Planned for",
+      "planned_undefined": "Not defined",
+      "started_at": "Started at"
     }
   },
   "usersettings": {
