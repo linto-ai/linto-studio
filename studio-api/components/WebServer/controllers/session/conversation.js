@@ -33,9 +33,12 @@ function initConversationMultiChannel(session, type = 'canonical') {
 function initCaptionsForConversation(sessionData) {
     try {
         const session = JSON.parse(JSON.stringify(sessionData))
-
         let captions = []
         for (let channel of session.channels) {
+            if (!channel.closed_captions) {
+                continue
+            }
+
             let caption = {
                 name: session.name + ' - ' + channel.name,
                 owner: session.owner,
@@ -64,6 +67,7 @@ function initCaptionsForConversation(sessionData) {
                 tags: [],
                 description: '',
             }
+
             for (let channel_caption of channel.closed_captions) {
                 let spk_id = caption.locutor
                 if (!caption.locutor) {

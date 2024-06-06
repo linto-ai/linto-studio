@@ -1,11 +1,18 @@
 const debug = require('debug')('linto:session-api:router:api:transcriber_profiles')
 const { Model } = require("live-srt-lib")
-const { v4: uuidv4 } = require('uuid')
 const axios = require('axios')
 
 const {
     storeSession
-} = require(`${process.cwd()}/components/WebServer/routecontrollers/session/conversation.js`)
+} = require(`${process.cwd()}/components/WebServer/controllers/session/conversation.js`)
+
+const {
+    SessionError,
+    SessionNotFound,
+    SessionForbidden,
+    SessionNotStarted,
+    TranscriberUnavailable
+} = require(`${process.cwd()}/components/WebServer/error/exception/session`)
 
 
 module.exports = (webserver) => {
@@ -65,9 +72,9 @@ module.exports = (webserver) => {
                 });
 
                 if (!session) {
-                    return res.status(404).send('Session not found');
+                    throw new SessionNotFound()
                 } else if (session.organizationId != req.params.organizationId) {
-                    return res.status(403).send('Forbidden');
+                    throw new SessionForbidden()
                 }
                 res.json(session);
             } catch (err) {
@@ -90,7 +97,7 @@ module.exports = (webserver) => {
 
                 //TODO: check if session is publicly open
                 if (!session) {
-                    return res.status(404).send('Session not found');
+                    throw new SessionNotFound()
                 }
                 res.json(session)
             } catch (err) {
@@ -143,31 +150,30 @@ module.exports = (webserver) => {
         requireOrganizationAdminAccess: true,
         controller: async (req, res, next) => {
             try {
-                try {
-                    const url = `${process.env.SESSION_SCHEDULER_URL}/v1/sessions`
-                    req.body.owner = req.payload.data.userId
-                    req.body.organizationId = req.params.organizationId
+                const url = `${process.env.SESSION_SCHEDULER_URL}/v1/sessions`
+                req.body.owner = req.payload.data.userId
+                req.body.organizationId = req.params.organizationId
 
-                    const response = await axios.post(url, req.body)
-                    const sessionId = response.data.sessionId
-                    const sessionWithChannels = await Model.Session.findByPk(sessionId, {
-                        include: {
-                            model: Model.Channel,
-                            attributes: {
-                                exclude: ['id', 'sessionId']
-                            }
+                const response = await axios.post(url, req.body)
+                const sessionId = response.data.sessionId
+                const sessionWithChannels = await Model.Session.findByPk(sessionId, {
+                    include: {
+                        model: Model.Channel,
+                        attributes: {
+                            exclude: ['id', 'sessionId']
                         }
-                    });
-                    res.json(sessionWithChannels);
-                } catch (err) {
-                    var msg = err.message
-                    if (err.response && err.response.data) {
-                        msg = err.response.data.error
                     }
+                });
+                res.json(sessionWithChannels);
+            } catch (err) {
+                var msg = err.message
+                if (err.response && err.response.data && err.response?.data?.error.includes('No available transcribers to enroll into session')) {
+                    next(new TranscriberUnavailable())
+                } else if (err.response && err.response.data) {
+                    res.status(500).json({ "error": err.response.data.error })
+                } else {
                     res.status(500).json({ "error": msg })
                 }
-            } catch (err) {
-                next(err);
             }
         }
     }, {
@@ -179,7 +185,7 @@ module.exports = (webserver) => {
             try {
                 const session = await Model.Session.findByPk(req.params.id);
                 if (!session) {
-                    return res.status(404).send('Session not found');
+                    throw new SessionNotFound()
                 }
                 const url = `${process.env.SESSION_SCHEDULER_URL}/v1/sessions/${session.id}`
                 try {
@@ -190,7 +196,7 @@ module.exports = (webserver) => {
                     if (err.response && err.response.data) {
                         msg = err.response.data.error
                     }
-                    res.status(500).json({ "error": msg })
+                    next(new SessionError(msg, err))
                 }
             } catch (err) {
                 next(err);
@@ -206,7 +212,7 @@ module.exports = (webserver) => {
                 const sessionId = req.params.id
                 const session = await Model.Session.findByPk(sessionId)
                 if (!session) {
-                    return res.status(404).send('Session not found')
+                    throw new SessionNotFound()
                 }
                 if (session.status == 'active') {
                     res.json(session)
@@ -222,7 +228,7 @@ module.exports = (webserver) => {
                     if (err.response && err.response.data) {
                         msg = err.response.data.error
                     }
-                    res.status(500).json({ "error": msg })
+                    next(new SessionError(msg, err))
                 }
             } catch (err) {
                 next(err)
@@ -238,11 +244,10 @@ module.exports = (webserver) => {
                 const sessionId = req.params.id
                 const session = await Model.Session.findByPk(sessionId)
                 if (!session) {
-                    return res.status(404).send('Session not found')
+                    throw new SessionNotFound()
                 }
                 if (!['active', 'ready'].includes(session.status)) {
-                    res.status(400).json({ 'error': 'Session must be ready or active' })
-                    return
+                    throw new SessionNotStarted()
                 }
 
                 const url = `${process.env.SESSION_SCHEDULER_URL}/v1/sessions/${session.id}/reset`
@@ -254,7 +259,7 @@ module.exports = (webserver) => {
                     if (err.response && err.response.data) {
                         msg = err.response.data.error
                     }
-                    res.status(500).json({ "error": msg })
+                    next(new SessionError(msg, err))
                 }
             } catch (err) {
                 next(err)
@@ -270,7 +275,7 @@ module.exports = (webserver) => {
                 const sessionId = req.params.id
                 const session = await Model.Session.findByPk(sessionId)
                 if (!session) {
-                    return res.status(404).send('Session not found')
+                    throw new SessionNotFound()
                 }
                 if (session.status == 'terminated') {
                     res.json(session)
@@ -282,16 +287,25 @@ module.exports = (webserver) => {
                 try {
                     await axios.put(url)
 
-                    const sessionTerminate = await Model.Session.findByPk(sessionId)
-                    await storeSession(sessionTerminate)
 
+                    const sessionToStore = await Model.Session.findByPk(req.params.id, {
+                        include: {
+                            model: Model.Channel,
+                            attributes: {
+                                exclude: ['id', 'sessionId']
+                            }
+                        }
+                    });
+                    await storeSession(sessionToStore)
+
+                    const sessionTerminate = await Model.Session.findByPk(sessionId)
                     res.json(sessionTerminate)
                 } catch (err) {
                     var msg = err.message
                     if (err.response && err.response.data) {
                         msg = err.response.data.error
                     }
-                    res.status(500).json({ "error": msg })
+                    next(new SessionError(msg, err))
                 }
             } catch (err) {
                 next(err)
@@ -315,15 +329,12 @@ module.exports = (webserver) => {
                 });
 
                 if (!session) {
-                    return res.status(404).send('Session not found');
+                    throw new SessionNotFound()
                 }
 
                 let conv = await storeSession(session)
 
                 res.json(conv);
-
-
-                // res.json(session);
             } catch (err) {
                 next(err);
             }
