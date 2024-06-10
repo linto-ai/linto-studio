@@ -56,6 +56,10 @@ const Session = sequelize.define('session', {
         type: DataTypes.STRING,
         allowNull: true
     },
+    public: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+    }
 });
 
 const Channel = sequelize.define('channel', {

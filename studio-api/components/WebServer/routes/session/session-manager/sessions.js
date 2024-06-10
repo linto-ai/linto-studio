@@ -56,12 +56,11 @@ module.exports = (webserver) => {
                             model: Model.Channel,
                             attributes: {
                                 exclude: ['id', 'sessionId']
-                            }
+                            },
                         }
                     });
 
-                    //TODO: check if session is publicly open
-                    if (!session) {
+                    if (!session || session.public === false) {
                         throw new SessionNotFound()
                     }
                     res.json(session)
