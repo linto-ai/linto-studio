@@ -50,3 +50,14 @@ export async function apiGetFutureSessions(organizationScope, notif) {
   }
   return getStartedSessions?.data ?? { sessions: [], totalItems: 0 }
 }
+
+export async function apiGetSession(organizationScope, sessionId, notif) {
+  const getSession = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}`,
+    { method: "get" },
+    {},
+    notif
+  )
+
+  return getSession
+}
