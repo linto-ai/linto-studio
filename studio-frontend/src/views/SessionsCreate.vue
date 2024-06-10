@@ -8,6 +8,9 @@
         <section>
           <h1>{{ $t("session.create_page.title") }}</h1>
           <FormInput :field="name" v-model="name.value" />
+          <FormCheckbox
+            :field="fieldIsPublic"
+            v-model="fieldIsPublic.value"></FormCheckbox>
         </section>
         <section class="flex col gap-medium">
           <div class="flex row gap-medium">
@@ -60,6 +63,8 @@ import { formsMixin } from "@/mixins/forms.js"
 
 import MainContent from "@/components/MainContent.vue"
 import FormInput from "@/components/FormInput.vue"
+import FormCheckbox from "@/components/FormCheckbox.vue"
+
 import SessionChannelsTable from "@/components/SessionChannelsTable.vue"
 import ModalAddSessionChannels from "@/components/ModalAddSessionChannels.vue"
 import { lang } from "moment"
@@ -81,6 +86,12 @@ export default {
         label: this.$i18n.t("session.create_page.name_field.label"),
         testField: testName,
       },
+      fieldIsPublic: {
+        value: true,
+        error: null,
+        valid: false,
+        label: this.$t("session.settings_page.isPublic_label"),
+      },
       channels: [],
       selectedProfiles: [],
       modalAddChannelsIsOpen: false,
@@ -98,6 +109,7 @@ export default {
             transcriberProfileId: profileId,
             name,
           })),
+          public: this.fieldIsPublic.value,
         })
         if (res.status == "success") {
           this.state = "success"
@@ -148,6 +160,7 @@ export default {
     FormInput,
     SessionChannelsTable,
     ModalAddSessionChannels,
+    FormCheckbox,
   },
 }
 </script>

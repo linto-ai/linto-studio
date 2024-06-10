@@ -610,6 +610,8 @@
     "is_not_updated": "La transcription a été mise à jour. Le compte rendu ne reflète plus les dernières modifications."
   },
   "session": {
+    "start_undefined": "Non définie",
+    "end_undefined": "Non définie",
     "create_page": {
       "title": "Créer une session",
       "submit_label": "Créer la session",
@@ -655,7 +657,6 @@
       },
       "no_sessions": "Aucune session trouvée",
       "planned_for": "Prévue pour",
-      "planned_undefined": "Non définie",
       "started_at": "Commencée à"
     }
   },

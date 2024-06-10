@@ -44,6 +44,7 @@
           <span class="icon medium apply"></span>
         </button>
       </div>
+      <slot name="content-after-input"></slot>
     </div>
 
     <span class="error-field" v-if="field.error !== null">{{

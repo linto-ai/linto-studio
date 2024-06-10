@@ -5,9 +5,9 @@
     class="session-line flex">
     <div class="flex1 session-line__title text-cut">{{ name }}</div>
     <LabeledValueSmall
-      v-if="isFuture"
+      v-if="isPending"
       :label="$t('session.list_page.planned_for')"
-      :value="plannedFor" />
+      :value="startTime" />
 
     <LabeledValueSmall
       v-if="isStarted"
@@ -18,10 +18,12 @@
 <script>
 import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
+import { sessionModelMixin } from "@/mixins/sessionModel.js"
 
 import LabeledValueSmall from "@/components/LabeledValueSmall.vue"
 
 export default {
+  mixins: [sessionModelMixin],
   props: {
     session: { type: Object, required: true },
   },
@@ -30,29 +32,6 @@ export default {
   },
   mounted() {},
   methods: {},
-  computed: {
-    name() {
-      return this.session.name
-    },
-    plannedFor() {
-      return (
-        this.session.start_time ??
-        this.$t("session.list_page.planned_undefined")
-      )
-    },
-    id() {
-      return this.session.id
-    },
-    startTime() {
-      return this.session.start_time
-    },
-    isFuture() {
-      return this.session.status === "ready"
-    },
-    isStarted() {
-      return this.session.status === "active"
-    },
-  },
   components: { Fragment, LabeledValueSmall },
 }
 </script>

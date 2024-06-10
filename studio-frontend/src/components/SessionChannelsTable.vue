@@ -15,9 +15,24 @@
           :sortListKey="sortListKey"
           :sortListDirection="sortListDirection" />
         <ArrayHeader
+          v-if="from === 'formCreateSession'"
           @list_sort_by="sortBy"
           eventLabel="profileName"
           :label="$t('session.channels_list.labels.profile_name')"
+          :sortListKey="sortListKey"
+          :sortListDirection="sortListDirection" />
+        <ArrayHeader
+          v-if="from === 'sessionSettings'"
+          @list_sort_by="sortBy"
+          eventLabel="endpoint"
+          :label="$t('session.channels_list.labels.endpoint')"
+          :sortListKey="sortListKey"
+          :sortListDirection="sortListDirection" />
+        <ArrayHeader
+          v-if="from === 'sessionSettings'"
+          @list_sort_by="sortBy"
+          eventLabel="stream_status"
+          :label="$t('session.channels_list.labels.stream_status')"
           :sortListKey="sortListKey"
           :sortListDirection="sortListDirection" />
         <ArrayHeader
@@ -26,7 +41,7 @@
           :label="$t('session.channels_list.labels.language')"
           :sortListKey="sortListKey"
           :sortListDirection="sortListDirection" />
-        <th></th>
+        <th v-if="from === 'formCreateSession'"></th>
       </tr>
     </thead>
     <tbody>
@@ -35,6 +50,7 @@
         @removeChannel="removeChannel(index)"
         @updateName="updateName(index, $event)"
         :key="channel.id"
+        :from="from"
         :item="channel" />
     </tbody>
   </table>
@@ -49,6 +65,12 @@ export default {
     channelsList: {
       type: Array,
       required: true,
+    },
+    // An improvement would be to pass an array for each column the parent want to display,
+    // but for now we will keep it simple (there is only two cases for now)
+    from: {
+      type: String,
+      default: "formCreateSession", // formCreateSession, sessionSettings
     },
   },
   data() {

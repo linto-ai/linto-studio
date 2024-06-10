@@ -17,7 +17,7 @@ textarea,
   //@include transition(all 0.2s ease);
   background-color: var(--input-background);
   color: var(--text-primary);
-  height: 44px;
+  height: 40px;
 
   &.error {
     border: 1px solid var(--red-chart);
@@ -50,8 +50,8 @@ input[type="radio"] {
 label,
 .form-label {
   color: var(--text-secondary);
-  font-size: 14px;
-  font-weight: 500;
+  //font-size: 14px;
+  //font-weight: 500;
 
   &:hover {
     cursor: pointer;
@@ -100,5 +100,5 @@ fieldset[role="listbox"] {
 }
 
 .form-value {
-  height: 44px;
+  height: 40px;
 }

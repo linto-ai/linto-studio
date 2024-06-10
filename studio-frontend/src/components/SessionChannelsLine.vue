@@ -8,11 +8,17 @@
         :title="alternativeTextForType" />
     </td>
     <td><FormInput v-model="nameField.value" :field="nameField" /></td>
-    <td>
+    <td v-if="from === 'formCreateSession'">
       {{ profileName }}
     </td>
+    <td v-if="from === 'sessionSettings'">
+      <pre>{{ endpoint }}</pre>
+    </td>
+    <td v-if="from === 'sessionSettings'">
+      <pre>{{ stream_status }}</pre>
+    </td>
     <td>{{ languages }}</td>
-    <td class="content-size">
+    <td class="content-size" v-if="from === 'formCreateSession'">
       <button class="btn red-border" @click="removeChannel" type="button">
         <span class="icon remove"></span>
         <span class="label">{{ $t("session.channels_list.remove") }}</span>
@@ -31,6 +37,10 @@ export default {
     item: {
       type: Object,
       required: true,
+    },
+    from: {
+      type: String,
+      default: "formCreateSession", // formCreateSession, sessionSettings
     },
   },
   data() {
@@ -52,8 +62,14 @@ export default {
       return this.item.profileName || ""
     },
     languages() {
-      const langs_str = this.item.languages.map((lang) => lang.candidate)
+      const langs_str = this.item.languages || []
       return langs_str.join(", ")
+    },
+    endpoint() {
+      return this.item.stream_endpoint || ""
+    },
+    stream_status() {
+      return this.item.stream_status || ""
     },
     nameField: {
       get() {

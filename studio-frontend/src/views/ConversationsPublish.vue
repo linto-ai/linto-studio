@@ -56,7 +56,7 @@
 
     <template v-slot:breadcrumb-actions>
       <div class="flex1 flex gap-small reset-overflows align-center">
-        <router-link :to="conversationListRoute" class="btn">
+        <router-link :to="conversationListRoute" class="btn secondary">
           <span class="icon close"></span>
           <span class="label">{{ $t("conversation.close_publish") }}</span>
         </router-link>

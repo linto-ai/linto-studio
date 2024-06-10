@@ -5,7 +5,7 @@
     :dataLoaded="conversationLoaded"
     :error="error">
     <template v-slot:breadcrumb-actions>
-      <router-link :to="conversationListRoute" class="btn">
+      <router-link :to="conversationListRoute" class="btn secondary">
         <span class="icon close"></span>
         <span class="label">{{ $t("conversation.close_editor") }}</span>
       </router-link>
