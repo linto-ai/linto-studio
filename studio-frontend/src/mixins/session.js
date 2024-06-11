@@ -1,11 +1,10 @@
 import { computed } from "vue"
 import { apiGetSession } from "../api/session"
 
-import { orgaRoleMixin } from "./orgaRole"
 import { sessionModelMixin } from "./sessionModel"
 
 export const sessionMixin = {
-  mixins: [orgaRoleMixin, sessionModelMixin],
+  mixins: [sessionModelMixin],
   props: {
     userInfo: { type: Object, required: true },
     currentOrganizationScope: {
@@ -31,6 +30,12 @@ export const sessionMixin = {
         this.currentOrganizationScope,
         this.sessionId
       )
+
+      if (session.status === "error") {
+        this.$router.replace({ name: "not_found" })
+        return
+      }
+
       this.session = session.data
       this.sessionLoaded = true
       console.log(session)

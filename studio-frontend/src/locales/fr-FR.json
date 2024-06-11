@@ -737,6 +737,7 @@
   },
   "globalError": {
     "auth_magic_link": "Le lien d'authentification a expiré, veuillez refaire une | demande de lien d'authentification",
-    "page_not_found": "La page à laquelle vous tentez d'accéder n'existe pas ou requiert des droits que vous n'avez pas."
+    "page_not_found": "La page à laquelle vous tentez d'accéder n'existe pas ou requiert des droits que vous n'avez pas.",
+    "back_to_home": "Retour à la page d'accueil"
   }
 }

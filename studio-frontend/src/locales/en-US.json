@@ -767,7 +767,8 @@
     }
   },
   "globalError": {
-    "auth_magic_link": "The authentication link as expired, please request again for an | authentication link",
-    "page_not_found": "The page is not found, or you don't have the rights to access it"
+    "auth_magic_link": "The authentication link as expired, please request again for an authentication link",
+    "page_not_found": "The page is not found, or you don't have the rights to access it",
+    "back_to_home": "Back to home"
   }
 }

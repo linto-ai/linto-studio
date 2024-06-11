@@ -11,7 +11,7 @@
         <span class="icon clock"></span>
         <span>{{ $t("session.detail_page.sessions_status.no_started") }}</span>
       </div>
-      <router-link :to="settingsRoute" class="btn">
+      <router-link :to="settingsRoute" class="btn" v-if="isAtLeastMaintainer">
         <span class="icon settings"></span>
         <span class="label">{{
           $t("session.detail_page.settings_button")
@@ -27,12 +27,13 @@ import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
 
 import { sessionMixin } from "@/mixins/session.js"
+import { orgaRoleMixin } from "@/mixins/orgaRole"
 
 import MainContent from "@/components/MainContent.vue"
 import SessionNotStarted from "../components/SessionNotStarted.vue"
 
 export default {
-  mixins: [sessionMixin],
+  mixins: [sessionMixin, orgaRoleMixin],
   props: {},
   data() {
     return {}
