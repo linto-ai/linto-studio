@@ -1,4 +1,7 @@
 export const sessionModelMixin = {
+  data() {
+    return {}
+  },
   computed: {
     name() {
       return this?.session?.name
@@ -22,7 +25,8 @@ export const sessionModelMixin = {
       return this?.session?.auto_start ?? false
     },
     publicLink() {
-      return "/interface/sessions/" + this.id
+      const baseUrl = window.location.origin
+      return baseUrl + "/interface/sessions/" + this.id
     },
     channels() {
       return this?.session?.channels ?? []

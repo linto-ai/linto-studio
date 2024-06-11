@@ -43,8 +43,5 @@ export const sessionMixin = {
     settingsRoute() {
       return `/interface/sessions/${this.sessionId}/settings`
     },
-    sessionStatus() {
-      return this.session?.status
-    },
   },
 }
