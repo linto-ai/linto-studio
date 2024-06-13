@@ -12,10 +12,11 @@ class IoHandler extends Component {
 
         this.io = socketIO(this.app.components["WebServer"].httpServer, {
             cors: {
-              origin: process.env.FRONT_END_PUBLIC_URL,
-              methods: ["GET", "POST"]
+                origin: process.env.WEBSERVER_HTTP_PORT,
+                methods: ["GET", "POST"]
             }
         })
+
 
         this.io.on("connection", (socket) => {
             debug(`New client connected : ${socket.id}`)

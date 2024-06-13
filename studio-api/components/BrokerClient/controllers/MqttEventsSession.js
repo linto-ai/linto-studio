@@ -1,4 +1,4 @@
-const debug = require('debug')('session-api:BrokerClient:mqtt-events-session');
+const debug = require('debug')('delivery:BrokerClient:mqtt-events-session');
 
 //Deals with MQTT messages
 //here, "this" is bound to the BrokerClient component

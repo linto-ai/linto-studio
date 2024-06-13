@@ -6,10 +6,14 @@ module.exports = function () {
   });
 
   this.app.components['BrokerClient'].deliveryClient.on('offline', () => {
-    this.app.components['IoHandler'].brokerKo()
+    setTimeout(() => {
+      this.app.components['IoHandler'].brokerKo()
+    }, 300) // We wait IoHandler component to be loaded
   });
 
   this.app.components['BrokerClient'].deliveryClient.on('ready', () => {
-    this.app.components['IoHandler'].brokerOk()
+    setTimeout(() => {
+      this.app.components['IoHandler'].brokerOk()
+    }, 300); // We wait IoHandler component to be loaded
   });
 }

@@ -15,8 +15,8 @@ class BrokerClient extends Component {
     super(app);
     const { CONNECTING, READY, ERROR } = this.constructor.states;
     this.id = this.constructor.name;
-    this.state = CONNECTING;
-
+    this.deliveryState = CONNECTING;
+    this.sessionState = CONNECTING;
 
     // Combined pub and subs
     this.deliveryPub = 'delivery';
@@ -24,27 +24,29 @@ class BrokerClient extends Component {
       transcriberId => `transcriber/out/${transcriberId}/partial`,
       transcriberId => `transcriber/out/${transcriberId}/final`
     ];
-    this.sessionPub = `session/out`;
-    this.sessionSubs = [`session/in/+/#`];
-
+    this.deliverySubs = [`transcriber/out/+/partial`, `transcriber/out/+/final`]
 
     // Initialize delivery client
-    this.deliveryClient = new MqttClient({ pub: this.deliveryPub, retain: false, uniqueId: 'delivery' });
+    this.deliveryClient = new MqttClient({ pub: this.deliveryPub, subs: this.deliverySubs, retain: false, uniqueId: 'delivery' });
     this.deliveryClient.on("ready", () => {
-      this.state = READY;
+      this.deliveryState = READY;
     });
     this.deliveryClient.on("error", (err) => {
-      this.state = ERROR;
+      this.deliveryState = ERROR;
     });
 
+
+
+    this.sessionPub = `session/out`;
+    this.sessionSubs = [`session/in/+/#`];
     // Initialize session client
     this.sessionClient = new MqttClient({ pub: this.sessionPub, subs: this.sessionSubs, retain: false, uniqueId: 'session-api' });
     this.sessionClient.on("ready", () => {
-      this.state = READY;
+      this.sessionState = READY;
       this.sessionClient.publishStatus();
     });
     this.sessionClient.on("error", (err) => {
-      this.state = ERROR;
+      this.sessionState = ERROR;
     });
     this.init(); // binds controllers, those will handle messages
 
@@ -52,14 +54,14 @@ class BrokerClient extends Component {
 
   subscribe(transcriberId) {
     debug(`Subscribe to transcriber ${transcriberId}`)
-    for (const sub_template of this.sub_templates) {
+    for (const sub_template of this.deliverySubTemplates) {
       this.deliveryClient.subscribe(sub_template(transcriberId))
     }
   }
 
   unsubscribe(transcriberId) {
     debug(`Unsubscribe from transcriber ${transcriberId}`)
-    for (const sub_template of this.sub_templates) {
+    for (const sub_template of this.deliverySubTemplates) {
       this.deliveryClient.unsubscribe(sub_template(transcriberId))
     }
   }
