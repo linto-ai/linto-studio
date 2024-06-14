@@ -9,7 +9,7 @@ class UserError extends Error {
         super()
         this.name = 'UserError'
         this.type = ExceptionType
-        this.status = '400'
+        this.status = 400
         if (message) this.message = message
         else this.message = 'Error during the operation'
         if (err) this.err = err
@@ -21,7 +21,7 @@ class UserConflict extends Error {
         super()
         this.name = 'UserConflict'
         this.type = ExceptionType
-        this.status = '409'
+        this.status = 409
         if (message) this.message = message
         else this.message = 'User address already use'
         if (err) this.err = err
@@ -33,7 +33,7 @@ class UserForbidden extends Error {
         super()
         this.name = 'UserForbidden'
         this.type = ExceptionType
-        this.status = '403'
+        this.status = 403
         if (message) this.message = message
         else this.message = 'Not allowed to do this'
         if (err) this.err = err
@@ -45,7 +45,7 @@ class UserNotFound extends Error {
         super()
         this.name = 'UserNotFound'
         this.type = ExceptionType
-        this.status = '404'
+        this.status = 404
         if (message) this.message = message
         else this.message = 'User not found'
         if (err) this.err = err
@@ -57,7 +57,7 @@ class UserUnsupportedMediaType extends Error {
         super()
         this.name = 'UserUnsupportedMediaType'
         this.type = ExceptionType
-        this.status = '415'
+        this.status = 415
         if (message) this.message = message
         else this.message = 'Parameter is not supported'
         if (err) this.err = err
@@ -69,7 +69,7 @@ class GenerateMagicLinkError extends Error {
       super()
       this.name = 'GenerateMagicLinkError'
       this.type = ExceptionType
-      this.status = '424' // Method failure
+      this.status = 424 // Method failure
       if (message) this.message = message
       else this.message = 'Error on generating authentication link.'
       if (err) this.err = err

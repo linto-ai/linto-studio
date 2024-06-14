@@ -9,7 +9,7 @@ class ConversationError extends Error {
     super()
     this.name = 'ConversationError'
     this.type = ExceptionType
-    this.status = '400'
+    this.status = 400
     if (message) this.message = message
     else this.message = 'Error during the operation'
     if (err) this.err = err
@@ -21,7 +21,7 @@ class ConversationNoFileUploaded extends Error {
     super()
     this.name = 'ConversationNoFileUploaded'
     this.type = ExceptionType
-    this.status = '400'
+    this.status = 400
     if (message) this.message = message
     else this.message = 'No files were uploaded.'
     if (err) this.err = err
@@ -32,7 +32,7 @@ class ConversationMetadataRequire extends Error {
     super()
     this.name = 'ConversationMetadataRequire'
     this.type = ExceptionType
-    this.status = '400'
+    this.status = 400
     if (message) this.message = message
     else this.message = 'Metadata was not provided.'
     if (err) this.err = err
@@ -44,7 +44,7 @@ class ConversationUnsupportedMediaType extends Error {
     super()
     this.name = 'ConversationUnsupportedMediaType'
     this.type = ExceptionType
-    this.status = '415'
+    this.status = 415
     if (message) this.message = message
     else this.message = 'Parameter is not supported'
     if (err) this.err = err
@@ -56,7 +56,7 @@ class ConversationWriteAccessDenied extends Error {
     super()
     this.name = 'ConversationWriteAccessDenied'
     this.type = ExceptionType
-    this.status = '401'
+    this.status = 401
     if (message) this.message = message
     else this.message = `User don't have write access to the conversation`
     if (err) this.err = err
@@ -68,7 +68,7 @@ class ConversationShareAccessDenied extends Error {
     super()
     this.name = 'ConversationShareAccessDenied'
     this.type = ExceptionType
-    this.status = '401'
+    this.status = 401
     if (message) this.message = message
     else this.message = `User don't have share access to the conversation`
     if (err) this.err = err
@@ -80,7 +80,7 @@ class ConversationDeleteAccessDenied extends Error {
     super()
     this.name = 'ConversationDeleteAccessDenied'
     this.type = ExceptionType
-    this.status = '401'
+    this.status = 401
     if (message) this.message = message
     else this.message = `User don't have delete access to the conversation`
     if (err) this.err = err
@@ -93,7 +93,7 @@ class ConversationReadAccessDenied extends Error {
     super()
     this.name = 'ConversationReadAccessDenied'
     this.type = ExceptionType
-    this.status = '401'
+    this.status = 401
     if (message) this.message = message
     else this.message = `User don't have read access to the conversation`
     if (err) this.err = err
@@ -104,7 +104,7 @@ class ConversationNotShared extends Error {
     super()
     this.name = 'ConversationNotShared'
     this.type = ExceptionType
-    this.status = '401'
+    this.status = 401
     if (message) this.message = message
     else this.message = `User don't have access to the conversation`
     if (err) this.err = err
@@ -116,7 +116,7 @@ class ConversationIdRequire extends Error {
     super()
     this.name = 'ConversationIdRequire'
     this.type = ExceptionType
-    this.status = '403'
+    this.status = 403
     if (message) this.message = message
     else this.message = `Conversation id param is require`
     if (err) this.err = err
@@ -128,7 +128,7 @@ class ConversationNotFound extends Error {
     super()
     this.name = 'ConversationNotFound'
     this.type = ExceptionType
-    this.status = '404'
+    this.status = 404
     if (message) this.message = message
     else this.message = 'Requested conversation not found'
     if (err) this.err = err
@@ -146,7 +146,7 @@ class TurnIdRequire extends Error {
     super()
     this.name = 'TurnIdRequire'
     this.type = ExceptionTurnType
-    this.status = '403'
+    this.status = 403
     if (message) this.message = message
     else this.message = 'Turn id param is require'
     if (err) this.err = err
@@ -158,7 +158,7 @@ class TurnNotFound extends Error {
     super()
     this.name = 'TurnNotFound'
     this.type = ExceptionTurnType
-    this.status = '404'
+    this.status = 404
     if (message) this.message = message
     else this.message = 'Requested turn not found'
     if (err) this.err = err
@@ -175,7 +175,7 @@ class TurnNotFound extends Error {
     super()
     this.name = 'SubtitleError'
     this.type = ExceptionType
-    this.status = '400'
+    this.status = 400
     if (message) this.message = message
     else this.message = 'Error during the operation'
     if (err) this.err = err
@@ -187,7 +187,7 @@ class SubtitleUnsupportedMediaType extends Error {
     super()
     this.name = 'SubtitleUnsupportedMediaType'
     this.type = ExceptionType
-    this.status = '415'
+    this.status = 415
     if (message) this.message = message
     else this.message = 'Parameter is not supported'
     if (err) this.err = err
@@ -199,7 +199,7 @@ class SubtitleMaxVersion extends Error {
     super()
     this.name = 'SubtitleMaxVersion'
     this.type = ExceptionType
-    this.status = '403'
+    this.status = 403
     if (message) this.message = message
     else this.message = 'The number of subtitle versions for that conversion has reached its limit.'
     if (err) this.err = err
@@ -211,7 +211,7 @@ class SubtitleNotFound extends Error {
     super()
     this.name = 'SubtitleNotFound'
     this.type = ExceptionType
-    this.status = '404'
+    this.status = 404
     if (message) this.message = message
     else this.message = 'Requested subtitle not found'
     if (err) this.err = err

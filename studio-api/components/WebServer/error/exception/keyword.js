@@ -9,7 +9,7 @@ class KeywordError extends Error {
     super()
     this.name = 'KeywordError'
     this.type = ExceptionType
-    this.status = '400'
+    this.status = 400
     if (message) this.message = message
     else this.message = 'Keyword extraction error'
     if (err) this.err = err
@@ -21,7 +21,7 @@ class KeywordMetadataRequire extends Error {
     super()
     this.name = 'KeywordMetadataRequire'
     this.type = ExceptionType
-    this.status = '400'
+    this.status = 400
     if (message) this.message = message
     else this.message = 'Metadata was not provided.'
     if (err) this.err = err
@@ -33,7 +33,7 @@ class KeywordUnsupportedMediaType extends Error {
       super()
       this.name = 'KeywordUnsupportedMediaType'
       this.type = ExceptionType
-      this.status = '415'
+      this.status = 415
       if (message) this.message = message
       else this.message = 'Request parameter is not supported'
       if (err) this.err = err

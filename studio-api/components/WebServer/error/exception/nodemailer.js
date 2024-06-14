@@ -9,7 +9,7 @@ class NodemailerError extends Error {
     super()
     this.name = 'NodemailerError'
     this.type = ExceptionType
-    this.status = '400'
+    this.status = 400
     if (message) this.message = message
     else this.message = 'An error has occured when sending email. Please retry later or contact support.'
     if (err) this.err = err
@@ -21,7 +21,7 @@ class NodemailerInvalidEmail extends Error {
     super()
     this.name = 'NodemailerInvalidEmail'
     this.type = ExceptionType
-    this.status = '400'
+    this.status = 400
     if (message) this.message = message
     else this.message = 'The email address is invalid or have a bad domain.'
     if (err) this.err = err

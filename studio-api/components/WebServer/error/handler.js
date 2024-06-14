@@ -17,7 +17,12 @@ let init = function (webserver) {
         if (err) debug(err)
         if (customException.indexOf(err.name) > -1) {
             if (err.err) debug(err.err)
-            res.status(err.status).send({ message: err.message })
+            const status = parseInt(err.status)
+            if (isNaN(status)) {
+                res.status(500).send({ message: err.message })
+            } else {
+                res.status(status).send({ message: err.message })
+            }
             return
         } else if (err) { // Handle unsupported exception
             res.status(500).send({ message: err.message })

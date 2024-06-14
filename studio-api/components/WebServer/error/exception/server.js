@@ -9,7 +9,7 @@ class InternalServerError extends Error {
     super()
     this.name = 'InternalServerError'
     this.type = ExceptionType
-    this.status = '500'
+    this.status = 500
     if (message) this.message = message
     else this.message = 'Server error'
     if (err) this.err = err
