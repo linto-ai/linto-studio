@@ -81,7 +81,7 @@ async function exportConversation(req, res, next) {
                 await handleLLMService(res, req.query, conversation, metadata)
                 break
             default:
-                await handleLLMService(res, req.query, conversation, metadata)
+                await handleVerbatimFormat(res, req.query, conversation, metadata)
         }
 
     } catch (err) {
@@ -122,7 +122,7 @@ async function handleLLMService(res, query, conversation, metadata) {
         res.status(200).send({ status: 'processing', processing: 'Processing 0%' })
     } else if (conversationExport[0].status === 'done' || conversationExport[0].status === 'complete') {
         conversationExport = conversationExport[0]
-        const file = await docx.generateDocxOnFormat(query.format, conversationExport)
+        const file = await docx.generateDocxOnFormat(query, conversationExport)
         sendFileAsResponse(res, file, query.preview)
     } else {
         if (conversationExport[0].status === 'error' && conversationExport[0].error) {
@@ -187,11 +187,6 @@ async function handleVerbatimFormat(res, query, conversation, metadata) {
         format: query.format
     }
     const file = await docx.generateDocxOnFormat(query.format, conv)
-    sendFileAsResponse(res, file, query.preview)
-}
-
-async function handleDocxFormat(res, query, conversation, metadata) {
-    const file = await docx.generateTranscriptionDocx(conversation, metadata)
     sendFileAsResponse(res, file, query.preview)
 }
 
