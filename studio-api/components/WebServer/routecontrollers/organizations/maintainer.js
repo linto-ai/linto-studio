@@ -191,7 +191,7 @@ async function deleteConversationFromOrganization(req, res, next) {
       const result = await model.conversations.delete(conv._id)
       if (result.deletedCount !== 1) throw new ConversationError('Error when deleting conversation ', conv._id)
 
-      if (conversation[0]?.metadata?.audio) {
+      if (conv[0]?.metadata?.audio) {
         const audioFilename = conv.metadata.audio.filepath.split('/').pop()
         const jsonFilename = audioFilename.split('.')[0] + '.json'
         // delete audio file

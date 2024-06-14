@@ -5,7 +5,7 @@ const RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const Mailing = require(`${process.cwd()}/lib/mailer/mailing`)
 
 const conversationUtility = require(`${process.cwd()}/components/WebServer/controllers/conversation/utility`)
-const { updateChildConversationRight } = require(`${process.cwd()}/components/WebServer/controllers/conversation/child`)
+const { updateChildConversation } = require(`${process.cwd()}/components/WebServer/controllers/conversation/child`)
 
 const {
   ConversationIdRequire,
