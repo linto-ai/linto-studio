@@ -36,6 +36,13 @@
           :sortListKey="sortListKey"
           :sortListDirection="sortListDirection" />
         <ArrayHeader
+          v-if="from === 'sessionSettings'"
+          @list_sort_by="sortBy"
+          eventLabel="stream_status"
+          :label="$t('session.channels_list.labels.transcriber_status')"
+          :sortListKey="sortListKey"
+          :sortListDirection="sortListDirection" />
+        <ArrayHeader
           @list_sort_by="sortBy"
           eventLabel="language"
           :label="$t('session.channels_list.labels.language')"

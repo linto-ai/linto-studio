@@ -17,6 +17,7 @@
     <td v-if="from === 'sessionSettings'">
       <pre>{{ stream_status }}</pre>
     </td>
+    <td v-if="from === 'sessionSettings'">{{ transcriber_status }}</td>
     <td>{{ languages }}</td>
     <td class="content-size" v-if="from === 'formCreateSession'">
       <button class="btn red-border" @click="removeChannel" type="button">
@@ -70,6 +71,9 @@ export default {
     },
     stream_status() {
       return this.item.stream_status || ""
+    },
+    transcriber_status() {
+      return this.item.transcriber_status || ""
     },
     nameField: {
       get() {

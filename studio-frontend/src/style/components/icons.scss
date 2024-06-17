@@ -118,6 +118,9 @@
   &.pause {
     @include maskImage("../public/img/pause.svg");
   }
+  &.stop {
+    @include maskImage("../public/img/stop.svg");
+  }
   &.email-verified {
     margin: -3px 5px 0 5px;
     @include maskImage("../public/img/state-done.svg");

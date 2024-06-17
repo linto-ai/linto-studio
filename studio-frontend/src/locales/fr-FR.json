@@ -626,7 +626,7 @@
       "labels": {
         "name": "Nom",
         "type": "Type",
-        "language": "Langue",
+        "language": "Langues",
         "profile_name": "Nom du profil"
       },
       "title": "Canaux attachés à la session",

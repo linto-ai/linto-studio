@@ -1,5 +1,10 @@
 import { computed } from "vue"
-import { apiGetSession } from "../api/session"
+import {
+  apiGetSession,
+  apiStartSession,
+  apiStopSession,
+  apiDeleteSession,
+} from "../api/session"
 
 import { sessionModelMixin } from "./sessionModel"
 
@@ -17,6 +22,9 @@ export const sessionMixin = {
       session: null,
       sessionLoaded: false,
       sessionId: this.$route.params.sessionId,
+      isStarting: false,
+      isStoping: false,
+      isDeleting: false,
     }
   },
   created() {
@@ -40,6 +48,52 @@ export const sessionMixin = {
       this.sessionLoaded = true
       console.log(session)
     },
+    async startSession() {
+      this.isStarting = true
+      const start = await apiStartSession(
+        this.currentOrganizationScope,
+        this.sessionId
+      )
+
+      if (start.status === "error") {
+        console.error("Error starting session", start)
+        return
+      }
+
+      await this.fetchSession()
+      this.isStarting = false
+    },
+    async stopSession() {
+      this.isStoping = true
+      const start = await apiStopSession(
+        this.currentOrganizationScope,
+        this.sessionId
+      )
+
+      if (start.status === "error") {
+        console.error("Error stoping session", start)
+        return
+      }
+
+      await this.fetchSession()
+      this.isStoping = false
+    },
+    async deleteSession() {
+      this.isDeleting = true
+      const deleteSession = await apiDeleteSession(
+        this.currentOrganizationScope,
+        this.sessionId
+      )
+
+      if (deleteSession.status === "error") {
+        console.error("Error deleting session", deleteSession)
+        return
+      }
+
+      // notif
+      this.$router.replace(this.sessionListRoute)
+      this.isDeleting = false
+    },
   },
   computed: {
     sessionListRoute() {
@@ -47,6 +101,9 @@ export const sessionMixin = {
     },
     settingsRoute() {
       return `/interface/sessions/${this.sessionId}/settings`
+    },
+    liveRoute() {
+      return `/interface/sessions/${this.sessionId}`
     },
   },
 }

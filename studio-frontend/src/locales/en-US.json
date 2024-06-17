@@ -664,10 +664,11 @@
       "labels": {
         "name": "Name",
         "type": "Type",
-        "language": "Language",
+        "language": "Languages",
         "profile_name": "Profile name",
         "endpoint": "Endpoint",
-        "stream_status": "Stream status"
+        "stream_status": "Stream status",
+        "transcriber_status": "Transcriber status"
       },
       "title": "Channels linked to the session",
       "add": "Add channels",
@@ -703,12 +704,15 @@
     "detail_page": {
       "session_not_started_title": "The session has not started yet",
       "back_to_listing": "Back to sessions list",
+      "back_to_live": "Back to live",
       "settings_button": "Settings",
       "sessions_status": {
         "no_started": "The session is scheduled",
         "started": "The session is in progress"
       },
       "start_button": "Start session",
+      "stop_button": "Stop session",
+      "delete_button": "Delete session",
       "start_time_not_defined": "Not defined",
       "end_time_not_defined": "Not defined"
     },
@@ -721,6 +725,11 @@
       "copy_link_button": "Copy link",
       "isPublic_label": "Allow anonymous access to the session",
       "channels_list_title": "Channels"
+    },
+    "live_page": {
+      "channel_selector": {
+        "label": "Choose a channel"
+      }
     }
   },
   "usersettings": {

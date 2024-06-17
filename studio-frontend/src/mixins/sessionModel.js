@@ -4,7 +4,7 @@ export const sessionModelMixin = {
   },
   computed: {
     name() {
-      return this?.session?.name
+      return this?.session?.name ?? ""
     },
     id() {
       return this?.session?.id

@@ -23,7 +23,7 @@
       </div>
 
       <div v-else-if="jobState == 'pending'">
-        <h3>
+        <h3 class="flex align-center gap-small">
           <span class="icon loading"></span>
           {{ $t(`conversation.status.pending`) }}
         </h3>

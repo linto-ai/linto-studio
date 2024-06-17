@@ -61,3 +61,36 @@ export async function apiGetSession(organizationScope, sessionId, notif) {
 
   return getSession
 }
+
+export async function apiStartSession(organizationScope, sessionId, notif) {
+  const startSession = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}/start`,
+    { method: "put" },
+    {},
+    notif
+  )
+
+  return startSession
+}
+
+export async function apiStopSession(organizationScope, sessionId, notif) {
+  const stopSession = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}/stop`,
+    { method: "put" },
+    {},
+    notif
+  )
+
+  return stopSession
+}
+
+export async function apiDeleteSession(organizationScope, sessionId, notif) {
+  const deleteSession = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}`,
+    { method: "delete" },
+    {},
+    notif
+  )
+
+  return deleteSession
+}
