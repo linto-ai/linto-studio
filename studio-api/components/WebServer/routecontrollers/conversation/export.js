@@ -184,9 +184,10 @@ async function handleVerbatimFormat(res, query, conversation, metadata) {
         data: text,
         status: 'done',
         convId: conversation._id,
-        format: query.format
+        format: query.format,
+        created: conversation.created
     }
-    const file = await docx.generateDocxOnFormat(query.format, conv)
+    const file = await docx.generateDocxOnFormat(query, conv)
     sendFileAsResponse(res, file, query.preview)
 }
 

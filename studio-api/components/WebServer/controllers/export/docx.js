@@ -11,6 +11,7 @@ const { Packer, Paragraph, TextRun, HeadingLevel, AlignmentType} = docx
 const { generate } = require('./generator')
 
 
+
 async function generateDocxOnFormat(query, conversationExport, metadata) {
     let conversation = await model.conversations.getById(conversationExport.convId, ['speakers', 'name', 'description', 'owner'])
     data = {
@@ -19,8 +20,8 @@ async function generateDocxOnFormat(query, conversationExport, metadata) {
         text: conversationExport,
 
     }
-
     let document = generate(data, query)
+
     return await writeFile(document.doc, data.conversation.name)
 }
 

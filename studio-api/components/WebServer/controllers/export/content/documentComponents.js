@@ -84,6 +84,20 @@ function createHighlightedTextRun(text) {
     })
 }
 
+function textColumn(nbColumn = 2, space = 500) {
+    return {
+        properties: {
+            type: SectionType.CONTINUOUS,
+            column: {
+                count: nbColumn,
+                space: space,
+                separate: false,
+                equalWidth: true,
+            },
+        }
+    }
+}
+
 
 module.exports = {
     generateHeader,
@@ -92,5 +106,6 @@ module.exports = {
     generateHeading,
     generateBulletParagraph,
     createTextRun,
-    createHighlightedTextRun
+    createHighlightedTextRun,
+    textColumn
 }
