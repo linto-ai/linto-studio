@@ -1,17 +1,16 @@
 const debug = require('debug')(`linto:conversation-manager:components:WebServer:controllers:export:generator:index`)
 
-const content = require('../content/content');
+const content = require('../content/transcription');
 const template = require('../template/index');
 
 module.exports = {
-    generate: (data, query) => {
+    generate: async (data, query) => {
         let docContent = content.generate(data, query)
 
         if (docContent.template === 'eu') {
-            return template.eu.generate(docContent, data)
+            return await template.eu.generate(docContent, data, query)
         } else {
-            return template.default.generate(docContent, data)
-
+            return template.default.generate(docContent)
         }
     }
 }

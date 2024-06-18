@@ -5,7 +5,7 @@ const { generateLineBreak } = require('../content/documentComponents.js')
 
 const { formatGenerator, titleGenerator } = require('../format/index.js')
 
-function generate(docxContent, data) {
+function generate(docxContent) {
     let document = {}
     docxContent.filedata.title = titleGenerator(docxContent)
     document.doc = new Document(docxContent.filedata)
@@ -19,6 +19,12 @@ function generate(docxContent, data) {
     }))
 
     document.paragraphs.push(generateLineBreak())
+    document.doc.addSection({
+        properties: {
+            type: SectionType.CONTINUOUS,
+        },
+        children: document.paragraphs,
+    })
     formatGenerator(docxContent, document)
     return document
 }

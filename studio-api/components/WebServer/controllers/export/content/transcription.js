@@ -1,4 +1,4 @@
-const debug = require('debug')(`linto:conversation-manager:components:WebServer:controllers:export:generator:verbatim`)
+const debug = require('debug')(`linto:conversation-manager:components:WebServer:controllers:export:content:transcription`)
 
 const docx = require("docx")
 const { SectionType } = docx
@@ -16,7 +16,6 @@ const generate = (data, query) => {
     if (!query.format) {
         query.template = 'verbatim'
     }
-
     const document = {
         filedata: {
             creator: data.conversation.owner,
@@ -24,6 +23,7 @@ const generate = (data, query) => {
             description: data.conversation.description,
             sections: [],
         },
+        locale: data.conversation.locale,
         format: query.format,
         template: query.template,
         transcription: []
