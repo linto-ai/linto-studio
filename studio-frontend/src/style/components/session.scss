@@ -13,8 +13,27 @@
 
 .session-content__turns {
   gap: 0.75em;
+  margin-bottom: 8em;
 }
 
 .session-content__title {
   font-size: 2em;
+}
+
+.session-content__subtitle {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: black;
+  color: white;
+
+  box-sizing: border-box;
+  padding: 3em;
+}
+
+#scroller {
+  height: 2.4em;
+  line-height: 1.2em;
+  overflow: hidden;
 }

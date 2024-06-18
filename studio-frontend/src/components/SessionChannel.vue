@@ -13,6 +13,16 @@
       :partialText="partialText"></SessionChannelTurnPartial>
 
     <div ref="bottom"></div>
+
+    <div class="session-content__subtitle" ref="subtitle">
+      <div id="scroller">
+        <div v-for="turn of lastTwoTurns">
+          {{ turn.text }}
+        </div>
+        <div>{{ partialText }}</div>
+        <div ref="subtitle-bottom"></div>
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -50,6 +60,9 @@ export default {
     selectedChannelId() {
       return this.channel?.transcriber_id
     },
+    lastTwoTurns() {
+      return this.turns.slice(-2)
+    },
   },
   watch: {
     channel: {
@@ -71,14 +84,23 @@ export default {
     onPartial(content) {
       this.partialText = content ?? ""
       this.scrollToBottom()
+      this.scrollSubtitle()
     },
     onFinal(content) {
       this.partialText = ""
       this.turns.push(content)
       this.scrollToBottom()
+      this.scrollSubtitle()
     },
     scrollToBottom() {
       this.$nextTick().then(() => this.$refs.bottom.scrollIntoView())
+    },
+    scrollSubtitle() {
+      this.$nextTick().then(() =>
+        document
+          .getElementById("scroller")
+          .scroll(0, document.getElementById("scroller").scrollHeight)
+      )
     },
   },
   components: { Fragment, SessionChannelTurn, SessionChannelTurnPartial },
