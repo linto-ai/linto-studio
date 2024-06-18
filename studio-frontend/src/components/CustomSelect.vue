@@ -100,7 +100,7 @@ export default {
       else {
         for (const sectionName in this.options) {
           for (const option of this.options[sectionName]) {
-            if (option.value == this.value) {
+            if (this.valueKey(option.value) == this.valueKey(this.value)) {
               return option.text
             }
           }

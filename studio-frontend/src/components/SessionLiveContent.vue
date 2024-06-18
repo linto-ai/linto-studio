@@ -1,10 +1,11 @@
 <template>
-  <div class="">
+  <div class="session-content" :style="style">
     <div class="medium-margin">
-      <h1 class="center-text">{{ name }}</h1>
+      <h1 class="center-text session-content__title">{{ name }}</h1>
     </div>
     <SessionChannel
       v-if="isConnected"
+      :fontSize="fontSize"
       :channel="selectedChannel"
       :sessionWS="sessionWS"></SessionChannel>
     <Loading v-else></Loading>
@@ -32,6 +33,10 @@ export default {
       type: Object,
       required: true,
     },
+    fontSize: {
+      type: String,
+      default: "16",
+    },
   },
   data() {
     return {
@@ -48,6 +53,12 @@ export default {
   computed: {
     isInError() {
       return this.selectedChannel?.transcriber_status === "errored"
+    },
+    style() {
+      return {
+        fontSize: this.fontSize + "px",
+        lineHeight: this.fontSize * 1.3 + "px",
+      }
     },
   },
   methods: {

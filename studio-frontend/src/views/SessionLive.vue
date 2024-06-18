@@ -31,12 +31,14 @@
     </template>
 
     <template v-slot:sidebar>
-      <div class="flex col medium-padding">
+      <div class="flex col medium-padding gap-medium">
         <SessionChannelsSelector
           v-if="sessionLoaded && selectedChannel"
           :channels="channels"
           v-model="selectedChannel"
           class="session-selector"></SessionChannelsSelector>
+
+        <FormInput :field="fontSizeField" v-model="fontSizeField.value" />
       </div>
     </template>
 
@@ -47,6 +49,7 @@
 
       <SessionLiveContent
         v-else
+        :fontSize="fontSizeField.value"
         :session="session"
         :selectedChannel="selectedChannel" />
     </div>
@@ -56,6 +59,8 @@
 import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
 
+import EMPTY_FIELD from "../const/emptyField"
+
 import { sessionMixin } from "@/mixins/session.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole"
 
@@ -64,6 +69,7 @@ import SessionNotStarted from "@/components/SessionNotStarted.vue"
 import SessionChannelsSelector from "@/components/SessionChannelsSelector.vue"
 import SessionLiveContent from "@/components/SessionLiveContent.vue"
 import Loading from "@/components/Loading.vue"
+import FormInput from "@/components/FormInput.vue"
 
 export default {
   mixins: [sessionMixin, orgaRoleMixin],
@@ -71,6 +77,12 @@ export default {
   data() {
     return {
       selectedChannel: null,
+      fontSizeField: {
+        ...EMPTY_FIELD,
+        value: "16",
+        label: this.$t("session.detail_page.font_size_label"),
+        type: "number",
+      },
     }
   },
   created() {
@@ -80,6 +92,9 @@ export default {
   },
   mounted() {},
   watch: {
+    selectedChannel(value) {
+      console.log("selectedChannel", value)
+    },
     sessionLoaded() {
       if (this.sessionLoaded) {
         this.selectedChannel = this.channels[0]
@@ -94,6 +109,7 @@ export default {
     SessionChannelsSelector,
     SessionLiveContent,
     Loading,
+    FormInput,
   },
 }
 </script>

@@ -714,7 +714,8 @@
       "stop_button": "Stop session",
       "delete_button": "Delete session",
       "start_time_not_defined": "Not defined",
-      "end_time_not_defined": "Not defined"
+      "end_time_not_defined": "Not defined",
+      "font_size_label": "Font size"
     },
     "settings_page": {
       "global_informations_title": "Global informations",

@@ -4,7 +4,7 @@
       $t("session.live_page.channel_selector.label")
     }}</label>
     <CustomSelect
-      class="channel-selector"
+      class="channel-selector fullwidth"
       v-model="selectedChannel"
       id="channel-selector"
       :aria-label="$t('session.live_page.channel_selector.label')"

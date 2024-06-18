@@ -1,5 +1,5 @@
 <template>
-  <div class="flex col gap-small small-padding-bottom">
+  <div class="flex col small-padding-bottom session-content__turns">
     <!-- <div v-for="turn in turns" :key="turn.id">
       <p>{{ turn.text }}</p>
     </div> -->
@@ -32,10 +32,14 @@ export default {
       type: Object,
       required: true,
     },
+    fontSize: {
+      type: String,
+      default: "16",
+    },
   },
   data() {
     return {
-      turns: this.channel?.closed_captions || [],
+      turns: [],
       partialText: "",
     }
   },
@@ -47,8 +51,17 @@ export default {
       return this.channel?.transcriber_id
     },
   },
+  watch: {
+    channel: {
+      handler() {
+        this.init()
+      },
+      deep: true,
+    },
+  },
   methods: {
     init() {
+      this.turns = this.channel?.closed_captions || []
       this.sessionWS.subscribe(
         this.selectedChannelId,
         this.onPartial.bind(this),
