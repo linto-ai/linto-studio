@@ -718,7 +718,9 @@
       "font_size_label": "Font size",
       "display_subtitles_label": "Display subtitles",
       "display_live_transcription_label": "Display live transcription",
-      "title_interface_settings": "Interface settings"
+      "title_interface_settings": "Interface settings",
+      "undefined_speaker": "Undefined speaker",
+      "undefined_lang": "Unknown language"
     },
     "settings_page": {
       "global_informations_title": "Global informations",

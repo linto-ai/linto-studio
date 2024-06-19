@@ -1,21 +1,21 @@
 <template>
-  <div
-    class="flex col small-padding-bottom session-content__turns"
-    :class="{ has_subtitles: displaySubtitles }">
-    <!-- TODO: Remove the :class when firefox ESR will support :has css operator-->
-    <SessionChannelTurn
-      v-if="displayLiveTranscription"
-      v-for="turn in turns"
-      :key="turn.id"
-      :turn="turn"></SessionChannelTurn>
+  <div>
+    <div
+      class="flex col flex1 session-content__turns"
+      :class="{ has_subtitles: displaySubtitles }">
+      <SessionChannelTurn
+        v-if="displayLiveTranscription"
+        v-for="turn in turns"
+        :key="turn.id"
+        :turn="turn"></SessionChannelTurn>
 
-    <SessionChannelTurnPartial
-      v-if="displayLiveTranscription"
-      ref="partial"
-      :partialText="partialText"></SessionChannelTurnPartial>
+      <SessionChannelTurnPartial
+        v-if="displayLiveTranscription && partialText !== ''"
+        ref="partial"
+        :partialText="partialText"></SessionChannelTurnPartial>
 
-    <div ref="bottom"></div>
-
+      <div ref="bottom"></div>
+    </div>
     <div
       class="session-content__subtitle"
       ref="subtitle"
