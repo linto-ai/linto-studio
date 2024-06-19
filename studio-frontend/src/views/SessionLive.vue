@@ -38,7 +38,18 @@
           v-model="selectedChannel"
           class="session-selector"></SessionChannelsSelector>
 
+        <h3>{{ $t("session.detail_page.title_interface_settings") }}</h3>
         <FormInput :field="fontSizeField" v-model="fontSizeField.value" />
+
+        <FormCheckbox
+          :field="displaySubtitlesField"
+          switchDisplay
+          v-model="displaySubtitlesField.value" />
+
+        <FormCheckbox
+          :field="displayLiveTranscriptionField"
+          switchDisplay
+          v-model="displayLiveTranscriptionField.value" />
       </div>
     </template>
 
@@ -50,6 +61,8 @@
       <SessionLiveContent
         v-else
         :fontSize="fontSizeField.value"
+        :displaySubtitles="displaySubtitlesField.value"
+        :displayLiveTranscription="displayLiveTranscriptionField.value"
         :session="session"
         :selectedChannel="selectedChannel" />
     </div>
@@ -70,6 +83,7 @@ import SessionChannelsSelector from "@/components/SessionChannelsSelector.vue"
 import SessionLiveContent from "@/components/SessionLiveContent.vue"
 import Loading from "@/components/Loading.vue"
 import FormInput from "@/components/FormInput.vue"
+import FormCheckbox from "../components/FormCheckbox.vue"
 
 export default {
   mixins: [sessionMixin, orgaRoleMixin],
@@ -82,6 +96,16 @@ export default {
         value: "16",
         label: this.$t("session.detail_page.font_size_label"),
         type: "number",
+      },
+      displaySubtitlesField: {
+        ...EMPTY_FIELD,
+        value: true,
+        label: this.$t("session.detail_page.display_subtitles_label"),
+      },
+      displayLiveTranscriptionField: {
+        ...EMPTY_FIELD,
+        value: true,
+        label: this.$t("session.detail_page.display_live_transcription_label"),
       },
     }
   },
@@ -110,6 +134,7 @@ export default {
     SessionLiveContent,
     Loading,
     FormInput,
+    FormCheckbox,
   },
 }
 </script>

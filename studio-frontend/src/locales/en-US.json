@@ -715,7 +715,10 @@
       "delete_button": "Delete session",
       "start_time_not_defined": "Not defined",
       "end_time_not_defined": "Not defined",
-      "font_size_label": "Font size"
+      "font_size_label": "Font size",
+      "display_subtitles_label": "Display subtitles",
+      "display_live_transcription_label": "Display live transcription",
+      "title_interface_settings": "Interface settings"
     },
     "settings_page": {
       "global_informations_title": "Global informations",

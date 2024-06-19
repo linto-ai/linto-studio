@@ -13,6 +13,15 @@
 
 .session-content__turns {
   gap: 0.75em;
+}
+
+// not supported in firefox ESR (2024 / v121), so we need js code
+.session-content__turns:has(> .session-content__subtitle) {
+  margin-bottom: 8em;
+}
+
+// TODO: remove this when firefox ESR will support :has
+.session-content__turns.has_subtitles {
   margin-bottom: 8em;
 }
 

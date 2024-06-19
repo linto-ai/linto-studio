@@ -1,20 +1,25 @@
 <template>
-  <div class="flex col small-padding-bottom session-content__turns">
-    <!-- <div v-for="turn in turns" :key="turn.id">
-      <p>{{ turn.text }}</p>
-    </div> -->
+  <div
+    class="flex col small-padding-bottom session-content__turns"
+    :class="{ has_subtitles: displaySubtitles }">
+    <!-- TODO: Remove the :class when firefox ESR will support :has css operator-->
     <SessionChannelTurn
+      v-if="displayLiveTranscription"
       v-for="turn in turns"
       :key="turn.id"
       :turn="turn"></SessionChannelTurn>
 
     <SessionChannelTurnPartial
+      v-if="displayLiveTranscription"
       ref="partial"
       :partialText="partialText"></SessionChannelTurnPartial>
 
     <div ref="bottom"></div>
 
-    <div class="session-content__subtitle" ref="subtitle">
+    <div
+      class="session-content__subtitle"
+      ref="subtitle"
+      v-if="displaySubtitles">
       <div id="scroller">
         <div v-for="turn of lastTwoTurns">
           {{ turn.text }}
@@ -45,6 +50,14 @@ export default {
     fontSize: {
       type: String,
       default: "16",
+    },
+    displaySubtitles: {
+      type: Boolean,
+      default: true,
+    },
+    displayLiveTranscription: {
+      type: Boolean,
+      default: true,
     },
   },
   data() {
@@ -93,9 +106,13 @@ export default {
       this.scrollSubtitle()
     },
     scrollToBottom() {
+      if (!this.displayLiveTranscription) return
+
       this.$nextTick().then(() => this.$refs.bottom.scrollIntoView())
     },
     scrollSubtitle() {
+      if (!this.displaySubtitles) return
+
       this.$nextTick().then(() =>
         document
           .getElementById("scroller")

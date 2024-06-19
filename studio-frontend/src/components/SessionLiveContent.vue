@@ -7,6 +7,8 @@
       v-if="isConnected"
       :fontSize="fontSize"
       :channel="selectedChannel"
+      :displaySubtitles="displaySubtitles"
+      :displayLiveTranscription="displayLiveTranscription"
       :sessionWS="sessionWS"></SessionChannel>
     <Loading v-else></Loading>
   </div>
@@ -36,6 +38,14 @@ export default {
     fontSize: {
       type: String,
       default: "16",
+    },
+    displaySubtitles: {
+      type: Boolean,
+      default: true,
+    },
+    displayLiveTranscription: {
+      type: Boolean,
+      default: true,
     },
   },
   data() {
