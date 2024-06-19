@@ -4,6 +4,8 @@ const conversationUtility = require(`${process.cwd()}/components/WebServer/contr
 const userUtility = require(`${process.cwd()}/components/WebServer/controllers/user/utility`)
 
 const { deleteFile, getStorageFolder, getAudioWaveformFolder } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
+const { updateChildConversation } = require(`${process.cwd()}/components/WebServer/controllers/conversation/child`)
+
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const { fetchJob } = require(`${process.cwd()}/components/WebServer/controllers/job/fetchHandler`)
@@ -22,23 +24,26 @@ async function deleteConversation(req, res, next) {
         const conversation = await model.conversations.getById(req.params.conversationId)
         if (conversation.length !== 1) throw new ConversationNotFound()
 
+        await updateChildConversation(conversation[0], 'DELETE')
+
         const result = await model.conversations.delete(req.params.conversationId)
         if (result.deletedCount !== 1) throw new ConversationError('Error when deleting conversation')
 
-        const audioFilename = conversation[0].metadata.audio.filepath.split('/').pop()
-        const jsonFilename = audioFilename.split('.')[0] + '.json'
+        if (conversation[0]?.metadata?.audio) {
+            const audioFilename = conversation[0].metadata.audio.filepath.split('/').pop()
+            const jsonFilename = audioFilename.split('.')[0] + '.json'
 
-        // delete audio file
-        deleteFile(`${getStorageFolder()}/${conversation[0].metadata.audio.filepath}`)
-        // delete audiowaveform json file
-        deleteFile(`${getStorageFolder()}/${getAudioWaveformFolder()}/${jsonFilename}`)
-
+            // delete audio file
+            deleteFile(`${getStorageFolder()}/${conversation[0].metadata.audio.filepath}`)
+            // delete audiowaveform json file
+            deleteFile(`${getStorageFolder()}/${getAudioWaveformFolder()}/${jsonFilename}`)
+        }
         // delete also all subtitle related to that conversation
         await model.conversationSubtitles.deleteAllFromConv(req.params.conversationId)
         const categoryList = await model.categories.getByScope(req.params.conversationId)
         for (const category of categoryList) {
-          model.categories.delete(category._id)
-          model.tags.deleteAllFromCategory(category._id.toString())
+            model.categories.delete(category._id)
+            model.tags.deleteAllFromCategory(category._id.toString())
         }
 
 
@@ -77,10 +82,11 @@ async function getConversation(req, res, next) {
     try {
         if (!req.params.conversationId) throw new ConversationIdRequire()
 
-        let conversation = await model.conversations.getById(req.params.conversationId, ['jobs'])
+        let conversation = await model.conversations.getById(req.params.conversationId, ['jobs', 'type'])
         if (conversation.length !== 1) throw new ConversationNotFound()
 
-        await fetchJob(req.params.conversationId, conversation[0].jobs)
+        if (conversation[0].type.mode === 'canonical')
+            await fetchJob(req.params.conversationId, conversation[0].jobs)
 
         if (req?.query?.key && typeof req.query.key === 'string') {
             const projectionValue = req.query.projection && /^\d+$/.test(req.query.projection) ? parseInt(req.query.projection, 10) : 1;
@@ -154,10 +160,28 @@ async function getUsersByConversationList(req, res, next) {
     }
 }
 
+async function getChildConversation(req, res, next) {
+    try {
+        if (!req.params.conversationId) throw new ConversationIdRequire()
+        const conversation = await model.conversations.getById(req.params.conversationId)
+        if (conversation.length !== 1) throw new ConversationNotFound()
+        if (conversation[0].type.mode === 'canonical') {
+            const childConversations = await model.conversations.getConversationFromList(conversation[0].type.child_conversations)
+            res.status(200).send(childConversations)
+        } else {
+            res.status(200).send([])
+        }
+    } catch (err) {
+        next(err)
+    }
+
+}
+
 module.exports = {
     deleteConversation,
     getConversation,
     getUsersByConversation,
     getUsersByConversationList,
     updateConversation,
+    getChildConversation
 }

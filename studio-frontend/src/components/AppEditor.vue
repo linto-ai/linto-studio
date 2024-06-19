@@ -30,7 +30,11 @@
     </div>
 
     <AppEditorPlayer
-      v-if="conversation.metadata.audio.filename && !noPlayer"
+      v-if="
+        conversation.metadata.audio &&
+        conversation.metadata.audio.filename &&
+        !noPlayer
+      "
       :audio="conversation.metadata.audio"
       :speakers="speakers"
       :speakersTurnsTimebox="speakersTurnsTimebox"

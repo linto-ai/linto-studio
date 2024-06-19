@@ -78,6 +78,7 @@
                 :sortListKey="sortListKey"
                 :sortListDirection="sortListDirection"
                 @list_sort_by="sortBy" />
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -112,7 +113,7 @@
                   userRoles.find((ur) => ur.value === user.role).name
                 }}</span>
               </td>
-              <td>
+              <td class="content-size">
                 <button
                   v-if="
                     isAtLeastMaintainer &&

@@ -98,6 +98,19 @@ fieldset[role="listbox"] {
   }
 }
 
+.service-box > input:checked + label,
+fieldset[role="listbox"][selected="selected"] {
+  border-color: var(--green-chart);
+  border-width: 2px;
+  legend {
+    color: var(--green-chart);
+  }
+  margin: 0px;
+  box-shadow: var(--shadow-block-selected);
+  background-color: #28998314;
+  padding: 1rem;
+}
+
 .form-value {
   height: 32px;
 }

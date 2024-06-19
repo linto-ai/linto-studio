@@ -65,7 +65,7 @@
     </template>
 
     <template v-slot:breadcrumb-actions>
-      <router-link :to="conversationListRoute" class="btn">
+      <router-link :to="conversationListRoute" class="btn secondary">
         <span class="icon close"></span>
         <span class="label">{{ $t("conversation.close_editor") }}</span>
       </router-link>
@@ -130,6 +130,7 @@ import { apiPostMetadata, apiUpdateMetadata } from "@/api/metadata.js"
 import findExpressionInWordsList from "@/tools/findExpressionInWordsList.js"
 
 import { conversationMixin } from "@/mixins/conversation.js"
+
 import Loading from "@/components/Loading.vue"
 import Modal from "@/components/Modal.vue"
 import UserInfoInline from "@/components/UserInfoInline.vue"

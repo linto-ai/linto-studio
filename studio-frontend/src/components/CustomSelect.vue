@@ -44,7 +44,9 @@
         <div
           class="select__list__section flex col"
           v-for="sectionName in Object.keys(options)">
-          <Fragment v-for="option in options[sectionName]" :key="option.value">
+          <Fragment
+            v-for="option in options[sectionName]"
+            :key="valueKey(option.value)">
             <button
               @click="onClickOption($event, option.value)"
               class="select__list__item"
@@ -79,6 +81,7 @@ export default {
     buttonClass: { type: String, default: "" },
     id: { type: String, default: null },
     disabled: { type: Boolean, default: false },
+    valueKey: { type: Function, default: (value) => value },
   },
   data() {
     return {
@@ -97,7 +100,7 @@ export default {
       else {
         for (const sectionName in this.options) {
           for (const option of this.options[sectionName]) {
-            if (option.value == this.value) {
+            if (this.valueKey(option.value) == this.valueKey(this.value)) {
               return option.text
             }
           }
@@ -110,7 +113,7 @@ export default {
   methods: {
     onClickOption(e, value) {
       this.showList = false
-      this.$emit("input", value)
+      this.$emit("input", structuredClone(value))
       e.preventDefault()
       e.stopPropagation()
     },

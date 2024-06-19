@@ -389,7 +389,7 @@
     "search_text_in_content": "Search \"{text}\" in transcription",
     "no_categories_modal": "There are no tags. Start tagging your media in the Inbox tab.",
     "link_to_inbox": "Go to Inbox",
-    "delete_conversation_button": "delete medias"
+    "delete_conversation_button": "Delete medias"
   },
   "favorites": {
     "title": "Favorites medias",
@@ -488,6 +488,10 @@
       "my_conversations": "Organization medias",
       "create_no_rights_error": "You don't have the rights to create a media. Please contact your organization administrator."
     },
+    "session": {
+      "create": "New session",
+      "create_no_rights_error": "You don't have the rights to create a media. Please contact your organization administrator."
+    },
     "organisation": {
       "aria_organisations_selector": "Organisations selector",
       "create": "Create organization",
@@ -497,6 +501,7 @@
     "tabs": {
       "inbox": "Homepage",
       "explore": "Explore",
+      "sessions": "Live transcriptions",
       "favorites": "Favorites",
       "shared": "Shared with me",
       "manage_tags": "Manage tags"
@@ -642,6 +647,92 @@
     "delete_tag_title": "Delete tag",
     "error_creating_tag": "An error occurred while creating the tag"
   },
+  "session": {
+    "start_undefined": "Not defined",
+    "end_undefined": "Not defined",
+    "create_page": {
+      "title": "Create a session",
+      "submit_label": "Create session",
+      "success_message": "Session successfully created",
+      "error_message": "An error occurred while creating the session",
+      "name_field": {
+        "label": "Session name"
+      },
+      "submit_button": "Create session"
+    },
+    "channels_list": {
+      "labels": {
+        "name": "Name",
+        "type": "Type",
+        "language": "Languages",
+        "profile_name": "Profile name",
+        "endpoint": "Endpoint",
+        "stream_status": "Stream status",
+        "transcriber_status": "Transcriber status"
+      },
+      "title": "Channels linked to the session",
+      "add": "Add channels",
+      "remove": "Remove",
+      "empty": "No channels linked to the session",
+      "modal_add": {
+        "title": "Add channels",
+        "main_button": "Create 1 channel | Create {count} channels",
+        "loading_profiles": "Loading transcriptions profiles..."
+      }
+    },
+    "profile_selector": {
+      "title": "Selection of transcription profiles",
+      "labels": {
+        "selected": "Selected",
+        "type": "Type",
+        "name": "Name",
+        "description": "Description",
+        "languages": "Languages"
+      }
+    },
+    "list_page": {
+      "tabs": {
+        "ongoing_sessions": "Ongoing sessions",
+        "past_sessions": "Past sessions",
+        "scheduled_sessions": "Scheduled sessions"
+      },
+      "no_sessions": "No sessions found",
+      "planned_for": "Planned for",
+
+      "started_at": "Started at"
+    },
+    "detail_page": {
+      "session_not_started_title": "The session has not started yet",
+      "back_to_listing": "Back to sessions list",
+      "back_to_live": "Back to live",
+      "settings_button": "Settings",
+      "sessions_status": {
+        "no_started": "The session is scheduled",
+        "started": "The session is in progress"
+      },
+      "start_button": "Start session",
+      "stop_button": "Stop session",
+      "delete_button": "Delete session",
+      "start_time_not_defined": "Not defined",
+      "end_time_not_defined": "Not defined",
+      "font_size_label": "Font size"
+    },
+    "settings_page": {
+      "global_informations_title": "Global informations",
+      "start_time_label": "Start time",
+      "end_time_label": "End time",
+      "autoStart_label": "Automatic session start",
+      "publicLink_label": "Session link",
+      "copy_link_button": "Copy link",
+      "isPublic_label": "Allow anonymous access to the session",
+      "channels_list_title": "Channels"
+    },
+    "live_page": {
+      "channel_selector": {
+        "label": "Choose a channel"
+      }
+    }
+  },
   "usersettings": {
     "change_password_label": "Change password",
     "email_label": "Email",
@@ -686,7 +777,8 @@
     }
   },
   "globalError": {
-    "auth_magic_link": "The authentication link as expired, please request again for an | authentication link",
-    "page_not_found": "The page is not found, or you don't have the rights to access it"
+    "auth_magic_link": "The authentication link as expired, please request again for an authentication link",
+    "page_not_found": "The page is not found, or you don't have the rights to access it",
+    "back_to_home": "Back to home"
   }
 }

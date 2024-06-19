@@ -186,5 +186,44 @@
         }
       }
     }
+  },
+  "/api/conversations/{conversationId}/child": {
+    "get": {
+      "tags": [
+        "conversations member"
+      ],
+      "summary": "Retrieve a conversation based on the parent ID",
+      "parameters": [{
+        "in": "path",
+        "name": "conversationId",
+        "type": "string",
+        "format": "uuid",
+        "required": true,
+        "description": "uuid string identifier for an conversation"
+      }
+    ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/ConversationList"
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
   }
 }

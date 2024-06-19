@@ -1,10 +1,9 @@
-const { DocumentAttributes, DocumentBackgroundAttributes } = require('docx')
-const { use } = require('passport')
-
 const debug = require('debug')(`linto:conversation-manager:components:WebServer:routeControllers:conversation:share`)
 const method_delete = 'DELETE'
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
+const { updateChildConversation } = require(`${process.cwd()}/components/WebServer/controllers/conversation/child`)
+
 
 const Mailing = require(`${process.cwd()}/lib/mailer/mailing`)
 const RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
@@ -111,6 +110,8 @@ async function updateConv(conversations, method, users_list, auth_user) {
       user.conversations.push(conversation._id)
     }
     await model.conversations.update(conversation)
+    await updateChildConversation(conversation, 'RIGHTS')
+
   }
 
   return users_list

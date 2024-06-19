@@ -483,6 +483,10 @@
       "my_conversations": "Médias de l'organisation",
       "create_no_rights_error": "Vous n'avez pas les droits pour créer un média dans cette organisation. Veuillez contacter un administrateur."
     },
+    "session": {
+      "create": "Créer une session",
+      "create_no_rights_error": "Vous n'avez pas les droits pour créer une session dans cette organisation. Veuillez contacter un administrateur."
+    },
     "organisation": {
       "aria_organisations_selector": "Sélectionnez une organisation",
       "create": "Créer une organisation",
@@ -492,6 +496,7 @@
     "tabs": {
       "inbox": "Accueil",
       "explore": "Explorer",
+      "sessions": "Transcription en direct",
       "favorites": "Favoris",
       "shared": "Partages reçus",
       "manage_tags": "Administrer les tags de médias"
@@ -604,6 +609,57 @@
     "is_updated": "Le compte rendu est à jour avec la transcription",
     "is_not_updated": "La transcription a été mise à jour. Le compte rendu ne reflète plus les dernières modifications."
   },
+  "session": {
+    "start_undefined": "Non définie",
+    "end_undefined": "Non définie",
+    "create_page": {
+      "title": "Créer une session",
+      "submit_label": "Créer la session",
+      "success_message": "La session a été créée avec succès",
+      "error_message": "Une erreur s'est produite lors de la création de la session",
+      "name_field": {
+        "label": "nom de la session"
+      },
+      "submit_button": "Créer la session"
+    },
+    "channels_list": {
+      "labels": {
+        "name": "Nom",
+        "type": "Type",
+        "language": "Langues",
+        "profile_name": "Nom du profil"
+      },
+      "title": "Canaux attachés à la session",
+      "add": "Ajouter des canaux",
+      "remove": "Retirer",
+      "empty": "Aucun canaux attachés à la session",
+      "modal_add": {
+        "title": "Ajouter des canaux",
+        "main_button": "Ajouter 1 canal | Ajouter {count} canaux",
+        "loading_profiles": "Chargement des profils de transcription"
+      }
+    },
+    "profile_selector": {
+      "title": "Choix des profils de transcription",
+      "labels": {
+        "selected": "Selectionné",
+        "type": "Type",
+        "name": "Nom",
+        "description": "Description",
+        "languages": "Langues"
+      }
+    },
+    "list_page": {
+      "tabs": {
+        "ongoing_sessions": "Sessions en cours",
+        "past_sessions": "Sessions passées",
+        "scheduled_sessions": "Sessions programmées"
+      },
+      "no_sessions": "Aucune session trouvée",
+      "planned_for": "Prévue pour",
+      "started_at": "Commencée à"
+    }
+  },
   "tags": {
     "back_to_search": "Retour à la recherche",
     "browse_categories": "Parcourir les catégories",
@@ -681,6 +737,7 @@
   },
   "globalError": {
     "auth_magic_link": "Le lien d'authentification a expiré, veuillez refaire une | demande de lien d'authentification",
-    "page_not_found": "La page à laquelle vous tentez d'accéder n'existe pas ou requiert des droits que vous n'avez pas."
+    "page_not_found": "La page à laquelle vous tentez d'accéder n'existe pas ou requiert des droits que vous n'avez pas.",
+    "back_to_home": "Retour à la page d'accueil"
   }
 }

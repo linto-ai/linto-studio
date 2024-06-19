@@ -25,9 +25,8 @@
             v-model="audioFiles" />
 
           <div class="flex col form-field">
-            <div class="flex row align-center form-label">
-              <input
-                type="checkbox"
+            <div class="flex row align-center form-label gap-small">
+              <Checkbox
                 v-model="organizationMemberAccess"
                 id="organizationMemberAccess"
                 :disabled="formState === 'sending'" />
@@ -115,6 +114,7 @@ import MainContent from "@/components/MainContent.vue"
 
 import RIGHTS_LIST from "@/const/rigthsList"
 import EMPTY_FIELD from "@/const/emptyField"
+import Checkbox from "../components/Checkbox.vue"
 
 export default {
   mixins: [formsMixin, debounceMixin],
@@ -329,6 +329,7 @@ export default {
     ConversationCreateAudio,
     ConversationCreateServices,
     MainContent,
+    Checkbox,
   },
 }
 </script>

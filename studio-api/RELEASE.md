@@ -1,3 +1,8 @@
+# 1.5.0
+- Added type to conversation
+  - Allow to handle multi channel conversation
+- Merged the session and delivery api to linto-studio
+
 # 1.4.3
 - Update export
 - Handle llm

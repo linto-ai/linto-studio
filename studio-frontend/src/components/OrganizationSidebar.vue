@@ -23,6 +23,12 @@
         <span class="icon discover"></span>
         <span class="tab__label">{{ $t("navigation.tabs.explore") }}</span>
       </router-link>
+      <router-link
+        :to="{ name: 'sessionsList' }"
+        class="flex row align-center gap-medium tab">
+        <span class="icon record"></span>
+        <span class="tab__label">{{ $t("navigation.tabs.sessions") }}</span>
+      </router-link>
     </nav>
     <!-- <div class="sidebar-divider"></div> -->
     <h3
