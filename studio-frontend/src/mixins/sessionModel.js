@@ -26,13 +26,16 @@ export const sessionModelMixin = {
     },
     publicLink() {
       const baseUrl = window.location.origin
-      return baseUrl + "/interface/sessions/" + this.id
+      return `${baseUrl}/interface/${this.sessionOrganizationId}/sessions/${this.id}`
     },
     channels() {
       return this?.session?.channels ?? []
     },
     isPublic() {
       return this?.session?.public ?? false
+    },
+    sessionOrganizationId() {
+      return this?.session?.organizationId
     },
   },
 }

@@ -1,7 +1,7 @@
 <template>
   <router-link
     :title="name"
-    :to="`/interface/sessions/${id}`"
+    :to="`/interface/${sessionOrganizationId}/sessions/${id}`"
     class="session-line flex">
     <div class="flex1 session-line__title text-cut">{{ name }}</div>
     <LabeledValueSmall

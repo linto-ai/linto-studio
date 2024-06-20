@@ -13,7 +13,13 @@ export const sessionMixin = {
   mixins: [sessionModelMixin],
   props: {
     userInfo: { type: Object, required: true },
+    // orga id from scope (cookie)
     currentOrganizationScope: {
+      type: String,
+      required: false,
+    },
+    //orga id from url
+    organizationId: {
       type: String,
       required: false,
     },
@@ -36,12 +42,14 @@ export const sessionMixin = {
   methods: {
     async fetchSession() {
       let sessionRequest = null
-      if (this.currentOrganizationScope) {
+      if (this.currentOrganizationScope || this.organizationId) {
         sessionRequest = await apiGetSession(
-          this.currentOrganizationScope,
+          this.organizationId,
           this.sessionId
         )
-      } else {
+      }
+
+      if (!sessionRequest || sessionRequest.status === "error") {
         sessionRequest = await apiGetPublicSession(this.sessionId)
       }
 
@@ -105,10 +113,10 @@ export const sessionMixin = {
       return `/interface/sessionsList`
     },
     settingsRoute() {
-      return `/interface/sessions/${this.sessionId}/settings`
+      return `/interface/${this.sessionOrganizationId}/sessions/${this.sessionId}/settings`
     },
     liveRoute() {
-      return `/interface/sessions/${this.sessionId}`
+      return `/interface/${this.sessionOrganizationId}/sessions/${this.sessionId}`
     },
   },
 }

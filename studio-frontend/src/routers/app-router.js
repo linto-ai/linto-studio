@@ -206,7 +206,7 @@ let router = new Router({
       props: defaultProps,
     },
     {
-      path: "/interface/sessions/:sessionId",
+      path: "/interface/:organizationId/sessions/:sessionId",
       name: "sessions live",
       components: {
         default: () => import("../views/SessionLive.vue"),
@@ -216,7 +216,7 @@ let router = new Router({
       meta: { public: true },
     },
     {
-      path: "/interface/sessions/:sessionId/settings",
+      path: "/interface/:organizationId/sessions/:sessionId/settings",
       name: "sessions settings",
       components: {
         default: () => import("../views/SessionSettings.vue"),
