@@ -62,6 +62,17 @@ export async function apiGetSession(organizationScope, sessionId, notif) {
   return getSession
 }
 
+export async function apiGetPublicSession(sessionId, notif) {
+  const getSession = await sendRequest(
+    `${BASE_API}/sessions/${sessionId}/public`,
+    { method: "get" },
+    {},
+    notif
+  )
+
+  return getSession
+}
+
 export async function apiStartSession(organizationScope, sessionId, notif) {
   const startSession = await sendRequest(
     `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}/start`,

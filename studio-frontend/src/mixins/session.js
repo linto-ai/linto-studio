@@ -4,6 +4,7 @@ import {
   apiStartSession,
   apiStopSession,
   apiDeleteSession,
+  apiGetPublicSession,
 } from "../api/session"
 
 import { sessionModelMixin } from "./sessionModel"
@@ -14,7 +15,7 @@ export const sessionMixin = {
     userInfo: { type: Object, required: true },
     currentOrganizationScope: {
       type: String,
-      required: true,
+      required: false,
     },
   },
   data() {
@@ -34,19 +35,23 @@ export const sessionMixin = {
   },
   methods: {
     async fetchSession() {
-      const session = await apiGetSession(
-        this.currentOrganizationScope,
-        this.sessionId
-      )
+      let sessionRequest = null
+      if (this.currentOrganizationScope) {
+        sessionRequest = await apiGetSession(
+          this.currentOrganizationScope,
+          this.sessionId
+        )
+      } else {
+        sessionRequest = await apiGetPublicSession(this.sessionId)
+      }
 
-      if (session.status === "error") {
+      if (sessionRequest.status === "error") {
         this.$router.replace({ name: "not_found" })
         return
       }
 
-      this.session = session.data
+      this.session = sessionRequest.data
       this.sessionLoaded = true
-      console.log(session)
     },
     async startSession() {
       this.isStarting = true

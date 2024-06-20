@@ -16,11 +16,6 @@ import Svglogo from "@/svg/Desert.vue"
 
 export default {
   props: {},
-  data() {
-    return {
-      svglogo: svglogo,
-    }
-  },
   mounted() {},
   methods: {},
   components: { Svglogo },
