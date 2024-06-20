@@ -4,8 +4,12 @@ const { Document, Paragraph, TextRun, HeadingLevel, AlignmentType, SectionType }
 const { generateLineBreak } = require('../content/documentComponents.js')
 
 const { formatGenerator, titleGenerator } = require('../format/index.js')
+const content = require('../content/document.js');
 
-function generate(docxContent) {
+
+function generate(data, query) {
+    let docxContent = content.generate(data, query)
+
     let document = {}
     docxContent.filedata.title = titleGenerator(docxContent)
     document.doc = new Document(docxContent.filedata)

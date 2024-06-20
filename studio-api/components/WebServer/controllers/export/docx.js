@@ -13,14 +13,16 @@ const { generate } = require('./generator')
 
 
 
-async function generateDocxOnFormat(query, conversationExport, metadata) {
+async function generateDocxOnFormat(query, conversationExport) {
     let conversation = await model.conversations.getById(conversationExport.convId,
-        ['speakers', 'name', 'description', 'owner', 'locale'])
+        ['speakers', 'name', 'description', 'owner', 'locale', 'metadata'])
     data = {
         conversation: conversation[0],
         speakers: conversation[0].speakers.map(speaker => speaker.speaker_name + ' : '),
         text: conversationExport,
+        conversationId: conversationExport.convId,
     }
+
     let document = await generate(data, query)
 
     if (document instanceof Blob)

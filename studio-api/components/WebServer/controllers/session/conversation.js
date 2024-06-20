@@ -19,10 +19,16 @@ function initConversationMultiChannel(session, type = 'canonical') {
         type: {
             mode: type,
             from_session_id: session.id,
-            channel_count: session.channels.length,
             child_conversations: []
         },
-        tags:[],
+        tags: [],
+        metadata: {
+            channel: {
+                channel_count: session.channels.length,
+                channel_start_time: session.start_time,
+                channel_end_time: session.end_time,
+            }
+        },
         jobs: {
             transcription: { state: 'done' },
             keyword: {}
@@ -51,18 +57,23 @@ function initCaptionsForConversation(sessionData) {
                 type: {
                     mode: 'child',
                     from_session_id: session.id,
-                    channel_count: session.channels.length,
                     child_conversations: []
                 },
                 speakers: [],
                 text: [],
 
-                tags:[],
+                tags: [],
                 jobs: {
                     transcription: { state: 'done' },
                     keyword: {}
                 },
-                metadata: {},
+                metadata: {
+                    channel: {
+                        channel_count: session.channels.length,
+                        channel_start_time: session.start_time,
+                        channel_end_time: session.end_time,
+                    }
+                },
                 sharedWithUsers: [],
                 tags: [],
                 description: '',
@@ -70,17 +81,24 @@ function initCaptionsForConversation(sessionData) {
 
             for (let channel_caption of channel.closed_captions) {
                 let spk_id = caption.locutor
+
                 if (!caption.locutor) {
-                    if (caption.speakers.length === 0) {
-                        caption.speakers.push({
-                            speaker_id: uuidv4(),
-                            speaker_name: 'chanel',
-                            stime: channel_caption.start,
-                            etime: channel_caption.end
-                        })
-                    }
-                    spk_id = caption.speakers[0].speaker_id
+                    caption.locutor = 'chanel'
                 }
+
+                let existingSpeaker = caption.speakers.find(speaker => speaker.speaker_name === caption.locutor)
+                if (!existingSpeaker) {
+                    caption.speakers.push({
+                        speaker_id: uuidv4(),
+                        speaker_name: caption.locutor || 'chanel',
+                        stime: channel_caption.start,
+                        etime: channel_caption.end
+                    })
+                    spk_id = caption.speakers[caption.speakers.length - 1].speaker_id
+                } else {
+                    spk_id = existingSpeaker.speaker_id
+                }
+
                 let turn = {
                     speaker_id: spk_id,
                     turn_id: uuidv4(),
@@ -120,8 +138,12 @@ async function storeSession(session) {
             for (let caption of captions) {
                 const result = await model.conversations.create(caption)
                 conversation_multi_channel.type.child_conversations.push(result.insertedId.toString())
+                await model.categories.createDefaultCategories('keyword', result.insertedId.toString())
+
             }
             const result = await model.conversations.create(conversation_multi_channel)
+            await model.categories.createDefaultCategories('keyword', result.insertedId.toString())
+
             return conversation_multi_channel
         }
 

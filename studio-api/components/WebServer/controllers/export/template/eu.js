@@ -4,34 +4,41 @@ const docx = require("docx")
 const {
     PatchType,
     patchDocument,
-    Table,
-    TableCell,
-    TableRow,
-    WidthType,
-    TableLayoutType,
+    TextRun,
 } = docx
 const fs = require('fs')
 const path = require('path')
-const { format, parseISO, addSeconds } = require('date-fns')
-const { en } = require('date-fns/locale')
 const { DateTime } = require('luxon')
 
-const { Document, Paragraph, TextRun, HeadingLevel, AlignmentType } = require('docx')
-const { generateLineBreak } = require('../content/documentComponents.js')
-
-const templatePath = path.join(__dirname, 'eu-template-session-transcription.docx')
 const systemTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
 const DATE_FORMAT = 'dd MMMM yyyy HH:mm'
 
-const generate = async (docContent, data, query) => {
+const content = require('../content/document.js');
+const { processTurnTable } = require('../content/text.js');
+const model = require(`${process.cwd()}/lib/mongodb/models`)
+
+
+const generate = async (data, query) => {
+    let docContent = content.generate(data, query, (query.format !== 'verbatim'))
+
+    if (query.format === 'verbatim') {
+        //we need to generate a table
+        const conversation = await model.conversations.getById(data.conversationId)
+        processTurnTable(docContent.transcription, conversation[0], data, query)
+    }
     const templatePath = path.join(__dirname, 'eu-template-session-transcription.docx')
     return new Promise((resolve, _) => {
         // we need to use DateTime.now to take into account summer/winter time
         const TZ = query.timezone || systemTimezone
         const offsetMinutes = DateTime.now().setZone(TZ).offset;
 
+        let startTime = data.conversation.created
+        if (data.conversation?.metadata?.channel?.channel_start_time) {
+            startTime = data.conversation.metadata.channel.channel_start_time
+        }
+
         // Parse data.created or create a new date if it's invalid or undefined
-        let dateToFormat = DateTime.fromISO(data.created || '', { zone: 'local' })
+        let dateToFormat = DateTime.fromISO(startTime || '', { zone: 'local' })
         if (!dateToFormat.isValid) {
             dateToFormat = DateTime.now()
         }
