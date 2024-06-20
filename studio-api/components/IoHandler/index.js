@@ -12,7 +12,7 @@ class IoHandler extends Component {
 
         this.io = socketIO(this.app.components["WebServer"].httpServer, {
             cors: {
-                origin: process.env.WEBSERVER_HTTP_PORT,
+                origin: process.env.CORS_API_WHITELIST.split(","),
                 methods: ["GET", "POST"]
             }
         })

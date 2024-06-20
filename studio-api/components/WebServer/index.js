@@ -49,20 +49,6 @@ class WebServer extends Component {
         // Cross domain whitelist
         if (process.env.CORS_ENABLED === 'true') this.express.use(CORS(corsOptions))
 
-        // From Session-api
-        // // const Session = require('express-session')
-        // let sessionConfig = {
-        //     resave: false,
-        //     saveUninitialized: true,
-        //     secret: require('crypto').randomBytes(64).toString('hex'),
-        //     cookie: {
-        //         secure: false,
-        //         maxAge: 604800 // 7 days
-        //     }
-        // }
-        // this.session = Session(sessionConfig)
-        // this.express.use(this.session)
-
         this.express.use(fileUpload({
             uriDecodeFileNames: true
         }))
