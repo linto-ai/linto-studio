@@ -47,6 +47,7 @@ function configureDefaults() {
 
         process.env.DISABLE_USER_CREATION = ifHas(process.env.DISABLE_USER_CREATION, envdefault.DISABLE_USER_CREATION)
 
+        process.env.EXPORT_TEMPLATE = ifHas(process.env.EXPORT_TEMPLATE, envdefault.EXPORT_TEMPLATE)
         process.env.ENABLE_SESSION_API = ifHas(process.env.ENABLE_SESSION_API, envdefault.ENABLE_SESSION_API)
         if (process.env.ENABLE_SESSION_API === "true") {
 
