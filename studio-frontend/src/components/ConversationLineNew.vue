@@ -36,6 +36,8 @@
             <img :src="sharedBy.img" class="list-profil-picture icon" />
           </span>
 
+          <span class="icon record" v-if="isFromSession"></span>
+
           <router-link
             :title="conversation.name"
             :to="`/interface/conversations/${conversation._id}/transcription`"
@@ -47,17 +49,7 @@
             :valueText="$t('conversation.open_editor')"
             value="editor"
             aria-label="select how to open the conversation"
-            :options="{
-              actions: [
-                { value: 'overview', text: $t('conversation.open_overview') },
-                { value: 'editor', text: $t('conversation.open_editor') },
-                {
-                  value: 'subtitle_editor',
-                  text: $t('conversation.open_subtitles'),
-                },
-                { value: 'publish', text: $t('conversation.open_publish') },
-              ],
-            }"
+            :options="editorOptions"
             inline
             @input="openWith"></CustomSelect>
         </div>
@@ -316,6 +308,32 @@ export default {
           conversation: this.conversation,
         })
       },
+    },
+    isFromSession() {
+      return !!this.conversation?.type?.from_session_id
+    },
+    editorOptions() {
+      if (this.isFromSession) {
+        return {
+          actions: [
+            { value: "overview", text: this.$t("conversation.open_overview") },
+            { value: "editor", text: this.$t("conversation.open_editor") },
+            { value: "publish", text: this.$t("conversation.open_publish") },
+          ],
+        }
+      }
+
+      return {
+        actions: [
+          { value: "overview", text: this.$t("conversation.open_overview") },
+          { value: "editor", text: this.$t("conversation.open_editor") },
+          {
+            value: "subtitle_editor",
+            text: this.$t("conversation.open_subtitles"),
+          },
+          { value: "publish", text: this.$t("conversation.open_publish") },
+        ],
+      }
     },
   },
   watch: {
