@@ -89,6 +89,8 @@ export default {
   mixins: [sessionMixin, orgaRoleMixin],
   props: {},
   data() {
+    const { subtitles, liveTranscription = "true" } = this.$route.query
+
     return {
       selectedChannel: null,
       fontSizeField: {
@@ -99,12 +101,12 @@ export default {
       },
       displaySubtitlesField: {
         ...EMPTY_FIELD,
-        value: true,
+        value: subtitles === "true",
         label: this.$t("session.detail_page.display_subtitles_label"),
       },
       displayLiveTranscriptionField: {
         ...EMPTY_FIELD,
-        value: true,
+        value: liveTranscription === "true",
         label: this.$t("session.detail_page.display_live_transcription_label"),
       },
     }
@@ -123,6 +125,22 @@ export default {
       if (this.sessionLoaded) {
         this.selectedChannel = this.channels[0]
       }
+    },
+    "displaySubtitlesField.value"(value) {
+      this.$router.replace({
+        query: {
+          ...this.$route.query,
+          subtitles: value,
+        },
+      })
+    },
+    "displayLiveTranscriptionField.value"(value) {
+      this.$router.replace({
+        query: {
+          ...this.$route.query,
+          liveTranscription: value,
+        },
+      })
     },
   },
   methods: {},

@@ -26,6 +26,7 @@
           <SessionChannelsTable
             v-if="channels.length > 0"
             :channelsList="channels"
+            @updateName="updateName"
             @removeChannel="removeChannel" />
           <p v-else>{{ $t("session.channels_list.empty") }}</p>
         </section>
@@ -119,7 +120,13 @@ export default {
             message: this.$i18n.t("session.create_page.success_message"),
             redirect: false,
           })
-          //this.$router.push({ name: "session", params: { id: res.id } })
+          this.$router.push({
+            name: "sessions settings",
+            params: {
+              sessionId: res.data.id,
+              organizationId: this.currentOrganizationScope,
+            },
+          })
         } else {
           bus.$emit("app_notif", {
             status: "error",

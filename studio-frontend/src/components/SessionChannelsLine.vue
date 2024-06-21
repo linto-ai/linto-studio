@@ -45,7 +45,12 @@ export default {
     },
   },
   data() {
-    return {}
+    return {
+      nameField: {
+        ...EMPTY_FIELD,
+        value: this.item.name || "",
+      },
+    }
   },
   computed: {
     type() {
@@ -75,16 +80,10 @@ export default {
     transcriber_status() {
       return this.item.transcriber_status || ""
     },
-    nameField: {
-      get() {
-        return {
-          ...EMPTY_FIELD,
-          value: this.item.name || "",
-        }
-      },
-      set(value) {
-        this.$emit("updateName", value)
-      },
+  },
+  watch: {
+    "nameField.value"(value) {
+      this.$emit("updateName", value)
     },
   },
   mounted() {},
