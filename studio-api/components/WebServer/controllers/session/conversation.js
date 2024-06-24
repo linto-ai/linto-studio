@@ -144,6 +144,11 @@ async function storeSession(session) {
             const result = await model.conversations.create(conversation_multi_channel)
             await model.categories.createDefaultCategories('keyword', result.insertedId.toString())
 
+            const parentId = result.insertedId.toString()
+            for (let childId of conversation_multi_channel.type.child_conversations) {
+                await model.conversations.update({ _id: childId, 'type.from_parent_id': parentId })
+            }
+
             return conversation_multi_channel
         }
 

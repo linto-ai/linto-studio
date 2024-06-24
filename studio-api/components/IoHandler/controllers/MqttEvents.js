@@ -1,19 +1,29 @@
 const debug = require('debug')('delivery:IoHandler:mqtt-events');
 
+const retryInterval = 1000 // Retry every 5 seconds
+const maxRetries = 5 // Maximum number of retries
+
+// The BrokerClient need to know if the IoHandler is connected to the broker
+const retryConnectionOperation = (operation, app, retryCount = 0) => {
+  if (app.components['IoHandler']) {
+    operation()
+  } else if (retryCount < maxRetries) {
+    setTimeout(() => retryOperation(operation, app, retryCount + 1), retryInterval)
+  } else {
+    debug('IoHandler not loaded after maximum retries')
+  }
+}
+
 module.exports = function () {
   this.app.components['BrokerClient'].deliveryClient.on('error', () => {
-    this.app.components['IoHandler'].brokerKo()
-  });
+    retryConnectionOperation(() => this.app.components['IoHandler'].brokerKo(), this.app)
+  })
 
   this.app.components['BrokerClient'].deliveryClient.on('offline', () => {
-    setTimeout(() => {
-      this.app.components['IoHandler'].brokerKo()
-    }, 300) // We wait IoHandler component to be loaded
-  });
+    retryConnectionOperation(() => this.app.components['IoHandler'].brokerKo(), this.app)
+  })
 
   this.app.components['BrokerClient'].deliveryClient.on('ready', () => {
-    setTimeout(() => {
-      this.app.components['IoHandler'].brokerOk()
-    }, 300); // We wait IoHandler component to be loaded
-  });
+    retryConnectionOperation(() => this.app.components['IoHandler'].brokerOk(), this.app)
+  })
 }
