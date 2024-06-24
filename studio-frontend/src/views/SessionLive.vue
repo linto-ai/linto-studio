@@ -127,23 +127,22 @@ export default {
       }
     },
     "displaySubtitlesField.value"(value) {
-      this.$router.replace({
-        query: {
-          ...this.$route.query,
-          subtitles: value,
-        },
-      })
+      this.updateUrl()
     },
     "displayLiveTranscriptionField.value"(value) {
-      this.$router.replace({
-        query: {
-          ...this.$route.query,
-          liveTranscription: value,
-        },
-      })
+      this.updateUrl()
     },
   },
-  methods: {},
+  methods: {
+    updateUrl() {
+      // add liveTranscription and subtitles to url and selectedChannel
+      history.pushState(
+        {},
+        "",
+        `${this.$route.path}?subtitles=${this.displaySubtitlesField.value}&liveTranscription=${this.displayLiveTranscriptionField.value}`
+      )
+    },
+  },
   components: {
     Fragment,
     MainContent,
