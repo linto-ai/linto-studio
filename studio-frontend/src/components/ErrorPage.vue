@@ -5,6 +5,7 @@
     <p>
       {{ $t("error.server_error.subtitle") }}
     </p>
+    <slot></slot>
   </div>
 </template>
 <script>

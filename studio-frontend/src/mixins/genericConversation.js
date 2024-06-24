@@ -55,11 +55,24 @@ export const genericConversationMixin = {
         case "conversation_loaded":
           this.conversation = event.data.params
           await this.dispatchConversationUsers()
-          this.conversationLoaded = true
           this.$store.commit(
             "SET_CURRENT_CONVERSATION_NAME",
             this.conversation.name
           )
+
+          if (
+            this.conversation?.metadata?.channel?.channel_count &&
+            this.conversation?.metadata?.channel?.channel_count > 0 &&
+            this.conversation.type.mode !== "child"
+          ) {
+            const firstChannelId = this.conversation.type.child_conversations[0]
+            console.log("firstChannelId", firstChannelId)
+            // go to 1st channel
+            this.$router.replace(this.selfUrl(firstChannelId))
+          } else {
+            this.conversationLoaded = true
+          }
+
           break
         case "title_updated":
           bus.$emit("update_field", {

@@ -43,6 +43,7 @@
 import { bus } from "./main.js"
 import LoadingOverlay from "@/components/LoadingOverlay.vue"
 import ErrorView from "./views/Error.vue"
+import ErrorPage from "./components/ErrorPage.vue"
 import Loading from "./components/Loading.vue"
 import PUBLIC_ROUTES from "./const/publicRoutes.js"
 import NoOrganizationComponent from "./views/NoOrganization.vue"
@@ -194,9 +195,13 @@ export default {
     LoadingOverlay,
     Loading,
     ErrorView,
+    ErrorPage,
     NoOrganizationComponent,
   },
-  errorCaptured(error) {},
+  errorCaptured(error) {
+    console.error("errorCaptured: ", error)
+    this.error = true
+  },
 }
 </script>
 <style lang="scss">

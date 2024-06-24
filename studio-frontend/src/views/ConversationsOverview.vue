@@ -38,7 +38,9 @@
       <div class="flex col flex1">
         <section
           class="flex col overview__main-section"
-          v-if="conversation.metadata.audio.filename">
+          v-if="
+            conversation.metadata.audio && conversation.metadata.audio.filename
+          ">
           <h2 v-if="conversation.metadata.audio">
             {{ $t("conversation.media_label") }}
           </h2>
@@ -64,7 +66,6 @@
 </template>
 <script>
 import Loading from "@/components/Loading.vue"
-import ErrorView from "@/views/Error.vue"
 import Modal from "@/components/Modal.vue"
 import ConversationShare from "@/components/ConversationShare.vue"
 import UserInfoInline from "@/components/UserInfoInline.vue"
@@ -77,7 +78,6 @@ import { debounceMixin } from "../mixins/debounce.js"
 import { workerSendMessage } from "../tools/worker-message.js"
 import MainContentConversation from "../components/MainContentConversation.vue"
 import ConversationStatus from "../components/ConversationStatus.vue"
-import ConversationStatusError from "../components/ConversationStatusError.vue"
 import { timeToHMS } from "../tools/timeToHMS"
 import ConversationOverviewMainInfos from "@/components/ConversationOverviewMainInfos.vue"
 import ConversationOverviewMetadata from "@/components/ConversationOverviewMetadata.vue"
@@ -87,6 +87,7 @@ export default {
   mixins: [conversationMixin, debounceMixin],
   data() {
     return {
+      selfUrl: (convId) => `/interface/conversations/${convId}`,
       conversationId: "",
       membersRight: {
         value: 1,
@@ -120,7 +121,7 @@ export default {
       return this.conversation?.metadata?.audio?.filename
     },
     duration() {
-      return timeToHMS(this.conversation.metadata.audio.duration)
+      return timeToHMS(this.conversation?.metadata?.audio?.duration)
     },
     linkToMedia() {
       const BASE_API = process.env.VUE_APP_CONVO_API
@@ -148,10 +149,8 @@ export default {
     UserInfoInline,
     CollaborativeField,
     Loading,
-    ErrorView,
     MainContentConversation,
     ConversationStatus,
-    ConversationStatusError,
     ConversationOverviewMainInfos,
     ConversationOverviewMetadata,
     LabeledValue,

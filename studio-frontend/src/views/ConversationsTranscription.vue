@@ -142,13 +142,13 @@ import ModalDeleteTagHighlight from "@/components/ModalDeleteTagHighlight.vue"
 import ConversationShare from "@/components/ConversationShare.vue"
 import TranscriptionHelper from "@/components/TranscriptionHelper.vue"
 import AppEditorMetadataModal from "@/components/AppEditorMetadataModal.vue"
-import ErrorView from "./Error.vue"
 import SearchResultPaginator from "@/components/SearchResultPaginator.vue"
 
 export default {
   mixins: [conversationMixin],
   data() {
     return {
+      selfUrl: (convId) => `/interface/conversations/${convId}/transcription`,
       filterSpeakers: "default",
       helperVisible: false,
       status: null,
@@ -385,7 +385,6 @@ export default {
     Modal,
     UserInfoInline,
     AppEditor,
-    ErrorView,
     MainContentConversation,
     HighlightsList,
     MenuToolbox,

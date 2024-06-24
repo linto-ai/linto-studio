@@ -137,7 +137,6 @@ import Loading from "@/components/Loading.vue"
 import Modal from "@/components/Modal.vue"
 import UserInfoInline from "@/components/UserInfoInline.vue"
 import AppEditor from "@/components/AppEditor.vue"
-import ErrorView from "./Error.vue"
 import MainContentConversation from "@/components/MainContentConversation.vue"
 import MenuToolbox from "@/components/MenuToolbox.vue"
 import CustomSelect from "@/components/CustomSelect.vue"
@@ -152,6 +151,7 @@ export default {
   mixins: [conversationMixin],
   data() {
     return {
+      selfUrl: (convId) => `/interface/conversations/${convId}/publish`,
       conversationId: "",
       filterSpeakers: [],
       speakerIndexedBySpeakerId: {},
@@ -502,7 +502,6 @@ export default {
     Modal,
     UserInfoInline,
     AppEditor,
-    ErrorView,
     MainContentConversation,
     MenuToolbox,
     CustomSelect,

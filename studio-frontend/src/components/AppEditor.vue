@@ -45,6 +45,11 @@
         v-model="currentPageNb"
         :pages="pages"></AppEditorPagination>
     </AppEditorPlayer>
+    <div id="conversation-audio-player" v-else>
+      <AppEditorPagination
+        v-model="currentPageNb"
+        :pages="pages"></AppEditorPagination>
+    </div>
   </div>
 </template>
 <script>
