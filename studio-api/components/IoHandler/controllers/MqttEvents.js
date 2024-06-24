@@ -8,7 +8,7 @@ const retryConnectionOperation = (operation, app, retryCount = 0) => {
   if (app.components['IoHandler']) {
     operation()
   } else if (retryCount < maxRetries) {
-    setTimeout(() => retryOperation(operation, app, retryCount + 1), retryInterval)
+    setTimeout(() => retryConnectionOperation(operation, app, retryCount + 1), retryInterval)
   } else {
     debug('IoHandler not loaded after maximum retries')
   }
