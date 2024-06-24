@@ -164,9 +164,14 @@ async function getChildConversation(req, res, next) {
     try {
         if (!req.params.conversationId) throw new ConversationIdRequire()
         const conversation = await model.conversations.getById(req.params.conversationId)
+
         if (conversation.length !== 1) throw new ConversationNotFound()
         if (conversation[0].type.mode === 'canonical') {
-            const childConversations = await model.conversations.getConversationFromList(conversation[0].type.child_conversations)
+            let projection = req.query?.projection ? req.query.projection.split(',') : [];
+
+
+            const childConversations = await model.conversations
+                .getConversationFromList(conversation[0].type.child_conversations, projection)
             res.status(200).send(childConversations)
         } else {
             res.status(200).send([])

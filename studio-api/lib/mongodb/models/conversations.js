@@ -64,7 +64,7 @@ class ConvoModel extends MongoModel {
         }
     }
 
-    async getConversationFromList(ids) {
+    async getConversationFromList(ids, projectionArray) {
         ids = ids.map(id => {
             if (typeof id === 'string') return this.getObjectId(id)
             else return id
@@ -76,7 +76,14 @@ class ConvoModel extends MongoModel {
             },
         }
 
-        return await this.mongoRequest(query)
+        let projection = {}
+        if (projectionArray) {
+            projectionArray.map(element => {
+                projection[element] = 1
+            })
+        }
+
+        return await this.mongoRequest(query, projection)
     } catch(error) {
         console.error(error)
         return errorMonitor
