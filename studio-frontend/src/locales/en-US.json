@@ -14,6 +14,12 @@
       "content": "Are you sure you want to delete this tag ?"
     }
   },
+  "app_editor_channels_selector": {
+    "label": "Choose a channel"
+  },
+  "app_editor_search": {
+    "label": "Search in transcription"
+  },
   "highlights_name": {
     "keyword": "Keywords"
   },

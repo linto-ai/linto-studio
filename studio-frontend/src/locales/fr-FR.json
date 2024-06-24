@@ -14,6 +14,12 @@
       "content": "Êtes vous sur de vouloir supprimer ce tag?"
     }
   },
+  "app_editor_channels_selector": {
+    "label": "Choisir un canal"
+  },
+  "app_editor_search": {
+    "label": "Rechercher"
+  },
   "highlights_name": {
     "keyword": "Mots clés"
   },

@@ -55,6 +55,7 @@
         </div>
         <div class="flex gap-medium">
           <div
+            v-if="audioDuration"
             class="conversation-line__duration"
             :title="$t('conversation.duration', { duration: audioDuration })">
             <LabeledValueSmall

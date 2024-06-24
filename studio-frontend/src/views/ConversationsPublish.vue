@@ -6,6 +6,13 @@
     :error="error"
     :sidebar="true">
     <template v-slot:sidebar>
+      <div
+        class="form-field flex col medium-margin"
+        v-if="conversationType === 'child'">
+        <AppEditorChannelsSelector
+          :channels="channels"
+          v-model="selectedChannel" />
+      </div>
       <div style="margin: 0 1rem" class="flex col">
         <!-- <h2>{{ $t(`publish.filter_title.${activeTab}`) }}</h2> -->
         <section v-if="isUpdated">
@@ -146,6 +153,7 @@ import Tabs from "@/components/Tabs.vue"
 import ConversationShare from "@/components/ConversationShare.vue"
 import TranscriptionHelper from "@/components/TranscriptionHelper.vue"
 import ConversationPublishContent from "@/components/ConversationPublishContent.vue"
+import AppEditorChannelsSelector from "@/components/AppEditorChannelsSelector.vue"
 
 export default {
   mixins: [conversationMixin],
@@ -512,6 +520,7 @@ export default {
     // ConversationPublishCra,
     // ConversationPublishCri,
     ConversationPublishContent,
+    AppEditorChannelsSelector,
   },
 }
 </script>

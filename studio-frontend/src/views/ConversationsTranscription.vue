@@ -7,8 +7,18 @@
     sidebar>
     <template v-slot:sidebar>
       <div>
+        <div
+          class="form-field flex col medium-margin"
+          v-if="conversationType === 'child'">
+          <AppEditorChannelsSelector
+            :channels="channels"
+            v-model="selectedChannel" />
+        </div>
+
         <div class="form-field flex col medium-margin">
-          <label for="transcription-search">Rechercher</label>
+          <label for="transcription-search">{{
+            $t("app_editor_search.label")
+          }}</label>
           <div class="flex gap-small">
             <input
               class="flex1"
@@ -73,7 +83,7 @@
       <h1
         class="flex1 center-text text-cut"
         style="padding-left: 1rem; padding-right: 1rem">
-        {{ conversation.name }}
+        {{ name }}
       </h1>
 
       <router-link
@@ -143,6 +153,7 @@ import ConversationShare from "@/components/ConversationShare.vue"
 import TranscriptionHelper from "@/components/TranscriptionHelper.vue"
 import AppEditorMetadataModal from "@/components/AppEditorMetadataModal.vue"
 import SearchResultPaginator from "@/components/SearchResultPaginator.vue"
+import AppEditorChannelsSelector from "@/components/AppEditorChannelsSelector.vue"
 
 export default {
   mixins: [conversationMixin],
@@ -391,6 +402,7 @@ export default {
     ModalDeleteTagHighlight,
     AppEditorMetadataModal,
     SearchResultPaginator,
+    AppEditorChannelsSelector,
   },
 }
 </script>

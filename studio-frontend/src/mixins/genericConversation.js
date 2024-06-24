@@ -1,6 +1,8 @@
 import {
   apiGetAudioFileFromConversation,
   apiGetUserRightFromConversation,
+  apiGetConversationById,
+  apiGetConversationChild,
 } from "../api/conversation.js"
 import { bus } from "../main.js"
 import { getCookie } from "../tools/getCookie.js"
@@ -20,7 +22,10 @@ export const genericConversationMixin = {
       focusFields: {},
       conversationUsersLoaded: false,
       conversation: null,
+      parentConversation: null,
+      channels: [],
       conversationId: "",
+      selectedChannel: "",
       userRight: 0,
       error: false,
       hightlightsCategories: [],
@@ -54,25 +59,7 @@ export const genericConversationMixin = {
           break
         case "conversation_loaded":
           this.conversation = event.data.params
-          await this.dispatchConversationUsers()
-          this.$store.commit(
-            "SET_CURRENT_CONVERSATION_NAME",
-            this.conversation.name
-          )
-
-          if (
-            this.conversation?.metadata?.channel?.channel_count &&
-            this.conversation?.metadata?.channel?.channel_count > 0 &&
-            this.conversation.type.mode !== "child"
-          ) {
-            const firstChannelId = this.conversation.type.child_conversations[0]
-            console.log("firstChannelId", firstChannelId)
-            // go to 1st channel
-            this.$router.replace(this.selfUrl(firstChannelId))
-          } else {
-            this.conversationLoaded = true
-          }
-
+          await this.initConversation()
           break
         case "title_updated":
           bus.$emit("update_field", {
@@ -138,8 +125,55 @@ export const genericConversationMixin = {
         )
       } else return []
     },
+    conversationType() {
+      // canonical or child
+      return this.conversation?.type?.mode ?? "canonical"
+    },
+    hasChildConversations() {
+      return this.childConversations.length > 0
+    },
+    childConversations() {
+      // return child conversations ids
+      return this.conversation?.type?.child_conversations ?? []
+    },
+    parentConversationId() {
+      return this.conversation?.type?.from_parent_id ?? ""
+    },
+    name() {
+      if (this.conversationType === "canonical") {
+        return this.conversation?.name
+      } else {
+        return this.parentConversation?.name
+      }
+    },
   },
   methods: {
+    async initConversation() {
+      if (this.conversationType === "canonical" && this.hasChildConversations) {
+        const firstChannelId = this.childConversations[0]
+        this.$router.replace(this.selfUrl(firstChannelId))
+        return
+      }
+
+      if (this.conversationType === "child") {
+        // fetch parent conversation
+        this.parentConversation = await apiGetConversationById(
+          this.parentConversationId
+        )
+        //fetch other child names
+        this.channels = await apiGetConversationChild(
+          this.parentConversationId,
+          ["name"]
+        )
+
+        this.selectedChannel = this.conversation._id
+      }
+
+      await this.dispatchConversationUsers()
+
+      this.conversationLoaded = true
+    },
+
     async fetchUserRight() {
       this.userRight = (
         await apiGetUserRightFromConversation(this.conversationId)
@@ -207,6 +241,13 @@ export const genericConversationMixin = {
           default:
             return job.state
         }
+      }
+    },
+  },
+  watch: {
+    selectedChannel(newVal, oldVal) {
+      if (newVal !== oldVal && oldVal !== "") {
+        this.$router.replace(this.selfUrl(newVal))
       }
     },
   },
