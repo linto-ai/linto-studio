@@ -4,6 +4,7 @@ const { v4: uuidv4 } = require('uuid')
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const DEFAULT_MEMBER_RIGHTS = '3'
+const DEFAULT_SPEAKER_NAME = 'Unknown speaker"'
 
 function initConversationMultiChannel(session, type = 'canonical') {
     return {
@@ -83,14 +84,14 @@ function initCaptionsForConversation(sessionData) {
                 let spk_id = caption.locutor
 
                 if (!caption.locutor) {
-                    caption.locutor = 'chanel'
+                    caption.locutor = DEFAULT_SPEAKER_NAME
                 }
 
                 let existingSpeaker = caption.speakers.find(speaker => speaker.speaker_name === caption.locutor)
                 if (!existingSpeaker) {
                     caption.speakers.push({
                         speaker_id: uuidv4(),
-                        speaker_name: caption.locutor || 'chanel',
+                        speaker_name: caption.locutor || DEFAULT_SPEAKER_NAME,
                         stime: channel_caption.start,
                         etime: channel_caption.end
                     })
