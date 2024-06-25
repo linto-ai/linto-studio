@@ -5,6 +5,7 @@
       :id="id"
       :name="name"
       :checked="value"
+      :disabled="disabled"
       :value="checkboxValue"
       v-model="_value" />
     <label :for="id">
@@ -20,6 +21,7 @@ export default {
     id: { type: String, default: "" },
     name: { type: String, default: "" },
     checkboxValue: { type: String, default: null },
+    disabled: { type: Boolean, default: false },
   },
   data() {
     return {}
@@ -32,6 +34,7 @@ export default {
         return this.value
       },
       set(value) {
+        if (this.disabled) return
         this.$emit("input", value)
       },
     },

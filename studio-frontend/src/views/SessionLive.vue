@@ -42,11 +42,13 @@
         <FormInput :field="fontSizeField" v-model="fontSizeField.value" />
 
         <FormCheckbox
+          disabled
           :field="displaySubtitlesField"
           switchDisplay
           v-model="displaySubtitlesField.value" />
 
         <FormCheckbox
+          disabled
           :field="displayLiveTranscriptionField"
           switchDisplay
           v-model="displayLiveTranscriptionField.value" />

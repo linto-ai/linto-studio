@@ -23,7 +23,7 @@
       v-else-if="status === 'processing'"
       class="flex col center-text publish-main__loading align-center flex1 justify-center">
       <h2 class="center-text">
-        {{ $t(`publish.generation_first_line.${format}`) }}
+        {{ $t(`publish.generation_first_line.general`) }}
       </h2>
       <div
         :class="'circle-progress-bar-' + Math.trunc(pdfPercentage)"

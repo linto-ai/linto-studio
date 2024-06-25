@@ -98,10 +98,12 @@ table {
       position: absolute;
       @include maskImage("../public/img/line-arrow.svg");
       @include transition(all 0.3s ease);
+      top: 50%;
+      transform: translateY(-50%);
     }
     &.asc {
       &:after {
-        transform: rotate(180deg);
+        transform: rotate(180deg) translateY(50%);
       }
     }
   }

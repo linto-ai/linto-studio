@@ -7,7 +7,11 @@
         v-model="value"
         :id="id"
         v-if="!switchDisplay" /> -->
-      <Checkbox v-model="value" :id="id" v-if="!switchDisplay" />
+      <Checkbox
+        v-model="value"
+        :id="id"
+        v-if="!switchDisplay"
+        :disabled="disabled" />
       <SwitchInput
         v-model="value"
         :id="id"
