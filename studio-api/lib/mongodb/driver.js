@@ -40,7 +40,7 @@ class MongoDriver {
                 poolSize: 40,
                 connectTimeoutMS: 5000,
                 userNewUrlParser: true,
-                useUnifiedTopology: true // ?? this is now false??
+                useUnifiedTopology: true
             }
             //if connection exists
         if (MongoDriver.checkConnection()) {

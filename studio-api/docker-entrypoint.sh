@@ -2,7 +2,7 @@
 set -e
 
 echo "Waiting mongo..."
-/wait-for-it.sh $DB_HOST:$DB_PORT --timeout=20 --strict -- echo " $DB_HOST:$DB_PORT is up"
+/wait-for-it.sh $DB_HOST_MONGO:$DB_PORT_MONGO --timeout=20 --strict -- echo " $DB_HOST_MONGO:$DB_PORT_MONGO is up"
 
 while [ "$1" != "" ]; do
     case $1 in
