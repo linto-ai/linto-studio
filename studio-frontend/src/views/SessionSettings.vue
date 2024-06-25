@@ -59,7 +59,7 @@
 
         <button
           class="btn red-border"
-          @click="deleteSession"
+          @click="openModalDeleteSession"
           :disabled="isDeleting">
           <span class="icon trash"></span>
           <span class="label">{{
@@ -70,6 +70,10 @@
     </template>
 
     <SessionSettingsContent v-if="sessionLoaded" :session="session" />
+    <ModalDeleteSession
+      v-if="showModalDeleteSession"
+      @on-close="closeModalDeleteSession"
+      @on-confirm="deleteSession" />
   </MainContent>
 </template>
 <script>
@@ -79,21 +83,32 @@ import { sessionMixin } from "@/mixins/session.js"
 
 import MainContent from "@/components/MainContent.vue"
 import SessionSettingsContent from "../components/SessionSettingsContent.vue"
+import ModalDeleteSession from "../components/ModalDeleteSession.vue"
 
 export default {
   mixins: [sessionMixin],
   props: {},
   data() {
-    return {}
+    return {
+      showModalDeleteSession: false,
+    }
   },
   created() {
     // if not started, redirect to home
   },
   mounted() {},
-  methods: {},
+  methods: {
+    openModalDeleteSession() {
+      this.showModalDeleteSession = true
+    },
+    closeModalDeleteSession() {
+      this.showModalDeleteSession = false
+    },
+  },
   components: {
     MainContent,
     SessionSettingsContent,
+    ModalDeleteSession,
   },
 }
 </script>

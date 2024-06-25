@@ -691,7 +691,13 @@
       "global_informations_title": "Global informations",
       "isPublic_label": "Allow anonymous access to the session",
       "publicLink_label": "Session link",
-      "start_time_label": "Start time"
+      "start_time_label": "Start time",
+      "delete_modal": {
+        "action": "Delete",
+        "content": "Are you sure you want to delete this session ?",
+        "title": "Delete session"
+      },
+      "title": "Session settings"
     },
     "start_undefined": "Not defined"
   },

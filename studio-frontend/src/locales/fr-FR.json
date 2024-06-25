@@ -691,7 +691,12 @@
       "global_informations_title": "Informations générales",
       "isPublic_label": "Autoriser l'accès anonyme à la session",
       "publicLink_label": "Lien de la session",
-      "start_time_label": "Heure de début"
+      "start_time_label": "Heure de début",
+      "delete_modal": {
+        "action": "Supprimer",
+        "content": "Êtes vous sur de vouloir supprimer la session ?",
+        "title": "Supprimer la session"
+      }
     },
     "start_undefined": "Non définie"
   },
