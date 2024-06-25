@@ -1,4 +1,4 @@
-const debug = require('debug')('linto:components:WebServer:controller:fetchHandler')
+const debug = require('debug')('linto:components:WebServer:controller:resultHandler')
 
 const SttWrapper = require(`${process.cwd()}/components/WebServer/controllers/conversation/generator`)
 const { segmentNormalizeText } = require(`${process.cwd()}/components/WebServer/controllers/conversation/normalizeSegment`)
