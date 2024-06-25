@@ -75,7 +75,8 @@ const generate = async (data, query) => {
                 }
             },
         }).then(doc => {
-            resolve(new Blob([doc], { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" }))
+            resolve(Buffer.from(doc))
+            // resolve(new Blob([doc], { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" }))
         })
     })
 }

@@ -24,9 +24,10 @@ async function generateDocxOnFormat(query, conversationExport) {
     }
 
     let document = await generate(data, query)
-
-    if (document instanceof Blob)
-        return await writeBlobToFile(document, data.conversation.name)
+    debug(document)
+    debug(document instanceof Buffer)
+    if (document instanceof Buffer)
+        return await writeBuffer(document, data.conversation.name)
 
     return await writeFile(document.doc, data.conversation.name)
 }
@@ -40,6 +41,16 @@ async function writeFile(doc, name) {
         path: outputFilePath,
         name: name + '.docx'
     }
+}
+
+async function writeBuffer(buffer, name){
+    const outputFilePath = `/tmp/${name.replace(/[^a-zA-Z0-9 ]/g, "")}.docx`
+
+    fs.writeFileSync(outputFilePath, buffer);
+    return {
+        path: outputFilePath,
+        name: name + '.docx'
+    };
 }
 
 async function writeBlobToFile(blob, name) {
