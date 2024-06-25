@@ -12,7 +12,7 @@
       <h1
         class="flex1 center-text text-cut"
         style="padding-left: 1rem; padding-right: 1rem">
-        {{ conversation.name }}
+        {{ name }}
       </h1>
       <div class="flex row conversation-actions gap-small">
         <router-link
@@ -32,6 +32,8 @@
       <div class="flex col flex1">
         <ConversationOverviewMainInfos
           :conversation="conversation"
+          :parentConversation="parentConversation"
+          :channels="channels"
           :canEdit="userRights.hasRightAccess(userRight, userRights.WRITE)" />
       </div>
       <!-- Media file -->

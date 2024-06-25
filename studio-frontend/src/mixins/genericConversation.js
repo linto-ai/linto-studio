@@ -8,8 +8,10 @@ import { bus } from "../main.js"
 import { getCookie } from "../tools/getCookie.js"
 import { workerDisconnect } from "../tools/worker-message.js"
 import EditorWorker from "../workers/collaboration-worker"
+import { conversationModelMixin } from "./conversationModel.js"
 
 export const genericConversationMixin = {
+  mixins: [conversationModelMixin],
   props: {
     userInfo: { type: Object, required: true },
   },
@@ -124,27 +126,6 @@ export const genericConversationMixin = {
           []
         )
       } else return []
-    },
-    conversationType() {
-      // canonical or child
-      return this.conversation?.type?.mode ?? "canonical"
-    },
-    hasChildConversations() {
-      return this.childConversations.length > 0
-    },
-    childConversations() {
-      // return child conversations ids
-      return this.conversation?.type?.child_conversations ?? []
-    },
-    parentConversationId() {
-      return this.conversation?.type?.from_parent_id ?? ""
-    },
-    name() {
-      if (this.conversationType === "canonical") {
-        return this.conversation?.name
-      } else {
-        return this.parentConversation?.name
-      }
     },
   },
   methods: {
