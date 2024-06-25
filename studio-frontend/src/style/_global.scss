@@ -261,6 +261,10 @@ li:last-child {
   overflow-y: auto;
 }
 
+.overflow-horizontal-auto {
+  overflow-x: auto;
+}
+
 .reset-color {
   color: var(--text-primary);
 }

@@ -22,13 +22,14 @@
               <span class="label">{{ $t("session.channels_list.add") }}</span>
             </button>
           </div>
-
-          <SessionChannelsTable
-            v-if="channels.length > 0"
-            :channelsList="channels"
-            @updateName="updateName"
-            @removeChannel="removeChannel" />
-          <p v-else>{{ $t("session.channels_list.empty") }}</p>
+          <div class="overflow-horizontal-auto">
+            <SessionChannelsTable
+              v-if="channels.length > 0"
+              :channelsList="channels"
+              @updateName="updateName"
+              @removeChannel="removeChannel" />
+            <p v-else>{{ $t("session.channels_list.empty") }}</p>
+          </div>
         </section>
 
         <div class="form-field flex row">

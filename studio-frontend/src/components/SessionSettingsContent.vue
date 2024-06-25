@@ -38,10 +38,12 @@
     </section>
     <section>
       <h2>{{ $t("session.settings_page.channels_list_title") }}</h2>
-      <SessionChannelsTable
-        v-if="channels.length > 0"
-        from="sessionSettings"
-        :channelsList="channels"></SessionChannelsTable>
+      <div class="overflow-horizontal-auto">
+        <SessionChannelsTable
+          v-if="channels.length > 0"
+          from="sessionSettings"
+          :channelsList="channels"></SessionChannelsTable>
+      </div>
     </section>
   </div>
 </template>
