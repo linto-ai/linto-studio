@@ -1,5 +1,5 @@
 <template>
-  <div class="session-content" :style="style">
+  <div class="session-content flex flex1 col" :style="style">
     <div class="medium-margin">
       <h1 class="center-text session-content__title">{{ name }}</h1>
     </div>

@@ -2,7 +2,7 @@
   <MainContent noBreadcrumb :organizationPage="false" fullwidthContent sidebar>
     <template v-slot:breadcrumb-actions>
       <router-link :to="sessionListRoute" class="btn secondary">
-        <span class="icon close"></span>
+        <span class="icon back"></span>
         <span class="label">{{
           $t("session.detail_page.back_to_listing")
         }}</span>

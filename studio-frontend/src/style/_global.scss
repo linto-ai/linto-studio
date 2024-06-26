@@ -200,6 +200,10 @@ li:last-child {
   position: relative;
 }
 
+.border-divider-bottom {
+  border-bottom: var(--divider);
+}
+
 .dropDown {
   position: absolute;
   background-color: var(--background-primary);

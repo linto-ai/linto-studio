@@ -2,6 +2,8 @@ import io from "socket.io-client"
 import { customDebug } from "../tools/customDebug"
 
 const socketioUrl = process.env.VUE_APP_SESSION_WS
+const socketioPath = process.env.VUE_APP_SESSION_WS_PATH
+
 const debugWS = customDebug("Websocket:Session:debug")
 
 export default class Session {
@@ -16,7 +18,7 @@ export default class Session {
 
   connect() {
     return new Promise((resolve, reject) => {
-      this.socket = io(socketioUrl)
+      this.socket = io(socketioUrl, { path: socketioPath })
       this.socket.on("connect", (msg) => {
         debugWS("connected to socket.io server", msg)
         this.isConnected = true

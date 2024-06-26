@@ -637,22 +637,23 @@
       "title": "Create a session"
     },
     "detail_page": {
-      "back_to_listing": "Back to sessions list",
-      "back_to_live": "Back to live",
-      "delete_button": "Delete session",
+      "back_to_listing": "Sessions list",
+      "back_to_live": "Go to the live",
+      "delete_button": "Delete",
       "display_live_transcription_label": "Display live transcription",
       "display_subtitles_label": "Display subtitles",
       "end_time_not_defined": "Not defined",
       "font_size_label": "Font size",
+      "no_transcription": "Nothing has been transcribed yet for this channel",
       "session_not_started_title": "The session has not started yet",
       "sessions_status": {
         "no_started": "The session is scheduled",
         "started": "The session is in progress"
       },
       "settings_button": "Settings",
-      "start_button": "Start session",
+      "start_button": "Start",
       "start_time_not_defined": "Not defined",
-      "stop_button": "Stop session",
+      "stop_button": "Stop",
       "title_interface_settings": "Interface settings",
       "undefined_lang": "Unknown language",
       "undefined_speaker": "Undefined speaker"

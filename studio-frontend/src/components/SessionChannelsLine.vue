@@ -1,6 +1,6 @@
 <template>
   <tr>
-    <td class="content-size">
+    <td class="content-size" v-if="from === 'formCreateSession'">
       <img
         class="icon medium"
         :src="type"

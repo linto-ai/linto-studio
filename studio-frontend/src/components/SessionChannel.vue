@@ -1,6 +1,7 @@
 <template>
-  <div>
+  <div class="flex col flex1">
     <div
+      v-if="turns.length > 0 || partialText !== ''"
       class="flex col flex1 session-content__turns"
       :class="{ has_subtitles: displaySubtitles }">
       <SessionChannelTurn
@@ -16,6 +17,13 @@
 
       <div ref="bottom"></div>
     </div>
+    <div
+      v-else
+      class="flex align-center justify-center flex1 col center-text gap-medium">
+      <h2>{{ $t("session.detail_page.no_transcription") }}</h2>
+      <Svglogo style="max-height: 6rem; margin: 2rem" />
+    </div>
+
     <div
       class="session-content__subtitle"
       ref="subtitle"
@@ -36,6 +44,7 @@ import { bus } from "../main.js"
 
 import SessionChannelTurn from "@/components/SessionChannelTurn.vue"
 import SessionChannelTurnPartial from "@/components/SessionChannelTurnPartial.vue"
+import Svglogo from "@/svg/Microphone.vue"
 
 export default {
   props: {
@@ -120,6 +129,11 @@ export default {
       )
     },
   },
-  components: { Fragment, SessionChannelTurn, SessionChannelTurnPartial },
+  components: {
+    Fragment,
+    SessionChannelTurn,
+    SessionChannelTurnPartial,
+    Svglogo,
+  },
 }
 </script>

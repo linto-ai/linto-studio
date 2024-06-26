@@ -3,6 +3,7 @@
     <thead>
       <tr>
         <ArrayHeader
+          v-if="from === 'formCreateSession'"
           @list_sort_by="sortBy"
           eventLabel="type"
           :label="$t('session.channels_list.labels.type')"
