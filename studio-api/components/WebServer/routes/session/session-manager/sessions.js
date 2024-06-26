@@ -24,12 +24,15 @@ module.exports = (webserver) => {
             requireOrganizationMemberAccess: true,
             controller: async (req, res, next) => {
                 try {
+                    const transcriber_id = req.query.transcriber_id
                     const session = await Model.Session.findByPk(req.params.id, {
                         include: {
                             model: Model.Channel,
                             attributes: {
                                 exclude: ['id', 'sessionId']
-                            }
+                            },
+                            where: transcriber_id ? { transcriber_id: transcriber_id } : {} // Apply filter if transcriberId is provided
+
                         },
                         where: {
                             organizationId: req.params.organizationId
