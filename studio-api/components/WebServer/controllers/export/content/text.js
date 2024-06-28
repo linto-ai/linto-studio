@@ -101,10 +101,18 @@ function processTurnTable(paragraphs_content, conversation, data, query) {
             } else datetime = text.stime + ' - ' + text.etime
 
         }
-        const languageName = new Intl.DisplayNames(['en'], { type: 'language' }).of(lang)
+
+        let displayLang = lang
+        if (text.lang) lang = text.lang
+        if (Array.isArray(lang)) {
+            displayLang = lang.join(' - ')
+        } else {
+            displayLang = new Intl.DisplayNames(['en'], { type: 'language' }).of(lang)
+        }
+
         lines.push({
             datetime: datetime,
-            language: languageName,
+            language: displayLang,
             speaker: conversation.speakers.find(speaker => speaker.speaker_id === text.speaker_id).speaker_name,
             text: text.segment,
         })

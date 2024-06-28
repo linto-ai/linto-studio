@@ -24,8 +24,6 @@ async function generateDocxOnFormat(query, conversationExport) {
     }
 
     let document = await generate(data, query)
-    debug(document)
-    debug(document instanceof Buffer)
     if (document instanceof Buffer)
         return await writeBuffer(document, data.conversation.name)
 
