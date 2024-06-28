@@ -3,7 +3,7 @@ const debug = require('debug')(`linto:conversation-manager:components:WebServer:
 const { v4: uuidv4 } = require('uuid')
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
-const DEFAULT_MEMBER_RIGHTS = '3'
+const DEFAULT_MEMBER_RIGHTS = 3
 const DEFAULT_SPEAKER_NAME = 'Unknown speaker'
 
 function initConversationMultiChannel(session, type = 'canonical') {

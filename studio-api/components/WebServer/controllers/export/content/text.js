@@ -106,7 +106,7 @@ function processTurnTable(paragraphs_content, conversation, data, query) {
         if (text.lang) lang = text.lang
         if (Array.isArray(lang)) {
             displayLang = lang.join(' - ')
-        }else {
+        } else {
             displayLang = new Intl.DisplayNames(['en'], { type: 'language' }).of(lang)
         }
 
