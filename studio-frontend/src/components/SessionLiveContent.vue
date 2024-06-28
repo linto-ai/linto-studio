@@ -1,10 +1,12 @@
 <template>
-  <div class="session-content flex flex1 col" :style="style">
+  <div class="session-content flex flex1 col" @scroll="handleScroll">
     <div class="medium-margin">
       <h1 class="center-text session-content__title">{{ name }}</h1>
     </div>
     <SessionChannel
       v-if="isConnected"
+      :sessionId="session.id"
+      :currentOrganizationScope="currentOrganizationScope"
       :fontSize="fontSize"
       :channel="selectedChannel"
       :displaySubtitles="displaySubtitles"
@@ -37,7 +39,7 @@ export default {
     },
     fontSize: {
       type: String,
-      default: "16",
+      default: "48",
     },
     displaySubtitles: {
       type: Boolean,
@@ -46,6 +48,10 @@ export default {
     displayLiveTranscription: {
       type: Boolean,
       default: true,
+    },
+    currentOrganizationScope: {
+      type: String,
+      required: true,
     },
   },
   data() {
@@ -64,17 +70,14 @@ export default {
     isInError() {
       return this.selectedChannel?.transcriber_status === "errored"
     },
-    style() {
-      return {
-        fontSize: this.fontSize + "px",
-        lineHeight: this.fontSize * 1.3 + "px",
-      }
-    },
   },
   methods: {
     async init() {
       await this.sessionWS.connect()
       this.isConnected = true
+    },
+    handleScroll() {
+      console.log("scroll")
     },
   },
   components: { Fragment, SessionChannel, Loading },

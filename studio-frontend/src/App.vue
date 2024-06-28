@@ -79,6 +79,7 @@ export default {
       localStorage.getItem("currentTheme") || "light"
     )
     this.appMounted = true
+    document.title = this.title
     this.init()
   },
   beforeDestroy() {
@@ -94,6 +95,9 @@ export default {
     },
   },
   computed: {
+    title() {
+      return process.env.VUE_APP_NAME || "LinTO studio"
+    },
     isPrivateRoute() {
       return !this.$route?.meta?.public
     },

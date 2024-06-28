@@ -39,19 +39,21 @@
           class="session-selector"></SessionChannelsSelector>
 
         <h3>{{ $t("session.detail_page.title_interface_settings") }}</h3>
-        <FormInput :field="fontSizeField" v-model="fontSizeField.value" />
-
+        <FormCheckbox
+          disabled
+          :field="displayLiveTranscriptionField"
+          switchDisplay
+          v-model="displayLiveTranscriptionField.value" />
         <FormCheckbox
           disabled
           :field="displaySubtitlesField"
           switchDisplay
           v-model="displaySubtitlesField.value" />
 
-        <FormCheckbox
-          disabled
-          :field="displayLiveTranscriptionField"
-          switchDisplay
-          v-model="displayLiveTranscriptionField.value" />
+        <FormInput
+          :field="fontSizeField"
+          v-model="fontSizeField.value"
+          v-if="displaySubtitlesField.value" />
       </div>
     </template>
 
@@ -62,6 +64,7 @@
 
       <SessionLiveContent
         v-else
+        :currentOrganizationScope="currentOrganizationScope"
         :fontSize="fontSizeField.value"
         :displaySubtitles="displaySubtitlesField.value"
         :displayLiveTranscription="displayLiveTranscriptionField.value"
@@ -97,7 +100,7 @@ export default {
       selectedChannel: null,
       fontSizeField: {
         ...EMPTY_FIELD,
-        value: "16",
+        value: "48",
         label: this.$t("session.detail_page.font_size_label"),
         type: "number",
       },

@@ -90,12 +90,7 @@ let router = new Router({
     {
       path: "/interface/inbox",
       name: "inbox",
-      components: {
-        default: () => import("../views/Inbox.vue"),
-        ...defaultComponents,
-      },
-      props: defaultProps,
-      meta: { mainListingPage: true },
+      redirect: { name: "explore" },
     },
     {
       path: "/interface/explore",
@@ -333,7 +328,7 @@ router.beforeEach(async (to, from, next) => {
           to.fullPath === "/interface" ||
           to.meta?.authRoute
         ) {
-          next({ name: "inbox" })
+          next({ name: "explore" })
           return
         }
 

@@ -53,7 +53,7 @@
             @nextResult="nextResult" />
         </div>
         <HighlightsList
-          v-if="status === 'done'"
+          v-if="status === 'done' && experimental_highlight"
           :conversation="conversation"
           :hightlightsCategories="hightlightsCategories"
           :hightlightsCategoriesVisibility="hightlightsCategoriesVisibility"
@@ -208,6 +208,9 @@ export default {
     },
   },
   computed: {
+    experimental_highlight() {
+      return process.env?.VUE_APP_EXPERIMENTAL_HIGHLIGHT === "true"
+    },
     conversationListRoute() {
       return { name: "inbox", hash: "#previous" }
     },

@@ -1,6 +1,12 @@
+.session-content {
+  overflow: auto;
+  font-size: 18px;
+}
+
 .session-content__turns {
   container-type: inline-size;
   container-name: session-content;
+  gap: 0.75em;
 }
 
 .channel-turn {
@@ -21,10 +27,6 @@
   text-align: justify;
   font-family: luciole;
   line-height: 1.3em;
-}
-
-.session-content__turns {
-  gap: 0.75em;
 }
 
 // not supported in firefox ESR (2024 / v121), so we need js code
@@ -55,7 +57,7 @@
   color: white;
 
   box-sizing: border-box;
-  padding: 3em;
+  padding: 0.5em;
 }
 
 #scroller {

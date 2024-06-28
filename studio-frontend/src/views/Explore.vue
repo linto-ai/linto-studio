@@ -54,9 +54,9 @@
         <h2>
           {{ $t("explore.title") }}
         </h2>
-        <span>
+        <!-- <span>
           {{ $t("explore.subtitle") }}
-        </span>
+        </span> -->
       </ConversationListHeader>
 
       <!-- search -->

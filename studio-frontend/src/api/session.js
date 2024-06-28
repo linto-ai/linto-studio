@@ -105,3 +105,19 @@ export async function apiDeleteSession(organizationScope, sessionId, notif) {
 
   return deleteSession
 }
+
+export async function apiGetSessionChannel(
+  organizationScope,
+  sessionId,
+  transcriberId,
+  notif
+) {
+  const getSessionChannel = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}`,
+    { method: "get" },
+    { transcriber_id: transcriberId },
+    notif
+  )
+
+  return getSessionChannel?.data?.channels?.[0] ?? {}
+}

@@ -490,7 +490,7 @@
       "create_no_rights_error": "You don't have the rights to create a media. Please contact your organization administrator."
     },
     "tabs": {
-      "explore": "Explore",
+      "explore": "Media library",
       "favorites": "Favorites",
       "inbox": "Homepage",
       "manage_tags": "Manage tags",

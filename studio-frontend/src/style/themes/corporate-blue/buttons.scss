@@ -24,7 +24,7 @@ button,
   background-color: var(--primary-color);
   color: var(--primary-contrast);
   text-decoration: none;
-  block-size: 40px;
+  min-height: 40px;
   min-width: 40px;
   box-sizing: border-box;
   &:focus,
@@ -37,6 +37,7 @@ button,
     padding: 0;
     flex-shrink: 0;
     block-size: auto;
+    min-height: auto;
   }
 
   &:hover {

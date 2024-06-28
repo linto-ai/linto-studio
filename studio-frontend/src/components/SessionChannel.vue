@@ -1,9 +1,15 @@
 <template>
-  <div class="flex col flex1">
+  <div class="flex col flex1 reset-overflows">
     <div
-      v-if="turns.length > 0 || partialText !== ''"
-      class="flex col flex1 session-content__turns"
+      v-if="turns.length > 0 || previousTurns.length > 0 || partialText !== ''"
+      class="flex col flex1 session-content__turns reset-overflows"
       :class="{ has_subtitles: displaySubtitles }">
+      <SessionChannelTurn
+        v-if="displayLiveTranscription"
+        v-for="turn in previousTurns"
+        :key="turn.id"
+        :turn="turn"></SessionChannelTurn>
+
       <SessionChannelTurn
         v-if="displayLiveTranscription"
         v-for="turn in turns"
@@ -26,6 +32,7 @@
 
     <div
       class="session-content__subtitle"
+      :style="style"
       ref="subtitle"
       v-if="displaySubtitles">
       <div id="scroller">
@@ -45,6 +52,7 @@ import { bus } from "../main.js"
 import SessionChannelTurn from "@/components/SessionChannelTurn.vue"
 import SessionChannelTurnPartial from "@/components/SessionChannelTurnPartial.vue"
 import Svglogo from "@/svg/Microphone.vue"
+import { apiGetSessionChannel } from "@/api/session.js"
 
 export default {
   props: {
@@ -58,7 +66,7 @@ export default {
     },
     fontSize: {
       type: String,
-      default: "16",
+      default: "48",
     },
     displaySubtitles: {
       type: Boolean,
@@ -68,14 +76,24 @@ export default {
       type: Boolean,
       default: true,
     },
+    currentOrganizationScope: {
+      type: String,
+      required: true,
+    },
+    sessionId: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
       turns: [],
+      previousTurns: [],
       partialText: "",
     }
   },
   mounted() {
+    this.previousTurns = this.channel?.closed_captions || []
     this.init()
   },
   computed: {
@@ -85,23 +103,42 @@ export default {
     lastTwoTurns() {
       return this.turns.slice(-2)
     },
+    style() {
+      return {
+        fontSize: this.fontSize + "px",
+        lineHeight: this.fontSize * 1.3 + "px",
+      }
+    },
   },
   watch: {
     channel: {
       handler() {
         this.init()
+        this.loadPreviousTranscrition()
       },
       deep: true,
     },
   },
   methods: {
     init() {
-      this.turns = this.channel?.closed_captions || []
+      this.partialText = ""
+      this.turns = []
       this.sessionWS.subscribe(
         this.selectedChannelId,
         this.onPartial.bind(this),
         this.onFinal.bind(this)
       )
+      this.scrollToBottom()
+      this.scrollSubtitle()
+    },
+    async loadPreviousTranscrition() {
+      console.log(this.channel)
+      let res = await apiGetSessionChannel(
+        this.currentOrganizationScope,
+        this.sessionId,
+        this.channel.transcriber_id
+      )
+      this.previousTurns = res.closed_captions
     },
     onPartial(content) {
       this.partialText = content ?? ""

@@ -378,7 +378,7 @@
     "search_text_in_title": "Rechercher \"{text}\" dans le titre",
     "search_text_label": "Rechercher du texte",
     "subtitle": "Recherchez et découvrez des informations sur les médias transcrits avec de la sémantique",
-    "title": "Explorer les médias de l'organisation"
+    "title": "Parcourez les médias de l'organisation"
   },
   "favorites": {
     "subtitle": "Vos médias favoris arrivent ici.",
@@ -490,7 +490,7 @@
       "create_no_rights_error": "Vous n'avez pas les droits pour créer une session dans cette organisation. Veuillez contacter un administrateur."
     },
     "tabs": {
-      "explore": "Explorer",
+      "explore": "Médiathèque",
       "favorites": "Favoris",
       "inbox": "Accueil",
       "manage_tags": "Administrer les tags de médias",
