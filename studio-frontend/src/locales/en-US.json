@@ -688,6 +688,7 @@
       "autoStart_label": "Automatic session start",
       "channels_list_title": "Channels",
       "copy_link_button": "Copy link",
+      "copy_link_button_done": "Link copied",
       "end_time_label": "End time",
       "global_informations_title": "Global informations",
       "isPublic_label": "Allow anonymous access to the session",
