@@ -201,7 +201,7 @@
     "remove_all_filters": "Remove all filters",
     "remove_from_favorites": "Remove from favorites",
     "return_to_editor": "Return to editor",
-    "search_criterions": "Search criterions",
+    "search_criterions": "Search criteria",
     "search_in_transcription": {
       "clear_search": "Clear search",
       "exact_word_match": "Exact word match",
@@ -378,11 +378,11 @@
     "search_text_in_title": "Search \"{text}\" in title",
     "search_text_label": "Search text",
     "subtitle": "Search and discover insights on transcribed media using meaningful semantics",
-    "title": "Explore organizations medias"
+    "title": "Explore the organization’s media"
   },
   "favorites": {
     "subtitle": "Your favorite media lands here.",
-    "title": "Favorites medias"
+    "title": "Favorites media"
   },
   "global": {
     "disabled": "disabled",
@@ -717,8 +717,8 @@
     "user_right_updated": "User rights have been updated"
   },
   "sharedWithTab": {
-    "subtitle": "All medias shared with you outside an organisation seat here",
-    "title": "Medias shared with me"
+    "subtitle": "All media shared with you outside the organization are stored here",
+    "title": "Media shared with me"
   },
   "tags": {
     "add_tag_to_conversation": "Add tag",
