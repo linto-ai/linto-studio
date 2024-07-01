@@ -35,7 +35,9 @@ export default {
     },
     time() {
       if (!this.turn.astart) return "00:00:00"
-      return new Date(this.turn.astart).toLocaleTimeString()
+      return new Date(
+        new Date(this.turn.astart).getTime() + this.turn.start * 1000
+      ).toLocaleTimeString()
     },
   },
   methods: {},
