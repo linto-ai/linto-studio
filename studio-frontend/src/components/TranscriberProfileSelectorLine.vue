@@ -3,7 +3,7 @@
     <td class="content-size">
       <input type="checkbox" :value="profile" v-model="selectedProfiles" />
     </td>
-    <td class="content-size">
+    <td class="content-size center-text">
       <img
         class="icon medium"
         :src="type"
@@ -59,6 +59,8 @@ export default {
       switch (this.profile.config.type) {
         case "microsoft":
           return "/img/microsoft.png"
+        case "linto":
+          return "/img/linto.svg"
         default:
           return "/img/question.svg"
       }
