@@ -18,8 +18,12 @@
           <FormInput :field="fieldPublicLink">
             <template v-slot:content-after-input>
               <button class="btn" @click="copyPublicLink">
-                <span class="icon copy"></span>
-                <span class="label">{{
+                <span class="icon apply" v-if="linkHasBeenCopied"></span>
+                <span class="icon copy" v-else></span>
+                <span class="label" v-if="linkHasBeenCopied">{{
+                  $t("session.settings_page.copy_link_button_done")
+                }}</span>
+                <span class="label" v-else>{{
                   $t("session.settings_page.copy_link_button")
                 }}</span>
               </button>
@@ -66,7 +70,6 @@ export default {
     session: { type: Object, required: true },
   },
   data() {
-    console.log(this.name)
     return {
       fieldAutoStart: {
         value: null, // computed property cannot be used here so fields are initialized in mounted
@@ -87,6 +90,7 @@ export default {
         valid: false,
         label: this.$t("session.settings_page.isPublic_label"),
       },
+      linkHasBeenCopied: false,
     }
   },
   created() {
@@ -100,6 +104,12 @@ export default {
   methods: {
     copyPublicLink() {
       navigator.clipboard.writeText(this.publicLink)
+      this.linkHasBeenCopied = true
+      setTimeout(() => {
+        try {
+          this.linkHasBeenCopied = false
+        } catch (error) {}
+      }, 2000)
     },
   },
   components: {
