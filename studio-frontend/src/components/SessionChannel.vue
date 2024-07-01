@@ -1,7 +1,7 @@
 <template>
   <div class="flex col flex1 reset-overflows">
     <div
-      v-if="turns.length > 0 || previousTurns.length > 0 || partialText !== ''"
+      v-if="hasText"
       class="flex col flex1 session-content__turns reset-overflows"
       :class="{ has_subtitles: displaySubtitles }">
       <SessionChannelTurn
@@ -66,7 +66,7 @@ export default {
     },
     fontSize: {
       type: String,
-      default: "48",
+      default: "40",
     },
     displaySubtitles: {
       type: Boolean,
@@ -109,6 +109,13 @@ export default {
         lineHeight: this.fontSize * 1.3 + "px",
       }
     },
+    hasText() {
+      return (
+        this.turns.length > 0 ||
+        this.previousTurns.length > 0 ||
+        this.partialText !== ""
+      )
+    },
   },
   watch: {
     channel: {
@@ -132,13 +139,12 @@ export default {
       this.scrollSubtitle()
     },
     async loadPreviousTranscrition() {
-      console.log(this.channel)
       let res = await apiGetSessionChannel(
         this.currentOrganizationScope,
         this.sessionId,
         this.channel.transcriber_id
       )
-      this.previousTurns = res.closed_captions
+      this.previousTurns = res.closed_captions || []
     },
     onPartial(content) {
       this.partialText = content ?? ""
@@ -153,7 +159,7 @@ export default {
     },
     scrollToBottom() {
       if (!this.displayLiveTranscription) return
-
+      if (!this.hasText) return
       this.$nextTick().then(() => this.$refs.bottom.scrollIntoView())
     },
     scrollSubtitle() {
