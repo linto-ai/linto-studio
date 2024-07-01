@@ -119,5 +119,20 @@ export async function apiGetSessionChannel(
     notif
   )
 
-  return getSessionChannel?.data?.channels?.[0] ?? {}
+  return getSessionChannel
+}
+
+export async function apiGetPublicSessionChannel(
+  sessionId,
+  transcriberId,
+  notif
+) {
+  const getSessionChannel = await sendRequest(
+    `${BASE_API}/sessions/${sessionId}/public`,
+    { method: "get" },
+    { transcriber_id: transcriberId },
+    notif
+  )
+
+  return getSessionChannel
 }

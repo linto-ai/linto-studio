@@ -49,10 +49,14 @@
 import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
 
+import {
+  apiGetSessionChannel,
+  apiGetPublicSessionChannel,
+} from "@/api/session.js"
+
 import SessionChannelTurn from "@/components/SessionChannelTurn.vue"
 import SessionChannelTurnPartial from "@/components/SessionChannelTurnPartial.vue"
 import Svglogo from "@/svg/Microphone.vue"
-import { apiGetSessionChannel } from "@/api/session.js"
 
 export default {
   props: {
@@ -76,9 +80,9 @@ export default {
       type: Boolean,
       default: true,
     },
-    currentOrganizationScope: {
+    organizationId: {
       type: String,
-      required: true,
+      required: false,
     },
     sessionId: {
       type: String,
@@ -139,11 +143,24 @@ export default {
       this.scrollSubtitle()
     },
     async loadPreviousTranscrition() {
-      let res = await apiGetSessionChannel(
-        this.currentOrganizationScope,
-        this.sessionId,
-        this.channel.transcriber_id
-      )
+      let sessionRequest = null
+
+      if (this.organizationId) {
+        sessionRequest = await apiGetSessionChannel(
+          this.organizationId,
+          this.sessionId,
+          this.channel.transcriber_id
+        )
+      }
+
+      if (!sessionRequest || sessionRequest.status === "error") {
+        sessionRequest = await apiGetPublicSessionChannel(
+          this.sessionId,
+          this.channel.transcriber_id
+        )
+      }
+
+      const res = sessionRequest?.data?.channels?.[0] ?? {}
       this.previousTurns = res.closed_captions || []
     },
     onPartial(content) {

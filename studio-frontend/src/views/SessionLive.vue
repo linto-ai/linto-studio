@@ -64,7 +64,7 @@
 
       <SessionLiveContent
         v-else
-        :currentOrganizationScope="currentOrganizationScope"
+        :organizationId="organizationId"
         :fontSize="fontSizeField.value"
         :displaySubtitles="displaySubtitlesField.value"
         :displayLiveTranscription="displayLiveTranscriptionField.value"

@@ -6,7 +6,7 @@
     <SessionChannel
       v-if="isConnected"
       :sessionId="session.id"
-      :currentOrganizationScope="currentOrganizationScope"
+      :organizationId="organizationId"
       :fontSize="fontSize"
       :channel="selectedChannel"
       :displaySubtitles="displaySubtitles"
@@ -49,9 +49,9 @@ export default {
       type: Boolean,
       default: true,
     },
-    currentOrganizationScope: {
+    organizationId: {
       type: String,
-      required: true,
+      required: false,
     },
   },
   data() {

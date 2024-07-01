@@ -42,7 +42,7 @@ export const sessionMixin = {
   methods: {
     async fetchSession() {
       let sessionRequest = null
-      if (this.currentOrganizationScope || this.organizationId) {
+      if (this.organizationId) {
         sessionRequest = await apiGetSession(
           this.organizationId,
           this.sessionId
