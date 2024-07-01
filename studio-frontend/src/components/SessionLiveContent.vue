@@ -39,7 +39,7 @@ export default {
     },
     fontSize: {
       type: String,
-      default: "48",
+      default: "40",
     },
     displaySubtitles: {
       type: Boolean,

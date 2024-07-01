@@ -100,7 +100,7 @@ export default {
       selectedChannel: null,
       fontSizeField: {
         ...EMPTY_FIELD,
-        value: "48",
+        value: "40",
         label: this.$t("session.detail_page.font_size_label"),
         type: "number",
       },
@@ -123,9 +123,6 @@ export default {
   },
   mounted() {},
   watch: {
-    selectedChannel(value) {
-      console.log("selectedChannel", value)
-    },
     sessionLoaded() {
       if (this.sessionLoaded) {
         this.selectedChannel = this.channels[0]
