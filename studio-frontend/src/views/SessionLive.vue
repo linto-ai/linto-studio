@@ -103,6 +103,10 @@ export default {
         value: "40",
         label: this.$t("session.detail_page.font_size_label"),
         type: "number",
+        customParams: {
+          min: 12,
+          max: 68,
+        },
       },
       displaySubtitlesField: {
         ...EMPTY_FIELD,

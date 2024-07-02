@@ -59,7 +59,7 @@ export default {
     return {
       sessionWS: new SessionWS(),
       isConnected: false,
-      isBottom: false,
+      isBottom: true,
     }
   },
   mounted() {
