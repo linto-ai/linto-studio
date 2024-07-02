@@ -11,6 +11,7 @@
       :channel="selectedChannel"
       :displaySubtitles="displaySubtitles"
       :displayLiveTranscription="displayLiveTranscription"
+      :isBottom="isBottom"
       :sessionWS="sessionWS"></SessionChannel>
     <Loading v-else></Loading>
   </div>
@@ -58,6 +59,7 @@ export default {
     return {
       sessionWS: new SessionWS(),
       isConnected: false,
+      isBottom: false,
     }
   },
   mounted() {
@@ -76,8 +78,12 @@ export default {
       await this.sessionWS.connect()
       this.isConnected = true
     },
-    handleScroll() {
-      console.log("scroll")
+    handleScroll(e) {
+      let isBottom =
+        e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight
+      if (isBottom !== this.isBottom) {
+        this.isBottom = isBottom
+      }
     },
   },
   components: { Fragment, SessionChannel, Loading },

@@ -88,6 +88,10 @@ export default {
       type: String,
       required: true,
     },
+    isBottom: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -177,6 +181,8 @@ export default {
     scrollToBottom() {
       if (!this.displayLiveTranscription) return
       if (!this.hasText) return
+      if (!this.isBottom) return
+
       this.$nextTick().then(() => this.$refs.bottom.scrollIntoView())
     },
     scrollSubtitle() {
