@@ -50,7 +50,7 @@
           </label>
           <input
             id="email"
-            type="text"
+            type="email"
             v-model="email.value"
             :class="email.error !== null ? 'error' : ''"
             @change="testEmail(email)" />

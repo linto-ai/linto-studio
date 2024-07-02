@@ -91,6 +91,7 @@ export default {
     $route(to, from) {
       this.resetKey = this.resetKey * -1
       this.error = false
+      this.init()
       bus.$emit("navigation", to)
     },
   },
