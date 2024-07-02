@@ -31,12 +31,12 @@
 
 // not supported in firefox ESR (2024 / v121), so we need js code
 .session-content__turns:has(+ .session-content__subtitle) {
-  margin-bottom: 8em;
+  margin-bottom: calc(96px + 40px);
 }
 
 // TODO: remove this when firefox ESR will support :has
 .session-content__turns.has_subtitles {
-  margin-bottom: 8em;
+  margin-bottom: calc(96px + 40px);
 }
 
 .channel-turn__metadata {
@@ -64,4 +64,14 @@
   height: 96px;
   line-height: 1.2em;
   overflow: hidden;
+}
+
+.bottom-session-button {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+
+  &.has_subtitles {
+    bottom: calc(96px + 40px + 1rem);
+  }
 }

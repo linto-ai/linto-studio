@@ -43,6 +43,14 @@
         <div ref="subtitle-bottom"></div>
       </div>
     </div>
+
+    <button
+      v-if="!isBottom"
+      @click="scrollToBottom(true)"
+      class="bottom-session-button"
+      :class="{ has_subtitles: displaySubtitles }">
+      <span class="icon bottom-arrow"></span>
+    </button>
   </div>
 </template>
 <script>
@@ -178,10 +186,10 @@ export default {
       this.scrollToBottom()
       this.scrollSubtitle()
     },
-    scrollToBottom() {
+    scrollToBottom(force = false) {
       if (!this.displayLiveTranscription) return
       if (!this.hasText) return
-      if (!this.isBottom) return
+      if (!this.isBottom && !force) return
 
       this.$nextTick().then(() => this.$refs.bottom.scrollIntoView())
     },
