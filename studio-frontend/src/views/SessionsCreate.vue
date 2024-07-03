@@ -13,14 +13,20 @@
             v-model="fieldIsPublic.value"></FormCheckbox>
         </section>
         <section class="flex col gap-medium">
-          <div class="flex row gap-medium">
-            <h2 style="width: auto">
-              {{ $t("session.channels_list.title") }}
-            </h2>
-            <button class="btn" @click="addChannel" type="button">
-              <span class="icon add"></span>
-              <span class="label">{{ $t("session.channels_list.add") }}</span>
-            </button>
+          <div>
+            <div class="flex row gap-medium">
+              <h2 style="width: auto">
+                {{ $t("session.channels_list.title") }}
+              </h2>
+
+              <button class="btn" @click="addChannel" type="button">
+                <span class="icon add"></span>
+                <span class="label">{{ $t("session.channels_list.add") }}</span>
+              </button>
+            </div>
+            <div v-if="channelsError" class="error-field">
+              {{ channelsError }}
+            </div>
           </div>
           <div class="overflow-horizontal-auto">
             <SessionChannelsTable
@@ -97,13 +103,25 @@ export default {
       channels: [],
       selectedProfiles: [],
       modalAddChannelsIsOpen: false,
+      channelsError: null,
     }
+  },
+  watch: {
+    selectedProfiles() {
+      this.channelsError = null
+    },
   },
   mounted() {},
   methods: {
     async createSession(e) {
       e.preventDefault()
       this.state = "sending"
+      if (this.channels.length === 0) {
+        this.channelsError = this.$i18n.t("session.create_page.channels_error")
+        this.state = "error"
+        return false
+      }
+
       if (this.testFields()) {
         const res = await apiCreateSession(this.currentOrganizationScope, {
           name: this.name.value,

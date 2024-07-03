@@ -632,6 +632,7 @@
       "name_field": {
         "label": "Session name"
       },
+      "channels_error": "Please add at least one channel to create the session",
       "submit_button": "Create session",
       "submit_label": "Create session",
       "success_message": "Session successfully created",

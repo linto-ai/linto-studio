@@ -18,7 +18,7 @@
     "no_highlights_second_line": "Améliorez votre contenu grâce aux outils linguistiques propulsés à l'IA."
   },
   "app_editor_search": {
-    "label": "Rechercher"
+    "label": "Rechercher dans le texte"
   },
   "breadcrumb": {
     "conversations": "Conversations",
@@ -635,7 +635,8 @@
       "submit_button": "Créer la session",
       "submit_label": "Créer la session",
       "success_message": "La session a été créée avec succès",
-      "title": "Créer une session"
+      "title": "Créer une session",
+      "channels_error": "Veuillez ajouter au moins un canal à la session"
     },
     "detail_page": {
       "back_to_listing": "Liste des sessions",
