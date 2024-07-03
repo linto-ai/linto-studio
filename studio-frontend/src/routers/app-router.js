@@ -277,33 +277,26 @@ router.beforeEach(async (to, from, next) => {
     }
     /* MAGIC LINK AUTH */
     if (to.name === "magic-link-login") {
-      const userIsLoggedIn = getCookie("authToken") !== null
       const conversationId = to?.query?.conversationId
       const magicId = to?.params?.magicId
 
-      if (userIsLoggedIn && conversationId) {
-        next({
-          path: "/interface/conversations/" + conversationId,
-        })
-      } else {
-        const login = await apiLoginUserMagicLink(magicId)
-        if (login.status === "success") {
-          setCookie("userId", login.data.user_id, 7)
-          setCookie("authToken", login.data.auth_token, 7)
-          setCookie("refreshToken", login.data.refresh_token, 14)
-          setCookie("cm_orga_scope", "")
-          let redirect = {}
-          if (conversationId) {
-            redirect = {
-              path: "/interface/conversations/" + conversationId,
-            }
-          } else {
-            redirect = { name: "inbox" }
+      const login = await apiLoginUserMagicLink(magicId)
+      if (login.status === "success") {
+        setCookie("userId", login.data.user_id, 7)
+        setCookie("authToken", login.data.auth_token, 7)
+        setCookie("refreshToken", login.data.refresh_token, 14)
+        setCookie("cm_orga_scope", "")
+        let redirect = {}
+        if (conversationId) {
+          redirect = {
+            path: "/interface/conversations/" + conversationId,
           }
-          next(redirect)
         } else {
-          next({ name: "magic-link-error" })
+          redirect = { name: "inbox" }
         }
+        next(redirect)
+      } else {
+        next({ name: "magic-link-error" })
       }
     }
     // CHECK AUTH + REDIRECTIONS

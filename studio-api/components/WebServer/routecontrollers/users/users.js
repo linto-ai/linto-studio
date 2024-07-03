@@ -165,7 +165,7 @@ async function updateUser(req, res, next) {
         const result = await model.users.update(user)
         if (result.matchedCount === 0) throw new UserError()
         else if (result.modifiedCount === 1) res.status(200).send({ message: 'User updated' })
-        else res.status(304).send()
+        else res.status(202).send()
     } catch (err) {
         next(err)
     }
