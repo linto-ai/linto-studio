@@ -21,7 +21,7 @@
         :currentRoute="currentRoute"
         :currentOrganization="currentOrganization" />-->
     </div>
-    <ThemeSwitcher></ThemeSwitcher>
+    <ThemeSwitcher v-if="darkThemeFeatureEnabled"></ThemeSwitcher>
     <LocalSwitcher></LocalSwitcher>
     <UserSettingsMenu :userInfo="userInfo" />
   </nav>
@@ -49,6 +49,9 @@ export default {
     },
     title() {
       return process.env.VUE_APP_NAME
+    },
+    darkThemeFeatureEnabled() {
+      return process.env?.VUE_APP_EXPERIMENTAL_DARK_THEME === "true"
     },
   },
   components: {
