@@ -90,13 +90,7 @@ export default {
   mounted() {},
   methods: {
     sortBy(key) {
-      if (this.sortListKey === key) {
-        this.sortListDirection =
-          this.sortListDirection === "asc" ? "desc" : "asc"
-      } else {
-        this.sortListKey = key
-        this.sortListDirection = "asc"
-      }
+      // not implemented yet
     },
     removeChannel(index) {
       this.$emit("removeChannel", index)
