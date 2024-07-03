@@ -53,6 +53,9 @@
               role="option">
               <span v-if="option.icon" class="icon" :class="option.icon"></span>
               <span class="label">{{ option.text }}</span>
+              <span class="badge" v-if="option.badge">
+                <span class="badge__content">{{ option.badge }}</span>
+              </span>
             </button>
           </Fragment>
         </div>
