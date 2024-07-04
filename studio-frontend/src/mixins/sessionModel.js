@@ -21,6 +21,9 @@ export const sessionModelMixin = {
     isStarted() {
       return this?.session?.status === "active"
     },
+    isTerminated() {
+      return this?.session?.status === "terminated"
+    },
     autoStart() {
       return this?.session?.auto_start ?? false
     },
@@ -37,5 +40,8 @@ export const sessionModelMixin = {
     sessionOrganizationId() {
       return this?.session?.organizationId
     },
+    conversationId() {
+      return this?.session?.conversationId
+    }
   },
 }

@@ -17,10 +17,21 @@
 
       <div
         class="flex flex1 center-text align-center justify-center"
-        v-if="isStarted">
+        v-else-if="isStarted">
         <span class="icon reload"></span>
         <span>{{ $t("session.detail_page.sessions_status.started") }}</span>
       </div>
+
+      <div
+        class="flex flex1 center-text align-center justify-center"
+        v-else-if="isTerminated">
+      </div>
+
+      <div
+        class="flex flex1 center-text align-center justify-center"
+        v-else>
+      </div>
+
 
       <router-link :to="settingsRoute" class="btn" v-if="isAtLeastMaintainer">
         <span class="icon settings"></span>
@@ -31,7 +42,7 @@
     </template>
 
     <template v-slot:sidebar>
-      <div class="flex col medium-padding gap-medium">
+      <div class="flex col medium-padding gap-medium" v-if="isStarted || isTerminated">
         <SessionChannelsSelector
           v-if="sessionLoaded && selectedChannel"
           :channels="channels"
@@ -59,8 +70,10 @@
 
     <div class="relative flex flex1 col">
       <SessionNotStarted v-if="isPending" />
-
+      
       <Loading v-else-if="!sessionLoaded || !selectedChannel" />
+
+      <SessionEnded v-else-if="isTerminated" :session="session" :isFromPublicLink="isFromPublicLink"/>
 
       <SessionLiveContent
         v-else
@@ -89,6 +102,7 @@ import SessionLiveContent from "@/components/SessionLiveContent.vue"
 import Loading from "@/components/Loading.vue"
 import FormInput from "@/components/FormInput.vue"
 import FormCheckbox from "../components/FormCheckbox.vue"
+import SessionEnded from "../components/SessionEnded.vue"
 
 export default {
   mixins: [sessionMixin, orgaRoleMixin],
@@ -158,6 +172,7 @@ export default {
     Loading,
     FormInput,
     FormCheckbox,
+    SessionEnded,
   },
 }
 </script>

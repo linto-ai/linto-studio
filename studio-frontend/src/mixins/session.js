@@ -32,6 +32,7 @@ export const sessionMixin = {
       isStarting: false,
       isStoping: false,
       isDeleting: false,
+      isFromPublicLink: false,
     }
   },
   created() {
@@ -50,6 +51,7 @@ export const sessionMixin = {
       }
 
       if (!sessionRequest || sessionRequest.status === "error") {
+        this.isFromPublicLink = true
         sessionRequest = await apiGetPublicSession(this.sessionId)
       }
 

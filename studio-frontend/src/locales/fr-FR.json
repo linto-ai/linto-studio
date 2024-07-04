@@ -647,6 +647,10 @@
       "end_time_not_defined": "Non défini",
       "font_size_label": "Taille de la police",
       "no_transcription": "Rien n'a encore été transcrit pour ce canal",
+      "session_ended_title": "La session est terminée",
+      "session_ended_subtitle": "La transcription a été sauvegardé dans votre bibliothèque de médias",
+      "session_ended_link_to_conversation_transcription":"Ouvrir la transcription dans l’éditeur",
+      "session_ended_link_to_inbox":"Accéder à la bibliothèque des médias",
       "session_not_started_title": "La session n'a pas encore commencé",
       "sessions_status": {
         "no_started": "La session est programmée",

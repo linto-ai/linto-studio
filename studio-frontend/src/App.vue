@@ -158,6 +158,11 @@ export default {
   },
   methods: {
     async init() {
+      
+      if(this.$route.query?.organizationId) {
+        this.setOrganizationScope(this.$route.query.organizationId)
+      }
+
       if (this.isAuthenticated()) {
         await this.getuserInfo()
         await this.dispatchUserOrganizations()
