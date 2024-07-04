@@ -271,10 +271,10 @@ module.exports = (webserver) => {
                                 }
                             }
                         });
-                        await storeSession(sessionToStore)
-
+                        let conversation = await storeSession(sessionToStore)
                         const sessionTerminate = await Model.Session.findByPk(sessionId)
-                        res.json(sessionTerminate)
+
+                        res.json({ ...sessionTerminate.dataValues, conversationId: conversation.insertedId.toString() })
                     } catch (err) {
                         var msg = err.message
                         if (err.response && err.response.data) {
@@ -307,9 +307,8 @@ module.exports = (webserver) => {
                         throw new SessionNotFound()
                     }
 
-                    let conv = await storeSession(session)
-
-                    res.json(conv);
+                    let conversation = await storeSession(session)
+                    res.json({ _id: conversation.insertedId.toString() });
                 } catch (err) {
                     next(err);
                 }

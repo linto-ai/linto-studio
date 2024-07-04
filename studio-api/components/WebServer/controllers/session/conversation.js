@@ -132,8 +132,8 @@ async function storeSession(session) {
             return
         } else if (captions.length === 1) {
             captions[0].type.mode = 'canonical'
-            model.conversations.create(captions[0])
-            return captions[0]
+            const result = await model.conversations.create(captions[0])
+            return result
         } else {
             const conversation_multi_channel = initConversationMultiChannel(session)
 
@@ -151,11 +151,12 @@ async function storeSession(session) {
                 await model.conversations.update({ _id: childId, 'type.from_parent_id': parentId })
             }
 
-            return conversation_multi_channel
+            return result
         }
 
     } catch (err) {
         debug(err)
+        throw err
     }
 }
 
