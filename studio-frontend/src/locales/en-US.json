@@ -95,6 +95,7 @@
     "description_description": "A short text describing the context of the media",
     "description_label": "Description",
     "description_title": "Sharing parameter",
+    "description_empty": "No description",
     "duration": "Duration {duration}",
     "duration_label": "Duration",
     "error": {
@@ -483,7 +484,7 @@
     "organisation": {
       "aria_organisations_selector": "Organisations selector",
       "create": "Create organisation",
-      "setting": "organisation settings",
+      "setting": "Organisation settings",
       "title": "organisation"
     },
     "session": {
@@ -791,6 +792,7 @@
       "label_private": "Private profile",
       "title": "Profile visibility"
     },
+    "profile_image_button": "Choose a file",
     "send_verification_link": "Send validation link",
     "share_notification_label": "Receive email notification when a media is shared to you",
     "title": "Profile settings",

@@ -238,7 +238,7 @@ export default {
       }
     },
     description() {
-      return this.conversation.description || "No description"
+      return this.conversation.description || this.$t("conversation.description_empty")
     },
     audioDuration() {
       return this.$options.filters.timeToHMS(

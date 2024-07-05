@@ -95,6 +95,7 @@
     "description_description": "Un court texte décrivant le contexte du média",
     "description_label": "Description",
     "description_title": "Paramètre de partage",
+    "description_empty": "Aucune description",
     "duration": "Durée: {duration}",
     "duration_label": "Durée",
     "error": {
@@ -791,6 +792,7 @@
       "label_private": "Profil privé",
       "title": "Visibilité du profil"
     },
+    "profile_image_button": "choisissez une image",
     "send_verification_link": "Envoyer un lien de validation",
     "share_notification_label": "Recevez une notification par e-mail lorsqu'un média vous est partagé",
     "title": "Paramètres utilisateur",
