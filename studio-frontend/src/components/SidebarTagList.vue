@@ -1,12 +1,12 @@
 <template>
   <section class="organization-sidebar__current-filter sidebar__section">
-    <h2 class="flex row">
+    <h3 class="flex row">
       <span class="flex1">{{ $t("conversation.search_criterions") }}</span>
       <!-- <button class="transparent" @click="resetFilters" v-if="hasFilters">
         <span class="icon trash"></span>
       </button> -->
       <!--<span class="icon options" @click="openExploreModal"></span>-->
-    </h2>
+    </h3>
 
     <div class="flex col gap-medium">
       <ul
