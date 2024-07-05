@@ -792,7 +792,7 @@
       "label_private": "Profil privé",
       "title": "Visibilité du profil"
     },
-    "profile_image_button": "choisissez une image",
+    "profile_image_button": "Choisir une image",
     "send_verification_link": "Envoyer un lien de validation",
     "share_notification_label": "Recevez une notification par e-mail lorsqu'un média vous est partagé",
     "title": "Paramètres utilisateur",
