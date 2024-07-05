@@ -44,7 +44,7 @@ export default {
       } else if (this.$route.name === "favorites") {
         return this.$t("navigation.tabs.favorites")
       } else if (this.$route.meta.userPage) {
-        return "User page"
+        return this.$t("navigation.tabs.user_page")
       }
       return `${this.currentOrganization.name} (${this.roleToString})`
     },

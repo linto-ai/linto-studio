@@ -497,7 +497,8 @@
       "inbox": "Homepage",
       "manage_tags": "Manage tags",
       "sessions": "Live transcriptions",
-      "shared": "Shared with me"
+      "shared": "Shared with me",
+      "user_page": "My account"
     }
   },
   "no_orga": {
