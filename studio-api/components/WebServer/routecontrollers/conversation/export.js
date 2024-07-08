@@ -59,7 +59,10 @@ async function exportConversation(req, res, next) {
         metadata = await prepateData(conversation, metadata, req.query.format)
         if (req.body) {
             if (req.body.filter) conversation = await prepareConversation(conversation, req.body.filter)
-            if (conversation.text.length === 0) res.status(204).send()
+            if (conversation.text.length === 0) {
+                res.status(204).send()
+                return
+            }
 
             if (req.body.metadata) metadata = await prepareMetadata(conversation, req.body.metadata, metadata)
         }
