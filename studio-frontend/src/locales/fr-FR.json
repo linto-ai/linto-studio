@@ -361,7 +361,7 @@
       "tooManyFiles": "Plusieurs fichiers donnés alors qu'un seul était attendu",
       "wrongFormat": "Un ou plusieurs fichiers ne sont pas valides"
     },
-    "openFileExplorer": "ou choisissez depuis l'exploratieur de fichier"
+    "openFileExplorer": "ou choisissez depuis l'explorateur de fichier"
   },
   "error": {
     "bug_report": "Signaler un bug ou une erreur",
