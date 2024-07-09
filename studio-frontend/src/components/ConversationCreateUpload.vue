@@ -1,5 +1,15 @@
 <template>
-  <div class="flex col" style="position: relative">
+  
+      <Droparea
+        :accepts="['audio/*']"
+        @drop="handleFileUpload"
+        @error="handleError($event)">
+        <div>{{ $t("conversation.subtitles.drop_audio") }}</div>
+      </Droparea>
+  
+  
+  
+  <!-- <div class="flex col" style="position: relative">
     <div class="flex row">
       <input
         type="file"
@@ -30,10 +40,11 @@
     <span class="error-field" v-if="audioFile.error !== null">
       {{ audioFile.error }}
     </span>
-  </div>
+  </div> -->
 </template>
 <script>
 import EMPTY_FIELD from "@/const/emptyField.js"
+import Droparea from "./Droparea.vue"
 export default {
   props: {
     disabled: {
@@ -53,8 +64,8 @@ export default {
     }
   },
   methods: {
-    handleFileUpload() {
-      const files = this.$refs.file.files
+    handleFileUpload(files) {
+      //const files = this.$refs.file.files
       this.audioFile.error = null
       this.audioFile.valid = true
       // file type is already checked by the input accept attribute so we don't need to check it again
@@ -71,6 +82,9 @@ export default {
         this.$emit("input", filesArray)
       }
     },
+  },
+  components: {
+    Droparea,
   },
 }
 </script>

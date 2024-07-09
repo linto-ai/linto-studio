@@ -1,7 +1,18 @@
 .audio-upload-form {
+  height: 16rem;
 }
 
 .audio-upload-list {
   list-style-type: none;
   padding-left: 0;
+}
+
+
+.audio-upload__record {
+  cursor: pointer;
+}
+
+.audio-upload__record__icon {
+  height: 2rem;
+  width: 2rem;
 }

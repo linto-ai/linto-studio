@@ -25,8 +25,20 @@
       </li>
     </ul>
 
+    <div class="flex audio-upload-form">
+      <ConversationCreateUpload
+        class="flex1"
+        :disabled="disabled"
+        @input="uploadFile"
+        :multipleFiles="multipleFiles" />
+      <ConversationCreateRecord
+        class="flex1"
+        :disabled="disabled"
+        @input="recordFile" />
+    </div>
+    
     <!-- form to add file -->
-    <div class="audio-upload-form">
+    <!-- <div class="audio-upload-form">
       <div>
         <input
           type="radio"
@@ -49,17 +61,13 @@
       </div>
 
       <div style="margin-top: 0.5rem">
-        <ConversationCreateUpload
-          v-if="mediaType === 'file'"
-          :disabled="disabled"
-          @input="uploadFile"
-          :multipleFiles="multipleFiles" />
+        
         <ConversationCreateRecord
           v-if="mediaType === 'mic'"
           :disabled="disabled"
           @input="recordFile" />
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 <script>
@@ -69,6 +77,7 @@ import { generateFileField } from "@/tools/generateFileField.js"
 import ConversationCreateUpload from "@/components/ConversationCreateUpload.vue"
 import ConversationCreateRecord from "@/components/ConversationCreateRecord.vue"
 import FormInput from "@/components/FormInput.vue"
+import Droparea from "./Droparea.vue"
 
 export default {
   props: {

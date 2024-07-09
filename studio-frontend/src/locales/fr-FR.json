@@ -337,6 +337,14 @@
     "websocket_error_content": "La mise à jour du document a echoué. Sauvegardez vos changement et actualisez la page.",
     "websocket_error_title": "Erreur de synchronisation."
   },
+  "conversation_creation": {
+    "tabs": {
+      "file":"Fichier",
+      "Microphone":"Microphone",
+      "Url": "Url",
+      "Visio": "Visio"
+    }
+  },
   "createaccount": {
     "create_account_button": "Créer mon compte",
     "email_label": "Courriel",

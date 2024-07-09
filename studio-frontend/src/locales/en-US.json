@@ -337,6 +337,14 @@
     "websocket_error_content": "Document update failed, save your change and reload the page.",
     "websocket_error_title": "Syncronisation error."
   },
+  "conversation_creation": {
+    "tabs": {
+      "file":"File",
+      "Microphone":"Microphone",
+      "Url": "Url",
+      "Visio": "Visio"
+    }
+  },
   "createaccount": {
     "create_account_button": "Create an account",
     "email_label": "Email",

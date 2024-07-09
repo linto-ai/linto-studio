@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="flex row tabs horizontal-tabs" role="tablist">
+    <div class="flex row tabs horizontal-tabs" role="tablist" :squareTabs="squareTabs">
       <div
         v-for="tab of tabs"
         class="tab"
@@ -23,6 +23,7 @@ export default {
   props: {
     tabs: { type: Array, required: true }, // array of tab objects { name: 'inbox', label: 'Inbox', icon: 'box', ?id, ?aria-control }
     value: { type: String, required: true }, // selected tab
+    squareTabs: { type: Boolean, default: false },
   },
   data() {
     return {}

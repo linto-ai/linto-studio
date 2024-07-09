@@ -1,5 +1,14 @@
 <template>
-  <div class="flex col">
+  <div class="flex col justify-center align-center audio-upload__record" @click="recording ? stopRecording() : startRecording()">
+    <span class="icon record audio-upload__record__icon" v-if="!recording"></span>
+    <span class="icon stop audio-upload__record__icon" v-if="recording"></span>
+    <label from for="record" class="label">
+      {{
+        recording ? $t("conversation.recording") : $t("conversation.record")
+      }}
+    </label>
+  </div>
+  <!-- <div class="flex col">
     <div class="flex row">
       <button
         @click="recording ? stopRecording() : startRecording()"
@@ -17,7 +26,7 @@
     <span class="error-field" v-if="audioRecFile.error !== null">
       {{ audioRecFile.error }}
     </span>
-  </div>
+  </div> -->
 </template>
 <script>
 import WebVoiceSDK from "@linto-ai/webvoicesdk"

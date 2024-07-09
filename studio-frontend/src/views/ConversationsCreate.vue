@@ -1,16 +1,7 @@
 <template>
   <MainContent sidebar box>
-    <ConversationHelper
-      :showHelper="helperVisible"
-      @close="closeHelper()"></ConversationHelper>
 
     <template v-slot:breadcrumb-actions>
-      <button class="btn" @click="showHelper()" style="min-width: 80px">
-        <span class="icon help"></span>
-        <span class="label">{{
-          $t("conversation.transcription_help.help_button_label")
-        }}</span>
-      </button>
     </template>
 
     <div class="flex row">
@@ -107,7 +98,6 @@ import { testService } from "@/tools/fields/testService.js"
 import { formsMixin } from "@/mixins/forms.js"
 import { debounceMixin } from "@/mixins/debounce"
 
-import ConversationHelper from "@/components/ConversationHelper.vue"
 import ConversationCreateAudio from "@/components/ConversationCreateAudio.vue"
 import ConversationCreateServices from "@/components/ConversationCreateServices.vue"
 import MainContent from "@/components/MainContent.vue"
@@ -134,6 +124,28 @@ export default {
   },
   data() {
     return {
+      tabs: [
+        {
+          name: "file",
+          label: this.$i18n.t("conversation_creation.tabs.file"),
+          icon: "reload",
+        },
+        {
+          name: "microphone",
+          label: this.$i18n.t("conversation_creation.tabs.microphone"),
+          icon: "clock",
+        },
+        {
+          name: "url",
+          label: this.$i18n.t("conversation_creation.tabs.microphone"),
+          icon: "clock",
+        },
+        {
+          name: "visio",
+          label: this.$i18n.t("conversation_creation.tabs.microphone"),
+          icon: "clock",
+        },
+      ],
       //conversationName: { ...EMPTY_FIELD },
       //conversationDescription: { ...EMPTY_FIELD },
       fields: [
@@ -170,7 +182,6 @@ export default {
         "conversation.conversation_creation_button.create"
       ),
       formState: "available",
-      helperVisible: false,
       languages: [
         { value: "fr", label: this.$i18n.t("lang.fr") },
         { value: "en", label: this.$i18n.t("lang.en") },
@@ -203,12 +214,6 @@ export default {
     },
   },
   methods: {
-    showHelper() {
-      this.helperVisible = true
-    },
-    closeHelper() {
-      this.helperVisible = false
-    },
     getTranscriptionList(lang, signal) {
       return apiGetTranscriptionService(lang, signal)
     },
@@ -325,7 +330,6 @@ export default {
     },
   },
   components: {
-    ConversationHelper,
     ConversationCreateAudio,
     ConversationCreateServices,
     MainContent,
