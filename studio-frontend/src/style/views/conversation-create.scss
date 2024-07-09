@@ -1,5 +1,17 @@
 .audio-upload-form {
-  height: 12rem;
+  height: 8rem;
+}
+
+.audio-upload__record {
+  border: 1px solid lightgray;
+
+  //padding: 1rem;
+  //padding-bottom: 0.5rem;
+}
+
+.audio-upload__record > * {
+  position: relative;
+  top: 0.5rem;
 }
 
 .audio-upload-list {
@@ -14,4 +26,14 @@
 .audio-upload__record__icon {
   height: 2rem;
   width: 2rem;
+}
+
+.audio-upload__record__button {
+  background-color: var(--primary-color);
+  border: none;
+  border-radius: 50%;
+  color: var(--white);
+  cursor: pointer;
+  height: 4rem;
+  width: 4rem;
 }

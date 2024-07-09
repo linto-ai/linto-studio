@@ -1,11 +1,15 @@
 <template>
-  <div class="flex col justify-center align-center audio-upload__record" @click="recording ? stopRecording() : startRecording()">
-    <span class="icon record audio-upload__record__icon" v-if="!recording"></span>
-    <span class="icon stop audio-upload__record__icon" v-if="recording"></span>
+  <div
+    class="flex col justify-center align-center audio-upload__record"
+    @click="recording ? stopRecording() : startRecording()">
+    <div class="btn audio-upload__record__button" v-if="!recording">
+      <span class="icon record audio-upload__record__icon"></span>
+    </div>
+    <div class="btn audio-upload__record__button" v-else>
+      <span class="icon stop audio-upload__record__icon"></span>
+    </div>
     <label from for="record" class="label">
-      {{
-        recording ? $t("conversation.recording") : $t("conversation.record")
-      }}
+      {{ recording ? $t("conversation.recording") : $t("conversation.record") }}
     </label>
   </div>
   <!-- <div class="flex col">

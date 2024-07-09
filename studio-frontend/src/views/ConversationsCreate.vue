@@ -5,46 +5,21 @@
     <div class="flex col">
       <Tabs v-model="currentTab" :tabs="tabs" squareTabs />
 
-      <ConversationCreateTabFile
-        :userInfo="userInfo"
-        :currentOrganizationScope="currentOrganizationScope"
-        :userOrganizations="userOrganizations" />
-
-      <!-- <form
+      <form
         class="flex col flex1"
         @submit="createConversation"
         :disabled="formState === 'sending'">
-        <section>
-          <h2>{{ $t("conversation.media_title") }}</h2>
-          <ConversationCreateAudio
-            :disabled="formState === 'sending'"
-            v-model="audioFiles" />
+        <ConversationCreateAudio
+          v-if="currentTab === 'file'"
+          mode="file"
+          :disabled="formState === 'sending'"
+          v-model="audioFiles" />
 
-          <div class="flex col form-field">
-            <div class="flex row align-center form-label gap-small">
-              <Checkbox
-                v-model="organizationMemberAccess"
-                id="organizationMemberAccess"
-                :disabled="formState === 'sending'" />
-              <label
-                for="organizationMemberAccess"
-                class="no-padding no-margin">
-                {{ $t("conversation.members_right_label") }}
-              </label>
-            </div>
-            <select
-              v-model="membersRight.value"
-              v-if="organizationMemberAccess"
-              :disabled="formState === 'sending'">
-              <option
-                v-for="right in membersRight.list"
-                :key="right.value"
-                :value="right.value">
-                {{ right.txt }}
-              </option>
-            </select>
-          </div>
-        </section>
+        <ConversationCreateAudio
+          v-if="currentTab === 'microphone'"
+          mode="microphone"
+          :disabled="formState === 'sending'"
+          v-model="audioFiles" />
 
         <section>
           <h2>{{ $t("conversation.transcription_service_title") }}</h2>
@@ -73,10 +48,11 @@
             :disabled="formState === 'sending'"
             :loading="transcriptionService.loading"
             v-model="transcriptionService.value" />
-        </section> -->
+        </section>
 
-      <!-- Submit -->
-      <!--<div class="flex col gap-small align-top" style="margin-top: 1rem">
+        <div
+          class="flex col gap-small align-top align-end"
+          style="margin-top: 1rem">
           <div class="error-field" v-if="formError">{{ formError }}</div>
           <button
             type="submit"
@@ -86,7 +62,18 @@
             <span class="label">{{ formSubmitLabel }}</span>
           </button>
         </div>
-      </form> -->
+      </form>
+      <!-- <ConversationCreateTabFile
+        v-if="currentTab === 'file'"
+        :userInfo="userInfo"
+        :currentOrganizationScope="currentOrganizationScope"
+        :userOrganizations="userOrganizations" />
+
+      <ConversationCreateMicro
+        v-if="currentTab === 'microphone'"
+        :userInfo="userInfo"
+        :currentOrganizationScope="currentOrganizationScope"
+        :userOrganizations="userOrganizations" /> -->
     </div>
   </MainContent>
 </template>
@@ -102,6 +89,7 @@ import { testService } from "@/tools/fields/testService.js"
 
 import { formsMixin } from "@/mixins/forms.js"
 import { debounceMixin } from "@/mixins/debounce"
+import ConversationCreateMixin from "@/mixins/conversationCreate.js"
 
 import ConversationCreateAudio from "@/components/ConversationCreateAudio.vue"
 import ConversationCreateServices from "@/components/ConversationCreateServices.vue"
@@ -112,9 +100,9 @@ import EMPTY_FIELD from "@/const/emptyField"
 import Checkbox from "../components/Checkbox.vue"
 import Tabs from "../components/Tabs.vue"
 import ConversationCreateTabFile from "../components/ConversationCreateTabFile.vue"
-
+import ConversationCreateMicro from "../components/ConversationCreateTabMicro.vue"
 export default {
-  mixins: [formsMixin, debounceMixin],
+  mixins: [ConversationCreateMixin],
   props: {
     userInfo: {
       type: Object,
@@ -148,12 +136,14 @@ export default {
           name: "url",
           label: this.$i18n.t("conversation_creation.tabs.url"),
           icon: "link",
+          disabled: true,
         },
         {
           name: "visio",
           label: this.$i18n.t("conversation_creation.tabs.visio"),
           icon: "profile",
           img: "/img/We10X-icon-theme/preferences-desktop-accessibility.svg",
+          disabled: true,
         },
       ],
       currentTab: "file",
@@ -167,6 +157,7 @@ export default {
     Checkbox,
     Tabs,
     ConversationCreateTabFile,
+    ConversationCreateMicro,
   },
 }
 </script>

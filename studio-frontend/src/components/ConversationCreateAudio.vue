@@ -7,7 +7,11 @@
         v-for="(field, index) of value"
         :key="field.file.lastModified + field.file.name">
         <!-- TODO: find a real unique key (this one is quite good), cannot be index because of possible deletion -->
-        <FormInput :field="field" v-model="field.value" :disabled="disabled" inputFullWidth>
+        <FormInput
+          :field="field"
+          v-model="field.value"
+          :disabled="disabled"
+          inputFullWidth>
           <button class="btn black" @click="deleteFile(index, $event)">
             <span class="icon delete"></span>
           </button>
@@ -27,16 +31,18 @@
 
     <div class="flex audio-upload-form">
       <ConversationCreateUpload
+        v-if="mode === 'file'"
         class="flex1"
         :disabled="disabled"
         @input="uploadFile"
         :multipleFiles="multipleFiles" />
-      <!-- <ConversationCreateRecord
+      <ConversationCreateRecord
+        v-else
         class="flex1"
         :disabled="disabled"
-        @input="recordFile" /> -->
+        @input="recordFile" />
     </div>
-    
+
     <!-- form to add file -->
     <!-- <div class="audio-upload-form">
       <div>
@@ -88,6 +94,11 @@ export default {
     },
     value: {
       required: true,
+    },
+    mode: {
+      type: String,
+      required: false,
+      default: "file",
     },
   },
   data() {

@@ -40,7 +40,8 @@ h4 {
     align-items: flex-start;
   }
 
-  &.align-bottom {
+  &.align-bottom,
+  &.align-end {
     align-items: flex-end;
   }
 

@@ -1,47 +1,11 @@
 <template>
-  
-      <Droparea
-        :accepts="['audio/*']"
-        :multiple="multipleFiles"
-        @drop="handleFileUpload"
-        @error="handleError($event)">
-        <div>{{ $t("conversation_creation.file.drop_audio") }}</div>
-      </Droparea>
-  
-  
-  
-  <!-- <div class="flex col" style="position: relative">
-    <div class="flex row">
-      <input
-        type="file"
-        ref="file"
-        id="conv-audio-file"
-        name="conv-audio-file"
-        @change="handleFileUpload()"
-        accept="audio/*, video/*"
-        :multiple="multipleFiles" />
-      <label
-        for="conv-audio-file"
-        :class="[
-          audioFile.error !== null ? 'error' : '',
-          audioFile.valid ? 'valid' : '',
-          'btn black',
-        ]">
-        <span class="icon upload"></span>
-        <span class="label">
-          {{
-            multipleFiles
-              ? $t("conversation.audio_file_upload_label_multiple")
-              : $t("conversation.audio_file_upload_label")
-          }}
-        </span>
-      </label>
-    </div>
-
-    <span class="error-field" v-if="audioFile.error !== null">
-      {{ audioFile.error }}
-    </span>
-  </div> -->
+  <Droparea
+    :accepts="['audio/*']"
+    :multiple="multipleFiles"
+    @drop="handleFileUpload"
+    @error="handleError($event)">
+    <div>{{ $t("conversation_creation.file.drop_audio") }}</div>
+  </Droparea>
 </template>
 <script>
 import EMPTY_FIELD from "@/const/emptyField.js"

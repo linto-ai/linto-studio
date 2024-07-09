@@ -26,22 +26,20 @@
   }
 }
 
-
 .tabs[squareTabs] {
   box-shadow: none;
-  gap:1rem;
+  gap: 1rem;
 
   .tab {
     flex-direction: column;
     border-radius: 8px;
     box-shadow: var(--shadow-block);
     border: var(--border-block);
-    margin:1px;
+    margin: 1px;
 
     .icon {
       height: 2.5rem;
       width: 2.5rem;
-      
     }
   }
 
@@ -50,8 +48,13 @@
       background-color: var(--text-primary) !important;
     }
     background-color: var(--background-primary);
-    border:2px solid var(--primary-color);
+    border: 2px solid var(--primary-color);
     margin: 0;
     color: var(--text-primary);
+  }
+
+  .tab[aria-disabled] {
+    cursor: not-allowed;
+    filter: opacity(60%);
   }
 }
