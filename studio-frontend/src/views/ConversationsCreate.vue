@@ -1,11 +1,16 @@
 <template>
   <MainContent sidebar box>
+    <template v-slot:breadcrumb-actions> </template>
 
-    <template v-slot:breadcrumb-actions>
-    </template>
+    <div class="flex col">
+      <Tabs v-model="currentTab" :tabs="tabs" squareTabs />
 
-    <div class="flex row">
-      <form
+      <ConversationCreateTabFile
+        :userInfo="userInfo"
+        :currentOrganizationScope="currentOrganizationScope"
+        :userOrganizations="userOrganizations" />
+
+      <!-- <form
         class="flex col flex1"
         @submit="createConversation"
         :disabled="formState === 'sending'">
@@ -68,10 +73,10 @@
             :disabled="formState === 'sending'"
             :loading="transcriptionService.loading"
             v-model="transcriptionService.value" />
-        </section>
+        </section> -->
 
-        <!-- Submit -->
-        <div class="flex col gap-small align-top" style="margin-top: 1rem">
+      <!-- Submit -->
+      <!--<div class="flex col gap-small align-top" style="margin-top: 1rem">
           <div class="error-field" v-if="formError">{{ formError }}</div>
           <button
             type="submit"
@@ -81,7 +86,7 @@
             <span class="label">{{ formSubmitLabel }}</span>
           </button>
         </div>
-      </form>
+      </form> -->
     </div>
   </MainContent>
 </template>
@@ -105,6 +110,8 @@ import MainContent from "@/components/MainContent.vue"
 import RIGHTS_LIST from "@/const/rigthsList"
 import EMPTY_FIELD from "@/const/emptyField"
 import Checkbox from "../components/Checkbox.vue"
+import Tabs from "../components/Tabs.vue"
+import ConversationCreateTabFile from "../components/ConversationCreateTabFile.vue"
 
 export default {
   mixins: [formsMixin, debounceMixin],
@@ -128,212 +135,38 @@ export default {
         {
           name: "file",
           label: this.$i18n.t("conversation_creation.tabs.file"),
-          icon: "reload",
+          icon: "file-audio",
+          img: "/img/We10X-icon-theme/audio-x-generic.svg",
         },
         {
           name: "microphone",
           label: this.$i18n.t("conversation_creation.tabs.microphone"),
-          icon: "clock",
+          icon: "record",
+          img: "/img/We10X-icon-theme/vocal.svg",
         },
         {
           name: "url",
-          label: this.$i18n.t("conversation_creation.tabs.microphone"),
-          icon: "clock",
+          label: this.$i18n.t("conversation_creation.tabs.url"),
+          icon: "link",
         },
         {
           name: "visio",
-          label: this.$i18n.t("conversation_creation.tabs.microphone"),
-          icon: "clock",
+          label: this.$i18n.t("conversation_creation.tabs.visio"),
+          icon: "profile",
+          img: "/img/We10X-icon-theme/preferences-desktop-accessibility.svg",
         },
       ],
-      //conversationName: { ...EMPTY_FIELD },
-      //conversationDescription: { ...EMPTY_FIELD },
-      fields: [
-        "audioFiles",
-        "conversationOrganization",
-        "membersRight",
-        "transcriptionService",
-        "conversationLanguage",
-      ],
-      audioFiles: [], // array of fields { value (name), file, error }
-      conversationOrganization: {
-        ...EMPTY_FIELD,
-        value: this.currentOrganizationScope,
-        testField: testFieldEmpty,
-      },
-      membersRight: {
-        ...EMPTY_FIELD,
-        value: 1,
-        list: RIGHTS_LIST((key) => this.$i18n.t(key)),
-      },
-      transcriptionService: {
-        ...EMPTY_FIELD,
-        loading: true,
-        list: [],
-        testField: testService,
-      },
-      conversationLanguage: {
-        ...EMPTY_FIELD,
-        value: "fr",
-        valid: true,
-      },
-      organizationMemberAccess: true,
-      formSubmitLabel: this.$i18n.t(
-        "conversation.conversation_creation_button.create"
-      ),
-      formState: "available",
-      languages: [
-        { value: "fr", label: this.$i18n.t("lang.fr") },
-        { value: "en", label: this.$i18n.t("lang.en") },
-      ],
-      formError: null,
-      debounceGetTranscriptionService: debounce(this.initTranscriptionList, 30),
+      currentTab: "file",
     }
   },
-  async created() {
-    this.conversationOrganization.value = this.currentOrganizationScope
-    this.initTranscriptionList()
-  },
-  watch: {
-    "conversationLanguage.value"(value) {
-      this.initTranscriptionList()
-    },
-    "$i18n.locale": {
-      handler(value) {
-        this.conversationLanguage.value = value.split("-")[0]
-      },
-      immediate: true,
-    },
-  },
-  computed: {
-    organizationList() {
-      return this.userOrganizations.filter((org) => {
-        let role = getUserRoleInOrganization(org, this.userInfo._id)
-        return role > 1
-      })
-    },
-  },
-  methods: {
-    getTranscriptionList(lang, signal) {
-      return apiGetTranscriptionService(lang, signal)
-    },
-    async initTranscriptionList() {
-      this.transcriptionService.loading = true
-      this.transcriptionService.value = null
-
-      const transcriptionService = await this.debouncedSearch(
-        this.getTranscriptionList.bind(this),
-        this.conversationLanguage.value
-      )
-
-      if (transcriptionService) {
-        this.transcriptionService.list = [...transcriptionService]
-        this.transcriptionService.loading = false
-        this.transcriptionService.value = null
-      }
-    },
-    async createConversation(event) {
-      event?.preventDefault()
-
-      if (this.audioFiles.length === 0) {
-        this.formError = this.$i18n.t("conversation.error.no_audio_file")
-        return
-      }
-
-      if (this.formState === "available") {
-        if (this.testFields()) {
-          this.formError = null
-          this.formState = "sending"
-          this.formSubmitLabel = this.$i18n.t(
-            "conversation.conversation_creation_button.sending"
-          )
-          let audioFileIndex = 0
-          let total = this.audioFiles.length
-          while (this.audioFiles.length > 0) {
-            audioFileIndex++
-
-            const { value: convName, file } = this.audioFiles[0]
-
-            bus.$emit("app_notif", {
-              status: "loading",
-              message: this.$i18n.t(
-                "conversation.conversation_creation_loading_multiple",
-                { count: audioFileIndex, total: total }
-              ),
-              timeout: -1,
-            })
-
-            let conversationHasBeenCreated = await apiCreateConversation(
-              this.currentOrganizationScope,
-              {
-                name: convName,
-                description: "",
-                membersRights: this.organizationMemberAccess
-                  ? parseInt(this.membersRight.value)
-                  : 0,
-                serviceName: this.transcriptionService.value.serviceName,
-                transcriptionConfig: JSON.stringify(
-                  this.transcriptionService.value.config
-                ),
-                segmentCharSize: process.env.VUE_APP_TURN_SIZE,
-                lang: this.transcriptionService.value.lang,
-                endpoint: this.transcriptionService.value.endpoint,
-                tracks: [file],
-              }
-            )
-
-            if (!conversationHasBeenCreated) {
-              this.emitError(
-                this.$i18n.t(
-                  "conversation.conversation_creation_error_multiple_unknown",
-                  {
-                    count: audioFileIndex - 1,
-                    total: total,
-                  }
-                )
-              )
-              this.formSubmitLabel = this.$i18n.t(
-                "conversation.conversation_creation_button.retry"
-              )
-              this.formState = "available"
-              return
-            }
-            this.audioFiles.shift()
-          }
-
-          if (this.audioFiles.length === 0) {
-            this.formState = "success"
-            bus.$emit("set_organization_scope", {
-              organizationId: this.conversationOrganization.value,
-            })
-            bus.$emit("app_notif", {
-              status: "success",
-              message: this.$i18n.t("conversation.creation_success_message"),
-              redirect: false,
-            })
-          }
-        } else {
-          this.formError = this.$i18n.t("conversation.error.form_invalid")
-        }
-      }
-      return false
-    },
-    emitError(errorMessage) {
-      bus.$emit("app_notif", {
-        status: "error",
-        message: errorMessage,
-        timeout: null,
-      })
-    },
-    getOrganizationById(id) {
-      return this.userOrganizations.find((orga) => orga._id === id)
-    },
-  },
+  async created() {},
   components: {
     ConversationCreateAudio,
     ConversationCreateServices,
     MainContent,
     Checkbox,
+    Tabs,
+    ConversationCreateTabFile,
   },
 }
 </script>

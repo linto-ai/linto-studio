@@ -2,9 +2,10 @@
   
       <Droparea
         :accepts="['audio/*']"
+        :multiple="multipleFiles"
         @drop="handleFileUpload"
         @error="handleError($event)">
-        <div>{{ $t("conversation.subtitles.drop_audio") }}</div>
+        <div>{{ $t("conversation_creation.file.drop_audio") }}</div>
       </Droparea>
   
   

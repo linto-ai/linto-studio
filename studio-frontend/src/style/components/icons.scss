@@ -201,6 +201,9 @@
   &.merge {
     @include maskImage("../public/img/link.svg");
   }
+  &.link {
+    @include maskImage("../public/img/link.svg");
+  }
   &.clear-history {
     @include maskImage("../public/img/clear-history.svg");
   }
@@ -225,6 +228,12 @@
   }
   &.merge2 {
     @include maskImage("../public/img/merge.svg");
+  }
+  &.file-audio {
+    @include maskImage("../public/img/file-audio.svg");
+  }
+  &.profile {
+    @include maskImage("../public/img/profile.svg");
   }
 }
 

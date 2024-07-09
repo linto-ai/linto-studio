@@ -12,7 +12,8 @@
         :id="tab.id ? tab.id : undefined"
         :aria-controls="tab.ariaControl ? tab.ariaControl : undefined"
         @click="!tab.disabled && $emit('input', tab.name)">
-        <span class="icon" :class="tab.icon"></span>
+        <span class="icon" :class="tab.icon" v-if="tab.icon"></span>
+        <img :src="tab.img" v-else-if="tab.img" class="icon"/>
         <span class="tab__label">{{ tab.label }}</span>
       </div>
     </div>

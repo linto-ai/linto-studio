@@ -340,9 +340,12 @@
   "conversation_creation": {
     "tabs": {
       "file":"File",
-      "Microphone":"Microphone",
-      "Url": "Url",
-      "Visio": "Visio"
+      "microphone":"Microphone",
+      "url": "Url",
+      "visio": "Visio"
+    },
+    "file": {
+      "drop_audio": "Drop your audio file here"
     }
   },
   "createaccount": {
