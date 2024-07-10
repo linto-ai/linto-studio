@@ -235,6 +235,9 @@
   &.profile {
     @include maskImage("../public/img/profile.svg");
   }
+  &.session {
+    @include maskImage("../public/img/session.svg");
+  }
 }
 
 .icon.small {

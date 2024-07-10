@@ -7,5 +7,7 @@ export function generateFileField(name, file) {
     value: name,
     file: file,
     testField: testFile,
+    id: Math.random().toString(36).substring(2),
+    progress: 0,
   }
 }

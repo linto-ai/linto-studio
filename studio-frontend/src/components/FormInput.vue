@@ -46,7 +46,7 @@
       </div>
       <slot name="content-after-input"></slot>
     </div>
-
+    <slot name="content-bottom-input"></slot>
     <span class="error-field" v-if="field.error !== null">{{
       field.error
     }}</span>

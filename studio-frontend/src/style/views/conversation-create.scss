@@ -1,5 +1,5 @@
 .audio-upload-form {
-  height: 8rem;
+  min-height: 8rem;
 }
 
 .audio-upload__record {
@@ -17,6 +17,12 @@
 .audio-upload-list {
   list-style-type: none;
   padding-left: 0;
+}
+
+.audio-upload-list__progress {
+  position: absolute;
+  top: 0;
+  opacity: 0.4;
 }
 
 .audio-upload__record {

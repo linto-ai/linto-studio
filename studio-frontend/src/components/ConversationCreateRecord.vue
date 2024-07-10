@@ -70,6 +70,8 @@ export default {
       }
     },
     async startRecording() {
+      if (this.disabled) return
+
       await this.initMicrophone()
       try {
         this.recorder.cleanBuffer()

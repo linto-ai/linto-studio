@@ -130,6 +130,8 @@ export default {
           this.formSubmitLabel = this.$i18n.t(
             "conversation.conversation_creation_button.sending"
           )
+          // scroll to top of the main element
+          document.querySelector("main").scrollTo(0, 0)
           let audioFileIndex = 0
           let total = this.audioFiles.length
           while (this.audioFiles.length > 0) {
@@ -144,6 +146,7 @@ export default {
                 { count: audioFileIndex, total: total }
               ),
               timeout: -1,
+              cantBeClosed: true,
             })
 
             let conversationHasBeenCreated = await apiCreateConversation(
@@ -162,6 +165,17 @@ export default {
                 lang: this.transcriptionService.value.lang,
                 endpoint: this.transcriptionService.value.endpoint,
                 tracks: [file],
+              },
+              null,
+              (progressEvent) => {
+                try {
+                  const { loaded, total } = progressEvent
+                  this.audioFiles[0].progress = Math.floor(
+                    (loaded * 100) / total
+                  )
+                } catch (error) {
+                  this.audioFiles[0].progress = -1
+                }
               }
             )
 
@@ -193,6 +207,7 @@ export default {
               status: "success",
               message: this.$i18n.t("conversation.creation_success_message"),
               redirect: false,
+              cantBeClosed: true,
             })
           }
         } else {

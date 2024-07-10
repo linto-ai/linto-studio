@@ -5,6 +5,7 @@ input[type="email"],
 input[type="password"],
 select,
 textarea,
+progress.hoverInput,
 .collab-input {
   border: var(--border-input);
   padding: 0.3rem 0.6rem;
@@ -35,6 +36,12 @@ textarea,
     width: 100%;
     max-width: none;
   }
+}
+
+progress.hoverInput {
+  background-color: transparent;
+  color: var(--primary-color);
+  padding: 0;
 }
 
 input[type="checkbox"],

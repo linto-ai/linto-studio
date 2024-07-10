@@ -3,7 +3,11 @@
     <template v-slot:breadcrumb-actions> </template>
 
     <div class="flex col">
-      <Tabs v-model="currentTab" :tabs="tabs" squareTabs />
+      <Tabs
+        v-model="currentTab"
+        :tabs="tabs"
+        squareTabs
+        :disabled="formState === 'sending'" />
 
       <form
         class="flex col flex1"
@@ -63,17 +67,6 @@
           </button>
         </div>
       </form>
-      <!-- <ConversationCreateTabFile
-        v-if="currentTab === 'file'"
-        :userInfo="userInfo"
-        :currentOrganizationScope="currentOrganizationScope"
-        :userOrganizations="userOrganizations" />
-
-      <ConversationCreateMicro
-        v-if="currentTab === 'microphone'"
-        :userInfo="userInfo"
-        :currentOrganizationScope="currentOrganizationScope"
-        :userOrganizations="userOrganizations" /> -->
     </div>
   </MainContent>
 </template>
@@ -131,6 +124,12 @@ export default {
           label: this.$i18n.t("conversation_creation.tabs.microphone"),
           icon: "record",
           img: "/img/We10X-icon-theme/vocal.svg",
+        },
+        {
+          name: "session",
+          label: this.$i18n.t("conversation_creation.tabs.session"),
+          icon: "session",
+          disabled: true,
         },
         {
           name: "url",

@@ -5,6 +5,7 @@ input[type="email"],
 input[type="password"],
 select,
 textarea,
+progress.hoverInput,
 .collab-input {
   display: inline-block;
   @include cancelBoxShadow();

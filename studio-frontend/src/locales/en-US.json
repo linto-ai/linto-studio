@@ -339,10 +339,12 @@
   },
   "conversation_creation": {
     "tabs": {
-      "file":"File",
-      "microphone":"Microphone",
+      "file": "File",
+      "microphone": "Microphone",
       "url": "Url",
-      "visio": "Visio"
+      "visio": "Visio",
+      "coming_soon": "Coming soon",
+      "session": "Session"
     },
     "file": {
       "drop_audio": "Drop your audio file here"
@@ -662,7 +664,7 @@
       "no_transcription": "Nothing has been transcribed yet for this channel",
       "session_ended_title": "The session has ended",
       "session_ended_subtitle": "The transcript has been saved in your media library",
-      "session_ended_link_to_inbox":"Go to the media library",
+      "session_ended_link_to_inbox": "Go to the media library",
       "session_not_started_title": "The session has not started yet",
       "sessions_status": {
         "no_started": "The session is scheduled",

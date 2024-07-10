@@ -171,7 +171,8 @@ export async function apiCreateConversation(
     endpoint,
     tracks,
   },
-  notif
+  notif,
+  onUploadProgress = null
 ) {
   try {
     let formData = new FormData()
@@ -193,7 +194,8 @@ export async function apiCreateConversation(
       `${process.env.VUE_APP_CONVO_API}/organizations/${organizationId}/conversations/create`,
       "post",
       formData,
-      notif
+      notif,
+      onUploadProgress
     )
 
     return req.status == "success"
