@@ -651,7 +651,8 @@
       "submit_button": "Create session",
       "submit_label": "Create session",
       "success_message": "Session successfully created",
-      "title": "Create a session"
+      "title": "Create a session",
+      "main_info_title": "General information"
     },
     "detail_page": {
       "back_to_listing": "Sessions list",

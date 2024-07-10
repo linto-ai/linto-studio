@@ -650,7 +650,8 @@
       "submit_label": "Créer la session",
       "success_message": "La session a été créée avec succès",
       "title": "Créer une session",
-      "channels_error": "Veuillez ajouter au moins un canal à la session"
+      "channels_error": "Veuillez ajouter au moins un canal à la session",
+      "main_info_title": "Informations générales"
     },
     "detail_page": {
       "back_to_listing": "Liste des sessions",

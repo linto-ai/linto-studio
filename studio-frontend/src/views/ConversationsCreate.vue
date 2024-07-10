@@ -10,6 +10,7 @@
         :disabled="formState === 'sending'" />
 
       <form
+        v-if="currentTab !== 'session'"
         class="flex col flex1"
         @submit="createConversation"
         :disabled="formState === 'sending'">
@@ -67,33 +68,26 @@
           </button>
         </div>
       </form>
+
+      <SessionCreateContent
+        v-if="currentTab === 'session'"
+        :currentOrganizationScope="currentOrganizationScope" />
     </div>
   </MainContent>
 </template>
 <script>
-import debounce from "debounce"
-
-import { bus } from "@/main.js"
-import { apiGetTranscriptionService } from "@/api/service"
-import { apiCreateConversation } from "@/api/conversation"
-import { getUserRoleInOrganization } from "@/tools/getUserRoleInOrganization"
-import { testFieldEmpty } from "@/tools/fields/testEmpty.js"
-import { testService } from "@/tools/fields/testService.js"
-
-import { formsMixin } from "@/mixins/forms.js"
-import { debounceMixin } from "@/mixins/debounce"
 import ConversationCreateMixin from "@/mixins/conversationCreate.js"
 
 import ConversationCreateAudio from "@/components/ConversationCreateAudio.vue"
 import ConversationCreateServices from "@/components/ConversationCreateServices.vue"
 import MainContent from "@/components/MainContent.vue"
 
-import RIGHTS_LIST from "@/const/rigthsList"
-import EMPTY_FIELD from "@/const/emptyField"
-import Checkbox from "../components/Checkbox.vue"
-import Tabs from "../components/Tabs.vue"
-import ConversationCreateTabFile from "../components/ConversationCreateTabFile.vue"
-import ConversationCreateMicro from "../components/ConversationCreateTabMicro.vue"
+import Checkbox from "@/components/Checkbox.vue"
+import Tabs from "@/components/Tabs.vue"
+import ConversationCreateTabFile from "@/components/ConversationCreateTabFile.vue"
+import ConversationCreateMicro from "@/components/ConversationCreateTabMicro.vue"
+import SessionCreateContent from "@/components/SessionCreateContent.vue"
+
 export default {
   mixins: [ConversationCreateMixin],
   props: {
@@ -129,7 +123,7 @@ export default {
           name: "session",
           label: this.$i18n.t("conversation_creation.tabs.session"),
           icon: "session",
-          disabled: true,
+          //disabled: true,
         },
         {
           name: "url",
@@ -157,6 +151,7 @@ export default {
     Tabs,
     ConversationCreateTabFile,
     ConversationCreateMicro,
+    SessionCreateContent,
   },
 }
 </script>
