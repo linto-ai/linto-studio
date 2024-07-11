@@ -43,3 +43,14 @@
   height: 4rem;
   width: 4rem;
 }
+
+.conversation-create-footer {
+  margin-top: 1rem;
+  position: sticky;
+  bottom: 1rem;
+  padding: 0.25rem 2rem;
+  border: 1px solid lightgray;
+  background-color: white;
+  border-radius: 30px;
+  //box-shadow: var(--shadow-block);
+}

@@ -56,7 +56,7 @@
         </section>
 
         <div
-          class="flex col gap-small align-top align-end"
+          class="flex col gap-small align-top align-end conversation-create-footer"
           style="margin-top: 1rem">
           <div class="error-field" v-if="formError">{{ formError }}</div>
           <button
@@ -84,8 +84,6 @@ import MainContent from "@/components/MainContent.vue"
 
 import Checkbox from "@/components/Checkbox.vue"
 import Tabs from "@/components/Tabs.vue"
-import ConversationCreateTabFile from "@/components/ConversationCreateTabFile.vue"
-import ConversationCreateMicro from "@/components/ConversationCreateTabMicro.vue"
 import SessionCreateContent from "@/components/SessionCreateContent.vue"
 
 export default {
@@ -149,8 +147,6 @@ export default {
     MainContent,
     Checkbox,
     Tabs,
-    ConversationCreateTabFile,
-    ConversationCreateMicro,
     SessionCreateContent,
   },
 }
