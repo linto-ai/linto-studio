@@ -38,7 +38,9 @@
         </div>
       </section>
 
-      <div class="form-field flex row">
+      <div class="flex gap-small align-center conversation-create-footer">
+        <div class="error-field flex1" v-if="formError">{{ formError }}</div>
+        <div v-else class="flex1"></div>
         <button
           type="submit"
           class="btn green"

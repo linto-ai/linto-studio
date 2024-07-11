@@ -56,9 +56,10 @@
         </section>
 
         <div
-          class="flex col gap-small align-top align-end conversation-create-footer"
+          class="flex gap-small align-center conversation-create-footer"
           style="margin-top: 1rem">
-          <div class="error-field" v-if="formError">{{ formError }}</div>
+          <div class="error-field flex1" v-if="formError">{{ formError }}</div>
+          <div v-else class="flex1"></div>
           <button
             type="submit"
             class="btn green"
