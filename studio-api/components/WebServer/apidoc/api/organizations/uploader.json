@@ -24,6 +24,10 @@
                   "format": "binary",
                   "description": "Audio file to convert into a conversation"
                 },
+                "url": {
+                  "type": "string",
+                  "description": "Url to the audio to transcribe, alternative to file"
+                },
                 "name": {
                   "type": "string",
                   "description": "Name of the conversation"

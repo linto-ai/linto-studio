@@ -52,11 +52,14 @@ async function storeFile(files, type = 'audio') {
             const store_path = `${getStorageFolder()}/${getAudioFolder()}/${fileName}`
             const output_audio = `${store_path}.mp3`
 
-            const filePath = `${store_path}_tmp${fileExtension}` // origine file
-
-            fs.writeFileSync(filePath, files.data)
-
-            await transformAudio(filePath, output_audio)
+            let filePath = `${store_path}_tmp${fileExtension}` // origine file
+            if (files.filePath) {   // we are in URL mode
+                filePath = files.filePath
+                await transformAudio(files.filePath, output_audio)
+            } else {
+                fs.writeFileSync(filePath, files.data)
+                await transformAudio(filePath, output_audio)
+            }
 
             // Generate waveform json
             // Write a JSON file in ../audiowaveform folder
@@ -80,11 +83,11 @@ function defaultPicture() {
 }
 
 function deleteFile(filePath) {
-  try {
-    fs.unlinkSync(filePath)
-  } catch (error) {
-    debug('File not found to be deleted : ', filePath)
-  }
+    try {
+        fs.unlinkSync(filePath)
+    } catch (error) {
+        debug('File not found to be deleted : ', filePath)
+    }
 }
 
 function getStorageFolder() {

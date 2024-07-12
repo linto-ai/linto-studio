@@ -27,6 +27,19 @@ class ConversationNoFileUploaded extends Error {
     if (err) this.err = err
   }
 }
+
+
+class ConversationURLExtractorError extends Error {
+  constructor(message, err) {
+    super()
+    this.name = 'ConversationURLExtractorError'
+    this.type = ExceptionType
+    this.status = 400
+    if (message) this.message = message
+    else this.message = 'No files were downloaded.'
+    if (err) this.err = err
+  }
+}
 class ConversationMetadataRequire extends Error {
   constructor(message, err) {
     super()
@@ -220,6 +233,7 @@ class SubtitleNotFound extends Error {
 
 module.exports = {
   ConversationNoFileUploaded,
+  ConversationURLExtractorError,
   ConversationMetadataRequire,
   ConversationUnsupportedMediaType,
   ConversationReadAccessDenied,
