@@ -396,7 +396,9 @@
   },
   "favorites": {
     "subtitle": "Vos médias favoris arrivent ici.",
-    "title": "Médias favoris"
+    "title": "Médias favoris",
+    "no_media_title": "Votre collection de médias favoris est vide",
+    "no_media_subtitle": "Ajoutez des médias favoris en cliquant sur l'étoile dans la liste des médias."
   },
   "global": {
     "disabled": "Inactif",

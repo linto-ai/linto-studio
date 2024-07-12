@@ -47,6 +47,7 @@
           {{ $t("sharedWithTab.subtitle") }}
         </span>
       </ConversationListHeader>
+
       <ConversationList
         :conversations="conversations"
         :loading="loading"
@@ -70,6 +71,7 @@
           </div>
         </template>
       </ConversationList>
+
       <div class="bottom-list-sticky">
         <Pagination
           v-model="currentPageNb"

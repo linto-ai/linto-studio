@@ -397,7 +397,9 @@
   },
   "favorites": {
     "subtitle": "Your favorite media lands here.",
-    "title": "Favorites media"
+    "title": "Favorites media",
+    "no_media_title": "Your favorite media collection is empty",
+    "no_media_subtitle": "Add favorite media by clicking on the star icon on the media card."
   },
   "global": {
     "disabled": "disabled",
