@@ -87,6 +87,7 @@ input:checked + .conversation-line .conversation-line__open-with {
   box-shadow: var(--shadow-block-left);
   background-color: var(--background-primary);
   flex-shrink: 0;
+  overflow: auto;
 }
 
 .organization-sidebar__current-filter .organization-sidebar__tag-list {

@@ -91,9 +91,11 @@ export default {
     fixed: { type: Boolean, default: false },
     withMetadata: { type: Boolean, default: false },
     possess: { type: Boolean, default: false },
+    closeBox: { type: Boolean }, // change its value to close the box from the parent (if true pass it to false and vice versa)
   },
   data() {
     return {
+      closeBoxStartValue: this.closeBox,
       loading: false,
       displayedCategory: this.category,
       open: this.startOpen,
@@ -130,6 +132,12 @@ export default {
     },
   },
   watch: {
+    closeBox() {
+      if (this.closeBox !== this.closeBoxStartValue) {
+        this.open = false
+        this.closeBoxStartValue = this.closeBox
+      }
+    },
     startOpen() {
       this.open = this.startOpen
     },
