@@ -740,7 +740,9 @@
   },
   "sharedWithTab": {
     "subtitle": "All media shared with you (from outside the organisation)",
-    "title": "Media shared with me"
+    "title": "Media shared with me",
+    "no_media_title": "No media has been shared with you",
+    "no_media_subtitle": "Other users can share media with you using the 'share' button in their media library."
   },
   "tags": {
     "add_tag_to_conversation": "Add tag",

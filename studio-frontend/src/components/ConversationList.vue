@@ -27,6 +27,7 @@
         @onSelect="onSelect"
         :selectedConversations="selectedConversations" />
     </ul>
+    <slot name="emptyPlaceholder" v-else-if="hasPlaceholderWhenEmpty"></slot>
     <div class="flex col align-center justify-center flex1" v-else>
       <h2 class="center-text">
         {{ $t("conversation.no_conversation_found") }}
@@ -70,7 +71,11 @@ export default {
     return {}
   },
   mounted() {},
-  computed: {},
+  computed: {
+    hasPlaceholderWhenEmpty() {
+      return !!this.$slots?.emptyPlaceholder
+    },
+  },
   methods: {
     dateToJMYHMS(date) {
       return this.$options.filters.dateToJMYHMS(date)

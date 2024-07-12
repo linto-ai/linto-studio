@@ -739,7 +739,9 @@
   },
   "sharedWithTab": {
     "subtitle": "Tout les médias partagés avec vous en dehors d'une organisation sont réunis ici.",
-    "title": "Médias partagés avec moi"
+    "title": "Médias partagés avec moi",
+    "no_media_title": " Aucun média n'a été partagé avec vous",
+    "no_media_subtitle": "D'autres utilisateurs peuvent partager des médias avec vous grâce au bouton 'partager' dans leur bibliothèque de médias. "
   },
   "tags": {
     "add_tag_to_conversation": "Ajouter le tag",
