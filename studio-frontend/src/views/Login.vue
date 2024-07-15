@@ -65,6 +65,8 @@
   </div>
 </template>
 <script>
+import { getEnv } from "@/tools/getEnv"
+
 import LocalSwitcher from "@/components/LocalSwitcher.vue"
 import { apiLoginUser } from "../api/user"
 export default {
@@ -94,10 +96,10 @@ export default {
       return process.env.VUE_APP_DISABLE_USER_CREATION !== "true"
     },
     logo() {
-      return `/img/${process.env.VUE_APP_LOGO}`
+      return `/img/${getEnv("VUE_APP_LOGO")}`
     },
     title() {
-      return process.env.VUE_APP_NAME
+      return getEnv("VUE_APP_NAME")
     },
   },
   methods: {

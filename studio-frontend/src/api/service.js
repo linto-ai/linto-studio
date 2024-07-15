@@ -1,7 +1,9 @@
 import nextServices from "../const/nextServices"
 import { sendRequest } from "../tools/sendRequest"
 
-const BASE_API = process.env.VUE_APP_CONVO_API
+import { getEnv } from "@/tools/getEnv"
+
+const BASE_API = getEnv("VUE_APP_CONVO_API")
 
 function getLangCode(lang) {
   const lang_code = {

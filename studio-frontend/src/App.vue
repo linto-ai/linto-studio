@@ -41,6 +41,8 @@
 </template>
 <script>
 import { bus } from "./main.js"
+import { getEnv } from "@/tools/getEnv"
+
 import LoadingOverlay from "@/components/LoadingOverlay.vue"
 import ErrorView from "./views/Error.vue"
 import ErrorPage from "./components/ErrorPage.vue"
@@ -97,7 +99,7 @@ export default {
   },
   computed: {
     title() {
-      return process.env.VUE_APP_NAME || "LinTO studio"
+      return getEnv("VUE_APP_NAME")
     },
     isPrivateRoute() {
       return !this.$route?.meta?.public
@@ -158,8 +160,7 @@ export default {
   },
   methods: {
     async init() {
-      
-      if(this.$route.query?.organizationId) {
+      if (this.$route.query?.organizationId) {
         this.setOrganizationScope(this.$route.query.organizationId)
       }
 

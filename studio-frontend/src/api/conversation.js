@@ -2,7 +2,10 @@ import conversationsPerPage from "../const/conversationsPerPage"
 import { sendMultipartFormData } from "../tools/sendMultipartFormData"
 import { sendRequest } from "../tools/sendRequest"
 
-const BASE_API = process.env.VUE_APP_CONVO_API
+import { getEnv } from "@/tools/getEnv"
+
+const BASE_API = getEnv("VUE_APP_CONVO_API")
+
 const DEFAULT_PAGE_SIZE = conversationsPerPage
 
 //  -- -- -- conversations listing -- -- -- --
@@ -135,7 +138,7 @@ export async function apiGetFavoritesConversations(
   tag = tag || []
 
   const res = await sendRequest(
-    `${process.env.VUE_APP_CONVO_API}/users/self/favorites`,
+    `${BASE_API}/users/self/favorites`,
     { method: "get" },
     {
       tags: tag.toString(),
@@ -191,7 +194,7 @@ export async function apiCreateConversation(
     }
 
     let req = await sendMultipartFormData(
-      `${process.env.VUE_APP_CONVO_API}/organizations/${organizationId}/conversations/create`,
+      `${BASE_API}/organizations/${organizationId}/conversations/create`,
       "post",
       formData,
       notif,
@@ -415,7 +418,7 @@ export async function apiGetFileFromConversationSubtitle(
 
 export async function apiSearchConversationByText(payload, notif) {
   const res = await sendRequest(
-    `${process.env.VUE_APP_CONVO_API}/conversations/search`,
+    `${BASE_API}/conversations/search`,
     { method: "post" },
     {
       text: payload.text,
@@ -462,7 +465,7 @@ export async function apiGetUsersFromMultipleConversation(
 
 export async function apiInviteInConversation(conversationId, email, notif) {
   return await sendRequest(
-    `${process.env.VUE_APP_CONVO_API}/conversations/${conversationId}/invite`,
+    `${BASE_API}/conversations/${conversationId}/invite`,
     { method: "post" },
     { email, right: 1 },
     notif
@@ -471,7 +474,7 @@ export async function apiInviteInConversation(conversationId, email, notif) {
 
 export async function apiAddConversationToFavorites(conversationId, notif) {
   return await sendRequest(
-    `${process.env.VUE_APP_CONVO_API}/users/self/favorites/${conversationId}`,
+    `${BASE_API}/users/self/favorites/${conversationId}`,
     { method: "put" },
     {},
     notif
@@ -483,7 +486,7 @@ export async function apiRemoveConversationFromFavorites(
   notif
 ) {
   return await sendRequest(
-    `${process.env.VUE_APP_CONVO_API}/users/self/favorites/${conversationId}`,
+    `${BASE_API}/users/self/favorites/${conversationId}`,
     { method: "delete" },
     {},
     notif

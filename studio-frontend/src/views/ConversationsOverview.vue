@@ -67,23 +67,24 @@
   </MainContentConversation>
 </template>
 <script>
+import { bus } from "../main.js"
+
+import { getEnv } from "@/tools/getEnv"
+import RIGHTS_LIST from "@/const/rigthsList.js"
+import { conversationMixin } from "@/mixins/conversation.js"
+import { debounceMixin } from "@/mixins/debounce.js"
+import { timeToHMS } from "@/tools/timeToHMS"
+
 import Loading from "@/components/Loading.vue"
 import Modal from "@/components/Modal.vue"
 import ConversationShare from "@/components/ConversationShare.vue"
 import UserInfoInline from "@/components/UserInfoInline.vue"
 import CollaborativeField from "@/components/CollaborativeField.vue"
-import RIGHTS_LIST from "@/const/rigthsList.js"
-
-import { bus } from "../main.js"
-import { conversationMixin } from "../mixins/conversation.js"
-import { debounceMixin } from "../mixins/debounce.js"
-import { workerSendMessage } from "../tools/worker-message.js"
-import MainContentConversation from "../components/MainContentConversation.vue"
-import ConversationStatus from "../components/ConversationStatus.vue"
-import { timeToHMS } from "../tools/timeToHMS"
+import MainContentConversation from "@/components/MainContentConversation.vue"
+import ConversationStatus from "@/components/ConversationStatus.vue"
 import ConversationOverviewMainInfos from "@/components/ConversationOverviewMainInfos.vue"
 import ConversationOverviewMetadata from "@/components/ConversationOverviewMetadata.vue"
-import LabeledValue from "../components/LabeledValue.vue"
+import LabeledValue from "@/components/LabeledValue.vue"
 
 export default {
   mixins: [conversationMixin, debounceMixin],
@@ -126,7 +127,7 @@ export default {
       return timeToHMS(this.conversation?.metadata?.audio?.duration)
     },
     linkToMedia() {
-      const BASE_API = process.env.VUE_APP_CONVO_API
+      const BASE_API = getEnv("VUE_APP_CONVO_API")
       return `${BASE_API}/conversations/${this.conversationId}/media`
     },
   },
