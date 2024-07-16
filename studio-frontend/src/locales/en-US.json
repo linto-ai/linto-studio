@@ -341,8 +341,7 @@
     "tabs": {
       "file": "File",
       "microphone": "Microphone",
-      "url": "Url",
-      "visio": "Visio",
+      "url": "Url & Visio",
       "coming_soon": "Coming soon",
       "session": "Session"
     },

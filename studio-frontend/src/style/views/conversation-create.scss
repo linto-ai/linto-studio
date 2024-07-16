@@ -35,13 +35,18 @@
 }
 
 .audio-upload__record__button {
-  background-color: var(--primary-color);
+  //background-color: var(--primary-color);
+  //background-image: none;
   border: none;
   border-radius: 50%;
-  color: var(--white);
+  //color: var(--white);
   cursor: pointer;
   height: 4rem;
   width: 4rem;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .conversation-create-footer {

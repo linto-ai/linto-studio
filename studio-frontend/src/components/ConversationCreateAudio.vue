@@ -1,5 +1,5 @@
 <template>
-  <div class="form-field flex gap-medium">
+  <div class="form-field flex col gap-medium">
     <!-- <h3>Uploaded media</h3> -->
     <!-- File list -->
     <ul class="audio-upload-list flex1" v-if="value && value.length > 0">

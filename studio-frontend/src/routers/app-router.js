@@ -1,5 +1,7 @@
 import Vue from "vue"
 import Router from "vue-router"
+import { getEnv } from "@/tools/getEnv.js"
+
 import { getCookie } from "../tools/getCookie"
 import { setCookie } from "../tools/setCookie"
 import { apiLoginUserMagicLink } from "../api/user"
@@ -110,7 +112,7 @@ let router = new Router({
         ...defaultComponents,
       },
       props: defaultProps,
-      meta: { sessionListingPage: true },
+      meta: { sessionListingPage: true, sessionPage: true },
     },
     {
       path: "/interface/favorites",
@@ -199,6 +201,7 @@ let router = new Router({
         ...defaultComponents,
       },
       props: defaultProps,
+      meta: { sessionPage: true },
     },
     {
       path: "/interface/:organizationId/sessions/:sessionId",
@@ -208,7 +211,7 @@ let router = new Router({
         ...defaultComponents,
       },
       props: defaultProps,
-      meta: { public: true },
+      meta: { public: true, sessionPage: true },
     },
     {
       path: "/interface/:organizationId/sessions/:sessionId/settings",
@@ -218,6 +221,7 @@ let router = new Router({
         ...defaultComponents,
       },
       props: defaultProps,
+      meta: { public: true, sessionPage: true },
     },
     {
       path: "/interface/organizations/create",
@@ -270,7 +274,12 @@ let router = new Router({
 })
 
 router.beforeEach(async (to, from, next) => {
+  const enableSession = getEnv("VUE_APP_ENABLE_SESSION") === "true"
+
   try {
+    if (!enableSession && to.meta?.sessionPage) {
+      next({ name: "not_found" })
+    }
     // Redirections 404
     if (to.name === "not_found_redirect") {
       next({ name: "not_found" })

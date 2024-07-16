@@ -2,10 +2,10 @@
   <div
     class="flex col justify-center align-center audio-upload__record"
     @click="recording ? stopRecording() : startRecording()">
-    <div class="btn audio-upload__record__button" v-if="!recording">
+    <div class="btn green audio-upload__record__button" v-if="!recording">
       <span class="icon record audio-upload__record__icon"></span>
     </div>
-    <div class="btn audio-upload__record__button" v-else>
+    <div class="btn green audio-upload__record__button" v-else>
       <span class="icon stop audio-upload__record__icon"></span>
     </div>
     <label from for="record" class="label">

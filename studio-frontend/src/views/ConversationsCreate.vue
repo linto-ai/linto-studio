@@ -77,12 +77,13 @@
   </MainContent>
 </template>
 <script>
+import { getEnv } from "@/tools/getEnv.js"
+
 import ConversationCreateMixin from "@/mixins/conversationCreate.js"
 
 import ConversationCreateAudio from "@/components/ConversationCreateAudio.vue"
 import ConversationCreateServices from "@/components/ConversationCreateServices.vue"
 import MainContent from "@/components/MainContent.vue"
-
 import Checkbox from "@/components/Checkbox.vue"
 import Tabs from "@/components/Tabs.vue"
 import SessionCreateContent from "@/components/SessionCreateContent.vue"
@@ -104,40 +105,46 @@ export default {
     },
   },
   data() {
+    const enableSession = getEnv("VUE_APP_ENABLE_SESSION") === "true"
+    const tabs = [
+      {
+        name: "file",
+        label: this.$i18n.t("conversation_creation.tabs.file"),
+        icon: "file-audio",
+        img: "/img/We10X-icon-theme/audio-x-generic.svg",
+      },
+      {
+        name: "microphone",
+        label: this.$i18n.t("conversation_creation.tabs.microphone"),
+        icon: "record",
+        img: "/img/We10X-icon-theme/vocal.svg",
+      },
+      {
+        name: "url",
+        label: this.$i18n.t("conversation_creation.tabs.url"),
+        icon: "link",
+        disabled: true,
+      },
+      // {
+      //   name: "visio",
+      //   label: this.$i18n.t("conversation_creation.tabs.visio"),
+      //   icon: "profile",
+      //   img: "/img/We10X-icon-theme/preferences-desktop-accessibility.svg",
+      //   disabled: true,
+      // },
+    ]
+
+    if (enableSession) {
+      tabs.push({
+        name: "session",
+        label: this.$i18n.t("conversation_creation.tabs.session"),
+        icon: "session",
+        //disabled: true,
+      })
+    }
+
     return {
-      tabs: [
-        {
-          name: "file",
-          label: this.$i18n.t("conversation_creation.tabs.file"),
-          icon: "file-audio",
-          img: "/img/We10X-icon-theme/audio-x-generic.svg",
-        },
-        {
-          name: "microphone",
-          label: this.$i18n.t("conversation_creation.tabs.microphone"),
-          icon: "record",
-          img: "/img/We10X-icon-theme/vocal.svg",
-        },
-        {
-          name: "session",
-          label: this.$i18n.t("conversation_creation.tabs.session"),
-          icon: "session",
-          //disabled: true,
-        },
-        {
-          name: "url",
-          label: this.$i18n.t("conversation_creation.tabs.url"),
-          icon: "link",
-          disabled: true,
-        },
-        {
-          name: "visio",
-          label: this.$i18n.t("conversation_creation.tabs.visio"),
-          icon: "profile",
-          img: "/img/We10X-icon-theme/preferences-desktop-accessibility.svg",
-          disabled: true,
-        },
-      ],
+      tabs,
       currentTab: "file",
     }
   },
