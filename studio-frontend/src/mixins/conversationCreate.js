@@ -69,6 +69,26 @@ export default {
         { value: "fr", label: this.$i18n.t("lang.fr") },
         { value: "en", label: this.$i18n.t("lang.en") },
       ],
+      linkFields: [
+        {
+          ...EMPTY_FIELD,
+          label: this.$i18n.t("conversation_creation.url_tab.url_label"),
+          value: "",
+          placeholder: "https://www.youtube.com/watch?v=YBpfClfbf0Y",
+          testField: testFieldEmpty,
+        },
+        {
+          ...EMPTY_FIELD,
+          label: this.$i18n.t("conversation_creation.url_tab.live_label"),
+          value: false,
+        },
+        {
+          ...EMPTY_FIELD,
+          label: this.$i18n.t("conversation_creation.url_tab.name_label"),
+          value: "",
+          testField: testFieldEmpty,
+        },
+      ],
       formError: null,
       debounceGetTranscriptionService: debounce(this.initTranscriptionList, 30),
     }
@@ -115,7 +135,7 @@ export default {
         this.transcriptionService.value = null
       }
     },
-    async createConversation(event) {
+    async createConversationByFile(event) {
       event?.preventDefault()
 
       if (this.audioFiles.length === 0) {
@@ -215,6 +235,63 @@ export default {
         }
       }
       return false
+    },
+    async createConversationByUrl(event) {
+      if (this.formState === "available") {
+        if (
+          this.testFields({
+            fieldsToTest: ["linkFields", "transcriptionService"],
+          })
+        ) {
+          this.formError = null
+          this.formState = "sending"
+          this.formSubmitLabel = this.$i18n.t(
+            "conversation.conversation_creation_button.sending"
+          )
+
+          const convName = this.linkFields[2].value
+
+          let conversationHasBeenCreated = await apiCreateConversation(
+            this.currentOrganizationScope,
+            {
+              name: convName,
+              description: "",
+              membersRights: this.organizationMemberAccess
+                ? parseInt(this.membersRight.value)
+                : 0,
+              serviceName: this.transcriptionService.value.serviceName,
+              transcriptionConfig: JSON.stringify(
+                this.transcriptionService.value.config
+              ),
+              segmentCharSize: process.env.VUE_APP_TURN_SIZE,
+              lang: this.transcriptionService.value.lang,
+              endpoint: this.transcriptionService.value.endpoint,
+              url: this.linkFields[0].value,
+            }
+          )
+
+          if (conversationHasBeenCreated) {
+            this.formState = "success"
+            bus.$emit("set_organization_scope", {
+              organizationId: this.conversationOrganization.value,
+            })
+            bus.$emit("app_notif", {
+              status: "success",
+              message: this.$i18n.t("conversation.creation_success_message"),
+              redirect: false,
+              cantBeClosed: true,
+            })
+          } else {
+            this.emitError(
+              this.$i18n.t("conversation.conversation_creation_error_unknown")
+            )
+            this.formSubmitLabel = this.$i18n.t(
+              "conversation.conversation_creation_button.retry"
+            )
+            this.formState = "available"
+          }
+        }
+      }
     },
     emitError(errorMessage) {
       bus.$emit("app_notif", {

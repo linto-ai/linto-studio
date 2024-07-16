@@ -22,7 +22,8 @@
       v-if="mainListingPage || sessionListingPage"
       :disabled="!isAtLeastUploader">
       <span class="icon new"></span>
-      <span class="label">{{ $t("navigation.conversation.create") }}</span>
+      <!-- <span class="label">{{ $t("navigation.conversation.create") }}</span> -->
+      <span class="label">{{ $t("navigation.conversation.start") }}</span>
     </router-link>
   </nav>
 </template>

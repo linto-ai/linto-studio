@@ -44,6 +44,7 @@
         <button
           type="submit"
           class="btn green"
+          id="upload-media-button"
           :disabled="formState === 'sending'">
           <span class="icon apply"></span>
           <span class="label">
@@ -104,6 +105,7 @@ export default {
       selectedProfiles: [],
       modalAddChannelsIsOpen: false,
       channelsError: null,
+      formError: null,
     }
   },
   watch: {
