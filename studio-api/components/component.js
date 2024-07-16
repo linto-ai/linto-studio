@@ -2,7 +2,7 @@ const fsPromises = require('fs').promises
 const path = require('path')
 const EventEmitter = require('eventemitter3')
 const { componentMissingError } = require(`../lib/error/customErrors.js`)
-
+const ignoredFilesExt = ['.docx']
 
 class Component extends EventEmitter {
 
@@ -32,6 +32,8 @@ class Component extends EventEmitter {
                 let stat = await fsPromises.lstat(itemPath)
                 if (stat.isDirectory()) {
                     await this.loadEventControllers(itemPath)
+                } else if (ignoredFilesExt.includes(path.extname(item))) {
+                    continue
                 } else if (item.toLocaleLowerCase().indexOf('.js')) {
                     let controller = require(itemPath)
                     if (typeof controller === "function") controller.call(this)
@@ -43,7 +45,7 @@ class Component extends EventEmitter {
     }
 
     async init() {
-        return new Promise(async(resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             try {
                 await this.loadEventControllers(path.join(__dirname, this.constructor.name, "/controllers"))
                 resolve(this)

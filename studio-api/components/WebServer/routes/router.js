@@ -21,14 +21,21 @@ class Router {
 
                 if (process.env.DEV_DISABLE_AUTH === 'true') {
                     route.requireAuth = false
-                    route.requireSession = false
+                    route.requireConversationCommentAccess = false
+                    route.requireConversationDeleteAccess = false
                     route.requireConversationReadAccess = false
+                    route.requireConversationShareAccess = false
                     route.requireConversationWriteAccess = false
+                    route.requireDeleteTaxonomyAccess = false
                     route.requireOrganizationAdminAccess = false
+                    route.requireOrganizationGuestAccess = false
                     route.requireOrganizationMaintainerAccess = false
                     route.requireOrganizationMemberAccess = false
-                    route.requireOrganizationGuestAccess = false
+                    route.requireOrganizationUploaderAccess = false
+                    route.requireReadTaxonomyAccess = false
+                    route.requireSession = false
                     route.requireUserVisibility = false
+                    route.requireWriteTaxonomyAccess = false
                 }
 
                 //debug('Create route : ' + route.method + ' - ' + level + route.path)

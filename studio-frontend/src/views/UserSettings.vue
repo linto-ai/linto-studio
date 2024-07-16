@@ -103,7 +103,7 @@ export default {
         error: null,
         label: this.$t("usersettings.profil_visibility.label_private"),
       },
-      pictureUploadLabel: "Choose a file",
+      pictureUploadLabel: this.$t("usersettings.profile_image_button"),
     }
   },
   computed: {

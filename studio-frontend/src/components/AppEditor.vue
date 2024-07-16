@@ -30,7 +30,11 @@
     </div>
 
     <AppEditorPlayer
-      v-if="conversation.metadata.audio.filename && !noPlayer"
+      v-if="
+        conversation.metadata.audio &&
+        conversation.metadata.audio.filename &&
+        !noPlayer
+      "
       :audio="conversation.metadata.audio"
       :speakers="speakers"
       :speakersTurnsTimebox="speakersTurnsTimebox"
@@ -41,6 +45,11 @@
         v-model="currentPageNb"
         :pages="pages"></AppEditorPagination>
     </AppEditorPlayer>
+    <div id="conversation-audio-player" v-else>
+      <AppEditorPagination
+        v-model="currentPageNb"
+        :pages="pages"></AppEditorPagination>
+    </div>
   </div>
 </template>
 <script>

@@ -78,6 +78,7 @@
                 :sortListKey="sortListKey"
                 :sortListDirection="sortListDirection"
                 @list_sort_by="sortBy" />
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -112,7 +113,7 @@
                   userRoles.find((ur) => ur.value === user.role).name
                 }}</span>
               </td>
-              <td>
+              <td class="content-size">
                 <button
                   v-if="
                     isAtLeastMaintainer &&
@@ -151,6 +152,8 @@
       :currentOrganizationScope="currentOrganizationScope"
       @on-confirm="closeLeaveModal"
       @on-cancel="closeLeaveModal" />
+
+    <Modal />
   </MainContent>
 </template>
 <script>
@@ -182,6 +185,7 @@ import SearchUsersListComponent from "@/components/SearchUsersList.vue"
 import ArrayHeader from "@/components/ArrayHeader.vue"
 import LabeledValue from "@/components/LabeledValue.vue"
 import MainContent from "@/components/MainContent.vue"
+import Modal from "../components/Modal.vue"
 
 export default {
   mixins: [formsMixin, orgaRoleMixin],
@@ -406,6 +410,7 @@ export default {
     UserInvite,
     ModalDeleteOrganization,
     ModalLeaveOrganization,
+    Modal,
   },
 }
 </script>

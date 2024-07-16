@@ -1,0 +1,77 @@
+.session-content {
+  overflow: auto;
+  font-size: 18px;
+}
+
+.session-content__turns {
+  container-type: inline-size;
+  container-name: session-content;
+  gap: 0.75em;
+}
+
+.channel-turn {
+  display: grid;
+  grid-template-columns: auto 60em;
+  margin-inline: auto;
+  gap: 1em;
+}
+
+@container session-content (max-width: 70em) {
+  .channel-turn {
+    grid-template-columns: auto 1fr;
+    margin-inline: 1rem;
+  }
+}
+
+.channel-turn__text {
+  text-align: justify;
+  font-family: luciole;
+  line-height: 1.3em;
+}
+
+// not supported in firefox ESR (2024 / v121), so we need js code
+.session-content__turns:has(+ .session-content__subtitle) {
+  margin-bottom: calc(96px + 40px);
+}
+
+// TODO: remove this when firefox ESR will support :has
+.session-content__turns.has_subtitles {
+  margin-bottom: calc(96px + 40px);
+}
+
+.channel-turn__metadata {
+  text-align: right;
+  font-size: 0.8em;
+}
+
+.session-content__title {
+  font-size: 2em;
+}
+
+.session-content__subtitle {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: black;
+  color: white;
+
+  box-sizing: border-box;
+  padding: 20px;
+}
+
+#scroller {
+  height: 96px;
+  line-height: 1.2em;
+  overflow: hidden;
+}
+
+.bottom-session-button {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+
+  &.has_subtitles {
+    bottom: calc(96px + 40px + 1rem);
+  }
+}

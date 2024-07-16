@@ -11,17 +11,23 @@
       :userOrganizations="userOrganizations"
       :currentOrganization="currentOrganization" /> -->
     <nav class="tabs col" v-if="organizationPage">
-      <router-link
+      <!-- <router-link
         :to="{ name: 'inbox' }"
         class="flex row align-center gap-medium tab">
         <span class="icon home"></span>
         <span class="tab__label">{{ $t("navigation.tabs.inbox") }}</span>
-      </router-link>
+      </router-link> -->
       <router-link
         :to="{ name: 'explore' }"
         class="flex row align-center gap-medium tab">
         <span class="icon discover"></span>
         <span class="tab__label">{{ $t("navigation.tabs.explore") }}</span>
+      </router-link>
+      <router-link
+        :to="{ name: 'sessionsList' }"
+        class="flex row align-center gap-medium tab">
+        <span class="icon record"></span>
+        <span class="tab__label">{{ $t("navigation.tabs.sessions") }}</span>
       </router-link>
     </nav>
     <!-- <div class="sidebar-divider"></div> -->

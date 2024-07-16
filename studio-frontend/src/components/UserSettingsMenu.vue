@@ -31,6 +31,7 @@
           text: $t('navigation.account.account_link'),
           icon: 'account',
           iconText: 'Account',
+          badge: badgeValue,
         },
         {
           value: 'logout',

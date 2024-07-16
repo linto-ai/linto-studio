@@ -6,6 +6,7 @@ const fileUpload = require('express-fileupload')
 const passport = require('passport')
 const bodyParser = require('body-parser')
 const WebServerErrorHandler = require('./error/handler')
+const cookieParser = require('cookie-parser')
 
 const swaggerUi = require('swagger-ui-express')
 const swaggerJsdoc = require("swagger-jsdoc")
@@ -32,13 +33,9 @@ class WebServer extends Component {
         super(app)
         this.id = this.constructor.name
         this.app = app
-
         this.express = express()
         this.express.set('etag', false)
         this.express.set('trust proxy', true)
-        this.express.use(fileUpload({
-            uriDecodeFileNames: true
-        }))
 
         this.express.use(bodyParser.json({
             limit: process.env.EXPRESS_SIZE_FILE_MAX,
@@ -48,9 +45,14 @@ class WebServer extends Component {
             limit: process.env.EXPRESS_SIZE_FILE_MAX,
             extended: true
         }))
-
+        this.express.use(cookieParser())
         // Cross domain whitelist
         if (process.env.CORS_ENABLED === 'true') this.express.use(CORS(corsOptions))
+
+        this.express.use(fileUpload({
+            uriDecodeFileNames: true
+        }))
+
 
         this.express.use(passport.initialize())
         this.express.use(passport.session())

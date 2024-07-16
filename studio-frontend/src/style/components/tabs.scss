@@ -13,7 +13,7 @@
   .tab {
     cursor: pointer;
     display: flex;
-
+    align-items: center;
     min-width: 7rem;
 
     .tab__label::first-letter {

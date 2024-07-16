@@ -59,10 +59,14 @@ async function exportConversation(req, res, next) {
         metadata = await prepateData(conversation, metadata, req.query.format)
         if (req.body) {
             if (req.body.filter) conversation = await prepareConversation(conversation, req.body.filter)
-            if (conversation.text.length === 0) res.status(204).send()
+            if (conversation.text.length === 0) {
+                res.status(204).send()
+                return
+            }
 
             if (req.body.metadata) metadata = await prepareMetadata(conversation, req.body.metadata, metadata)
         }
+
 
         switch (req.query.format) {
             case 'json':
@@ -81,7 +85,7 @@ async function exportConversation(req, res, next) {
                 await handleLLMService(res, req.query, conversation, metadata)
                 break
             default:
-                await handleLLMService(res, req.query, conversation, metadata)
+                await handleVerbatimFormat(res, req.query, conversation, metadata)
         }
 
     } catch (err) {
@@ -104,7 +108,7 @@ async function callLlmAPI(query, conversation, metadata, conversationExport) {
 
 
 async function handleLLMService(res, query, conversation, metadata) {
-    if(query.flavor === undefined) throw new ConversationMetadataRequire('flavor is required')
+    if (query.flavor === undefined) throw new ConversationMetadataRequire('flavor is required')
 
     let conversationExport = await model.conversationExport.getByConvAndFormat(conversation._id, query.format)
     if (query.regenerate === 'true' || conversationExport.length === 0) {
@@ -122,7 +126,7 @@ async function handleLLMService(res, query, conversation, metadata) {
         res.status(200).send({ status: 'processing', processing: 'Processing 0%' })
     } else if (conversationExport[0].status === 'done' || conversationExport[0].status === 'complete') {
         conversationExport = conversationExport[0]
-        const file = await docx.generateDocxOnFormat(query.format, conversationExport)
+        const file = await docx.generateDocxOnFormat(query, conversationExport)
         sendFileAsResponse(res, file, query.preview)
     } else {
         if (conversationExport[0].status === 'error' && conversationExport[0].error) {
@@ -167,6 +171,7 @@ async function handleTextFormat(res, metadata, conversation) {
     let output = jsonToPlainText(metadata, {
         color: false,
     })
+
     output += "\n\n"
     conversation.text.map(text => {
         if (metadata.speakers) output += `${text.speaker_name} : `
@@ -184,14 +189,10 @@ async function handleVerbatimFormat(res, query, conversation, metadata) {
         data: text,
         status: 'done',
         convId: conversation._id,
-        format: query.format
+        format: query.format,
+        created: conversation.created
     }
-    const file = await docx.generateDocxOnFormat(query.format, conv)
-    sendFileAsResponse(res, file, query.preview)
-}
-
-async function handleDocxFormat(res, query, conversation, metadata) {
-    const file = await docx.generateTranscriptionDocx(conversation, metadata)
+    const file = await docx.generateDocxOnFormat(query, conv)
     sendFileAsResponse(res, file, query.preview)
 }
 
@@ -224,14 +225,21 @@ async function prepateData(conversation, data, format) {
     if (format === 'docx') secondsDecimals = 0
 
     let text = conversation.text.map(turn => {
+        let stime, etime
+        if (turn.stime) stime = turn.stime
+        else stime = turn.words[0].stime
+
+        if (turn.etime) etime = turn.etime
+        else etime = turn.words[turn.words.length - 1].etime
+
         let update_turn = {
             turn_id: turn.turn_id,
             segment: turn.segment,
         }
         update_turn.speaker_id = turn.speaker_id
         update_turn.speaker_name = speakers[turn.speaker_id]
-        update_turn.stime = secondsToHHMMSSWithDecimals(turn.words[0].stime, secondsDecimals)
-        update_turn.etime = secondsToHHMMSSWithDecimals(turn.words[turn.words.length - 1].etime, secondsDecimals)
+        update_turn.stime = secondsToHHMMSSWithDecimals(stime, secondsDecimals)
+        update_turn.etime = secondsToHHMMSSWithDecimals(etime, secondsDecimals)
         return update_turn
     })
 

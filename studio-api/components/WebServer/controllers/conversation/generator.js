@@ -29,6 +29,10 @@ function initConversation(metadata, userId, job_id) {
         tags: [],
         speakers: [],
         text: [],
+        type : {
+            mode : 'canonical',
+            child_conversations: []
+        },
         metadata: {
             transcription: {
                 lang: metadata.lang,

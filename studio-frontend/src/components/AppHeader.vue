@@ -5,7 +5,7 @@
       to="/interface"
       class="flex row gap-small header-logo">
       <img :src="logo" style="height: 3rem" />
-      <h1 id="main-title" style="">Linto Studio</h1>
+      <h1 id="main-title" style="">{{ title }}</h1>
     </router-link>
     <!-- <router-link
       :title="$t('navigation.conversation.create')"
@@ -21,7 +21,7 @@
         :currentRoute="currentRoute"
         :currentOrganization="currentOrganization" />-->
     </div>
-    <ThemeSwitcher></ThemeSwitcher>
+    <ThemeSwitcher v-if="darkThemeFeatureEnabled"></ThemeSwitcher>
     <LocalSwitcher></LocalSwitcher>
     <UserSettingsMenu :userInfo="userInfo" />
   </nav>
@@ -46,6 +46,12 @@ export default {
     },
     logo() {
       return `/img/${process.env.VUE_APP_LOGO}`
+    },
+    title() {
+      return process.env.VUE_APP_NAME
+    },
+    darkThemeFeatureEnabled() {
+      return process.env?.VUE_APP_EXPERIMENTAL_DARK_THEME === "true"
     },
   },
   components: {

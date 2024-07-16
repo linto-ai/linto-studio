@@ -10,10 +10,6 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const { MalformedToken, MultipleUserFound, InvalidCredential, UserNotFound } = require(`${process.cwd()}/components/WebServer/error/exception/auth`)
 
-const randomstring = require('randomstring')
-const TokenGenerator = require('./token/generator')
-
-
 const refreshToken = require('./token/refresh')
 
 module.exports = {

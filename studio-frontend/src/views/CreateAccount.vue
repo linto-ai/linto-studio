@@ -1,7 +1,8 @@
 <template>
   <div>
     <div class="login-form-container flex col">
-      <img src="/img/linto-studio-logo.svg" class="login-logo" />
+      <img :src="logo" class="login-logo" />
+      <h1 class="center-text">{{ title }}</h1>
       <div>
         <LocalSwitcher></LocalSwitcher>
       </div>
@@ -49,7 +50,7 @@
           </label>
           <input
             id="email"
-            type="text"
+            type="email"
             v-model="email.value"
             :class="email.error !== null ? 'error' : ''"
             @change="testEmail(email)" />
@@ -246,6 +247,12 @@ export default {
     },
     enable_inscription() {
       return process.env.VUE_APP_DISABLE_USER_CREATION !== "true"
+    },
+    logo() {
+      return `/img/${process.env.VUE_APP_LOGO}`
+    },
+    title() {
+      return process.env.VUE_APP_NAME
     },
   },
 

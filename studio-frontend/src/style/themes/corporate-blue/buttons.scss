@@ -24,7 +24,9 @@ button,
   background-color: var(--primary-color);
   color: var(--primary-contrast);
   text-decoration: none;
-  //box-sizing: border-box;
+  min-height: 40px;
+  min-width: 40px;
+  box-sizing: border-box;
   &:focus,
   &:active {
     outline: none;
@@ -34,6 +36,8 @@ button,
     display: inline-flex;
     padding: 0;
     flex-shrink: 0;
+    block-size: auto;
+    min-height: auto;
   }
 
   &:hover {
@@ -156,4 +160,16 @@ button,
     background-image: none;
     padding: 0.3rem 0.6rem;
   }
+}
+
+.pagination-btn {
+  height: auto !important;
+  line-height: normal !important;
+  padding-top: 1rem !important;
+  padding-bottom: 1rem !important;
+}
+
+#audio-player-play {
+  background-color: white;
+  border: var(--border-block);
 }

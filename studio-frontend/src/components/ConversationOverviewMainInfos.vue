@@ -5,10 +5,13 @@
         {{ $t("conversation.information_label") }}
       </h2>
       <div></div>
-      <FormInput :field="name" v-model="name.value" :readonly="!canEdit" />
       <FormInput
-        :field="description"
-        v-model="description.value"
+        :field="nameField"
+        v-model="nameField.value"
+        :readonly="!canEdit" />
+      <FormInput
+        :field="descriptionField"
+        v-model="descriptionField.value"
         textarea
         :readonly="!canEdit" />
       <button type="submit" class="btn" v-if="canEdit">
@@ -23,17 +26,29 @@
 <script>
 import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
-import EMPTY_FIELD from "../const/emptyField"
-import FormInput from "./FormInput.vue"
-import { formsMixin } from "@/mixins/forms.js"
 import { apiUpdateConversation } from "../api/conversation"
+import EMPTY_FIELD from "../const/emptyField"
+import { testName } from "@/tools/fields/testName"
+
+import { formsMixin } from "@/mixins/forms.js"
+import { conversationModelMixin } from "@/mixins/conversationModel.js"
+
+import FormInput from "@/components/FormInput.vue"
 
 export default {
-  mixins: [formsMixin],
+  mixins: [formsMixin, conversationModelMixin],
   props: {
     conversation: {
       type: Object,
       required: true,
+    },
+    parentConversation: {
+      type: Object,
+      required: false,
+    },
+    channels: {
+      type: Array,
+      required: false,
     },
     canEdit: {
       type: Boolean,
@@ -42,30 +57,36 @@ export default {
   },
   data() {
     return {
-      name: {
+      nameField: {
         ...EMPTY_FIELD,
-        value: this.conversation.name,
+        value: "",
         label: this.$t("conversation.name_label"),
+        testField: testName,
       },
-      description: {
+      descriptionField: {
         ...EMPTY_FIELD,
-        value: this.conversation.description,
+        value: "",
         label: this.$t("conversation.description_label"),
       },
-      fields: ["name", "description"],
+      fields: ["nameField", "descriptionField"],
     }
   },
-  mounted() {},
+  mounted() {
+    this.initFields()
+  },
   methods: {
+    initFields() {
+      this.nameField.value = this.name
+      this.descriptionField.value = this.conversation.description
+    },
     async update(e) {
       e.preventDefault()
       if (this.testFields()) {
-        const res = await apiUpdateConversation(this.conversation._id, {
-          description: this.description.value,
-          name: this.name.value,
+        const res = await apiUpdateConversation(this.canonicalId, {
+          description: this.descriptionField.value,
+          name: this.nameField.value,
         })
 
-        console.log(res.status)
         if (res.status === "error") {
           bus.$emit("app_notif", {
             status: "error",

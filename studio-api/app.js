@@ -19,9 +19,7 @@ class App {
 
                 if (this.components['MongoMigration'] !== undefined) {
                     await this.components['MongoMigration'].migrate()
-
                     delete this.components['MongoMigration']
-                    console.log(`MongoMigration unloaded`)
                 }
             })
 

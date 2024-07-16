@@ -1,7 +1,8 @@
 <template>
   <div>
     <div class="login-form-container flex col">
-      <img src="/img/linto-studio-logo.svg" class="login-logo" />
+      <img :src="logo" class="login-logo" />
+      <h1 class="center-text">{{ title }}</h1>
       <div>
         <LocalSwitcher></LocalSwitcher>
       </div>
@@ -91,6 +92,12 @@ export default {
     },
     enable_inscription() {
       return process.env.VUE_APP_DISABLE_USER_CREATION !== "true"
+    },
+    logo() {
+      return `/img/${process.env.VUE_APP_LOGO}`
+    },
+    title() {
+      return process.env.VUE_APP_NAME
     },
   },
   methods: {

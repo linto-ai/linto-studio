@@ -513,3 +513,19 @@ export async function apiDeleteTagFromConversation(
     notif
   )
 }
+
+export async function apiGetConversationChild(conversationId, fields, notif) {
+  let res = await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/child`,
+    { method: "get" },
+    { projection: fields ? fields.toString() : "" },
+    notif
+  )
+
+  if (res.status == "error") {
+    console.error(res.error)
+    return []
+  }
+
+  return res?.data ?? []
+}

@@ -1,13 +1,17 @@
 import {
   apiGetAudioFileFromConversation,
   apiGetUserRightFromConversation,
+  apiGetConversationById,
+  apiGetConversationChild,
 } from "../api/conversation.js"
 import { bus } from "../main.js"
 import { getCookie } from "../tools/getCookie.js"
 import { workerDisconnect } from "../tools/worker-message.js"
 import EditorWorker from "../workers/collaboration-worker"
+import { conversationModelMixin } from "./conversationModel.js"
 
 export const genericConversationMixin = {
+  mixins: [conversationModelMixin],
   props: {
     userInfo: { type: Object, required: true },
   },
@@ -20,7 +24,10 @@ export const genericConversationMixin = {
       focusFields: {},
       conversationUsersLoaded: false,
       conversation: null,
+      parentConversation: null,
+      channels: [],
       conversationId: "",
+      selectedChannel: "",
       userRight: 0,
       error: false,
       hightlightsCategories: [],
@@ -54,12 +61,7 @@ export const genericConversationMixin = {
           break
         case "conversation_loaded":
           this.conversation = event.data.params
-          await this.dispatchConversationUsers()
-          this.conversationLoaded = true
-          this.$store.commit(
-            "SET_CURRENT_CONVERSATION_NAME",
-            this.conversation.name
-          )
+          await this.initConversation()
           break
         case "title_updated":
           bus.$emit("update_field", {
@@ -127,6 +129,32 @@ export const genericConversationMixin = {
     },
   },
   methods: {
+    async initConversation() {
+      if (this.conversationType === "canonical" && this.hasChildConversations) {
+        const firstChannelId = this.childConversations[0]
+        this.$router.replace(this.selfUrl(firstChannelId))
+        return
+      }
+
+      if (this.conversationType === "child") {
+        // fetch parent conversation
+        this.parentConversation = await apiGetConversationById(
+          this.parentConversationId
+        )
+        //fetch other child names
+        this.channels = await apiGetConversationChild(
+          this.parentConversationId,
+          ["name"]
+        )
+
+        this.selectedChannel = this.conversation._id
+      }
+
+      await this.dispatchConversationUsers()
+
+      this.conversationLoaded = true
+    },
+
     async fetchUserRight() {
       this.userRight = (
         await apiGetUserRightFromConversation(this.conversationId)
@@ -194,6 +222,13 @@ export const genericConversationMixin = {
           default:
             return job.state
         }
+      }
+    },
+  },
+  watch: {
+    selectedChannel(newVal, oldVal) {
+      if (newVal !== oldVal && oldVal !== "") {
+        this.$router.replace(this.selfUrl(newVal))
       }
     },
   },

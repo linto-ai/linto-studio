@@ -40,13 +40,7 @@
       </router-link>
     </div>
   </div>
-  <div v-else-if="error" class="flex col flex1 align-center justify-center">
-    <h2 class="center-text">{{ $t("error.server_error.title") }}</h2>
-    <img src="/img/raining_illustration.svg" style="height: 8rem" />
-    <p>
-      {{ $t("error.server_error.subtitle") }}
-    </p>
-  </div>
+  <ErrorPage v-else-if="error" :error="error" />
   <div v-else class="flex col flex1 align-center justify-center relative">
     <loading :title="$t('conversation.loading_list_title')"></loading>
   </div>
@@ -57,6 +51,7 @@ import { Fragment } from "vue-fragment"
 
 import Loading from "@/components/Loading.vue"
 import ConversationLineNew from "@/components/ConversationLineNew.vue"
+import ErrorPage from "./ErrorPage.vue"
 
 export default {
   props: {
@@ -90,6 +85,7 @@ export default {
   components: {
     Loading,
     ConversationLine: ConversationLineNew,
+    ErrorPage,
   },
 }
 </script>

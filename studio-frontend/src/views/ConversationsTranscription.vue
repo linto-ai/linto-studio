@@ -7,8 +7,18 @@
     sidebar>
     <template v-slot:sidebar>
       <div>
+        <div
+          class="form-field flex col medium-margin"
+          v-if="conversationType === 'child'">
+          <AppEditorChannelsSelector
+            :channels="channels"
+            v-model="selectedChannel" />
+        </div>
+
         <div class="form-field flex col medium-margin">
-          <label for="transcription-search">Rechercher</label>
+          <label for="transcription-search">{{
+            $t("app_editor_search.label")
+          }}</label>
           <div class="flex gap-small">
             <input
               class="flex1"
@@ -43,7 +53,7 @@
             @nextResult="nextResult" />
         </div>
         <HighlightsList
-          v-if="status === 'done'"
+          v-if="status === 'done' && experimental_highlight"
           :conversation="conversation"
           :hightlightsCategories="hightlightsCategories"
           :hightlightsCategoriesVisibility="hightlightsCategoriesVisibility"
@@ -65,7 +75,7 @@
     </template>
 
     <template v-slot:breadcrumb-actions>
-      <router-link :to="conversationListRoute" class="btn">
+      <router-link :to="conversationListRoute" class="btn secondary">
         <span class="icon close"></span>
         <span class="label">{{ $t("conversation.close_editor") }}</span>
       </router-link>
@@ -73,7 +83,7 @@
       <h1
         class="flex1 center-text text-cut"
         style="padding-left: 1rem; padding-right: 1rem">
-        {{ conversation.name }}
+        {{ name }}
       </h1>
 
       <router-link
@@ -130,6 +140,7 @@ import { apiPostMetadata, apiUpdateMetadata } from "@/api/metadata.js"
 import findExpressionInWordsList from "@/tools/findExpressionInWordsList.js"
 
 import { conversationMixin } from "@/mixins/conversation.js"
+
 import Loading from "@/components/Loading.vue"
 import Modal from "@/components/Modal.vue"
 import UserInfoInline from "@/components/UserInfoInline.vue"
@@ -141,13 +152,14 @@ import ModalDeleteTagHighlight from "@/components/ModalDeleteTagHighlight.vue"
 import ConversationShare from "@/components/ConversationShare.vue"
 import TranscriptionHelper from "@/components/TranscriptionHelper.vue"
 import AppEditorMetadataModal from "@/components/AppEditorMetadataModal.vue"
-import ErrorView from "./Error.vue"
 import SearchResultPaginator from "@/components/SearchResultPaginator.vue"
+import AppEditorChannelsSelector from "@/components/AppEditorChannelsSelector.vue"
 
 export default {
   mixins: [conversationMixin],
   data() {
     return {
+      selfUrl: (convId) => `/interface/conversations/${convId}/transcription`,
       filterSpeakers: "default",
       helperVisible: false,
       status: null,
@@ -196,6 +208,9 @@ export default {
     },
   },
   computed: {
+    experimental_highlight() {
+      return process.env?.VUE_APP_EXPERIMENTAL_HIGHLIGHT === "true"
+    },
     conversationListRoute() {
       return { name: "inbox", hash: "#previous" }
     },
@@ -384,13 +399,13 @@ export default {
     Modal,
     UserInfoInline,
     AppEditor,
-    ErrorView,
     MainContentConversation,
     HighlightsList,
     MenuToolbox,
     ModalDeleteTagHighlight,
     AppEditorMetadataModal,
     SearchResultPaginator,
+    AppEditorChannelsSelector,
   },
 }
 </script>

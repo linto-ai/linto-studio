@@ -11,7 +11,7 @@
     <span class="breadcrumb__element">{{ userName }} – {{ RoleToString }}</span> -->
     <span
       class="icon right-arrow breadcrumb__separator"
-      v-if="mainListingPage" />
+      v-if="mainListingPage || sessionListingPage" />
     <!-- <span class="breadcrumb__element">{{ currentRoute.name }}</span> -->
     <router-link
       id="upload-media-button"
@@ -23,6 +23,18 @@
       :disabled="!isAtLeastUploader">
       <span class="icon new"></span>
       <span class="label">{{ $t("navigation.conversation.create") }}</span>
+    </router-link>
+
+    <router-link
+      id="upload-media-button"
+      :title="createSessionTitle"
+      to="/interface/sessions/create"
+      class="btn nav-link green no-shrink"
+      tag="button"
+      v-if="sessionListingPage"
+      :disabled="!isAtLeastUploader">
+      <span class="icon new"></span>
+      <span class="label">{{ $t("navigation.session.create") }}</span>
     </router-link>
   </nav>
 </template>
@@ -70,11 +82,21 @@ export default {
     mainListingPage() {
       return this.$route.meta?.mainListingPage
     },
+    sessionListingPage() {
+      return this.$route.meta?.sessionListingPage
+    },
     createTitle() {
       if (!this.isAtLeastUploader) {
         return this.$t("navigation.conversation.create_no_rights_error")
       } else {
         return this.$t("navigation.conversation.create")
+      }
+    },
+    createSessionTitle() {
+      if (!this.isAtLeastUploader) {
+        return this.$t("navigation.session.create_no_rights_error")
+      } else {
+        return this.$t("navigation.session.create")
       }
     },
   },

@@ -36,6 +36,8 @@
             <img :src="sharedBy.img" class="list-profil-picture icon" />
           </span>
 
+          <span class="icon record" v-if="isFromSession"></span>
+
           <router-link
             :title="conversation.name"
             :to="`/interface/conversations/${conversation._id}/transcription`"
@@ -47,22 +49,13 @@
             :valueText="$t('conversation.open_editor')"
             value="editor"
             aria-label="select how to open the conversation"
-            :options="{
-              actions: [
-                { value: 'overview', text: $t('conversation.open_overview') },
-                { value: 'editor', text: $t('conversation.open_editor') },
-                {
-                  value: 'subtitle_editor',
-                  text: $t('conversation.open_subtitles'),
-                },
-                { value: 'publish', text: $t('conversation.open_publish') },
-              ],
-            }"
+            :options="editorOptions"
             inline
             @input="openWith"></CustomSelect>
         </div>
         <div class="flex gap-medium">
           <div
+            v-if="audioDuration"
             class="conversation-line__duration"
             :title="$t('conversation.duration', { duration: audioDuration })">
             <LabeledValueSmall
@@ -171,7 +164,7 @@ import { convRoleMixin } from "@/mixins/convRole.js"
 import Tag from "@/components/Tag.vue"
 import DropDownAddTag from "@/components/DropDownAddTag.vue"
 import CustomSelect from "@/components/CustomSelect.vue"
-import LabeledValueSmall from "./LabeledValueSmall.vue"
+import LabeledValueSmall from "@/components/LabeledValueSmall.vue"
 import FormInput from "@/components/FormInput.vue"
 import ContextMenu from "./ContextMenu.vue"
 
@@ -245,7 +238,7 @@ export default {
       }
     },
     description() {
-      return this.conversation.description || "No description"
+      return this.conversation.description || this.$t("conversation.description_empty")
     },
     audioDuration() {
       return this.$options.filters.timeToHMS(
@@ -316,6 +309,32 @@ export default {
           conversation: this.conversation,
         })
       },
+    },
+    isFromSession() {
+      return !!this.conversation?.type?.from_session_id
+    },
+    editorOptions() {
+      if (this.isFromSession) {
+        return {
+          actions: [
+            { value: "overview", text: this.$t("conversation.open_overview") },
+            { value: "editor", text: this.$t("conversation.open_editor") },
+            { value: "publish", text: this.$t("conversation.open_publish") },
+          ],
+        }
+      }
+
+      return {
+        actions: [
+          { value: "overview", text: this.$t("conversation.open_overview") },
+          { value: "editor", text: this.$t("conversation.open_editor") },
+          {
+            value: "subtitle_editor",
+            text: this.$t("conversation.open_subtitles"),
+          },
+          { value: "publish", text: this.$t("conversation.open_publish") },
+        ],
+      }
     },
   },
   watch: {

@@ -4,8 +4,8 @@
       <!-- HEADER -->
       <keep-alive>
         <router-view
+          v-if="isAuthenticated()"
           name="AppHeader"
-          v-if="!editorView"
           :currentOrganizationScope="currentOrganizationScope"
           :noOrganization="noOrganization"
           :userInfo="userInfo"
@@ -43,9 +43,11 @@
 import { bus } from "./main.js"
 import LoadingOverlay from "@/components/LoadingOverlay.vue"
 import ErrorView from "./views/Error.vue"
+import ErrorPage from "./components/ErrorPage.vue"
 import Loading from "./components/Loading.vue"
 import PUBLIC_ROUTES from "./const/publicRoutes.js"
 import NoOrganizationComponent from "./views/NoOrganization.vue"
+import { getCookie } from "./tools/getCookie"
 export default {
   data() {
     return {
@@ -55,12 +57,11 @@ export default {
       currentRoute: {},
       convosLoaded: false,
       error: false,
-      resetKey: 0,
+      resetKey: 1,
       noOrganization: false,
     }
   },
   mounted() {
-    this.appMounted = true
     bus.$on("set_organization_scope", async (data) => {
       this.setOrganizationScope(data.organizationId)
       await this.dispatchUserOrganizations()
@@ -77,6 +78,9 @@ export default {
       "data-theme",
       localStorage.getItem("currentTheme") || "light"
     )
+    this.appMounted = true
+    document.title = this.title
+    this.init()
   },
   beforeDestroy() {
     bus.$off("set_organization_scope")
@@ -85,32 +89,24 @@ export default {
   },
   watch: {
     $route(to, from) {
-      this.resetKey++
+      this.resetKey = this.resetKey * -1
       this.error = false
+      this.init()
       bus.$emit("navigation", to)
-    },
-    async isPrivateRoute(isPrivate) {
-      if (isPrivate) {
-        await this.getuserInfo()
-        await this.dispatchUserOrganizations()
-      }
     },
   },
   computed: {
+    title() {
+      return process.env.VUE_APP_NAME || "LinTO studio"
+    },
     isPrivateRoute() {
-      if (
-        this.$route.name !== null &&
-        !PUBLIC_ROUTES.includes(this.$route.name)
-      ) {
-        return true
-      }
-      return false
+      return !this.$route?.meta?.public
     },
     userInfo() {
       return this.$store.state.userInfo
     },
     dataLoaded() {
-      if (this.isPrivateRoute) {
+      if (this.isPrivateRoute || this.isAuthenticated()) {
         return (
           !!this.userInfo &&
           this.appMounted &&
@@ -161,6 +157,20 @@ export default {
     },
   },
   methods: {
+    async init() {
+      
+      if(this.$route.query?.organizationId) {
+        this.setOrganizationScope(this.$route.query.organizationId)
+      }
+
+      if (this.isAuthenticated()) {
+        await this.getuserInfo()
+        await this.dispatchUserOrganizations()
+      }
+    },
+    isAuthenticated() {
+      return getCookie("authToken") !== null
+    },
     async setOrganizationScope(organizationId) {
       this.$options.filters.setCookie("cm_orga_scope", organizationId, 7)
       if (!this.listView) {
@@ -195,9 +205,13 @@ export default {
     LoadingOverlay,
     Loading,
     ErrorView,
+    ErrorPage,
     NoOrganizationComponent,
   },
-  errorCaptured(error) {},
+  errorCaptured(error) {
+    console.error("errorCaptured: ", error)
+    this.error = true
+  },
 }
 </script>
 <style lang="scss">

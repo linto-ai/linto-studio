@@ -6,6 +6,13 @@
     :error="error"
     :sidebar="true">
     <template v-slot:sidebar>
+      <div
+        class="form-field flex col medium-margin"
+        v-if="conversationType === 'child'">
+        <AppEditorChannelsSelector
+          :channels="channels"
+          v-model="selectedChannel" />
+      </div>
       <div style="margin: 0 1rem" class="flex col">
         <!-- <h2>{{ $t(`publish.filter_title.${activeTab}`) }}</h2> -->
         <section v-if="isUpdated">
@@ -56,7 +63,7 @@
 
     <template v-slot:breadcrumb-actions>
       <div class="flex1 flex gap-small reset-overflows align-center">
-        <router-link :to="conversationListRoute" class="btn">
+        <router-link :to="conversationListRoute" class="btn secondary">
           <span class="icon close"></span>
           <span class="label">{{ $t("conversation.close_publish") }}</span>
         </router-link>
@@ -137,7 +144,6 @@ import Loading from "@/components/Loading.vue"
 import Modal from "@/components/Modal.vue"
 import UserInfoInline from "@/components/UserInfoInline.vue"
 import AppEditor from "@/components/AppEditor.vue"
-import ErrorView from "./Error.vue"
 import MainContentConversation from "@/components/MainContentConversation.vue"
 import MenuToolbox from "@/components/MenuToolbox.vue"
 import CustomSelect from "@/components/CustomSelect.vue"
@@ -147,11 +153,13 @@ import Tabs from "@/components/Tabs.vue"
 import ConversationShare from "@/components/ConversationShare.vue"
 import TranscriptionHelper from "@/components/TranscriptionHelper.vue"
 import ConversationPublishContent from "@/components/ConversationPublishContent.vue"
+import AppEditorChannelsSelector from "@/components/AppEditorChannelsSelector.vue"
 
 export default {
   mixins: [conversationMixin],
   data() {
     return {
+      selfUrl: (convId) => `/interface/conversations/${convId}/publish`,
       conversationId: "",
       filterSpeakers: [],
       speakerIndexedBySpeakerId: {},
@@ -502,7 +510,6 @@ export default {
     Modal,
     UserInfoInline,
     AppEditor,
-    ErrorView,
     MainContentConversation,
     MenuToolbox,
     CustomSelect,
@@ -513,6 +520,7 @@ export default {
     // ConversationPublishCra,
     // ConversationPublishCri,
     ConversationPublishContent,
+    AppEditorChannelsSelector,
   },
 }
 </script>

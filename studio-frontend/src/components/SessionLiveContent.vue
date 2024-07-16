@@ -1,0 +1,91 @@
+<template>
+  <div class="session-content flex flex1 col" @scroll="handleScroll">
+    <div class="medium-margin">
+      <h1 class="center-text session-content__title">{{ name }}</h1>
+    </div>
+    <SessionChannel
+      v-if="isConnected"
+      :sessionId="session.id"
+      :organizationId="organizationId"
+      :fontSize="fontSize"
+      :channel="selectedChannel"
+      :displaySubtitles="displaySubtitles"
+      :displayLiveTranscription="displayLiveTranscription"
+      :isBottom="isBottom"
+      :sessionWS="sessionWS"></SessionChannel>
+    <Loading v-else></Loading>
+  </div>
+</template>
+<script>
+import { Fragment } from "vue-fragment"
+import { bus } from "../main.js"
+
+import SessionWS from "@/models/SessionWS.js"
+
+import { sessionModelMixin } from "@/mixins/sessionModel.js"
+
+import SessionChannel from "@/components/SessionChannel.vue"
+import Loading from "@/components/Loading.vue"
+
+export default {
+  mixins: [sessionModelMixin],
+  props: {
+    selectedChannel: {
+      type: Object,
+      required: true,
+    },
+    session: {
+      type: Object,
+      required: true,
+    },
+    fontSize: {
+      type: String,
+      default: "40",
+    },
+    displaySubtitles: {
+      type: Boolean,
+      default: true,
+    },
+    displayLiveTranscription: {
+      type: Boolean,
+      default: true,
+    },
+    organizationId: {
+      type: String,
+      required: false,
+    },
+  },
+  data() {
+    return {
+      sessionWS: new SessionWS(),
+      isConnected: false,
+      isBottom: true,
+    }
+  },
+  mounted() {
+    this.init()
+  },
+  beforeDestroy() {
+    this.sessionWS.close()
+  },
+  computed: {
+    isInError() {
+      return this.selectedChannel?.transcriber_status === "errored"
+    },
+  },
+  methods: {
+    async init() {
+      await this.sessionWS.connect()
+      this.isConnected = true
+    },
+    handleScroll(e) {
+      let isBottom =
+        e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight
+      if (isBottom !== this.isBottom) {
+        this.isBottom = isBottom
+      }
+    },
+  },
+  components: { Fragment, SessionChannel, Loading },
+}
+</script>
