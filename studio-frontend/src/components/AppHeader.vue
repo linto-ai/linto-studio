@@ -56,6 +56,12 @@ export default {
     darkThemeFeatureEnabled() {
       return process.env?.VUE_APP_EXPERIMENTAL_DARK_THEME === "true"
     },
+    title() {
+      return process.env.VUE_APP_NAME
+    },
+    darkThemeFeatureEnabled() {
+      return process.env?.VUE_APP_EXPERIMENTAL_DARK_THEME === "true"
+    },
   },
   components: {
     Breadcrumb,

@@ -194,7 +194,7 @@ export default {
                 ? parseInt(this.speakersNumber.value)
                 : null,
             maxNumberOfSpeaker:
-              this.diarization.value !== "disabled" ? 8 : null,
+              this.diarization.value !== "disabled" ? 100 : null,
             serviceName:
               this.diarization.value !== "disabled"
                 ? this.diarization.value

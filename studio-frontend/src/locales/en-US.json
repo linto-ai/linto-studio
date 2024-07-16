@@ -385,8 +385,8 @@
   },
   "explore": {
     "delete_conversation_button": "Delete ",
-    "link_to_inbox": "Go to Inbox",
-    "no_categories_modal": "There are no tags. Start tagging your media in the Inbox tab.",
+    "link_to_inbox": "Go to the media library",
+    "no_categories_modal": "There are no tags. Start tagging your media in the media library",
     "search_text_in_content": "Search \"{text}\" in transcription",
     "search_text_in_title": "Search \"{text}\" in title",
     "search_text_label": "Search text",
@@ -395,7 +395,7 @@
     "title": "Explore the organisation’s media"
   },
   "favorites": {
-    "subtitle": "Your favorite media lands here.",
+    "subtitle": "Your favourite media are here.",
     "title": "Favorites media",
     "no_media_title": "Your favorite media collection is empty",
     "no_media_subtitle": "Add favorite media by clicking on the star icon on the media card."
