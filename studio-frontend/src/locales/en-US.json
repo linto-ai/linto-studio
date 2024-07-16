@@ -337,6 +337,18 @@
     "websocket_error_content": "Document update failed, save your change and reload the page.",
     "websocket_error_title": "Syncronisation error."
   },
+  "conversation_creation": {
+    "tabs": {
+      "file": "File",
+      "microphone": "Microphone",
+      "url": "Url & Visio",
+      "coming_soon": "Coming soon",
+      "session": "Session"
+    },
+    "file": {
+      "drop_audio": "Drop your audio file here"
+    }
+  },
   "createaccount": {
     "create_account_button": "Create an account",
     "email_label": "Email",
@@ -384,7 +396,9 @@
   },
   "favorites": {
     "subtitle": "Your favourite media are here.",
-    "title": "Favorites media"
+    "title": "Favorites media",
+    "no_media_title": "Your favorite media collection is empty",
+    "no_media_subtitle": "Add favorite media by clicking on the star icon on the media card."
   },
   "global": {
     "disabled": "disabled",
@@ -638,7 +652,8 @@
       "submit_button": "Create session",
       "submit_label": "Create session",
       "success_message": "Session successfully created",
-      "title": "Create a session"
+      "title": "Create a session",
+      "main_info_title": "General information"
     },
     "detail_page": {
       "back_to_listing": "Sessions list",
@@ -651,7 +666,7 @@
       "no_transcription": "Nothing has been transcribed yet for this channel",
       "session_ended_title": "The session has ended",
       "session_ended_subtitle": "The transcript has been saved in your media library",
-      "session_ended_link_to_inbox":"Go to the media library",
+      "session_ended_link_to_inbox": "Go to the media library",
       "session_not_started_title": "The session has not started yet",
       "sessions_status": {
         "no_started": "The session is scheduled",
@@ -726,7 +741,9 @@
   },
   "sharedWithTab": {
     "subtitle": "All media shared with you (from outside the organisation)",
-    "title": "Media shared with me"
+    "title": "Media shared with me",
+    "no_media_title": "No media has been shared with you",
+    "no_media_subtitle": "Other users can share media with you using the 'share' button in their media library."
   },
   "tags": {
     "add_tag_to_conversation": "Add tag",

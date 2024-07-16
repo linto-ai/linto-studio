@@ -72,16 +72,16 @@
 <script>
 import { apiUpdateUserInfo, apiSendVerificationLink } from "@/api/user.js"
 import { bus } from "@/main.js"
+import { getEnv } from "@/tools/getEnv"
 
 import Loading from "@/components/Loading.vue"
 import Breadcrumb from "@/components/Breadcrumb.vue"
 import MainContent from "@/components/MainContent.vue"
-import UserSettingsPersonal from "../components/UserSettingsPersonal.vue"
-
+import UserSettingsPersonal from "@/components/UserSettingsPersonal.vue"
+import UserSettingsPassword from "@/components/UserSettingsPassword.vue"
+import UserSettingsNotifications from "@/components/UserSettingsNotifications.vue"
+import FormCheckbox from "@/components/FormCheckbox.vue"
 import ErrorView from "@/views/Error.vue"
-import UserSettingsPassword from "../components/UserSettingsPassword.vue"
-import UserSettingsNotifications from "../components/UserSettingsNotifications.vue"
-import FormCheckbox from "../components/FormCheckbox.vue"
 
 export default {
   props: {
@@ -172,7 +172,7 @@ export default {
           formData.append("file", file)
           // TODO: put this function in api/user.js
           let req = await this.$options.filters.sendMultipartFormData(
-            `${process.env.VUE_APP_CONVO_API}/users/self/picture`,
+            `${getEnv("VUE_APP_CONVO_API")}/users/self/picture`,
             "put",
             formData,
             { timeout: 3000, redirect: false }

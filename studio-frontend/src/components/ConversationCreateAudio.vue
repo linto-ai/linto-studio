@@ -2,63 +2,31 @@
   <div class="form-field flex col gap-medium">
     <!-- <h3>Uploaded media</h3> -->
     <!-- File list -->
-    <ul class="audio-upload-list" v-if="value && value.length > 0">
-      <li
+    <ul class="audio-upload-list flex1" v-if="value && value.length > 0">
+      <!-- TODO: find a real unique key (hash + date upload ?) -->
+      <ConversationCreateFileLine
         v-for="(field, index) of value"
-        :key="field.file.lastModified + field.file.name">
-        <!-- TODO: find a real unique key (this one is quite good), cannot be index because of possible deletion -->
-        <FormInput :field="field" v-model="field.value" :disabled="disabled">
-          <button class="btn black" @click="deleteFile(index, $event)">
-            <span class="icon delete"></span>
-          </button>
-          <button
-            class="btn black"
-            @click="
-              index == indexPlaying ? stopFile($event) : playFile(index, $event)
-            ">
-            <span
-              :class="`icon ${
-                index == indexPlaying ? 'pause' : 'play'
-              }`"></span>
-          </button>
-        </FormInput>
-      </li>
+        :key="field.id"
+        :field="field"
+        :isPlaying="index === indexPlaying"
+        :disabled="disabled"
+        @deleteFile="deleteFile(index, $event)"
+        @playFile="playFile(index, $event)"
+        @stopFile="stopFile($event)" />
     </ul>
 
-    <!-- form to add file -->
-    <div class="audio-upload-form">
-      <div>
-        <input
-          type="radio"
-          id="media-type-file"
-          value="file"
-          v-model="mediaType"
-          :disabled="disabled" />
-        <label for="media-type-file">
-          {{ $t("conversation.media.file_label") }}
-        </label>
-        <input
-          type="radio"
-          id="media-type-mic"
-          value="mic"
-          v-model="mediaType"
-          :disabled="disabled" />
-        <label for="media-type-mic">
-          {{ $t("conversation.media.microphone_label") }}
-        </label>
-      </div>
-
-      <div style="margin-top: 0.5rem">
-        <ConversationCreateUpload
-          v-if="mediaType === 'file'"
-          :disabled="disabled"
-          @input="uploadFile"
-          :multipleFiles="multipleFiles" />
-        <ConversationCreateRecord
-          v-if="mediaType === 'mic'"
-          :disabled="disabled"
-          @input="recordFile" />
-      </div>
+    <div class="flex audio-upload-form flex1">
+      <ConversationCreateUpload
+        v-if="mode === 'file'"
+        class="flex1"
+        :disabled="disabled"
+        @input="uploadFile"
+        :multipleFiles="multipleFiles" />
+      <ConversationCreateRecord
+        v-else
+        class="flex1"
+        :disabled="disabled"
+        @input="recordFile" />
     </div>
   </div>
 </template>
@@ -69,6 +37,7 @@ import { generateFileField } from "@/tools/generateFileField.js"
 import ConversationCreateUpload from "@/components/ConversationCreateUpload.vue"
 import ConversationCreateRecord from "@/components/ConversationCreateRecord.vue"
 import FormInput from "@/components/FormInput.vue"
+import ConversationCreateFileLine from "@/components/ConversationCreateFileLine.vue"
 
 export default {
   props: {
@@ -79,6 +48,11 @@ export default {
     },
     value: {
       required: true,
+    },
+    mode: {
+      type: String,
+      required: false,
+      default: "file",
     },
   },
   data() {
@@ -93,6 +67,7 @@ export default {
   },
   methods: {
     uploadFile(file) {
+      if (this.disabled) return
       if (this.multipleFiles) {
         this.AddMultipleFiles(file)
       } else {
@@ -100,6 +75,7 @@ export default {
       }
     },
     recordFile(file) {
+      if (this.disabled) return
       if (this.multipleFiles) {
         this.AddMultipleFiles(file)
       } else {
@@ -137,7 +113,6 @@ export default {
     deleteFile(index, event) {
       if (this.disabled) return
 
-      event?.preventDefault()
       if (this.indexPlaying === index) {
         this.stopFile()
       }
@@ -145,7 +120,6 @@ export default {
       this.$emit("input", this.value)
     },
     playFile(index, event) {
-      event?.preventDefault()
       const file = this.value[index].file
       this.stopFile()
       this.audio = new Audio(URL.createObjectURL(file))
@@ -156,7 +130,6 @@ export default {
       this.audio.play()
     },
     stopFile(event) {
-      event?.preventDefault()
       if (this.audio) {
         this.audio.pause()
         URL.revokeObjectURL(this.value[this.indexPlaying].file)
@@ -172,6 +145,7 @@ export default {
     ConversationCreateUpload,
     ConversationCreateRecord,
     FormInput,
+    ConversationCreateFileLine,
   },
 }
 </script>

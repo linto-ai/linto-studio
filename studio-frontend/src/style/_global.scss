@@ -40,7 +40,8 @@ h4 {
     align-items: flex-start;
   }
 
-  &.align-bottom {
+  &.align-bottom,
+  &.align-end {
     align-items: flex-end;
   }
 
@@ -149,6 +150,10 @@ li:last-child {
 
 .small-margin {
   margin: var(--small-gap);
+}
+
+.medium-margin-top {
+  margin-top: var(--medium-gap);
 }
 
 .medium-margin {

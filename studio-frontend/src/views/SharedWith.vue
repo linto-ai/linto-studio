@@ -3,6 +3,7 @@
     <template v-slot:breadcrumb-actions>
       <div class="flex align-center gap-small">
         <ConversationShareMultiple
+          v-if="!noConversations"
           :currentOrganizationScope="currentOrganizationScope"
           :userInfo="userInfo"
           :selectedConversations="selectedConversations" />
@@ -32,9 +33,11 @@
 
     <section class="flex col flex1 gap-small reset-overflows">
       <ConversationListHeader
+        v-if="!noConversations"
         :options="options"
         v-model="selectedOption"
-        with-search
+        :with-search="!noConversations"
+        :withSelector="!noConversations"
         @searchInConversationsTitle="onSearchInConversationsTitle"
         @searchInConversationsText="onSearchInConversationsText">
         <h2>
@@ -44,6 +47,7 @@
           {{ $t("sharedWithTab.subtitle") }}
         </span>
       </ConversationListHeader>
+
       <ConversationList
         :conversations="conversations"
         :loading="loading"
@@ -54,7 +58,20 @@
         :pageSharedWith="true"
         :displayTags="true"
         :error="error"
-        @clickOnTag="clickOnTag" />
+        @clickOnTag="clickOnTag">
+        <template v-slot:emptyPlaceholder>
+          <div class="flex col align-center justify-center flex1">
+            <h2 class="center-text">
+              {{ $t("sharedWithTab.no_media_title") }}
+            </h2>
+            <Svglogo style="max-height: 15rem" />
+            <div>
+              {{ $t("sharedWithTab.no_media_subtitle") }}
+            </div>
+          </div>
+        </template>
+      </ConversationList>
+
       <div class="bottom-list-sticky">
         <Pagination
           v-model="currentPageNb"
@@ -89,6 +106,8 @@ import Pagination from "@/components/Pagination.vue"
 import ConversationShareMultiple from "@/components/ConversationShareMultiple.vue"
 import SelectedConversationIndicator from "@/components/SelectedConversationIndicator.vue"
 import ConversationListHeader from "@/components/ConversationListHeader.vue"
+import Svglogo from "@/svg/ShareBalloon.vue"
+
 export default {
   mixins: [debounceMixin, conversationListMixin],
   props: {
@@ -183,6 +202,7 @@ export default {
     ConversationShareMultiple,
     SelectedConversationIndicator,
     ConversationListHeader,
+    Svglogo,
   },
 }
 </script>

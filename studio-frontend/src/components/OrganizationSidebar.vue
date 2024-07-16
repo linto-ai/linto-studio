@@ -24,6 +24,7 @@
         <span class="tab__label">{{ $t("navigation.tabs.explore") }}</span>
       </router-link>
       <router-link
+        v-if="sessionEnable"
         :to="{ name: 'sessionsList' }"
         class="flex row align-center gap-medium tab">
         <span class="icon record"></span>
@@ -56,11 +57,12 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
+import { getEnv } from "@/tools/getEnv.js"
 
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import { userName } from "@/tools/userName"
 
-import OrganizationSelector from "../components/OrganizationSelector.vue"
+import OrganizationSelector from "@/components/OrganizationSelector.vue"
 
 export default {
   props: {
@@ -90,6 +92,9 @@ export default {
     },
     userName() {
       return userName(this.userInfo)
+    },
+    sessionEnable() {
+      return getEnv("VUE_APP_ENABLE_SESSION") === "true"
     },
   },
   mounted() {},

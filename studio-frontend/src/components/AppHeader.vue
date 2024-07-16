@@ -28,11 +28,14 @@
 </template>
 <script>
 import { bus } from "../main.js"
+import { getEnv } from "@/tools/getEnv"
+
 import Breadcrumb from "@/components/Breadcrumb.vue"
 import LocalSwitcher from "@/components/LocalSwitcher.vue"
 import UserSettingsMenu from "./UserSettingsMenu.vue"
 import OrganizationSelector from "./OrganizationSelector.vue"
 import ThemeSwitcher from "./ThemeSwitcher.vue"
+
 export default {
   props: {
     userInfo: { type: Object, required: true },
@@ -45,7 +48,13 @@ export default {
       return this.$route
     },
     logo() {
-      return `/img/${process.env.VUE_APP_LOGO}`
+      return `/img/${getEnv("VUE_APP_LOGO")}`
+    },
+    title() {
+      return getEnv("VUE_APP_NAME")
+    },
+    darkThemeFeatureEnabled() {
+      return process.env?.VUE_APP_EXPERIMENTAL_DARK_THEME === "true"
     },
     title() {
       return process.env.VUE_APP_NAME

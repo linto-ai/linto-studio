@@ -337,6 +337,18 @@
     "websocket_error_content": "La mise à jour du document a echoué. Sauvegardez vos changement et actualisez la page.",
     "websocket_error_title": "Erreur de synchronisation."
   },
+  "conversation_creation": {
+    "tabs": {
+      "file": "Fichier",
+      "microphone": "Microphone",
+      "url": "Url & Visio",
+      "visio": "Visio",
+      "coming_soon": "Bientôt disponible"
+    },
+    "file": {
+      "drop_audio": "Glissez-déposez votre fichier audio ici"
+    }
+  },
   "createaccount": {
     "create_account_button": "Créer mon compte",
     "email_label": "Courriel",
@@ -384,7 +396,9 @@
   },
   "favorites": {
     "subtitle": "Vos médias favoris arrivent ici.",
-    "title": "Médias favoris"
+    "title": "Médias favoris",
+    "no_media_title": "Votre collection de médias favoris est vide",
+    "no_media_subtitle": "Ajoutez des favoris en cliquant sur l'étoile dans la liste des médias."
   },
   "global": {
     "disabled": "Inactif",
@@ -638,7 +652,8 @@
       "submit_label": "Créer la session",
       "success_message": "La session a été créée avec succès",
       "title": "Créer une session",
-      "channels_error": "Veuillez ajouter au moins un canal à la session"
+      "channels_error": "Veuillez ajouter au moins un canal à la session",
+      "main_info_title": "Informations générales"
     },
     "detail_page": {
       "back_to_listing": "Liste des sessions",
@@ -651,8 +666,8 @@
       "no_transcription": "Rien n'a encore été transcrit pour ce canal",
       "session_ended_title": "La session est terminée",
       "session_ended_subtitle": "La transcription a été sauvegardé dans votre bibliothèque de médias",
-      "session_ended_link_to_conversation_transcription":"Ouvrir la transcription dans l’éditeur",
-      "session_ended_link_to_inbox":"Accéder à la bibliothèque des médias",
+      "session_ended_link_to_conversation_transcription": "Ouvrir la transcription dans l’éditeur",
+      "session_ended_link_to_inbox": "Accéder à la bibliothèque des médias",
       "session_not_started_title": "La session n'a pas encore commencé",
       "sessions_status": {
         "no_started": "La session est programmée",
@@ -726,7 +741,9 @@
   },
   "sharedWithTab": {
     "subtitle": "Tout les médias partagés avec vous en dehors d'une organisation sont réunis ici.",
-    "title": "Médias partagés avec moi"
+    "title": "Médias partagés avec moi",
+    "no_media_title": " Aucun média n'a été partagé avec vous",
+    "no_media_subtitle": "D'autres utilisateurs peuvent partager des médias avec vous grâce au bouton 'partager' dans leur bibliothèque de médias. "
   },
   "tags": {
     "add_tag_to_conversation": "Ajouter le tag",

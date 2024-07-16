@@ -6,7 +6,8 @@
     scope="conversation"
     :scopeId="conversationId"
     :selectable="false"
-    :fixed="empty"
+    :fixed="empty || loading"
+    :closeBox="closeBox"
     @clickOnTag="(tag) => $emit('clickOnTag', tag)">
     <template v-slot:content-just-before-title="slotProps">
       <span class="icon ai"></span>
@@ -55,6 +56,7 @@ export default {
   data() {
     return {
       reload: false,
+      closeBox: false,
     }
   },
   watch: {
@@ -86,6 +88,13 @@ export default {
     },
   },
   mounted() {},
+  watch: {
+    loading: function (val) {
+      if (val) {
+        this.closeBox = !this.closeBox
+      }
+    },
+  },
   methods: {
     getName(scope) {
       return (

@@ -19,22 +19,10 @@
       to="/interface/conversations/create"
       class="btn nav-link green no-shrink"
       tag="button"
-      v-if="mainListingPage"
+      v-if="mainListingPage || sessionListingPage"
       :disabled="!isAtLeastUploader">
       <span class="icon new"></span>
       <span class="label">{{ $t("navigation.conversation.create") }}</span>
-    </router-link>
-
-    <router-link
-      id="upload-media-button"
-      :title="createSessionTitle"
-      to="/interface/sessions/create"
-      class="btn nav-link green no-shrink"
-      tag="button"
-      v-if="sessionListingPage"
-      :disabled="!isAtLeastUploader">
-      <span class="icon new"></span>
-      <span class="label">{{ $t("navigation.session.create") }}</span>
     </router-link>
   </nav>
 </template>

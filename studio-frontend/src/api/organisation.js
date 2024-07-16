@@ -1,6 +1,8 @@
 import { sendRequest } from "../tools/sendRequest"
 
-const BASE_API = process.env.VUE_APP_CONVO_API
+import { getEnv } from "@/tools/getEnv"
+
+const BASE_API = getEnv("VUE_APP_CONVO_API")
 
 export async function apiGetOrganizationById(organizationId, notif) {
   const getOrganization = await sendRequest(
@@ -71,12 +73,3 @@ export async function apiCreateOrganisation(payload, notif) {
     notif
   )
 }
-
-// export async function apiUpdateOrganisationType(organizationId, type, notif) {
-//   return await sendRequest(
-//     `${process.env.VUE_APP_CONVO_API}/organizations/${organizationId}`,
-//     { method: "patch" },
-//     { type },
-//     notif
-//   )
-// }

@@ -1,3 +1,13 @@
+progress::-moz-progress-bar {
+  background: var(--primary-color);
+}
+progress::-webkit-progress-value {
+  background: var(--primary-color);
+}
+progress {
+  color: var(--primary-color);
+}
+
 .circle-progress-bar {
   display: flex;
   justify-content: center;

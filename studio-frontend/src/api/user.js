@@ -1,8 +1,10 @@
 import { sendRequest } from "../tools/sendRequest"
 import { sendMultipartFormData } from "../tools/sendMultipartFormData"
 
-const BASE_API = process.env.VUE_APP_CONVO_API
+import { getEnv } from "@/tools/getEnv"
 
+const BASE_API = getEnv("VUE_APP_CONVO_API")
+const BASE_AUTH = getEnv("VUE_APP_CONVO_AUTH")
 export async function apiGetPersonalUserInfo() {
   const getUserInfos = await sendRequest(`${BASE_API}/users/self`, {
     method: "get",
@@ -77,7 +79,7 @@ export async function apiRemoveUserFromOrganisation(
 
 export async function apiLoginUser(email, password) {
   return await sendRequest(
-    `${process.env.VUE_APP_CONVO_AUTH}/login`,
+    `${BASE_AUTH}/login`,
     { method: "post" },
     {
       email,
@@ -89,7 +91,7 @@ export async function apiLoginUser(email, password) {
 
 export async function apiLoginUserMagicLink(magicId) {
   return await sendRequest(
-    `${process.env.VUE_APP_CONVO_AUTH}/login/magic-link`,
+    `${BASE_AUTH}/login/magic-link`,
     { method: "post" },
     {
       psw: "psw", // Needed
@@ -106,7 +108,7 @@ export async function apiAddUserToOrganisation(
   notif
 ) {
   return await sendRequest(
-    `${process.env.VUE_APP_CONVO_API}/organizations/${organizationId}/users`,
+    `${BASE_API}/organizations/${organizationId}/users`,
     { method: "post" },
     {
       email,
@@ -123,7 +125,7 @@ export async function apiUpdateUserRoleInOrganisation(
   notif
 ) {
   return await sendRequest(
-    `${process.env.VUE_APP_CONVO_API}/organizations/${organizationId}/users`,
+    `${BASE_API}/organizations/${organizationId}/users`,
     { method: "patch" },
     {
       role,
@@ -133,22 +135,9 @@ export async function apiUpdateUserRoleInOrganisation(
   )
 }
 
-// export async function apiUpdateSelfVisibility(
-//   organizationId,
-//   visibility,
-//   notif
-// ) {
-//   return await sendRequest(
-//     `${process.env.VUE_APP_CONVO_API}/organizations/${organizationId}/self`,
-//     { method: "patch" },
-//     { visibility },
-//     notif
-//   )
-// }
-
 export async function apiSearchUser(search, signal, notif) {
   return await sendRequest(
-    `${process.env.VUE_APP_CONVO_API}/users/search`,
+    `${BASE_API}/users/search`,
     { method: "get", signal },
     { search },
     notif
@@ -157,7 +146,7 @@ export async function apiSearchUser(search, signal, notif) {
 
 export async function apiUpdateUserInfo(payload, notif) {
   return await sendRequest(
-    `${process.env.VUE_APP_CONVO_API}/users/self`,
+    `${BASE_API}/users/self`,
     { method: "put" },
     payload,
     notif
@@ -166,7 +155,7 @@ export async function apiUpdateUserInfo(payload, notif) {
 
 export async function apiRecoverPassword(email, notif) {
   return await sendRequest(
-    `${process.env.VUE_APP_CONVO_API}/users/self/reset-password`,
+    `${BASE_API}/users/self/reset-password`,
     { method: "post" },
     { email },
     notif
@@ -175,7 +164,7 @@ export async function apiRecoverPassword(email, notif) {
 
 export async function apiCreateUser(payload, notif) {
   return await sendMultipartFormData(
-    `${process.env.VUE_APP_CONVO_API}/users`,
+    `${BASE_API}/users`,
     "post",
     payload,
     notif
@@ -184,7 +173,7 @@ export async function apiCreateUser(payload, notif) {
 
 export async function apiSendVerificationLink(notif) {
   return await sendMultipartFormData(
-    `${process.env.VUE_APP_CONVO_API}/users/self/verify-email`,
+    `${BASE_API}/users/self/verify-email`,
     "patch",
     {},
     notif

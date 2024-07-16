@@ -6,8 +6,11 @@ import i18n from "./i18n"
 import Debug from "debug"
 import vClickOutside from "v-click-outside"
 import Fragment from "vue-fragment"
+//import { setDefaultEnv } from "./tools/setDefaultEnv.js"
 
 import "./filters/index.js"
+
+//setDefaultEnv() // doesn't work
 
 export const bus = new Vue()
 Vue.use(vClickOutside)

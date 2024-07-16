@@ -1,7 +1,61 @@
 .audio-upload-form {
+  min-height: 8rem;
+}
+
+.audio-upload__record {
+  border: 1px solid lightgray;
+
+  //padding: 1rem;
+  //padding-bottom: 0.5rem;
+}
+
+.audio-upload__record > * {
+  position: relative;
+  top: 0.5rem;
 }
 
 .audio-upload-list {
   list-style-type: none;
   padding-left: 0;
+}
+
+.audio-upload-list__progress {
+  position: absolute;
+  top: 0;
+  opacity: 0.4;
+}
+
+.audio-upload__record {
+  cursor: pointer;
+}
+
+.audio-upload__record__icon {
+  height: 2rem;
+  width: 2rem;
+}
+
+.audio-upload__record__button {
+  //background-color: var(--primary-color);
+  //background-image: none;
+  border: none;
+  border-radius: 50%;
+  //color: var(--white);
+  cursor: pointer;
+  height: 4rem;
+  width: 4rem;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.conversation-create-footer {
+  margin-top: 1rem;
+  position: sticky;
+  bottom: 1rem;
+  padding: 0.25rem 0.5rem;
+  border: var(--border-button);
+  background-color: white;
+  border-radius: 4px;
+  //box-shadow: var(--shadow-block);
 }
