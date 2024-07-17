@@ -349,7 +349,8 @@
       "drop_audio": "Drop your audio file here"
     },
     "url_tab": {
-      "url_label": "URL",
+      "main_info_title": "General information",
+      "url_label": "Source URL",
       "live_label": "Live transcription",
       "name_label": "Media name"
     }

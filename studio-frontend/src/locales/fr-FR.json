@@ -349,7 +349,8 @@
       "drop_audio": "Glissez-déposez votre fichier audio ici"
     },
     "url_tab": {
-      "url_label": "URL",
+      "main_info_title": "Informations principales",
+      "url_label": "URL de la source",
       "live_label": "Transcription en direct",
       "name_label": "Nom du média"
     }

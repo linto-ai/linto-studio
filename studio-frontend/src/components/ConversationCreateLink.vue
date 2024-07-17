@@ -1,12 +1,13 @@
 <template>
   <section>
+    <h2>{{ $t("conversation_creation.url_tab.main_info_title") }}</h2>
+    <FormInput :field="nameFields" v-model="nameFields.value" />
     <FormInput :field="linkFields" v-model="linkFields.value" />
-    <FormCheckbox
+    <!-- <FormCheckbox
       disabled
       :field="liveFields"
       v-model="liveFields.value"
-      switchDisplay />
-    <FormInput :field="nameFields" v-model="nameFields.value" />
+      switchDisplay /> -->
   </section>
 </template>
 <script>

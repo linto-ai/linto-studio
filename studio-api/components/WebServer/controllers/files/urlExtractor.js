@@ -15,7 +15,7 @@ async function downloadAudio(url, domain) {
 
         if (domain === undefined) domain = 'all'
         const args = [url, '--use-extractors', domain, '--output', fileName, '--paths', filePath, '--extract-audio', '--audio-format', 'mp3']
-        let streamProcess = spawn('yt-dlp_linux', args)
+        let streamProcess = spawn('yt-dlp', args)
         await handleStreamProcess(streamProcess)
 
         return {
