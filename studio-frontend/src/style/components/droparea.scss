@@ -1,6 +1,7 @@
 .droparea {
   cursor: pointer;
-  border: 1px dashed black;
+  border: var(--border-button);
+  border-style: dashed;
   text-align: center;
   & .droparea-description {
     padding: 0.5rem;
