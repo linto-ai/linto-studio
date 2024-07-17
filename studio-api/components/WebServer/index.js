@@ -2,6 +2,7 @@ const Component = require(`../component.js`)
 const fs = require('fs')
 const debug = require('debug')(`linto:components:webserver`)
 const express = require('express')
+const session = require('express-session')
 const fileUpload = require('express-fileupload')
 const passport = require('passport')
 const bodyParser = require('body-parser')
@@ -36,6 +37,13 @@ class WebServer extends Component {
         this.express = express()
         this.express.set('etag', false)
         this.express.set('trust proxy', true)
+
+        this.express.use(session({
+            secret: process.env.WEBSERVER_SESSION_SECRET, // Replace with a secure key
+            resave: false,
+            saveUninitialized: true,
+            cookie: { secure: false } // Set to true if using HTTPS
+        }))
 
         this.express.use(bodyParser.json({
             limit: process.env.EXPRESS_SIZE_FILE_MAX,
