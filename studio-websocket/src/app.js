@@ -46,7 +46,7 @@ class App {
     } catch (e) {
       if (e.name == "COMPONENT_MISSING") {
         return spinner.warn(
-          `Skipping ${componentFolderName} - this component depends on : ${e.missingComponents}`
+          `Skipping ${componentFolderName} - this component depends on : ${e.missingComponents}`,
         )
       }
       spinner.fail(`Error in component loading : ${componentFolderName}`)

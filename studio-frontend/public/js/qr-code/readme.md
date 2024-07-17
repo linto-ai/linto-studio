@@ -1,6 +1,6 @@
 Cloned from https://github.com/davidshimjs/qrcodejs
 
------
+---
 
 [![npm](https://img.shields.io/npm/v/@bitjson/qr-code)](https://www.npmjs.com/package/@bitjson/qr-code)
 [![npm downloads](https://img.shields.io/npm/dm/@bitjson/qr-code)](https://www.npmjs.com/package/@bitjson/qr-code)
@@ -47,15 +47,14 @@ Here's an example in pure HTML using most features:
     height: 200px;
     margin: 2em auto;
     background-color: #fff;
-  "
->
+  ">
   <img src="assets/1.2-x-to-y-ratio-icon.svg" slot="icon" />
 </qr-code>
 
 <script>
-  document.getElementById('qr1').addEventListener('codeRendered', () => {
-    document.getElementById('qr1').animateQRCode('MaterializeIn');
-  });
+  document.getElementById("qr1").addEventListener("codeRendered", () => {
+    document.getElementById("qr1").animateQRCode("MaterializeIn")
+  })
 </script>
 ```
 
@@ -66,7 +65,7 @@ Animate in, animate on user interactions like URL hits or detected payments, and
 Several preset animations are available, simply run them with the element's `animateQRCode` method:
 
 ```js
-document.getElementById('qr1').animateQRCode('RadialRipple');
+document.getElementById("qr1").animateQRCode("RadialRipple")
 ```
 
 Available built-in presets:
@@ -81,14 +80,14 @@ You can also design your own custom animations! Just pass a function to the `qr-
 
 ```js
 document
-  .getElementById('qr1')
+  .getElementById("qr1")
   .animateQRCode((targets, _x, _y, _count, entity) => ({
     targets,
-    from: entity === 'module' ? Math.random() * 200 : 200,
+    from: entity === "module" ? Math.random() * 200 : 200,
     duration: 500,
-    easing: 'cubic-bezier(.5,0,1,1)',
+    easing: "cubic-bezier(.5,0,1,1)",
     web: { opacity: [1, 0], scale: [1, 1.1, 0.5] },
-  }));
+  }))
 ```
 
 The [built-in presets use this API internally](src/components/qr-code/animations.ts), so review those for guidance and inspiration. Pull request for new presets are welcome!

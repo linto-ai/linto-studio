@@ -1,63 +1,66 @@
-const debug = require('debug')('linto:conversation-manager:routes:auth')
+const debug = require("debug")("linto:conversation-manager:routes:auth")
 
-const { logout, recoveryAuth } = require(`${process.cwd()}/components/WebServer/routecontrollers/users/users.js`)
-const auth_middleware = require(`${process.cwd()}/components/WebServer/config/passport/local/middleware`)
-
+const { logout, recoveryAuth } = require(
+  `${process.cwd()}/components/WebServer/routecontrollers/users/users.js`,
+)
+const auth_middleware = require(
+  `${process.cwd()}/components/WebServer/config/passport/local/middleware`,
+)
 
 module.exports = (webServer) => {
-    return [
-        {
-            path: '/login',
-            method: 'post',
-            requireAuth: false,
-            controller: [
-                auth_middleware.authenticate,
-                (req, res, next) => {
-                    res.status(202).json(req.user)
-                }
-            ]
+  return [
+    {
+      path: "/login",
+      method: "post",
+      requireAuth: false,
+      controller: [
+        auth_middleware.authenticate,
+        (req, res, next) => {
+          res.status(202).json(req.user)
         },
-        {
-            path: '/refresh',
-            method: 'get',
-            requireRefresh: true,
-            controller: [
-                auth_middleware.refresh,
-                (req, res, next) => {
-                    res.status(202).json(req.user)
-                }
-            ]
+      ],
+    },
+    {
+      path: "/refresh",
+      method: "get",
+      requireRefresh: true,
+      controller: [
+        auth_middleware.refresh,
+        (req, res, next) => {
+          res.status(202).json(req.user)
         },
-        {
-            path: '/login/magic-link',
-            method: 'post',
-            requireAuth: false,
-            controller: [
-                auth_middleware.authenticate_reset,
-                (req, res, next) => {
-                    res.status(202).json(req.user)
-                }
-            ]
+      ],
+    },
+    {
+      path: "/login/magic-link",
+      method: "post",
+      requireAuth: false,
+      controller: [
+        auth_middleware.authenticate_reset,
+        (req, res, next) => {
+          res.status(202).json(req.user)
         },
-        {
-            path: '/logout',
-            method: 'get',
-            requireAuth: true,
-            controller: logout
-        },
-        {
-            path: '/isAuth',
-            method: 'get',
-            requireAuth: true,
-            controller: async (req, res, next) => {
-                res.status(200).send('Ok')
-            }
-        },
-        {
-            path: '/recovery',
-            method: 'post',
-            requireAuth: false,
-            controller: recoveryAuth
-        }
-    ]
+      ],
+    },
+    {
+      path: "/logout",
+      method: "get",
+      requireAuth: true,
+      controller: logout,
+    },
+    {
+      path: "/isAuth",
+      method: "get",
+      requireAuth: true,
+      controller: async (req, res, next) => {
+        res.status(200).send("Ok")
+      },
+    },
+    {
+      path: "/recovery",
+      method: "post",
+      requireAuth: false,
+      controller: recoveryAuth,
+    },
+  ]
 }

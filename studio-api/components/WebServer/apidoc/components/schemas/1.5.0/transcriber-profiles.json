@@ -1,77 +1,66 @@
 {
-    "TranscriberProfile": {
-      "type": "object",
-      "properties": {
-        "config": {
-          "$ref": "#/components/schemas/TranscriberProfileData"
-        }
-      },
-      "required": [
-        "config"
-      ]
+  "TranscriberProfile": {
+    "type": "object",
+    "properties": {
+      "config": {
+        "$ref": "#/components/schemas/TranscriberProfileData"
+      }
     },
-    "TranscriberProfileData": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "enum": [
-            "microsoft",
-            "linto"
-          ]
-        },
-        "name": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "languages": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "candidate": {
-                "type": "string",
-                "description": "Language code BCP 47"
-              },
-              "endpoint": {
-                "type": "string"
-              }
+    "required": ["config"]
+  },
+  "TranscriberProfileData": {
+    "type": "object",
+    "properties": {
+      "type": {
+        "type": "string",
+        "enum": ["microsoft", "linto"]
+      },
+      "name": {
+        "type": "string"
+      },
+      "description": {
+        "type": "string"
+      },
+      "languages": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "candidate": {
+              "type": "string",
+              "description": "Language code BCP 47"
             },
-            "required": ["candidate"]
-          }
-        },
-        "key": {
-          "type": "string"
-        },
-        "region": {
-          "type": "string"
-        },
-        "endpoint": {
-          "type": "string"
+            "endpoint": {
+              "type": "string"
+            }
+          },
+          "required": ["candidate"]
         }
       },
-      "oneOf": [
-        {
-          "required": [
-            "type",
-            "name",
-            "description",
-            "languages",
-            "key",
-            "region"
-          ]
-        },
-        {
-          "required": [
-            "type",
-            "name",
-            "description",
-            "languages",
-            "endpoint"
-          ]
-        }
-      ]
-    }
+      "key": {
+        "type": "string"
+      },
+      "region": {
+        "type": "string"
+      },
+      "endpoint": {
+        "type": "string"
+      }
+    },
+    "oneOf": [
+      {
+        "required": [
+          "type",
+          "name",
+          "description",
+          "languages",
+          "key",
+          "region"
+        ]
+      },
+      {
+        "required": ["type", "name", "description", "languages", "endpoint"]
+      }
+    ]
   }
+}

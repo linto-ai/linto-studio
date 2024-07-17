@@ -1,4 +1,4 @@
 module.exports = {
-    default: require('./default.js'),
-    eu: require('./eu.js'),
+  default: require("./default.js"),
+  eu: require("./eu.js"),
 }

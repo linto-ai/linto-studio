@@ -42,6 +42,6 @@ export const sessionModelMixin = {
     },
     conversationId() {
       return this?.session?.conversationId
-    }
+    },
   },
 }

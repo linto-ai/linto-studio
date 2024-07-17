@@ -1,12 +1,12 @@
 /****************
-**Category***
-*****************/
+ **Category***
+ *****************/
 
-const ExceptionType = 'category'
+const ExceptionType = "category"
 class CategoryTypeNotDefined extends Error {
   constructor(message, err) {
     super()
-    this.name = 'CategoryTypeNotDefined'
+    this.name = "CategoryTypeNotDefined"
     this.type = ExceptionType
     this.status = 415
     if (message) this.message = message
@@ -18,7 +18,7 @@ class CategoryTypeNotDefined extends Error {
 class CategoryTypeNotValid extends Error {
   constructor(message, err) {
     super()
-    this.name = 'CategoryTypeNotValid'
+    this.name = "CategoryTypeNotValid"
     this.type = ExceptionType
     this.status = 415
     if (message) this.message = message
@@ -30,7 +30,7 @@ class CategoryTypeNotValid extends Error {
 class CategoryError extends Error {
   constructor(message, err) {
     super()
-    this.name = 'CategoryError'
+    this.name = "CategoryError"
     this.type = ExceptionType
     this.status = 400
     if (message) this.message = message
@@ -42,7 +42,7 @@ class CategoryError extends Error {
 class CategoryConflict extends Error {
   constructor(message, err) {
     super()
-    this.name = 'CategoryConflict'
+    this.name = "CategoryConflict"
     this.type = ExceptionType
     this.status = 409
     if (message) this.message = message
@@ -54,7 +54,7 @@ class CategoryConflict extends Error {
 class CategoryUnsupportedMediaTypepeNotDefined extends Error {
   constructor(message, err) {
     super()
-    this.name = 'CategoryUnsupportedMediaTypepeNotDefined'
+    this.name = "CategoryUnsupportedMediaTypepeNotDefined"
     this.type = ExceptionType
     this.status = 415
     if (message) this.message = message
@@ -66,7 +66,7 @@ class CategoryUnsupportedMediaTypepeNotDefined extends Error {
 class CategoryNotFound extends Error {
   constructor(message, err) {
     super()
-    this.name = 'CategoryNotFound'
+    this.name = "CategoryNotFound"
     this.type = ExceptionType
     this.status = 404
     if (message) this.message = message
@@ -81,5 +81,5 @@ module.exports = {
   CategoryTypeNotValid,
   CategoryConflict,
   CategoryNotFound,
-  CategoryError
+  CategoryError,
 }

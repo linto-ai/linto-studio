@@ -24,14 +24,11 @@
 
       <div
         class="flex flex1 center-text align-center justify-center"
-        v-else-if="isTerminated">
-      </div>
+        v-else-if="isTerminated"></div>
 
       <div
         class="flex flex1 center-text align-center justify-center"
-        v-else>
-      </div>
-
+        v-else></div>
 
       <router-link :to="settingsRoute" class="btn" v-if="isAtLeastMaintainer">
         <span class="icon settings"></span>
@@ -42,7 +39,9 @@
     </template>
 
     <template v-slot:sidebar>
-      <div class="flex col medium-padding gap-medium" v-if="isStarted || isTerminated">
+      <div
+        class="flex col medium-padding gap-medium"
+        v-if="isStarted || isTerminated">
         <SessionChannelsSelector
           v-if="sessionLoaded && selectedChannel"
           :channels="channels"
@@ -70,10 +69,13 @@
 
     <div class="relative flex flex1 col">
       <SessionNotStarted v-if="isPending" />
-      
+
       <Loading v-else-if="!sessionLoaded || !selectedChannel" />
 
-      <SessionEnded v-else-if="isTerminated" :session="session" :isFromPublicLink="isFromPublicLink"/>
+      <SessionEnded
+        v-else-if="isTerminated"
+        :session="session"
+        :isFromPublicLink="isFromPublicLink" />
 
       <SessionLiveContent
         v-else
