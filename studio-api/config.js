@@ -15,6 +15,7 @@ function configureDefaults() {
         // Webserver Settings
         process.env.COMPONENTS = ifHas(process.env.COMPONENTS, envdefault.COMPONENTS)
         process.env.WEBSERVER_HTTP_PORT = ifHas(process.env.WEBSERVER_HTTP_PORT, envdefault.WEBSERVER_HTTP_PORT)
+        process.env.WEBSERVER_SESSION_SECRET = ifHas(process.env.WEBSERVER_SESSION_SECRET, envdefault.WEBSERVER_SESSION_SECRET)
 
         // Mongo
         process.env.DB_HOST_MONGO = ifHas(process.env.DB_HOST_MONGO, envdefault.DB_HOST_MONGO)
