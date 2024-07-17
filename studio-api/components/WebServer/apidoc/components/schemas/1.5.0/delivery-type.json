@@ -1,18 +1,13 @@
 {
-    "DeliveryType": {
-      "type": "string",
-      "nullable": false,
-      "enum": [
-        "txt",
-        "doc",
-        "srt",
-        "vtt"
-      ]
-    },
-    "example": {
-      "txt": "txt",
-      "doc": "doc",
-      "srt": "srt",
-      "vtt": "vtt"
-    }
+  "DeliveryType": {
+    "type": "string",
+    "nullable": false,
+    "enum": ["txt", "doc", "srt", "vtt"]
+  },
+  "example": {
+    "txt": "txt",
+    "doc": "doc",
+    "srt": "srt",
+    "vtt": "vtt"
   }
+}

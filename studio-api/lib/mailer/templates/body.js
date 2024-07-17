@@ -1,6 +1,6 @@
-const debug = require('debug')('linto:lib:Mailer:templates:builder:body')
+const debug = require("debug")("linto:lib:Mailer:templates:builder:body")
 
-const TYPE = require('./../dao/type')
+const TYPE = require("./../dao/type")
 
 module.exports = function (Type, payload) {
   switch (Type.type) {
@@ -29,7 +29,7 @@ module.exports = function (Type, payload) {
     case TYPE.SHARE_MULTIPLE_CONVERSATION_RIGHT.type:
       return shareMultipleConversation(payload)
     default:
-      throw new Error('Unknown mail type')
+      throw new Error("Unknown mail type")
   }
 }
 
@@ -130,7 +130,7 @@ function shareMultipleConversation(payload) {
   for (let conv_id of payload.conversationsList) {
     conv_link += `<li><p style="margin:0;"><a href="${payload.origin}/interface/conversations/${conv_id}" target="_blank">${payload.origin}/interface/conversations/${conv_id}</a></p></li>`
   }
-  conv_link += '</ul>'
+  conv_link += "</ul>"
 
   return `
   <p>Vous avez reçu une transcription de média sur la plateforme LinTO Studio de la part de <strong>${payload.sharedByEmail}</strong>.</p>

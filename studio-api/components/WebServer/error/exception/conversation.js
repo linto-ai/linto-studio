@@ -1,17 +1,17 @@
 /****************
-**Conversation***
-*****************/
+ **Conversation***
+ *****************/
 
-const ExceptionType = 'conversation'
+const ExceptionType = "conversation"
 
 class ConversationError extends Error {
   constructor(message, err) {
     super()
-    this.name = 'ConversationError'
+    this.name = "ConversationError"
     this.type = ExceptionType
     this.status = 400
     if (message) this.message = message
-    else this.message = 'Error during the operation'
+    else this.message = "Error during the operation"
     if (err) this.err = err
   }
 }
@@ -19,35 +19,34 @@ class ConversationError extends Error {
 class ConversationNoFileUploaded extends Error {
   constructor(message, err) {
     super()
-    this.name = 'ConversationNoFileUploaded'
+    this.name = "ConversationNoFileUploaded"
     this.type = ExceptionType
     this.status = 400
     if (message) this.message = message
-    else this.message = 'No files were uploaded.'
+    else this.message = "No files were uploaded."
     if (err) this.err = err
   }
 }
 
-
 class ConversationURLExtractorError extends Error {
   constructor(message, err) {
     super()
-    this.name = 'ConversationURLExtractorError'
+    this.name = "ConversationURLExtractorError"
     this.type = ExceptionType
     this.status = 400
     if (message) this.message = message
-    else this.message = 'No files were downloaded.'
+    else this.message = "No files were downloaded."
     if (err) this.err = err
   }
 }
 class ConversationMetadataRequire extends Error {
   constructor(message, err) {
     super()
-    this.name = 'ConversationMetadataRequire'
+    this.name = "ConversationMetadataRequire"
     this.type = ExceptionType
     this.status = 400
     if (message) this.message = message
-    else this.message = 'Metadata was not provided.'
+    else this.message = "Metadata was not provided."
     if (err) this.err = err
   }
 }
@@ -55,11 +54,11 @@ class ConversationMetadataRequire extends Error {
 class ConversationUnsupportedMediaType extends Error {
   constructor(message, err) {
     super()
-    this.name = 'ConversationUnsupportedMediaType'
+    this.name = "ConversationUnsupportedMediaType"
     this.type = ExceptionType
     this.status = 415
     if (message) this.message = message
-    else this.message = 'Parameter is not supported'
+    else this.message = "Parameter is not supported"
     if (err) this.err = err
   }
 }
@@ -67,7 +66,7 @@ class ConversationUnsupportedMediaType extends Error {
 class ConversationWriteAccessDenied extends Error {
   constructor(message, err) {
     super()
-    this.name = 'ConversationWriteAccessDenied'
+    this.name = "ConversationWriteAccessDenied"
     this.type = ExceptionType
     this.status = 401
     if (message) this.message = message
@@ -79,7 +78,7 @@ class ConversationWriteAccessDenied extends Error {
 class ConversationShareAccessDenied extends Error {
   constructor(message, err) {
     super()
-    this.name = 'ConversationShareAccessDenied'
+    this.name = "ConversationShareAccessDenied"
     this.type = ExceptionType
     this.status = 401
     if (message) this.message = message
@@ -91,7 +90,7 @@ class ConversationShareAccessDenied extends Error {
 class ConversationDeleteAccessDenied extends Error {
   constructor(message, err) {
     super()
-    this.name = 'ConversationDeleteAccessDenied'
+    this.name = "ConversationDeleteAccessDenied"
     this.type = ExceptionType
     this.status = 401
     if (message) this.message = message
@@ -100,11 +99,10 @@ class ConversationDeleteAccessDenied extends Error {
   }
 }
 
-
 class ConversationReadAccessDenied extends Error {
   constructor(message, err) {
     super()
-    this.name = 'ConversationReadAccessDenied'
+    this.name = "ConversationReadAccessDenied"
     this.type = ExceptionType
     this.status = 401
     if (message) this.message = message
@@ -115,7 +113,7 @@ class ConversationReadAccessDenied extends Error {
 class ConversationNotShared extends Error {
   constructor(message, err) {
     super()
-    this.name = 'ConversationNotShared'
+    this.name = "ConversationNotShared"
     this.type = ExceptionType
     this.status = 401
     if (message) this.message = message
@@ -127,7 +125,7 @@ class ConversationNotShared extends Error {
 class ConversationIdRequire extends Error {
   constructor(message, err) {
     super()
-    this.name = 'ConversationIdRequire'
+    this.name = "ConversationIdRequire"
     this.type = ExceptionType
     this.status = 403
     if (message) this.message = message
@@ -139,11 +137,11 @@ class ConversationIdRequire extends Error {
 class ConversationNotFound extends Error {
   constructor(message, err) {
     super()
-    this.name = 'ConversationNotFound'
+    this.name = "ConversationNotFound"
     this.type = ExceptionType
     this.status = 404
     if (message) this.message = message
-    else this.message = 'Requested conversation not found'
+    else this.message = "Requested conversation not found"
     if (err) this.err = err
   }
 }
@@ -152,16 +150,16 @@ class ConversationNotFound extends Error {
  ******Conversation Turn*******
  ******************************/
 
-const ExceptionTurnType = ExceptionType + 'Turn'
+const ExceptionTurnType = ExceptionType + "Turn"
 
 class TurnIdRequire extends Error {
   constructor(message, err) {
     super()
-    this.name = 'TurnIdRequire'
+    this.name = "TurnIdRequire"
     this.type = ExceptionTurnType
     this.status = 403
     if (message) this.message = message
-    else this.message = 'Turn id param is require'
+    else this.message = "Turn id param is require"
     if (err) this.err = err
   }
 }
@@ -169,11 +167,11 @@ class TurnIdRequire extends Error {
 class TurnNotFound extends Error {
   constructor(message, err) {
     super()
-    this.name = 'TurnNotFound'
+    this.name = "TurnNotFound"
     this.type = ExceptionTurnType
     this.status = 404
     if (message) this.message = message
-    else this.message = 'Requested turn not found'
+    else this.message = "Requested turn not found"
     if (err) this.err = err
   }
 }
@@ -182,15 +180,14 @@ class TurnNotFound extends Error {
  **********Subtitle************
  ******************************/
 
-
- class SubtitleError extends Error {
+class SubtitleError extends Error {
   constructor(message, err) {
     super()
-    this.name = 'SubtitleError'
+    this.name = "SubtitleError"
     this.type = ExceptionType
     this.status = 400
     if (message) this.message = message
-    else this.message = 'Error during the operation'
+    else this.message = "Error during the operation"
     if (err) this.err = err
   }
 }
@@ -198,11 +195,11 @@ class TurnNotFound extends Error {
 class SubtitleUnsupportedMediaType extends Error {
   constructor(message, err) {
     super()
-    this.name = 'SubtitleUnsupportedMediaType'
+    this.name = "SubtitleUnsupportedMediaType"
     this.type = ExceptionType
     this.status = 415
     if (message) this.message = message
-    else this.message = 'Parameter is not supported'
+    else this.message = "Parameter is not supported"
     if (err) this.err = err
   }
 }
@@ -210,11 +207,13 @@ class SubtitleUnsupportedMediaType extends Error {
 class SubtitleMaxVersion extends Error {
   constructor(message, err) {
     super()
-    this.name = 'SubtitleMaxVersion'
+    this.name = "SubtitleMaxVersion"
     this.type = ExceptionType
     this.status = 403
     if (message) this.message = message
-    else this.message = 'The number of subtitle versions for that conversion has reached its limit.'
+    else
+      this.message =
+        "The number of subtitle versions for that conversion has reached its limit."
     if (err) this.err = err
   }
 }
@@ -222,11 +221,11 @@ class SubtitleMaxVersion extends Error {
 class SubtitleNotFound extends Error {
   constructor(message, err) {
     super()
-    this.name = 'SubtitleNotFound'
+    this.name = "SubtitleNotFound"
     this.type = ExceptionType
     this.status = 404
     if (message) this.message = message
-    else this.message = 'Requested subtitle not found'
+    else this.message = "Requested subtitle not found"
     if (err) this.err = err
   }
 }
@@ -249,5 +248,5 @@ module.exports = {
   SubtitleUnsupportedMediaType,
   SubtitleError,
   SubtitleMaxVersion,
-  SubtitleNotFound
+  SubtitleNotFound,
 }

@@ -1,17 +1,17 @@
 /****************
-****Delivery*****
-*****************/
+ ****Delivery*****
+ *****************/
 
-const ExceptionType = 'delivery'
+const ExceptionType = "delivery"
 
 class DeliveryError extends Error {
   constructor(message, err) {
     super()
-    this.name = 'DeliveryError'
+    this.name = "DeliveryError"
     this.type = ExceptionType
-    this.status = '400'
+    this.status = "400"
     if (message) this.message = message
-    else this.message = 'Keyword extraction error'
+    else this.message = "Keyword extraction error"
     if (err) this.err = err
   }
 }
@@ -19,11 +19,11 @@ class DeliveryError extends Error {
 class DeliveryNotFound extends Error {
   constructor(message, err) {
     super()
-    this.name = 'DeliveryNotFound'
+    this.name = "DeliveryNotFound"
     this.type = ExceptionType
-    this.status = '404'
+    this.status = "404"
     if (message) this.message = message
-    else this.message = 'Requested delivery session not found'
+    else this.message = "Requested delivery session not found"
     if (err) this.err = err
   }
 }
@@ -31,11 +31,11 @@ class DeliveryNotFound extends Error {
 class DeliveryUnknowType extends Error {
   constructor(message, err) {
     super()
-    this.name = 'DeliveryUnknowType'
+    this.name = "DeliveryUnknowType"
     this.type = ExceptionType
-    this.status = '400'
+    this.status = "400"
     if (message) this.message = message
-    else this.message = 'Requested type is not supported'
+    else this.message = "Requested type is not supported"
     if (err) this.err = err
   }
 }
@@ -43,11 +43,11 @@ class DeliveryUnknowType extends Error {
 class DeliveryUnsupportedMediaType extends Error {
   constructor(message, err) {
     super()
-    this.name = 'DeliveryUnsupportedMediaType'
+    this.name = "DeliveryUnsupportedMediaType"
     this.type = ExceptionType
-    this.status = '415'
+    this.status = "415"
     if (message) this.message = message
-    else this.message = 'Request parameter is not supported'
+    else this.message = "Request parameter is not supported"
     if (err) this.err = err
   }
 }
@@ -56,5 +56,5 @@ module.exports = {
   DeliveryError,
   DeliveryNotFound,
   DeliveryUnknowType,
-  DeliveryUnsupportedMediaType
+  DeliveryUnsupportedMediaType,
 }

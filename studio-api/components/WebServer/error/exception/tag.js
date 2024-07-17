@@ -1,13 +1,13 @@
 /****************
-********Tag******
-*****************/
+ ********Tag******
+ *****************/
 
-const ExceptionType = 'tag'
+const ExceptionType = "tag"
 
 class TagError extends Error {
   constructor(message, err) {
     super()
-    this.name = 'TagError'
+    this.name = "TagError"
     this.type = ExceptionType
     this.status = 400
     if (message) this.message = message
@@ -19,7 +19,7 @@ class TagError extends Error {
 class TagConflict extends Error {
   constructor(message, err) {
     super()
-    this.name = 'TagConflict'
+    this.name = "TagConflict"
     this.type = ExceptionType
     this.status = 409
     if (message) this.message = message
@@ -31,7 +31,7 @@ class TagConflict extends Error {
 class TagNotFound extends Error {
   constructor(message, err) {
     super()
-    this.name = 'TagNotFound'
+    this.name = "TagNotFound"
     this.type = ExceptionType
     this.status = 404
     if (message) this.message = message
@@ -43,7 +43,7 @@ class TagNotFound extends Error {
 class TagUnsupportedMediaType extends Error {
   constructor(message, err) {
     super()
-    this.name = 'TagUnsupportedMediaType'
+    this.name = "TagUnsupportedMediaType"
     this.type = ExceptionType
     this.status = 415
     if (message) this.message = message
@@ -56,5 +56,5 @@ module.exports = {
   TagError,
   TagConflict,
   TagNotFound,
-  TagUnsupportedMediaType
+  TagUnsupportedMediaType,
 }

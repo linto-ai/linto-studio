@@ -120,7 +120,10 @@ export const genericConversationMixin = {
     },
     conversationUsers() {
       if (this.conversationUsersLoaded) {
-        let convUsers = this.$store.state.conversationUsers ?? {organization_members: [], external_members: []}
+        let convUsers = this.$store.state.conversationUsers ?? {
+          organization_members: [],
+          external_members: [],
+        }
         return (
           [...convUsers.organization_members, ...convUsers.external_members] ||
           []
