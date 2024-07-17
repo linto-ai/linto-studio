@@ -26,6 +26,11 @@
           :disabled="formState === 'sending'"
           v-model="audioFiles" />
 
+        <ConversationCreateLink
+          v-if="currentTab === 'url'"
+          v-model="linkFields" />
+
+        <!-- services -->
         <section>
           <h2>{{ $t("conversation.transcription_service_title") }}</h2>
           <div class="error-field" v-if="transcriptionService.error">
@@ -62,7 +67,8 @@
           <div v-else class="flex1"></div>
           <button
             type="submit"
-            class="btn green"
+            class="btn green upload-media-button"
+            id="upload-media-button"
             :disabled="formState === 'sending'">
             <span class="icon apply"></span>
             <span class="label">{{ formSubmitLabel }}</span>
@@ -87,6 +93,8 @@ import MainContent from "@/components/MainContent.vue"
 import Checkbox from "@/components/Checkbox.vue"
 import Tabs from "@/components/Tabs.vue"
 import SessionCreateContent from "@/components/SessionCreateContent.vue"
+import ConversationCreateLink from "../components/ConversationCreateLink.vue"
+import EMPTY_FIELD from "../const/emptyField"
 
 export default {
   mixins: [ConversationCreateMixin],
@@ -123,15 +131,7 @@ export default {
         name: "url",
         label: this.$i18n.t("conversation_creation.tabs.url"),
         icon: "link",
-        disabled: true,
       },
-      // {
-      //   name: "visio",
-      //   label: this.$i18n.t("conversation_creation.tabs.visio"),
-      //   icon: "profile",
-      //   img: "/img/We10X-icon-theme/preferences-desktop-accessibility.svg",
-      //   disabled: true,
-      // },
     ]
 
     if (enableSession) {
@@ -139,7 +139,6 @@ export default {
         name: "session",
         label: this.$i18n.t("conversation_creation.tabs.session"),
         icon: "session",
-        //disabled: true,
       })
     }
 
@@ -149,9 +148,28 @@ export default {
     }
   },
   async created() {},
+  methods: {
+    createConversation(event) {
+      event?.preventDefault()
+      switch (this.currentTab) {
+        case "url":
+          this.createConversationByUrl()
+          break
+        case "file":
+        case "microphone":
+          this.createConversationByFile()
+          break
+        default:
+          console.error("Unknown tab", this.currentTab)
+          break
+      }
+      return false
+    },
+  },
   components: {
     ConversationCreateAudio,
     ConversationCreateServices,
+    ConversationCreateLink,
     MainContent,
     Checkbox,
     Tabs,

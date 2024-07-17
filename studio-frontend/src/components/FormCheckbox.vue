@@ -13,6 +13,7 @@
         v-if="!switchDisplay"
         :disabled="disabled" />
       <SwitchInput
+        :disabled="disabled"
         v-model="value"
         :id="id"
         v-else

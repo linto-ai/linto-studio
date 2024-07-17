@@ -173,6 +173,7 @@ export async function apiCreateConversation(
     lang,
     endpoint,
     tracks,
+    url, // tracks or url is required
   },
   notif,
   onUploadProgress = null
@@ -189,8 +190,13 @@ export async function apiCreateConversation(
     formData.append("segmentCharSize", segmentCharSize)
     formData.append("lang", lang)
     formData.append("endpoint", endpoint)
-    for (let i = 0; i < tracks.length; i++) {
-      formData.append("file", tracks[i])
+
+    if (tracks) {
+      for (let i = 0; i < tracks.length; i++) {
+        formData.append("file", tracks[i])
+      }
+    } else {
+      formData.append("url", url)
     }
 
     let req = await sendMultipartFormData(

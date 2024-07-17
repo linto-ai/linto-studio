@@ -15,7 +15,7 @@
         @stopFile="stopFile($event)" />
     </ul>
 
-    <div class="flex audio-upload-form flex1">
+    <div class="flex audio-upload-form">
       <ConversationCreateUpload
         v-if="mode === 'file'"
         class="flex1"

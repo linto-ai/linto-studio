@@ -62,11 +62,6 @@ export default {
       bus.$emit("playFile", event)
     },
   },
-  watch: {
-    "field.progress": function (value) {
-      console.log("progress", value)
-    },
-  },
   components: { Fragment, FormInput },
 }
 </script>

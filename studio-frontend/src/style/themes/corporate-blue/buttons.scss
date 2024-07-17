@@ -173,3 +173,13 @@ button,
   background-color: white;
   border: var(--border-block);
 }
+
+#upload-media-button {
+  font-weight: 800;
+  box-shadow: 0px 0px 0px 5px rgba(10, 84, 175, 0.17),
+    0px 0px 25px 8px rgba(10, 84, 175, 0.17);
+  //width: 8rem;
+  font-size: 1.1rem;
+  min-width: 8rem !important;
+  margin: 8px;
+}

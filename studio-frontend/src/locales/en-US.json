@@ -347,6 +347,12 @@
     },
     "file": {
       "drop_audio": "Drop your audio file here"
+    },
+    "url_tab": {
+      "main_info_title": "General information",
+      "url_label": "Source URL",
+      "live_label": "Live transcription",
+      "name_label": "Media name"
     }
   },
   "createaccount": {
@@ -486,6 +492,7 @@
       "title": "User menu"
     },
     "conversation": {
+      "start": "Start",
       "create": "Upload media",
       "create_no_rights_error": "You don't have the rights to create a media. Please contact your organisation administrator.",
       "list": "Media",

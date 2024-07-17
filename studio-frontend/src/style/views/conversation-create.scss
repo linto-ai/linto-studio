@@ -54,8 +54,8 @@
   position: sticky;
   bottom: 1rem;
   padding: 0.25rem 0.5rem;
-  border: var(--border-button);
-  background-color: white;
+  border: var(--border-button-flat);
+  background-color: var(--background-primary);
   border-radius: 4px;
   //box-shadow: var(--shadow-block);
 }

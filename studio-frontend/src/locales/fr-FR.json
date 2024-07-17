@@ -347,6 +347,12 @@
     },
     "file": {
       "drop_audio": "Glissez-déposez votre fichier audio ici"
+    },
+    "url_tab": {
+      "main_info_title": "Informations principales",
+      "url_label": "URL de la source",
+      "live_label": "Transcription en direct",
+      "name_label": "Nom du média"
     }
   },
   "createaccount": {
@@ -486,6 +492,7 @@
       "title": "Menu utilisateur"
     },
     "conversation": {
+      "start": "Démmarer",
       "create": "Importer un media",
       "create_no_rights_error": "Vous n'avez pas les droits pour créer un média dans cette organisation. Veuillez contacter un administrateur.",
       "list": "Conversations",
