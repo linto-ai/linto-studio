@@ -1,4 +1,4 @@
-FROM node:16.2.0 as builder
+FROM node:20.15.1 as builder
 
 RUN apt-get update -y && \
   apt-get install gettext -y && \

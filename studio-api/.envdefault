@@ -15,7 +15,7 @@ DB_PASS_MONGO=example
 DB_NAME_MONGO=conversations
 
 # Request a specific version of the database (optional)
-DB_MIGRATION_TARGET=1.4.2
+DB_MIGRATION_TARGET=1.5.0
 
 # STT Config
 GATEWAY_SERVICES=https://api.linto.ai
