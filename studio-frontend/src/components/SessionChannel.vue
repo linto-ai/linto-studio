@@ -28,9 +28,14 @@
       class="flex align-center justify-center flex1 col center-text gap-medium">
       <h2>{{ $t("session.detail_page.no_transcription") }}</h2>
       <Svglogo style="max-height: 6rem; margin: 2rem" />
+      <div ref="bottom"></div>
     </div>
 
-    <div
+    <!-- Subtitles -->
+    <SessionSubtitle v-if="displaySubtitles" class="session-content__subtitle" :partialText="partialText" :finalText="finalText"/>
+    
+    
+    <!-- <div
       class="session-content__subtitle"
       :style="style"
       ref="subtitle"
@@ -42,7 +47,7 @@
         <div>{{ partialText }}</div>
         <div ref="subtitle-bottom"></div>
       </div>
-    </div>
+    </div> -->
 
     <button
       v-if="!isBottom"
@@ -65,7 +70,7 @@ import {
 import SessionChannelTurn from "@/components/SessionChannelTurn.vue"
 import SessionChannelTurnPartial from "@/components/SessionChannelTurnPartial.vue"
 import Svglogo from "@/svg/Microphone.vue"
-
+import SessionSubtitle from "@/components/SessionSubtitle.vue"
 export default {
   props: {
     channel: {
@@ -106,6 +111,7 @@ export default {
       turns: [],
       previousTurns: [],
       partialText: "",
+      finalText: {text:""},
     }
   },
   mounted() {
@@ -181,7 +187,8 @@ export default {
       this.scrollSubtitle()
     },
     onFinal(content) {
-      this.partialText = ""
+      //this.partialText = ""
+      this.finalText = content
       this.turns.push(content)
       this.scrollToBottom()
       this.scrollSubtitle()
@@ -196,11 +203,11 @@ export default {
     scrollSubtitle() {
       if (!this.displaySubtitles) return
 
-      this.$nextTick().then(() =>
-        document
-          .getElementById("scroller")
-          .scroll(0, document.getElementById("scroller").scrollHeight)
-      )
+      // this.$nextTick().then(() =>
+      //   document
+      //     .getElementById("scroller")
+      //     .scroll(0, document.getElementById("scroller").scrollHeight)
+      // )
     },
   },
   components: {
@@ -208,6 +215,7 @@ export default {
     SessionChannelTurn,
     SessionChannelTurnPartial,
     Svglogo,
+    SessionSubtitle,
   },
 }
 </script>
