@@ -50,12 +50,10 @@
 
         <h3>{{ $t("session.detail_page.title_interface_settings") }}</h3>
         <FormCheckbox
-          disabled
           :field="displayLiveTranscriptionField"
           switchDisplay
           v-model="displayLiveTranscriptionField.value" />
         <FormCheckbox
-          disabled
           :field="displaySubtitlesField"
           switchDisplay
           v-model="displaySubtitlesField.value" />
