@@ -147,6 +147,9 @@ export default {
       },
       deep: true,
     },
+    displaySubtitles() {
+      this.scrollToBottom()
+    },
   },
   methods: {
     init() {
@@ -158,7 +161,6 @@ export default {
         this.onFinal.bind(this)
       )
       this.scrollToBottom()
-      this.scrollSubtitle()
     },
     async loadPreviousTranscrition() {
       let sessionRequest = null
@@ -184,14 +186,12 @@ export default {
     onPartial(content) {
       this.partialText = content ?? ""
       this.scrollToBottom()
-      this.scrollSubtitle()
     },
     onFinal(content) {
-      //this.partialText = ""
+      this.partialText = ""
       this.finalText = content
       this.turns.push(content)
       this.scrollToBottom()
-      this.scrollSubtitle()
     },
     scrollToBottom(force = false) {
       if (!this.displayLiveTranscription) return
@@ -199,15 +199,6 @@ export default {
       if (!this.isBottom && !force) return
 
       this.$nextTick().then(() => this.$refs.bottom.scrollIntoView())
-    },
-    scrollSubtitle() {
-      if (!this.displaySubtitles) return
-
-      // this.$nextTick().then(() =>
-      //   document
-      //     .getElementById("scroller")
-      //     .scroll(0, document.getElementById("scroller").scrollHeight)
-      // )
     },
   },
   components: {

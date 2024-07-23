@@ -89,5 +89,27 @@ export function getIndexesWhereToCutText(text, computeIfTextIsTooLong) {
 }
 
 function isSameWord(word1, word2) {
-  return word1 === word2
+  const w1Normalized = word1
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+  const w2Normalized = word2
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+
+  const word1Length = w1Normalized.length
+  const word2Length = w2Normalized.length
+
+  const shortestLength = Math.min(word1Length, word2Length)
+
+  let numberOfSameChars = 0
+  for (let i = 0; i < shortestLength; i++) {
+    if (w1Normalized[i].toLowerCase() === w2Normalized[i].toLowerCase()) {
+      numberOfSameChars++
+    }
+  }
+
+  const similarity = numberOfSameChars / word1Length
+  return similarity > 0.8
 }

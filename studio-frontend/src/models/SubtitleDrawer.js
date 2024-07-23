@@ -8,7 +8,8 @@ export class SubtitleDrawer {
       lineHeight = 50,
       color = "white",
       font = "Arial",
-      padding = 100,
+      paddingInline = 100,
+      paddingVertical = 20,
     } = {}
   ) {
     this.canvas = canvas
@@ -17,7 +18,22 @@ export class SubtitleDrawer {
     this.lineHeight = lineHeight
     this.color = color
     this.font = font
-    this.padding = padding
+    this.paddingInline = paddingInline
+    this.paddingVertical = 0
+
+    // set width canvas equal to the width of the parent element
+    this.canvas.width = this.canvas.clientWidth
+    // set height canvas equal to the height of the parent element
+    this.canvas.height = this.canvas.clientHeight
+
+    this.resizeObserverContainer = new ResizeObserver(
+      function (entries) {
+        this.canvas.width = this.canvas.clientWidth
+        this.canvas.height = this.canvas.clientHeight
+      }.bind(this)
+    )
+
+    this.resizeObserverContainer.observe(this.canvas)
   }
 
   reset() {
@@ -29,16 +45,20 @@ export class SubtitleDrawer {
     const ctx = this.canvas.getContext("2d")
     ctx.font = `${this.fontSize}px ${this.font}`
     ctx.fillStyle = this.color
-    ctx.fillText(text, x + this.padding, y)
+    ctx.fillText(text, x + this.paddingInline, y)
   }
 
   // those two methods can be refactored into one methods "drawLine(text, lineNumber)"
   drawFirstLine(text) {
-    this.drawText(text, 0, this.fontSize)
+    this.drawText(text, 0, this.fontSize + this.paddingVertical)
   }
 
   drawSecondLine(text) {
-    this.drawText(text, 0, this.fontSize + this.lineHeight)
+    this.drawText(
+      text,
+      0,
+      this.fontSize + this.lineHeight + this.paddingVertical
+    )
   }
 }
 
@@ -88,6 +108,7 @@ export class SubtitleScroller extends SubtitleDrawer {
         secondLine = this._getLastLineOfState(this.currentState)
         break
     }
+
     this.drawFirstLine(firstLine)
     this.drawSecondLine(secondLine)
   }
@@ -133,7 +154,7 @@ export class SubtitleScroller extends SubtitleDrawer {
 
   computeIfTextIsTooLong(text) {
     const ctx = this.canvas.getContext("2d")
-    const maxWidth = this.canvas.width - 2 * this.padding
+    const maxWidth = this.canvas.width - 2 * this.paddingInline
     const width = ctx.measureText(text).width
     return width > maxWidth
   }

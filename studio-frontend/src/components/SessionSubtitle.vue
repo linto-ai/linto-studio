@@ -31,7 +31,8 @@ export default {
   watch: {
     partialText: function (newVal, oldVal) {
       //console.log("partialText", newVal)
-      this.subtitleDrawer.newPartial(newVal)
+      if(newVal.trim().length > 0)
+        this.subtitleDrawer.newPartial(newVal)
     },
     finalText: function (newVal, oldVal) {
       //console.log("finalText", newVal)
@@ -40,11 +41,6 @@ export default {
   },
   mounted() {
     this.canvas = document.getElementById("scroller")
-    // set width canvas equal to the width of the parent element
-    this.canvas.width = this.canvas.clientWidth
-    // set height canvas equal to the height of the parent element
-    this.canvas.height = this.canvas.clientHeight
-
     this.subtitleDrawer = new SubtitleScroller(this.canvas, this.fontSize, this.lineHeight)
   },
   methods: {
