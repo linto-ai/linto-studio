@@ -67,16 +67,50 @@ test("divide word on first line", (t) => {
 })
 
 test("change last word of line", (t) => {
-  const state = {
+  // const state = {
+  //   previousText: "lorem ipsum",
+  //   previousIndexes: [],
+  // }
+
+  // t.deepEqual(
+  //   splitPartialSubtitles(
+  //     state,
+  //     "lorem mot ipsum dolor",
+  //     computeIfTextIsTooLong
+  //   ),
+  //   {
+  //     previousText: "lorem mot ipsum dolor",
+  //     previousIndexes: [3],
+  //   }
+  // )
+
+  const state2 = {
     previousText: "lorem ipsum",
     previousIndexes: [],
   }
 
   t.deepEqual(
-    splitPartialSubtitles(state, "lorem ipsumopopotam", computeIfTextIsTooLong),
+    splitPartialSubtitles(
+      state2,
+      "lorem ipsumomomo dolor",
+      computeIfTextIsTooLong
+    ),
     {
-      previousText: "lorem ipsumopopotam",
-      previousIndexes: [],
+      previousText: "lorem ipsumomomo dolor",
+      previousIndexes: [2],
+    }
+  )
+
+  const state3 = {
+    previousText: "lorem ipsum",
+    previousIndexes: [],
+  }
+
+  t.deepEqual(
+    splitPartialSubtitles(state3, "lorem ipsumomomo", computeIfTextIsTooLong),
+    {
+      previousText: "lorem ipsumomomo",
+      previousIndexes: [2],
     }
   )
 })

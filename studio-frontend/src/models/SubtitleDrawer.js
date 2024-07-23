@@ -3,7 +3,13 @@ import splitPartialSubtitles from "../tools/splitPartialSubtitles"
 export class SubtitleDrawer {
   constructor(
     canvas,
-    { fontSize = 40, lineHeight = 50, color = "white", font = "Arial" } = {}
+    {
+      fontSize = 40,
+      lineHeight = 50,
+      color = "white",
+      font = "Arial",
+      padding = 100,
+    } = {}
   ) {
     this.canvas = canvas
 
@@ -11,6 +17,7 @@ export class SubtitleDrawer {
     this.lineHeight = lineHeight
     this.color = color
     this.font = font
+    this.padding = padding
   }
 
   reset() {
@@ -22,7 +29,7 @@ export class SubtitleDrawer {
     const ctx = this.canvas.getContext("2d")
     ctx.font = `${this.fontSize}px ${this.font}`
     ctx.fillStyle = this.color
-    ctx.fillText(text, x, y)
+    ctx.fillText(text, x + this.padding, y)
   }
 
   // those two methods can be refactored into one methods "drawLine(text, lineNumber)"
@@ -42,74 +49,92 @@ export class SubtitleScroller extends SubtitleDrawer {
   ) {
     super(canvas, { fontSize, lineHeight, color, font })
 
-    this.allFinal = ""
+    this.currentText = ""
     this.currentLine = 0
 
-    this.partialState = { previousText: "", previousIndexes: [] }
+    this.currentState = { previousText: "", previousIndexes: [] }
+    this.previousState = { previousText: "", previousIndexes: [] }
   }
 
   newPartial(text) {
-    console.log("----")
-    console.log("Partial before", this.partialState)
-    this.partialState = splitPartialSubtitles(
-      this.partialState,
-      this.allFinal + " " + text,
-      this.computeIfTextIsTooLong
+    const currentText = text
+    this.currentState = splitPartialSubtitles(
+      this.currentState,
+      currentText.trim(),
+      this.computeIfTextIsTooLong.bind(this)
     )
-    console.log("Partial after", this.partialState)
 
     this.draw()
+  }
+
+  resetState() {
+    this.previousState = this.currentState
+    this.currentState = { previousText: "", previousIndexes: [] }
+    this.currentText = ""
   }
 
   draw() {
     this.reset()
-    if (this.partialState.previousIndexes.length === 0) {
-      return
+    let firstLine = ""
+    let secondLine = ""
+
+    switch (this.currentState.previousIndexes.length) {
+      case 0:
+        firstLine = this._getLastLineOfState(this.previousState)
+        secondLine = this.currentState.previousText
+        break
+      default:
+        firstLine = this._getSecondLastLineOfState(this.currentState)
+        secondLine = this._getLastLineOfState(this.currentState)
+        break
+    }
+    this.drawFirstLine(firstLine)
+    this.drawSecondLine(secondLine)
+  }
+
+  _getLastLineOfState(state) {
+    if (state.previousIndexes.length === 0) {
+      return state.previousText
     }
 
-    if (this.partialState.previousIndexes.length === 1) {
-      this.drawFirstLine(this.partialState.previousText)
-      return
+    const lastIndex = state.previousIndexes[state.previousIndexes.length - 1]
+
+    return state.previousText.split(" ").slice(lastIndex).join(" ")
+  }
+
+  _getSecondLastLineOfState(state) {
+    if (state.previousIndexes.length === 0) {
+      return ""
     }
 
-    const beforeLastIndex =
-      this.partialState.previousIndexes[
-        this.partialState.previousIndexes.length - 2
-      ]
-    const lastIndex =
-      this.partialState.previousIndexes[
-        this.partialState.previousIndexes.length - 1
-      ]
+    const lastIndex = state.previousIndexes[state.previousIndexes.length - 1]
+    let beforeLastIndex = 0
 
-    const textFirstLine = this.partialState.previousText
+    if (state.previousIndexes.length > 1) {
+      beforeLastIndex = state.previousIndexes[state.previousIndexes.length - 2]
+    }
+
+    return state.previousText
       .split(" ")
       .slice(beforeLastIndex, lastIndex)
       .join(" ")
-
-    const textSecondLine = this.partialState.previousText
-      .split(" ")
-      .slice(lastIndex)
-      .join(" ")
-
-    console.log(textFirstLine)
-    console.log(textSecondLine)
-    console.log("-----")
-    this.drawFirstLine(textFirstLine)
-    this.drawSecondLine(textSecondLine)
   }
 
   newFinal(text) {
-    this.allFinal += " " + text
-    this.partialState = splitPartialSubtitles(
-      this.partialState,
-      this.allFinal,
-      this.computeIfTextIsTooLong
+    this.currentText = text
+    this.currentState = splitPartialSubtitles(
+      this.currentState,
+      this.currentText.trim(),
+      this.computeIfTextIsTooLong.bind(this)
     )
-
     this.draw()
+    this.resetState()
   }
 
   computeIfTextIsTooLong(text) {
-    return text.length > 60
+    const ctx = this.canvas.getContext("2d")
+    const maxWidth = this.canvas.width - 2 * this.padding
+    const width = ctx.measureText(text).width
+    return width > maxWidth
   }
 }

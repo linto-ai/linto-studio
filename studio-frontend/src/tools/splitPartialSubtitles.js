@@ -1,57 +1,65 @@
 import { diffArrays } from "diff"
 
 export default function splitPartialSubtitles(
-  { previousText, previousIndexes },
+  { previousText, previousIndexes: oldCutPositions },
   newText,
   computeIfTextIsTooLong
 ) {
-  //console.log("\n\n ======= splitPartialSubtitles ======= \n")
-
   const previousTextSplitBySpace = previousText.split(" ")
+
   const newTextSplitBySpace = newText.split(" ")
-  const diff_list = diffArrays(previousTextSplitBySpace, newTextSplitBySpace)
-
-  let index = 0
-  let startIndexOfCurrentLine = 0
-  let currentLineNumber = 0
-  let newIndexes = [...previousIndexes]
-  let shiftEndLineIndex = 0
-
-  //console.log(diff_list)
+  const diff_list = diffArrays(previousTextSplitBySpace, newTextSplitBySpace, {
+    comparator: isSameWord,
+  })
+  let indexInNewText = 0
+  let numberOfRemove = 0
+  let newCutPositions = [...oldCutPositions]
 
   for (const diff of diff_list) {
-    //console.log("diff: ", diff)
-
     if (diff.removed) {
-      newIndexes = incrementIndexes(newIndexes, index, -diff.count)
+      newCutPositions = incrementIndexes(
+        newCutPositions,
+        indexInNewText,
+        -diff.count
+      )
+
+      numberOfRemove += diff.count
     } else if (diff.added) {
-      newIndexes = incrementIndexes(newIndexes, index, diff.count)
-      index += diff.count
+      newCutPositions = incrementIndexes(
+        newCutPositions,
+        indexInNewText - numberOfRemove,
+        diff.count
+      )
+      indexInNewText += diff.count
     } else {
-      index += diff.count
+      indexInNewText += diff.count
     }
   }
 
-  const sliceIndex =
-    newIndexes.length == 0 ? 0 : newIndexes[newIndexes.length - 1]
-  let currentLine = newTextSplitBySpace.slice(sliceIndex).join(" ")
-
-  newIndexes = newIndexes.concat(
-    incrementIndexes(
-      getIndexesWhereToCutText(currentLine, computeIfTextIsTooLong),
-      0,
-      sliceIndex
+  const lastLinePosition = newCutPositions.at(-1) ?? 0
+  let lastLine = newTextSplitBySpace.slice(lastLinePosition).join(" ")
+  if (computeIfTextIsTooLong(lastLine)) {
+    const offset = (newCutPositions.at(-1) ?? 0) - (oldCutPositions.at(-1) ?? 0)
+    const realLastLinePosition = previousTextSplitBySpace.length + offset
+    const realLastLine = newTextSplitBySpace
+      .slice(realLastLinePosition)
+      .join(" ")
+    const cutPositionsForLastLine = getIndexesWhereToCutText(
+      realLastLine,
+      computeIfTextIsTooLong
     )
-  )
+    newCutPositions.push(realLastLinePosition)
+    newCutPositions = newCutPositions.concat(cutPositionsForLastLine)
+  }
 
   return {
-    previousIndexes: newIndexes,
+    previousIndexes: newCutPositions,
     previousText: newText,
   }
 }
 
 function incrementIndexes(indexes, from, increment) {
-  return indexes.map((index) => (index >= from ? index + increment : index))
+  return indexes.map((index) => (index > from ? index + increment : index))
 }
 
 export function getIndexesWhereToCutText(text, computeIfTextIsTooLong) {
@@ -78,4 +86,8 @@ export function getIndexesWhereToCutText(text, computeIfTextIsTooLong) {
       )
     )
   }
+}
+
+function isSameWord(word1, word2) {
+  return word1 === word2
 }
