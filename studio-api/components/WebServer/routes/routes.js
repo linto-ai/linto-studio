@@ -1,7 +1,7 @@
 const debug = require("debug")("linto:webserver:routes")
 
 module.exports = (webServer) => {
-  let routes = {
+  let api_routes = {
     "/": require("./root")(webServer),
     "/healthcheck": require("./api/healthcheck/healthcheck")(webServer),
     "/auth": require("./auth")(webServer),
@@ -31,14 +31,13 @@ module.exports = (webServer) => {
     "/api/services": require("./api/service/services")(webServer, this),
   }
 
+  let proxy_routes = []
   if (process.env.ENABLE_SESSION_API === "true") {
-    routes["/api/organizations/:organizationId/delivery"] =
-      require("./session/delivery/index.js")(webServer)
-    routes["/api"] = [
-      ...routes["/api"],
-      ...require("./session/session-manager/index.js")(webServer),
-    ]
+    proxy_routes.push(require("./proxy/sessions/session.js")(webServer))
   }
 
-  return routes
+  return {
+    api_routes: api_routes,
+    proxy_routes: proxy_routes,
+  }
 }
