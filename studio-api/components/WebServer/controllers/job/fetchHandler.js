@@ -37,12 +37,12 @@ async function fetchJob(conv_id, conv_job) {
 
     job_queue = await Promise.all(
       job_queue.map(async (job) => {
+        const host = `${process.env.GATEWAY_SERVICES}/${job.endpoint}`
         let current_job = job
         let logs
         try {
-          const host = `${process.env.GATEWAY_SERVICES}/${job.endpoint}`
           let job_info = await axios.get(`${host}/job/${job.job_id}`)
-
+          job_info.state = "error"
           if (job_info.state === "error") {
             logs = await fetchLogs(host, job)
             logs !== undefined ? (current_job.job_logs = logs) : undefined
@@ -57,8 +57,11 @@ async function fetchJob(conv_id, conv_job) {
             ...job_info, // job_info can update job previous state, that's why it's after
           }
         } catch (err) {
+          if (current_job.job_log === undefined) {
+            logs = await fetchLogs(host, job)
+            logs !== undefined ? (current_job.job_logs = logs) : undefined
+          } else logs !== undefined ? (current_job.job_logs = logs) : undefined
           current_job.state = "error"
-          logs !== undefined ? (current_job.job_logs = logs) : undefined
         }
         return current_job
       }),
