@@ -5,12 +5,13 @@
       v-model="field.value"
       :disabled="disabled"
       inputFullWidth>
-      <button class="btn black" @click="deleteFile" v-if="!disabled">
+      <button class="btn black" @click="deleteFile" v-if="!disabled" type="button">
         <span class="icon delete"></span>
       </button>
       <button
+        type="button"
         class="btn black"
-        @click="isPlaying ? stopFile : playFile"
+        @click="playOrStopFile"
         v-if="!disabled">
         <span :class="`icon ${isPlaying ? 'pause' : 'play'}`"></span>
       </button>
@@ -55,11 +56,20 @@ export default {
     },
     stopFile(event) {
       event.preventDefault()
-      bus.$emit("stopFile", event)
+      this.$emit("stopFile", event)
     },
     playFile(event) {
       event.preventDefault()
-      bus.$emit("playFile", event)
+      
+      this.$emit("playFile", event)
+    },
+    playOrStopFile(event) {
+      event.preventDefault()
+      if (this.isPlaying) {
+        this.stopFile(event)
+      } else {
+        this.playFile(event)
+      }
     },
   },
   components: { Fragment, FormInput },
