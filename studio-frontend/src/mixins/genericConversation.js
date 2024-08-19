@@ -155,6 +155,9 @@ export const genericConversationMixin = {
 
       await this.dispatchConversationUsers()
 
+      if (this.initConversationHook) {
+        await this.initConversationHook()
+      }
       this.conversationLoaded = true
     },
 

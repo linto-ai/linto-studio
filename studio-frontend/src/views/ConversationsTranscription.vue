@@ -174,6 +174,9 @@ export default {
       searchedHighlightId: null,
       currentHighlightResult: 0,
       totalHighlightResult: 0,
+      turnsIndexedByid: {},
+      turns: [],
+      turnPages: [],
     }
   },
   mounted() {
@@ -181,9 +184,24 @@ export default {
       this.showMetadataModal = true
       this.metadataModalData = data
     })
+
+    bus.$on("segment_updated", (data) => {
+      this.turnsIndexedByid[data.turnId].segment = data.value
+    })
+
+    bus.$on("words_updated", (data) => {
+      this.turnsIndexedByid[data.turnId].words = data.value
+    })
+
+    bus.$on('refresh_turns', () => {
+      this.setupTurns()
+    })
   },
   beforeDestroy() {
     bus.$off("open-metadata-modal")
+    bus.$off("segment_updated")
+    bus.$off("words_updated")
+    bus.$off("refresh_turns")
   },
   watch: {
     "conversation.speakers"(newVal, oldVal) {
@@ -222,53 +240,51 @@ export default {
         "YYYYMMDDHHmmss"
       )}`
     },
-    turns() {
-      if (!this.conversation) return []
-      if (this.filterSpeakers && this.filterSpeakers != "default") {
-        const filterTurns = this.conversation.text.filter(
-          (turn) => turn.speaker_id == this.filterSpeakers
-        )
-        return filterTurns
-      } else {
-        // TODO:
-        // some words can be empty so this rule is not enough check segment instead ?
-        // it breaks turn merge. So we need to fix it but empty turns should not be in the conversation.
-        return this.conversation.text.filter((turn) => turn.words.length > 0)
-      }
+  },
+  methods: {
+    initConversationHook() {
+      this.setupTurns()
     },
-    turnPages() {
-      if (!this.turns) return []
-      let res = [[]]
+    setupTurns() {
+      this.turnPages = [[]]
+      this.turnsIndexedByid = {}
+      this.turns = []
+
       let currentPage = 0
       let nbCaracters = 0
       let nbTurns = 0
-      res[currentPage] = []
-      this.turns.forEach((turn, index) => {
-        res[currentPage].push(turn)
+      this.turnPages[currentPage] = []
+      
+      for (let shadowTurn of this.conversation.text) {
+        if(shadowTurn.words.length === 0) {
+          continue
+        }
+        const turn = structuredClone(shadowTurn)
+        this.turnsIndexedByid[turn.turn_id] = turn
+        this.turns.push(turn)
+
+        // Split the turns in pages
+        this.turnPages[currentPage].push(turn)
         nbCaracters += turn.segment.length
-        if (
-          nbCaracters > parseInt(process.env.VUE_APP_MAX_CARACTERS_PER_PAGE)
-        ) {
+        if(nbCaracters > parseInt(process.env.VUE_APP_MAX_CARACTERS_PER_PAGE)) {
           nbCaracters = 0
           nbTurns = 0
           currentPage += 1
-          res[currentPage] = []
+          this.turnPages[currentPage] = []
         }
         nbTurns += 1
         if (nbTurns > parseInt(process.env.VUE_APP_TURN_PER_PAGE)) {
-          nbTurns = 0
           nbCaracters = 0
+          nbTurns = 0
           currentPage += 1
-          res[currentPage] = []
+          this.turnPages[currentPage] = []
         }
-      })
-      if (res[res.length - 1].length === 0) {
-        res.pop()
       }
-      return res
+
+      if (this.turnPages.at(-1).length === 0) {
+        this.turnPages.pop()
+      }
     },
-  },
-  methods: {
     onClickOnTag(tag) {
       this.$refs.editor.nextHighlightSearch(tag._id)
     },

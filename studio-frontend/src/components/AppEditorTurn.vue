@@ -204,7 +204,7 @@ export default {
   },
   data() {
     return {
-      localTurnData: this.turnData,
+      localTurnData: structuredClone(this.turnData),
       contentEditable: false,
       clickTimer: null,
       clickNb: 0,
