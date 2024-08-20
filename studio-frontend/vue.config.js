@@ -1,10 +1,12 @@
 import path from "path"
 import { fileURLToPath } from "url"
 import { dirname } from "path"
+import getCurrentTheme from "./src/tools/getCurrentTheme.js"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-const THEME = process.env.VUE_APP_THEME ?? "linTO-green"
+
+const STYLE_PATH = getCurrentTheme()["stylePath"]
 
 export default {
   configureWebpack: (config) => {
@@ -32,7 +34,7 @@ export default {
   css: {
     loaderOptions: {
       scss: {
-        additionalData: `@import "src/style/themes/${THEME}/style.scss";`,
+        additionalData: `@import "${STYLE_PATH}";`,
       },
     },
   },

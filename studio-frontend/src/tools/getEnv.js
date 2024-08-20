@@ -1,5 +1,7 @@
 import DEFAULTENV from "../const/defaultEnv"
+import getCurrentTheme from "./getCurrentTheme"
 
 export function getEnv(envKey) {
-  return process.env[envKey] || DEFAULTENV[envKey]
+  const themeEnv = getCurrentTheme()?.defaultEnvValues || {}
+  return themeEnv[envKey] || process.env[envKey] || DEFAULTENV[envKey]
 }
