@@ -126,7 +126,7 @@ function initCaptionsForConversation(sessionData) {
     }
     return captions
   } catch (err) {
-    debug(err)
+    throw err
   }
 }
 
@@ -177,6 +177,24 @@ async function storeSession(session) {
   }
 }
 
+async function storeProxyResponse(session) {
+  try {
+    if (typeof session === "string") {
+      session = JSON.parse(session)
+    }
+
+    const conversation = await storeSession(session)
+
+    return JSON.stringify({
+      ...session,
+      conversationId: conversation.insertedId.toString(),
+    })
+  } catch (err) {
+    return session
+  }
+}
+
 module.exports = {
   storeSession,
+  storeProxyResponse,
 }

@@ -17,6 +17,7 @@ const user_middlewares = require(
 const {
   createProxyMiddleware,
   fixRequestBody,
+  responseInterceptor,
 } = require("http-proxy-middleware")
 
 const ifHasElse = (condition, ifHas, otherwise) => {
@@ -145,9 +146,31 @@ const createProxyRoutes = (webServer, proxy_routes) => {
         path.method.forEach((method) => {
           const proxy = createProxyMiddleware({
             target: serviceHost,
+            selfHandleResponse: true, // We want to handle the response ourselves
+
             changeOrigin: true,
             on: {
               proxyReq: fixRequestBody,
+              proxyRes: responseInterceptor(
+                async (responseBuffer, proxyRes, req, res) => {
+                  try {
+                    if (path.executeAfterResult) {
+                      let result
+
+                      for (let proxyAfterFunction of path.executeAfterResult) {
+                        const buffer = Buffer.from(responseBuffer, "utf-8")
+                        const jsonString = buffer.toString("utf-8")
+                        result = await proxyAfterFunction(jsonString)
+                      }
+                      return result.toString()
+                    } else {
+                      return responseBuffer
+                    }
+                  } catch (error) {
+                    return responseBuffer
+                  }
+                },
+              ),
             },
             pathRewrite: (path, req) => {
               // Removing the linto-studio path from the request
@@ -179,6 +202,7 @@ const createProxyRoutes = (webServer, proxy_routes) => {
               })
             },
             onError: (err, req, res) => {
+              console.log("onError")
               debug("Proxy error:", err)
               res
                 .status(500)
@@ -194,6 +218,7 @@ const createProxyRoutes = (webServer, proxy_routes) => {
             (req, res, next) => {
               addProxyParams(req, path)
               proxy(req, res, next)
+              debug("done")
             },
           )
         })

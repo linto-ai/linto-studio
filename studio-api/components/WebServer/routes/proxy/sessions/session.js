@@ -3,6 +3,10 @@ const proxyForwardParams = [
   { "body.organizationId": "params.organizationId" },
 ]
 
+const { storeProxyResponse } = require(
+  `${process.cwd()}/components/WebServer/controllers/session/conversation.js`,
+)
+
 module.exports = (webServer) => {
   return {
     basePath: "/api",
@@ -86,6 +90,7 @@ module.exports = (webServer) => {
             path: "/organizations/:organizationId/sessions/:id/stop",
             method: ["put"],
             forwardParams: proxyForwardParams,
+            executeAfterResult: [storeProxyResponse],
           },
           {
             path: "/organizations/:organizationId/sessions/terminated",
