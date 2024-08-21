@@ -21,15 +21,6 @@ function configureDefaults() {
     process.env.VOLUME_AUDIO_PATH = "audios"
     process.env.VOLUME_PROFILE_PICTURE_PATH = "pictures"
     process.env.VOLUME_AUDIO_WAVEFORM_PATH = "audiowaveform"
-
-    if (process.env.ENABLE_SESSION_API === "true") {
-      const envdefaultSession = loadEnvFile(".session-envdefault")
-
-      // Loop over each key in the envdefaultSession and set process.env if not already set
-      Object.keys(envdefaultSession).forEach((key) => {
-        process.env[key] = ifHas(process.env[key], envdefaultSession[key])
-      })
-    }
   } catch (e) {
     console.error(debug.namespace, e)
     process.exit(1)

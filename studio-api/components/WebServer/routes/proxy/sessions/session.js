@@ -68,11 +68,6 @@ module.exports = (webServer) => {
             method: ["get"],
             forwardParams: proxyForwardParams,
           },
-          {
-            path: "/organizations/:organizationId/sessions/active",
-            method: ["get"],
-            forwardParams: proxyForwardParams,
-          },
         ],
         requireAuth: true,
         requireOrganizationMemberAccess: true,
@@ -82,20 +77,10 @@ module.exports = (webServer) => {
         scrapPath: /^\/organizations\/[^/]+/,
         paths: [
           {
-            path: "/organizations/:organizationId/sessions/:id/start",
-            method: ["put"],
-            forwardParams: proxyForwardParams,
-          },
-          {
             path: "/organizations/:organizationId/sessions/:id/stop",
             method: ["put"],
             forwardParams: proxyForwardParams,
             executeAfterResult: [storeProxyResponse],
-          },
-          {
-            path: "/organizations/:organizationId/sessions/terminated",
-            method: ["get"],
-            forwardParams: proxyForwardParams,
           },
         ],
         requireAuth: true,

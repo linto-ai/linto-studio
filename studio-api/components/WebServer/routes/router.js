@@ -218,7 +218,6 @@ const createProxyRoutes = (webServer, proxy_routes) => {
             (req, res, next) => {
               addProxyParams(req, path)
               proxy(req, res, next)
-              debug("done")
             },
           )
         })
