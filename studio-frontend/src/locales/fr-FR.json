@@ -634,7 +634,7 @@
       "add": "Ajouter des canaux",
       "empty": "Aucun canaux attachés à la session",
       "labels": {
-        "endpoint": "Adresse du flux",
+        "endpoint": "Adresse des flux",
         "language": "Langues",
         "name": "Nom",
         "profile_name": "Nom du profil",
@@ -648,7 +648,8 @@
         "title": "Ajouter des canaux"
       },
       "remove": "Retirer",
-      "title": "Canaux attachés à la session"
+      "title": "Canaux attachés à la session",
+      "multiple_endpoint": "1 flux | {count} flux"
     },
     "create_page": {
       "error_message": "Une erreur s'est produite lors de la création de la session",

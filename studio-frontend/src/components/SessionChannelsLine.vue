@@ -12,12 +12,12 @@
       {{ profileName }}
     </td>
     <td v-if="from === 'sessionSettings'">
-      <pre>{{ endpoint }}</pre>
+      <SessionChannelsEndpoints :endpoints="endpoints" />
     </td>
     <td v-if="from === 'sessionSettings'">
       <pre>{{ stream_status }}</pre>
     </td>
-    <td v-if="from === 'sessionSettings'">{{ transcriber_status }}</td>
+    <!-- <td v-if="from === 'sessionSettings'">{{ transcriber_status }}</td> -->
     <td>{{ languages }}</td>
     <td class="content-size" v-if="from === 'formCreateSession'">
       <button class="btn red-border" @click="removeChannel" type="button">
@@ -33,6 +33,9 @@ import { bus } from "../main.js"
 import ArrayHeader from "./ArrayHeader.vue"
 import FormInput from "./FormInput.vue"
 import EMPTY_FIELD from "../const/emptyField"
+
+import SessionChannelsEndpoints from "./SessionChannelsEndpoints.vue"
+
 export default {
   props: {
     item: {
@@ -71,8 +74,11 @@ export default {
       const langs_str = this.item.languages || []
       return langs_str.join(", ")
     },
-    endpoint() {
-      return this.item.stream_endpoint || ""
+    // endpoint() {
+    //   return this.item.stream_endpoint || ""
+    // },
+    endpoints() {
+      return this.item.stream_endpoints || {}
     },
     stream_status() {
       return this.item.stream_status || ""
@@ -92,6 +98,6 @@ export default {
       this.$emit("removeChannel")
     },
   },
-  components: { Fragment, ArrayHeader, FormInput },
+  components: { Fragment, ArrayHeader, FormInput, SessionChannelsEndpoints },
 }
 </script>

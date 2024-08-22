@@ -634,7 +634,7 @@
       "add": "Add channels",
       "empty": "No channels linked to the session",
       "labels": {
-        "endpoint": "Endpoint",
+        "endpoint": "Endpoints",
         "language": "Languages",
         "name": "Name",
         "profile_name": "Profile name",
@@ -648,7 +648,8 @@
         "title": "Add channels"
       },
       "remove": "Remove",
-      "title": "Channels linked to the session"
+      "title": "Channels linked to the session",
+      "multiple_endpoint": "1 endpoint | {count} endpoints"
     },
     "create_page": {
       "error_message": "An error occurred while creating the session",

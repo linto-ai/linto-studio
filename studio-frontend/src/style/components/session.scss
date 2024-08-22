@@ -76,3 +76,8 @@
     bottom: calc(96px + 40px + 1rem);
   }
 }
+
+.session-endpoint-label {
+  text-decoration: underline;
+  cursor: pointer;
+}
