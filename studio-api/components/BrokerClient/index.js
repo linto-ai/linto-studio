@@ -20,10 +20,14 @@ class BrokerClient extends Component {
     // Combined pub and subs
     this.deliveryPub = "delivery"
     this.deliverySubTemplates = [
-      (transcriberId) => `transcriber/out/${transcriberId}/partial`,
-      (transcriberId) => `transcriber/out/${transcriberId}/final`,
+      // roomId is the concatenation of session_id / channel_index
+      (roomId) => `transcriber/out/${roomId}/partial`,
+      (roomId) => `transcriber/out/${roomId}/final`,
     ]
-    this.deliverySubs = [`transcriber/out/+/partial`, `transcriber/out/+/final`]
+    this.deliverySubs = [
+      `transcriber/out/+/+/partial`,
+      `transcriber/out/+/+/final`,
+    ]
 
     // Initialize delivery client
     this.deliveryClient = new MqttClient({
@@ -58,17 +62,17 @@ class BrokerClient extends Component {
     this.init() // binds controllers, those will handle messages
   }
 
-  subscribe(transcriberId) {
-    debug(`Subscribe to transcriber ${transcriberId}`)
+  subscribe(roomId) {
+    debug(`Subscribe to transcriber ${roomId}`)
     for (const sub_template of this.deliverySubTemplates) {
-      this.deliveryClient.subscribe(sub_template(transcriberId))
+      this.deliveryClient.subscribe(sub_template(roomId))
     }
   }
 
-  unsubscribe(transcriberId) {
-    debug(`Unsubscribe from transcriber ${transcriberId}`)
+  unsubscribe(roomId) {
+    debug(`Unsubscribe from transcriber ${roomId}`)
     for (const sub_template of this.deliverySubTemplates) {
-      this.deliveryClient.unsubscribe(sub_template(transcriberId))
+      this.deliveryClient.unsubscribe(sub_template(roomId))
     }
   }
 }
