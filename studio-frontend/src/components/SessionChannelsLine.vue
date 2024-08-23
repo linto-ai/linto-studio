@@ -15,9 +15,9 @@
       <SessionChannelsEndpoints :endpoints="endpoints" />
     </td>
     <td v-if="from === 'sessionSettings'">
-      <pre>{{ stream_status }}</pre>
+      <pre>{{ streamStatus }}</pre>
     </td>
-    <!-- <td v-if="from === 'sessionSettings'">{{ transcriber_status }}</td> -->
+    <!-- <td v-if="from === 'sessionSettings'">{{ transcriberStatus }}</td> -->
     <td>{{ languages }}</td>
     <td class="content-size" v-if="from === 'formCreateSession'">
       <button class="btn red-border" @click="removeChannel" type="button">
@@ -78,13 +78,13 @@ export default {
     //   return this.item.stream_endpoint || ""
     // },
     endpoints() {
-      return this.item.stream_endpoints || {}
+      return this.item.streamEndpoints || {}
     },
-    stream_status() {
-      return this.item.stream_status || ""
+    streamStatus() {
+      return this.item.streamStatus || ""
     },
-    transcriber_status() {
-      return this.item.transcriber_status || ""
+    transcriberStatus() {
+      return this.item.transcriberStatus || ""
     },
   },
   watch: {

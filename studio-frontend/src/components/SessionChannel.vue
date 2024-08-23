@@ -107,6 +107,7 @@ export default {
     },
   },
   data() {
+    console.log("channel", this.channel)
     return {
       turns: [],
       previousTurns: [],
@@ -119,8 +120,8 @@ export default {
     this.init()
   },
   computed: {
-    selectedChannelId() {
-      return this.channel?.transcriber_id
+    channelIndex() {
+      return this.channel.index
     },
     lastTwoTurns() {
       return this.turns.slice(-2)
@@ -156,7 +157,8 @@ export default {
       this.partialText = ""
       this.turns = []
       this.sessionWS.subscribe(
-        this.selectedChannelId,
+        this.sessionId,
+        this.channelIndex,
         this.onPartial.bind(this),
         this.onFinal.bind(this)
       )

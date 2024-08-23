@@ -66,9 +66,9 @@
     </template>
 
     <div class="relative flex flex1 col">
-      <SessionNotStarted v-if="isPending" />
+      <!-- <SessionNotStarted v-if="isPending" /> -->
 
-      <Loading v-else-if="!sessionLoaded || !selectedChannel" />
+      <Loading v-if="!sessionLoaded || !selectedChannel" />
 
       <SessionEnded
         v-else-if="isTerminated"
