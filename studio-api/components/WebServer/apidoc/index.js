@@ -22,9 +22,17 @@ function mergeModule(modules, loadModule) {
 }
 
 function loadModulesFromDirectory(directory) {
+  const skipItems = ["transcriber_profiles", "sessions"]
   let modules = {}
 
   fs.readdirSync(directory).forEach((item) => {
+    if (
+      process.env.SESSION_API_HOST === "" &&
+      skipItems.some((skipItem) => item.includes(skipItem))
+    ) {
+      return
+    }
+
     const itemPath = path.join(directory, item)
 
     if (fs.statSync(itemPath).isDirectory()) {
