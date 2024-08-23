@@ -2,12 +2,32 @@ const debug = require("debug")("delivery:BrokerClient:mqtt-events-delivery")
 
 module.exports = function () {
   this.deliveryClient.on("message", (topic, message) => {
-    const [type, out, session_id, channel_index, action] = topic.split("/")
-    this.app.components["IoHandler"].emit(
-      action,
-      session_id + "/" + channel_index,
-      JSON.parse(message.toString()),
-    )
+    let type, out, session_id, channel_index, action
+    try {
+      // Attempt to split the topic into parts
+      ;[type, out, session_id, channel_index, action] = topic.split("/")
+    } catch (error) {
+      // Handle the split error (e.g., skip processing, return early, etc.)
+      console.error("Error splitting topic:", error)
+      return
+    }
+
+    try {
+      // Attempt to parse the message, it should be a JSON string
+      let parsedMessage = JSON.parse(message.toString())
+      this.app.components["IoHandler"].emit(
+        action,
+        session_id + "/" + channel_index,
+        parsedMessage,
+      )
+    } catch (error) {
+      this.app.components["IoHandler"].emit(
+        "error",
+        session_id + "/" + channel_index,
+        { error: "Error parsing message" },
+      )
+      return
+    }
   })
 
   this.on("join_room", (roomId) => {
