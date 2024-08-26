@@ -1,5 +1,6 @@
 # LinTO Studio API
-Transcription / summarization / annotation api for recorded audio files 
+
+Transcription / summarization / annotation api for recorded audio files
 
 ## Installation
 
@@ -9,7 +10,7 @@ Transcription / summarization / annotation api for recorded audio files
   npm install
 ```
 
-you need also to install **Audiowavesform**. 
+you need also to install **Audiowavesform**.
 
 Audiowaveform is a C++ command-line application that generates waveform data from either MP3, WAV, FLAC, Ogg Vorbis, or Opus format audio files.
 You need to install it to be able to generate audiowaveforms that be loaded with your audio.
@@ -18,7 +19,7 @@ Please read the [documentation](https://github.com/bbc/audiowaveform) to install
 
 ### Set environment variables
 
-Duplicate *".envdefault"* file to create *".env"* file
+Duplicate _".envdefault"_ file to create _".env"_ file
 
 ```bash
 cp .envdefault .env
@@ -37,7 +38,8 @@ MongoMigration is a component that allows to migrate data from one version of th
 ### Enabling migration
 
 Two environment variables are required to use the component:
-- `COMPONENTS` must contain the desired to be loaded  `MongoMigration`.
+
+- `COMPONENTS` must contain the desired to be loaded `MongoMigration`.
 - `DB_MIGRATION_TARGET` must be set to the desired version (1.0.0)
 
 ### Migration process
@@ -46,7 +48,7 @@ The migration process is composed of two steps:
 
 ### Add migration version
 
-The first step to add a new version is done by the creation of a new folder in `components/MongoMigration/version/`. The name of the folder must be the version number of the migration (it's better if they match *RELEASE.md* format). Then create a new file `collections_name.js` in that contain the needed data:
+The first step to add a new version is done by the creation of a new folder in `components/MongoMigration/version/`. The name of the folder must be the version number of the migration (it's better if they match _RELEASE.md_ format). Then create a new file `collections_name.js` in that contain the needed data:
 
 ```javascript
 module.exports = {
@@ -57,8 +59,12 @@ module.exports = {
   down: async (db) => {
     // rollback code example
     // db.collection(collections_name).updateMany({}, { $unset: migration_update })
-  }
+  },
 }
 ```
 
 Make sure to create a `version.js` file to update the version on a migration step.
+
+### Enable session API
+
+To enable `linto-studio` to load the session API feature, set the `SESSION_API_HOST=http://localhost:8002/v1` environment variable. Once configured, the API will automatically load the proxy and redirect all requests to the session API. The corresponding Swagger documentation will also be loaded when the environment variable is set.
