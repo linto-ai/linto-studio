@@ -28,8 +28,8 @@ function initConversationMultiChannel(session, type = "canonical") {
     metadata: {
       channel: {
         channel_count: session.channels.length,
-        channel_start_time: session.start_time,
-        channel_end_time: session.end_time,
+        channel_start_time: session.startTime,
+        channel_end_time: session.endTime,
       },
     },
     jobs: {
@@ -44,7 +44,7 @@ function initCaptionsForConversation(sessionData) {
     const session = JSON.parse(JSON.stringify(sessionData))
     let captions = []
     for (let channel of session.channels) {
-      if (!channel.closed_captions) {
+      if (!channel.closedCaptions) {
         continue
       }
 
@@ -73,8 +73,8 @@ function initCaptionsForConversation(sessionData) {
         metadata: {
           channel: {
             channel_count: session.channels.length,
-            channel_start_time: session.start_time,
-            channel_end_time: session.end_time,
+            channel_start_time: session.startTime,
+            channel_end_time: session.endTime,
           },
         },
         sharedWithUsers: [],
@@ -82,7 +82,7 @@ function initCaptionsForConversation(sessionData) {
         description: "",
       }
 
-      for (let channel_caption of channel.closed_captions) {
+      for (let channel_caption of channel.closedCaptions) {
         let spk_id = caption.locutor
 
         if (!caption.locutor) {
