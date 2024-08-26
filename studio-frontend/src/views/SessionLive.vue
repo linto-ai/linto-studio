@@ -39,9 +39,12 @@
     </template>
 
     <template v-slot:sidebar>
-      <div
+      <!-- <div
         class="flex col medium-padding gap-medium"
-        v-if="isStarted || isTerminated">
+        v-if="isStarted || isTerminated"
+      > -->
+      <div
+        class="flex col medium-padding gap-medium">
         <SessionChannelsSelector
           v-if="sessionLoaded && selectedChannel"
           :channels="channels"

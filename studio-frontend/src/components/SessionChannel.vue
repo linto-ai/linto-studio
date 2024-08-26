@@ -16,9 +16,11 @@
         :key="turn.id"
         :turn="turn"></SessionChannelTurn>
 
+      
       <SessionChannelTurnPartial
         v-if="displayLiveTranscription && partialText !== ''"
         ref="partial"
+        :partialObject="partialObject"
         :partialText="partialText"></SessionChannelTurnPartial>
 
       <div ref="bottom"></div>
@@ -112,11 +114,13 @@ export default {
       turns: [],
       previousTurns: [],
       partialText: "",
-      finalText: {text:""},
+      partialObject: {},
+      finalText: "",
     }
   },
   mounted() {
-    this.previousTurns = this.channel?.closed_captions || []
+    this.previousTurns = this.channel?.closedCaptions || []
+    console.log("previousTurns", this.previousTurns)
     this.init()
   },
   computed: {
@@ -171,7 +175,7 @@ export default {
         sessionRequest = await apiGetSessionChannel(
           this.organizationId,
           this.sessionId,
-          this.channel.transcriber_id
+          this.channelIndex,
         )
       }
 
@@ -182,16 +186,27 @@ export default {
         )
       }
 
-      const res = sessionRequest?.data?.channels?.[0] ?? {}
-      this.previousTurns = res.closed_captions || []
+      // filter out the channel we are interested in
+
+      const allChannels = sessionRequest?.data?.channels
+
+      if (!allChannels) {
+        this.previousTurns = []
+      } else {
+        const channel = allChannels.find(
+          (channel) => channel.index === this.channelIndex
+        )
+        this.previousTurns = channel?.closedCaptions || []
+      }
     },
     onPartial(content) {
-      this.partialText = content ?? ""
+      this.partialText = content.text ?? ""
+      this.partialObject = content
       this.scrollToBottom()
     },
     onFinal(content) {
       this.partialText = ""
-      this.finalText = content
+      this.finalText = content.text
       this.turns.push(content)
       this.scrollToBottom()
     },

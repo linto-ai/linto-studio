@@ -13,6 +13,10 @@ export default {
       type: String,
       required: true,
     },
+    partialObject: {
+      type: Object,
+      required: true,
+    },
   },
   data() {
     return {}
@@ -20,7 +24,7 @@ export default {
   mounted() {},
   computed: {
     turn() {
-      return { text: this.partialText }
+      return this.partialObject
     },
   },
   methods: {},

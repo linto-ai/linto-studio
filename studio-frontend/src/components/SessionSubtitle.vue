@@ -13,7 +13,7 @@ export default {
       required: true,
     },
     finalText: {
-      type: Object,
+      type: String,
       required: true,
     },
     fontSize: {
@@ -36,7 +36,7 @@ export default {
     },
     finalText: function (newVal, oldVal) {
       //console.log("finalText", newVal)
-      this.subtitleDrawer.newFinal(newVal.text)
+      this.subtitleDrawer.newFinal(newVal)
     },
   },
   mounted() {
