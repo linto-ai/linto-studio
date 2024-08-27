@@ -14,7 +14,7 @@ while [ "$1" != "" ]; do
         ;;
     --skip)
         echo 'Skip starup param'
-    ;;
+        ;;
     *)
         echo "ERROR: Bad argument provided \"$1\""
         exit 1
@@ -31,6 +31,7 @@ mkdir -p storages/audios/original
 mkdir -p storages/pictures
 mkdir -p storages/audiowaveform
 
-cron
+# Cron is run by the root user on the dockerfile rules
+# cron
 
 eval "$script"
