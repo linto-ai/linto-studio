@@ -697,7 +697,8 @@
       "tabs": {
         "ongoing_sessions": "Sessions en cours",
         "past_sessions": "Sessions passées",
-        "scheduled_sessions": "Sessions programmées"
+        "scheduled_sessions": "Sessions programmées",
+        "all_sessions": "Toutes les sessions"
       }
     },
     "live_page": {

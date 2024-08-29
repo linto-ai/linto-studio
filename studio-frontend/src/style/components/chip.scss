@@ -29,6 +29,11 @@
 
   font-size: 1rem;
   flex-shrink: 0;
+
+  &[inverted] {
+    background-color: var(--primary-contrast);
+    color: var(--primary-color);
+  }
 }
 
 .badge.badge--small {

@@ -696,7 +696,8 @@
       "tabs": {
         "ongoing_sessions": "Ongoing sessions",
         "past_sessions": "Past sessions",
-        "scheduled_sessions": "Scheduled sessions"
+        "scheduled_sessions": "Scheduled sessions",
+        "all_sessions": "All sessions"
       }
     },
     "live_page": {

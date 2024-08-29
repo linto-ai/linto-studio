@@ -25,9 +25,9 @@ export async function apiCreateSession(organizationScope, data, notif) {
   return createSession
 }
 
-export async function apiGetStartedSessions(organizationScope, notif) {
+export async function apiGetActiveSessions(organizationScope, notif) {
   const getStartedSessions = await sendRequest(
-    `${BASE_API}/organizations/${organizationScope}/sessions?status=active`,
+    `${BASE_API}/organizations/${organizationScope}/sessions?statusList=active`,
     { method: "get" },
     {},
     notif,
