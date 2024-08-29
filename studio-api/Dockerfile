@@ -35,7 +35,7 @@ RUN service cron start
 
 # Create a non-root user and group named linto & change ownership of the application files
 RUN groupadd -r linto && useradd -r -g linto linto && \
-  chown -R linto:linto /usr/src/app
+  chown -R linto:linto /usr/src/app /usr/src/app/conversation-manager/storages/
 USER linto
 
 HEALTHCHECK CMD curl -f http://localhost || exit 1
