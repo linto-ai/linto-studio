@@ -67,4 +67,15 @@ Make sure to create a `version.js` file to update the version on a migration ste
 
 ### Enable session API
 
-To enable `linto-studio` to load the session API feature, set the `SESSION_API_HOST=http://localhost:8002/v1` environment variable. Once configured, the API will automatically load the proxy and redirect all requests to the session API. The corresponding Swagger documentation will also be loaded when the environment variable is set.
+To enable `linto-studio` to load the session API feature, set the `SESSION_API_ENDPOINT=http://session_api:8002/v1` environment variable. Once configured, the API will automatically load the proxy and redirect all requests to the session API. The corresponding Swagger documentation will also be loaded when the environment variable is set.
+
+To enable live session monitoring, the MQTT broker environment must be properly configured.
+
+```bash
+BROKER_HOST=localhost
+BROKER_PORT=1883
+BROKER_USERNAME=
+BROKER_PASSWORD=
+BROKER_KEEPALIVE=60
+BROKER_PROTOCOL=mqtt
+```

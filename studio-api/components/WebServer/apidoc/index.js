@@ -27,7 +27,7 @@ function loadModulesFromDirectory(directory) {
 
   fs.readdirSync(directory).forEach((item) => {
     if (
-      process.env.SESSION_API_HOST === "" &&
+      process.env.SESSION_API_ENDPOINT === "" &&
       skipItems.some((skipItem) => item.includes(skipItem))
     ) {
       return
