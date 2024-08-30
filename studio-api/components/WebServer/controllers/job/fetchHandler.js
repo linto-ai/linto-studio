@@ -42,7 +42,7 @@ async function fetchJob(conv_id, conv_job) {
         let logs
         try {
           let job_info = await axios.get(`${host}/job/${job.job_id}`)
-          job_info.state = "error"
+
           if (job_info.state === "error") {
             logs = await fetchLogs(host, job)
             logs !== undefined ? (current_job.job_logs = logs) : undefined
