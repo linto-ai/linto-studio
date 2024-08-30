@@ -44,6 +44,7 @@
     "express-session": "^1.18.0",
     "form-data": "^4.0.0",
     "fs": "0.0.1-security",
+    "http-proxy-middleware": "^3.0.0",
     "json-to-plain-text": "^1.1.2",
     "jsonschema": "^1.4.1",
     "jsonwebtoken": "^9.0.2",
