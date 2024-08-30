@@ -1,4 +1,4 @@
-const debug = require("debug")("delivery:IoHandler:socket-event")
+const debug = require("debug")("linto:components:IoHandler:socket-event")
 
 module.exports = function () {
   this.on("partial", (transcriberId, transcription) => {

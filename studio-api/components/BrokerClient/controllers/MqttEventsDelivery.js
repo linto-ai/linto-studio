@@ -1,4 +1,6 @@
-const debug = require("debug")("delivery:BrokerClient:mqtt-events-delivery")
+const debug = require("debug")(
+  "linto:components:BrokerClient:mqtt-events-delivery",
+)
 
 module.exports = function () {
   this.deliveryClient.on("message", (topic, message) => {
