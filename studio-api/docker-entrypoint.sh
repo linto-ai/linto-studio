@@ -25,13 +25,7 @@ done
 
 echo "RUNNING : $script"
 cd /usr/src/app/conversation-manager
-mkdir -p storages
-mkdir -p storages/audios
-mkdir -p storages/audios/original
-mkdir -p storages/pictures
-mkdir -p storages/audiowaveform
 
-# Cron is run by the root user on the dockerfile rules
-# cron
+mkdir -p storages/audios/original storages/pictures storages/audiowaveform
 
 eval "$script"
