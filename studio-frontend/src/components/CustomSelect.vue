@@ -181,7 +181,7 @@ export default {
     },
     toggleMenu(e) {
       e.preventDefault()
-      //e.stopPropagation()
+      e.stopPropagation()
       if (this.disabled) return
       this.showList = !this.showList
     },

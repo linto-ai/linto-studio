@@ -18,6 +18,11 @@ export default {
       type: Object,
       required: true,
     },
+    selectedTranslations: {
+      type: String,
+      required: false,
+      default: "original",
+    },
   },
   data() {
     return {}
@@ -25,7 +30,11 @@ export default {
   mounted() {},
   computed: {
     text() {
-      return this.turn.text
+      if (this.selectedTranslations === "original") {
+        return this.turn.text
+      } else {
+        return this.turn.translations[this.selectedTranslations]
+      }
     },
     speaker() {
       return this.$t("session.detail_page.undefined_speaker") || "Unknown"
@@ -36,7 +45,7 @@ export default {
     time() {
       if (!this.turn.astart) return "00:00:00"
       return new Date(
-        new Date(this.turn.astart).getTime() + this.turn.start * 1000
+        new Date(this.turn.astart).getTime() + this.turn.start * 1000,
       ).toLocaleTimeString()
     },
   },

@@ -43,13 +43,16 @@
         class="flex col medium-padding gap-medium"
         v-if="isStarted || isTerminated"
       > -->
-      <div
-        class="flex col medium-padding gap-medium">
+      <div class="flex col medium-padding gap-medium">
         <SessionChannelsSelector
           v-if="sessionLoaded && selectedChannel"
           :channels="channels"
-          v-model="selectedChannel"
-          class="session-selector"></SessionChannelsSelector>
+          v-model="selectedChannel"></SessionChannelsSelector>
+
+        <SessionTranslationSelection
+          v-if="sessionLoaded && selectedChannel"
+          :selectedChannel="selectedChannel"
+          v-model="selectedTranslations"></SessionTranslationSelection>
 
         <h3>{{ $t("session.detail_page.title_interface_settings") }}</h3>
         <FormCheckbox
@@ -80,6 +83,7 @@
 
       <SessionLiveContent
         v-else
+        :selectedTranslations="selectedTranslations"
         :organizationId="organizationId"
         :fontSize="fontSizeField.value"
         :displaySubtitles="displaySubtitlesField.value"
@@ -101,6 +105,7 @@ import { orgaRoleMixin } from "@/mixins/orgaRole"
 import MainContent from "@/components/MainContent.vue"
 import SessionNotStarted from "@/components/SessionNotStarted.vue"
 import SessionChannelsSelector from "@/components/SessionChannelsSelector.vue"
+import SessionTranslationSelection from "@/components/SessionTranslationSelection.vue"
 import SessionLiveContent from "@/components/SessionLiveContent.vue"
 import Loading from "@/components/Loading.vue"
 import FormInput from "@/components/FormInput.vue"
@@ -115,6 +120,7 @@ export default {
 
     return {
       selectedChannel: null,
+      selectedTranslations: null,
       fontSizeField: {
         ...EMPTY_FIELD,
         value: "40",
@@ -147,6 +153,7 @@ export default {
     sessionLoaded() {
       if (this.sessionLoaded) {
         this.selectedChannel = this.channels[0]
+        this.selectedTranslations = "original"
       }
     },
     "displaySubtitlesField.value"(value) {
@@ -162,7 +169,7 @@ export default {
       history.pushState(
         {},
         "",
-        `${this.$route.path}?subtitles=${this.displaySubtitlesField.value}&liveTranscription=${this.displayLiveTranscriptionField.value}`
+        `${this.$route.path}?subtitles=${this.displaySubtitlesField.value}&liveTranscription=${this.displayLiveTranscriptionField.value}`,
       )
     },
   },
@@ -171,6 +178,7 @@ export default {
     MainContent,
     SessionNotStarted,
     SessionChannelsSelector,
+    SessionTranslationSelection,
     SessionLiveContent,
     Loading,
     FormInput,

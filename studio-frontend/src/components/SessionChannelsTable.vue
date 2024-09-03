@@ -49,6 +49,15 @@
           :label="$t('session.channels_list.labels.language')"
           :sortListKey="sortListKey"
           :sortListDirection="sortListDirection" />
+
+        <ArrayHeader
+          @list_sort_by="sortBy"
+          eventLabel="translations"
+          :label="$t('session.channels_list.labels.translations')"
+          :sortListKey="sortListKey"
+          :sortListDirection="sortListDirection" />
+
+        <!-- remove button -->
         <th v-if="from === 'formCreateSession'"></th>
       </tr>
     </thead>

@@ -6,6 +6,7 @@
       class="modal flex col"
       :class="{
         'modal--small': small,
+        'modal--large': large,
         'modal--full-height': fullHeight,
         [customModalClass]: true,
       }"
@@ -38,6 +39,7 @@ export default {
     actionBtnLabel: { type: String, required: true },
     cancelButton: { type: Boolean, default: true },
     small: { type: Boolean, default: false },
+    large: { type: Boolean, default: false },
     fullHeight: { type: Boolean, default: false },
     customClassButton: { type: Object, default: () => ({}) },
     noApply: { type: Boolean, default: false },

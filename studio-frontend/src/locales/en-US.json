@@ -640,7 +640,8 @@
         "profile_name": "Profile name",
         "stream_status": "Stream status",
         "transcriber_status": "Transcriber status",
-        "type": "Type"
+        "type": "Type",
+        "translations": "Translations"
       },
       "modal_add": {
         "loading_profiles": "Loading transcriptions profiles...",
@@ -703,6 +704,10 @@
     "live_page": {
       "channel_selector": {
         "label": "Choose a channel"
+      },
+      "translation_selector": {
+        "label": "Choose a translation",
+        "original_language": "Original language"
       }
     },
     "profile_selector": {
@@ -711,10 +716,12 @@
         "languages": "Languages",
         "name": "Name",
         "selected": "Selected",
-        "type": "Type"
+        "type": "Type",
+        "translations": "Translations"
       },
       "title": "Selection of transcription profiles"
     },
+
     "settings_page": {
       "autoStart_label": "Automatic session start",
       "channels_list_title": "Channels",

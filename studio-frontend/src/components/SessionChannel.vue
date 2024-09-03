@@ -8,18 +8,20 @@
         v-if="displayLiveTranscription"
         v-for="turn in previousTurns"
         :key="turn.id"
+        :selectedTranslations="selectedTranslations"
         :turn="turn"></SessionChannelTurn>
 
       <SessionChannelTurn
         v-if="displayLiveTranscription"
         v-for="turn in turns"
         :key="turn.id"
+        :selectedTranslations="selectedTranslations"
         :turn="turn"></SessionChannelTurn>
 
-      
       <SessionChannelTurnPartial
         v-if="displayLiveTranscription && partialText !== ''"
         ref="partial"
+        :selectedTranslations="selectedTranslations"
         :partialObject="partialObject"
         :partialText="partialText"></SessionChannelTurnPartial>
 
@@ -34,9 +36,12 @@
     </div>
 
     <!-- Subtitles -->
-    <SessionSubtitle v-if="displaySubtitles" class="session-content__subtitle" :partialText="partialText" :finalText="finalText"/>
-    
-    
+    <SessionSubtitle
+      v-if="displaySubtitles"
+      class="session-content__subtitle"
+      :partialText="partialText"
+      :finalText="finalText" />
+
     <!-- <div
       class="session-content__subtitle"
       :style="style"
@@ -107,6 +112,11 @@ export default {
       type: Boolean,
       default: false,
     },
+    selectedTranslations: {
+      type: String,
+      required: false,
+      default: "original",
+    },
   },
   data() {
     console.log("channel", this.channel)
@@ -164,7 +174,7 @@ export default {
         this.sessionId,
         this.channelIndex,
         this.onPartial.bind(this),
-        this.onFinal.bind(this)
+        this.onFinal.bind(this),
       )
       this.scrollToBottom()
     },
@@ -182,7 +192,7 @@ export default {
       if (!sessionRequest || sessionRequest.status === "error") {
         sessionRequest = await apiGetPublicSessionChannel(
           this.sessionId,
-          this.channel.transcriber_id
+          this.channel.transcriber_id,
         )
       }
 
@@ -194,7 +204,7 @@ export default {
         this.previousTurns = []
       } else {
         const channel = allChannels.find(
-          (channel) => channel.index === this.channelIndex
+          (channel) => channel.index === this.channelIndex,
         )
         this.previousTurns = channel?.closedCaptions || []
       }

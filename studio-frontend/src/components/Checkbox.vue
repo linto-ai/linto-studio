@@ -20,7 +20,7 @@ export default {
     value: { type: [Boolean, Array], default: false },
     id: { type: String, default: "" },
     name: { type: String, default: "" },
-    checkboxValue: { type: String, default: null },
+    checkboxValue: { type: [String, Object, Number], default: null },
     disabled: { type: Boolean, default: false },
   },
   data() {
