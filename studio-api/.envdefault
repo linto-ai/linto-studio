@@ -60,7 +60,7 @@ EXPORT_TEMPLATE=default
 
 
 # Bellow are the settings require for the session service
-SESSION_API_HOST=
+SESSION_API_ENDPOINT=
 
 BROKER_HOST=localhost
 BROKER_PORT=1883

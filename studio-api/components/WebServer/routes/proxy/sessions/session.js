@@ -10,7 +10,7 @@ const { storeProxyResponse } = require(
 module.exports = (webServer) => {
   return {
     basePath: "/api",
-    proxyHost: process.env.SESSION_API_HOST,
+    proxyHost: process.env.SESSION_API_ENDPOINT,
     proxyPaths: [
       /*************************/
       /***** healthcheck *******/
