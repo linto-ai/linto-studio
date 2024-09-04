@@ -51,7 +51,6 @@ class OrganizationModel extends MongoModel {
     }
   }
 
-  // get a user by id
   async getById(id) {
     try {
       const query = {

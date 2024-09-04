@@ -65,6 +65,8 @@ const loadMiddlewares = (route) => {
     middlewares.push(organization_middlewares.asAdminAccess)
   if (route.requireOrganizationMaintainerAccess)
     middlewares.push(organization_middlewares.asMaintainerAccess)
+  if (route.requireOrganizationMeetingManagerAccess)
+    middlewares.push(organization_middlewares.asMeetingManagerAccess)
   if (route.requireOrganizationUploaderAccess)
     middlewares.push(organization_middlewares.asUploaderAccess)
   if (route.requireOrganizationMemberAccess)

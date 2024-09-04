@@ -8,6 +8,9 @@ const randomstring = require("randomstring")
 const VALIDITY_DATE = require(
   `${process.cwd()}/lib/dao/validityDate/validityDate.js`,
 )
+
+const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
+
 const public_projection = {
   email: 1,
   firstname: 1,
@@ -21,6 +24,7 @@ const personal_projection = {
   passwordHash: 0,
   keyToken: 0,
   authLink: 0,
+  role: 0,
 }
 
 class UsersModel extends MongoModel {
@@ -58,6 +62,7 @@ class UsersModel extends MongoModel {
             add: true,
           },
         },
+        role: ROLE.USER,
       }
 
       if (process.env.SMTP_HOST === "") {

@@ -74,7 +74,7 @@ module.exports = (webServer) => {
         requireOrganizationMemberAccess: true,
       },
       {
-        // maintener access
+        // Meeting Manager access
         scrapPath: /^\/organizations\/[^/]+/,
         paths: [
           {
@@ -94,10 +94,10 @@ module.exports = (webServer) => {
           },
         ],
         requireAuth: true,
-        requireOrganizationMaintainerAccess: true,
+        requireOrganizationMeetingManagerAccess: true,
       },
       {
-        // admin access
+        // Meeting Manager access
         scrapPath: /^\/organizations\/[^/]+/,
         paths: [
           {
@@ -117,7 +117,7 @@ module.exports = (webServer) => {
           },
         ],
         requireAuth: true,
-        requireOrganizationAdminAccess: true,
+        requireOrganizationMeetingManagerAccess: true,
       },
     ],
   }

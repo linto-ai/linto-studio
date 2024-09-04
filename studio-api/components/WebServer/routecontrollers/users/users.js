@@ -70,10 +70,15 @@ async function createUser(req, res, next) {
       throw new UserError()
     }
 
+    let myCreatedUser = await model.users.getById(
+      createdUser.insertedId.toString(),
+      true,
+    )
+
     const mail_result = await Mailing.accountCreate(
       user.email,
       req,
-      createdUser.ops[0].authLink.magicId,
+      myCreatedUser[0].authLink.magicId,
     )
     if (!mail_result) throw new NodemailerError()
 
@@ -275,12 +280,9 @@ async function recoveryAuth(req, res, next) {
       if (!mail_result)
         res.status(400).send({ message: "Error while sending email" })
       else
-        res
-          .status(200)
-          .send({
-            message:
-              "An email with an authentication link has been sent to you.",
-          })
+        res.status(200).send({
+          message: "An email with an authentication link has been sent to you.",
+        })
     }
   } catch (error) {
     next(error)
