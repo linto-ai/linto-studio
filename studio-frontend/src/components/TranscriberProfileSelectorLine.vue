@@ -1,5 +1,5 @@
 <template>
-  <tr @click="selectProfile">
+  <tr @click="onClickLine">
     <td class="content-size">
       <Checkbox :checkboxValue="id_profile" v-model="selectedProfiles" />
       <!-- <input type="checkbox" :value="profile" v-model="selectedProfiles" /> -->
@@ -61,6 +61,7 @@ export default {
   watch: {
     selectedTranslations: {
       handler(value) {
+        this.selectProfile()
         this.profile.translations = value // it uses shallow copy so profile from parent is updated (it's an optimisation feature instead of emiting update event...)
       },
       deep: true,
@@ -113,8 +114,39 @@ export default {
     },
   },
   methods: {
-    selectProfile() {
+    // selectProfile(e) {
+    //   if (e && e.target.classList.contains("no-propagation")) return
+    //   // do same as checkbox
+    //   this.selectedProfiles = this.selectedProfiles.includes(this.id_profile)
+    //     ? this.selectedProfiles.filter(
+    //         (profile_id) => profile_id !== this.id_profile,
+    //       )
+    //     : [...this.selectedProfiles, this.id_profile]
+    // },
+
+    selectProfile(e) {
+      if (e && e.target.classList.contains("no-propagation")) return
       // do same as checkbox
+      if (this.selectedProfiles.includes(this.id_profile)) {
+        return
+      }
+
+      this.selectedProfiles = [...this.selectedProfiles, this.id_profile]
+    },
+    unSelectProfile(e) {
+      if (e && e.target.classList.contains("no-propagation")) return
+      // do same as checkbox
+      if (!this.selectedProfiles.includes(this.id_profile)) {
+        return
+      }
+
+      this.selectedProfiles = this.selectedProfiles.filter(
+        (profile_id) => profile_id !== this.id_profile,
+      )
+    },
+    onClickLine(e) {
+      if (e && e.target.classList.contains("no-propagation")) return
+
       this.selectedProfiles = this.selectedProfiles.includes(this.id_profile)
         ? this.selectedProfiles.filter(
             (profile_id) => profile_id !== this.id_profile,

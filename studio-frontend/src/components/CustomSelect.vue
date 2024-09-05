@@ -9,7 +9,7 @@
     role="menu">
     <button
       @click="toggleMenu"
-      class="select__head flex row"
+      class="select__head flex row no-propagation"
       :class="buttonClass"
       aria-haspopup="true"
       :disabled="disabled"
@@ -181,7 +181,7 @@ export default {
     },
     toggleMenu(e) {
       e.preventDefault()
-      e.stopPropagation()
+      //e.stopPropagation()
       if (this.disabled) return
       this.showList = !this.showList
     },

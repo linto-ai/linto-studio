@@ -1,5 +1,6 @@
 <template>
-  <div class="flex col flex1 reset-overflows">
+  <Loading v-if="loading" />
+  <div class="flex col flex1 reset-overflows" v-else>
     <div
       v-if="hasText"
       class="flex col flex1 session-content__turns reset-overflows"
@@ -39,8 +40,10 @@
     <SessionSubtitle
       v-if="displaySubtitles"
       class="session-content__subtitle"
+      :previousTurns="previousTurns"
       :partialText="partialText"
-      :finalText="finalText" />
+      :finalText="finalText"
+      :selectedTranslations="selectedTranslations" />
 
     <!-- <div
       class="session-content__subtitle"
@@ -78,6 +81,10 @@ import SessionChannelTurn from "@/components/SessionChannelTurn.vue"
 import SessionChannelTurnPartial from "@/components/SessionChannelTurnPartial.vue"
 import Svglogo from "@/svg/Microphone.vue"
 import SessionSubtitle from "@/components/SessionSubtitle.vue"
+import Loading from "@/components/Loading.vue"
+
+import getTextTurnWithTranslation from "@/tools/getTextTurnWithTranslation.js"
+
 export default {
   props: {
     channel: {
@@ -119,18 +126,19 @@ export default {
     },
   },
   data() {
-    console.log("channel", this.channel)
     return {
       turns: [],
       previousTurns: [],
       partialText: "",
       partialObject: {},
       finalText: "",
+      finalObject: {},
+      loading: true,
     }
   },
   mounted() {
     this.previousTurns = this.channel?.closedCaptions || []
-    console.log("previousTurns", this.previousTurns)
+    this.loading = false
     this.init()
   },
   computed: {
@@ -156,9 +164,12 @@ export default {
   },
   watch: {
     channel: {
-      handler() {
+      async handler() {
+        this.loading = true
         this.init()
-        this.loadPreviousTranscrition()
+        await this.loadPreviousTranscrition()
+        this.loading = false
+        this.scrollToBottom()
       },
       deep: true,
     },
@@ -210,13 +221,20 @@ export default {
       }
     },
     onPartial(content) {
-      this.partialText = content.text ?? ""
+      this.partialText = getTextTurnWithTranslation(
+        content,
+        this.selectedTranslations,
+      )
       this.partialObject = content
       this.scrollToBottom()
     },
     onFinal(content) {
       this.partialText = ""
-      this.finalText = content.text
+      this.finalText = getTextTurnWithTranslation(
+        content,
+        this.selectedTranslations,
+      )
+      this.finalObject = content
       this.turns.push(content)
       this.scrollToBottom()
     },
@@ -225,7 +243,11 @@ export default {
       if (!this.hasText) return
       if (!this.isBottom && !force) return
 
-      this.$nextTick().then(() => this.$refs.bottom.scrollIntoView())
+      this.$nextTick().then(() => {
+        if (this.$refs.bottom) {
+          this.$refs.bottom.scrollIntoView({ behavior: "smooth" })
+        }
+      })
     },
   },
   components: {
@@ -234,6 +256,7 @@ export default {
     SessionChannelTurnPartial,
     Svglogo,
     SessionSubtitle,
+    Loading,
   },
 }
 </script>
