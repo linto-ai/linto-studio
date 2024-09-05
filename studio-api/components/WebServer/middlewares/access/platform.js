@@ -5,7 +5,15 @@ const debug = require("debug")(
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
 
+const { UserForbidden, UserNotFound } = require(
+  `${process.cwd()}/components/WebServer/error/exception/users`,
+)
+
 module.exports = {
+  isPlatformAdmin: async (req, res, next) => {
+    if (await checkAccess(req, ROLE.SUPER_ADMINISTRATOR)) next()
+    else next(new UserForbidden())
+  },
   isSuperAdmin: (req) => checkAccess(req, ROLE.SUPER_ADMINISTRATOR),
   isSystemAdministrator: (req) => checkAccess(req, ROLE.SYSTEM_ADMINISTRATOR),
   isSessionOperator: (req) => checkAccess(req, ROLE.SESSION_OPERATOR),

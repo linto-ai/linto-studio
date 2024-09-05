@@ -14,6 +14,10 @@ const user_middlewares = require(
   `${process.cwd()}/components/WebServer/middlewares/access/user.js`,
 )
 
+const platform_middlewares = require(
+  `${process.cwd()}/components/WebServer/middlewares/access/platform.js`,
+)
+
 const {
   createProxyMiddleware,
   fixRequestBody,
@@ -49,6 +53,9 @@ const loadMiddlewares = (route) => {
 
   if (route.requireAuth) middlewares.push(auth_middlewares.isAuthenticate)
   if (route.requireRefresh) middlewares.push(auth_middlewares.refresh_token)
+
+  if (route.requireSuperAdmin)
+    middlewares.push(platform_middlewares.isPlatformAdmin)
 
   if (route.requireConversationReadAccess)
     middlewares.push(conversation_middlewares.asReadAccess)
