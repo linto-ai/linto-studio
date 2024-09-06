@@ -1,4 +1,4 @@
-const debug = require("debug")("conversation-manager:interface:*")
+const debug = require("debug")("linto:conversation-manager:interface:*")
 const middlewares = require(
   `${process.cwd()}/components/WebServer/middlewares/index.js`,
 )

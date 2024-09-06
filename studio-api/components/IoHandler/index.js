@@ -1,4 +1,4 @@
-const debug = require("debug")("delivery:socketio")
+const debug = require("debug")("linto:components:socketio")
 const path = require("path")
 const { Component } = require("live-srt-lib")
 const socketIO = require("socket.io")

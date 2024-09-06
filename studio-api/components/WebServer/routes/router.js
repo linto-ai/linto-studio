@@ -209,7 +209,6 @@ const createProxyRoutes = (webServer, proxy_routes) => {
               })
             },
             onError: (err, req, res) => {
-              console.log("onError")
               debug("Proxy error:", err)
               res
                 .status(500)

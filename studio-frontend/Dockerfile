@@ -14,6 +14,10 @@ COPY ./config/nginx/nginx.conf /etc/nginx/nginx.conf
 
 COPY ./docker-entrypoint.sh /
 
+RUN chown -R node:node /usr/src/app /usr/share/nginx/html /var/lib/nginx /var/log/nginx && \
+  touch /run/nginx.pid && chown -R node:node /run/nginx.pid
+USER node
+
 HEALTHCHECK CMD curl -f http://localhost
 
 EXPOSE 80

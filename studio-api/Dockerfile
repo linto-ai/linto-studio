@@ -31,6 +31,11 @@ RUN npm install
 RUN chmod 0644 config/cron/backup-cron && \
   crontab config/cron/backup-cron
 
+RUN service cron start
+
+RUN chown -R node:node /usr/src/app/
+USER node
+
 HEALTHCHECK CMD curl -f http://localhost || exit 1
 EXPOSE 80
 
