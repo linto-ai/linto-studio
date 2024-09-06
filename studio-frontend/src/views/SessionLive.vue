@@ -162,6 +162,9 @@ export default {
     "displayLiveTranscriptionField.value"(value) {
       this.updateUrl()
     },
+    selectedChannel() {
+      this.selectedTranslations = "original"
+    },
   },
   methods: {
     updateUrl() {

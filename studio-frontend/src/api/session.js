@@ -27,7 +27,7 @@ export async function apiCreateSession(organizationScope, data, notif) {
 
 export async function apiGetActiveSessions(organizationScope, notif) {
   const getStartedSessions = await sendRequest(
-    `${BASE_API}/organizations/${organizationScope}/sessions?statusList=active`,
+    `${BASE_API}/organizations/${organizationScope}/sessions?statusList=active&organizationId=${organizationScope}`,
     { method: "get" },
     {},
     notif,
@@ -41,7 +41,7 @@ export async function apiGetActiveSessions(organizationScope, notif) {
 
 export async function apiGetFutureSessions(organizationScope, notif) {
   const getStartedSessions = await sendRequest(
-    `${BASE_API}/organizations/${organizationScope}/sessions?status=ready`,
+    `${BASE_API}/organizations/${organizationScope}/sessions?status=ready&organizationId=${organizationScope}`,
     { method: "get" },
     {},
     notif,
