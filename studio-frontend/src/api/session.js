@@ -8,7 +8,7 @@ export async function apiGetTranscriberProfiles(notif) {
     `${BASE_API}/transcriber_profiles`,
     { method: "get" },
     {},
-    notif
+    notif,
   )
 
   return getTranscriberProfiles?.data ?? []
@@ -19,18 +19,18 @@ export async function apiCreateSession(organizationScope, data, notif) {
     `${BASE_API}/organizations/${organizationScope}/sessions`,
     { method: "post" },
     data,
-    notif
+    notif,
   )
 
   return createSession
 }
 
-export async function apiGetStartedSessions(organizationScope, notif) {
+export async function apiGetActiveSessions(organizationScope, notif) {
   const getStartedSessions = await sendRequest(
-    `${BASE_API}/organizations/${organizationScope}/sessions?status=active`,
+    `${BASE_API}/organizations/${organizationScope}/sessions?statusList=active&organizationId=${organizationScope}`,
     { method: "get" },
     {},
-    notif
+    notif,
   )
 
   if (getStartedSessions.status === "error") {
@@ -41,10 +41,10 @@ export async function apiGetStartedSessions(organizationScope, notif) {
 
 export async function apiGetFutureSessions(organizationScope, notif) {
   const getStartedSessions = await sendRequest(
-    `${BASE_API}/organizations/${organizationScope}/sessions?status=ready`,
+    `${BASE_API}/organizations/${organizationScope}/sessions?status=ready&organizationId=${organizationScope}`,
     { method: "get" },
     {},
-    notif
+    notif,
   )
 
   if (getStartedSessions.status === "error") {
@@ -58,7 +58,7 @@ export async function apiGetSession(organizationScope, sessionId, notif) {
     `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}`,
     { method: "get" },
     {},
-    notif
+    notif,
   )
 
   return getSession
@@ -69,7 +69,7 @@ export async function apiGetPublicSession(sessionId, notif) {
     `${BASE_API}/sessions/${sessionId}/public`,
     { method: "get" },
     {},
-    notif
+    notif,
   )
 
   return getSession
@@ -80,7 +80,7 @@ export async function apiStartSession(organizationScope, sessionId, notif) {
     `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}/start`,
     { method: "put" },
     {},
-    notif
+    notif,
   )
 
   return startSession
@@ -91,7 +91,7 @@ export async function apiStopSession(organizationScope, sessionId, notif) {
     `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}/stop`,
     { method: "put" },
     {},
-    notif
+    notif,
   )
 
   return stopSession
@@ -102,7 +102,7 @@ export async function apiDeleteSession(organizationScope, sessionId, notif) {
     `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}`,
     { method: "delete" },
     {},
-    notif
+    notif,
   )
 
   return deleteSession
@@ -111,14 +111,14 @@ export async function apiDeleteSession(organizationScope, sessionId, notif) {
 export async function apiGetSessionChannel(
   organizationScope,
   sessionId,
-  transcriberId,
-  notif
+  channelIndex,
+  notif,
 ) {
   const getSessionChannel = await sendRequest(
     `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}`,
     { method: "get" },
-    { transcriber_id: transcriberId },
-    notif
+    { channel_index: channelIndex },
+    notif,
   )
 
   return getSessionChannel
@@ -127,13 +127,13 @@ export async function apiGetSessionChannel(
 export async function apiGetPublicSessionChannel(
   sessionId,
   transcriberId,
-  notif
+  notif,
 ) {
   const getSessionChannel = await sendRequest(
     `${BASE_API}/sessions/${sessionId}/public`,
     { method: "get" },
     { transcriber_id: transcriberId },
-    notif
+    notif,
   )
 
   return getSessionChannel

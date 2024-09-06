@@ -12,13 +12,25 @@
       {{ profileName }}
     </td>
     <td v-if="from === 'sessionSettings'">
-      <pre>{{ endpoint }}</pre>
+      <SessionChannelsEndpoints :endpoints="endpoints" />
     </td>
     <td v-if="from === 'sessionSettings'">
-      <pre>{{ stream_status }}</pre>
+      <pre>{{ streamStatus }}</pre>
     </td>
-    <td v-if="from === 'sessionSettings'">{{ transcriber_status }}</td>
+    <!-- <td v-if="from === 'sessionSettings'">{{ transcriberStatus }}</td> -->
     <td>{{ languages }}</td>
+
+    <!-- Translations -->
+    <td v-if="from === 'formCreateSession'">
+      <CustomSelect
+        multipleSelection
+        v-model="selectedTranslations"
+        :options="translationsOptions" />
+    </td>
+    <td v-else>
+      {{ translations }}
+    </td>
+
     <td class="content-size" v-if="from === 'formCreateSession'">
       <button class="btn red-border" @click="removeChannel" type="button">
         <span class="icon remove"></span>
@@ -33,6 +45,10 @@ import { bus } from "../main.js"
 import ArrayHeader from "./ArrayHeader.vue"
 import FormInput from "./FormInput.vue"
 import EMPTY_FIELD from "../const/emptyField"
+import CustomSelect from "./CustomSelect.vue"
+
+import SessionChannelsEndpoints from "./SessionChannelsEndpoints.vue"
+
 export default {
   props: {
     item: {
@@ -49,6 +65,14 @@ export default {
       nameField: {
         ...EMPTY_FIELD,
         value: this.item.name || "",
+      },
+      selectedTranslations: this.item.translations || [],
+      translationsOptions: {
+        channels: [
+          { value: "fr", text: "FR" },
+          { value: "en", text: "EN" },
+          { value: "it", text: "IT" },
+        ],
       },
     }
   },
@@ -68,22 +92,32 @@ export default {
       return this.item.profileName || ""
     },
     languages() {
-      const langs_str = this.item.languages || []
-      return langs_str.join(", ")
+      const langs_array = this.item.languages || []
+      return langs_array.join(", ")
     },
-    endpoint() {
-      return this.item.stream_endpoint || ""
+    translations() {
+      const translations_array = this.item.translations || []
+      return translations_array.join(", ")
     },
-    stream_status() {
-      return this.item.stream_status || ""
+    // endpoint() {
+    //   return this.item.stream_endpoint || ""
+    // },
+    endpoints() {
+      return this.item.streamEndpoints || {}
     },
-    transcriber_status() {
-      return this.item.transcriber_status || ""
+    streamStatus() {
+      return this.item.streamStatus || ""
+    },
+    transcriberStatus() {
+      return this.item.transcriberStatus || ""
     },
   },
   watch: {
     "nameField.value"(value) {
       this.$emit("updateName", value)
+    },
+    selectedTranslations(value) {
+      this.item.translations = value // shallow copy, parent will be updated
     },
   },
   mounted() {},
@@ -92,6 +126,12 @@ export default {
       this.$emit("removeChannel")
     },
   },
-  components: { Fragment, ArrayHeader, FormInput },
+  components: {
+    Fragment,
+    ArrayHeader,
+    FormInput,
+    SessionChannelsEndpoints,
+    CustomSelect,
+  },
 }
 </script>

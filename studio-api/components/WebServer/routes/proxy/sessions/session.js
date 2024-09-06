@@ -3,10 +3,14 @@ const proxyForwardParams = [
   { "body.organizationId": "params.organizationId" },
 ]
 
+const { storeProxyResponse } = require(
+  `${process.cwd()}/components/WebServer/controllers/session/conversation.js`,
+)
+
 module.exports = (webServer) => {
   return {
     basePath: "/api",
-    proxyHost: process.env.SESSION_API_HOST,
+    proxyHost: process.env.SESSION_API_ENDPOINT,
     proxyPaths: [
       /*************************/
       /***** healthcheck *******/
@@ -64,11 +68,6 @@ module.exports = (webServer) => {
             method: ["get"],
             forwardParams: proxyForwardParams,
           },
-          {
-            path: "/organizations/:organizationId/sessions/active",
-            method: ["get"],
-            forwardParams: proxyForwardParams,
-          },
         ],
         requireAuth: true,
         requireOrganizationMemberAccess: true,
@@ -78,19 +77,10 @@ module.exports = (webServer) => {
         scrapPath: /^\/organizations\/[^/]+/,
         paths: [
           {
-            path: "/organizations/:organizationId/sessions/:id/start",
-            method: ["put"],
-            forwardParams: proxyForwardParams,
-          },
-          {
             path: "/organizations/:organizationId/sessions/:id/stop",
             method: ["put"],
             forwardParams: proxyForwardParams,
-          },
-          {
-            path: "/organizations/:organizationId/sessions/terminated",
-            method: ["get"],
-            forwardParams: proxyForwardParams,
+            executeAfterResult: [storeProxyResponse],
           },
         ],
         requireAuth: true,

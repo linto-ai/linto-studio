@@ -634,13 +634,14 @@
       "add": "Add channels",
       "empty": "No channels linked to the session",
       "labels": {
-        "endpoint": "Endpoint",
+        "endpoint": "Endpoints",
         "language": "Languages",
         "name": "Name",
         "profile_name": "Profile name",
         "stream_status": "Stream status",
         "transcriber_status": "Transcriber status",
-        "type": "Type"
+        "type": "Type",
+        "translations": "Translations"
       },
       "modal_add": {
         "loading_profiles": "Loading transcriptions profiles...",
@@ -648,7 +649,8 @@
         "title": "Add channels"
       },
       "remove": "Remove",
-      "title": "Channels linked to the session"
+      "title": "Channels linked to the session",
+      "multiple_endpoint": "1 endpoint | {count} endpoints"
     },
     "create_page": {
       "error_message": "An error occurred while creating the session",
@@ -695,12 +697,17 @@
       "tabs": {
         "ongoing_sessions": "Ongoing sessions",
         "past_sessions": "Past sessions",
-        "scheduled_sessions": "Scheduled sessions"
+        "scheduled_sessions": "Scheduled sessions",
+        "all_sessions": "All sessions"
       }
     },
     "live_page": {
       "channel_selector": {
         "label": "Choose a channel"
+      },
+      "translation_selector": {
+        "label": "Choose a translation",
+        "original_language": "Original language"
       }
     },
     "profile_selector": {
@@ -709,10 +716,12 @@
         "languages": "Languages",
         "name": "Name",
         "selected": "Selected",
-        "type": "Type"
+        "type": "Type",
+        "translations": "Translations"
       },
       "title": "Selection of transcription profiles"
     },
+
     "settings_page": {
       "autoStart_label": "Automatic session start",
       "channels_list_title": "Channels",

@@ -33,7 +33,7 @@ module.exports = (webServer) => {
   }
 
   let proxy_routes = []
-  if (process.env.ENABLE_SESSION_API === "true") {
+  if (process.env.SESSION_API_ENDPOINT !== "") {
     proxy_routes.push(require("./proxy/sessions/session.js")(webServer))
   }
 

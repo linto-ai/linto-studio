@@ -11,6 +11,10 @@
   font-family: $mainFont;
 }
 
+.context-menu.fit-content {
+  width: auto;
+}
+
 .context-menu__speaker {
   position: absolute !important;
   //top: 1.3rem !important;

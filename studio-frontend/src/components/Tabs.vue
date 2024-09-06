@@ -18,11 +18,16 @@
         <span class="icon" :class="tab.icon" v-if="tab.icon"></span>
         <img :src="tab.img" v-else-if="tab.img" class="icon" />
         <span class="tab__label">{{ tab.label }}</span>
+        <Badge v-if="tab.badge" :inverted="value == tab.name">{{
+          tab.badge
+        }}</Badge>
       </div>
     </div>
   </div>
 </template>
 <script>
+import Badge from "@/components/Badge.vue"
+
 export default {
   props: {
     tabs: { type: Array, required: true }, // array of tab objects { name: 'inbox', label: 'Inbox', icon: 'box', ?id, ?aria-control }
@@ -36,5 +41,8 @@ export default {
   watch: {},
   computed: {},
   methods: {},
+  components: {
+    Badge,
+  },
 }
 </script>

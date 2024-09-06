@@ -3,8 +3,15 @@ import { diffArrays } from "diff"
 export default function splitPartialSubtitles(
   { previousText, previousIndexes: oldCutPositions },
   newText,
-  computeIfTextIsTooLong
+  computeIfTextIsTooLong,
 ) {
+  if (!newText) {
+    return {
+      previousText,
+      previousIndexes: oldCutPositions,
+    }
+  }
+
   const previousTextSplitBySpace = previousText.split(" ")
 
   const newTextSplitBySpace = newText.split(" ")
@@ -20,7 +27,7 @@ export default function splitPartialSubtitles(
       newCutPositions = incrementIndexes(
         newCutPositions,
         indexInNewText,
-        -diff.count
+        -diff.count,
       )
 
       numberOfRemove += diff.count
@@ -28,7 +35,7 @@ export default function splitPartialSubtitles(
       newCutPositions = incrementIndexes(
         newCutPositions,
         indexInNewText - numberOfRemove,
-        diff.count
+        diff.count,
       )
       indexInNewText += diff.count
     } else {
@@ -46,7 +53,7 @@ export default function splitPartialSubtitles(
       .join(" ")
     const cutPositionsForLastLine = getIndexesWhereToCutText(
       realLastLine,
-      computeIfTextIsTooLong
+      computeIfTextIsTooLong,
     )
     newCutPositions.push(realLastLinePosition)
     newCutPositions = newCutPositions.concat(cutPositionsForLastLine)
@@ -79,11 +86,11 @@ export function getIndexesWhereToCutText(text, computeIfTextIsTooLong) {
       incrementIndexes(
         getIndexesWhereToCutText(
           splitText.slice(i - 1).join(" "),
-          computeIfTextIsTooLong
+          computeIfTextIsTooLong,
         ),
         0,
-        i - 1
-      )
+        i - 1,
+      ),
     )
   }
 }

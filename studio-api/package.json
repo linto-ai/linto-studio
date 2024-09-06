@@ -52,6 +52,7 @@
     "libreoffice-convert": "^1.5.1",
     "live-srt-lib": "file:./lib/live-srt-lib",
     "luxon": "^3.4.3",
+    "mqtt": "^4.3.7",
     "moment": "^2.29.1",
     "mongodb": "^6.8.0",
     "music-metadata": "^7.8.1",

@@ -21,6 +21,7 @@ const platform_middlewares = require(
 const {
   createProxyMiddleware,
   fixRequestBody,
+  responseInterceptor,
 } = require("http-proxy-middleware")
 
 const ifHasElse = (condition, ifHas, otherwise) => {
@@ -154,15 +155,44 @@ const createProxyRoutes = (webServer, proxy_routes) => {
         path.method.forEach((method) => {
           const proxy = createProxyMiddleware({
             target: serviceHost,
+            selfHandleResponse: true, // We want to handle the response ourselves
+
             changeOrigin: true,
             on: {
               proxyReq: fixRequestBody,
+              proxyRes: responseInterceptor(
+                async (responseBuffer, proxyRes, req, res) => {
+                  try {
+                    if (path.executeAfterResult) {
+                      let result
+
+                      for (let proxyAfterFunction of path.executeAfterResult) {
+                        const buffer = Buffer.from(responseBuffer, "utf-8")
+                        const jsonString = buffer.toString("utf-8")
+                        result = await proxyAfterFunction(jsonString)
+                      }
+                      return result.toString()
+                    } else {
+                      return responseBuffer
+                    }
+                  } catch (error) {
+                    return responseBuffer
+                  }
+                },
+              ),
             },
             pathRewrite: (path, req) => {
               // Removing the linto-studio path from the request
               let newPath = path.replace(basePath, "")
-              if (proxyPath.scrapPath)
-                return newPath.replace(proxyPath.scrapPath, "")
+              if (proxyPath.scrapPath) {
+                newPath = newPath.replace(proxyPath.scrapPath, "")
+              }
+
+              // Retrieve query parameters from req.query and append them to the new path
+              const queryParams = new URLSearchParams(req.query).toString()
+              if (queryParams) {
+                newPath = `${newPath}?${queryParams}`
+              }
               return newPath
             },
             onProxyReq: (proxyReq, req, res) => {
@@ -225,21 +255,25 @@ function setNestedValue(obj, path, value) {
 
 // Middleware function
 function addProxyParams(req, path) {
-  if (path.forwardParams !== undefined) {
-    path.forwardParams.forEach((param) => {
-      const [targetPath, sourcePath] = Object.entries(param)[0]
-      const sourceValue = getNestedValue(req, sourcePath)
-      if (sourceValue !== undefined) {
-        setNestedValue(req, targetPath, sourceValue)
-      }
-    })
-  }
+  try {
+    if (path.forwardParams !== undefined) {
+      path.forwardParams.forEach((param) => {
+        const [targetPath, sourcePath] = Object.entries(param)[0]
+        const sourceValue = getNestedValue(req, sourcePath)
+        if (sourceValue !== undefined) {
+          setNestedValue(req, targetPath, sourceValue)
+        }
+      })
+    }
 
-  if (path.addParams !== undefined) {
-    path.addParams.forEach((param) => {
-      const [targetPath, value] = Object.entries(param)[0]
-      setNestedValue(req, targetPath, value)
-    })
+    if (path.addParams !== undefined) {
+      path.addParams.forEach((param) => {
+        const [targetPath, value] = Object.entries(param)[0]
+        setNestedValue(req, targetPath, value)
+      })
+    }
+  } catch (err) {
+    debug(err)
   }
 }
 module.exports = (webServer) => new Router(webServer)

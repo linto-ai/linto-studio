@@ -1,12 +1,13 @@
 <template>
   <ModalNew
+    large
     @on-cancel="($event) => this.$emit('on-cancel')"
     @on-confirm="addChannels"
     :title="$t('session.channels_list.modal_add.title')"
     :actionBtnLabel="
       $tc(
         'session.channels_list.modal_add.main_button',
-        selectedProfiles.length
+        selectedProfiles.length,
       )
     ">
     <LoadingComponent
@@ -60,6 +61,7 @@ export default {
           profileName: profile.config.name,
           profileId: profile.id,
           languages: profile.config.languages.map((l) => l.candidate),
+          translations: profile.translations,
         }
       })
       this.$emit("on-confirm", newChannels)

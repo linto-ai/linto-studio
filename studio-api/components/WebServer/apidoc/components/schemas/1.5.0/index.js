@@ -1,6 +1,8 @@
-module.exports = {
-  ...require("./delivery-type.json"),
-  ...require("./session-status.json"),
-  ...require("./sessions.json"),
-  ...require("./transcriber-profiles.json"),
+const config = {}
+
+if (process.env.SESSION_API_ENDPOINT !== "") {
+  Object.assign(config, require("./transcriber-profiles.json"))
+  Object.assign(config, require("./sessions.json"))
 }
+
+module.exports = config

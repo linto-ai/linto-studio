@@ -6,13 +6,4 @@
 .select__list__item {
   background-color: var(--background-primary);
   background-image: none;
-
-  &:hover {
-    background-color: var(--primary-color);
-    color: var(--primary-contrast);
-
-    .icon {
-      background: var(--primary-contrast);
-    }
-  }
 }

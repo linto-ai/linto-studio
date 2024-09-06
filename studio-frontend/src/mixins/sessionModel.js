@@ -16,10 +16,13 @@ export const sessionModelMixin = {
       return this?.session?.end_time ?? this.$t("session.end_undefined")
     },
     isPending() {
-      return this?.session?.status === "ready"
+      // with new api, we don't have pending status anymore. The session autostart when audio are sent, and pause when audio are not sent
+      return false //this?.session?.status === "ready"
     },
     isStarted() {
-      return this?.session?.status === "active"
+      return (
+        this?.session?.status === "active" || this?.session?.status === "ready"
+      )
     },
     isTerminated() {
       return this?.session?.status === "terminated"

@@ -1,5 +1,6 @@
 .select {
   width: 12rem;
+  max-width: 100%;
 }
 
 .select.fullwidth {
@@ -60,14 +61,22 @@
   border-radius: 0px;
   border: none;
 
-  &:hover {
+  &[hovered] {
     background-color: var(--primary-color);
     color: var(--primary-contrast);
 
     .icon {
       background: var(--primary-contrast);
     }
+
+    .custom-checkbox input[type="checkbox"] + label {
+      border-color: var(--primary-contrast);
+    }
   }
+}
+
+.select__list__item__checkbox {
+  margin-right: 0.5rem;
 }
 
 .select__list__section {

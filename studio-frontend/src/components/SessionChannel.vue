@@ -1,5 +1,6 @@
 <template>
-  <div class="flex col flex1 reset-overflows">
+  <Loading v-if="loading" />
+  <div class="flex col flex1 reset-overflows" v-else>
     <div
       v-if="hasText"
       class="flex col flex1 session-content__turns reset-overflows"
@@ -8,17 +9,21 @@
         v-if="displayLiveTranscription"
         v-for="turn in previousTurns"
         :key="turn.id"
+        :selectedTranslations="selectedTranslations"
         :turn="turn"></SessionChannelTurn>
 
       <SessionChannelTurn
         v-if="displayLiveTranscription"
         v-for="turn in turns"
         :key="turn.id"
+        :selectedTranslations="selectedTranslations"
         :turn="turn"></SessionChannelTurn>
 
       <SessionChannelTurnPartial
         v-if="displayLiveTranscription && partialText !== ''"
         ref="partial"
+        :selectedTranslations="selectedTranslations"
+        :partialObject="partialObject"
         :partialText="partialText"></SessionChannelTurnPartial>
 
       <div ref="bottom"></div>
@@ -32,9 +37,14 @@
     </div>
 
     <!-- Subtitles -->
-    <SessionSubtitle v-if="displaySubtitles" class="session-content__subtitle" :partialText="partialText" :finalText="finalText"/>
-    
-    
+    <SessionSubtitle
+      v-if="displaySubtitles"
+      class="session-content__subtitle"
+      :previousTurns="previousTurns"
+      :partialText="partialText"
+      :finalText="finalText"
+      :selectedTranslations="selectedTranslations" />
+
     <!-- <div
       class="session-content__subtitle"
       :style="style"
@@ -71,6 +81,10 @@ import SessionChannelTurn from "@/components/SessionChannelTurn.vue"
 import SessionChannelTurnPartial from "@/components/SessionChannelTurnPartial.vue"
 import Svglogo from "@/svg/Microphone.vue"
 import SessionSubtitle from "@/components/SessionSubtitle.vue"
+import Loading from "@/components/Loading.vue"
+
+import getTextTurnWithTranslation from "@/tools/getTextTurnWithTranslation.js"
+
 export default {
   props: {
     channel: {
@@ -105,22 +119,31 @@ export default {
       type: Boolean,
       default: false,
     },
+    selectedTranslations: {
+      type: String,
+      required: false,
+      default: "original",
+    },
   },
   data() {
     return {
       turns: [],
       previousTurns: [],
       partialText: "",
-      finalText: {text:""},
+      partialObject: {},
+      finalText: "",
+      finalObject: {},
+      loading: true,
     }
   },
   mounted() {
-    this.previousTurns = this.channel?.closed_captions || []
+    this.previousTurns = this.channel?.closedCaptions || []
+    this.loading = false
     this.init()
   },
   computed: {
-    selectedChannelId() {
-      return this.channel?.transcriber_id
+    channelIndex() {
+      return this.channel.index
     },
     lastTwoTurns() {
       return this.turns.slice(-2)
@@ -141,9 +164,12 @@ export default {
   },
   watch: {
     channel: {
-      handler() {
+      async handler() {
+        this.loading = true
         this.init()
-        this.loadPreviousTranscrition()
+        await this.loadPreviousTranscrition()
+        this.loading = false
+        this.scrollToBottom()
       },
       deep: true,
     },
@@ -156,9 +182,10 @@ export default {
       this.partialText = ""
       this.turns = []
       this.sessionWS.subscribe(
-        this.selectedChannelId,
+        this.sessionId,
+        this.channelIndex,
         this.onPartial.bind(this),
-        this.onFinal.bind(this)
+        this.onFinal.bind(this),
       )
       this.scrollToBottom()
     },
@@ -169,27 +196,45 @@ export default {
         sessionRequest = await apiGetSessionChannel(
           this.organizationId,
           this.sessionId,
-          this.channel.transcriber_id
+          this.channelIndex,
         )
       }
 
       if (!sessionRequest || sessionRequest.status === "error") {
         sessionRequest = await apiGetPublicSessionChannel(
           this.sessionId,
-          this.channel.transcriber_id
+          this.channel.transcriber_id,
         )
       }
 
-      const res = sessionRequest?.data?.channels?.[0] ?? {}
-      this.previousTurns = res.closed_captions || []
+      // filter out the channel we are interested in
+
+      const allChannels = sessionRequest?.data?.channels
+
+      if (!allChannels) {
+        this.previousTurns = []
+      } else {
+        const channel = allChannels.find(
+          (channel) => channel.index === this.channelIndex,
+        )
+        this.previousTurns = channel?.closedCaptions || []
+      }
     },
     onPartial(content) {
-      this.partialText = content ?? ""
+      this.partialText = getTextTurnWithTranslation(
+        content,
+        this.selectedTranslations,
+      )
+      this.partialObject = content
       this.scrollToBottom()
     },
     onFinal(content) {
       this.partialText = ""
-      this.finalText = content
+      this.finalText = getTextTurnWithTranslation(
+        content,
+        this.selectedTranslations,
+      )
+      this.finalObject = content
       this.turns.push(content)
       this.scrollToBottom()
     },
@@ -198,7 +243,11 @@ export default {
       if (!this.hasText) return
       if (!this.isBottom && !force) return
 
-      this.$nextTick().then(() => this.$refs.bottom.scrollIntoView())
+      this.$nextTick().then(() => {
+        if (this.$refs.bottom) {
+          this.$refs.bottom.scrollIntoView({ behavior: "smooth" })
+        }
+      })
     },
   },
   components: {
@@ -207,6 +256,7 @@ export default {
     SessionChannelTurnPartial,
     Svglogo,
     SessionSubtitle,
+    Loading,
   },
 }
 </script>

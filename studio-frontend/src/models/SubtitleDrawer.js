@@ -10,7 +10,7 @@ export class SubtitleDrawer {
       font = "Arial",
       paddingInline = 100,
       paddingVertical = 20,
-    } = {}
+    } = {},
   ) {
     this.canvas = canvas
 
@@ -21,22 +21,26 @@ export class SubtitleDrawer {
     this.paddingInline = paddingInline
     this.paddingVertical = 0
 
+    this.isResizing = false
     // set width canvas equal to the width of the parent element
     this.canvas.width = this.canvas.clientWidth
     // set height canvas equal to the height of the parent element
     this.canvas.height = this.canvas.clientHeight
-
     this.resizeObserverContainer = new ResizeObserver(
       function (entries) {
+        this.isResizing = true
         this.canvas.width = this.canvas.clientWidth
         this.canvas.height = this.canvas.clientHeight
-      }.bind(this)
+        //this.draw()
+        this.onResize()
+        this.isResizing = false
+      }.bind(this),
     )
 
     this.resizeObserverContainer.observe(this.canvas)
   }
 
-  reset() {
+  resetDrawing() {
     const ctx = this.canvas.getContext("2d")
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
   }
@@ -46,6 +50,7 @@ export class SubtitleDrawer {
     ctx.font = `${this.fontSize}px ${this.font}`
     ctx.fillStyle = this.color
     ctx.fillText(text, x + this.paddingInline, y)
+    //debugger
   }
 
   // those two methods can be refactored into one methods "drawLine(text, lineNumber)"
@@ -57,44 +62,64 @@ export class SubtitleDrawer {
     this.drawText(
       text,
       0,
-      this.fontSize + this.lineHeight + this.paddingVertical
+      this.fontSize + this.lineHeight + this.paddingVertical,
     )
+  }
+
+  onResize() {
+    return
   }
 }
 
 export class SubtitleScroller extends SubtitleDrawer {
   constructor(
     canvas,
-    { fontSize = 40, lineHeight = 50, color = "white", font = "Arial" } = {}
+    { fontSize = 40, lineHeight = 50, color = "white", font = "Arial" } = {},
   ) {
     super(canvas, { fontSize, lineHeight, color, font })
-
-    this.currentText = ""
-    this.currentLine = 0
 
     this.currentState = { previousText: "", previousIndexes: [] }
     this.previousState = { previousText: "", previousIndexes: [] }
   }
 
+  resetAll() {
+    this.currentState = { previousText: "", previousIndexes: [] }
+    this.previousState = { previousText: "", previousIndexes: [] }
+  }
+
+  onResize() {
+    const currentText = this.currentState.previousText
+    this.resetAll()
+    this.currentState = splitPartialSubtitles(
+      this.currentState,
+      currentText.trim(),
+      this.computeIfTextIsTooLong.bind(this),
+    )
+
+    this.draw()
+  }
+
   newPartial(text) {
+    if (this.isResizing) {
+      return
+    }
+
     const currentText = text
     this.currentState = splitPartialSubtitles(
       this.currentState,
       currentText.trim(),
-      this.computeIfTextIsTooLong.bind(this)
+      this.computeIfTextIsTooLong.bind(this),
     )
-
     this.draw()
   }
 
   resetState() {
     this.previousState = this.currentState
     this.currentState = { previousText: "", previousIndexes: [] }
-    this.currentText = ""
   }
 
   draw() {
-    this.reset()
+    this.resetDrawing()
     let firstLine = ""
     let secondLine = ""
 
@@ -142,11 +167,14 @@ export class SubtitleScroller extends SubtitleDrawer {
   }
 
   newFinal(text) {
-    this.currentText = text
+    if (this.isResizing) {
+      return
+    }
+
     this.currentState = splitPartialSubtitles(
       this.currentState,
-      this.currentText.trim(),
-      this.computeIfTextIsTooLong.bind(this)
+      text.trim(),
+      this.computeIfTextIsTooLong.bind(this),
     )
     this.draw()
     this.resetState()

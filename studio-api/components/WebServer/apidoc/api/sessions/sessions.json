@@ -1,17 +1,31 @@
 {
+  "/api/organizations/{organizationId}/sessions/purge": {
+    "post": {
+      "tags": ["sessions"],
+      "summary": "Purge terminated sessions or all sessions if force is true",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "force",
+          "description": "Force deletion of all sessions",
+          "required": false,
+          "schema": {
+            "type": "boolean"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Sessions purged successfully"
+        }
+      }
+    }
+  },
   "/api/organizations/{organizationId}/sessions": {
     "get": {
       "tags": ["sessions"],
       "summary": "Get all sessions",
       "parameters": [
-        {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
-        },
         {
           "in": "query",
           "name": "limit",
@@ -19,14 +33,6 @@
           "required": false,
           "schema": {
             "type": "integer"
-          }
-        },
-        {
-          "in": "query",
-          "name": "status",
-          "required": false,
-          "schema": {
-            "$ref": "#/components/schemas/SessionStatus"
           }
         },
         {
@@ -45,6 +51,33 @@
           "required": false,
           "schema": {
             "type": "string"
+          }
+        },
+        {
+          "in": "query",
+          "name": "statusList",
+          "description": "Session status to search for. Multiple statuses can be specified, separated by a comma.",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "in": "query",
+          "name": "organizationId",
+          "description": "Search for sessions belonging to this organization.",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "in": "query",
+          "name": "public",
+          "description": "Search for private or public sessions only.",
+          "required": false,
+          "schema": {
+            "type": "boolean"
           }
         }
       ],
@@ -67,16 +100,6 @@
     "post": {
       "tags": ["sessions"],
       "summary": "Create a new session",
-      "parameters": [
-        {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
-        }
-      ],
       "requestBody": {
         "content": {
           "application/json": {
@@ -92,7 +115,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SessionAnswer"
+                "$ref": "#/components/schemas/SessionAnswerWithCaptions"
               }
             }
           }
@@ -105,14 +128,6 @@
       "tags": ["sessions"],
       "summary": "Get a session by ID",
       "parameters": [
-        {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
-        },
         {
           "name": "id",
           "in": "path",
@@ -130,7 +145,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SessionAnswer"
+                "$ref": "#/components/schemas/SessionAnswerWithCaptions"
               }
             }
           }
@@ -153,26 +168,11 @@
             "type": "string",
             "format": "uuid"
           }
-        },
-        {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
         }
       ],
       "responses": {
         "200": {
-          "description": "The session",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SessionAnswer"
-              }
-            }
-          }
+          "description": "Session successfully deleted"
         },
         "404": {
           "$ref": "#/components/responses/NotFound"
@@ -180,43 +180,104 @@
       }
     }
   },
-  "/api/organizations/{organizationId}/sessions/{id}/start": {
-    "put": {
+  "/api/organizations/{organizationId}/sessions/{id}/start-bot": {
+    "post": {
       "tags": ["sessions"],
-      "summary": "Start a session by ID",
+      "summary": "Starts a bot for a specific session",
+      "description": "This endpoint starts a bot for the given session ID with a specified channel index, URL, and bot type. Available bot types are 'jitsi', 'youtube', and 'bigbluebutton'.",
       "parameters": [
-        {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
-        },
         {
           "name": "id",
           "in": "path",
-          "description": "Session ID",
+          "description": "The UUID of the session for which the bot is to be started.",
           "required": true,
           "schema": {
-            "type": "string",
-            "format": "uuid"
+            "type": "string"
           }
         }
       ],
-      "responses": {
-        "200": {
-          "description": "The session",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SessionAnswer"
-              }
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "The URL to start the bot."
+                },
+                "channelIndex": {
+                  "type": "integer",
+                  "description": "The index of the channel."
+                },
+                "botType": {
+                  "type": "string",
+                  "description": "The type of bot to start.",
+                  "enum": ["jitsi", "youtube", "bigbluebutton"]
+                }
+              },
+              "required": ["url", "channelIndex", "botType"]
             }
           }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Bot started successfully."
+        },
+        "400": {
+          "description": "Bad request. sessionId, url, channelIndex, and botType are required."
         },
         "404": {
-          "$ref": "#/components/responses/NotFound"
+          "description": "Session or channel not found."
+        }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/sessions/{id}/stop-bot": {
+    "post": {
+      "tags": ["sessions"],
+      "summary": "Stops a bot for a specific session",
+      "description": "This endpoint stops a bot for the given session ID with a specified channel index.",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "description": "The UUID of the session for which the bot is to be stopped.",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "channelIndex": {
+                  "type": "integer",
+                  "description": "The index of the channel to stop the bot."
+                }
+              },
+              "required": ["channelIndex"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Bot stopped successfully."
+        },
+        "400": {
+          "description": "Bad request. sessionId and channelIndex are required."
+        },
+        "404": {
+          "description": "Session or channel not found."
         }
       }
     }
@@ -227,14 +288,6 @@
       "summary": "Stop a session by ID",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
-        },
-        {
           "name": "id",
           "in": "path",
           "description": "Session ID",
@@ -251,118 +304,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SessionAnswer"
-              }
-            }
-          }
-        },
-        "404": {
-          "$ref": "#/components/responses/NotFound"
-        }
-      }
-    }
-  },
-  "/api/organizations/{organizationId}/sessions/{id}/reset": {
-    "put": {
-      "tags": ["sessions"],
-      "summary": "Reset a session by ID",
-      "parameters": [
-        {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
-        },
-        {
-          "name": "id",
-          "in": "path",
-          "description": "Session ID",
-          "required": true,
-          "schema": {
-            "type": "string",
-            "format": "uuid"
-          }
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "The session",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SessionAnswer"
-              }
-            }
-          }
-        },
-        "404": {
-          "$ref": "#/components/responses/NotFound"
-        }
-      }
-    }
-  },
-  "/api/organizations/{organizationId}/store": {
-    "post": {
-      "tags": ["sessions"],
-      "summary": "Store a finished session",
-      "parameters": [
-        {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
-        }
-      ],
-      "requestBody": {
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/SessionRequest"
-            }
-          }
-        }
-      },
-      "responses": {
-        "200": {
-          "description": "OK",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SessionAnswer"
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "/api/sessions/{id}/public": {
-    "get": {
-      "tags": ["sessions"],
-      "summary": "Get information of a public session by ID",
-      "parameters": [
-        {
-          "name": "id",
-          "in": "path",
-          "description": "Session ID",
-          "required": true,
-          "schema": {
-            "type": "string",
-            "format": "uuid"
-          }
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "The session",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SessionAnswer"
+                "$ref": "#/components/schemas/SessionAnswerWithCaptions"
               }
             }
           }
