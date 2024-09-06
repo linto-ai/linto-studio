@@ -1,9 +1,32 @@
 {
-  "TranscriberProfile": {
+  "TranscriberProfileRequest": {
     "type": "object",
     "properties": {
       "config": {
         "$ref": "#/components/schemas/TranscriberProfileData"
+      }
+    },
+    "required": ["config"]
+  },
+  "TranscriberProfileAnswer": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "integer",
+        "description": "The ID of the transcriber profile"
+      },
+      "config": {
+        "$ref": "#/components/schemas/TranscriberProfileData"
+      },
+      "createdAt": {
+        "type": "string",
+        "format": "date-time",
+        "description": "Creation date of the transcriber profile"
+      },
+      "updatedAt": {
+        "type": "string",
+        "format": "date-time",
+        "description": "Update date of the transcriber profile"
       }
     },
     "required": ["config"]

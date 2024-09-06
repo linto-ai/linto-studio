@@ -4,9 +4,9 @@
     <Loading v-if="loading" />
     <ErrorPage v-else-if="error" :error="error" />
     <div v-else>
-      <div v-if="startedSessions.length > 0" class="flex col gap-medium">
+      <div v-if="sessionList.length > 0" class="flex col gap-medium">
         <SessionListLine
-          v-for="session in startedSessions"
+          v-for="session in sessionList"
           :key="session.id"
           :session="session"></SessionListLine>
       </div>
@@ -29,7 +29,7 @@
 import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
 
-import { apiGetStartedSessions, apiGetFutureSessions } from "@/api/session.js"
+import { apiGetActiveSessions, apiGetFutureSessions } from "@/api/session.js"
 
 import MainContent from "@/components/MainContent.vue"
 import Tabs from "@/components/Tabs.vue"
@@ -47,34 +47,24 @@ export default {
   data() {
     return {
       activeTab: "started",
-      tabs: [
-        {
-          name: "started",
-          label: this.$i18n.t("session.list_page.tabs.ongoing_sessions"),
-          icon: "reload",
-        },
-        {
-          name: "completed",
-          label: this.$i18n.t("session.list_page.tabs.scheduled_sessions"),
-          icon: "clock",
-        },
-      ],
+
       loading: false,
       error: null,
       startedSessions: [],
+      activeSessions: [],
     }
   },
   mounted() {
-    this.fetchStartedSessions()
+    this.fetchActiveSessions()
   },
   methods: {
-    async fetchStartedSessions() {
+    async fetchActiveSessions() {
       this.loading = true
       try {
-        const sessions = await apiGetStartedSessions(
-          this.currentOrganizationScope
+        const sessions = await apiGetActiveSessions(
+          this.currentOrganizationScope,
         )
-        this.startedSessions = sessions.sessions
+        this.activeSessions = sessions.sessions
       } catch (e) {
         console.error(e)
         this.error = e
@@ -86,7 +76,7 @@ export default {
       this.loading = true
       try {
         const sessions = await apiGetFutureSessions(
-          this.currentOrganizationScope
+          this.currentOrganizationScope,
         )
         this.startedSessions = sessions.sessions
       } catch (e) {
@@ -100,9 +90,36 @@ export default {
   watch: {
     activeTab(value) {
       if (value === "started") {
-        this.fetchStartedSessions()
+        this.fetchActiveSessions()
       } else if (value === "completed") {
         this.fetchFutureSessions()
+      }
+    },
+  },
+  computed: {
+    countActiveSessions() {
+      return this.activeSessions.length
+    },
+    tabs() {
+      return [
+        {
+          name: "started",
+          label: this.$i18n.t("session.list_page.tabs.ongoing_sessions"),
+          icon: "reload",
+          badge: this.countActiveSessions,
+        },
+        {
+          name: "completed",
+          label: this.$i18n.t("session.list_page.tabs.all_sessions"),
+          icon: "clock",
+        },
+      ]
+    },
+    sessionList() {
+      if (this.activeTab === "started") {
+        return this.activeSessions
+      } else if (this.activeTab === "completed") {
+        return this.startedSessions
       }
     },
   },

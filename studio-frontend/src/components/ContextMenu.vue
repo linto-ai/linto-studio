@@ -16,6 +16,7 @@ import { Fragment } from "vue-fragment"
 import findParentByClass from "../tools/findParentByClass"
 import { bus } from "../main.js"
 
+// Placement is handmade, it's not perfect. Todo: use a lib like https://floating-ui.com/
 export default {
   props: {
     x: {
@@ -86,7 +87,7 @@ export default {
 
       switch (this.positionMenuVertical) {
         case "top":
-          res["bottom"] = `${this.heightContainer - this.y}px`
+          res["bottom"] = `1rem`
           break
         case "bottom":
           res["top"] = `${this.YpositionBottom}px`
@@ -180,6 +181,7 @@ export default {
       )
       // TODO: see https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API to update current position when scrolling
       if (this.first) {
+        console.log("first", this._topRelativeParent)
         this.contentYTop = this._topRelativeParent.getBoundingClientRect().top
         this.contentYBottom =
           this._topRelativeParent.getBoundingClientRect().bottom

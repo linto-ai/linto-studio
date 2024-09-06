@@ -5,6 +5,7 @@
     </div>
     <SessionChannel
       v-if="isConnected"
+      :selectedTranslations="selectedTranslations"
       :sessionId="session.id"
       :organizationId="organizationId"
       :fontSize="fontSize"
@@ -53,6 +54,11 @@ export default {
     organizationId: {
       type: String,
       required: false,
+    },
+    selectedTranslations: {
+      type: String,
+      required: false,
+      default: "original",
     },
   },
   data() {

@@ -27,7 +27,7 @@
             {{ channelsError }}
           </div>
         </div>
-        <div class="overflow-horizontal-auto">
+        <div class="">
           <SessionChannelsTable
             class="medium-margin-top"
             v-if="channels.length > 0"
@@ -127,9 +127,10 @@ export default {
       if (this.testFields()) {
         const res = await apiCreateSession(this.currentOrganizationScope, {
           name: this.name.value,
-          channels: this.channels.map(({ profileId, name }) => ({
+          channels: this.channels.map(({ profileId, name, translations }) => ({
             transcriberProfileId: profileId,
             name,
+            translations: translations ?? [],
           })),
           public: this.fieldIsPublic.value,
         })

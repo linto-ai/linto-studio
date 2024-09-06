@@ -1,5 +1,7 @@
 <template>
-  <SessionChannelTurn :turn="turn" />
+  <SessionChannelTurn
+    :turn="turn"
+    :selectedTranslations="selectedTranslations" />
 </template>
 <script>
 import { Fragment } from "vue-fragment"
@@ -13,6 +15,15 @@ export default {
       type: String,
       required: true,
     },
+    partialObject: {
+      type: Object,
+      required: true,
+    },
+    selectedTranslations: {
+      type: String,
+      required: false,
+      default: "original",
+    },
   },
   data() {
     return {}
@@ -20,7 +31,7 @@ export default {
   mounted() {},
   computed: {
     turn() {
-      return { text: this.partialText }
+      return this.partialObject
     },
   },
   methods: {},

@@ -12,11 +12,17 @@
 import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
 import { lang } from "moment"
+import getTextTurnWithTranslation from "@/tools/getTextTurnWithTranslation.js"
 export default {
   props: {
     turn: {
       type: Object,
       required: true,
+    },
+    selectedTranslations: {
+      type: String,
+      required: false,
+      default: "original",
     },
   },
   data() {
@@ -25,7 +31,7 @@ export default {
   mounted() {},
   computed: {
     text() {
-      return this.turn.text
+      return getTextTurnWithTranslation(this.turn, this.selectedTranslations)
     },
     speaker() {
       return this.$t("session.detail_page.undefined_speaker") || "Unknown"
@@ -36,7 +42,7 @@ export default {
     time() {
       if (!this.turn.astart) return "00:00:00"
       return new Date(
-        new Date(this.turn.astart).getTime() + this.turn.start * 1000
+        new Date(this.turn.astart).getTime() + this.turn.start * 1000,
       ).toLocaleTimeString()
     },
   },

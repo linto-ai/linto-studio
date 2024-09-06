@@ -34,11 +34,18 @@
             :label="$t('session.profile_selector.labels.languages')"
             :sortListDirection="sortListDirection"
             :sortListKey="sortListKey" />
+          <ArrayHeader
+            @list_sort_by="sortBy"
+            eventLabel="translations"
+            :label="$t('session.profile_selector.labels.translations')"
+            :sortListDirection="sortListDirection"
+            :sortListKey="sortListKey" />
         </tr>
       </thead>
       <tbody>
         <TranscriberProfileSelectorLine
-          v-for="profile in profilesList"
+          v-for="profile in l_profilesList"
+          :profilesList="l_profilesList"
           :key="profile.id"
           :profile="profile"
           v-model="selectedProfiles" />
@@ -68,6 +75,7 @@ export default {
     return {
       sortListKey: "name",
       sortListDirection: "asc",
+      l_profilesList: structuredClone(this.profilesList), // TranscriberProfileSelectorLine uses shallow copy so we need to clone the list to avoid propagation to parent
     }
   },
   computed: {
@@ -76,6 +84,7 @@ export default {
         return this.value
       },
       set(value) {
+        console.log("set selectedProfiles", value)
         this.$emit("input", value)
       },
     },

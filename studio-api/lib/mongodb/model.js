@@ -80,7 +80,6 @@ class MongoModel {
       // Assuming `this.db` is your MongoDB database instance and `this.collection` is the target collection name
 
       if (result.acknowledged) {
-        console.log(`Document inserted with id: ${result.insertedId}`)
         //result.insertedId.toString()
         return {
           success: true,

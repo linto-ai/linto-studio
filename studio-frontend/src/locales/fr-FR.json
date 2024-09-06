@@ -634,13 +634,14 @@
       "add": "Ajouter des canaux",
       "empty": "Aucun canaux attachés à la session",
       "labels": {
-        "endpoint": "Adresse du flux",
+        "endpoint": "Adresse des flux",
         "language": "Langues",
         "name": "Nom",
         "profile_name": "Nom du profil",
         "stream_status": "Statut du flux",
         "transcriber_status": "Statut du transcriber",
-        "type": "Type"
+        "type": "Type",
+        "translations": "Traductions"
       },
       "modal_add": {
         "loading_profiles": "Chargement des profils de transcription",
@@ -648,7 +649,8 @@
         "title": "Ajouter des canaux"
       },
       "remove": "Retirer",
-      "title": "Canaux attachés à la session"
+      "title": "Canaux attachés à la session",
+      "multiple_endpoint": "1 flux | {count} flux"
     },
     "create_page": {
       "error_message": "Une erreur s'est produite lors de la création de la session",
@@ -696,12 +698,17 @@
       "tabs": {
         "ongoing_sessions": "Sessions en cours",
         "past_sessions": "Sessions passées",
-        "scheduled_sessions": "Sessions programmées"
+        "scheduled_sessions": "Sessions programmées",
+        "all_sessions": "Toutes les sessions"
       }
     },
     "live_page": {
       "channel_selector": {
         "label": "Choisir un canal"
+      },
+      "translation_selector": {
+        "label": "Choisir la langue de traduction",
+        "original_language": "Langue originale"
       }
     },
     "profile_selector": {
@@ -710,7 +717,8 @@
         "languages": "Langues",
         "name": "Nom",
         "selected": "Selectionné",
-        "type": "Type"
+        "type": "Type",
+        "translations": "Traductions"
       },
       "title": "Choix des profils de transcription"
     },

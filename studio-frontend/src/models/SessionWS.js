@@ -40,11 +40,13 @@ export default class Session {
     this.isConnected = false
   }
 
-  subscribe(channelId, onPartial, onFinal) {
+  subscribe(sessionId, channelIndex, onPartial, onFinal) {
     return new Promise((resolve, reject) => {
       if (this.currentChannelId) {
         this.socket.emit("leave_room", this.currentChannelId)
       }
+
+      const channelId = `${sessionId}/${channelIndex}`
 
       this.socket.off("partial")
       this.socket.off("final")

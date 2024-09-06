@@ -1,5 +1,5 @@
 {
-  "/api/transcriber_profiles": {
+  "/transcriber_profiles": {
     "get": {
       "tags": ["transcriber_profiles"],
       "summary": "Get all transcriber configs",
@@ -11,7 +11,7 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/TranscriberProfile"
+                  "$ref": "#/components/schemas/TranscriberProfileAnswer"
                 }
               }
             }
@@ -26,7 +26,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/TranscriberProfile"
+              "$ref": "#/components/schemas/TranscriberProfileRequest"
             }
           }
         }
@@ -38,7 +38,7 @@
       }
     }
   },
-  "/api/transcriber_profiles/{id}": {
+  "/transcriber_profiles/{id}": {
     "get": {
       "tags": ["transcriber_profiles"],
       "summary": "Get a transcriber config by ID",
@@ -59,7 +59,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/TranscriberProfile"
+                "$ref": "#/components/schemas/TranscriberProfileAnswer"
               }
             }
           }
@@ -87,14 +87,21 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/TranscriberProfile"
+              "$ref": "#/components/schemas/TranscriberProfileRequest"
             }
           }
         }
       },
       "responses": {
         "200": {
-          "description": "OK"
+          "description": "The transcriber config",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TranscriberProfileAnswer"
+              }
+            }
+          }
         },
         "404": {
           "$ref": "#/components/responses/NotFound"
