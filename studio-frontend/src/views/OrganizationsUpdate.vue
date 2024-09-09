@@ -228,7 +228,7 @@ export default {
       userVisibility: {
         ...EMPTY_FIELD,
         value: this.currentOrganization.users.find(
-          (usr) => usr._id === this.userInfo._id
+          (usr) => usr._id === this.userInfo._id,
         ).visibility,
       },
       orgaMembers,
@@ -243,13 +243,14 @@ export default {
   },
   computed: {
     userRole() {
+      console.log("userRole", this.$store.getters.getUserRoleInOrganization())
       return this.$store.getters.getUserRoleInOrganization()
     },
     sortedUsers() {
       return sortArray(
         this.orgaMembers,
         this.sortListKey,
-        this.sortListDirection
+        this.sortListDirection,
       )
     },
     organizationId() {
@@ -307,7 +308,7 @@ export default {
         {
           timeout: 3000,
           redirect: false,
-        }
+        },
       )
       if (req.status === "success") {
         await this.dispatchOrganization()
@@ -316,7 +317,7 @@ export default {
         this.searchMemberValue = ""
       }
       this.usersEmailPending = this.usersEmailPending.filter(
-        (email) => email !== user.email
+        (email) => email !== user.email,
       )
     },
     removeFromMembersValidation(user) {
@@ -364,7 +365,7 @@ export default {
         {
           timeout: 3000,
           redirect: false,
-        }
+        },
       )
 
       if (req.status === "success") {

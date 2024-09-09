@@ -33,6 +33,7 @@
         {{ $t("conversation.no_conversation_found") }}
       </h2>
       <router-link
+        v-if="isAtLeastUploader"
         :title="$t('navigation.conversation.create')"
         to="/interface/conversations/create"
         class="btn green-border">
@@ -53,8 +54,10 @@ import { Fragment } from "vue-fragment"
 import Loading from "@/components/Loading.vue"
 import ConversationLineNew from "@/components/ConversationLineNew.vue"
 import ErrorPage from "./ErrorPage.vue"
+import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 
 export default {
+  mixins: [orgaRoleMixin],
   props: {
     conversations: { type: Array, required: false },
     loading: { type: Boolean, required: true },
