@@ -33,6 +33,10 @@ import {
 } from "../api/organisation.js"
 import { apiRemoveUserFromOrganisation } from "../api/user.js"
 import { bus } from "../main.js"
+
+// Outdated component, use ModalNew instead and put the logic outside of the modal.
+// See Modal**.vue components for examples.
+
 export default {
   data() {
     return {
@@ -126,7 +130,7 @@ export default {
       let req = await apiRemoveUserFromOrganisation(
         this.modalData.organizationId,
         this.modalData.user._id,
-        { timeout: 3000, redirect: false }
+        { timeout: 3000, redirect: false },
       )
 
       if (req?.status === "success") {
@@ -152,9 +156,8 @@ export default {
       await this.$options.filters.dispatchStore("getUserOrganizations")
     },
     async dispatchUserRights() {
-      this.userRightsLoaded = await this.$options.filters.dispatchStore(
-        "getUserRights"
-      )
+      this.userRightsLoaded =
+        await this.$options.filters.dispatchStore("getUserRights")
     },
   },
 }
