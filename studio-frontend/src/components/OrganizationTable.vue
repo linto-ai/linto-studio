@@ -6,6 +6,7 @@
     <tbody>
       <OrganizationTableLine
         v-for="organization in organizationList"
+        :linkTo="linkTo"
         :key="organization.id"
         :organization="organization" />
     </tbody>
@@ -19,6 +20,10 @@ export default {
     organizationList: {
       type: Array,
       required: true,
+    },
+    linkTo: {
+      type: Object,
+      required: false,
     },
   },
   data() {

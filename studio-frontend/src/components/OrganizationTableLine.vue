@@ -1,10 +1,14 @@
 <template>
   <tr>
-    <td>{{ id }}</td>
-    <td>{{ name }}</td>
+    <td>
+      <router-link :to="to">{{ id }}</router-link>
+    </td>
+    <td>
+      <router-link :to="to">{{ name }}</router-link>
+    </td>
     <td>{{ userNumber }}</td>
     <td>
-      <button>
+      <button @click="editOrganization">
         <span class="icon edit"></span>
         <span class="label">{{ $t("orgaTable.edit_button_label") }}</span>
       </button>
@@ -13,6 +17,7 @@
 </template>
 <script>
 import { organizationModelMixin } from "@/mixins/organizationModel"
+import router from "../routers/app-router"
 
 export default {
   mixins: [organizationModelMixin],
@@ -21,12 +26,28 @@ export default {
       type: Object,
       required: true,
     },
+    linkTo: {
+      type: Object,
+      required: false,
+    },
   },
   data() {
     return {}
   },
   mounted() {},
-  methods: {},
+  computed: {
+    to() {
+      return {
+        ...this.linkTo,
+        params: { organizationId: this.id },
+      }
+    },
+  },
+  methods: {
+    editOrganization() {
+      router.push(this.to)
+    },
+  },
   components: {},
 }
 </script>

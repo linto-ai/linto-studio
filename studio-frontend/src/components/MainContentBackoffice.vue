@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex1">
     <BackofficeSidebar />
-    <main class="flex1">
+    <main class="flex1 backoffice-main">
       <slot v-if="!loading"></slot>
       <Loading v-else />
     </main>

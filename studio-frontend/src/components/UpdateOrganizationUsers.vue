@@ -3,7 +3,7 @@
     <div class="flex row gap-medium">
       <h2 style="width: auto">{{ $t("organisation.organization_users") }}</h2>
       <UserInvite
-        v-if="isAtLeastMaintainer"
+        v-if="isAtLeastMaintainer || isAtLeastSystemAdministrator"
         @inviteUser="addToMembers"
         @removeUser="removeFromMembers"
         :currentUsers="orgaMembers"
@@ -43,9 +43,10 @@
               <select
                 v-model="user.role"
                 v-if="
-                  isAtLeastMaintainer &&
-                  userRole >= user.role &&
-                  userInfo._id !== user._id
+                  (isAtLeastMaintainer &&
+                    userRole >= user.role &&
+                    userInfo._id !== user._id) ||
+                  isAtLeastSystemAdministrator
                 "
                 @change="updateUserRole(user)">
                 <option
@@ -66,9 +67,10 @@
             <td class="content-size">
               <button
                 v-if="
-                  isAtLeastMaintainer &&
-                  userRole >= user.role &&
-                  userInfo._id !== user._id
+                  (isAtLeastMaintainer &&
+                    userRole >= user.role &&
+                    userInfo._id !== user._id) ||
+                  isAtLeastSystemAdministrator
                 "
                 @click="removeFromMembers(user)"
                 class="red-border">
@@ -107,6 +109,7 @@
 import { bus } from "../main.js"
 import EMPTY_FIELD from "@/const/emptyField"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
+import { platformRoleMixin } from "@/mixins/platformRole.js"
 
 import { sortArray } from "@/tools/sortList.js"
 
@@ -122,7 +125,7 @@ import ModalLeaveOrganization from "@/components/ModalLeaveOrganization.vue"
 import ModalRemoveUserFromOrganization from "./ModalRemoveUserFromOrganization.vue"
 
 export default {
-  mixins: [orgaRoleMixin],
+  mixins: [orgaRoleMixin, platformRoleMixin],
   props: {
     currentOrganization: {
       type: Object,
@@ -136,17 +139,16 @@ export default {
   data() {
     const orgaMembers = []
     const orgaMembersIds = []
-    for (let user of this.currentOrganization.users) {
+
+    const users = this.currentOrganization.users || []
+    for (let user of users) {
       orgaMembersIds.push(user._id)
       orgaMembers.push(user)
     }
-
     return {
       userVisibility: {
         ...EMPTY_FIELD,
-        value: this.currentOrganization.users.find(
-          (usr) => usr._id === this.userInfo._id,
-        ).visibility,
+        value: users.find((usr) => usr._id === this.userInfo._id)?.visibility,
       },
       orgaMembers,
       orgaMembersIds,

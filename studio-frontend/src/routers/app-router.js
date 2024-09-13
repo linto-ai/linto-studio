@@ -65,6 +65,16 @@ let router = new Router({
       defaultProps,
       meta: { backoffice: true },
     },
+    {
+      path: "/backoffice/organizations/:organizationId",
+      name: "backoffice-organizationDetail",
+      components: {
+        default: () => import("../views/backoffice/OrganizationDetail.vue"),
+        ...defaultComponents,
+      },
+      defaultProps,
+      meta: { backoffice: true },
+    },
     // PUBLIC ROUTES
     {
       path: "/interface/404",

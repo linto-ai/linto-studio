@@ -3,14 +3,17 @@
     <section>
       <h2>{{ $t("organisation.general_settings") }}</h2>
       <!--Organization Name -->
-      <FormInput v-if="isAdmin" :field="orgaName" v-model="orgaName.value" />
+      <FormInput
+        v-if="isAdmin || isAtLeastSystemAdministrator"
+        :field="orgaName"
+        v-model="orgaName.value" />
       <labeled-value
         v-else
         class="form-field flex col"
         :label="$t('organisation.name_label')"
         :value="orgaName.value" />
       <FormInput
-        v-if="isAdmin"
+        v-if="isAdmin || isAtLeastSystemAdministrator"
         :field="orgaDescription"
         v-model="orgaDescription.value" />
       <labeled-value
@@ -18,7 +21,10 @@
         class="form-field flex col"
         :label="$t('organisation.description_label')"
         :value="orgaDescription.value" />
-      <button type="submit" class="btn green" v-if="isAdmin">
+      <button
+        type="submit"
+        class="btn green"
+        v-if="isAdmin || isAtLeastSystemAdministrator">
         <span class="icon apply"></span>
         <span class="label">{{ $t("organisation.update_button") }}</span>
       </button>
@@ -31,6 +37,7 @@ import { bus } from "../main.js"
 
 import { formsMixin } from "@/mixins/forms.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
+import { platformRoleMixin } from "@/mixins/platformRole.js"
 
 import EMPTY_FIELD from "@/const/emptyField"
 
@@ -42,7 +49,7 @@ import { apiUpdateOrganisation } from "@/api/organisation.js"
 import FormInput from "@/components/FormInput.vue"
 import LabeledValue from "@/components/LabeledValue.vue"
 export default {
-  mixins: [formsMixin, orgaRoleMixin],
+  mixins: [formsMixin, orgaRoleMixin, platformRoleMixin],
   props: {
     currentOrganization: {
       type: Object,

@@ -7,7 +7,9 @@
         $t('backoffice.organisation_list.add_organisation_button')
       "></HeaderTable>
     <div class="backoffice-listing-container">
-      <OrganizationTable :organizationList="organizationList" />
+      <OrganizationTable
+        :organizationList="organizationList"
+        :linkTo="{ name: 'backoffice-organizationDetail' }" />
     </div>
   </MainContentBackoffice>
 </template>
