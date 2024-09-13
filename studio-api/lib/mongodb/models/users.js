@@ -24,7 +24,7 @@ const personal_projection = {
   passwordHash: 0,
   keyToken: 0,
   authLink: 0,
-  role: 0,
+  //role: 0,
 }
 
 const defaultUserPayload = {

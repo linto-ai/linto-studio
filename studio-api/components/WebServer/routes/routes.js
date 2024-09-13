@@ -27,7 +27,10 @@ module.exports = (webServer) => {
       ...require("./api/media/media")(webServer),
       ...require("./api/taxonomy/metadata")(webServer),
     ],
-    "/api/admin": require("./api/admin/users")(webServer),
+    "/api/admin": [
+      ...require("./api/admin/users")(webServer),
+      ...require("./api/admin/organization")(webServer),
+    ],
     "/api/nlp": require("./api/nlp/nlp")(webServer),
     "/api/services": require("./api/service/services")(webServer, this),
   }

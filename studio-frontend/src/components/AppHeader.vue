@@ -5,7 +5,9 @@
       to="/interface"
       class="flex row gap-small header-logo">
       <img :src="logo" style="height: 3rem" />
-      <h1 id="main-title" style="">{{ title }}</h1>
+      <h1 id="main-title" style="">
+        {{ title }}
+      </h1>
     </router-link>
     <!-- <router-link
       :title="$t('navigation.conversation.create')"
@@ -23,7 +25,7 @@
     </div>
     <ThemeSwitcher v-if="darkThemeFeatureEnabled"></ThemeSwitcher>
     <LocalSwitcher></LocalSwitcher>
-    <UserSettingsMenu :userInfo="userInfo" />
+    <UserSettingsMenu :userInfo="userInfo" :isBackoffice="isBackoffice" />
   </nav>
 </template>
 <script>
@@ -51,6 +53,9 @@ export default {
       return `/img/${getEnv("VUE_APP_LOGO")}`
     },
     title() {
+      if (this.isBackoffice) {
+        return getEnv("VUE_APP_NAME") + "| Backoffice"
+      }
       return getEnv("VUE_APP_NAME")
     },
     darkThemeFeatureEnabled() {
@@ -58,6 +63,9 @@ export default {
     },
     darkThemeFeatureEnabled() {
       return process.env?.VUE_APP_EXPERIMENTAL_DARK_THEME === "true"
+    },
+    isBackoffice() {
+      return this.currentRoute.meta.backoffice
     },
   },
   components: {

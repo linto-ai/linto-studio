@@ -72,6 +72,17 @@ async function getOrganization(req, res, next) {
 
 async function listSelfOrganization(req, res, next) {
   try {
+    let organizations = await model.organizations.listSelf(
+      req.payload.data.userId,
+    )
+    return res.status(200).send(organizations)
+  } catch (err) {
+    next(err)
+  }
+}
+
+async function listAllOrganization(req, res, next) {
+  try {
     let user = await model.users.getById(req.payload.data.userId, true)
     let organizations = []
     if (
@@ -82,10 +93,9 @@ async function listSelfOrganization(req, res, next) {
     ) {
       organizations = await model.organizations.getAll()
     } else {
-      organizations = await model.organizations.listSelf(
-        req.payload.data.userId,
-      )
+      return res.status(401).sned({ message: "Unauthorized" })
     }
+
     return res.status(200).send(organizations)
   } catch (err) {
     next(err)
@@ -105,6 +115,7 @@ async function listOrganization(req, res, next) {
 module.exports = {
   createOrganization,
   listSelfOrganization,
+  listAllOrganization,
   listOrganization,
   getOrganization,
 }

@@ -34,12 +34,53 @@ let isAuthenticated = function () {
 let router = new Router({
   mode: "history",
   routes: [
+    // BACKOFFICE ROUTES
+    {
+      path: "/backoffice",
+      name: "backoffice",
+      components: {
+        default: () => import("../views/backoffice/Home.vue"),
+        ...defaultComponents,
+      },
+      defaultProps,
+      meta: { backoffice: true },
+    },
+    {
+      path: "/backoffice/users",
+      name: "backoffice-userList",
+      components: {
+        default: () => import("../views/backoffice/UserList.vue"),
+        ...defaultComponents,
+      },
+      defaultProps,
+      meta: { backoffice: true },
+    },
+    {
+      path: "/backoffice/organizations",
+      name: "backoffice-organizationList",
+      components: {
+        default: () => import("../views/backoffice/OrganizationList.vue"),
+        ...defaultComponents,
+      },
+      defaultProps,
+      meta: { backoffice: true },
+    },
+    // PUBLIC ROUTES
     {
       path: "/interface/404",
       name: "not_found",
       components: {
         default: () => import("../views/404.vue"),
         ...defaultComponents,
+      },
+      defaultProps,
+    },
+    {
+      path: "/test",
+      name: "not_found",
+      components: {
+        default: () => import("../views/Test.vue"),
+        ...componentsWithoutHeader,
       },
       defaultProps,
     },
@@ -89,6 +130,8 @@ let router = new Router({
       defaultProps,
       meta: { public: true, authRoute: true },
     },
+
+    // PRIVATE ROUTES FOR MAIN APP
     {
       path: "/interface/inbox",
       name: "inbox",
@@ -339,9 +382,8 @@ router.beforeEach(async (to, from, next) => {
           const conversationId = to.params.conversationId
           let userRight = 0
 
-          let getUserRight = await apiGetUserRightFromConversation(
-            conversationId
-          )
+          let getUserRight =
+            await apiGetUserRightFromConversation(conversationId)
 
           if (getUserRight) {
             userRight = getUserRight?.right

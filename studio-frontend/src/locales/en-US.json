@@ -20,6 +20,22 @@
   "app_editor_search": {
     "label": "Search in transcription"
   },
+  "backoffice": {
+    "title": "Backoffice",
+    "navigation": {
+      "home": "Home",
+      "users": "Users",
+      "organisations": "Organisations"
+    },
+    "user_list": {
+      "title": "Users",
+      "add_user_button": "Add a user"
+    },
+    "organisation_list": {
+      "title": "Organisations",
+      "add_organisation_button": "Add an organisation"
+    }
+  },
   "breadcrumb": {
     "conversations": "Media",
     "create": "Upload media",
@@ -491,6 +507,10 @@
       "logout": "Logout",
       "title": "User menu"
     },
+    "backoffice": {
+      "link_title": "Backoffice",
+      "return_link": "User interface"
+    },
     "conversation": {
       "start": "Start",
       "create": "Upload media",
@@ -554,6 +574,11 @@
       "action": "Leave",
       "content": "Are you sure you want to leave the organisation \"{name}\" ?",
       "title": "Leave organisation"
+    },
+    "remove_user_modal": {
+      "action": "Remove user from organization",
+      "content": "Are you sure you want to remove \"{name}\" from the organization?",
+      "title": "Remove user from organization"
     },
     "my_workspace": "My workspace",
     "name_description": "The name of your organisation",
@@ -837,5 +862,25 @@
     "update_pswd_notif": "You recently requested a recovery link for your password. You might think about updating your password.",
     "update_pswd_notif_dismiss_btn": "Dismiss",
     "verify_email_notif": "Please verify your email address"
+  },
+  "userTable": {
+    "header": {
+      "id": "ID",
+      "email": "Email",
+      "firstname": "Firstname",
+      "lastname": "Lastname",
+      "role": "Role",
+      "status": "Status"
+    },
+    "edit_button_label": "Edit"
+  },
+  "orgaTable": {
+    "header": {
+      "id": "ID",
+      "name": "Name",
+      "description": "Description",
+      "userNumber": "Number of users"
+    },
+    "edit_button_label": "Edit"
   }
 }

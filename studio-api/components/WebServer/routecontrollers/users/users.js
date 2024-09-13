@@ -115,7 +115,7 @@ async function searchUser(req, res, next) {
       ]
 
       const find = userField
-        .map((field) => field.toLowerCase())
+        .map((field) => field?.toLowerCase() ?? "")
         .filter((field) => field.indexOf(req.query.search.toLowerCase()) >= 0)
 
       return find.length > 0

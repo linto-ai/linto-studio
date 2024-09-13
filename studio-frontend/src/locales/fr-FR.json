@@ -20,6 +20,22 @@
   "app_editor_search": {
     "label": "Rechercher dans le texte"
   },
+  "backoffice": {
+    "title": "Backoffice",
+    "navigation": {
+      "home": "Accueil",
+      "users": "Utilisateurs",
+      "organisations": "Organisations"
+    },
+    "user_list": {
+      "title": "Utilisateurs",
+      "add_user_button": "Ajouter un utilisateur"
+    },
+    "organisation_list": {
+      "title": "Organisations",
+      "add_organisation_button": "Ajouter une organisation"
+    }
+  },
   "breadcrumb": {
     "conversations": "Conversations",
     "create": "Importer un media",
@@ -491,6 +507,10 @@
       "logout": "Se déconnecter",
       "title": "Menu utilisateur"
     },
+    "backoffice": {
+      "link_title": "Backoffice",
+      "return_link": "Interface utilisateur"
+    },
     "conversation": {
       "start": "Démarrer",
       "create": "Importer un media",
@@ -836,5 +856,25 @@
     "update_pswd_notif": "Vous avez récemment fait une demande suite à un mot de passe oublié, pensez à actualiser votre mot de passe.",
     "update_pswd_notif_dismiss_btn": "Ne plus afficher",
     "verify_email_notif": "Veuillez vérifier votre adresse email"
+  },
+  "userTable": {
+    "header": {
+      "id": "ID",
+      "email": "Email",
+      "firstname": "Prénom",
+      "lastname": "Nom",
+      "role": "Rôle",
+      "status": "Status"
+    },
+    "edit_button_label": "Modifier"
+  },
+  "orgaTable": {
+    "header": {
+      "id": "ID",
+      "name": "Nom",
+      "description": "Description",
+      "userNumber": "Nombre d'utilisateurs"
+    },
+    "edit_button_label": "Modifier"
   }
 }

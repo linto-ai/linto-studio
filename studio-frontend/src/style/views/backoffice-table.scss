@@ -1,0 +1,16 @@
+.backoffice-listing-header {
+  padding: 1rem;
+}
+
+.backoffice-listing-header__title h2 {
+  width: auto;
+  padding: 0;
+  margin: 0;
+}
+
+.backoffice-listing-container {
+  background-color: var(--background-primary);
+  border: var(--border-block);
+  margin: 0 1rem;
+  border-radius: 4px;
+}

@@ -43,8 +43,7 @@ class OrganizationModel extends MongoModel {
   async getAll() {
     try {
       const query = {}
-      const projetion = { token: 0, users: 0 }
-      return await this.mongoRequest(query, projetion)
+      return await this.mongoRequest(query)
     } catch (error) {
       console.error(error)
       return error

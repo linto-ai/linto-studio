@@ -10,37 +10,7 @@
     menuPosition="left"
     :badge="badgeValue"
     @input="clickMenu"
-    :options="{
-      medias: [
-        {
-          value: 'shared',
-          text: $t('navigation.tabs.shared'),
-          icon: 'share',
-          iconText: 'share',
-        },
-        {
-          value: 'favorites',
-          text: $t('navigation.tabs.favorites'),
-          icon: 'star',
-          iconText: 'Favorites',
-        },
-      ],
-      user: [
-        {
-          value: 'account',
-          text: $t('navigation.account.account_link'),
-          icon: 'account',
-          iconText: 'Account',
-          badge: badgeValue,
-        },
-        {
-          value: 'logout',
-          text: $t('navigation.account.logout'),
-          icon: 'logout',
-          iconText: 'Logout',
-        },
-      ],
-    }" />
+    :options="selectOptions" />
   <!--
     <div
       class="user-menu-notification"
@@ -62,6 +32,7 @@ import CustomSelect from "./CustomSelect.vue"
 export default {
   props: {
     userInfo: { type: Object, required: true },
+    isBackoffice: { type: Boolean, default: false },
   },
   data() {
     return {
@@ -80,7 +51,8 @@ export default {
       return this.$store.state.userInfo
     },
     imgUrl() {
-      return `${process.env.VUE_APP_PUBLIC_MEDIA}/${this.userInfo.img}`
+      const imageUrl = this.userInfo.img ?? "pictures/default.jpg"
+      return `${process.env.VUE_APP_PUBLIC_MEDIA}/${imageUrl}`
     },
     currentRoute() {
       return this.$route
@@ -107,6 +79,77 @@ export default {
         return null
       }
     },
+    selectOptions() {
+      let res = {}
+
+      if (this.isBackoffice) {
+        return {
+          backOffice: [
+            {
+              value: "user_interface",
+              text: this.$t("navigation.backoffice.return_link"),
+              icon: "back",
+              iconText: this.$t("navigation.backoffice.return_link"),
+            },
+          ],
+          user: [
+            {
+              value: "account",
+              text: this.$t("navigation.account.account_link"),
+              icon: "account",
+              iconText: "Account",
+              badge: this.badgeValue,
+            },
+            {
+              value: "logout",
+              text: this.$t("navigation.account.logout"),
+              icon: "logout",
+              iconText: "Logout",
+            },
+          ],
+        }
+      } else {
+        return {
+          backOffice: [
+            {
+              value: "backoffice",
+              text: this.$t("navigation.backoffice.link_title"),
+              icon: "settings",
+              iconText: "Backoffice",
+            },
+          ],
+          medias: [
+            {
+              value: "shared",
+              text: this.$t("navigation.tabs.shared"),
+              icon: "share",
+              iconText: "share",
+            },
+            {
+              value: "favorites",
+              text: this.$t("navigation.tabs.favorites"),
+              icon: "star",
+              iconText: "Favorites",
+            },
+          ],
+          user: [
+            {
+              value: "account",
+              text: this.$t("navigation.account.account_link"),
+              icon: "account",
+              iconText: "Account",
+              badge: this.badgeValue,
+            },
+            {
+              value: "logout",
+              text: this.$t("navigation.account.logout"),
+              icon: "logout",
+              iconText: "Logout",
+            },
+          ],
+        }
+      }
+    },
   },
   methods: {
     closeMenu() {
@@ -124,6 +167,12 @@ export default {
       }
       if (value === "logout") {
         this.logout()
+      }
+      if (value === "backoffice") {
+        this.$router.push({ name: "backoffice" })
+      }
+      if (value === "user_interface") {
+        this.$router.push({ name: "inbox" })
       }
     },
     capitalizeFirstLetter(string) {
