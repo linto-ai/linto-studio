@@ -9,27 +9,35 @@ const ROLES = {
 export const platformRoleMixin = {
   computed: {
     hasNoRole() {
-      return this.userRole === 0
+      return this.platformRole === 0
     },
     isUser() {
-      return this.userRole === ROLES.USER
+      return (this.platformRole & ROLES.USER) == ROLES.USER
     },
     isSessionOperator() {
-      return this.userRole === ROLES.SESSION_OPERATOR
+      return (
+        (this.platformRole & ROLES.SESSION_OPERATOR) == ROLES.SESSION_OPERATOR
+      )
     },
     isSystemAdministrator() {
-      return this.userRole === ROLES.SYSTEM_ADMINISTRATOR
+      return (
+        (this.platformRole & ROLES.SYSTEM_ADMINISTRATOR) ==
+        ROLES.SYSTEM_ADMINISTRATOR
+      )
     },
     isSuperAdministrator() {
-      return this.userRole === ROLES.SUPER_ADMINISTRATOR
+      return (
+        (this.platformRole & ROLES.SUPER_ADMINISTRATOR) ==
+        ROLES.SUPER_ADMINISTRATOR
+      )
     },
     isAtLeastSessionOperator() {
-      return this.userRole >= ROLES.SESSION_OPERATOR
+      return this.platformRole >= ROLES.SESSION_OPERATOR
     },
     isAtLeastSystemAdministrator() {
-      return this.userRole >= ROLES.SYSTEM_ADMINISTRATOR
+      return isSystemAdministrator || isSuperAdministrator
     },
-    userRole() {
+    platformRole() {
       return this.$store.state.userInfo.role
     },
   },

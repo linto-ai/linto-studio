@@ -4,6 +4,7 @@ const debug = require("debug")(
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
+const ORGANIZATION_ROLE = require(`${process.cwd()}/lib/dao/organization/roles`)
 
 const { UserForbidden, UserNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/users`,
@@ -54,6 +55,7 @@ async function impersonateUser(req) {
 async function setOrganizationOwnerAsUser(req, organizationId) {
   const organization = await model.organizations.getById(organizationId)
   if (organization.length > 0) {
+    req.userRole = ORGANIZATION_ROLE.ADMIN
     req.payload.data.userId = organization[0].owner
   }
 }

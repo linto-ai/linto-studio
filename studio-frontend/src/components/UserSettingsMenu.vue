@@ -29,10 +29,12 @@ import { bus } from "../main.js"
 import { userName } from "@/tools/userName.js"
 import CustomSelect from "./CustomSelect.vue"
 
+import { platformRoleMixin } from "@/mixins/platformRole.js"
+
 export default {
   props: {
     userInfo: { type: Object, required: true },
-    isBackoffice: { type: Boolean, default: false },
+    isBackofficePage: { type: Boolean, default: false },
   },
   data() {
     return {
@@ -80,9 +82,7 @@ export default {
       }
     },
     selectOptions() {
-      let res = {}
-
-      if (this.isBackoffice) {
+      if (this.isBackofficePage) {
         return {
           backOffice: [
             {
@@ -109,45 +109,51 @@ export default {
           ],
         }
       } else {
-        return {
-          backOffice: [
+        let res = {}
+
+        if (this.isSessionOperator || this.isSystemAdministrator) {
+          res["backOffice"] = [
             {
               value: "backoffice",
-              text: this.$t("navigation.backoffice.link_title"),
-              icon: "settings",
-              iconText: "Backoffice",
+              text: this.$t("navigation.backoffice.title"),
+              icon: "backoffice",
+              iconText: this.$t("navigation.backoffice.title"),
             },
-          ],
-          medias: [
-            {
-              value: "shared",
-              text: this.$t("navigation.tabs.shared"),
-              icon: "share",
-              iconText: "share",
-            },
-            {
-              value: "favorites",
-              text: this.$t("navigation.tabs.favorites"),
-              icon: "star",
-              iconText: "Favorites",
-            },
-          ],
-          user: [
-            {
-              value: "account",
-              text: this.$t("navigation.account.account_link"),
-              icon: "account",
-              iconText: "Account",
-              badge: this.badgeValue,
-            },
-            {
-              value: "logout",
-              text: this.$t("navigation.account.logout"),
-              icon: "logout",
-              iconText: "Logout",
-            },
-          ],
+          ]
         }
+
+        res["medias"] = [
+          {
+            value: "shared",
+            text: this.$t("navigation.tabs.shared"),
+            icon: "share",
+            iconText: "share",
+          },
+          {
+            value: "favorites",
+            text: this.$t("navigation.tabs.favorites"),
+            icon: "star",
+            iconText: "Favorites",
+          },
+        ]
+
+        res["user"] = [
+          {
+            value: "account",
+            text: this.$t("navigation.account.account_link"),
+            icon: "account",
+            iconText: "Account",
+            badge: this.badgeValue,
+          },
+          {
+            value: "logout",
+            text: this.$t("navigation.account.logout"),
+            icon: "logout",
+            iconText: "Logout",
+          },
+        ]
+
+        return res
       }
     },
   },

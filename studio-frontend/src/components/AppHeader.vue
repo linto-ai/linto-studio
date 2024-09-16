@@ -25,7 +25,9 @@
     </div>
     <ThemeSwitcher v-if="darkThemeFeatureEnabled"></ThemeSwitcher>
     <LocalSwitcher></LocalSwitcher>
-    <UserSettingsMenu :userInfo="userInfo" :isBackoffice="isBackoffice" />
+    <UserSettingsMenu
+      :userInfo="userInfo"
+      :isBackofficePage="isBackofficePage" />
   </nav>
 </template>
 <script>
@@ -53,7 +55,7 @@ export default {
       return `/img/${getEnv("VUE_APP_LOGO")}`
     },
     title() {
-      if (this.isBackoffice) {
+      if (this.isBackofficePage) {
         return getEnv("VUE_APP_NAME") + "| Backoffice"
       }
       return getEnv("VUE_APP_NAME")
@@ -64,7 +66,7 @@ export default {
     darkThemeFeatureEnabled() {
       return process.env?.VUE_APP_EXPERIMENTAL_DARK_THEME === "true"
     },
-    isBackoffice() {
+    isBackofficePage() {
       return this.currentRoute.meta.backoffice
     },
   },
