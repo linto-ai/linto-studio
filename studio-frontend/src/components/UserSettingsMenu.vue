@@ -32,6 +32,7 @@ import CustomSelect from "./CustomSelect.vue"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 
 export default {
+  mixins: [platformRoleMixin],
   props: {
     userInfo: { type: Object, required: true },
     isBackofficePage: { type: Boolean, default: false },
@@ -115,9 +116,9 @@ export default {
           res["backOffice"] = [
             {
               value: "backoffice",
-              text: this.$t("navigation.backoffice.title"),
-              icon: "backoffice",
-              iconText: this.$t("navigation.backoffice.title"),
+              text: this.$t("navigation.backoffice.link_title"),
+              icon: "settings",
+              iconText: "Backoffice",
             },
           ]
         }

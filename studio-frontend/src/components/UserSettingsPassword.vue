@@ -4,7 +4,7 @@
       <h2>
         {{ $t("usersettings.change_password_label") }}
       </h2>
-      <div class="flex row" v-if="userInfo.accountNotifications.updatePassword">
+      <div class="flex row" v-if="notificationShouldUpdatePassword">
         <div class="user-settings-notification">
           <span class="content">
             {{ $t("usersettings.update_pswd_notif") }}
@@ -80,7 +80,7 @@ export default {
       this.$options.filters.testPassword(this.newPassword)
       this.$options.filters.testPasswordConfirm(
         this.newPasswordConfirm,
-        this.newPassword
+        this.newPassword,
       )
       if (this.newPassword.valid && this.newPasswordConfirm.valid) {
         await this.updatePassword()
@@ -94,7 +94,7 @@ export default {
         {
           timeout: 3000,
           redirect: false,
-        }
+        },
       )
 
       if (req.status === "success") {
@@ -119,6 +119,11 @@ export default {
       })
       bus.$emit("user_settings_update", {})
       e.preventDefault()
+    },
+  },
+  computed: {
+    notificationShouldUpdatePassword() {
+      return this.userInfo?.accountNotifications?.updatePassword ?? false
     },
   },
   components: { Fragment },

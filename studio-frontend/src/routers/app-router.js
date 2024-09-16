@@ -56,6 +56,16 @@ let router = new Router({
       meta: { backoffice: true },
     },
     {
+      path: "/backoffice/users/:userId",
+      name: "backoffice-userDetail",
+      components: {
+        default: () => import("../views/backoffice/UserDetail.vue"),
+        ...defaultComponents,
+      },
+      defaultProps,
+      meta: { backoffice: true },
+    },
+    {
       path: "/backoffice/organizations",
       name: "backoffice-organizationList",
       components: {
@@ -82,15 +92,6 @@ let router = new Router({
       components: {
         default: () => import("../views/404.vue"),
         ...defaultComponents,
-      },
-      defaultProps,
-    },
-    {
-      path: "/test",
-      name: "not_found",
-      components: {
-        default: () => import("../views/Test.vue"),
-        ...componentsWithoutHeader,
       },
       defaultProps,
     },

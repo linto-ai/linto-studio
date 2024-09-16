@@ -7,7 +7,7 @@
         $t('backoffice.user_list.add_user_button')
       "></HeaderTable>
     <div class="backoffice-listing-container">
-      <UserTable :users="users" />
+      <UserTable :users="users" :linkTo="{ name: 'backoffice-userDetail' }" />
     </div>
   </MainContentBackoffice>
 </template>

@@ -4,7 +4,11 @@
       :sortListKey="sortListKey"
       :sortListDirection="sortListDirection" />
     <tbody>
-      <UserTableLine v-for="user in users" :key="user.id" :user="user" />
+      <UserTableLine
+        v-for="user in users"
+        :key="user.id"
+        :user="user"
+        :linkTo="linkTo" />
     </tbody>
   </table>
 </template>
@@ -20,6 +24,10 @@ export default {
     users: {
       type: Array,
       required: true,
+    },
+    linkTo: {
+      type: Object,
+      required: false,
     },
   },
   data() {
