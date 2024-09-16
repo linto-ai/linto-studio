@@ -500,6 +500,11 @@
     "cancel": "Annuler",
     "close_title": "Fermer la modale"
   },
+  "modal_create_organization": {
+    "title": "Créer une organisation",
+    "label_name": "Nom de l'organisation",
+    "action_btn": "Créer"
+  },
   "navigation": {
     "account": {
       "account_link": "Mon compte",

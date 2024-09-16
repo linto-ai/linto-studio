@@ -12,7 +12,7 @@
         <span class="label">Rechercher</span>
       </button>
     </form>
-    <button class="btn green">
+    <button class="btn green" @click="$emit('on-create')">
       <span class="icon plus"></span>
       <span class="label">{{ add_button_label }}</span>
     </button>

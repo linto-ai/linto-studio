@@ -66,7 +66,12 @@
             </td>
             <td class="content-size">
               <button
-                v-if="
+                v-if="userInfo._id === user._id"
+                @click="leaveOrganization()">
+                {{ $t("organisation.user.leave_button") }}
+              </button>
+              <button
+                v-else-if="
                   (isAtLeastMaintainer &&
                     userRole >= user.role &&
                     userInfo._id !== user._id) ||
@@ -78,11 +83,6 @@
                 <span class="label">{{
                   $t("organisation.user.remove_button")
                 }}</span>
-              </button>
-              <button
-                v-if="userInfo._id === user._id"
-                @click="leaveOrganization()">
-                {{ $t("organisation.user.leave_button") }}
               </button>
             </td>
           </tr>
