@@ -102,20 +102,9 @@ async function listAllOrganization(req, res, next) {
   }
 }
 
-// List all public organization
-async function listOrganization(req, res, next) {
-  try {
-    const organizations = await model.organizations.getAll()
-    return res.status(200).send(organizations)
-  } catch (err) {
-    next(err)
-  }
-}
-
 module.exports = {
   createOrganization,
   listSelfOrganization,
   listAllOrganization,
-  listOrganization,
   getOrganization,
 }

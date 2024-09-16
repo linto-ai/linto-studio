@@ -376,49 +376,6 @@ async function sendVerificationEmail(req, res, next) {
   }
 }
 
-async function createSuperUser(req, res, next) {
-  try {
-    if (process.env.DISABLE_USER_CREATION === "true")
-      throw new UserError("User creation is disabled")
-
-    let user = req.body
-    if (!user.email || !user.password || !user.role)
-      throw new UserUnsupportedMediaType()
-    user.img = defaultPicture()
-
-    //convert user.role to a number
-    user.role = parseInt(user.role)
-
-    if (!ROLE.isValid(user.role))
-      throw new UserUnsupportedMediaType("Role invalid")
-
-    if ((await model.users.getByEmail(user.email)).length !== 0)
-      throw new UserConflict()
-
-    const createdUser = await model.users.createSuperAdmin(user)
-    if (createdUser.insertedCount !== 1) throw new UserError()
-
-    let myCreatedUser = await model.users.getById(
-      createdUser.insertedId.toString(),
-      true,
-    )
-
-    const mail_result = await Mailing.accountCreate(
-      user.email,
-      req,
-      myCreatedUser[0].authLink.magicId,
-    )
-    if (!mail_result) throw new NodemailerError()
-
-    res.status(201).send({
-      message:
-        "Account created. An email has been sent to the created account.",
-    })
-  } catch (err) {
-    next(err)
-  }
-}
-
 module.exports = {
   listUser,
   searchUser,
@@ -431,5 +388,4 @@ module.exports = {
   updateUserPicture,
   recoveryAuth,
   sendVerificationEmail,
-  createSuperUser,
 }

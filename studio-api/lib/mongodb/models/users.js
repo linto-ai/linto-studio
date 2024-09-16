@@ -162,6 +162,16 @@ class UsersModel extends MongoModel {
     }
   }
 
+  async listAllUsers() {
+    try {
+      const query = {}
+      return await this.mongoRequest(query, personal_projection) // we don't want to return sensitive data
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   async getPersonalInfo(id) {
     try {
       const query = {
