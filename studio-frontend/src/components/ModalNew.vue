@@ -51,7 +51,6 @@ export default {
   },
   mounted() {
     document.onkeydown = (e) => {
-      console.log(e.key)
       if (e.key === "Escape") {
         this.close()
       }

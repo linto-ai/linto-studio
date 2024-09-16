@@ -14,7 +14,7 @@
 <script>
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import UserTable from "@/components/UserTable.vue"
-import { apiGetUsers } from "@/api/user.js"
+import { apiGetAllUsers } from "@/api/admin.js"
 import HeaderTable from "../../components/HeaderTable.vue"
 
 export default {
@@ -31,7 +31,7 @@ export default {
   methods: {
     async fetchAllUsers() {
       this.loading = true
-      this.users = await apiGetUsers()
+      this.users = await apiGetAllUsers()
       this.loading = false
     },
   },
