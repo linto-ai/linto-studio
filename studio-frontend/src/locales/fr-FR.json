@@ -29,7 +29,8 @@
     },
     "user_list": {
       "title": "Utilisateurs",
-      "add_user_button": "Ajouter un utilisateur"
+      "add_user_button": "Ajouter un utilisateur",
+      "remove_user_button": "Supprimer l'utilisateur | Supprimer les {count} utilisateurs"
     },
     "organisation_list": {
       "title": "Organisations",
@@ -871,7 +872,8 @@
       "role": "Rôle",
       "status": "Status"
     },
-    "edit_button_label": "Modifier"
+    "edit_button_label": "Modifier",
+    "delete_button_label": "Supprimer"
   },
   "orgaTable": {
     "header": {

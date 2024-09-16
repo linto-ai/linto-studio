@@ -8,6 +8,7 @@
         v-for="user in users"
         :key="user.id"
         :user="user"
+        v-model="p_selectedUsers"
         :linkTo="linkTo" />
     </tbody>
   </table>
@@ -29,6 +30,11 @@ export default {
       type: Object,
       required: false,
     },
+    value: {
+      //selectedUsers
+      type: Array,
+      required: true,
+    },
   },
   data() {
     return {
@@ -38,6 +44,17 @@ export default {
   },
   mounted() {},
   methods: {},
+  computed: {
+    p_selectedUsers: {
+      get() {
+        return this.value
+      },
+      set(value) {
+        console.log("p_selectedUsers", value)
+        this.$emit("input", value)
+      },
+    },
+  },
   components: { Fragment, UserTableHeaders, UserTableLine },
 }
 </script>

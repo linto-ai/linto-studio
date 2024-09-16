@@ -1,6 +1,7 @@
 <template>
   <thead>
     <tr>
+      <th class="no-size"></th>
       <ArrayHeader
         @list_sort_by="sortBy"
         eventLabel="id"

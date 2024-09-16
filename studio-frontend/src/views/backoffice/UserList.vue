@@ -3,11 +3,17 @@
     <HeaderTable
       :title="$t('backoffice.user_list.title')"
       :count="count"
+      :remove_button_label="
+        $tc('backoffice.user_list.remove_user_button', selectedUsers.length)
+      "
       :add_button_label="
         $t('backoffice.user_list.add_user_button')
       "></HeaderTable>
     <div class="backoffice-listing-container">
-      <UserTable :users="users" :linkTo="{ name: 'backoffice-userDetail' }" />
+      <UserTable
+        :users="users"
+        :linkTo="{ name: 'backoffice-userDetail' }"
+        v-model="selectedUsers" />
     </div>
   </MainContentBackoffice>
 </template>
@@ -23,6 +29,7 @@ export default {
     return {
       loading: true,
       users: [],
+      selectedUsers: [],
     }
   },
   mounted() {
@@ -38,6 +45,11 @@ export default {
   computed: {
     count() {
       return this.users.length
+    },
+  },
+  watch: {
+    selectedUsers() {
+      console.log(this.selectedUsers)
     },
   },
   components: { MainContentBackoffice, UserTable, HeaderTable },

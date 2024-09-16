@@ -16,6 +16,10 @@
       <span class="icon plus"></span>
       <span class="label">{{ add_button_label }}</span>
     </button>
+    <button class="btn red-border" @click="$emit('on-delete')">
+      <span class="icon delete"></span>
+      <span class="label">{{ remove_button_label }}</span>
+    </button>
   </div>
 </template>
 <script>
@@ -24,6 +28,7 @@ export default {
     title: { type: String, required: true },
     count: { type: Number, required: true },
     add_button_label: { type: String, required: true },
+    remove_button_label: { type: String, required: true },
   },
   data() {
     return {}
