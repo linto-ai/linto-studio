@@ -123,3 +123,8 @@ td.content-size {
   width: 1%;
   white-space: nowrap;
 }
+
+// :has selector does not work for old version of firefox, but it's not critical feature (latest ESR of 2024 should work fine)
+tr:has(.line-selector input:checked) {
+  background-color: var(--selected-background);
+}

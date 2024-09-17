@@ -12,7 +12,7 @@ export async function apiGetAllOrganizations() {
 }
 
 export async function apiGetAllUsers() {
-  const res = await sendRequest(`${BASE_API}/administration/user`, {
+  const res = await sendRequest(`${BASE_API}/administration/users`, {
     method: "get",
   })
 
@@ -28,5 +28,5 @@ export async function apiDeleteMultipleUsers(userIds) {
     { userIds },
   )
 
-  return res?.data || []
+  return res
 }

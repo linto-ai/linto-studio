@@ -50,7 +50,6 @@ export default {
         return this.value
       },
       set(value) {
-        console.log("p_selectedUsers", value)
         this.$emit("input", value)
       },
     },

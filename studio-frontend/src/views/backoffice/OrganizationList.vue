@@ -10,7 +10,8 @@
     <div class="backoffice-listing-container">
       <OrganizationTable
         :organizationList="organizationList"
-        :linkTo="{ name: 'backoffice-organizationDetail' }" />
+        :linkTo="{ name: 'backoffice-organizationDetail' }"
+        v-model="selectedOrganizations" />
     </div>
     <ModalCreateOrganization
       @on-confirm="newOrganization"
@@ -32,6 +33,7 @@ export default {
       loading: true,
       organizationList: [],
       modalCreateOrganizationIsVisible: false,
+      selectedOrganizations: [],
     }
   },
   mounted() {
@@ -57,6 +59,11 @@ export default {
   computed: {
     count() {
       return this.organizationList.length
+    },
+  },
+  watch: {
+    selectedOrganizations() {
+      console.log(this.selectedOrganizations)
     },
   },
   components: {

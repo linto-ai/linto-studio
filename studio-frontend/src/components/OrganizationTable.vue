@@ -6,6 +6,7 @@
     <tbody>
       <OrganizationTableLine
         v-for="organization in organizationList"
+        v-model="p_selectedOrganizations"
         :linkTo="linkTo"
         :key="organization.id"
         :organization="organization" />
@@ -25,6 +26,11 @@ export default {
       type: Object,
       required: false,
     },
+    value: {
+      //selectedOrganizations
+      type: Array,
+      required: true,
+    },
   },
   data() {
     return {
@@ -34,6 +40,16 @@ export default {
   },
   mounted() {},
   methods: {},
+  computed: {
+    p_selectedOrganizations: {
+      get() {
+        return this.value
+      },
+      set(value) {
+        this.$emit("input", value)
+      },
+    },
+  },
   components: { OrganizationTableHeaders, OrganizationTableLine },
 }
 </script>

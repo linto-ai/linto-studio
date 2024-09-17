@@ -1,7 +1,10 @@
 <template>
   <tr @click="selectUser">
     <td>
-      <Checkbox v-model="p_selectedUsers" :checkboxValue="id"></Checkbox>
+      <Checkbox
+        class="line-selector"
+        v-model="p_selectedUsers"
+        :checkboxValue="id"></Checkbox>
     </td>
     <td>
       <router-link :to="to">{{ id }}</router-link>
@@ -15,7 +18,7 @@
     <td>
       <router-link :to="to">{{ lastname }}</router-link>
     </td>
-    <td class="flex gap-small">
+    <td class="">
       <button @click="editUser">
         <span class="icon edit"></span>
         <span class="label">{{ $t("userTable.edit_button_label") }}</span>

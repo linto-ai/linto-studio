@@ -1,7 +1,10 @@
 <template>
   <tr @click="onClickLine">
     <td class="content-size">
-      <Checkbox :checkboxValue="id_profile" v-model="selectedProfiles" />
+      <Checkbox
+        class="line-selector"
+        :checkboxValue="id_profile"
+        v-model="selectedProfiles" />
       <!-- <input type="checkbox" :value="profile" v-model="selectedProfiles" /> -->
     </td>
     <td class="content-size center-text">

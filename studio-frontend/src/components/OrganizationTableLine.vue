@@ -1,5 +1,11 @@
 <template>
-  <tr>
+  <tr @click="selectOrganization">
+    <td>
+      <Checkbox
+        class="line-selector"
+        v-model="p_selectedOrganizations"
+        :checkboxValue="id"></Checkbox>
+    </td>
     <td>
       <router-link :to="to">{{ id }}</router-link>
     </td>
@@ -19,6 +25,8 @@
 import { organizationModelMixin } from "@/mixins/organizationModel"
 import router from "../routers/app-router"
 
+import Checkbox from "@/components/Checkbox.vue"
+
 export default {
   mixins: [organizationModelMixin],
   props: {
@@ -29,6 +37,11 @@ export default {
     linkTo: {
       type: Object,
       required: false,
+    },
+    value: {
+      //selectedOrganizations
+      type: Array,
+      required: true,
     },
   },
   data() {
@@ -42,12 +55,29 @@ export default {
         params: { organizationId: this.id },
       }
     },
+    p_selectedOrganizations: {
+      get() {
+        return this.value
+      },
+      set(value) {
+        this.$emit("input", value)
+      },
+    },
   },
   methods: {
     editOrganization() {
       router.push(this.to)
     },
+    selectOrganization() {
+      this.p_selectedOrganizations = this.p_selectedOrganizations.includes(
+        this.id,
+      )
+        ? this.p_selectedOrganizations.filter((id) => id !== this.id)
+        : [...this.p_selectedOrganizations, this.id]
+    },
   },
-  components: {},
+  components: {
+    Checkbox,
+  },
 }
 </script>

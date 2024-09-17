@@ -12,7 +12,10 @@
         <span class="label">Rechercher</span>
       </button>
     </form>
-    <button class="btn green" @click="$emit('on-create')">
+    <button
+      v-if="add_button_label"
+      class="btn green"
+      @click="$emit('on-create')">
       <span class="icon plus"></span>
       <span class="label">{{ add_button_label }}</span>
     </button>
@@ -31,7 +34,7 @@ export default {
   props: {
     title: { type: String, required: true },
     count: { type: Number, required: true },
-    add_button_label: { type: String, required: true },
+    add_button_label: { type: String, required: false },
     remove_button_label: { type: String, required: false },
     disableDelete: { type: Boolean, default: false },
   },

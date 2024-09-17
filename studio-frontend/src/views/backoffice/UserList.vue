@@ -7,9 +7,6 @@
       :disableDelete="selectedUsers.length === 0"
       :remove_button_label="
         $tc('backoffice.user_list.remove_user_button', selectedUsers.length)
-      "
-      :add_button_label="
-        $t('backoffice.user_list.add_user_button')
       "></HeaderTable>
     <div class="backoffice-listing-container">
       <UserTable
