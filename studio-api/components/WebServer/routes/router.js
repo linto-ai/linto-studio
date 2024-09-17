@@ -58,9 +58,9 @@ const loadMiddlewares = (route) => {
   if (route.requireSuperAdmin)
     middlewares.push(platform_middlewares.isPlatformAdmin)
   if (route.requireSystemAdministrator)
-    middlewares.push(platform_middlewares.isSystemAdministrator)
+    middlewares.push(platform_middlewares.isPlatformSystemAdministrator)
   if (route.requireSessionOperator)
-    middlewares.push(platform_middlewares.isSessionOperator)
+    middlewares.push(platform_middlewares.isPlatformSessionOperator)
 
   if (route.requireConversationReadAccess)
     middlewares.push(conversation_middlewares.asReadAccess)

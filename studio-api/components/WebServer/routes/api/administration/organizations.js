@@ -4,6 +4,7 @@ const debug = require("debug")(
 const { listAllOrganization } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/administration/organizations.js`,
 )
+
 module.exports = (webserver) => {
   return [
     {
@@ -11,20 +12,6 @@ module.exports = (webserver) => {
       method: "get",
       requireAuth: true,
       requireSessionOperator: true,
-      controller: listAllOrganization,
-    },
-    {
-      path: "/organizations/:organizationId",
-      method: "delete",
-      requireAuth: true,
-      requireSystemAdministrator: true,
-      controller: listAllOrganization,
-    },
-    {
-      path: "/organizations/:organizationId/users",
-      method: "post",
-      requireAuth: true,
-      requireSystemAdministrator: true,
       controller: listAllOrganization,
     },
   ]

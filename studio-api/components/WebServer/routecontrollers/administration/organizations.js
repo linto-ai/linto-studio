@@ -12,22 +12,6 @@ async function listAllOrganization(req, res, next) {
   }
 }
 
-async function deleteOrganization(req, res, next) {
-  try {
-  } catch (err) {
-    next(err)
-  }
-}
-
-async function addUserInOrganization(req, res, next) {
-  try {
-  } catch (err) {
-    next(err)
-  }
-}
-
 module.exports = {
   listAllOrganization,
-  deleteOrganization,
-  addUserInOrganization,
 }

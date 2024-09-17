@@ -15,6 +15,14 @@ module.exports = {
     if (await checkAccess(req, ROLE.SUPER_ADMINISTRATOR)) next()
     else next(new UserForbidden())
   },
+  isPlatformSystemAdministrator: async (req, res, next) => {
+    if (await checkAccess(req, ROLE.SYSTEM_ADMINISTRATOR)) next()
+    else next(new UserForbidden())
+  },
+  isPlatformSessionOperator: async (req, res, next) => {
+    if (await checkAccess(req, ROLE.SESSION_OPERATOR)) next()
+    else next(new UserForbidden())
+  },
   isSuperAdmin: (req) => checkAccess(req, ROLE.SUPER_ADMINISTRATOR),
   isSystemAdministrator: (req) => checkAccess(req, ROLE.SYSTEM_ADMINISTRATOR),
   isSessionOperator: (req) => checkAccess(req, ROLE.SESSION_OPERATOR),
