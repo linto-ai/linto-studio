@@ -16,7 +16,11 @@
       <span class="icon plus"></span>
       <span class="label">{{ add_button_label }}</span>
     </button>
-    <button class="btn red-border" @click="$emit('on-delete')">
+    <button
+      v-if="remove_button_label"
+      class="btn red-border"
+      @click="$emit('on-delete')"
+      :disabled="disableDelete">
       <span class="icon delete"></span>
       <span class="label">{{ remove_button_label }}</span>
     </button>
@@ -28,7 +32,8 @@ export default {
     title: { type: String, required: true },
     count: { type: Number, required: true },
     add_button_label: { type: String, required: true },
-    remove_button_label: { type: String, required: true },
+    remove_button_label: { type: String, required: false },
+    disableDelete: { type: Boolean, default: false },
   },
   data() {
     return {}

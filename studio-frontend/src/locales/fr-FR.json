@@ -506,6 +506,12 @@
     "label_name": "Nom de l'organisation",
     "action_btn": "Créer"
   },
+  "modal_delete_users": {
+    "title": "Supprimer un utilisateur | Supprimer {count} utilisateurs",
+    "content": "Êtes-vous sûr de vouloir supprimer cet utilisateur ? | Êtes-vous sûr de vouloir supprimer les {count} utilisateurs sélectionnés ?",
+    "action_btn": "Confirmer la suppression",
+    "error": "Une erreur s'est produite lors de la suppression de l'utilisateur | {count} utilisateurs n'ont pas pu être supprimés"
+  },
   "navigation": {
     "account": {
       "account_link": "Mon compte",

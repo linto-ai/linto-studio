@@ -1,8 +1,10 @@
 <template>
   <MainContentBackoffice :loading="loading">
     <HeaderTable
+      @on-delete="showModalDeleteUsers"
       :title="$t('backoffice.user_list.title')"
       :count="count"
+      :disableDelete="selectedUsers.length === 0"
       :remove_button_label="
         $tc('backoffice.user_list.remove_user_button', selectedUsers.length)
       "
@@ -15,6 +17,11 @@
         :linkTo="{ name: 'backoffice-userDetail' }"
         v-model="selectedUsers" />
     </div>
+    <ModalDeleteUsers
+      @on-close="hideModalDeleteUsers"
+      @on-confirm="reload"
+      :selectedUsers="selectedUsers"
+      v-if="modalDeleteUsersIsVisible"></ModalDeleteUsers>
   </MainContentBackoffice>
 </template>
 <script>
@@ -22,6 +29,7 @@ import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import UserTable from "@/components/UserTable.vue"
 import { apiGetAllUsers } from "@/api/admin.js"
 import HeaderTable from "../../components/HeaderTable.vue"
+import ModalDeleteUsers from "../../components/ModalDeleteUsers.vue"
 
 export default {
   props: {},
@@ -30,6 +38,7 @@ export default {
       loading: true,
       users: [],
       selectedUsers: [],
+      modalDeleteUsersIsVisible: false,
     }
   },
   mounted() {
@@ -41,17 +50,27 @@ export default {
       this.users = await apiGetAllUsers()
       this.loading = false
     },
+    showModalDeleteUsers() {
+      this.modalDeleteUsersIsVisible = true
+    },
+    hideModalDeleteUsers() {
+      this.modalDeleteUsersIsVisible = false
+    },
+    reload() {
+      this.hideModalDeleteUsers()
+      this.fetchAllUsers()
+    },
   },
   computed: {
     count() {
       return this.users.length
     },
   },
-  watch: {
-    selectedUsers() {
-      console.log(this.selectedUsers)
-    },
+  components: {
+    MainContentBackoffice,
+    UserTable,
+    HeaderTable,
+    ModalDeleteUsers,
   },
-  components: { MainContentBackoffice, UserTable, HeaderTable },
 }
 </script>

@@ -50,7 +50,6 @@ export default {
       this.modalCreateOrganizationIsVisible = false
     },
     newOrganization(res) {
-      console.log(res)
       this.organizationList.unshift(res.data)
       this.hideModalCreateOrganization()
     },
