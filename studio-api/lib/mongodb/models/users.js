@@ -338,6 +338,25 @@ class UsersModel extends MongoModel {
       return error
     }
   }
+
+  async deleteMany(ids) {
+    try {
+      const objectIdArray = ids.map((id) => {
+        if (typeof id === "string") return this.getObjectId(id)
+        else if (typeof id === "object") return id
+      })
+
+      const query = {
+        _id: { $in: objectIdArray },
+        role: { $bitsAllClear: ROLE.SUPER_ADMINISTRATOR }, // 4th bit (8 in decimal) must be clear (0)
+      }
+
+      return await this.mongoDeleteMany(query)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
 }
 
 module.exports = new UsersModel()

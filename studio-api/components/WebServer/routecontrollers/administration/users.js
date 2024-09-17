@@ -83,12 +83,12 @@ async function listAllUser(req, res, next) {
 
 async function deleteUser(req, res, next) {
   try {
-    if (!req.params.userId) throw new UserUnsupportedMediaType()
+    if (!req.body.userIds) throw new UserUnsupportedMediaType()
 
-    const user = await model.users.getById(req.params.userId)
-    if (user.length === 0) throw new UserError("User not found")
+    if (!Array.isArray(req.body.userIds))
+      throw new UserUnsupportedMediaType("userIds must be an array")
 
-    await model.users.delete(user[0]._id)
+    await model.users.deleteMany(req.body.userIds)
     return res.status(200).send({ message: "User deleted" })
   } catch (err) {
     next(err)

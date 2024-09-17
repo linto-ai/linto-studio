@@ -8,28 +8,28 @@ const { createSuperUser, listAllUser, deleteUser, updateUser } = require(
 module.exports = (webserver) => {
   return [
     {
-      path: "/user",
+      path: "/users",
       method: "post",
       requireAuth: true,
       requireSuperAdmin: true,
       controller: createSuperUser,
     },
     {
-      path: "/user",
+      path: "/users",
       method: "get",
       requireAuth: true,
       requireSuperAdmin: true,
       controller: listAllUser,
     },
     {
-      path: "/user/:userId",
+      path: "/users",
       method: "delete",
       requireAuth: true,
       requireSuperAdmin: true,
       controller: deleteUser,
     },
     {
-      path: "/user/:userId",
+      path: "/users/:userId",
       method: "patch",
       requireAuth: true,
       requireSuperAdmin: true,
