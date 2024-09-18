@@ -162,10 +162,38 @@ class UsersModel extends MongoModel {
     }
   }
 
-  async listAllUsers() {
+  async listAllUsers(filter) {
     try {
-      const query = {}
-      return await this.mongoRequest(query, personal_projection) // we don't want to return sensitive data
+      let query = {}
+
+      if (filter.name) {
+        query.name = {
+          $regex: filter.name,
+          $options: "i",
+        }
+      }
+
+      if (filter.lastname) {
+        query.lastname = {
+          $regex: filter.lastname,
+          $options: "i",
+        }
+      }
+
+      if (filter.email) {
+        query.email = {
+          $regex: filter.email,
+          $options: "i",
+        }
+      }
+
+      if (!filter) return await this.mongoRequest(query, personal_projection)
+      else
+        return await this.mongoAggregatePaginate(
+          query,
+          personal_projection,
+          filter,
+        )
     } catch (error) {
       console.error(error)
       return error

@@ -74,7 +74,7 @@ async function createSuperUser(req, res, next) {
 
 async function listAllUser(req, res, next) {
   try {
-    const users = await model.users.listAllUsers()
+    const users = await model.users.listAllUsers(req.query)
     return res.status(200).send(users)
   } catch (err) {
     next(err)

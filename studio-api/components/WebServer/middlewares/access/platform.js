@@ -64,6 +64,7 @@ async function setOrganizationOwnerAsUser(req, organizationId) {
   const organization = await model.organizations.getById(organizationId)
   if (organization.length > 0) {
     req.userRole = ORGANIZATION_ROLE.ADMIN
+    req.payload.data.adminId = req.payload.data.userId
     req.payload.data.userId = organization[0].owner
   }
 }

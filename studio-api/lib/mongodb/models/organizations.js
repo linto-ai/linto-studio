@@ -40,10 +40,22 @@ class OrganizationModel extends MongoModel {
   }
 
   // get all organizations
-  async getAll() {
+  async getAll(filter) {
     try {
-      const query = {}
-      return await this.mongoRequest(query)
+      let query = {}
+      if (filter.name) {
+        query.name = {
+          $regex: filter.name,
+          $options: "i",
+        }
+      }
+      if (!filter) return await this.mongoRequest(query)
+      else
+        return await this.mongoAggregatePaginate(
+          query,
+          public_projection,
+          filter,
+        )
     } catch (error) {
       console.error(error)
       return error
