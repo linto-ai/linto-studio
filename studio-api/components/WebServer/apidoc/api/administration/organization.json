@@ -1,0 +1,32 @@
+{
+  "/api/administration/organizations": {
+    "get": {
+      "tags": ["administration"],
+      "summary": "List all organizations of the platform",
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userOrganizations": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/OrganizationUsers"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    }
+  }
+}
