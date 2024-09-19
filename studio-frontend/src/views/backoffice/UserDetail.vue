@@ -1,8 +1,8 @@
 <template>
   <MainContentBackoffice :loading="loading">
     <UserSettingsRights :userInfo="user" />
-    <UserSettingsPersonal :userInfo="user" />
-    <UserSettingsPassword :userInfo="user" />
+    <UserSettingsPersonal :userInfo="user" isAdminPage />
+    <UserSettingsPassword :userInfo="user" isAdminPage />
   </MainContentBackoffice>
 </template>
 <script>

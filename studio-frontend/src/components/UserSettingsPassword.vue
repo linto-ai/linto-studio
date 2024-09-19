@@ -50,13 +50,19 @@
 <script>
 import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
+
 import { apiUpdateUserInfo } from "@/api/user.js"
+import { apiAdminUpdateUser } from "@/api/admin.js"
 
 export default {
   props: {
     userInfo: {
       type: Object,
       required: true,
+    },
+    isAdminPage: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -89,14 +95,15 @@ export default {
     },
 
     async updatePassword() {
-      let req = await apiUpdateUserInfo(
-        { password: this.newPassword.value },
-        {
-          timeout: 3000,
-          redirect: false,
-        },
-      )
+      let req = null
 
+      if (!this.isAdminPage) {
+        req = await apiUpdateUserInfo({ password: this.newPassword.value })
+      } else {
+        req = await apiAdminUpdateUser(this.userInfo._id, {
+          password: this.newPassword.value,
+        })
+      }
       if (req.status === "success") {
         this.newPassword = {
           value: "",
@@ -109,6 +116,15 @@ export default {
           valid: false,
         }
         bus.$emit("user_settings_update", {})
+        bus.$emit("app_notif", {
+          status: "success",
+          message: this.$t("usersettings.notif_success"),
+        })
+      } else {
+        bus.$emit("app_notif", {
+          status: "error",
+          message: this.$t("usersettings.notif_error"),
+        })
       }
     },
     async dismissForgottenPswdNotif(e) {

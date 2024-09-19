@@ -856,6 +856,8 @@
       "submit_button": "Update notifications",
       "title": "Notifications by email"
     },
+    "notif_success": "User informations updated",
+    "notif_error": "An error occurred while updating user informations",
     "personal_information": "Personal information",
     "picture_label": "Picture",
     "private_label": "Set profile private",

@@ -850,6 +850,8 @@
       "submit_button": "Mettre à jour les notifications",
       "title": "Notifications par email"
     },
+    "notif_success": "Les informations ont été mises à jour",
+    "notif_error": "Une erreur s'est produite lors de la mise à jour des informations",
     "personal_information": "Informations personnelles",
     "picture_label": "Image de profil",
 
@@ -862,7 +864,9 @@
     "profile_image_button": "Choisir une image",
     "role_section": {
       "title": "Rôle d'administration",
-      "submit_button": "Sauvegarder les rôles"
+      "submit_button": "Sauvegarder les rôles",
+      "notif_success": "Les rôles ont été mis à jour",
+      "notif_error": "Une erreur s'est produite lors de la mise à jour des rôles"
     },
     "send_verification_link": "Envoyer un lien de validation",
     "share_notification_label": "Recevez une notification par e-mail lorsqu'un média vous est partagé",
