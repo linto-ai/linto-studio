@@ -4,7 +4,6 @@ const debug = require("debug")(
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 
 const MongoModel = require(`../model`)
-const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const public_projection = { token: 0 }
 
