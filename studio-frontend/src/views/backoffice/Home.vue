@@ -1,7 +1,7 @@
 <template>
   <MainContentBackoffice :loading="loading">
     <div class="flex gap-medium">
-      <StatCard :count="userCount" title="Users" icon="profile" />
+      <StatCard :count="usersCount" title="Users" icon="profile" />
       <StatCard :count="organizationCount" title="Organizations" icon="work" />
     </div>
   </MainContentBackoffice>
@@ -16,8 +16,8 @@ export default {
   data() {
     return {
       loading: true,
-      users: [],
-      organizationList: [],
+      usersCount: 0,
+      organizationCount: 0,
     }
   },
   mounted() {
@@ -26,25 +26,20 @@ export default {
   methods: {
     async fetchAll() {
       this.loading = true
-      await this.fetchAllUsers()
-      await this.fetchAllOrganizations()
+      await this.countUsers()
+      await this.countOrganizations()
       this.loading = false
     },
-    async fetchAllUsers() {
-      this.users = await apiGetAllUsers()
+    async countUsers() {
+      const req = await apiGetAllUsers()
+      this.usersCount = req.count
     },
-    async fetchAllOrganizations() {
-      this.organizationList = await apiGetAllOrganizations()
-    },
-  },
-  computed: {
-    userCount() {
-      return this.users.length
-    },
-    organizationCount() {
-      return this.organizationList.length
+    async countOrganizations() {
+      const req = await apiGetAllOrganizations()
+      this.organizationCount = req.count
     },
   },
+  computed: {},
   components: { MainContentBackoffice, StatCard },
 }
 </script>

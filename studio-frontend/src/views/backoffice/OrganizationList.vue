@@ -13,6 +13,10 @@
         :linkTo="{ name: 'backoffice-organizationDetail' }"
         v-model="selectedOrganizations" />
     </div>
+    <Pagination
+      :pages="totalPagesNumber"
+      v-model="currentPageNb"
+      v-if="count > 0"></Pagination>
     <ModalCreateOrganization
       @on-confirm="newOrganization"
       @on-cancel="hideModalCreateOrganization"
@@ -22,18 +26,22 @@
 <script>
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import { apiGetAllOrganizations } from "@/api/admin.js"
-import HeaderTable from "../../components/HeaderTable.vue"
-import OrganizationTable from "../../components/OrganizationTable.vue"
-import ModalCreateOrganization from "../../components/ModalCreateOrganization.vue"
 
+import HeaderTable from "@/components/HeaderTable.vue"
+import OrganizationTable from "@/components/OrganizationTable.vue"
+import ModalCreateOrganization from "@/components/ModalCreateOrganization.vue"
+import Pagination from "@/components/Pagination.vue"
 export default {
   props: {},
   data() {
     return {
       loading: true,
       organizationList: [],
+      count: 0,
       modalCreateOrganizationIsVisible: false,
       selectedOrganizations: [],
+      totalPagesNumber: 0,
+      currentPageNb: 0,
     }
   },
   mounted() {
@@ -42,7 +50,10 @@ export default {
   methods: {
     async fetchAllOrganizations() {
       this.loading = true
-      this.organizationList = await apiGetAllOrganizations()
+      const req = await apiGetAllOrganizations(this.currentPageNb)
+      this.organizationList = req.list
+      this.count = req.count
+      this.totalPagesNumber = Math.ceil(req.count / 10) + 1
       this.loading = false
     },
     showModalCreateOrganization() {
@@ -56,14 +67,10 @@ export default {
       this.hideModalCreateOrganization()
     },
   },
-  computed: {
-    count() {
-      return this.organizationList.length
-    },
-  },
+  computed: {},
   watch: {
-    selectedOrganizations() {
-      console.log(this.selectedOrganizations)
+    currentPageNb() {
+      this.fetchAllOrganizations()
     },
   },
   components: {
@@ -71,6 +78,7 @@ export default {
     OrganizationTable,
     HeaderTable,
     ModalCreateOrganization,
+    Pagination,
   },
 }
 </script>

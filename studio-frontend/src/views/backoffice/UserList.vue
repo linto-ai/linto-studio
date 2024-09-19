@@ -14,6 +14,10 @@
         :linkTo="{ name: 'backoffice-userDetail' }"
         v-model="selectedUsers" />
     </div>
+    <Pagination
+      :pages="totalPagesNumber"
+      v-model="currentPageNb"
+      v-if="count > 0"></Pagination>
     <ModalDeleteUsers
       @on-close="hideModalDeleteUsers"
       @on-confirm="reload"
@@ -27,6 +31,7 @@ import UserTable from "@/components/UserTable.vue"
 import { apiGetAllUsers } from "@/api/admin.js"
 import HeaderTable from "../../components/HeaderTable.vue"
 import ModalDeleteUsers from "../../components/ModalDeleteUsers.vue"
+import Pagination from "../../components/Pagination.vue"
 
 export default {
   props: {},
@@ -34,8 +39,11 @@ export default {
     return {
       loading: true,
       users: [],
+      count: 0,
       selectedUsers: [],
       modalDeleteUsersIsVisible: false,
+      currentPageNb: 0,
+      totalPagesNumber: 0,
     }
   },
   mounted() {
@@ -44,7 +52,10 @@ export default {
   methods: {
     async fetchAllUsers() {
       this.loading = true
-      this.users = await apiGetAllUsers()
+      const req = await apiGetAllUsers(this.currentPageNb)
+      this.users = req.list
+      this.count = req.count
+      this.totalPagesNumber = Math.ceil(req.count / 10) + 1
       this.loading = false
     },
     showModalDeleteUsers() {
@@ -58,9 +69,10 @@ export default {
       this.fetchAllUsers()
     },
   },
-  computed: {
-    count() {
-      return this.users.length
+  computed: {},
+  watch: {
+    currentPageNb() {
+      this.fetchAllUsers()
     },
   },
   components: {
@@ -68,6 +80,7 @@ export default {
     UserTable,
     HeaderTable,
     ModalDeleteUsers,
+    Pagination,
   },
 }
 </script>
