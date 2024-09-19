@@ -11,9 +11,9 @@
         v-model="value"
         :id="id"
         v-if="!switchDisplay"
-        :disabled="disabled" />
+        :disabled="p_disabled" />
       <SwitchInput
-        :disabled="disabled"
+        :disabled="p_disabled"
         v-model="value"
         :id="id"
         v-else
@@ -77,6 +77,11 @@ export default {
     },
     "field.value"() {
       this.value = this.field.value
+    },
+  },
+  computed: {
+    p_disabled() {
+      return this.disabled || this.field.disabled
     },
   },
   methods: {},

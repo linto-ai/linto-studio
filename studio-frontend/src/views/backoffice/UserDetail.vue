@@ -1,5 +1,6 @@
 <template>
   <MainContentBackoffice :loading="loading">
+    <UserSettingsRights :userInfo="user" />
     <UserSettingsPersonal :userInfo="user" />
     <UserSettingsPassword :userInfo="user" />
   </MainContentBackoffice>
@@ -9,6 +10,7 @@ import { apiGetPublicUserById } from "@/api/user.js"
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import UserSettingsPersonal from "@/components/UserSettingsPersonal.vue"
 import UserSettingsPassword from "@/components/UserSettingsPassword.vue"
+import UserSettingsRights from "@/components/UserSettingsRights.vue"
 export default {
   props: {},
   data() {
@@ -37,6 +39,7 @@ export default {
     MainContentBackoffice,
     UserSettingsPersonal,
     UserSettingsPassword,
+    UserSettingsRights,
   },
 }
 </script>

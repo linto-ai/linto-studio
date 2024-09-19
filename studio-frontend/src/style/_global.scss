@@ -152,8 +152,20 @@ li:last-child {
   margin: var(--small-gap);
 }
 
+.small-margin-top {
+  margin-top: var(--small-gap);
+}
+
+.small-margin-bottom {
+  margin-bottom: var(--small-gap);
+}
+
 .medium-margin-top {
   margin-top: var(--medium-gap);
+}
+
+.medium-margin-bottom {
+  margin-bottom: var(--medium-gap);
 }
 
 .medium-margin {

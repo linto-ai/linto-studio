@@ -864,6 +864,12 @@
       "title": "Profile visibility"
     },
     "profile_image_button": "Choose a file",
+    "role_section": {
+      "title": "Platform role",
+      "submit_button": "Update role",
+      "notif_success": "Role updated",
+      "notif_error": "An error occurred while updating the role"
+    },
     "send_verification_link": "Send validation link",
     "share_notification_label": "Receive email notification when a media is shared to you",
     "title": "Profile settings",
@@ -895,5 +901,10 @@
       "userNumber": "Number of users"
     },
     "edit_button_label": "Edit"
+  },
+  "platform_role": {
+    "session_operator": "Session operator",
+    "system_administrator": "System administrator",
+    "super_administrator": "Super administrator"
   }
 }

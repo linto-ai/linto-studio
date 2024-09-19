@@ -852,12 +852,18 @@
     },
     "personal_information": "Informations personnelles",
     "picture_label": "Image de profil",
+
     "private_label": "Rendre le profil privée",
+
     "profil_visibility": {
       "label_private": "Profil privé",
       "title": "Visibilité du profil"
     },
     "profile_image_button": "Choisir une image",
+    "role_section": {
+      "title": "Rôle d'administration",
+      "submit_button": "Sauvegarder les rôles"
+    },
     "send_verification_link": "Envoyer un lien de validation",
     "share_notification_label": "Recevez une notification par e-mail lorsqu'un média vous est partagé",
     "title": "Paramètres utilisateur",
@@ -889,5 +895,10 @@
       "userNumber": "Nombre d'utilisateurs"
     },
     "edit_button_label": "Modifier"
+  },
+  "platform_role": {
+    "session_operator": "Opérateur de session",
+    "system_administrator": "Administrateur système",
+    "super_administrator": "Super administrateur"
   }
 }

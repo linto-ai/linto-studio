@@ -30,3 +30,15 @@ export async function apiDeleteMultipleUsers(userIds) {
 
   return res
 }
+
+export async function apiAdminUpdateUser(userId, data) {
+  const res = await sendRequest(
+    `${BASE_API}/administration/users/${userId}`,
+    {
+      method: "patch",
+    },
+    data,
+  )
+
+  return res
+}
