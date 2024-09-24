@@ -7,11 +7,14 @@
 </template>
 <script>
 import { apiGetPublicUserById } from "@/api/user.js"
+import { platformRoleMixin } from "@/mixins/platformRole.js"
+
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import UserSettingsPersonal from "@/components/UserSettingsPersonal.vue"
 import UserSettingsPassword from "@/components/UserSettingsPassword.vue"
 import UserSettingsRights from "@/components/UserSettingsRights.vue"
 export default {
+  mixins: [platformRoleMixin],
   props: {},
   data() {
     return {
@@ -21,6 +24,9 @@ export default {
     }
   },
   mounted() {
+    if (!this.isAtLeastSystemAdministrator) {
+      this.$router.push({ name: "not_found" })
+    }
     this.fetchUser()
   },
   methods: {

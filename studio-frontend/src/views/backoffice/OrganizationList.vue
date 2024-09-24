@@ -26,12 +26,14 @@
 <script>
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import { apiGetAllOrganizations } from "@/api/admin.js"
+import { platformRoleMixin } from "@/mixins/platformRole.js"
 
 import HeaderTable from "@/components/HeaderTable.vue"
 import OrganizationTable from "@/components/OrganizationTable.vue"
 import ModalCreateOrganization from "@/components/ModalCreateOrganization.vue"
 import Pagination from "@/components/Pagination.vue"
 export default {
+  mixins: [platformRoleMixin],
   props: {},
   data() {
     return {
@@ -45,6 +47,9 @@ export default {
     }
   },
   mounted() {
+    if (!this.isAtLeastSystemAdministrator) {
+      this.$router.push({ name: "not_found" })
+    }
     this.fetchAllOrganizations()
   },
   methods: {
@@ -53,7 +58,7 @@ export default {
       const req = await apiGetAllOrganizations(this.currentPageNb)
       this.organizationList = req.list
       this.count = req.count
-      this.totalPagesNumber = Math.ceil(req.count / 10) + 1
+      this.totalPagesNumber = Math.ceil(req.count / 10)
       this.loading = false
     },
     showModalCreateOrganization() {

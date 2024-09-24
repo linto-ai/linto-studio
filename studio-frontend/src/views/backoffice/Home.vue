@@ -9,9 +9,12 @@
 <script>
 import { apiGetAllUsers, apiGetAllOrganizations } from "@/api/admin.js"
 
+import { platformRoleMixin } from "@/mixins/platformRole.js"
+
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import StatCard from "@/components/StatCard.vue"
 export default {
+  mixins: [platformRoleMixin],
   props: {},
   data() {
     return {
@@ -21,6 +24,9 @@ export default {
     }
   },
   mounted() {
+    if (!this.isAtLeastSystemAdministrator) {
+      this.$router.push({ name: "not_found" })
+    }
     this.fetchAll()
   },
   methods: {
@@ -39,6 +45,7 @@ export default {
       this.organizationCount = req.count
     },
   },
+  watch: {},
   computed: {},
   components: { MainContentBackoffice, StatCard },
 }

@@ -51,7 +51,7 @@ export const platformRoleMixin = {
       return this.platformRole >= ROLES.SESSION_OPERATOR
     },
     isAtLeastSystemAdministrator() {
-      return isSystemAdministrator || isSuperAdministrator
+      return this.isSystemAdministrator || this.isSuperAdministrator
     },
     platformRole() {
       return this.$store.state.userInfo.role

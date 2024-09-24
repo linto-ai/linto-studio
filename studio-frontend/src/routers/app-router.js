@@ -405,6 +405,8 @@ router.beforeEach(async (to, from, next) => {
           } else {
             next({ name: "not_found" })
           }
+        } else if (to.meta?.backoffice) {
+          next()
         } else {
           next()
         }

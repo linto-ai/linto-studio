@@ -56,7 +56,7 @@ export default {
     },
     title() {
       if (this.isBackofficePage) {
-        return getEnv("VUE_APP_NAME") + "| Backoffice"
+        return getEnv("VUE_APP_NAME") + " – Backoffice"
       }
       return getEnv("VUE_APP_NAME")
     },

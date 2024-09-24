@@ -26,14 +26,17 @@
   </MainContentBackoffice>
 </template>
 <script>
+import { platformRoleMixin } from "@/mixins/platformRole.js"
+import { apiGetAllUsers } from "@/api/admin.js"
+
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import UserTable from "@/components/UserTable.vue"
-import { apiGetAllUsers } from "@/api/admin.js"
-import HeaderTable from "../../components/HeaderTable.vue"
-import ModalDeleteUsers from "../../components/ModalDeleteUsers.vue"
-import Pagination from "../../components/Pagination.vue"
+import HeaderTable from "@/components/HeaderTable.vue"
+import ModalDeleteUsers from "@/components/ModalDeleteUsers.vue"
+import Pagination from "@/components/Pagination.vue"
 
 export default {
+  mixins: [platformRoleMixin],
   props: {},
   data() {
     return {
@@ -47,6 +50,9 @@ export default {
     }
   },
   mounted() {
+    if (!this.isAtLeastSystemAdministrator) {
+      this.$router.push({ name: "not_found" })
+    }
     this.fetchAllUsers()
   },
   methods: {
@@ -55,7 +61,7 @@ export default {
       const req = await apiGetAllUsers(this.currentPageNb)
       this.users = req.list
       this.count = req.count
-      this.totalPagesNumber = Math.ceil(req.count / 10) + 1
+      this.totalPagesNumber = Math.ceil(req.count / 10)
       this.loading = false
     },
     showModalDeleteUsers() {

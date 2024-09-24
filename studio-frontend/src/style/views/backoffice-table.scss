@@ -9,6 +9,11 @@
   margin: 0;
 }
 
+.backoffice-listing-header__total {
+  font-size: 2rem;
+  color: var(--text-disabled);
+}
+
 .backoffice-listing-container {
   background-color: var(--background-primary);
   border: var(--border-block);
