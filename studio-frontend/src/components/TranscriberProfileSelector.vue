@@ -35,6 +35,7 @@
             :sortListDirection="sortListDirection"
             :sortListKey="sortListKey" />
           <ArrayHeader
+            class="no-size"
             @list_sort_by="sortBy"
             eventLabel="translations"
             :label="$t('session.profile_selector.labels.translations')"

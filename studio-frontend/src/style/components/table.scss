@@ -9,7 +9,7 @@ table {
     tr {
       border-bottom: 1px solid #757575;
       th {
-        padding: 5px 0;
+        padding: 5px 0.25rem;
         font-size: 14px;
         text-transform: uppercase;
         color: #757575;
@@ -20,6 +20,11 @@ table {
       }
     }
   }
+
+  th.no-size {
+    width: 0;
+  }
+
   tbody {
     tr {
       &:hover {
@@ -117,4 +122,9 @@ table {
 td.content-size {
   width: 1%;
   white-space: nowrap;
+}
+
+// :has selector does not work for old version of firefox, but it's not critical feature (latest ESR of 2024 should work fine)
+tr:has(.line-selector input:checked) {
+  background-color: var(--selected-background);
 }

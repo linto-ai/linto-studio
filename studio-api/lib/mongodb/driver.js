@@ -2,6 +2,7 @@ const mongoDb = require("mongodb")
 const { MongoClient } = require("mongodb")
 
 const index = require("./index/init.js")
+const user = require("./populate/init.js")
 
 let urlMongo = "mongodb://"
 
@@ -62,6 +63,7 @@ class MongoDriver {
 
         // Optionally, create indexes
         index.createIndex(MongoDriver)
+        user.createSuperAdmin()
       } catch (err) {
         console.error("> MongoDB ERROR unable to connect:", err)
       }

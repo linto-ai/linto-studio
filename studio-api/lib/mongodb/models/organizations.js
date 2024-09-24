@@ -4,7 +4,6 @@ const debug = require("debug")(
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 
 const MongoModel = require(`../model`)
-const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const public_projection = { token: 0 }
 
@@ -40,18 +39,28 @@ class OrganizationModel extends MongoModel {
   }
 
   // get all organizations
-  async getAll() {
+  async getAll(filter) {
     try {
-      const query = {}
-      const projetion = { token: 0, users: 0 }
-      return await this.mongoRequest(query, projetion)
+      let query = {}
+      if (filter.name) {
+        query.name = {
+          $regex: filter.name,
+          $options: "i",
+        }
+      }
+      if (!filter) return await this.mongoRequest(query)
+      else
+        return await this.mongoAggregatePaginate(
+          query,
+          public_projection,
+          filter,
+        )
     } catch (error) {
       console.error(error)
       return error
     }
   }
 
-  // get a user by id
   async getById(id) {
     try {
       const query = {

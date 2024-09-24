@@ -3,6 +3,8 @@ const debug = require("debug")(
 )
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
+const platformAccess = require(`./platform`)
+
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 
 const {
@@ -15,40 +17,59 @@ const {
 
 module.exports = {
   asAdminAccess: async (req, res, next) => {
-    await access(
-      req,
-      next,
-      req.params.organizationId,
-      req.payload.data.userId,
-      ROLES.ADMIN,
-    )
+    if (await platformAccess.isSystemAdministrator(req)) next()
+    else
+      await access(
+        req,
+        next,
+        req.params.organizationId,
+        req.payload.data.userId,
+        ROLES.ADMIN,
+      )
   },
   asMaintainerAccess: async (req, res, next) => {
-    await access(
-      req,
-      next,
-      req.params.organizationId,
-      req.payload.data.userId,
-      ROLES.MAINTAINER,
-    )
+    if (await platformAccess.isSystemAdministrator(req)) next()
+    else
+      await access(
+        req,
+        next,
+        req.params.organizationId,
+        req.payload.data.userId,
+        ROLES.MAINTAINER,
+      )
+  },
+  asMeetingManagerAccess: async (req, res, next) => {
+    if (await platformAccess.isSessionOperator(req)) next()
+    else
+      await access(
+        req,
+        next,
+        req.params.organizationId,
+        req.payload.data.userId,
+        ROLES.MEETING_MANAGER,
+      )
   },
   asUploaderAccess: async (req, res, next) => {
-    await access(
-      req,
-      next,
-      req.params.organizationId,
-      req.payload.data.userId,
-      ROLES.UPLOADER,
-    )
+    if (await platformAccess.isSystemAdministrator(req)) next()
+    else
+      await access(
+        req,
+        next,
+        req.params.organizationId,
+        req.payload.data.userId,
+        ROLES.UPLOADER,
+      )
   },
   asMemberAccess: async (req, res, next) => {
-    await access(
-      req,
-      next,
-      req.params.organizationId,
-      req.payload.data.userId,
-      ROLES.MEMBER,
-    )
+    if (await platformAccess.isSystemAdministrator(req)) return next()
+    else
+      await access(
+        req,
+        next,
+        req.params.organizationId,
+        req.payload.data.userId,
+        ROLES.MEMBER,
+      )
   },
   access: async (req, next, organizationId, userId, right) => {
     await access(req, next, organizationId, userId, right)
@@ -67,7 +88,6 @@ async function access(req, next, organizationId, userId, right) {
         (user) =>
           user.userId === userId && ROLES.hasRoleAccess(user.role, right),
       )
-
       if (isUserFound.length !== 0) {
         if (req) req.userRole = isUserFound[0].role
 

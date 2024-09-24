@@ -8,6 +8,9 @@ const randomstring = require("randomstring")
 const VALIDITY_DATE = require(
   `${process.cwd()}/lib/dao/validityDate/validityDate.js`,
 )
+
+const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
+
 const public_projection = {
   email: 1,
   firstname: 1,
@@ -21,6 +24,39 @@ const personal_projection = {
   passwordHash: 0,
   keyToken: 0,
   authLink: 0,
+  //role: 0,
+}
+
+const defaultUserPayload = {
+  keyToken: null,
+  emailIsVerified: false,
+  verifiedEmail: [],
+  private: false,
+  favorites: [],
+  emailNotifications: {
+    conversations: {
+      share: { update: false, delete: false, add: true },
+    },
+    organizations: { update: false, delete: false, add: true },
+  },
+}
+
+function generatePasswordHash(password) {
+  const salt = randomstring.generate(12)
+  const passwordHash = crypto
+    .pbkdf2Sync(password, salt, 10000, 512, "sha512")
+    .toString("hex")
+  return { salt, passwordHash }
+}
+
+function generateAuthLink() {
+  return {
+    magicId: randomstring.generate({
+      charset: "alphanumeric",
+      length: 20,
+    }),
+    validityDate: VALIDITY_DATE.generateValidityDate(VALIDITY_DATE.SHORT), // 30 minutes
+  }
 }
 
 class UsersModel extends MongoModel {
@@ -28,83 +64,85 @@ class UsersModel extends MongoModel {
     super("users") // define name of 'users' collection elsewhere?
   }
 
+  async createSuperAdmin(user) {
+    try {
+      const { salt, passwordHash } = generatePasswordHash(user.password)
+
+      const adminPayload = {
+        ...defaultUserPayload,
+        ...user,
+        email: user.email,
+        salt,
+        passwordHash,
+        authLink: generateAuthLink(),
+        emailIsVerified: true,
+        verifiedEmail: [user.email],
+      }
+
+      return await this.mongoInsert(adminPayload)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   async create(payload) {
     try {
-      payload = {
+      const userPayload = {
         ...payload,
-        authLink: {
-          magicId: randomstring.generate({
-            charset: "alphanumeric",
-            length: 20,
-          }),
-          validityDate: VALIDITY_DATE.generateValidityDate(VALIDITY_DATE.SHORT), // 30 minutes
-        },
-        keyToken: null,
-        emailIsVerified: false,
-        verifiedEmail: [],
-        private: false,
-        favorites: [],
-        emailNotifications: {
-          conversations: {
-            share: {
-              update: false,
-              delete: false,
-              add: true,
-            },
-          },
-          organizations: {
-            update: false,
-            delete: false,
-            add: true,
-          },
-        },
+        authLink: generateAuthLink(),
+        ...defaultUserPayload,
+        role: ROLE.USER,
       }
 
+      // If SMTP is disabled, mark the email as verified
       if (process.env.SMTP_HOST === "") {
-        payload.emailIsVerified = true
-        payload.verifiedEmail.push(payload.email)
+        userPayload.emailIsVerified = true
+        userPayload.verifiedEmail.push(userPayload.email)
       }
 
-      return await this.mongoInsert(payload)
+      return await this.mongoInsert(userPayload)
     } catch (error) {
       console.error(error)
       return error
     }
   }
 
-  // create a user
   async createUser(payload) {
     try {
-      payload.salt = randomstring.generate(12)
-      payload.passwordHash = crypto
-        .pbkdf2Sync(payload.password, payload.salt, 10000, 512, "sha512")
-        .toString("hex")
-      delete payload.password
-
-      payload.accountNotifications = {
-        updatePassword: false,
-        inviteAccount: false,
+      const { salt, passwordHash } = generatePasswordHash(payload.password)
+      const userPayload = {
+        ...payload,
+        salt,
+        passwordHash,
+        accountNotifications: {
+          updatePassword: false,
+          inviteAccount: false,
+        },
       }
-      return await this.create(payload)
+
+      return await this.create(userPayload)
     } catch (error) {
       console.error(error)
       return error
     }
   }
 
-  // create a user
   async createExternal(payload) {
     try {
-      payload.lastname = ""
-      payload.firstname = ""
-      payload.img = "pictures/default.jpg"
-      payload.passwordHash = null
-      payload.accountNotifications = {
-        updatePassword: false,
-        inviteAccount: true,
+      const externalPayload = {
+        ...payload,
+        lastname: "",
+        firstname: "",
+        img: "pictures/default.jpg",
+        passwordHash: null,
+        accountNotifications: {
+          updatePassword: false,
+          inviteAccount: true,
+        },
       }
 
-      return await this.create(payload)
+      return await this.create(externalPayload)
     } catch (error) {
       console.error(error)
       return error
@@ -118,6 +156,44 @@ class UsersModel extends MongoModel {
         emailIsVerified: true,
       }
       return await this.mongoRequest(query, public_projection)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async listAllUsers(filter) {
+    try {
+      let query = {}
+
+      if (filter.name) {
+        query.name = {
+          $regex: filter.name,
+          $options: "i",
+        }
+      }
+
+      if (filter.lastname) {
+        query.lastname = {
+          $regex: filter.lastname,
+          $options: "i",
+        }
+      }
+
+      if (filter.email) {
+        query.email = {
+          $regex: filter.email,
+          $options: "i",
+        }
+      }
+
+      if (!filter) return await this.mongoRequest(query, personal_projection)
+      else
+        return await this.mongoAggregatePaginate(
+          query,
+          personal_projection,
+          filter,
+        )
     } catch (error) {
       console.error(error)
       return error
@@ -285,6 +361,25 @@ class UsersModel extends MongoModel {
         _id: this.getObjectId(id),
       }
       return await this.mongoDelete(query)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async deleteMany(ids) {
+    try {
+      const objectIdArray = ids.map((id) => {
+        if (typeof id === "string") return this.getObjectId(id)
+        else if (typeof id === "object") return id
+      })
+
+      const query = {
+        _id: { $in: objectIdArray },
+        role: { $bitsAllClear: ROLE.SUPER_ADMINISTRATOR }, // 4th bit (8 in decimal) must be clear (0)
+      }
+
+      return await this.mongoDeleteMany(query)
     } catch (error) {
       console.error(error)
       return error

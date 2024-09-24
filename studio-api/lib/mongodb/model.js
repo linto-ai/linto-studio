@@ -43,14 +43,15 @@ class MongoModel {
     try {
       const aggregationPipeline = [
         { $match: query },
-        { $sort: sort },
-        { $skip: size * page },
-        { $limit: size },
-        { $project: projection },
         {
           $facet: {
             totalCount: [{ $count: "count" }],
-            paginatedResult: [{ $project: projection }], // Assuming projection for paginated results
+            paginatedResult: [
+              { $sort: sort },
+              { $skip: size * page },
+              { $limit: size },
+              { $project: projection }, // Projection for paginated results
+            ],
           },
         },
       ]

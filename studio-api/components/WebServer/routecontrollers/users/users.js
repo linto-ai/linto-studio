@@ -9,6 +9,7 @@ const orgaUtility = require(
   `${process.cwd()}/components/WebServer/controllers/organization/utility`,
 )
 
+const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
 const Mailing = require(`${process.cwd()}/lib/mailer/mailing`)
 const validator = require(`${process.cwd()}/lib/dao/schema/validator`)
 
@@ -70,10 +71,15 @@ async function createUser(req, res, next) {
       throw new UserError()
     }
 
+    let myCreatedUser = await model.users.getById(
+      createdUser.insertedId.toString(),
+      true,
+    )
+
     const mail_result = await Mailing.accountCreate(
       user.email,
       req,
-      createdUser.ops[0].authLink.magicId,
+      myCreatedUser[0].authLink.magicId,
     )
     if (!mail_result) throw new NodemailerError()
 
@@ -109,7 +115,7 @@ async function searchUser(req, res, next) {
       ]
 
       const find = userField
-        .map((field) => field.toLowerCase())
+        .map((field) => field?.toLowerCase() ?? "")
         .filter((field) => field.indexOf(req.query.search.toLowerCase()) >= 0)
 
       return find.length > 0
@@ -275,12 +281,9 @@ async function recoveryAuth(req, res, next) {
       if (!mail_result)
         res.status(400).send({ message: "Error while sending email" })
       else
-        res
-          .status(200)
-          .send({
-            message:
-              "An email with an authentication link has been sent to you.",
-          })
+        res.status(200).send({
+          message: "An email with an authentication link has been sent to you.",
+        })
     }
   } catch (error) {
     next(error)

@@ -16,10 +16,6 @@ const {
   `${process.cwd()}/components/WebServer/routecontrollers/users/users.js`,
 )
 
-const auth_middleware = require(
-  `${process.cwd()}/components/WebServer/config/passport/local/middleware`,
-)
-
 module.exports = (webserver) => {
   return [
     {

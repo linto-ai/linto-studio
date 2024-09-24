@@ -120,6 +120,9 @@ async function updateConversationRights(req, res, next) {
         req.params.conversationId,
       )
 
+      if (req.payload.data.adminId) {
+        req.payload.data.userId = req.payload.data.adminId // if it's an admin that share the conversation
+      }
       userRight.push({
         userId: req.params.userId.toString(),
         right: req.body.right,

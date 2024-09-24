@@ -5,7 +5,7 @@
     <div class="flex col">
       <Tabs
         v-model="currentTab"
-        :tabs="tabs"
+        :tabs="mainTabs"
         squareTabs
         :disabled="formState === 'sending'" />
 
@@ -86,6 +86,7 @@
 import { getEnv } from "@/tools/getEnv.js"
 
 import ConversationCreateMixin from "@/mixins/conversationCreate.js"
+import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 
 import ConversationCreateAudio from "@/components/ConversationCreateAudio.vue"
 import ConversationCreateServices from "@/components/ConversationCreateServices.vue"
@@ -97,7 +98,7 @@ import ConversationCreateLink from "../components/ConversationCreateLink.vue"
 import EMPTY_FIELD from "../const/emptyField"
 
 export default {
-  mixins: [ConversationCreateMixin],
+  mixins: [ConversationCreateMixin, orgaRoleMixin],
   props: {
     userInfo: {
       type: Object,
@@ -107,47 +108,52 @@ export default {
       type: String,
       required: true,
     },
-    userOrganizations: {
-      type: Array,
-      required: true,
-    },
+    // userOrganizations: {
+    //   type: Array,
+    //   required: true,
+    // },
   },
   data() {
-    const enableSession = getEnv("VUE_APP_ENABLE_SESSION") === "true"
-    const tabs = [
-      {
-        name: "file",
-        label: this.$i18n.t("conversation_creation.tabs.file"),
-        icon: "file-audio",
-        img: "/img/We10X-icon-theme/audio-x-generic.svg",
-      },
-      {
-        name: "microphone",
-        label: this.$i18n.t("conversation_creation.tabs.microphone"),
-        icon: "record",
-        img: "/img/We10X-icon-theme/vocal.svg",
-      },
-      {
-        name: "url",
-        label: this.$i18n.t("conversation_creation.tabs.url"),
-        icon: "link",
-      },
-    ]
-
-    if (enableSession) {
-      tabs.push({
-        name: "session",
-        label: this.$i18n.t("conversation_creation.tabs.session"),
-        icon: "session",
-      })
-    }
-
     return {
-      tabs,
       currentTab: "file",
     }
   },
   async created() {},
+  computed: {
+    mainTabs() {
+      const enableSession = getEnv("VUE_APP_ENABLE_SESSION") === "true"
+
+      let res = [
+        {
+          name: "file",
+          label: this.$i18n.t("conversation_creation.tabs.file"),
+          icon: "file-audio",
+          img: "/img/We10X-icon-theme/audio-x-generic.svg",
+        },
+        {
+          name: "microphone",
+          label: this.$i18n.t("conversation_creation.tabs.microphone"),
+          icon: "record",
+          img: "/img/We10X-icon-theme/vocal.svg",
+        },
+        {
+          name: "url",
+          label: this.$i18n.t("conversation_creation.tabs.url"),
+          icon: "link",
+        },
+      ]
+
+      if (enableSession && this.isAtLeastMeetingManager) {
+        res.push({
+          name: "session",
+          label: this.$i18n.t("conversation_creation.tabs.session"),
+          icon: "session",
+        })
+      }
+
+      return res
+    },
+  },
   methods: {
     createConversation(event) {
       event?.preventDefault()

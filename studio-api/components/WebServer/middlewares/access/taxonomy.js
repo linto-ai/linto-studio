@@ -2,8 +2,6 @@ const debug = require("debug")(
   "linto:conversation-manager:components:webserver:middlewares:access:conversation",
 )
 
-const model = require(`${process.cwd()}/lib/mongodb/models`)
-
 const CONVERSATION_RIGHTS = require(
   `${process.cwd()}/lib/dao/conversation/rights`,
 )
@@ -11,7 +9,7 @@ const ORGANIZATION_ROLES = require(
   `${process.cwd()}/lib/dao/organization/roles`,
 )
 
-const projection = ["owner", "sharedWithUsers", "organization"]
+const platformAccess = require(`./platform`)
 
 const conversation = require(
   `${process.cwd()}/components/WebServer/middlewares/access/conversation.js`,
@@ -22,7 +20,6 @@ const organization = require(
 
 const {
   ConversationReadAccessDenied,
-  ConversationWriteAccessDenied,
   ConversationDeleteAccessDenied,
 } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
@@ -30,7 +27,8 @@ const {
 
 module.exports = {
   asReadTaxonomyAccess: async (req, res, next) => {
-    if (req.params.conversationId)
+    if (await platformAccess.isSystemAdministrator(req)) next()
+    else if (req.params.conversationId)
       await conversation.access(
         req,
         next,
@@ -39,7 +37,8 @@ module.exports = {
         false,
         CONVERSATION_RIGHTS.READ,
         ConversationReadAccessDenied,
-      ) // ORGA MEMBER
+      )
+    // ORGA MEMBER
     else if (req.params.organizationId)
       await organization.access(
         req,
@@ -50,7 +49,8 @@ module.exports = {
       )
   },
   asWriteTaxonomyAccess: async (req, res, next) => {
-    if (req.params.conversationId)
+    if (await platformAccess.isSystemAdministrator(req)) next()
+    else if (req.params.conversationId)
       await conversation.access(
         req,
         next,
@@ -59,7 +59,8 @@ module.exports = {
         false,
         CONVERSATION_RIGHTS.WRITE,
         ConversationReadAccessDenied,
-      ) // ORGA MEMBER
+      )
+    // ORGA MEMBER
     else if (req.params.organizationId)
       await organization.access(
         req,
@@ -70,7 +71,8 @@ module.exports = {
       )
   },
   asDeleteTaxonomyAccess: async (req, res, next) => {
-    if (req.params.organizationId)
+    if (await platformAccess.isSystemAdministrator(req)) next()
+    else if (req.params.organizationId)
       await organization.access(
         req,
         next,

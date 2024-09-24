@@ -14,6 +14,10 @@ const user_middlewares = require(
   `${process.cwd()}/components/WebServer/middlewares/access/user.js`,
 )
 
+const platform_middlewares = require(
+  `${process.cwd()}/components/WebServer/middlewares/access/platform.js`,
+)
+
 const {
   createProxyMiddleware,
   fixRequestBody,
@@ -51,6 +55,13 @@ const loadMiddlewares = (route) => {
   if (route.requireAuth) middlewares.push(auth_middlewares.isAuthenticate)
   if (route.requireRefresh) middlewares.push(auth_middlewares.refresh_token)
 
+  if (route.requireSuperAdmin)
+    middlewares.push(platform_middlewares.isPlatformAdmin)
+  if (route.requireSystemAdministrator)
+    middlewares.push(platform_middlewares.isPlatformSystemAdministrator)
+  if (route.requireSessionOperator)
+    middlewares.push(platform_middlewares.isPlatformSessionOperator)
+
   if (route.requireConversationReadAccess)
     middlewares.push(conversation_middlewares.asReadAccess)
   if (route.requireConversationCommentAccess)
@@ -66,6 +77,8 @@ const loadMiddlewares = (route) => {
     middlewares.push(organization_middlewares.asAdminAccess)
   if (route.requireOrganizationMaintainerAccess)
     middlewares.push(organization_middlewares.asMaintainerAccess)
+  if (route.requireOrganizationMeetingManagerAccess)
+    middlewares.push(organization_middlewares.asMeetingManagerAccess)
   if (route.requireOrganizationUploaderAccess)
     middlewares.push(organization_middlewares.asUploaderAccess)
   if (route.requireOrganizationMemberAccess)

@@ -5,6 +5,13 @@ import { getEnv } from "@/tools/getEnv"
 
 const BASE_API = getEnv("VUE_APP_CONVO_API")
 const BASE_AUTH = getEnv("VUE_APP_CONVO_AUTH")
+
+export async function apiGetUsers() {
+  const res = await sendRequest(`${BASE_API}/users`, { method: "get" })
+
+  return res?.data || []
+}
+
 export async function apiGetPersonalUserInfo() {
   const getUserInfos = await sendRequest(`${BASE_API}/users/self`, {
     method: "get",
@@ -26,7 +33,7 @@ export async function apiGetUsersByConversationId(conversationId, notif) {
     `${BASE_API}/conversations/${conversationId}/users`,
     { method: "get" },
     null,
-    notif
+    notif,
   )
 
   return res?.data?.conversationUsers
@@ -36,13 +43,13 @@ export async function apiUpdateUserRightInConversation(
   conversationId,
   userId,
   right,
-  notif
+  notif,
 ) {
   return await sendRequest(
     `${BASE_API}/conversations/${conversationId}/users/${userId}`,
     { method: "patch" },
     { right: right },
-    notif
+    notif,
   )
 }
 
@@ -50,7 +57,7 @@ export async function apiUpdateMultipleUsersInMultipleConversations(
   conversationsIds,
   users,
   organizationId,
-  notif
+  notif,
 ) {
   return await sendRequest(
     `${BASE_API}/conversations/shared/access`,
@@ -60,20 +67,20 @@ export async function apiUpdateMultipleUsersInMultipleConversations(
       users: JSON.stringify({ users }),
       organizationId,
     },
-    notif
+    notif,
   )
 }
 
 export async function apiRemoveUserFromOrganisation(
   organizationId,
   userId,
-  notif
+  notif,
 ) {
   return await sendRequest(
     `${BASE_API}/organizations/${organizationId}/users`,
     { method: "delete" },
     { userId },
-    notif
+    notif,
   )
 }
 
@@ -85,7 +92,7 @@ export async function apiLoginUser(email, password) {
       email,
       password,
     },
-    {}
+    {},
   )
 }
 
@@ -97,7 +104,7 @@ export async function apiLoginUserMagicLink(magicId) {
       psw: "psw", // Needed
       magicId,
     },
-    {}
+    {},
   )
 }
 
@@ -105,7 +112,7 @@ export async function apiAddUserToOrganisation(
   organizationId,
   email,
   role = 1,
-  notif
+  notif,
 ) {
   return await sendRequest(
     `${BASE_API}/organizations/${organizationId}/users`,
@@ -114,7 +121,7 @@ export async function apiAddUserToOrganisation(
       email,
       role,
     },
-    notif
+    notif,
   )
 }
 
@@ -122,7 +129,7 @@ export async function apiUpdateUserRoleInOrganisation(
   organizationId,
   userId,
   role,
-  notif
+  notif,
 ) {
   return await sendRequest(
     `${BASE_API}/organizations/${organizationId}/users`,
@@ -131,7 +138,7 @@ export async function apiUpdateUserRoleInOrganisation(
       role,
       userId,
     },
-    notif
+    notif,
   )
 }
 
@@ -140,7 +147,7 @@ export async function apiSearchUser(search, signal, notif) {
     `${BASE_API}/users/search`,
     { method: "get", signal },
     { search },
-    notif
+    notif,
   )
 }
 
@@ -149,7 +156,7 @@ export async function apiUpdateUserInfo(payload, notif) {
     `${BASE_API}/users/self`,
     { method: "put" },
     payload,
-    notif
+    notif,
   )
 }
 
@@ -158,7 +165,7 @@ export async function apiRecoverPassword(email, notif) {
     `${BASE_API}/users/self/reset-password`,
     { method: "post" },
     { email },
-    notif
+    notif,
   )
 }
 
@@ -167,7 +174,7 @@ export async function apiCreateUser(payload, notif) {
     `${BASE_API}/users`,
     "post",
     payload,
-    notif
+    notif,
   )
 }
 
@@ -176,6 +183,6 @@ export async function apiSendVerificationLink(notif) {
     `${BASE_API}/users/self/verify-email`,
     "patch",
     {},
-    notif
+    notif,
   )
 }

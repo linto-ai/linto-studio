@@ -23,6 +23,9 @@
 @import "./views/error.scss";
 @import "./views/conversation-publish.scss";
 
+@import "./views/backoffice-table.scss";
+@import "./views/backoffice-main.scss";
+
 // Components
 @import "./components/app-header.scss";
 @import "./components/app-notif.scss";
@@ -36,6 +39,7 @@
 @import "./components/transcript-editor.scss";
 @import "./components/transcript-helper.scss";
 @import "./components/search-member-form.scss";
+@import "./components/statCard.scss";
 @import "./components/select.scss";
 @import "./components/switch.scss";
 @import "./components/user.scss";

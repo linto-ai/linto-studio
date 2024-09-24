@@ -59,6 +59,10 @@ DISABLE_USER_CREATION=false
 EXPORT_TEMPLATE=default
 
 
+
+SUPER_ADMIN_EMAIL=
+SUPER_ADMIN_PWD=
+
 # Bellow are the settings require for the session service
 SESSION_API_ENDPOINT=
 

@@ -96,6 +96,7 @@ async function listConversationFromOrganization(req, res, next) {
       RIGHT.READ,
       req.query,
     )
+
     res.status(200).send(conversations)
   } catch (err) {
     next(err)

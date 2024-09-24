@@ -4,6 +4,7 @@ const debug = require("debug")(
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
+const PLATFORM_ROLES = require(`${process.cwd()}/lib/dao/users/platformRole`)
 
 const {
   OrganizationError,
@@ -63,7 +64,6 @@ async function getOrganization(req, res, next) {
       })
     }
     organization.users = orgaUser
-
     return res.status(200).send(organization)
   } catch (err) {
     next(err)
@@ -72,7 +72,7 @@ async function getOrganization(req, res, next) {
 
 async function listSelfOrganization(req, res, next) {
   try {
-    const organizations = await model.organizations.listSelf(
+    let organizations = await model.organizations.listSelf(
       req.payload.data.userId,
     )
     return res.status(200).send(organizations)
@@ -81,10 +81,21 @@ async function listSelfOrganization(req, res, next) {
   }
 }
 
-// List all public organization
-async function listOrganization(req, res, next) {
+async function listAllOrganization(req, res, next) {
   try {
-    const organizations = await model.organizations.getAll()
+    let user = await model.users.getById(req.payload.data.userId, true)
+    let organizations = []
+    if (
+      PLATFORM_ROLES.hasPlatformRoleAccess(
+        user[0].role,
+        PLATFORM_ROLES.SYSTEM_ADMINISTRATOR,
+      )
+    ) {
+      organizations = await model.organizations.getAll()
+    } else {
+      return res.status(401).sned({ message: "Unauthorized" })
+    }
+
     return res.status(200).send(organizations)
   } catch (err) {
     next(err)
@@ -94,6 +105,6 @@ async function listOrganization(req, res, next) {
 module.exports = {
   createOrganization,
   listSelfOrganization,
-  listOrganization,
+  listAllOrganization,
   getOrganization,
 }

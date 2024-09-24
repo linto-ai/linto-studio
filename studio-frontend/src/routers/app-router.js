@@ -34,6 +34,58 @@ let isAuthenticated = function () {
 let router = new Router({
   mode: "history",
   routes: [
+    // BACKOFFICE ROUTES
+    {
+      path: "/backoffice",
+      name: "backoffice",
+      components: {
+        default: () => import("../views/backoffice/Home.vue"),
+        ...defaultComponents,
+      },
+      defaultProps,
+      meta: { backoffice: true },
+    },
+    {
+      path: "/backoffice/users",
+      name: "backoffice-userList",
+      components: {
+        default: () => import("../views/backoffice/UserList.vue"),
+        ...defaultComponents,
+      },
+      defaultProps,
+      meta: { backoffice: true },
+    },
+    {
+      path: "/backoffice/users/:userId",
+      name: "backoffice-userDetail",
+      components: {
+        default: () => import("../views/backoffice/UserDetail.vue"),
+        ...defaultComponents,
+      },
+      defaultProps,
+      meta: { backoffice: true },
+    },
+    {
+      path: "/backoffice/organizations",
+      name: "backoffice-organizationList",
+      components: {
+        default: () => import("../views/backoffice/OrganizationList.vue"),
+        ...defaultComponents,
+      },
+      defaultProps,
+      meta: { backoffice: true },
+    },
+    {
+      path: "/backoffice/organizations/:organizationId",
+      name: "backoffice-organizationDetail",
+      components: {
+        default: () => import("../views/backoffice/OrganizationDetail.vue"),
+        ...defaultComponents,
+      },
+      defaultProps,
+      meta: { backoffice: true },
+    },
+    // PUBLIC ROUTES
     {
       path: "/interface/404",
       name: "not_found",
@@ -89,6 +141,8 @@ let router = new Router({
       defaultProps,
       meta: { public: true, authRoute: true },
     },
+
+    // PRIVATE ROUTES FOR MAIN APP
     {
       path: "/interface/inbox",
       name: "inbox",
@@ -339,9 +393,8 @@ router.beforeEach(async (to, from, next) => {
           const conversationId = to.params.conversationId
           let userRight = 0
 
-          let getUserRight = await apiGetUserRightFromConversation(
-            conversationId
-          )
+          let getUserRight =
+            await apiGetUserRightFromConversation(conversationId)
 
           if (getUserRight) {
             userRight = getUserRight?.right
@@ -352,6 +405,8 @@ router.beforeEach(async (to, from, next) => {
           } else {
             next({ name: "not_found" })
           }
+        } else if (to.meta?.backoffice) {
+          next()
         } else {
           next()
         }

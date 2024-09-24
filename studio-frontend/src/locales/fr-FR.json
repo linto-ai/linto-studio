@@ -20,6 +20,23 @@
   "app_editor_search": {
     "label": "Rechercher dans le texte"
   },
+  "backoffice": {
+    "title": "Backoffice",
+    "navigation": {
+      "home": "Accueil",
+      "users": "Utilisateurs",
+      "organisations": "Organisations"
+    },
+    "user_list": {
+      "title": "Utilisateurs",
+      "add_user_button": "Ajouter un utilisateur",
+      "remove_user_button": "Supprimer l'utilisateur | Supprimer les {count} utilisateurs"
+    },
+    "organisation_list": {
+      "title": "Organisations",
+      "add_organisation_button": "Ajouter une organisation"
+    }
+  },
   "breadcrumb": {
     "conversations": "Conversations",
     "create": "Importer un media",
@@ -146,9 +163,11 @@
     "language_description": "Sélectionnez la langue dans laquelle sera transcrit le fichier",
     "language_label": "Langage :",
     "loading_audio_file": "Chargement du fichier audio",
-    "loading_detail_title": "Chargement du detail du média.",
     "loading_list_title": "Chargement des médias",
-    "loading_transcription_title": "Chargement de la transcription.",
+    "loading": {
+      "conversation_data": "Chargement des données de la conversation",
+      "llm_services": "Chargement des services de résumé"
+    },
     "media": {
       "duration_label_inline": "Durée : ",
       "file_description": "Vous permet de télécharger un fichier multimédia à transcrire (audio ou vidéo)",
@@ -484,12 +503,27 @@
     "cancel": "Annuler",
     "close_title": "Fermer la modale"
   },
+  "modal_create_organization": {
+    "title": "Créer une organisation",
+    "label_name": "Nom de l'organisation",
+    "action_btn": "Créer"
+  },
+  "modal_delete_users": {
+    "title": "Supprimer un utilisateur | Supprimer {count} utilisateurs",
+    "content": "Êtes-vous sûr de vouloir supprimer cet utilisateur ? | Êtes-vous sûr de vouloir supprimer les {count} utilisateurs sélectionnés ?",
+    "action_btn": "Confirmer la suppression",
+    "error": "Une erreur s'est produite lors de la suppression de l'utilisateur | {count} utilisateurs n'ont pas pu être supprimés"
+  },
   "navigation": {
     "account": {
       "account_link": "Mon compte",
       "avatar_title": "Photo du profil",
       "logout": "Se déconnecter",
       "title": "Menu utilisateur"
+    },
+    "backoffice": {
+      "link_title": "Backoffice",
+      "return_link": "Interface utilisateur"
     },
     "conversation": {
       "start": "Démarrer",
@@ -546,6 +580,7 @@
       "title": "Supprimer l'organisation"
     },
     "delete_organization": "Supprimer l'organisation",
+    "delete_success_message": "L'organisation a été supprimée avec succès",
     "description_description": "Description de l'organisation",
     "description_label": "Description",
     "general_settings": "Réglages",
@@ -818,14 +853,24 @@
       "submit_button": "Mettre à jour les notifications",
       "title": "Notifications par email"
     },
+    "notif_success": "Les informations ont été mises à jour",
+    "notif_error": "Une erreur s'est produite lors de la mise à jour des informations",
     "personal_information": "Informations personnelles",
     "picture_label": "Image de profil",
+
     "private_label": "Rendre le profil privée",
+
     "profil_visibility": {
       "label_private": "Profil privé",
       "title": "Visibilité du profil"
     },
     "profile_image_button": "Choisir une image",
+    "role_section": {
+      "title": "Rôle d'administration",
+      "submit_button": "Sauvegarder les rôles",
+      "notif_success": "Les rôles ont été mis à jour",
+      "notif_error": "Une erreur s'est produite lors de la mise à jour des rôles"
+    },
     "send_verification_link": "Envoyer un lien de validation",
     "share_notification_label": "Recevez une notification par e-mail lorsqu'un média vous est partagé",
     "title": "Paramètres utilisateur",
@@ -836,5 +881,31 @@
     "update_pswd_notif": "Vous avez récemment fait une demande suite à un mot de passe oublié, pensez à actualiser votre mot de passe.",
     "update_pswd_notif_dismiss_btn": "Ne plus afficher",
     "verify_email_notif": "Veuillez vérifier votre adresse email"
+  },
+  "userTable": {
+    "header": {
+      "id": "ID",
+      "email": "Email",
+      "firstname": "Prénom",
+      "lastname": "Nom",
+      "role": "Rôle",
+      "status": "Status"
+    },
+    "edit_button_label": "Modifier",
+    "delete_button_label": "Supprimer"
+  },
+  "orgaTable": {
+    "header": {
+      "id": "ID",
+      "name": "Nom",
+      "description": "Description",
+      "userNumber": "Nombre d'utilisateurs"
+    },
+    "edit_button_label": "Modifier"
+  },
+  "platform_role": {
+    "session_operator": "Opérateur de session",
+    "system_administrator": "Administrateur système",
+    "super_administrator": "Super administrateur"
   }
 }
