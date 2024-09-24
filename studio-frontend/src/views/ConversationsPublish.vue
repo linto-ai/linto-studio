@@ -3,6 +3,7 @@
     :conversation="conversation"
     :status="status"
     :dataLoaded="dataLoaded"
+    :dataLoadedStatus="dataLoadedStatus"
     :error="error"
     :sidebar="true">
     <template v-slot:sidebar>
@@ -190,14 +191,14 @@ export default {
       if (newVal) {
         this.status = this.computeStatus(this.conversation?.jobs?.transcription)
         this.filterSpeakers = this.conversation.speakers.map(
-          (speaker) => speaker.speaker_id
+          (speaker) => speaker.speaker_id,
         )
         this.speakerIndexedBySpeakerId = this.conversation.speakers.reduce(
           (acc, speaker) => {
             acc[speaker.speaker_id] = speaker
             return acc
           },
-          {}
+          {},
         )
         if (this.status !== "done") {
           this.$router.push(`/interface/conversations/${this.conversation._id}`)
@@ -239,12 +240,20 @@ export default {
     dataLoaded() {
       return this.conversationLoaded && !this.loadingServices
     },
+    dataLoadedStatus() {
+      if (!this.conversationLoaded) {
+        return this.$t("conversation.loading.conversation_data")
+      }
+      if (this.loadingServices) {
+        return this.$t("conversation.loading.llm_services")
+      }
+    },
     conversationListRoute() {
       return { name: "inbox", hash: "#previous" }
     },
     exportFileTitle() {
       return `${this.conversation.name.replace(/\s/g, "_")}_${moment().format(
-        "YYYYMMDDHHmmss"
+        "YYYYMMDDHHmmss",
       )}`
     },
     mainComponentName() {
@@ -256,7 +265,7 @@ export default {
       const res = Object.keys(this.indexedFormat).map((format) => {
         const description = getDescriptionByLanguage(
           this.indexedFormat[format].description,
-          this.$i18n.locale
+          this.$i18n.locale,
         )
         return {
           name: format,
@@ -332,13 +341,13 @@ export default {
       let req = await apiGetJsonFileFromConversation(
         this.conversationId,
         this.filterSpeakers,
-        this.filterTags
+        this.filterTags,
       )
       if (req?.status === "success") {
         this.exportFile(
           JSON.stringify(req?.data, null, 4),
           "application/json",
-          ".json"
+          ".json",
         )
       }
       this.loadingDownload = false
@@ -348,7 +357,7 @@ export default {
       let req = await apiGetTextFileFromConversation(
         this.conversationId,
         this.filterSpeakers,
-        this.filterTags
+        this.filterTags,
       )
 
       if (req?.status === "success") {
@@ -364,7 +373,7 @@ export default {
         this.selectedService,
         {
           preview: false,
-        }
+        },
       )
 
       if (req?.status === "success") {
@@ -380,7 +389,7 @@ export default {
         this.selectedService,
         {
           preview: true,
-        }
+        },
       )
 
       if (req?.status === "success") {
@@ -450,7 +459,7 @@ export default {
         {
           preview: true,
           regenerate,
-        }
+        },
       )
 
       await this.getMetadata()
@@ -470,7 +479,7 @@ export default {
         if (req.data.type === "application/json") {
           this.pdfStatus = JSON.parse(await req.data.text())?.status
           this.pdfPercentageIndexByFormat[this.activeTab] = JSON.parse(
-            await req.data.text()
+            await req.data.text(),
           )?.processing
           this.pdfPercentage = this.pdfPercentageIndexByFormat[this.activeTab]
 

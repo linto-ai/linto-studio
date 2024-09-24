@@ -23,7 +23,7 @@
       :conversation="conversation"></conversationStatusError>
   </div>
   <div v-else-if="!error" id="conversation-is-loading">
-    <Loading></Loading>
+    <Loading :title="dataLoadedStatus"></Loading>
   </div>
   <div v-else>
     <ErrorView></ErrorView>
@@ -48,6 +48,10 @@ export default {
     dataLoaded: {
       type: Boolean,
       required: true,
+    },
+    dataLoadedStatus: {
+      type: String,
+      default: null,
     },
     error: {
       type: Boolean,

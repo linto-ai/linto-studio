@@ -163,9 +163,11 @@
     "language_description": "Select the transcription language for the media file",
     "language_label": "Language: ",
     "loading_audio_file": "Loading audio file",
-    "loading_detail_title": "Loading media details.",
     "loading_list_title": "Loading media.",
-    "loading_transcription_title": "Loading transcription.",
+    "loading": {
+      "conversation_data": "Loading conversation data",
+      "llm_services": "Loading summary services"
+    },
     "media": {
       "duration_label_inline": "Duration : ",
       "file_description": "allows you to upload a media file to be transcripted (audio or video)",

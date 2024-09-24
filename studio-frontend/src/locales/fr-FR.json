@@ -163,9 +163,11 @@
     "language_description": "Sélectionnez la langue dans laquelle sera transcrit le fichier",
     "language_label": "Langage :",
     "loading_audio_file": "Chargement du fichier audio",
-    "loading_detail_title": "Chargement du detail du média.",
     "loading_list_title": "Chargement des médias",
-    "loading_transcription_title": "Chargement de la transcription.",
+    "loading": {
+      "conversation_data": "Chargement des données de la conversation",
+      "llm_services": "Chargement des services de résumé"
+    },
     "media": {
       "duration_label_inline": "Durée : ",
       "file_description": "Vous permet de télécharger un fichier multimédia à transcrire (audio ou vidéo)",
