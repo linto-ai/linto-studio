@@ -580,6 +580,7 @@
       "title": "Supprimer l'organisation"
     },
     "delete_organization": "Supprimer l'organisation",
+    "delete_success_message": "L'organisation a été supprimée avec succès",
     "description_description": "Description de l'organisation",
     "description_label": "Description",
     "general_settings": "Réglages",

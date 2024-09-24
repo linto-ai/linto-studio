@@ -580,6 +580,7 @@
       "title": "Delete organisation"
     },
     "delete_organization": "Delete organisation",
+    "delete_success_message": "Organisation successfully deleted",
     "description_description": "The description of your organisation",
     "description_label": "Description",
     "general_settings": "General settings",
@@ -597,7 +598,7 @@
     "my_workspace": "My workspace",
     "name_description": "The name of your organisation",
     "name_label": "Name",
-    "organization_users": "organisation users",
+    "organization_users": "Organisation users",
     "update": {
       "title": "organisation : {name}"
     },
