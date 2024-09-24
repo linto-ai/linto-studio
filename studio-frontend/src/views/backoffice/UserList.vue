@@ -90,7 +90,7 @@ export default {
   computed: {},
   watch: {
     currentPageNb() {
-      this.fetchAllUsers()
+      this.debouncedFetchAllUsers()
     },
     search() {
       this.debouncedFetchAllUsers()

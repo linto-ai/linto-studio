@@ -92,7 +92,7 @@ export default {
   computed: {},
   watch: {
     currentPageNb() {
-      this.fetchAllOrganizations()
+      this.debouncedFetchAllOrganizations()
     },
     search() {
       this.debouncedFetchAllOrganizations()
