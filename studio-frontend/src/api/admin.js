@@ -12,14 +12,32 @@ export async function apiGetAllOrganizations(
     sortField = "last_update",
     sortOrder = -1,
   } = {},
+  search,
 ) {
-  const res = await sendRequest(
-    `${BASE_API}/administration/organizations`,
-    {
-      method: "get",
-    },
-    { page, size: pageSize, sortField, sortCriteria: sortOrder },
-  )
+  let res
+  if (!search) {
+    res = await sendRequest(
+      `${BASE_API}/administration/organizations`,
+      {
+        method: "get",
+      },
+      { page, size: pageSize, sortField, sortCriteria: sortOrder },
+    )
+  } else {
+    res = await sendRequest(
+      `${BASE_API}/administration/organizations`,
+      {
+        method: "get",
+      },
+      {
+        page,
+        size: pageSize,
+        sortField,
+        sortCriteria: sortOrder,
+        name: search,
+      },
+    )
+  }
   return res?.data || { count: 0, list: [] }
 }
 
@@ -30,14 +48,33 @@ export async function apiGetAllUsers(
     sortField = "last_update",
     sortOrder = -1,
   } = {},
+  search,
 ) {
-  const res = await sendRequest(
-    `${BASE_API}/administration/users`,
-    {
-      method: "get",
-    },
-    { page, size: pageSize, sortField, sortCriteria: sortOrder },
-  )
+  let res
+
+  if (!search) {
+    res = await sendRequest(
+      `${BASE_API}/administration/users`,
+      {
+        method: "get",
+      },
+      { page, size: pageSize, sortField, sortCriteria: sortOrder },
+    )
+  } else {
+    res = await sendRequest(
+      `${BASE_API}/administration/users`,
+      {
+        method: "get",
+      },
+      {
+        page,
+        size: pageSize,
+        sortField,
+        sortCriteria: sortOrder,
+        email: search,
+      },
+    )
+  }
 
   return res?.data || { count: 0, list: [] }
 }

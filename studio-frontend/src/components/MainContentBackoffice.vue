@@ -2,6 +2,7 @@
   <div class="flex flex1">
     <BackofficeSidebar />
     <main class="flex1 backoffice-main">
+      <slot name="header"></slot>
       <slot v-if="!loading"></slot>
       <Loading v-else />
     </main>

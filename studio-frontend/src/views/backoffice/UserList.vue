@@ -1,13 +1,17 @@
 <template>
   <MainContentBackoffice :loading="loading">
-    <HeaderTable
-      @on-delete="showModalDeleteUsers"
-      :title="$t('backoffice.user_list.title')"
-      :count="count"
-      :disableDelete="selectedUsers.length === 0"
-      :remove_button_label="
-        $tc('backoffice.user_list.remove_user_button', selectedUsers.length)
-      "></HeaderTable>
+    <template v-slot:header>
+      <HeaderTable
+        v-bind:search.sync="search"
+        @on-delete="showModalDeleteUsers"
+        :title="$t('backoffice.user_list.title')"
+        :count="count"
+        :disableDelete="selectedUsers.length === 0"
+        :remove_button_label="
+          $tc('backoffice.user_list.remove_user_button', selectedUsers.length)
+        "></HeaderTable>
+    </template>
+
     <div class="backoffice-listing-container">
       <UserTable
         :users="users"
@@ -28,6 +32,7 @@
 <script>
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 import { apiGetAllUsers } from "@/api/admin.js"
+import { debounceMixin } from "@/mixins/debounce.js"
 
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import UserTable from "@/components/UserTable.vue"
@@ -36,7 +41,7 @@ import ModalDeleteUsers from "@/components/ModalDeleteUsers.vue"
 import Pagination from "@/components/Pagination.vue"
 
 export default {
-  mixins: [platformRoleMixin],
+  mixins: [platformRoleMixin, debounceMixin],
   props: {},
   data() {
     return {
@@ -47,18 +52,25 @@ export default {
       modalDeleteUsersIsVisible: false,
       currentPageNb: 0,
       totalPagesNumber: 0,
+      search: "",
     }
   },
   mounted() {
     if (!this.isAtLeastSystemAdministrator) {
       this.$router.push({ name: "not_found" })
     }
-    this.fetchAllUsers()
+    this.debouncedFetchAllUsers()
   },
   methods: {
     async fetchAllUsers() {
+      return await apiGetAllUsers(this.currentPageNb, {}, this.search)
+    },
+    async debouncedFetchAllUsers() {
       this.loading = true
-      const req = await apiGetAllUsers(this.currentPageNb)
+      const req = await this.debouncedSearch(
+        this.fetchAllUsers.bind(this),
+        this.search,
+      )
       this.users = req.list
       this.count = req.count
       this.totalPagesNumber = Math.ceil(req.count / 10)
@@ -79,6 +91,9 @@ export default {
   watch: {
     currentPageNb() {
       this.fetchAllUsers()
+    },
+    search() {
+      this.debouncedFetchAllUsers()
     },
   },
   components: {

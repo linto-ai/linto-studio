@@ -6,7 +6,11 @@
       <span class="backoffice-listing-header__total">{{ count }}</span>
     </div>
     <form class="flex align-center gap-small">
-      <input type="text" placeholder="Search" />
+      <input
+        type="text"
+        placeholder="Search"
+        :value="search"
+        @input="updateSearch" />
       <button type="submit">
         <span class="icon search"></span>
         <span class="label">Rechercher</span>
@@ -37,12 +41,17 @@ export default {
     add_button_label: { type: String, required: false },
     remove_button_label: { type: String, required: false },
     disableDelete: { type: Boolean, default: false },
+    search: { type: String, required: false },
   },
   data() {
     return {}
   },
   mounted() {},
-  methods: {},
+  methods: {
+    updateSearch(e) {
+      this.$emit("update:search", e.target.value)
+    },
+  },
   components: {},
 }
 </script>
