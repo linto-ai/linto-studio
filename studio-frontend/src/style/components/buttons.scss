@@ -27,6 +27,12 @@ button,
   }
 }
 
+.btn.placeholder {
+  cursor: default !important;
+  pointer-events: none !important;
+  text-decoration: none !important;
+}
+
 .btn.wrap > .label {
   white-space: normal;
 }

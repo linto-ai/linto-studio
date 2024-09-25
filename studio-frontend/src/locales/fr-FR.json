@@ -676,7 +676,8 @@
         "stream_status": "Statut du flux",
         "transcriber_status": "Statut du transcriber",
         "type": "Type",
-        "translations": "Traductions"
+        "translations": "Traductions",
+        "diarization": "Séparation des locuteurs"
       },
       "modal_add": {
         "loading_profiles": "Chargement des profils de transcription",
@@ -692,6 +693,7 @@
       "name_field": {
         "label": "Nom de la session"
       },
+      "diarization_label": "Activer la séparation des locuteurs (si disponible dans le canal)",
       "submit_button": "Créer la session",
       "submit_label": "Créer la session",
       "success_message": "La session a été créée avec succès",
@@ -753,10 +755,12 @@
         "name": "Nom",
         "selected": "Selectionné",
         "type": "Type",
-        "translations": "Traductions"
+        "translations": "Traductions",
+        "diarization": "Séparation des locuteurs"
       },
       "title": "Choix des profils de transcription",
-      "translation_not_available": "Non disponible"
+      "translation_not_available": "Non disponible",
+      "diarization_not_available": "Non disponible"
     },
     "settings_page": {
       "autoStart_label": "Démarrage automatique de la session",
@@ -766,6 +770,7 @@
       "end_time_label": "Heure de fin",
       "global_informations_title": "Informations générales",
       "isPublic_label": "Autoriser l'accès anonyme à la session",
+      "diarization_label": "Séparation des locuteurs",
       "publicLink_label": "Lien de la session",
       "start_time_label": "Heure de début",
       "delete_modal": {

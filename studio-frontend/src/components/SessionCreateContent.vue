@@ -27,6 +27,10 @@
             {{ channelsError }}
           </div>
         </div>
+        <FormCheckbox
+          class="medium-margin-top"
+          :field="diarizationEnabled"
+          v-model="diarizationEnabled.value"></FormCheckbox>
         <div class="">
           <SessionChannelsTable
             class="medium-margin-top"
@@ -101,6 +105,11 @@ export default {
         valid: false,
         label: this.$t("session.settings_page.isPublic_label"),
       },
+      diarizationEnabled: {
+        ...EMPTY_FIELD,
+        value: false,
+        label: this.$t("session.create_page.diarization_label"),
+      },
       channels: [],
       selectedProfiles: [],
       modalAddChannelsIsOpen: false,
@@ -131,6 +140,7 @@ export default {
             transcriberProfileId: profileId,
             name,
             translations: translations ?? [],
+            diarization: this.diarizationEnabled.value,
           })),
           public: this.fieldIsPublic.value,
         })

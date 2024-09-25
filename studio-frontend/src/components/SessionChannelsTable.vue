@@ -59,6 +59,14 @@
 
         <!-- remove button -->
         <th v-if="from === 'formCreateSession'"></th>
+
+        <!-- <ArrayHeader
+          class="no-size"
+          @list_sort_by="sortBy"
+          eventLabel="translations"
+          :label="$t('session.channels_list.labels.diarization')"
+          :sortListDirection="sortListDirection"
+          :sortListKey="sortListKey" /> -->
       </tr>
     </thead>
     <tbody>

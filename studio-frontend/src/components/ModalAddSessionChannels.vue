@@ -63,6 +63,8 @@ export default {
           languages: profile.config.languages.map((l) => l.candidate),
           translations: profile.translations,
           availableTranslations: profile.config.availableTranslations,
+          hasDiarization: profile.config.hasDiarization,
+          // diarization: profile.config.diarization,
         }
       })
       this.$emit("on-confirm", newChannels)

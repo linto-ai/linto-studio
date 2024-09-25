@@ -23,10 +23,20 @@
         multipleSelection
         v-model="selectedTranslations"
         :options="translationsOptions" />
-      <div v-else>
+      <div v-else class="btn placeholder transparent">
         {{ $t("session.profile_selector.translation_not_available") }}
       </div>
     </td>
+    <!-- <td class="center-text" @click="preventClick">
+      <SwitchInput
+        v-if="profile.config.hasDiarization"
+        v-model="profile.config.diarization"
+        :id="`${profile.id}-diarization`" />
+
+      <div v-else>
+        {{ $t("session.profile_selector.diarization_not_available") }}
+      </div>
+    </td> -->
   </tr>
 </template>
 <script>
@@ -36,6 +46,7 @@ import { bus } from "../main.js"
 import ArrayHeader from "@/components/ArrayHeader.vue"
 import CustomSelect from "@/components/CustomSelect.vue"
 import Checkbox from "@/components/Checkbox.vue"
+import SwitchInput from "@/components/SwitchInput.vue"
 
 export default {
   props: {
@@ -125,6 +136,9 @@ export default {
     },
   },
   methods: {
+    preventClick(e) {
+      e.stopPropagation()
+    },
     selectProfile(e) {
       if (e && e.target.classList.contains("no-propagation")) return
       // do same as checkbox
@@ -155,6 +169,13 @@ export default {
         : [...this.selectedProfiles, this.id_profile]
     },
   },
-  components: { Fragment, ArrayHeader, CustomSelect, Checkbox, CustomSelect },
+  components: {
+    Fragment,
+    ArrayHeader,
+    CustomSelect,
+    Checkbox,
+    CustomSelect,
+    SwitchInput,
+  },
 }
 </script>

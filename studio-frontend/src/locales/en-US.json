@@ -681,7 +681,8 @@
         "stream_status": "Stream status",
         "transcriber_status": "Transcriber status",
         "type": "Type",
-        "translations": "Translations"
+        "translations": "Translations",
+        "diarization": "Diarization"
       },
       "modal_add": {
         "loading_profiles": "Loading transcriptions profiles...",
@@ -697,6 +698,7 @@
       "name_field": {
         "label": "Session name"
       },
+      "diarization_label": "Activate speakers detection (if available per channels)",
       "channels_error": "Please add at least one channel to create the session",
       "submit_button": "Create session",
       "submit_label": "Create session",
@@ -757,10 +759,12 @@
         "name": "Name",
         "selected": "Selected",
         "type": "Type",
-        "translations": "Translations"
+        "translations": "Translations",
+        "diarization": "Diarization"
       },
       "title": "Selection of transcription profiles",
-      "translation_not_available": "No translation available"
+      "translation_not_available": "No translation available",
+      "diarization_not_available": "No diarization available"
     },
 
     "settings_page": {
@@ -771,6 +775,7 @@
       "end_time_label": "End time",
       "global_informations_title": "General information",
       "isPublic_label": "Allow anonymous access to the session",
+      "diarization_label": "Speakers detection",
       "publicLink_label": "Session link",
       "start_time_label": "Start time",
       "delete_modal": {
