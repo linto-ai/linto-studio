@@ -23,6 +23,7 @@
     <!-- Translations -->
     <td v-if="from === 'formCreateSession'">
       <CustomSelect
+        v-if="translationsOptions.channels.length > 0"
         multipleSelection
         v-model="selectedTranslations"
         :options="translationsOptions" />
@@ -61,6 +62,7 @@ export default {
     },
   },
   data() {
+    const translations = this.item?.availableTranslations || []
     return {
       nameField: {
         ...EMPTY_FIELD,
@@ -68,11 +70,12 @@ export default {
       },
       selectedTranslations: this.item.translations || [],
       translationsOptions: {
-        channels: [
-          { value: "fr", text: "FR" },
-          { value: "en", text: "EN" },
-          { value: "it", text: "IT" },
-        ],
+        channels: translations.map((translation) => {
+          return {
+            value: translation,
+            text: translation.toUpperCase(),
+          }
+        }),
       },
     }
   },

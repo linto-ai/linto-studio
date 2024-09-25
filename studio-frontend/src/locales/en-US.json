@@ -759,7 +759,8 @@
         "type": "Type",
         "translations": "Translations"
       },
-      "title": "Selection of transcription profiles"
+      "title": "Selection of transcription profiles",
+      "translation_not_available": "No translation available"
     },
 
     "settings_page": {

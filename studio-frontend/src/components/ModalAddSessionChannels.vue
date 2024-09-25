@@ -62,6 +62,7 @@ export default {
           profileId: profile.id,
           languages: profile.config.languages.map((l) => l.candidate),
           translations: profile.translations,
+          availableTranslations: profile.config.availableTranslations,
         }
       })
       this.$emit("on-confirm", newChannels)

@@ -19,9 +19,13 @@
     <td>{{ languages }}</td>
     <td>
       <CustomSelect
+        v-if="translationsOptions.channels.length > 0"
         multipleSelection
         v-model="selectedTranslations"
         :options="translationsOptions" />
+      <div v-else>
+        {{ $t("session.profile_selector.translation_not_available") }}
+      </div>
     </td>
   </tr>
 </template>
@@ -49,7 +53,6 @@ export default {
     },
   },
   data() {
-    console.log(this.profile.config.availableTranslations)
     const translations = this.profile?.config?.availableTranslations || []
     return {
       selectedTranslations: [],
@@ -68,7 +71,9 @@ export default {
     selectedTranslations: {
       handler(value) {
         this.selectProfile()
-        this.profile.translations = value // it uses shallow copy so profile from parent is updated (it's an optimisation feature instead of emiting update event...)
+        // it uses shallow copy so profile from parent is updated (it's an optimisation feature instead of emiting update event...)
+        // maybe use https://v2.vuejs.org/v2/guide/components-custom-events.html#sync-Modifier instead ?
+        this.profile.translations = value
       },
       deep: true,
     },
@@ -120,16 +125,6 @@ export default {
     },
   },
   methods: {
-    // selectProfile(e) {
-    //   if (e && e.target.classList.contains("no-propagation")) return
-    //   // do same as checkbox
-    //   this.selectedProfiles = this.selectedProfiles.includes(this.id_profile)
-    //     ? this.selectedProfiles.filter(
-    //         (profile_id) => profile_id !== this.id_profile,
-    //       )
-    //     : [...this.selectedProfiles, this.id_profile]
-    // },
-
     selectProfile(e) {
       if (e && e.target.classList.contains("no-propagation")) return
       // do same as checkbox

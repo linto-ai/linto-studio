@@ -755,7 +755,8 @@
         "type": "Type",
         "translations": "Traductions"
       },
-      "title": "Choix des profils de transcription"
+      "title": "Choix des profils de transcription",
+      "translation_not_available": "Non disponible"
     },
     "settings_page": {
       "autoStart_label": "Démarrage automatique de la session",
