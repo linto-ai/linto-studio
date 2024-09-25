@@ -7,12 +7,12 @@ WEBSERVER_SWAGGER_HTTP_HOST=localhost
 WEBSERVER_SWAGGER_API_PATH=cm-api
 
 # Mongo
-DB_HOST_MONGO=localhost
-DB_PORT_MONGO=27017
-DB_REQUIRE_LOGIN_MONGO=true
-DB_USER_MONGO=root
-DB_PASS_MONGO=example
-DB_NAME_MONGO=conversations
+DB_HOST=localhost
+DB_PORT=27017
+DB_REQUIRE_LOGIN=true
+DB_USER=root
+DB_PASS=example
+DB_NAME=conversations
 
 # Request a specific version of the database (optional)
 DB_MIGRATION_TARGET=1.5.0
