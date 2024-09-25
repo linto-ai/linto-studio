@@ -1,14 +1,20 @@
 <template>
   <div class="relative popover-parent">
-    <div @click="displayMenu" class="session-endpoint-label">{{ $tc("session.channels_list.multiple_endpoint", endpoints_list.length) }}</div>
+    <div @click="displayMenu" class="session-endpoint-label">
+      {{
+        $tc("session.channels_list.multiple_endpoint", endpoints_list.length)
+      }}
+    </div>
     <ContextMenu
       v-if="menuIsVisible"
       class="fit-content"
       first
       name="enpoints-menu"
-      v-click-outside="hideMenu"
-    >
-      <SessionChannelsEndpointsLine v-for="endpoint in endpoints_list" :endpoint="endpoint"></SessionChannelsEndpointsLine>
+      v-click-outside="hideMenu">
+      <SessionChannelsEndpointsLine
+        v-for="endpoint in endpoints_list"
+        :endpoint="endpoint"
+        :key="endpoint"></SessionChannelsEndpointsLine>
     </ContextMenu>
   </div>
 </template>
@@ -29,11 +35,9 @@ export default {
     console.log(this.endpoints)
     return {
       menuIsVisible: false,
-      
     }
   },
-  mounted() {
-  },
+  mounted() {},
   computed: {
     endpoints_list() {
       return Object.values(this.endpoints)
@@ -46,7 +50,6 @@ export default {
     hideMenu() {
       this.menuIsVisible = false
     },
-    
   },
   components: { Fragment, ContextMenu, SessionChannelsEndpointsLine },
 }

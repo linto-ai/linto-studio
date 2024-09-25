@@ -23,18 +23,18 @@
     border-radius: 20px;
   }
 
-  &.open {
-    .select__head {
-      border-radius: 15px 15px 0 0;
-    }
-    .select__list__inner,
-    .select__list__section:last-child {
-      border-radius: 0px 0px 15px 15px;
-    }
-    .select__list__section:last-child .select__list__item:last-child {
-      border-radius: 0px 0px 15px 15px;
-    }
-  }
+  // &.open {
+  //   .select__head {
+  //     border-radius: 15px 15px 0 0;
+  //   }
+  //   .select__list__inner,
+  //   .select__list__section:last-child {
+  //     border-radius: 0px 0px 15px 15px;
+  //   }
+  //   .select__list__section:last-child .select__list__item:last-child {
+  //     border-radius: 0px 0px 15px 15px;
+  //   }
+  // }
 }
 
 .header-logo {

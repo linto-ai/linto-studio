@@ -49,15 +49,18 @@ export default {
     },
   },
   data() {
+    console.log(this.profile.config.availableTranslations)
+    const translations = this.profile?.config?.availableTranslations || []
     return {
       selectedTranslations: [],
       id_profile: this.profile.id,
       translationsOptions: {
-        channels: [
-          { value: "fr", text: "FR" },
-          { value: "en", text: "EN" },
-          { value: "it", text: "IT" },
-        ],
+        channels: translations.map((translation) => {
+          return {
+            value: translation,
+            text: translation.toUpperCase(),
+          }
+        }),
       },
     }
   },

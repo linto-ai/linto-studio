@@ -1,6 +1,6 @@
 <template>
   <div
-    class="select"
+    class="select popover-parent"
     v-click-outside="close"
     :class="showList ? 'open' : 'close'"
     :inline="inline"
@@ -48,41 +48,31 @@
         <span class="badge__content no-propagation">{{ badge }}</span>
       </span>
     </button>
-    <!-- Menu list-->
-    <!--  
-      TODO: refactore with contextMenu component ? 
-      TODO: else use popover api: https://developer.mozilla.org/fr/docs/Web/API/Popover_API/Using
-    -->
-    <div class="select__list" v-if="showList">
+    <ContextMenu :name="p_id" first v-if="showList" overflow getContainerSize>
       <div
-        class="select__list__inner flex col"
-        :class="menuPosition"
-        role="listbox">
-        <div
-          class="select__list__section flex col"
-          v-for="sectionName in Object.keys(options)">
-          <button
-            v-for="(option, index) in options[sectionName]"
-            :key="valueKey(option.value)"
-            @click="onClickOption($event, option.value)"
-            @mouseover="onHoverOption($event, index, sectionName)"
-            :hovered="
-              highlightedIndex == index && highlightedSection == sectionName
-            "
-            class="select__list__item"
-            role="option">
-            <Checkbox
-              v-if="multipleSelection"
-              :checkboxValue="option.value"
-              v-model="value"
-              class="select__list__item__checkbox" />
-            <span v-if="option.icon" class="icon" :class="option.icon"></span>
-            <span class="label">{{ option.text }}</span>
-            <Badge v-if="option.badge">{{ option.badge }}</Badge>
-          </button>
-        </div>
+        class="select__list__section flex col context-menu__element"
+        v-for="sectionName in Object.keys(options)">
+        <button
+          v-for="(option, index) in options[sectionName]"
+          :key="valueKey(option.value)"
+          @click="onClickOption($event, option.value)"
+          @mouseover="onHoverOption($event, index, sectionName)"
+          :hovered="
+            highlightedIndex == index && highlightedSection == sectionName
+          "
+          class="select__list__item"
+          role="option">
+          <Checkbox
+            v-if="multipleSelection"
+            :checkboxValue="option.value"
+            v-model="value"
+            class="select__list__item__checkbox" />
+          <span v-if="option.icon" class="icon" :class="option.icon"></span>
+          <span class="label">{{ option.text }}</span>
+          <Badge v-if="option.badge">{{ option.badge }}</Badge>
+        </button>
       </div>
-    </div>
+    </ContextMenu>
   </div>
 </template>
 <script>
@@ -93,9 +83,10 @@ TODO :
 import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
 
-import Checkbox from "./Checkbox.vue"
-import Chip from "./Chip.vue"
-import Badge from "./Badge.vue"
+import Checkbox from "@/components/Checkbox.vue"
+import Chip from "@/components/Chip.vue"
+import Badge from "@/components/Badge.vue"
+import ContextMenu from "@/components/ContextMenu.vue"
 
 export default {
   props: {
@@ -119,6 +110,7 @@ export default {
       showList: false,
       highlightedIndex: 0,
       highlightedSection: Object.keys(this.options)[0],
+      p_id: this.id || "select-" + Math.floor(Math.random() * 1000000000),
     }
   },
   mounted() {
@@ -241,6 +233,6 @@ export default {
       this.showList = false
     },
   },
-  components: { Fragment, Checkbox, Chip, Badge },
+  components: { Fragment, Checkbox, Chip, Badge, ContextMenu },
 }
 </script>
