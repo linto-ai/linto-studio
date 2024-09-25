@@ -7,13 +7,13 @@ const user = require("./populate/init.js")
 let urlMongo = "mongodb://"
 
 //user access
-if (process.env.DB_REQUIRE_LOGIN_MONGO === "true")
-  urlMongo += process.env.DB_USER_MONGO + ":" + process.env.DB_PASS_MONGO + "@"
+if (process.env.DB_REQUIRE_LOGIN === "true")
+  urlMongo += process.env.DB_USER + ":" + process.env.DB_PASS + "@"
 
-urlMongo += process.env.DB_HOST_MONGO + ":" + process.env.DB_PORT_MONGO + "/"
+urlMongo += process.env.DB_HOST + ":" + process.env.DB_PORT + "/"
 
-if (process.env.DB_REQUIRE_LOGIN_MONGO === "true")
-  urlMongo += "?authSource=" + process.env.DB_NAME_MONGO
+if (process.env.DB_REQUIRE_LOGIN === "true")
+  urlMongo += "?authSource=" + process.env.DB_NAME
 
 // Create an instance of a MongoDb client. Handle connection/close connection/reconnect/error
 class MongoDriver {
@@ -45,9 +45,9 @@ class MongoDriver {
       try {
         await MongoDriver.client.connect()
         console.log("> MongoDB : Connected")
-        MongoDriver.db = MongoDriver.client.db(process.env.DB_NAME_MONGO)
+        MongoDriver.db = MongoDriver.client.db(process.env.DB_NAME)
         console.log(
-          `> MongoDB : Successfully connected to database "${process.env.DB_NAME_MONGO}"`,
+          `> MongoDB : Successfully connected to database "${process.env.DB_NAME}"`,
         )
 
         // Event handling
