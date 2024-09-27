@@ -6,6 +6,9 @@
   margin: 0 5px 0 0;
   vertical-align: top;
   flex-shrink: 0;
+  &.diarization {
+    @include maskImage("../public/img/speaker-diarization.svg");
+  }
   &.add,
   &.new {
     @include maskImage("../public/img/plus-rounded.svg");

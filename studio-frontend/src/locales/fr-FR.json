@@ -686,7 +686,8 @@
       },
       "remove": "Retirer",
       "title": "Canaux attachés à la session",
-      "multiple_endpoint": "1 flux | {count} flux"
+      "multiple_endpoint": "1 flux | {count} flux",
+      "no_translations": "Aucune traduction"
     },
     "create_page": {
       "error_message": "Une erreur s'est produite lors de la création de la session",

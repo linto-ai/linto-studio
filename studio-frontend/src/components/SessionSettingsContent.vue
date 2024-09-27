@@ -5,7 +5,7 @@
       <h2>{{ $t("session.settings_page.global_informations_title") }}</h2>
       <div class="flex">
         <div class="flex1">
-          <LabeledValue
+          <!-- <LabeledValue
             :label="$t('session.settings_page.start_time_label')"
             :value="startTime"></LabeledValue>
           <FormCheckbox
@@ -14,7 +14,7 @@
             :disabled="isStarted"></FormCheckbox>
           <LabeledValue
             :label="$t('session.settings_page.end_time_label')"
-            :value="endTime"></LabeledValue>
+            :value="endTime"></LabeledValue> -->
           <FormInput :field="fieldPublicLink">
             <template v-slot:content-after-input>
               <button class="btn" @click="copyPublicLink">
@@ -89,6 +89,12 @@ export default {
         error: null,
         valid: false,
         label: this.$t("session.settings_page.isPublic_label"),
+      },
+      fieldHasDiarization: {
+        value: null,
+        error: null,
+        valid: false,
+        label: "––",
       },
       linkHasBeenCopied: false,
     }

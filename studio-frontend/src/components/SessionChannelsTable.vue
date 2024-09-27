@@ -57,6 +57,12 @@
           :sortListKey="sortListKey"
           :sortListDirection="sortListDirection" />
 
+        <!-- diarization -->
+        <th class="no-size" v-if="from === 'sessionSettings'">
+          <span
+            class="icon diarization large"
+            :title="$t('session.channels_list.labels.diarization')"></span>
+        </th>
         <!-- remove button -->
         <th v-if="from === 'formCreateSession'"></th>
 

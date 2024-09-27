@@ -691,7 +691,8 @@
       },
       "remove": "Remove",
       "title": "Channels linked to the session",
-      "multiple_endpoint": "1 endpoint | {count} endpoints"
+      "multiple_endpoint": "1 endpoint | {count} endpoints",
+      "no_translations": "No translation"
     },
     "create_page": {
       "error_message": "An error occurred while creating the session",

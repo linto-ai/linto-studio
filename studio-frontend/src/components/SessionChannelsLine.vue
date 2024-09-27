@@ -31,7 +31,9 @@
     <td v-else>
       {{ translations }}
     </td>
-
+    <td v-if="from === 'sessionSettings'" class="text-center">
+      <Checkbox v-model="item.diarization" />
+    </td>
     <td class="content-size" v-if="from === 'formCreateSession'">
       <button class="btn red-border" @click="removeChannel" type="button">
         <span class="icon remove"></span>
@@ -49,6 +51,7 @@ import EMPTY_FIELD from "../const/emptyField"
 import CustomSelect from "./CustomSelect.vue"
 
 import SessionChannelsEndpoints from "./SessionChannelsEndpoints.vue"
+import Checkbox from "./Checkbox.vue"
 
 export default {
   props: {
@@ -100,6 +103,10 @@ export default {
     },
     translations() {
       const translations_array = this.item.translations || []
+
+      if (translations_array.length === 0) {
+        return this.$t("session.channels_list.no_translations")
+      }
       return translations_array.join(", ")
     },
     // endpoint() {
@@ -135,6 +142,7 @@ export default {
     FormInput,
     SessionChannelsEndpoints,
     CustomSelect,
+    Checkbox,
   },
 }
 </script>
