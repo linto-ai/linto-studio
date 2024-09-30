@@ -102,7 +102,7 @@ async function exportConversation(req, res, next) {
         await handleLLMService(res, req.query, conversation, metadata)
         break
       default:
-        await handleVerbatimFormat(res, req.query, conversation, metadata)
+        await handleLLMService(res, req.query, conversation, metadata)
     }
   } catch (err) {
     next(err)
@@ -158,20 +158,16 @@ async function handleLLMService(res, query, conversation, metadata) {
       conversationExport[0].status === "error" &&
       conversationExport[0].error
     ) {
-      res
-        .status(400)
-        .send({
-          status: conversationExport[0].status,
-          error: conversationExport[0].error,
-        })
+      res.status(400).send({
+        status: conversationExport[0].status,
+        error: conversationExport[0].error,
+      })
     } else {
       llm.pollingLlm(conversationExport[0].jobId, conversationExport[0])
-      res
-        .status(200)
-        .send({
-          status: conversationExport[0].status,
-          processing: conversationExport[0].processing,
-        })
+      res.status(200).send({
+        status: conversationExport[0].status,
+        processing: conversationExport[0].processing,
+      })
     }
   }
 }
