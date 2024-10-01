@@ -122,7 +122,8 @@ export default {
       if (file.type.includes("video/")) {
         let duration = Math.floor(await this.getFileDuration(file))
         let requested = Math.floor(this.audioDuration)
-        return duration === requested
+        // Allow 10% difference
+        return Math.abs(duration - requested) < requested * 0.1
       }
       return false
     },
