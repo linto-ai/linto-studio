@@ -63,10 +63,9 @@
           >{{ $t("login.create_account_button") }}</router-link
         >
       </main>
-      <footer class="login-footer flex col">
+      <footer class="login-footer flex col" v-if="show_footer">
         <div class="login-footer-text">
-          Innovations Open source propulsées par LINAGORA sur les
-          infrastructures EXAION
+          {{ $t("login.footer.description") }}
         </div>
         <div class="flex gap-medium login-logo-bottom">
           <img src="/img/linagora.png" class="flex1" />
@@ -112,6 +111,9 @@ export default {
     },
     title() {
       return getEnv("VUE_APP_NAME")
+    },
+    show_footer() {
+      return getEnv("VUE_APP_SHOW_LOGIN_FOOTER") === "true"
     },
   },
   methods: {

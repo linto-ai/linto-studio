@@ -467,7 +467,10 @@
     "recover_password": "Forgot your password?",
     "recover_password_btn_label": "Send recovery link",
     "recover_password_detail": "Please fill in your email address for us to send you a recovery link.",
-    "title": "Sign in"
+    "title": "Sign in",
+    "footer": {
+      "description": "Open source innovations powered by LINAGORA on EXAION infrastructures"
+    }
   },
   "manage_tags": {
     "create_category": {

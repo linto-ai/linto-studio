@@ -467,7 +467,10 @@
     "recover_password": "Mot de passe oublié ?",
     "recover_password_btn_label": "Envoyer un lien de connexion",
     "recover_password_detail": "Saisissez votre adresse email sur laquelle sera envoyé un lien de récupération",
-    "title": "Identifiez-vous"
+    "title": "Identifiez-vous",
+    "footer": {
+      "description": "Innovations Open source propulsées par LINAGORA sur les infrastructures EXAION"
+    }
   },
   "manage_tags": {
     "create_category": {
