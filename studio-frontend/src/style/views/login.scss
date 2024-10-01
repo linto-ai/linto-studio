@@ -5,18 +5,47 @@
 
 .login-form-container {
   align-items: center;
+  height: 100vh;
+  overflow: auto;
 
   .login-logo {
     display: inline-block;
-    height: 116px;
+    height: 200px;
     width: auto;
-    margin: 1rem 0 0rem 0;
+    margin: 1rem 0 1rem 0;
   }
-}
 
-.toggle-login-link {
-  text-decoration: underline;
-  margin-bottom: 5px;
+  main {
+    align-items: center;
+    overflow: auto !important;
+  }
+
+  footer {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    align-items: center;
+    padding: 1rem;
+    font-weight: 800;
+    background-color: var(--primary-contrast);
+    border-top: 1px solid var(--neutral-60);
+
+    .login-footer-text {
+      margin-bottom: 1rem;
+    }
+
+    .login-logo-bottom {
+      height: 50px;
+      img {
+        object-fit: contain;
+      }
+    }
+  }
+
+  .toggle-login-link {
+    text-decoration: underline;
+    margin-bottom: 5px;
+  }
 }
 
 #app-login {
