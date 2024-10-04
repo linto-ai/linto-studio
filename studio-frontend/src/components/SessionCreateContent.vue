@@ -7,6 +7,11 @@
       <section>
         <h2>{{ $t("session.create_page.main_info_title") }}</h2>
         <FormInput :field="name" v-model="name.value" />
+        <AppointmentSelector
+          :field="fieldAppointment"
+          v-bind:error.sync="fieldAppointment.error"
+          v-model="fieldAppointment.value" />
+
         <FormCheckbox
           :field="fieldIsPublic"
           v-model="fieldIsPublic.value"></FormCheckbox>
@@ -17,7 +22,6 @@
             <h2 style="width: auto">
               {{ $t("session.channels_list.title") }}
             </h2>
-
             <button class="btn" @click="addChannel" type="button">
               <span class="icon add"></span>
               <span class="label">{{ $t("session.channels_list.add") }}</span>
@@ -29,8 +33,8 @@
         </div>
         <FormCheckbox
           class="medium-margin-top"
-          :field="diarizationEnabled"
-          v-model="diarizationEnabled.value"></FormCheckbox>
+          :field="fieldDiarizationEnabled"
+          v-model="fieldDiarizationEnabled.value"></FormCheckbox>
         <div class="">
           <SessionChannelsTable
             class="medium-margin-top"
@@ -78,9 +82,9 @@ import { formsMixin } from "@/mixins/forms.js"
 import MainContent from "@/components/MainContent.vue"
 import FormInput from "@/components/FormInput.vue"
 import FormCheckbox from "@/components/FormCheckbox.vue"
-
 import SessionChannelsTable from "@/components/SessionChannelsTable.vue"
 import ModalAddSessionChannels from "@/components/ModalAddSessionChannels.vue"
+import AppointmentSelector from "./AppointmentSelector.vue"
 
 export default {
   mixins: [formsMixin],
@@ -93,7 +97,12 @@ export default {
   data() {
     return {
       formState: "idle",
-      fields: ["name"],
+      fields: [
+        "name",
+        "fieldIsPublic",
+        "fieldDiarizationEnabled",
+        "fieldAppointment",
+      ],
       name: {
         ...EMPTY_FIELD,
         label: this.$i18n.t("session.create_page.name_field.label"),
@@ -105,11 +114,17 @@ export default {
         valid: false,
         label: this.$t("session.settings_page.isPublic_label"),
       },
-      diarizationEnabled: {
+      fieldDiarizationEnabled: {
         ...EMPTY_FIELD,
         value: false,
         label: this.$t("session.create_page.diarization_label"),
       },
+      fieldAppointment: {
+        ...EMPTY_FIELD,
+        value: [null, null], // startDateTime, endDateTime
+        label: this.$t("session.create_page.appointment_label"),
+      },
+
       channels: [],
       selectedProfiles: [],
       modalAddChannelsIsOpen: false,
@@ -134,19 +149,29 @@ export default {
       }
 
       if (this.testFields()) {
+        // convert fieldAppointment.value[0] and fieldAppointment.value[1] to ISO string like 2024-10-04T13:52:56.693Z
+        const startDateTime = this.fieldAppointment.value[0]
+          ? this.fieldAppointment.value[0].toISOString()
+          : null
+
+        const endDateTime = this.fieldAppointment.value[1]
+          ? this.fieldAppointment.value[1].toISOString()
+          : null
+
         const res = await apiCreateSession(this.currentOrganizationScope, {
           name: this.name.value,
           channels: this.channels.map(({ profileId, name, translations }) => ({
             transcriberProfileId: profileId,
             name,
             translations: translations ?? [],
-            diarization: this.diarizationEnabled.value,
+            diarization: this.fieldDiarizationEnabled.value,
           })),
+          startTime: startDateTime,
+          endTime: endDateTime,
           public: this.fieldIsPublic.value,
         })
         if (res.status == "success") {
           this.state = "success"
-          console.log("res success !!!", res)
           bus.$emit("app_notif", {
             status: "success",
             message: this.$i18n.t("session.create_page.success_message"),
@@ -200,6 +225,7 @@ export default {
     SessionChannelsTable,
     ModalAddSessionChannels,
     FormCheckbox,
+    AppointmentSelector,
   },
 }
 </script>

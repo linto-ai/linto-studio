@@ -2,6 +2,14 @@
   "accoustic": {
     "standard": "Standard"
   },
+  "appointment_selector": {
+    "date_label": "Date",
+    "start_time_label": "Heure de début",
+    "end_time_label": "Heure de fin",
+    "duration_label": "Durée:",
+    "error_end_time_before_start_time": "L'heure de fin doit être après l'heure de début",
+    "error_past_date": "La date doit être dans le futur"
+  },
   "app_editor_channels_selector": {
     "label": "Choisir un canal"
   },
@@ -362,6 +370,7 @@
       "microphone": "Microphone",
       "url": "Url & Visio",
       "visio": "Visio",
+      "session": "Session",
       "coming_soon": "Bientôt disponible"
     },
     "file": {
@@ -698,12 +707,15 @@
         "label": "Nom de la session"
       },
       "diarization_label": "Activer la séparation des locuteurs (si disponible dans le canal)",
+      "start_timestamp_label": "Heure de début",
+      "end_timestamp_label": "Heure de fin",
       "submit_button": "Créer la session",
       "submit_label": "Créer la session",
       "success_message": "La session a été créée avec succès",
       "title": "Créer une session",
       "channels_error": "Veuillez ajouter au moins un canal à la session",
-      "main_info_title": "Informations générales"
+      "main_info_title": "Informations générales",
+      "appointment_label": "Selecteur d'horaire"
     },
     "detail_page": {
       "back_to_listing": "Liste des sessions",

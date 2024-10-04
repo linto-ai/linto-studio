@@ -2,6 +2,14 @@
   "accoustic": {
     "standard": "Regular"
   },
+  "appointment_selector": {
+    "date_label": "Date",
+    "start_time_label": "Start time",
+    "end_time_label": "End time",
+    "duration_label": "Duration:",
+    "error_end_time_before_start_time": "The end time must be after the start time",
+    "error_past_date": "The date must be in the future"
+  },
   "app_editor_channels_selector": {
     "label": "Choose a channel"
   },
@@ -708,7 +716,8 @@
       "submit_label": "Create session",
       "success_message": "Session successfully created",
       "title": "Create a session",
-      "main_info_title": "General information"
+      "main_info_title": "General information",
+      "appointment_label": "Schedule selector"
     },
     "detail_page": {
       "back_to_listing": "Sessions list",
