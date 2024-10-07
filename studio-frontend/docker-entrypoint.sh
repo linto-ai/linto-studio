@@ -40,4 +40,5 @@ echo "RUNNING : $script"
 cd /usr/src/app/conversation-manager-front
 
 echo "done"
+
 nginx

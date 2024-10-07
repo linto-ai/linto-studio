@@ -44,7 +44,7 @@ def performBuildForFile(changedFiles, version) {
 pipeline {
     agent any
     environment {
-        DOCKER_HUB_REPO = "lintoai/"
+        DOCKER_HUB_REPO = "lintoai"
         DOCKER_HUB_CRED = 'docker-hub-credentials'
     }
 
