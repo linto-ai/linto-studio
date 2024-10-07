@@ -27,5 +27,4 @@ echo "RUNNING : $script"
 cd /usr/src/app/conversation-manager
 
 mkdir -p storages/audios/original storages/pictures storages/audiowaveform
-
 eval "$script"

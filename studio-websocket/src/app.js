@@ -27,9 +27,7 @@ class App {
           await this.use(componentFolderName)
         })
       }, Promise.resolve())
-      .then(() => {
-        // Do some stuff after all components being loaded
-      })
+      .then(() => {})
   }
 
   async use(componentFolderName) {
