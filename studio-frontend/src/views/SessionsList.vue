@@ -3,12 +3,13 @@
     <Tabs v-model="activeTab" :tabs="tabs"></Tabs>
     <Loading v-if="loading" />
     <ErrorPage v-else-if="error" :error="error" />
-    <div v-else>
-      <div v-if="sessionList.length > 0" class="flex col gap-medium">
-        <SessionListLine
+    <div v-else class="flex flex1">
+      <div v-if="sessionList.length > 0" class="flex col gap-medium flex1">
+        <!-- <SessionListLine
           v-for="session in sessionList"
           :key="session.id"
-          :session="session"></SessionListLine>
+          :session="session"></SessionListLine> -->
+        <SessionWeekList></SessionWeekList>
       </div>
       <div class="flex col align-center justify-center flex1" v-else>
         <h2 class="center-text">
@@ -33,10 +34,10 @@ import { apiGetActiveSessions, apiGetFutureSessions } from "@/api/session.js"
 
 import MainContent from "@/components/MainContent.vue"
 import Tabs from "@/components/Tabs.vue"
-import Loading from "../components/Loading.vue"
-import ErrorPage from "../components/ErrorPage.vue"
-import SessionListLine from "../components/SessionListLine.vue"
-
+import Loading from "@/components/Loading.vue"
+import ErrorPage from "@/components/ErrorPage.vue"
+import SessionListLine from "@/components/SessionListLine.vue"
+import SessionWeekList from "@/components/SessionWeekList.vue"
 export default {
   props: {
     currentOrganizationScope: {
@@ -130,6 +131,7 @@ export default {
     Loading,
     ErrorPage,
     SessionListLine,
+    SessionWeekList,
   },
 }
 </script>

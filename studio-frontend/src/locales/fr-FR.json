@@ -929,5 +929,10 @@
     "session_operator": "Opérateur de session",
     "system_administrator": "Administrateur système",
     "super_administrator": "Super administrateur"
+  },
+  "week_selector": {
+    "previous_button_title": "Semaine précédente",
+    "next_button_title": "Semaine suivante",
+    "main_label": "Semaine {weekNumber} de {year} ({startDate} - {endDate})"
   }
 }
