@@ -10,12 +10,10 @@
       </div>
     </div>
     <div class="session-day-line--content" ref="dayCards">
-      <SessionCard></SessionCard>
-      <SessionCard></SessionCard>
-      <SessionCard></SessionCard>
-      <SessionCard></SessionCard>
-      <SessionCard></SessionCard>
-      <SessionCard></SessionCard>
+      <SessionCard
+        v-for="session of sessions"
+        :session="session"
+        :key="session.id"></SessionCard>
     </div>
   </div>
 </template>
@@ -32,8 +30,13 @@ export default {
       type: Date,
       required: true,
     },
+    sessions: {
+      type: Array,
+      required: true,
+    },
   },
   data() {
+    console.log(this.sessions)
     return {
       styleHeader: {
         position: "sticky",

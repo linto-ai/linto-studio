@@ -1,6 +1,6 @@
 <template>
   <div class="session-card">
-    <div class="session-card--name">Nom de la session</div>
+    <div class="session-card--name">{{ name }}</div>
     <div class="session-card--date">Date de la session</div>
     <div class="session-card--room">Salle 1</div>
   </div>
@@ -11,9 +11,9 @@ import { bus } from "../main.js"
 import { sessionModelMixin } from "@/mixins/sessionModel.js"
 
 export default {
-  //mixins: [sessionModelMixin],
+  mixins: [sessionModelMixin],
   props: {
-    //session: { type: Object, required: true },
+    session: { type: Object, required: true },
   },
   data() {
     return {}

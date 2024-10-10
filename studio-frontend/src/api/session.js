@@ -64,6 +64,33 @@ export async function apiGetSession(organizationScope, sessionId, notif) {
   return getSession
 }
 
+export async function apiGetSessionsBetweenDates(
+  organizationScope,
+  start_date,
+  end_date,
+  notif,
+) {
+  const allSessionsReq = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions`,
+    { method: "get" },
+    { limit: 100 },
+    notif,
+  )
+
+  const allSessionsList = allSessionsReq?.data?.sessions ?? []
+
+  const allSessionsFiltered = allSessionsList.filter(
+    (session) =>
+      new Date(session.startTime) >= new Date(start_date) &&
+      new Date(session.startTime) <= new Date(end_date),
+  )
+
+  return {
+    sessions: allSessionsFiltered,
+    totalItems: allSessionsFiltered.length,
+  }
+}
+
 export async function apiGetPublicSession(sessionId, notif) {
   const getSession = await sendRequest(
     `${BASE_API}/sessions/${sessionId}/public`,
