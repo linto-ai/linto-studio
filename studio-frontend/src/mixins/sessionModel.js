@@ -15,6 +15,34 @@ export const sessionModelMixin = {
     endTime() {
       return this?.session?.endTime ?? this.$t("session.end_undefined")
     },
+    startTimeFormatted() {
+      const startTime = this?.session?.startTime
+
+      if (startTime) {
+        const options = {
+          month: "numeric",
+          day: "numeric",
+          hour: "numeric",
+          minute: "numeric",
+        }
+
+        return new Date(startTime).toLocaleDateString(undefined, options)
+      }
+    },
+    endTimeFormatted() {
+      const endTime = this?.session?.endTime
+
+      if (endTime) {
+        const options = {
+          month: "numeric",
+          day: "numeric",
+          hour: "numeric",
+          minute: "numeric",
+        }
+
+        return new Date(endTime).toLocaleDateString(undefined, options)
+      }
+    },
     isPending() {
       // with new api, we don't have pending status anymore. The session autostart when audio are sent, and pause when audio are not sent
       return false //this?.session?.status === "ready"

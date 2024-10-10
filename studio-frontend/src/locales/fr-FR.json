@@ -746,6 +746,7 @@
     "end_undefined": "Non définie",
     "list_page": {
       "no_sessions": "Aucune session trouvée",
+      "no_sessions_this_day": "Aucune session prévue pour ce jour",
       "planned_for": "Prévue pour",
       "started_at": "Commencée à",
       "tabs": {

@@ -745,8 +745,10 @@
       "undefined_speaker": "Undefined speaker"
     },
     "end_undefined": "Not defined",
+
     "list_page": {
       "no_sessions": "No sessions found",
+      "no_sessions_this_day": "No sessions planned for this day",
       "planned_for": "Planned for",
       "started_at": "Started at",
       "tabs": {

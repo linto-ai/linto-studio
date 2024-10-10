@@ -1,8 +1,10 @@
 <template>
   <div class="session-card">
     <div class="session-card--name">{{ name }}</div>
-    <div class="session-card--date">Date de la session</div>
-    <div class="session-card--room">Salle 1</div>
+    <div class="session-card--date">
+      {{ startTimeFormatted }} – {{ endTimeFormatted }}
+    </div>
+    <div class="session-card--room">room</div>
   </div>
 </template>
 <script>

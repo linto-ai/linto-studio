@@ -4,9 +4,8 @@
       class="flex col session-day-line--header"
       :style="styleHeader"
       ref="header">
-      <div class="flex col session-day-line--header--content" @click="gotoDay">
-        <h4 class="day-name">{{ dayName }}</h4>
-        <div class="day-date">{{ dateFormated }}</div>
+      <div class="session-day-line--header--content" @click="gotoDay">
+        <h4>{{ dayName }} {{ dateFormated }}</h4>
       </div>
     </div>
     <div class="session-day-line--content" ref="dayCards">
@@ -14,6 +13,9 @@
         v-for="session of sessions"
         :session="session"
         :key="session.id"></SessionCard>
+      <div class="center-text" v-if="sessions.length == 0">
+        {{ $t("session.list_page.no_sessions_this_day") }}
+      </div>
     </div>
   </div>
 </template>
@@ -39,8 +41,8 @@ export default {
     console.log(this.sessions)
     return {
       styleHeader: {
-        position: "sticky",
-        bottom: `${(this.lineIndex - 1) * 3.8 + 0.25}rem`,
+        //position: "sticky",
+        //bottom: `${(this.lineIndex - 1) * 3.8 + 0.25}rem`,
       },
     }
   },

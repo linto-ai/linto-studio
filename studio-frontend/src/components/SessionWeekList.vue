@@ -77,15 +77,25 @@ export default {
         this.loading = false
       }
     },
+    filterSessionsByDay(day) {
+      return this.sessions
+        .filter((session) => new Date(session.startTime).getDay() === day)
+        .sort((a, b) => {
+          return new Date(a.startTime) - new Date(b.startTime)
+        })
+    },
+  },
+  watch: {
+    startDate() {
+      this.fetchSessions()
+    },
   },
   computed: {
     mondayDate() {
       return new Date(this.startDate)
     },
     mondaySessions() {
-      return this.sessions.filter(
-        (session) => new Date(session.startTime).getDay() === 1,
-      )
+      return this.filterSessionsByDay(1)
     },
     tuesdayDate() {
       return new Date(
@@ -93,9 +103,7 @@ export default {
       )
     },
     tuesdaySessions() {
-      return this.sessions.filter(
-        (session) => new Date(session.startTime).getDay() === 2,
-      )
+      return this.filterSessionsByDay(2)
     },
     wednesdayDate() {
       return new Date(
@@ -103,9 +111,7 @@ export default {
       )
     },
     wednesdaySessions() {
-      return this.sessions.filter(
-        (session) => new Date(session.startTime).getDay() === 3,
-      )
+      return this.filterSessionsByDay(3)
     },
     thursdayDate() {
       return new Date(
@@ -113,9 +119,7 @@ export default {
       )
     },
     thursdaySessions() {
-      return this.sessions.filter(
-        (session) => new Date(session.startTime).getDay() === 4,
-      )
+      return this.filterSessionsByDay(4)
     },
     fridayDate() {
       return new Date(
@@ -123,9 +127,7 @@ export default {
       )
     },
     fridaySessions() {
-      return this.sessions.filter(
-        (session) => new Date(session.startTime).getDay() === 5,
-      )
+      return this.filterSessionsByDay(5)
     },
     saturdayDate() {
       return new Date(
@@ -133,9 +135,7 @@ export default {
       )
     },
     saturdaySessions() {
-      return this.sessions.filter(
-        (session) => new Date(session.startTime).getDay() === 6,
-      )
+      return this.filterSessionsByDay(6)
     },
     sundayDate() {
       return new Date(
@@ -143,9 +143,7 @@ export default {
       )
     },
     sundaySessions() {
-      return this.sessions.filter(
-        (session) => new Date(session.startTime).getDay() === 0,
-      )
+      return this.filterSessionsByDay(0)
     },
   },
   components: {
