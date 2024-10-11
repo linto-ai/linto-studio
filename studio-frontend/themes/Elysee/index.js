@@ -1,5 +1,5 @@
 const theme = {
-  stylePath: "themes/elysee/style/style.scss",
+  stylePath: "themes/Elysee/style/style.scss",
   locales: ["fr-FR", "en-US"],
   defaultLocale: "fr-FR",
   localesStrings: {},

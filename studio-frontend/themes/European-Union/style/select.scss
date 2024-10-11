@@ -29,6 +29,15 @@
   & img.icon {
     background-color: transparent !important;
   }
+
+  &:hover {
+    background-color: var(--primary-color);
+    color: var(--primary-contrast);
+
+    .icon {
+      background: var(--primary-contrast);
+    }
+  }
 }
 
 .select[inline] .select__head {
