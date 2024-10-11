@@ -39,6 +39,17 @@ export async function apiGetActiveSessions(organizationScope, notif) {
   return getStartedSessions?.data ?? { sessions: [], totalItems: 0 }
 }
 
+export async function apiCountActiveSessions(organizationScope, notif) {
+  const getStartedSessions = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions?statusList=active&organizationId=${organizationScope}`,
+    { method: "get" },
+    { limit: 1 },
+    notif,
+  )
+
+  return getStartedSessions?.data?.totalItems ?? 0
+}
+
 export async function apiGetFutureSessions(organizationScope, notif) {
   const getStartedSessions = await sendRequest(
     `${BASE_API}/organizations/${organizationScope}/sessions?status=ready&organizationId=${organizationScope}`,
@@ -51,6 +62,17 @@ export async function apiGetFutureSessions(organizationScope, notif) {
     throw new Error(getStartedSessions.message)
   }
   return getStartedSessions?.data ?? { sessions: [], totalItems: 0 }
+}
+
+export async function apiCountFutureSessions(organizationScope, notif) {
+  const getStartedSessions = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions?status=ready&organizationId=${organizationScope}`,
+    { method: "get" },
+    { limit: 1 },
+    notif,
+  )
+
+  return getStartedSessions?.data?.totalItems ?? 0
 }
 
 export async function apiGetSession(organizationScope, sessionId, notif) {

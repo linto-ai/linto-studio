@@ -52,6 +52,9 @@ export const sessionModelMixin = {
         this?.session?.status === "active" || this?.session?.status === "ready"
       )
     },
+    isActive() {
+      return this?.session?.status === "active"
+    },
     isTerminated() {
       return this?.session?.status === "terminated"
     },
@@ -73,6 +76,9 @@ export const sessionModelMixin = {
     },
     conversationId() {
       return this?.session?.conversationId
+    },
+    room() {
+      return this.$t("session.room_undefined")
     },
   },
 }

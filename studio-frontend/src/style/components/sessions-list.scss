@@ -40,6 +40,10 @@
   cursor: pointer;
 }
 
+a.session-card:hover {
+  text-decoration: none;
+}
+
 .session-card--name {
   font-size: 1rem;
   color: var(--blue-chart);

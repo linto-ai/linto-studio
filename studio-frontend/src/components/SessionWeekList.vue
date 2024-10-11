@@ -1,6 +1,6 @@
 <template>
   <Loading v-if="loading" />
-  <div class="session-week-list" v-else>
+  <div class="session-week-list flex col gap-medium" v-else>
     <WeekSelector v-model="startDate"></WeekSelector>
     <div class="flex col gap-medium session-day-list">
       <SessionDayLine

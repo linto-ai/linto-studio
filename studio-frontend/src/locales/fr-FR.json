@@ -744,6 +744,7 @@
       "undefined_speaker": "Locuteur inconnu"
     },
     "end_undefined": "Non définie",
+    "room_undefined": "Lieu non défini",
     "list_page": {
       "no_sessions": "Aucune session trouvée",
       "no_sessions_this_day": "Aucune session prévue pour ce jour",
