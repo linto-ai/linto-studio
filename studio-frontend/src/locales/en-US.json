@@ -745,8 +745,10 @@
       "undefined_speaker": "Undefined speaker"
     },
     "end_undefined": "Not defined",
+    "room_undefined": "Place not defined",
     "list_page": {
       "no_sessions": "No sessions found",
+      "no_sessions_this_day": "No sessions planned for this day",
       "planned_for": "Planned for",
       "started_at": "Started at",
       "tabs": {
@@ -930,5 +932,10 @@
     "session_operator": "Session operator",
     "system_administrator": "System administrator",
     "super_administrator": "Super administrator"
+  },
+  "week_selector": {
+    "previous_button_title": "Previous week",
+    "next_button_title": "Next week",
+    "main_label": "Week {weekNumber} of {year} ({startDate} - {endDate})"
   }
 }

@@ -241,6 +241,9 @@
   &.session {
     @include maskImage("../public/img/session.svg");
   }
+  &.save-cloud {
+    @include maskImage("../public/img/save-cloud.svg");
+  }
 }
 
 .icon.small {
