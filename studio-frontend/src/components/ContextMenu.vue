@@ -216,7 +216,6 @@ export default {
       )
       // TODO: see https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API to update current position when scrolling
       if (this.first) {
-        console.log("first", this._topRelativeParent)
         this.contentYTop = this._topRelativeParent.getBoundingClientRect().top
         this.contentYBottom =
           this._topRelativeParent.getBoundingClientRect().bottom

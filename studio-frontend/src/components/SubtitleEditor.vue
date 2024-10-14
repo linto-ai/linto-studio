@@ -115,15 +115,12 @@ export default {
     blocks: {
       handler() {
         if (!this.blocks.get(this.playingScreenId)) {
-          this.playingScreenId = this.nextScreenId
+          this.playingScreenId = this.nextScreenId ?? this.blocks.first
         }
-
         const currentScreen = this.blocks.get(this.playingScreenId)
-
         if (!this.blocks.get(this.nextScreenId)) {
           this.nextScreenId = currentScreen.next
         }
-
         if (!this.blocks.get(this.previousScreenId)) {
           this.previousScreenId = currentScreen.prev
         }
