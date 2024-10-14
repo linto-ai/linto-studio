@@ -1,8 +1,8 @@
 <template>
-  <div class="context-menu__element flex gap-small">
-    <pre class="flex1 overflow-horizontal-auto"  @click="copyEndpoint">{{ endpoint }}</pre>
+  <div class="context-menu__element flex gap-small" @click="copyEndpoint">
+    <pre class="flex1 overflow-horizontal-auto">{{ endpoint }}</pre>
     <button class="icon-only">
-      <span class="icon copy" v-if="!endpointHasbeenCopied" @click="copyEndpoint"></span>
+      <span class="icon copy" v-if="!endpointHasbeenCopied"></span>
       <span class="icon apply" v-else></span>
     </button>
   </div>
@@ -22,8 +22,7 @@ export default {
       endpointHasbeenCopied: false,
     }
   },
-  mounted() {
-  },
+  mounted() {},
   methods: {
     copyEndpoint() {
       const endpoint = this.endpoint
