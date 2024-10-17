@@ -45,6 +45,9 @@
 <script>
 import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
+
+import { sessionChannelModelMixin } from "../mixins/sessionChannelModel.js"
+
 import ArrayHeader from "./ArrayHeader.vue"
 import FormInput from "./FormInput.vue"
 import EMPTY_FIELD from "../const/emptyField"
@@ -54,6 +57,7 @@ import SessionChannelsEndpoints from "./SessionChannelsEndpoints.vue"
 import Checkbox from "./Checkbox.vue"
 
 export default {
+  mixins: [sessionChannelModelMixin],
   props: {
     item: {
       type: Object,
@@ -65,13 +69,13 @@ export default {
     },
   },
   data() {
-    const translations = this.item?.availableTranslations || []
+    const translations = this.channelAvailableTranslations || []
     return {
       nameField: {
         ...EMPTY_FIELD,
         value: this.item.name || "",
       },
-      selectedTranslations: this.item.translations || [],
+      selectedTranslations: this.channelTranslations || [],
       translationsOptions: {
         channels: translations.map((translation) => {
           return {
@@ -80,11 +84,12 @@ export default {
           }
         }),
       },
+      channelKeyObj: "item",
     }
   },
   computed: {
     type() {
-      switch (this.item.type) {
+      switch (this.channelType) {
         case "microsoft":
           return "/img/microsoft.png"
         default:
@@ -92,17 +97,17 @@ export default {
       }
     },
     alternativeTextForType() {
-      return this.item.type || ""
+      return this.channelType || ""
     },
     profileName() {
-      return this.item.profileName || ""
+      return this.channelProfileName || ""
     },
     languages() {
-      const langs_array = this.item.languages || []
+      const langs_array = this.channelLanguages || []
       return langs_array.join(", ")
     },
     translations() {
-      const translations_array = this.item.translations || []
+      const translations_array = this.channelTranslations || []
 
       if (translations_array.length === 0) {
         return this.$t("session.channels_list.no_translations")
@@ -113,13 +118,13 @@ export default {
     //   return this.item.stream_endpoint || ""
     // },
     endpoints() {
-      return this.item.streamEndpoints || {}
+      return this.channelStreamEndpoint || {}
     },
     streamStatus() {
-      return this.item.streamStatus || ""
+      return this.channelStreamStatus || ""
     },
     transcriberStatus() {
-      return this.item.transcriberStatus || ""
+      return this.channelTranscriberStatus || ""
     },
   },
   watch: {

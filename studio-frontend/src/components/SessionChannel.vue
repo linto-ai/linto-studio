@@ -72,6 +72,8 @@
 import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
 
+import { sessionChannelModelMixin } from "../mixins/sessionChannelModel.js"
+
 import {
   apiGetSessionChannel,
   apiGetPublicSessionChannel,
@@ -86,6 +88,7 @@ import Loading from "@/components/Loading.vue"
 import getTextTurnWithTranslation from "@/tools/getTextTurnWithTranslation.js"
 
 export default {
+  mixins: [sessionChannelModelMixin],
   props: {
     channel: {
       type: Object,
@@ -143,7 +146,7 @@ export default {
   },
   computed: {
     channelIndex() {
-      return this.channel.index
+      return this.channelId
     },
     lastTwoTurns() {
       return this.turns.slice(-2)
@@ -215,7 +218,7 @@ export default {
         this.previousTurns = []
       } else {
         const channel = allChannels.find(
-          (channel) => channel.index === this.channelIndex,
+          (channel) => channel.id === this.channelIndex,
         )
         this.previousTurns = channel?.closedCaptions || []
       }

@@ -24,12 +24,13 @@ import { bus } from "../main.js"
 import SessionWS from "@/models/SessionWS.js"
 
 import { sessionModelMixin } from "@/mixins/sessionModel.js"
+import { sessionChannelModelMixin } from "../mixins/sessionChannelModel.js"
 
 import SessionChannel from "@/components/SessionChannel.vue"
 import Loading from "@/components/Loading.vue"
 
 export default {
-  mixins: [sessionModelMixin],
+  mixins: [sessionModelMixin, sessionChannelModelMixin],
   props: {
     selectedChannel: {
       type: Object,
@@ -66,6 +67,7 @@ export default {
       sessionWS: new SessionWS(),
       isConnected: false,
       isBottom: true,
+      channelKeyObj: "selectedChannel",
     }
   },
   mounted() {
@@ -76,7 +78,7 @@ export default {
   },
   computed: {
     isInError() {
-      return this.selectedChannel?.transcriber_status === "errored"
+      return this.channelTranscriberStatus === "errored"
     },
   },
   methods: {
