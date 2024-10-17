@@ -120,23 +120,26 @@ export default {
       this.testSessionDates()
       this.$emit("input", [this.startDateTime, this.endDateTime])
     },
-    "field.value"() {
-      const startDateTime = this.field.value
-        ? (this.field.value?.[0] ?? null)
-        : null
-      const endDateTime = this.field.value
-        ? (this.field.value?.[1] ?? null)
-        : null
+    "field.value": {
+      handler() {
+        const startDateTime = this.field.value
+          ? (this.field.value?.[0] ?? null)
+          : null
+        const endDateTime = this.field.value
+          ? (this.field.value?.[1] ?? null)
+          : null
 
-      const date = startDateTime ? getFullDate(startDateTime) : null
-      const startTime = startDateTime ? getTimeFromDate(startDateTime) : null
-      const endTime = endDateTime ? getTimeFromDate(endDateTime) : null
+        const date = startDateTime ? getFullDate(startDateTime) : null
+        const startTime = startDateTime ? getTimeFromDate(startDateTime) : null
+        const endTime = endDateTime ? getTimeFromDate(endDateTime) : null
 
-      if (date) this.fieldDate.value = date
+        if (date) this.fieldDate.value = date
 
-      if (startTime) this.fieldStartTimestamp.value = startTime
+        if (startTime) this.fieldStartTimestamp.value = startTime
 
-      if (endTime) this.fieldEndTimestamp.value = endTime
+        if (endTime) this.fieldEndTimestamp.value = endTime
+      },
+      deep: true,
     },
   },
   methods: {

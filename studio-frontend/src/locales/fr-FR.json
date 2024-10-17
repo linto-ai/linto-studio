@@ -720,7 +720,7 @@
     "detail_page": {
       "back_to_listing": "Liste des sessions",
       "back_to_live": "Accéder au direct",
-      "delete_button": "Supprimer",
+      "delete_button": "Supprimer la session",
       "display_live_transcription_label": "Afficher la transcription",
       "display_subtitles_label": "Afficher le sous-titre",
       "end_time_not_defined": "Non défini",
@@ -782,15 +782,19 @@
     },
     "settings_page": {
       "autoStart_label": "Démarrage automatique de la session",
+      "autoStop_label": "Arrêt automatique de la session",
       "channels_list_title": "Canaux",
       "copy_link_button": "Copier le lien",
       "copy_link_button_done": "Lien copié",
       "end_time_label": "Heure de fin",
       "global_informations_title": "Informations générales",
+      "time_informations_title": "Démarrage et arrêt",
       "isPublic_label": "Autoriser l'accès anonyme à la session",
       "diarization_label": "Séparation des locuteurs",
       "publicLink_label": "Lien de la session",
       "start_time_label": "Heure de début",
+      "success_message": "Session successfully updated",
+      "error_update_message": "Session has not been updated",
       "delete_modal": {
         "action": "Supprimer",
         "content": "Êtes vous sur de vouloir supprimer la session ?",

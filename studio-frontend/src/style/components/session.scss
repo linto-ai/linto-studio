@@ -81,3 +81,10 @@
   text-decoration: underline;
   cursor: pointer;
 }
+
+.session-settings-topbar {
+}
+
+.session-settings-topbar[haschanged] {
+  background-color: var(--bg-highlight);
+}

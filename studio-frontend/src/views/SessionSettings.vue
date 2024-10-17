@@ -39,7 +39,9 @@
       </div>
     </template>
 
-    <div class="flex gap-medium small-padding border-divider-bottom">
+    <!-- <div
+      class="flex gap-medium small-padding border-divider-bottom session-settings-topbar"
+      :hasChanged="hasChanged">
       <div class="flex1"></div>
 
       <button
@@ -67,13 +69,18 @@
         <span class="icon trash"></span>
         <span class="label">{{ $t("session.detail_page.delete_button") }}</span>
       </button>
-    </div>
-    <SessionSettingsContent v-if="sessionLoaded" :session="session" />
+    </div> -->
+    <SessionSettingsContent
+      v-if="sessionLoaded"
+      :userInfo="userInfo"
+      :currentOrganizationScope="currentOrganizationScope"
+      :organizationId="organizationId"
+      :session="session" />
 
-    <ModalDeleteSession
+    <!-- <ModalDeleteSession
       v-if="showModalDeleteSession"
       @on-close="closeModalDeleteSession"
-      @on-confirm="deleteSession" />
+      @on-confirm="deleteSession" /> -->
   </MainContent>
 </template>
 <script>
@@ -90,21 +97,14 @@ export default {
   props: {},
   data() {
     return {
-      showModalDeleteSession: false,
+      hasChanged: false,
     }
   },
   created() {
     // if not started, redirect to home
   },
   mounted() {},
-  methods: {
-    openModalDeleteSession() {
-      this.showModalDeleteSession = true
-    },
-    closeModalDeleteSession() {
-      this.showModalDeleteSession = false
-    },
-  },
+  methods: {},
   components: {
     MainContent,
     SessionSettingsContent,

@@ -10,10 +10,18 @@ export const sessionModelMixin = {
       return this?.session?.id
     },
     startTime() {
-      return this?.session?.startTime ?? this.$t("session.start_undefined")
+      if (this?.session?.startTime) {
+        return new Date(this?.session?.startTime)
+      } else {
+        return null
+      }
     },
     endTime() {
-      return this?.session?.endTime ?? this.$t("session.end_undefined")
+      if (this?.session?.endTime) {
+        return new Date(this?.session?.endTime)
+      } else {
+        return null
+      }
     },
     startTimeFormatted() {
       const startTime = this?.session?.startTime
@@ -44,13 +52,10 @@ export const sessionModelMixin = {
       }
     },
     isPending() {
-      // with new api, we don't have pending status anymore. The session autostart when audio are sent, and pause when audio are not sent
-      return false //this?.session?.status === "ready"
+      return this?.session?.status === "ready"
     },
     isStarted() {
-      return (
-        this?.session?.status === "active" || this?.session?.status === "ready"
-      )
+      return this?.session?.status === "active"
     },
     isActive() {
       return this?.session?.status === "active"
@@ -59,7 +64,10 @@ export const sessionModelMixin = {
       return this?.session?.status === "terminated"
     },
     autoStart() {
-      return this?.session?.auto_start ?? false
+      return this?.session?.autoStart ?? false
+    },
+    autoStop() {
+      return this?.session?.autoStop ?? false
     },
     publicLink() {
       const baseUrl = window.location.origin

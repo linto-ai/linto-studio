@@ -97,6 +97,11 @@ module.exports = (webServer) => {
           },
           {
             path: "/organizations/:organizationId/sessions/:id",
+            method: ["put"],
+            forwardParams: proxyForwardParams,
+          },
+          {
+            path: "/organizations/:organizationId/sessions/:id",
             method: ["delete"],
             forwardParams: proxyForwardParams,
           },

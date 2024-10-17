@@ -25,8 +25,7 @@ export const sessionMixin = {
     },
   },
   data() {
-    return {
-      session: null,
+    const props = {
       sessionLoaded: false,
       sessionId: this.$route.params.sessionId,
       isStarting: false,
@@ -34,11 +33,17 @@ export const sessionMixin = {
       isDeleting: false,
       isFromPublicLink: false,
     }
+
+    if (!this.session) {
+      props["session"] = null
+    }
+
+    return props
   },
   created() {
     // TODO: check rights
     // then fetch session
-    this.fetchSession()
+    if (this.session === null) this.fetchSession()
   },
   methods: {
     async fetchSession() {
@@ -46,7 +51,7 @@ export const sessionMixin = {
       if (this.organizationId) {
         sessionRequest = await apiGetSession(
           this.organizationId,
-          this.sessionId
+          this.sessionId,
         )
       }
 
@@ -67,7 +72,7 @@ export const sessionMixin = {
       this.isStarting = true
       const start = await apiStartSession(
         this.currentOrganizationScope,
-        this.sessionId
+        this.sessionId,
       )
 
       if (start.status === "error") {
@@ -82,7 +87,7 @@ export const sessionMixin = {
       this.isStoping = true
       const start = await apiStopSession(
         this.currentOrganizationScope,
-        this.sessionId
+        this.sessionId,
       )
 
       if (start.status === "error") {
@@ -97,7 +102,7 @@ export const sessionMixin = {
       this.isDeleting = true
       const deleteSession = await apiDeleteSession(
         this.currentOrganizationScope,
-        this.sessionId
+        this.sessionId,
       )
 
       if (deleteSession.status === "error") {

@@ -7,12 +7,12 @@
     <LabeledValueSmall
       v-if="isPending"
       :label="$t('session.list_page.planned_for')"
-      :value="startTime" />
+      :value="startTimeFormatted" />
 
     <LabeledValueSmall
       v-if="isStarted"
       :label="$t('session.list_page.started_at')"
-      :value="startTime" />
+      :value="endTimeFormatted" />
   </router-link>
 </template>
 <script>

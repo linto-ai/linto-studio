@@ -722,7 +722,7 @@
     "detail_page": {
       "back_to_listing": "Sessions list",
       "back_to_live": "Live Session",
-      "delete_button": "Delete",
+      "delete_button": "Delete session",
       "display_live_transcription_label": "Display live transcription",
       "display_subtitles_label": "Display subtitles",
       "end_time_not_defined": "Not defined",
@@ -784,15 +784,18 @@
 
     "settings_page": {
       "autoStart_label": "Automatic session start",
+      "autoStop_label": "Automatic session stop",
       "channels_list_title": "Channels",
       "copy_link_button": "Copy link",
       "copy_link_button_done": "Link copied",
       "end_time_label": "End time",
       "global_informations_title": "General information",
+      "time_informations_title": "Start and stop settings",
       "isPublic_label": "Allow anonymous access to the session",
       "diarization_label": "Speakers detection",
       "publicLink_label": "Session link",
       "start_time_label": "Start time",
+      "success_message": "Session successfully updated",
       "delete_modal": {
         "action": "Delete",
         "content": "Are you sure you want to delete this session ?",

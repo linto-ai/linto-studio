@@ -25,6 +25,22 @@ export async function apiCreateSession(organizationScope, data, notif) {
   return createSession
 }
 
+export async function apiUpdateSession(
+  organizationScope,
+  sessionId,
+  data,
+  notif,
+) {
+  const createSession = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}`,
+    { method: "put" },
+    data,
+    notif,
+  )
+
+  return createSession
+}
+
 export async function apiGetActiveSessions(organizationScope, notif) {
   const getStartedSessions = await sendRequest(
     `${BASE_API}/organizations/${organizationScope}/sessions?statusList=active&organizationId=${organizationScope}`,
@@ -95,7 +111,7 @@ export async function apiGetSessionsBetweenDates(
   const allSessionsReq = await sendRequest(
     `${BASE_API}/organizations/${organizationScope}/sessions`,
     { method: "get" },
-    { limit: 100 },
+    { limit: 100, organizationId: organizationScope },
     notif,
   )
 
