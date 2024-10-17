@@ -1,5 +1,5 @@
 {
-  "/transcriber_profiles": {
+  "/api/transcriber_profiles": {
     "get": {
       "tags": ["transcriber_profiles"],
       "summary": "Get all transcriber configs",
@@ -38,7 +38,7 @@
       }
     }
   },
-  "/transcriber_profiles/{id}": {
+  "/api/transcriber_profiles/{id}": {
     "get": {
       "tags": ["transcriber_profiles"],
       "summary": "Get a transcriber config by ID",
