@@ -14,9 +14,7 @@
     cursor: pointer;
     display: flex;
     align-items: center;
-    width: 7rem;
-    height: 6rem;
-    padding-bottom: 0;
+    min-width: 7rem;
 
     .tab__label {
       line-height: 1.25rem;
@@ -42,6 +40,10 @@
     box-shadow: var(--shadow-block);
     border: var(--border-block);
     margin: 1px;
+
+    width: 7rem;
+    height: 6rem;
+    padding-bottom: 0;
 
     .icon {
       height: 2.5rem;
