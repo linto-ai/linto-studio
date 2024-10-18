@@ -111,11 +111,11 @@
       class="flex gap-medium conversation-create-footer align-center"
       v-if="hasChanged">
       <div class="flex1 small-padding-left">Session has been modified</div>
-      <button class="btn secondary">
+      <button class="btn secondary" @click="resetSession">
         <span class="label">Reset</span>
       </button>
 
-      <button @click="updateSession">
+      <button @click="updateSession" class="btn green">
         <span class="icon apply"></span>
         <span class="label">Sauvegarder</span>
       </button>
@@ -201,12 +201,7 @@ export default {
     // if not started, redirect to home
   },
   mounted() {
-    this.fieldAutoStart.value = this.autoStart
-    this.fieldAutoStop.value = this.autoStop
-    this.fieldPublicLink.value = this.publicLink
-    this.fieldIsPublic.value = this.isPublic
-
-    this.fieldAppointment.value = [this.startTime, this.endTime]
+    this.initValues()
   },
   watch: {},
   computed: {
@@ -232,6 +227,14 @@ export default {
     },
   },
   methods: {
+    initValues() {
+      this.fieldAutoStart.value = this.autoStart
+      this.fieldAutoStop.value = this.autoStop
+      this.fieldPublicLink.value = this.publicLink
+      this.fieldIsPublic.value = this.isPublic
+
+      this.fieldAppointment.value = [this.startTime, this.endTime]
+    },
     updateChannelName(index, value) {
       this.localChannels[index].name = value
       this.channelsHasChanged = true
@@ -251,8 +254,8 @@ export default {
         } catch (error) {}
       }, 2000)
     },
-    save() {
-      console.log("save")
+    resetSession() {
+      this.initValues()
     },
     async updateSession() {
       this.formState = "sending"
