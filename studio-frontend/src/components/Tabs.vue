@@ -17,7 +17,9 @@
         @click="!disabled && !tab.disabled && $emit('input', tab.name)">
         <span class="icon" :class="tab.icon" v-if="tab.icon"></span>
         <img :src="tab.img" v-else-if="tab.img" class="icon" />
-        <span class="tab__label">{{ tab.label }}</span>
+        <div class="flex flex1 col justify-center">
+          <span class="tab__label">{{ tab.label }}</span>
+        </div>
         <Badge v-if="tab.badge" :inverted="value == tab.name">{{
           tab.badge
         }}</Badge>
