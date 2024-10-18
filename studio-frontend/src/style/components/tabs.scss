@@ -14,7 +14,13 @@
     cursor: pointer;
     display: flex;
     align-items: center;
-    min-width: 7rem;
+    width: 7rem;
+    height: 6rem;
+    padding-bottom: 0;
+
+    .tab__label {
+      line-height: 1.25rem;
+    }
 
     .tab__label::first-letter {
       text-transform: uppercase;
