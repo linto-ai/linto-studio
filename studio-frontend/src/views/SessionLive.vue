@@ -8,27 +8,12 @@
         }}</span>
       </router-link>
 
-      <div
-        class="flex flex1 center-text align-center justify-center"
-        v-if="isPending">
-        <span class="icon clock"></span>
-        <span>{{ $t("session.detail_page.sessions_status.no_started") }}</span>
-      </div>
-
-      <div
-        class="flex flex1 center-text align-center justify-center"
-        v-else-if="isStarted">
-        <span class="icon reload"></span>
-        <span>{{ $t("session.detail_page.sessions_status.started") }}</span>
-      </div>
-
-      <div
-        class="flex flex1 center-text align-center justify-center"
-        v-else-if="isTerminated"></div>
-
-      <div
-        class="flex flex1 center-text align-center justify-center"
-        v-else></div>
+      <!-- title -->
+      <SessionStatus
+        v-if="sessionLoaded"
+        :session="session"
+        withText
+        class="flex1" />
 
       <router-link :to="settingsRoute" class="btn" v-if="isAtLeastMaintainer">
         <span class="icon settings"></span>
@@ -109,8 +94,9 @@ import SessionTranslationSelection from "@/components/SessionTranslationSelectio
 import SessionLiveContent from "@/components/SessionLiveContent.vue"
 import Loading from "@/components/Loading.vue"
 import FormInput from "@/components/FormInput.vue"
-import FormCheckbox from "../components/FormCheckbox.vue"
-import SessionEnded from "../components/SessionEnded.vue"
+import FormCheckbox from "@/components/FormCheckbox.vue"
+import SessionEnded from "@/components/SessionEnded.vue"
+import SessionStatus from "@/components/SessionStatus.vue"
 
 export default {
   mixins: [sessionMixin, orgaRoleMixin],
@@ -187,6 +173,7 @@ export default {
     FormInput,
     FormCheckbox,
     SessionEnded,
+    SessionStatus,
   },
 }
 </script>

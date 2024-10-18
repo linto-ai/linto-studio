@@ -1,16 +1,22 @@
 <template>
   <fieldset
     class="appointment-selector form-field"
-    :class="{ errored: field.error }">
+    :class="{ errored: field.error && !readonly }">
     <legend class="form-label" v-if="label">{{ label }}</legend>
-    <FormInput :field="fieldDate" v-model="fieldDate.value" ref=""></FormInput>
+    <FormInput
+      :field="fieldDate"
+      v-model="fieldDate.value"
+      ref=""
+      :readonly="readonly"></FormInput>
     <div class="flex gap-medium">
       <FormInput
         class="flex1"
+        :readonly="readonly"
         :field="fieldStartTimestamp"
         v-model="fieldStartTimestamp.value"></FormInput>
       <FormInput
         class="flex1"
+        :readonly="readonly"
         :field="fieldEndTimestamp"
         v-model="fieldEndTimestamp.value"></FormInput>
     </div>
@@ -19,7 +25,7 @@
       <span v-if="timeDuration">{{ timeDuration }}</span>
       <span v-else>–</span>
     </div>
-    <div class="error-field" v-if="field.error">
+    <div class="error-field" v-if="field.error && !readonly">
       {{ field.error }}
     </div>
   </fieldset>
@@ -36,6 +42,10 @@ export default {
     field: {
       type: Object,
       required: true,
+    },
+    readonly: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

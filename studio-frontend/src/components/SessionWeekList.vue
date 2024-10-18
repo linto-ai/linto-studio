@@ -69,7 +69,6 @@ export default {
           this.mondayDate,
           this.sundayDate,
         )
-        console.log(response)
         this.sessions = response.sessions
         this.loading = false
       } catch (error) {

@@ -1,7 +1,7 @@
 <template>
   <Loading v-if="loading" />
   <ErrorPage v-else-if="error" :error="error" />
-  <div v-else-if="sessionList.length > 0" class="flex flex1 col">
+  <div v-else-if="sessionList.length > 0" class="flex flex1 col gap-small">
     <SessionListLine
       v-if="sessionList.length > 0"
       v-for="session in sessionList"
@@ -16,7 +16,7 @@
   </div>
 </template>
 <script>
-import { apiGetActiveSessions } from "@/api/session.js"
+import { apiGetStartedSessions } from "@/api/session.js"
 import Loading from "@/components/Loading.vue"
 import ErrorPage from "@/components/ErrorPage.vue"
 import SessionListLine from "@/components/SessionListLine.vue"
@@ -41,11 +41,10 @@ export default {
     async fetchActiveSessions() {
       this.loading = true
       try {
-        const sessions = await apiGetActiveSessions(
+        const sessions = await apiGetStartedSessions(
           this.currentOrganizationScope,
         )
         this.sessionList = sessions.sessions
-        console.log(this.sessionList.length)
       } catch (e) {
         console.error(e)
         this.error = e

@@ -68,7 +68,7 @@ export default {
     }
   },
   mounted() {
-    this.fetchCountActiveSessions()
+    //this.fetchCountActiveSessions()
   },
   methods: {
     async fetchCountActiveSessions() {
@@ -124,13 +124,13 @@ export default {
           name: "started",
           label: this.$i18n.t("session.list_page.tabs.ongoing_sessions"),
           icon: "record",
-          badge: this.countActiveSessions,
+          //badge: this.countActiveSessions,
         },
         {
           name: "timeline",
           label: this.$i18n.t("session.list_page.tabs.scheduled_sessions"),
           icon: "clock",
-          badge: this.countFutureSessions,
+          //badge: this.countFutureSessions,
         },
       ]
     },

@@ -677,6 +677,12 @@
     }
   },
   "session": {
+    "sessions_status": {
+      "pending": "La session est en attente de recevoir un flux audio.",
+      "active": "La session est active. Un ou des audio(s) sont transcrits.",
+      "scheduled": "La session n'a pas démarrée",
+      "terminated": "La session est terminée"
+    },
     "channels_list": {
       "add": "Ajouter des canaux",
       "empty": "Aucun canaux attachés à la session",
@@ -731,25 +737,23 @@
       "session_ended_link_to_conversation_transcription": "Ouvrir la transcription dans l’éditeur",
       "session_ended_link_to_inbox": "Accéder à la bibliothèque des médias",
       "session_not_started_title": "La session n'a pas encore commencé",
-      "sessions_status": {
-        "no_started": "La session est programmée",
-        "started": "La session est en cours"
-      },
       "settings_button": "Paramètres",
       "start_button": "Démarrer",
       "start_time_not_defined": "Non défini",
-      "stop_button": "Arrêter",
+      "stop_button": "Arrêter et sauvegarder",
       "title_interface_settings": "Paramètre d'interface",
       "undefined_lang": "Langage inconnu",
-      "undefined_speaker": "Locuteur inconnu"
+      "undefined_speaker": "Locuteur inconnu",
+      "session_already_started": "La session a déjà démarrée",
+      "session_auto_start_helper": "La session démmarera automatiquement à l'heure de début"
     },
     "end_undefined": "Non définie",
     "room_undefined": "Lieu non défini",
     "list_page": {
       "no_sessions": "Aucune session trouvée",
       "no_sessions_this_day": "Aucune session prévue pour ce jour",
-      "planned_for": "Prévue pour",
-      "started_at": "Commencée à",
+      "end_time": "Heure de fin",
+      "start_time": "Heure de début",
       "tabs": {
         "ongoing_sessions": "Sessions en cours",
         "past_sessions": "Sessions passées",

@@ -29,11 +29,18 @@
         <!-- Auto start and datetime-->
         <section>
           <h2>{{ $t("session.settings_page.time_informations_title") }}</h2>
+          <div v-if="isStarted">
+            {{ $t("session.detail_page.session_already_started") }}
+          </div>
+          <div v-else>
+            {{ $t("session.detail_page.session_auto_start_helper") }}
+          </div>
           <AppointmentSelector
+            :readonly="isStarted"
             :field="fieldAppointment"
             v-bind:error.sync="fieldAppointment.error"
             v-model="fieldAppointment.value" />
-          <div class="flex gap-medium align-center medium-margin-top">
+          <!-- <div class="flex gap-medium align-center medium-margin-top">
             <FormCheckbox
               :field="fieldAutoStart"
               v-model="fieldAutoStart.value"
@@ -43,14 +50,14 @@
               v-model="fieldAutoStop.value"
               :disabled="isStarted"></FormCheckbox>
             <div></div>
-          </div>
+          </div> -->
         </section>
       </div>
       <div class="flex col gap-medium">
         <!-- it's not a vueJS component, it's a webcomponent. Code is imported in index.html -->
 
         <div class="flex col gap-medium">
-          <button
+          <!-- <button
             class="btn flex1"
             v-if="isPending"
             @click="startSession"
@@ -59,7 +66,7 @@
             <span class="label">{{
               $t("session.detail_page.start_button")
             }}</span>
-          </button>
+          </button> -->
 
           <button
             class="btn flex1"
@@ -72,7 +79,10 @@
             }}</span>
           </button>
 
-          <button class="btn red-border flex1" :disabled="isDeleting">
+          <button
+            class="btn red-border flex1"
+            :disabled="isDeleting"
+            @click="openModalDeleteSession">
             <span class="icon trash"></span>
             <span class="label">{{
               $t("session.detail_page.delete_button")
@@ -91,10 +101,12 @@
         <SessionChannelsTable
           v-if="channels.length > 0"
           from="sessionSettings"
-          :channelsList="channels"></SessionChannelsTable>
+          @updateName="updateChannelName"
+          :channelsList="localChannels"></SessionChannelsTable>
       </div>
     </section>
 
+    <!-- Save bottom bar -->
     <div
       class="flex gap-medium conversation-create-footer align-center"
       v-if="hasChanged">
@@ -181,6 +193,8 @@ export default {
       linkHasBeenCopied: false,
       showModalDeleteSession: false,
       formState: "idle",
+      localChannels: structuredClone(this.session.channels),
+      channelsHasChanged: false,
     }
   },
   created() {
@@ -212,11 +226,16 @@ export default {
         autoStartChanged ||
         autoStopChanged ||
         startDateChanged ||
-        stopDateChanged
+        stopDateChanged ||
+        this.channelsHasChanged
       )
     },
   },
   methods: {
+    updateChannelName(index, value) {
+      this.localChannels[index].name = value
+      this.channelsHasChanged = true
+    },
     openModalDeleteSession() {
       this.showModalDeleteSession = true
     },
@@ -235,7 +254,7 @@ export default {
     save() {
       console.log("save")
     },
-    updateSession() {
+    async updateSession() {
       this.formState = "sending"
       const startDateTime = this.fieldAppointment.value[0]
         ? this.fieldAppointment.value[0].toISOString()
@@ -247,14 +266,16 @@ export default {
 
       if (this.testFields()) {
         let newValues = {
+          ...this.session,
           startTime: startDateTime,
           endTime: endDateTime,
           autoStart: this.fieldAutoStart.value,
           autoStop: this.fieldAutoStop.value,
           public: this.fieldIsPublic.value,
+          channels: this.localChannels,
         }
 
-        const res = apiUpdateSession(
+        const res = await apiUpdateSession(
           this.currentOrganizationScope,
           this.session.id,
           newValues,
@@ -266,6 +287,7 @@ export default {
             message: this.$i18n.t("session.settings_page.success_message"),
             redirect: false,
           })
+          this.$emit("session_update", res.data)
         } else {
           bus.$emit("app_notif", {
             status: "error",

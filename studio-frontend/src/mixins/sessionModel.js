@@ -1,3 +1,5 @@
+import isSessionStarted from "../tools/isSessionStarted"
+
 export const sessionModelMixin = {
   data() {
     return {}
@@ -35,6 +37,8 @@ export const sessionModelMixin = {
         }
 
         return new Date(startTime).toLocaleDateString(undefined, options)
+      } else {
+        return "–"
       }
     },
     endTimeFormatted() {
@@ -49,13 +53,15 @@ export const sessionModelMixin = {
         }
 
         return new Date(endTime).toLocaleDateString(undefined, options)
+      } else {
+        return "–"
       }
     },
     isPending() {
       return this?.session?.status === "ready"
     },
     isStarted() {
-      return this?.session?.status === "active"
+      return isSessionStarted(this.session)
     },
     isActive() {
       return this?.session?.status === "active"

@@ -1,3 +1,4 @@
+import isSessionStarted from "../tools/isSessionStarted"
 import { sendRequest } from "../tools/sendRequest"
 import { getEnv } from "@/tools/getEnv"
 
@@ -55,6 +56,25 @@ export async function apiGetActiveSessions(organizationScope, notif) {
   return getStartedSessions?.data ?? { sessions: [], totalItems: 0 }
 }
 
+// started is not a session api status
+export async function apiGetStartedSessions(organizationScope, notif) {
+  const allSessionsReq = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions`,
+    { method: "get" },
+    { limit: 100, organizationId: organizationScope },
+    notif,
+  )
+
+  const allSessionsList = allSessionsReq?.data?.sessions ?? []
+
+  const allSessionsFiltered = allSessionsList.filter(isSessionStarted)
+
+  return {
+    sessions: allSessionsFiltered,
+    totalItems: allSessionsFiltered.length,
+  }
+}
+
 export async function apiCountActiveSessions(organizationScope, notif) {
   const getStartedSessions = await sendRequest(
     `${BASE_API}/organizations/${organizationScope}/sessions?statusList=active&organizationId=${organizationScope}`,
@@ -68,7 +88,7 @@ export async function apiCountActiveSessions(organizationScope, notif) {
 
 export async function apiGetFutureSessions(organizationScope, notif) {
   const getStartedSessions = await sendRequest(
-    `${BASE_API}/organizations/${organizationScope}/sessions?status=ready&organizationId=${organizationScope}`,
+    `${BASE_API}/organizations/${organizationScope}/sessions?organizationId=${organizationScope}`,
     { method: "get" },
     {},
     notif,
