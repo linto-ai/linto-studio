@@ -5,6 +5,14 @@
       "summary": "Purge terminated sessions or all sessions if force is true",
       "parameters": [
         {
+          "in": "path",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an organization"
+        },
+        {
           "in": "query",
           "name": "force",
           "description": "Force deletion of all sessions",
@@ -26,6 +34,14 @@
       "tags": ["sessions"],
       "summary": "Get all sessions",
       "parameters": [
+        {
+          "in": "path",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an organization"
+        },
         {
           "in": "query",
           "name": "limit",
@@ -73,11 +89,12 @@
         },
         {
           "in": "query",
-          "name": "public",
-          "description": "Search for private or public sessions only.",
+          "name": "visibility",
+          "description": "Search for sessions with a specific visibility.",
           "required": false,
           "schema": {
-            "type": "boolean"
+            "type": "string",
+            "enum": ["private", "organization", "public"]
           }
         }
       ],
@@ -100,6 +117,16 @@
     "post": {
       "tags": ["sessions"],
       "summary": "Create a new session",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an organization"
+        }
+      ],
       "requestBody": {
         "content": {
           "application/json": {
@@ -129,6 +156,14 @@
       "summary": "Get a session by ID",
       "parameters": [
         {
+          "in": "path",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an organization"
+        },
+        {
           "name": "id",
           "in": "path",
           "description": "Session ID",
@@ -155,10 +190,63 @@
         }
       }
     },
+    "put": {
+      "tags": ["sessions"],
+      "summary": "Update a session and its channels",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an organization"
+        },
+        {
+          "name": "id",
+          "in": "path",
+          "description": "Session ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/SessionUpdateRequest"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionAnswerWithCaptions"
+              }
+            }
+          }
+        }
+      }
+    },
     "delete": {
       "tags": ["sessions"],
       "summary": "Delete a session by ID",
       "parameters": [
+        {
+          "in": "path",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an organization"
+        },
         {
           "name": "id",
           "in": "path",
@@ -184,8 +272,16 @@
     "post": {
       "tags": ["sessions"],
       "summary": "Starts a bot for a specific session",
-      "description": "This endpoint starts a bot for the given session ID with a specified channel index, URL, and bot type. Available bot types are 'jitsi', 'youtube', and 'bigbluebutton'.",
+      "description": "This endpoint starts a bot for the given session ID with a specified channel ID, URL, and bot type. Available bot types are 'jitsi', 'youtube', and 'bigbluebutton'.",
       "parameters": [
+        {
+          "in": "path",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an organization"
+        },
         {
           "name": "id",
           "in": "path",
@@ -208,9 +304,9 @@
                   "format": "uri",
                   "description": "The URL to start the bot."
                 },
-                "channelIndex": {
+                "channelId": {
                   "type": "integer",
-                  "description": "The index of the channel."
+                  "description": "The id of the channel."
                 },
                 "botType": {
                   "type": "string",
@@ -218,7 +314,7 @@
                   "enum": ["jitsi", "youtube", "bigbluebutton"]
                 }
               },
-              "required": ["url", "channelIndex", "botType"]
+              "required": ["url", "channelId", "botType"]
             }
           }
         }
@@ -228,7 +324,7 @@
           "description": "Bot started successfully."
         },
         "400": {
-          "description": "Bad request. sessionId, url, channelIndex, and botType are required."
+          "description": "Bad request. sessionId, url, channelId, and botType are required."
         },
         "404": {
           "description": "Session or channel not found."
@@ -240,8 +336,16 @@
     "post": {
       "tags": ["sessions"],
       "summary": "Stops a bot for a specific session",
-      "description": "This endpoint stops a bot for the given session ID with a specified channel index.",
+      "description": "This endpoint stops a bot for the given session ID with a specified channel id.",
       "parameters": [
+        {
+          "in": "path",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an organization"
+        },
         {
           "name": "id",
           "in": "path",
@@ -259,12 +363,12 @@
             "schema": {
               "type": "object",
               "properties": {
-                "channelIndex": {
+                "channelId": {
                   "type": "integer",
-                  "description": "The index of the channel to stop the bot."
+                  "description": "The id of the channel to stop the bot."
                 }
               },
-              "required": ["channelIndex"]
+              "required": ["channelId"]
             }
           }
         }
@@ -274,7 +378,7 @@
           "description": "Bot stopped successfully."
         },
         "400": {
-          "description": "Bad request. sessionId and channelIndex are required."
+          "description": "Bad request. sessionId and channelId are required."
         },
         "404": {
           "description": "Session or channel not found."
@@ -287,6 +391,14 @@
       "tags": ["sessions"],
       "summary": "Stop a session by ID",
       "parameters": [
+        {
+          "in": "path",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an organization"
+        },
         {
           "name": "id",
           "in": "path",
