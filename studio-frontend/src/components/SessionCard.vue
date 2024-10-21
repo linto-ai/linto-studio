@@ -4,9 +4,7 @@
     :to="`/interface/${sessionOrganizationId}/sessions/${id}`"
     class="session-card">
     <div class="session-card--name flex align-center">
-      <span class="icon save-cloud small" v-if="isTerminated"></span>
-      <span class="icon record small" v-else-if="isActive"></span>
-      <span class="icon clock small" v-else></span>
+      <SessionStatus :session="session" small />
       <span class="flex1">{{ name }}</span>
     </div>
     <div class="session-card--date">
@@ -19,6 +17,7 @@
 import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
 import { sessionModelMixin } from "@/mixins/sessionModel.js"
+import SessionStatus from "@/components/SessionStatus.vue"
 
 export default {
   mixins: [sessionModelMixin],
@@ -30,6 +29,6 @@ export default {
   },
   mounted() {},
   methods: {},
-  components: { Fragment },
+  components: { Fragment, SessionStatus },
 }
 </script>

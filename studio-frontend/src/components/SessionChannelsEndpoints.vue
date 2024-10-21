@@ -32,7 +32,6 @@ export default {
     },
   },
   data() {
-    console.log(this.endpoints)
     return {
       menuIsVisible: false,
     }

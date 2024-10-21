@@ -2,23 +2,25 @@
   <router-link
     :title="name"
     :to="`/interface/${sessionOrganizationId}/sessions/${id}`"
-    class="session-line flex">
+    class="session-line flex align-center">
+    <SessionStatus :session="session" />
     <div class="flex1 session-line__title text-cut">{{ name }}</div>
     <LabeledValueSmall
       v-if="isPending"
-      :label="$t('session.list_page.planned_for')"
-      :value="startTime" />
+      :label="$t('session.list_page.start_time')"
+      :value="startTimeFormatted" />
 
     <LabeledValueSmall
       v-if="isStarted"
-      :label="$t('session.list_page.started_at')"
-      :value="startTime" />
+      :label="$t('session.list_page.end_time')"
+      :value="endTimeFormatted" />
   </router-link>
 </template>
 <script>
 import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
 import { sessionModelMixin } from "@/mixins/sessionModel.js"
+import SessionStatus from "@/components/SessionStatus.vue"
 
 import LabeledValueSmall from "@/components/LabeledValueSmall.vue"
 
@@ -32,6 +34,6 @@ export default {
   },
   mounted() {},
   methods: {},
-  components: { Fragment, LabeledValueSmall },
+  components: { Fragment, LabeledValueSmall, SessionStatus },
 }
 </script>

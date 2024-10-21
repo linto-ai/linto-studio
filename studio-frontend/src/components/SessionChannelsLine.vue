@@ -69,13 +69,13 @@ export default {
     },
   },
   data() {
-    const translations = this.channelAvailableTranslations || []
+    const translations = this.item.availableTranslations || []
     return {
       nameField: {
         ...EMPTY_FIELD,
         value: this.item.name || "",
       },
-      selectedTranslations: this.channelTranslations || [],
+      selectedTranslations: this.item.translations || [],
       translationsOptions: {
         channels: translations.map((translation) => {
           return {

@@ -38,7 +38,6 @@ export default {
     },
   },
   data() {
-    console.log(this.sessions)
     return {
       styleHeader: {
         //position: "sticky",

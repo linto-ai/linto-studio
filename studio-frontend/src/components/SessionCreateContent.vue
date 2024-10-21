@@ -35,7 +35,7 @@
           class="medium-margin-top"
           :field="fieldDiarizationEnabled"
           v-model="fieldDiarizationEnabled.value"></FormCheckbox>
-        <div class="">
+        <div class="" style="overflow: auto">
           <SessionChannelsTable
             class="medium-margin-top"
             v-if="channels.length > 0"
@@ -84,7 +84,7 @@ import FormInput from "@/components/FormInput.vue"
 import FormCheckbox from "@/components/FormCheckbox.vue"
 import SessionChannelsTable from "@/components/SessionChannelsTable.vue"
 import ModalAddSessionChannels from "@/components/ModalAddSessionChannels.vue"
-import AppointmentSelector from "./AppointmentSelector.vue"
+import AppointmentSelector from "@/components/AppointmentSelector.vue"
 
 export default {
   mixins: [formsMixin],
@@ -141,10 +141,10 @@ export default {
   methods: {
     async createSession(e) {
       e.preventDefault()
-      this.state = "sending"
+      this.formState = "sending"
       if (this.channels.length === 0) {
         this.channelsError = this.$i18n.t("session.create_page.channels_error")
-        this.state = "error"
+        this.formState = "error"
         return false
       }
 
@@ -171,7 +171,7 @@ export default {
           public: this.fieldIsPublic.value,
         })
         if (res.status == "success") {
-          this.state = "success"
+          this.formState = "success"
           bus.$emit("app_notif", {
             status: "success",
             message: this.$i18n.t("session.create_page.success_message"),
@@ -190,10 +190,10 @@ export default {
             message: this.$i18n.t("session.create_page.error_message"),
             timeout: null,
           })
-          this.state = "error"
+          this.formState = "error"
         }
       } else {
-        this.state = "error"
+        this.formState = "error"
       }
 
       return false
