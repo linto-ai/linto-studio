@@ -812,7 +812,8 @@
       "source_title": "Source",
       "microphone_source_label": "Utiliser le microphone de mon ordinateur",
       "visio_source_label": "Rejoindre une visio-conférence",
-      "profile_selector_title": "Transcription profile selection"
+      "profile_selector_title": "Transcription profil selection",
+      "no_profile_selected_error": "Aucun profil de transcription selectionné"
     }
   },
   "share_menu": {
