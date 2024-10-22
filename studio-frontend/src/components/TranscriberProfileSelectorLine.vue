@@ -2,10 +2,16 @@
   <tr @click="onClickLine">
     <td class="content-size">
       <Checkbox
+        v-if="multiple"
         class="line-selector"
         :checkboxValue="id_profile"
         v-model="selectedProfiles" />
-      <!-- <input type="checkbox" :value="profile" v-model="selectedProfiles" /> -->
+      <Radio
+        v-else
+        class="line-selector"
+        :radioValue="id_profile"
+        v-model="selectedProfiles"
+        name="select-profile" />
     </td>
     <td class="content-size center-text">
       <img
@@ -47,6 +53,7 @@ import ArrayHeader from "@/components/ArrayHeader.vue"
 import CustomSelect from "@/components/CustomSelect.vue"
 import Checkbox from "@/components/Checkbox.vue"
 import SwitchInput from "@/components/SwitchInput.vue"
+import Radio from "./Radio.vue"
 
 export default {
   props: {
@@ -55,12 +62,16 @@ export default {
       required: true,
     },
     value: {
-      type: Array,
-      required: true,
+      type: [Array, Object],
+      required: false,
     },
     profilesList: {
       type: Array,
       required: true,
+    },
+    multiple: {
+      type: Boolean,
+      default: true,
     },
   },
   data() {
@@ -92,17 +103,28 @@ export default {
   computed: {
     selectedProfiles: {
       get() {
-        return (
-          this.value.map((profile) => {
-            return profile.id
-          }) || []
-        )
+        if (this.multiple) {
+          return (
+            this.value.map((profile) => {
+              return profile.id
+            }) || []
+          )
+        } else {
+          return this.value ? this.value.id : null
+        }
       },
       set(value) {
-        this.$emit(
-          "input",
-          value.map((id) => this.profilesList.find((p) => p.id === id)),
-        )
+        if (this.multiple) {
+          this.$emit(
+            "input",
+            value.map((id) => this.profilesList.find((p) => p.id === id)),
+          )
+        } else {
+          this.$emit(
+            "input",
+            value ? this.profilesList.find((p) => p.id === value) : null,
+          )
+        }
       },
     },
     sortListKey() {
@@ -142,11 +164,15 @@ export default {
     selectProfile(e) {
       if (e && e.target.classList.contains("no-propagation")) return
       // do same as checkbox
-      if (this.selectedProfiles.includes(this.id_profile)) {
-        return
-      }
+      if (this.multiple) {
+        if (this.selectedProfiles.includes(this.id_profile)) {
+          return
+        }
 
-      this.selectedProfiles = [...this.selectedProfiles, this.id_profile]
+        this.selectedProfiles = [...this.selectedProfiles, this.id_profile]
+      } else {
+        this.selectedProfiles = this.id_profile
+      }
     },
     unSelectProfile(e) {
       if (e && e.target.classList.contains("no-propagation")) return
@@ -162,11 +188,13 @@ export default {
     onClickLine(e) {
       if (e && e.target.classList.contains("no-propagation")) return
 
-      this.selectedProfiles = this.selectedProfiles.includes(this.id_profile)
-        ? this.selectedProfiles.filter(
-            (profile_id) => profile_id !== this.id_profile,
-          )
-        : [...this.selectedProfiles, this.id_profile]
+      if (this.multiple) {
+        this.selectedProfiles = this.selectedProfiles.includes(this.id_profile)
+          ? this.unSelectProfile(e)
+          : this.selectProfile(e)
+      } else {
+        this.selectedProfiles = this.id_profile
+      }
     },
   },
   components: {
@@ -176,6 +204,7 @@ export default {
     Checkbox,
     CustomSelect,
     SwitchInput,
+    Radio,
   },
 }
 </script>

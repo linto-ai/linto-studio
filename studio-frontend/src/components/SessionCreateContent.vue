@@ -63,6 +63,7 @@
     </form>
     <ModalAddSessionChannels
       v-if="modalAddChannelsIsOpen"
+      :transcriberProfiles="transcriberProfiles"
       v-model="selectedProfiles"
       @on-confirm="confirmAddSessionChannels"
       @on-cancel="closeModalAddSessionChannels" />
@@ -92,6 +93,10 @@ export default {
     currentOrganizationScope: {
       type: String,
       required: true,
+    },
+    transcriberProfiles: {
+      type: Array,
+      Required: true,
     },
   },
   data() {

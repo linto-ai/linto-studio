@@ -807,6 +807,14 @@
     },
     "start_undefined": "Non définie"
   },
+  "quick_session": {
+    "creation": {
+      "source_title": "Source",
+      "microphone_source_label": "Utiliser le microphone de mon ordinateur",
+      "visio_source_label": "Rejoindre une visio-conférence",
+      "profile_selector_title": "Transcription profile selection"
+    }
+  },
   "share_menu": {
     "button": "Partager",
     "conversation_error_title": "Des conversations ne peuvent pas être partagées",

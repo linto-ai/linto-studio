@@ -1,65 +1,63 @@
 <template>
-  <section>
-    <h3>{{ $t("session.profile_selector.title") }}</h3>
-    <table style="width: 100%">
-      <thead>
-        <tr>
-          <ArrayHeader
-            @list_sort_by="sortBy"
-            eventLabel="selected"
-            :label="$t('session.profile_selector.labels.selected')"
-            :sortListDirection="sortListDirection"
-            :sortListKey="sortListKey" />
-          <ArrayHeader
-            @list_sort_by="sortBy"
-            eventLabel="type"
-            :label="$t('session.profile_selector.labels.type')"
-            :sortListDirection="sortListDirection"
-            :sortListKey="sortListKey" />
-          <ArrayHeader
-            @list_sort_by="sortBy"
-            eventLabel="name"
-            :label="$t('session.profile_selector.labels.name')"
-            :sortListDirection="sortListDirection"
-            :sortListKey="sortListKey" />
-          <ArrayHeader
-            @list_sort_by="sortBy"
-            eventLabel="description"
-            :label="$t('session.profile_selector.labels.description')"
-            :sortListDirection="sortListDirection"
-            :sortListKey="sortListKey" />
-          <ArrayHeader
-            @list_sort_by="sortBy"
-            eventLabel="languages"
-            :label="$t('session.profile_selector.labels.languages')"
-            :sortListDirection="sortListDirection"
-            :sortListKey="sortListKey" />
-          <ArrayHeader
-            class="no-size"
-            @list_sort_by="sortBy"
-            eventLabel="translations"
-            :label="$t('session.profile_selector.labels.translations')"
-            :sortListDirection="sortListDirection"
-            :sortListKey="sortListKey" />
-          <!-- <ArrayHeader
+  <table style="width: 100%">
+    <thead>
+      <tr>
+        <ArrayHeader
+          @list_sort_by="sortBy"
+          eventLabel="selected"
+          :label="$t('session.profile_selector.labels.selected')"
+          :sortListDirection="sortListDirection"
+          :sortListKey="sortListKey" />
+        <ArrayHeader
+          @list_sort_by="sortBy"
+          eventLabel="type"
+          :label="$t('session.profile_selector.labels.type')"
+          :sortListDirection="sortListDirection"
+          :sortListKey="sortListKey" />
+        <ArrayHeader
+          @list_sort_by="sortBy"
+          eventLabel="name"
+          :label="$t('session.profile_selector.labels.name')"
+          :sortListDirection="sortListDirection"
+          :sortListKey="sortListKey" />
+        <ArrayHeader
+          @list_sort_by="sortBy"
+          eventLabel="description"
+          :label="$t('session.profile_selector.labels.description')"
+          :sortListDirection="sortListDirection"
+          :sortListKey="sortListKey" />
+        <ArrayHeader
+          @list_sort_by="sortBy"
+          eventLabel="languages"
+          :label="$t('session.profile_selector.labels.languages')"
+          :sortListDirection="sortListDirection"
+          :sortListKey="sortListKey" />
+        <ArrayHeader
+          class="no-size"
+          @list_sort_by="sortBy"
+          eventLabel="translations"
+          :label="$t('session.profile_selector.labels.translations')"
+          :sortListDirection="sortListDirection"
+          :sortListKey="sortListKey" />
+        <!-- <ArrayHeader
             class="no-size"
             @list_sort_by="sortBy"
             eventLabel="translations"
             :label="$t('session.profile_selector.labels.diarization')"
             :sortListDirection="sortListDirection"
             :sortListKey="sortListKey" /> -->
-        </tr>
-      </thead>
-      <tbody>
-        <TranscriberProfileSelectorLine
-          v-for="profile in l_profilesList"
-          :profilesList="l_profilesList"
-          :key="profile.id"
-          :profile="profile"
-          v-model="selectedProfiles" />
-      </tbody>
-    </table>
-  </section>
+      </tr>
+    </thead>
+    <tbody>
+      <TranscriberProfileSelectorLine
+        v-for="profile in l_profilesList"
+        :multiple="multiple"
+        :profilesList="l_profilesList"
+        :key="profile.id"
+        :profile="profile"
+        v-model="selectedProfiles" />
+    </tbody>
+  </table>
 </template>
 <script>
 import { Fragment } from "vue-fragment"
@@ -75,8 +73,12 @@ export default {
       required: true,
     },
     value: {
-      type: Array,
-      required: true,
+      type: [Array, Object],
+      required: false,
+    },
+    multiple: {
+      type: Boolean,
+      default: true,
     },
   },
   data() {
@@ -92,7 +94,6 @@ export default {
         return this.value
       },
       set(value) {
-        console.log("set selectedProfiles", value)
         this.$emit("input", value)
       },
     },

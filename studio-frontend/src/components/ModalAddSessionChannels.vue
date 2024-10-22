@@ -10,15 +10,12 @@
         selectedProfiles.length,
       )
     ">
-    <LoadingComponent
-      v-if="loading"
-      :title="
-        $t('session.channels_list.modal_add.loading_profiles')
-      "></LoadingComponent>
-    <TranscriberProfileSelector
-      v-else
-      v-model="selectedProfiles"
-      :profilesList="profilesList" />
+    <section>
+      <h3>{{ $t("session.profile_selector.title") }}</h3>
+      <TranscriberProfileSelector
+        v-model="selectedProfiles"
+        :profilesList="profilesList" />
+    </section>
   </ModalNew>
 </template>
 <script>
@@ -28,23 +25,27 @@ import { bus } from "../main.js"
 import { apiGetTranscriberProfiles } from "@/api/session.js"
 
 import ModalNew from "./ModalNew.vue"
-import TranscriberProfileSelector from "./TranscriberProfileSelector.vue"
-import LoadingComponent from "./Loading.vue"
+import TranscriberProfileSelector from "@/components/TranscriberProfileSelector.vue"
+import LoadingComponent from "@/components/Loading.vue"
 export default {
   props: {
     value: {
       type: Array,
       required: true,
     },
+    transcriberProfiles: {
+      type: Array,
+      required: true,
+    },
   },
   data() {
     return {
-      profilesList: [],
-      loading: true,
+      profilesList: this.transcriberProfiles,
+      loading: false,
     }
   },
   mounted() {
-    this.fetchProfiles()
+    //this.fetchProfiles()
   },
   methods: {
     async fetchProfiles() {

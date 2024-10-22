@@ -10,7 +10,7 @@
         :disabled="formState === 'sending'" />
 
       <form
-        v-if="currentTab !== 'session'"
+        v-if="currentTab !== 'session' && currentTab !== 'live'"
         class="flex col flex1"
         @submit="createConversation"
         :disabled="formState === 'sending'">
@@ -78,7 +78,11 @@
 
       <SessionCreateContent
         v-if="currentTab === 'session'"
+        :transcriberProfiles="transcriberProfiles"
         :currentOrganizationScope="currentOrganizationScope" />
+      <QuickSessionCreateContent
+        v-if="currentTab === 'live'"
+        :transcriberProfiles="transcriberProfiles" />
     </div>
   </MainContent>
 </template>
@@ -88,14 +92,17 @@ import { getEnv } from "@/tools/getEnv.js"
 import ConversationCreateMixin from "@/mixins/conversationCreate.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 
+import EMPTY_FIELD from "@/const/emptyField"
+import { apiGetTranscriberProfiles } from "@/api/session.js"
+
 import ConversationCreateAudio from "@/components/ConversationCreateAudio.vue"
 import ConversationCreateServices from "@/components/ConversationCreateServices.vue"
 import MainContent from "@/components/MainContent.vue"
 import Checkbox from "@/components/Checkbox.vue"
 import Tabs from "@/components/Tabs.vue"
 import SessionCreateContent from "@/components/SessionCreateContent.vue"
-import ConversationCreateLink from "../components/ConversationCreateLink.vue"
-import EMPTY_FIELD from "../const/emptyField"
+import ConversationCreateLink from "@/components/ConversationCreateLink.vue"
+import QuickSessionCreateContent from "@/components/QuickSessionCreateContent.vue"
 
 export default {
   mixins: [ConversationCreateMixin, orgaRoleMixin],
@@ -116,7 +123,12 @@ export default {
   data() {
     return {
       currentTab: "file",
+      transcriberProfiles: [],
+      loadingTranscriberProfiles: true,
     }
+  },
+  mounted() {
+    this.fetchProfiles()
   },
   async created() {},
   computed: {
@@ -144,11 +156,20 @@ export default {
       ]
 
       if (enableSession && this.isAtLeastMeetingManager) {
-        res.push({
-          name: "session",
-          label: this.$i18n.t("conversation_creation.tabs.session"),
-          icon: "session",
-        })
+        res.push(
+          {
+            name: "live",
+            label: "Quick meeting",
+            icon: this.loadingTranscriberProfiles ? "loading" : "live",
+            disabled: this.transcriberProfiles.length === 0,
+          },
+          {
+            name: "session",
+            label: this.$i18n.t("conversation_creation.tabs.session"),
+            icon: this.loadingTranscriberProfiles ? "loading" : "session",
+            disabled: this.transcriberProfiles.length === 0,
+          },
+        )
       }
 
       return res
@@ -171,6 +192,11 @@ export default {
       }
       return false
     },
+    async fetchProfiles() {
+      const res = await apiGetTranscriberProfiles()
+      this.transcriberProfiles = res
+      this.loadingTranscriberProfiles = false
+    },
   },
   components: {
     ConversationCreateAudio,
@@ -180,6 +206,7 @@ export default {
     Checkbox,
     Tabs,
     SessionCreateContent,
+    QuickSessionCreateContent,
   },
 }
 </script>
