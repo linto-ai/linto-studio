@@ -23,7 +23,7 @@
           <FormCheckbox
             :field="fieldIsPublic"
             v-model="fieldIsPublic.value"
-            :disabled="isStarted"></FormCheckbox>
+            :disabled="isActive"></FormCheckbox>
         </section>
 
         <!-- Auto start and datetime-->
@@ -274,7 +274,7 @@ export default {
           endTime: endDateTime,
           autoStart: this.fieldAutoStart.value,
           autoStop: this.fieldAutoStop.value,
-          public: this.fieldIsPublic.value,
+          visibility: this.fieldIsPublic.value ? "public" : "private",
           channels: this.localChannels,
         }
 

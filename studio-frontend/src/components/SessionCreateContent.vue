@@ -168,7 +168,7 @@ export default {
           })),
           startTime: startDateTime,
           endTime: endDateTime,
-          public: this.fieldIsPublic.value,
+          visibility: this.fieldIsPublic.value ? "public" : "private",
         })
         if (res.status == "success") {
           this.formState = "success"
