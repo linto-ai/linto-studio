@@ -274,7 +274,7 @@ export default {
           endTime: endDateTime,
           autoStart: this.fieldAutoStart.value,
           autoStop: this.fieldAutoStop.value,
-          visibility: this.fieldIsPublic.value ? "public" : "private",
+          visibility: this.fieldIsPublic.value ? "public" : "organization",
           channels: this.localChannels,
         }
 
