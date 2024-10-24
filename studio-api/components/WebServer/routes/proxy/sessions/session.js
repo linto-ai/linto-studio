@@ -49,7 +49,7 @@ module.exports = (webServer) => {
           {
             path: "/sessions/:id/public",
             method: ["get"],
-            addParams: [{ "body.public": true }],
+            addParams: [{ "body.visibility": "public" }],
           },
         ],
         requireAuth: false,
