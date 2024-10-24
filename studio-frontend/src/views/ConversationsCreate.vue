@@ -82,7 +82,8 @@
         :currentOrganizationScope="currentOrganizationScope" />
       <QuickSessionCreateContent
         v-if="currentTab === 'live'"
-        :transcriberProfiles="transcriberProfiles" />
+        :transcriberProfiles="transcriberProfiles"
+        :currentOrganizationScope="currentOrganizationScope" />
     </div>
   </MainContent>
 </template>

@@ -42,6 +42,10 @@ export default {
       type: Array,
       required: true,
     },
+    currentOrganizationScope: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
@@ -85,7 +89,16 @@ export default {
       }
 
       if (this.testFields()) {
-        console.log("ouiiii")
+        this.$router.push({
+          name: "quick session setup",
+          query: {
+            source: this.fieldSource.value,
+            transcriberProfileId: this.selectedProfile.id,
+          },
+          params: {
+            organizationId: this.currentOrganizationScope,
+          },
+        })
       } else {
         this.formState = "error"
       }
