@@ -8,6 +8,7 @@ import {
 } from "../api/session"
 
 import { sessionModelMixin } from "./sessionModel"
+import { bus } from "../main"
 
 export const sessionMixin = {
   mixins: [sessionModelMixin],
@@ -92,6 +93,14 @@ export const sessionMixin = {
 
       if (start.status === "error") {
         console.error("Error stoping session", start)
+        this.isStoping = false
+        bus.$emit("app_notif", {
+          status: "error",
+          message: this.$i18n.t(
+            "session.detail_page.stop_session_error_message",
+          ),
+          timeout: null,
+        })
         return
       }
 
@@ -107,6 +116,14 @@ export const sessionMixin = {
 
       if (deleteSession.status === "error") {
         console.error("Error deleting session", deleteSession)
+        bus.$emit("app_notif", {
+          status: "error",
+          message: this.$i18n.t(
+            "session.detail_page.delete_session_error_message",
+          ),
+          timeout: null,
+        })
+        this.isDeleting = false
         return
       }
 

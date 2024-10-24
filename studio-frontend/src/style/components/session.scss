@@ -88,3 +88,7 @@
 .session-settings-topbar[haschanged] {
   background-color: var(--bg-highlight);
 }
+
+.session-settings-qr-code {
+  max-width: 300px;
+}
