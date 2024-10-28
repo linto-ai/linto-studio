@@ -173,7 +173,7 @@ export default {
           })),
           startTime: startDateTime,
           endTime: endDateTime,
-          public: this.fieldIsPublic.value,
+          visibility: this.fieldIsPublic.value ? "public" : "organization",
         })
         if (res.status == "success") {
           this.formState = "success"

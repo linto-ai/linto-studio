@@ -16,6 +16,10 @@
   align-self: center;
 }
 
+.session-line__time {
+  min-width: 8rem;
+}
+
 .session-day-line--content {
   // display: grid;
   // grid-template-columns: repeat(4, 200px);

@@ -83,7 +83,7 @@ export const sessionModelMixin = {
       return this?.session?.channels ?? []
     },
     isPublic() {
-      return this?.session?.public ?? false
+      return this?.session?.visibility === "public"
     },
     sessionOrganizationId() {
       return this?.session?.organizationId

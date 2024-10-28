@@ -13,8 +13,13 @@ export default function isSessionStarted(session) {
     }
 
     const startTime = new Date(session?.startTime)
-    const endTime = new Date(session?.endTime)
     const now = new Date()
+
+    if (!session.endTime) {
+      return startTime < now
+    }
+
+    const endTime = new Date(session?.endTime)
 
     if (startTime < now && endTime > now) {
       return true

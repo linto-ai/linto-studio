@@ -49,7 +49,7 @@ module.exports = (webServer) => {
           {
             path: "/sessions/:id/public",
             method: ["get"],
-            addParams: [{ "body.public": true }],
+            addParams: [{ "body.visibility": "public" }],
           },
         ],
         requireAuth: false,
@@ -73,7 +73,7 @@ module.exports = (webServer) => {
         requireOrganizationMemberAccess: true,
       },
       {
-        // Meeting Manager access
+        // Meeting Manager access with special rules
         scrapPath: /^\/organizations\/[^/]+/,
         paths: [
           {
@@ -107,6 +107,16 @@ module.exports = (webServer) => {
           },
           {
             path: "/organizations/:organizationId/sessions/purge",
+            method: ["post"],
+            forwardParams: proxyForwardParams,
+          },
+          {
+            path: "/organizations/:organizationId/sessions/:id/start-bot",
+            method: ["post"],
+            forwardParams: proxyForwardParams,
+          },
+          {
+            path: "/organizations/:organizationId/sessions/:id/stop-bot",
             method: ["post"],
             forwardParams: proxyForwardParams,
           },

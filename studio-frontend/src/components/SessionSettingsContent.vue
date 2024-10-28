@@ -23,7 +23,7 @@
           <FormCheckbox
             :field="fieldIsPublic"
             v-model="fieldIsPublic.value"
-            :disabled="isStarted"></FormCheckbox>
+            :disabled="isActive"></FormCheckbox>
         </section>
 
         <!-- Auto start and datetime-->
@@ -53,7 +53,7 @@
           </div> -->
         </section>
       </div>
-      <div class="flex col gap-medium">
+      <div class="flex col gap-medium session-settings-right align-center">
         <!-- it's not a vueJS component, it's a webcomponent. Code is imported in index.html -->
 
         <div class="flex col gap-medium">
@@ -69,28 +69,31 @@
           </button> -->
 
           <button
-            class="btn flex1"
+            class="btn flex1 red-border flex"
             v-if="isStarted"
             @click="stopSession"
-            :disabled="isStoping">
+            :title="titleButtonDelete"
+            :disabled="isStoping || isActive">
             <span class="icon stop"></span>
-            <span class="label">{{
+            <span class="label flex1">{{
               $t("session.detail_page.stop_button")
             }}</span>
           </button>
 
-          <button
+          <!-- <button
             class="btn red-border flex1"
-            :disabled="isDeleting"
+            :disabled="isDeleting || isActive"
+            :title="titleButtonDelete"
             @click="openModalDeleteSession">
             <span class="icon trash"></span>
             <span class="label">{{
               $t("session.detail_page.delete_button")
             }}</span>
-          </button>
+          </button> -->
         </div>
-
-        <qr-code :contents="publicLink"></qr-code>
+        <qr-code
+          :contents="publicLink"
+          class="session-settings-qr-code"></qr-code>
       </div>
     </div>
 
@@ -135,6 +138,8 @@ import EMPTY_FIELD from "@/const/emptyField"
 import { sessionMixin } from "@/mixins/session.js"
 import { formsMixin } from "@/mixins/forms.js"
 
+import isSameDateTimeWithoutSeconds from "@/tools/isSameDateTimeWithoutSeconds.js"
+
 import { apiUpdateSession } from "@/api/session.js"
 
 import MainContent from "@/components/MainContent.vue"
@@ -144,7 +149,7 @@ import FormInput from "@/components/FormInput.vue"
 import FormCheckbox from "@/components/FormCheckbox.vue"
 import SessionChannelsTable from "@/components/SessionChannelsTable.vue"
 import AppointmentSelector from "@/components/AppointmentSelector.vue"
-import ModalDeleteSession from "../components/ModalDeleteSession.vue"
+import ModalDeleteSession from "@/components/ModalDeleteSession.vue"
 
 export default {
   mixins: [sessionMixin, formsMixin],
@@ -209,12 +214,15 @@ export default {
       const publicChanged = this.fieldIsPublic.value !== this.isPublic
       const autoStartChanged = this.fieldAutoStart.value !== this.autoStart
       const autoStopChanged = this.fieldAutoStop.value !== this.autoStop
-      const startDateChanged =
-        new Date(this.fieldAppointment.value[0]).getTime() !==
-        new Date(this.startTime).getTime()
-      const stopDateChanged =
-        new Date(this.fieldAppointment.value[1]).getTime() !==
-        new Date(this.endTime).getTime()
+      const startDateChanged = !isSameDateTimeWithoutSeconds(
+        new Date(this.fieldAppointment.value[0]),
+        new Date(this.startTime),
+      )
+
+      const stopDateChanged = !isSameDateTimeWithoutSeconds(
+        new Date(this.fieldAppointment.value[1]),
+        new Date(this.endTime),
+      )
 
       return (
         publicChanged ||
@@ -224,6 +232,11 @@ export default {
         stopDateChanged ||
         this.channelsHasChanged
       )
+    },
+    titleButtonDelete() {
+      return this.isActive
+        ? this.$t("session.detail_page.stop_button_title_session_running")
+        : null
     },
   },
   methods: {
@@ -274,7 +287,7 @@ export default {
           endTime: endDateTime,
           autoStart: this.fieldAutoStart.value,
           autoStop: this.fieldAutoStop.value,
-          public: this.fieldIsPublic.value,
+          visibility: this.fieldIsPublic.value ? "public" : "organization",
           channels: this.localChannels,
         }
 

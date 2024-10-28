@@ -193,7 +193,11 @@ export default {
       this.turnsIndexedByid[data.turnId].words = data.value
     })
 
-    bus.$on('refresh_turns', () => {
+    bus.$on("turn_speaker_update", (data) => {
+      this.turnsIndexedByid[data.turnId].speaker_id = data.value
+    })
+
+    bus.$on("refresh_turns", () => {
       this.setupTurns()
     })
   },
@@ -202,6 +206,7 @@ export default {
     bus.$off("segment_updated")
     bus.$off("words_updated")
     bus.$off("refresh_turns")
+    bus.$off("turn_speaker_update")
   },
   watch: {
     "conversation.speakers"(newVal, oldVal) {
@@ -237,7 +242,7 @@ export default {
     },
     exportFileTitle() {
       return `${this.conversation.name.replace(/\s/g, "_")}_${moment().format(
-        "YYYYMMDDHHmmss"
+        "YYYYMMDDHHmmss",
       )}`
     },
   },
@@ -254,9 +259,9 @@ export default {
       let nbCaracters = 0
       let nbTurns = 0
       this.turnPages[currentPage] = []
-      
+
       for (let shadowTurn of this.conversation.text) {
-        if(shadowTurn.words.length === 0) {
+        if (shadowTurn.words.length === 0) {
           continue
         }
         const turn = structuredClone(shadowTurn)
@@ -266,7 +271,9 @@ export default {
         // Split the turns in pages
         this.turnPages[currentPage].push(turn)
         nbCaracters += turn.segment.length
-        if(nbCaracters > parseInt(process.env.VUE_APP_MAX_CARACTERS_PER_PAGE)) {
+        if (
+          nbCaracters > parseInt(process.env.VUE_APP_MAX_CARACTERS_PER_PAGE)
+        ) {
           nbCaracters = 0
           nbTurns = 0
           currentPage += 1
@@ -318,8 +325,8 @@ export default {
         schema.name,
         fields.reduce(
           (obj, field) => ({ ...obj, [field.key]: field.value }),
-          {}
-        )
+          {},
+        ),
       )
       // Todo: only update the right metadata
       await this.fetchHightlightsCategories(this.conversationId)
@@ -393,7 +400,7 @@ export default {
       this.exactMatching = !this.exactMatching
       this.$refs.editor.searchInTranscription(
         this.transcriptionSearch,
-        this.exactMatching
+        this.exactMatching,
       )
     },
     resetSearch() {

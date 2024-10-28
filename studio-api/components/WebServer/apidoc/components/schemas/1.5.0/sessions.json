@@ -7,25 +7,68 @@
       },
       "startTime": {
         "type": "string",
-        "format": "date-time"
+        "format": "date-time",
+        "default": null
       },
       "endTime": {
         "type": "string",
-        "format": "date-time"
+        "format": "date-time",
+        "default": null
       },
       "owner": {
-        "type": "string"
+        "type": "string",
+        "default": null
       },
       "organizationId": {
-        "type": "string"
+        "type": "string",
+        "default": null
       },
-      "public": {
-        "type": "boolean"
+      "visibility": {
+        "type": "string",
+        "enum": ["public", "organization", "private"],
+        "default": "private"
       },
       "channels": {
         "type": "array",
         "items": {
           "$ref": "#/components/schemas/ChannelRequest"
+        }
+      }
+    }
+  },
+  "SessionUpdateRequest": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string"
+      },
+      "startTime": {
+        "type": "string",
+        "format": "date-time",
+        "default": null
+      },
+      "endTime": {
+        "type": "string",
+        "format": "date-time",
+        "default": null
+      },
+      "owner": {
+        "type": "string",
+        "default": null
+      },
+      "organizationId": {
+        "type": "string",
+        "default": null
+      },
+      "visibility": {
+        "type": "string",
+        "enum": ["public", "organization", "private"],
+        "default": "private"
+      },
+      "channels": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ChannelUpdateRequest"
         }
       }
     }
@@ -121,21 +164,63 @@
         "description": "List of bcp47 strings.",
         "items": {
           "type": "string"
-        }
+        },
+        "default": []
       },
       "keepAudio": {
         "type": "boolean",
-        "description": "Save audio"
+        "description": "Save audio",
+        "default": false
       },
       "diarization": {
         "type": "boolean",
-        "description": "Enable diarization"
+        "description": "Enable diarization",
+        "default": false
+      }
+    }
+  },
+  "ChannelUpdateRequest": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "integer",
+        "description": "The id of the channel"
+      },
+      "name": {
+        "type": "string",
+        "description": "The name of the channel"
+      },
+      "transcriberProfileId": {
+        "type": "integer",
+        "description": "The id of the transcriber profile"
+      },
+      "translations": {
+        "type": "array",
+        "description": "List of bcp47 strings.",
+        "items": {
+          "type": "string"
+        },
+        "default": []
+      },
+      "keepAudio": {
+        "type": "boolean",
+        "description": "Save audio",
+        "default": false
+      },
+      "diarization": {
+        "type": "boolean",
+        "description": "Enable diarization",
+        "default": false
       }
     }
   },
   "ChannelAnswer": {
     "type": "object",
     "properties": {
+      "id": {
+        "type": "integer",
+        "description": "The ID of the channel"
+      },
       "keepAudio": {
         "type": "boolean",
         "description": "The audio is saved"
@@ -143,10 +228,6 @@
       "diarization": {
         "type": "boolean",
         "description": "The diarization is enabled"
-      },
-      "index": {
-        "type": "integer",
-        "description": "The index of the channel"
       },
       "transcriberId": {
         "type": "string",
