@@ -4,7 +4,7 @@
     :title="text">
     <span class="session-on-air flex align-center gap-small" v-if="isActive">
       <span v-if="!small">[</span>
-      <span class="session-status-led session-status-led--flat" />
+      <StatusLed on />
       <span v-if="!small">On Air</span>
       <span v-if="!small">]</span>
     </span>
@@ -13,7 +13,7 @@
       class="session-on-air session-on-air--off flex align-center gap-small"
       v-else-if="isStarted">
       <span v-if="!small">[</span>
-      <span class="session-status-led session-status-led--disable" />
+      <StatusLed off />
       <span v-if="!small">Off Air</span>
       <span v-if="!small">]</span>
     </span>
@@ -32,6 +32,7 @@
 </template>
 <script>
 import { sessionModelMixin } from "@/mixins/sessionModel.js"
+import StatusLed from "./StatusLed.vue"
 
 export default {
   mixins: [sessionModelMixin],
@@ -80,6 +81,6 @@ export default {
   },
   mounted() {},
   methods: {},
-  components: {},
+  components: { StatusLed },
 }
 </script>

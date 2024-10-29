@@ -818,6 +818,19 @@
       "visio_source_label": "Rejoindre une visio-conférence",
       "profile_selector_title": "Selection du profil de transcription",
       "no_profile_selected_error": "Aucun profil de transcription selectionné"
+    },
+    "setup_microphone": {
+      "waiting_permission_title": "En attente des permissions pour accéder au microphone",
+      "microphone_error_first_line": "Bonjour, votre ordinateur est muet.",
+      "microphone_error_second_line": "Vérifiez les permissions de votre microphone.",
+      "microphone_select_label": "Choix du microphone",
+      "microphone_reset_button": "Rétablir au microphone par défaut du système",
+      "microphone_select_button": "Séléctionner le microphone",
+      "microphone_default_value": "Microphone par défaut du système",
+      "sound_detector_headline": "Dites quelquechose pour tester votre microphone.",
+      "sound_detector_label": "Détection de la voix",
+      "sound_detector_value_ok": "Votre microphone fonctionne",
+      "sound_detector_value_wait": "En attente de son du microphone..."
     }
   },
   "share_menu": {
