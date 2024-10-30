@@ -32,6 +32,16 @@ module.exports = function () {
     }
   })
 
+  this.organizationClient.on("message", (topic, message) => {
+    let parsedMessage = JSON.parse(message.toString())
+
+    this.app.components["IoHandler"].emit(
+      "watcher_status",
+      topic,
+      parsedMessage,
+    )
+  })
+
   this.on("join_room", (roomId) => {
     this.subscribe(roomId)
   })

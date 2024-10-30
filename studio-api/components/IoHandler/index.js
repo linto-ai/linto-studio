@@ -9,6 +9,7 @@ class IoHandler extends Component {
     this.id = this.constructor.name
     this.app = app
     this.rooms = {}
+    this.orgas = {}
 
     this.io = socketIO(this.app.components["WebServer"].httpServer, {
       cors: {
@@ -30,6 +31,16 @@ class IoHandler extends Component {
         this.removeSocketFromRoom(roomId, socket)
       })
 
+      socket.on("watch_organization", (orgaId) => {
+        debug(`Client ${socket.id} joins watcher session of orga ${orgaId}`)
+        this.addSocketInOrga(orgaId, socket)
+      })
+
+      socket.on("unwatch_organization", (orgaId) => {
+        debug(`Client ${socket.id} leaves watcher session of orga ${orgaId}`)
+        this.removeSocketFromOrga(orgaId, socket)
+      })
+
       socket.on("disconnect", () => {
         debug(`Client ${socket.id} disconnected`)
         this.searchAndRemoveSocketFromRooms(socket)
@@ -37,6 +48,29 @@ class IoHandler extends Component {
     })
 
     return this.init()
+  }
+
+  addSocketInOrga(orgaId, socket) {
+    socket.join(orgaId)
+    if (this.orgas.hasOwnProperty(orgaId)) {
+      // TODO: fetch the desired session based on the orgaId
+      // TODO: generate a memory session list and update it on necessary
+      this.orgas[orgaId].add(socket.id)
+    } else {
+      this.orgas[orgaId] = new Set().add(socket.id)
+    }
+  }
+
+  removeSocketFromOrga(orgaId, socket) {
+    socket.leave(orgaId)
+    if (!this.orgas.hasOwnProperty(orgaId)) {
+      return
+    }
+
+    this.orgas[orgaId].delete(socket.id)
+    if (this.orgas[orgaId].size == 0) {
+      delete this.orgas[orgaId]
+    }
   }
 
   addSocketInRoom(roomId, socket) {
@@ -78,6 +112,11 @@ class IoHandler extends Component {
     if (this.io.sockets.adapter.rooms.has(roomId)) {
       this.io.to(roomId).emit(action, transcription)
     }
+  }
+
+  notify_sessions(roomId, action, sessions) {
+    //TODO: Handle cache of orga
+    this.io.to(roomId).emit(action, sessions)
   }
 
   brokerOk() {
