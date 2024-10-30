@@ -2,6 +2,11 @@ const debug = require("debug")("linto:components:socketio")
 const path = require("path")
 const { Component } = require("live-srt-lib")
 const socketIO = require("socket.io")
+const axios = require(`${process.cwd()}/lib/utility/axios`)
+
+const { diffSessions, groupSessionsByOrg } = require(
+  `${process.cwd()}/components/IoHandler/controllers/SessionHandling`,
+)
 
 class IoHandler extends Component {
   constructor(app) {
@@ -10,6 +15,8 @@ class IoHandler extends Component {
     this.app = app
     this.rooms = {}
     this.orgas = {}
+    this.sessionsCache = {}
+    this.memorySessions = {}
 
     this.io = socketIO(this.app.components["WebServer"].httpServer, {
       cors: {
@@ -50,14 +57,21 @@ class IoHandler extends Component {
     return this.init()
   }
 
-  addSocketInOrga(orgaId, socket) {
+  async addSocketInOrga(orgaId, socket) {
     socket.join(orgaId)
     if (this.orgas.hasOwnProperty(orgaId)) {
-      // TODO: fetch the desired session based on the orgaId
-      // TODO: generate a memory session list and update it on necessary
       this.orgas[orgaId].add(socket.id)
     } else {
       this.orgas[orgaId] = new Set().add(socket.id)
+
+      const organizationSession = await axios.get(
+        process.env.SESSION_API_ENDPOINT + `/sessions`,
+      )
+      organizationSession.sessions.forEach((session) => {
+        if (this.memorySessions[session.id] === undefined) {
+          this.memorySessions[session.id] = session.organizationId
+        }
+      })
     }
   }
 
@@ -114,9 +128,16 @@ class IoHandler extends Component {
     }
   }
 
-  notify_sessions(roomId, action, sessions) {
-    //TODO: Handle cache of orga
-    this.io.to(roomId).emit(action, sessions)
+  async notify_sessions(roomId, action, sessions) {
+    const differences = diffSessions(this.sessionsCache, sessions)
+    const merged = await groupSessionsByOrg(differences, this.memorySessions)
+    Object.keys(merged).forEach((orgaId) => {
+      //Verify if a websocket connection is establish to the room
+      if (this.io.sockets.adapter.rooms.has(orgaId)) {
+        this.io.to(orgaId).emit(action, merged[orgaId])
+      }
+    })
+    this.sessionsCache = sessions
   }
 
   brokerOk() {
