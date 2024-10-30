@@ -109,6 +109,9 @@
   &.record {
     @include maskImage("../public/img/microphone.svg");
   }
+  &.record-off {
+    @include maskImage("../public/img/microphone-off.svg");
+  }
   &.upload {
     @include maskImage("../public/img/upload.svg");
   }

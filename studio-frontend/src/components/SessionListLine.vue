@@ -7,11 +7,13 @@
     <div class="flex1 session-line__title text-cut">{{ name }}</div>
     <LabeledValueSmall
       v-if="isPending"
+      class="session-line__time"
       :label="$t('session.list_page.start_time')"
       :value="startTimeFormatted" />
 
     <LabeledValueSmall
       v-if="isStarted"
+      class="session-line__time"
       :label="$t('session.list_page.end_time')"
       :value="endTimeFormatted" />
   </router-link>

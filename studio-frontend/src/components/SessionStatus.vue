@@ -1,6 +1,32 @@
 <template>
-  <div class="flex align-center justify-center">
-    <span :class="iconClasses" :title="text"></span>
+  <div
+    class="flex align-center justify-center session-status gap-small"
+    :title="text">
+    <span class="session-on-air flex align-center gap-small" v-if="isActive">
+      <span v-if="!small">[</span>
+      <span class="session-status-led session-status-led--flat" />
+      <span v-if="!small">On Air</span>
+      <span v-if="!small">]</span>
+    </span>
+
+    <span
+      class="session-on-air session-on-air--off flex align-center gap-small"
+      v-else-if="isStarted">
+      <span v-if="!small">[</span>
+      <span class="session-status-led session-status-led--disable" />
+      <span v-if="!small">Off Air</span>
+      <span v-if="!small">]</span>
+    </span>
+
+    <span
+      class="session-on-air session-on-air--muted flex align-center gap-small"
+      v-else>
+      <!-- <span>[</span> -->
+      <span class="icon record-off" />
+      <!-- <span v-if="!small">Muted</span> -->
+      <!-- <span>]</span> -->
+    </span>
+
     <span v-if="withText">{{ text }}</span>
   </div>
 </template>
