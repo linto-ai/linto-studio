@@ -134,7 +134,7 @@ class IoHandler extends Component {
     Object.keys(merged).forEach((orgaId) => {
       //Verify if a websocket connection is establish to the room
       if (this.io.sockets.adapter.rooms.has(orgaId)) {
-        this.io.to(orgaId).emit(action, merged[orgaId])
+        this.io.to(orgaId).emit(`orga_${orgaId}_${action}`, merged[orgaId])
       }
     })
     this.sessionsCache = sessions

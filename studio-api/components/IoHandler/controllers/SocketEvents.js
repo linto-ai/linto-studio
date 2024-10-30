@@ -9,6 +9,6 @@ module.exports = function () {
   })
 
   this.on("watch_organization", (roomId, sessions) => {
-    this.notify_sessions(roomId, "watch_organization", sessions)
+    this.notify_sessions(roomId, "session_update", sessions)
   })
 }
