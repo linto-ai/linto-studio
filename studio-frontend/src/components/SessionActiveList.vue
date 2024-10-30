@@ -36,6 +36,10 @@ export default {
   },
   mounted() {
     this.fetchActiveSessions()
+
+    if (this.$sessionWS.state.isConnected) {
+      this.subscribeToWebsocket()
+    }
   },
   methods: {
     async fetchActiveSessions() {
@@ -50,6 +54,16 @@ export default {
         this.error = e
       } finally {
         this.loading = false
+      }
+    },
+    subscribeToWebsocket() {
+      this.$sessionWS.subscribeOrganization(this.currentOrganizationScope)
+    },
+  },
+  watch: {
+    "$sessionWS.state.isConnected"(newValue, oldValue) {
+      if (newValue) {
+        this.subscribeToWebsocket()
       }
     },
   },

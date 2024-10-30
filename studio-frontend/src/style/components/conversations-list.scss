@@ -82,12 +82,18 @@ input:checked + .conversation-line .conversation-line__open-with {
 
 .organization-sidebar {
   border-right: var(--border-block);
-  padding: var(--medium-gap) 0;
+  padding: var(--medium-gap) 0px;
+  padding-bottom: 0px;
   width: 17rem;
   box-shadow: var(--shadow-block-left);
   background-color: var(--background-primary);
   flex-shrink: 0;
   overflow: auto;
+}
+
+.sidebar__websocket-status {
+  border-top: var(--border-block);
+  padding: 0.5rem;
 }
 
 .organization-sidebar__current-filter .organization-sidebar__tag-list {

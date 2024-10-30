@@ -12,8 +12,7 @@
       :channel="selectedChannel"
       :displaySubtitles="displaySubtitles"
       :displayLiveTranscription="displayLiveTranscription"
-      :isBottom="isBottom"
-      :sessionWS="sessionWS"></SessionChannel>
+      :isBottom="isBottom"></SessionChannel>
     <Loading v-else></Loading>
   </div>
 </template>
@@ -64,7 +63,6 @@ export default {
   },
   data() {
     return {
-      sessionWS: new SessionWS(),
       isConnected: false,
       isBottom: true,
       channelKeyObj: "selectedChannel",
@@ -73,9 +71,7 @@ export default {
   mounted() {
     this.init()
   },
-  beforeDestroy() {
-    this.sessionWS.close()
-  },
+  beforeDestroy() {},
   computed: {
     isInError() {
       return this.channelTranscriberStatus === "errored"
@@ -83,7 +79,6 @@ export default {
   },
   methods: {
     async init() {
-      await this.sessionWS.connect()
       this.isConnected = true
     },
     handleScroll(e) {

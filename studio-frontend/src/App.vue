@@ -78,7 +78,7 @@ export default {
 
     document.documentElement.setAttribute(
       "data-theme",
-      localStorage.getItem("currentTheme") || "light"
+      localStorage.getItem("currentTheme") || "light",
     )
     this.appMounted = true
     document.title = this.title
@@ -167,6 +167,7 @@ export default {
       if (this.isAuthenticated()) {
         await this.getuserInfo()
         await this.dispatchUserOrganizations()
+        this.$sessionWS.connect()
       }
     },
     isAuthenticated() {
@@ -192,7 +193,7 @@ export default {
     async dispatchUserOrganizations() {
       try {
         this.userOrgasLoaded = await this.$options.filters.dispatchStore(
-          "getUserOrganizations"
+          "getUserOrganizations",
         )
         const orgaScopeId = this.$store.getters.getCurrentOrganizationScope()
         await this.$store.dispatch("getCurrentOrganizationById", orgaScopeId)
