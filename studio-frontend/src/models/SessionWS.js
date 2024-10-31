@@ -83,10 +83,12 @@ export default class SessionWS {
   }
 
   subscribeOrganization(organizationId) {
+    this.unSubscribeOrganization()
+    this.currentOrganizationId = organizationId
     this.socket.emit("watch_organization", organizationId)
     // TODO: generalize every this.socket.on(event_name) to bus.$emit(`websocket/${event_name}`)
-    this.socket.on(`orga_${this.organizationId}_session_update`, (value) => {
-      bus.$emit(`websocket/orga_${this.organizationId}_session_update`, value)
+    this.socket.on(`orga_${organizationId}_session_update`, (value) => {
+      bus.$emit(`websocket/orga_${organizationId}_session_update`, value)
     })
   }
 

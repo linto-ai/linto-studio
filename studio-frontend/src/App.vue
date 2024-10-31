@@ -82,7 +82,7 @@ export default {
     )
     this.appMounted = true
     document.title = this.title
-    this.init()
+    this.$sessionWS.connect()
   },
   beforeDestroy() {
     bus.$off("set_organization_scope")
@@ -167,7 +167,6 @@ export default {
       if (this.isAuthenticated()) {
         await this.getuserInfo()
         await this.dispatchUserOrganizations()
-        this.$sessionWS.connect()
       }
     },
     isAuthenticated() {
