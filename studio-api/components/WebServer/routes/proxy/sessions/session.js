@@ -73,20 +73,6 @@ module.exports = (webServer) => {
         requireOrganizationMemberAccess: true,
       },
       {
-        // Meeting Manager access with special rules
-        scrapPath: /^\/organizations\/[^/]+/,
-        paths: [
-          {
-            path: "/organizations/:organizationId/sessions/:id/stop",
-            method: ["put"],
-            forwardParams: proxyForwardParams,
-            executeAfterResult: [storeProxyResponse],
-          },
-        ],
-        requireAuth: true,
-        requireOrganizationMeetingManagerAccess: true,
-      },
-      {
         // Meeting Manager access
         scrapPath: /^\/organizations\/[^/]+/,
         paths: [
@@ -103,6 +89,11 @@ module.exports = (webServer) => {
           {
             path: "/organizations/:organizationId/sessions/:id",
             method: ["delete"],
+            forwardParams: proxyForwardParams,
+          },
+          {
+            path: "/organizations/:organizationId/sessions/:id/stop",
+            method: ["put"],
             forwardParams: proxyForwardParams,
           },
           {

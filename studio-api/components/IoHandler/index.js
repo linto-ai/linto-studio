@@ -63,15 +63,16 @@ class IoHandler extends Component {
       this.orgas[orgaId].add(socket.id)
     } else {
       this.orgas[orgaId] = new Set().add(socket.id)
-
-      const organizationSession = await axios.get(
-        process.env.SESSION_API_ENDPOINT + `/sessions`,
-      )
-      organizationSession.sessions.forEach((session) => {
-        if (this.memorySessions[session.id] === undefined) {
-          this.memorySessions[session.id] = session.organizationId
-        }
-      })
+      if (this.memorySessions[orgaId] === undefined) {
+        const sessions = await axios.get(
+          process.env.SESSION_API_ENDPOINT + `/sessions`,
+        )
+        sessions.sessions.forEach((session) => {
+          if (this.memorySessions[session.id] === undefined) {
+            this.memorySessions[session.id] = session.organizationId
+          }
+        })
+      }
     }
   }
 
