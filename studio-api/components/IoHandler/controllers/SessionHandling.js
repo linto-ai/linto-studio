@@ -1,6 +1,10 @@
 const debug = require("debug")("linto:components:IoHandler:Session-Handling")
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 
+const { storeSession } = require(
+  `${process.cwd()}/components/WebServer/controllers/session/conversation.js`,
+)
+
 function diffSessions(oldSessions, newSessions) {
   if (oldSessions.length === undefined) {
     return {
@@ -72,6 +76,12 @@ async function groupSessionsByOrg(differences, sessionIdToOrg) {
   for (const session of differences.removed) {
     const orgId = await getOrganizationId(session)
     await addToGroup(orgId, "removed", session)
+
+    // We store the session when it's finished
+    const sessionEnded = await axios.get(
+      process.env.SESSION_API_ENDPOINT + `/sessions/${session.id}`,
+    )
+    storeSession(sessionEnded)
   }
   for (const session of differences.updated) {
     const orgId = await getOrganizationId(session)
