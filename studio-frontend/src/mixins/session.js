@@ -1,4 +1,4 @@
-import { computed } from "vue"
+import { computed, watch } from "vue"
 import {
   apiGetSession,
   apiStartSession,
@@ -41,10 +41,18 @@ export const sessionMixin = {
 
     return props
   },
-  created() {
+  mounted() {
     // TODO: check rights
     // then fetch session
     if (this.session === null) this.fetchSession()
+    bus.$on(
+      `websocket/orga_${this.currentOrganizationScope}_session_update`,
+      this.onSessionUpdateEvent.bind(this),
+    )
+  },
+  beforeDestroy() {
+    //this.$sessionWS.unSubscribeOrganization()
+    bus.$off(`websocket/orga_${this.currentOrganizationScope}_session_update`)
   },
   methods: {
     async fetchSession() {
@@ -131,6 +139,21 @@ export const sessionMixin = {
       this.$router.replace(this.sessionListRoute)
       this.isDeleting = false
     },
+    subscribeToWebsocket() {
+      this.$sessionWS.subscribeOrganization(this.currentOrganizationScope)
+    },
+    onSessionUpdateEvent(value) {
+      const sessionIndexes = {}
+
+      for (const updatedSession of value.updated) {
+        if (updatedSession.id === this.sessionId) {
+          this.session = {
+            ...this.session,
+            ...updatedSession,
+          }
+        }
+      }
+    },
   },
   computed: {
     sessionListRoute() {
@@ -141,6 +164,16 @@ export const sessionMixin = {
     },
     liveRoute() {
       return `/interface/${this.sessionOrganizationId}/sessions/${this.sessionId}`
+    },
+    readyForWSConnection() {
+      return this.sessionLoaded && this.$sessionWS.state.isConnected
+    },
+  },
+  watch: {
+    readyForWSConnection(newValue, oldValue) {
+      if (newValue) {
+        this.subscribeToWebsocket()
+      }
     },
   },
 }
