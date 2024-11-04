@@ -1,17 +1,22 @@
 import io from "socket.io-client"
+import Vue from "vue"
 import { customDebug } from "../tools/customDebug"
+import { bus } from "../main"
 
 const socketioUrl = process.env.VUE_APP_SESSION_WS
 const socketioPath = process.env.VUE_APP_SESSION_WS_PATH
 
 const debugWS = customDebug("Websocket:Session:debug")
 
-export default class Session {
+export default class SessionWS {
   constructor() {
-    this.isConnected = false
+    this.state = Vue.observable({
+      isConnected: false,
+    })
+
     this.socket = null
     this.currentChannelId = null
-
+    this.currentOrganizationId = null
     this.test = false
     this.textPartialForTest = ""
   }
@@ -21,7 +26,7 @@ export default class Session {
       this.socket = io(socketioUrl, { path: socketioPath })
       this.socket.on("connect", (msg) => {
         debugWS("connected to socket.io server", msg)
-        this.isConnected = true
+        this.state.isConnected = true
         resolve()
 
         this.socket.on("broker_ko", () => {
@@ -37,14 +42,13 @@ export default class Session {
 
   close() {
     this.socket.close()
-    this.isConnected = false
+    this.state.isConnected = false
   }
 
-  subscribe(sessionId, channelIndex, onPartial, onFinal) {
+  subscribeRoom(sessionId, channelIndex, onPartial, onFinal) {
+    // TODO: rewrite by emitting event via bus
     return new Promise((resolve, reject) => {
-      if (this.currentChannelId) {
-        this.socket.emit("leave_room", this.currentChannelId)
-      }
+      this.unSubscribeRoom()
 
       const channelId = `${sessionId}/${channelIndex}`
 
@@ -68,5 +72,30 @@ export default class Session {
 
       resolve()
     })
+  }
+
+  unSubscribeRoom() {
+    if (this.currentChannelId) {
+      this.socket.emit("leave_room", this.currentChannelId)
+    }
+    this.socket.off("partial")
+    this.socket.off("final")
+  }
+
+  subscribeOrganization(organizationId) {
+    this.unSubscribeOrganization()
+    this.currentOrganizationId = organizationId
+    this.socket.emit("watch_organization", organizationId)
+    // TODO: generalize every this.socket.on(event_name) to bus.$emit(`websocket/${event_name}`)
+    this.socket.on(`orga_${organizationId}_session_update`, (value) => {
+      bus.$emit(`websocket/orga_${organizationId}_session_update`, value)
+    })
+  }
+
+  unSubscribeOrganization() {
+    if (this.currentOrganizationId) {
+      this.socket.emit("unwatch_organization", this.currentOrganizationId)
+      this.socket.off(`orga_${this.currentOrganizationId}_session_update`)
+    }
   }
 }

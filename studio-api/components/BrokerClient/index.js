@@ -59,6 +59,26 @@ class BrokerClient extends Component {
     this.sessionClient.on("error", (err) => {
       this.sessionState = ERROR
     })
+
+    this.organizationPub = `system/out/sessions/statuses`
+    this.organizationSubs = [`system/out/sessions/statuses`]
+    // Initialize session client
+    this.organizationClient = new MqttClient({
+      pub: this.organizationPub,
+      subs: this.organizationSubs,
+      retain: false,
+      uniqueId: "organization-api",
+    })
+    this.organizationClient.on("ready", () => {
+      this.organizationState = READY
+      this.organizationClient.publishStatus()
+    })
+    this.organizationClient.on("error", (err) => {
+      this.organizationState = ERROR
+    })
+
+    this.organizationClient.subscribe(`system/out/sessions/statuses`)
+
     this.init() // binds controllers, those will handle messages
   }
 

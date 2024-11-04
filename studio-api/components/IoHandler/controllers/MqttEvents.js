@@ -38,4 +38,25 @@ module.exports = function () {
       this.app,
     )
   })
+
+  this.app.components["BrokerClient"].organizationClient.on("error", () => {
+    retryConnectionOperation(
+      () => this.app.components["IoHandler"].brokerKo(),
+      this.app,
+    )
+  })
+
+  this.app.components["BrokerClient"].organizationClient.on("offline", () => {
+    retryConnectionOperation(
+      () => this.app.components["IoHandler"].brokerKo(),
+      this.app,
+    )
+  })
+
+  this.app.components["BrokerClient"].organizationClient.on("ready", () => {
+    retryConnectionOperation(
+      () => this.app.components["IoHandler"].brokerOk(),
+      this.app,
+    )
+  })
 }

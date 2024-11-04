@@ -20,25 +20,20 @@ import { apiGetStartedSessions } from "@/api/session.js"
 import Loading from "@/components/Loading.vue"
 import ErrorPage from "@/components/ErrorPage.vue"
 import SessionListLine from "@/components/SessionListLine.vue"
+import { bus } from "../main"
+import { genericSessionList } from "../mixins/genericSessionList"
+
 export default {
+  mixins: [genericSessionList],
   props: {
     currentOrganizationScope: {
       type: String,
       required: true,
     },
   },
-  data() {
-    return {
-      loading: true,
-      error: null,
-      sessionList: [],
-    }
-  },
-  mounted() {
-    this.fetchActiveSessions()
-  },
+  mounted() {},
   methods: {
-    async fetchActiveSessions() {
+    async fetchSessions() {
       this.loading = true
       try {
         const sessions = await apiGetStartedSessions(

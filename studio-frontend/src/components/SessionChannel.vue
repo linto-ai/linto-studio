@@ -94,10 +94,6 @@ export default {
       type: Object,
       required: true,
     },
-    sessionWS: {
-      type: Object,
-      required: true,
-    },
     fontSize: {
       type: String,
       default: "40",
@@ -144,6 +140,9 @@ export default {
     this.loading = false
     this.init()
   },
+  beforeDestroy() {
+    this.$sessionWS.unSubscribeRoom()
+  },
   computed: {
     channelIndex() {
       return this.channelId
@@ -179,18 +178,28 @@ export default {
     displaySubtitles() {
       this.scrollToBottom()
     },
+    "$sessionWS.state.isConnected"(newValue, oldValue) {
+      if (newValue) {
+        this.subscribeToWebsocket()
+      }
+    },
   },
   methods: {
     init() {
       this.partialText = ""
       this.turns = []
-      this.sessionWS.subscribe(
+      if (this.$sessionWS.state.isConnected) {
+        this.subscribeToWebsocket()
+      }
+      this.scrollToBottom()
+    },
+    subscribeToWebsocket() {
+      this.$sessionWS.subscribeRoom(
         this.sessionId,
         this.channelIndex,
         this.onPartial.bind(this),
         this.onFinal.bind(this),
       )
-      this.scrollToBottom()
     },
     async loadPreviousTranscrition() {
       let sessionRequest = null
