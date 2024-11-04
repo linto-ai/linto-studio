@@ -153,6 +153,10 @@ export const sessionMixin = {
           }
         }
       }
+
+      if (this.onSessionUpdatePostProcess) {
+        this.onSessionUpdatePostProcess(this.session)
+      }
     },
   },
   computed: {

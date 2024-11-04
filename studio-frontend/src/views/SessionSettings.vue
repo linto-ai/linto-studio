@@ -271,8 +271,8 @@ export default {
     },
   },
   methods: {
-    onSessionUpdate(newSession) {
-      this.session = newSession
+    onSessionUpdatePostProcess(newSession) {
+      this.initValues()
     },
     initValues() {
       this.fieldAutoStart.value = this.autoStart
