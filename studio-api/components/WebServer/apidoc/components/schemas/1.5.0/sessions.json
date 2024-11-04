@@ -28,6 +28,10 @@
         "enum": ["public", "organization", "private"],
         "default": "private"
       },
+      "meta": {
+        "type": "json",
+        "default": null
+      },
       "channels": {
         "type": "array",
         "items": {
@@ -64,6 +68,10 @@
         "type": "string",
         "enum": ["public", "organization", "private"],
         "default": "private"
+      },
+      "meta": {
+        "type": "json",
+        "default": null
       },
       "channels": {
         "type": "array",
@@ -220,6 +228,10 @@
       "id": {
         "type": "integer",
         "description": "The ID of the channel"
+      },
+      "index": {
+        "type": "integer",
+        "description": "The index of the channel in the channels list"
       },
       "keepAudio": {
         "type": "boolean",

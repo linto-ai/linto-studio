@@ -7,7 +7,7 @@ import Debug from "debug"
 import vClickOutside from "v-click-outside"
 import Fragment from "vue-fragment"
 //import { setDefaultEnv } from "./tools/setDefaultEnv.js"
-
+import SessionWS from "@/models/SessionWS.js"
 import "./filters/index.js"
 
 //setDefaultEnv() // doesn't work
@@ -18,6 +18,7 @@ Vue.use(Fragment.Plugin)
 
 Vue.config.productionTip = false
 Vue.prototype.debug = Debug("Vue")
+Vue.prototype.$sessionWS = new SessionWS()
 
 Debug.enable(process.env.VUE_APP_DEBUG)
 

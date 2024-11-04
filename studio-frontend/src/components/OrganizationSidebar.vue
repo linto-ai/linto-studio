@@ -52,7 +52,12 @@
         <span class="tab__label">{{ $t("navigation.tabs.favorites") }}</span>
       </router-link>
     </nav>
-    <slot></slot>
+    <div class="flex col flex1"><slot class=""></slot></div>
+
+    <div class="sidebar__websocket-status">
+      <span v-if="$sessionWS.state.isConnected">Websocket connected</span>
+      <span v-else>Websocket is not connected</span>
+    </div>
   </aside>
 </template>
 <script>

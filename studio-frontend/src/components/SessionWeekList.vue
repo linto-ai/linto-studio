@@ -41,8 +41,10 @@ import { apiGetSessionsBetweenDates } from "@/api/session.js"
 import WeekSelector from "@/components/WeekSelector.vue"
 import SessionDayLine from "@/components/SessionDayLine.vue"
 import Loading from "@/components/Loading.vue"
+import { genericSessionList } from "../mixins/genericSessionList"
 
 export default {
+  mixins: [genericSessionList],
   props: {
     currentOrganizationScope: {
       type: String,
@@ -52,14 +54,9 @@ export default {
   data() {
     return {
       startDate: getStartOfWeek(new Date()),
-      loading: true,
-      error: null,
-      sessions: [],
     }
   },
-  mounted() {
-    this.fetchSessions()
-  },
+  mounted() {},
   methods: {
     async fetchSessions() {
       this.loading = true
@@ -69,7 +66,7 @@ export default {
           this.mondayDate,
           this.sundayDate,
         )
-        this.sessions = response.sessions
+        this.sessionList = response.sessions
         this.loading = false
       } catch (error) {
         this.error = error
@@ -77,7 +74,7 @@ export default {
       }
     },
     filterSessionsByDay(day) {
-      return this.sessions
+      return this.sessionList
         .filter((session) => new Date(session.startTime).getDay() === day)
         .sort((a, b) => {
           return new Date(a.startTime) - new Date(b.startTime)

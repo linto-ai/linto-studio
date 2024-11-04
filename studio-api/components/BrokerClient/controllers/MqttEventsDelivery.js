@@ -32,6 +32,20 @@ module.exports = function () {
     }
   })
 
+  this.organizationClient.on("message", (topic, message) => {
+    let parsedMessage = JSON.parse(message.toString())
+
+    if (this.app.components["IoHandler"] === undefined) {
+      console.log("IoHandler not loaded yet")
+      return
+    }
+    this.app.components["IoHandler"].emit(
+      "watch_organization",
+      topic,
+      parsedMessage,
+    )
+  })
+
   this.on("join_room", (roomId) => {
     this.subscribe(roomId)
   })

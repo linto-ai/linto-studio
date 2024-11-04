@@ -78,11 +78,11 @@ export default {
 
     document.documentElement.setAttribute(
       "data-theme",
-      localStorage.getItem("currentTheme") || "light"
+      localStorage.getItem("currentTheme") || "light",
     )
     this.appMounted = true
     document.title = this.title
-    this.init()
+    this.$sessionWS.connect()
   },
   beforeDestroy() {
     bus.$off("set_organization_scope")
@@ -192,7 +192,7 @@ export default {
     async dispatchUserOrganizations() {
       try {
         this.userOrgasLoaded = await this.$options.filters.dispatchStore(
-          "getUserOrganizations"
+          "getUserOrganizations",
         )
         const orgaScopeId = this.$store.getters.getCurrentOrganizationScope()
         await this.$store.dispatch("getCurrentOrganizationById", orgaScopeId)
