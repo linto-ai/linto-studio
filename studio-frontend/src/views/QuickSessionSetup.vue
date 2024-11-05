@@ -1,5 +1,6 @@
 <template>
-  <MainContent sidebar box>
+  <!-- === === === === === MICROPHONE SETUP === === === === === -->
+  <MainContent sidebar box v-if="state === 'microphone-setup'">
     <!-- WAITING PERMISSIONS -->
     <div
       class="flex col center-text flex1 align-center justify-center permission-microphone"
@@ -32,20 +33,6 @@
             v-model="selectedDeviceId"
             class="fullwidth" />
         </div>
-        <!-- <div class="flex gap-small">
-          <button class="btn secondary" @click="resetMicrophone">
-            <span class="label">
-              {{ $t("quick_session.setup_microphone.microphone_reset_button") }}
-            </span>
-          </button>
-          <button @click="connectToMicrophone">
-            <span class="label">
-              {{
-                $t("quick_session.setup_microphone.microphone_select_button")
-              }}
-            </span>
-          </button>
-        </div> -->
       </section>
       <!-- TEST MICROPHONE SECTION-->
       <section class="flex col gap-small">
@@ -82,11 +69,35 @@
         <span class="label">Retour</span>
       </button>
       <div class="flex1"></div>
-      <button class="btn" :disabled="!microphoneWorked">
+      <button class="btn" :disabled="!microphoneWorked" @click="setupSession">
         <span class="icon apply"></span>
         <span class="label">Démarrer la réunion</span>
       </button>
     </div>
+  </MainContent>
+
+  <!-- === === === === === === LIVE === === === === === === -->
+
+  <MainContent
+    noBreadcrumb
+    :organizationPage="false"
+    fullwidthContent
+    sidebar
+    v-else-if="state === 'live'">
+    <template v-slot:breadcrumb-actions>
+      <button>
+        <span class="icon record"></span>
+      </button>
+      <span class="flex1">Recording...</span>
+      <button>
+        <span class="label">Save and quit</span>
+      </button>
+    </template>
+    <SessionLiveContent
+      :organizationId="currentOrganizationScope"
+      displayLiveTranscription
+      :session="session"
+      :selectedChannel="selectedChannel" />
   </MainContent>
 </template>
 <script>
@@ -95,9 +106,18 @@ import MainContent from "@/components/MainContent.vue"
 import CustomSelect from "../components/CustomSelect.vue"
 import WebVoiceSDK from "@linto-ai/webvoicesdk"
 import StatusLed from "../components/StatusLed.vue"
+import { apiSearchSessionByName, apiCreateSession } from "@/api/session.js"
+import SessionLiveContent from "@/components/SessionLiveContent"
+import convertFloat32ToInt16 from "../tools/convertFloat32ToInt16.js"
 
 export default {
-  props: {},
+  props: {
+    currentOrganizationScope: {
+      type: String,
+      required: true,
+    },
+    userInfo: { type: Object, required: true },
+  },
   data() {
     return {
       waitingPermission: true,
@@ -108,18 +128,23 @@ export default {
       microphoneStream: null,
       speaking: false,
       microphoneWorked: false,
+      state: "microphone-setup", // microphone-setup, live
+      session: null,
+      selectedChannel: null,
     }
   },
   mounted() {
     // this.$route.query
     this.getDeviceList()
     this.recorder = new WebVoiceSDK.Recorder()
+    this.downSampler = new WebVoiceSDK.DownSampler()
     this.mic = new WebVoiceSDK.Mic()
     this.vad = new WebVoiceSDK.Vad({
       threshold: 0.85,
       timeAfterStop: 1000,
     })
     this.vad.addEventListener("speakingStatus", this.onVadEvent.bind(this))
+    this.websocket = null
   },
   computed: {
     selectedMicroName() {
@@ -171,7 +196,9 @@ export default {
 
       await this.mic.stop()
       await this.vad.stop()
+      await this.downSampler.stop()
       await this.mic.start(deviceId)
+      //
       this.vad.start(this.mic)
       this.microphoneWorked = false
     },
@@ -184,6 +211,86 @@ export default {
       this.speaking = speaking
       this.microphoneWorked = this.microphoneWorked || this.speaking
     },
+    async setupSession(e) {
+      e.preventDefault()
+
+      try {
+        const sessionName = `@${this.userInfo._id}`
+        const alreadyCreatedPersonalSessions = await apiSearchSessionByName(
+          this.currentOrganizationScope,
+          sessionName,
+        )
+
+        if (alreadyCreatedPersonalSessions.length > 0) {
+          this.session = alreadyCreatedPersonalSessions[0]
+        } else {
+          const channels = [
+            {
+              name: "Main",
+              transcriberProfileId: this.$route.query.transcriberProfileId,
+              translations: [],
+              diarization: false,
+            },
+          ]
+          const res = await apiCreateSession(this.currentOrganizationScope, {
+            name: sessionName,
+            channels: channels,
+            visibility: "private",
+          })
+
+          if (res.status == "success") {
+            this.session = res.data
+          } else {
+            throw new Error("api error")
+          }
+        }
+
+        this.selectedChannel = this.session.channels[0]
+        this.state = "live"
+
+        this.connectToWebsocket()
+      } catch (error) {
+        console.error(error)
+        bus.$emit("app_notif", {
+          status: "error",
+          message: this.$i18n.t("session.create_page.error_message"),
+          timeout: null,
+        })
+      }
+      // check if session exists
+    },
+    async connectToWebsocket() {
+      console.log(this.selectedChannel?.streamEndpoints)
+      const url = this.selectedChannel?.streamEndpoints?.ws
+      console.log(url)
+      if (url) {
+        this.closeWebsocket()
+        this.websocket = new WebSocket(url)
+        this.websocket.onopen = this.setupRecord.bind(this)
+      } else {
+        console.error("No valid endpoint for websocket connection")
+      }
+    },
+    async closeWebsocket() {
+      //this.websocket?.close()
+    },
+    async setupRecord() {
+      //this.recorder.start(this.downSampler)
+      //this.recorder.rec()
+      await this.downSampler.start(this.mic)
+      this.downSampler.addEventListener(
+        "downSamplerFrame",
+        this.onAudioFrame.bind(this),
+      )
+    },
+    onAudioFrame(e) {
+      if (this.vad.speaking) {
+        const audioData = e.detail
+        const int16AudioData = convertFloat32ToInt16(audioData)
+        console.log("sending audio", int16AudioData)
+        this.websocket.send(int16AudioData)
+      }
+    },
   },
   watch: {
     async selectedDeviceId() {
@@ -191,6 +298,6 @@ export default {
       this.connectToMicrophone()
     },
   },
-  components: { MainContent, CustomSelect, StatusLed },
+  components: { MainContent, CustomSelect, StatusLed, SessionLiveContent },
 }
 </script>

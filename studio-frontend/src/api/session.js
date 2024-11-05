@@ -42,6 +42,21 @@ export async function apiUpdateSession(
   return createSession
 }
 
+export async function apiSearchSessionByName(
+  organizationScope,
+  sessionName,
+  notif,
+) {
+  const search = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions?searchName=${sessionName}&organizationId=${organizationScope}`,
+    { method: "get" },
+    {},
+    notif,
+  )
+
+  return search?.data?.sessions ?? []
+}
+
 export async function apiGetActiveSessions(organizationScope, notif) {
   const getStartedSessions = await sendRequest(
     `${BASE_API}/organizations/${organizationScope}/sessions?statusList=active&organizationId=${organizationScope}`,
