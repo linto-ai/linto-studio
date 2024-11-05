@@ -88,7 +88,7 @@
       <button>
         <span class="icon record"></span>
       </button>
-      <span class="flex1">Recording...</span>
+      <span class="flex1"></span>
       <button>
         <span class="label">Save and quit</span>
       </button>
@@ -137,8 +137,12 @@ export default {
     // this.$route.query
     this.getDeviceList()
     this.recorder = new WebVoiceSDK.Recorder()
-    this.downSampler = new WebVoiceSDK.DownSampler()
-    this.mic = new WebVoiceSDK.Mic()
+    this.downSampler = new WebVoiceSDK.DownSampler({
+      targetSampleRate: 16000,
+      targetFrameSize: 512,
+      Int16Convert: true,
+    })
+    this.mic = new WebVoiceSDK.Mic(512)
     this.vad = new WebVoiceSDK.Vad({
       threshold: 0.85,
       timeAfterStop: 1000,
@@ -266,6 +270,7 @@ export default {
       if (url) {
         this.closeWebsocket()
         this.websocket = new WebSocket(url)
+        this.websocket.binaryType = "arraybuffer"
         this.websocket.onopen = this.setupRecord.bind(this)
       } else {
         console.error("No valid endpoint for websocket connection")
@@ -284,12 +289,16 @@ export default {
       )
     },
     onAudioFrame(e) {
-      if (this.vad.speaking) {
-        const audioData = e.detail
-        const int16AudioData = convertFloat32ToInt16(audioData)
-        console.log("sending audio", int16AudioData)
-        this.websocket.send(int16AudioData)
-      }
+      //if (this.vad.speaking) {
+      const audioData = e.detail
+      //const int16AudioData = convertFloat32ToInt16(audioData)
+      //console.log("sending audio", audioData)
+
+      const buffer16 = audioData.buffer
+      const int8Array = new Int8Array(buffer16)
+      console.log("buffer", int8Array.buffer)
+      this.websocket.send(int8Array.buffer)
+      //}
     },
   },
   watch: {
