@@ -47,21 +47,30 @@ async function groupSessionsByOrg(differences, sessionIdToOrg) {
   const groupedByOrg = {}
 
   async function getOrganizationId(session) {
-    if (sessionIdToOrg[session.id]) {
-      return sessionIdToOrg[session.id]
-    } else {
-      // Get session information when we don't know that session yet
-      const response = await axios.get(
-        process.env.SESSION_API_ENDPOINT + `/sessions/${session.id}`,
-      )
-      const orgId = response.organizationId
-      sessionIdToOrg[session.id] = orgId // Cache the result for future calls
-      return orgId
+    try {
+      if (sessionIdToOrg[session.id]) {
+        return sessionIdToOrg[session.id]
+      } else {
+        // Get session information when we don't know that session yet
+        const response = await axios.get(
+          process.env.SESSION_API_ENDPOINT + `/sessions/${session.id}`,
+        )
+        const orgId = response.organizationId
+        sessionIdToOrg[session.id] = orgId // Cache the result for future calls
+        return orgId
+      }
+    } catch (err) {
+      debug(`Error getting organization ID for session ${session.id}: ${err}`)
+      return null
     }
   }
 
   // Function to add session to the appropriate group under the organization
   async function addToGroup(orgId, type, session) {
+    if (!orgId) {
+      debug(`Session ${session.id} has no organization`)
+      return
+    }
     if (!groupedByOrg[orgId]) {
       groupedByOrg[orgId] = { added: [], removed: [], updated: [] }
     }
