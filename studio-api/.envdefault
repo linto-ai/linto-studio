@@ -15,7 +15,7 @@ DB_PASS=example
 DB_NAME=conversations
 
 # Request a specific version of the database (optional)
-DB_MIGRATION_TARGET=1.5.0
+DB_MIGRATION_TARGET=1.5.2
 
 # STT Config
 GATEWAY_SERVICES=https://api.linto.ai
@@ -58,6 +58,7 @@ DISABLE_USER_CREATION=false
 
 EXPORT_TEMPLATE=default
 
+ORGANIZATION_DEFAULT_PERMISSIONS=upload,quick_meeting,summary,session
 
 
 SUPER_ADMIN_EMAIL=
