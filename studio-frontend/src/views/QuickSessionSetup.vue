@@ -102,13 +102,18 @@
 </template>
 <script>
 import { bus } from "../main.js"
-import MainContent from "@/components/MainContent.vue"
-import CustomSelect from "../components/CustomSelect.vue"
+
 import WebVoiceSDK from "@linto-ai/webvoicesdk"
-import StatusLed from "../components/StatusLed.vue"
+
+import convertFloat32ToInt16 from "@/tools/convertFloat32ToInt16.js"
+import { customDebug } from "@/tools/customDebug.js"
+
 import { apiSearchSessionByName, apiCreateSession } from "@/api/session.js"
+
+import MainContent from "@/components/MainContent.vue"
+import CustomSelect from "@/components/CustomSelect.vue"
+import StatusLed from "@/components/StatusLed.vue"
 import SessionLiveContent from "@/components/SessionLiveContent"
-import convertFloat32ToInt16 from "../tools/convertFloat32ToInt16.js"
 
 export default {
   props: {
@@ -120,6 +125,7 @@ export default {
   },
   data() {
     return {
+      debugQuickSession: customDebug("vue:debug:quickSession"),
       waitingPermission: true,
       error: null,
       audioDevices: null,
@@ -131,6 +137,10 @@ export default {
       state: "microphone-setup", // microphone-setup, live
       session: null,
       selectedChannel: null,
+      mediaProcessor: null,
+      mediaProcessorReader: null,
+      hasReceivedACK: false,
+      sendRawAudio: true,
     }
   },
   mounted() {
@@ -139,16 +149,19 @@ export default {
     this.recorder = new WebVoiceSDK.Recorder()
     this.downSampler = new WebVoiceSDK.DownSampler({
       targetSampleRate: 16000,
-      targetFrameSize: 512,
+      targetFrameSize: 4096,
       Int16Convert: true,
     })
-    this.mic = new WebVoiceSDK.Mic(512)
+    this.mic = new WebVoiceSDK.Mic({
+      frameSize: 4096,
+    })
     this.vad = new WebVoiceSDK.Vad({
       threshold: 0.85,
       timeAfterStop: 1000,
     })
     this.vad.addEventListener("speakingStatus", this.onVadEvent.bind(this))
     this.websocket = null
+    this.audioEncoder = null
   },
   computed: {
     selectedMicroName() {
@@ -264,24 +277,62 @@ export default {
       // check if session exists
     },
     async connectToWebsocket() {
-      console.log(this.selectedChannel?.streamEndpoints)
       const url = this.selectedChannel?.streamEndpoints?.ws
-      console.log(url)
+      this.debugQuickSession(`Connecting WS to ${url}...`)
       if (url) {
         this.closeWebsocket()
         this.websocket = new WebSocket(url)
         this.websocket.binaryType = "arraybuffer"
-        this.websocket.onopen = this.setupRecord.bind(this)
+        this.websocket.onopen = this.sendWSInitMessage.bind(this) //this.setupRecord.bind(this)
+        this.websocket.onmessage = this.onWebsocketMessage.bind(this)
       } else {
         console.error("No valid endpoint for websocket connection")
+      }
+    },
+    onWebsocketMessage(message) {
+      const msg = JSON.parse(message.data)
+      if (msg.type === "ack") {
+        this.debugQuickSession("Received ACK")
+        //self.hasReceivedACK = true
+        this.setupRecord()
       }
     },
     async closeWebsocket() {
       //this.websocket?.close()
     },
+    sendWSInitMessage() {
+      const initMessage = {
+        type: "init",
+        sampleRate: 16000,
+        encoding: "pcm", // Spécifie que les données sont en PCM brut
+      }
+      this.websocket.send(JSON.stringify(initMessage))
+    },
     async setupRecord() {
-      //this.recorder.start(this.downSampler)
-      //this.recorder.rec()
+      this.debugQuickSession(`WS is connected`)
+
+      if (!this.sendRawAudio) {
+        this.debugQuickSession("Start recording setup")
+
+        this.audioEncoder = new AudioEncoder({
+          output: this.processEncodedAudio.bind(this),
+          error: this.errorOnEncodedAudio.bind(this),
+        })
+
+        this.debugQuickSession(
+          "Audio encoder created. Start encoder configuration...",
+        )
+
+        let config = {
+          codec: "opus",
+          sampleRate: 16000,
+          numberOfChannels: 1,
+        }
+
+        this.audioEncoder.configure(config)
+      }
+
+      this.debugQuickSession("Starting downsampler")
       await this.downSampler.start(this.mic)
       this.downSampler.addEventListener(
         "downSamplerFrame",
@@ -289,16 +340,45 @@ export default {
       )
     },
     onAudioFrame(e) {
-      //if (this.vad.speaking) {
-      const audioData = e.detail
-      //const int16AudioData = convertFloat32ToInt16(audioData)
-      //console.log("sending audio", audioData)
+      if (this.sendRawAudio) {
+        if (this.vad.speaking) {
+          const data = e.detail
+          this.websocket.send(data)
+        }
+      } else {
+        const data = e.detail
+        const audioData = new AudioData({
+          format: "s16",
+          sampleRate: "16000",
+          numberOfFrames: "4096",
+          numberOfChannels: 1,
+          timestamp: 0,
+          data,
+        })
 
-      const buffer16 = audioData.buffer
-      const int8Array = new Int8Array(buffer16)
-      console.log("buffer", int8Array.buffer)
-      this.websocket.send(int8Array.buffer)
-      //}
+        this.encodeAudioToCodec(audioData)
+      }
+    },
+    encodeAudioToCodec(value) {
+      this.audioEncoder.encode(value)
+    },
+    processEncodedAudio(chunk) {
+      console.log("got chunk !", chunk)
+      // let newBuffer
+
+      const buffer = new ArrayBuffer(chunk.byteLength * 2)
+
+      chunk.copyTo(buffer)
+
+      const int16array = new Int16Array(buffer)
+
+      console.log("int16array", int16array)
+      // const int16array = new Int16Array(chunk.byteLength / 2 + 1)
+
+      this.websocket.send(int16array)
+    },
+    errorOnEncodedAudio(error) {
+      console.error("encoding failed", error)
     },
   },
   watch: {
