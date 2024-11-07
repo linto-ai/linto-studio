@@ -1,9 +1,7 @@
 const debug = require("debug")(
   `linto:components:MongoMigration:controllers:version:1.5.2:organization`,
 )
-const { getDefaultPermissions } = require(
-  `${process.cwd()}/lib/dao/organization/permissions`,
-)
+const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
 
 const collections_name = "organizations"
 
@@ -13,8 +11,7 @@ module.exports = {
     const orgas = await db.collection(collections_name).find({}).toArray()
 
     // Get default permissions based on environment variable
-    const defaultPermissions = getDefaultPermissions()
-
+    const defaultPermissions = PERMISSIONS.getDefaultPermissions()
     await Promise.all(
       orgas.map(async (orga) => {
         // Check if the organization already has a `permissions` field
@@ -26,7 +23,6 @@ module.exports = {
               { _id: orga._id },
               { $set: { permissions: defaultPermissions } },
             )
-          debug(`Updated organization ${orga._id} with default permissions`)
         }
       }),
     )
@@ -42,7 +38,6 @@ module.exports = {
         await db
           .collection(collections_name)
           .updateOne({ _id: orga._id }, { $unset: { permissions: "" } })
-        debug(`Reverted permissions for organization ${orga._id}`)
       }),
     )
   },

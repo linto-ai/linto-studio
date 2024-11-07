@@ -44,7 +44,7 @@ async function createOrganization(req, res, next) {
       permissions: {},
     }
 
-    organization.permissions = PERMISSIONS.validateAndSetDefaultPermissions(
+    organization.permissions = PERMISSIONS.validateAndSetPermissions(
       req.body.permissions,
     )
     const result = await model.organizations.createOrgaByAdmin(organization)
@@ -92,7 +92,7 @@ async function updateOrganizationPlatform(req, res, next) {
     if (description) organization.description = description
     if (name) organization.name = name
     if (permissions)
-      organization.permissions = PERMISSIONS.validateAndSetDefaultPermissions(
+      organization.permissions = PERMISSIONS.validateAndSetPermissions(
         permissions,
         organization.permissions,
       )

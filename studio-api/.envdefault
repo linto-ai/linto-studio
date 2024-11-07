@@ -58,7 +58,8 @@ DISABLE_USER_CREATION=false
 
 EXPORT_TEMPLATE=default
 
-ORGANIZATION_DEFAULT_PERMISSIONS=upload,quick_meeting,summary,session
+# ORGANIZATION_DEFAULT_PERMISSIONS supported value are "upload,summary,session"
+ORGANIZATION_DEFAULT_PERMISSIONS=upload,summary,session
 
 
 SUPER_ADMIN_EMAIL=

@@ -18,6 +18,14 @@ const platform_middlewares = require(
   `${process.cwd()}/components/WebServer/middlewares/access/platform.js`,
 )
 
+const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
+
+const permissionMiddlewareMap = {
+  [PERMISSIONS.UPLOAD]: organization_middlewares.permissionUpload,
+  [PERMISSIONS.SUMMARY]: organization_middlewares.permissionSummary,
+  [PERMISSIONS.SESSION]: organization_middlewares.permissionSession,
+}
+
 const {
   createProxyMiddleware,
   fixRequestBody,
@@ -90,6 +98,16 @@ const loadMiddlewares = (route) => {
     middlewares.push(taxonomy_middlewares.asWriteTaxonomyAccess)
   if (route.requireDeleteTaxonomyAccess)
     middlewares.push(taxonomy_middlewares.asDeleteTaxonomyAccess)
+
+  if (route.orgaPermissionAccess !== undefined) {
+    Object.keys(permissionMiddlewareMap).forEach((permission) => {
+      const permissionValue = parseInt(permission)
+      if ((route.orgaPermissionAccess & permissionValue) === permissionValue) {
+        const desiredMiddleware = permissionMiddlewareMap[permissionValue]
+        if (desiredMiddleware) middlewares.push(desiredMiddleware)
+      }
+    })
+  }
 
   if (route.requireUserVisibility)
     middlewares.push(user_middlewares.isVisibility)

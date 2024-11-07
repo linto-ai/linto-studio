@@ -17,6 +17,8 @@ const { exportConversation, listExport } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/conversation/export.js`,
 )
 
+const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
+
 module.exports = (webserver) => {
   return [
     /*Require Auth */
@@ -59,6 +61,7 @@ module.exports = (webserver) => {
       method: "post",
       requireAuth: true,
       requireConversationReadAccess: true,
+      orgaPermissionAccess: PERMISSIONS.SUMMARY,
       controller: exportConversation,
     },
     {
