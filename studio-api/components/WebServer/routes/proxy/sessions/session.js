@@ -3,9 +3,7 @@ const proxyForwardParams = [
   { "body.organizationId": "params.organizationId" },
 ]
 
-const { storeProxyResponse } = require(
-  `${process.cwd()}/components/WebServer/controllers/session/conversation.js`,
-)
+const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
 
 module.exports = (webServer) => {
   return {
@@ -113,6 +111,7 @@ module.exports = (webServer) => {
           },
         ],
         requireAuth: true,
+        orgaPermissionAccess: PERMISSIONS.SESSION,
         requireOrganizationMeetingManagerAccess: true,
       },
     ],
