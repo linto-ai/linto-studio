@@ -115,7 +115,7 @@ ORGANIZATION_DEFAULT_PERMISSIONS=upload,summary,session
 
 An organization can be structured with various user roles, each granting specific permissions. The default role is **Member**, and each subsequent role inherits the permissions of the previous one, as outlined below:
 
-- **Member**: Can view and edit any media.
+- **Member**: Can view and edit any media regarding of the media permission.
 - **Uploader**: Can create and upload new media.
 - **Meeting Manager**: Has the ability to initiate and manage sessions.
 - **Maintainer**: Manages all users within the organization.
