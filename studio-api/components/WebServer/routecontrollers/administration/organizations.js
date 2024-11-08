@@ -41,12 +41,14 @@ async function createOrganization(req, res, next) {
       users: [{ userId: owner, role: ROLES.ADMIN }],
       owner: owner,
       token: "",
-      permissions: {},
+      permissions: PERMISSIONS.getDefaultPermissions(),
     }
 
     organization.permissions = PERMISSIONS.validateAndSetPermissions(
       req.body.permissions,
+      organization.permissions,
     )
+
     const result = await model.organizations.createOrgaByAdmin(organization)
     if (result.insertedCount !== 1) throw new OrganizationError()
 

@@ -8,6 +8,7 @@ const PERMISSIONS = Object.freeze({
     (orgaPermission & desiredPermission) == desiredPermission,
 
   isValidPermission: (value) => {
+    if (value === undefined) return false
     const validPermissions =
       PERMISSIONS.NONE |
       PERMISSIONS.UPLOAD |
@@ -29,7 +30,6 @@ const PERMISSIONS = Object.freeze({
         permissionsSum |= PERMISSIONS[upperPermission]
       }
     })
-
     return permissionsSum
   },
 
