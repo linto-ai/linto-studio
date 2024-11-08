@@ -818,7 +818,9 @@
       "microphone_source_label": "Use my computer microphone",
       "visio_source_label": "Join a visioconférence",
       "profile_selector_title": "Transcription profile selection",
-      "no_profile_selected_error": "No transcription profile selected"
+      "no_profile_selected_error": "No transcription profile selected",
+      "quick_meeting_already_start_title": "A recording has already been started.",
+      "quick_meeting_already_start_button": "Join the quick meeting"
     },
     "setup_microphone": {
       "waiting_permission_title": "Waiting permission to access your microphone",
@@ -832,6 +834,11 @@
       "sound_detector_label": "Voice detection",
       "sound_detector_value_ok": "Your microphone works",
       "sound_detector_value_wait": "Waiting sound from microphone..."
+    },
+    "live": {
+      "status_recording": "Recording.",
+      "status_muted": "Micro is muted.",
+      "save_button": "Save and quit"
     }
   },
   "share_menu": {

@@ -1,5 +1,5 @@
 <template>
-  <form @submit="createQuickSession">
+  <form @submit="createQuickSession" v-if="currentQuickSession === null">
     <section class="flex col gap-small">
       <h2>{{ $t("quick_session.creation.source_title") }}</h2>
       <FormRadio :field="fieldSource" v-model="fieldSource.value" />
@@ -27,6 +27,14 @@
       </button>
     </div>
   </form>
+  <div v-else class="flex1 flex col align-center justify-center gap-small">
+    <h3 class="center-text">
+      {{ $t("quick_session.creation.quick_meeting_already_start_title") }}
+    </h3>
+    <button @click="goToQuickSession">
+      {{ $t("quick_session.creation.quick_meeting_already_start_button") }}
+    </button>
+  </div>
 </template>
 <script>
 import EMPTY_FIELD from "@/const/emptyField"
@@ -45,6 +53,10 @@ export default {
     currentOrganizationScope: {
       type: String,
       required: true,
+    },
+    currentQuickSession: {
+      type: Object,
+      default: null,
     },
   },
   data() {
@@ -77,6 +89,15 @@ export default {
   },
   mounted() {},
   methods: {
+    goToQuickSession() {
+      this.$router.push({
+        name: "quick session setup",
+        query: {},
+        params: {
+          organizationId: this.currentOrganizationScope,
+        },
+      })
+    },
     createQuickSession(event) {
       event?.preventDefault()
 

@@ -104,21 +104,21 @@ export default {
     selectedProfiles: {
       get() {
         if (this.multiple) {
-          return (
+          const list =
             this.value.map((profile) => {
               return profile.id
             }) || []
-          )
+          return list
         } else {
           return this.value ? this.value.id : null
         }
       },
       set(value) {
         if (this.multiple) {
-          this.$emit(
-            "input",
-            value.map((id) => this.profilesList.find((p) => p.id === id)),
+          const list = value.map((id) =>
+            this.profilesList.find((p) => p.id === id),
           )
+          this.$emit("input", list)
         } else {
           this.$emit(
             "input",
@@ -189,7 +189,7 @@ export default {
       if (e && e.target.classList.contains("no-propagation")) return
 
       if (this.multiple) {
-        this.selectedProfiles = this.selectedProfiles.includes(this.id_profile)
+        this.selectedProfiles.includes(this.id_profile)
           ? this.unSelectProfile(e)
           : this.selectProfile(e)
       } else {

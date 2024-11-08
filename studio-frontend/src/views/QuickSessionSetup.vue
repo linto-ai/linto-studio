@@ -76,7 +76,7 @@
     </div>
   </MainContent>
 
-  <!-- === === === === === === LIVE === === === === === === -->
+  <!-- === === === === === === = LIVE = === === === === === -->
 
   <MainContent
     noBreadcrumb
@@ -85,12 +85,22 @@
     sidebar
     v-else-if="state === 'live'">
     <template v-slot:breadcrumb-actions>
+      <div class="flex1 flex gap-small align-center">
+        <button @click="toggleMicrophone">
+          <span class="icon record" v-if="isRecording"></span>
+          <span class="icon record-off" v-else></span>
+        </button>
+        <StatusLed :on="speaking" />
+        <span class="flex1" v-if="isRecording">{{
+          $t("quick_session.live.status_recording")
+        }}</span>
+        <span class="flex1" v-else>
+          {{ $t("quick_session.live.status_muted") }}
+        </span>
+      </div>
+
       <button>
-        <span class="icon record"></span>
-      </button>
-      <span class="flex1"></span>
-      <button>
-        <span class="label">Save and quit</span>
+        <span class="label">{{ $t("quick_session.live.save_button") }}</span>
       </button>
     </template>
     <SessionLiveContent
@@ -141,6 +151,7 @@ export default {
       mediaProcessorReader: null,
       hasReceivedACK: false,
       sendRawAudio: true,
+      isRecording: false,
     }
   },
   mounted() {
@@ -162,6 +173,12 @@ export default {
     this.vad.addEventListener("speakingStatus", this.onVadEvent.bind(this))
     this.websocket = null
     this.audioEncoder = null
+  },
+  destroyed() {
+    this.mic.stop()
+    this.vad.stop()
+    this.downSampler.stop()
+    this.closeWebsocket()
   },
   computed: {
     selectedMicroName() {
@@ -281,6 +298,7 @@ export default {
       this.debugQuickSession(`Connecting WS to ${url}...`)
       if (url) {
         this.closeWebsocket()
+        await this.$nextTick()
         this.websocket = new WebSocket(url)
         this.websocket.binaryType = "arraybuffer"
         this.websocket.onopen = this.sendWSInitMessage.bind(this) //this.setupRecord.bind(this)
@@ -298,7 +316,7 @@ export default {
       }
     },
     async closeWebsocket() {
-      //this.websocket?.close()
+      this.websocket?.close()
     },
     sendWSInitMessage() {
       const initMessage = {
@@ -338,8 +356,13 @@ export default {
         "downSamplerFrame",
         this.onAudioFrame.bind(this),
       )
+      this.isRecording = true
     },
     onAudioFrame(e) {
+      if (!this.isRecording) {
+        return
+      }
+
       if (this.sendRawAudio) {
         if (this.vad.speaking) {
           const data = e.detail
@@ -379,6 +402,9 @@ export default {
     },
     errorOnEncodedAudio(error) {
       console.error("encoding failed", error)
+    },
+    toggleMicrophone() {
+      this.isRecording = !this.isRecording
     },
   },
   watch: {

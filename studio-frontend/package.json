@@ -41,7 +41,7 @@
     }
   },
   "dependencies": {
-    "@linto-ai/webvoicesdk": "file:/home/tom/info/WebVoiceSDK",
+    "@linto-ai/webvoicesdk": "github:linto-ai/WebVoiceSDK",
     "@vue/cli-plugin-babel": "^5.0.4",
     "@vue/cli-plugin-router": "^5.0.4",
     "@vue/cli-plugin-vuex": "^5.0.4",

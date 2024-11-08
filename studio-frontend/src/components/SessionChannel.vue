@@ -220,7 +220,6 @@ export default {
         )
       }
 
-      console.log("request", sessionRequest)
       // filter out the channel we are interested in
 
       const allChannels = sessionRequest?.data?.channels

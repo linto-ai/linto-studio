@@ -2,7 +2,7 @@
   <MainContent sidebar box>
     <template v-slot:breadcrumb-actions> </template>
 
-    <div class="flex col">
+    <div class="flex col flex1">
       <Tabs
         v-model="currentTab"
         :tabs="mainTabs"
@@ -83,6 +83,7 @@
       <QuickSessionCreateContent
         v-if="currentTab === 'live'"
         :transcriberProfiles="transcriberProfiles"
+        :currentQuickSession="currentQuickSession"
         :currentOrganizationScope="currentOrganizationScope" />
     </div>
   </MainContent>
@@ -94,7 +95,10 @@ import ConversationCreateMixin from "@/mixins/conversationCreate.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 
 import EMPTY_FIELD from "@/const/emptyField"
-import { apiGetTranscriberProfiles } from "@/api/session.js"
+import {
+  apiGetTranscriberProfiles,
+  apiSearchSessionByName,
+} from "@/api/session.js"
 
 import ConversationCreateAudio from "@/components/ConversationCreateAudio.vue"
 import ConversationCreateServices from "@/components/ConversationCreateServices.vue"
@@ -126,10 +130,13 @@ export default {
       currentTab: "file",
       transcriberProfiles: [],
       loadingTranscriberProfiles: true,
+      loadingQuickSession: true,
+      currentQuickSession: null,
     }
   },
   mounted() {
     this.fetchProfiles()
+    this.fetchQuickSession()
   },
   async created() {},
   computed: {
@@ -157,17 +164,19 @@ export default {
       ]
 
       if (enableSession && this.isAtLeastMeetingManager) {
+        const loading =
+          this.loadingTranscriberProfiles || this.loadingQuickSession
         res.push(
           {
             name: "live",
             label: "Quick meeting",
-            icon: this.loadingTranscriberProfiles ? "loading" : "live",
+            icon: loading ? "loading" : "live",
             disabled: this.transcriberProfiles.length === 0,
           },
           {
             name: "session",
             label: this.$i18n.t("conversation_creation.tabs.session"),
-            icon: this.loadingTranscriberProfiles ? "loading" : "session",
+            icon: loading ? "loading" : "session",
             disabled: this.transcriberProfiles.length === 0,
           },
         )
@@ -197,6 +206,19 @@ export default {
       const res = await apiGetTranscriberProfiles()
       this.transcriberProfiles = res
       this.loadingTranscriberProfiles = false
+    },
+    async fetchQuickSession() {
+      const sessionName = `@${this.userInfo._id}`
+      const alreadyCreatedPersonalSessions = await apiSearchSessionByName(
+        this.currentOrganizationScope,
+        sessionName,
+      )
+
+      if (alreadyCreatedPersonalSessions.length > 0) {
+        this.currentQuickSession = alreadyCreatedPersonalSessions[0]
+      }
+
+      this.loadingQuickSession = false
     },
   },
   components: {
