@@ -65,7 +65,7 @@
       </section>
     </div>
     <div class="flex medium-margin-top">
-      <button class="btn secondary">
+      <button class="btn secondary" @click="backToStart">
         <span class="label">Retour</span>
       </button>
       <div class="flex1"></div>
@@ -86,6 +86,9 @@
     v-else-if="state === 'live'">
     <template v-slot:sidebar>
       <div class="flex col medium-padding gap-medium">
+        <SessionTranslationSelection
+          :selectedChannel="selectedChannel"
+          v-model="selectedTranslations"></SessionTranslationSelection>
         <h3>{{ $t("session.detail_page.title_interface_settings") }}</h3>
         <FormCheckbox
           :field="displayLiveTranscriptionField"
@@ -135,6 +138,7 @@
       :displayLiveTranscription="displayLiveTranscriptionField.value"
       :fontSize="fontSizeField.value"
       customTitle="Quick meeting"
+      :selectedTranslations="selectedTranslations"
       :selectedChannel="selectedChannel" />
   </MainContent>
 </template>
@@ -162,6 +166,8 @@ import StatusLed from "@/components/StatusLed.vue"
 import SessionLiveContent from "@/components/SessionLiveContent"
 import FormInput from "@/components/FormInput.vue"
 import FormCheckbox from "@/components/FormCheckbox.vue"
+import SessionTranslationSelection from "@/components/SessionTranslationSelection.vue"
+
 export default {
   props: {
     currentOrganizationScope: {
@@ -171,6 +177,7 @@ export default {
     userInfo: { type: Object, required: true },
   },
   data() {
+    const source = this.$route.query.source
     return {
       debugQuickSession: customDebug("vue:debug:quickSession"),
       waitingPermission: true,
@@ -211,6 +218,7 @@ export default {
         value: true,
         label: this.$t("session.detail_page.display_live_transcription_label"),
       },
+      selectedTranslations: null,
     }
   },
   mounted() {
@@ -249,6 +257,10 @@ export default {
       await this.vad.stop()
       await this.downSampler.stop()
       this.closeWebsocket()
+    },
+    async backToStart() {
+      await this.close()
+      this.$router.replace({ name: "conversations create" })
     },
     async onSaveSession() {
       this.isSavingSession = true
@@ -335,7 +347,7 @@ export default {
             {
               name: "Main",
               transcriberProfileId: this.$route.query.transcriberProfileId,
-              translations: [],
+              translations: this.$route.query.translations,
               diarization: false,
             },
           ]
@@ -354,7 +366,7 @@ export default {
 
         this.selectedChannel = this.session.channels[0]
         this.state = "live"
-
+        this.selectedTranslations = "original"
         this.connectToWebsocket()
       } catch (error) {
         console.error(error)
@@ -495,6 +507,7 @@ export default {
     SessionLiveContent,
     FormInput,
     FormCheckbox,
+    SessionTranslationSelection,
   },
 }
 </script>

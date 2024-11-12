@@ -116,6 +116,7 @@ export default {
           query: {
             source: this.fieldSource.value,
             transcriberProfileId: this.selectedProfile.id,
+            translations: this.selectedProfile.translations,
           },
           params: {
             organizationId: this.currentOrganizationScope,
