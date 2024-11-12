@@ -347,8 +347,8 @@ export default {
             {
               name: "Main",
               transcriberProfileId: this.$route.query.transcriberProfileId,
-              translations: this.$route.query.translations,
-              diarization: false,
+              translations: this.$route.query.translations ?? [],
+              diarization: this.$route.query.diarization ?? false,
             },
           ]
           const res = await apiCreateSession(this.currentOrganizationScope, {

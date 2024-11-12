@@ -6,6 +6,10 @@
     </section>
     <section class="flex col gap-small">
       <h2>{{ $t("quick_session.creation.profile_selector_title") }}</h2>
+      <FormCheckbox
+        class=""
+        :field="fieldDiarizationEnabled"
+        v-model="fieldDiarizationEnabled.value"></FormCheckbox>
       <TranscriberProfileSelector
         :multiple="false"
         v-model="selectedProfile"
@@ -42,6 +46,7 @@ import FormRadio from "@/components/FormRadio.vue"
 import TranscriberProfileSelector from "@/components/TranscriberProfileSelector.vue"
 import { testFieldEmpty } from "@/tools/fields/testEmpty"
 import { formsMixin } from "@/mixins/forms.js"
+import FormCheckbox from "@/components/FormCheckbox.vue"
 
 export default {
   mixins: [formsMixin],
@@ -81,6 +86,11 @@ export default {
         ],
         testField: testFieldEmpty,
       },
+      fieldDiarizationEnabled: {
+        ...EMPTY_FIELD,
+        value: false,
+        label: this.$t("session.create_page.diarization_label"),
+      },
       selectedProfile: null,
       formSubmitLabel: "Start",
 
@@ -117,6 +127,7 @@ export default {
             source: this.fieldSource.value,
             transcriberProfileId: this.selectedProfile.id,
             translations: this.selectedProfile.translations,
+            diarization: this.fieldDiarizationEnabled.value,
           },
           params: {
             organizationId: this.currentOrganizationScope,
@@ -128,6 +139,6 @@ export default {
       return false
     },
   },
-  components: { FormRadio, TranscriberProfileSelector },
+  components: { FormRadio, TranscriberProfileSelector, FormCheckbox },
 }
 </script>
