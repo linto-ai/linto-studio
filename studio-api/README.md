@@ -79,3 +79,46 @@ BROKER_PASSWORD=
 BROKER_KEEPALIVE=60
 BROKER_PROTOCOL=mqtt
 ```
+
+### Back Office Access
+
+#### Creating a Superuser for Back Office Access
+
+The superuser has an administrative access to the back office, which includes managing organization creation, assigning default permissions, and overseeing users within organizations. To set up a superuser, configure the following environment variables in your `.env` file:
+
+```bash
+SUPER_ADMIN_EMAIL=superadmin@mail.fr
+SUPER_ADMIN_PWD=superadminpassword
+```
+
+The superuser will have the authority to define organization-wide settings, manage user roles and can monitore all live sessions.
+
+#### Default Permissions for User-Created Organizations
+
+By default, each newly created organization is granted the following permissions, which define what members can do within the organization:
+
+- **Upload**: Grants access to use the transcription service to upload and process media.
+- **Summary**: Enables the use of large language models (LLM) to generate summaries for uploaded media.
+- **Session**: Provides access to the Session API, allowing the organization to create live meetings.
+
+These default permissions can be set up on project startup or adjusted individually in the back office by the superuser.
+To configure default permissions at startup, set the following variable in the `.env` file:
+
+```bash
+ORGANIZATION_DEFAULT_PERMISSIONS=upload,summary,session
+```
+
+> **Note**: If any default permission is removed, future organizations will not have access to that functionality unless the superuser grants it in the back office.
+> **Note**: To disable all permissions, set `ORGANIZATION_DEFAULT_PERMISSIONS=none`
+
+#### Member Roles in an Organization
+
+An organization can be structured with various user roles, each granting specific permissions. The default role is **Member**, and each subsequent role inherits the permissions of the previous one, as outlined below:
+
+- **Member**: Can view and edit any media regarding of the media permission.
+- **Uploader**: Can create and upload new media.
+- **Meeting Manager**: Has the ability to initiate and manage sessions.
+- **Maintainer**: Manages all users within the organization.
+- **Admin**: Has full control over all organization actions and settings, including permissions and user management.
+
+These roles allow for a structured, role-based permission system within each organization, ensuring that each user has the appropriate level of access based on their responsibilities.

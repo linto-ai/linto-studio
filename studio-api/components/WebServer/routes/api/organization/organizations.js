@@ -9,6 +9,8 @@ const { listConversationFromOrganization, leaveSelfFromOrganization } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/organizations/member.js`,
 )
 
+const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
+
 const {
   addUserInOrganization,
   updateUserFromOrganization,
@@ -74,6 +76,7 @@ module.exports = (webserver) => {
       method: "post",
       requireAuth: true,
       requireOrganizationUploaderAccess: true,
+      orgaPermissionAccess: PERMISSIONS.UPLOAD,
       controller: transcribeReq,
     },
     {
@@ -81,6 +84,7 @@ module.exports = (webserver) => {
       method: "post",
       requireAuth: true,
       requireOrganizationUploaderAccess: true,
+      orgaPermissionAccess: PERMISSIONS.UPLOAD,
       controller: importConversation,
     },
 

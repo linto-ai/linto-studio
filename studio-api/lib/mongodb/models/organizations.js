@@ -2,7 +2,7 @@ const debug = require("debug")(
   "linto:conversation-manager:lib:mongodb:models:organization",
 )
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
-
+const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
 const MongoModel = require(`../model`)
 
 const public_projection = { token: 0 }
@@ -14,6 +14,7 @@ class OrganizationModel extends MongoModel {
 
   async create(payload) {
     try {
+      payload.permissions = PERMISSIONS.getDefaultPermissions() // We don't allow user to set permissions orga permissions
       return await this.mongoInsert(payload)
     } catch (error) {
       console.error(error)
@@ -32,6 +33,34 @@ class OrganizationModel extends MongoModel {
 
       const result = await this.mongoInsert(payload)
       return result
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async createOrgaByAdmin(payload) {
+    try {
+      const result = await this.mongoInsert(payload)
+      return result
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  // update an organization
+  async updateOrgaByAdmin(payload) {
+    try {
+      const operator = "$set"
+      const query = {
+        _id: this.getObjectId(payload._id),
+      }
+      if (payload.organizationId) delete payload.organizationId
+      delete payload._id
+
+      let mutableElements = payload
+      return await this.mongoUpdateOne(query, operator, mutableElements)
     } catch (error) {
       console.error(error)
       return error
@@ -123,9 +152,8 @@ class OrganizationModel extends MongoModel {
       const query = {
         _id: this.getObjectId(payload._id),
       }
-
       if (payload.organizationId) delete payload.organizationId
-
+      delete payload.permissions
       delete payload._id
       let mutableElements = payload
       return await this.mongoUpdateOne(query, operator, mutableElements)
