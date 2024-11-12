@@ -812,6 +812,36 @@
     },
     "start_undefined": "Not defined"
   },
+  "quick_session": {
+    "creation": {
+      "source_title": "Source",
+      "microphone_source_label": "Use my computer microphone",
+      "visio_source_label": "Join a visioconférence",
+      "profile_selector_title": "Transcription profile selection",
+      "no_profile_selected_error": "No transcription profile selected",
+      "quick_meeting_already_start_title": "A recording has already been started.",
+      "quick_meeting_already_start_button": "Join the quick meeting"
+    },
+    "setup_microphone": {
+      "waiting_permission_title": "Waiting permission to access your microphone",
+      "microphone_error_first_line": "Hello ! You are muted.",
+      "microphone_error_second_line": "Check the permissions of your microphone.",
+      "microphone_select_label": "Microphone selection",
+      "microphone_reset_button": "Reset to default system microphone",
+      "microphone_select_button": "Select microphone",
+      "microphone_default_value": "Default system microphone",
+      "sound_detector_headline": "Say something to test your microphone.",
+      "sound_detector_label": "Voice detection",
+      "sound_detector_value_ok": "Your microphone works",
+      "sound_detector_value_wait": "Waiting sound from microphone..."
+    },
+    "live": {
+      "status_no_websocket": "Not connected to audio server",
+      "status_recording": "Recording.",
+      "status_muted": "Micro is muted.",
+      "save_button": "Save and quit"
+    }
+  },
   "share_menu": {
     "button": "share",
     "conversation_error_title": "Some conversations cannot be shared",

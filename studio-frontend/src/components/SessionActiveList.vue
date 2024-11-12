@@ -39,7 +39,7 @@ export default {
         const sessions = await apiGetStartedSessions(
           this.currentOrganizationScope,
         )
-        this.sessionList = sessions.sessions
+        this.sessionList = sessions.sessions.filter((s) => s.name[0] != "@")
       } catch (e) {
         console.error(e)
         this.error = e

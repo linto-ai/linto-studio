@@ -247,6 +247,9 @@
   &.save-cloud {
     @include maskImage("../public/img/save-cloud.svg");
   }
+  &.live {
+    @include maskImage("../public/img/live.svg");
+  }
 }
 
 .icon.small {

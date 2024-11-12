@@ -34,7 +34,11 @@ export default {
       return getTextTurnWithTranslation(this.turn, this.selectedTranslations)
     },
     speaker() {
-      return this.$t("session.detail_page.undefined_speaker") || "Unknown"
+      return (
+        this.turn?.locutor ||
+        this.$t("session.detail_page.undefined_speaker") ||
+        "Unknown"
+      )
     },
     lang() {
       return this.turn.lang || this.$t("session.detail_page.undefined_lang")

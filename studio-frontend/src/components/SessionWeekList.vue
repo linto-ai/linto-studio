@@ -66,7 +66,8 @@ export default {
           this.mondayDate,
           this.sundayDate,
         )
-        this.sessionList = response.sessions
+
+        this.sessionList = response.sessions.filter((s) => s.name[0] != "@")
         this.loading = false
       } catch (error) {
         this.error = error

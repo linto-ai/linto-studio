@@ -278,6 +278,16 @@ let router = new Router({
       meta: { public: true, sessionPage: true },
     },
     {
+      path: "/interface/:organizationId/quick-session/setup",
+      name: "quick session setup",
+      components: {
+        default: () => import("../views/QuickSessionSetup.vue"),
+        ...defaultComponents,
+      },
+      props: defaultProps,
+      meta: { public: true, sessionPage: true },
+    },
+    {
       path: "/interface/organizations/create",
       name: "organizations create",
       components: {

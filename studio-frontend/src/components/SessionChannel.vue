@@ -174,6 +174,7 @@ export default {
         this.scrollToBottom()
       },
       deep: true,
+      immediate: true,
     },
     displaySubtitles() {
       this.scrollToBottom()

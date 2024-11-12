@@ -3,6 +3,10 @@ const proxyForwardParams = [
   { "body.organizationId": "params.organizationId" },
 ]
 
+const { storeSessionFromStop } = require(
+  `${process.cwd()}/components/WebServer/controllers/session/conversation.js`,
+)
+
 const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
 
 module.exports = (webServer) => {
@@ -88,6 +92,7 @@ module.exports = (webServer) => {
             path: "/organizations/:organizationId/sessions/:id",
             method: ["delete"],
             forwardParams: proxyForwardParams,
+            executeBeforeResult: storeSessionFromStop,
           },
           {
             path: "/organizations/:organizationId/sessions/:id/stop",

@@ -99,24 +99,6 @@
   text-decoration: none !important;
 }
 
-.session-status-led {
-  height: 1rem;
-  width: 1rem;
-  border-radius: 2rem;
-  background-color: $redChart;
-  //background: #fd2f51;
-  //border: 1px solid #fd163c;
-  //color: #fd2f51;
-}
-
-.session-status-led.session-status-led--disable {
-  background-color: #62111e;
-}
-
-.session-status-led.session-status-led--flat.session-status-led--disable {
-  background-color: #62111e;
-}
-
 .session-on-air {
   border-radius: 55px;
   //background-color: red;

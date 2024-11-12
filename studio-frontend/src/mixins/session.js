@@ -94,7 +94,7 @@ export const sessionMixin = {
     },
     async stopSession() {
       this.isStoping = true
-      const start = await apiStopSession(
+      const start = await apiDeleteSession(
         this.currentOrganizationScope,
         this.sessionId,
       )
