@@ -84,6 +84,25 @@
     fullwidthContent
     sidebar
     v-else-if="state === 'live'">
+    <template v-slot:sidebar>
+      <div class="flex col medium-padding gap-medium">
+        <h3>{{ $t("session.detail_page.title_interface_settings") }}</h3>
+        <FormCheckbox
+          :field="displayLiveTranscriptionField"
+          switchDisplay
+          v-model="displayLiveTranscriptionField.value" />
+        <FormCheckbox
+          :field="displaySubtitlesField"
+          switchDisplay
+          v-model="displaySubtitlesField.value" />
+
+        <FormInput
+          :field="fontSizeField"
+          v-model="fontSizeField.value"
+          v-if="displaySubtitlesField.value" />
+      </div>
+    </template>
+
     <template v-slot:breadcrumb-actions>
       <div class="flex1 flex gap-small align-center">
         <button @click="toggleMicrophone">
@@ -112,6 +131,10 @@
       :organizationId="currentOrganizationScope"
       displayLiveTranscription
       :session="session"
+      :displaySubtitles="displaySubtitlesField.value"
+      :displayLiveTranscription="displayLiveTranscriptionField.value"
+      :fontSize="fontSizeField.value"
+      customTitle="Quick meeting"
       :selectedChannel="selectedChannel" />
   </MainContent>
 </template>
@@ -131,11 +154,14 @@ import {
   apiDeleteSession,
 } from "@/api/session.js"
 
+import EMPTY_FIELD from "@/const/emptyField"
+
 import MainContent from "@/components/MainContent.vue"
 import CustomSelect from "@/components/CustomSelect.vue"
 import StatusLed from "@/components/StatusLed.vue"
 import SessionLiveContent from "@/components/SessionLiveContent"
-
+import FormInput from "@/components/FormInput.vue"
+import FormCheckbox from "@/components/FormCheckbox.vue"
 export default {
   props: {
     currentOrganizationScope: {
@@ -165,6 +191,26 @@ export default {
       isRecording: false,
       isSavingSession: false,
       isConnectedToWS: false,
+      fontSizeField: {
+        ...EMPTY_FIELD,
+        value: "40",
+        label: this.$t("session.detail_page.font_size_label"),
+        type: "number",
+        customParams: {
+          min: 12,
+          max: 68,
+        },
+      },
+      displaySubtitlesField: {
+        ...EMPTY_FIELD,
+        value: true,
+        label: this.$t("session.detail_page.display_subtitles_label"),
+      },
+      displayLiveTranscriptionField: {
+        ...EMPTY_FIELD,
+        value: true,
+        label: this.$t("session.detail_page.display_live_transcription_label"),
+      },
     }
   },
   mounted() {
@@ -442,6 +488,13 @@ export default {
       this.connectToMicrophone()
     },
   },
-  components: { MainContent, CustomSelect, StatusLed, SessionLiveContent },
+  components: {
+    MainContent,
+    CustomSelect,
+    StatusLed,
+    SessionLiveContent,
+    FormInput,
+    FormCheckbox,
+  },
 }
 </script>

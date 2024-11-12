@@ -82,7 +82,7 @@
 import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
 
-import EMPTY_FIELD from "../const/emptyField"
+import EMPTY_FIELD from "@/const/emptyField"
 
 import { sessionMixin } from "@/mixins/session.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole"

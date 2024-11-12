@@ -1,7 +1,7 @@
 <template>
   <div class="session-content flex flex1 col" @scroll="handleScroll">
     <div class="medium-margin">
-      <h1 class="center-text session-content__title">{{ name }}</h1>
+      <h1 class="center-text session-content__title">{{ title }}</h1>
     </div>
     <SessionChannel
       v-if="isConnected"
@@ -60,6 +60,10 @@ export default {
       required: false,
       default: "original",
     },
+    customTitle: {
+      type: String,
+      required: false,
+    },
   },
   data() {
     return {
@@ -75,6 +79,9 @@ export default {
   computed: {
     isInError() {
       return this.channelTranscriberStatus === "errored"
+    },
+    title() {
+      return this.customTitle ?? this.name
     },
   },
   methods: {
