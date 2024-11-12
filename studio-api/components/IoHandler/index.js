@@ -74,9 +74,7 @@ class IoHandler extends Component {
             }
           })
         } catch (err) {
-          debug(
-            `Error getting organization ID for session ${session.id}: ${err}`,
-          )
+          debug(`Error getting organization ID from the orga ${orgaId}: ${err}`)
         }
       }
     }
