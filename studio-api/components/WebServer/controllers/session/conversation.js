@@ -10,9 +10,13 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 const DEFAULT_MEMBER_RIGHTS = 3
 const DEFAULT_SPEAKER_NAME = "Unknown speaker"
 
-function initConversationMultiChannel(session, type = "canonical") {
+function initConversationMultiChannel(
+  session,
+  name = undefined,
+  type = "canonical",
+) {
   return {
-    name: session.name,
+    name: name || session.name,
     owner: session.owner,
     locale: "",
     organization: {
@@ -41,7 +45,7 @@ function initConversationMultiChannel(session, type = "canonical") {
   }
 }
 
-function initCaptionsForConversation(sessionData) {
+function initCaptionsForConversation(sessionData, name = undefined) {
   try {
     const session = JSON.parse(JSON.stringify(sessionData))
     let captions = []
@@ -51,7 +55,8 @@ function initCaptionsForConversation(sessionData) {
       }
 
       let caption = {
-        name: session.name + " - " + channel.name,
+        name:
+          name + " - " + channel.name || session.name + " - " + channel.name,
         owner: session.owner,
         locale: channel.languages,
         organization: {
@@ -132,9 +137,9 @@ function initCaptionsForConversation(sessionData) {
   }
 }
 
-async function storeSession(session) {
+async function storeSession(session, name = undefined) {
   try {
-    const captions = initCaptionsForConversation(session)
+    const captions = initCaptionsForConversation(session, name)
 
     if (captions.length === 0) {
       return
@@ -143,7 +148,10 @@ async function storeSession(session) {
       const result = await model.conversations.create(captions[0])
       return result
     } else {
-      const conversation_multi_channel = initConversationMultiChannel(session)
+      const conversation_multi_channel = initConversationMultiChannel(
+        session,
+        name,
+      )
 
       for (let caption of captions) {
         const result = await model.conversations.create(caption)
@@ -174,7 +182,6 @@ async function storeSession(session) {
       return result
     }
   } catch (err) {
-    debug(err)
     throw err
   }
 }
@@ -195,16 +202,15 @@ async function storeProxyResponse(session) {
   }
 }
 
-async function storeSessionFromStop(req) {
+async function storeSessionFromStop(req, next) {
   try {
     const session = await axios.get(
       process.env.SESSION_API_ENDPOINT + `/sessions/${req.params.id}`,
     )
-    const conversation = await storeSession(session)
-    if (conversation) return conversation.insertedId.toString()
-    else return null
+    await storeSession(session, req.query.name)
+    next()
   } catch (err) {
-    return // proxy function before don't handle user api response
+    next(err)
   }
 }
 

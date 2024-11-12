@@ -92,7 +92,7 @@ module.exports = (webServer) => {
             path: "/organizations/:organizationId/sessions/:id",
             method: ["delete"],
             forwardParams: proxyForwardParams,
-            executeBeforeResult: [storeSessionFromStop],
+            executeBeforeResult: storeSessionFromStop,
           },
           {
             path: "/organizations/:organizationId/sessions/:id/stop",
