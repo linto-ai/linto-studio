@@ -6,6 +6,7 @@
           v-model="value"
           :id="id + option.name"
           :radioValue="option.name"
+          :disabled="option.disabled"
           :name="id"
           ref="input"></Radio>
       </div>
@@ -37,6 +38,7 @@ export default {
           {
             name:"",
             label:""
+            ?disabled
           }
         ]
       }

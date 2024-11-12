@@ -818,7 +818,7 @@
       "visio_source_label": "Rejoindre une visio-conférence",
       "profile_selector_title": "Selection du profil de transcription",
       "no_profile_selected_error": "Aucun profil de transcription selectionné",
-      "quick_meeting_already_start_title": "Un enregistrement est déjà démmaré.",
+      "quick_meeting_already_start_title": "Un enregistrement est déjà démarré.",
       "quick_meeting_already_start_button": "Rejoindre le Quick meeting"
     },
     "setup_microphone": {
@@ -835,6 +835,7 @@
       "sound_detector_value_wait": "En attente de son du microphone..."
     },
     "live": {
+      "status_no_websocket": "Déconnecté du serveur audio",
       "status_recording": "En cours d'enregistrement.",
       "status_muted": "Muet.",
       "save_button": "Sauvegarder et quitter"

@@ -63,7 +63,7 @@ export default {
     return {
       fields: ["fieldSource"],
       fieldSource: {
-        value: null,
+        value: "microphone",
         error: null,
         valid: false,
         options: [
@@ -76,6 +76,7 @@ export default {
           {
             name: "visio",
             label: this.$i18n.t("quick_session.creation.visio_source_label"),
+            disabled: true,
           },
         ],
         testField: testFieldEmpty,

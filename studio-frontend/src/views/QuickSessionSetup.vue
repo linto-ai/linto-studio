@@ -87,11 +87,16 @@
     <template v-slot:breadcrumb-actions>
       <div class="flex1 flex gap-small align-center">
         <button @click="toggleMicrophone">
-          <span class="icon record" v-if="isRecording"></span>
+          <span
+            class="icon record"
+            v-if="isRecording && isConnectedToWS"></span>
           <span class="icon record-off" v-else></span>
         </button>
         <StatusLed :on="speaking" />
-        <span class="flex1" v-if="isRecording">{{
+        <span v-if="!isConnectedToWS">
+          {{ $t("quick_session.live.status_no_websocket") }}
+        </span>
+        <span class="flex1" v-else-if="isRecording">{{
           $t("quick_session.live.status_recording")
         }}</span>
         <span class="flex1" v-else>
@@ -99,7 +104,7 @@
         </span>
       </div>
 
-      <button>
+      <button @click="onSaveSession" :disabled="isSavingSession">
         <span class="label">{{ $t("quick_session.live.save_button") }}</span>
       </button>
     </template>
@@ -117,8 +122,14 @@ import WebVoiceSDK from "@linto-ai/webvoicesdk"
 
 import convertFloat32ToInt16 from "@/tools/convertFloat32ToInt16.js"
 import { customDebug } from "@/tools/customDebug.js"
+import { userName } from "@/tools/userName.js"
 
-import { apiSearchSessionByName, apiCreateSession } from "@/api/session.js"
+import {
+  apiSearchSessionByName,
+  apiCreateSession,
+  apiUpdateSession,
+  apiDeleteSession,
+} from "@/api/session.js"
 
 import MainContent from "@/components/MainContent.vue"
 import CustomSelect from "@/components/CustomSelect.vue"
@@ -152,6 +163,8 @@ export default {
       hasReceivedACK: false,
       sendRawAudio: true,
       isRecording: false,
+      isSavingSession: false,
+      isConnectedToWS: false,
     }
   },
   mounted() {
@@ -175,10 +188,7 @@ export default {
     this.audioEncoder = null
   },
   destroyed() {
-    this.mic.stop()
-    this.vad.stop()
-    this.downSampler.stop()
-    this.closeWebsocket()
+    this.close()
   },
   computed: {
     selectedMicroName() {
@@ -188,6 +198,23 @@ export default {
     },
   },
   methods: {
+    async close() {
+      await this.mic.stop()
+      await this.vad.stop()
+      await this.downSampler.stop()
+      this.closeWebsocket()
+    },
+    async onSaveSession() {
+      this.isSavingSession = true
+      const now = new Date()
+      const conversationName = `Meeting from ${userName(this.userInfo)}, ${now.toLocaleString()} `
+      await this.close()
+
+      await apiDeleteSession(this.currentOrganizationScope, this.session.id, {
+        name: conversationName,
+      })
+      this.$router.replace({ name: "inbox" })
+    },
     async getDeviceList() {
       try {
         await navigator.mediaDevices.getUserMedia({ audio: true })
@@ -317,6 +344,7 @@ export default {
     },
     async closeWebsocket() {
       this.websocket?.close()
+      this.isConnectedToWS = true
     },
     sendWSInitMessage() {
       const initMessage = {
@@ -328,6 +356,7 @@ export default {
     },
     async setupRecord() {
       this.debugQuickSession(`WS is connected`)
+      this.isConnectedToWS = true
 
       if (!this.sendRawAudio) {
         this.debugQuickSession("Start recording setup")
@@ -386,7 +415,6 @@ export default {
       this.audioEncoder.encode(value)
     },
     processEncodedAudio(chunk) {
-      console.log("got chunk !", chunk)
       // let newBuffer
 
       const buffer = new ArrayBuffer(chunk.byteLength * 2)
@@ -395,7 +423,6 @@ export default {
 
       const int16array = new Int16Array(buffer)
 
-      console.log("int16array", int16array)
       // const int16array = new Int16Array(chunk.byteLength / 2 + 1)
 
       this.websocket.send(int16array)
@@ -404,7 +431,9 @@ export default {
       console.error("encoding failed", error)
     },
     toggleMicrophone() {
-      this.isRecording = !this.isRecording
+      if (this.isConnectedToWS) {
+        this.isRecording = !this.isRecording
+      }
     },
   },
   watch: {

@@ -836,6 +836,7 @@
       "sound_detector_value_wait": "Waiting sound from microphone..."
     },
     "live": {
+      "status_no_websocket": "Not connected to audio server",
       "status_recording": "Recording.",
       "status_muted": "Micro is muted.",
       "save_button": "Save and quit"

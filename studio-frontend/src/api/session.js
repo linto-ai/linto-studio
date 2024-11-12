@@ -197,15 +197,30 @@ export async function apiStopSession(organizationScope, sessionId, notif) {
   return stopSession
 }
 
-export async function apiDeleteSession(organizationScope, sessionId, notif) {
-  const deleteSession = await sendRequest(
-    `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}`,
-    { method: "delete" },
-    {},
-    notif,
-  )
+export async function apiDeleteSession(
+  organizationScope,
+  sessionId,
+  { name } = {},
+  notif = null,
+) {
+  let resRequest
+  if (name) {
+    resRequest = await sendRequest(
+      `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}?name=${name}`,
+      { method: "delete" },
+      {},
+      notif,
+    )
+  } else {
+    resRequest = await sendRequest(
+      `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}`,
+      { method: "delete" },
+      {},
+      notif,
+    )
+  }
 
-  return deleteSession
+  return resRequest
 }
 
 export async function apiGetSessionChannel(
