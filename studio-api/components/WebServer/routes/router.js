@@ -220,6 +220,7 @@ const createProxyRoutes = (webServer, proxy_routes) => {
               if (queryParams) {
                 newPath = `${newPath}?${queryParams}`
               }
+
               return newPath
             },
             onProxyReq: (proxyReq, req, res) => {
@@ -258,6 +259,11 @@ const createProxyRoutes = (webServer, proxy_routes) => {
             basePath + path.path,
             middlewares,
             (req, res, next) => {
+              if (path.executeBeforeResult) {
+                for (let proxyBeforeFunction of path.executeBeforeResult) {
+                  proxyBeforeFunction(req)
+                }
+              }
               addProxyParams(req, path)
               proxy(req, res, next)
             },

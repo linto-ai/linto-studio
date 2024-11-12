@@ -2,6 +2,8 @@ const debug = require("debug")(
   `linto:conversation-manager:components:WebServer:session:conversation`,
 )
 
+const axios = require(`${process.cwd()}/lib/utility/axios`)
+
 const { v4: uuidv4 } = require("uuid")
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
@@ -182,7 +184,6 @@ async function storeProxyResponse(session) {
     if (typeof session === "string") {
       session = JSON.parse(session)
     }
-
     const conversation = await storeSession(session)
 
     return JSON.stringify({
@@ -194,7 +195,21 @@ async function storeProxyResponse(session) {
   }
 }
 
+async function storeSessionFromStop(req) {
+  try {
+    const session = await axios.get(
+      process.env.SESSION_API_ENDPOINT + `/sessions/${req.params.id}`,
+    )
+    const conversation = await storeSession(session)
+    if (conversation) return conversation.insertedId.toString()
+    else return null
+  } catch (err) {
+    return // proxy function before don't handle user api response
+  }
+}
+
 module.exports = {
   storeSession,
   storeProxyResponse,
+  storeSessionFromStop,
 }

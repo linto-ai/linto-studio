@@ -86,11 +86,15 @@ async function groupSessionsByOrg(differences, sessionIdToOrg) {
     const orgId = await getOrganizationId(session)
     await addToGroup(orgId, "removed", session)
 
-    // We store the session when it's finished
-    const sessionEnded = await axios.get(
-      process.env.SESSION_API_ENDPOINT + `/sessions/${session.id}`,
-    )
-    storeSession(sessionEnded)
+    // We store the session when it's finished and not deleted
+    try {
+      const sessionEnded = await axios.get(
+        process.env.SESSION_API_ENDPOINT + `/sessions/${session.id}`,
+      )
+      storeSession(sessionEnded)
+    } catch (err) {
+      debug(`Error storing session ${session.id}, it was deleted: ${err}`)
+    }
   }
   for (const session of differences.updated) {
     const orgId = await getOrganizationId(session)
