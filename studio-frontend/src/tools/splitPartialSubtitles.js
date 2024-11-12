@@ -82,6 +82,10 @@ export function getIndexesWhereToCutText(text, computeIfTextIsTooLong) {
       }
     }
 
+    if (i == 0) {
+      return []
+    }
+
     return [i - 1].concat(
       incrementIndexes(
         getIndexesWhereToCutText(
