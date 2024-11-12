@@ -70,20 +70,16 @@ function incrementIndexes(indexes, from, increment) {
 }
 
 export function getIndexesWhereToCutText(text, computeIfTextIsTooLong) {
-  if (!computeIfTextIsTooLong(text)) {
+  const splitText = text.split(" ")
+  if (!computeIfTextIsTooLong(text) || splitText.length <= 1) {
     return []
   } else {
-    const splitText = text.split(" ")
     let i
     for (i = 0; i < splitText.length; i++) {
       const currentText = splitText.slice(0, i).join(" ")
       if (computeIfTextIsTooLong(currentText)) {
         break
       }
-    }
-
-    if (i == 0) {
-      return []
     }
 
     return [i - 1].concat(
