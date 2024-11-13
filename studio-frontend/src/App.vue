@@ -64,6 +64,8 @@ export default {
     }
   },
   mounted() {
+    const enableSession = getEnv("VUE_APP_ENABLE_SESSION") === "true"
+
     bus.$on("set_organization_scope", async (data) => {
       this.setOrganizationScope(data.organizationId)
       await this.dispatchUserOrganizations()
@@ -82,7 +84,10 @@ export default {
     )
     this.appMounted = true
     document.title = this.title
-    this.$sessionWS.connect()
+
+    if (enableSession) {
+      this.$sessionWS.connect()
+    }
   },
   beforeDestroy() {
     bus.$off("set_organization_scope")
