@@ -5,7 +5,7 @@
       <h1>{{ $t("usersettings.title") }}</h1>
     </div>
      LEFT COLUMN -->
-    <div class="flex row" v-if="userInfo.accountNotifications.inviteAccount">
+    <div class="flex row" v-if="isInviteAccount">
       <div class="user-settings-notification">
         <span class="content">
           {{ $t("usersettings.invite_account_notif") }}
@@ -114,6 +114,9 @@ export default {
     imgUrl() {
       return `${process.env.VUE_APP_PUBLIC_MEDIA}/${this.userInfo.img}`
     },
+    isInviteAccount() {
+      return this.userInfo?.accountNotifications?.inviteAccount ?? false
+    },
   },
   methods: {
     async updateUserInfo(payload) {
@@ -175,7 +178,7 @@ export default {
             `${getEnv("VUE_APP_CONVO_API")}/users/self/picture`,
             "put",
             formData,
-            { timeout: 3000, redirect: false }
+            { timeout: 3000, redirect: false },
           )
           if (req.status === "success") {
             this.picture = {

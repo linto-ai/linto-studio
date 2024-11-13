@@ -73,8 +73,8 @@ export default {
     },
     badgeValue() {
       if (
-        this.accountNotifications.updatePassword ||
-        this.accountNotifications.inviteAccount ||
+        this.accountNotifications?.updatePassword ||
+        this.accountNotifications?.inviteAccount ||
         !this.userInfo.emailIsVerified
       ) {
         return 1
