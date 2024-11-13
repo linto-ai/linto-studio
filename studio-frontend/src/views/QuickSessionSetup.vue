@@ -260,7 +260,7 @@ export default {
     },
     async backToStart() {
       await this.close()
-      this.$router.replace({ name: "conversations create" })
+      this.$router.push({ name: "conversations create" })
     },
     async onSaveSession() {
       this.isSavingSession = true
@@ -271,7 +271,7 @@ export default {
       await apiDeleteSession(this.currentOrganizationScope, this.session.id, {
         name: conversationName,
       })
-      this.$router.replace({ name: "inbox" })
+      this.$router.push({ name: "inbox" })
     },
     async getDeviceList() {
       try {

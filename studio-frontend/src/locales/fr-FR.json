@@ -744,6 +744,7 @@
       "start_session_error_message": "La session n'a pas pu être arrêtée",
       "stop_button": "Arrêter et enregistrer la transcription",
       "stop_session_error_message": "La session n'a pas pu être arrêtée",
+      "stop_session_success": "La session a été arrétée et sauvegardée",
       "title_interface_settings": "Paramètre d'interface",
       "undefined_lang": "Langage inconnu",
       "undefined_speaker": "Locuteur inconnu",
@@ -814,7 +815,7 @@
   "quick_session": {
     "creation": {
       "source_title": "Source",
-      "microphone_source_label": "Utiliser le microphone de mon ordinateur",
+      "microphone_source_label": "Utiliser le microphone local",
       "visio_source_label": "Rejoindre une visio-conférence",
       "profile_selector_title": "Selection du profil de transcription",
       "no_profile_selected_error": "Aucun profil de transcription selectionné",

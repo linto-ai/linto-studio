@@ -744,6 +744,7 @@
       "start_time_not_defined": "Not defined",
       "stop_button": "Stop and save session to library",
       "stop_session_error_message": "The session could not be stopped",
+      "stop_session_success": "The session has been stopped and saved",
       "title_interface_settings": "Interface settings",
       "undefined_lang": "Unknown language",
       "undefined_speaker": "Undefined speaker",
@@ -815,7 +816,7 @@
   "quick_session": {
     "creation": {
       "source_title": "Source",
-      "microphone_source_label": "Use my computer microphone",
+      "microphone_source_label": "Use my local microphone",
       "visio_source_label": "Join a visioconférence",
       "profile_selector_title": "Transcription profile selection",
       "no_profile_selected_error": "No transcription profile selected",

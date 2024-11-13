@@ -3,7 +3,7 @@
     :title="name"
     :to="`/interface/${sessionOrganizationId}/sessions/${id}`"
     class="session-line flex align-center">
-    <SessionStatus :session="session" />
+    <SessionStatus :session="session" @click="goToSessionSettings" />
     <div class="flex1 session-line__title text-cut">{{ name }}</div>
     <LabeledValueSmall
       v-if="isPending"
@@ -35,7 +35,19 @@ export default {
     return {}
   },
   mounted() {},
-  methods: {},
+  methods: {
+    goToSessionSettings(e) {
+      this.$router.push({
+        name: "sessions settings",
+        params: {
+          organizationId: this.sessionOrganizationId,
+          sessionId: this.id,
+        },
+      })
+      e.preventDefault()
+      e.stopPropagation()
+    },
+  },
   components: { Fragment, LabeledValueSmall, SessionStatus },
 }
 </script>

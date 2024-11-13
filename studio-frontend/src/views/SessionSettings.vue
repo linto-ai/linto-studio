@@ -82,8 +82,6 @@
           </section>
         </div>
         <div class="flex col gap-medium session-settings-right align-center">
-          <!-- it's not a vueJS component, it's a webcomponent. Code is imported in index.html -->
-
           <div class="flex col gap-medium">
             <!-- <button
             class="btn flex1"
@@ -119,6 +117,8 @@
             }}</span>
           </button> -->
           </div>
+          <!-- it's not a vueJS component, it's a webcomponent. Code is imported in index.html -->
+
           <qr-code
             :contents="publicLink"
             class="session-settings-qr-code"></qr-code>

@@ -1,5 +1,6 @@
 <template>
   <div
+    @click="onClick"
     class="flex align-center justify-center session-status gap-small"
     :title="text">
     <span class="session-on-air flex align-center gap-small" v-if="isActive">
@@ -80,7 +81,11 @@ export default {
     },
   },
   mounted() {},
-  methods: {},
+  methods: {
+    onClick(e) {
+      this.$emit("click", e)
+    },
+  },
   components: { StatusLed },
 }
 </script>

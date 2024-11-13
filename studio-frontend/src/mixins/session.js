@@ -112,7 +112,13 @@ export const sessionMixin = {
         return
       }
 
-      await this.fetchSession()
+      bus.$emit("app_notif", {
+        status: "success",
+        message: this.$i18n.t("session.detail_page.stop_session_success"),
+        timeout: null,
+      })
+      this.$router.push(this.sessionListRoute)
+      //await this.fetchSession()
       this.isStoping = false
     },
     async deleteSession() {
