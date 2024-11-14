@@ -38,7 +38,7 @@ class MongoModel {
     const page = parseInt(paginate.page) || 0
     const sortField = paginate.sortField || "_id"
     const sortCriteria = parseInt(paginate.sortCriteria) === -1 ? -1 : 1
-    const sort = { [sortField]: sortCriteria }
+    const sort = { [sortField]: sortCriteria, _id: sortCriteria }
 
     try {
       const aggregationPipeline = [
