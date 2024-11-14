@@ -102,7 +102,7 @@ export default {
   methods: {
     goToQuickSession() {
       this.$router.push({
-        name: "quick session setup",
+        name: "quick session",
         query: {},
         params: {
           organizationId: this.currentOrganizationScope,
@@ -122,7 +122,7 @@ export default {
 
       if (this.testFields()) {
         this.$router.push({
-          name: "quick session setup",
+          name: "quick session",
           query: {
             source: this.fieldSource.value,
             transcriberProfileId: this.selectedProfile.id,

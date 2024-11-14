@@ -122,3 +122,11 @@
 .session-on-air.session-on-air--off {
   color: #62111e;
 }
+
+.session-microphone-status {
+  padding: 1rem;
+  border: var(--divider);
+  margin: 0 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+}
