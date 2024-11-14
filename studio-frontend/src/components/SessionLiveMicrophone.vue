@@ -21,11 +21,11 @@
       </div>
       <SessionLiveToolbar
         :channels="channels"
-        v-bind:selectedTranslation="selectedTranslation"
-        v-bind:displayLiveTranscription="displayLiveTranscription"
-        v-bind:displaySubtitles="displaySubtitles"
-        v-bind:fontSize="fontSize"
-        v-bind:selectedChannel="selectedChannel" />
+        v-bind:selectedTranslation.sync="selectedTranslation"
+        v-bind:displayLiveTranscription.sync="displayLiveTranscription"
+        v-bind:displaySubtitles.sync="displaySubtitles"
+        v-bind:fontSize.sync="fontSize"
+        v-bind:selectedChannel.sync="selectedChannel" />
     </template>
     <template v-slot:breadcrumb-actions>
       <slot name="breadcrumb-actions"></slot>
@@ -86,6 +86,10 @@ export default {
   },
   destroyed() {
     this.channelWebsocket.close()
+    this.downSampler.removeEventListener(
+      "downSamplerFrame",
+      this.onAudioFrameRaw,
+    )
   },
   methods: {
     async setup() {
