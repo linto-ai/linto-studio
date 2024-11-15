@@ -183,7 +183,7 @@ import MainContent from "@/components/MainContent.vue"
 import SessionStatus from "@/components/SessionStatus.vue"
 
 export default {
-  mixins: [sessionMixin],
+  mixins: [sessionMixin, formsMixin],
   props: {},
   data() {
     return {
@@ -339,6 +339,7 @@ export default {
             redirect: false,
           })
           this.$emit("session_update", res.data)
+          this.session = { ...this.session, ...res.data }
         } else {
           bus.$emit("app_notif", {
             status: "error",
