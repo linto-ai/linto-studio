@@ -62,7 +62,7 @@ export default {
       },
       organizationMemberAccess: true,
       formSubmitLabel: this.$i18n.t(
-        "conversation.conversation_creation_button.create"
+        "conversation.conversation_creation_button.create",
       ),
       formState: "available",
       languages: [
@@ -126,13 +126,14 @@ export default {
 
       const transcriptionService = await this.debouncedSearch(
         this.getTranscriptionList.bind(this),
-        this.conversationLanguage.value
+        this.conversationLanguage.value,
       )
 
       if (transcriptionService) {
         this.transcriptionService.list = [...transcriptionService]
         this.transcriptionService.loading = false
-        this.transcriptionService.value = null
+        this.transcriptionService.value =
+          transcriptionService.length > 0 ? transcriptionService[0] : null
       }
     },
     async createConversationByFile(event) {
@@ -148,7 +149,7 @@ export default {
           this.formError = null
           this.formState = "sending"
           this.formSubmitLabel = this.$i18n.t(
-            "conversation.conversation_creation_button.sending"
+            "conversation.conversation_creation_button.sending",
           )
           // scroll to top of the main element
           document.querySelector("main").scrollTo(0, 0)
@@ -163,7 +164,7 @@ export default {
               status: "loading",
               message: this.$i18n.t(
                 "conversation.conversation_creation_loading_multiple",
-                { count: audioFileIndex, total: total }
+                { count: audioFileIndex, total: total },
               ),
               timeout: -1,
               cantBeClosed: true,
@@ -179,7 +180,7 @@ export default {
                   : 0,
                 serviceName: this.transcriptionService.value.serviceName,
                 transcriptionConfig: JSON.stringify(
-                  this.transcriptionService.value.config
+                  this.transcriptionService.value.config,
                 ),
                 segmentCharSize: process.env.VUE_APP_TURN_SIZE,
                 lang: this.transcriptionService.value.lang,
@@ -191,12 +192,12 @@ export default {
                 try {
                   const { loaded, total } = progressEvent
                   this.audioFiles[0].progress = Math.floor(
-                    (loaded * 100) / total
+                    (loaded * 100) / total,
                   )
                 } catch (error) {
                   this.audioFiles[0].progress = -1
                 }
-              }
+              },
             )
 
             if (!conversationHasBeenCreated) {
@@ -206,11 +207,11 @@ export default {
                   {
                     count: audioFileIndex - 1,
                     total: total,
-                  }
-                )
+                  },
+                ),
               )
               this.formSubmitLabel = this.$i18n.t(
-                "conversation.conversation_creation_button.retry"
+                "conversation.conversation_creation_button.retry",
               )
               this.formState = "available"
               return
@@ -246,7 +247,7 @@ export default {
           this.formError = null
           this.formState = "sending"
           this.formSubmitLabel = this.$i18n.t(
-            "conversation.conversation_creation_button.sending"
+            "conversation.conversation_creation_button.sending",
           )
 
           const convName = this.linkFields[2].value
@@ -261,13 +262,13 @@ export default {
                 : 0,
               serviceName: this.transcriptionService.value.serviceName,
               transcriptionConfig: JSON.stringify(
-                this.transcriptionService.value.config
+                this.transcriptionService.value.config,
               ),
               segmentCharSize: process.env.VUE_APP_TURN_SIZE,
               lang: this.transcriptionService.value.lang,
               endpoint: this.transcriptionService.value.endpoint,
               url: this.linkFields[0].value,
-            }
+            },
           )
 
           if (conversationHasBeenCreated) {
@@ -283,10 +284,10 @@ export default {
             })
           } else {
             this.emitError(
-              this.$i18n.t("conversation.conversation_creation_error_unknown")
+              this.$i18n.t("conversation.conversation_creation_error_unknown"),
             )
             this.formSubmitLabel = this.$i18n.t(
-              "conversation.conversation_creation_button.retry"
+              "conversation.conversation_creation_button.retry",
             )
             this.formState = "available"
           }

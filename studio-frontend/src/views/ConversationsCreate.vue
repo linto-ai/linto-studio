@@ -30,6 +30,24 @@
           v-if="currentTab === 'url'"
           v-model="linkFields" />
 
+        <!-- rights -->
+        <section>
+          <h2>{{ $t("conversation.conversation_creation_right_title") }}</h2>
+          <div class="form-field flex col">
+            <label class="form-label">
+              {{ $t("conversation.conversation_creation_right_label") }}
+            </label>
+            <select v-model="membersRight.value">
+              <option
+                v-for="uright in membersRight.list"
+                :key="uright.value"
+                :value="uright.value">
+                {{ uright.txt }}
+              </option>
+            </select>
+          </div>
+        </section>
+
         <!-- services -->
         <section>
           <h2>{{ $t("conversation.transcription_service_title") }}</h2>
@@ -94,7 +112,6 @@ import { getEnv } from "@/tools/getEnv.js"
 import ConversationCreateMixin from "@/mixins/conversationCreate.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 
-import EMPTY_FIELD from "@/const/emptyField"
 import {
   apiGetTranscriberProfiles,
   apiSearchSessionByName,
