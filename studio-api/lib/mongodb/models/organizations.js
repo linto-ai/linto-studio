@@ -2,7 +2,9 @@ const debug = require("debug")(
   "linto:conversation-manager:lib:mongodb:models:organization",
 )
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
-const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
+const DEFAULT_PERMISSION = require(
+  `${process.cwd()}/lib/dao/organization/permissions`,
+).getDefaultPermissions()
 const MongoModel = require(`../model`)
 
 const public_projection = { token: 0 }
@@ -14,7 +16,7 @@ class OrganizationModel extends MongoModel {
 
   async create(payload) {
     try {
-      payload.permissions = PERMISSIONS.getDefaultPermissions() // We don't allow user to set permissions orga permissions
+      payload.permissions = DEFAULT_PERMISSION // We don't allow user to set permissions orga permissions
       return await this.mongoInsert(payload)
     } catch (error) {
       console.error(error)
@@ -30,6 +32,7 @@ class OrganizationModel extends MongoModel {
         users: [{ userId: userId, role: ROLES.ADMIN }],
         ...oPayload,
       }
+      payload.permissions = DEFAULT_PERMISSION // We don't allow user to set permissions orga permissions
 
       const result = await this.mongoInsert(payload)
       return result
