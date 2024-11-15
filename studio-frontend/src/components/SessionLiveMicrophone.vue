@@ -1,10 +1,8 @@
 <template>
   <MainContent noBreadcrumb :organizationPage="false" fullwidthContent sidebar>
     <template v-slot:sidebar>
-      <div class="session-microphone-status">
-        <div
-          class="flex align-center gap-small center-text"
-          @click="toggleMicrophone">
+      <div class="session-microphone-status" @click="toggleMicrophone">
+        <div class="flex align-center gap-small center-text">
           <StatusLed :on="speaking" v-if="isRecording" />
           <span class="icon record-off" v-else />
 
