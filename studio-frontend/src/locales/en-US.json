@@ -811,7 +811,11 @@
         "content": "Are you sure you want to delete this session ?",
         "title": "Delete session"
       },
-      "title": "Session settings"
+      "title": "Session settings",
+      "visibility_private_label": "Private",
+      "visibility_organization_label": "Internal",
+      "visibility_public_label": "Public",
+      "visibility_title": "Visibility"
     },
     "start_undefined": "Not defined"
   },

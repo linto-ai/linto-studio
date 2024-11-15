@@ -1,5 +1,5 @@
 <template>
-  <div class="form-field flex col gap-small">
+  <div class="form-field flex gap-small" :class="{ col: !inline }">
     <div v-for="option in field.options" class="flex row align-top gap-small">
       <div class="flex align-center">
         <Radio
@@ -50,6 +50,10 @@ export default {
     inputId: {
       type: String,
       default: null,
+    },
+    inline: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

@@ -11,11 +11,16 @@
           :field="fieldAppointment"
           v-bind:error.sync="fieldAppointment.error"
           v-model="fieldAppointment.value" />
-
-        <FormCheckbox
-          :field="fieldIsPublic"
-          v-model="fieldIsPublic.value"></FormCheckbox>
       </section>
+
+      <section class="flex col gap-medium">
+        <h2>{{ $t("session.settings_page.visibility_title") }}</h2>
+        <FormRadio
+          inline
+          :field="fieldSessionVisibility"
+          v-model="fieldSessionVisibility.value" />
+      </section>
+
       <section class="flex col">
         <div>
           <div class="flex row gap-medium">
@@ -86,6 +91,7 @@ import FormCheckbox from "@/components/FormCheckbox.vue"
 import SessionChannelsTable from "@/components/SessionChannelsTable.vue"
 import ModalAddSessionChannels from "@/components/ModalAddSessionChannels.vue"
 import AppointmentSelector from "@/components/AppointmentSelector.vue"
+import FormRadio from "@/components/FormRadio.vue"
 
 export default {
   mixins: [formsMixin],
@@ -118,6 +124,31 @@ export default {
         error: null,
         valid: false,
         label: this.$t("session.settings_page.isPublic_label"),
+      },
+      fieldSessionVisibility: {
+        value: "organization",
+        error: null,
+        valid: true,
+        options: [
+          {
+            name: "private",
+            label: this.$i18n.t(
+              "session.settings_page.visibility_private_label",
+            ),
+          },
+          {
+            name: "organization",
+            label: this.$i18n.t(
+              "session.settings_page.visibility_organization_label",
+            ),
+          },
+          {
+            name: "public",
+            label: this.$i18n.t(
+              "session.settings_page.visibility_public_label",
+            ),
+          },
+        ],
       },
       fieldDiarizationEnabled: {
         ...EMPTY_FIELD,
@@ -173,7 +204,7 @@ export default {
           })),
           startTime: startDateTime,
           endTime: endDateTime,
-          visibility: this.fieldIsPublic.value ? "public" : "organization",
+          visibility: this.fieldSessionVisibility.value ?? "organization",
         })
         if (res.status == "success") {
           this.formState = "success"
@@ -230,6 +261,7 @@ export default {
     SessionChannelsTable,
     ModalAddSessionChannels,
     FormCheckbox,
+    FormRadio,
     AppointmentSelector,
   },
 }

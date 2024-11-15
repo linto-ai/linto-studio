@@ -810,7 +810,11 @@
         "action": "Supprimer",
         "content": "Êtes vous sur de vouloir supprimer la session ?",
         "title": "Supprimer la session"
-      }
+      },
+      "visibility_private_label": "Privée",
+      "visibility_organization_label": "Interne",
+      "visibility_public_label": "Publique",
+      "visibility_title": "Visibilité"
     },
     "start_undefined": "Non définie"
   },
