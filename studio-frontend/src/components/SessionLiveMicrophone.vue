@@ -56,6 +56,8 @@ import SessionLiveToolbar from "@/components/SessionLiveToolbar.vue"
 import SessionLiveContent from "@/components/SessionLiveContent.vue"
 import StatusLed from "@/components/StatusLed.vue"
 
+const EVENT_TO_LISTEN = "downSamplerFrame"
+
 export default {
   mixins: [sessionModelMixin, microphoneMixin],
   props: {
@@ -84,14 +86,14 @@ export default {
   mounted() {
     this.setup()
   },
-  destroyed() {
-    this.channelWebsocket.close()
-    this.downSampler.removeEventListener(
-      "downSamplerFrame",
-      this.onAudioFrameRaw,
-    )
-  },
   methods: {
+    async onClose() {
+      this.channelWebsocket.close()
+      this.downSampler.removeEventListener(
+        EVENT_TO_LISTEN,
+        this.onAudioFrameRaw,
+      )
+    },
     async setup() {
       await this.connectToMicrophone()
 
@@ -116,10 +118,7 @@ export default {
     async setupRecordRaw() {
       this.debugQuickSession("Starting downsampler")
       await this.downSampler.start(this.mic)
-      this.downSampler.addEventListener(
-        "downSamplerFrame",
-        this.onAudioFrameRaw.bind(this),
-      )
+      this.downSampler.addEventListener(EVENT_TO_LISTEN, this.onAudioFrameRaw)
       this.isRecording = true
     },
     onAudioFrameRaw(event) {

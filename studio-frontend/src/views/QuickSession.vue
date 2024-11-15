@@ -5,6 +5,7 @@
     @back="backToStart"></SessionSetupMicrophone>
   <SessionLiveMicrophone
     v-else-if="state == 'session-live'"
+    ref="sessionLiveMicrophone"
     :currentOrganizationScope="currentOrganizationScope"
     :session="session">
     <template v-slot:breadcrumb-actions>
@@ -60,6 +61,8 @@ export default {
       this.$router.push({ name: "conversations create" })
     },
     async onSaveSession() {
+      await this.$refs.sessionLiveMicrophone.p_close()
+      await this.$nextTick()
       this.isSavingSession = true
       const now = new Date()
       const conversationName = `Meeting from ${userName(this.userInfo)}, ${now.toLocaleString()} `

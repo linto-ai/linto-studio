@@ -41,6 +41,7 @@ export const microphoneMixin = {
       }
 
       if (this.downSampler?.close) {
+        console.log("close downSampler")
         this.downSampler?.close()
       }
 
