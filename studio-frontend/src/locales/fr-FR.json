@@ -84,7 +84,7 @@
     "conversation_creation_loading": "Envoi en cours. Cette opération peut prendre plusieurs minutes.",
     "conversation_creation_loading_multiple": "Envoi du fichier {count} sur {total}. Cette opération peut prendre plusieurs minutes.",
     "conversation_creation_right_title": "Gestion des droits",
-    "conversation_creation_right_label": "Droits par defaut pour les membres de l'organisation",
+    "conversation_creation_right_label": "Droits par défaut pour les membres de l'organisation",
     "conversation_is_locked_by": "Le média est verouillée par",
     "conversation_need_reload": " Le média a été modifiée par un autre utilisateur, rechargez la page pour l'éditer",
     "conversation_overview_title": "Synthèse du média",
@@ -468,7 +468,8 @@
   },
   "lang": {
     "en": "Anglais",
-    "fr": "Français"
+    "fr": "Français",
+    "all": "Toutes langues"
   },
   "login": {
     "create_account_button": "Créer un compte",
@@ -608,6 +609,9 @@
     "name_description": "Nom de l'organisation",
     "name_label": "Nom",
     "organization_users": "Utilisateurs de l'organisation",
+    "organization_permissions": {
+      "title": "Permissions de l'organisation"
+    },
     "update": {
       "title": "Organisation : {name}"
     },

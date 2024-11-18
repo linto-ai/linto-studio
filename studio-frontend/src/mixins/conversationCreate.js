@@ -101,12 +101,12 @@ export default {
     "conversationLanguage.value"(value) {
       this.initTranscriptionList()
     },
-    "$i18n.locale": {
-      handler(value) {
-        this.conversationLanguage.value = value.split("-")[0]
-      },
-      immediate: true,
-    },
+    // "$i18n.locale": {
+    //   handler(value) {
+    //     this.conversationLanguage.value = value.split("-")[0]
+    //   },
+    //   immediate: true,
+    // },
   },
   computed: {
     organizationList() {
@@ -126,7 +126,7 @@ export default {
 
       const transcriptionService = await this.debouncedSearch(
         this.getTranscriptionList.bind(this),
-        this.conversationLanguage.value,
+        "*",
       )
 
       if (transcriptionService) {

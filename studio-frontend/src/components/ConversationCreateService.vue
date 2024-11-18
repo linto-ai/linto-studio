@@ -22,7 +22,7 @@
       </div>
       <div>
         <label>{{ $t("conversation.language_label") }}</label>
-        {{ languages[value.language] }}
+        {{ language_formatted }}
       </div>
       <div>
         <label>{{ $t("conversation.model_quality_label") }}</label>
@@ -132,6 +132,7 @@ export default {
         "fr-FR": this.$i18n.t("lang.fr"),
         "en-US": this.$i18n.t("lang.en"),
         en_GB: this.$i18n.t("lang.en"),
+        "*": this.$i18n.t("lang.all"),
       },
     }
   },
@@ -147,6 +148,17 @@ export default {
     },
     isWhisper() {
       return this.modelType === "whisper"
+    },
+    language_formatted() {
+      if (!this.value.language) {
+        return this.languages["*"]
+      }
+
+      if (this.value.language in this.languages) {
+        return this.languages[this.value.language]
+      }
+
+      return this.value.language
     },
   },
   watch: {

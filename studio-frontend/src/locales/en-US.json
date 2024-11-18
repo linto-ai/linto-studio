@@ -467,7 +467,8 @@
   },
   "lang": {
     "en": "English",
-    "fr": "French"
+    "fr": "French",
+    "all": "All languages"
   },
   "login": {
     "create_account_button": "Create an account",
@@ -612,6 +613,9 @@
     "name_description": "The name of your organisation",
     "name_label": "Name",
     "organization_users": "Organisation users",
+    "organization_permissions": {
+      "title": "Organisation permissions"
+    },
     "update": {
       "title": "organisation : {name}"
     },
