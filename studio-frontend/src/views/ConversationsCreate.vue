@@ -94,14 +94,15 @@
         </div>
       </form>
 
-      <SessionCreateContent
-        v-if="currentTab === 'session'"
-        :transcriberProfiles="transcriberProfiles"
-        :currentOrganizationScope="currentOrganizationScope" />
       <QuickSessionCreateContent
-        v-if="currentTab === 'live'"
+        v-if="currentTab === 'live' && !loadingSessionData"
         :transcriberProfiles="transcriberProfiles"
         :currentQuickSession="currentQuickSession"
+        :currentOrganizationScope="currentOrganizationScope" />
+
+      <SessionCreateContent
+        v-if="currentTab === 'session' && !loadingSessionData"
+        :transcriberProfiles="transcriberProfiles"
         :currentOrganizationScope="currentOrganizationScope" />
     </div>
   </MainContent>
@@ -175,6 +176,9 @@ export default {
 
       return enableSession && this.canSessionInCurrentOrganization
     },
+    loadingSessionData() {
+      return this.loadingTranscriberProfiles || this.loadingQuickSession
+    },
     mainTabs() {
       let res = []
       if (this.canUploadFiles) {
@@ -200,8 +204,7 @@ export default {
       }
 
       if (this.canCreateQuickSession) {
-        const loading =
-          this.loadingTranscriberProfiles || this.loadingQuickSession
+        const loading = this.loadingSessionData
 
         res.push({
           name: "live",
