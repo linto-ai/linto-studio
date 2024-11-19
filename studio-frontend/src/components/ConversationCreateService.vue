@@ -154,11 +154,11 @@ export default {
         return this.languages["*"]
       }
 
-      if (this.value.language in this.languages) {
-        return this.languages[this.value.language]
-      }
+      let languageNames = new Intl.DisplayNames([this.$i18n.locale], {
+        type: "language",
+      })
 
-      return this.value.language
+      return languageNames.of(this.value.language)
     },
   },
   watch: {
