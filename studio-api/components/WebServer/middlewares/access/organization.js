@@ -51,6 +51,17 @@ module.exports = {
         ROLES.MEETING_MANAGER,
       )
   },
+  asQuickMeetingAccess: async (req, res, next) => {
+    if (await platformAccess.isSessionOperator(req)) next()
+    else
+      await access(
+        req,
+        next,
+        req.params.organizationId,
+        req.payload.data.userId,
+        ROLES.QUICK_MEETING,
+      )
+  },
   asUploaderAccess: async (req, res, next) => {
     if (await platformAccess.isSystemAdministrator(req)) next()
     else
