@@ -1,7 +1,7 @@
 export function getUserRoleInOrganization(organization, userId) {
   if (!organization || !userId) return 0
 
-  if (organization.owner === userId) return 5
+  if (organization.owner === userId) return 6
   else {
     let findUser = organization.users.filter(
       (usr) => usr._id === userId || usr.userId === userId,
