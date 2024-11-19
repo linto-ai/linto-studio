@@ -67,7 +67,7 @@
     "add_search_criterion": "Add a search criterion",
     "add_tag": "Add a tag",
     "add_to_favorites": "Add to favorites",
-    "apply_filters": "Appliquer les filtres",
+    "apply_filters": "Apply filters",
     "audio_file_too_big": "The audio file is too big. The maximum size is 1GB.",
     "audio_file_upload_label": "Choose a file...",
     "audio_file_upload_label_multiple": "Choose one or multiple files...",
@@ -310,8 +310,8 @@
       "add_speaker": "Add a speaker",
       "diarization_description": "Enable diarization and select the number of speakers",
       "diarization_disabled": "Disabled",
-      "diarization_label": "Speakers split",
-      "diarization_label_inline": "Speakers split : ",
+      "diarization_label": "Speakers diarization",
+      "diarization_label_inline": "Speakers diarization : ",
       "edit_speaker": "Edit speaker",
       "normalization_description": "Enable normalization and replace text numbers by numbers",
       "normalization_label_inline": "Normalization : ",
@@ -321,7 +321,7 @@
       "punctuation_disabled": "Disabled",
       "punctuation_label": "Punctuation",
       "punctuation_label_inline": "Punctuation : ",
-      "punctuation_value_whisper": "Automatic.",
+      "punctuation_value_whisper": "Automatic",
       "speaker_name": "Speaker name",
       "speakers": "speakers"
     },
@@ -467,7 +467,8 @@
   },
   "lang": {
     "en": "English",
-    "fr": "French"
+    "fr": "French",
+    "all": "All languages"
   },
   "login": {
     "create_account_button": "Create an account",
@@ -612,6 +613,9 @@
     "name_description": "The name of your organisation",
     "name_label": "Name",
     "organization_users": "Organisation users",
+    "organization_permissions": {
+      "title": "Organisation permissions"
+    },
     "update": {
       "title": "organisation : {name}"
     },
@@ -684,10 +688,10 @@
   },
   "session": {
     "sessions_status": {
-      "pending": "Session is pending, waiting to receive audio.",
-      "active": "Session is active, receiving audio.",
-      "scheduled": "Session has not started yet.",
-      "terminated": "Session has ended."
+      "pending": "Session is pending, waiting to receive audio",
+      "active": "Session is active, receiving audio",
+      "scheduled": "Session has not started yet",
+      "terminated": "Session has ended"
     },
     "channels_list": {
       "add": "Add channels",
@@ -837,10 +841,12 @@
       "microphone_reset_button": "Reset to default system microphone",
       "microphone_select_button": "Select microphone",
       "microphone_default_value": "Default system microphone",
-      "sound_detector_headline": "Say something to test your microphone.",
+      "sound_detector_headline": "Say something to test your microphone",
       "sound_detector_label": "Voice detection",
       "sound_detector_value_ok": "Your microphone works",
-      "sound_detector_value_wait": "Waiting sound from microphone..."
+      "sound_detector_value_wait": "Waiting sound from microphone...",
+      "start_meeting": "Start the meeting",
+      "back": "Back"
     },
     "live": {
       "status_no_websocket": "Not connected to audio server",
@@ -921,7 +927,7 @@
       "organizations": {
         "add_label": "When you joined an organisation",
         "del_label": "When you left an organisation",
-        "title": "organisations",
+        "title": "Organisations",
         "update_label": "When your role in the organisation is updated"
       },
       "submit_button": "Update notifications",

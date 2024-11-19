@@ -54,7 +54,7 @@
           <div class="error-field" v-if="transcriptionService.error">
             {{ transcriptionService.error }}
           </div>
-          <div class="form-field flex row">
+          <!-- <div class="form-field flex row">
             <div class="flex col">
               <label class="form-label" for="conversationName">
                 {{ $t("conversation.language_label") }}
@@ -70,7 +70,7 @@
                 </option>
               </select>
             </div>
-          </div>
+          </div> -->
           <ConversationCreateServices
             :serviceList="transcriptionService.list"
             :disabled="formState === 'sending'"
