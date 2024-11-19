@@ -29,6 +29,7 @@
       }
     }
   },
+
   "/api/organizations/{organizationId}/sessions": {
     "get": {
       "tags": ["sessions"],
@@ -146,6 +147,161 @@
               }
             }
           }
+        }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/quickMeeting": {
+    "get": {
+      "tags": ["sessions"],
+      "summary": "Get user private sessions for quick meeting",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an organization"
+        },
+        {
+          "in": "query",
+          "name": "limit",
+          "description": "Maximum number of sessions in the answer",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "in": "query",
+          "name": "offset",
+          "description": "Offset from the start the number of sessions",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "in": "query",
+          "name": "searchName",
+          "description": "Name of the session to search",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "in": "query",
+          "name": "statusList",
+          "description": "Session status to search for. Multiple statuses can be specified, separated by a comma.",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "in": "query",
+          "name": "organizationId",
+          "description": "Search for sessions belonging to this organization.",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "in": "query",
+          "name": "visibility",
+          "description": "Search for sessions with a specific visibility.",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "enum": ["private", "organization", "public"]
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The list of sessions",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SessionPaginationAnswer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "post": {
+      "tags": ["sessions"],
+      "summary": "Create user quick meeting session",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an organization"
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/SessionRequest"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionAnswer"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/quickMeeting/{id}": {
+    "delete": {
+      "tags": ["sessions"],
+      "summary": "Delete user quick meeting session",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an organization"
+        },
+        {
+          "name": "id",
+          "in": "path",
+          "description": "Session ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Session successfully deleted"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
         }
       }
     }
