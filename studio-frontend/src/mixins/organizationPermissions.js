@@ -33,4 +33,19 @@ export const organizationPermissionsMixin = {
       )
     },
   },
+  computed: {
+    organizationPermissions() {
+      return this.$store.state.currentOrganization.permissions
+    },
+    canUploadInCurrentOrganization() {
+      console.log(this.organizationPermissions)
+      return this.hasUploadPermission(this.organizationPermissions)
+    },
+    canSummaryInCurrentOrganization() {
+      return this.hasSummaryPermission(this.organizationPermissions)
+    },
+    canSessionInCurrentOrganization() {
+      return this.hasSessionPermission(this.organizationPermissions)
+    },
+  },
 }
