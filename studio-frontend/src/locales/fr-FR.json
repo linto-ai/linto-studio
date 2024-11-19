@@ -684,8 +684,8 @@
   },
   "session": {
     "sessions_status": {
-      "pending": "La session est en attente de recevoir un flux audio.",
-      "active": "La session est active. Un ou des audio(s) sont transcrits.",
+      "pending": "La session est en attente de recevoir un flux audio",
+      "active": "La session est active. Un ou des audio(s) sont transcrits",
       "scheduled": "La session n'a pas démarrée",
       "terminated": "La session est terminée"
     },
@@ -840,10 +840,12 @@
       "microphone_reset_button": "Rétablir au microphone par défaut du système",
       "microphone_select_button": "Séléctionner le microphone",
       "microphone_default_value": "Microphone par défaut du système",
-      "sound_detector_headline": "Dites quelquechose pour tester votre microphone.",
+      "sound_detector_headline": "Dites quelquechose pour tester votre microphone",
       "sound_detector_label": "Détection de la voix",
       "sound_detector_value_ok": "Votre microphone fonctionne",
-      "sound_detector_value_wait": "En attente de son du microphone..."
+      "sound_detector_value_wait": "En attente de son du microphone...",
+      "start_meeting": "Démarrer la réunion",
+      "back": "Retour"
     },
     "live": {
       "status_no_websocket": "Déconnecté du serveur audio",

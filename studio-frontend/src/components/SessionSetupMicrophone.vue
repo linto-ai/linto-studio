@@ -64,12 +64,17 @@
     </div>
     <div class="flex medium-margin-top">
       <button class="btn secondary" @click="backToStart">
-        <span class="label">Retour</span>
+        <span class="icon back"></span>
+        <span class="label">{{
+          $t("quick_session.setup_microphone.back")
+        }}</span>
       </button>
       <div class="flex1"></div>
       <button class="btn" :disabled="!microphoneWorked" @click="setupSession">
         <span class="icon apply"></span>
-        <span class="label">Démarrer la réunion</span>
+        <span class="label"
+          >{{ $t("quick_session.setup_microphone.start_meeting") }}
+        </span>
       </button>
     </div>
   </MainContent>
