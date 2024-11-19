@@ -1,6 +1,7 @@
 <template>
   <MainContentBackoffice :loading="loading">
     <UpdateOrganizationForm :currentOrganization="organization" />
+    <UpdateOrganizationPermissions :currentOrganization="organization" />
     <UpdateOrganizationUsers
       :currentOrganization="organization"
       :userInfo="userInfo" />
@@ -27,6 +28,7 @@ import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import UpdateOrganizationForm from "@/components/UpdateOrganizationForm.vue"
 import UpdateOrganizationUsers from "@/components/UpdateOrganizationUsers.vue"
 import ModalDeleteOrganization from "@/components/ModalDeleteOrganization.vue"
+import UpdateOrganizationPermissions from "@/components/UpdateOrganizationPermissions.vue"
 export default {
   mixins: [platformRoleMixin],
   props: {
@@ -69,6 +71,7 @@ export default {
     MainContentBackoffice,
     UpdateOrganizationForm,
     UpdateOrganizationUsers,
+    UpdateOrganizationPermissions,
     ModalDeleteOrganization,
   },
 }

@@ -614,7 +614,11 @@
     "name_label": "Name",
     "organization_users": "Organisation users",
     "organization_permissions": {
-      "title": "Organisation permissions"
+      "title": "Organisation permissions",
+      "upload_permission": "Upload media",
+      "summary_permission": "Generate summary",
+      "session_permission": "Create session",
+      "update_button": "Update permissions"
     },
     "update": {
       "title": "organisation : {name}"

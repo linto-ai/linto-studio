@@ -9,7 +9,7 @@ export async function apiGetOrganizationById(organizationId, notif) {
     `${BASE_API}/organizations/${organizationId}`,
     { method: "get" },
     null,
-    notif
+    notif,
   )
   return getOrganization?.data
 }
@@ -29,7 +29,7 @@ export async function apiGetUserOrganizations(notif) {
     `${BASE_API}/organizations`,
     { method: "get" },
     null,
-    notif
+    notif,
   )
   return getUserOrganizations?.data
 }
@@ -37,13 +37,26 @@ export async function apiGetUserOrganizations(notif) {
 export async function apiUpdateOrganisation(
   organizationId,
   organizationObject,
-  notif
+  notif,
 ) {
   return await sendRequest(
     `${BASE_API}/organizations/${organizationId}`,
     { method: "patch" },
     organizationObject,
-    notif
+    notif,
+  )
+}
+
+export async function apiAdminUpdateOrganisation(
+  organizationId,
+  organizationObject,
+  notif,
+) {
+  return await sendRequest(
+    `${BASE_API}/administration/organizations/${organizationId}`,
+    { method: "patch" },
+    organizationObject,
+    notif,
   )
 }
 
@@ -52,7 +65,7 @@ export async function apiLeaveOrganisation(organizationId, notif) {
     `${BASE_API}/organizations/${organizationId}/self`,
     { method: "delete" },
     {},
-    notif
+    notif,
   )
 }
 
@@ -61,7 +74,7 @@ export async function apiDeleteOrganisation(organizationId, notif) {
     `${BASE_API}/organizations/${organizationId}`,
     { method: "delete" },
     {},
-    notif
+    notif,
   )
 }
 
@@ -70,6 +83,6 @@ export async function apiCreateOrganisation(payload, notif) {
     `${BASE_API}/organizations`,
     { method: "post" },
     payload,
-    notif
+    notif,
   )
 }
