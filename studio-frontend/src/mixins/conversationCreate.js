@@ -12,6 +12,7 @@ import { debounceMixin } from "@/mixins/debounce"
 
 import RIGHTS_LIST from "@/const/rigthsList"
 import EMPTY_FIELD from "@/const/emptyField"
+import generateServiceConfig from "../tools/generateServiceConfig"
 
 export default {
   mixins: [formsMixin, debounceMixin],
@@ -133,7 +134,9 @@ export default {
         this.transcriptionService.list = [...transcriptionService]
         this.transcriptionService.loading = false
         this.transcriptionService.value =
-          transcriptionService.length > 0 ? transcriptionService[0] : null
+          transcriptionService.length > 0
+            ? generateServiceConfig(transcriptionService[0])
+            : null
       }
     },
     async createConversationByFile(event) {

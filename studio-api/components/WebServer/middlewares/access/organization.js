@@ -103,9 +103,11 @@ async function permissionAccess(req, res, next, access) {
   if (req.params.organizationId) {
     organization = await model.organizations.getById(req.params.organizationId)
   } else if (req.params.conversationId && req.path.endsWith("/download")) {
-    if (req.query.format === ("json" || "text" || "verbatim")) {
+    const allowDownloadFormat = ["json", "text", "verbatim"]
+    if (allowDownloadFormat.includes(req.query.format)) {
       return next()
     }
+
     const conv = await model.conversations.getById(req.params.conversationId)
     if (conv.length !== 1) return next(new ConversationNotShared())
     organization = await model.organizations.getById(

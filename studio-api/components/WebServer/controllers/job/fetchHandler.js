@@ -90,8 +90,12 @@ async function fetchResult(conv_id, job) {
 async function getResult(job, metadata) {
   try {
     let url = `${process.env.GATEWAY_SERVICES}/${job.endpoint}/results/${job.result_id}`
-    if (metadata.transcription.transcriptionConfig.enableNormalization)
+    if (
+      metadata.transcription.transcriptionConfig.enableNormalization &&
+      metadata.transcription.lang !== "*"
+    ) {
       url += "?convert_numbers=true"
+    }
 
     const options = { headers: { accept: "application/json" } }
 

@@ -22,10 +22,9 @@
 import { bus } from "../main.js"
 
 import {
-  apiSearchSessionByName,
-  apiCreateSession,
-  apiUpdateSession,
-  apiDeleteSession,
+  apiGetQuickSession,
+  apiCreateQuickSession,
+  apiDeleteQuickSession,
 } from "@/api/session.js"
 import { userName } from "@/tools/userName.js"
 
@@ -67,21 +66,23 @@ export default {
       const now = new Date()
       const conversationName = `Meeting from ${userName(this.userInfo)}, ${now.toLocaleString()} `
 
-      await apiDeleteSession(this.currentOrganizationScope, this.session.id, {
-        name: conversationName,
-      })
+      await apiDeleteQuickSession(
+        this.currentOrganizationScope,
+        this.session.id,
+        {
+          name: conversationName,
+        },
+      )
       this.$router.push({ name: "inbox" })
     },
     async setupSession() {
       try {
-        const sessionName = `@${this.userInfo._id}`
-        const alreadyCreatedPersonalSessions = await apiSearchSessionByName(
+        const alreadyCreatedPersonalSession = await apiGetQuickSession(
           this.currentOrganizationScope,
-          sessionName,
         )
 
-        if (alreadyCreatedPersonalSessions.length > 0) {
-          this.session = alreadyCreatedPersonalSessions[0]
+        if (alreadyCreatedPersonalSession) {
+          this.session = alreadyCreatedPersonalSession
         } else {
           const channels = [
             {
@@ -91,11 +92,12 @@ export default {
               diarization: this.$route.query.diarization ?? false,
             },
           ]
-          const res = await apiCreateSession(this.currentOrganizationScope, {
-            name: sessionName,
-            channels: channels,
-            visibility: "private",
-          })
+          const res = await apiCreateQuickSession(
+            this.currentOrganizationScope,
+            {
+              channels: channels,
+            },
+          )
 
           if (res.status == "success") {
             this.session = res.data

@@ -253,3 +253,63 @@ export async function apiGetPublicSessionChannel(
 
   return getSessionChannel
 }
+
+export async function apiGetQuickSession(organizationScope, notif) {
+  const getSession = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/quickMeeting/`,
+    { method: "get" },
+    {},
+    notif,
+  )
+
+  if (getSession.status === "error") {
+    return null
+  }
+
+  if (!getSession?.data?.sessions) {
+    return null
+  }
+
+  if (getSession.data.sessions.length === 0) {
+    return null
+  }
+
+  return getSession.data.sessions[0]
+}
+
+export async function apiCreateQuickSession(organizationScope, data, notif) {
+  const createSession = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/quickMeeting/`,
+    { method: "post" },
+    data,
+    notif,
+  )
+
+  return createSession
+}
+
+export async function apiDeleteQuickSession(
+  organizationScope,
+  sessionId,
+  { name } = {},
+  notif,
+) {
+  let resRequest
+  if (name) {
+    resRequest = await sendRequest(
+      `${BASE_API}/organizations/${organizationScope}/quickMeeting/${sessionId}?name=${name}`,
+      { method: "delete" },
+      {},
+      notif,
+    )
+  } else {
+    resRequest = await sendRequest(
+      `${BASE_API}/organizations/${organizationScope}/quickMeeting/${sessionId}`,
+      { method: "delete" },
+      {},
+      notif,
+    )
+  }
+
+  return resRequest
+}
