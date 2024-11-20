@@ -162,14 +162,15 @@ export default {
     this.fetchQuickSession()
   },
   async created() {
-    this.currentTab = this.mainTabs[0].name
+    if (this.mainTabs.length > 0) {
+      this.currentTab = this.mainTabs[0].name
+    } else {
+      this.$router.push({ name: "not_found" })
+    }
   },
   computed: {
     canUploadFiles() {
       return this.canUploadInCurrentOrganization
-    },
-    canCreateQuickSession() {
-      return this.isAtLeastQuickMeeting
     },
     canCreateSession() {
       const enableSession = getEnv("VUE_APP_ENABLE_SESSION") === "true"
@@ -203,16 +204,16 @@ export default {
         )
       }
 
-      if (this.canCreateQuickSession) {
+      if (this.canCreateSession) {
         const loading = this.loadingSessionData
-
-        res.push({
-          name: "live",
-          label: "Quick meeting",
-          icon: loading ? "loading" : "live",
-          disabled: this.transcriberProfiles.length === 0,
-        })
-
+        if (this.isAtLeastQuickMeeting) {
+          res.push({
+            name: "live",
+            label: "Quick meeting",
+            icon: loading ? "loading" : "live",
+            disabled: this.transcriberProfiles.length === 0,
+          })
+        }
         if (this.isAtLeastMeetingManager) {
           res.push({
             name: "session",
