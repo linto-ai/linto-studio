@@ -12,7 +12,7 @@ DB_NAME=conversations
 DB_REQUIRE_LOGIN=false
 
 # Request a specific version of the database (optional)
-DB_MIGRATION_TARGET=1.5.0
+DB_MIGRATION_TARGET=1.5.3
 
 # STT Config
 GATEWAY_SERVICES=https://api.linto.ai
@@ -50,3 +50,4 @@ VOLUME_AUDIO_PATH=audios
 VOLUME_PROFILE_PICTURE_PATH=pictures
 
 EXPORT_TEMPLATE=default
+ORGANIZATION_DEFAULT_PERMISSIONS=upload,summary,session

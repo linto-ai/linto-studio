@@ -10,6 +10,10 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 const DEFAULT_MEMBER_RIGHTS = 3
 const DEFAULT_SPEAKER_NAME = "Unknown speaker"
 
+const { SessionError } = require(
+  `${process.cwd()}/components/WebServer/error/exception/session`,
+)
+
 function initConversationMultiChannel(
   session,
   name = undefined,
@@ -214,8 +218,27 @@ async function storeSessionFromStop(req, next) {
   }
 }
 
+async function storeQuickMeetingFromStop(req, next) {
+  try {
+    const session = await axios.get(
+      process.env.SESSION_API_ENDPOINT + `/sessions/${req.params.id}`,
+    )
+    if (session.owner === req.payload.data.userId) {
+      await storeSession(session, req.query.name)
+      next()
+    } else {
+      throw new SessionError(
+        "Quick meeting require to be the owner of the session",
+      )
+    }
+  } catch (err) {
+    next(err)
+  }
+}
+
 module.exports = {
   storeSession,
   storeProxyResponse,
   storeSessionFromStop,
+  storeQuickMeetingFromStop,
 }

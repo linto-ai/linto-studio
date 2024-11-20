@@ -51,6 +51,17 @@ module.exports = {
         ROLES.MEETING_MANAGER,
       )
   },
+  asQuickMeetingAccess: async (req, res, next) => {
+    if (await platformAccess.isSessionOperator(req)) next()
+    else
+      await access(
+        req,
+        next,
+        req.params.organizationId,
+        req.payload.data.userId,
+        ROLES.QUICK_MEETING,
+      )
+  },
   asUploaderAccess: async (req, res, next) => {
     if (await platformAccess.isSystemAdministrator(req)) next()
     else
@@ -92,9 +103,11 @@ async function permissionAccess(req, res, next, access) {
   if (req.params.organizationId) {
     organization = await model.organizations.getById(req.params.organizationId)
   } else if (req.params.conversationId && req.path.endsWith("/download")) {
-    if (req.query.format === ("json" || "text" || "verbatim")) {
+    const allowDownloadFormat = ["json", "text", "verbatim"]
+    if (allowDownloadFormat.includes(req.query.format)) {
       return next()
     }
+
     const conv = await model.conversations.getById(req.params.conversationId)
     if (conv.length !== 1) return next(new ConversationNotShared())
     organization = await model.organizations.getById(

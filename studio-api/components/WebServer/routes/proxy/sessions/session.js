@@ -3,8 +3,11 @@ const proxyForwardParams = [
   { "body.organizationId": "params.organizationId" },
 ]
 
-const { storeSessionFromStop } = require(
+const { storeSessionFromStop, storeQuickMeetingFromStop } = require(
   `${process.cwd()}/components/WebServer/controllers/session/conversation.js`,
+)
+const { forceQueryParams } = require(
+  `${process.cwd()}/components/WebServer/controllers/session/session.js`,
 )
 
 const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
@@ -73,6 +76,37 @@ module.exports = (webServer) => {
         ],
         requireAuth: true,
         requireOrganizationMemberAccess: true,
+      },
+      {
+        //quick meeting access
+        scrapPath: /^\/organizations\/[^/]+/,
+        paths: [
+          {
+            path: "/organizations/:organizationId/quickMeeting/",
+            method: ["get"],
+            forwardParams: proxyForwardParams,
+            executeBeforeResult: forceQueryParams,
+          },
+          {
+            path: "/organizations/:organizationId/quickMeeting/",
+            method: ["post"],
+            forwardParams: proxyForwardParams,
+            executeBeforeResult: forceQueryParams,
+          },
+          {
+            path: "/organizations/:organizationId/quickMeeting/:id",
+            method: ["delete"],
+            forwardParams: proxyForwardParams,
+            executeBeforeResult: storeQuickMeetingFromStop,
+          },
+        ],
+        requireAuth: true,
+        orgaPermissionAccess: PERMISSIONS.SESSION,
+        requireOrganizationQuickMeetingAccess: true,
+        rewrite: {
+          fromPath: "/quickMeeting/",
+          toPath: "/sessions/",
+        },
       },
       {
         // Meeting Manager access

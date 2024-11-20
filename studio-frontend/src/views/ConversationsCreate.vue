@@ -94,14 +94,15 @@
         </div>
       </form>
 
-      <SessionCreateContent
-        v-if="currentTab === 'session'"
-        :transcriberProfiles="transcriberProfiles"
-        :currentOrganizationScope="currentOrganizationScope" />
       <QuickSessionCreateContent
-        v-if="currentTab === 'live'"
+        v-if="currentTab === 'live' && !loadingSessionData"
         :transcriberProfiles="transcriberProfiles"
         :currentQuickSession="currentQuickSession"
+        :currentOrganizationScope="currentOrganizationScope" />
+
+      <SessionCreateContent
+        v-if="currentTab === 'session' && !loadingSessionData"
+        :transcriberProfiles="transcriberProfiles"
         :currentOrganizationScope="currentOrganizationScope" />
     </div>
   </MainContent>
@@ -111,11 +112,9 @@ import { getEnv } from "@/tools/getEnv.js"
 
 import ConversationCreateMixin from "@/mixins/conversationCreate.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
+import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"
 
-import {
-  apiGetTranscriberProfiles,
-  apiSearchSessionByName,
-} from "@/api/session.js"
+import { apiGetTranscriberProfiles, apiGetQuickSession } from "@/api/session.js"
 
 import ConversationCreateAudio from "@/components/ConversationCreateAudio.vue"
 import ConversationCreateServices from "@/components/ConversationCreateServices.vue"
@@ -127,7 +126,11 @@ import ConversationCreateLink from "@/components/ConversationCreateLink.vue"
 import QuickSessionCreateContent from "@/components/QuickSessionCreateContent.vue"
 
 export default {
-  mixins: [ConversationCreateMixin, orgaRoleMixin],
+  mixins: [
+    ConversationCreateMixin,
+    orgaRoleMixin,
+    organizationPermissionsMixin,
+  ],
   props: {
     userInfo: {
       type: Object,
@@ -144,7 +147,7 @@ export default {
   },
   data() {
     return {
-      currentTab: "file",
+      currentTab: null,
       transcriberProfiles: [],
       loadingTranscriberProfiles: true,
       loadingQuickSession: true,
@@ -155,48 +158,67 @@ export default {
     this.fetchProfiles()
     this.fetchQuickSession()
   },
-  async created() {},
+  async created() {
+    if (this.mainTabs.length > 0) {
+      this.currentTab = this.mainTabs[0].name
+    } else {
+      this.$router.push({ name: "not_found" })
+    }
+  },
   computed: {
-    mainTabs() {
+    canUploadFiles() {
+      return this.canUploadInCurrentOrganization
+    },
+    canCreateSession() {
       const enableSession = getEnv("VUE_APP_ENABLE_SESSION") === "true"
 
-      let res = [
-        {
-          name: "file",
-          label: this.$i18n.t("conversation_creation.tabs.file"),
-          icon: "file-audio",
-          img: "/img/We10X-icon-theme/audio-x-generic.svg",
-        },
-        {
-          name: "microphone",
-          label: this.$i18n.t("conversation_creation.tabs.microphone"),
-          icon: "record",
-          img: "/img/We10X-icon-theme/vocal.svg",
-        },
-        {
-          name: "url",
-          label: this.$i18n.t("conversation_creation.tabs.url"),
-          icon: "link",
-        },
-      ]
-
-      if (enableSession && this.isAtLeastMeetingManager) {
-        const loading =
-          this.loadingTranscriberProfiles || this.loadingQuickSession
+      return enableSession && this.canSessionInCurrentOrganization
+    },
+    loadingSessionData() {
+      return this.loadingTranscriberProfiles || this.loadingQuickSession
+    },
+    mainTabs() {
+      let res = []
+      if (this.canUploadFiles) {
         res.push(
           {
+            name: "file",
+            label: this.$i18n.t("conversation_creation.tabs.file"),
+            icon: "file-audio",
+            img: "/img/We10X-icon-theme/audio-x-generic.svg",
+          },
+          {
+            name: "microphone",
+            label: this.$i18n.t("conversation_creation.tabs.microphone"),
+            icon: "record",
+            img: "/img/We10X-icon-theme/vocal.svg",
+          },
+          {
+            name: "url",
+            label: this.$i18n.t("conversation_creation.tabs.url"),
+            icon: "link",
+          },
+        )
+      }
+
+      if (this.canCreateSession) {
+        const loading = this.loadingSessionData
+        if (this.isAtLeastQuickMeeting) {
+          res.push({
             name: "live",
             label: "Quick meeting",
             icon: loading ? "loading" : "live",
             disabled: this.transcriberProfiles.length === 0,
-          },
-          {
+          })
+        }
+        if (this.isAtLeastMeetingManager) {
+          res.push({
             name: "session",
             label: this.$i18n.t("conversation_creation.tabs.session"),
             icon: loading ? "loading" : "session",
             disabled: this.transcriberProfiles.length === 0,
-          },
-        )
+          })
+        }
       }
 
       return res
@@ -225,14 +247,12 @@ export default {
       this.loadingTranscriberProfiles = false
     },
     async fetchQuickSession() {
-      const sessionName = `@${this.userInfo._id}`
-      const alreadyCreatedPersonalSessions = await apiSearchSessionByName(
+      const alreadyCreatedPersonalSession = await apiGetQuickSession(
         this.currentOrganizationScope,
-        sessionName,
       )
 
-      if (alreadyCreatedPersonalSessions.length > 0) {
-        this.currentQuickSession = alreadyCreatedPersonalSessions[0]
+      if (alreadyCreatedPersonalSession) {
+        this.currentQuickSession = alreadyCreatedPersonalSession
       }
 
       this.loadingQuickSession = false

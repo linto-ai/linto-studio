@@ -87,6 +87,8 @@ const loadMiddlewares = (route) => {
     middlewares.push(organization_middlewares.asMaintainerAccess)
   if (route.requireOrganizationMeetingManagerAccess)
     middlewares.push(organization_middlewares.asMeetingManagerAccess)
+  if (route.requireOrganizationQuickMeetingAccess)
+    middlewares.push(organization_middlewares.asQuickMeetingAccess)
   if (route.requireOrganizationUploaderAccess)
     middlewares.push(organization_middlewares.asUploaderAccess)
   if (route.requireOrganizationMemberAccess)
@@ -206,6 +208,13 @@ const createProxyRoutes = (webServer, proxy_routes) => {
             pathRewrite: (path, req) => {
               // Removing the linto-studio path from the request
               let newPath = path.replace(basePath, "")
+
+              if (proxyPath.rewrite) {
+                newPath = newPath.replace(
+                  proxyPath.rewrite.fromPath,
+                  proxyPath.rewrite.toPath,
+                )
+              }
               if (proxyPath.scrapPath) {
                 const [pathWithoutQuery, query] = newPath.split("?")
                 let updatedPath = pathWithoutQuery.replace(

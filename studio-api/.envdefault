@@ -15,7 +15,7 @@ DB_PASS=example
 DB_NAME=conversations
 
 # Request a specific version of the database (optional)
-DB_MIGRATION_TARGET=1.5.2
+DB_MIGRATION_TARGET=1.5.3
 
 # STT Config
 GATEWAY_SERVICES=https://api.linto.ai

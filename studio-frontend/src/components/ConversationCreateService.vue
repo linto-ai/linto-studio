@@ -99,6 +99,7 @@ import EMPTY_FIELD from "../const/emptyField"
 import ACOUSTIC from "../const/acoustic"
 import AUDIO_QUALITY from "../const/audioQuality"
 import LabeledValue from "./LabeledValue.vue"
+import generateServiceConfig from "../tools/generateServiceConfig"
 
 export default {
   props: {
@@ -186,46 +187,56 @@ export default {
 
     select(event) {
       event?.preventDefault()
-      this.$emit("select", {
-        serviceName: this.value.serviceName,
-        endpoint: this.removeLeadingSlash(this.value.endpoints[0].endpoint),
-        lang: this.value.language,
-        config: {
-          punctuationConfig: {
-            enablePunctuation: this.punctuation.value !== "disabled",
-            serviceName:
-              this.punctuation.value !== "disabled"
-                ? this.punctuation.value
-                : null,
-          },
-          diarizationConfig: {
-            enableDiarization: this.diarization.value !== "disabled",
-            numberOfSpeaker:
-              this.diarization.value !== "disabled" &&
-              this.speakersNumber.value > 0
-                ? parseInt(this.speakersNumber.value)
-                : null,
-            maxNumberOfSpeaker:
-              this.diarization.value !== "disabled" ? 100 : null,
-            serviceName:
-              this.diarization.value !== "disabled"
-                ? this.diarization.value
-                : null,
-          },
-          enableNormalization: true,
-          vadConfig: this.isWhisper
-            ? {
-                enableVAD: true,
-                methodName: "WebRTC",
-                minDuration: 30,
-              }
-            : {
-                enableVAD: true,
-                methodName: "WebRTC",
-                minDuration: 0,
-              },
-        },
-      })
+      console.log("select !!!!", this.value.language)
+      this.$emit(
+        "select",
+        generateServiceConfig(this.value, {
+          punctuationValue: this.punctuation.value,
+          diarizationValue: this.diarization.value,
+          speakersNumberValue: this.speakersNumber.value,
+        }),
+      )
+
+      // this.$emit("select", {
+      //   serviceName: this.value.serviceName,
+      //   endpoint: this.removeLeadingSlash(this.value.endpoints[0].endpoint),
+      //   lang: this.value.language || "*",
+      //   config: {
+      //     punctuationConfig: {
+      //       enablePunctuation: this.punctuation.value !== "disabled",
+      //       serviceName:
+      //         this.punctuation.value !== "disabled"
+      //           ? this.punctuation.value
+      //           : null,
+      //     },
+      //     diarizationConfig: {
+      //       enableDiarization: this.diarization.value !== "disabled",
+      //       numberOfSpeaker:
+      //         this.diarization.value !== "disabled" &&
+      //         this.speakersNumber.value > 0
+      //           ? parseInt(this.speakersNumber.value)
+      //           : null,
+      //       maxNumberOfSpeaker:
+      //         this.diarization.value !== "disabled" ? 100 : null,
+      //       serviceName:
+      //         this.diarization.value !== "disabled"
+      //           ? this.diarization.value
+      //           : null,
+      //     },
+      //     enableNormalization: true,
+      //     vadConfig: this.isWhisper
+      //       ? {
+      //           enableVAD: true,
+      //           methodName: "WebRTC",
+      //           minDuration: 30,
+      //         }
+      //       : {
+      //           enableVAD: true,
+      //           methodName: "WebRTC",
+      //           minDuration: 0,
+      //         },
+      //   },
+      // })
     },
   },
   components: { LabeledValue },
