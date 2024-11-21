@@ -203,6 +203,7 @@ export default {
     },
   },
   data() {
+    console.log("this.turnData", this.turnData)
     return {
       localTurnData: structuredClone(this.turnData),
       contentEditable: false,
@@ -300,7 +301,7 @@ export default {
       const isFocus = this.focusFields?.[this.flag]
       if (isFocus) {
         const user = this.conversationUsers.find(
-          (usr) => usr._id === isFocus.userId
+          (usr) => usr._id === isFocus.userId,
         )
         return user.firstname + " " + user.lastname
       }
@@ -444,7 +445,7 @@ export default {
           {
             functionToHighlightWord: this.highlightSearchWord,
             functionArgs: [iscurrent],
-          }
+          },
         )
       })
     },
@@ -458,7 +459,7 @@ export default {
 
         this.unhighlightRange(
           { range: domRange },
-          { functionToUnhighlightWord: this.unHighlightSearchWord }
+          { functionToUnhighlightWord: this.unHighlightSearchWord },
         )
       })
     },
@@ -512,13 +513,13 @@ export default {
       } else {
         domRange.setEnd(
           endRange.parentNode,
-          endRange.parentNode.childNodes.length - 1
+          endRange.parentNode.childNodes.length - 1,
         )
       }
       this.selectedRange = domRange
       await this.highlightRange(
         { range: this.selectedRange, category: { color: "blue" } },
-        { functionArgs: [false] }
+        { functionArgs: [false] },
       )
       // if (
       //   target.classList.contains("turn") ||

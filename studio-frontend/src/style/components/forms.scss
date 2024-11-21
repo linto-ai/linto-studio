@@ -9,6 +9,7 @@ input[type="time"],
 select,
 textarea,
 progress.hoverInput,
+form-field[select-like] .form-value,
 .collab-input {
   display: inline-block;
   @include cancelBoxShadow();

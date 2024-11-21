@@ -8,6 +8,7 @@ input[type="time"],
 select,
 textarea,
 progress.hoverInput,
+.form-field[select-like] .form-value,
 .collab-input {
   border: 1px solid var(--dark-80);
   padding-inline: 1rem;
@@ -39,6 +40,14 @@ progress.hoverInput,
     width: 100%;
     max-width: none;
   }
+}
+
+.form-field[select-like] .form-value {
+  border-color: var(--text-disabled);
+  outline-color: var(--text-disabled);
+  background-color: var(--background-disabled);
+  display: flex;
+  align-items: center;
 }
 
 progress.hoverInput {

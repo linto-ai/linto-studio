@@ -4,6 +4,7 @@ export default function generateServiceConfig(
     punctuationValue = "disabled",
     diarizationValue = "disabled",
     speakersNumberValue = 0,
+    languageValue = service.language || "*",
   } = {},
 ) {
   const isWhisper = service.model_type === "whisper"
@@ -11,7 +12,7 @@ export default function generateServiceConfig(
   return {
     serviceName: service.serviceName,
     endpoint: removeLeadingSlash(service.endpoints[0].endpoint),
-    lang: service.language || "*",
+    lang: languageValue,
     config: {
       punctuationConfig: {
         enablePunctuation: punctuationValue !== "disabled",

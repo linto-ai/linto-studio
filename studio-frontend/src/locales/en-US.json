@@ -313,6 +313,7 @@
       "diarization_label": "Speakers diarization",
       "diarization_label_inline": "Speakers diarization : ",
       "edit_speaker": "Edit speaker",
+      "language_label": "Language",
       "normalization_description": "Enable normalization and replace text numbers by numbers",
       "normalization_label_inline": "Normalization : ",
       "number_of_speaker_label": "Number of speakers",
@@ -468,7 +469,9 @@
   "lang": {
     "en": "English",
     "fr": "French",
-    "all": "All languages"
+    "all": "All languages",
+    "optimized_fr": "Optimize for French",
+    "optimized_en": "Optimize for English"
   },
   "login": {
     "create_account_button": "Create an account",

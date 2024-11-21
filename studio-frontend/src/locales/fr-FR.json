@@ -313,6 +313,7 @@
       "diarization_label": "Séparation des locuteurs",
       "diarization_label_inline": "Séparation des locuteurs : ",
       "edit_speaker": "Modifier locuteur",
+      "language_label": "Langage",
       "normalization_description": "Active la normalisation et transcrit les nombres avec des chiffres",
       "normalization_label_inline": "Normalisation : ",
       "number_of_speaker_label": "Nombre de locuteurs",
@@ -469,7 +470,9 @@
   "lang": {
     "en": "Anglais",
     "fr": "Français",
-    "all": "Toutes langues"
+    "all": "Toutes langues",
+    "optimized_fr": "Optimisé pour le français",
+    "optimized_en": "Optimisé pour l'anglais"
   },
   "login": {
     "create_account_button": "Créer un compte",

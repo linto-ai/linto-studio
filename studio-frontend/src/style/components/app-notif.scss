@@ -32,7 +32,7 @@
   position: absolute;
   bottom: 0;
   left: 0;
-  z-index: 20;
+  z-index: 150;
   padding: 10px 0;
   @include transition(all 0.2s ease);
   &.closed {
