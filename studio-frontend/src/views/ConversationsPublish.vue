@@ -486,7 +486,7 @@ export default {
           if (this.pdfStatus === "processing" || this.pdfStatus === "queued") {
             setTimeout(() => {
               if (this.currentTabId === currentActiveTab) this.getPdf()
-            }, 30000)
+            }, 5000)
           }
         } else if (req.data.type === "application/pdf") {
           this.blobUrl = URL.createObjectURL(req.data)

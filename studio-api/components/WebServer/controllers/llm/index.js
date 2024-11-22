@@ -133,7 +133,7 @@ async function pollingLlm(jobsId, conversationExport) {
 
           clearJobInterval(jobsId, intervalId)
         }
-      }, 30000)
+      }, 5000)
 
       intervals[jobsId] = intervalId
 
