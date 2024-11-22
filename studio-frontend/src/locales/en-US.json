@@ -470,6 +470,7 @@
     "en": "English",
     "fr": "French",
     "all": "All languages",
+    "automatic": "Automatic",
     "optimized_fr": "Optimize for French",
     "optimized_en": "Optimize for English"
   },

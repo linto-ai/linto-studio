@@ -33,17 +33,19 @@
     </div>
 
     <!-- -- -- language -- -- -->
-
-    <div class="form-field flex col" v-if="isWhisper && language === '*'">
+    <!-- todo: reactivate lang selector when supported by api-->
+    <div
+      class="form-field flex col"
+      v-if="false && isWhisper && language === '*'">
       <label :for="`service-${value.name}-language`">
         {{ $t("conversation.transcription.language_label") }}
       </label>
       <select
         v-model="languageField.value"
         :id="`service-${value.name}-language`">
-        <option value="*">{{ this.$i18n.t("lang.all") }}</option>
-        <option value="fr">{{ this.$i18n.t("lang.optimized_fr") }}</option>
-        <option value="en">{{ this.$i18n.t("lang.optimized_en") }}</option>
+        <option value="*">{{ this.$i18n.t("lang.automatic") }}</option>
+        <option value="fr">{{ this.$i18n.t("lang.fr") }}</option>
+        <option value="en">{{ this.$i18n.t("lang.en") }}</option>
       </select>
     </div>
 
@@ -178,7 +180,7 @@ export default {
     },
     language_formatted() {
       if (!this.value.language) {
-        return this.$i18n.t("lang.all")
+        return this.$i18n.t("lang.automatic")
       }
 
       let languageNames = new Intl.DisplayNames([this.$i18n.locale], {

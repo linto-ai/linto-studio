@@ -471,6 +471,7 @@
     "en": "Anglais",
     "fr": "Français",
     "all": "Toutes langues",
+    "automatic": "Automatique",
     "optimized_fr": "Optimisé pour le français",
     "optimized_en": "Optimisé pour l'anglais"
   },
