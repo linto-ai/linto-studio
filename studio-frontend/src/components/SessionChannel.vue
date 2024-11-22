@@ -6,15 +6,15 @@
       class="flex col flex1 session-content__turns reset-overflows"
       :class="{ has_subtitles: displaySubtitles }">
       <SessionChannelTurn
-        v-if="displayLiveTranscription"
         v-for="turn in previousTurns"
+        v-if="displayLiveTranscription && shouldDisplayTurn(turn)"
         :key="turn.id"
         :selectedTranslations="selectedTranslations"
         :turn="turn"></SessionChannelTurn>
 
       <SessionChannelTurn
-        v-if="displayLiveTranscription"
         v-for="turn in turns"
+        v-if="displayLiveTranscription && shouldDisplayTurn(turn)"
         :key="turn.id"
         :selectedTranslations="selectedTranslations"
         :turn="turn"></SessionChannelTurn>
@@ -125,6 +125,7 @@ export default {
     },
   },
   data() {
+    console.log("channel", this.channel)
     return {
       turns: [],
       previousTurns: [],
@@ -202,6 +203,26 @@ export default {
         this.onFinal.bind(this),
       )
     },
+    shouldDisplayTurn(turn) {
+      const hasSpeaker = !!turn.locutor
+      if (
+        this.hasDiarization &&
+        this.selectedTranslations === "original" &&
+        hasSpeaker
+      ) {
+        return true
+      }
+
+      if (this.selectedTranslations !== "original" && !hasSpeaker) {
+        return true
+      }
+
+      if (!this.hasDiarization && !hasSpeaker) {
+        return true
+      }
+
+      return false
+    },
     async loadPreviousTranscrition() {
       let sessionRequest = null
 
@@ -243,6 +264,7 @@ export default {
     },
     onFinal(content) {
       this.partialText = ""
+
       this.finalText = getTextTurnWithTranslation(
         content,
         this.selectedTranslations,

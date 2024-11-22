@@ -30,5 +30,8 @@ export const sessionChannelModelMixin = {
     channelAvailableTranslations() {
       return this?.p_channelObj?.availableTranslations
     },
+    hasDiarization() {
+      return !!this?.p_channelObj?.diarization
+    },
   },
 }
