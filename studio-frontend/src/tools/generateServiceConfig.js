@@ -28,6 +28,7 @@ export default function generateServiceConfig(
         serviceName: diarizationValue !== "disabled" ? diarizationValue : null,
       },
       enableNormalization: true,
+      modelType: service.model_type,
       vadConfig: isWhisper
         ? {
             enableVAD: true,

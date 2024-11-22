@@ -90,7 +90,10 @@ async function fetchResult(conv_id, job) {
 async function getResult(job, metadata) {
   try {
     let url = `${process.env.GATEWAY_SERVICES}/${job.endpoint}/results/${job.result_id}`
+    const isWhisper =
+      metadata.transcription?.transcriptionConfig?.modelType === "whisper"
     if (
+      !isWhisper &&
       metadata.transcription.transcriptionConfig.enableNormalization &&
       metadata.transcription.lang !== "*"
     ) {
