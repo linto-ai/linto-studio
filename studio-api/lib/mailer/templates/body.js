@@ -75,18 +75,14 @@ function shareExternalLink(payload) {
   <p>Vous avez reçu une transcription de média sur la plateforme LinTO Studio de la part de <strong>${payload.sharedByEmail}</strong>.</p>
   <p>Utilisez le lien unique ci-après pour accéder à cette ressource et lier un compte à votre adresse e-mail qui l’identifie. N'oubliez pas de définir un mot de passe pour les connexions futures en allant dans "Mon Compte" > "Modifier le mot de passe". </p>
   <p>Ce lien a une validité de 48h.</p>
-  <p> Cliquez sur le lien pour accéder à votre compte et à la transcription partagée : </p>
+  <p> Cliquez sur le lien pour accéder à votre compte ainsi qu'à la transcription partagée : </p>
   <div style="margin: 0 auto 20px auto; padding:20px; background-color: #fff; max-width: 960px; min-width: 320px;"><p style="margin:0;"><a href="${payload.origin}/magiclink-auth/${payload.magicId}?type=share_conversation&conversationId=${payload.conversationId}" target="_blank">${payload.origin}/magiclink-auth/${payload.magicId}</a></p></div>
   `
 }
 
 function shareMemberOrga(payload) {
   return `
-  <p>Vous avez reçu une invitation a l'organization ${payload.orgaName} de la part de <strong>${payload.sharedByEmail}</strong>.</p>
-  <p>Cliquez sur le lien pour accéder à la transcription partagée : </p>
-
-  <div style="margin: 0 auto 20px auto; padding:20px; background-color: #fff; max-width: 960px; min-width: 320px;"><p style="margin:0;"><a href="${payload.origin}/interface/inbox?organizationId=${payload.organizationId}" target="_blank">${payload.origin}/interface/inbox?type=share_organization&organizationId=${payload.organizationId}}</a></p></div>
-  `
+  <p>Vous avez reçu une invitation à l'organization ${payload.orgaName} de la part de <strong>${payload.sharedByEmail}</strong>.</p>  `
 }
 
 function accountInviteMemberOrga(payload) {
@@ -94,7 +90,7 @@ function accountInviteMemberOrga(payload) {
   <p>Vous avez reçu une invitation a l'organization ${payload.orgaName} sur la plateforme LinTO Studio de la part de <strong>${payload.sharedByEmail}</strong>.</p>
   <p>Utilisez le lien unique ci-après pour accéder à cette ressource et lier un compte à votre adresse e-mail qui l’identifie. N'oubliez pas de définir un mot de passe pour les connexions futures en allant dans "Mon Compte" > "Modifier le mot de passe". </p>
   <p>Ce lien a une validité de 48h.</p>
-  <p> Cliquez sur le lien pour accéder à votre compte et à la transcription partagée : </p>
+  <p> Cliquez sur le lien pour accéder à votre compte: </p>
   <div style="margin: 0 auto 20px auto; padding:20px; background-color: #fff; max-width: 960px; min-width: 320px;"><p style="margin:0;"><a href="${payload.origin}/magiclink-auth/${payload.magicId}?type=invite_organization&organizationId=${payload.organizationId}" target="_blank">${payload.origin}/magiclink-auth/${payload.magicId}</a></p></div>
   `
 }
