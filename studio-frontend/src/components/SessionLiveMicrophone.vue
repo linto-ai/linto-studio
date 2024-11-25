@@ -67,6 +67,10 @@ export default {
       type: String,
       required: true,
     },
+    deviceId: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     const currentChannel = this.session.channels[0]
@@ -93,7 +97,7 @@ export default {
       )
     },
     async setup() {
-      await this.connectToMicrophone()
+      await this.connectToMicrophone(this.deviceId)
 
       this.connectToWebsocket()
         .then(() => {

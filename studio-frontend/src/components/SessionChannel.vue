@@ -178,7 +178,7 @@ export default {
       immediate: true,
     },
     displaySubtitles() {
-      this.scrollToBottom()
+      this.scrollToBottom(true)
     },
     "$sessionWS.state.isConnected"(newValue, oldValue) {
       if (newValue) {
@@ -193,7 +193,7 @@ export default {
       if (this.$sessionWS.state.isConnected) {
         this.subscribeToWebsocket()
       }
-      this.scrollToBottom()
+      this.scrollToBottom(true)
     },
     subscribeToWebsocket() {
       this.$sessionWS.subscribeRoom(

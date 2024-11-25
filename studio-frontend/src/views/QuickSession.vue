@@ -6,6 +6,7 @@
   <SessionLiveMicrophone
     v-else-if="state == 'session-live'"
     ref="sessionLiveMicrophone"
+    :deviceId="selectedDeviceId"
     :currentOrganizationScope="currentOrganizationScope"
     :session="session">
     <template v-slot:breadcrumb-actions>
