@@ -88,9 +88,25 @@ a.session-card:hover {
 // }
 
 .session-day-line {
-  display: contents;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .session-day-list {
   //padding-left: 8rem;
+}
+
+.session-day-line--header {
+  border-bottom: var(--border-block);
+}
+
+.session-week-list {
+  border-radius: 4px;
+  border: var(--border-block);
+  background-color: var(--background-primary);
+  box-shadow: var(--shadow-block);
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
 }
