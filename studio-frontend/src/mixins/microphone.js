@@ -32,21 +32,16 @@ export const microphoneMixin = {
   methods: {
     p_close() {
       this.vad.removeEventListener("speakingStatus", this.p_onVadEvent)
-      if (this.vad.close) {
-        this.vad.close()
+      if (this.vad.stop) {
+        this.vad.stop()
       }
 
-      if (this.mic.close) {
-        this.mic.close()
+      if (this.mic.stop) {
+        this.mic.stop()
       }
 
-      if (this.downSampler?.close) {
-        console.log("close downSampler")
-        this.downSampler?.close()
-      }
-
-      if (this.recorder?.close) {
-        this.recorder.close()
+      if (this.recorder?.stop) {
+        this.recorder.stop()
       }
 
       if (this.onClose) {
