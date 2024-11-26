@@ -310,6 +310,9 @@ export default {
       }
       return true
     },
+    label_format() {
+      return this.tabs.find((tab) => tab.name === this.activeTab)?.label
+    },
   },
   methods: {
     showHelper() {
@@ -373,6 +376,7 @@ export default {
         this.selectedService,
         {
           preview: false,
+          title: this.label_format,
         },
       )
 
@@ -389,6 +393,7 @@ export default {
         this.selectedService,
         {
           preview: true,
+          title: this.label_format,
         },
       )
 
@@ -458,6 +463,7 @@ export default {
         this.selectedService,
         {
           preview: true,
+          title: this.label_format,
           regenerate,
         },
       )
