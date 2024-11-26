@@ -417,7 +417,9 @@
       "subtitle": "We are working on it, please try again later.",
       "title": "The operation is currently unavailable."
     },
-    "title": "Something went wrong"
+    "title": "Something went wrong",
+    "required": "This field is required",
+    "invalidVisioUrl": "Invalid visio URL"
   },
   "explore": {
     "delete_conversation_button": "Delete ",
@@ -855,6 +857,15 @@
       "sound_detector_value_wait": "Waiting sound from microphone...",
       "start_meeting": "Start the meeting",
       "back": "Back"
+    },
+    "setup_visio": {
+      "title": "Join a videoconference",
+      "subtitle": "Enter the videoconference link to start the transcription",
+      "type_label": "Service type",
+      "link_label": "URL",
+      "back": "Back",
+      "join_meeting": "Join the meeting",
+      "error_bot_setup": "An error occurred while joining the videoconference"
     },
     "live": {
       "status_no_websocket": "Not connected to audio server",

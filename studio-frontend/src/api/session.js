@@ -313,3 +313,30 @@ export async function apiDeleteQuickSession(
 
   return resRequest
 }
+
+export async function apiStartBot(
+  organizationScope,
+  sessionId,
+  payload,
+  notif,
+) {
+  const startBot = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}/start-bot`,
+    { method: "post" },
+    payload,
+    notif,
+  )
+
+  return startBot
+}
+
+export async function apiStopBot(organizationScope, sessionId, notif) {
+  const startBot = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}/stop-bot`,
+    { method: "post" },
+    {},
+    notif,
+  )
+
+  return startBot
+}
