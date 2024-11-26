@@ -117,6 +117,8 @@ function processTurnTable(paragraphs_content, conversation, data, query) {
         datetime =
           text.words[0].stime + " - " + text.words[text.words.length - 1].etime
       } else datetime = text.stime + " - " + text.etime
+
+      datetime = (Math.trunc(parseFloat(datetime) * 100) / 100).toString() // Trunc time to 2 decimals
     }
 
     let displayLang = lang
@@ -124,7 +126,7 @@ function processTurnTable(paragraphs_content, conversation, data, query) {
     if (Array.isArray(lang)) {
       displayLang = lang.join(" - ")
     } else {
-      if (lang === "*") lang = "en"
+      if (lang === "*") lang = "en" // We force the language to be English on multi language models
       displayLang = new Intl.DisplayNames(["en"], { type: "language" }).of(lang)
     }
 
