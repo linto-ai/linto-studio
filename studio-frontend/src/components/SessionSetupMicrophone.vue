@@ -1,5 +1,11 @@
 <template>
-  <MainContent sidebar box>
+  <MainContent :sidebar="!alreadyCreatedPersonalSession" box>
+    <h1 class="medium-margin-top" v-if="alreadyCreatedPersonalSession">
+      {{ $t("quick_session.restore.title") }}
+    </h1>
+    <div v-if="alreadyCreatedPersonalSession">
+      {{ $t("quick_session.restore.subtitle") }}
+    </div>
     <div
       class="flex col center-text flex1 align-center justify-center permission-microphone"
       v-if="waitingPermission">
@@ -62,7 +68,8 @@
         </div>
       </section>
     </div>
-    <div class="flex medium-margin-top">
+
+    <div class="flex medium-margin-top" v-if="!alreadyCreatedPersonalSession">
       <button class="btn secondary" @click="backToStart">
         <span class="icon back"></span>
         <span class="label">{{
@@ -74,6 +81,29 @@
         <span class="icon apply"></span>
         <span class="label"
           >{{ $t("quick_session.setup_microphone.start_meeting") }}
+        </span>
+      </button>
+    </div>
+
+    <div class="flex medium-margin-top gap-small" v-else>
+      <button class="btn secondary" @click="trashSession">
+        <span class="icon trash"></span>
+        <span class="label">
+          {{ $t("quick_session.restore.trash_button") }}
+        </span>
+      </button>
+      <button class="btn secondary" @click="saveSession">
+        <span class="icon save"></span>
+        <span class="label">
+          {{ $t("quick_session.restore.save_button") }}
+        </span>
+      </button>
+
+      <div class="flex1"></div>
+      <button class="btn" @click="setupSession" :disabled="!microphoneWorked">
+        <span class="icon apply"></span>
+        <span class="label">
+          {{ $t("quick_session.restore.continue_button") }}
         </span>
       </button>
     </div>
@@ -90,7 +120,12 @@ import CustomSelect from "@/components/CustomSelect.vue"
 import StatusLed from "@/components/StatusLed.vue"
 export default {
   mixins: [microphoneMixin],
-  props: {},
+  props: {
+    alreadyCreatedPersonalSession: {
+      type: Object,
+      required: false,
+    },
+  },
   data() {
     return {
       waitingPermission: true,
@@ -128,6 +163,12 @@ export default {
         source: "microphone",
         deviceId: this.selectedDeviceId,
       })
+    },
+    trashSession() {
+      this.$emit("trash-session")
+    },
+    saveSession() {
+      this.$emit("save-session")
     },
     async backToStart() {
       this.$emit("back")

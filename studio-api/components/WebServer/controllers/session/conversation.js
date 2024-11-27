@@ -220,16 +220,20 @@ async function storeSessionFromStop(req, next) {
 
 async function storeQuickMeetingFromStop(req, next) {
   try {
-    const session = await axios.get(
-      process.env.SESSION_API_ENDPOINT + `/sessions/${req.params.id}`,
-    )
-    if (session.owner === req.payload.data.userId) {
-      await storeSession(session, req.query.name)
+    if (req.query.trash === "true") {
       next()
     } else {
-      throw new SessionError(
-        "Quick meeting require to be the owner of the session",
+      const session = await axios.get(
+        process.env.SESSION_API_ENDPOINT + `/sessions/${req.params.id}`,
       )
+      if (session.owner === req.payload.data.userId) {
+        await storeSession(session, req.query.name)
+        next()
+      } else {
+        throw new SessionError(
+          "Quick meeting require to be the owner of the session",
+        )
+      }
     }
   } catch (err) {
     next(err)
