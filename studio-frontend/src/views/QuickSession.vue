@@ -104,6 +104,7 @@ export default {
         {
           name: conversationName,
           trash,
+          force: true,
         },
       )
       this.$router.push({ name: "inbox" })

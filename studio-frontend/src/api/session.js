@@ -317,13 +317,13 @@ export async function apiCreateQuickSession(organizationScope, data, notif) {
 export async function apiDeleteQuickSession(
   organizationScope,
   sessionId,
-  { name, trash = false } = {},
+  { name, trash = false, force } = {},
   notif,
 ) {
   let resRequest
   if (name) {
     resRequest = await sendRequest(
-      `${BASE_API}/organizations/${organizationScope}/quickMeeting/${sessionId}?name=${name}&trash=${trash ? "true" : "false"}`,
+      `${BASE_API}/organizations/${organizationScope}/quickMeeting/${sessionId}?name=${name}&trash=${trash ? "true" : "false"}&force=${force ? "true" : "false"}`,
       { method: "delete" },
       {},
       notif,
