@@ -24,7 +24,6 @@ const personal_projection = {
   passwordHash: 0,
   keyToken: 0,
   authLink: 0,
-  //role: 0,
 }
 
 const defaultUserPayload = {
@@ -92,7 +91,7 @@ class UsersModel extends MongoModel {
         ...payload,
         authLink: generateAuthLink(),
         ...defaultUserPayload,
-        role: ROLE.USER,
+        role: ROLE.defaultUserRole(),
       }
 
       // If SMTP is disabled, mark the email as verified

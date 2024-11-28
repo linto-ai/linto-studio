@@ -69,6 +69,8 @@ const loadMiddlewares = (route) => {
     middlewares.push(platform_middlewares.isPlatformSystemAdministrator)
   if (route.requireSessionOperator)
     middlewares.push(platform_middlewares.isPlatformSessionOperator)
+  if (route.requireOrganizationInitiatorAccess)
+    middlewares.push(platform_middlewares.isPlatformOrganizationInitiator)
 
   if (route.requireConversationReadAccess)
     middlewares.push(conversation_middlewares.asReadAccess)

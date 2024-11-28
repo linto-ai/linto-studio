@@ -27,14 +27,21 @@ function generateJWT(data, authSecret) {
         data,
       },
       authSecret + process.env.CM_JWT_SECRET,
-      { algorithm: "HS256", expiresIn: TOKEN_DAYS_TIME },
+      {
+        algorithm: "HS256",
+        expiresIn: process.env.TOKEN_DAYS_TIME || TOKEN_DAYS_TIME,
+      },
     ),
     refresh_token: jwt.sign(
       {
         data,
       },
       authSecret + process.env.CM_REFRESH_SECRET + process.env.CM_JWT_SECRET,
-      { algorithm: "HS256", expiresIn: REFRESH_TOKEN_DAYS_TIME },
+      {
+        algorithm: "HS256",
+        expiresIn:
+          process.env.REFRESH_TOKEN_DAYS_TIME || REFRESH_TOKEN_DAYS_TIME,
+      },
     ),
     user_id: data.userId,
   }
