@@ -1,12 +1,24 @@
 const debug = require("debug")(
   `linto:components:MongoMigration:controllers:version:1.5.4:users`,
 )
-const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
 const collections_name = "users"
+
+const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
+const moment = require("moment")
 
 module.exports = {
   up: async (db) => {
     const usersCollection = db.collection(collections_name)
+    await db.collection(collections_name).updateMany(
+      {}, // Apply to all documents
+      {
+        $set: {
+          suspend: false,
+          created: moment().format(),
+          last_update: moment().format(),
+        },
+      },
+    )
 
     // Fetch all users with roles other than USER
     const usersToUpdate = await usersCollection
@@ -27,9 +39,12 @@ module.exports = {
   },
 
   down: async (db) => {
-    // No need to revert
-    // const usersCollection = db.collection(collections_name)
-    // // Fetch all users with roles other than USER
+    const usersCollection = db.collection(collections_name)
+    await db.collection(collections_name).updateMany(
+      {}, // Apply to all documents
+      { $unset: { suspend: "", created: "", last_update: "" } }, // Explicitly unset fields
+    )
+    // Fetch all users with roles other than USER
     // const usersToUpdate = await usersCollection
     //   .find({
     //     role: { $exists: true, $ne: ROLE.userRole() },

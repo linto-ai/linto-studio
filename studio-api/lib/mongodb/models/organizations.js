@@ -6,6 +6,7 @@ const DEFAULT_PERMISSION = require(
   `${process.cwd()}/lib/dao/organization/permissions`,
 ).getDefaultPermissions()
 const MongoModel = require(`../model`)
+const moment = require("moment")
 
 const public_projection = { token: 0 }
 
@@ -17,6 +18,10 @@ class OrganizationModel extends MongoModel {
   async create(payload) {
     try {
       payload.permissions = DEFAULT_PERMISSION // We don't allow user to set permissions orga permissions
+      const dateTime = moment().format()
+      payload.created = dateTime
+      payload.last_update = dateTime
+
       return await this.mongoInsert(payload)
     } catch (error) {
       console.error(error)
@@ -32,6 +37,10 @@ class OrganizationModel extends MongoModel {
         users: [{ userId: userId, role: ROLES.ADMIN }],
         ...oPayload,
       }
+      const dateTime = moment().format()
+      payload.created = dateTime
+      payload.last_update = dateTime
+
       payload.permissions = DEFAULT_PERMISSION // We don't allow user to set permissions orga permissions
 
       const result = await this.mongoInsert(payload)
@@ -44,6 +53,9 @@ class OrganizationModel extends MongoModel {
 
   async createOrgaByAdmin(payload) {
     try {
+      const dateTime = moment().format()
+      payload.created = dateTime
+      payload.last_update = dateTime
       const result = await this.mongoInsert(payload)
       return result
     } catch (error) {
@@ -61,6 +73,7 @@ class OrganizationModel extends MongoModel {
       }
       if (payload.organizationId) delete payload.organizationId
       delete payload._id
+      payload.last_update = moment().format()
 
       let mutableElements = payload
       return await this.mongoUpdateOne(query, operator, mutableElements)
@@ -158,6 +171,8 @@ class OrganizationModel extends MongoModel {
       if (payload.organizationId) delete payload.organizationId
       delete payload.permissions
       delete payload._id
+      payload.last_update = moment().format()
+
       let mutableElements = payload
       return await this.mongoUpdateOne(query, operator, mutableElements)
     } catch (error) {
