@@ -855,6 +855,13 @@
       "start_meeting": "Démarrer la réunion",
       "back": "Retour"
     },
+    "restore": {
+      "title": "Un Quick meeting est déjà en cours",
+      "subtitle": "Vous pouvez l'enregistrer, le supprimer ou poursuivre l'enregistrement.",
+      "trash_button": "Quittez sans sauvegarder",
+      "save_button": "Sauvegarder et quitter",
+      "continue_button": "Continuer l'enregistrement"
+    },
     "live": {
       "status_no_websocket": "Déconnecté du serveur audio",
       "status_recording": "En cours d'enregistrement.",

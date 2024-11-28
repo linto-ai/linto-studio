@@ -856,6 +856,13 @@
       "start_meeting": "Start the meeting",
       "back": "Back"
     },
+    "restore": {
+      "title": "A quick meeting is already in progress",
+      "subtitle": "You can save it, trash it, or continue the recording.",
+      "trash_button": "Quit without saving",
+      "save_button": "Save and quit",
+      "continue_button": "Continue the recording"
+    },
     "live": {
       "status_no_websocket": "Not connected to audio server",
       "status_recording": "Recording.",

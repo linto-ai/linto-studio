@@ -79,6 +79,23 @@ module.exports = (webServer) => {
       },
       {
         //quick meeting access
+        scrapPath: /^\/users\/self/,
+        paths: [
+          {
+            path: "/users/self/quickMeeting/",
+            method: ["get"],
+            forwardParams: proxyForwardParams,
+            executeBeforeResult: forceQueryParams,
+          },
+        ],
+        requireAuth: true,
+        rewrite: {
+          fromPath: "/quickMeeting/",
+          toPath: "/sessions/",
+        },
+      },
+      {
+        //quick meeting access
         scrapPath: /^\/organizations\/[^/]+/,
         paths: [
           {

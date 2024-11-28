@@ -165,7 +165,9 @@ export default {
   },
   methods: {
     async init() {
-      if (this.$route.query?.organizationId) {
+      if (this.$route.params?.organizationId) {
+        this.setOrganizationScope(this.$route.params.organizationId, false)
+      } else if (this.$route.query?.organizationId) {
         this.setOrganizationScope(this.$route.query.organizationId)
       }
 
@@ -177,9 +179,9 @@ export default {
     isAuthenticated() {
       return getCookie("authToken") !== null
     },
-    async setOrganizationScope(organizationId) {
+    async setOrganizationScope(organizationId, redirect = true) {
       this.$options.filters.setCookie("cm_orga_scope", organizationId, 7)
-      if (!this.listView) {
+      if (!this.listView && redirect) {
         this.$router.push({ name: "inbox" })
       }
     },

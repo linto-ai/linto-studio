@@ -250,6 +250,9 @@
   &.live {
     @include maskImage("../public/img/live.svg");
   }
+  &.save {
+    @include maskImage("../public/img/breeze/document-save.svg");
+  }
 }
 
 .icon.small {

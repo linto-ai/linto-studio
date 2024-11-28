@@ -114,7 +114,10 @@ import ConversationCreateMixin from "@/mixins/conversationCreate.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"
 
-import { apiGetTranscriberProfiles, apiGetQuickSession } from "@/api/session.js"
+import {
+  apiGetTranscriberProfiles,
+  apiGetQuickSessionByOrganization,
+} from "@/api/session.js"
 
 import ConversationCreateAudio from "@/components/ConversationCreateAudio.vue"
 import ConversationCreateServices from "@/components/ConversationCreateServices.vue"
@@ -247,9 +250,8 @@ export default {
       this.loadingTranscriberProfiles = false
     },
     async fetchQuickSession() {
-      const alreadyCreatedPersonalSession = await apiGetQuickSession(
-        this.currentOrganizationScope,
-      )
+      const alreadyCreatedPersonalSession =
+        await apiGetQuickSessionByOrganization(this.currentOrganizationScope)
 
       if (alreadyCreatedPersonalSession) {
         this.currentQuickSession = alreadyCreatedPersonalSession
