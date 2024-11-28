@@ -11,10 +11,10 @@
         placeholder="Search"
         :value="search"
         @input="updateSearch" />
-      <button type="submit">
+      <!-- <button type="submit">
         <span class="icon search"></span>
         <span class="label">Rechercher</span>
-      </button>
+      </button> -->
     </form>
     <button
       v-if="add_button_label"

@@ -982,7 +982,8 @@
       "firstname": "Firstname",
       "lastname": "Lastname",
       "role": "Role",
-      "status": "Status"
+      "status": "Status",
+      "platform_role": "Hightest Platform role"
     },
     "edit_button_label": "Edit",
     "delete_button_label": "Delete"
@@ -999,7 +1000,8 @@
   "platform_role": {
     "session_operator": "Session operator",
     "system_administrator": "System administrator",
-    "super_administrator": "Super administrator"
+    "super_administrator": "Super administrator",
+    "user": "User"
   },
   "week_selector": {
     "previous_button_title": "Previous week",

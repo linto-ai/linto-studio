@@ -983,7 +983,8 @@
       "firstname": "Prénom",
       "lastname": "Nom",
       "role": "Rôle",
-      "status": "Status"
+      "status": "Status",
+      "platform_role": "Rôle de plateforme le plus élevé"
     },
     "edit_button_label": "Modifier",
     "delete_button_label": "Supprimer"

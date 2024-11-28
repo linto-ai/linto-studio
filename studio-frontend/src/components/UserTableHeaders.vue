@@ -2,10 +2,16 @@
   <thead>
     <tr>
       <th class="no-size"></th>
-      <ArrayHeader
+      <!-- <ArrayHeader
         @list_sort_by="sortBy"
         eventLabel="id"
         :label="$t('userTable.header.id')"
+        :sortListKey="sortListKey"
+        :sortListDirection="sortListDirection" /> -->
+      <ArrayHeader
+        @list_sort_by="sortBy"
+        eventLabel="role"
+        :label="$t('userTable.header.platform_role')"
         :sortListKey="sortListKey"
         :sortListDirection="sortListDirection" />
       <ArrayHeader

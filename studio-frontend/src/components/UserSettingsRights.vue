@@ -77,6 +77,8 @@ export default {
     this.super_administrator_field.value = this.roleIsSuperAdministrator(
       this.userInfo.role,
     )
+    console.log(this.userInfo.role)
+    console.log(this.super_administrator_field.value)
     this.dataLoaded = true
   },
   methods: {
