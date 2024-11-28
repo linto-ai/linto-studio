@@ -19,6 +19,7 @@ export default class SessionWS {
     this.currentOrganizationId = null
     this.test = false
     this.textPartialForTest = ""
+    this.retryAfterKO = 0
   }
 
   connect() {
@@ -31,10 +32,16 @@ export default class SessionWS {
 
         this.socket.on("broker_ko", () => {
           debugWS("broker_ko")
+          this.retryAfterKO += 1
+          if (this.retryAfterKO > 5) {
+            this.close()
+            this.retryAfterKO = 0
+          }
         })
 
         this.socket.on("broker_ok", () => {
           debugWS("broker_ok")
+          this.retryAfterKO = 0
         })
       })
     })
