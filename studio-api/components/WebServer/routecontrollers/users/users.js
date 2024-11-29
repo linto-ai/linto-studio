@@ -130,7 +130,20 @@ async function searchUser(req, res, next) {
 
 async function getUserById(req, res, next) {
   try {
-    const user = await model.users.getById(req.params.userId)
+    let user
+    if (
+      ROLE.hasPlatformRoleAccess(
+        req.payload.data.role,
+        ROLE.SUPER_ADMINISTRATOR,
+      )
+    ) {
+      user = await model.users.getById(req.params.userId, true)
+      const { salt, passwordHash, authLink, keyToken, ...cleanedUser } = user[0]
+      user = [cleanedUser]
+    } else {
+      user = await model.users.getById(req.params.userId)
+    }
+
     if (user && user.length !== 1) throw new UserNotFound()
     res.status(200).send({
       ...user[0],
