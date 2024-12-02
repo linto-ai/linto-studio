@@ -1,9 +1,15 @@
 <template>
-  <table style="width: 100%">
+  <table
+    class="table-grid"
+    style="grid-template-columns: auto 1fr 1fr 1fr auto; width: 100%">
     <OrganizationTableHeaders
+      @list_sort_by="sortBy"
       :sortListKey="sortListKey"
       :sortListDirection="sortListDirection" />
     <tbody>
+      <div class="table-loader" v-if="loading">
+        <Loading />
+      </div>
       <OrganizationTableLine
         v-for="organization in organizationList"
         v-model="p_selectedOrganizations"
@@ -16,6 +22,7 @@
 <script>
 import OrganizationTableHeaders from "./OrganizationTableHeaders.vue"
 import OrganizationTableLine from "./OrganizationTableLine.vue"
+import Loading from "./Loading.vue"
 export default {
   props: {
     organizationList: {
@@ -31,15 +38,29 @@ export default {
       type: Array,
       required: true,
     },
+    sortListKey: {
+      type: String,
+      required: true,
+    },
+    sortListDirection: {
+      type: String,
+      required: true,
+    },
+    loading: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
-    return {
-      sortListKey: "id",
-      sortListDirection: "asc",
-    }
+    return {}
   },
   mounted() {},
-  methods: {},
+  methods: {
+    sortBy(event) {
+      this.$emit("list_sort_by", event)
+    },
+  },
   computed: {
     p_selectedOrganizations: {
       get() {
@@ -50,6 +71,6 @@ export default {
       },
     },
   },
-  components: { OrganizationTableHeaders, OrganizationTableLine },
+  components: { OrganizationTableHeaders, OrganizationTableLine, Loading },
 }
 </script>

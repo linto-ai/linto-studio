@@ -10,19 +10,23 @@
       <router-link :to="to">{{ id }}</router-link>
     </td> -->
     <td>
-      <router-link :to="to" class="flex flex1">
-        <span class="flex1">{{ platformRoleName }}</span>
-        <span>({{ platformRole }})</span>
-      </router-link>
+      <router-link :to="to">{{ creationDateFormatted }}</router-link>
     </td>
     <td>
       <router-link :to="to">{{ email }}</router-link>
     </td>
+
     <td>
       <router-link :to="to">{{ firstname }}</router-link>
     </td>
     <td>
       <router-link :to="to">{{ lastname }}</router-link>
+    </td>
+    <td>
+      <router-link :to="to" class="flex flex1 gap-small">
+        <span class="flex1">{{ platformRoleName }}</span>
+        <span>({{ platformRole }})</span>
+      </router-link>
     </td>
     <td class="fit-content">
       <button @click="editUser">

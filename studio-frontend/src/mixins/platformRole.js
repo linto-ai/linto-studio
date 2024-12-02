@@ -1,15 +1,21 @@
 const ROLES = {
   UNDEFINED: 0,
   USER: 1,
-  SESSION_OPERATOR: 2,
-  SYSTEM_ADMINISTRATOR: 4,
-  SUPER_ADMINISTRATOR: 8,
+  ORGANIZATION_INITIATOR: 2,
+  SESSION_OPERATOR: 4,
+  SYSTEM_ADMINISTRATOR: 8,
+  SUPER_ADMINISTRATOR: 16,
 }
 
 export const platformRoleMixin = {
   methods: {
     roleIsUser(role) {
       return (role & ROLES.USER) == ROLES.USER
+    },
+    roleIsOrganizationInitiator(role) {
+      return (
+        (role & ROLES.ORGANIZATION_INITIATOR) == ROLES.ORGANIZATION_INITIATOR
+      )
     },
     roleIsSessionOperator(role) {
       return (role & ROLES.SESSION_OPERATOR) == ROLES.SESSION_OPERATOR
@@ -38,6 +44,9 @@ export const platformRoleMixin = {
     isUser() {
       return this.roleIsSessionOperator(this.platformRole)
     },
+    isOrganizationInitiator() {
+      return this.roleIsOrganizationInitiator(this.platformRole)
+    },
     isSessionOperator() {
       return this.roleIsSessionOperator(this.platformRole)
     },
@@ -46,6 +55,9 @@ export const platformRoleMixin = {
     },
     isSuperAdministrator() {
       return this.roleIsSuperAdministrator(this.platformRole)
+    },
+    isAtLeastOrganizationInitiator() {
+      return this.platformRole >= ROLES.ORGANIZATION_INITIATOR
     },
     isAtLeastSessionOperator() {
       return this.platformRole >= ROLES.SESSION_OPERATOR

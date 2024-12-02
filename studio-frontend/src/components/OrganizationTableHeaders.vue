@@ -4,8 +4,8 @@
       <th class="no-size"></th>
       <ArrayHeader
         @list_sort_by="sortBy"
-        eventLabel="id"
-        :label="$t('orgaTable.header.id')"
+        eventLabel="created"
+        :label="$t('orgaTable.header.creation_date')"
         :sortListKey="sortListKey"
         :sortListDirection="sortListDirection" />
       <ArrayHeader

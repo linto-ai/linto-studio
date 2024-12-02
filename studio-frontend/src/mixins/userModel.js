@@ -18,6 +18,12 @@ export const userModelMixin = {
     platformRole() {
       return this?.user?.role ?? 0
     },
+    creationDate() {
+      return this?.user?.created ?? ""
+    },
+    creationDateFormatted() {
+      return new Date(this.creationDate).toLocaleDateString()
+    },
     platformRoleName() {
       switch (true) {
         case this.roleIsSuperAdministrator(this.platformRole):
@@ -26,6 +32,8 @@ export const userModelMixin = {
           return this.$t("platform_role.system_administrator")
         case this.roleIsSessionOperator(this.platformRole):
           return this.$t("platform_role.session_operator")
+        case this.roleIsOrganizationInitiator(this.platformRole):
+          return this.$t("platform_role.organization_initiator")
         default:
           return "–" //this.$t("platform_role.user")
       }

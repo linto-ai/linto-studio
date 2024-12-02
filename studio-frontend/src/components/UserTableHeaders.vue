@@ -10,8 +10,8 @@
         :sortListDirection="sortListDirection" /> -->
       <ArrayHeader
         @list_sort_by="sortBy"
-        eventLabel="role"
-        :label="$t('userTable.header.platform_role')"
+        eventLabel="created"
+        :label="$t('userTable.header.creation_date')"
         :sortListKey="sortListKey"
         :sortListDirection="sortListDirection" />
       <ArrayHeader
@@ -20,6 +20,7 @@
         :label="$t('userTable.header.email')"
         :sortListKey="sortListKey"
         :sortListDirection="sortListDirection" />
+
       <ArrayHeader
         @list_sort_by="sortBy"
         eventLabel="firstname"
@@ -30,6 +31,12 @@
         @list_sort_by="sortBy"
         eventLabel="lastname"
         :label="$t('userTable.header.lastname')"
+        :sortListKey="sortListKey"
+        :sortListDirection="sortListDirection" />
+      <ArrayHeader
+        @list_sort_by="sortBy"
+        eventLabel="role"
+        :label="$t('userTable.header.platform_role')"
         :sortListKey="sortListKey"
         :sortListDirection="sortListDirection" />
       <th class="no-size"></th>

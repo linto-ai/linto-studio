@@ -8,6 +8,10 @@
       <div class="flex col gap-small">
         <FormCheckbox
           :disabled="!dataLoaded"
+          :field="organization_initiator_field"
+          v-model="organization_initiator_field.value" />
+        <FormCheckbox
+          :disabled="!dataLoaded"
           :field="session_operator_field"
           v-model="session_operator_field.value" />
         <FormCheckbox
@@ -47,6 +51,12 @@ export default {
   data() {
     return {
       dataLoaded: false,
+      organization_initiator_field: {
+        label: this.$t("platform_role.organization_initiator"),
+        value: false,
+        error: null,
+        disabled: false,
+      },
       session_operator_field: {
         label: this.$t("platform_role.session_operator"),
         value: false,
@@ -68,6 +78,9 @@ export default {
     }
   },
   mounted() {
+    this.organization_initiator_field.value = this.roleIsOrganizationInitiator(
+      this.userInfo.role,
+    )
     this.session_operator_field.value = this.roleIsSessionOperator(
       this.userInfo.role,
     )
@@ -86,6 +99,7 @@ export default {
       e.preventDefault()
       const role_value = this.computeRoleValue({
         USER: true,
+        ORGANIZATION_INITIATOR: this.organization_initiator_field.value,
         SESSION_OPERATOR: this.session_operator_field.value,
         SYSTEM_ADMINISTRATOR: this.system_administrator_field.value,
         SUPER_ADMINISTRATOR: this.super_administrator_field.value,
