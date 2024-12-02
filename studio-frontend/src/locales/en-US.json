@@ -1004,7 +1004,8 @@
     "session_operator": "Session operator",
     "system_administrator": "System administrator",
     "super_administrator": "Super administrator",
-    "user": "User"
+    "user": "User",
+    "suspend": "Suspended user"
   },
   "week_selector": {
     "previous_button_title": "Previous week",

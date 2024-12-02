@@ -1005,7 +1005,8 @@
     "session_operator": "Opérateur de session",
     "system_administrator": "Administrateur système",
     "super_administrator": "Super administrateur",
-    "user": "Utilisateur"
+    "user": "Utilisateur",
+    "suspend": "Utilisateur désactivé"
   },
   "week_selector": {
     "previous_button_title": "Semaine précédente",

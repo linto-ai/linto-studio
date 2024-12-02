@@ -1,6 +1,6 @@
 <template>
-  <form @submit="updateRoles">
-    <section>
+  <section>
+    <form @submit="updateRoles">
       <h2 class="small-margin-bottom">
         {{ $t("usersettings.role_section.title") }}
       </h2>
@@ -27,8 +27,15 @@
       <button type="submit" class="medium-margin-top">
         {{ $t("usersettings.role_section.submit_button") }}
       </button>
-    </section>
-  </form>
+    </form>
+    <div class="flex col gap-small medium-margin-top">
+      <FormCheckbox
+        switchDisplay
+        :disabled="!dataLoaded"
+        :field="suspend_field"
+        v-model="suspend_field.value" />
+    </div>
+  </section>
 </template>
 <script>
 import { Fragment } from "vue-fragment"
@@ -75,6 +82,12 @@ export default {
         error: null,
         disabled: false,
       },
+      suspend_field: {
+        label: this.$t("platform_role.suspend"),
+        value: false,
+        error: null,
+        disabled: false,
+      },
     }
   },
   mounted() {
@@ -90,8 +103,7 @@ export default {
     this.super_administrator_field.value = this.roleIsSuperAdministrator(
       this.userInfo.role,
     )
-    console.log(this.userInfo.role)
-    console.log(this.super_administrator_field.value)
+    this.suspend_field.value = this.userInfo.suspend
     this.dataLoaded = true
   },
   methods: {
@@ -131,10 +143,32 @@ export default {
         this.system_administrator_field.disabled = true
         this.session_operator_field.value = true
         this.session_operator_field.disabled = true
+        this.organization_initiator_field.value = true
+        this.organization_initiator_field.disabled = true
       } else {
         this.system_administrator_field.disabled = false
         this.session_operator_field.disabled = false
+        this.organization_initiator_field.disabled = false
       }
+    },
+    async "suspend_field.value"(value) {
+      this.suspend_field.disabled = true
+      let req = await apiAdminUpdateUser(this.userInfo._id, {
+        suspend: value,
+      })
+
+      if (req.status === "success") {
+        bus.$emit("app_notif", {
+          status: "success",
+          message: this.$t("usersettings.role_section.notif_success"),
+        })
+      } else {
+        bus.$emit("app_notif", {
+          status: "error",
+          message: this.$t("usersettings.role_section.notif_error"),
+        })
+      }
+      this.suspend_field.disabled = false
     },
   },
   components: { Fragment, Checkbox, FormCheckbox },
