@@ -4,6 +4,7 @@ const debug = require("debug")(
 const MongoModel = require(`../model`)
 const crypto = require("crypto")
 const randomstring = require("randomstring")
+const moment = require("moment")
 
 const VALIDITY_DATE = require(
   `${process.cwd()}/lib/dao/validityDate/validityDate.js`,
@@ -24,7 +25,6 @@ const personal_projection = {
   passwordHash: 0,
   keyToken: 0,
   authLink: 0,
-  //role: 0,
 }
 
 const defaultUserPayload = {
@@ -67,6 +67,7 @@ class UsersModel extends MongoModel {
   async createSuperAdmin(user) {
     try {
       const { salt, passwordHash } = generatePasswordHash(user.password)
+      const dateTime = moment().format()
 
       const adminPayload = {
         ...defaultUserPayload,
@@ -77,6 +78,8 @@ class UsersModel extends MongoModel {
         authLink: generateAuthLink(),
         emailIsVerified: true,
         verifiedEmail: [user.email],
+        created: dateTime,
+        last_update: dateTime,
       }
 
       return await this.mongoInsert(adminPayload)
@@ -88,11 +91,15 @@ class UsersModel extends MongoModel {
 
   async create(payload) {
     try {
+      const dateTime = moment().format()
+
       const userPayload = {
         ...payload,
         authLink: generateAuthLink(),
         ...defaultUserPayload,
-        role: ROLE.USER,
+        role: ROLE.defaultUserRole(),
+        created: dateTime,
+        last_update: dateTime,
       }
 
       // If SMTP is disabled, mark the email as verified
@@ -111,6 +118,8 @@ class UsersModel extends MongoModel {
   async createUser(payload) {
     try {
       const { salt, passwordHash } = generatePasswordHash(payload.password)
+      const dateTime = moment().format()
+
       const userPayload = {
         ...payload,
         salt,
@@ -119,6 +128,8 @@ class UsersModel extends MongoModel {
           updatePassword: false,
           inviteAccount: false,
         },
+        created: dateTime,
+        last_update: dateTime,
       }
 
       return await this.create(userPayload)
@@ -130,6 +141,8 @@ class UsersModel extends MongoModel {
 
   async createExternal(payload) {
     try {
+      const dateTime = moment().format()
+
       const externalPayload = {
         ...payload,
         lastname: "",
@@ -140,6 +153,8 @@ class UsersModel extends MongoModel {
           updatePassword: false,
           inviteAccount: true,
         },
+        created: dateTime,
+        last_update: dateTime,
       }
 
       return await this.create(externalPayload)
@@ -257,6 +272,7 @@ class UsersModel extends MongoModel {
       _id: this.getObjectId(payload._id),
     }
     delete payload._id
+    payload.last_update = moment().format()
 
     if (payload.password) {
       const salt = randomstring.generate(12)
@@ -275,7 +291,6 @@ class UsersModel extends MongoModel {
       }
     }
     let mutableElements = payload
-
     return await this.mongoUpdateOne(query, operator, mutableElements)
   }
 

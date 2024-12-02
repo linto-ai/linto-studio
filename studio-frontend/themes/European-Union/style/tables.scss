@@ -18,3 +18,14 @@ td {
   text-transform: initial !important;
   font-size: 1rem !important;
 }
+
+table.table-grid {
+  gap: 1px;
+
+  th,
+  td {
+    border: none;
+
+    outline: 1px solid var(--neutral-60);
+  }
+}

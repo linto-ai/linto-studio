@@ -7,7 +7,7 @@
         :checkboxValue="id"></Checkbox>
     </td>
     <td>
-      <router-link :to="to">{{ id }}</router-link>
+      <router-link :to="to">{{ creationDateFormatted }}</router-link>
     </td>
     <td>
       <router-link :to="to">{{ name }}</router-link>

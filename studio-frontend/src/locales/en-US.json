@@ -982,13 +982,16 @@
       "firstname": "Firstname",
       "lastname": "Lastname",
       "role": "Role",
-      "status": "Status"
+      "status": "Status",
+      "creation_date": "Creation date",
+      "platform_role": "Highest Platform role"
     },
     "edit_button_label": "Edit",
     "delete_button_label": "Delete"
   },
   "orgaTable": {
     "header": {
+      "creation_date": "Creation date",
       "id": "ID",
       "name": "Name",
       "description": "Description",
@@ -997,9 +1000,12 @@
     "edit_button_label": "Edit"
   },
   "platform_role": {
+    "organization_initiator": "Organisation initiator",
     "session_operator": "Session operator",
     "system_administrator": "System administrator",
-    "super_administrator": "Super administrator"
+    "super_administrator": "Super administrator",
+    "user": "User",
+    "suspend": "Suspended user"
   },
   "week_selector": {
     "previous_button_title": "Previous week",

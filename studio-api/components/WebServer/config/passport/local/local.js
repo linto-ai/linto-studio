@@ -17,6 +17,7 @@ const {
   UnableToGenerateKeyToken,
   UserNotFound,
   ExpiredLink,
+  DisabledUser,
 } = require(`${process.cwd()}/components/WebServer/error/exception/auth`)
 
 const moment = require("moment")
@@ -37,6 +38,7 @@ async function generateUserToken(email, password, done) {
     else if (users.length > 1) throw new MultipleUserFound()
     else throw new UserNotFound()
 
+    if (user.suspend) throw new DisabledUser()
     if (!user.salt) throw new UnableToGenerateKeyToken()
     if (!user || !validatePassword(password, user))
       return done(new InvalidCredential())
@@ -50,6 +52,7 @@ async function generateUserToken(email, password, done) {
       tokenId: token.insertedId,
       email: user.email,
       userId: user._id,
+      role: user.role,
     }
 
     return done(null, TokenGenerator(tokenData))

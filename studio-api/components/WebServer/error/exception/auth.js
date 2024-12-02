@@ -81,12 +81,27 @@ class ExpiredLink extends Error {
   }
 }
 
+class DisabledUser extends Error {
+  constructor(message, err) {
+    super()
+    this.name = "DisabledUser"
+    this.type = ExceptionType
+    this.status = 423
+    if (message) this.message = message
+    else
+      this.message =
+        "Your account is disabled. Contact support to reactivate it."
+    if (err) this.err = err
+  }
+}
+
 module.exports = {
   //Auth Exception
   InvalidCredential,
   MultipleUserFound,
   UnableToGenerateKeyToken,
   UserNotFound,
+  DisabledUser,
   //Passport Exception
   MalformedToken,
   ExpiredLink,

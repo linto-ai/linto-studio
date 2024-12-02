@@ -9,5 +9,11 @@ export const organizationModelMixin = {
     id() {
       return this?.organization?._id ?? ""
     },
+    creationDate() {
+      return this?.organization?.created ?? ""
+    },
+    creationDateFormatted() {
+      return new Date(this.creationDate).toLocaleDateString()
+    },
   },
 }

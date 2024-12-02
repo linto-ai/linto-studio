@@ -40,6 +40,7 @@ module.exports = (webserver) => {
       method: "post",
       requireAuth: true,
       controller: createOrganization,
+      requireOrganizationInitiatorAccess: true,
     },
     {
       path: "/",

@@ -23,9 +23,15 @@ module.exports = {
     if (await checkAccess(req, ROLE.SESSION_OPERATOR)) next()
     else next(new UserForbidden())
   },
+  isPlatformOrganizationInitiator: async (req, res, next) => {
+    if (await checkAccess(req, ROLE.ORGANIZATION_INITIATOR)) next()
+    else next(new UserForbidden())
+  },
   isSuperAdmin: (req) => checkAccess(req, ROLE.SUPER_ADMINISTRATOR),
   isSystemAdministrator: (req) => checkAccess(req, ROLE.SYSTEM_ADMINISTRATOR),
   isSessionOperator: (req) => checkAccess(req, ROLE.SESSION_OPERATOR),
+  isOrganizationInitiator: (req) =>
+    checkAccess(req, ROLE.ORGANIZATION_INITIATOR),
 }
 
 async function checkAccess(req, role) {

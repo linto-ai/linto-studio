@@ -1,12 +1,26 @@
 const roles = Object.freeze({
   UNDEFINED: 0,
   USER: 1,
-  SESSION_OPERATOR: 2,
-  SYSTEM_ADMINISTRATOR: 4,
-  SUPER_ADMINISTRATOR: 8,
+  ORGANIZATION_INITIATOR: 2,
+  SESSION_OPERATOR: 4,
+  SYSTEM_ADMINISTRATOR: 8,
+  SUPER_ADMINISTRATOR: 16,
+
+  defaultUserRole() {
+    let defaultRole = process.env.DEFAULT_USER_ROLE || roles.USER
+    if (typeof defaultRole === "string") {
+      defaultRole = parseInt(defaultRole)
+    }
+    if (!roles.isValid(defaultRole)) return roles.USER
+    return defaultRole
+  },
 
   userRole: function () {
     return roles.USER
+  },
+
+  organizationInitiatorRole: function () {
+    return roles.USER + roles.ORGANIZATION_INITIATOR
   },
 
   sessionOperatorRole: function () {
@@ -20,6 +34,7 @@ const roles = Object.freeze({
   superAdministratorRole: function () {
     return (
       roles.USER +
+      roles.ORGANIZATION_INITIATOR +
       roles.SESSION_OPERATOR +
       roles.SYSTEM_ADMINISTRATOR +
       roles.SUPER_ADMINISTRATOR
@@ -32,6 +47,20 @@ const roles = Object.freeze({
 
   isValid(role) {
     return (role & roles.superAdministratorRole()) === role
+  },
+
+  shiftBitsUp(userRole) {
+    let bitsToShift = userRole & ~roles.USER
+
+    bitsToShift = bitsToShift << 1
+    return (userRole & roles.USER) | bitsToShift
+  },
+
+  shiftBitsDown(userRole) {
+    let bitsToShift = userRole & ~roles.USER
+
+    bitsToShift = bitsToShift >> 1
+    return (userRole & roles.USER) | bitsToShift
   },
 })
 

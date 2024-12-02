@@ -12,7 +12,7 @@ const { UserForbidden, UserNotFound } = require(
 module.exports = {
   isVisibility: async (req, res, next) => {
     try {
-      if (await platformAccess.isSuperAdmin(req.payload.data.userId)) next()
+      if (await platformAccess.isSuperAdmin(req)) next()
       else {
         if (req.payload.data.userId === req.params.userId) next()
         else {

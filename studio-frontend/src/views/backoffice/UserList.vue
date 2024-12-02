@@ -1,5 +1,5 @@
 <template>
-  <MainContentBackoffice :loading="loading">
+  <MainContentBackoffice>
     <template v-slot:header>
       <HeaderTable
         v-bind:search.sync="search"
@@ -14,14 +14,19 @@
 
     <div class="backoffice-listing-container">
       <UserTable
+        :loading="loading"
         :users="users"
+        :sortListKey="sortListKey"
+        :sortListDirection="sortListDirection"
+        @list_sort_by="sortBy"
         :linkTo="{ name: 'backoffice-userDetail' }"
         v-model="selectedUsers" />
     </div>
     <Pagination
+      v
       :pages="totalPagesNumber"
       v-model="currentPageNb"
-      v-if="count > 0"></Pagination>
+      v-if="count > 0 && !loading"></Pagination>
     <ModalDeleteUsers
       @on-close="hideModalDeleteUsers"
       @on-confirm="reload"
@@ -53,6 +58,8 @@ export default {
       currentPageNb: 0,
       totalPagesNumber: 0,
       search: "",
+      sortListKey: "email",
+      sortListDirection: "asc",
     }
   },
   mounted() {
@@ -63,7 +70,14 @@ export default {
   },
   methods: {
     async fetchAllUsers() {
-      return await apiGetAllUsers(this.currentPageNb, {}, this.search)
+      return await apiGetAllUsers(
+        this.currentPageNb,
+        {
+          sortField: this.sortListKey,
+          sortOrder: this.sortListDirection === "asc" ? 1 : -1,
+        },
+        this.search,
+      )
     },
     async debouncedFetchAllUsers() {
       this.loading = true
@@ -85,6 +99,16 @@ export default {
     reload() {
       this.hideModalDeleteUsers()
       this.fetchAllUsers()
+    },
+    sortBy(key) {
+      if (key === this.sortListKey) {
+        this.sortListDirection =
+          this.sortListDirection === "desc" ? "asc" : "desc"
+      } else {
+        this.sortListDirection = "desc"
+      }
+      this.sortListKey = key
+      this.debouncedFetchAllUsers()
     },
   },
   computed: {},

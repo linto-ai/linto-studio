@@ -12,7 +12,9 @@ DB_NAME=conversations
 DB_REQUIRE_LOGIN=false
 
 # Request a specific version of the database (optional)
-DB_MIGRATION_TARGET=1.5.3
+DB_MIGRATION_TARGET=1.5.4
+DEFAULT_USER_ROLE=1
+
 
 # STT Config
 GATEWAY_SERVICES=https://api.linto.ai
