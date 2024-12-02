@@ -22,7 +22,7 @@ function mergeModule(modules, loadModule) {
 }
 
 function loadModulesFromDirectory(directory) {
-  const skipItems = ["transcriber_profiles", "sessions"]
+  const skipItems = ["transcriber_profiles", "sessions", "templates"]
   let modules = {}
 
   fs.readdirSync(directory).forEach((item) => {
