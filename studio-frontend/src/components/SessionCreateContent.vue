@@ -11,6 +11,10 @@
           :field="fieldAppointment"
           v-bind:error.sync="fieldAppointment.error"
           v-model="fieldAppointment.value" />
+        <FormCheckbox
+          class="medium-margin-top"
+          :field="fieldAutoStop"
+          v-model="fieldAutoStop.value"></FormCheckbox>
       </section>
 
       <section class="flex col gap-medium">
@@ -160,7 +164,11 @@ export default {
         value: [null, null], // startDateTime, endDateTime
         label: this.$t("session.create_page.appointment_label"),
       },
-
+      fieldAutoStop: {
+        ...EMPTY_FIELD,
+        value: false,
+        label: this.$t("session.create_page.auto_stop_label"),
+      },
       channels: [],
       selectedProfiles: [],
       modalAddChannelsIsOpen: false,
@@ -171,6 +179,14 @@ export default {
   watch: {
     selectedProfiles() {
       this.channelsError = null
+    },
+    "fieldAppointment.value": {
+      handler(value) {
+        if (value[1]) {
+          this.fieldAutoStop.value = true
+        }
+      },
+      deep: true,
     },
   },
   mounted() {},
@@ -202,8 +218,10 @@ export default {
             translations: translations ?? [],
             diarization: this.fieldDiarizationEnabled.value,
           })),
-          startTime: startDateTime,
-          endTime: endDateTime,
+          scheduleOn: startDateTime,
+          endOn: endDateTime,
+          autoStart: true,
+          autoEnd: this.fieldAutoStop.value,
           visibility: this.fieldSessionVisibility.value ?? "organization",
         })
         if (res.status == "success") {

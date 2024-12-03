@@ -735,7 +735,8 @@
       "title": "Créer une session",
       "channels_error": "Veuillez ajouter au moins un canal à la session",
       "main_info_title": "Informations générales",
-      "appointment_label": "Selecteur d'horaire"
+      "appointment_label": "Selecteur d'horaire",
+      "auto_stop_label": "Arrêt automatique de la session à l'heure de fin"
     },
     "detail_page": {
       "back_to_listing": "Liste des sessions",
@@ -805,7 +806,6 @@
     },
     "settings_page": {
       "autoStart_label": "Démarrage automatique de la session",
-      "autoStop_label": "Arrêt automatique de la session",
       "channels_list_title": "Canaux",
       "copy_link_button": "Copier le lien",
       "copy_link_button_done": "Lien copié",

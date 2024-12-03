@@ -68,15 +68,16 @@
               :field="fieldAppointment"
               v-bind:error.sync="fieldAppointment.error"
               v-model="fieldAppointment.value" />
+            <FormCheckbox
+              :field="fieldAutoStop"
+              v-model="fieldAutoStop.value"
+              :disabled="isStarted"></FormCheckbox>
             <!-- <div class="flex gap-medium align-center medium-margin-top">
             <FormCheckbox
               :field="fieldAutoStart"
               v-model="fieldAutoStart.value"
               :disabled="isStarted"></FormCheckbox>
-            <FormCheckbox
-              :field="fieldAutoStop"
-              v-model="fieldAutoStop.value"
-              :disabled="isStarted"></FormCheckbox>
+            
             <div></div>
           </div> -->
           </section>
@@ -216,7 +217,7 @@ export default {
         value: null, // computed property cannot be used here so fields are initialized in mounted
         error: null,
         valid: false,
-        label: this.$t("session.settings_page.autoStop_label"),
+        label: this.$t("session.create_page.auto_stop_label"),
       },
       fieldAutoStart: {
         value: null, // computed property cannot be used here so fields are initialized in mounted
@@ -269,6 +270,14 @@ export default {
     sessionLoaded(value) {
       if (value) this.initValues()
     },
+    "fieldAppointment.value": {
+      handler(value) {
+        if (value[1] && value[1] != this.endTime) {
+          this.fieldAutoStop.value = true
+        }
+      },
+      deep: true,
+    },
   },
   methods: {
     onSessionUpdatePostProcess(newSession) {
@@ -318,10 +327,10 @@ export default {
       if (this.testFields()) {
         let newValues = {
           ...this.session,
-          startTime: startDateTime,
-          endTime: endDateTime,
+          scheduleOn: startDateTime,
+          endOn: endDateTime,
           autoStart: this.fieldAutoStart.value,
-          autoStop: this.fieldAutoStop.value,
+          autoEnd: this.fieldAutoStop.value,
           visibility: this.fieldIsPublic.value ? "public" : "organization",
           channels: this.localChannels,
         }

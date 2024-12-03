@@ -737,7 +737,8 @@
       "success_message": "Session successfully created",
       "title": "Create a session",
       "main_info_title": "General information",
-      "appointment_label": "Schedule selector"
+      "appointment_label": "Schedule selector",
+      "auto_stop_label": "Stop session automatically at the end time"
     },
     "detail_page": {
       "back_to_listing": "Sessions list",
@@ -806,7 +807,6 @@
 
     "settings_page": {
       "autoStart_label": "Automatic session start",
-      "autoStop_label": "Automatic session stop",
       "channels_list_title": "Channels",
       "copy_link_button": "Copy link",
       "copy_link_button_done": "Link copied",
