@@ -208,15 +208,14 @@ const createProxyRoutes = (webServer, proxy_routes) => {
               ),
             },
             pathRewrite: (path, req) => {
-              // Removing the linto-studio path from the request
               let newPath = path.replace(basePath, "")
-
               if (proxyPath.rewrite) {
                 newPath = newPath.replace(
                   proxyPath.rewrite.fromPath,
                   proxyPath.rewrite.toPath,
                 )
               }
+
               if (proxyPath.scrapPath) {
                 const [pathWithoutQuery, query] = newPath.split("?")
                 let updatedPath = pathWithoutQuery.replace(
@@ -226,11 +225,14 @@ const createProxyRoutes = (webServer, proxy_routes) => {
                 newPath = query ? `${updatedPath}?${query}` : updatedPath
               }
 
-              // Retrieve query parameters from req.query and append them to the new path
-              const queryParams = new URLSearchParams(req.query).toString()
-              if (queryParams) {
-                newPath = `${newPath}?${queryParams}`
-              }
+              const queryParams = new URLSearchParams(req.query)
+              const uniqueParams = {}
+              for (const [key, value] of queryParams.entries())
+                uniqueParams[key] = value
+
+              const cleanedQuery = new URLSearchParams(uniqueParams).toString()
+              if (cleanedQuery)
+                newPath = `${newPath.split("?")[0]}?${cleanedQuery}`
 
               return newPath
             },
