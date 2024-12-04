@@ -1,68 +1,41 @@
 <template>
-  <div>
-    <div class="login-form-container flex col">
-      <main class="flex1 flex col">
-        <img :src="logo" class="login-logo" />
-        <h1 class="center-text">{{ title }}</h1>
-        <div>
-          <LocalSwitcher></LocalSwitcher>
-        </div>
+  <MainContentPublic>
+    <form class="flex col login-page__form gap-small" @submit="handleForm">
+      <h2 class="login-title">{{ $t("login.title") }}</h2>
 
-        <form id="app-login" class="flex col" @submit="handleForm">
-          <h2 class="login-title">{{ $t("login.title") }}</h2>
-          <div class="form-field flex col">
-            <label for="email" class="form-label">{{
-              $t("login.email_label")
-            }}</label>
-            <input
-              id="email"
-              type="text"
-              v-model="email.value"
-              autocomplete="username"
-              :class="email.error !== null ? 'error' : ''"
-              ref="email"
-              @change="testEmail()" />
-            <span class="error-field" v-if="email.error !== null">{{
-              email.error
-            }}</span>
-          </div>
-          <div class="form-field flex col">
-            <label for="password" class="form-label">{{
-              $t("login.password_label")
-            }}</label>
-            <input
-              id="password"
-              type="password"
-              v-model="password.value"
-              autocomplete="current-password"
-              :class="password.error !== null ? 'error' : ''"
-              @change="testPasswordEmpty()" />
-            <span class="error-field" v-if="password.error !== null">{{
-              password.error
-            }}</span>
-          </div>
-          <div class="form-field flex row">
-            <button class="btn green" type="submit">
-              <span class="label">{{ $t("login.login_button") }}</span>
-              <span class="icon apply"></span>
-            </button>
-          </div>
-          <router-link to="/reset-password" class="toggle-login-link">{{
-            $t("login.recover_password")
-          }}</router-link>
-          <div class="form-field" v-if="formError !== null">
-            <span class="form-error">{{ formError }}</span>
-          </div>
-        </form>
+      <FormInput :field="email" v-model="email.value" focus />
+      <FormInput :field="password" v-model="password.value" />
 
-        <router-link
-          to="/create-account"
-          id="create-account-link"
-          class="toggle-login-link"
-          v-if="enable_inscription"
-          >{{ $t("login.create_account_button") }}</router-link
-        >
-      </main>
+      <div class="form-field flex row">
+        <button class="btn green fullwidth" type="submit">
+          <span class="label">{{ $t("login.login_button") }}</span>
+          <span class="icon apply"></span>
+        </button>
+      </div>
+      <div class="form-field" v-if="formError !== null">
+        <span class="form-error">{{ formError }}</span>
+      </div>
+      <router-link to="/reset-password" class="toggle-login-link underline">{{
+        $t("login.recover_password")
+      }}</router-link>
+      <router-link
+        to="/create-account"
+        id="create-account-link"
+        class="underline"
+        v-if="enable_inscription">
+        {{ $t("login.create_account_button") }}
+      </router-link>
+      <div class="login-separator"></div>
+      <button class="btn primary">
+        <span class="label">EU Login</span>
+      </button>
+    </form>
+
+    <!-- 
+    > -->
+  </MainContentPublic>
+
+  <!--
       <footer class="login-footer flex col" v-if="show_footer">
         <div class="login-footer-text">
           {{ $t("login.footer.description") }}
@@ -72,14 +45,17 @@
           <img src="/img/exaion.svg" class="flex1" />
         </div>
       </footer>
-    </div>
-  </div>
+    </div> -->
 </template>
 <script>
 import { getEnv } from "@/tools/getEnv"
 
 import LocalSwitcher from "@/components/LocalSwitcher.vue"
-import { apiLoginUser } from "../api/user"
+import { apiLoginUser } from "@/api/user"
+import MainContentPublic from "@/components/MainContentPublic.vue"
+import { testEmail } from "@/tools/fields/testEmail"
+import FormInput from "@/components/FormInput.vue"
+
 export default {
   data() {
     return {
@@ -87,17 +63,21 @@ export default {
         value: "",
         error: null,
         valid: false,
+        label: this.$t("login.email_label"),
+        testField: testEmail,
       },
       password: {
         value: "",
         error: null,
         valid: false,
+        label: this.$t("login.password_label"),
+        type: "password",
       },
       formError: null,
     }
   },
   mounted() {
-    this.$refs.email.focus()
+    //this.$refs.email.focus()
   },
   computed: {
     formValid() {
@@ -161,6 +141,6 @@ export default {
       return this.$options.filters.setCookie(name, value, exdays)
     },
   },
-  components: { LocalSwitcher },
+  components: { LocalSwitcher, MainContentPublic, FormInput },
 }
 </script>

@@ -1,3 +1,50 @@
+.login-page {
+  height: 100%;
+  overflow: auto;
+}
+
+.login-page__decoration {
+  padding: 2rem;
+}
+
+.login-page__content {
+  width: 33.33%;
+  border-left: var(--border-block);
+  background-color: var(--primary-contrast);
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.login-page__form {
+  width: 320px;
+}
+
+.login-page__logo {
+  max-width: 40rem;
+  max-height: 12rem;
+}
+
+.login-page__main-title {
+  font-size: 3rem;
+  color: var(--primary-color);
+}
+
+.login-page__decoration__slogan {
+  width: 800px;
+  max-width: 100%;
+}
+
+.login-page__decoration__slogan > p {
+  margin-top: 0.5rem;
+}
+
+.login-separator {
+  width: 100%;
+  border-top: var(--border-block);
+  margin: 1rem 0;
+}
+/* old code to delete */
+
 .login-form-wrapper {
   overflow: auto;
   padding: 40px;

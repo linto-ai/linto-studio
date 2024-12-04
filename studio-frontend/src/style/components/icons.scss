@@ -253,6 +253,9 @@
   &.save {
     @include maskImage("../public/img/breeze/document-save.svg");
   }
+  &.subtitle {
+    @include maskImage("../public/img/subtitle.svg");
+  }
 }
 
 .icon.small {
