@@ -80,3 +80,7 @@ BROKER_PROTOCOL=mqtt
 # Token duration settings possible in m, h, d
 TOKEN_DAYS_TIME=7d
 REFRESH_TOKEN_DAYS_TIME=14d
+
+OIDC_CLIENT_SECRET=
+OIDC_CLIENT=
+OIDC_URL=
