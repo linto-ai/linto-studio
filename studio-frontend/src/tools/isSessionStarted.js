@@ -15,15 +15,15 @@ export default function isSessionStarted(session) {
     const startTime = new Date(session?.startTime)
     const now = new Date()
 
-    if (!session.endTime) {
-      return startTime < now
-    }
+    //if (!session.endTime) {
+    return startTime < now
+    //}
 
-    const endTime = new Date(session?.endTime)
+    // const endTime = new Date(session?.endTime)
 
-    if (startTime < now && endTime > now) {
-      return true
-    }
+    // if (startTime < now && endTime > now) {
+    //   return true
+    // }
   }
 
   return false
