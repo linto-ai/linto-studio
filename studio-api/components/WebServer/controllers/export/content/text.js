@@ -37,52 +37,54 @@ function processTurn(paragraphs_content, data) {
   ])
 
   let last_spk = ""
-  lines.map((turn) => {
-    let children = []
+  lines
+    .filter((turn) => turn !== "")
+    .map((turn) => {
+      let children = []
 
-    if (turn.startsWith("- ")) {
-      turn = turn.substring(2)
-    } else if (turn.startsWith(" - ")) {
-      turn = turn.substring(3)
-    }
-
-    if (data.speakers.length === 0) {
-      children.push(new TextRun(turn))
-    } else {
-      // const phrasePattern = new RegExp(`\\b(${metadata.speakers.join('|')})\\b`, 'ig')
-      const phrasePattern = new RegExp(`(${data.speakers.join("|")})`, "ig")
-      const segments = turn.split(phrasePattern)
-
-      for (const segment of segments) {
-        if (segments.length === 1)
-          // No speaker name found
-          children.push(new TextRun("\t" + segment))
-        else if (data.speakers.some((phrase) => segment.includes(phrase))) {
-          if (last_spk !== segment) {
-            children.push(createTextRun("\t" + segment, true))
-            last_spk = segment
-          } else {
-            children.push(createTextRun("\t"))
-          }
-        } else children.push(new TextRun(segment))
+      if (turn.startsWith("- ")) {
+        turn = turn.substring(2)
+      } else if (turn.startsWith(" - ")) {
+        turn = turn.substring(3)
       }
-    }
 
-    paragraphs_content.push(
-      new Paragraph({
-        tabStops: [
-          {
-            type: TabStopType.LEFT,
-            position: 300,
-          },
-        ],
-        children,
-        rightToLeft: true,
-        alignment: AlignmentType.JUSTIFIED,
-      }),
-    )
-    paragraphs_content.push(new Paragraph({}))
-  })
+      if (data.speakers.length === 0) {
+        children.push(new TextRun(turn))
+      } else {
+        // const phrasePattern = new RegExp(`\\b(${metadata.speakers.join('|')})\\b`, 'ig')
+        const phrasePattern = new RegExp(`(${data.speakers.join("|")})`, "ig")
+        const segments = turn.split(phrasePattern)
+
+        for (const segment of segments) {
+          if (segments.length === 1)
+            // No speaker name found
+            children.push(new TextRun("\t" + segment))
+          else if (data.speakers.some((phrase) => segment.includes(phrase))) {
+            if (last_spk !== segment) {
+              children.push(createTextRun("\t" + segment, true))
+              last_spk = segment
+            } else {
+              children.push(createTextRun("\t"))
+            }
+          } else children.push(new TextRun(segment))
+        }
+      }
+
+      paragraphs_content.push(
+        new Paragraph({
+          tabStops: [
+            {
+              type: TabStopType.LEFT,
+              position: 300,
+            },
+          ],
+          children,
+          rightToLeft: true,
+          alignment: AlignmentType.JUSTIFIED,
+        }),
+      )
+      paragraphs_content.push(new Paragraph({}))
+    })
 
   return paragraphs_content
 }
@@ -115,6 +117,8 @@ function processTurnTable(paragraphs_content, conversation, data, query) {
         datetime =
           text.words[0].stime + " - " + text.words[text.words.length - 1].etime
       } else datetime = text.stime + " - " + text.etime
+
+      datetime = (Math.trunc(parseFloat(datetime) * 100) / 100).toString() // Trunc time to 2 decimals
     }
 
     let displayLang = lang
@@ -122,6 +126,7 @@ function processTurnTable(paragraphs_content, conversation, data, query) {
     if (Array.isArray(lang)) {
       displayLang = lang.join(" - ")
     } else {
+      if (lang === "*") lang = "en" // We force the language to be English on multi language models
       displayLang = new Intl.DisplayNames(["en"], { type: "language" }).of(lang)
     }
 

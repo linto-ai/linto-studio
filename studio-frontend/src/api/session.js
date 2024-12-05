@@ -61,7 +61,7 @@ export async function apiGetActiveSessions(organizationScope, notif) {
   const getStartedSessions = await sendRequest(
     `${BASE_API}/organizations/${organizationScope}/sessions?statusList=active&organizationId=${organizationScope}`,
     { method: "get" },
-    {},
+    { statusList: "active, ready" },
     notif,
   )
 
@@ -146,22 +146,24 @@ export async function apiGetSessionsBetweenDates(
   const allSessionsReq = await sendRequest(
     `${BASE_API}/organizations/${organizationScope}/sessions`,
     { method: "get" },
-    { limit: 100, organizationId: organizationScope },
+    {
+      limit: 100,
+      organizationId: organizationScope,
+      "scheduleOn[before]": end_date,
+      "scheduleOn[after]": start_date,
+    },
     notif,
   )
 
-  const allSessionsList = allSessionsReq?.data?.sessions ?? []
+  // const allSessionsList = allSessionsReq?.data?.sessions ?? []
 
-  const allSessionsFiltered = allSessionsList.filter(
-    (session) =>
-      new Date(session.startTime) >= new Date(start_date) &&
-      new Date(session.startTime) <= new Date(end_date),
-  )
+  // const allSessionsFiltered = allSessionsList.filter(
+  //   (session) =>
+  //     new Date(session.startTime) >= new Date(start_date) &&
+  //     new Date(session.startTime) <= new Date(end_date),
+  // )
 
-  return {
-    sessions: allSessionsFiltered,
-    totalItems: allSessionsFiltered.length,
-  }
+  return allSessionsReq?.data ?? { sessions: [], totalItems: 0 }
 }
 
 export async function apiGetPublicSession(sessionId, notif) {
@@ -254,9 +256,35 @@ export async function apiGetPublicSessionChannel(
   return getSessionChannel
 }
 
-export async function apiGetQuickSession(organizationScope, notif) {
+export async function apiGetQuickSessionByOrganization(
+  organizationScope,
+  notif,
+) {
   const getSession = await sendRequest(
     `${BASE_API}/organizations/${organizationScope}/quickMeeting/`,
+    { method: "get" },
+    {},
+    notif,
+  )
+
+  if (getSession.status === "error") {
+    return null
+  }
+
+  if (!getSession?.data?.sessions) {
+    return null
+  }
+
+  if (getSession.data.sessions.length === 0) {
+    return null
+  }
+
+  return getSession.data.sessions[0]
+}
+
+export async function apiGetQuickSession(notif) {
+  const getSession = await sendRequest(
+    `${BASE_API}/users/self/quickMeeting/`,
     { method: "get" },
     {},
     notif,
@@ -291,13 +319,13 @@ export async function apiCreateQuickSession(organizationScope, data, notif) {
 export async function apiDeleteQuickSession(
   organizationScope,
   sessionId,
-  { name } = {},
+  { name, trash = false, force } = {},
   notif,
 ) {
   let resRequest
   if (name) {
     resRequest = await sendRequest(
-      `${BASE_API}/organizations/${organizationScope}/quickMeeting/${sessionId}?name=${name}`,
+      `${BASE_API}/organizations/${organizationScope}/quickMeeting/${sessionId}?name=${name}&trash=${trash ? "true" : "false"}&force=${force ? "true" : "false"}`,
       { method: "delete" },
       {},
       notif,

@@ -737,7 +737,8 @@
       "title": "Créer une session",
       "channels_error": "Veuillez ajouter au moins un canal à la session",
       "main_info_title": "Informations générales",
-      "appointment_label": "Selecteur d'horaire"
+      "appointment_label": "Selecteur d'horaire",
+      "auto_stop_label": "Arrêt automatique de la session à l'heure de fin"
     },
     "detail_page": {
       "back_to_listing": "Liste des sessions",
@@ -807,7 +808,6 @@
     },
     "settings_page": {
       "autoStart_label": "Démarrage automatique de la session",
-      "autoStop_label": "Arrêt automatique de la session",
       "channels_list_title": "Canaux",
       "copy_link_button": "Copier le lien",
       "copy_link_button_done": "Lien copié",
@@ -856,6 +856,13 @@
       "sound_detector_value_wait": "En attente de son du microphone...",
       "start_meeting": "Démarrer la réunion",
       "back": "Retour"
+    },
+    "restore": {
+      "title": "Un Quick meeting est déjà en cours",
+      "subtitle": "Vous pouvez l'enregistrer, le supprimer ou poursuivre l'enregistrement.",
+      "trash_button": "Quittez sans sauvegarder",
+      "save_button": "Sauvegarder et quitter",
+      "continue_button": "Continuer l'enregistrement"
     },
     "setup_visio": {
       "title": "Rejoindre une visio-conférence",
@@ -987,13 +994,16 @@
       "firstname": "Prénom",
       "lastname": "Nom",
       "role": "Rôle",
-      "status": "Status"
+      "status": "Status",
+      "creation_date": "Date de création",
+      "platform_role": "Rôle de plateforme le plus élevé"
     },
     "edit_button_label": "Modifier",
     "delete_button_label": "Supprimer"
   },
   "orgaTable": {
     "header": {
+      "creation_date": "Date de création",
       "id": "ID",
       "name": "Nom",
       "description": "Description",
@@ -1002,9 +1012,12 @@
     "edit_button_label": "Modifier"
   },
   "platform_role": {
+    "organization_initiator": "Initiateur d'organisation",
     "session_operator": "Opérateur de session",
     "system_administrator": "Administrateur système",
-    "super_administrator": "Super administrateur"
+    "super_administrator": "Super administrateur",
+    "user": "Utilisateur",
+    "suspend": "Utilisateur désactivé"
   },
   "week_selector": {
     "previous_button_title": "Semaine précédente",

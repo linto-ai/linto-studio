@@ -1,6 +1,11 @@
 <template>
+  <Loading v-if="loading" />
   <SessionSetupMicrophone
-    v-if="state == 'microphone-selection'"
+    ref="sessionSetupMicrophone"
+    v-else-if="state == 'microphone-selection'"
+    :alreadyCreatedPersonalSession="alreadyCreatedPersonalSession"
+    @trash-session="trashSession"
+    @save-session="onSaveSession"
     @start-session="startSession"
     @back="backToStart"></SessionSetupMicrophone>
   <SessionSetupVisio
@@ -44,7 +49,7 @@
 import { bus } from "../main.js"
 
 import {
-  apiGetQuickSession,
+  apiGetQuickSessionByOrganization,
   apiCreateQuickSession,
   apiDeleteQuickSession,
   apiStartBot,
@@ -55,7 +60,8 @@ import { userName } from "@/tools/userName.js"
 import SessionSetupMicrophone from "@/components/SessionSetupMicrophone.vue"
 import SessionLiveMicrophone from "@/components/SessionLiveMicrophone.vue"
 import SessionSetupVisio from "@/components/SessionSetupVisio.vue"
-import SessionLiveVisio from "../components/SessionLiveVisio.vue"
+import SessionLiveVisio from "@/components/SessionLiveVisio.vue"
+import Loading from "@/components/Loading.vue"
 export default {
   props: {
     userInfo: {
@@ -77,11 +83,29 @@ export default {
       state, // microphone-selection, session-live, visio-setup
       session: null,
       isSavingSession: false,
+      alreadyCreatedPersonalSession: null,
+      loading: true,
     }
   },
-  mounted() {},
+  mounted() {
+    this.fetchData()
+  },
   methods: {
-    async startSession({ deviceId }) {
+    async fetchData() {
+      try {
+        this.alreadyCreatedPersonalSession =
+          await apiGetQuickSessionByOrganization(this.currentOrganizationScope)
+        this.loading = false
+      } catch (error) {
+        console.error(error)
+        bus.$emit("app_notif", {
+          status: "error",
+          message: this.$i18n.t("session.create_page.error_message"),
+          timeout: null,
+        })
+      }
+    },
+    startSession({ deviceId }) {
       console.log("startSession", deviceId)
       this.selectedDeviceId = deviceId
       const isSetup = await this.setupSession()
@@ -117,30 +141,35 @@ export default {
     backToStart() {
       this.$router.push({ name: "conversations create" })
     },
-    async onSaveSession() {
-      await this.$refs.sessionLiveMicrophone.p_close()
+    trashSession() {
+      this.onSaveSession(true)
+    },
+    async onSaveSession(trash = false) {
+      if (this.$refs.sessionLiveMicrophone) {
+        await this.$refs.sessionLiveMicrophone.p_close()
+      } else if (this.$refs.sessionSetupMicrophone) {
+        await this.$refs.sessionSetupMicrophone.p_close()
+      }
       await this.$nextTick()
       this.isSavingSession = true
       const now = new Date()
       const conversationName = `Meeting from ${userName(this.userInfo)}, ${now.toLocaleString()} `
-
+      const sessionToDelete = this.session ?? this.alreadyCreatedPersonalSession
       await apiDeleteQuickSession(
         this.currentOrganizationScope,
-        this.session.id,
+        sessionToDelete.id,
         {
           name: conversationName,
+          trash,
+          force: true,
         },
       )
       this.$router.push({ name: "inbox" })
     },
     async setupSession() {
       try {
-        const alreadyCreatedPersonalSession = await apiGetQuickSession(
-          this.currentOrganizationScope,
-        )
-
-        if (alreadyCreatedPersonalSession) {
-          this.session = alreadyCreatedPersonalSession
+        if (this.alreadyCreatedPersonalSession) {
+          this.session = this.alreadyCreatedPersonalSession
         } else {
           const channels = [
             {
@@ -184,6 +213,7 @@ export default {
     SessionLiveMicrophone,
     SessionSetupVisio,
     SessionLiveVisio,
+    Loading,
   },
 }
 </script>

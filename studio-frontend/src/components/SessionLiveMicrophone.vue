@@ -86,15 +86,21 @@ export default {
     }
   },
   mounted() {
+    window.addEventListener("beforeunload", this.onbeforeunload)
     this.setup()
   },
   methods: {
+    onbeforeunload(event) {
+      event.preventDefault()
+      event.returnValue = ""
+    },
     async onClose() {
       this.channelWebsocket.close()
       this.downSampler.removeEventListener(
         EVENT_TO_LISTEN,
         this.onAudioFrameRaw,
       )
+      window.removeEventListener("beforeunload", this.onbeforeunload)
     },
     async setup() {
       await this.connectToMicrophone(this.deviceId)

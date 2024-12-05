@@ -1,5 +1,5 @@
 <template>
-  <MainContentBackoffice :loading="loading">
+  <MainContentBackoffice>
     <template v-slot:header>
       <HeaderTable
         :title="$t('backoffice.organisation_list.title')"
@@ -13,8 +13,12 @@
 
     <div class="backoffice-listing-container">
       <OrganizationTable
+        :loading="loading"
         :organizationList="organizationList"
         :linkTo="{ name: 'backoffice-organizationDetail' }"
+        :sortListKey="sortListKey"
+        :sortListDirection="sortListDirection"
+        @list_sort_by="sortBy"
         v-model="selectedOrganizations" />
     </div>
     <Pagination
@@ -50,6 +54,8 @@ export default {
       totalPagesNumber: 0,
       currentPageNb: 0,
       search: "",
+      sortListKey: "name",
+      sortListDirection: "asc",
     }
   },
   mounted() {
@@ -62,7 +68,10 @@ export default {
     async fetchAllOrganizations(search, signal) {
       return await apiGetAllOrganizations(
         this.currentPageNb,
-        {},
+        {
+          sortField: this.sortListKey,
+          sortOrder: this.sortListDirection === "asc" ? 1 : -1,
+        },
         search,
         signal,
       )
@@ -87,6 +96,16 @@ export default {
     newOrganization(res) {
       this.organizationList.unshift(res.data)
       this.hideModalCreateOrganization()
+    },
+    sortBy(key) {
+      if (key === this.sortListKey) {
+        this.sortListDirection =
+          this.sortListDirection === "desc" ? "asc" : "desc"
+      } else {
+        this.sortListDirection = "desc"
+      }
+      this.sortListKey = key
+      this.debouncedFetchAllOrganizations()
     },
   },
   computed: {},

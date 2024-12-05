@@ -1,3 +1,54 @@
+table.table-grid {
+  display: grid;
+  grid-template-columns: auto 1fr 1fr 1fr 1fr auto; // need to be overwritten in the component depending on the number of columns
+  gap: 1px;
+  position: relative;
+  .fit-content {
+    width: fit-content;
+  }
+
+  .no-size {
+    width: auto;
+  }
+
+  thead,
+  tbody {
+    display: contents;
+  }
+
+  tr {
+    display: contents;
+  }
+
+  td > a {
+    white-space: wrap;
+  }
+
+  td,
+  th {
+    display: flex;
+    align-items: center;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  td {
+    outline: 1px solid var(--neutral-60);
+  }
+
+  th {
+    background-color: var(--neutral-100);
+  }
+
+  .table-loader {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #ffffff82;
+    z-index: 2;
+  }
+}
+
 table {
   width: auto;
   //table-layout: fixed;

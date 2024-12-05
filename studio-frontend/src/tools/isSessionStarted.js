@@ -8,18 +8,18 @@ export default function isSessionStarted(session) {
   }
 
   if (session.status === "ready") {
-    if (!session.startTime) {
+    if (!session.scheduleOn) {
       return true
     }
 
-    const startTime = new Date(session?.startTime)
+    const startTime = new Date(session?.scheduleOn)
     const now = new Date()
 
-    if (!session.endTime) {
+    if (!session.endOn) {
       return startTime < now
     }
 
-    const endTime = new Date(session?.endTime)
+    const endTime = new Date(session?.endOn)
 
     if (startTime < now && endTime > now) {
       return true

@@ -1,24 +1,34 @@
 <template>
   <tr @click="selectUser">
-    <td>
+    <td class="fit-content">
       <Checkbox
         class="line-selector"
         v-model="p_selectedUsers"
         :checkboxValue="id"></Checkbox>
     </td>
-    <td>
+    <!-- <td>
       <router-link :to="to">{{ id }}</router-link>
+    </td> -->
+    <td>
+      <router-link :to="to">{{ creationDateFormatted }}</router-link>
     </td>
     <td>
       <router-link :to="to">{{ email }}</router-link>
     </td>
+
     <td>
       <router-link :to="to">{{ firstname }}</router-link>
     </td>
     <td>
       <router-link :to="to">{{ lastname }}</router-link>
     </td>
-    <td class="">
+    <td>
+      <router-link :to="to" class="flex flex1 gap-small">
+        <span class="flex1">{{ platformRoleName }}</span>
+        <span>({{ platformRole }})</span>
+      </router-link>
+    </td>
+    <td class="fit-content">
       <button @click="editUser">
         <span class="icon edit"></span>
         <span class="label">{{ $t("userTable.edit_button_label") }}</span>

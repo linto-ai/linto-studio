@@ -49,15 +49,24 @@ const generate = async (data, query) => {
     if (Array.isArray(docContent.locale)) {
       docContent.locale = docContent.locale.join()
     }
+
     patchDocument(fs.readFileSync(templatePath), {
       patches: {
+        title: {
+          type: PatchType.PARAGRAPH,
+          children: [
+            new TextRun({
+              text: query.title || "Automatic transcription",
+              bold: false,
+            }),
+          ],
+        },
         session_name: {
           type: PatchType.PARAGRAPH,
           children: [
             new TextRun(docContent.filedata.title),
             // new TextRun(' - '),
             // new TextRun(channel.name),
-            new TextRun(` (${docContent.locale})`),
           ],
         },
         datetime: {
@@ -65,7 +74,17 @@ const generate = async (data, query) => {
           children: [
             new TextRun({
               text: formattedDate,
-              bold: true,
+              bold: false,
+            }),
+          ],
+        },
+        langue: {
+          type: PatchType.PARAGRAPH,
+          children: [
+            new TextRun({
+              text:
+                docContent.locale !== "*" ? docContent.locale : "multilingue",
+              bold: false,
             }),
           ],
         },

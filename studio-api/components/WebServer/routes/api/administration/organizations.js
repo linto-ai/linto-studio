@@ -15,7 +15,7 @@ module.exports = (webserver) => {
       path: "/organizations",
       method: "get",
       requireAuth: true,
-      requireSessionOperator: true,
+      requireSystemAdministrator: true,
       controller: listAllOrganization,
     },
     {

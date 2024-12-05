@@ -69,6 +69,7 @@ module.exports = {
         data: {
           userId: tokenData.data.userId,
           tokenId: tokenData.data.tokenId,
+          role: tokenData.data.role,
         },
       }
       next()

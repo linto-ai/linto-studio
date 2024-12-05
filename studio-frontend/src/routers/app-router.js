@@ -2,19 +2,20 @@ import Vue from "vue"
 import Router from "vue-router"
 import { getEnv } from "@/tools/getEnv.js"
 
-import { getCookie } from "../tools/getCookie"
-import { setCookie } from "../tools/setCookie"
-import { apiLoginUserMagicLink } from "../api/user"
-import { apiGetUserRightFromConversation } from "../api/conversation"
+import { getCookie } from "@/tools/getCookie"
+import { setCookie } from "@/tools/setCookie"
+import { apiLoginUserMagicLink } from "@/api/user"
+import { apiGetUserRightFromConversation } from "@/api/conversation"
 import PUBLIC_ROUTES from "../const/publicRoutes"
+import { apiGetQuickSession } from "@/api/session.js"
 
 const defaultComponents = {
-  AppHeader: () => import("../components/AppHeader.vue"),
-  AppNotif: () => import("../components/AppNotif"),
+  AppHeader: () => import("@/components/AppHeader.vue"),
+  AppNotif: () => import("@/components/AppNotif"),
 }
 
 const componentsWithoutHeader = {
-  AppNotif: () => import("../components/AppNotif"),
+  AppNotif: () => import("@/components/AppNotif"),
 }
 
 // it's **not** a boolean do describe if the component is displayed or not
@@ -387,6 +388,17 @@ router.beforeEach(async (to, from, next) => {
       if (isAuthenticated()) {
         if (from.query.next && from.query.next !== to.fullPath) {
           next(from.query.next)
+        }
+
+        // if quick session is running, redirect to session live
+        if (enableSession && to.name !== "quick session") {
+          const quickSession = await apiGetQuickSession()
+          if (quickSession) {
+            next({
+              name: "quick session",
+              params: { organizationId: quickSession.organizationId },
+            })
+          }
         }
         // If user try to access an auth route > redirect to conversations
         if (

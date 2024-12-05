@@ -739,7 +739,8 @@
       "success_message": "Session successfully created",
       "title": "Create a session",
       "main_info_title": "General information",
-      "appointment_label": "Schedule selector"
+      "appointment_label": "Schedule selector",
+      "auto_stop_label": "Stop session automatically at the end time"
     },
     "detail_page": {
       "back_to_listing": "Sessions list",
@@ -808,7 +809,6 @@
 
     "settings_page": {
       "autoStart_label": "Automatic session start",
-      "autoStop_label": "Automatic session stop",
       "channels_list_title": "Channels",
       "copy_link_button": "Copy link",
       "copy_link_button_done": "Link copied",
@@ -857,6 +857,13 @@
       "sound_detector_value_wait": "Waiting sound from microphone...",
       "start_meeting": "Start the meeting",
       "back": "Back"
+    },
+    "restore": {
+      "title": "A quick meeting is already in progress",
+      "subtitle": "You can save it, trash it, or continue the recording.",
+      "trash_button": "Quit without saving",
+      "save_button": "Save and quit",
+      "continue_button": "Continue the recording"
     },
     "setup_visio": {
       "title": "Join a videoconference",
@@ -986,13 +993,16 @@
       "firstname": "Firstname",
       "lastname": "Lastname",
       "role": "Role",
-      "status": "Status"
+      "status": "Status",
+      "creation_date": "Creation date",
+      "platform_role": "Highest Platform role"
     },
     "edit_button_label": "Edit",
     "delete_button_label": "Delete"
   },
   "orgaTable": {
     "header": {
+      "creation_date": "Creation date",
       "id": "ID",
       "name": "Name",
       "description": "Description",
@@ -1001,9 +1011,12 @@
     "edit_button_label": "Edit"
   },
   "platform_role": {
+    "organization_initiator": "Organisation initiator",
     "session_operator": "Session operator",
     "system_administrator": "System administrator",
-    "super_administrator": "Super administrator"
+    "super_administrator": "Super administrator",
+    "user": "User",
+    "suspend": "Suspended user"
   },
   "week_selector": {
     "previous_button_title": "Previous week",
