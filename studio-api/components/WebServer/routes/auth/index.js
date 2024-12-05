@@ -10,39 +10,6 @@ const auth_middleware = require(
 module.exports = (webServer) => {
   return [
     {
-      path: "/login",
-      method: "post",
-      requireAuth: false,
-      controller: [
-        auth_middleware.authenticate,
-        (req, res, next) => {
-          res.status(202).json(req.user)
-        },
-      ],
-    },
-    {
-      path: "/refresh",
-      method: "get",
-      requireRefresh: true,
-      controller: [
-        auth_middleware.refresh,
-        (req, res, next) => {
-          res.status(202).json(req.user)
-        },
-      ],
-    },
-    {
-      path: "/login/magic-link",
-      method: "post",
-      requireAuth: false,
-      controller: [
-        auth_middleware.authenticate_reset,
-        (req, res, next) => {
-          res.status(202).json(req.user)
-        },
-      ],
-    },
-    {
       path: "/logout",
       method: "get",
       requireAuth: true,
@@ -61,6 +28,18 @@ module.exports = (webServer) => {
       method: "post",
       requireAuth: false,
       controller: recoveryAuth,
+    },
+    {
+      path: "/list",
+      method: "get",
+      requireAuth: false,
+      controller: (req, res, next) => {
+        let list = [{ path: "local", from: "studio", name: "studio" }]
+        if (process.env.OIDC_URL !== "") {
+          list.push({ path: "oidc", from: "linagora", name: "linagora" })
+        }
+        res.status(200).send(list)
+      },
     },
   ]
 }

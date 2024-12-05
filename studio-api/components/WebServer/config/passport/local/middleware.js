@@ -3,6 +3,8 @@ const debug = require("debug")(
 )
 
 require("./local")
+require("./oidc")
+
 const passport = require("passport")
 
 const { expressjwt: jwt } = require("express-jwt")
@@ -20,8 +22,7 @@ const {
 const refreshToken = require("./token/refresh")
 
 module.exports = {
-  authType: "local",
-  authenticate: (req, res, next) => {
+  local_authenticate: (req, res, next) => {
     passport.authenticate("local", { session: false }, (err, user) => {
       if (err) {
         next(err)
@@ -56,6 +57,25 @@ module.exports = {
         }
       },
     )(req, res, next)
+  },
+  oidc_authenticate: (req, res, next) => {
+    console.log("oidc_authenticate")
+    passport.authenticate("oidc", { session: false }, (err, user) => {
+      //TODO: how to check stuff there ?
+      console.log("oidc_authenticate 2")
+      debug("auth oidc")
+      if (err) {
+        next(err)
+      } else if (!user) {
+        throw new InvalidCredential()
+      } else {
+        // do stuff there ?
+        res.status(200).json({
+          message: "login success",
+          ...user,
+        })
+      }
+    })(req, res, next)
   },
   isAuthenticate: [
     jwt({
