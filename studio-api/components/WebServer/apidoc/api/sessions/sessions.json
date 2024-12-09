@@ -97,6 +97,46 @@
             "type": "string",
             "enum": ["private", "organization", "public"]
           }
+        },
+        {
+          "name": "scheduleOn[before]",
+          "in": "query",
+          "description": "Filter items scheduled before the specified date.",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "scheduleOn[after]",
+          "in": "query",
+          "description": "Filter items scheduled after the specified date.",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "endOn[before]",
+          "in": "query",
+          "description": "Filter items ending before the specified date.",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "endOn[after]",
+          "in": "query",
+          "description": "Filter items ending after the specified date.",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
         }
       ],
       "responses": {
@@ -154,7 +194,7 @@
   "/api/organizations/{organizationId}/quickMeeting": {
     "get": {
       "tags": ["sessions"],
-      "summary": "Get user private sessions for quick meeting",
+      "summary": "Get the user quick meeting",
       "parameters": [
         {
           "in": "path",
@@ -218,6 +258,46 @@
             "type": "string",
             "enum": ["private", "organization", "public"]
           }
+        },
+        {
+          "name": "scheduleOn[before]",
+          "in": "query",
+          "description": "Filter items scheduled before the specified date.",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "scheduleOn[after]",
+          "in": "query",
+          "description": "Filter items scheduled after the specified date.",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "endOn[before]",
+          "in": "query",
+          "description": "Filter items ending before the specified date.",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "endOn[after]",
+          "in": "query",
+          "description": "Filter items ending after the specified date.",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
         }
       ],
       "responses": {
@@ -238,7 +318,7 @@
     },
     "post": {
       "tags": ["sessions"],
-      "summary": "Create user quick meeting session",
+      "summary": "Create a user quick meeting",
       "parameters": [
         {
           "in": "path",
@@ -275,7 +355,7 @@
   "/api/organizations/{organizationId}/quickMeeting/{id}": {
     "delete": {
       "tags": ["sessions"],
-      "summary": "Delete user quick meeting session",
+      "summary": "Delete the user quick meeting session",
       "parameters": [
         {
           "in": "path",
@@ -563,6 +643,15 @@
           "schema": {
             "type": "string",
             "format": "uuid"
+          }
+        },
+        {
+          "in": "query",
+          "name": "force",
+          "description": "Force session stop",
+          "required": false,
+          "schema": {
+            "type": "boolean"
           }
         }
       ],

@@ -8,6 +8,11 @@
     @save-session="onSaveSession"
     @start-session="startSession"
     @back="backToStart"></SessionSetupMicrophone>
+  <SessionSetupVisio
+    v-else-if="state == 'visio-setup'"
+    @start-session="startSessionVisio"
+    @back="backToStart"></SessionSetupVisio>
+
   <SessionLiveMicrophone
     v-else-if="state == 'session-live'"
     ref="sessionLiveMicrophone"
@@ -23,6 +28,21 @@
       </div>
     </template>
   </SessionLiveMicrophone>
+
+  <SessionLiveVisio
+    v-else-if="state == 'session-live-visio'"
+    :session="session"
+    :currentOrganizationScope="currentOrganizationScope">
+    <template v-slot:breadcrumb-actions>
+      <div class="flex1 flex gap-small align-center">
+        <div>{{ $t("quick_session.live_visio.status_recording_visio") }}</div>
+        <div class="flex1"></div>
+        <button @click="onSaveBotSession" :disabled="isSavingSession">
+          <span class="label">{{ $t("quick_session.live.save_button") }}</span>
+        </button>
+      </div>
+    </template>
+  </SessionLiveVisio>
 </template>
 <script>
 import { bus } from "../main.js"
@@ -31,12 +51,16 @@ import {
   apiGetQuickSessionByOrganization,
   apiCreateQuickSession,
   apiDeleteQuickSession,
+  apiStartBot,
+  apiStopBot,
 } from "@/api/session.js"
 import { userName } from "@/tools/userName.js"
 
 import SessionSetupMicrophone from "@/components/SessionSetupMicrophone.vue"
 import SessionLiveMicrophone from "@/components/SessionLiveMicrophone.vue"
-import Loading from "../components/Loading.vue"
+import SessionSetupVisio from "@/components/SessionSetupVisio.vue"
+import SessionLiveVisio from "@/components/SessionLiveVisio.vue"
+import Loading from "@/components/Loading.vue"
 export default {
   props: {
     userInfo: {
@@ -49,9 +73,13 @@ export default {
     },
   },
   data() {
+    let state = "microphone-selection"
+    if (this.$route.query.source === "visio") {
+      state = "visio-setup"
+    }
     return {
       selectedDeviceId: null,
-      state: "microphone-selection", // microphone-selection, session-live
+      state, // microphone-selection, session-live, visio-setup, session-live-visio
       session: null,
       isSavingSession: false,
       alreadyCreatedPersonalSession: null,
@@ -66,6 +94,15 @@ export default {
       try {
         this.alreadyCreatedPersonalSession =
           await apiGetQuickSessionByOrganization(this.currentOrganizationScope)
+
+        if (this.alreadyCreatedPersonalSession) {
+          if (this.alreadyCreatedPersonalSession.channels[0].bot) {
+            this.state = "session-live-visio"
+            this.session = this.alreadyCreatedPersonalSession
+          } else {
+            this.state = "microphone-selection"
+          }
+        }
         this.loading = false
       } catch (error) {
         console.error(error)
@@ -76,16 +113,52 @@ export default {
         })
       }
     },
-    startSession({ deviceId }) {
+    async startSession({ deviceId }) {
       console.log("startSession", deviceId)
       this.selectedDeviceId = deviceId
-      this.setupSession()
+      const isSetup = await this.setupSession()
+      if (isSetup) {
+        this.state = "session-live"
+      }
+    },
+    async startSessionVisio({ visioType, visioLink }) {
+      console.log("startSessionVisio", visioType, visioLink)
+      const isSetup = await this.setupSession()
+      if (isSetup) {
+        let resBot = await apiStartBot(
+          this.currentOrganizationScope,
+          this.session.id,
+          {
+            channelId: this.session.channels[0].id,
+            botType: visioType,
+            url: visioLink,
+          },
+        )
+
+        if (resBot.status == "success") {
+          this.state = "session-live-visio"
+        } else {
+          bus.$emit("app_notif", {
+            status: "error",
+            message: this.$i18n.t("quick_session.setup_visio.error_bot_setup"),
+            timeout: null,
+          })
+        }
+      }
     },
     backToStart() {
       this.$router.push({ name: "conversations create" })
     },
     trashSession() {
       this.onSaveSession(true)
+    },
+    async onSaveBotSession() {
+      await apiStopBot(
+        this.currentOrganizationScope,
+        this.session.id,
+        this.session.channels[0].id,
+      )
+      this.onSaveSession()
     },
     async onSaveSession(trash = false) {
       if (this.$refs.sessionLiveMicrophone) {
@@ -138,8 +211,8 @@ export default {
 
         this.selectedChannel = this.session.channels[0]
         this.selectedTranslations = "original"
-        this.state = "session-live"
         //this.connectToWebsocket()
+        return true
       } catch (error) {
         console.error(error)
         bus.$emit("app_notif", {
@@ -147,12 +220,15 @@ export default {
           message: this.$i18n.t("session.create_page.error_message"),
           timeout: null,
         })
+        return false
       }
     },
   },
   components: {
     SessionSetupMicrophone,
     SessionLiveMicrophone,
+    SessionSetupVisio,
+    SessionLiveVisio,
     Loading,
   },
 }

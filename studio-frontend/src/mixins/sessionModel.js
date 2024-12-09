@@ -12,21 +12,21 @@ export const sessionModelMixin = {
       return this?.session?.id
     },
     startTime() {
-      if (this?.session?.startTime) {
-        return new Date(this?.session?.startTime)
+      if (this?.session?.scheduleOn) {
+        return new Date(this?.session?.scheduleOn)
       } else {
         return null
       }
     },
     endTime() {
-      if (this?.session?.endTime) {
-        return new Date(this?.session?.endTime)
+      if (this?.session?.endOn) {
+        return new Date(this?.session?.endOn)
       } else {
         return null
       }
     },
     startTimeFormatted() {
-      const startTime = this?.session?.startTime
+      const startTime = this?.session?.scheduleOn
 
       if (startTime) {
         const options = {
@@ -42,7 +42,7 @@ export const sessionModelMixin = {
       }
     },
     endTimeFormatted() {
-      const endTime = this?.session?.endTime
+      const endTime = this?.session?.endOn
 
       if (endTime) {
         const options = {
@@ -73,7 +73,7 @@ export const sessionModelMixin = {
       return this?.session?.autoStart ?? false
     },
     autoStop() {
-      return this?.session?.autoStop ?? false
+      return this?.session?.autoEnd ?? false
     },
     publicLink() {
       const baseUrl = window.location.origin

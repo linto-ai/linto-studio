@@ -417,7 +417,9 @@
       "subtitle": "We are working on it, please try again later.",
       "title": "The operation is currently unavailable."
     },
-    "title": "Something went wrong"
+    "title": "Something went wrong",
+    "required": "This field is required",
+    "invalidVisioUrl": "Invalid visio URL"
   },
   "explore": {
     "delete_conversation_button": "Delete ",
@@ -737,7 +739,8 @@
       "success_message": "Session successfully created",
       "title": "Create a session",
       "main_info_title": "General information",
-      "appointment_label": "Schedule selector"
+      "appointment_label": "Schedule selector",
+      "auto_stop_label": "Stop session automatically at the end time"
     },
     "detail_page": {
       "back_to_listing": "Sessions list",
@@ -806,7 +809,6 @@
 
     "settings_page": {
       "autoStart_label": "Automatic session start",
-      "autoStop_label": "Automatic session stop",
       "channels_list_title": "Channels",
       "copy_link_button": "Copy link",
       "copy_link_button_done": "Link copied",
@@ -863,11 +865,23 @@
       "save_button": "Save and quit",
       "continue_button": "Continue the recording"
     },
+    "setup_visio": {
+      "title": "Join a videoconference",
+      "subtitle": "Enter the videoconference link to start the transcription",
+      "type_label": "Service type",
+      "link_label": "URL",
+      "back": "Back",
+      "join_meeting": "Join the meeting",
+      "error_bot_setup": "An error occurred while joining the videoconference"
+    },
     "live": {
       "status_no_websocket": "Not connected to audio server",
       "status_recording": "Recording.",
       "status_muted": "Micro is muted.",
       "save_button": "Save and quit"
+    },
+    "live_visio": {
+      "status_recording_visio": "Recording videoconference"
     }
   },
   "share_menu": {

@@ -67,6 +67,7 @@ export default {
           this.sundayDate,
         )
 
+        console.log(response)
         this.sessionList = response.sessions.filter((s) => s.name[0] != "@")
         this.loading = false
       } catch (error) {
@@ -75,10 +76,11 @@ export default {
       }
     },
     filterSessionsByDay(day) {
+      console.log(this.sessionList)
       return this.sessionList
-        .filter((session) => new Date(session.startTime).getDay() === day)
+        .filter((session) => new Date(session.scheduleOn).getDay() === day)
         .sort((a, b) => {
-          return new Date(a.startTime) - new Date(b.startTime)
+          return new Date(a.scheduleOn) - new Date(b.scheduleOn)
         })
     },
   },
