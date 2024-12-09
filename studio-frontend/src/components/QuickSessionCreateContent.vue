@@ -81,7 +81,7 @@ export default {
           {
             name: "visio",
             label: this.$i18n.t("quick_session.creation.visio_source_label"),
-            disabled: true,
+            disabled: false,
           },
         ],
         testField: testFieldEmpty,

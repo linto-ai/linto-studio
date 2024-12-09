@@ -418,7 +418,9 @@
       "subtitle": "Nous sommes désolés pour la gêne occasionnée. Nous travaillons à résoudre le problème au plus vite.",
       "title": "L’opération est indisponible pour le moment."
     },
-    "title": "Nous avons rencontré un problème"
+    "title": "Nous avons rencontré un problème",
+    "required": "Ce champ est requis",
+    "invalidVisioUrl": "L'url de la visio n'est pas valide"
   },
   "explore": {
     "delete_conversation_button": "Supprimer des médias",
@@ -862,11 +864,23 @@
       "save_button": "Sauvegarder et quitter",
       "continue_button": "Continuer l'enregistrement"
     },
+    "setup_visio": {
+      "title": "Rejoindre une visio-conférence",
+      "subtitle": "Veuillez entrer l'URL de la visio-conférence à laquelle vous souhaitez participer.",
+      "type_label": "Type de visio-conférence",
+      "link_label": "URL de la visio-conférence",
+      "back": "Retour",
+      "join_meeting": "Rejoindre la visio-conférence",
+      "error_bot_setup": "An error occurred while joining the videoconference"
+    },
     "live": {
       "status_no_websocket": "Déconnecté du serveur audio",
-      "status_recording": "En cours d'enregistrement.",
-      "status_muted": "Muet.",
+      "status_recording": "En cours d'enregistrement",
+      "status_muted": "Muet",
       "save_button": "Sauvegarder et quitter"
+    },
+    "live_visio": {
+      "status_recording_visio": "Enregistrement de la visio-conférence en cours"
     }
   },
   "share_menu": {
