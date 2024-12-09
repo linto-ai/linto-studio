@@ -45,14 +45,14 @@ export default {
       type: String,
       required: true,
     },
-    visioType: {
-      type: String,
-      required: true,
-    },
-    visioUrl: {
-      type: String,
-      required: true,
-    },
+    // visioType: {
+    //   type: String,
+    //   required: true,
+    // },
+    // visioUrl: {
+    //   type: String,
+    //   required: true,
+    // },
   },
   data() {
     const currentChannel = this.session.channels[0]

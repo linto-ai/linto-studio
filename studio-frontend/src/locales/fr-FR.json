@@ -875,9 +875,12 @@
     },
     "live": {
       "status_no_websocket": "Déconnecté du serveur audio",
-      "status_recording": "En cours d'enregistrement.",
-      "status_muted": "Muet.",
+      "status_recording": "En cours d'enregistrement",
+      "status_muted": "Muet",
       "save_button": "Sauvegarder et quitter"
+    },
+    "live_visio": {
+      "status_recording_visio": "Enregistrement de la visio-conférence en cours"
     }
   },
   "share_menu": {

@@ -879,6 +879,9 @@
       "status_recording": "Recording.",
       "status_muted": "Micro is muted.",
       "save_button": "Save and quit"
+    },
+    "live_visio": {
+      "status_recording_visio": "Recording videoconference"
     }
   },
   "share_menu": {

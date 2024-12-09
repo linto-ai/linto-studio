@@ -358,11 +358,16 @@ export async function apiStartBot(
   return startBot
 }
 
-export async function apiStopBot(organizationScope, sessionId, notif) {
+export async function apiStopBot(
+  organizationScope,
+  sessionId,
+  channelId,
+  notif,
+) {
   const startBot = await sendRequest(
     `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}/stop-bot`,
     { method: "post" },
-    {},
+    { channelId },
     notif,
   )
 

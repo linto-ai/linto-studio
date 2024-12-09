@@ -32,13 +32,12 @@
   <SessionLiveVisio
     v-else-if="state == 'session-live-visio'"
     :session="session"
-    :currentOrganizationScope="currentOrganizationScope"
-    :visioType="visioType"
-    :visioUrl="visioUrl">
+    :currentOrganizationScope="currentOrganizationScope">
     <template v-slot:breadcrumb-actions>
       <div class="flex1 flex gap-small align-center">
+        <div>{{ $t("quick_session.live_visio.status_recording_visio") }}</div>
         <div class="flex1"></div>
-        <button @click="onSaveSession" :disabled="isSavingSession">
+        <button @click="onSaveBotSession" :disabled="isSavingSession">
           <span class="label">{{ $t("quick_session.live.save_button") }}</span>
         </button>
       </div>
@@ -80,7 +79,7 @@ export default {
     }
     return {
       selectedDeviceId: null,
-      state, // microphone-selection, session-live, visio-setup
+      state, // microphone-selection, session-live, visio-setup, session-live-visio
       session: null,
       isSavingSession: false,
       alreadyCreatedPersonalSession: null,
@@ -95,6 +94,15 @@ export default {
       try {
         this.alreadyCreatedPersonalSession =
           await apiGetQuickSessionByOrganization(this.currentOrganizationScope)
+
+        if (this.alreadyCreatedPersonalSession) {
+          if (this.alreadyCreatedPersonalSession.channels[0].bot) {
+            this.state = "session-live-visio"
+            this.session = this.alreadyCreatedPersonalSession
+          } else {
+            this.state = "microphone-selection"
+          }
+        }
         this.loading = false
       } catch (error) {
         console.error(error)
@@ -105,7 +113,7 @@ export default {
         })
       }
     },
-    startSession({ deviceId }) {
+    async startSession({ deviceId }) {
       console.log("startSession", deviceId)
       this.selectedDeviceId = deviceId
       const isSetup = await this.setupSession()
@@ -143,6 +151,14 @@ export default {
     },
     trashSession() {
       this.onSaveSession(true)
+    },
+    async onSaveBotSession() {
+      await apiStopBot(
+        this.currentOrganizationScope,
+        this.session.id,
+        this.session.channels[0].id,
+      )
+      this.onSaveSession()
     },
     async onSaveSession(trash = false) {
       if (this.$refs.sessionLiveMicrophone) {
