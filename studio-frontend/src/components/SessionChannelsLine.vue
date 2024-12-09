@@ -70,6 +70,9 @@ export default {
   },
   data() {
     const translations = this.item.availableTranslations || []
+    let languageNames = new Intl.DisplayNames([this.$i18n.locale], {
+      type: "language",
+    })
     return {
       nameField: {
         ...EMPTY_FIELD,
@@ -77,12 +80,14 @@ export default {
       },
       selectedTranslations: this.item.translations || [],
       translationsOptions: {
-        channels: translations.map((translation) => {
-          return {
-            value: translation,
-            text: translation.toUpperCase(),
-          }
-        }),
+        channels: translations
+          .map((translation) => {
+            return {
+              value: translation,
+              text: languageNames.of(translation),
+            }
+          })
+          .sort((t1, t2) => t1.text.localeCompare(t2.text)),
       },
       channelKeyObj: "item",
     }
