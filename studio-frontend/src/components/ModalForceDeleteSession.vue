@@ -5,7 +5,7 @@
     :title="title"
     :actionBtnLabel="actionBtnLabel"
     small>
-    {{ $t("session.settings_page.delete_modal.content") }}
+    {{ $t("session.settings_page.force_delete_modal.content") }}
   </ModalNew>
 </template>
 <script>
@@ -14,8 +14,10 @@ export default {
   props: {},
   data() {
     return {
-      title: this.$t("session.settings_page.delete_modal.title"),
-      actionBtnLabel: this.$t("session.settings_page.delete_modal.action"),
+      title: this.$t("session.settings_page.force_delete_modal.title"),
+      actionBtnLabel: this.$t(
+        "session.settings_page.force_delete_modal.action",
+      ),
     }
   },
   methods: {

@@ -760,6 +760,7 @@
       "start_time_not_defined": "Non défini",
       "start_session_error_message": "La session n'a pas pu être arrêtée",
       "stop_button": "Arrêter et enregistrer la transcription",
+      "stop_force_button": "Forcer l'arrêt de la session",
       "stop_session_error_message": "La session n'a pas pu être arrêtée",
       "stop_session_success": "La session a été arrétée et sauvegardée",
       "title_interface_settings": "Paramètre d'interface",
@@ -820,10 +821,10 @@
       "start_time_label": "Heure de début",
       "success_message": "Session successfully updated",
       "error_update_message": "Session has not been updated",
-      "delete_modal": {
+      "force_delete_modal": {
         "action": "Supprimer",
-        "content": "Êtes vous sur de vouloir supprimer la session ?",
-        "title": "Supprimer la session"
+        "content": "Un flux audio est connecté. Êtes-vous sûr de vouloir supprimer la session ? Le contenu sera sauvegardé dans votre bibliothèque de médias.",
+        "title": "Confirmer la suppression de la session"
       },
       "visibility_private_label": "Privée",
       "visibility_organization_label": "Interne",

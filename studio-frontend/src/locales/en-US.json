@@ -760,6 +760,7 @@
       "start_button": "Start",
       "start_time_not_defined": "Not defined",
       "stop_button": "Stop and save session to library",
+      "stop_force_button": "Force stop and save session to library",
       "stop_session_error_message": "The session could not be stopped",
       "stop_session_success": "The session has been stopped and saved",
       "title_interface_settings": "Interface settings",
@@ -820,10 +821,10 @@
       "publicLink_label": "Session link",
       "start_time_label": "Start time",
       "success_message": "Session successfully updated",
-      "delete_modal": {
+      "force_delete_modal": {
         "action": "Delete",
-        "content": "Are you sure you want to delete this session ?",
-        "title": "Delete session"
+        "content": "An audio stream is connected. Are you sure you want to delete the session? The content will be saved in your media library.",
+        "title": "Confirm session deletion"
       },
       "title": "Session settings",
       "visibility_private_label": "Private",

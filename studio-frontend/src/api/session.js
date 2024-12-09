@@ -208,14 +208,14 @@ export async function apiDeleteSession(
   let resRequest
   if (name) {
     resRequest = await sendRequest(
-      `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}?name=${name}`,
+      `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}?name=${name}&force=true`,
       { method: "delete" },
       {},
       notif,
     )
   } else {
     resRequest = await sendRequest(
-      `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}`,
+      `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}?force=true`,
       { method: "delete" },
       {},
       notif,

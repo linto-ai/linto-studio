@@ -95,15 +95,28 @@
             }}</span>
           </button> -->
 
+            <!-- Delete and save -->
             <button
               class="btn flex1 red-border flex"
-              v-if="isStarted"
+              v-if="isStarted && !isActive"
               @click="stopSession"
               :title="titleButtonDelete"
-              :disabled="isStoping || isActive">
+              :disabled="isStoping">
               <span class="icon stop"></span>
               <span class="label flex1">{{
                 $t("session.detail_page.stop_button")
+              }}</span>
+            </button>
+            <!-- Force delete and save -->
+            <button
+              class="btn flex1 red-border flex"
+              v-if="isActive"
+              @click="openModalDeleteSession"
+              :title="titleButtonDelete"
+              :disabled="isStoping">
+              <span class="icon stop"></span>
+              <span class="label flex1">{{
+                $t("session.detail_page.stop_force_button")
               }}</span>
             </button>
 
@@ -153,10 +166,10 @@
         </button>
       </div>
 
-      <ModalDeleteSession
+      <ModalForceDeleteSession
         v-if="showModalDeleteSession"
         @on-close="closeModalDeleteSession"
-        @on-confirm="deleteSession" />
+        @on-confirm="stopSession" />
     </div>
   </MainContent>
 </template>
@@ -179,7 +192,7 @@ import FormInput from "@/components/FormInput.vue"
 import FormCheckbox from "@/components/FormCheckbox.vue"
 import SessionChannelsTable from "@/components/SessionChannelsTable.vue"
 import AppointmentSelector from "@/components/AppointmentSelector.vue"
-import ModalDeleteSession from "@/components/ModalDeleteSession.vue"
+import ModalForceDeleteSession from "@/components/ModalForceDeleteSession.vue"
 import MainContent from "@/components/MainContent.vue"
 import SessionStatus from "@/components/SessionStatus.vue"
 
@@ -364,7 +377,6 @@ export default {
   },
   components: {
     MainContent,
-    ModalDeleteSession,
     SessionStatus,
     MainContent,
     SessionNotStarted,
@@ -373,7 +385,7 @@ export default {
     FormCheckbox,
     SessionChannelsTable,
     AppointmentSelector,
-    ModalDeleteSession,
+    ModalForceDeleteSession,
   },
 }
 </script>
