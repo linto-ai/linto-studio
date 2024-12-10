@@ -3,7 +3,8 @@
     <span :class="['icon', icon]"></span>
     <div class="flex col flex1">
       <div class="flex stat-card__header align-center">
-        <span class="flex1 stat-card__count">{{ count }}</span>
+        <span class="flex1 stat-card__count" v-if="count">{{ count }}</span>
+        <span class="flex1 stat-card__count" v-else>–</span>
       </div>
       <div class="stat-card__title">
         <span>{{ title }}</span>

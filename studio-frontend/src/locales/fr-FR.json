@@ -622,6 +622,10 @@
       "session_permission": "Créer des sessions",
       "update_button": "Mettre à jour les permissions"
     },
+    "organization_stats": {
+      "title": "Statistiques de l'organisation",
+      "medias": "Médias"
+    },
     "update": {
       "title": "Organisation : {name}"
     },

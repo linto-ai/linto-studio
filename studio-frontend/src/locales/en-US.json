@@ -626,6 +626,10 @@
       "session_permission": "Create session",
       "update_button": "Update permissions"
     },
+    "organization_stats": {
+      "title": "Organisation statistics",
+      "medias": "Medias"
+    },
     "update": {
       "title": "organisation : {name}"
     },
