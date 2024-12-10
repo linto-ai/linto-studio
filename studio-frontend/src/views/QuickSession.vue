@@ -22,7 +22,7 @@
     <template v-slot:breadcrumb-actions>
       <div class="flex1 flex gap-small align-center">
         <div class="flex1"></div>
-        <button @click="onSaveSession" :disabled="isSavingSession">
+        <button @click="onSaveMicroSession" :disabled="isSavingSession">
           <span class="label">{{ $t("quick_session.live.save_button") }}</span>
         </button>
       </div>
@@ -151,6 +151,9 @@ export default {
     },
     trashSession() {
       this.onSaveSession(true)
+    },
+    onSaveMicroSession(e) {
+      this.onSaveSession(false)
     },
     async onSaveBotSession() {
       await apiStopBot(
