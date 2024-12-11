@@ -7,7 +7,11 @@ async function updateChildConversation(conversation, action = update) {
   try {
     for (const conversationId of conversation.type.child_conversations) {
       if (action === "DELETE") {
-        //TODO handle other delete when needed (at the moment no audio, so nothing to delete)
+        const child_conv = await model.conversations.getById(conversationId)
+        if (!child_conv) continue
+        if (child_conv && child_conv[0].type.child_conversations.length > 0) {
+          await updateChildConversation(child_conv[0], action)
+        }
         await model.conversations.delete(conversationId)
       } else if (action === "RIGHTS") {
         let updateConv = {

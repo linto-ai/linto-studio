@@ -21,6 +21,7 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 const { fetchJob } = require(
   `${process.cwd()}/components/WebServer/controllers/job/fetchHandler`,
 )
+const TYPES = require(`${process.cwd()}/lib/dao/conversation/types`)
 
 const {
   ConversationIdRequire,
@@ -219,20 +220,17 @@ async function getChildConversation(req, res, next) {
     )
 
     if (conversation.length !== 1) throw new ConversationNotFound()
-    if (conversation[0].type.mode === "canonical") {
-      let projection = req.query?.projection
-        ? req.query.projection.split(",")
-        : []
 
-      const childConversations =
-        await model.conversations.getConversationFromList(
-          conversation[0].type.child_conversations,
-          projection,
-        )
-      res.status(200).send(childConversations)
-    } else {
-      res.status(200).send([])
-    }
+    let projection = req.query?.projection
+      ? req.query.projection.split(",")
+      : []
+
+    const childConversations =
+      await model.conversations.getConversationFromParent(
+        req.params.conversationId,
+        projection,
+      )
+    res.status(200).send(childConversations)
   } catch (err) {
     next(err)
   }

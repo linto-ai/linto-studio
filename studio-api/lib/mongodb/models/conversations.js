@@ -64,30 +64,24 @@ class ConvoModel extends MongoModel {
     }
   }
 
-  async getConversationFromList(ids, projectionArray) {
-    ids = ids.map((id) => {
-      if (typeof id === "string") return this.getObjectId(id)
-      else return id
-    })
+  async getConversationFromParent(id, projectionArray) {
+    try {
+      let query = {
+        "type.from_parent_id": id,
+      }
 
-    let query = {
-      _id: {
-        $in: ids,
-      },
+      let projection = {}
+      if (projectionArray) {
+        projectionArray.map((element) => {
+          projection[element] = 1
+        })
+      }
+
+      return await this.mongoRequest(query, projection)
+    } catch (error) {
+      console.error(error)
+      return error
     }
-
-    let projection = {}
-    if (projectionArray) {
-      projectionArray.map((element) => {
-        projection[element] = 1
-      })
-    }
-
-    return await this.mongoRequest(query, projection)
-  }
-  catch(error) {
-    console.error(error)
-    return errorMonitor
   }
 
   async getByIdWithFilter(convId, projection) {
