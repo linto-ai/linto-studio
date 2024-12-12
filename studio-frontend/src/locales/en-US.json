@@ -13,6 +13,10 @@
   "app_editor_channels_selector": {
     "label": "Choose a channel"
   },
+  "app_editor_translations_selector": {
+    "label": "Choose a translation",
+    "original_language": "Original language"
+  },
   "app_editor_highlights_modal": {
     "delete_tag_modal": {
       "content": "Are you sure you want to delete this tag ?"

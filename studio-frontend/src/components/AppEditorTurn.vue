@@ -203,7 +203,6 @@ export default {
     },
   },
   data() {
-    console.log("this.turnData", this.turnData)
     return {
       localTurnData: structuredClone(this.turnData),
       contentEditable: false,

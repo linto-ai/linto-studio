@@ -14,7 +14,7 @@ export const conversationModelMixin = {
       // return child conversations ids
       return this.conversation?.type?.child_conversations ?? []
     },
-    parentConversationId() {
+    rootConversationId() {
       return this.conversation?.type?.from_parent_id ?? ""
     },
     name() {
@@ -22,14 +22,14 @@ export const conversationModelMixin = {
         return this.conversation?.name
       }
 
-      return this.parentConversation?.name
+      return this.rootConversation?.name
     },
     canonicalId() {
       if (this.conversationType === "canonical") {
         return this.conversation?._id
       }
 
-      return this.parentConversation?._id
+      return this.rootConversation?._id
     },
   },
 }

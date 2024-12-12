@@ -226,11 +226,15 @@ export async function apiCountConversation(organizationScope, tag, notif) {
   return getConversations?.count || 0
 }
 
-export async function apiGetConversationById(conversationId, notif) {
+export async function apiGetConversationById(
+  conversationId,
+  projection = {},
+  notif,
+) {
   const getConversation = await sendRequest(
     `${BASE_API}/conversations/${conversationId}`,
     { method: "get" },
-    null,
+    { projection },
     notif,
   )
   return getConversation?.data
