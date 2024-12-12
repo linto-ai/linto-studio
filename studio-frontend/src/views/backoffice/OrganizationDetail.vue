@@ -1,7 +1,13 @@
 <template>
   <MainContentBackoffice :loading="loading">
-    <UpdateOrganizationForm :currentOrganization="organization" />
-    <UpdateOrganizationPermissions :currentOrganization="organization" />
+    <div class="flex gap-large">
+      <div>
+        <UpdateOrganizationForm :currentOrganization="organization" />
+        <UpdateOrganizationPermissions :currentOrganization="organization" />
+      </div>
+      <OrganizationStats :organizationId="organizationId" />
+    </div>
+
     <UpdateOrganizationUsers
       :currentOrganization="organization"
       :userInfo="userInfo" />
@@ -29,6 +35,7 @@ import UpdateOrganizationForm from "@/components/UpdateOrganizationForm.vue"
 import UpdateOrganizationUsers from "@/components/UpdateOrganizationUsers.vue"
 import ModalDeleteOrganization from "@/components/ModalDeleteOrganization.vue"
 import UpdateOrganizationPermissions from "@/components/UpdateOrganizationPermissions.vue"
+import OrganizationStats from "@/components/OrganizationStats.vue"
 export default {
   mixins: [platformRoleMixin],
   props: {
@@ -73,6 +80,7 @@ export default {
     UpdateOrganizationUsers,
     UpdateOrganizationPermissions,
     ModalDeleteOrganization,
+    OrganizationStats,
   },
 }
 </script>

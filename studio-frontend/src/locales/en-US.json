@@ -630,6 +630,10 @@
       "session_permission": "Create session",
       "update_button": "Update permissions"
     },
+    "organization_stats": {
+      "title": "Organisation statistics",
+      "medias": "Medias"
+    },
     "update": {
       "title": "organisation : {name}"
     },
@@ -737,6 +741,7 @@
         "label": "Session name"
       },
       "diarization_label": "Activate speakers detection (if available per channels)",
+      "keep_audio_label": "Keep audio when session ends",
       "channels_error": "Please add at least one channel to create the session",
       "submit_button": "Create session",
       "submit_label": "Create session",

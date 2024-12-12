@@ -44,6 +44,10 @@
           class="medium-margin-top"
           :field="fieldDiarizationEnabled"
           v-model="fieldDiarizationEnabled.value"></FormCheckbox>
+        <FormCheckbox
+          class=""
+          :field="fieldKeepAudio"
+          v-model="fieldKeepAudio.value"></FormCheckbox>
         <div class="" style="overflow: auto">
           <SessionChannelsTable
             class="medium-margin-top"
@@ -159,6 +163,11 @@ export default {
         value: false,
         label: this.$t("session.create_page.diarization_label"),
       },
+      fieldKeepAudio: {
+        ...EMPTY_FIELD,
+        value: true,
+        label: this.$t("session.create_page.keep_audio_label"),
+      },
       fieldAppointment: {
         ...EMPTY_FIELD,
         value: [null, null], // startDateTime, endDateTime
@@ -217,6 +226,7 @@ export default {
             name,
             translations: translations ?? [],
             diarization: this.fieldDiarizationEnabled.value,
+            keepAudio: this.fieldKeepAudio.value,
           })),
           scheduleOn: startDateTime,
           endOn: endDateTime,

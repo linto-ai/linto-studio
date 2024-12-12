@@ -214,7 +214,7 @@ export async function apiCreateConversation(
   }
 }
 
-export async function apiCountConversation(organizationScope, tag, notif) {
+export async function apiCountConversation(organizationScope, tag = [], notif) {
   const getConversations = await apiGetConversationsByTags(
     organizationScope,
     tag,
