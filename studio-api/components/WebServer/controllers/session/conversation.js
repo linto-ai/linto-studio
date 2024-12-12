@@ -50,11 +50,37 @@ function initConversationMultiChannel(
   }
 }
 
+function mergeClosedCaptions(closedCaptions) {
+  let memory = {}
+  for (let caption of closedCaptions) {
+    if (memory[caption.start] === undefined) memory[caption.start] = caption
+    else memory[caption.start] = { ...memory[caption.start], ...caption }
+  }
+
+  let newCaption = []
+  for (let key in memory) {
+    newCaption.push(memory[key])
+  }
+  return newCaption
+}
+
+function formatChannel(session) {
+  for (let channel of session.channels) {
+    // We need to merge locutor and the translation in the same object when they both are enabled
+    if (channel.diarization === true && channel.translations.length >= 1) {
+      channel.closedCaptions = mergeClosedCaptions(channel.closedCaptions)
+    }
+  }
+  return session
+}
+
 function initCaptionsForConversation(sessionData, name = undefined) {
   try {
-    const session = JSON.parse(JSON.stringify(sessionData))
+    let session = JSON.parse(JSON.stringify(sessionData))
     let captions = []
 
+    // we need to reformat the session data to match the conversation model
+    session = formatChannel(session)
     for (let channel of session.channels) {
       if (!channel.closedCaptions) {
         continue
@@ -66,6 +92,8 @@ function initCaptionsForConversation(sessionData, name = undefined) {
 
       let caption = initializeCaption(session, channel, name)
       processChannelCaptions(channel.closedCaptions, caption)
+
+      // In case of translation enabled, we need to create a new caption for each translation
       if (channel.translations && channel.translations.length > 0) {
         for (let tl of channel.translations) {
           let tlCaption = initializeCaption(session, channel, name, tl)
@@ -77,7 +105,6 @@ function initCaptionsForConversation(sessionData, name = undefined) {
       }
       captions.push(caption)
     }
-
     return captions
   } catch (err) {
     throw err
@@ -136,18 +163,19 @@ function processChannelCaptions(closedCaptions, caption, translation = "") {
 }
 
 function ensureSpeaker(caption, channel_caption) {
+  let speakerName = channel_caption.locutor || DEFAULT_SPEAKER_NAME
   if (!caption.locutor) {
     caption.locutor = DEFAULT_SPEAKER_NAME
   }
 
   let existingSpeaker = caption.speakers.find(
-    (speaker) => speaker.speaker_name === caption.locutor,
+    (speaker) => speaker.speaker_name === speakerName,
   )
 
   if (!existingSpeaker) {
     const newSpeaker = {
       speaker_id: uuidv4(),
-      speaker_name: caption.locutor || DEFAULT_SPEAKER_NAME,
+      speaker_name: speakerName || DEFAULT_SPEAKER_NAME,
       stime: channel_caption.start,
       etime: channel_caption.end,
     }
@@ -158,7 +186,7 @@ function ensureSpeaker(caption, channel_caption) {
   return existingSpeaker.speaker_id
 }
 
-function createTurn(channel_caption, spk_id, translation = "") {
+function createTurn(channel_caption, spk_id, translation) {
   let turn = {
     speaker_id: spk_id,
     turn_id: uuidv4(),
@@ -188,99 +216,131 @@ function createTurn(channel_caption, spk_id, translation = "") {
 
 async function storeSession(session, name = undefined) {
   try {
-    let result
     const captions = initCaptionsForConversation(session, name)
     let conversationMemory = []
 
-    let count = 0
-    let translationCount = 0
-    for (let caption of captions) {
-      if (caption.type.mode !== TYPES.TRANSLATION) {
-        count++
-      } else {
-        translationCount++
-      }
-    }
+    const { canonicalCount, translationCount } = countCaptions(captions)
 
-    if (count === 0) {
-      return
-    } else if (count === 1) {
-      for (let caption of captions) {
-        if (caption.type.mode !== TYPES.TRANSLATION) {
-          caption.type.mode = TYPES.CANONICAL
-          result = await model.conversations.create(caption)
-          conversationMemory.push({
-            convId: result.insertedId.toString(),
-            name: caption.name,
-          })
-        }
-      }
-    } else {
-      const conversation_multi_channel = initConversationMultiChannel(
-        session,
-        name,
-      )
+    if (canonicalCount === 0) return
 
-      for (let caption of captions) {
-        if (caption.type.mode === TYPES.TRANSLATION) {
-          continue
-        }
-        const result = await model.conversations.create(caption)
-        conversation_multi_channel.type.child_conversations.push(
-          result.insertedId.toString(),
-        )
-        await model.categories.createDefaultCategories(
-          "keyword",
-          result.insertedId.toString(),
-        )
-        conversationMemory.push({
-          convId: result.insertedId.toString(),
-          name: caption.name,
-        })
-      }
-      result = await model.conversations.create(conversation_multi_channel)
-      await model.categories.createDefaultCategories(
-        "keyword",
-        result.insertedId.toString(),
-      )
-
-      const parentId = result.insertedId.toString()
-      for (let childId of conversation_multi_channel.type.child_conversations) {
-        await model.conversations.update({
-          _id: childId,
-          "type.from_canonical_id": parentId,
-          "type.from_parent_id": parentId,
-        })
-      }
-    }
+    const result =
+      canonicalCount === 1
+        ? await storeSingleConversation(captions, conversationMemory)
+        : await storeMultiChannelConversation(
+            captions,
+            session,
+            name,
+            conversationMemory,
+          )
 
     if (translationCount > 0) {
-      for (let caption of captions) {
-        if (caption.type.mode === TYPES.TRANSLATION) {
-          const parent = conversationMemory.find(
-            (conv) => conv.name === caption.parentName,
-          )
-
-          caption.type = {
-            ...caption.type,
-            from_parent_id: parent.convId,
-            from_canonical_id: result.insertedId.toString(),
-          }
-
-          const result_translation = await model.conversations.create(caption)
-
-          const parentConv = await model.conversations.getById(parent.convId)
-          parentConv[0].type.child_conversations.push(
-            result_translation.insertedId.toString(),
-          )
-          await model.conversations.update(parentConv[0])
-        }
-      }
+      await storeTranslations(captions, conversationMemory, result)
     }
 
     return result
   } catch (err) {
     throw err
+  }
+}
+
+function countCaptions(captions) {
+  let canonicalCount = 0
+  let translationCount = 0
+
+  for (let caption of captions) {
+    if (caption.type.mode !== TYPES.TRANSLATION) {
+      canonicalCount++ // count canonical & child
+    } else {
+      translationCount++ // count translations
+    }
+  }
+
+  return { canonicalCount, translationCount }
+}
+
+async function storeSingleConversation(captions, conversationMemory) {
+  let result
+  for (let caption of captions) {
+    if (caption.type.mode !== TYPES.TRANSLATION) {
+      caption.type.mode = TYPES.CANONICAL
+      result = await model.conversations.create(caption)
+      conversationMemory.push({
+        convId: result.insertedId.toString(),
+        name: caption.name,
+      })
+    }
+  }
+  return result
+}
+
+async function storeMultiChannelConversation(
+  captions,
+  session,
+  name,
+  conversationMemory,
+) {
+  const main_conversation = initConversationMultiChannel(session, name)
+
+  for (let caption of captions) {
+    if (caption.type.mode === TYPES.TRANSLATION) continue
+    let caption_result = await model.conversations.create(caption)
+    main_conversation.type.child_conversations.push(
+      caption_result.insertedId.toString(),
+    )
+    await model.categories.createDefaultCategories(
+      "keyword",
+      caption_result.insertedId.toString(),
+    )
+    conversationMemory.push({
+      convId: caption_result.insertedId.toString(),
+      name: caption.name,
+    })
+  }
+
+  let result = await model.conversations.create(main_conversation)
+  await model.categories.createDefaultCategories(
+    "keyword",
+    result.insertedId.toString(),
+  )
+
+  await updateChildConversations(
+    main_conversation.type.child_conversations,
+    result.insertedId.toString(),
+  )
+
+  return result
+}
+
+async function updateChildConversations(childConversations, parentId) {
+  for (let childId of childConversations) {
+    await model.conversations.update({
+      _id: childId,
+      "type.from_canonical_id": parentId,
+      "type.from_parent_id": parentId,
+    })
+  }
+}
+
+async function storeTranslations(captions, conversationMemory, result) {
+  for (let caption of captions) {
+    if (caption.type.mode !== TYPES.TRANSLATION) continue
+
+    const parent = conversationMemory.find(
+      (conv) => conv.name === caption.parentName,
+    )
+    caption.type = {
+      ...caption.type,
+      from_parent_id: parent.convId,
+      from_canonical_id: result.insertedId.toString(),
+    }
+
+    const result_translation = await model.conversations.create(caption)
+
+    const parentConv = await model.conversations.getById(parent.convId)
+    parentConv[0].type.child_conversations.push(
+      result_translation.insertedId.toString(),
+    )
+    await model.conversations.update(parentConv[0])
   }
 }
 
