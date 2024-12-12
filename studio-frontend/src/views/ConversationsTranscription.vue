@@ -9,9 +9,11 @@
       <div>
         <div class="form-field flex col medium-margin gap-medium">
           <AppEditorChannelsSelector
+            v-if="channels && channels.length > 0"
             :channels="channels"
             v-model="selectedChannel" />
           <AppEditorTranslationSelector
+            v-if="translations && translations.length > 0"
             :translations="translations"
             v-model="selectedTranslation" />
         </div>

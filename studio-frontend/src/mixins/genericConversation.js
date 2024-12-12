@@ -113,6 +113,7 @@ export const genericConversationMixin = {
         case "translation":
           this.channels = []
           this.translations = childs
+          this.selectedTranslation = "original"
           this.conversationId = canonicalConversation._id
           break
         default:
