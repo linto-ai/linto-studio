@@ -94,6 +94,7 @@ export const genericConversationMixin = {
         "_id",
         "name",
         "type.mode",
+        "locale",
       ])
 
       const childsType = childs.map((child) => child.type.mode)
@@ -105,6 +106,7 @@ export const genericConversationMixin = {
             "_id",
             "name",
             "type.mode",
+            "locale",
           ])
           this.conversationId = childs[0]._id
           this.selectedChannel = childs[0]._id

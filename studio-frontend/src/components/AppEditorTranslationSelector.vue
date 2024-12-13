@@ -35,10 +35,13 @@ export default {
       return "name"
     },
     translationsList() {
+      let languageNames = new Intl.DisplayNames([this.$i18n.locale], {
+        type: "language",
+      })
       let translationsList = this.translations.map((translation) => {
         return {
           value: translation._id,
-          text: `${translation.name}`,
+          text: languageNames.of(translation.locale),
         }
       })
 
