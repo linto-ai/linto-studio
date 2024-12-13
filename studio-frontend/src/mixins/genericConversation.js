@@ -129,6 +129,7 @@ export const genericConversationMixin = {
         "_id",
         "name",
         "type.mode",
+        "locale",
       ])
       this.selectedTranslation = "original"
       this.connectToWorker(this.initConversation)

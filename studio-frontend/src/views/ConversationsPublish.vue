@@ -7,12 +7,15 @@
     :error="error"
     :sidebar="true">
     <template v-slot:sidebar>
-      <div
-        class="form-field flex col medium-margin"
-        v-if="conversationType === 'child'">
+      <div class="form-field flex col medium-margin gap-medium">
         <AppEditorChannelsSelector
+          v-if="channels && channels.length > 0"
           :channels="channels"
           v-model="selectedChannel" />
+        <AppEditorTranslationSelector
+          v-if="translations && translations.length > 0"
+          :translations="translations"
+          v-model="selectedTranslation" />
       </div>
       <div style="margin: 0 1rem" class="flex col">
         <!-- <h2>{{ $t(`publish.filter_title.${activeTab}`) }}</h2> -->
@@ -36,29 +39,6 @@
             <span class="label">{{ $t("publish.reload_document") }}</span>
           </button>
         </section>
-
-        <!-- <section v-if="conversation.speakers.length > 1">
-          <h3 for="template-format-list">
-            {{ $t("publish.filter_speaker.title") }}
-          </h3>
-
-          <div
-            v-for="speaker of conversation.speakers"
-            class="flex speaker-filter-item"
-            style="margin: 0.25rem 0rem">
-            <label
-              :for="'filter-speaker-' + speaker.speaker_id"
-              class="flex1"
-              >{{ speaker.speaker_name }}</label
-            >
-            <SwitchInput
-              :checkboxValue="speaker.speaker_id"
-              v-model="filterSpeakers"
-              :id="'filter-speaker-' + speaker.speaker_id"
-              name="filter-speakers"
-              style="margin-right: 0.5rem" />
-          </div>
-        </section> -->
       </div>
     </template>
 
@@ -101,15 +81,6 @@
         v-model="activeTab"
         :tabs="tabs"
         v-if="tabs && tabs.length > 0"></Tabs>
-      <!-- <div class="publish-turn-list">
-        <h1>{{ conversation.name }}</h1>
-        <h2>Transcription</h2>
-        <PublishTurn
-          v-for="turn of turns"
-          :key="turn.turn_id"
-          :turn="turn"
-          :speakerIndexedBySpeakerId="speakerIndexedBySpeakerId" />
-      </div> -->
       <ConversationPublishContent
         :status="pdfStatus"
         :blobUrl="blobUrl"
@@ -149,12 +120,12 @@ import MainContentConversation from "@/components/MainContentConversation.vue"
 import MenuToolbox from "@/components/MenuToolbox.vue"
 import CustomSelect from "@/components/CustomSelect.vue"
 import SwitchInput from "@/components/SwitchInput.vue"
-import PublishTurn from "@/components/PublishTurn.vue"
 import Tabs from "@/components/Tabs.vue"
 import ConversationShare from "@/components/ConversationShare.vue"
 import TranscriptionHelper from "@/components/TranscriptionHelper.vue"
 import ConversationPublishContent from "@/components/ConversationPublishContent.vue"
 import AppEditorChannelsSelector from "@/components/AppEditorChannelsSelector.vue"
+import AppEditorTranslationSelector from "../components/AppEditorTranslationSelector.vue"
 
 export default {
   mixins: [conversationMixin],
@@ -163,7 +134,6 @@ export default {
       selfUrl: (convId) => `/interface/conversations/${convId}/publish`,
       conversationId: "",
       filterSpeakers: [],
-      speakerIndexedBySpeakerId: {},
       helperVisible: false,
       pdfStatus: null,
       status: null,
@@ -192,13 +162,6 @@ export default {
         this.status = this.computeStatus(this.conversation?.jobs?.transcription)
         this.filterSpeakers = this.conversation.speakers.map(
           (speaker) => speaker.speaker_id,
-        )
-        this.speakerIndexedBySpeakerId = this.conversation.speakers.reduce(
-          (acc, speaker) => {
-            acc[speaker.speaker_id] = speaker
-            return acc
-          },
-          {},
         )
         if (this.status !== "done") {
           this.$router.push(`/interface/conversations/${this.conversation._id}`)
@@ -315,6 +278,9 @@ export default {
     },
   },
   methods: {
+    initConversationHook() {
+      this.getPdf()
+    },
     showHelper() {
       this.helperVisible = true
     },
@@ -529,13 +495,13 @@ export default {
     MenuToolbox,
     CustomSelect,
     SwitchInput,
-    PublishTurn,
     Tabs,
     // ConversationPublishVerbatim,
     // ConversationPublishCra,
     // ConversationPublishCri,
     ConversationPublishContent,
     AppEditorChannelsSelector,
+    AppEditorTranslationSelector,
   },
 }
 </script>
