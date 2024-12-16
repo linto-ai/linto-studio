@@ -67,6 +67,7 @@ class UsersModel extends MongoModel {
   async createSuperAdmin(user) {
     try {
       const { salt, passwordHash } = generatePasswordHash(user.password)
+      delete user.password
       const dateTime = moment().format()
 
       const adminPayload = {
@@ -92,6 +93,7 @@ class UsersModel extends MongoModel {
   async create(payload) {
     try {
       const dateTime = moment().format()
+      delete payload.password
 
       const userPayload = {
         ...payload,
@@ -118,6 +120,8 @@ class UsersModel extends MongoModel {
   async createUser(payload) {
     try {
       const { salt, passwordHash } = generatePasswordHash(payload.password)
+      delete payload.password
+
       const dateTime = moment().format()
 
       const userPayload = {
@@ -142,6 +146,7 @@ class UsersModel extends MongoModel {
   async createExternal(payload) {
     try {
       const dateTime = moment().format()
+      delete payload.password
 
       const externalPayload = {
         ...payload,
