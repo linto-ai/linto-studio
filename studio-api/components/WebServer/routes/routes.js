@@ -43,12 +43,11 @@ module.exports = (webServer) => {
     proxy_routes.push(require("./proxy/sessions/session.js")(webServer))
   }
 
-  if (process.env.OIDC_URL !== "") {
+  if (process.env.OIDC_TYPE !== "") {
     api_routes["/auth"] = [
       ...api_routes["/auth"],
       ...require("./auth/oidc.js")(webServer),
     ]
-    debug(api_routes["/auth"])
   }
 
   return {

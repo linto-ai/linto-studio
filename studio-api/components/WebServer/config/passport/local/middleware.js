@@ -1,10 +1,11 @@
 const debug = require("debug")(
-  "linto:conversation-manager:components:webserver:config:passport:local:middleware",
+  "linto:conversation-manager:components:webserver:config:passport:oidc:middleware",
 )
 
-require("./local")
-require("./oidc")
-
+require("./strategies/local")
+if (process.env.OIDC_TYPE === "linagora") {
+  require("./strategies/oidc_linagora")
+}
 const passport = require("passport")
 
 const { expressjwt: jwt } = require("express-jwt")
@@ -59,11 +60,7 @@ module.exports = {
     )(req, res, next)
   },
   oidc_authenticate: (req, res, next) => {
-    console.log("oidc_authenticate")
-    passport.authenticate("oidc", { session: false }, (err, user) => {
-      //TODO: how to check stuff there ?
-      console.log("oidc_authenticate 2")
-      debug("auth oidc")
+    passport.authenticate("oidc", { session: false }, (err) => {
       if (err) {
         next(err)
       } else if (!user) {
@@ -84,7 +81,13 @@ module.exports = {
       getToken: getTokenFromHeaders,
     }),
     (req, res, next) => {
-      const tokenData = jwtDecode(req.headers.authorization.split(" ")[1])
+      let token
+      if (req.headers.authorization)
+        token = req.headers.authorization.split(" ")[1]
+      else if (req.session.passport.user.auth_token)
+        token = req.session.passport.user.auth_token
+
+      const tokenData = jwtDecode(token)
       req.payload = {
         data: {
           userId: tokenData.data.userId,
@@ -102,7 +105,13 @@ module.exports = {
       getToken: getTokenFromHeaders,
     }),
     async (req, res, next) => {
-      const tokenData = jwtDecode(req.headers.authorization.split(" ")[1])
+      let token
+      if (req.headers.authorization)
+        token = req.headers.authorization.split(" ")[1]
+      else if (req.session.passport.user.auth_token)
+        token = req.session.passport.user.auth_token
+
+      const tokenData = jwtDecode(token)
 
       req.payload = {
         data: {
@@ -120,6 +129,8 @@ function getTokenFromHeaders(req) {
   } = req
   if (authorization && authorization.split(" ")[0] === "Bearer")
     return authorization.split(" ")[1]
+  else if (req?.session?.passport?.user?.auth_token)
+    return req.session.passport.user.auth_token
   else return null
 }
 
@@ -129,11 +140,13 @@ async function generateSecretFromHeaders(req, token, done) {
     const {
       headers: { authorization },
     } = req
-
     const userId = token.payload.data.userId
     const tokenId = token.payload.data.tokenId
 
-    if (authorization.split(" ")[0] === "Bearer") {
+    if (
+      (authorization && authorization.split(" ")[0] === "Bearer") ||
+      req.session.passport.user.auth_token
+    ) {
       const users_token = await model.tokens.getTokenById(tokenId, userId)
 
       if (users_token.length === 0) throw new UserNotFound()
@@ -155,7 +168,10 @@ async function generateRefreshSecretFromHeaders(req, token, done) {
     const userId = token.payload.data.userId
     const tokenId = token.payload.data.tokenId
 
-    if (authorization.split(" ")[0] === "Bearer") {
+    if (
+      (authorization && authorization.split(" ")[0] === "Bearer") ||
+      req.session.passport.user.auth_token
+    ) {
       const users_token = await model.tokens.getTokenById(tokenId, userId)
 
       if (users_token.length === 0) throw new UserNotFound()

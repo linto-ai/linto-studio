@@ -10,7 +10,7 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const crypto = require("crypto")
 
-const TokenGenerator = require("./token/generator")
+const TokenGenerator = require("../token/generator")
 const {
   InvalidCredential,
   MultipleUserFound,

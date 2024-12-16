@@ -6,6 +6,7 @@ const { logout, recoveryAuth } = require(
 const auth_middleware = require(
   `${process.cwd()}/components/WebServer/config/passport/local/middleware`,
 )
+var passport = require("passport")
 
 module.exports = (webServer) => {
   return [
@@ -17,7 +18,7 @@ module.exports = (webServer) => {
         (req, res, next) => {
           console.log("OIDC")
           next()
-        }, // This is a placeholder
+        },
         auth_middleware.oidc_authenticate,
         (req, res, next) => {
           res.status(202).json(req.user)
@@ -25,14 +26,28 @@ module.exports = (webServer) => {
       ],
     },
     {
-      path: "/login/oidc/cb",
+      path: "/oidc/cb",
       method: "get",
-      requireAuth: true,
+      requireAuth: false,
       controller: [
         (req, res, next) => {
           console.log("OIDC CB")
           next()
-        }, // This is a placeholder
+        },
+        passport.authenticate("oidc", {
+          successReturnToOrRedirect: "/",
+          failureRedirect: "auth/login/oidc",
+        }),
+      ],
+    },
+    {
+      path: "/oidc/token",
+      method: "get",
+      requireAuth: true,
+      controller: [
+        (req, res, next) => {
+          res.status(200).json(req.session.passport.user)
+        },
       ],
     },
   ]
