@@ -57,7 +57,7 @@ export default {
   },
   methods: {
     onClick(e) {
-      this.$emit("select")
+      this.$emit("select", e)
     },
   },
   components: {},

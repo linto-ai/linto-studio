@@ -2,6 +2,27 @@
   <Loading v-if="loading" />
   <div class="flex col flex1 reset-overflows" v-else>
     <div
+      class="session-content__action-bar flex align-center gap-medium"
+      v-if="this.selectedTurns.length > 0">
+      <button class="red-border" @click="clearSelectedTurns">
+        <span class="label">{{
+          $tc("session.detail_page.clear_turn_selection")
+        }}</span>
+      </button>
+
+      <button @click="copyTurns">
+        <span class="icon apply" v-if="copyState"></span>
+        <span class="icon copy" v-else></span>
+        <span class="label">{{
+          $tc("session.detail_page.copy_turns_text")
+        }}</span>
+      </button>
+      <span>{{
+        $tc("session.detail_page.n_turns_selected", this.selectedTurns.length)
+      }}</span>
+    </div>
+
+    <div
       v-if="hasText"
       class="flex col flex1 session-content__turns reset-overflows"
       :class="{ has_subtitles: displaySubtitles }">
@@ -12,7 +33,7 @@
         :selectedTranslations="selectedTranslations"
         :turn="turn"
         :selected="selectedTurns.includes(turn.uuid)"
-        @select="onSelectTurn(turn.uuid)"></SessionChannelTurn>
+        @select="onSelectTurn(turn.uuid, $event)"></SessionChannelTurn>
 
       <SessionChannelTurn
         v-for="turn in turns"
@@ -21,7 +42,7 @@
         :selectedTranslations="selectedTranslations"
         :turn="turn"
         :selected="selectedTurns.includes(turn.uuid)"
-        @select="onSelectTurn(turn.uuid)"></SessionChannelTurn>
+        @select="onSelectTurn(turn.uuid, $event)"></SessionChannelTurn>
 
       <SessionChannelTurnPartial
         v-if="displayLiveTranscription && partialText !== ''"
@@ -139,16 +160,17 @@ export default {
       finalObject: {},
       loading: true,
       selectedTurns: [],
+      copyState: false,
     }
   },
   mounted() {
     // add uuid to the channel
-    this.previousTurns = (this.channel?.closedCaptions || []).map((turn) => {
-      return {
-        ...turn,
-        uuid: uuidv4(),
-      }
-    })
+    // this.previousTurns = (this.channel?.closedCaptions || []).map((turn) => {
+    //   return {
+    //     ...turn,
+    //     uuid: uuidv4(),
+    //   }
+    // })
     this.loading = false
     this.init()
   },
@@ -184,6 +206,7 @@ export default {
         await this.loadPreviousTranscrition()
         this.loading = false
         this.scrollToBottom()
+        this.clearSelectedTurns()
       },
       deep: true,
       immediate: true,
@@ -264,7 +287,13 @@ export default {
         const channel = allChannels.find(
           (channel) => channel.id === this.channelIndex,
         )
-        this.previousTurns = channel?.closedCaptions || []
+        // add uuid to the channel
+        this.previousTurns = (channel?.closedCaptions || []).map((turn) => {
+          return {
+            ...turn,
+            uuid: uuidv4(),
+          }
+        })
       }
     },
     onPartial(content) {
@@ -299,13 +328,80 @@ export default {
         }
       })
     },
-    onSelectTurn(turnId) {
-      console.log("onSelectTurn", turnId)
-      if (this.selectedTurns.includes(turnId)) {
-        this.selectedTurns = this.selectedTurns.filter((id) => id !== turnId)
-      } else {
-        this.selectedTurns.push(turnId)
+    clearSelection() {
+      if (document.selection && document.selection.empty) {
+        document.selection.empty()
+      } else if (window.getSelection) {
+        var sel = window.getSelection()
+        sel.removeAllRanges()
       }
+    },
+    onSelectTurn(turnId, event) {
+      event.stopPropagation()
+      event.preventDefault()
+      if (event.ctrlKey) {
+        if (this.selectedTurns.includes(turnId)) {
+          this.selectedTurns = this.selectedTurns.filter((id) => id !== turnId)
+        } else {
+          this.selectedTurns.push(turnId)
+        }
+
+        return
+      }
+
+      if (event.shiftKey) {
+        this.clearSelection()
+        const allturns = this.previousTurns.concat(this.turns)
+        const clickedIndex = allturns.findIndex((turn) => turn.uuid === turnId)
+        const firstSelectedIndex = allturns.findIndex(
+          (turn) => turn.uuid === this.selectedTurns[0],
+        )
+        const lastSelectedIndex = allturns.findIndex(
+          (turn) =>
+            turn.uuid === this.selectedTurns[this.selectedTurns.length - 1],
+        )
+
+        if (clickedIndex < firstSelectedIndex) {
+          this.selectedTurns = allturns
+            .slice(clickedIndex, firstSelectedIndex + 1)
+            .map((turn) => turn.uuid)
+        }
+
+        if (clickedIndex > lastSelectedIndex) {
+          this.selectedTurns = allturns
+            .slice(lastSelectedIndex, clickedIndex + 1)
+            .map((turn) => turn.uuid)
+        }
+
+        return
+      }
+
+      this.selectedTurns = [turnId]
+    },
+    copyTurns() {
+      const selectedTurns = this.turns.filter((turn) =>
+        this.selectedTurns.includes(turn.uuid),
+      )
+      const previousSelectedTurns = this.previousTurns.filter((turn) =>
+        this.selectedTurns.includes(turn.uuid),
+      )
+
+      const text = previousSelectedTurns
+        .concat(selectedTurns)
+        .map((turn) =>
+          getTextTurnWithTranslation(turn, this.selectedTranslations),
+        )
+        .join("\n\n")
+
+      this.copyState = true
+      setTimeout(() => {
+        this.copyState = false
+      }, 1000)
+      navigator.clipboard.writeText(text)
+    },
+    clearSelectedTurns() {
+      // TODO: clear selection when clicking on the background
+      this.selectedTurns = []
     },
   },
   components: {
