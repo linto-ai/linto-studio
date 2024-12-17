@@ -13,50 +13,73 @@ export default function splitPartialSubtitles(
   }
 
   const previousTextSplitBySpace = previousText.split(" ")
-
   const newTextSplitBySpace = newText.split(" ")
-  const diff_list = diffArrays(previousTextSplitBySpace, newTextSplitBySpace, {
+  const diffList = diffArrays(previousTextSplitBySpace, newTextSplitBySpace, {
     comparator: isSameWord,
   })
-  let indexInNewText = 0
-  let numberOfRemove = 0
+
+  const diffListWithReplacements = detectReplacements(diffList)
+
+  const copyCutPositions = [...oldCutPositions]
   let newCutPositions = [...oldCutPositions]
 
-  for (const diff of diff_list) {
-    if (diff.removed) {
-      newCutPositions = incrementIndexes(
-        newCutPositions,
-        indexInNewText,
-        -diff.count,
-      )
+  let wordIndex = 0
+  for (const diff of diffListWithReplacements) {
+    do {
+      if (wordIndex < copyCutPositions[0]) {
+        break
+      }
+    } while (copyCutPositions.shift())
 
-      numberOfRemove += diff.count
-    } else if (diff.added) {
-      newCutPositions = incrementIndexes(
-        newCutPositions,
-        indexInNewText - numberOfRemove,
-        diff.count,
-      )
-      indexInNewText += diff.count
-    } else {
-      indexInNewText += diff.count
+    if (copyCutPositions.length == 0) {
+      // last line
+      break
+    }
+
+    switch (true) {
+      case diff.replaced:
+        newCutPositions = incrementIndexes(
+          newCutPositions,
+          copyCutPositions[0],
+          diff.countAdded - diff.countRemoved,
+        )
+        wordIndex += diff.countRemoved
+        break
+
+      case diff.removed:
+        wordIndex += diff.count
+        newCutPositions = incrementIndexes(
+          newCutPositions,
+          copyCutPositions[0],
+          -diff.count,
+        )
+        break
+
+      case diff.added:
+        newCutPositions = incrementIndexes(
+          newCutPositions,
+          copyCutPositions[0],
+          diff.count,
+        )
+        break
+      default:
+        // keep
+        wordIndex += diff.count
+        break
     }
   }
 
   const lastLinePosition = newCutPositions.at(-1) ?? 0
   let lastLine = newTextSplitBySpace.slice(lastLinePosition).join(" ")
   if (computeIfTextIsTooLong(lastLine)) {
-    const offset = (newCutPositions.at(-1) ?? 0) - (oldCutPositions.at(-1) ?? 0)
-    const realLastLinePosition = previousTextSplitBySpace.length + offset
-    const realLastLine = newTextSplitBySpace
-      .slice(realLastLinePosition)
-      .join(" ")
     const cutPositionsForLastLine = getIndexesWhereToCutText(
-      realLastLine,
+      lastLine,
       computeIfTextIsTooLong,
     )
-    newCutPositions.push(realLastLinePosition)
-    newCutPositions = newCutPositions.concat(cutPositionsForLastLine)
+    const cutPositionsForLastLineIncremented = cutPositionsForLastLine.map(
+      (index) => index + lastLinePosition,
+    )
+    newCutPositions = newCutPositions.concat(cutPositionsForLastLineIncremented)
   }
 
   return {
@@ -65,8 +88,40 @@ export default function splitPartialSubtitles(
   }
 }
 
+function detectReplacements(diffList) {
+  const diffListWithReplacements = []
+
+  for (let i = 0; i < diffList.length; i++) {
+    const currentDiff = diffList[i]
+    // keep or added
+    if (!currentDiff.removed) {
+      diffListWithReplacements.push(currentDiff)
+      continue
+    }
+
+    if (i + 1 < diffList.length) {
+      const nextDiff = diffList[i + 1]
+      if (nextDiff.added) {
+        diffListWithReplacements.push({
+          replaced: true,
+          removed: currentDiff.removed,
+          added: nextDiff.added,
+          countRemoved: currentDiff.count,
+          countAdded: nextDiff.count,
+        })
+        i++ // skip next step (the added step)
+        continue
+      }
+
+      diffListWithReplacements.push(currentDiff)
+    }
+  }
+
+  return diffListWithReplacements
+}
+
 function incrementIndexes(indexes, from, increment) {
-  return indexes.map((index) => (index > from ? index + increment : index))
+  return indexes.map((index) => (index >= from ? index + increment : index))
 }
 
 export function getIndexesWhereToCutText(text, computeIfTextIsTooLong) {

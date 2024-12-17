@@ -5,13 +5,13 @@
       <span class="channel-turn__lang">{{ lang }}</span>
       <span class="channel-turn__time">{{ time }}</span>
     </div>
-    <div class="channel-turn__text">{{ text }}</div>
+    <div class="channel-turn__text" :selected="selected" @click="onClick">
+      {{ text }}
+    </div>
   </div>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
-import { lang } from "moment"
 import getTextTurnWithTranslation from "@/tools/getTextTurnWithTranslation.js"
 export default {
   props: {
@@ -23,6 +23,11 @@ export default {
       type: String,
       required: false,
       default: "original",
+    },
+    selected: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   data() {
@@ -50,7 +55,11 @@ export default {
       ).toLocaleTimeString()
     },
   },
-  methods: {},
-  components: { Fragment },
+  methods: {
+    onClick(e) {
+      this.$emit("select")
+    },
+  },
+  components: {},
 }
 </script>

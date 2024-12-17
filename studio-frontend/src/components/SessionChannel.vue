@@ -8,16 +8,20 @@
       <SessionChannelTurn
         v-for="turn in previousTurns"
         v-if="displayLiveTranscription && shouldDisplayTurn(turn)"
-        :key="turn.id"
+        :key="turn.uuid"
         :selectedTranslations="selectedTranslations"
-        :turn="turn"></SessionChannelTurn>
+        :turn="turn"
+        :selected="selectedTurns.includes(turn.uuid)"
+        @select="onSelectTurn(turn.uuid)"></SessionChannelTurn>
 
       <SessionChannelTurn
         v-for="turn in turns"
         v-if="displayLiveTranscription && shouldDisplayTurn(turn)"
-        :key="turn.id"
+        :key="turn.uuid"
         :selectedTranslations="selectedTranslations"
-        :turn="turn"></SessionChannelTurn>
+        :turn="turn"
+        :selected="selectedTurns.includes(turn.uuid)"
+        @select="onSelectTurn(turn.uuid)"></SessionChannelTurn>
 
       <SessionChannelTurnPartial
         v-if="displayLiveTranscription && partialText !== ''"
@@ -84,6 +88,7 @@ import SessionChannelTurnPartial from "@/components/SessionChannelTurnPartial.vu
 import Svglogo from "@/svg/Microphone.vue"
 import SessionSubtitle from "@/components/SessionSubtitle.vue"
 import Loading from "@/components/Loading.vue"
+import uuidv4 from "uuid/v4.js"
 
 import getTextTurnWithTranslation from "@/tools/getTextTurnWithTranslation.js"
 
@@ -125,7 +130,6 @@ export default {
     },
   },
   data() {
-    console.log("channel", this.channel)
     return {
       turns: [],
       previousTurns: [],
@@ -134,10 +138,17 @@ export default {
       finalText: "",
       finalObject: {},
       loading: true,
+      selectedTurns: [],
     }
   },
   mounted() {
-    this.previousTurns = this.channel?.closedCaptions || []
+    // add uuid to the channel
+    this.previousTurns = (this.channel?.closedCaptions || []).map((turn) => {
+      return {
+        ...turn,
+        uuid: uuidv4(),
+      }
+    })
     this.loading = false
     this.init()
   },
@@ -193,7 +204,9 @@ export default {
       if (this.$sessionWS.state.isConnected) {
         this.subscribeToWebsocket()
       }
-      this.scrollToBottom(true)
+      setTimeout(() => {
+        this.scrollToBottom(true)
+      }, 1000)
     },
     subscribeToWebsocket() {
       this.$sessionWS.subscribeRoom(
@@ -263,6 +276,8 @@ export default {
       this.scrollToBottom()
     },
     onFinal(content) {
+      content.uuid = uuidv4()
+
       this.partialText = ""
 
       this.finalText = getTextTurnWithTranslation(
@@ -283,6 +298,14 @@ export default {
           this.$refs.bottom.scrollIntoView({ behavior: "smooth" })
         }
       })
+    },
+    onSelectTurn(turnId) {
+      console.log("onSelectTurn", turnId)
+      if (this.selectedTurns.includes(turnId)) {
+        this.selectedTurns = this.selectedTurns.filter((id) => id !== turnId)
+      } else {
+        this.selectedTurns.push(turnId)
+      }
     },
   },
   components: {
