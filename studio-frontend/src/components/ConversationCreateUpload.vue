@@ -1,6 +1,6 @@
 <template>
   <Droparea
-    :accepts="['audio/*']"
+    :accepts="['audio/*', 'video/*']"
     :multiple="multipleFiles"
     @drop="handleFileUpload"
     @error="handleError($event)">
