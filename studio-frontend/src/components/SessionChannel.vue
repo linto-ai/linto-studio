@@ -173,9 +173,12 @@ export default {
     // })
     this.loading = false
     this.init()
+
+    document.addEventListener("keydown", this.keydown)
   },
   beforeDestroy() {
     this.$sessionWS.unSubscribeRoom()
+    document.removeEventListener("keydown", this.keydown)
   },
   computed: {
     channelIndex() {
@@ -402,6 +405,15 @@ export default {
     clearSelectedTurns() {
       // TODO: clear selection when clicking on the background
       this.selectedTurns = []
+    },
+    keydown(e) {
+      if (e.key === "Escape") {
+        this.clearSelectedTurns()
+      }
+
+      if (e.key === "c" && e.ctrlKey) {
+        this.copyTurns()
+      }
     },
   },
   components: {
