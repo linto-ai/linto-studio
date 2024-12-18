@@ -15,6 +15,10 @@ const { MultipleUserFound, DisabledUser } = require(
   `${process.cwd()}/components/WebServer/error/exception/auth`,
 )
 
+const { populateUserToOrganization } = require(
+  `${process.cwd()}/components/WebServer/controllers/organization/utility`,
+)
+
 const STRATEGY = new Strategy(
   {
     issuer: process.env.OIDC_URL,
@@ -80,21 +84,3 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser((user, done) => {
   done(null, user)
 })
-
-async function populateUserToOrganization(user) {
-  const matchingMail = "@" + user.email.split("@")[1]
-
-  const organizations = await model.organizations.getAll({
-    matchingMail: matchingMail,
-  })
-  organizations.list.forEach(async (organization) => {
-    if (
-      organization.users.filter((u) => u.userId === user._id.toString())
-        .length === 0
-    ) {
-      let orgaCopy = JSON.parse(JSON.stringify(organization))
-      orgaCopy.users.push({ userId: user._id.toString(), role: ROLES.MEMBER })
-      await model.organizations.update(orgaCopy)
-    }
-  })
-}

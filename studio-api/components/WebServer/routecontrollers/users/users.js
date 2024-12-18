@@ -37,6 +37,10 @@ const { NodemailerError, NodemailerInvalidEmail } = require(
   `${process.cwd()}/components/WebServer/error/exception/nodemailer`,
 )
 
+const { populateUserToOrganization } = require(
+  `${process.cwd()}/components/WebServer/controllers/organization/utility`,
+)
+
 async function createUser(req, res, next) {
   try {
     if (process.env.DISABLE_USER_CREATION === "true")
@@ -82,6 +86,8 @@ async function createUser(req, res, next) {
       myCreatedUser[0].authLink.magicId,
     )
     if (!mail_result) throw new NodemailerError()
+
+    populateUserToOrganization(myCreatedUser[0])
 
     res.status(201).send({
       message:

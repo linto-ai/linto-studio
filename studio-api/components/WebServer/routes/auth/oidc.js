@@ -23,7 +23,8 @@ module.exports = (webServer) => {
       requireAuth: false,
       controller: [
         passport.authenticate("oidc", {
-          successReturnToOrRedirect: "/login/oidc",
+          successReturnToOrRedirect:
+            (process.env.FRONTEND_DOMAIN || "") + "/login/oidc",
           failureRedirect: "auth/login/oidc",
         }),
       ],
