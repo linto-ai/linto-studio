@@ -5,6 +5,8 @@ const debug = require("debug")(
 const passport = require("passport")
 const randomstring = require("randomstring")
 
+const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
+
 const Strategy = require("passport-openidconnect")
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const TokenGenerator = require("../token/generator")
@@ -45,6 +47,8 @@ const STRATEGY = new Strategy(
       if (createdUser.insertedCount !== 1) throw new UserError()
       users = await model.users.getTokenByEmail(email?.emails[0]?.value)
       user = users[0]
+
+      populateUserToOrganization(user) // Only on user creation
     }
 
     const token_salt = randomstring.generate(12)
@@ -76,3 +80,21 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser((user, done) => {
   done(null, user)
 })
+
+async function populateUserToOrganization(user) {
+  const matchingMail = "@" + user.email.split("@")[1]
+
+  const organizations = await model.organizations.getAll({
+    matchingMail: matchingMail,
+  })
+  organizations.list.forEach(async (organization) => {
+    if (
+      organization.users.filter((u) => u.userId === user._id.toString())
+        .length === 0
+    ) {
+      let orgaCopy = JSON.parse(JSON.stringify(organization))
+      orgaCopy.users.push({ userId: user._id.toString(), role: ROLES.MEMBER })
+      await model.organizations.update(orgaCopy)
+    }
+  })
+}

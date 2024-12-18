@@ -64,7 +64,7 @@ async function createOrganization(req, res, next) {
 async function updateOrganizationPlatform(req, res, next) {
   try {
     const { organizationId } = req.params
-    const { name, token, description, permissions } = req.body
+    const { name, token, description, permissions, matchingMail } = req.body
 
     // Check if organizationId is provided
     if (!organizationId) {
@@ -98,7 +98,24 @@ async function updateOrganizationPlatform(req, res, next) {
         permissions,
         organization.permissions,
       )
+    if (matchingMail) {
+      // we search user with the same email as the matchingMail
+      // we add them if they are not in the organization
 
+      organization.matchingMail = matchingMail
+      const users = await model.users.listAllUsers({ email: matchingMail })
+      users.list.forEach(async (user) => {
+        const userInOrga = organization.users.find(
+          (u) => u.userId === user._id.toString(),
+        )
+        if (!userInOrga) {
+          organization.users.push({
+            userId: user._id.toString(),
+            role: ROLES.MEMBER,
+          })
+        }
+      })
+    }
     // Update organization in the database
     const result = await model.organizations.updateOrgaByAdmin(organization)
     if (result.matchedCount === 0) {
