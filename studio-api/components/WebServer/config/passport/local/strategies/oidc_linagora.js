@@ -50,6 +50,7 @@ const STRATEGY = new Strategy(
     const token_salt = randomstring.generate(12)
     let token = await model.tokens.insert(user._id, token_salt)
 
+    let expires_in = params.expires_in || process.env.TOKEN_EXPIRES_IN || 3600
     let tokenData = {
       salt: token_salt,
       tokenId: token.insertedId,
@@ -58,19 +59,20 @@ const STRATEGY = new Strategy(
       role: user.role,
     }
 
-    return cb(null, TokenGenerator(tokenData))
+    return cb(
+      null,
+      TokenGenerator(tokenData, { expires_in: expires_in, refresh: false }),
+    )
   },
 )
 passport.use("oidc", STRATEGY)
 
 // Serialize user into session
 passport.serializeUser((user, done) => {
-  debug(user)
   done(null, user)
 })
 
 // Deserialize user from session
 passport.deserializeUser((user, done) => {
-  debug(user)
   done(null, user)
 })

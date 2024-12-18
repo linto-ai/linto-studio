@@ -3,9 +3,6 @@ const debug = require("debug")("linto:conversation-manager:routes:auth")
 const { logout, recoveryAuth } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/users/users.js`,
 )
-const auth_middleware = require(
-  `${process.cwd()}/components/WebServer/config/passport/local/middleware`,
-)
 
 module.exports = (webServer) => {
   return [
@@ -35,8 +32,12 @@ module.exports = (webServer) => {
       requireAuth: false,
       controller: (req, res, next) => {
         let list = [{ path: "local", from: "studio", name: "studio" }]
-        if (process.env.OIDC_URL !== "") {
-          list.push({ path: "oidc", from: "linagora", name: "linagora" })
+        if (process.env.OIDC_TYPE !== "") {
+          list.push({
+            path: "oidc",
+            from: process.env.OIDC_TYPE,
+            name: process.env.OIDC_TYPE,
+          })
         }
         res.status(200).send(list)
       },

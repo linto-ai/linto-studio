@@ -1,8 +1,9 @@
 const debug = require("debug")("linto:conversation-manager:routes:auth:oidc")
 
-const { logout, recoveryAuth } = require(
-  `${process.cwd()}/components/WebServer/routecontrollers/users/users.js`,
+const { Unauthorized } = require(
+  `${process.cwd()}/components/WebServer/error/exception/auth`,
 )
+
 const auth_middleware = require(
   `${process.cwd()}/components/WebServer/config/passport/local/middleware`,
 )
@@ -11,31 +12,18 @@ var passport = require("passport")
 module.exports = (webServer) => {
   return [
     {
-      path: "/login/oidc",
+      path: "/oidc/login",
       method: "get",
       requireAuth: false,
-      controller: [
-        (req, res, next) => {
-          console.log("OIDC")
-          next()
-        },
-        auth_middleware.oidc_authenticate,
-        (req, res, next) => {
-          res.status(202).json(req.user)
-        },
-      ],
+      controller: [auth_middleware.oidc_authenticate],
     },
     {
       path: "/oidc/cb",
       method: "get",
       requireAuth: false,
       controller: [
-        (req, res, next) => {
-          console.log("OIDC CB")
-          next()
-        },
         passport.authenticate("oidc", {
-          successReturnToOrRedirect: "/",
+          successReturnToOrRedirect: "/login/oidc",
           failureRedirect: "auth/login/oidc",
         }),
       ],
@@ -46,7 +34,11 @@ module.exports = (webServer) => {
       requireAuth: true,
       controller: [
         (req, res, next) => {
-          res.status(200).json(req.session.passport.user)
+          if (req?.session?.passport?.user) {
+            res.status(200).json(req.session.passport.user)
+          } else {
+            next(new Unauthorized())
+          }
         },
       ],
     },

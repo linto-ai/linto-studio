@@ -18,8 +18,8 @@ module.exports = async function (refreshToken) {
   const token_salt = randomstring.generate(12)
   let token = await model.tokens.insert(userId, token_salt)
 
+  // Data stored in the token
   const tokenData = {
-    // Data stored in the token
     salt: token_salt,
     tokenId: token.insertedId,
     userId: userId,
