@@ -19,5 +19,57 @@
         }
       }
     }
+  },
+  "/api/services/{scope}": {
+    "get": {
+      "tags": ["services"],
+      "summary": "Get all runing services based of the gateway api",
+      "parameters": [
+        {
+          "name": "scope",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The list of services",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Services"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    }
+  },
+  "/api/services/llm": {
+    "get": {
+      "tags": ["services"],
+      "summary": "Get all llm service listed",
+      "responses": {
+        "200": {
+          "description": "The list of llm services",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServicesLlm"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    }
   }
 }

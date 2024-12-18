@@ -31,6 +31,8 @@ function loadModulesFromDirectory(directory) {
       skipItems.some((skipItem) => item.includes(skipItem))
     ) {
       return
+    } else if (process.env.OIDC_TYPE === "" && item.includes("oidc")) {
+      return
     }
 
     const itemPath = path.join(directory, item)
