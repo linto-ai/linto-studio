@@ -393,8 +393,8 @@ export default {
       this.loadingDownload = true
       let req = await apiGetGenericFileFromConversation(
         this.conversationId,
-        this.activeTab,
         this.selectedRoute || this.activeTab,
+        this.selectedService,
         {
           preview: true,
           title: this.label_format,
