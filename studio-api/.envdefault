@@ -24,6 +24,7 @@ GATEWAY_SERVICES=https://api.linto.ai
 
 # LLM Config
 LLM_GATEWAY_SERVICES=
+LLM_GATEWAY_SERVICES_WS=
 
 # NLP Service
 NLP_SERVICES=<nlp_service_host>

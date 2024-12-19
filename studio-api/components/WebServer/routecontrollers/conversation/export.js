@@ -96,11 +96,6 @@ async function exportConversation(req, res, next) {
       case "verbatim":
         await handleVerbatimFormat(res, req.query, conversation, metadata)
         break
-      case "cri":
-      case "cra":
-      case "cred":
-        await handleLLMService(res, req.query, conversation, metadata)
-        break
       default:
         await handleLLMService(res, req.query, conversation, metadata)
     }
