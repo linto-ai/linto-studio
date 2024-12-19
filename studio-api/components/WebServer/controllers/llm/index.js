@@ -102,7 +102,7 @@ function updateStatus(conversationExport, data) {
     status === "started" ||
     status === "progress"
   ) {
-    conversationExport.processing = data.message + " " + data.progress
+    conversationExport.processing = data.progress
   }
   model.conversationExport.updateStatus(conversationExport)
 }
