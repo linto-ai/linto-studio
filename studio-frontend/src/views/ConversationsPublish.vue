@@ -292,7 +292,11 @@ export default {
       return res
     },
     selectedService() {
+      // return string like "llama3"
       return this.indexedFormat[this.activeTab]?.services[0]
+    },
+    selectedRoute() {
+      return this.indexedFormat[this.activeTab]?.route
     },
     currentInfoFormat() {
       return this.metadataList.find((item) => item.format === this.activeTab)
@@ -372,7 +376,7 @@ export default {
       this.loadingDownload = true
       let req = await apiGetGenericFileFromConversation(
         this.conversationId,
-        this.activeTab,
+        this.selectedRoute || this.activeTab,
         this.selectedService,
         {
           preview: false,
@@ -390,7 +394,7 @@ export default {
       let req = await apiGetGenericFileFromConversation(
         this.conversationId,
         this.activeTab,
-        this.selectedService,
+        this.selectedRoute || this.activeTab,
         {
           preview: true,
           title: this.label_format,
@@ -459,7 +463,7 @@ export default {
 
       let req = await apiGetGenericFileFromConversation(
         this.conversationId,
-        this.activeTab,
+        this.selectedRoute || this.activeTab,
         this.selectedService,
         {
           preview: true,
