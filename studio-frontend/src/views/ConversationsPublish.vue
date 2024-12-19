@@ -433,7 +433,9 @@ export default {
           }
           res[format]["services"] = service.flavor.map((flavor) => flavor.name)
           res[format]["description"] = service.description
+          res[format]["route"] = service.route
         }
+        console.log("res", res)
         this.indexedFormat = res
       } catch (e) {
         console.error(e)
