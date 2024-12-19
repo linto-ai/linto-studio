@@ -485,6 +485,9 @@
     "title": "Sign in",
     "footer": {
       "description": "Open source innovations powered by LINAGORA on EXAION infrastructures"
+    },
+    "sso": {
+      "linagora": "Sign in with Linagora"
     }
   },
   "manage_tags": {

@@ -8,15 +8,17 @@
 }
 
 .login-page__content {
-  width: 33.33%;
+  min-width: 33.33%;
   border-left: var(--border-block);
   background-color: var(--primary-contrast);
   padding: 1rem;
   box-sizing: border-box;
 }
 
-.login-page__form {
+.login-page__form,
+.btn.sso {
   width: 320px;
+  box-sizing: border-box;
 }
 
 .login-page__logo {

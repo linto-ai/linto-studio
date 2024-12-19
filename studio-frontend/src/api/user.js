@@ -186,3 +186,24 @@ export async function apiSendVerificationLink(notif) {
     notif,
   )
 }
+
+export async function getLoginMethods() {
+  const req = await sendRequest(`${BASE_AUTH}/list`, {
+    method: "get",
+  })
+
+  return req.data || []
+}
+
+export async function getOidcToken() {
+  return await sendRequest(
+    `${BASE_AUTH}/oidc/token`,
+    {
+      method: "get",
+    },
+    {},
+    false,
+    {},
+    true,
+  )
+}

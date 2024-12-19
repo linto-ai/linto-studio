@@ -486,6 +486,9 @@
     "title": "Identifiez-vous",
     "footer": {
       "description": "Innovations Open source propulsées par LINAGORA sur les infrastructures EXAION"
+    },
+    "sso": {
+      "linagora": "Se connecter avec Linagora"
     }
   },
   "manage_tags": {

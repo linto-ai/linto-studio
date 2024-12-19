@@ -256,6 +256,9 @@
   &.subtitle {
     @include maskImage("../public/img/subtitle.svg");
   }
+  &.linagora-small {
+    @include maskImage("../public/img/logo_linagora.webp");
+  }
 }
 
 .icon.small {

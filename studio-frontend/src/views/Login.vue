@@ -1,6 +1,9 @@
 <template>
   <MainContentPublic>
-    <form class="flex col login-page__form gap-small" @submit="handleForm">
+    <form
+      class="flex col login-page__form gap-small"
+      @submit="handleForm"
+      v-if="hasLocalLogin">
       <h2 class="login-title">{{ $t("login.title") }}</h2>
 
       <FormInput :field="email" v-model="email.value" focus />
@@ -25,11 +28,19 @@
         v-if="enable_inscription">
         {{ $t("login.create_account_button") }}
       </router-link>
-      <div class="login-separator"></div>
-      <button class="btn primary">
-        <span class="label">EU Login</span>
-      </button>
     </form>
+    <div class="login-separator" v-if="hasLocalLogin"></div>
+    <!-- <button class="btn primary">
+      <span class="label">EU Login</span>
+    </button> -->
+    <a
+      :href="BASE_AUTH + '/' + oidcInfo.path + '/login'"
+      class="btn sso"
+      :class="oidcInfo.name"
+      v-for="oidcInfo of oidcList">
+      <span class="label">{{ $t(`login.sso.${oidcInfo.name}`) }}</span>
+      <span class="icon linagora-small" />
+    </a>
 
     <!-- 
     > -->
@@ -51,7 +62,7 @@
 import { getEnv } from "@/tools/getEnv"
 
 import LocalSwitcher from "@/components/LocalSwitcher.vue"
-import { apiLoginUser } from "@/api/user"
+import { apiLoginUser, getLoginMethods } from "@/api/user"
 import MainContentPublic from "@/components/MainContentPublic.vue"
 import { testEmail } from "@/tools/fields/testEmail"
 import FormInput from "@/components/FormInput.vue"
@@ -74,9 +85,12 @@ export default {
         type: "password",
       },
       formError: null,
+      loginMethodsIndexedByPath: {},
+      BASE_AUTH: getEnv("VUE_APP_CONVO_AUTH"),
     }
   },
   mounted() {
+    this.fetchLoginMethods()
     //this.$refs.email.focus()
   },
   computed: {
@@ -94,6 +108,15 @@ export default {
     },
     show_footer() {
       return getEnv("VUE_APP_SHOW_LOGIN_FOOTER") === "true"
+    },
+    hasLocalLogin() {
+      return (
+        this.loginMethodsIndexedByPath?.local &&
+        this.loginMethodsIndexedByPath?.local?.length > 0
+      )
+    },
+    oidcList() {
+      return this.loginMethodsIndexedByPath?.oidc
     },
   },
   methods: {
@@ -139,6 +162,15 @@ export default {
     },
     setCookie(name, value, exdays) {
       return this.$options.filters.setCookie(name, value, exdays)
+    },
+    async fetchLoginMethods() {
+      const loginList = await getLoginMethods()
+      const indexedByPath = { local: [], oidc: [] }
+      for (const login of loginList) {
+        indexedByPath[login.path].push(login)
+      }
+      this.loginMethodsIndexedByPath = indexedByPath
+      console.log(indexedByPath)
     },
   },
   components: { LocalSwitcher, MainContentPublic, FormInput },

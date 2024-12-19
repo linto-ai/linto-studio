@@ -2,7 +2,14 @@ import axios from "axios"
 import { bus } from "../main.js"
 import { getCookie } from "./getCookie"
 
-export async function sendRequest(url, params, data, notif, headers) {
+export async function sendRequest(
+  url,
+  params,
+  data,
+  notif,
+  headers,
+  withoutToken = false,
+) {
   // Get authorization token
   const userToken = getCookie("authToken")
   try {
@@ -13,7 +20,7 @@ export async function sendRequest(url, params, data, notif, headers) {
         params: { ...data, t: Date.now() },
         headers: {
           ...headers,
-          Authorization: `Bearer ${userToken}`,
+          Authorization: withoutToken ? null : `Bearer ${userToken}`,
         },
       })
     } else {
@@ -22,7 +29,7 @@ export async function sendRequest(url, params, data, notif, headers) {
         data,
         headers: {
           ...headers,
-          Authorization: `Bearer ${userToken}`,
+          Authorization: withoutToken ? null : `Bearer ${userToken}`,
         },
       })
     }
