@@ -4,6 +4,7 @@
 <script>
 import Loading from "@/components/Loading.vue"
 import { getOidcToken } from "@/api/user.js"
+import { setCookie } from "@/tools/setCookie.js"
 
 export default {
   props: {},
@@ -16,15 +17,15 @@ export default {
   methods: {
     async fetchToken() {
       let res = await getOidcToken()
-      console.log(res)
+
       if (res.status == "error") {
         this.$router.replace({ name: "login", query: { error: "oidc" } })
       }
 
       if (res.status == "success") {
-        this.setCookie("userId", res.data.user_id, 7)
-        this.setCookie("authToken", res.data.auth_token, 7)
-        this.setCookie("cm_orga_scope", "")
+        setCookie("userId", res.data.user_id, 7)
+        setCookie("authToken", res.data.auth_token, 7)
+        setCookie("cm_orga_scope", "")
 
         if (this.$route?.query?.next) {
           window.location.href = this.$route?.query?.next

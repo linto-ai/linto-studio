@@ -15,14 +15,21 @@ export async function sendRequest(
   try {
     let req = null
     if (params.method === "get") {
-      req = await axios.get(url, {
-        ...params,
-        params: { ...data, t: Date.now() },
-        headers: {
-          ...headers,
-          Authorization: withoutToken ? null : `Bearer ${userToken}`,
-        },
-      })
+      if (withoutToken) {
+        req = await axios.get(url, {
+          ...params,
+          params: { ...data, t: Date.now() },
+        })
+      } else {
+        req = await axios.get(url, {
+          ...params,
+          params: { ...data, t: Date.now() },
+          headers: {
+            ...headers,
+            Authorization: withoutToken ? null : `Bearer ${userToken}`,
+          },
+        })
+      }
     } else {
       req = await axios(url, {
         ...params,
