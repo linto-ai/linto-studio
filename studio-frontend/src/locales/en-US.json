@@ -667,7 +667,8 @@
       "cra": "Error during summary report generation",
       "cred": "Error during commission and delegation report generation",
       "cri": "Error during full report generation",
-      "verbatim": "Error during verbatim generation"
+      "verbatim": "Error during verbatim generation",
+      "generic": "Error during generation"
     },
     "filter_speaker": {
       "title": "Filter by speaker"

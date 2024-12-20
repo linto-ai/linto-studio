@@ -1,8 +1,11 @@
 <template>
   <div class="flex1 flex">
+    <div v-if="pdfIsInError" class="publish-main__empty">
+      <h2>{{ $t(`publish.error_first_line.generic`) }}</h2>
+    </div>
     <object
       class="publish__pdf-wrapper"
-      v-if="status === 'displayed' && blobUrl"
+      v-else-if="status === 'displayed' && blobUrl"
       :data="blobUrl"
       type="application/pdf"
       width="100%"
@@ -44,7 +47,7 @@
       <!-- <span class="icon loading"></span> -->
     </div>
     <div v-else class="publish-main__empty">
-      <h2>{{ $t(`publish.error_first_line.${format}`) }}</h2>
+      <h2>{{ $t(`publish.error_first_line.generic`) }}</h2>
     </div>
   </div>
 </template>
@@ -89,6 +92,11 @@ export default {
       //blobUrl: null,
       currentStatus: null,
     }
+  },
+  computed: {
+    pdfIsInError() {
+      return this.status === "error" || this.status === "unknown"
+    },
   },
   mounted() {},
   components: { Fragment },

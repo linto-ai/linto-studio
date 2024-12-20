@@ -95,7 +95,7 @@ function updateStatus(conversationExport, data) {
     conversationExport.data = data.summarization
     conversationExport.processing = "Processing 100%"
   } else if (status === "error" || status === "unknown") {
-    conversationExport.data = data.message
+    conversationExport.data = data.error || data.message
   } else if (
     status === "queued" ||
     status === "processing" ||

@@ -663,7 +663,8 @@
       "cra": "Erreur lors de la génération du compte rendu analytique",
       "cred": "Erreur lors de la génération du compte rendu des commissions et des délégations",
       "cri": "Erreur lors de la génération du compte rendu intégral",
-      "verbatim": "Erreur lors de la génération du verbatim"
+      "verbatim": "Erreur lors de la génération du verbatim",
+      "generic": "Erreur lors de la génération du document"
     },
     "filter_speaker": {
       "title": "Filtrer les locuteurs"
