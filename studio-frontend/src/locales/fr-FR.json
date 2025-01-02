@@ -626,6 +626,11 @@
       "content": "Êtes vous sur de vouloir quitter l'organisation \"{name}\" ?",
       "title": "Quitter l'organisation"
     },
+    "remove_user_modal": {
+      "action": "Supprimer l'utilisateur de l'organisation",
+      "content": "Êtes vous sur de supprimer \"{name}\" de cette organisation ?",
+      "title": "Supprimer l'utilisateur de l'organisation"
+    },
     "my_workspace": "Mon espace de travail",
     "name_description": "Nom de l'organisation",
     "name_label": "Nom",
