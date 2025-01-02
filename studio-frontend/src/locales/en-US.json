@@ -488,6 +488,20 @@
     },
     "sso": {
       "linagora": "Sign in with Linagora"
+    },
+    "teaser": {
+      "transcribe": {
+        "title": "Transcribe",
+        "desc": "All your media, your microphone, your conference"
+      },
+      "collaborate": {
+        "title": "Collaborate",
+        "desc": "Organize, share and edit your content"
+      },
+      "ia": {
+        "title": "Trusted AI",
+        "desc": "Get summaries suited to your business in your own formats (word, pdf, subtitles)"
+      }
     }
   },
   "manage_tags": {

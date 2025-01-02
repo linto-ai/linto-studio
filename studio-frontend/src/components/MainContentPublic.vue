@@ -12,26 +12,25 @@
         class="flex flex1 col justify-center align-center gap-medium reset-overflows">
         <div class="login-page__decoration__slogan">
           <h3 class="flex align-center gap-small">
-            <span class="icon large record"></span><span>Enregistrer</span>
+            <span class="icon large record"></span
+            ><span>{{ $t("login.teaser.transcribe.title") }}</span>
           </h3>
-          <p>
-            Enregistrez vos réunions en toute sécurité, de manière fluide et
-            automatique.
-          </p>
+          <p>{{ $t("login.teaser.transcribe.desc") }}</p>
         </div>
         <div class="login-page__decoration__slogan">
           <h3 class="flex align-center gap-small">
-            <span class="icon large edit"></span><span>Annoter</span>
+            <span class="icon large edit"></span
+            ><span>{{ $t("login.teaser.collaborate.title") }}</span>
           </h3>
-          <p>Manipulez et éditez vos retranscriptions.</p>
+          <p>{{ $t("login.teaser.collaborate.desc") }}</p>
         </div>
         <div class="login-page__decoration__slogan">
           <h3 class="flex align-center gap-small">
-            <span class="icon large subtitle"></span><span>Exporter</span>
+            <span class="icon large subtitle"></span
+            ><span>{{ $t("login.teaser.ia.title") }}</span>
           </h3>
           <p>
-            Exportez vos médias sous une multitude de formats tel que des
-            sous-titres ou un document Word.
+            {{ $t("login.teaser.ia.desc") }}
           </p>
         </div>
       </div>

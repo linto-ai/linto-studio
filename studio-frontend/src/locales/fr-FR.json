@@ -489,6 +489,20 @@
     },
     "sso": {
       "linagora": "Se connecter avec Linagora"
+    },
+    "teaser": {
+      "transcribe": {
+        "title": "Transcrire",
+        "desc": "Tous vos médias, votre microphone, votre conférence"
+      },
+      "collaborate": {
+        "title": "Collaborer",
+        "desc": "Organisez, partagez et éditez vos contenus"
+      },
+      "ia": {
+        "title": "IA de confiance",
+        "desc": "Obtenez des résumés adaptés à votre métier dans vos formats (word, pdf, sous-titres)"
+      }
     }
   },
   "manage_tags": {
