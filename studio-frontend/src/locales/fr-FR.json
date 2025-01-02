@@ -637,6 +637,14 @@
       "session_permission": "Créer des sessions",
       "update_button": "Mettre à jour les permissions"
     },
+    "matching_users": {
+      "title": "Ajout automatique d'utilisateurs",
+      "matching_mail": {
+        "label": "Email d'appartenance à l'organisation"
+      },
+      "update_button": "Mettre à jour les critères d'appartenance",
+      "apply_button": "Inviter les utilisateurs correspondant aux critères"
+    },
     "update": {
       "title": "Organisation : {name}"
     },
