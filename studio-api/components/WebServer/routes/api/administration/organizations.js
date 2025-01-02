@@ -5,6 +5,7 @@ const {
   listAllOrganization,
   createOrganization,
   updateOrganizationPlatform,
+  inviteMatchingMail,
 } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/administration/organizations.js`,
 )
@@ -31,6 +32,13 @@ module.exports = (webserver) => {
       requireAuth: true,
       requireSystemAdministrator: true,
       controller: updateOrganizationPlatform,
+    },
+    {
+      path: "/organizations/:organizationId/inviteMatchingMail",
+      method: "post",
+      requireAuth: true,
+      requireSystemAdministrator: true,
+      controller: inviteMatchingMail,
     },
   ]
 }
