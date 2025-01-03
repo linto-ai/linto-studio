@@ -77,6 +77,7 @@ async function listExport(req, res, next) {
       if (completed) {
         // No need to wait, everything is done
         delete memory[req.params.conversationId]
+        llm.emitter.removeAllListeners(req.params.conversationId, () => {})
         res.status(200).send(list)
       } else {
         let resultCalled = false // security to not call res twice, should not happe,d
@@ -95,7 +96,7 @@ async function listExport(req, res, next) {
 
           if (completed) delete memory[req.params.conversationId]
 
-          llm.emitter.off(req.params.conversationId, () => {})
+          llm.emitter.removeAllListeners(req.params.conversationId)
           if (resultCalled) return
 
           resultCalled = true
