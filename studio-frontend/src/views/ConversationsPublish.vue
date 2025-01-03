@@ -146,6 +146,7 @@ export default {
   },
   beforeDestroy() {
     clearTimeout(this.pollingJob)
+    this.activeTab = "destroyed"
   },
   watch: {
     dataLoaded(newVal, oldVal) {
@@ -285,7 +286,7 @@ export default {
       this.blobUrl = null
       await this.getPreview(regenerate)
       await this.getJobsList(true)
-      await this.pollingGeneration(true)
+      await this.pollingGeneration(true, this.activeTab)
     },
     exportConv(value) {
       switch (value) {
@@ -427,14 +428,22 @@ export default {
         }
       }
     },
-    async pollingGeneration(first = false) {
+    async pollingGeneration(first = false, currentTab) {
+      if (currentTab === "destroy" || currentTab !== this.activeTab) {
+        return
+      }
+
       if (
         this.currentStatus == "processing" ||
         this.currentStatus == "queued" ||
         this.currentStatus == "started"
       ) {
         await this.getJobsList()
-        this.pollingJob = setTimeout(this.pollingGeneration, 0)
+
+        this.pollingJob = setTimeout(
+          () => this.pollingGeneration(false, currentTab),
+          0,
+        )
       }
 
       if (this.currentStatus == "complete" && !first) {
