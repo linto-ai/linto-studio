@@ -434,7 +434,7 @@ export default {
         this.currentStatus == "started"
       ) {
         await this.getJobsList()
-        this.pollingJob = setTimeout(this.pollingGeneration, 2000)
+        this.pollingJob = setTimeout(this.pollingGeneration, 0)
       }
 
       if (this.currentStatus == "complete" && !first) {
@@ -445,7 +445,10 @@ export default {
       this.initGeneration(true)
     },
     async getJobsList(immediate = false) {
-      this.jobsList = await apiGetMetadataLLMService(this.conversationId)
+      this.jobsList = await apiGetMetadataLLMService(
+        this.conversationId,
+        immediate,
+      )
     },
     async getLastUpdate() {
       const res = await apiGetConversationLastUpdate(this.conversationId)
