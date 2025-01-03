@@ -28,8 +28,7 @@ async function getList(convId) {
   let conversationExport =
     await model.conversationExport.getByConvAndFormat(convId)
   if (conversationExport.length === 0) {
-    res.status(204).send([])
-    return
+    return []
   }
 
   let export_list = []
