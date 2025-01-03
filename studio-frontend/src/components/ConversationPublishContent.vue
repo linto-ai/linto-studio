@@ -5,7 +5,7 @@
     </div>
     <object
       class="publish__pdf-wrapper"
-      v-else-if="status === 'displayed' && blobUrl"
+      v-else-if="status === 'complete' && blobUrl"
       :data="blobUrl"
       type="application/pdf"
       width="100%"
