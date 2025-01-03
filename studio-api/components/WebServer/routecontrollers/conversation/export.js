@@ -33,6 +33,7 @@ async function getList(convId) {
   }
 
   let export_list = []
+  let done = true
   for (let status of conversationExport) {
     let export_conv = {
       _id: status._id.toString(),
@@ -42,11 +43,12 @@ async function getList(convId) {
       processing: status.processing,
       last_update: status.last_update,
     }
+    if (!["complete", "error", "unknown"].includes(status.status)) done = false
     if (status.status === "error") export_conv.error = status.error
     export_list.push(export_conv)
   }
 
-  if (!llm.getSocketStatus()) {
+  if (!done && !llm.getSocketStatus()) {
     llm.initWebSocketConnection(conversationExport[0])
   }
   return export_list
