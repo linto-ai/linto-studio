@@ -162,10 +162,7 @@ export default {
       }
     },
     async activeTab(newVal, oldVal) {
-      clearTimeout(this.pollingJob)
-      await this.getPreview()
-      await this.getJobsList(true)
-      await this.pollingGeneration(true)
+      this.initGeneration()
     },
   },
   computed: {
@@ -259,7 +256,7 @@ export default {
       const job = this.currentJob
 
       if (job) {
-        if (job.status === "error") {
+        if (job.status === "error" || job.status === "unknown") {
           return false
         }
         const format_last_update = new Date(job.last_update)
@@ -275,6 +272,7 @@ export default {
       if (this.blobUrl) {
         return "complete"
       }
+      console.log("p", this?.currentJob?.status)
       return this?.currentJob?.status || "queued"
     },
     generationPercentage() {
@@ -282,6 +280,13 @@ export default {
     },
   },
   methods: {
+    async initGeneration(regenerate = false) {
+      clearTimeout(this.pollingJob)
+      this.blobUrl = null
+      await this.getPreview(regenerate)
+      await this.getJobsList(true)
+      await this.pollingGeneration(true)
+    },
     exportConv(value) {
       switch (value) {
         case "docx":
@@ -437,7 +442,7 @@ export default {
       }
     },
     reloadGeneration() {
-      this.getPreview(true)
+      this.initGeneration(true)
     },
     async getJobsList(immediate = false) {
       this.jobsList = await apiGetMetadataLLMService(this.conversationId)

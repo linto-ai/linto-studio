@@ -664,7 +664,7 @@
       "cred": "Erreur lors de la génération du compte rendu des commissions et des délégations",
       "cri": "Erreur lors de la génération du compte rendu intégral",
       "verbatim": "Erreur lors de la génération du verbatim",
-      "generic": "Erreur lors de la génération du document"
+      "generic": "Le service de résumé n'a pas pu être complété."
     },
     "filter_speaker": {
       "title": "Filtrer les locuteurs"
@@ -683,6 +683,7 @@
       "verbatim": "Génération du verbatim en cours...",
       "general": "Génération en cours..."
     },
+    "loading_document": "Chargement du document final",
     "is_not_updated": "La transcription a été mise à jour. Le compte rendu ne reflète plus les dernières modifications.",
     "is_updated": "Le compte rendu est à jour avec la transcription",
     "queued": {
