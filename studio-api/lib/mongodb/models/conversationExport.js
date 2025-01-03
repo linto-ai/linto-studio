@@ -124,6 +124,19 @@ class SubtitleModel extends MongoModel {
       return error
     }
   }
+
+  async getByJobId(id) {
+    try {
+      let query = {
+        jobId: id.toString(),
+      }
+
+      return await this.mongoRequest(query)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
 }
 
 module.exports = new SubtitleModel()

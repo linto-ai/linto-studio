@@ -22,33 +22,87 @@ const {
 } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
+let memory = {}
+
+async function getList(convId) {
+  let conversationExport =
+    await model.conversationExport.getByConvAndFormat(convId)
+  if (conversationExport.length === 0) {
+    res.status(204).send([])
+    return
+  }
+
+  let export_list = []
+  for (let status of conversationExport) {
+    let export_conv = {
+      _id: status._id.toString(),
+      format: status.format,
+      status: status.status,
+      jobId: status.jobId,
+      processing: status.processing,
+      last_update: status.last_update,
+    }
+    if (status.status === "error") export_conv.error = status.error
+    export_list.push(export_conv)
+  }
+
+  if (!llm.getSocketStatus()) {
+    llm.initWebSocketConnection(conversationExport[0])
+  }
+  return export_list
+}
 
 async function listExport(req, res, next) {
   try {
     if (!req.params.conversationId) throw new ConversationIdRequire()
-    let conversationExport = await model.conversationExport.getByConvAndFormat(
-      req.params.conversationId,
-    )
-    if (conversationExport.length === 0) {
-      res.status(204).send([])
-      return
-    }
 
-    let export_list = []
-    for (let status of conversationExport) {
-      let export_conv = {
-        _id: status._id.toString(),
-        format: status.format,
-        status: status.status,
-        jobId: status.jobId,
-        processing: status.processing,
-        last_update: status.last_update,
+    if (req.query.init === undefined) req.query.init = "true"
+
+    if (
+      req.query.init === "true" ||
+      memory[req.params.conversationId] === undefined
+    ) {
+      const list = await getList(req.params.conversationId)
+      memory[req.params.conversationId] = true
+      res.status(200).send(list)
+    } else {
+      const list = await getList(req.params.conversationId)
+      let completed = true
+      list.map((conv) => {
+        if (!["complete", "error", "unknown"].includes(conv.status))
+          completed = false
+      })
+
+      if (completed) {
+        // No need to wait, everything is done
+        delete memory[req.params.conversationId]
+        res.status(200).send(list)
+      } else {
+        let resultCalled = false // security to not call res twice, should not happe,d
+
+        llm.emitter.on(req.params.conversationId, async (updatedConv) => {
+          let completed = true
+          const list = await getList(req.params.conversationId)
+          list.map((conv) => {
+            if (!["complete", "error", "unknown"].includes(conv.status))
+              completed = false
+            if (conv.jobId === updatedConv.task_id) {
+              conv.processing = updatedConv.processing || 100
+              conv.status = updatedConv.status
+            }
+          })
+
+          if (completed) delete memory[req.params.conversationId]
+
+          llm.emitter.off(req.params.conversationId, () => {})
+          if (resultCalled) return
+
+          resultCalled = true
+          res.status(200).send(list)
+          return
+        })
       }
-      if (status.status === "error") export_conv.error = status.error
-      export_list.push(export_conv)
     }
-
-    res.status(200).send(export_list)
   } catch (error) {
     next(error)
   }
@@ -134,13 +188,13 @@ async function handleLLMService(res, query, conversation, metadata) {
       convId: conversation._id.toString(),
       format: query.format,
       status: "processing",
-      processing: "Processing 0%",
+      processing: 0,
     }
     exportResult = await model.conversationExport.create(conversationExport)
     conversationExport._id = exportResult.insertedId.toString()
 
     callLlmAPI(query, conversation, metadata, conversationExport)
-    res.status(200).send({ status: "processing", processing: "Processing 0%" })
+    res.status(200).send({ status: "processing", processing: 0 })
   } else if (
     conversationExport[0].status === "done" ||
     conversationExport[0].status === "complete"
@@ -150,8 +204,8 @@ async function handleLLMService(res, query, conversation, metadata) {
     sendFileAsResponse(res, file, query.preview)
   } else {
     if (
-      conversationExport[0].status === "error" &&
-      conversationExport[0].error
+      conversationExport[0].status === "unknown" ||
+      (conversationExport[0].status === "error" && conversationExport[0].error)
     ) {
       res.status(400).send({
         status: conversationExport[0].status,
