@@ -22,7 +22,6 @@ const {
 } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
-let memory = {}
 
 async function getList(convId) {
   let conversationExport =
@@ -56,55 +55,35 @@ async function getList(convId) {
 async function listExport(req, res, next) {
   try {
     if (!req.params.conversationId) throw new ConversationIdRequire()
-
-    if (req.query.init === undefined) req.query.init = "true"
-
-    if (
-      req.query.init === "true" ||
-      memory[req.params.conversationId] === undefined
-    ) {
-      const list = await getList(req.params.conversationId)
-      memory[req.params.conversationId] = true
-      res.status(200).send(list)
-    } else {
-      const list = await getList(req.params.conversationId)
-      let completed = true
-      list.map((conv) => {
-        if (!["complete", "error", "unknown"].includes(conv.status))
-          completed = false
-      })
-
-      if (completed) {
-        // No need to wait, everything is done
-        delete memory[req.params.conversationId]
-        llm.emitter.removeAllListeners(req.params.conversationId, () => {})
-        res.status(200).send(list)
-      } else {
-        let resultCalled = false // security to not call res twice, should not happe,d
-
-        llm.emitter.on(req.params.conversationId, async (updatedConv) => {
-          let completed = true
-          const list = await getList(req.params.conversationId)
-          list.map((conv) => {
-            if (!["complete", "error", "unknown"].includes(conv.status))
-              completed = false
-            if (conv.jobId === updatedConv.task_id) {
-              conv.processing = updatedConv.processing || 100
-              conv.status = updatedConv.status
-            }
-          })
-
-          if (completed) delete memory[req.params.conversationId]
-
-          llm.emitter.removeAllListeners(req.params.conversationId)
-          if (resultCalled) return
-
-          resultCalled = true
-          res.status(200).send(list)
-          return
-        })
-      }
+    const list = await getList(req.params.conversationId)
+    let conversationExport = await model.conversationExport.getByConvAndFormat(
+      req.params.conversationId,
+    )
+    if (conversationExport.length === 0) {
+      return []
     }
+
+    let export_list = []
+    let done = true
+    for (let status of conversationExport) {
+      let export_conv = {
+        _id: status._id.toString(),
+        format: status.format,
+        status: status.status,
+        jobId: status.jobId,
+        processing: status.processing,
+        last_update: status.last_update,
+      }
+      if (!["complete", "error", "unknown"].includes(status.status))
+        done = false
+      if (status.status === "error") export_conv.error = status.error
+      export_list.push(export_conv)
+    }
+    if (!done && !llm.getSocketStatus()) {
+      llm.initWebSocketConnection(conversationExport[0])
+    }
+
+    res.status(200).send(list)
   } catch (error) {
     next(error)
   }

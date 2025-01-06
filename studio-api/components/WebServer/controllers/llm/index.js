@@ -2,9 +2,6 @@ const debug = require("debug")(
   `linto:conversation-manager:components:WebServer:controllers:llm:index`,
 )
 
-const EventEmitter = require("events")
-const emitter = new EventEmitter()
-
 const fs = require("fs")
 const FormData = require("form-data")
 const model = require(`${process.cwd()}/lib/mongodb/models`)
@@ -81,11 +78,9 @@ async function requestAPI(query, content, fileName, conversationExport) {
   }
 
   fs.unlinkSync(tempFilePath)
-
   if (isSocketConnected) {
     initWebSocketConnection(conversationExport)
-  }
-  if (jobId !== undefined) {
+  } else if (jobId !== undefined) {
     processJobWithWebSocket(jobId, conversationExport)
   }
   return jobId
@@ -117,8 +112,6 @@ async function initWebSocketConnection(convExport) {
   if (!process.env.LLM_GATEWAY_SERVICES_WS) {
     throw new Error("LLM_GATEWAY_SERVICES_WS is not defined")
   }
-  socket = new WebSocket(process.env.LLM_GATEWAY_SERVICES_WS)
-
   let conversationExport = await model.conversationExport.getByConvAndFormat(
     convExport.convId,
   )
@@ -133,12 +126,16 @@ async function initWebSocketConnection(convExport) {
   if (currentJobs.length === 0) return // No job to track
   const uniqueJobs = [...new Set(currentJobs)]
 
+  socket = new WebSocket(process.env.LLM_GATEWAY_SERVICES_WS)
+
   socket.on("open", () => {
     if (socket.readyState === 1) {
       isSocketConnected = true
       socket.send(JSON.stringify(uniqueJobs))
     }
   })
+
+  socket.on("connect", () => {})
 
   socket.onmessage = async (message) => {
     try {
@@ -159,7 +156,6 @@ async function initWebSocketConnection(convExport) {
             activeJobs.set(element.task_id, convExport[0])
           }
         }
-        if (convId !== "") emitter.emit(convId, result) // We send an event in canse of someone listening
       } else {
         const jobsId = result.task_id
 
@@ -170,9 +166,6 @@ async function initWebSocketConnection(convExport) {
         updateStatus(conversationExport, result)
 
         // Should notify for the long polling
-        if (conversationExport.convId) {
-          emitter.emit(conversationExport.convId, result)
-        }
         if (completedJob(result)) {
           activeJobs.delete(jobsId)
 
@@ -230,5 +223,4 @@ module.exports = {
   pollingLlm: processJobWithWebSocket,
   initWebSocketConnection,
   getSocketStatus,
-  emitter,
 }
