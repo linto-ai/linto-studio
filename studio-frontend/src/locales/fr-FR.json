@@ -664,7 +664,7 @@
       "cred": "Erreur lors de la génération du compte rendu des commissions et des délégations",
       "cri": "Erreur lors de la génération du compte rendu intégral",
       "verbatim": "Erreur lors de la génération du verbatim",
-      "generic": "Le service de résumé n'a pas pu être complété."
+      "generic": "Nous n'avons pas pu terminer la tâche en raison d'un problème de connexion temporaire avec le service d'intelligence artificielle. Veuillez réessayer dans un moment."
     },
     "filter_speaker": {
       "title": "Filtrer les locuteurs"

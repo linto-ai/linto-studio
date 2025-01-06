@@ -78,24 +78,13 @@ export async function getLLMService() {
   }
 }
 
-export async function apiGetMetadataLLMService(conversationId, immediate) {
-  let req
-
-  if (immediate) {
-    req = await sendRequest(
-      `${BASE_API}/conversations/${conversationId}/export/list`,
-      { method: "get" },
-      {},
-      null,
-    )
-  } else {
-    req = await sendRequest(
-      `${BASE_API}/conversations/${conversationId}/export/list?init=false`,
-      { method: "get" },
-      {},
-      null,
-    )
-  }
+export async function apiGetMetadataLLMService(conversationId) {
+  const req = await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/export/list`,
+    { method: "get" },
+    {},
+    null,
+  )
 
   if (req.status === "success") {
     return req.data || []

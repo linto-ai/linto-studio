@@ -442,7 +442,7 @@ export default {
 
         this.pollingJob = setTimeout(
           () => this.pollingGeneration(false, currentTab),
-          0,
+          10000,
         )
       }
 
@@ -453,11 +453,8 @@ export default {
     reloadGeneration() {
       this.initGeneration(true)
     },
-    async getJobsList(immediate = false) {
-      this.jobsList = await apiGetMetadataLLMService(
-        this.conversationId,
-        immediate,
-      )
+    async getJobsList() {
+      this.jobsList = await apiGetMetadataLLMService(this.conversationId)
     },
     async getLastUpdate() {
       const res = await apiGetConversationLastUpdate(this.conversationId)

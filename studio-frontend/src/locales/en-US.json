@@ -668,7 +668,7 @@
       "cred": "Error during commission and delegation report generation",
       "cri": "Error during full report generation",
       "verbatim": "Error during verbatim generation",
-      "generic": "The summary service could not be completed"
+      "generic": "We couldn't complete the task due to a temporary connection issue with the model provider. Please try again in a moment"
     },
     "filter_speaker": {
       "title": "Filter by speaker"
