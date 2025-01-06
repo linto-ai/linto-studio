@@ -406,6 +406,8 @@ export default {
       }
     },
     async getPreview(regenerate = false) {
+      let currentTab = this.activeTab
+
       let req = await apiGetGenericFileFromConversation(
         this.conversationId,
         this.selectedRoute || this.activeTab,
@@ -416,6 +418,11 @@ export default {
           regenerate,
         },
       )
+
+      if (currentTab !== this.activeTab) {
+        return
+      }
+
       if (req?.status === "success") {
         if (req.data.type === "application/json") {
           this.blobUrl = null
