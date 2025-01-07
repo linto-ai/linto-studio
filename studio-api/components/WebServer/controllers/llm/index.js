@@ -2,13 +2,14 @@ const debug = require("debug")(
   `linto:conversation-manager:components:WebServer:controllers:llm:index`,
 )
 
+const webSocketSingleton = require(
+  `${process.cwd()}/components/WebServer/controllers/llm//llm_ws`,
+)
+let socket
+
 const fs = require("fs")
 const FormData = require("form-data")
 const model = require(`${process.cwd()}/lib/mongodb/models`)
-const WebSocket = require("ws") // Import the WebSocket library
-
-const activeJobs = new Map()
-let socket
 let isSocketConnected = false
 
 async function generateText(conversation, metadata) {
@@ -78,118 +79,22 @@ async function requestAPI(query, content, fileName, conversationExport) {
   }
 
   fs.unlinkSync(tempFilePath)
-  if (isSocketConnected) {
-    initWebSocketConnection(conversationExport)
-  } else if (jobId !== undefined) {
-    processJobWithWebSocket(jobId, conversationExport)
-  }
+  // if (isSocketConnected) {
+  initWebSocketConnection(conversationExport)
+  // }
+  //  else if (jobId !== undefined) {
+  //   processJobWithWebSocket(jobId, conversationExport)
+  // }
   return jobId
-}
-
-function updateStatus(conversationExport, data) {
-  let status = data.status
-  conversationExport.status = status
-
-  if (status === "complete" && data.message === "success") {
-    conversationExport.data = data.summarization
-    conversationExport.processing = data.progress || 100
-  } else if (status === "error" || status === "unknown") {
-    conversationExport.data = data.error || data.message
-  } else if (
-    status === "queued" ||
-    status === "processing" ||
-    status === "started" ||
-    status === "progress"
-  ) {
-    conversationExport.processing = data.progress
-  }
-  model.conversationExport.updateStatus(conversationExport)
 }
 
 // Function to initialize or reuse the WebSocket connection
 async function initWebSocketConnection(convExport) {
-  if (socket && isSocketConnected) return
-  if (!process.env.LLM_GATEWAY_SERVICES_WS) {
-    throw new Error("LLM_GATEWAY_SERVICES_WS is not defined")
-  }
-  let conversationExport = await model.conversationExport.getByConvAndFormat(
-    convExport.convId,
-  )
+  if (webSocketSingleton.getSocketState() === 1) return
+  socket = webSocketSingleton.getSocket() // Should init the socket
 
-  //we filter the conversationExport to get the one who are not completed or in error and we reduce the object to only the jobId
-  const currentJobs = conversationExport
-    .filter((convExport) => !completedJob(convExport))
-    .filter((convExport) => convExport.jobId)
-    .map((convExport) => convExport.jobId)
-
-  if (convExport.status !== "complete") currentJobs.push(convExport.jobId)
-  if (currentJobs.length === 0) return // No job to track
-  const uniqueJobs = [...new Set(currentJobs)]
-
-  if (!isSocketConnected) {
-    socket = new WebSocket(process.env.LLM_GATEWAY_SERVICES_WS)
-  }
-
-  socket.on("open", () => {
-    if (socket.readyState === 1) {
-      isSocketConnected = true
-      socket.send(JSON.stringify(uniqueJobs))
-
-      if (!activeJobs.has(convExport.jobId)) {
-        activeJobs.set(convExport.jobId, convExport)
-      }
-    }
-  })
-
-  socket.on("connect", () => {})
-
-  socket.onmessage = async (message) => {
-    try {
-      const result = JSON.parse(message.data)
-      if (Array.isArray(result)) {
-        let convId = ""
-        for (const element of result) {
-          let convExport = await model.conversationExport.getByJobId(
-            element.task_id,
-          )
-          if (completedJob(element) && !completedJob(convExport)) {
-            updateStatus(convExport[0], element)
-            convId = convExport[0].convId
-          } else if (
-            convExport.length !== 0 ||
-            !activeJobs.has(element.task_id)
-          ) {
-            activeJobs.set(element.task_id, convExport[0])
-          }
-        }
-      } else {
-        const jobsId = result.task_id
-
-        if (!activeJobs.has(jobsId)) {
-          return
-        }
-        const conversationExport = activeJobs.get(jobsId)
-        updateStatus(conversationExport, result)
-
-        // Should notify for the long polling
-        if (completedJob(result)) {
-          activeJobs.delete(jobsId)
-
-          if (activeJobs.size === 0) {
-            isSocketConnected = false
-            if (socket && socket.readyState === WebSocket.OPEN) socket.close()
-          }
-        }
-      }
-    } catch (err) {
-      debug(`Error processing WebSocket message: ${err.message}`)
-    }
-  }
-
-  socket.on("error", (err) => {
-    isSocketConnected = false
-    console.error("WebSocket error:", err)
-  })
+  if (convExport && convExport.jobId)
+    webSocketSingleton._addToWatchingList(convExport.jobId)
 }
 
 // Function to add a job and manage the WebSocket lifecycle
@@ -198,21 +103,11 @@ async function processJobWithWebSocket(jobsId, conversationExport) {
     if (!jobsId) {
       throw new Error("Job ID is required")
     }
-    if (activeJobs.has(jobsId)) return
-
-    if (jobsId !== null) activeJobs.set(jobsId, conversationExport)
-    else activeJobs.set(conversationExport.jobId, conversationExport)
-
     initWebSocketConnection(conversationExport)
   } catch (err) {
     conversationExport.status = "error"
     conversationExport.error = err.message
     model.conversationExport.updateStatus(conversationExport)
-    activeJobs.delete(jobsId)
-    if (activeJobs.size === 0) {
-      isSocketConnected = false
-      if (socket && socket.readyState === WebSocket.OPEN) socket.close()
-    }
   }
 }
 

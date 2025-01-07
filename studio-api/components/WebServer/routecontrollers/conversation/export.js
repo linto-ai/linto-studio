@@ -3,6 +3,9 @@ const debug = require("debug")(
 )
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
+const webSocketSingleton = require(
+  `${process.cwd()}/components/WebServer/controllers/llm//llm_ws`,
+)
 
 const docx = require(
   `${process.cwd()}/components/WebServer/controllers/export/docx`,
@@ -23,39 +26,9 @@ const {
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
 
-async function getList(convId) {
-  let conversationExport =
-    await model.conversationExport.getByConvAndFormat(convId)
-  if (conversationExport.length === 0) {
-    return []
-  }
-
-  let export_list = []
-  let done = true
-  for (let status of conversationExport) {
-    let export_conv = {
-      _id: status._id.toString(),
-      format: status.format,
-      status: status.status,
-      jobId: status.jobId,
-      processing: status.processing,
-      last_update: status.last_update,
-    }
-    if (!["complete", "error", "unknown"].includes(status.status)) done = false
-    if (status.status === "error") export_conv.error = status.error
-    export_list.push(export_conv)
-  }
-
-  if (!done && !llm.getSocketStatus()) {
-    llm.initWebSocketConnection(conversationExport[0])
-  }
-  return export_list
-}
-
 async function listExport(req, res, next) {
   try {
     if (!req.params.conversationId) throw new ConversationIdRequire()
-    const list = await getList(req.params.conversationId)
     let conversationExport = await model.conversationExport.getByConvAndFormat(
       req.params.conversationId,
     )
@@ -63,7 +36,7 @@ async function listExport(req, res, next) {
       return []
     }
 
-    let export_list = []
+    let list = []
     let done = true
     for (let status of conversationExport) {
       let export_conv = {
@@ -77,10 +50,25 @@ async function listExport(req, res, next) {
       if (!["complete", "error", "unknown"].includes(status.status))
         done = false
       if (status.status === "error") export_conv.error = status.error
-      export_list.push(export_conv)
+      list.push(export_conv)
     }
-    if (!done && !llm.getSocketStatus()) {
-      llm.initWebSocketConnection(conversationExport[0])
+    if (!done) {
+      webSocketSingleton.getSocket() // in case the socket is not initialized
+      // we add the list of job to the watching list
+      const jobIds = conversationExport
+        .filter((convExport) => {
+          if (
+            convExport.status === "complete" ||
+            convExport.status === "error" ||
+            convExport.status === "unknown"
+          )
+            return false
+          if (!convExport.jobId) return false
+          return true
+        })
+        .map((convExport) => convExport.jobId)
+
+      webSocketSingleton.sendMessage(jobIds)
     }
 
     res.status(200).send(list)
