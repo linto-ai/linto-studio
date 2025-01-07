@@ -92,11 +92,7 @@ export default {
       return this.status === "error" || this.status === "unknown"
     },
   },
-  watch: {
-    status() {
-      console.log("new status", this.status)
-    },
-  },
+  watch: {},
   mounted() {},
   components: { Fragment },
 }

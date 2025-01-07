@@ -273,7 +273,6 @@ export default {
       if (this.blobUrl) {
         return "complete"
       }
-      console.log("p", this?.currentJob?.status)
       return this?.currentJob?.status || "queued"
     },
     generationPercentage() {
@@ -436,7 +435,7 @@ export default {
       }
     },
     async pollingGeneration(first = false, currentTab) {
-      if (currentTab === "destroy" || currentTab !== this.activeTab) {
+      if (currentTab === "destroyed" || currentTab !== this.activeTab) {
         return
       }
 
