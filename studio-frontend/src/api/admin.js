@@ -1,6 +1,7 @@
 import { sendRequest } from "../tools/sendRequest"
 
 import { getEnv } from "@/tools/getEnv"
+import { sendMultipartFormData } from "@/tools/sendMultipartFormData"
 
 const BASE_API = getEnv("VUE_APP_CONVO_API")
 const DEFAULT_PAGE_SIZE = 10
@@ -97,6 +98,16 @@ export async function apiAdminUpdateUser(userId, data) {
     {
       method: "patch",
     },
+    data,
+  )
+
+  return res
+}
+
+export async function apiAdminCreateUser(data) {
+  const res = await sendMultipartFormData(
+    `${BASE_API}/administration/users`,
+    "post",
     data,
   )
 

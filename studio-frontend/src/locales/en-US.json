@@ -998,6 +998,13 @@
     "update_pswd_notif_dismiss_btn": "Dismiss",
     "verify_email_notif": "Please verify your email address"
   },
+  "userCreation": {
+    "title": "New user",
+    "confirm_button": "Create user",
+    "email_already_exists": "This email is already used",
+    "passwords_do_not_match": "Passwords do not match",
+    "error_message": "An error occurred while creating the user"
+  },
   "userTable": {
     "header": {
       "id": "ID",
