@@ -1,8 +1,16 @@
 <template>
   <MainContentBackoffice :loading="loading">
     <div class="flex gap-medium">
-      <StatCard :count="usersCount" title="Users" icon="profile" />
-      <StatCard :count="organizationCount" title="Organizations" icon="work" />
+      <StatCard
+        :count="usersCount"
+        title="Users"
+        icon="profile"
+        :to="{ name: 'backoffice-userList' }" />
+      <StatCard
+        :count="organizationCount"
+        title="Organizations"
+        icon="work"
+        :to="{ name: 'backoffice-organizationList' }" />
     </div>
   </MainContentBackoffice>
 </template>

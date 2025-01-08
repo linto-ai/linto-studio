@@ -117,6 +117,7 @@ export default {
       this.hideModalDeleteUsers()
       this.hideModalAddUser()
       this.debouncedFetchAllUsers()
+      this.selectedUsers = []
     },
     sortBy(key) {
       if (key === this.sortListKey) {
