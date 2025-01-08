@@ -302,7 +302,7 @@ export default {
         })
         if (res.message === "User address already use") {
           this.state = "personal-information"
-          this.email.error = "User address already use" //TODO: translate
+          this.email.error = this.$t("userCreation.email_already_exists")
         } else if (res.status === "success") {
           this.firstname = { ...EMPTY_FIELD }
           this.lastname = { ...EMPTY_FIELD }
@@ -314,7 +314,7 @@ export default {
           this.state = "email-verification"
         } else {
           this.state = "personal-information"
-          this.formError = "An error occured, please try again later"
+          this.formError = this.$t("userCreation.error_message")
         }
       } else {
         console.log("invalid form")

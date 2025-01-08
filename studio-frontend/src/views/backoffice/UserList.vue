@@ -4,11 +4,15 @@
       <HeaderTable
         v-bind:search.sync="search"
         @on-delete="showModalDeleteUsers"
+        @on-create="showModalAddUser"
         :title="$t('backoffice.user_list.title')"
         :count="count"
         :disableDelete="selectedUsers.length === 0"
         :remove_button_label="
           $tc('backoffice.user_list.remove_user_button', selectedUsers.length)
+        "
+        :add_button_label="
+          $t('backoffice.user_list.add_user_button')
         "></HeaderTable>
     </template>
 
@@ -32,6 +36,11 @@
       @on-confirm="reload"
       :selectedUsers="selectedUsers"
       v-if="modalDeleteUsersIsVisible"></ModalDeleteUsers>
+
+    <ModalCreateUser
+      @on-confirm="reload"
+      @on-close="hideModalAddUser"
+      v-if="modalAddUserIsVisible"></ModalCreateUser>
   </MainContentBackoffice>
 </template>
 <script>
@@ -44,6 +53,7 @@ import UserTable from "@/components/UserTable.vue"
 import HeaderTable from "@/components/HeaderTable.vue"
 import ModalDeleteUsers from "@/components/ModalDeleteUsers.vue"
 import Pagination from "@/components/Pagination.vue"
+import ModalCreateUser from "@/components/ModalCreateUser.vue"
 
 export default {
   mixins: [platformRoleMixin, debounceMixin],
@@ -55,6 +65,7 @@ export default {
       count: 0,
       selectedUsers: [],
       modalDeleteUsersIsVisible: false,
+      modalAddUserIsVisible: false,
       currentPageNb: 0,
       totalPagesNumber: 0,
       search: "",
@@ -93,12 +104,19 @@ export default {
     showModalDeleteUsers() {
       this.modalDeleteUsersIsVisible = true
     },
+    showModalAddUser() {
+      this.modalAddUserIsVisible = true
+    },
     hideModalDeleteUsers() {
       this.modalDeleteUsersIsVisible = false
     },
+    hideModalAddUser() {
+      this.modalAddUserIsVisible = false
+    },
     reload() {
       this.hideModalDeleteUsers()
-      this.fetchAllUsers()
+      this.hideModalAddUser()
+      this.debouncedFetchAllUsers()
     },
     sortBy(key) {
       if (key === this.sortListKey) {
@@ -125,6 +143,7 @@ export default {
     UserTable,
     HeaderTable,
     ModalDeleteUsers,
+    ModalCreateUser,
     Pagination,
   },
 }

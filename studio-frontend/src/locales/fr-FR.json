@@ -1001,6 +1001,13 @@
     "update_pswd_notif_dismiss_btn": "Ne plus afficher",
     "verify_email_notif": "Veuillez vérifier votre adresse email"
   },
+  "userCreation": {
+    "title": "Nouvel utilisateur",
+    "confirm_button": "Créer l'utilisateur",
+    "email_already_exists": "Un utilisateur avec cet email existe déjà",
+    "passwords_do_not_match": "Les mots de passe ne correspondent pas",
+    "error_message": "Une erreur s'est produite lors de la création de l'utilisateur"
+  },
   "userTable": {
     "header": {
       "id": "ID",
