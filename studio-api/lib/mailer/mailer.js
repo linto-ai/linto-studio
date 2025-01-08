@@ -1,11 +1,15 @@
 const debug = require("debug")("linto:lib:Mailer:mailer")
 const nodemailer = require("nodemailer")
 const { MailError } = require("./../error/customErrors")
+
+const SMTP_SECURE = process.env.SMTP_SECURE === "true"
+const SMTP_REQUIRE_TLS = process.env.SMTP_REQUIRE_TLS === "true"
+
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: process.env.SMTP_PORT,
-  secure: process.env.SMTP_SECURE, // true for 465, false for other ports
-  requireTLS: process.env.SMTP_REQUIRE_TLS,
+  secure: SMTP_SECURE, // true for 465, false for other ports
+  requireTLS: SMTP_REQUIRE_TLS,
   auth: {
     user: process.env.SMTP_AUTH, // generated ethereal user
     pass: process.env.SMTP_PSWD, // generated ethereal password
@@ -13,6 +17,9 @@ const transporter = nodemailer.createTransport({
 })
 
 class Mailer {
+  // const SMTP_REQUIRE_TLS = true
+  // const SMTP_SECURE = false
+
   static transporter = transporter
   static connected = false
 
@@ -60,8 +67,11 @@ class Mailer {
     try {
       return await new Promise((resolve, reject) => {
         Mailer.transporter.verify((error, success) => {
-          if (error || !success) return reject(error)
-          else Mailer.connected = true
+          if (error || !success) {
+            debug("Error connecting to mail server")
+            debug(error)
+            return reject(error)
+          } else Mailer.connected = true
           resolve(true)
         })
       })
