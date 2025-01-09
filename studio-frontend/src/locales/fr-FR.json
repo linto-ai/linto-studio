@@ -595,11 +595,18 @@
     }
   },
   "no_orga": {
-    "create": "Créer une organisation",
-    "creating": "Création de l'organisation en cours...",
-    "label": "Nommez votre organisation, vous pourrez en créer d'autres par la suite",
-    "subtitle": "Créez une organisation pour réaliser et partager vos transcriptions.",
-    "title": "Redécouvrez LinTO Studio"
+    "can_create": {
+      "create": "Créer une organisation",
+      "creating": "Création de l'organisation en cours...",
+      "label": "Nommez votre organisation, vous pourrez en créer d'autres par la suite",
+      "subtitle": "Créez une organisation pour réaliser et partager vos transcriptions.",
+      "title": "Redécouvrez LinTO Studio"
+    },
+    "cannot_create": {
+      "subtitle_line_one": "Votre utilisateur n'appartient à aucune organisation.",
+      "subtitle_line_two": "Veuillez contacter un administrateur.",
+      "title": "Votre compte n'est pas provisionné"
+    }
   },
   "organisation": {
     "add_member_description": "Utilisez le champ de recherche pour chercher des utilisateurs par leur prénom, nom ou adresse électronique",

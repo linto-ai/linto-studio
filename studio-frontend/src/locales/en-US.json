@@ -594,11 +594,18 @@
     }
   },
   "no_orga": {
-    "create": "Create an organisation",
-    "creating": "Creating organisation...",
-    "label": "Name your organisation, you can create others later",
-    "subtitle": "Create an organisation to create and share your transcriptions.",
-    "title": "Discover LinTO Studio again"
+    "can_create": {
+      "create": "Create an organisation",
+      "creating": "Creating organisation...",
+      "label": "Name your organisation, you can create others later",
+      "subtitle": "Create an organisation to create and share your transcriptions.",
+      "title": "Discover LinTO Studio again"
+    },
+    "cannot_create": {
+      "subtitle_line_one": "Your user does not belong to any organisation.",
+      "subtitle_line_two": "Please contact an administrator.",
+      "title": "Your account is not provisioned"
+    }
   },
   "organisation": {
     "add_member_description": "Use the search form to find users by their firstname, lastname or email address",
