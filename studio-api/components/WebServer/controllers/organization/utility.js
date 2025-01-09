@@ -90,8 +90,27 @@ async function getOrgaIdFromReq(req) {
   return organizationId
 }
 
+async function populateUserToOrganization(user) {
+  const matchingMail = "@" + user.email.split("@")[1]
+
+  const organizations = await model.organizations.getAll({
+    matchingMail: matchingMail,
+  })
+  organizations.list.forEach(async (organization) => {
+    if (
+      organization.users.filter((u) => u.userId === user._id.toString())
+        .length === 0
+    ) {
+      let orgaCopy = JSON.parse(JSON.stringify(organization))
+      orgaCopy.users.push({ userId: user._id.toString(), role: ROLES.MEMBER })
+      await model.organizations.update(orgaCopy)
+    }
+  })
+}
+
 module.exports = {
   getOrgaIdFromReq,
   countAdmin,
   getUserConversationFromOrganization,
+  populateUserToOrganization,
 }

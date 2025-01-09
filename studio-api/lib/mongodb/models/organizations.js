@@ -93,6 +93,13 @@ class OrganizationModel extends MongoModel {
           $options: "i",
         }
       }
+      if (filter.matchingMail) {
+        query.matchingMail = {
+          $regex: filter.matchingMail,
+          $options: "i",
+        }
+      }
+
       if (!filter) return await this.mongoRequest(query)
       else
         return await this.mongoAggregatePaginate(

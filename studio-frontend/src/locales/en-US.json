@@ -487,6 +487,23 @@
     "title": "Sign in",
     "footer": {
       "description": "Open source innovations powered by LINAGORA on EXAION infrastructures"
+    },
+    "sso": {
+      "linagora": "Sign in with Linagora"
+    },
+    "teaser": {
+      "transcribe": {
+        "title": "Transcribe",
+        "desc": "All your media, your microphone, your conference"
+      },
+      "collaborate": {
+        "title": "Collaborate",
+        "desc": "Organize, share and edit your content"
+      },
+      "ia": {
+        "title": "Trusted AI",
+        "desc": "Get summaries suited to your business in your own formats (word, pdf, subtitles)"
+      }
     }
   },
   "manage_tags": {
@@ -625,6 +642,14 @@
       "summary_permission": "Generate summary",
       "session_permission": "Create session",
       "update_button": "Update permissions"
+    },
+    "matching_users": {
+      "title": "Automatic user invitation",
+      "matching_mail": {
+        "label": "Maching email"
+      },
+      "update_button": "Update matching criterions",
+      "apply_button": "Invite all users matching criterions"
     },
     "organization_stats": {
       "title": "Organisation statistics",

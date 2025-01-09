@@ -5,6 +5,7 @@ module.exports = {
   ...require("./organization.json"),
   ...require("./service.json"),
   ...require("./services.json"),
+  ...require("./servicesLlm.json"),
   ...require("./speakers.json"),
   ...require("./turn.json"),
   ...require("./transcription-config.json"),

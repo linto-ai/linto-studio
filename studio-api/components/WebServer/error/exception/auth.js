@@ -95,6 +95,18 @@ class DisabledUser extends Error {
   }
 }
 
+class Unauthorized extends Error {
+  constructor(message, err) {
+    super()
+    this.name = "DisabledUser"
+    this.type = ExceptionType
+    this.status = 401
+    if (message) this.message = message
+    else this.message = "You are not authorized to access this resource"
+    if (err) this.err = err
+  }
+}
+
 module.exports = {
   //Auth Exception
   InvalidCredential,
@@ -103,6 +115,7 @@ module.exports = {
   UserNotFound,
   DisabledUser,
   //Passport Exception
+  Unauthorized,
   MalformedToken,
   ExpiredLink,
 }

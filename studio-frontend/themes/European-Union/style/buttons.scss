@@ -104,6 +104,7 @@ button,
       background-color: var(--text-primary);
     }
   }
+
   &.red,
   &.hover-red,
   &.red-border,
@@ -117,6 +118,17 @@ button,
     }
     .icon {
       background-color: var(--primary-color);
+    }
+  }
+
+  &.call-to-action {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    .label {
+      color: var(--text-primary);
+    }
+    .icon {
+      background-color: var(--text-primary);
     }
   }
 
@@ -176,7 +188,8 @@ button,
 
 #upload-media-button {
   font-weight: 800;
-  box-shadow: 0px 0px 0px 5px rgba(10, 84, 175, 0.17),
+  box-shadow:
+    0px 0px 0px 5px rgba(10, 84, 175, 0.17),
     0px 0px 25px 8px rgba(10, 84, 175, 0.17);
   //width: 8rem;
   font-size: 1.1rem;

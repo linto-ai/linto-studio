@@ -13,6 +13,7 @@ module.exports = {
         $set: {
           created: moment().format(),
           last_update: moment().format(),
+          matchingMail: "",
         },
       },
     )
@@ -21,7 +22,7 @@ module.exports = {
   down: async (db) => {
     await db.collection(collections_name).updateMany(
       {}, // Apply to all documents
-      { $unset: { created: "", last_update: "" } }, // Explicitly unset fields
+      { $unset: { created: "", last_update: "", matchingMail: "" } }, // Explicitly unset fields
     )
   },
 }

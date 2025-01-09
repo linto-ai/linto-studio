@@ -107,6 +107,16 @@ let router = new Router({
       meta: { public: true, authRoute: true },
     },
     {
+      path: "/login/oidc",
+      name: "oidc-login",
+      components: {
+        default: () => import("../views/oidc.vue"),
+        ...componentsWithoutHeader,
+      },
+      defaultProps,
+      meta: { public: true, authRoute: true },
+    },
+    {
       path: "/create-account",
       name: "create-account",
       components: {

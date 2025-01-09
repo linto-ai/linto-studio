@@ -4,45 +4,42 @@ const debug = require("debug")(
 
 const jwt = require("jsonwebtoken")
 
-const TOKEN_DAYS_TIME = "7d"
-const REFRESH_TOKEN_DAYS_TIME = "14d"
+const DEFAULT_TOKEN_EXPIRATION = "7d"
+const DEFAULT_REFRESH_TOKEN_EXPIRATION = "14d"
 
-module.exports = function (tokenData) {
-  const authSecret = tokenData.salt
+module.exports = function generateTokens(
+  tokenData,
+  generatingOptions = { refresh: true },
+) {
+  const { salt, ...payload } = tokenData
   delete tokenData.salt
 
-  const token = generateJWT(tokenData, authSecret)
+  const authSecret = salt + process.env.CM_JWT_SECRET
 
-  return {
-    user_id: token.user_id,
-    auth_token: token.auth_token,
-    refresh_token: token.refresh_token,
+  // Generate the tokens
+  const tokens = {
+    auth_token: generateJWT(payload, authSecret, generatingOptions.expires_in),
+    user_id: payload.userId,
   }
+
+  if (generatingOptions.refresh) {
+    tokens.refresh_token = generateJWT(
+      payload,
+      authSecret + process.env.CM_REFRESH_SECRET,
+      generatingOptions.expires_in ||
+        process.env.REFRESH_TOKEN_DAYS_TIME ||
+        DEFAULT_REFRESH_TOKEN_EXPIRATION,
+    )
+  }
+
+  return tokens
 }
 
-function generateJWT(data, authSecret) {
-  return {
-    auth_token: jwt.sign(
-      {
-        data,
-      },
-      authSecret + process.env.CM_JWT_SECRET,
-      {
-        algorithm: "HS256",
-        expiresIn: process.env.TOKEN_DAYS_TIME || TOKEN_DAYS_TIME,
-      },
-    ),
-    refresh_token: jwt.sign(
-      {
-        data,
-      },
-      authSecret + process.env.CM_REFRESH_SECRET + process.env.CM_JWT_SECRET,
-      {
-        algorithm: "HS256",
-        expiresIn:
-          process.env.REFRESH_TOKEN_DAYS_TIME || REFRESH_TOKEN_DAYS_TIME,
-      },
-    ),
-    user_id: data.userId,
-  }
+// Helper function to generate a single JWT
+function generateJWT(payload, secret, expiresIn) {
+  return jwt.sign({ data: payload }, secret, {
+    algorithm: "HS256",
+    expiresIn:
+      expiresIn || process.env.TOKEN_DAYS_TIME || DEFAULT_TOKEN_EXPIRATION,
+  })
 }

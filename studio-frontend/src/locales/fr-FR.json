@@ -488,6 +488,23 @@
     "title": "Identifiez-vous",
     "footer": {
       "description": "Innovations Open source propulsées par LINAGORA sur les infrastructures EXAION"
+    },
+    "sso": {
+      "linagora": "Se connecter avec Linagora"
+    },
+    "teaser": {
+      "transcribe": {
+        "title": "Transcrire",
+        "desc": "Tous vos médias, votre microphone, votre conférence"
+      },
+      "collaborate": {
+        "title": "Collaborer",
+        "desc": "Organisez, partagez et éditez vos contenus"
+      },
+      "ia": {
+        "title": "IA de confiance",
+        "desc": "Obtenez des résumés adaptés à votre métier dans vos formats (word, pdf, sous-titres)"
+      }
     }
   },
   "manage_tags": {
@@ -611,6 +628,11 @@
       "content": "Êtes vous sur de vouloir quitter l'organisation \"{name}\" ?",
       "title": "Quitter l'organisation"
     },
+    "remove_user_modal": {
+      "action": "Supprimer l'utilisateur de l'organisation",
+      "content": "Êtes vous sur de supprimer \"{name}\" de cette organisation ?",
+      "title": "Supprimer l'utilisateur de l'organisation"
+    },
     "my_workspace": "Mon espace de travail",
     "name_description": "Nom de l'organisation",
     "name_label": "Nom",
@@ -621,6 +643,14 @@
       "summary_permission": "Générer des résumés",
       "session_permission": "Créer des sessions",
       "update_button": "Mettre à jour les permissions"
+    },
+    "matching_users": {
+      "title": "Ajout automatique d'utilisateurs",
+      "matching_mail": {
+        "label": "Email d'appartenance à l'organisation"
+      },
+      "update_button": "Mettre à jour les critères d'appartenance",
+      "apply_button": "Inviter les utilisateurs correspondant aux critères"
     },
     "organization_stats": {
       "title": "Statistiques de l'organisation",

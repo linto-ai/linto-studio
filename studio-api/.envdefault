@@ -2,6 +2,7 @@ COMPONENTS=WebServer,MongoMigration
 WEBSERVER_HTTP_PORT=80
 WEBSERVER_SESSION_SECRET=secret
 
+FRONTEND_DOMAIN=
 DEFAULT_USER_ROLE=1
 
 # Optional for swagger
@@ -80,3 +81,10 @@ BROKER_PROTOCOL=mqtt
 # Token duration settings possible in m, h, d
 TOKEN_DAYS_TIME=7d
 REFRESH_TOKEN_DAYS_TIME=14d
+
+# OIDC Type supported are : linagora
+OIDC_TYPE=
+OIDC_URL=
+OIDC_CLIENT_ID=
+OIDC_CLIENT_SECRET=
+OIDC_CALLBACK_URI=
