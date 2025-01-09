@@ -61,7 +61,7 @@ export async function apiGetActiveSessions(organizationScope, notif) {
   const getStartedSessions = await sendRequest(
     `${BASE_API}/organizations/${organizationScope}/sessions?statusList=active&organizationId=${organizationScope}`,
     { method: "get" },
-    {},
+    { statusList: "active, ready" },
     notif,
   )
 
@@ -146,22 +146,24 @@ export async function apiGetSessionsBetweenDates(
   const allSessionsReq = await sendRequest(
     `${BASE_API}/organizations/${organizationScope}/sessions`,
     { method: "get" },
-    { limit: 100, organizationId: organizationScope },
+    {
+      limit: 100,
+      organizationId: organizationScope,
+      "scheduleOn[before]": end_date,
+      "scheduleOn[after]": start_date,
+    },
     notif,
   )
 
-  const allSessionsList = allSessionsReq?.data?.sessions ?? []
+  // const allSessionsList = allSessionsReq?.data?.sessions ?? []
 
-  const allSessionsFiltered = allSessionsList.filter(
-    (session) =>
-      new Date(session.startTime) >= new Date(start_date) &&
-      new Date(session.startTime) <= new Date(end_date),
-  )
+  // const allSessionsFiltered = allSessionsList.filter(
+  //   (session) =>
+  //     new Date(session.startTime) >= new Date(start_date) &&
+  //     new Date(session.startTime) <= new Date(end_date),
+  // )
 
-  return {
-    sessions: allSessionsFiltered,
-    totalItems: allSessionsFiltered.length,
-  }
+  return allSessionsReq?.data ?? { sessions: [], totalItems: 0 }
 }
 
 export async function apiGetPublicSession(sessionId, notif) {
@@ -206,14 +208,14 @@ export async function apiDeleteSession(
   let resRequest
   if (name) {
     resRequest = await sendRequest(
-      `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}?name=${name}`,
+      `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}?name=${name}&force=true`,
       { method: "delete" },
       {},
       notif,
     )
   } else {
     resRequest = await sendRequest(
-      `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}`,
+      `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}?force=true`,
       { method: "delete" },
       {},
       notif,
@@ -338,4 +340,36 @@ export async function apiDeleteQuickSession(
   }
 
   return resRequest
+}
+
+export async function apiStartBot(
+  organizationScope,
+  sessionId,
+  payload,
+  notif,
+) {
+  const startBot = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}/start-bot`,
+    { method: "post" },
+    payload,
+    notif,
+  )
+
+  return startBot
+}
+
+export async function apiStopBot(
+  organizationScope,
+  sessionId,
+  channelId,
+  notif,
+) {
+  const startBot = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}/stop-bot`,
+    { method: "post" },
+    { channelId },
+    notif,
+  )
+
+  return startBot
 }

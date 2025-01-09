@@ -68,15 +68,16 @@
               :field="fieldAppointment"
               v-bind:error.sync="fieldAppointment.error"
               v-model="fieldAppointment.value" />
+            <FormCheckbox
+              :field="fieldAutoStop"
+              v-model="fieldAutoStop.value"
+              :disabled="isStarted"></FormCheckbox>
             <!-- <div class="flex gap-medium align-center medium-margin-top">
             <FormCheckbox
               :field="fieldAutoStart"
               v-model="fieldAutoStart.value"
               :disabled="isStarted"></FormCheckbox>
-            <FormCheckbox
-              :field="fieldAutoStop"
-              v-model="fieldAutoStop.value"
-              :disabled="isStarted"></FormCheckbox>
+            
             <div></div>
           </div> -->
           </section>
@@ -94,15 +95,28 @@
             }}</span>
           </button> -->
 
+            <!-- Delete and save -->
             <button
               class="btn flex1 red-border flex"
-              v-if="isStarted"
+              v-if="isStarted && !isActive"
               @click="stopSession"
               :title="titleButtonDelete"
-              :disabled="isStoping || isActive">
+              :disabled="isStoping">
               <span class="icon stop"></span>
               <span class="label flex1">{{
                 $t("session.detail_page.stop_button")
+              }}</span>
+            </button>
+            <!-- Force delete and save -->
+            <button
+              class="btn flex1 red-border flex"
+              v-if="isActive"
+              @click="openModalDeleteSession"
+              :title="titleButtonDelete"
+              :disabled="isStoping">
+              <span class="icon stop"></span>
+              <span class="label flex1">{{
+                $t("session.detail_page.stop_force_button")
               }}</span>
             </button>
 
@@ -152,10 +166,10 @@
         </button>
       </div>
 
-      <ModalDeleteSession
+      <ModalForceDeleteSession
         v-if="showModalDeleteSession"
         @on-close="closeModalDeleteSession"
-        @on-confirm="deleteSession" />
+        @on-confirm="stopSession" />
     </div>
   </MainContent>
 </template>
@@ -178,7 +192,7 @@ import FormInput from "@/components/FormInput.vue"
 import FormCheckbox from "@/components/FormCheckbox.vue"
 import SessionChannelsTable from "@/components/SessionChannelsTable.vue"
 import AppointmentSelector from "@/components/AppointmentSelector.vue"
-import ModalDeleteSession from "@/components/ModalDeleteSession.vue"
+import ModalForceDeleteSession from "@/components/ModalForceDeleteSession.vue"
 import MainContent from "@/components/MainContent.vue"
 import SessionStatus from "@/components/SessionStatus.vue"
 
@@ -216,7 +230,7 @@ export default {
         value: null, // computed property cannot be used here so fields are initialized in mounted
         error: null,
         valid: false,
-        label: this.$t("session.settings_page.autoStop_label"),
+        label: this.$t("session.create_page.auto_stop_label"),
       },
       fieldAutoStart: {
         value: null, // computed property cannot be used here so fields are initialized in mounted
@@ -269,6 +283,14 @@ export default {
     sessionLoaded(value) {
       if (value) this.initValues()
     },
+    "fieldAppointment.value": {
+      handler(value) {
+        if (value[1] && value[1] != this.endTime) {
+          this.fieldAutoStop.value = true
+        }
+      },
+      deep: true,
+    },
   },
   methods: {
     onSessionUpdatePostProcess(newSession) {
@@ -318,10 +340,10 @@ export default {
       if (this.testFields()) {
         let newValues = {
           ...this.session,
-          startTime: startDateTime,
-          endTime: endDateTime,
+          scheduleOn: startDateTime,
+          endOn: endDateTime,
           autoStart: this.fieldAutoStart.value,
-          autoStop: this.fieldAutoStop.value,
+          autoEnd: this.fieldAutoStop.value,
           visibility: this.fieldIsPublic.value ? "public" : "organization",
           channels: this.localChannels,
         }
@@ -355,7 +377,6 @@ export default {
   },
   components: {
     MainContent,
-    ModalDeleteSession,
     SessionStatus,
     MainContent,
     SessionNotStarted,
@@ -364,7 +385,7 @@ export default {
     FormCheckbox,
     SessionChannelsTable,
     AppointmentSelector,
-    ModalDeleteSession,
+    ModalForceDeleteSession,
   },
 }
 </script>

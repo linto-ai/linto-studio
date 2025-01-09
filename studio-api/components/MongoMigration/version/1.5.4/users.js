@@ -28,6 +28,9 @@ module.exports = {
       .toArray()
 
     for (const user of usersToUpdate) {
+      if (ROLE.hasPlatformRoleAccess(user.role, ROLE.SUPER_ADMINISTRATOR)) {
+        continue //Should not happend in migration, but just in case user have already the desired platform role
+      }
       updatedRole = ROLE.shiftBitsUp(user.role) + ROLE.ORGANIZATION_INITIATOR
 
       // Update the role in the database

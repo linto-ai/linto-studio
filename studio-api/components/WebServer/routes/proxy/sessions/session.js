@@ -48,7 +48,43 @@ module.exports = (webServer) => {
         ],
         requireAuth: true,
       },
-
+      /*************************/
+      /******* template  *******/
+      /*************************/
+      {
+        //member access
+        scrapPath: /^\/organizations\/[^/]+/,
+        paths: [
+          {
+            path: "/organizations/:organizationId/templates",
+            method: ["get"],
+            forwardParams: proxyForwardParams,
+          },
+          {
+            path: "/organizations/:organizationId/templates",
+            method: ["post"],
+            forwardParams: proxyForwardParams,
+          },
+          {
+            path: "/organizations/:organizationId/templates/:id",
+            method: ["get"],
+            forwardParams: proxyForwardParams,
+          },
+          {
+            path: "/organizations/:organizationId/templates/:id",
+            method: ["put"],
+            forwardParams: proxyForwardParams,
+          },
+          {
+            path: "/organizations/:organizationId/templates/:id",
+            method: ["delete"],
+            forwardParams: proxyForwardParams,
+          },
+        ],
+        requireAuth: true,
+        orgaPermissionAccess: PERMISSIONS.SESSION,
+        requireOrganizationMeetingManagerAccess: true,
+      },
       /*************************/
       /******** sessions *******/
       /*************************/ {

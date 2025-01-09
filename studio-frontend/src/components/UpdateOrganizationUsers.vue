@@ -53,7 +53,9 @@
                   v-for="role in userRoles"
                   :key="role.value"
                   :value="role.value"
-                  :disabled="userRole < role.value">
+                  :disabled="
+                    userRole < role.value && !isAtLeastSystemAdministrator
+                  ">
                   {{ role.name }}
                 </option>
               </select>

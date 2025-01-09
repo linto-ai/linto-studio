@@ -81,6 +81,9 @@ h4 {
   &.gap-medium {
     gap: var(--medium-gap);
   }
+  &.gap-large {
+    gap: var(--large-gap);
+  }
 }
 
 .flex1 {

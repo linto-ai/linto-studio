@@ -90,7 +90,7 @@ export default {
     },
     handleScroll(e) {
       let isBottom =
-        e.target.scrollHeight - e.target.scrollTop < e.target.clientHeight + 300
+        e.target.scrollHeight - e.target.scrollTop < e.target.clientHeight + 150
       if (isBottom !== this.isBottom) {
         this.isBottom = isBottom
       }

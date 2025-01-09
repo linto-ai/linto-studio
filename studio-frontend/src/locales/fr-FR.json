@@ -418,7 +418,9 @@
       "subtitle": "Nous sommes désolés pour la gêne occasionnée. Nous travaillons à résoudre le problème au plus vite.",
       "title": "L’opération est indisponible pour le moment."
     },
-    "title": "Nous avons rencontré un problème"
+    "title": "Nous avons rencontré un problème",
+    "required": "Ce champ est requis",
+    "invalidVisioUrl": "L'url de la visio n'est pas valide"
   },
   "explore": {
     "delete_conversation_button": "Supprimer des médias",
@@ -650,6 +652,10 @@
       "update_button": "Mettre à jour les critères d'appartenance",
       "apply_button": "Inviter les utilisateurs correspondant aux critères"
     },
+    "organization_stats": {
+      "title": "Statistiques de l'organisation",
+      "medias": "Médias"
+    },
     "update": {
       "title": "Organisation : {name}"
     },
@@ -757,6 +763,7 @@
         "label": "Nom de la session"
       },
       "diarization_label": "Activer la séparation des locuteurs (si disponible dans le canal)",
+      "keep_audio_label": "Conserver l'audio à la fin de la session",
       "start_timestamp_label": "Heure de début",
       "end_timestamp_label": "Heure de fin",
       "submit_button": "Créer la session",
@@ -765,7 +772,8 @@
       "title": "Créer une session",
       "channels_error": "Veuillez ajouter au moins un canal à la session",
       "main_info_title": "Informations générales",
-      "appointment_label": "Selecteur d'horaire"
+      "appointment_label": "Selecteur d'horaire",
+      "auto_stop_label": "Arrêt automatique de la session à l'heure de fin"
     },
     "detail_page": {
       "back_to_listing": "Liste des sessions",
@@ -777,6 +785,9 @@
       "end_time_not_defined": "Non défini",
       "font_size_label": "Taille de la police",
       "no_transcription": "Rien n'a encore été transcrit pour ce canal",
+      "n_turns_selected": "Aucun tour de parole sélectionné | 1 tour de parole sélectionné | {count} tours de parole sélectionnés",
+      "copy_turns_text": "Copier le texte",
+      "clear_turn_selection": "Déselectionner",
       "session_ended_title": "La session est terminée",
       "session_ended_subtitle": "La transcription a été sauvegardé dans votre bibliothèque de médias",
       "session_ended_link_to_conversation_transcription": "Ouvrir la transcription dans l’éditeur",
@@ -787,6 +798,7 @@
       "start_time_not_defined": "Non défini",
       "start_session_error_message": "La session n'a pas pu être arrêtée",
       "stop_button": "Arrêter et enregistrer la transcription",
+      "stop_force_button": "Forcer l'arrêt de la session",
       "stop_session_error_message": "La session n'a pas pu être arrêtée",
       "stop_session_success": "La session a été arrétée et sauvegardée",
       "title_interface_settings": "Paramètre d'interface",
@@ -835,7 +847,6 @@
     },
     "settings_page": {
       "autoStart_label": "Démarrage automatique de la session",
-      "autoStop_label": "Arrêt automatique de la session",
       "channels_list_title": "Canaux",
       "copy_link_button": "Copier le lien",
       "copy_link_button_done": "Lien copié",
@@ -848,10 +859,10 @@
       "start_time_label": "Heure de début",
       "success_message": "Session successfully updated",
       "error_update_message": "Session has not been updated",
-      "delete_modal": {
+      "force_delete_modal": {
         "action": "Supprimer",
-        "content": "Êtes vous sur de vouloir supprimer la session ?",
-        "title": "Supprimer la session"
+        "content": "Un flux audio est connecté. Êtes-vous sûr de vouloir supprimer la session ? Le contenu sera sauvegardé dans votre bibliothèque de médias.",
+        "title": "Confirmer la suppression de la session"
       },
       "visibility_private_label": "Privée",
       "visibility_organization_label": "Interne",
@@ -892,11 +903,23 @@
       "save_button": "Sauvegarder et quitter",
       "continue_button": "Continuer l'enregistrement"
     },
+    "setup_visio": {
+      "title": "Rejoindre une visio-conférence",
+      "subtitle": "Veuillez entrer l'URL de la visio-conférence à laquelle vous souhaitez participer.",
+      "type_label": "Type de visio-conférence",
+      "link_label": "URL de la visio-conférence",
+      "back": "Retour",
+      "join_meeting": "Rejoindre la visio-conférence",
+      "error_bot_setup": "An error occurred while joining the videoconference"
+    },
     "live": {
       "status_no_websocket": "Déconnecté du serveur audio",
-      "status_recording": "En cours d'enregistrement.",
-      "status_muted": "Muet.",
+      "status_recording": "En cours d'enregistrement",
+      "status_muted": "Muet",
       "save_button": "Sauvegarder et quitter"
+    },
+    "live_visio": {
+      "status_recording_visio": "Enregistrement de la visio-conférence en cours"
     }
   },
   "share_menu": {
@@ -1005,6 +1028,13 @@
     "update_pswd_notif": "Vous avez récemment fait une demande suite à un mot de passe oublié, pensez à actualiser votre mot de passe.",
     "update_pswd_notif_dismiss_btn": "Ne plus afficher",
     "verify_email_notif": "Veuillez vérifier votre adresse email"
+  },
+  "userCreation": {
+    "title": "Nouvel utilisateur",
+    "confirm_button": "Créer l'utilisateur",
+    "email_already_exists": "Un utilisateur avec cet email existe déjà",
+    "passwords_do_not_match": "Les mots de passe ne correspondent pas",
+    "error_message": "Une erreur s'est produite lors de la création de l'utilisateur"
   },
   "userTable": {
     "header": {

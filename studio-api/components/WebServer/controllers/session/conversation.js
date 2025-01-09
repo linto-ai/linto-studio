@@ -57,10 +57,11 @@ function initCaptionsForConversation(sessionData, name = undefined) {
       if (!channel.closedCaptions) {
         continue
       }
-
+      if (name === undefined) {
+        name = session.name || ""
+      }
       let caption = {
-        name:
-          name + " - " + channel.name || session.name + " - " + channel.name,
+        name: name + " - " + channel.name,
         owner: session.owner,
         locale: channel.languages,
         organization: {
