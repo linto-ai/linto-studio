@@ -45,14 +45,23 @@ const STRATEGY = new Strategy(
     else if (users?.length > 1) throw new MultipleUserFound()
     else if (user?.suspend) throw new DisabledUser()
     else {
-      const createdUser = await model.users.createExternal({
-        email: email?.emails[0]?.value,
-      })
+      const createdUser = await model.users.createExternal(
+        {
+          email: email?.emails[0]?.value,
+          lastname: email?.name?.familyName || "",
+          firstname: email?.name?.givenName || "",
+        },
+        true, // User come from an SSO, we disable the mail update
+      )
       if (createdUser.insertedCount !== 1) throw new UserError()
       users = await model.users.getTokenByEmail(email?.emails[0]?.value)
       user = users[0]
 
       populateUserToOrganization(user) // Only on user creation
+    }
+    if (!user.fromSSO) {
+      // If the user was created by the local auth and not from the SSO
+      model.users.update({ _id: user._id, fromSso: true })
     }
 
     const token_salt = randomstring.generate(12)

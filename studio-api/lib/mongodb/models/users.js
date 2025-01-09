@@ -143,15 +143,15 @@ class UsersModel extends MongoModel {
     }
   }
 
-  async createExternal(payload) {
+  async createExternal(payload, fromSso = false) {
     try {
       const dateTime = moment().format()
       delete payload.password
 
       const externalPayload = {
-        ...payload,
         lastname: "",
         firstname: "",
+        ...payload,
         img: "pictures/default.jpg",
         passwordHash: null,
         accountNotifications: {
@@ -160,6 +160,11 @@ class UsersModel extends MongoModel {
         },
         created: dateTime,
         last_update: dateTime,
+        fromSso,
+      }
+      if (fromSso) {
+        externalPayload.emailIsVerified = true
+        externalPayload.verifiedEmail = [payload.email]
       }
 
       return await this.create(externalPayload)

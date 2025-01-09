@@ -192,6 +192,9 @@ async function updateUser(req, res, next) {
     let user = myUser[0]
 
     if (req.body.email) {
+      if (myUser[0].fromSso)
+        throw new UserError("Cannot update email for an SSO user")
+
       const userMail = await model.users.getByEmail(req.body.email)
 
       if (
