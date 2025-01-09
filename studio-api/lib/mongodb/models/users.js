@@ -81,6 +81,7 @@ class UsersModel extends MongoModel {
         verifiedEmail: [user.email],
         created: dateTime,
         last_update: dateTime,
+        fromSso: false,
       }
 
       return await this.mongoInsert(adminPayload)
@@ -95,6 +96,7 @@ class UsersModel extends MongoModel {
       const dateTime = moment().format()
       delete payload.password
 
+      if (!payload.fromSso) payload.fromSso = false
       const userPayload = {
         ...payload,
         authLink: generateAuthLink(),
@@ -134,6 +136,7 @@ class UsersModel extends MongoModel {
         },
         created: dateTime,
         last_update: dateTime,
+        fromSso: false,
       }
 
       return await this.create(userPayload)
