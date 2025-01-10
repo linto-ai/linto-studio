@@ -59,9 +59,19 @@ const STRATEGY = new Strategy(
 
       populateUserToOrganization(user) // Only on user creation
     }
-    if (!user.fromSSO) {
-      // If the user was created by the local auth and not from the SSO
-      model.users.update({ _id: user._id, fromSso: true })
+
+    if (!user.fromSSO && !user.emailIsVerified) {
+      let emailList = user.verifiedEmail
+      if (!user.verifiedEmail.includes(user.email)) {
+        emailList = user.verifiedEmail.concat(user.email)
+      }
+
+      model.users.update({
+        _id: user._id,
+        fromSso: true,
+        emailIsVerified: true,
+        verifiedEmail: emailList,
+      })
     }
 
     const token_salt = randomstring.generate(12)
