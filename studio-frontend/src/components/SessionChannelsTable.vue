@@ -89,8 +89,8 @@
 <script>
 import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
-import ArrayHeader from "./ArrayHeader.vue"
-import SessionChannelsLine from "./SessionChannelsLine.vue"
+import ArrayHeader from "@/components/ArrayHeader.vue"
+import SessionChannelsLine from "@/components/SessionChannelsLine.vue"
 export default {
   props: {
     channelsList: {

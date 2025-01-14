@@ -27,7 +27,7 @@
 <script>
 import { bus } from "../main.js"
 import { userName } from "@/tools/userName.js"
-import CustomSelect from "./CustomSelect.vue"
+import CustomSelect from "@/components/CustomSelect.vue"
 
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 

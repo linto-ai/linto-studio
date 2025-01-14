@@ -15,6 +15,28 @@ export async function apiGetTranscriberProfiles(notif) {
   return getTranscriberProfiles?.data ?? []
 }
 
+export async function apiGetSessionTemplates(organizationScope, notif) {
+  const getSessionTemplates = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/templates`,
+    { method: "get" },
+    {},
+    notif,
+  )
+
+  return getSessionTemplates?.data ?? { sessionTemplates: [], totalItems: 0 }
+}
+
+export async function apiCreateSessionTemplate(organizationScope, data, notif) {
+  const createSessionTemplate = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/templates`,
+    { method: "post" },
+    data,
+    notif,
+  )
+
+  return createSessionTemplate
+}
+
 export async function apiCreateSession(organizationScope, data, notif) {
   const createSession = await sendRequest(
     `${BASE_API}/organizations/${organizationScope}/sessions`,
