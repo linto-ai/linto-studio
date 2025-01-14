@@ -699,7 +699,8 @@
       "cra": "Error during summary report generation",
       "cred": "Error during commission and delegation report generation",
       "cri": "Error during full report generation",
-      "verbatim": "Error during verbatim generation"
+      "verbatim": "Error during verbatim generation",
+      "generic": "We couldn't complete the task due to a temporary connection issue with the model provider. Please try again in a moment"
     },
     "filter_speaker": {
       "title": "Filter by speaker"
@@ -718,6 +719,7 @@
       "verbatim": "Verbatim generation in progress...",
       "general": "Generation in progress..."
     },
+    "loading_document": "Requesting final document...",
     "is_not_updated": "The transcription has been updated. The report no longer reflects the latest changes.",
     "is_updated": "The report is up to date with the transcript ",
     "queued": {

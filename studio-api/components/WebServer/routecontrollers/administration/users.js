@@ -8,6 +8,10 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
 const Mailing = require(`${process.cwd()}/lib/mailer/mailing`)
 
+const userUtility = require(
+  `${process.cwd()}/components/WebServer/controllers/user/utility`,
+)
+
 const { defaultPicture } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
@@ -88,7 +92,13 @@ async function deleteUser(req, res, next) {
     if (!Array.isArray(req.body.userIds))
       throw new UserUnsupportedMediaType("userIds must be an array")
 
-    await model.users.deleteMany(req.body.userIds)
+    for (const userId of req.body.userIds) {
+      await userUtility.removeUserFromPlatform(userId)
+    }
+    const result = await model.users.deleteMany(req.body.userIds)
+    if (result.deletedCount !== req.body.userIds.length)
+      throw new UserError("User not deleted")
+
     return res.status(200).send({ message: "User deleted" })
   } catch (err) {
     next(err)

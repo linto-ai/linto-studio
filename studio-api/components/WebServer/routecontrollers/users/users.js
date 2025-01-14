@@ -8,6 +8,9 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 const orgaUtility = require(
   `${process.cwd()}/components/WebServer/controllers/organization/utility`,
 )
+const userUtility = require(
+  `${process.cwd()}/components/WebServer/controllers/user/utility`,
+)
 
 const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
 const Mailing = require(`${process.cwd()}/lib/mailer/mailing`)
@@ -315,62 +318,18 @@ async function recoveryAuth(req, res, next) {
 async function deleteUser(req, res, next) {
   try {
     const userId = req.payload.data.userId
+    let removeMedia = await userUtility.removeUserFromPlatform(userId)
 
-    // Remove user from organizations
-    const organizations = await model.organizations.listSelf(userId)
-    organizations.map(async (organization) => {
-      const data = orgaUtility.countAdmin(organization, userId)
-      if (data.adminCount === 1 && data.isAdmin) {
-        //delete organization
-        // delete conversations from orga
-        const conversations = await model.conversations.getByOrga(
-          organization._id,
-        )
-        conversations.map(async (conversation) => {
-          const audioFilename = conversation.metadata.audio.filepath
-            .split("/")
-            .pop()
-          const jsonFilename = audioFilename.split(".")[0] + ".json"
+    if (removeMedia) {
+      const result = await model.users.delete(userId)
+      if (result.deletedCount !== 1) throw new UserError()
 
-          deleteFile(
-            `${getStorageFolder()}/${conversation.metadata.audio.filepath}`,
-          )
-          deleteFile(
-            `${getStorageFolder()}/${getAudioWaveformFolder()}/${jsonFilename}`,
-          )
-
-          const resultConvo = await model.conversations.delete(conversation._id)
-          if (resultConvo.deletedCount !== 1) throw new UserError()
-        })
-        // delete orga
-        const resultOrga = await model.organizations.delete(organization._id)
-        if (resultOrga.deletedCount !== 1) throw new UserError()
-      } else if (data.adminCount > 1) {
-        // delete user from orga
-        organization.users = organization.users.filter(
-          (user) => user.userId !== userId,
-        )
-        let resultOperation = await model.organizations.update(organization)
-        if (resultOperation.matchedCount === 0) throw new UserError()
-      }
-    })
-
-    // Delete conversation if owner and remove user from shared with
-    const conversations = await model.conversations.getByShare(userId)
-    conversations.map(async (conversation) => {
-      conversation.sharedWithUsers = conversation.sharedWithUsers.filter(
-        (user) => user.userId !== userId,
+      res.status(200).send({ message: "User deleted" })
+    } else {
+      throw new UserError(
+        "Unable to delete the user, please contact an administrator",
       )
-      const resultConvoUpdate = await model.conversations.update(conversation)
-      if (resultConvoUpdate.matchedCount === 0) throw new UserError()
-    })
-
-    const result = await model.users.delete(req.payload.data.userId)
-    if (result.deletedCount !== 1) throw new UserError()
-
-    res.status(200).send({
-      message: "User deleted",
-    })
+    }
   } catch (err) {
     next(err)
   }
