@@ -9,6 +9,7 @@ import {
 
 import { sessionModelMixin } from "./sessionModel"
 import { bus } from "../main"
+import mergeSession from "../tools/mergeSession"
 
 export const sessionMixin = {
   mixins: [sessionModelMixin],
@@ -149,14 +150,9 @@ export const sessionMixin = {
       this.$sessionWS.subscribeOrganization(this.currentOrganizationScope)
     },
     onSessionUpdateEvent(value) {
-      const sessionIndexes = {}
-
       for (const updatedSession of value.updated) {
         if (updatedSession.id === this.sessionId) {
-          this.session = {
-            ...this.session,
-            ...updatedSession,
-          }
+          this.session = mergeSession(this.session, updatedSession)
         }
       }
 

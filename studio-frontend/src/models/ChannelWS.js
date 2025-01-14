@@ -3,6 +3,7 @@ import { customDebug } from "../tools/customDebug"
 
 const debugWS = customDebug("Websocket:Channel:debug")
 
+// Websocket to session transcriber to send audio
 export default class ChannelWS {
   constructor(channel) {
     this.state = Vue.observable({
