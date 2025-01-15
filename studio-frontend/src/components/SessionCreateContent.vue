@@ -305,7 +305,7 @@ export default {
 
       channel.id = templateChannel.id
       channel.name = templateChannel.name
-      channel.translations = templateChannel.translations
+      channel.translations = structuredClone(templateChannel.translations)
       channel.languages = templateChannel.languages
       channel.profileId = templateChannel.transcriberProfileId
 
@@ -315,9 +315,8 @@ export default {
       if (!profile) {
         throw "Transcriber profiles does not exists"
       }
-
       channel.type = profile.config.type
-      channel.availableTranslations = profile.availableTranslations ?? []
+      channel.availableTranslations = profile.config.availableTranslations ?? []
       channel.profileName = profile.config.name
 
       return channel
