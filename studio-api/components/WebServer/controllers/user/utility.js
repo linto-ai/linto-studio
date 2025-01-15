@@ -7,6 +7,10 @@ const CONVERSATION_RIGHTS = require(
   `${process.cwd()}/lib/dao/conversation/rights`,
 )
 
+const orgaUtility = require(
+  `${process.cwd()}/components/WebServer/controllers/organization/utility`,
+)
+
 async function getUsersListByConversation(userId, conversation, organiaztion) {
   try {
     let isShare = false
@@ -92,4 +96,64 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
   }
 }
 
-module.exports = { getUsersListByConversation }
+async function removeUserFromPlatform(userId) {
+  try {
+    // Get all conversations shared with the user
+    const conversations = await model.conversations.getByShare(userId)
+
+    // Remove the user from the sharedWithUsers array
+    conversations.map(async (conversation) => {
+      conversation.sharedWithUsers = conversation.sharedWithUsers.filter(
+        (user) => user.userId !== userId,
+      )
+
+      // Update the conversation
+      const resultConvoUpdate = await model.conversations.update(conversation)
+      if (resultConvoUpdate.matchedCount === 0) throw new UserError()
+    })
+
+    // Get all organizations the user is part of
+
+    const organizations = await model.organizations.listSelf(userId)
+    organizations.map(async (organization) => {
+      const data = orgaUtility.countAdmin(organization, userId)
+      if (data.adminCount === 1 && data.isAdmin) {
+        const conversations = await model.conversations.getByOrga(
+          organization._id,
+        )
+        conversations.map(async (conversation) => {
+          const audioFilename = conversation.metadata.audio.filepath
+            .split("/")
+            .pop()
+          const jsonFilename = audioFilename.split(".")[0] + ".json"
+
+          deleteFile(
+            `${getStorageFolder()}/${conversation.metadata.audio.filepath}`,
+          )
+          deleteFile(
+            `${getStorageFolder()}/${getAudioWaveformFolder()}/${jsonFilename}`,
+          )
+
+          const resultConvo = await model.conversations.delete(conversation._id)
+          if (resultConvo.deletedCount !== 1) throw new UserError()
+        })
+        // delete orga
+        const resultOrga = await model.organizations.delete(organization._id)
+        if (resultOrga.deletedCount !== 1) throw new UserError()
+      } else if (data.adminCount > 1 || !data.isAdmin) {
+        organization.users = organization.users.filter(
+          (user) => user.userId !== userId,
+        )
+        let resultOperation = await model.organizations.update(organization)
+        if (resultOperation.matchedCount === 0) throw new UserError()
+      }
+    })
+
+    return true
+  } catch (error) {
+    console.error(error)
+    return error
+  }
+}
+
+module.exports = { getUsersListByConversation, removeUserFromPlatform }

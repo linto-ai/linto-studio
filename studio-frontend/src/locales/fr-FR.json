@@ -700,7 +700,8 @@
       "cra": "Erreur lors de la génération du compte rendu analytique",
       "cred": "Erreur lors de la génération du compte rendu des commissions et des délégations",
       "cri": "Erreur lors de la génération du compte rendu intégral",
-      "verbatim": "Erreur lors de la génération du verbatim"
+      "verbatim": "Erreur lors de la génération du verbatim",
+      "generic": "Nous n'avons pas pu terminer la tâche en raison d'un problème de connexion temporaire avec le service d'intelligence artificielle. Veuillez réessayer dans un moment."
     },
     "filter_speaker": {
       "title": "Filtrer les locuteurs"
@@ -719,6 +720,7 @@
       "verbatim": "Génération du verbatim en cours...",
       "general": "Génération en cours..."
     },
+    "loading_document": "Chargement du document final",
     "is_not_updated": "La transcription a été mise à jour. Le compte rendu ne reflète plus les dernières modifications.",
     "is_updated": "Le compte rendu est à jour avec la transcription",
     "queued": {
