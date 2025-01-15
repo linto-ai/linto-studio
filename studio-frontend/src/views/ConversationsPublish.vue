@@ -1,7 +1,7 @@
 <template>
   <MainContentConversation
     :conversation="conversation"
-    :status="conversationStatus"
+    :status="status"
     :dataLoaded="dataLoaded"
     :dataLoadedStatus="dataLoadedStatus"
     :error="error"
@@ -156,15 +156,7 @@ export default {
   watch: {
     dataLoaded(newVal, oldVal) {
       if (newVal) {
-        this.conversationStatus = this.computeStatus(
-          this.conversation?.jobs?.transcription,
-        )
-        this.filterSpeakers = this.conversation.speakers.map(
-          (speaker) => speaker.speaker_id,
-        )
-        if (this.status !== "done") {
-          this.$router.push(`/interface/conversations/${this.conversation._id}`)
-        }
+        this.status = this.computeStatus(this.conversation?.jobs?.transcription)
       }
     },
     async activeTab(newVal, oldVal) {
