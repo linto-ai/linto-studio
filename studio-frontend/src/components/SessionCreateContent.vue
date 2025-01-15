@@ -67,13 +67,24 @@
       </section>
 
       <div class="flex gap-medium align-center conversation-create-footer">
+        <button
+          type="button"
+          class="red-border"
+          :disabled="formState === 'sending' || selectedTemplateId == ''"
+          @click="deleteSelectedTemplate">
+          <span class="label">
+            {{ $t("session.create_page.delete_template_button") }}
+          </span>
+        </button>
         <div class="error-field flex1" v-if="formError">{{ formError }}</div>
         <div v-else class="flex1"></div>
         <button
           type="button"
           :disabled="formState === 'sending'"
           @click="saveTemplate">
-          {{ $t("session.create_page.save_as_template_button") }}
+          <span class="label">{{
+            $t("session.create_page.save_as_template_button")
+          }}</span>
         </button>
         <button
           type="submit"
@@ -93,6 +104,12 @@
       v-model="selectedProfiles"
       @on-confirm="confirmAddSessionChannels"
       @on-cancel="closeModalAddSessionChannels" />
+    <ModalDeleteTemplate
+      v-if="modalDeleteTemplateIsOpen"
+      :template="selectedTemplate"
+      :currentOrganizationScope="currentOrganizationScope"
+      @on-confirm="confirmDeleteTemplate"
+      @on-cancel="closeModalDeleteTemplate" />
   </div>
 </template>
 <script>
@@ -114,6 +131,7 @@ import ModalAddSessionChannels from "@/components/ModalAddSessionChannels.vue"
 import AppointmentSelector from "@/components/AppointmentSelector.vue"
 import FormRadio from "@/components/FormRadio.vue"
 import CustomSelect from "@/components/CustomSelect.vue"
+import ModalDeleteTemplate from "@/components/ModalDeleteTemplate.vue"
 
 export default {
   mixins: [formsMixin],
@@ -201,6 +219,7 @@ export default {
       channels: [],
       selectedProfiles: [],
       modalAddChannelsIsOpen: false,
+      modalDeleteTemplateIsOpen: false,
       channelsError: null,
       formError: null,
     }
@@ -224,14 +243,15 @@ export default {
         return
       }
 
-      const selectedTemplate = this.sessionTemplates.sessionTemplates.find(
-        (t) => t.id === newId,
-      )
-
-      this.applyTemplate(selectedTemplate)
+      this.applyTemplate(this.selectedTemplate)
     },
   },
   computed: {
+    selectedTemplate() {
+      return this.localSessionTemplates.sessionTemplates.find(
+        (t) => t.id === this.selectedTemplateId,
+      )
+    },
     optionsSelectTemplate() {
       return {
         placeholder: [
@@ -448,12 +468,28 @@ export default {
     updateName(index, value) {
       this.channels[index].name = value
     },
+    confirmDeleteTemplate() {
+      this.closeModalDeleteTemplate()
+      this.localSessionTemplates.sessionTemplates =
+        this.localSessionTemplates.sessionTemplates.filter(
+          (t) => t.id !== this.selectedTemplateId,
+        )
+      this.localSessionTemplates.totalItems--
+      this.selectedTemplateId = ""
+    },
+    closeModalDeleteTemplate() {
+      this.modalDeleteTemplateIsOpen = false
+    },
+    deleteSelectedTemplate() {
+      this.modalDeleteTemplateIsOpen = true
+    },
   },
   components: {
     MainContent,
     FormInput,
     SessionChannelsTable,
     ModalAddSessionChannels,
+    ModalDeleteTemplate,
     FormCheckbox,
     FormRadio,
     AppointmentSelector,

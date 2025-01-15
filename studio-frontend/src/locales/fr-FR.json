@@ -778,6 +778,14 @@
       "save_as_template_button": "Enregistrer en tant que modèle",
       "save_as_template_success": "La session a été enregistrée en tant que modèle",
       "save_as_template_error": "La session n'a pas pu être enregistrée en tant que modèle",
+      "delete_template_button": "Supprimer le modèle courant",
+      "delete_template_modal": {
+        "title": "Supprimer le modèle \"{name}\"",
+        "action": "Supprimer",
+        "description": "Êtes-vous sûr de vouloir supprimer ce modèle ?",
+        "error": "Le modèle n'a pas pu être supprimé",
+        "success": "Le modèle a été supprimé"
+      },
       "submit_button": "Créer la session",
       "submit_label": "Créer la session",
       "success_message": "La session a été créée avec succès",

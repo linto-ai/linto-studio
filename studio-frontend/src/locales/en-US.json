@@ -776,6 +776,14 @@
       "save_as_template_button": "Save as template",
       "save_as_template_success": "The session has been saved as a template",
       "save_as_template_error": "The session could not be saved as a template",
+      "delete_template_button": "Delete selected template",
+      "delete_template_modal": {
+        "title": "Delete template \"{name}\"",
+        "action": "Delete",
+        "description": "Are you sure you want to delete this template ?",
+        "error": "The template could not be deleted",
+        "success": "The template has been deleted"
+      },
       "submit_button": "Create session",
       "submit_label": "Create session",
       "success_message": "Session successfully created",

@@ -37,6 +37,21 @@ export async function apiCreateSessionTemplate(organizationScope, data, notif) {
   return createSessionTemplate
 }
 
+export async function apiDeleteSessionTemplate(
+  organizationScope,
+  templateId,
+  notif,
+) {
+  const deleteSessionTemplate = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/templates/${templateId}`,
+    { method: "delete" },
+    {},
+    notif,
+  )
+
+  return deleteSessionTemplate
+}
+
 export async function apiCreateSession(organizationScope, data, notif) {
   const createSession = await sendRequest(
     `${BASE_API}/organizations/${organizationScope}/sessions`,
