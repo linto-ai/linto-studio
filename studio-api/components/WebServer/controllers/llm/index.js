@@ -1,12 +1,16 @@
 const debug = require("debug")(
   `linto:conversation-manager:components:WebServer:controllers:llm:index`,
 )
+
+const webSocketSingleton = require(
+  `${process.cwd()}/components/WebServer/controllers/llm//llm_ws`,
+)
+let socket
+
 const fs = require("fs")
 const FormData = require("form-data")
 const model = require(`${process.cwd()}/lib/mongodb/models`)
-const axios = require("axios").default
-
-const intervals = {}
+let isSocketConnected = false
 
 async function generateText(conversation, metadata) {
   let prompt = ""
@@ -67,7 +71,6 @@ async function requestAPI(query, content, fileName, conversationExport) {
   try {
     const response = await fetch.default(url, options)
     const result = await response.json()
-
     jobId = result.jobId
   } catch (err) {
     jobId = undefined
@@ -76,74 +79,31 @@ async function requestAPI(query, content, fileName, conversationExport) {
   }
 
   fs.unlinkSync(tempFilePath)
-  if (jobId !== undefined) {
-    pollingLlm(jobId, conversationExport)
-  }
+  // if (isSocketConnected) {
+  initWebSocketConnection(conversationExport)
+  // }
+  //  else if (jobId !== undefined) {
+  //   processJobWithWebSocket(jobId, conversationExport)
+  // }
   return jobId
 }
 
-function clearJobInterval(jobsId, intervalId) {
-  delete intervals[jobsId]
-  clearInterval(intervalId)
+// Function to initialize or reuse the WebSocket connection
+async function initWebSocketConnection(convExport) {
+  if (webSocketSingleton.getSocketState() === 1) return
+  socket = webSocketSingleton.getSocket() // Should init the socket
+
+  if (convExport && convExport.jobId)
+    webSocketSingleton._addToWatchingList(convExport.jobId)
 }
 
-function updateStatus(conversationExport, data) {
-  let status = data.status
-  conversationExport.status = status
-  if (status === "complete" && data.message === "success") {
-    conversationExport.data = data.summarization
-    conversationExport.processing = "Processing 100%"
-  } else if (status === "error") {
-    conversationExport.data = data.message
-  } else if (status === "queued" || status === "processing") {
-    conversationExport.processing = data.message
-  }
-  model.conversationExport.updateStatus(conversationExport)
-}
-
-async function pollingLlm(jobsId, conversationExport) {
+// Function to add a job and manage the WebSocket lifecycle
+async function processJobWithWebSocket(jobsId, conversationExport) {
   try {
-    if (!intervals[jobsId]) {
-      if (process.env.LLM_GATEWAY_SERVICES === undefined) {
-        throw new Error("LLM_GATEWAY_SERVICES is not defined")
-      }
-      const options = {
-        headers: {
-          Accept: "application/json",
-        },
-      }
-
-      let url = process.env.LLM_GATEWAY_SERVICES + "/results/" + jobsId
-
-      debug(`Create a polling for job ${jobsId}`)
-      const intervalId = setInterval(async () => {
-        let result = {}
-        try {
-          result = await axios.get(url, options)
-          updateStatus(conversationExport, result.data)
-
-          if (["complete", "error", "nojob"].includes(result.data.status))
-            clearJobInterval(jobsId, intervalId)
-        } catch (err) {
-          debug(err)
-          conversationExport.status = "error"
-
-          if (err?.response?.data) conversationExport.error = err.response.data
-          model.conversationExport.updateStatus(conversationExport)
-
-          clearJobInterval(jobsId, intervalId)
-        }
-      }, 5000)
-
-      intervals[jobsId] = intervalId
-
-      setTimeout(
-        () => {
-          clearJobInterval(jobsId, intervalId)
-        },
-        60 * 60 * 1000,
-      )
-    } else debug(`Job ${jobsId} already polling`)
+    if (!jobsId) {
+      throw new Error("Job ID is required")
+    }
+    initWebSocketConnection(conversationExport)
   } catch (err) {
     conversationExport.status = "error"
     conversationExport.error = err.message
@@ -151,8 +111,20 @@ async function pollingLlm(jobsId, conversationExport) {
   }
 }
 
+getSocketStatus = () => {
+  return isSocketConnected
+}
+
+// return the state of the job if done or not
+completedJob = (job) => {
+  if (["complete", "error", "unknown"].includes(job.status)) return true
+  return false
+}
+
 module.exports = {
   generateText,
   request,
-  pollingLlm,
+  pollingLlm: processJobWithWebSocket,
+  initWebSocketConnection,
+  getSocketStatus,
 }

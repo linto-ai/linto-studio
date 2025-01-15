@@ -5,6 +5,13 @@
       @submit="createSession"
       :disabled="formState === 'sending'">
       <section>
+        <h2>{{ $t("session.create_page.template_selection_title") }}</h2>
+        <CustomSelect
+          :options="optionsSelectTemplate"
+          id="template-selector"
+          v-model="selectedTemplateId" />
+      </section>
+      <section>
         <h2>{{ $t("session.create_page.main_info_title") }}</h2>
         <FormInput :field="name" v-model="name.value" />
         <AppointmentSelector
@@ -59,9 +66,26 @@
         </div>
       </section>
 
-      <div class="flex gap-small align-center conversation-create-footer">
+      <div class="flex gap-medium align-center conversation-create-footer">
+        <button
+          type="button"
+          class="red-border"
+          :disabled="formState === 'sending' || selectedTemplateId == ''"
+          @click="deleteSelectedTemplate">
+          <span class="label">
+            {{ $t("session.create_page.delete_template_button") }}
+          </span>
+        </button>
         <div class="error-field flex1" v-if="formError">{{ formError }}</div>
         <div v-else class="flex1"></div>
+        <button
+          type="button"
+          :disabled="formState === 'sending'"
+          @click="saveTemplate">
+          <span class="label">{{
+            $t("session.create_page.save_as_template_button")
+          }}</span>
+        </button>
         <button
           type="submit"
           class="btn green"
@@ -80,6 +104,12 @@
       v-model="selectedProfiles"
       @on-confirm="confirmAddSessionChannels"
       @on-cancel="closeModalAddSessionChannels" />
+    <ModalDeleteTemplate
+      v-if="modalDeleteTemplateIsOpen"
+      :template="selectedTemplate"
+      :currentOrganizationScope="currentOrganizationScope"
+      @on-confirm="confirmDeleteTemplate"
+      @on-cancel="closeModalDeleteTemplate" />
   </div>
 </template>
 <script>
@@ -89,7 +119,7 @@ import { testName } from "@/tools/fields/testName"
 
 import EMPTY_FIELD from "@/const/emptyField"
 
-import { apiCreateSession } from "@/api/session.js"
+import { apiCreateSession, apiCreateSessionTemplate } from "@/api/session.js"
 
 import { formsMixin } from "@/mixins/forms.js"
 
@@ -100,6 +130,8 @@ import SessionChannelsTable from "@/components/SessionChannelsTable.vue"
 import ModalAddSessionChannels from "@/components/ModalAddSessionChannels.vue"
 import AppointmentSelector from "@/components/AppointmentSelector.vue"
 import FormRadio from "@/components/FormRadio.vue"
+import CustomSelect from "@/components/CustomSelect.vue"
+import ModalDeleteTemplate from "@/components/ModalDeleteTemplate.vue"
 
 export default {
   mixins: [formsMixin],
@@ -112,9 +144,15 @@ export default {
       type: Array,
       Required: true,
     },
+    sessionTemplates: {
+      type: Object, // { sessionTemplates: [...] totalItems: number }
+      Required: true,
+    },
   },
   data() {
     return {
+      localSessionTemplates: structuredClone(this.sessionTemplates),
+      selectedTemplateId: "",
       formState: "idle",
       fields: [
         "name",
@@ -181,6 +219,7 @@ export default {
       channels: [],
       selectedProfiles: [],
       modalAddChannelsIsOpen: false,
+      modalDeleteTemplateIsOpen: false,
       channelsError: null,
       formError: null,
     }
@@ -197,9 +236,155 @@ export default {
       },
       deep: true,
     },
+    selectedTemplateId(newId, oldId) {
+      if (newId == "") {
+        this.channels = []
+        this.name.value = ""
+        return
+      }
+
+      this.applyTemplate(this.selectedTemplate)
+    },
+  },
+  computed: {
+    selectedTemplate() {
+      return this.localSessionTemplates.sessionTemplates.find(
+        (t) => t.id === this.selectedTemplateId,
+      )
+    },
+    optionsSelectTemplate() {
+      return {
+        placeholder: [
+          {
+            value: "",
+            text: this.$t("session.create_page.template_selection_placeholder"),
+          },
+        ],
+        templates: this.localSessionTemplates.sessionTemplates.map(
+          (template) => ({
+            value: template.id,
+            text: template.name,
+          }),
+        ),
+      }
+    },
   },
   mounted() {},
   methods: {
+    applyTemplate(template) {
+      let nameToApply
+      let channelsToApply
+      try {
+        nameToApply = template.name
+        channelsToApply = template.channelTemplates.map(
+          this.convertTemplateChannelToEditableChannel,
+        )
+      } catch (error) {
+        console.error(error)
+        bus.$emit("app_notif", {
+          status: "error",
+          message: this.$i18n.t("session.create_page.template_apply_error"),
+          timeout: null,
+        })
+        this.formState = "error"
+        return false
+      }
+
+      this.name.value = nameToApply
+      this.channels = structuredClone(channelsToApply)
+
+      bus.$emit("app_notif", {
+        status: "success",
+        message: this.$i18n.t("session.create_page.template_apply_success"),
+        redirect: false,
+      })
+      return true
+    },
+    convertTemplateChannelToEditableChannel(templateChannel) {
+      let channel = {}
+
+      channel.id = templateChannel.id
+      channel.name = templateChannel.name
+      channel.translations = structuredClone(templateChannel.translations)
+      channel.languages = templateChannel.languages
+      channel.profileId = templateChannel.transcriberProfileId
+
+      const profile = this.transcriberProfiles.find(
+        (p) => p.id == templateChannel.transcriberProfileId,
+      )
+      if (!profile) {
+        throw "Transcriber profiles does not exists"
+      }
+      channel.type = profile.config.type
+      channel.availableTranslations = profile.config.availableTranslations ?? []
+      channel.profileName = profile.config.name
+
+      return channel
+    },
+    async saveTemplate(e) {
+      // TODO: refactore with createSession function
+      e.preventDefault()
+      this.formState = "sending"
+      if (this.channels.length === 0) {
+        this.channelsError = this.$i18n.t("session.create_page.channels_error")
+        this.formState = "error"
+        return false
+      }
+
+      if (this.testFields()) {
+        // convert fieldAppointment.value[0] and fieldAppointment.value[1] to ISO string like 2024-10-04T13:52:56.693Z
+        const startDateTime = this.fieldAppointment.value[0]
+          ? this.fieldAppointment.value[0].toISOString()
+          : null
+
+        const endDateTime = this.fieldAppointment.value[1]
+          ? this.fieldAppointment.value[1].toISOString()
+          : null
+
+        const res = await apiCreateSessionTemplate(
+          this.currentOrganizationScope,
+          {
+            name: this.name.value,
+            channels: this.channels.map(
+              ({ profileId, name, translations }) => ({
+                transcriberProfileId: profileId,
+                name,
+                translations: translations ?? [],
+                diarization: this.fieldDiarizationEnabled.value,
+                keepAudio: this.fieldKeepAudio.value,
+              }),
+            ),
+            scheduleOn: startDateTime,
+            endOn: endDateTime,
+            autoStart: true,
+            autoEnd: this.fieldAutoStop.value,
+            visibility: this.fieldSessionVisibility.value ?? "organization",
+          },
+        )
+
+        if (res.status == "success") {
+          this.formState = "success"
+          bus.$emit("app_notif", {
+            status: "success",
+            message: this.$i18n.t(
+              "session.create_page.save_as_template_success",
+            ),
+            redirect: false,
+          })
+          this.localSessionTemplates.sessionTemplates.push(res.data)
+          this.localSessionTemplates.totalItems++
+        } else {
+          bus.$emit("app_notif", {
+            status: "error",
+            message: this.$i18n.t("session.create_page.save_as_template_error"),
+            timeout: null,
+          })
+          this.formState = "error"
+        }
+      } else {
+        this.formState = "error"
+      }
+    },
     async createSession(e) {
       e.preventDefault()
       this.formState = "sending"
@@ -282,15 +467,32 @@ export default {
     updateName(index, value) {
       this.channels[index].name = value
     },
+    confirmDeleteTemplate() {
+      this.closeModalDeleteTemplate()
+      this.localSessionTemplates.sessionTemplates =
+        this.localSessionTemplates.sessionTemplates.filter(
+          (t) => t.id !== this.selectedTemplateId,
+        )
+      this.localSessionTemplates.totalItems--
+      this.selectedTemplateId = ""
+    },
+    closeModalDeleteTemplate() {
+      this.modalDeleteTemplateIsOpen = false
+    },
+    deleteSelectedTemplate() {
+      this.modalDeleteTemplateIsOpen = true
+    },
   },
   components: {
     MainContent,
     FormInput,
     SessionChannelsTable,
     ModalAddSessionChannels,
+    ModalDeleteTemplate,
     FormCheckbox,
     FormRadio,
     AppointmentSelector,
+    CustomSelect,
   },
 }
 </script>

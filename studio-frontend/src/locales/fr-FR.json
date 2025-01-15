@@ -492,6 +492,23 @@
     "title": "Identifiez-vous",
     "footer": {
       "description": "Innovations Open source propulsées par LINAGORA sur les infrastructures EXAION"
+    },
+    "sso": {
+      "linagora": "Se connecter avec Linagora"
+    },
+    "teaser": {
+      "transcribe": {
+        "title": "Transcrire",
+        "desc": "Tous vos médias, votre microphone, votre conférence"
+      },
+      "collaborate": {
+        "title": "Collaborer",
+        "desc": "Organisez, partagez et éditez vos contenus"
+      },
+      "ia": {
+        "title": "IA de confiance",
+        "desc": "Obtenez des résumés adaptés à votre métier dans vos formats (word, pdf, sous-titres)"
+      }
     }
   },
   "manage_tags": {
@@ -582,11 +599,18 @@
     }
   },
   "no_orga": {
-    "create": "Créer une organisation",
-    "creating": "Création de l'organisation en cours...",
-    "label": "Nommez votre organisation, vous pourrez en créer d'autres par la suite",
-    "subtitle": "Créez une organisation pour réaliser et partager vos transcriptions.",
-    "title": "Redécouvrez LinTO Studio"
+    "can_create": {
+      "create": "Créer une organisation",
+      "creating": "Création de l'organisation en cours...",
+      "label": "Nommez votre organisation, vous pourrez en créer d'autres par la suite",
+      "subtitle": "Créez une organisation pour réaliser et partager vos transcriptions.",
+      "title": "Redécouvrez LinTO Studio"
+    },
+    "cannot_create": {
+      "subtitle_line_one": "Votre utilisateur n'appartient à aucune organisation.",
+      "subtitle_line_two": "Veuillez contacter un administrateur.",
+      "title": "Votre compte n'est pas provisionné"
+    }
   },
   "organisation": {
     "add_member_description": "Utilisez le champ de recherche pour chercher des utilisateurs par leur prénom, nom ou adresse électronique",
@@ -615,6 +639,11 @@
       "content": "Êtes vous sur de vouloir quitter l'organisation \"{name}\" ?",
       "title": "Quitter l'organisation"
     },
+    "remove_user_modal": {
+      "action": "Supprimer l'utilisateur de l'organisation",
+      "content": "Êtes vous sur de supprimer \"{name}\" de cette organisation ?",
+      "title": "Supprimer l'utilisateur de l'organisation"
+    },
     "my_workspace": "Mon espace de travail",
     "name_description": "Nom de l'organisation",
     "name_label": "Nom",
@@ -625,6 +654,14 @@
       "summary_permission": "Générer des résumés",
       "session_permission": "Créer des sessions",
       "update_button": "Mettre à jour les permissions"
+    },
+    "matching_users": {
+      "title": "Ajout automatique d'utilisateurs",
+      "matching_mail": {
+        "label": "Email d'appartenance à l'organisation"
+      },
+      "update_button": "Mettre à jour les critères d'appartenance",
+      "apply_button": "Inviter les utilisateurs correspondant aux critères"
     },
     "organization_stats": {
       "title": "Statistiques de l'organisation",
@@ -667,7 +704,8 @@
       "cra": "Erreur lors de la génération du compte rendu analytique",
       "cred": "Erreur lors de la génération du compte rendu des commissions et des délégations",
       "cri": "Erreur lors de la génération du compte rendu intégral",
-      "verbatim": "Erreur lors de la génération du verbatim"
+      "verbatim": "Erreur lors de la génération du verbatim",
+      "generic": "Nous n'avons pas pu terminer la tâche en raison d'un problème de connexion temporaire avec le service d'intelligence artificielle. Veuillez réessayer dans un moment."
     },
     "filter_speaker": {
       "title": "Filtrer les locuteurs"
@@ -686,6 +724,7 @@
       "verbatim": "Génération du verbatim en cours...",
       "general": "Génération en cours..."
     },
+    "loading_document": "Chargement du document final",
     "is_not_updated": "La transcription a été mise à jour. Le compte rendu ne reflète plus les dernières modifications.",
     "is_updated": "Le compte rendu est à jour avec la transcription",
     "queued": {
@@ -740,10 +779,25 @@
       "keep_audio_label": "Conserver l'audio à la fin de la session",
       "start_timestamp_label": "Heure de début",
       "end_timestamp_label": "Heure de fin",
+      "save_as_template_button": "Enregistrer en tant que modèle",
+      "save_as_template_success": "La session a été enregistrée en tant que modèle",
+      "save_as_template_error": "La session n'a pas pu être enregistrée en tant que modèle",
+      "delete_template_button": "Supprimer le modèle courant",
+      "delete_template_modal": {
+        "title": "Supprimer le modèle \"{name}\"",
+        "action": "Supprimer",
+        "description": "Êtes-vous sûr de vouloir supprimer ce modèle ?",
+        "error": "Le modèle n'a pas pu être supprimé",
+        "success": "Le modèle a été supprimé"
+      },
       "submit_button": "Créer la session",
       "submit_label": "Créer la session",
       "success_message": "La session a été créée avec succès",
       "title": "Créer une session",
+      "template_selection_title": "Selection d'un modèle",
+      "template_selection_placeholder": "Pas de modèle",
+      "template_apply_success": "Le modèle a été appliqué",
+      "template_apply_error": "Le modèle n'a pas pu être appliqué",
       "channels_error": "Veuillez ajouter au moins un canal à la session",
       "main_info_title": "Informations générales",
       "appointment_label": "Selecteur d'horaire",
@@ -759,6 +813,9 @@
       "end_time_not_defined": "Non défini",
       "font_size_label": "Taille de la police",
       "no_transcription": "Rien n'a encore été transcrit pour ce canal",
+      "n_turns_selected": "Aucun tour de parole sélectionné | 1 tour de parole sélectionné | {count} tours de parole sélectionnés",
+      "copy_turns_text": "Copier le texte",
+      "clear_turn_selection": "Déselectionner",
       "session_ended_title": "La session est terminée",
       "session_ended_subtitle": "La transcription a été sauvegardé dans votre bibliothèque de médias",
       "session_ended_link_to_conversation_transcription": "Ouvrir la transcription dans l’éditeur",
@@ -999,6 +1056,13 @@
     "update_pswd_notif": "Vous avez récemment fait une demande suite à un mot de passe oublié, pensez à actualiser votre mot de passe.",
     "update_pswd_notif_dismiss_btn": "Ne plus afficher",
     "verify_email_notif": "Veuillez vérifier votre adresse email"
+  },
+  "userCreation": {
+    "title": "Nouvel utilisateur",
+    "confirm_button": "Créer l'utilisateur",
+    "email_already_exists": "Un utilisateur avec cet email existe déjà",
+    "passwords_do_not_match": "Les mots de passe ne correspondent pas",
+    "error_message": "Une erreur s'est produite lors de la création de l'utilisateur"
   },
   "userTable": {
     "header": {

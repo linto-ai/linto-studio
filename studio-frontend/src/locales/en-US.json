@@ -491,6 +491,23 @@
     "title": "Sign in",
     "footer": {
       "description": "Open source innovations powered by LINAGORA on EXAION infrastructures"
+    },
+    "sso": {
+      "linagora": "Sign in with Linagora"
+    },
+    "teaser": {
+      "transcribe": {
+        "title": "Transcribe",
+        "desc": "All your media, your microphone, your conference"
+      },
+      "collaborate": {
+        "title": "Collaborate",
+        "desc": "Organize, share and edit your content"
+      },
+      "ia": {
+        "title": "Trusted AI",
+        "desc": "Get summaries suited to your business in your own formats (word, pdf, subtitles)"
+      }
     }
   },
   "manage_tags": {
@@ -581,11 +598,18 @@
     }
   },
   "no_orga": {
-    "create": "Create an organisation",
-    "creating": "Creating organisation...",
-    "label": "Name your organisation, you can create others later",
-    "subtitle": "Create an organisation to create and share your transcriptions.",
-    "title": "Discover LinTO Studio again"
+    "can_create": {
+      "create": "Create an organisation",
+      "creating": "Creating organisation...",
+      "label": "Name your organisation, you can create others later",
+      "subtitle": "Create an organisation to create and share your transcriptions.",
+      "title": "Discover LinTO Studio again"
+    },
+    "cannot_create": {
+      "subtitle_line_one": "Your user does not belong to any organisation.",
+      "subtitle_line_two": "Please contact an administrator.",
+      "title": "Your account is not provisioned"
+    }
   },
   "organisation": {
     "add_member_description": "Use the search form to find users by their firstname, lastname or email address",
@@ -630,6 +654,14 @@
       "session_permission": "Create session",
       "update_button": "Update permissions"
     },
+    "matching_users": {
+      "title": "Automatic user invitation",
+      "matching_mail": {
+        "label": "Maching email"
+      },
+      "update_button": "Update matching criterions",
+      "apply_button": "Invite all users matching criterions"
+    },
     "organization_stats": {
       "title": "Organisation statistics",
       "medias": "Medias"
@@ -671,7 +703,8 @@
       "cra": "Error during summary report generation",
       "cred": "Error during commission and delegation report generation",
       "cri": "Error during full report generation",
-      "verbatim": "Error during verbatim generation"
+      "verbatim": "Error during verbatim generation",
+      "generic": "We couldn't complete the task due to a temporary connection issue with the model provider. Please try again in a moment"
     },
     "filter_speaker": {
       "title": "Filter by speaker"
@@ -690,6 +723,7 @@
       "verbatim": "Verbatim generation in progress...",
       "general": "Generation in progress..."
     },
+    "loading_document": "Requesting final document...",
     "is_not_updated": "The transcription has been updated. The report no longer reflects the latest changes.",
     "is_updated": "The report is up to date with the transcript ",
     "queued": {
@@ -743,10 +777,25 @@
       "diarization_label": "Activate speakers detection (if available per channels)",
       "keep_audio_label": "Keep audio when session ends",
       "channels_error": "Please add at least one channel to create the session",
+      "save_as_template_button": "Save as template",
+      "save_as_template_success": "The session has been saved as a template",
+      "save_as_template_error": "The session could not be saved as a template",
+      "delete_template_button": "Delete selected template",
+      "delete_template_modal": {
+        "title": "Delete template \"{name}\"",
+        "action": "Delete",
+        "description": "Are you sure you want to delete this template ?",
+        "error": "The template could not be deleted",
+        "success": "The template has been deleted"
+      },
       "submit_button": "Create session",
       "submit_label": "Create session",
       "success_message": "Session successfully created",
       "title": "Create a session",
+      "template_selection_title": "Template selection",
+      "template_selection_placeholder": "No template",
+      "template_apply_success": "The template has been applied",
+      "template_apply_error": "The template could not be applied",
       "main_info_title": "General information",
       "appointment_label": "Schedule selector",
       "auto_stop_label": "Stop session automatically at the end time"
@@ -761,6 +810,9 @@
       "end_time_not_defined": "Not defined",
       "font_size_label": "Font size",
       "no_transcription": "Nothing has been transcribed yet for this channel",
+      "n_turns_selected": "0 turn selected | 1 turn selected | {count} turns selected",
+      "copy_turns_text": "Copy content",
+      "clear_turn_selection": "Clear selection",
       "session_ended_title": "The session has ended",
       "session_ended_subtitle": "The transcript has been saved in your media library",
       "session_ended_link_to_inbox": "Go to the media library",
@@ -998,6 +1050,13 @@
     "update_pswd_notif": "You recently requested a recovery link for your password. You might think about updating your password.",
     "update_pswd_notif_dismiss_btn": "Dismiss",
     "verify_email_notif": "Please verify your email address"
+  },
+  "userCreation": {
+    "title": "New user",
+    "confirm_button": "Create user",
+    "email_already_exists": "This email is already used",
+    "passwords_do_not_match": "Passwords do not match",
+    "error_message": "An error occurred while creating the user"
   },
   "userTable": {
     "header": {

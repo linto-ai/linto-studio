@@ -10,7 +10,7 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const crypto = require("crypto")
 
-const TokenGenerator = require("./token/generator")
+const TokenGenerator = require("../token/generator")
 const {
   InvalidCredential,
   MultipleUserFound,
@@ -46,8 +46,8 @@ async function generateUserToken(email, password, done) {
     const token_salt = randomstring.generate(12)
     let token = await model.tokens.insert(user._id, token_salt)
 
+    // Data stored in the token
     let tokenData = {
-      // Data stored in the token
       salt: token_salt,
       tokenId: token.insertedId,
       email: user.email,
@@ -84,8 +84,8 @@ async function generateResetUserToken(magicId, psw, done) {
     const token_salt = randomstring.generate(12)
     let token = await model.tokens.insert(user._id, token_salt)
 
+    // Data stored in the token
     let tokenData = {
-      // Data stored in the token
       salt: token_salt,
       tokenId: token.insertedId,
       email: user.email,

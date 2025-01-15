@@ -86,3 +86,12 @@ export async function apiCreateOrganisation(payload, notif) {
     notif,
   )
 }
+
+export async function apiInviteUsersMachingEmail(organizationId, notif) {
+  return await sendRequest(
+    `${BASE_API}/administration/organizations/${organizationId}/inviteMatchingMail`,
+    { method: "post" },
+    {},
+    notif,
+  )
+}

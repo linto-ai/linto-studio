@@ -1,9 +1,10 @@
 <template>
   <div class="modal-wrapper flex col visible">
-    <div
+    <component
       aria-modal="true"
       aria-labelledby="modal-title"
       class="modal flex col"
+      :is="modalComponentType"
       :class="{
         'modal--small': small,
         'modal--large': large,
@@ -13,7 +14,7 @@
       v-click-outside="close">
       <div class="modal-header flex row align-center">
         <span class="title flex1" id="modal-title">{{ title }}</span>
-        <button class="btn transparent" @click="close()">
+        <button class="btn transparent" @click="close()" type="button">
           <span class="icon close" :title="$t('modal.close_title')"></span>
         </button>
       </div>
@@ -21,15 +22,23 @@
         <slot></slot>
       </div>
       <div class="modal-footer flex row gap-small">
-        <button class="btn secondary" @click="close()" v-if="cancelButton">
+        <button
+          class="btn secondary"
+          @click="close()"
+          v-if="cancelButton"
+          type="button">
           <span class="label">{{ $t("modal.cancel") }}</span>
         </button>
-        <button :class="customClass" @click="apply" v-if="!noApply">
+        <button
+          :class="customClass"
+          @click="apply"
+          v-if="!noApply"
+          type="submit">
           <span class="icon apply"></span>
           <span class="label">{{ actionBtnLabel }}</span>
         </button>
       </div>
-    </div>
+    </component>
   </div>
 </template>
 <script>
@@ -70,6 +79,9 @@ export default {
       return {
         green: true,
       }
+    },
+    modalComponentType() {
+      return this.isForm ? "form" : "div"
     },
   },
   methods: {

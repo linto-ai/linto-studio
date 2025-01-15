@@ -3,6 +3,9 @@ const debug = require("debug")(
 )
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
+const webSocketSingleton = require(
+  `${process.cwd()}/components/WebServer/controllers/llm//llm_ws`,
+)
 
 const docx = require(
   `${process.cwd()}/components/WebServer/controllers/export/docx`,
@@ -30,11 +33,11 @@ async function listExport(req, res, next) {
       req.params.conversationId,
     )
     if (conversationExport.length === 0) {
-      res.status(204).send([])
-      return
+      return []
     }
 
-    let export_list = []
+    let list = []
+    let done = true
     for (let status of conversationExport) {
       let export_conv = {
         _id: status._id.toString(),
@@ -44,11 +47,31 @@ async function listExport(req, res, next) {
         processing: status.processing,
         last_update: status.last_update,
       }
+      if (!["complete", "error", "unknown"].includes(status.status))
+        done = false
       if (status.status === "error") export_conv.error = status.error
-      export_list.push(export_conv)
+      list.push(export_conv)
+    }
+    if (!done) {
+      webSocketSingleton.getSocket() // in case the socket is not initialized
+      // we add the list of job to the watching list
+      const jobIds = conversationExport
+        .filter((convExport) => {
+          if (
+            convExport.status === "complete" ||
+            convExport.status === "error" ||
+            convExport.status === "unknown"
+          )
+            return false
+          if (!convExport.jobId) return false
+          return true
+        })
+        .map((convExport) => convExport.jobId)
+
+      webSocketSingleton.sendMessage(jobIds)
     }
 
-    res.status(200).send(export_list)
+    res.status(200).send(list)
   } catch (error) {
     next(error)
   }
@@ -96,11 +119,6 @@ async function exportConversation(req, res, next) {
       case "verbatim":
         await handleVerbatimFormat(res, req.query, conversation, metadata)
         break
-      case "cri":
-      case "cra":
-      case "cred":
-        await handleLLMService(res, req.query, conversation, metadata)
-        break
       default:
         await handleLLMService(res, req.query, conversation, metadata)
     }
@@ -139,13 +157,13 @@ async function handleLLMService(res, query, conversation, metadata) {
       convId: conversation._id.toString(),
       format: query.format,
       status: "processing",
-      processing: "Processing 0%",
+      processing: 0,
     }
     exportResult = await model.conversationExport.create(conversationExport)
     conversationExport._id = exportResult.insertedId.toString()
 
     callLlmAPI(query, conversation, metadata, conversationExport)
-    res.status(200).send({ status: "processing", processing: "Processing 0%" })
+    res.status(200).send({ status: "processing", processing: 0 })
   } else if (
     conversationExport[0].status === "done" ||
     conversationExport[0].status === "complete"
@@ -155,8 +173,8 @@ async function handleLLMService(res, query, conversation, metadata) {
     sendFileAsResponse(res, file, query.preview)
   } else {
     if (
-      conversationExport[0].status === "error" &&
-      conversationExport[0].error
+      conversationExport[0].status === "unknown" ||
+      (conversationExport[0].status === "error" && conversationExport[0].error)
     ) {
       res.status(400).send({
         status: conversationExport[0].status,

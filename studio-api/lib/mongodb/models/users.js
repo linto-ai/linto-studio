@@ -67,6 +67,7 @@ class UsersModel extends MongoModel {
   async createSuperAdmin(user) {
     try {
       const { salt, passwordHash } = generatePasswordHash(user.password)
+      delete user.password
       const dateTime = moment().format()
 
       const adminPayload = {
@@ -80,6 +81,7 @@ class UsersModel extends MongoModel {
         verifiedEmail: [user.email],
         created: dateTime,
         last_update: dateTime,
+        fromSso: false,
       }
 
       return await this.mongoInsert(adminPayload)
@@ -92,7 +94,9 @@ class UsersModel extends MongoModel {
   async create(payload) {
     try {
       const dateTime = moment().format()
+      delete payload.password
 
+      if (!payload.fromSso) payload.fromSso = false
       const userPayload = {
         ...payload,
         authLink: generateAuthLink(),
@@ -118,6 +122,8 @@ class UsersModel extends MongoModel {
   async createUser(payload) {
     try {
       const { salt, passwordHash } = generatePasswordHash(payload.password)
+      delete payload.password
+
       const dateTime = moment().format()
 
       const userPayload = {
@@ -130,6 +136,7 @@ class UsersModel extends MongoModel {
         },
         created: dateTime,
         last_update: dateTime,
+        fromSso: false,
       }
 
       return await this.create(userPayload)
@@ -139,14 +146,15 @@ class UsersModel extends MongoModel {
     }
   }
 
-  async createExternal(payload) {
+  async createExternal(payload, fromSso = false) {
     try {
       const dateTime = moment().format()
+      delete payload.password
 
       const externalPayload = {
-        ...payload,
         lastname: "",
         firstname: "",
+        ...payload,
         img: "pictures/default.jpg",
         passwordHash: null,
         accountNotifications: {
@@ -155,6 +163,11 @@ class UsersModel extends MongoModel {
         },
         created: dateTime,
         last_update: dateTime,
+        fromSso,
+      }
+      if (fromSso) {
+        externalPayload.emailIsVerified = true
+        externalPayload.verifiedEmail = [payload.email]
       }
 
       return await this.create(externalPayload)

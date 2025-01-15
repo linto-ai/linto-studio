@@ -9,7 +9,7 @@
 
       <FormInput :field="lastName" v-model="lastName.value" />
 
-      <FormInput :field="email" v-model="email.value">
+      <FormInput :field="email" v-model="email.value" :disabled="fromSso">
         <template v-slot:content-after-label>
           <span
             class="icon email-verified"
@@ -105,6 +105,11 @@ export default {
     }
   },
   mounted() {},
+  computed: {
+    fromSso() {
+      return this.userInfo.fromSso
+    },
+  },
   methods: {
     async update(event) {
       event?.preventDefault()

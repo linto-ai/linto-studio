@@ -64,7 +64,7 @@ async function createOrganization(req, res, next) {
 async function updateOrganizationPlatform(req, res, next) {
   try {
     const { organizationId } = req.params
-    const { name, token, description, permissions } = req.body
+    const { name, token, description, permissions, matchingMail } = req.body
 
     // Check if organizationId is provided
     if (!organizationId) {
@@ -99,6 +99,12 @@ async function updateOrganizationPlatform(req, res, next) {
         organization.permissions,
       )
 
+    if (matchingMail && matchingMail.includes("@")) {
+      organization.matchingMail = matchingMail
+    } else {
+      next(new OrganizationUnsupportedMediaType("Not an email"))
+    }
+
     // Update organization in the database
     const result = await model.organizations.updateOrgaByAdmin(organization)
     if (result.matchedCount === 0) {
@@ -113,8 +119,50 @@ async function updateOrganizationPlatform(req, res, next) {
   }
 }
 
+async function inviteMatchingMail(req, res, next) {
+  try {
+    const { organizationId } = req.params
+
+    let organization = await model.organizations.getById(organizationId)
+    if (organization.length === 0) {
+      throw new OrganizationError("Organization not found")
+    }
+    organization = organization[0]
+
+    // we search user with the same email as the matchingMail
+    // we add them if they are not in the organization
+    const users = await model.users.listAllUsers({
+      email: organization.matchingMail,
+    })
+
+    users.list.forEach(async (user) => {
+      const userInOrga = organization.users.find(
+        (u) => u.userId === user._id.toString(),
+      )
+      if (!userInOrga) {
+        organization.users.push({
+          userId: user._id.toString(),
+          role: ROLES.MEMBER,
+        })
+      }
+    })
+
+    const result = await model.organizations.updateOrgaByAdmin(organization)
+    if (result.matchedCount === 0) {
+      throw new OrganizationError("Failed to update organization")
+    }
+
+    res.status(200).send({
+      message: "Matching email users have been added to the organization",
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
 module.exports = {
   listAllOrganization,
   createOrganization,
   updateOrganizationPlatform,
+  inviteMatchingMail,
 }

@@ -54,6 +54,7 @@ import CustomSelect from "@/components/CustomSelect.vue"
 import Checkbox from "@/components/Checkbox.vue"
 import SwitchInput from "@/components/SwitchInput.vue"
 import Radio from "./Radio.vue"
+import transriberImageFromtype from "@/tools/transriberImageFromtype.js"
 
 export default {
   props: {
@@ -142,15 +143,7 @@ export default {
       return this.profile.config.description || ""
     },
     type() {
-      //this.profile.config.type || ""
-      switch (this.profile.config.type) {
-        case "microsoft":
-          return "/img/microsoft.png"
-        case "linto":
-          return "/img/linto.svg"
-        default:
-          return "/img/question.svg"
-      }
+      return transriberImageFromtype(this.profile.config.type)
     },
     alternativeTextForType() {
       return this.profile.config.type || ""

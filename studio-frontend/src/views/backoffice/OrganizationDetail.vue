@@ -3,6 +3,7 @@
     <div class="flex gap-large">
       <div>
         <UpdateOrganizationForm :currentOrganization="organization" />
+        <UpdateOrganizationMatchingUsers :currentOrganization="organization" />
         <UpdateOrganizationPermissions :currentOrganization="organization" />
       </div>
       <OrganizationStats :organizationId="organizationId" />
@@ -27,6 +28,8 @@
   </MainContentBackoffice>
 </template>
 <script>
+import { bus } from "@/main.js"
+
 import { apiGetOrganizationById } from "@/api/organisation.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 
@@ -35,6 +38,7 @@ import UpdateOrganizationForm from "@/components/UpdateOrganizationForm.vue"
 import UpdateOrganizationUsers from "@/components/UpdateOrganizationUsers.vue"
 import ModalDeleteOrganization from "@/components/ModalDeleteOrganization.vue"
 import UpdateOrganizationPermissions from "@/components/UpdateOrganizationPermissions.vue"
+import UpdateOrganizationMatchingUsers from "@/components/UpdateOrganizationMatchingUsers.vue"
 import OrganizationStats from "@/components/OrganizationStats.vue"
 export default {
   mixins: [platformRoleMixin],
@@ -56,7 +60,12 @@ export default {
     if (!this.isAtLeastSystemAdministrator) {
       this.$router.push({ name: "not_found" })
     }
+
+    bus.$on("user_orga_update", this.fetchOrganization)
     this.fetchOrganization()
+  },
+  beforeDestroy() {
+    bus.$off("user_orga_update", this.fetchOrganization)
   },
   methods: {
     async fetchOrganization() {
@@ -79,6 +88,7 @@ export default {
     UpdateOrganizationForm,
     UpdateOrganizationUsers,
     UpdateOrganizationPermissions,
+    UpdateOrganizationMatchingUsers,
     ModalDeleteOrganization,
     OrganizationStats,
   },
