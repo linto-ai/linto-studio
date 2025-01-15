@@ -32,7 +32,7 @@
       <div class="flex col flex1">
         <ConversationOverviewMainInfos
           :conversation="conversation"
-          :parentConversation="parentConversation"
+          :rootConversation="rootConversation"
           :channels="channels"
           :canEdit="userRights.hasRightAccess(userRight, userRights.WRITE)" />
       </div>

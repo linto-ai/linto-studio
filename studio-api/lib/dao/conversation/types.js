@@ -1,15 +1,20 @@
 const TYPES = Object.freeze({
   CANONICAL: "canonical",
   CHILD: "child",
+  TRANSLATION: "translation",
 
   // check if the type is valid
-  checkValue: (type) => job === JOBS.TRANSCRIPTION || job === JOBS.CHILD,
+  checkValue: (type) =>
+    type === TYPES.CANONICAL ||
+    type === TYPES.CHILD ||
+    type === TYPES.TRANSLATION,
   desiredType: (type) => {
     switch (true) {
       case type === undefined:
         return false
-      case type === JOBS.TRANSCRIPTION:
-      case type === JOBS.CHILD:
+      case type === TYPES.CANONICAL:
+      case type === TYPES.CHILD:
+      case type === TYPES.TRANSLATION:
         return true
       default:
         return false

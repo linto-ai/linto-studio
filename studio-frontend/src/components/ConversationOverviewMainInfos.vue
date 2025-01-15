@@ -42,7 +42,7 @@ export default {
       type: Object,
       required: true,
     },
-    parentConversation: {
+    rootConversation: {
       type: Object,
       required: false,
     },
@@ -91,7 +91,7 @@ export default {
           bus.$emit("app_notif", {
             status: "error",
             message: this.$i18n.t(
-              "conversation.update_information_error_notif"
+              "conversation.update_information_error_notif",
             ),
             redirect: false,
           })

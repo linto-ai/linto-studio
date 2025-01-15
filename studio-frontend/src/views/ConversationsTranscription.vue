@@ -7,12 +7,15 @@
     sidebar>
     <template v-slot:sidebar>
       <div>
-        <div
-          class="form-field flex col medium-margin"
-          v-if="conversationType === 'child'">
+        <div class="form-field flex col medium-margin gap-medium">
           <AppEditorChannelsSelector
+            v-if="channels && channels.length > 0"
             :channels="channels"
             v-model="selectedChannel" />
+          <AppEditorTranslationSelector
+            v-if="translations && translations.length > 0"
+            :translations="translations"
+            v-model="selectedTranslation" />
         </div>
 
         <div class="form-field flex col medium-margin">
@@ -154,6 +157,7 @@ import TranscriptionHelper from "@/components/TranscriptionHelper.vue"
 import AppEditorMetadataModal from "@/components/AppEditorMetadataModal.vue"
 import SearchResultPaginator from "@/components/SearchResultPaginator.vue"
 import AppEditorChannelsSelector from "@/components/AppEditorChannelsSelector.vue"
+import AppEditorTranslationSelector from "../components/AppEditorTranslationSelector.vue"
 
 export default {
   mixins: [conversationMixin],
@@ -429,6 +433,7 @@ export default {
     AppEditorMetadataModal,
     SearchResultPaginator,
     AppEditorChannelsSelector,
+    AppEditorTranslationSelector,
   },
 }
 </script>
