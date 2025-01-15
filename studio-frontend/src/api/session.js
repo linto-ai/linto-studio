@@ -19,7 +19,7 @@ export async function apiGetSessionTemplates(organizationScope, notif) {
   const getSessionTemplates = await sendRequest(
     `${BASE_API}/organizations/${organizationScope}/templates`,
     { method: "get" },
-    {},
+    { limit: 100 },
     notif,
   )
 

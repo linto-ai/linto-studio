@@ -55,6 +55,7 @@ import CustomSelect from "@/components/CustomSelect.vue"
 
 import SessionChannelsEndpoints from "@/components/SessionChannelsEndpoints.vue"
 import Checkbox from "@/components/Checkbox.vue"
+import transriberImageFromtype from "@/tools/transriberImageFromtype.js"
 
 export default {
   mixins: [sessionChannelModelMixin],
@@ -94,12 +95,7 @@ export default {
   },
   computed: {
     type() {
-      switch (this.channelType) {
-        case "microsoft":
-          return "/img/microsoft.png"
-        default:
-          return "/img/question.svg"
-      }
+      return transriberImageFromtype(this.channelType)
     },
     alternativeTextForType() {
       return this.channelType || ""

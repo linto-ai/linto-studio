@@ -218,6 +218,12 @@ export default {
       deep: true,
     },
     selectedTemplateId(newId, oldId) {
+      if (newId == "") {
+        this.channels = []
+        this.name.value = ""
+        return
+      }
+
       const selectedTemplate = this.sessionTemplates.sessionTemplates.find(
         (t) => t.id === newId,
       )
@@ -257,7 +263,7 @@ export default {
         console.error(error)
         bus.$emit("app_notif", {
           status: "error",
-          message: this.$i18n.t("session.create_page.save_as_template_error"),
+          message: this.$i18n.t("session.create_page.template_apply_error"),
           timeout: null,
         })
         this.formState = "error"
@@ -269,7 +275,7 @@ export default {
 
       bus.$emit("app_notif", {
         status: "success",
-        message: this.$i18n.t("session.create_page.save_as_template_success"),
+        message: this.$i18n.t("session.create_page.template_apply_success"),
         redirect: false,
       })
       return true
