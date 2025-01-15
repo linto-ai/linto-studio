@@ -102,6 +102,7 @@
 
       <SessionCreateContent
         v-if="currentTab === 'session' && !loadingSessionData"
+        :sessionTemplates="sessionTemplates"
         :transcriberProfiles="transcriberProfiles"
         :currentOrganizationScope="currentOrganizationScope" />
     </div>
@@ -116,6 +117,7 @@ import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.j
 
 import {
   apiGetTranscriberProfiles,
+  apiGetSessionTemplates,
   apiGetQuickSessionByOrganization,
 } from "@/api/session.js"
 
@@ -152,14 +154,17 @@ export default {
     return {
       currentTab: null,
       transcriberProfiles: [],
+      sessionTemplates: [],
       loadingTranscriberProfiles: true,
       loadingQuickSession: true,
+      loadingSessionTemplates: true,
       currentQuickSession: null,
     }
   },
   mounted() {
     this.fetchProfiles()
     this.fetchQuickSession()
+    this.fetchSessionTemplates()
   },
   async created() {
     if (this.mainTabs.length > 0) {
@@ -178,7 +183,11 @@ export default {
       return enableSession && this.canSessionInCurrentOrganization
     },
     loadingSessionData() {
-      return this.loadingTranscriberProfiles || this.loadingQuickSession
+      return (
+        this.loadingTranscriberProfiles ||
+        this.loadingQuickSession ||
+        this.loadingSessionTemplates
+      )
     },
     mainTabs() {
       let res = []
@@ -248,6 +257,11 @@ export default {
       const res = await apiGetTranscriberProfiles()
       this.transcriberProfiles = res
       this.loadingTranscriberProfiles = false
+    },
+    async fetchSessionTemplates() {
+      const res = await apiGetSessionTemplates(this.currentOrganizationScope)
+      this.sessionTemplates = res
+      this.loadingSessionTemplates = false
     },
     async fetchQuickSession() {
       const alreadyCreatedPersonalSession =

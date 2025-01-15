@@ -46,15 +46,16 @@
 import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
 
-import { sessionChannelModelMixin } from "../mixins/sessionChannelModel.js"
+import { sessionChannelModelMixin } from "@/mixins/sessionChannelModel.js"
 
-import ArrayHeader from "./ArrayHeader.vue"
-import FormInput from "./FormInput.vue"
-import EMPTY_FIELD from "../const/emptyField"
-import CustomSelect from "./CustomSelect.vue"
+import ArrayHeader from "@/components/ArrayHeader.vue"
+import FormInput from "@/components/FormInput.vue"
+import EMPTY_FIELD from "@/const/emptyField"
+import CustomSelect from "@/components/CustomSelect.vue"
 
-import SessionChannelsEndpoints from "./SessionChannelsEndpoints.vue"
-import Checkbox from "./Checkbox.vue"
+import SessionChannelsEndpoints from "@/components/SessionChannelsEndpoints.vue"
+import Checkbox from "@/components/Checkbox.vue"
+import transriberImageFromtype from "@/tools/transriberImageFromtype.js"
 
 export default {
   mixins: [sessionChannelModelMixin],
@@ -94,12 +95,7 @@ export default {
   },
   computed: {
     type() {
-      switch (this.channelType) {
-        case "microsoft":
-          return "/img/microsoft.png"
-        default:
-          return "/img/question.svg"
-      }
+      return transriberImageFromtype(this.channelType)
     },
     alternativeTextForType() {
       return this.channelType || ""
