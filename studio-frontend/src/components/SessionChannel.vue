@@ -68,6 +68,8 @@
       :previousTurns="previousTurns"
       :partialText="partialText"
       :finalText="finalText"
+      :fontSize="fontSize"
+      :key="fontSize"
       :selectedTranslations="selectedTranslations" />
 
     <!-- <div

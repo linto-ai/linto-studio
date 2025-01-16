@@ -42,11 +42,10 @@ export default {
   },
   async mounted() {
     this.canvas = document.getElementById("scroller")
-    this.subtitleDrawer = new SubtitleScroller(
-      this.canvas,
-      this.fontSize,
-      this.lineHeight,
-    )
+    this.subtitleDrawer = new SubtitleScroller(this.canvas, {
+      fontSize: Number(this.fontSize),
+      lineHeight: this.lineHeight,
+    })
   },
   methods: {},
   components: { Fragment },
