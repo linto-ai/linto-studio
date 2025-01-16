@@ -54,9 +54,11 @@
     </nav>
     <div class="flex col flex1"><slot class=""></slot></div>
 
-    <div class="sidebar__websocket-status">
-      <span v-if="$sessionWS.state.isConnected">Websocket connected</span>
-      <span v-else>Websocket is not connected</span>
+    <div class="sidebar__websocket-status center-text" v-if="isSessionPage">
+      <span v-if="$sessionWS.state.isConnected">{{
+        $t("websocket.connected")
+      }}</span>
+      <span v-else>{{ $t("websocket.disconnected") }}</span>
     </div>
   </aside>
 </template>
@@ -100,6 +102,9 @@ export default {
     },
     sessionEnable() {
       return getEnv("VUE_APP_ENABLE_SESSION") === "true"
+    },
+    isSessionPage() {
+      return this.$route?.meta?.sessionPage
     },
   },
   mounted() {},

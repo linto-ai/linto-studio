@@ -54,9 +54,3 @@ _2025_01_15_
 
 - Merge conversation-manager to one repository
 - Rename conversation-manager to linto-studio
-
-## API
-
-## Frontend
-
-## Websocket

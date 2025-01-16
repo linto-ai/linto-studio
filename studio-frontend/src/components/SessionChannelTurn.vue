@@ -39,10 +39,15 @@ export default {
       return getTextTurnWithTranslation(this.turn, this.selectedTranslations)
     },
     speaker() {
+      if (this.selectedTranslations !== "original") {
+        let languageNames = new Intl.DisplayNames([this.$i18n.locale], {
+          type: "language",
+        })
+        return this.$t("session.detail_page.translation_bot")
+      }
+
       return (
-        this.turn?.locutor ||
-        this.$t("session.detail_page.undefined_speaker") ||
-        "Unknown"
+        this.turn?.locutor || this.$t("session.detail_page.undefined_speaker")
       )
     },
     lang() {

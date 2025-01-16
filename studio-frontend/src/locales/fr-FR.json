@@ -832,6 +832,7 @@
       "title_interface_settings": "Paramètre d'interface",
       "undefined_lang": "Langage inconnu",
       "undefined_speaker": "Locuteur inconnu",
+      "translation_bot": "Bot de traduction",
       "session_already_started": "La session a déjà démarrée",
       "session_auto_start_helper": "La session démmarera automatiquement à l'heure de début",
       "stop_button_title_session_running": "La session ne peut pas être arrêtée tant que des flux sont envoyés."
@@ -1100,5 +1101,9 @@
     "previous_button_title": "Semaine précédente",
     "next_button_title": "Semaine suivante",
     "main_label": "Semaine {weekNumber} de {year} ({startDate} - {endDate})"
+  },
+  "websocket": {
+    "connected": "Contenu mis à jour en temps réel",
+    "disconnected": "Contenu non mis à jour, vérifiez votre connexion internet"
   }
 }

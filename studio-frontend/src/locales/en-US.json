@@ -826,7 +826,8 @@
       "stop_session_success": "The session has been stopped and saved",
       "title_interface_settings": "Interface settings",
       "undefined_lang": "Unknown language",
-      "undefined_speaker": "Undefined speaker",
+      "undefined_speaker": "Unknown speaker",
+      "translation_bot": "Translation bot",
       "session_already_started": "Session already started",
       "session_auto_start_helper": "Session will start automatically at start time",
       "stop_button_title_session_running": "The session cannot be stopped while streams are being sent."
@@ -1094,5 +1095,9 @@
     "previous_button_title": "Previous week",
     "next_button_title": "Next week",
     "main_label": "Week {weekNumber} of {year} ({startDate} - {endDate})"
+  },
+  "websocket": {
+    "connected": "Content updated in real time",
+    "disconnected": "Content not updated, check your internet connection"
   }
 }

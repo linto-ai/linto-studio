@@ -16,12 +16,15 @@
   </div>
 </template>
 <script>
+import { bus } from "@/main"
+
 import { apiGetStartedSessions } from "@/api/session.js"
+import { genericSessionList } from "@/mixins/genericSessionList"
+import sortSessionByDate from "@/tools/sortSessionByDate"
+
 import Loading from "@/components/Loading.vue"
 import ErrorPage from "@/components/ErrorPage.vue"
 import SessionListLine from "@/components/SessionListLine.vue"
-import { bus } from "../main"
-import { genericSessionList } from "../mixins/genericSessionList"
 
 export default {
   mixins: [genericSessionList],
@@ -39,7 +42,9 @@ export default {
         const sessions = await apiGetStartedSessions(
           this.currentOrganizationScope,
         )
-        this.sessionList = sessions.sessions.filter((s) => s.name[0] != "@")
+        this.sessionList = sessions.sessions
+          .filter((s) => s.name[0] != "@")
+          .sort(sortSessionByDate)
       } catch (e) {
         console.error(e)
         this.error = e
