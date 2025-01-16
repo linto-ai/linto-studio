@@ -3,11 +3,7 @@ const proxyForwardParams = [
   { "body.organizationId": "params.organizationId" },
 ]
 
-const {
-  storeSessionFromStop,
-  storeQuickMeetingFromStop,
-  storeSessionTest,
-} = require(
+const { storeSessionFromStop, storeQuickMeetingFromStop } = require(
   `${process.cwd()}/components/WebServer/controllers/session/conversation.js`,
 )
 const { forceQueryParams } = require(
@@ -133,20 +129,6 @@ module.exports = (webServer) => {
           fromPath: "/quickMeeting/",
           toPath: "/sessions/",
         },
-      },
-      {
-        //quick meeting access
-        scrapPath: /^\/organizations\/[^/]+/,
-        paths: [
-          {
-            path: "/organizations/:organizationId/savetest",
-            method: ["get"],
-            forwardParams: proxyForwardParams,
-            executeBeforeResult: storeSessionTest,
-          },
-        ],
-        requireAuth: false,
-        requireOrganizationQuickMeetingAccess: false,
       },
       {
         //quick meeting access
