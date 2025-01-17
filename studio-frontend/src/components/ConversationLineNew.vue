@@ -1,34 +1,147 @@
 <template>
   <li class="conversation-line-container">
-    <input
-      type="checkbox"
-      class="conversation-line__checkbox"
-      :value="conversation._id"
-      v-if="selectable"
-      v-model="_selectedConversation" />
+    <div class="flex col">
+      <span
+        class="icon star conversation-line__favorite no-propagation"
+        v-if="!isFavorite"
+        :title="$t('conversation.add_to_favorites')"
+        @click="toggleFavorite"></span>
+      <span
+        class="icon star-filled conversation-line__favorite no-propagation"
+        v-if="isFavorite"
+        :title="$t('conversation.remove_from_favorites')"
+        @click="toggleFavorite"></span>
+      <input
+        type="checkbox"
+        class="conversation-line__checkbox"
+        :value="conversation._id"
+        v-if="selectable"
+        v-model="_selectedConversation" />
+    </div>
+
     <div
-      class="conversation-line relative flex col flex1"
+      class="conversation-line relative flex flex1 gap-medium"
       ref="line"
       @click="selectLine">
-      <header class="conversation-line__head flex row gap-medium align-center">
-        <!--
+      <div class="flex col flex1 justify-evenly small-margin">
+        <div class="conversation-line__head flex">
+          <div class="flex col flex1">
+            <!-- Title -->
+            <router-link
+              :title="conversation.name"
+              :to="`/interface/conversations/${conversation._id}/transcription`"
+              class="conversation-line__title no-padding no-propagation">
+              {{ conversation.name }}
+            </router-link>
+            <!-- Description -->
+            <div
+              class="conversation-line__description"
+              @click="startDescriptionEdition"
+              v-if="!descriptionIsEditing">
+              <span class="no-propagation">{{ description }}</span>
+              <button v-if="canEditConv" class="transparent no-propagation">
+                <span class="icon edit no-propagation" />
+              </button>
+            </div>
+          </div>
+          <!-- metadata-->
+          <div class="flex gap-medium">
+            <div
+              v-if="audioDuration"
+              class="conversation-line__duration"
+              :title="$t('conversation.duration', { duration: audioDuration })">
+              <LabeledValueSmall
+                :label="$t('conversation.duration_label')"
+                :value="audioDuration" />
+            </div>
+            <div
+              class="conversation-line__last-update"
+              :title="$t('conversation.updated', { date: lastUpdate })">
+              <LabeledValueSmall
+                :label="$t('conversation.update_label')"
+                :value="lastUpdate" />
+            </div>
+            <div
+              class="conversation-line__last-update"
+              :title="$t('conversation.created', { date: created })">
+              <LabeledValueSmall
+                :label="$t('conversation.created_label')"
+                :value="created" />
+            </div>
+          </div>
+        </div>
+        <!-- tags -->
+
+        <div
+          class="conversation-line__tags flex row gap-small align-bottom"
+          v-if="displayTags">
+          <span
+            class="conversation-line__tag"
+            v-for="tag in tags"
+            :key="tag._id">
+            <Tag
+              :value="tag.name"
+              :categoryId="tag.categoryId"
+              :categoryName="tag.categoryName"
+              :color="tag.color"
+              :deletable="canEditTag"
+              @delete="unSelectTag(tag)"
+              clickable
+              @click="clickOnTag($event, tag)" />
+          </span>
+          <span v-if="tags.length === 0" @click="showDropDown">{{
+            $t("tags.no_tags")
+          }}</span>
+          <div class="conversation-line__dropDown-container">
+            <ContextMenu
+              v-if="dropDownVisible"
+              :y="dropDownY"
+              :x="dropDownX"
+              name="main-tag-menu">
+              <DropDownAddTag
+                v-click-outside="closeDropDown"
+                :conversationId="conversation._id"
+                :value="tags"
+                @close="closeDropDown"
+                @selectTag="selectTag"
+                @unSelectTag="unSelectTag"></DropDownAddTag>
+            </ContextMenu>
+          </div>
+          <button
+            :title="$t('conversation.add_tag')"
+            v-if="canEditTag && !tagsReadOnly"
+            @click="showDropDown"
+            class="transparent inline">
+            <span class="icon add no-propagation" />
+            <span class="label no-propagation">{{ $t("tags.add_tags") }}</span>
+          </button>
+        </div>
+      </div>
+      <!-- secondary actions -->
+      <div class="flex col gap-small justify-evenly">
+        <!-- TODO: put in blue like link-->
+
+        <button class="black icon-only small">
+          <span class="icon information"></span>
+        </button>
+        <button class="black icon-only small">
+          <span class="icon subtitle"></span>
+        </button>
+        <button class="black icon-only small">
+          <span class="icon document"></span>
+        </button>
+      </div>
+
+      <!-- <header class="conversation-line__head flex row gap-medium align-center"> -->
+      <!--
       <div
         class="list-profil-picture-container"
         :data-info="convOwner.fullname">
         <img :src="convOwner.img" class="list-profil-picture" />
       </div>
       -->
-        <div class="flex flex1 align-center gap-small">
-          <span
-            class="icon star conversation-line__favorite no-propagation"
-            v-if="!isFavorite"
-            :title="$t('conversation.add_to_favorites')"
-            @click="toggleFavorite"></span>
-          <span
-            class="icon star-filled conversation-line__favorite no-propagation"
-            v-if="isFavorite"
-            :title="$t('conversation.remove_from_favorites')"
-            @click="toggleFavorite"></span>
+      <!-- <div class="flex flex1 align-center gap-small">
+          
           <span
             class="flex row align-center list-profil-picture-container"
             v-if="conversation.sharedBy"
@@ -53,41 +166,9 @@
             inline
             @input="openWith"></CustomSelect>
         </div>
-        <div class="flex gap-medium">
-          <div
-            v-if="audioDuration"
-            class="conversation-line__duration"
-            :title="$t('conversation.duration', { duration: audioDuration })">
-            <LabeledValueSmall
-              :label="$t('conversation.duration_label')"
-              :value="audioDuration" />
-          </div>
-          <div
-            class="conversation-line__last-update"
-            :title="$t('conversation.updated', { date: lastUpdate })">
-            <LabeledValueSmall
-              :label="$t('conversation.update_label')"
-              :value="lastUpdate" />
-          </div>
-          <div
-            class="conversation-line__last-update"
-            :title="$t('conversation.created', { date: created })">
-            <LabeledValueSmall
-              :label="$t('conversation.created_label')"
-              :value="created" />
-          </div>
-          <!-- <div>{{ highlightedTags.length }} Highlights</div> -->
-        </div>
+        
       </header>
-      <div
-        class="conversation-line__description"
-        @click="startDescriptionEdition"
-        v-if="!descriptionIsEditing">
-        <span class="no-propagation">{{ description }}</span>
-        <button v-if="canEditConv" class="transparent no-propagation">
-          <span class="icon edit no-propagation" />
-        </button>
-      </div>
+      
       <FormInput
         v-else
         :field="descriptionFormData"
@@ -136,13 +217,8 @@
           class="transparent inline">
           <span class="icon add no-propagation" />
           <span class="label no-propagation">{{ $t("tags.add_tags") }}</span>
-        </button>
-      </div>
-      <!-- <div>
-      <span v-for="highlight in highlightedTags" :key="highlight._id">{{
-        highlight.name
-      }}</span>
-    </div> -->
+        </button> 
+      </div> -->
     </div>
   </li>
 </template>
@@ -219,7 +295,7 @@ export default {
 
       if (this.conversation.organization) {
         return this.isAtLeastMaintainerOfOrganization(
-          this.conversation.organization.organizationId
+          this.conversation.organization.organizationId,
         )
       }
 
@@ -245,7 +321,7 @@ export default {
     },
     audioDuration() {
       return this.$options.filters.timeToHMS(
-        this.conversation?.metadata?.audio?.duration
+        this.conversation?.metadata?.audio?.duration,
       )
     },
     lastUpdate() {
@@ -366,7 +442,7 @@ export default {
       if (this.isFavorite) {
         this.$store.dispatch(
           "removeFavoriteConversation",
-          this.conversation._id
+          this.conversation._id,
         )
       } else {
         this.$store.dispatch("addFavoriteConversation", this.conversation)
@@ -388,7 +464,7 @@ export default {
         return tag && tag.type == "conversation_metadata"
       })
       this.highlightedTags = allTags.filter(
-        (tag) => tag && tag.type == "highlight"
+        (tag) => tag && tag.type == "highlight",
       )
       this.originalTags = [...this.tags]
       this.loadingTags = false
@@ -400,7 +476,7 @@ export default {
       const tagsTree = await apiSearchTagsById(
         this.conversation._id,
         this.conversation.tags,
-        "conversation"
+        "conversation",
       )
 
       return extractTagsFromCategoryTree(tagsTree)

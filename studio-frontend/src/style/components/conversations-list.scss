@@ -23,7 +23,7 @@
 }
 
 input[type="checkbox"].conversation-line__checkbox {
-  margin: 1rem;
+  //margin: 1rem;
 }
 
 input:checked + .conversation-line {
@@ -34,7 +34,7 @@ input:checked + .conversation-line {
 .conversation-line {
   border: var(--border-block);
   border-radius: 4px;
-  padding: 1rem;
+  padding: 0.25rem 0.25rem 0.25rem 0.5rem;
   margin: 0;
   gap: 0.5rem;
   background-color: var(--background-primary);
@@ -49,7 +49,8 @@ input:checked + .conversation-line {
 
 .conversation-line__title {
   color: var(--blue-chart);
-  font-size: 1rem; // 16px
+  font-size: 1.1rem;
+  font-weight: normal;
   flex-basis: fit-content;
 
   &:first-letter {
@@ -59,6 +60,7 @@ input:checked + .conversation-line {
 
 .conversation-line__favorite {
   cursor: pointer;
+  margin: 0.5rem;
 }
 
 .conversation-line__description {
