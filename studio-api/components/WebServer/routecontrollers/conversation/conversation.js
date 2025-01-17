@@ -9,7 +9,7 @@ const userUtility = require(
   `${process.cwd()}/components/WebServer/controllers/user/utility`,
 )
 
-const { deleteFile, getStorageFolder, getAudioWaveformFolder } = require(
+const { deleteFile, getStorageFolder } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
 const { updateChildConversation } = require(
@@ -21,7 +21,6 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 const { fetchJob } = require(
   `${process.cwd()}/components/WebServer/controllers/job/fetchHandler`,
 )
-const TYPES = require(`${process.cwd()}/lib/dao/conversation/types`)
 
 const {
   ConversationIdRequire,
@@ -46,18 +45,9 @@ async function deleteConversation(req, res, next) {
       throw new ConversationError("Error when deleting conversation")
 
     if (conversation[0]?.metadata?.audio) {
-      const audioFilename = conversation[0].metadata.audio.filepath
-        .split("/")
-        .pop()
-      const jsonFilename = audioFilename.split(".")[0] + ".json"
-
       // delete audio file
       deleteFile(
         `${getStorageFolder()}/${conversation[0].metadata.audio.filepath}`,
-      )
-      // delete audiowaveform json file
-      deleteFile(
-        `${getStorageFolder()}/${getAudioWaveformFolder()}/${jsonFilename}`,
       )
     }
     // delete also all subtitle related to that conversation

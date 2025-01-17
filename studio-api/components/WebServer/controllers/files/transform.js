@@ -20,20 +20,6 @@ async function transformAudio(filePath, transformedFilePath) {
   await handleStreamProcess(streamProcess)
 }
 
-async function generateAudioWaveform(inputFile, outputFile) {
-  let streamProcess = spawn(
-    "audiowaveform",
-    [
-      "-i",
-      `${inputFile}`,
-      "-o",
-      `./${process.env.VOLUME_FOLDER}/audiowaveform/${outputFile}`,
-    ],
-    { detached: true },
-  )
-  await handleStreamProcess(streamProcess)
-}
-
 async function mergeAudio(files, audioPath) {
   let fileList = []
   let filter_complex = ""
@@ -86,5 +72,4 @@ module.exports = {
   transformAudio,
   mergeAudio,
   mergeChannel,
-  generateAudioWaveform,
 }

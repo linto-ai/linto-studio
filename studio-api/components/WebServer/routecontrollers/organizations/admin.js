@@ -3,7 +3,7 @@ const debug = require("debug")(
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
-const { getStorageFolder, getAudioFolder, deleteFile } = require(
+const { getStorageFolder, deleteFile } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
 
@@ -72,14 +72,7 @@ async function deleteOrganization(req, res, next) {
         )
 
       try {
-        const audioFilename = conversation.metadata.audio.filepath
-          .split("/")
-          .pop()
-        const jsonFilename = audioFilename.split(".")[0] + ".json"
         deleteFile(`${getStorageFolder()}/${conv.metadata.audio.filepath}`)
-        deleteFile(
-          `${getStorageFolder()}/${getAudioWaveformFolder()}/${jsonFilename}`,
-        )
       } catch (err) {
         debug(
           `file not found ${getStorageFolder()}/${conv.metadata.audio.filepath}`,

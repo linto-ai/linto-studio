@@ -4,12 +4,9 @@ const { v4: uuidv4 } = require("uuid")
 const fs = require("fs")
 const path = require("path")
 
-const {
-  transformAudio,
-  mergeAudio,
-  generateAudioWaveform,
-  mergeChannel,
-} = require(`${process.cwd()}/components/WebServer/controllers/files/transform`)
+const { transformAudio, mergeAudio, mergeChannel } = require(
+  `${process.cwd()}/components/WebServer/controllers/files/transform`,
+)
 
 /*
 ffmpeg -i in.whatever -vn -ar 16000 -ac 1 -b:a 96k out.mp3
@@ -70,10 +67,6 @@ async function storeFile(files, type = "audio") {
         await transformAudio(filePath, output_audio)
       }
 
-      // Generate waveform json
-      // Write a JSON file in ../audiowaveform folder
-      await generateAudioWaveform(output_audio, fileName + ".json")
-
       deleteFile(filePath)
       return {
         filePath: `${process.env.VOLUME_AUDIO_PATH}/${fileName}.mp3`,
@@ -110,10 +103,6 @@ function getAudioFolder() {
   return process.env.VOLUME_AUDIO_PATH
 }
 
-function getAudioWaveformFolder() {
-  return process.env.VOLUME_AUDIO_WAVEFORM_PATH
-}
-
 module.exports = {
   storeFile,
   defaultPicture,
@@ -121,5 +110,4 @@ module.exports = {
   getStorageFolder,
   getPictureFolder,
   getAudioFolder,
-  getAudioWaveformFolder,
 }

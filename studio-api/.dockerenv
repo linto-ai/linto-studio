@@ -12,7 +12,7 @@ DB_NAME=conversations
 DB_REQUIRE_LOGIN=false
 
 # Request a specific version of the database (optional)
-DB_MIGRATION_TARGET=1.5.4
+DB_MIGRATION_TARGET=1.5.5
 DEFAULT_USER_ROLE=1
 
 
