@@ -100,9 +100,8 @@ async function updateOrganizationPlatform(req, res, next) {
       )
 
     if (matchingMail && matchingMail.includes("@")) {
-      organization.matchingMail = matchingMail
-    } else {
-      next(new OrganizationUnsupportedMediaType("Not an email"))
+      if (matchingMail.includes("@")) organization.matchingMail = matchingMail
+      else next(new OrganizationUnsupportedMediaType("Not an email"))
     }
 
     // Update organization in the database

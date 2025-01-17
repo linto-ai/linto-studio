@@ -118,7 +118,10 @@ export default {
         const payload = {
           firstname: this.firstName.value,
           lastname: this.lastName.value,
-          email: this.email.value,
+        }
+
+        if (!this.fromSso) {
+          payload["email"] = this.email.value
         }
 
         let req = null

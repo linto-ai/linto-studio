@@ -9,6 +9,7 @@ const { v4: uuidv4 } = require("uuid")
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const DEFAULT_MEMBER_RIGHTS = 3
 const DEFAULT_SPEAKER_NAME = "Unknown speaker"
+const DEFAULT_TRANSLATION_NAME = "Automatic Translation"
 const TYPES = require(`${process.cwd()}/lib/dao/conversation/types`)
 
 const { SessionError } = require(
@@ -80,7 +81,7 @@ function initCaptionsForConversation(sessionData, name = undefined) {
     let captions = []
 
     // we need to reformat the session data to match the conversation model
-    session = formatChannel(session)
+
     for (let channel of session.channels) {
       if (!channel.closedCaptions) {
         continue
@@ -89,20 +90,21 @@ function initCaptionsForConversation(sessionData, name = undefined) {
       if (name === undefined) {
         name = session.name || ""
       }
+      let caption
 
-      let caption = initializeCaption(session, channel, name)
-      processChannelCaptions(channel.closedCaptions, caption)
+      caption = initializeCaption(session, channel, name)
+      processChannelCaptions(channel, caption, true)
 
-      // In case of translation enabled, we need to create a new caption for each translation
-      if (channel.translations && channel.translations.length > 0) {
-        for (let tl of channel.translations) {
-          let tlCaption = initializeCaption(session, channel, name, tl)
-          processChannelCaptions(channel.closedCaptions, tlCaption, tl)
+      if (channel.translations.length !== 0) {
+        for (let translation of channel.translations) {
+          let tlCaption = initializeCaption(session, channel, name, translation)
+          processChannelCaptions(channel, tlCaption, false)
 
           tlCaption.parentName = caption.name
           captions.push(tlCaption)
         }
       }
+
       captions.push(caption)
     }
     return captions
@@ -153,20 +155,30 @@ function initializeCaption(session, channel, name, translation) {
   return caption
 }
 
-function processChannelCaptions(closedCaptions, caption, translation = "") {
-  for (let channel_caption of closedCaptions) {
+function processChannelCaptions(channel, caption, main = true) {
+  let closedCaptions = channel.closedCaptions
+
+  for (const channel_caption of closedCaptions) {
     let spk_id = ensureSpeaker(caption, channel_caption)
 
-    let turn = createTurn(channel_caption, spk_id, translation)
+    let turn = createTurn(
+      channel_caption,
+      spk_id,
+      main,
+      channel.diarization,
+      caption,
+    )
+    if (!turn) continue
     caption.text.push(turn)
   }
 }
 
 function ensureSpeaker(caption, channel_caption) {
-  let speakerName = channel_caption.locutor || DEFAULT_SPEAKER_NAME
-  if (!caption.locutor) {
-    caption.locutor = DEFAULT_SPEAKER_NAME
-  }
+  let speakerName
+  if (caption.type.mode === TYPES.TRANSLATION)
+    speakerName = DEFAULT_TRANSLATION_NAME
+  else if (channel_caption.locutor) speakerName = channel_caption.locutor
+  else speakerName = DEFAULT_SPEAKER_NAME
 
   let existingSpeaker = caption.speakers.find(
     (speaker) => speaker.speaker_name === speakerName,
@@ -175,7 +187,7 @@ function ensureSpeaker(caption, channel_caption) {
   if (!existingSpeaker) {
     const newSpeaker = {
       speaker_id: uuidv4(),
-      speaker_name: speakerName || DEFAULT_SPEAKER_NAME,
+      speaker_name: speakerName,
       stime: channel_caption.start,
       etime: channel_caption.end,
     }
@@ -186,7 +198,16 @@ function ensureSpeaker(caption, channel_caption) {
   return existingSpeaker.speaker_id
 }
 
-function createTurn(channel_caption, spk_id, translation) {
+function createTurn(
+  channel_caption,
+  spk_id,
+  main,
+  diarization = false,
+  caption,
+) {
+  if (main && diarization && !channel_caption.locutor) {
+    return
+  }
   let turn = {
     speaker_id: spk_id,
     turn_id: uuidv4(),
@@ -197,12 +218,17 @@ function createTurn(channel_caption, spk_id, translation) {
     lang: channel_caption.lang,
     words: [],
   }
-  if (translation !== "") {
-    turn.segment =
-      channel_caption.translations[translation] || channel_caption.text
-    turn.raw_segment =
-      channel_caption.translations[translation] || channel_caption.text
-  }
+  if (
+    caption.type.mode === TYPES.TRANSLATION &&
+    channel_caption.translations[caption.locale]
+  ) {
+    turn.segment = channel_caption.translations[caption.locale] // || channel_caption.text
+    turn.raw_segment = channel_caption.translations[caption.locale] //|| channel_caption.text
+  } else if (
+    caption.type.mode === TYPES.TRANSLATION &&
+    !channel_caption.translations[caption.locale]
+  )
+    return
 
   turn.raw_segment.split(" ").forEach((word) => {
     turn.words.push({
@@ -218,7 +244,6 @@ async function storeSession(session, name = undefined) {
   try {
     const captions = initCaptionsForConversation(session, name)
     let conversationMemory = []
-
     const { canonicalCount, translationCount } = countCaptions(captions)
 
     if (canonicalCount === 0) return
@@ -246,7 +271,6 @@ async function storeSession(session, name = undefined) {
 function countCaptions(captions) {
   let canonicalCount = 0
   let translationCount = 0
-
   for (let caption of captions) {
     if (caption.type.mode !== TYPES.TRANSLATION) {
       canonicalCount++ // count canonical & child

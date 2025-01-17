@@ -1,5 +1,9 @@
 <template>
-  <canvas id="scroller" width="100%" height="97px"></canvas>
+  <canvas
+    id="scroller"
+    width="100%"
+    :height="canvaHeight"
+    :style="style"></canvas>
 </template>
 <script>
 import { Fragment } from "vue-fragment"
@@ -30,6 +34,7 @@ export default {
       canvas: null,
       lineHeight: 1.2 * this.fontSize,
       subtitleDrawer: null,
+      canvaHeight: 2.4 * this.fontSize,
     }
   },
   watch: {
@@ -38,6 +43,14 @@ export default {
     },
     finalText: function (newVal, oldVal) {
       this.subtitleDrawer.newFinal(newVal)
+    },
+  },
+  computed: {
+    style() {
+      return {
+        height: this.canvaHeight,
+        lineHeight: this.lineHeight,
+      }
     },
   },
   async mounted() {
