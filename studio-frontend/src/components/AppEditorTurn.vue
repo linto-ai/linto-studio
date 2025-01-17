@@ -17,11 +17,7 @@
         ]"
         @click="handleSpeakerClick($event)"
         :style="`color: ${speakerColor};`">
-        {{
-          speakerName.length > 12
-            ? speakerName.substr(0, 12) + "..."
-            : speakerName
-        }}
+        {{ speakerName }}
         <AppEditorSpkToolbox
           v-if="displaySpeakerToolbox"
           :speakers="speakers"
