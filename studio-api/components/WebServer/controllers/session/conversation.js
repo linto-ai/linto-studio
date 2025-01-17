@@ -9,7 +9,7 @@ const { v4: uuidv4 } = require("uuid")
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const DEFAULT_MEMBER_RIGHTS = 3
 const DEFAULT_SPEAKER_NAME = "Unknown speaker"
-const DEFAULT_TRANSLATION_NAME = "Translation bot"
+const DEFAULT_TRANSLATION_NAME = "Automatic Translation"
 const TYPES = require(`${process.cwd()}/lib/dao/conversation/types`)
 
 const { SessionError } = require(
@@ -92,12 +92,12 @@ function initCaptionsForConversation(sessionData, name = undefined) {
       }
       let caption
 
-      caption = initializeCaption(session, channel)
+      caption = initializeCaption(session, channel, name)
       processChannelCaptions(channel, caption, true)
 
       if (channel.translations.length !== 0) {
         for (let translation of channel.translations) {
-          let tlCaption = initializeCaption(session, channel, translation)
+          let tlCaption = initializeCaption(session, channel, name, translation)
           processChannelCaptions(channel, tlCaption, false)
 
           tlCaption.parentName = caption.name
@@ -113,9 +113,9 @@ function initCaptionsForConversation(sessionData, name = undefined) {
   }
 }
 
-function initializeCaption(session, channel, translation) {
+function initializeCaption(session, channel, name, translation) {
   let caption = {
-    name: `${session.name} - ${channel.name}`,
+    name: `${name} - ${channel.name}`,
     owner: session.owner,
     locale: channel.languages,
     organization: {
@@ -147,7 +147,7 @@ function initializeCaption(session, channel, translation) {
   }
 
   if (translation) {
-    caption.name = `${session.name} - ${channel.name} - ${translation}`
+    caption.name = `${name} - ${channel.name} - ${translation}`
     caption.locale = translation
     caption.type.mode = TYPES.TRANSLATION
   }
