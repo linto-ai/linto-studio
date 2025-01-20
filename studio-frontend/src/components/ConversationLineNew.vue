@@ -25,14 +25,35 @@
       @click="selectLine">
       <div class="flex col flex1 justify-evenly small-margin">
         <div class="conversation-line__head flex">
-          <div class="flex col flex1">
+          <div class="flex col flex1 gap-small">
             <!-- Title -->
-            <router-link
-              :title="conversation.name"
-              :to="`/interface/conversations/${conversation._id}/transcription`"
-              class="conversation-line__title no-padding no-propagation">
-              {{ conversation.name }}
-            </router-link>
+            <div class="flex align-center">
+              <div
+                class="list-profil-picture-container conversation-line__owner"
+                :data-info="convOwner.fullname">
+                <img :src="convOwner.img" class="list-profil-picture" />
+              </div>
+              <div
+                v-if="isFromSession"
+                class="flex"
+                :data-info="$t('conversation.source.from_session')">
+                <span class="icon record secondary"></span>
+              </div>
+              <div
+                v-else
+                class="flex"
+                :data-info="$t('conversation.source.from_upload')">
+                <span class="icon file-audio secondary" />
+              </div>
+
+              <router-link
+                :title="conversation.name"
+                :to="`/interface/conversations/${conversation._id}/transcription`"
+                class="conversation-line__title no-padding no-propagation">
+                {{ conversation.name }}
+              </router-link>
+            </div>
+
             <!-- Description -->
             <div
               class="conversation-line__description"
@@ -98,9 +119,18 @@
               clickable
               @click="clickOnTag($event, tag)" />
           </span>
-          <span v-if="tags.length === 0" @click="showDropDown">{{
+          <!-- <span v-if="tags.length === 0" @click="showDropDown">{{
             $t("tags.no_tags")
-          }}</span>
+          }}</span> -->
+
+          <button
+            :title="$t('conversation.add_tag')"
+            v-if="canEditTag && !tagsReadOnly"
+            @click="showDropDown"
+            class="only-border conversation-line__add-tag-btn">
+            <span class="icon add no-propagation" />
+            <span class="label no-propagation">{{ $t("tags.add_tags") }}</span>
+          </button>
           <div class="conversation-line__dropDown-container">
             <ContextMenu
               v-if="dropDownVisible"
@@ -116,14 +146,6 @@
                 @unSelectTag="unSelectTag"></DropDownAddTag>
             </ContextMenu>
           </div>
-          <button
-            :title="$t('conversation.add_tag')"
-            v-if="canEditTag && !tagsReadOnly"
-            @click="showDropDown"
-            class="transparent inline">
-            <span class="icon add no-propagation" />
-            <span class="label no-propagation">{{ $t("tags.add_tags") }}</span>
-          </button>
         </div>
       </div>
       <!-- secondary actions -->
@@ -131,7 +153,10 @@
         class="flex col gap-small justify-center conversation-line__secondary-action-container">
         <!-- TODO: put in blue like link-->
         <router-link
-          :to="`/interface/conversations/${conversation._id}/transcription`"
+          :to="{
+            name: 'conversations overview',
+            params: { conversationId: this.conversation._id },
+          }"
           class="conversation-line__secondary-action">
           <div class="conversation-line__secondary-action__button">
             <span class="label">{{ $t("conversation.open_overview") }}</span>
@@ -140,7 +165,10 @@
         </router-link>
 
         <router-link
-          :to="`/interface/conversations/${conversation._id}/transcription`"
+          :to="{
+            name: 'conversations subtitles',
+            params: { conversationId: this.conversation._id },
+          }"
           class="conversation-line__secondary-action">
           <div class="conversation-line__secondary-action__button">
             <span class="label">{{ $t("conversation.open_subtitles") }}</span>
@@ -149,7 +177,10 @@
         </router-link>
 
         <router-link
-          :to="`/interface/conversations/${conversation._id}/transcription`"
+          :to="{
+            name: 'conversations publish',
+            params: { conversationId: this.conversation._id },
+          }"
           class="conversation-line__secondary-action">
           <div class="conversation-line__secondary-action__button">
             <span class="label">{{ $t("conversation.open_publish") }}</span>
@@ -157,94 +188,6 @@
           </div>
         </router-link>
       </div>
-
-      <!-- <header class="conversation-line__head flex row gap-medium align-center"> -->
-      <!--
-      <div
-        class="list-profil-picture-container"
-        :data-info="convOwner.fullname">
-        <img :src="convOwner.img" class="list-profil-picture" />
-      </div>
-      -->
-      <!-- <div class="flex flex1 align-center gap-small">
-          
-          <span
-            class="flex row align-center list-profil-picture-container"
-            v-if="conversation.sharedBy"
-            :data-info="sharedBy.fullName">
-            <img :src="sharedBy.img" class="list-profil-picture icon" />
-          </span>
-
-          <span class="icon record" v-if="isFromSession"></span>
-
-          <router-link
-            :title="conversation.name"
-            :to="`/interface/conversations/${conversation._id}/transcription`"
-            class="conversation-line__title no-padding no-propagation">
-            {{ conversation.name }}
-          </router-link>
-          <CustomSelect
-            class="conversation-line__open-with"
-            :valueText="$t('conversation.open_editor')"
-            value="editor"
-            aria-label="select how to open the conversation"
-            :options="editorOptions"
-            inline
-            @input="openWith"></CustomSelect>
-        </div>
-        
-      </header>
-      
-      <FormInput
-        v-else
-        :field="descriptionFormData"
-        v-model="descriptionFormData.value"
-        withConfirmation
-        inputFullWidth
-        focus
-        @on-cancel="resetDescriptionEdition"
-        @on-confirm="saveNewDescription"></FormInput>
-      <div
-        class="conversation-line__tags flex row gap-small align-bottom"
-        v-if="displayTags">
-        <span class="conversation-line__tag" v-for="tag in tags" :key="tag._id">
-          <Tag
-            :value="tag.name"
-            :categoryId="tag.categoryId"
-            :categoryName="tag.categoryName"
-            :color="tag.color"
-            :deletable="canEditTag"
-            @delete="unSelectTag(tag)"
-            clickable
-            @click="clickOnTag($event, tag)" />
-        </span>
-        <span v-if="tags.length === 0" @click="showDropDown">{{
-          $t("tags.no_tags")
-        }}</span>
-        <div class="conversation-line__dropDown-container">
-          <ContextMenu
-            v-if="dropDownVisible"
-            :y="dropDownY"
-            :x="dropDownX"
-            name="main-tag-menu">
-            <DropDownAddTag
-              v-click-outside="closeDropDown"
-              :conversationId="conversation._id"
-              :value="tags"
-              @close="closeDropDown"
-              @selectTag="selectTag"
-              @unSelectTag="unSelectTag"></DropDownAddTag>
-          </ContextMenu>
-        </div>
-        <button
-          :title="$t('conversation.add_tag')"
-          v-if="canEditTag && !tagsReadOnly"
-          @click="showDropDown"
-          class="transparent inline">
-          <span class="icon add no-propagation" />
-          <span class="label no-propagation">{{ $t("tags.add_tags") }}</span>
-        </button> 
-      </div> -->
     </div>
   </li>
 </template>
@@ -269,6 +212,7 @@ import CustomSelect from "@/components/CustomSelect.vue"
 import LabeledValueSmall from "@/components/LabeledValueSmall.vue"
 import FormInput from "@/components/FormInput.vue"
 import ContextMenu from "./ContextMenu.vue"
+import { userName } from "../tools/userName"
 
 export default {
   mixins: [orgaRoleMixin, convRoleMixin],
@@ -380,27 +324,37 @@ export default {
         }
       }
     },
-    /*
+
     convOwner() {
-      if (this.conversation.sharedBy) {
-        //console.log(conv)
-        let owner = this.conversation.usersList.organization_members.find(
-          (usr) => usr._id === this.conversation.owner
-        )
-        if (owner) {
-          return {
-            ...owner,
-            fullname: `${owner.firstname} ${owner.lastname}`,
-            img: process.env.VUE_APP_PUBLIC_MEDIA + "/" + owner.img,
-          }
+      // if (this.conversation.sharedBy) {
+      //   //console.log(conv)
+      //   let owner = this.conversation.usersList.organization_members.find(
+      //     (usr) => usr._id === this.conversation.owner
+      //   )
+      //   if (owner) {
+      //     return {
+      //       ...owner,
+      //       fullname: `${owner.firstname} ${owner.lastname}`,
+      //       img: process.env.VUE_APP_PUBLIC_MEDIA + "/" + owner.img,
+      //     }
+      //   }
+      // }
+      const userList = this.$store.state?.currentOrganization?.users ?? []
+      console.log(userList)
+      const owner = userList.find((u) => u._id == this.conversation.owner)
+      console.log(owner)
+      if (owner) {
+        return {
+          fullname: userName(owner),
+          img: process.env.VUE_APP_PUBLIC_MEDIA + "/" + owner.img,
+        }
+      } else {
+        return {
+          fullname: "Private user",
+          img: process.env.VUE_APP_PUBLIC_MEDIA + "/pictures/default.jpg",
         }
       }
-
-      return {
-        fullname: "Private user",
-        img: process.env.VUE_APP_PUBLIC_MEDIA + "/pictures/default.jpg",
-      }
-    },*/
+    },
     isFavorite() {
       return this.$store.getters.isFavoriteConversation(this.conversation._id)
     },
@@ -518,36 +472,6 @@ export default {
     async unSelectTag(tag) {
       this.tags = this.tags.filter((t) => t._id !== tag._id)
       await apiDeleteTagFromConversation(this.conversation._id, tag._id)
-    },
-    openWith(value) {
-      switch (value) {
-        case "editor":
-          this.$router.push({
-            name: "conversations transcription",
-            params: { conversationId: this.conversation._id },
-          })
-          break
-        case "subtitle_editor":
-          this.$router.push({
-            name: "conversations subtitles",
-            params: { conversationId: this.conversation._id },
-          })
-          break
-        case "overview":
-          this.$router.push({
-            name: "conversations overview",
-            params: { conversationId: this.conversation._id },
-          })
-          break
-        case "publish":
-          this.$router.push({
-            name: "conversations publish",
-            params: { conversationId: this.conversation._id },
-          })
-          break
-        default:
-          break
-      }
     },
     startDescriptionEdition(e) {
       if (this.canEditConv) this.descriptionIsEditing = true

@@ -244,6 +244,10 @@
     "search_placeholder": "Search a media",
     "shared_by_label": "Shared by",
     "shared_with_label": "Shared with",
+    "source": {
+      "from_session": "Source : Live Session",
+      "from_upload": "Source : User Upload"
+    },
     "speaker_toolbox": {
       "change_speaker_button": "Assign another speaker to this turn",
       "create_speaker_button": "Create a new speaker",
@@ -363,6 +367,7 @@
     "transcription_settings_label": "Transcription settings",
     "turn_cant_merge": "There are too many caracteres in the turn to merge it",
     "turn_sync_error_title": "The turn is not well synchronized",
+
     "update_information_button": "Update information",
     "update_information_done_notif": "Information updated",
     "update_information_error_notif": "An error has occured while updating information",

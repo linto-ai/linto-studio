@@ -26,7 +26,10 @@ input[type="checkbox"].conversation-line__checkbox {
   //margin: 1rem;
 }
 
-input:checked + .conversation-line {
+.conversation-line-container:has(
+    input[type="checkbox"].conversation-line__checkbox:checked
+  )
+  .conversation-line {
   border: 1px solid var(--primary-color);
   background-color: var(--selected-background);
 }
@@ -56,6 +59,11 @@ input:checked + .conversation-line {
   &:first-letter {
     text-transform: uppercase;
   }
+}
+
+.conversation-line__owner {
+  margin-right: 1rem !important;
+  align-self: center;
 }
 
 .conversation-line__secondary-action-container {
@@ -127,6 +135,13 @@ input:checked + .conversation-line {
 
 .conversation-line__tags {
   flex-wrap: wrap;
+  margin-top: 0.25rem;
+}
+
+.conversation-line__add-tag-btn {
+  padding: 0.25rem 0.5rem !important;
+  height: auto !important;
+  min-height: auto !important;
 }
 
 input:checked + .conversation-line .conversation-line__open-with {
