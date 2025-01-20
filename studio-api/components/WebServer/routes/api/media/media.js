@@ -21,17 +21,12 @@ module.exports = (webserver) => {
             conversation[0].metadata.audio &&
             conversation[0].metadata.audio.filepath
           ) {
-            if (req?.query?.mediatype === "json") {
-              //TODO: need to remove that, we only handle the file now
-              res.status(404).send({})
-            } else {
-              const fileName = conversation[0].metadata.audio.filepath
-                .split("/")
-                .pop()
-              const file = `${process.cwd()}/${process.env.VOLUME_FOLDER}/${process.env.VOLUME_AUDIO_PATH}/${fileName}`
-              res.setHeader("Content-Type", "audio/mpeg")
-              res.sendFile(file)
-            }
+            const fileName = conversation[0].metadata.audio.filepath
+              .split("/")
+              .pop()
+            const file = `${process.cwd()}/${process.env.VOLUME_FOLDER}/${process.env.VOLUME_AUDIO_PATH}/${fileName}`
+            res.setHeader("Content-Type", "audio/mpeg")
+            res.sendFile(file)
           } else {
             res.status(404).send({ message: "Conversation audio not found" })
           }
