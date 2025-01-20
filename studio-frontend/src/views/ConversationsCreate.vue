@@ -96,7 +96,7 @@
 
       <QuickSessionCreateContent
         v-if="currentTab === 'live' && !loadingSessionData"
-        :transcriberProfiles="transcriberProfiles"
+        :transcriberProfiles="transcriberProfilesQuickMeeting"
         :currentQuickSession="currentQuickSession"
         :currentOrganizationScope="currentOrganizationScope" />
 
@@ -174,6 +174,9 @@ export default {
     }
   },
   computed: {
+    transcriberProfilesQuickMeeting() {
+      return this.transcriberProfiles.filter((t) => t.quickMeeting)
+    },
     canUploadFiles() {
       return this.canUploadInCurrentOrganization
     },
@@ -220,7 +223,7 @@ export default {
             name: "live",
             label: "Quick meeting",
             icon: loading ? "loading" : "live",
-            disabled: this.transcriberProfiles.length === 0,
+            disabled: this.transcriberProfilesQuickMeeting.length === 0,
           })
         }
         if (this.isAtLeastMeetingManager) {

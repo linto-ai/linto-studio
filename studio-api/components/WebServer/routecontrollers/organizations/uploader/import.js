@@ -72,8 +72,7 @@ async function importConv(req, res) {
       if (!conversation.organization?.organizationId)
         conversation.organization.organizationId = req.params.organizationId
       if (!conversation.organization?.membersRight)
-        conversation.organization.membersRight =
-          CONVERSATION_RIGHT.READ + CONVERSATION_RIGHT.COMMENT
+        conversation.organization.membersRight = CONVERSATION_RIGHT.READ
       if (!conversation.organization?.customRights)
         conversation.organization.customRights = []
     }
@@ -97,8 +96,7 @@ async function importTranscription(req, res) {
     throw new ConversationMetadataRequire("lang param is required")
   if (!req.body.transcription)
     throw new ConversationMetadataRequire("transcription param is required")
-  if (!req.body.membersRight)
-    req.body.membersRight = CONVERSATION_RIGHT.READ + CONVERSATION_RIGHT.COMMENT
+  if (!req.body.membersRight) req.body.membersRight = CONVERSATION_RIGHT.READ
 
   let conversation = initConversation(req.body, req.body.userId, "imported")
   await addFileToConv(conversation, req)
@@ -154,10 +152,9 @@ async function importConversation(req, res, next) {
     else if (req.query.type === "transcription")
       await importTranscription(req, res)
     else if (req.query.type === "srt") await importSrt(req, res)
-    else if (req.query.type === "audapolis") await importAudapolis(req, res)
     else if (req.query.type)
       throw new ConversationError(
-        `Query param type ${req.query.type} is not supported, Supported type are : conversation, transcription, srt, audapolis`,
+        `Query param type ${req.query.type} is not supported, Supported type are : conversation, transcription, srt`,
       )
     else throw new ConversationError("Query param type is required")
   } catch (err) {
