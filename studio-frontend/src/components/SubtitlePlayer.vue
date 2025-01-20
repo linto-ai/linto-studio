@@ -131,7 +131,7 @@ export default {
         if (!this.useVideo) {
           await this.getAudioFile()
         }
-        await this.getAudiowaveform()
+        // await this.getAudiowaveform() audio waveform is now only generated front-end side
         this.player = WaveSurfer.create({
           url: this.useVideo ? undefined : this.audioFile,
           media: this.useVideo ? this.useVideo : undefined,
