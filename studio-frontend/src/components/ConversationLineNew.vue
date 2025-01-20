@@ -43,6 +43,15 @@
                 <span class="icon edit no-propagation" />
               </button>
             </div>
+            <FormInput
+              v-else
+              :field="descriptionFormData"
+              v-model="descriptionFormData.value"
+              withConfirmation
+              inputFullWidth
+              focus
+              @on-cancel="resetDescriptionEdition"
+              @on-confirm="saveNewDescription"></FormInput>
           </div>
           <!-- metadata-->
           <div class="flex gap-medium">
@@ -118,18 +127,35 @@
         </div>
       </div>
       <!-- secondary actions -->
-      <div class="flex col gap-small justify-evenly">
+      <div
+        class="flex col gap-small justify-center conversation-line__secondary-action-container">
         <!-- TODO: put in blue like link-->
+        <router-link
+          :to="`/interface/conversations/${conversation._id}/transcription`"
+          class="conversation-line__secondary-action">
+          <div class="conversation-line__secondary-action__button">
+            <span class="label">{{ $t("conversation.open_overview") }}</span>
+            <span class="icon information"></span>
+          </div>
+        </router-link>
 
-        <button class="black icon-only small">
-          <span class="icon information"></span>
-        </button>
-        <button class="black icon-only small">
-          <span class="icon subtitle"></span>
-        </button>
-        <button class="black icon-only small">
-          <span class="icon document"></span>
-        </button>
+        <router-link
+          :to="`/interface/conversations/${conversation._id}/transcription`"
+          class="conversation-line__secondary-action">
+          <div class="conversation-line__secondary-action__button">
+            <span class="label">{{ $t("conversation.open_subtitles") }}</span>
+            <span class="icon subtitle"></span>
+          </div>
+        </router-link>
+
+        <router-link
+          :to="`/interface/conversations/${conversation._id}/transcription`"
+          class="conversation-line__secondary-action">
+          <div class="conversation-line__secondary-action__button">
+            <span class="label">{{ $t("conversation.open_publish") }}</span>
+            <span class="icon document"></span>
+          </div>
+        </router-link>
       </div>
 
       <!-- <header class="conversation-line__head flex row gap-medium align-center"> -->
@@ -397,7 +423,7 @@ export default {
         return {
           actions: [
             { value: "overview", text: this.$t("conversation.open_overview") },
-            { value: "editor", text: this.$t("conversation.open_editor") },
+            { value: "editor", text: this.$t("conversation.open_overview") },
             { value: "publish", text: this.$t("conversation.open_publish") },
           ],
         }
