@@ -166,7 +166,7 @@ export async function apiCreateConversation(
   {
     name,
     description,
-    membersRights,
+    membersRight,
     serviceName,
     transcriptionConfig,
     segmentCharSize,
@@ -184,7 +184,7 @@ export async function apiCreateConversation(
     formData.append("organizationId", organizationId)
     formData.append("name", name)
     formData.append("description", description)
-    formData.append("membersRights", membersRights)
+    formData.append("membersRight", membersRight)
     formData.append("serviceName", serviceName)
     formData.append("transcriptionConfig", transcriptionConfig)
     formData.append("segmentCharSize", segmentCharSize)
