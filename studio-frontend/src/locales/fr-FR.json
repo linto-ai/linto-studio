@@ -244,6 +244,10 @@
     "search_placeholder": "Rechercher un média",
     "shared_by_label": "Partagée par",
     "shared_with_label": "Partagée avec",
+    "source": {
+      "from_session": "Source : Session en direct",
+      "from_upload": "Source : Téléchargement par l'utilisateur"
+    },
     "speaker_toolbox": {
       "change_speaker_button": "Affecter un autre locuteur à ce tour de parole",
       "create_speaker_button": "Créer un nouveau locuteur",
