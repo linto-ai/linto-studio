@@ -50,6 +50,10 @@ input[type="checkbox"].conversation-line__checkbox {
   border: var(--border-button);
 }
 
+.conversation-line__head {
+  gap: 2px;
+}
+
 .conversation-line__title {
   color: var(--blue-chart);
   font-size: 1.1rem;

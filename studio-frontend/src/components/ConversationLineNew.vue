@@ -24,87 +24,85 @@
       ref="line"
       @click="selectLine">
       <div class="flex col flex1 justify-evenly small-margin">
-        <div class="conversation-line__head flex">
-          <div class="flex col flex1">
-            <!-- 1st line: owner + title + metadata -->
-            <div class="flex align-center">
-              <!-- owner -->
-              <div
-                class="list-profil-picture-container conversation-line__owner"
-                :data-info="convOwner.fullName">
-                <img :src="convOwner.img" class="list-profil-picture" />
-              </div>
-              <!-- type -->
-              <div
-                v-if="isFromSession"
-                class="flex"
-                :data-info="$t('conversation.source.from_session')">
-                <span class="icon record secondary"></span>
-              </div>
-              <div
-                v-else
-                class="flex"
-                :data-info="$t('conversation.source.from_upload')">
-                <span class="icon file-audio secondary" />
-              </div>
-              <!-- title -->
-              <router-link
-                :title="conversation.name"
-                :to="`/interface/conversations/${conversation._id}/transcription`"
-                class="conversation-line__title no-padding no-propagation text-cut">
-                {{ conversation.name }}
-              </router-link>
-
-              <div class="flex1"></div>
-              <!-- metadata-->
-              <div class="flex gap-medium conversation-line__metadata">
-                <div
-                  v-if="audioDuration"
-                  class="conversation-line__duration"
-                  :title="
-                    $t('conversation.duration', { duration: audioDuration })
-                  ">
-                  <LabeledValueSmall
-                    :label="$t('conversation.duration_label')"
-                    :value="audioDuration" />
-                </div>
-                <div
-                  class="conversation-line__last-update"
-                  :title="$t('conversation.updated', { date: lastUpdate })">
-                  <LabeledValueSmall
-                    :label="$t('conversation.update_label')"
-                    :value="lastUpdate" />
-                </div>
-                <div
-                  class="conversation-line__last-update"
-                  :title="$t('conversation.created', { date: created })">
-                  <LabeledValueSmall
-                    :label="$t('conversation.created_label')"
-                    :value="created" />
-                </div>
-              </div>
-            </div>
-
-            <!-- 2nd line: description -->
+        <div class="conversation-line__head col flex">
+          <!-- 1st line: owner + title + metadata -->
+          <div class="flex align-center">
+            <!-- owner -->
             <div
-              class="conversation-line__description flex"
-              @click="startDescriptionEdition"
-              v-if="!descriptionIsEditing">
-              <span class="no-propagation">{{ description }}</span>
-              <button v-if="canEditConv" class="transparent no-propagation">
-                <span class="icon edit no-propagation" />
-              </button>
+              class="list-profil-picture-container conversation-line__owner"
+              :data-info="convOwner.fullName">
+              <img :src="convOwner.img" class="list-profil-picture" />
             </div>
-            <FormInput
+            <!-- type -->
+            <div
+              v-if="isFromSession"
+              class="flex"
+              :data-info="$t('conversation.source.from_session')">
+              <span class="icon record secondary"></span>
+            </div>
+            <div
               v-else
-              :field="descriptionFormData"
-              v-model="descriptionFormData.value"
-              withConfirmation
-              inputFullWidth
-              focus
-              @on-cancel="resetDescriptionEdition"
-              @on-confirm="saveNewDescription"></FormInput>
+              class="flex"
+              :data-info="$t('conversation.source.from_upload')">
+              <span class="icon file-audio secondary" />
+            </div>
+            <!-- title -->
+            <router-link
+              :title="conversation.name"
+              :to="`/interface/conversations/${conversation._id}/transcription`"
+              class="conversation-line__title no-padding no-propagation text-cut">
+              {{ conversation.name }}
+            </router-link>
+
+            <div class="flex1"></div>
+            <!-- metadata-->
+            <div class="flex gap-medium conversation-line__metadata">
+              <div
+                v-if="audioDuration"
+                class="conversation-line__duration"
+                :title="
+                  $t('conversation.duration', { duration: audioDuration })
+                ">
+                <LabeledValueSmall
+                  :label="$t('conversation.duration_label')"
+                  :value="audioDuration" />
+              </div>
+              <div
+                class="conversation-line__last-update"
+                :title="$t('conversation.updated', { date: lastUpdate })">
+                <LabeledValueSmall
+                  :label="$t('conversation.update_label')"
+                  :value="lastUpdate" />
+              </div>
+              <div
+                class="conversation-line__last-update"
+                :title="$t('conversation.created', { date: created })">
+                <LabeledValueSmall
+                  :label="$t('conversation.created_label')"
+                  :value="created" />
+              </div>
+            </div>
           </div>
+
+          <!-- 2nd line: description -->
+          <div
+            class="conversation-line__description flex"
+            @click="startDescriptionEdition"
+            v-if="!descriptionIsEditing">
+            <span class="no-propagation">{{ description }}</span>
+            <button v-if="canEditConv" class="transparent no-propagation">
+              <span class="icon edit no-propagation" />
+            </button>
+          </div>
+          <FormInput
+            v-else
+            :field="descriptionFormData"
+            v-model="descriptionFormData.value"
+            withConfirmation
+            inputFullWidth
+            focus
+            @on-cancel="resetDescriptionEdition"
+            @on-confirm="saveNewDescription"></FormInput>
         </div>
         <!-- tags -->
 
