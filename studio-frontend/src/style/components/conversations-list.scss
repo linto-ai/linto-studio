@@ -80,7 +80,6 @@ input[type="checkbox"].conversation-line__checkbox {
   margin-right: 0rem;
 
   & .conversation-line__secondary-action__button {
-    background-color: var(--background-primary);
     position: absolute;
     right: 0;
     padding: 1px;
@@ -107,6 +106,7 @@ input[type="checkbox"].conversation-line__checkbox {
 
 .conversation-line__secondary-action:hover {
   & .conversation-line__secondary-action__button {
+    background-color: var(--background-primary);
     border: var(--border-button-flat);
     box-shadow: var(--shadow-block);
     padding: 0px;

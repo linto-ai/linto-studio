@@ -30,7 +30,7 @@
             <div class="flex align-center">
               <div
                 class="list-profil-picture-container conversation-line__owner"
-                :data-info="convOwner.fullname">
+                :data-info="convOwner.fullName">
                 <img :src="convOwner.img" class="list-profil-picture" />
               </div>
               <div
@@ -326,31 +326,27 @@ export default {
     },
 
     convOwner() {
-      // if (this.conversation.sharedBy) {
-      //   //console.log(conv)
-      //   let owner = this.conversation.usersList.organization_members.find(
-      //     (usr) => usr._id === this.conversation.owner
-      //   )
-      //   if (owner) {
-      //     return {
-      //       ...owner,
-      //       fullname: `${owner.firstname} ${owner.lastname}`,
-      //       img: process.env.VUE_APP_PUBLIC_MEDIA + "/" + owner.img,
-      //     }
-      //   }
-      // }
+      if (this.conversation.sharedBy) {
+        return {
+          ...this.conversation.sharedBy,
+          img:
+            process.env.VUE_APP_PUBLIC_MEDIA +
+            "/" +
+            this.conversation.sharedBy.img,
+          fullName: `${this.conversation.sharedBy.firstname} ${this.conversation.sharedBy.lastname}`,
+        }
+      }
+
       const userList = this.$store.state?.currentOrganization?.users ?? []
-      console.log(userList)
       const owner = userList.find((u) => u._id == this.conversation.owner)
-      console.log(owner)
       if (owner) {
         return {
-          fullname: userName(owner),
+          fullName: userName(owner),
           img: process.env.VUE_APP_PUBLIC_MEDIA + "/" + owner.img,
         }
       } else {
         return {
-          fullname: "Private user",
+          fullName: "Private user",
           img: process.env.VUE_APP_PUBLIC_MEDIA + "/pictures/default.jpg",
         }
       }

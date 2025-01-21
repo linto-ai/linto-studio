@@ -129,13 +129,15 @@ export default {
     }
   },
   methods: {
-    apply() {
+    apply(e) {
+      e && e.stopPropagation()
       this.$emit("input", this.value)
-      this.$emit("on-confirm")
+      this.$emit("on-confirm", e)
     },
-    cancel() {
+    cancel(e) {
+      e && e.stopPropagation()
       this.value = this.field.value
-      this.$emit("on-cancel")
+      this.$emit("on-cancel", e)
     },
     keydown(e) {
       if (e.key == "Enter") {
