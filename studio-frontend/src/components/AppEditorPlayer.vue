@@ -168,7 +168,7 @@ export default {
     async initAudioPlayer() {
       try {
         await this.getAudioFile()
-        await this.getAudiowaveform()
+        // await this.getAudiowaveform() audio waveform is now only generated front-end side
         this.player = WaveSurfer.create({
           container: "#waveform",
           waveColor: "#000",
@@ -211,10 +211,10 @@ export default {
             this.regionsPlugin.regionsContainer.style.zIndex = "0"
             for (let region of this.regionsPlugin.regions) {
               let time = `(${timeToHMS(region.start)} - ${timeToHMS(
-                region.end
+                region.end,
               )})`
               let name = this.speakersTurnsTimebox.find(
-                (e) => e.turn_id == region.id
+                (e) => e.turn_id == region.id,
               )
               region.element.title = `${name.speakerName} ${time}`
             }

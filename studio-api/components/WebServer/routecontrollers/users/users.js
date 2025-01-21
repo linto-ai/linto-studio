@@ -16,13 +16,9 @@ const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
 const Mailing = require(`${process.cwd()}/lib/mailer/mailing`)
 const validator = require(`${process.cwd()}/lib/dao/schema/validator`)
 
-const {
-  storeFile,
-  defaultPicture,
-  deleteFile,
-  getStorageFolder,
-  getAudioWaveformFolder,
-} = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
+const { storeFile, defaultPicture, deleteFile, getStorageFolder } = require(
+  `${process.cwd()}/components/WebServer/controllers/files/store`,
+)
 
 const { OrganizationConflict } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,

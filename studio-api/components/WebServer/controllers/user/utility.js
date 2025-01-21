@@ -7,6 +7,10 @@ const CONVERSATION_RIGHTS = require(
   `${process.cwd()}/lib/dao/conversation/rights`,
 )
 
+const { getStorageFolder, deleteFile } = require(
+  `${process.cwd()}/components/WebServer/controllers/files/store`,
+)
+
 const orgaUtility = require(
   `${process.cwd()}/components/WebServer/controllers/organization/utility`,
 )
@@ -122,16 +126,8 @@ async function removeUserFromPlatform(userId) {
           organization._id,
         )
         conversations.map(async (conversation) => {
-          const audioFilename = conversation.metadata.audio.filepath
-            .split("/")
-            .pop()
-          const jsonFilename = audioFilename.split(".")[0] + ".json"
-
           deleteFile(
             `${getStorageFolder()}/${conversation.metadata.audio.filepath}`,
-          )
-          deleteFile(
-            `${getStorageFolder()}/${getAudioWaveformFolder()}/${jsonFilename}`,
           )
 
           const resultConvo = await model.conversations.delete(conversation._id)

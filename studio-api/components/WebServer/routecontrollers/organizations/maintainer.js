@@ -9,7 +9,7 @@ const orgaUtility = require(
   `${process.cwd()}/components/WebServer/controllers/organization/utility`,
 )
 
-const { deleteFile, getStorageFolder, getAudioWaveformFolder } = require(
+const { deleteFile, getStorageFolder } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
 const { updateChildConversation } = require(
@@ -269,14 +269,7 @@ async function deleteConversationFromOrganization(req, res, next) {
         )
 
       if (conv[0]?.metadata?.audio) {
-        const audioFilename = conv.metadata.audio.filepath.split("/").pop()
-        const jsonFilename = audioFilename.split(".")[0] + ".json"
-        // delete audio file
         deleteFile(`${getStorageFolder()}/${conv.metadata.audio.filepath}`)
-        // delete audiowaveform json file
-        deleteFile(
-          `${getStorageFolder()}/${getAudioWaveformFolder()}/${jsonFilename}`,
-        )
       }
 
       await model.conversationSubtitles.deleteAllFromConv(conv._id.toString())

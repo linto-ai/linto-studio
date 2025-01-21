@@ -22,8 +22,7 @@ WORKDIR /usr/src/app/conversation-manager
 COPY . /usr/src/app/conversation-manager
 
 # Move binaries to their respective locations
-RUN cp config/bin/audiowaveform /usr/local/bin/audiowaveform && \
-  cp config/bin/yt-dlp_linux /usr/local/bin/yt-dlp
+RUN cp config/bin/yt-dlp_linux /usr/local/bin/yt-dlp
 
 RUN npm install
 
