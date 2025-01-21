@@ -55,10 +55,15 @@ input[type="checkbox"].conversation-line__checkbox {
   font-size: 1.1rem;
   font-weight: normal;
   flex-basis: fit-content;
+  display: block;
 
   &:first-letter {
     text-transform: uppercase;
   }
+}
+
+.conversation-line__metadata {
+  white-space: nowrap;
 }
 
 .conversation-line__owner {
@@ -127,6 +132,8 @@ input[type="checkbox"].conversation-line__checkbox {
 .conversation-line__description {
   width: fit-content;
   word-break: break-word;
+  color: var(--text-secondary);
+  align-items: center;
 
   & > * {
     vertical-align: middle;
