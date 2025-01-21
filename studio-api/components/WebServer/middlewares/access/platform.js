@@ -57,7 +57,9 @@ async function checkAccess(req, role) {
 
 async function impersonateUser(req) {
   const { organizationId, conversationId } = req.params
-
+  if (req.url.includes("/users/self/")) {
+    return
+  }
   if (organizationId) {
     await setOrganizationOwnerAsUser(req, organizationId)
   } else if (conversationId) {
