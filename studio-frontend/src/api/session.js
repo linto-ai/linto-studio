@@ -399,18 +399,11 @@ export async function getBotForChannelId(channelId, notif) {
   )
 }
 
-export async function apiStopBot(
-  organizationScope,
-  sessionId,
-  channelId,
-  notif,
-) {
-  const startBot = await sendRequest(
-    `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}/stop-bot`,
-    { method: "post" },
-    { channelId },
+export async function apiStopBot(botId, notif) {
+  return await sendRequest(
+    `${BASE_API}/bots/${botId}`,
+    { method: "delete" },
+    {},
     notif,
   )
-
-  return startBot
 }

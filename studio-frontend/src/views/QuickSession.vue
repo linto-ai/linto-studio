@@ -8,10 +8,6 @@
     @save-session="onSaveSession"
     @start-session="startSession"
     @back="backToStart"></SessionSetupMicrophone>
-  <SessionSetupVisio
-    v-else-if="state == 'visio-setup'"
-    @start-session=""
-    @back="backToStart"></SessionSetupVisio>
 
   <SessionLiveMicrophone
     v-else-if="state == 'session-live'"
@@ -51,14 +47,13 @@ import {
   apiGetQuickSessionByOrganization,
   apiCreateQuickSession,
   apiDeleteQuickSession,
-  apiStopBot,
   getBotForChannelId,
+  apiStopBot,
 } from "@/api/session.js"
 import { userName } from "@/tools/userName.js"
 
 import SessionSetupMicrophone from "@/components/SessionSetupMicrophone.vue"
 import SessionLiveMicrophone from "@/components/SessionLiveMicrophone.vue"
-import SessionSetupVisio from "@/components/SessionSetupVisio.vue"
 import SessionLiveVisio from "@/components/SessionLiveVisio.vue"
 import Loading from "@/components/Loading.vue"
 export default {
@@ -80,6 +75,7 @@ export default {
       isSavingSession: false,
       recover: this.$route.query.recover == "true",
       loading: true,
+      sessionBot: null,
     }
   },
   mounted() {
@@ -100,6 +96,7 @@ export default {
           botReq.data &&
           botReq.data?.bots?.length > 0
         ) {
+          this.sessionBot = botReq.data?.bots[0]
           this.state = "session-live-visio"
         } else {
           this.state = "microphone-selection"
@@ -132,12 +129,9 @@ export default {
     },
     async onSaveBotSession() {
       console.log("todo !")
-      // await apiStopBot(
-      //   this.currentOrganizationScope,
-      //   this.session.id,
-      //   this.session.channels[0].id,
-      // )
-      // this.onSaveSession()
+      this.loading = true
+      await apiStopBot(this.sessionBot.id)
+      this.onSaveSession()
     },
     async onSaveSession(trash = false) {
       if (this.$refs.sessionLiveMicrophone) {
@@ -165,7 +159,6 @@ export default {
   components: {
     SessionSetupMicrophone,
     SessionLiveMicrophone,
-    SessionSetupVisio,
     SessionLiveVisio,
     Loading,
   },

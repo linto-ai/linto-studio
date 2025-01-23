@@ -70,7 +70,7 @@
     </div>
 
     <div class="flex medium-margin-top" v-if="!recover">
-      <button class="btn secondary" @click="backToStart">
+      <button class="btn secondary" @click="trashSession">
         <span class="icon back"></span>
         <span class="label">{{
           $t("quick_session.setup_microphone.back")

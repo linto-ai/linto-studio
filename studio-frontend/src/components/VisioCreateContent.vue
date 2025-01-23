@@ -24,19 +24,31 @@
     </section>
 
     <section>
-      <h2>Transcription en temps réél</h2>
-      <FormCheckbox :field="subInVisioField" />
-      <FormCheckbox :field="subInStudio" />
-      <div class="medium-margin-top">
-        <h3>Selection du profil de transcription</h3>
+      <!-- <h2>Options de la transcription temps-réel</h2> -->
+      <FormCheckbox
+        :field="subInStudio"
+        v-model="subInStudio.value"
+        switchDisplay />
+      <div v-if="subInStudio.value" class="subSection">
+        <h3 class="small-margin-bottom">
+          {{ $t("quick_session.setup_visio.live_options") }}
+        </h3>
+        <FormCheckbox
+          :field="subInVisioField"
+          v-model="subInVisioField.value" />
         <FormCheckbox
           class=""
           :field="fieldDiarizationEnabled"
           v-model="fieldDiarizationEnabled.value"></FormCheckbox>
-        <TranscriberProfileSelector
-          :multiple="false"
-          v-model="selectedProfile"
-          :profilesList="transcriberProfiles" />
+
+        <div class="medium-margin-top">
+          <h3>{{ $t("quick_session.creation.profile_selector_title") }}</h3>
+
+          <TranscriberProfileSelector
+            :multiple="false"
+            v-model="selectedProfile"
+            :profilesList="transcriberProfiles" />
+        </div>
       </div>
     </section>
 
@@ -67,7 +79,11 @@ import FormInput from "@/components/FormInput.vue"
 import FormCheckbox from "@/components/FormCheckbox.vue"
 import TranscriberProfileSelector from "@/components/TranscriberProfileSelector.vue"
 
-import { apiCreateQuickSession, apiStartBot } from "@/api/session.js"
+import {
+  apiCreateQuickSession,
+  apiStartBot,
+  apiDeleteQuickSession,
+} from "@/api/session.js"
 
 export default {
   mixins: [formsMixin],
@@ -107,8 +123,9 @@ export default {
         ...EMPTY_FIELD,
         value: true,
         label: this.$i18n.t(
-          "quick_session.setup_visio.display_transcription_in_studio_label",
+          "quick_session.setup_visio.live_transcription_label",
         ),
+        disabled: true,
       },
       fieldDiarizationEnabled: {
         ...EMPTY_FIELD,
@@ -118,7 +135,7 @@ export default {
 
       supportedVisioServices: ["jitsi"],
       selectedProfile: null,
-      formSubmitLabel: "Start",
+      formSubmitLabel: this.$t("quick_session.setup_visio.join_meeting"),
 
       formError: null,
       formState: "idle",
@@ -156,7 +173,7 @@ export default {
         if (requestSession.status == "success") {
           const session = requestSession.data
 
-          const requestBot = apiStartBot({
+          const requestBot = await apiStartBot({
             url: this.visioLinkField.value,
             channelId: session.channels[0].id,
             async: false,
@@ -167,7 +184,6 @@ export default {
             },
             provider: this.visioTypeField.value,
           })
-
           if (requestBot.status == "success") {
             this.$router.push({
               name: "quick session",
@@ -177,6 +193,11 @@ export default {
               },
             })
           } else {
+            await apiDeleteQuickSession(
+              this.currentOrganizationScope,
+              requestSession.data.id,
+              { trash: true, force: true },
+            )
             this.formState = "error"
           }
         } else {
@@ -184,6 +205,9 @@ export default {
         }
       }
     },
+  },
+  trashSession() {
+    return
   },
   components: {
     FormInput,

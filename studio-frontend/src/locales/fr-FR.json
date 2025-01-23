@@ -909,7 +909,7 @@
       "source_title": "Source",
       "microphone_source_label": "Utiliser le microphone local",
       "visio_source_label": "Rejoindre une visio-conférence",
-      "profile_selector_title": "Selection du profil de transcription",
+      "profile_selector_title": "Sélection du profil de transcription",
       "no_profile_selected_error": "Aucun profil de transcription selectionné",
       "quick_meeting_already_start_title": "Un enregistrement est déjà démarré.",
       "quick_meeting_already_start_button": "Rejoindre le Quick meeting"
@@ -942,7 +942,8 @@
       "type_label": "Type de visio-conférence",
       "link_label": "URL de la visio-conférence",
       "display_transcription_in_visio_label": "Afficher les sous-titres dans la visioconférence",
-      "display_transcription_in_studio_label": "Afficher et sauvegarder la transcription dans Studio",
+      "live_transcription_label": "Transcription en temps réél",
+      "live_options": "Options de la transcription",
       "back": "Retour",
       "join_meeting": "Rejoindre la visio-conférence",
       "error_bot_setup": "An error occurred while joining the videoconference"

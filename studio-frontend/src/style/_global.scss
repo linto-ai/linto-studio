@@ -303,3 +303,11 @@ li:last-child {
     }
   }
 }
+
+.subSection {
+  border: var(--border-block);
+  padding: 1rem;
+  border-radius: 4px;
+  box-shadow: var(--box-shadow-inset);
+  background-color: var(--background-inset-section);
+}

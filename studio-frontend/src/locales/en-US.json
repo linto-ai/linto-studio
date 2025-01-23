@@ -939,7 +939,8 @@
       "type_label": "Service type",
       "link_label": "URL",
       "display_transcription_in_visio_label": "Display subtitles in the videoconference",
-      "display_transcription_in_studio_label": "Display and save transcription to Studio",
+      "live_transcription_label": "Live transcription",
+      "live_options": "Transcription options",
       "back": "Back",
       "join_meeting": "Join the meeting",
       "error_bot_setup": "An error occurred while joining the videoconference"
