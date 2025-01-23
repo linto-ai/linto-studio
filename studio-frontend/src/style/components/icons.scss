@@ -242,7 +242,7 @@
     @include maskImage("../public/img/profile.svg");
   }
   &.session {
-    @include maskImage("../public/img/session.svg");
+    @include maskImage("../public/img/session-2.svg");
   }
   &.save-cloud {
     @include maskImage("../public/img/save-cloud.svg");
@@ -261,6 +261,9 @@
   }
   &.information {
     @include maskImage("../public/img/information.svg");
+  }
+  &.visio {
+    @include maskImage("../public/img/visio.svg");
   }
 }
 

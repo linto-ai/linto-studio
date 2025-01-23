@@ -44,6 +44,20 @@ module.exports = (webServer) => {
         ],
         requireAuth: true,
       },
+
+      /*************************/
+      /********* Bots  *********/
+      /*************************/
+      {
+        paths: [
+          { path: "/bots", method: ["get", "post"] },
+          {
+            path: "/bots/:id",
+            method: ["get", "delete"],
+          },
+        ],
+        requireAuth: true,
+      },
       /*************************/
       /******* template  *******/
       /*************************/

@@ -1,5 +1,5 @@
 <template>
-  <form @submit="createQuickSession" v-if="currentQuickSession === null">
+  <form @submit="createQuickSession">
     <section class="flex col gap-small">
       <h2>{{ $t("quick_session.creation.source_title") }}</h2>
       <FormRadio :field="fieldSource" v-model="fieldSource.value" />
@@ -31,22 +31,18 @@
       </button>
     </div>
   </form>
-  <div v-else class="flex1 flex col align-center justify-center gap-small">
-    <h3 class="center-text">
-      {{ $t("quick_session.creation.quick_meeting_already_start_title") }}
-    </h3>
-    <button @click="goToQuickSession">
-      {{ $t("quick_session.creation.quick_meeting_already_start_button") }}
-    </button>
-  </div>
 </template>
 <script>
 import EMPTY_FIELD from "@/const/emptyField"
+import { testFieldEmpty } from "@/tools/fields/testEmpty"
+
+import { formsMixin } from "@/mixins/forms.js"
+
 import FormRadio from "@/components/FormRadio.vue"
 import TranscriberProfileSelector from "@/components/TranscriberProfileSelector.vue"
-import { testFieldEmpty } from "@/tools/fields/testEmpty"
-import { formsMixin } from "@/mixins/forms.js"
 import FormCheckbox from "@/components/FormCheckbox.vue"
+
+import { apiCreateQuickSession } from "@/api/session.js"
 
 export default {
   mixins: [formsMixin],
@@ -58,10 +54,6 @@ export default {
     currentOrganizationScope: {
       type: String,
       required: true,
-    },
-    currentQuickSession: {
-      type: Object,
-      default: null,
     },
   },
   data() {
@@ -100,7 +92,7 @@ export default {
   },
   mounted() {},
   methods: {
-    goToQuickSession() {
+    async goToQuickSession() {
       this.$router.push({
         name: "quick session",
         query: {},
@@ -109,7 +101,7 @@ export default {
         },
       })
     },
-    createQuickSession(event) {
+    async createQuickSession(event) {
       event?.preventDefault()
 
       if (!this.selectedProfile) {
@@ -121,18 +113,29 @@ export default {
       }
 
       if (this.testFields()) {
-        this.$router.push({
-          name: "quick session",
-          query: {
-            source: this.fieldSource.value,
+        const channels = [
+          {
+            name: "Main",
             transcriberProfileId: this.selectedProfile.id,
-            translations: this.selectedProfile.translations,
-            diarization: this.fieldDiarizationEnabled.value,
+            translations: this.selectedProfile.translations ?? [],
+            diarization: this.fieldDiarizationEnabled.value ?? false,
           },
-          params: {
-            organizationId: this.currentOrganizationScope,
-          },
+        ]
+        const res = await apiCreateQuickSession(this.currentOrganizationScope, {
+          channels: channels,
         })
+
+        if (res.status == "success") {
+          this.$router.push({
+            name: "quick session",
+            query: {},
+            params: {
+              organizationId: this.currentOrganizationScope,
+            },
+          })
+        } else {
+          this.formState = "error"
+        }
       } else {
         this.formState = "error"
       }

@@ -10,7 +10,11 @@
         :disabled="formState === 'sending'" />
 
       <form
-        v-if="currentTab !== 'session' && currentTab !== 'live'"
+        v-if="
+          currentTab !== 'session' &&
+          currentTab !== 'live' &&
+          currentTab !== 'visio'
+        "
         class="flex col flex1"
         @submit="createConversation"
         :disabled="formState === 'sending'">
@@ -97,7 +101,11 @@
       <QuickSessionCreateContent
         v-if="currentTab === 'live' && !loadingSessionData"
         :transcriberProfiles="transcriberProfilesQuickMeeting"
-        :currentQuickSession="currentQuickSession"
+        :currentOrganizationScope="currentOrganizationScope" />
+
+      <VisioCreateContent
+        v-if="currentTab === 'visio' && !loadingSessionData"
+        :transcriberProfiles="transcriberProfilesQuickMeeting"
         :currentOrganizationScope="currentOrganizationScope" />
 
       <SessionCreateContent
@@ -129,6 +137,7 @@ import Tabs from "@/components/Tabs.vue"
 import SessionCreateContent from "@/components/SessionCreateContent.vue"
 import ConversationCreateLink from "@/components/ConversationCreateLink.vue"
 import QuickSessionCreateContent from "@/components/QuickSessionCreateContent.vue"
+import VisioCreateContent from "../components/VisioCreateContent.vue"
 
 export default {
   mixins: [
@@ -158,12 +167,10 @@ export default {
       loadingTranscriberProfiles: true,
       loadingQuickSession: true,
       loadingSessionTemplates: true,
-      currentQuickSession: null,
     }
   },
   mounted() {
     this.fetchProfiles()
-    this.fetchQuickSession()
     this.fetchSessionTemplates()
   },
   async created() {
@@ -186,11 +193,7 @@ export default {
       return enableSession && this.canSessionInCurrentOrganization
     },
     loadingSessionData() {
-      return (
-        this.loadingTranscriberProfiles ||
-        this.loadingQuickSession ||
-        this.loadingSessionTemplates
-      )
+      return this.loadingTranscriberProfiles || this.loadingSessionTemplates
     },
     mainTabs() {
       let res = []
@@ -198,21 +201,21 @@ export default {
         res.push(
           {
             name: "file",
-            label: this.$i18n.t("conversation_creation.tabs.file"),
-            icon: "file-audio",
+            label: "Media",
+            icon: "upload",
             img: "/img/We10X-icon-theme/audio-x-generic.svg",
           },
-          {
-            name: "microphone",
-            label: this.$i18n.t("conversation_creation.tabs.microphone"),
-            icon: "record",
-            img: "/img/We10X-icon-theme/vocal.svg",
-          },
-          {
-            name: "url",
-            label: this.$i18n.t("conversation_creation.tabs.url"),
-            icon: "link",
-          },
+          // {
+          //   name: "microphone",
+          //   label: this.$i18n.t("conversation_creation.tabs.microphone"),
+          //   icon: "record",
+          //   img: "/img/We10X-icon-theme/vocal.svg",
+          // },
+          // {
+          //   name: "url",
+          //   label: this.$i18n.t("conversation_creation.tabs.url"),
+          //   icon: "link",
+          // },
         )
       }
 
@@ -222,7 +225,13 @@ export default {
           res.push({
             name: "live",
             label: "Quick meeting",
-            icon: loading ? "loading" : "live",
+            icon: loading ? "loading" : "record",
+            disabled: this.transcriberProfilesQuickMeeting.length === 0,
+          })
+          res.push({
+            name: "visio",
+            label: "Visioconférence",
+            icon: loading ? "loading" : "visio",
             disabled: this.transcriberProfilesQuickMeeting.length === 0,
           })
         }
@@ -286,6 +295,7 @@ export default {
     Tabs,
     SessionCreateContent,
     QuickSessionCreateContent,
+    VisioCreateContent,
   },
 }
 </script>

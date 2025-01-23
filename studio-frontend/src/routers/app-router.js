@@ -407,6 +407,7 @@ router.beforeEach(async (to, from, next) => {
             next({
               name: "quick session",
               params: { organizationId: quickSession.organizationId },
+              query: { recover: "true" },
             })
           }
         }

@@ -1,9 +1,9 @@
 <template>
-  <MainContent :sidebar="!alreadyCreatedPersonalSession" box>
-    <h1 class="medium-margin-top" v-if="alreadyCreatedPersonalSession">
+  <MainContent :sidebar="!recover" box>
+    <h1 class="medium-margin-top" v-if="recover">
       {{ $t("quick_session.restore.title") }}
     </h1>
-    <div v-if="alreadyCreatedPersonalSession">
+    <div v-if="recover">
       {{ $t("quick_session.restore.subtitle") }}
     </div>
     <div
@@ -69,7 +69,7 @@
       </section>
     </div>
 
-    <div class="flex medium-margin-top" v-if="!alreadyCreatedPersonalSession">
+    <div class="flex medium-margin-top" v-if="!recover">
       <button class="btn secondary" @click="backToStart">
         <span class="icon back"></span>
         <span class="label">{{
@@ -121,9 +121,9 @@ import StatusLed from "@/components/StatusLed.vue"
 export default {
   mixins: [microphoneMixin],
   props: {
-    alreadyCreatedPersonalSession: {
-      type: Object,
-      required: false,
+    recover: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

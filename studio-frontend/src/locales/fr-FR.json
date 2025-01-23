@@ -941,6 +941,8 @@
       "subtitle": "Veuillez entrer l'URL de la visio-conférence à laquelle vous souhaitez participer.",
       "type_label": "Type de visio-conférence",
       "link_label": "URL de la visio-conférence",
+      "display_transcription_in_visio_label": "Afficher les sous-titres dans la visioconférence",
+      "display_transcription_in_studio_label": "Afficher et sauvegarder la transcription dans Studio",
       "back": "Retour",
       "join_meeting": "Rejoindre la visio-conférence",
       "error_bot_setup": "An error occurred while joining the videoconference"

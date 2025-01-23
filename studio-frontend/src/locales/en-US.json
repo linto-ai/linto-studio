@@ -938,6 +938,8 @@
       "subtitle": "Enter the videoconference link to start the transcription",
       "type_label": "Service type",
       "link_label": "URL",
+      "display_transcription_in_visio_label": "Display subtitles in the videoconference",
+      "display_transcription_in_studio_label": "Display and save transcription to Studio",
       "back": "Back",
       "join_meeting": "Join the meeting",
       "error_bot_setup": "An error occurred while joining the videoconference"
