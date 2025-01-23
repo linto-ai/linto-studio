@@ -2,6 +2,7 @@ const debug = require("debug")(
   "linto:conversation-manager:router:api:file:files",
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
+const fs = require("fs")
 
 module.exports = (webserver) => {
   return [
@@ -21,14 +22,19 @@ module.exports = (webserver) => {
             conversation[0].metadata.audio &&
             conversation[0].metadata.audio.filepath
           ) {
-            const fileName = conversation[0].metadata.audio.filepath
-              .split("/")
-              .pop()
-            const file = `${process.cwd()}/${process.env.VOLUME_FOLDER}/${process.env.VOLUME_AUDIO_PATH}/${fileName}`
-            res.setHeader("Content-Type", "audio/mpeg")
-            res.sendFile(file)
+            const filePath = `${process.cwd()}/${process.env.VOLUME_FOLDER}/${conversation[0].metadata.audio.filepath}`
+            if (!fs.existsSync(filePath)) {
+              res
+                .status(404)
+                .send({ message: "Error on fetching the audio file" })
+            } else {
+              res.setHeader("Content-Type", "audio/mpeg")
+              res.sendFile(filePath)
+            }
           } else {
-            res.status(404).send({ message: "Conversation audio not found" })
+            res
+              .status(204)
+              .send({ message: "Conversation don't have any audio" })
           }
         } catch (err) {
           next(err)

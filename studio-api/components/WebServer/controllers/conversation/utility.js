@@ -17,6 +17,9 @@ const { OrganizationNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
 
+const fs = require("fs")
+const mm = require("music-metadata")
+
 const conversation_projection = [
   "_id",
   "name",
@@ -229,6 +232,21 @@ async function textInConversation(text, conversationId) {
   return false
 }
 
+async function generateAudioDuration(conversation) {
+  const filePath = `${process.cwd()}/${process.env.VOLUME_FOLDER}/${conversation.metadata.audio.filepath}`
+  if (fs.existsSync(filePath)) {
+    const file_metadata = await mm.parseStream(fs.createReadStream(filePath), {
+      mimeType: "audio/mpeg",
+    })
+    conversation.metadata.audio.duration = file_metadata.format.duration
+    await model.conversations.update({
+      _id: conversation._id,
+      metadata: conversation.metadata,
+    })
+  }
+  return conversation
+}
+
 module.exports = {
   userAccess,
   getUserConversation,
@@ -236,4 +254,5 @@ module.exports = {
   getUserRightFromConversationList,
   getUserRightByShare,
   textInConversation,
+  generateAudioDuration,
 }

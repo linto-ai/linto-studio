@@ -138,6 +138,20 @@ async function getConversation(req, res, next) {
       req.payload.data.userId,
       conversation[0],
     )
+
+    // We need to get the audio duration from the session, the audio didn't exist on the conversation creation
+    if (
+      conversation[0].metadata &&
+      conversation[0].metadata.audio &&
+      conversation[0].metadata.audio.duration === 0 &&
+      conversation[0].metadata.audio.filepath &&
+      conversation[0].type.from_session_id !== undefined
+    ) {
+      conversation[0] = await conversationUtility.generateAudioDuration(
+        conversation[0],
+      )
+    }
+
     res.status(200).send({
       ...conversation[0],
       userAccess: data.access,

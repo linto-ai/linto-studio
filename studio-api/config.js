@@ -20,6 +20,7 @@ function configureDefaults() {
     process.env.VOLUME_FOLDER = "storages"
     process.env.VOLUME_AUDIO_PATH = "audios"
     process.env.VOLUME_PROFILE_PICTURE_PATH = "pictures"
+    process.env.VOLUME_AUDIO_SESSION_PATH = "session_audio"
   } catch (e) {
     console.error(debug.namespace, e)
     process.exit(1)
