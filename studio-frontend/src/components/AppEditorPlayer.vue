@@ -1,5 +1,5 @@
 <template>
-  <div id="conversation-audio-player" class="flex col">
+  <div id="conversation-audio-player" class="flex col" v-if="!noPlayer">
     <AppPlayerHeader
       :playerError="playerError"
       :currentTime="currentTimeHMS"
@@ -49,6 +49,7 @@ export default {
       audioProcessClean: true,
       currentPlaylist: {},
       regionZoom: 1,
+      noPlayer: false,
     }
   },
   async mounted() {
@@ -168,6 +169,11 @@ export default {
     async initAudioPlayer() {
       try {
         await this.getAudioFile()
+
+        if (!this.audioFile) {
+          this.noPlayer = true
+          throw "Audio is empty"
+        }
         // await this.getAudiowaveform() audio waveform is now only generated front-end side
         this.player = WaveSurfer.create({
           container: "#waveform",
