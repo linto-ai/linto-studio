@@ -16,6 +16,9 @@
       <div id="waveform-timeline" style="min-width: 300px; height: 20px"></div>
     </div>
   </div>
+  <div id="conversation-audio-player" v-else>
+    <slot></slot>
+  </div>
 </template>
 <script>
 import { bus } from "../main.js"

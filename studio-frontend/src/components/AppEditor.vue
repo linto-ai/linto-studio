@@ -35,6 +35,7 @@
         conversation.metadata.audio.filename &&
         !noPlayer
       "
+      :key="conversationId"
       :audio="conversation.metadata.audio"
       :speakers="speakers"
       :speakersTurnsTimebox="speakersTurnsTimebox"
@@ -123,7 +124,6 @@ export default {
   },
   data() {
     return {
-      conversationId: this.conversation._id,
       pageNumberOfEachWord: this.computePageNumberOfEachWord(this.turnPages),
       //speakers: this.conversation.speakers,
       currentTime: 0,
@@ -144,6 +144,9 @@ export default {
     }
   },
   computed: {
+    conversationId() {
+      return this.conversation._id
+    },
     pages() {
       return this.turnPages.length
     },
