@@ -190,7 +190,7 @@ export default {
               [tag],
               words,
               (k) => k.name,
-              (w) => w.word
+              (w) => w.word,
             )
 
             ranges.forEach((element) => {
@@ -290,7 +290,7 @@ export default {
       this.resetSearchResult()
       this.searchResults = await this.debouncedSearch(
         this.searchInTranscriptionLocal.bind(this),
-        { search, exactMatching }
+        { search, exactMatching },
       )
       this.$emit("foundExpression", this.searchResults.length)
       this.selectFirstResult()
@@ -312,14 +312,14 @@ export default {
           if (!exactMatching) {
             found = findInSegment(
               wordsList.map((w) => w.word),
-              search
+              search,
             )
           } else {
             found = findExpressionInWordsList(
               [search],
               wordsList.map((w) => w.word),
               null,
-              null
+              null,
             )
           }
 
@@ -373,9 +373,24 @@ export default {
     getSpkTimebox() {
       let spkTimebox = []
       for (let turn of this.turns) {
-        if (turn.words.length > 0) {
+        if (turn.stime && turn.etime) {
           let spk = this.speakers.find(
-            (spk) => spk.speaker_id === turn.speaker_id
+            (spk) => spk.speaker_id === turn.speaker_id,
+          )
+          if (spk) {
+            let item = {
+              turn_id: turn.turn_id,
+              speakerId: turn.speaker_id,
+              speakerName: spk.speaker_name,
+              stime: turn.stime,
+              etime: turn.etime,
+              color: spk.color,
+            }
+            spkTimebox.push(item)
+          }
+        } else if (turn.words.length > 0) {
+          let spk = this.speakers.find(
+            (spk) => spk.speaker_id === turn.speaker_id,
           )
           if (spk) {
             let item = {
@@ -399,7 +414,7 @@ export default {
       this.currentTime = time
       // Remove playing class from all words
       let activeWords = Array.from(
-        document.getElementsByClassName("word playing")
+        document.getElementsByClassName("word playing"),
       ) // need Array.from else it's a HTMLCollection (which will be updated when removing class)
       if (activeWords.length > 0) {
         for (let word of activeWords) {
@@ -448,13 +463,13 @@ export default {
       // save to localStorage
       localStorage.setItem(
         "editorCurrentTime",
-        JSON.stringify({ time, conversationId: this.conversationId })
+        JSON.stringify({ time, conversationId: this.conversationId }),
       )
     },
     mergeTurns(index) {
       const baseTurn = this.turns.find((turn) => turn.turn_id === index)
       const baseTurnIndex = this.turns.findIndex(
-        (turn) => turn.turn_id === index
+        (turn) => turn.turn_id === index,
       )
       if (baseTurnIndex === this.turns.length + 1) {
         return
