@@ -33,6 +33,9 @@ body {
   --background-lock-turn: #e6e6e6;
   --border-lock-turn: 1px solid #848484;
 
+  --background-inset-section: rgb(249, 249, 249);
+  --box-shadow-inset: 0px 0px 1px 0 rgba(67, 76, 95, 0.44) inset;
+
   --border-button: 1px solid var(--dark-80);
   --border-button-flat: 1px solid var(--neutral-60);
   --border-input: 1px solid var(--dark-80);
