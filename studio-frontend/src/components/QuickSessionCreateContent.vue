@@ -1,9 +1,12 @@
 <template>
   <form @submit="createQuickSession">
-    <section class="flex col gap-small">
+    <!-- <section class="flex col gap-small">
       <h2>{{ $t("quick_session.creation.source_title") }}</h2>
       <FormRadio :field="fieldSource" v-model="fieldSource.value" />
-    </section>
+    </section> -->
+    <div>
+      {{ $t("quick_session.creation.description") }}
+    </div>
     <section class="flex col gap-small">
       <h2>{{ $t("quick_session.creation.profile_selector_title") }}</h2>
       <FormCheckbox
@@ -84,7 +87,7 @@ export default {
         label: this.$t("session.create_page.diarization_label"),
       },
       selectedProfile: null,
-      formSubmitLabel: "Start",
+      formSubmitLabel: this.$i18n.t("quick_session.creation.submit_button"),
 
       formError: null,
       formState: "idle",

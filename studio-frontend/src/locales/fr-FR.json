@@ -912,7 +912,9 @@
       "profile_selector_title": "Sélection du profil de transcription",
       "no_profile_selected_error": "Aucun profil de transcription selectionné",
       "quick_meeting_already_start_title": "Un enregistrement est déjà démarré.",
-      "quick_meeting_already_start_button": "Rejoindre le Quick meeting"
+      "quick_meeting_already_start_button": "Rejoindre le Quick meeting",
+      "submit_button": "Démarrer l'enregistrement",
+      "description": "Les données captées par le microphone seront transcrits en temps réel"
     },
     "setup_microphone": {
       "waiting_permission_title": "En attente des permissions pour accéder au microphone",

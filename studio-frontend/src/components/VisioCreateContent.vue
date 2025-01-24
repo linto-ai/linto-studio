@@ -133,7 +133,7 @@ export default {
         label: this.$t("session.create_page.diarization_label"),
       },
 
-      supportedVisioServices: ["jitsi"],
+      supportedVisioServices: ["jitsi", "bigbluebutton"],
       selectedProfile: null,
       formSubmitLabel: this.$t("quick_session.setup_visio.join_meeting"),
 
