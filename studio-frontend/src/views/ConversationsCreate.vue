@@ -202,7 +202,7 @@ export default {
           {
             name: "file",
             label: "Media",
-            icon: "upload",
+            icon: "file-audio",
             img: "/img/We10X-icon-theme/audio-x-generic.svg",
           },
           // {
