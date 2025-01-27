@@ -100,7 +100,7 @@ export const genericConversationMixin = {
       const childsType = childs.map((child) => child.type.mode)
 
       switch (childsType[0]) {
-        case "child":
+        case "child": // multitple channels
           this.channels = childs
           this.translations = await apiGetConversationChild(childs[0]._id, [
             "_id",
@@ -112,7 +112,7 @@ export const genericConversationMixin = {
           this.selectedChannel = childs[0]._id
           this.selectedTranslation = "original"
           break
-        case "translation":
+        case "translation": // one channel, only translation
           this.channels = []
           this.translations = childs
           this.selectedTranslation = "original"

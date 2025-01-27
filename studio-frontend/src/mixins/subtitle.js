@@ -30,7 +30,7 @@ export const subtitleMixin = {
         conversationId,
         token,
         userId,
-        CONVERSATION_FORMATS.subtitles
+        CONVERSATION_FORMATS.subtitles,
       )
     },
     async specificWorkerOnMessage(event) {
@@ -56,7 +56,7 @@ export const subtitleMixin = {
         case "screen_update":
           this.screenUpdateFromWebsocket(
             event.data.params.screenId,
-            event.data.params.changes
+            event.data.params.changes,
           )
           break
         case "add_screen":
@@ -103,7 +103,7 @@ export const subtitleMixin = {
     deleteVersions(versionIds) {
       for (const versionId of versionIds) {
         let versionIndex = this.conversation.subtitleVersions.findIndex(
-          (version) => version._id === versionId
+          (version) => version._id === versionId,
         )
         if (versionIndex !== -1) {
           this.conversation.subtitleVersions.splice(versionIndex, 1)
@@ -119,12 +119,12 @@ export const subtitleMixin = {
     },
     updateSpeakerName(speakerId, speakerName) {
       this.conversation.speakers.find(
-        (spk) => spk.speaker_id === speakerId
+        (spk) => spk.speaker_id === speakerId,
       ).speaker_name = speakerName
     },
     updateSpeakerTurn(turnId, speakerId) {
       this.conversation.text.find(
-        (turn) => turn.turn_id === turnId
+        (turn) => turn.turn_id === turnId,
       ).speaker_id = speakerId
     },
   },

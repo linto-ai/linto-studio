@@ -10,10 +10,10 @@ export const playerMixin = {
       type: String,
       required: true,
     },
-    audio: {
-      type: Object,
-      required: true,
-    },
+    // audio: {
+    //   type: Object,
+    //   required: false,
+    // },
   },
   data() {
     return {
@@ -25,10 +25,11 @@ export const playerMixin = {
       audioFile: "",
       state: "pause",
       currentTime: 0,
-      duration: this.audio.duration,
       audiowaveform: [],
       fetchController: new AbortController(),
       instanceDestroyed: false,
+      noPlayer: false,
+      duration: null,
     }
   },
   beforeDestroy() {
@@ -40,7 +41,11 @@ export const playerMixin = {
       return timeToHMS(this.currentTime)
     },
     durationHMS() {
-      return timeToHMS(this.duration)
+      if (this.duration) {
+        return timeToHMS(this.duration)
+      } else {
+        return "00:00:00"
+      }
     },
     regionsPlugin() {
       return this?.player?.plugins[0]
@@ -70,9 +75,9 @@ export const playerMixin = {
     async getAudioFile() {
       let req = await apiGetAudioFileFromConversation(
         this.conversationId,
-        false
+        false,
       )
-      if (req?.status === "success") {
+      if (req?.status === "success" && req.data && req.data.size > 0) {
         this.audioFile = URL.createObjectURL(req.data)
       }
     },
@@ -80,7 +85,7 @@ export const playerMixin = {
       try {
         let req = await apiGetAudioWaveFormFromConversation(
           this.conversationId,
-          false
+          false,
         )
         if (req.status === "success") {
           this.audiowaveform = req.data.data

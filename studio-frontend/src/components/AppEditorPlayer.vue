@@ -52,7 +52,6 @@ export default {
       audioProcessClean: true,
       currentPlaylist: {},
       regionZoom: 1,
-      noPlayer: false,
     }
   },
   async mounted() {
@@ -210,6 +209,7 @@ export default {
         this.player.on("ready", () => {
           this.playerReady = true
           this.playerLoading = false
+          this.duration = this.player.getDuration()
           bus.$emit("player-ready")
         })
         this.player.once("decode", () => {

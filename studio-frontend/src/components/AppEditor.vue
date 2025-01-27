@@ -30,27 +30,17 @@
     </div>
 
     <AppEditorPlayer
-      v-if="
-        conversation.metadata.audio &&
-        conversation.metadata.audio.filename &&
-        !noPlayer
-      "
-      :key="conversationId"
+      :key="channelId"
       :audio="conversation.metadata.audio"
       :speakers="speakers"
       :speakersTurnsTimebox="speakersTurnsTimebox"
-      :conversationId="conversationId"
+      :conversationId="channelId"
       :filterSpeakers="filterSpeakers"
       ref="editorPlayer">
       <AppEditorPagination
         v-model="currentPageNb"
         :pages="pages"></AppEditorPagination>
     </AppEditorPlayer>
-    <div id="conversation-audio-player" v-else>
-      <AppEditorPagination
-        v-model="currentPageNb"
-        :pages="pages"></AppEditorPagination>
-    </div>
   </div>
 </template>
 <script>
@@ -94,6 +84,10 @@ export default {
       type: Object,
       required: true,
     },
+    rootConversation: {
+      type: Object,
+      required: true,
+    },
     filterSpeakers: {
       required: false,
     },
@@ -121,6 +115,10 @@ export default {
       type: Object,
       required: true,
     },
+    channelId: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
@@ -146,6 +144,9 @@ export default {
   computed: {
     conversationId() {
       return this.conversation._id
+    },
+    rootConversationId() {
+      return this.rootConversation._id
     },
     pages() {
       return this.turnPages.length
