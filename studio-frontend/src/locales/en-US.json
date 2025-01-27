@@ -909,7 +909,9 @@
       "profile_selector_title": "Transcription profile selection",
       "no_profile_selected_error": "No transcription profile selected",
       "quick_meeting_already_start_title": "A recording has already been started.",
-      "quick_meeting_already_start_button": "Join the quick meeting"
+      "quick_meeting_already_start_button": "Join the quick meeting",
+      "submit_button": "Start recording",
+      "description": "Data recorded by the microphone will be transcribed in real time"
     },
     "setup_microphone": {
       "waiting_permission_title": "Waiting permission to access your microphone",
@@ -938,6 +940,9 @@
       "subtitle": "Enter the videoconference link to start the transcription",
       "type_label": "Service type",
       "link_label": "URL",
+      "display_transcription_in_visio_label": "Display subtitles in the videoconference",
+      "live_transcription_label": "Live transcription",
+      "live_options": "Transcription options",
       "back": "Back",
       "join_meeting": "Join the meeting",
       "error_bot_setup": "An error occurred while joining the videoconference"

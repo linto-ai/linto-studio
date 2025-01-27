@@ -3,15 +3,11 @@
   <SessionSetupMicrophone
     ref="sessionSetupMicrophone"
     v-else-if="state == 'microphone-selection'"
-    :alreadyCreatedPersonalSession="alreadyCreatedPersonalSession"
+    :recover="recover"
     @trash-session="trashSession"
     @save-session="onSaveSession"
     @start-session="startSession"
     @back="backToStart"></SessionSetupMicrophone>
-  <SessionSetupVisio
-    v-else-if="state == 'visio-setup'"
-    @start-session="startSessionVisio"
-    @back="backToStart"></SessionSetupVisio>
 
   <SessionLiveMicrophone
     v-else-if="state == 'session-live'"
@@ -51,14 +47,13 @@ import {
   apiGetQuickSessionByOrganization,
   apiCreateQuickSession,
   apiDeleteQuickSession,
-  apiStartBot,
+  getBotForChannelId,
   apiStopBot,
 } from "@/api/session.js"
 import { userName } from "@/tools/userName.js"
 
 import SessionSetupMicrophone from "@/components/SessionSetupMicrophone.vue"
 import SessionLiveMicrophone from "@/components/SessionLiveMicrophone.vue"
-import SessionSetupVisio from "@/components/SessionSetupVisio.vue"
 import SessionLiveVisio from "@/components/SessionLiveVisio.vue"
 import Loading from "@/components/Loading.vue"
 export default {
@@ -73,17 +68,14 @@ export default {
     },
   },
   data() {
-    let state = "microphone-selection"
-    if (this.$route.query.source === "visio") {
-      state = "visio-setup"
-    }
     return {
       selectedDeviceId: null,
-      state, // microphone-selection, session-live, visio-setup, session-live-visio
+      state: null, // microphone-selection, session-live, session-live-visio
       session: null,
       isSavingSession: false,
-      alreadyCreatedPersonalSession: null,
+      recover: this.$route.query.recover == "true",
       loading: true,
+      sessionBot: null,
     }
   },
   mounted() {
@@ -91,60 +83,40 @@ export default {
   },
   methods: {
     async fetchData() {
-      try {
-        this.alreadyCreatedPersonalSession =
-          await apiGetQuickSessionByOrganization(this.currentOrganizationScope)
+      this.session = await apiGetQuickSessionByOrganization(
+        this.currentOrganizationScope,
+      )
 
-        if (this.alreadyCreatedPersonalSession) {
-          if (this.alreadyCreatedPersonalSession.channels[0].bot) {
-            this.state = "session-live-visio"
-            this.session = this.alreadyCreatedPersonalSession
-          } else {
-            this.state = "microphone-selection"
-          }
+      if (this.session) {
+        this.selectedChannel = this.session.channels[0]
+
+        const botReq = await getBotForChannelId(this.selectedChannel.id)
+        if (
+          botReq.status == "success" &&
+          botReq.data &&
+          botReq.data?.bots?.length > 0
+        ) {
+          this.sessionBot = botReq.data?.bots[0]
+          this.state = "session-live-visio"
+        } else {
+          this.state = "microphone-selection"
         }
+
         this.loading = false
-      } catch (error) {
-        console.error(error)
-        bus.$emit("app_notif", {
-          status: "error",
-          message: this.$i18n.t("session.create_page.error_message"),
-          timeout: null,
+        this.selectedTranslations = "original"
+      } else {
+        // redirect to start page
+        this.$router.push({
+          name: "conversations create",
+          query: {},
+          params: {},
         })
       }
     },
     async startSession({ deviceId }) {
-      console.log("startSession", deviceId)
       this.selectedDeviceId = deviceId
-      const isSetup = await this.setupSession()
-      if (isSetup) {
-        this.state = "session-live"
-      }
-    },
-    async startSessionVisio({ visioType, visioLink }) {
-      console.log("startSessionVisio", visioType, visioLink)
-      const isSetup = await this.setupSession()
-      if (isSetup) {
-        let resBot = await apiStartBot(
-          this.currentOrganizationScope,
-          this.session.id,
-          {
-            channelId: this.session.channels[0].id,
-            botType: visioType,
-            url: visioLink,
-          },
-        )
 
-        if (resBot.status == "success") {
-          this.state = "session-live-visio"
-        } else {
-          bus.$emit("app_notif", {
-            status: "error",
-            message: this.$i18n.t("quick_session.setup_visio.error_bot_setup"),
-            timeout: null,
-          })
-        }
-      }
+      this.state = "session-live"
     },
     backToStart() {
       this.$router.push({ name: "conversations create" })
@@ -156,11 +128,9 @@ export default {
       this.onSaveSession(false)
     },
     async onSaveBotSession() {
-      await apiStopBot(
-        this.currentOrganizationScope,
-        this.session.id,
-        this.session.channels[0].id,
-      )
+      console.log("todo !")
+      this.loading = true
+      await apiStopBot(this.sessionBot.id)
       this.onSaveSession()
     },
     async onSaveSession(trash = false) {
@@ -173,7 +143,7 @@ export default {
       this.isSavingSession = true
       const now = new Date()
       const conversationName = `Meeting from ${userName(this.userInfo)}, ${now.toLocaleString()} `
-      const sessionToDelete = this.session ?? this.alreadyCreatedPersonalSession
+      const sessionToDelete = this.session
       await apiDeleteQuickSession(
         this.currentOrganizationScope,
         sessionToDelete.id,
@@ -185,52 +155,10 @@ export default {
       )
       this.$router.push({ name: "inbox" })
     },
-    async setupSession() {
-      try {
-        if (this.alreadyCreatedPersonalSession) {
-          this.session = this.alreadyCreatedPersonalSession
-        } else {
-          const channels = [
-            {
-              name: "Main",
-              transcriberProfileId: this.$route.query.transcriberProfileId,
-              translations: this.$route.query.translations ?? [],
-              diarization: this.$route.query.diarization ?? false,
-            },
-          ]
-          const res = await apiCreateQuickSession(
-            this.currentOrganizationScope,
-            {
-              channels: channels,
-            },
-          )
-
-          if (res.status == "success") {
-            this.session = res.data
-          } else {
-            throw new Error("api error")
-          }
-        }
-
-        this.selectedChannel = this.session.channels[0]
-        this.selectedTranslations = "original"
-        //this.connectToWebsocket()
-        return true
-      } catch (error) {
-        console.error(error)
-        bus.$emit("app_notif", {
-          status: "error",
-          message: this.$i18n.t("session.create_page.error_message"),
-          timeout: null,
-        })
-        return false
-      }
-    },
   },
   components: {
     SessionSetupMicrophone,
     SessionLiveMicrophone,
-    SessionSetupVisio,
     SessionLiveVisio,
     Loading,
   },
