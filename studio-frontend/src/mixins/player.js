@@ -77,6 +77,10 @@ export const playerMixin = {
         this.conversationId,
         false,
       )
+      if (!req || req.status === "error") {
+        return
+      }
+
       if (req?.status === "success" && req.data && req.data.size > 0) {
         this.audioFile = URL.createObjectURL(req.data)
       }
