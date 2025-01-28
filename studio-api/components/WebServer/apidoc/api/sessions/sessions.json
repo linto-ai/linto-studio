@@ -29,7 +29,6 @@
       }
     }
   },
-
   "/api/organizations/{organizationId}/sessions": {
     "get": {
       "tags": ["sessions"],
@@ -191,6 +190,7 @@
       }
     }
   },
+
   "/api/organizations/{organizationId}/quickMeeting": {
     "get": {
       "tags": ["sessions"],
@@ -374,6 +374,15 @@
             "type": "string",
             "format": "uuid"
           }
+        },
+        {
+          "in": "query",
+          "name": "force",
+          "description": "Force session stop",
+          "required": false,
+          "schema": {
+            "type": "boolean"
+          }
         }
       ],
       "responses": {
@@ -386,6 +395,7 @@
       }
     }
   },
+
   "/api/organizations/{organizationId}/sessions/{id}": {
     "get": {
       "tags": ["sessions"],
@@ -492,6 +502,15 @@
             "type": "string",
             "format": "uuid"
           }
+        },
+        {
+          "in": "query",
+          "name": "force",
+          "description": "Force session stop",
+          "required": false,
+          "schema": {
+            "type": "boolean"
+          }
         }
       ],
       "responses": {
@@ -500,124 +519,6 @@
         },
         "404": {
           "$ref": "#/components/responses/NotFound"
-        }
-      }
-    }
-  },
-  "/api/organizations/{organizationId}/sessions/{id}/start-bot": {
-    "post": {
-      "tags": ["sessions"],
-      "summary": "Starts a bot for a specific session",
-      "description": "This endpoint starts a bot for the given session ID with a specified channel ID, URL, and bot type. Available bot types are 'jitsi', 'youtube', and 'bigbluebutton'.",
-      "parameters": [
-        {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
-        },
-        {
-          "name": "id",
-          "in": "path",
-          "description": "The UUID of the session for which the bot is to be started.",
-          "required": true,
-          "schema": {
-            "type": "string"
-          }
-        }
-      ],
-      "requestBody": {
-        "required": true,
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "url": {
-                  "type": "string",
-                  "format": "uri",
-                  "description": "The URL to start the bot."
-                },
-                "channelId": {
-                  "type": "integer",
-                  "description": "The id of the channel."
-                },
-                "botType": {
-                  "type": "string",
-                  "description": "The type of bot to start.",
-                  "enum": ["jitsi", "youtube", "bigbluebutton"]
-                }
-              },
-              "required": ["url", "channelId", "botType"]
-            }
-          }
-        }
-      },
-      "responses": {
-        "200": {
-          "description": "Bot started successfully."
-        },
-        "400": {
-          "description": "Bad request. sessionId, url, channelId, and botType are required."
-        },
-        "404": {
-          "description": "Session or channel not found."
-        }
-      }
-    }
-  },
-  "/api/organizations/{organizationId}/sessions/{id}/stop-bot": {
-    "post": {
-      "tags": ["sessions"],
-      "summary": "Stops a bot for a specific session",
-      "description": "This endpoint stops a bot for the given session ID with a specified channel id.",
-      "parameters": [
-        {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "uuid string identifier for an organization"
-        },
-        {
-          "name": "id",
-          "in": "path",
-          "description": "The UUID of the session for which the bot is to be stopped.",
-          "required": true,
-          "schema": {
-            "type": "string"
-          }
-        }
-      ],
-      "requestBody": {
-        "required": true,
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "channelId": {
-                  "type": "integer",
-                  "description": "The id of the channel to stop the bot."
-                }
-              },
-              "required": ["channelId"]
-            }
-          }
-        }
-      },
-      "responses": {
-        "200": {
-          "description": "Bot stopped successfully."
-        },
-        "400": {
-          "description": "Bad request. sessionId and channelId are required."
-        },
-        "404": {
-          "description": "Session or channel not found."
         }
       }
     }
