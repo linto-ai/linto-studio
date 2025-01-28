@@ -169,6 +169,7 @@
         </router-link>
 
         <router-link
+          :disabled="isFromSession"
           :to="{
             name: 'conversations subtitles',
             params: { conversationId: this.conversation._id },
