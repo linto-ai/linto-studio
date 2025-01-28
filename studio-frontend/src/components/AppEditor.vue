@@ -30,11 +30,11 @@
     </div>
 
     <AppEditorPlayer
-      :key="channelId"
+      :key="audioId"
       :audio="conversation.metadata.audio"
       :speakers="speakers"
       :speakersTurnsTimebox="speakersTurnsTimebox"
-      :conversationId="channelId"
+      :conversationId="audioId"
       :filterSpeakers="filterSpeakers"
       ref="editorPlayer">
       <AppEditorPagination
@@ -147,6 +147,9 @@ export default {
     },
     rootConversationId() {
       return this.rootConversation._id
+    },
+    audioId() {
+      return this.channelId || this.conversationId
     },
     pages() {
       return this.turnPages.length
@@ -419,10 +422,19 @@ export default {
       // Remove playing class from all words
       let activeWords = Array.from(
         document.getElementsByClassName("word playing"),
-      ) // need Array.from else it's a HTMLCollection (which will be updated when removing class)
+      ) // need Array.from else it's a HTMLCollection
       if (activeWords.length > 0) {
         for (let word of activeWords) {
           word.classList.remove("playing")
+        }
+      }
+      // Remove playing class from all turns
+      let activeTurns = Array.from(
+        document.getElementsByClassName("turn playing"),
+      )
+      if (activeTurns.length > 0) {
+        for (let turn of activeTurns) {
+          turn.classList.remove("playing")
         }
       }
 
@@ -461,6 +473,20 @@ export default {
             }
           }
           break
+        } else if (
+          turn.stime &&
+          time >= turn.stime &&
+          turn.etime &&
+          time <= turn.etime
+        ) {
+          // if no timestamps on word, check timestamps on turn
+          let turnElement = document.getElementById(turn.turn_id)
+          turnElement.classList.add("playing")
+          turnElement.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+            inline: "center",
+          })
         }
       }
 
