@@ -176,12 +176,9 @@ export default {
           const requestBot = await apiStartBot({
             url: this.visioLinkField.value,
             channelId: session.channels[0].id,
-            async: false,
-            live: {
-              keepLiveTranscripts: this.subInStudio.value,
-              displaySub: this.subInVisioField.value,
-              subSource: null,
-            },
+            enableLiveTranscripts: this.subInStudio.value,
+            enableDisplaySub: this.subInVisioField.value,
+            subSource: null,
             provider: this.visioTypeField.value,
           })
           if (requestBot.status == "success") {
