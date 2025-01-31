@@ -380,7 +380,8 @@
       "file": "Fichier",
       "microphone": "Microphone",
       "url": "Médias depuis internet",
-      "visio": "Visio",
+      "quick_meeting": "Enregistrement en direct",
+      "visio": "Visioconférence",
       "session": "Session",
       "coming_soon": "Bientôt disponible"
     },
@@ -401,7 +402,7 @@
         "url": "URL"
       },
       "tabs_upload": {
-        "microphone": "Enregistrement",
+        "microphone": "Microphone",
         "file": "Fichier",
         "url": "URL"
       }

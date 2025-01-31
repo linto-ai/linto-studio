@@ -27,7 +27,7 @@
         v-if="sessionEnable"
         :to="{ name: 'sessionsList' }"
         class="flex row align-center gap-medium tab">
-        <span class="icon record"></span>
+        <span class="icon session"></span>
         <span class="tab__label">{{ $t("navigation.tabs.sessions") }}</span>
       </router-link>
     </nav>

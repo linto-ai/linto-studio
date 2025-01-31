@@ -199,13 +199,13 @@ export default {
         if (this.isAtLeastQuickMeeting) {
           res.push({
             name: "live",
-            label: "Quick meeting",
-            icon: loading ? "loading" : "record",
+            label: this.$t("conversation_creation.tabs.quick_meeting"),
+            icon: loading ? "loading" : "record-live",
             disabled: this.transcriberProfilesQuickMeeting.length === 0,
           })
           res.push({
             name: "visio",
-            label: "Visioconférence",
+            label: this.$t("conversation_creation.tabs.visio"),
             icon: loading ? "loading" : "visio",
             disabled: this.transcriberProfilesQuickMeeting.length === 0,
           })
