@@ -93,7 +93,7 @@ async function updateOrganizationPlatform(req, res, next) {
     if (token) organization.token = token
     if (description) organization.description = description
     if (name) organization.name = name
-    if (permissions)
+    if (permissions >= 0)
       organization.permissions = PERMISSIONS.validateAndSetPermissions(
         permissions,
         organization.permissions,
