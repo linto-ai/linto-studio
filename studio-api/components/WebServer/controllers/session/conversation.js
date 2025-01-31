@@ -51,36 +51,10 @@ function initConversationMultiChannel(
   }
 }
 
-function mergeClosedCaptions(closedCaptions) {
-  let memory = {}
-  for (let caption of closedCaptions) {
-    if (memory[caption.start] === undefined) memory[caption.start] = caption
-    else memory[caption.start] = { ...memory[caption.start], ...caption }
-  }
-
-  let newCaption = []
-  for (let key in memory) {
-    newCaption.push(memory[key])
-  }
-  return newCaption
-}
-
-function formatChannel(session) {
-  for (let channel of session.channels) {
-    // We need to merge locutor and the translation in the same object when they both are enabled
-    if (channel.diarization === true && channel.translations.length >= 1) {
-      channel.closedCaptions = mergeClosedCaptions(channel.closedCaptions)
-    }
-  }
-  return session
-}
-
 function initCaptionsForConversation(sessionData, name = undefined) {
   try {
     let session = JSON.parse(JSON.stringify(sessionData))
     let captions = []
-
-    // we need to reformat the session data to match the conversation model
 
     for (let channel of session.channels) {
       if (!channel.closedCaptions) {
@@ -90,9 +64,8 @@ function initCaptionsForConversation(sessionData, name = undefined) {
       if (name === undefined) {
         name = session.name || ""
       }
-      let caption
 
-      caption = initializeCaption(session, channel, name)
+      let caption = initializeCaption(session, channel, name)
       processChannelCaptions(channel, caption, true)
 
       if (channel.translations.length !== 0) {
@@ -103,6 +76,17 @@ function initCaptionsForConversation(sessionData, name = undefined) {
           tlCaption.parentName = caption.name
           captions.push(tlCaption)
         }
+      }
+
+      if (channel.keepAudio === true) {
+        let audioId = `${session.id}-${channel.id}`
+        const audioData = {
+          filename: audioId + ".mp3",
+          duration: 0, // We generate duration when the conversation is fetch, audio don't exist now
+          mimetype: "audio/mpeg",
+          filepath: `${process.env.VOLUME_AUDIO_SESSION_PATH}/${audioId}.mp3`,
+        }
+        caption.metadata.audio = { ...audioData }
       }
 
       captions.push(caption)
@@ -389,6 +373,7 @@ async function storeSessionFromStop(req, next) {
     const session = await axios.get(
       process.env.SESSION_API_ENDPOINT + `/sessions/${req.params.id}`,
     )
+
     await storeSession(session, req.query.name)
     next()
   } catch (err) {

@@ -126,6 +126,12 @@ $selectedWord: #0057f5;
     font-family: luciole;
     border: 1px solid transparent;
     border-radius: 5px;
+
+    &.playing {
+      background-color: var(--selected-background);
+      border-left-color: var(--primary-color);
+      border-radius: 0;
+    }
   }
 
   .collab-input {

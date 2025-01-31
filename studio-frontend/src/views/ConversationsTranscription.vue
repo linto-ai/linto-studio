@@ -103,6 +103,8 @@
     <div class="flex flex1">
       <AppEditor
         :conversation="conversation"
+        :rootConversation="rootConversation"
+        :channelId="selectedChannel"
         :usersConnected="usersConnected"
         :focusFields="focusFields"
         :conversationUsers="conversationUsers"

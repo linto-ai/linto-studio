@@ -98,9 +98,15 @@ input[type="checkbox"].conversation-line__checkbox {
   }
 
   & .icon {
-    background-color: var(--blue-chart);
     height: var(--action-size);
     width: var(--action-size);
+  }
+
+  &:not([disabled]) .icon {
+    background-color: var(--blue-chart);
+  }
+  &[disabled] .icon {
+    background-color: var(--text-disabled);
   }
 
   & .label {
@@ -113,7 +119,7 @@ input[type="checkbox"].conversation-line__checkbox {
   }
 }
 
-.conversation-line__secondary-action:hover {
+.conversation-line__secondary-action:not([disabled]):hover {
   & .conversation-line__secondary-action__button {
     background-color: var(--background-primary);
     border: var(--border-button-flat);
