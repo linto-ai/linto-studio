@@ -45,7 +45,12 @@ async function checkAccess(req, role) {
       debug(
         `User ${userId} : ${user[0].email} has an admin role value of ${role} doing request to ${req.url} with method ${req.method} and body ${JSON.stringify(req.body)}`,
       )
-      await impersonateUser(req) // Only impersonate if the user has a super role
+
+      if (req.query.impersonateUser) {
+        impersonate(req, req.query.impersonateUser)
+      } else if (req.query.userScope === "backoffice") {
+        await impersonateUser(req) // Only impersonate if the user has a super role
+      }
       return true
     }
 
@@ -74,8 +79,12 @@ async function impersonateUser(req) {
 async function setOrganizationOwnerAsUser(req, organizationId) {
   const organization = await model.organizations.getById(organizationId)
   if (organization.length > 0) {
-    req.userRole = ORGANIZATION_ROLE.ADMIN
-    req.payload.data.adminId = req.payload.data.userId
-    req.payload.data.userId = organization[0].owner
+    impersonate(req, organization[0].owner)
   }
+}
+
+function impersonate(req, userId) {
+  req.userRole = ORGANIZATION_ROLE.ADMIN
+  req.payload.data.adminId = req.payload.data.userId
+  req.payload.data.userId = userId
 }
