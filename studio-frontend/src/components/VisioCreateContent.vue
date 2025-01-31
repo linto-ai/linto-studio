@@ -40,7 +40,9 @@
           class=""
           :field="fieldDiarizationEnabled"
           v-model="fieldDiarizationEnabled.value"></FormCheckbox>
-
+        <FormCheckbox
+          :field="fieldKeepAudio"
+          v-model="fieldKeepAudio.value"></FormCheckbox>
         <div class="medium-margin-top">
           <h3>{{ $t("quick_session.creation.profile_selector_title") }}</h3>
 
@@ -132,7 +134,11 @@ export default {
         value: false,
         label: this.$t("session.create_page.diarization_label"),
       },
-
+      fieldKeepAudio: {
+        ...EMPTY_FIELD,
+        value: true,
+        label: this.$t("session.create_page.keep_audio_label"),
+      },
       supportedVisioServices: ["jitsi", "bigbluebutton"],
       selectedProfile: null,
       formSubmitLabel: this.$t("quick_session.setup_visio.join_meeting"),
@@ -161,6 +167,7 @@ export default {
             transcriberProfileId: this.selectedProfile.id,
             translations: this.selectedProfile.translations ?? [],
             diarization: this.fieldDiarizationEnabled.value ?? false,
+            keepAudio: this.fieldKeepAudio.value,
           },
         ]
         const requestSession = await apiCreateQuickSession(

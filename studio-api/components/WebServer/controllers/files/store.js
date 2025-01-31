@@ -103,6 +103,10 @@ function getAudioFolder() {
   return process.env.VOLUME_AUDIO_PATH
 }
 
+function getAudioSessionFolder() {
+  return process.env.VOLUME_AUDIO_SESSION_PATH
+}
+
 module.exports = {
   storeFile,
   defaultPicture,

@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="!noPlayer"
     id="conversation-audio-player"
     class="conversation-audio-player--subtitle">
     <div
@@ -130,6 +131,10 @@ export default {
       try {
         if (!this.useVideo) {
           await this.getAudioFile()
+          if (!this.audioFile) {
+            this.noPlayer = true
+            throw "Audio is empty"
+          }
         }
         // await this.getAudiowaveform() audio waveform is now only generated front-end side
         this.player = WaveSurfer.create({
@@ -161,6 +166,7 @@ export default {
         this.player.on("ready", () => {
           this.playerReady = true
           this.playerLoading = false
+          this.duration = this.player.getDuration()
         })
         this.player.once("decode", () => {
           this.player.zoom(130)

@@ -30,26 +30,17 @@
     </div>
 
     <AppEditorPlayer
-      v-if="
-        conversation.metadata.audio &&
-        conversation.metadata.audio.filename &&
-        !noPlayer
-      "
+      :key="audioId"
       :audio="conversation.metadata.audio"
       :speakers="speakers"
       :speakersTurnsTimebox="speakersTurnsTimebox"
-      :conversationId="conversationId"
+      :conversationId="audioId"
       :filterSpeakers="filterSpeakers"
       ref="editorPlayer">
       <AppEditorPagination
         v-model="currentPageNb"
         :pages="pages"></AppEditorPagination>
     </AppEditorPlayer>
-    <div id="conversation-audio-player" v-else>
-      <AppEditorPagination
-        v-model="currentPageNb"
-        :pages="pages"></AppEditorPagination>
-    </div>
   </div>
 </template>
 <script>
@@ -93,6 +84,10 @@ export default {
       type: Object,
       required: true,
     },
+    rootConversation: {
+      type: Object,
+      required: true,
+    },
     filterSpeakers: {
       required: false,
     },
@@ -120,10 +115,13 @@ export default {
       type: Object,
       required: true,
     },
+    channelId: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
-      conversationId: this.conversation._id,
       pageNumberOfEachWord: this.computePageNumberOfEachWord(this.turnPages),
       //speakers: this.conversation.speakers,
       currentTime: 0,
@@ -144,6 +142,15 @@ export default {
     }
   },
   computed: {
+    conversationId() {
+      return this.conversation._id
+    },
+    rootConversationId() {
+      return this.rootConversation._id
+    },
+    audioId() {
+      return this.channelId || this.conversationId
+    },
     pages() {
       return this.turnPages.length
     },
@@ -190,7 +197,7 @@ export default {
               [tag],
               words,
               (k) => k.name,
-              (w) => w.word
+              (w) => w.word,
             )
 
             ranges.forEach((element) => {
@@ -290,7 +297,7 @@ export default {
       this.resetSearchResult()
       this.searchResults = await this.debouncedSearch(
         this.searchInTranscriptionLocal.bind(this),
-        { search, exactMatching }
+        { search, exactMatching },
       )
       this.$emit("foundExpression", this.searchResults.length)
       this.selectFirstResult()
@@ -312,14 +319,14 @@ export default {
           if (!exactMatching) {
             found = findInSegment(
               wordsList.map((w) => w.word),
-              search
+              search,
             )
           } else {
             found = findExpressionInWordsList(
               [search],
               wordsList.map((w) => w.word),
               null,
-              null
+              null,
             )
           }
 
@@ -373,9 +380,24 @@ export default {
     getSpkTimebox() {
       let spkTimebox = []
       for (let turn of this.turns) {
-        if (turn.words.length > 0) {
+        if (turn.stime && turn.etime) {
           let spk = this.speakers.find(
-            (spk) => spk.speaker_id === turn.speaker_id
+            (spk) => spk.speaker_id === turn.speaker_id,
+          )
+          if (spk) {
+            let item = {
+              turn_id: turn.turn_id,
+              speakerId: turn.speaker_id,
+              speakerName: spk.speaker_name,
+              stime: turn.stime,
+              etime: turn.etime,
+              color: spk.color,
+            }
+            spkTimebox.push(item)
+          }
+        } else if (turn.words.length > 0) {
+          let spk = this.speakers.find(
+            (spk) => spk.speaker_id === turn.speaker_id,
           )
           if (spk) {
             let item = {
@@ -399,11 +421,20 @@ export default {
       this.currentTime = time
       // Remove playing class from all words
       let activeWords = Array.from(
-        document.getElementsByClassName("word playing")
-      ) // need Array.from else it's a HTMLCollection (which will be updated when removing class)
+        document.getElementsByClassName("word playing"),
+      ) // need Array.from else it's a HTMLCollection
       if (activeWords.length > 0) {
         for (let word of activeWords) {
           word.classList.remove("playing")
+        }
+      }
+      // Remove playing class from all turns
+      let activeTurns = Array.from(
+        document.getElementsByClassName("turn playing"),
+      )
+      if (activeTurns.length > 0) {
+        for (let turn of activeTurns) {
+          turn.classList.remove("playing")
         }
       }
 
@@ -442,19 +473,33 @@ export default {
             }
           }
           break
+        } else if (
+          turn.stime &&
+          time >= turn.stime &&
+          turn.etime &&
+          time <= turn.etime
+        ) {
+          // if no timestamps on word, check timestamps on turn
+          let turnElement = document.getElementById(turn.turn_id)
+          turnElement.classList.add("playing")
+          turnElement.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+            inline: "center",
+          })
         }
       }
 
       // save to localStorage
       localStorage.setItem(
         "editorCurrentTime",
-        JSON.stringify({ time, conversationId: this.conversationId })
+        JSON.stringify({ time, conversationId: this.conversationId }),
       )
     },
     mergeTurns(index) {
       const baseTurn = this.turns.find((turn) => turn.turn_id === index)
       const baseTurnIndex = this.turns.findIndex(
-        (turn) => turn.turn_id === index
+        (turn) => turn.turn_id === index,
       )
       if (baseTurnIndex === this.turns.length + 1) {
         return
