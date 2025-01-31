@@ -5,8 +5,45 @@
       v-model="field.value"
       :disabled="disabled"
       inputFullWidth>
-      <button class="btn black" @click="deleteFile" v-if="!disabled" type="button">
-        <span class="icon delete"></span>
+      <div
+        class="flex"
+        :title="$t('conversation_creation.offline.label_icon_source.file')"
+        v-if="uploadType == 'file'">
+        <span
+          class="icon file-audio secondary"
+          :alt="
+            $t('conversation_creation.offline.label_icon_source.file')
+          "></span>
+      </div>
+      <div
+        class="flex"
+        :title="
+          $t('conversation_creation.offline.label_icon_source.microphone')
+        "
+        v-if="uploadType == 'microphone'">
+        <span
+          class="icon record secondary"
+          :alt="
+            $t('conversation_creation.offline.label_icon_source.microphone')
+          "></span>
+      </div>
+      <div
+        class="flex"
+        :title="$t('conversation_creation.offline.label_icon_source.url')"
+        v-if="uploadType == 'url'">
+        <span
+          class="icon link secondary"
+          :alt="
+            $t('conversation_creation.offline.label_icon_source.url')
+          "></span>
+      </div>
+
+      <button
+        class="btn black"
+        @click="deleteFile"
+        v-if="!disabled"
+        type="button">
+        <span class="icon trash"></span>
       </button>
       <button
         type="button"
@@ -49,6 +86,11 @@ export default {
     return {}
   },
   mounted() {},
+  computed: {
+    uploadType() {
+      return this.field?.uploadType || "file"
+    },
+  },
   methods: {
     deleteFile(event) {
       event.preventDefault()
@@ -60,7 +102,7 @@ export default {
     },
     playFile(event) {
       event.preventDefault()
-      
+
       this.$emit("playFile", event)
     },
     playOrStopFile(event) {

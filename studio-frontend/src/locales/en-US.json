@@ -381,8 +381,10 @@
       "file": "File",
       "microphone": "Microphone",
       "url": "Import URL",
+      "quick_meeting": "Live record",
       "coming_soon": "Coming soon",
-      "session": "Session"
+      "session": "Session",
+      "visio": "Videoconference"
     },
     "file": {
       "drop_audio": "Drop your audio file here"
@@ -391,7 +393,20 @@
       "main_info_title": "General information",
       "url_label": "Source URL",
       "live_label": "Live transcription",
-      "name_label": "Media name"
+      "name_label": "Media name",
+      "get_button": "Add media from the URL"
+    },
+    "offline": {
+      "label_icon_source": {
+        "microphone": "Microphone",
+        "file": "File",
+        "url": "URL"
+      },
+      "tabs_upload": {
+        "microphone": "Microphone",
+        "file": "File",
+        "url": "URL"
+      }
     }
   },
   "createaccount": {

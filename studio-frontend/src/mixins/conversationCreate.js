@@ -70,26 +70,6 @@ export default {
         { value: "fr", label: this.$i18n.t("lang.fr") },
         { value: "en", label: this.$i18n.t("lang.en") },
       ],
-      linkFields: [
-        {
-          ...EMPTY_FIELD,
-          label: this.$i18n.t("conversation_creation.url_tab.url_label"),
-          value: "",
-          placeholder: "https://www.youtube.com/watch?v=YBpfClfbf0Y",
-          testField: testFieldEmpty,
-        },
-        {
-          ...EMPTY_FIELD,
-          label: this.$i18n.t("conversation_creation.url_tab.live_label"),
-          value: false,
-        },
-        {
-          ...EMPTY_FIELD,
-          label: this.$i18n.t("conversation_creation.url_tab.name_label"),
-          value: "",
-          testField: testFieldEmpty,
-        },
-      ],
       formError: null,
       debounceGetTranscriptionService: debounce(this.initTranscriptionList, 30),
     }
@@ -161,7 +141,7 @@ export default {
           while (this.audioFiles.length > 0) {
             audioFileIndex++
 
-            const { value: convName, file } = this.audioFiles[0]
+            const { value: convName, file, uploadType } = this.audioFiles[0]
 
             bus.$emit("app_notif", {
               status: "loading",
@@ -188,7 +168,8 @@ export default {
                 segmentCharSize: process.env.VUE_APP_TURN_SIZE,
                 lang: this.transcriptionService.value.lang,
                 endpoint: this.transcriptionService.value.endpoint,
-                tracks: [file],
+                tracks: uploadType == "url" ? null : [file],
+                url: uploadType == "url" ? file : null,
               },
               null,
               (progressEvent) => {
