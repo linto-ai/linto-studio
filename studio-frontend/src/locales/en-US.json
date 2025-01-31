@@ -391,7 +391,20 @@
       "main_info_title": "General information",
       "url_label": "Source URL",
       "live_label": "Live transcription",
-      "name_label": "Media name"
+      "name_label": "Media name",
+      "get_button": "Add media from the URL"
+    },
+    "offline": {
+      "label_icon_source": {
+        "microphone": "Microphone",
+        "file": "File",
+        "url": "URL"
+      },
+      "tabs_upload": {
+        "microphone": "Record",
+        "file": "File",
+        "url": "URL"
+      }
     }
   },
   "createaccount": {

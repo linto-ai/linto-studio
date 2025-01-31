@@ -18,22 +18,12 @@
         class="flex col flex1"
         @submit="createConversation"
         :disabled="formState === 'sending'">
-        <ConversationCreateAudio
-          v-if="currentTab === 'file'"
-          mode="file"
-          :disabled="formState === 'sending'"
-          v-model="audioFiles" />
-
-        <ConversationCreateAudio
-          v-if="currentTab === 'microphone'"
-          mode="microphone"
-          :disabled="formState === 'sending'"
-          v-model="audioFiles" />
-
-        <ConversationCreateLink
-          v-if="currentTab === 'url'"
-          v-model="linkFields" />
-
+        <div class="flex col gap-small">
+          <ConversationCreateAudio
+            class="flex1"
+            :disabled="formState === 'sending'"
+            v-model="audioFiles" />
+        </div>
         <!-- rights -->
         <section>
           <h2>{{ $t("conversation.conversation_creation_right_title") }}</h2>
@@ -58,23 +48,6 @@
           <div class="error-field" v-if="transcriptionService.error">
             {{ transcriptionService.error }}
           </div>
-          <!-- <div class="form-field flex row">
-            <div class="flex col">
-              <label class="form-label" for="conversationName">
-                {{ $t("conversation.language_label") }}
-              </label>
-              <select
-                :disabled="formState === 'sending'"
-                v-model="conversationLanguage.value">
-                <option
-                  v-for="lang of languages"
-                  :key="lang.value"
-                  :value="lang.value">
-                  {{ lang.label }}
-                </option>
-              </select>
-            </div>
-          </div> -->
           <ConversationCreateServices
             :serviceList="transcriptionService.list"
             :disabled="formState === 'sending'"
@@ -137,7 +110,9 @@ import Tabs from "@/components/Tabs.vue"
 import SessionCreateContent from "@/components/SessionCreateContent.vue"
 import ConversationCreateLink from "@/components/ConversationCreateLink.vue"
 import QuickSessionCreateContent from "@/components/QuickSessionCreateContent.vue"
-import VisioCreateContent from "../components/VisioCreateContent.vue"
+import VisioCreateContent from "@/components/VisioCreateContent.vue"
+import TabsVertical from "@/components/TabsVertical.vue"
+import ConversationCreateFileLine from "@/components/ConversationCreateFileLine.vue"
 
 export default {
   mixins: [
@@ -253,8 +228,8 @@ export default {
       event?.preventDefault()
       switch (this.currentTab) {
         case "url":
-          this.createConversationByUrl()
-          break
+        //this.createConversationByUrl()
+        //break
         case "file":
         case "microphone":
           this.createConversationByFile()
@@ -296,6 +271,8 @@ export default {
     SessionCreateContent,
     QuickSessionCreateContent,
     VisioCreateContent,
+    TabsVertical,
+    ConversationCreateFileLine,
   },
 }
 </script>
