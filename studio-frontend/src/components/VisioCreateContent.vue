@@ -140,7 +140,7 @@ export default {
         label: this.$t("session.create_page.keep_audio_label"),
       },
       supportedVisioServices: ["jitsi", "bigbluebutton"],
-      selectedProfile: null,
+      selectedProfile: this.transcriberProfiles[0],
       formSubmitLabel: this.$t("quick_session.setup_visio.join_meeting"),
 
       formError: null,

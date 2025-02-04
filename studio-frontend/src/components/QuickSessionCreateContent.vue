@@ -93,7 +93,7 @@ export default {
         value: true,
         label: this.$t("session.create_page.keep_audio_label"),
       },
-      selectedProfile: null,
+      selectedProfile: this.transcriberProfiles[0],
       formSubmitLabel: this.$i18n.t("quick_session.creation.submit_button"),
 
       formError: null,
