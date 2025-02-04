@@ -10,6 +10,13 @@ export async function sendRequest(
   headers,
   withoutToken = false,
 ) {
+  // TODO: try to use $route singleton to check $route.meta.backoffice instead
+  const isBackOfficePage = location.pathname.startsWith("/backoffice")
+  const defaultQueryParams = {}
+  if (isBackOfficePage) {
+    defaultQueryParams["userScope"] = "backoffice"
+  }
+
   // Get authorization token
   const userToken = getCookie("authToken")
   try {
@@ -18,12 +25,20 @@ export async function sendRequest(
       if (withoutToken) {
         req = await axios.get(url, {
           ...params,
-          params: { ...data, t: Date.now() },
+          params: {
+            ...data,
+            ...defaultQueryParams,
+            t: Date.now(),
+          },
         })
       } else {
         req = await axios.get(url, {
           ...params,
-          params: { ...data, t: Date.now() },
+          params: {
+            ...data,
+            ...defaultQueryParams,
+            t: Date.now(),
+          },
           headers: {
             ...headers,
             Authorization: withoutToken ? null : `Bearer ${userToken}`,
@@ -34,6 +49,9 @@ export async function sendRequest(
       req = await axios(url, {
         ...params,
         data,
+        params: {
+          ...defaultQueryParams,
+        },
         headers: {
           ...headers,
           Authorization: withoutToken ? null : `Bearer ${userToken}`,
