@@ -1,5 +1,7 @@
 FROM node:20.15.1 as builder
 
+ARG WEBSERVER_HTTP_PORT=80
+
 RUN apt-get update -y && \
   apt-get install gettext -y && \
   apt-get install nginx -y
@@ -11,6 +13,7 @@ RUN npm install
 
 RUN rm -rf /usr/share/nginx/html/*
 COPY ./config/nginx/nginx.conf /etc/nginx/nginx.conf
+RUN sed -i "s/listen [0-9]\+;/listen ${WEBSERVER_HTTP_PORT};/" /etc/nginx/nginx.conf
 
 COPY ./docker-entrypoint.sh /
 
@@ -20,5 +23,5 @@ USER node
 
 HEALTHCHECK CMD curl -f http://localhost
 
-EXPOSE 80
+EXPOSE ${WEBSERVER_HTTP_PORT}
 ENTRYPOINT ["/docker-entrypoint.sh"]
