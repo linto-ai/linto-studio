@@ -4,6 +4,8 @@ const debug = require("debug")(
 const WebSocket = require("ws")
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
+const appLogger = require(`${process.cwd()}/lib/logger/logger.js`)
+
 class WebSocketSingleton {
   constructor() {
     if (!WebSocketSingleton.instance) {
@@ -19,7 +21,7 @@ class WebSocketSingleton {
       this.socket = new WebSocket(url)
 
       this.socket.on("open", () => {
-        debug("WebSocket connection established.")
+        appLogger.info(`[${Date.now()}] - [LLM WS] connected.`)
       })
 
       this.socket.on("message", (message) => {
@@ -27,11 +29,12 @@ class WebSocketSingleton {
       })
 
       this.socket.on("close", () => {
-        debug("WebSocket connection closed.")
+        appLogger.info(`[${Date.now()}] - [LLM WS] closed.`)
         this.socket = null // Reset the socket on close
       })
 
       this.socket.on("error", (error) => {
+        appLogger.error(`[${Date.now()}] - [LLM WS] : ${error}`)
         console.error("WebSocket error:", error)
       })
     }
@@ -60,13 +63,15 @@ class WebSocketSingleton {
           this.watchingList.add(taskId)
           debug(`Task ID ${taskId} added to the watching list.`)
         })
-
-        debug("Message sent:", idsToAdd)
+        appLogger.info(`[${Date.now()}] - [LLM WS] Message sent : ${idsToAdd}`)
         socket.send(JSON.stringify(idsToAdd))
       } else {
         debug("All task IDs are already in the watching list.")
       }
     } else {
+      appLogger.warn(
+        `[${Date.now()}] - [LLM WS] Not connected, cannot send message.`,
+      )
       console.error(
         `Cannot send message. WebSocket is not open. Current state: ${socket.readyState}`,
       )
@@ -84,6 +89,9 @@ class WebSocketSingleton {
         ? parsedMessage
         : [parsedMessage]
 
+      appLogger.debug(
+        `[${Date.now()}] - [LLM WS] Message : ${JSON.stringify(tasks)}`,
+      )
       for (const task of tasks) {
         const { task_id, status } = task
         const conv = await model.conversationExport.getByJobId(task_id)
@@ -92,14 +100,16 @@ class WebSocketSingleton {
         this.updateStatus(conv[0], task)
 
         if (this.completedJob(status)) {
-          this._handleCompletedJob(task_id) // Handle completed job
+          this._handleCompletedJob(task_id, status) // Handle completed job
         } else {
           this._addToWatchingList(task_id) // Add to watching list if not already there
         }
       }
 
       if (this.watchingList.size === 0) {
-        debug("No more tasks to watch. Closing WebSocket connection.")
+        appLogger.info(
+          `[${Date.now()}] - [LLM WS] No more tasks. Closing WebSocket.`,
+        )
         this.socket.close()
       }
     } catch (error) {
@@ -111,13 +121,15 @@ class WebSocketSingleton {
     if (!taskId) return
     if (!this.watchingList.has(taskId)) {
       this.watchingList.add(taskId)
-      debug(`Task ID ${taskId} added to the watching list.`)
+      appLogger.info(`[${Date.now()}] - [LLM WS] Watching task ${taskId}.`)
     }
   }
 
-  _handleCompletedJob(taskId) {
+  _handleCompletedJob(taskId, status) {
     this.watchingList.delete(taskId)
-    debug(`Task ID ${taskId} removed from the watching list.`)
+    appLogger.info(
+      `[${Date.now()}] - [LLM WS] Task ${taskId} completed : status ${status}.`,
+    )
   }
 
   areJobsInWatchingList(jobIds) {

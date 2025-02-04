@@ -70,7 +70,8 @@
     "swagger-ui-express": "^4.6.0",
     "utf8": "^3.0.0",
     "utils-copy": "^1.1.1",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
     "jest": "^28.1.3",

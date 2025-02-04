@@ -42,9 +42,6 @@ async function checkAccess(req, role) {
 
     const userRole = user[0].role
     if (userRole && ROLE.hasPlatformRoleAccess(userRole, role)) {
-      debug(
-        `User ${userId} : ${user[0].email} has an admin role value of ${role} doing request to ${req.url} with method ${req.method} and body ${JSON.stringify(req.body)}`,
-      )
       await impersonateUser(req) // Only impersonate if the user has a super role
       return true
     }
