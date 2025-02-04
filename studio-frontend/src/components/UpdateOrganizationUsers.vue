@@ -3,7 +3,9 @@
     <div class="flex row gap-medium">
       <h2 style="width: auto">{{ $t("organisation.organization_users") }}</h2>
       <UserInvite
-        v-if="isAtLeastMaintainer || isSystemAdministrator"
+        v-if="
+          isAtLeastMaintainer || (isSystemAdministrator && isBackofficePage)
+        "
         @inviteUser="addToMembers"
         @removeUser="removeFromMembers"
         :currentUsers="orgaMembers"
@@ -46,7 +48,7 @@
                   (isAtLeastMaintainer &&
                     userRole >= user.role &&
                     userInfo._id !== user._id) ||
-                  isSystemAdministrator
+                  (isSystemAdministrator && isBackofficePage)
                 "
                 @change="updateUserRole(user)">
                 <option
@@ -77,7 +79,7 @@
                   (isAtLeastMaintainer &&
                     userRole >= user.role &&
                     userInfo._id !== user._id) ||
-                  isSystemAdministrator
+                  (isSystemAdministrator && isBackofficePage)
                 "
                 @click="removeFromMembers(user)"
                 class="red-border">

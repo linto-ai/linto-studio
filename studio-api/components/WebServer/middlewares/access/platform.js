@@ -49,8 +49,11 @@ async function checkAccess(req, role) {
       if (req.query.impersonateUser) {
         impersonate(req, req.query.impersonateUser)
       } else if (req.query.userScope === "backoffice") {
-        await impersonateUser(req) // Only impersonate if the user has a super role
+        await impersonateOwner(req) // Only impersonate if the user has a super role
+      } else {
+        return false // Normal user access behavior
       }
+
       return true
     }
 
@@ -60,7 +63,7 @@ async function checkAccess(req, role) {
   }
 }
 
-async function impersonateUser(req) {
+async function impersonateOwner(req) {
   const { organizationId, conversationId } = req.params
   if (req.url.includes("/users/self/")) {
     return
