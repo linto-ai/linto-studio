@@ -79,12 +79,7 @@ async function requestAPI(query, content, fileName, conversationExport) {
   }
 
   fs.unlinkSync(tempFilePath)
-  // if (isSocketConnected) {
   initWebSocketConnection(conversationExport)
-  // }
-  //  else if (jobId !== undefined) {
-  //   processJobWithWebSocket(jobId, conversationExport)
-  // }
   return jobId
 }
 

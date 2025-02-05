@@ -42,10 +42,6 @@ async function checkAccess(req, role) {
 
     const userRole = user[0].role
     if (userRole && ROLE.hasPlatformRoleAccess(userRole, role)) {
-      debug(
-        `User ${userId} : ${user[0].email} has an admin role value of ${role} doing request to ${req.url} with method ${req.method} and body ${JSON.stringify(req.body)}`,
-      )
-
       if (req.query.impersonateUser) {
         impersonate(req, req.query.impersonateUser)
       } else if (req.query.userScope === "backoffice") {
@@ -53,7 +49,6 @@ async function checkAccess(req, role) {
       } else {
         return false // Normal user access behavior
       }
-
       return true
     }
 

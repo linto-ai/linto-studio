@@ -1,6 +1,9 @@
 const debug = require("debug")("linto:app:webserver:router")
 
 const auth_middlewares = require(`../config/passport/local/middleware`)
+const logger_middlewares = require(
+  `${process.cwd()}/components/WebServer/middlewares/logger/logger.js`,
+)
 const conversation_middlewares = require(
   `${process.cwd()}/components/WebServer/middlewares/access/conversation.js`,
 )
@@ -151,6 +154,8 @@ const createApiRoutes = (webServer, api_routes) => {
           webServer.express[method](
             level + path,
             middlewares,
+            logger_middlewares.logger,
+
             (req, res, next) => {
               next()
             },
