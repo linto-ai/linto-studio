@@ -40,7 +40,9 @@
           class=""
           :field="fieldDiarizationEnabled"
           v-model="fieldDiarizationEnabled.value"></FormCheckbox>
-
+        <FormCheckbox
+          :field="fieldKeepAudio"
+          v-model="fieldKeepAudio.value"></FormCheckbox>
         <div class="medium-margin-top">
           <h3>{{ $t("quick_session.creation.profile_selector_title") }}</h3>
 
@@ -132,9 +134,13 @@ export default {
         value: false,
         label: this.$t("session.create_page.diarization_label"),
       },
-
+      fieldKeepAudio: {
+        ...EMPTY_FIELD,
+        value: true,
+        label: this.$t("session.create_page.keep_audio_label"),
+      },
       supportedVisioServices: ["jitsi", "bigbluebutton"],
-      selectedProfile: null,
+      selectedProfile: this.transcriberProfiles[0],
       formSubmitLabel: this.$t("quick_session.setup_visio.join_meeting"),
 
       formError: null,
@@ -161,6 +167,7 @@ export default {
             transcriberProfileId: this.selectedProfile.id,
             translations: this.selectedProfile.translations ?? [],
             diarization: this.fieldDiarizationEnabled.value ?? false,
+            keepAudio: this.fieldKeepAudio.value,
           },
         ]
         const requestSession = await apiCreateQuickSession(
@@ -176,12 +183,9 @@ export default {
           const requestBot = await apiStartBot({
             url: this.visioLinkField.value,
             channelId: session.channels[0].id,
-            async: false,
-            live: {
-              keepLiveTranscripts: this.subInStudio.value,
-              displaySub: this.subInVisioField.value,
-              subSource: null,
-            },
+            enableLiveTranscripts: this.subInStudio.value,
+            enableDisplaySub: this.subInVisioField.value,
+            subSource: null,
             provider: this.visioTypeField.value,
           })
           if (requestBot.status == "success") {

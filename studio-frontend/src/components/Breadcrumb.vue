@@ -11,7 +11,11 @@
     <span class="breadcrumb__element">{{ userName }} – {{ RoleToString }}</span> -->
     <span
       class="icon right-arrow breadcrumb__separator"
-      v-if="mainListingPage || sessionListingPage" />
+      v-if="
+        (mainListingPage || sessionListingPage) &&
+        isAtLeastUploader &&
+        (canUploadInCurrentOrganization || canSessionInCurrentOrganization)
+      " />
     <!-- <span class="breadcrumb__element">{{ currentRoute.name }}</span> -->
     <router-link
       id="upload-media-button"
@@ -19,10 +23,10 @@
       to="/interface/conversations/create"
       class="btn nav-link green no-shrink"
       tag="button"
-      v-if="mainListingPage || sessionListingPage"
-      :disabled="
-        !isAtLeastUploader ||
-        !(canUploadInCurrentOrganization || canSessionInCurrentOrganization)
+      v-if="
+        (mainListingPage || sessionListingPage) &&
+        isAtLeastUploader &&
+        (canUploadInCurrentOrganization || canSessionInCurrentOrganization)
       ">
       <span class="icon new"></span>
       <!-- <span class="label">{{ $t("navigation.conversation.create") }}</span> -->

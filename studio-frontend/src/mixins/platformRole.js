@@ -65,6 +65,9 @@ export const platformRoleMixin = {
     isAtLeastSystemAdministrator() {
       return this.isSystemAdministrator || this.isSuperAdministrator
     },
+    isBackofficePage() {
+      return this.$route.meta.backoffice
+    },
     platformRole() {
       return this.$store.state.userInfo.role
     },

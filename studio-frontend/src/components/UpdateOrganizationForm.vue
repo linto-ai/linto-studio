@@ -4,7 +4,7 @@
       <h2>{{ $t("organisation.general_settings") }}</h2>
       <!--Organization Name -->
       <FormInput
-        v-if="isAdmin || isSystemAdministrator"
+        v-if="isAdmin || (isSystemAdministrator && isBackofficePage)"
         :field="orgaName"
         v-model="orgaName.value" />
       <labeled-value
@@ -13,7 +13,7 @@
         :label="$t('organisation.name_label')"
         :value="orgaName.value" />
       <FormInput
-        v-if="isAdmin || isSystemAdministrator"
+        v-if="isAdmin || (isSystemAdministrator && isBackofficePage)"
         :field="orgaDescription"
         v-model="orgaDescription.value" />
       <labeled-value
@@ -24,7 +24,7 @@
       <button
         type="submit"
         class="btn green"
-        v-if="isAdmin || isSystemAdministrator">
+        v-if="isAdmin || (isSystemAdministrator && isBackofficePage)">
         <span class="icon apply"></span>
         <span class="label">{{ $t("organisation.update_button") }}</span>
       </button>

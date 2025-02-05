@@ -13,12 +13,14 @@
         class=""
         :field="fieldDiarizationEnabled"
         v-model="fieldDiarizationEnabled.value"></FormCheckbox>
+      <FormCheckbox
+        :field="fieldKeepAudio"
+        v-model="fieldKeepAudio.value"></FormCheckbox>
       <TranscriberProfileSelector
         :multiple="false"
         v-model="selectedProfile"
         :profilesList="transcriberProfiles" />
     </section>
-
     <div
       class="flex gap-small align-center conversation-create-footer"
       style="margin-top: 1rem">
@@ -86,7 +88,12 @@ export default {
         value: false,
         label: this.$t("session.create_page.diarization_label"),
       },
-      selectedProfile: null,
+      fieldKeepAudio: {
+        ...EMPTY_FIELD,
+        value: true,
+        label: this.$t("session.create_page.keep_audio_label"),
+      },
+      selectedProfile: this.transcriberProfiles[0],
       formSubmitLabel: this.$i18n.t("quick_session.creation.submit_button"),
 
       formError: null,
@@ -122,6 +129,7 @@ export default {
             transcriberProfileId: this.selectedProfile.id,
             translations: this.selectedProfile.translations ?? [],
             diarization: this.fieldDiarizationEnabled.value ?? false,
+            keepAudio: this.fieldKeepAudio.value,
           },
         ]
         const res = await apiCreateQuickSession(this.currentOrganizationScope, {

@@ -3,7 +3,7 @@
     <div class="flex1 flex subtitles" id="conversation">
       <VideoPlayer
         @videoLoaded="setVideo"
-        :audioDuration="audio.duration"
+        :audioDuration="duration"
         :screens="blocks.screens"></VideoPlayer>
       <div id="screen-list" class="flex1" :key="blocks.size">
         <div v-for="block in blocks" :key="block.screen.screen_id">
@@ -36,7 +36,6 @@
       <SubtitlePlayer
         :key="playerKey"
         :conversationId="conversation._id"
-        :audio="audio"
         :blocks="blocks"
         :canEdit="canEdit"
         :useVideo="useVideo"
@@ -95,8 +94,8 @@ export default {
     }
   },
   computed: {
-    audio() {
-      return this.conversation.metadata.audio
+    duration() {
+      return this.conversation?.metadata?.audio?.duration ?? 0
     },
   },
   mounted() {

@@ -380,7 +380,8 @@
       "file": "Fichier",
       "microphone": "Microphone",
       "url": "Médias depuis internet",
-      "visio": "Visio",
+      "quick_meeting": "Enregistrement en direct",
+      "visio": "Visioconférence",
       "session": "Session",
       "coming_soon": "Bientôt disponible"
     },
@@ -391,7 +392,20 @@
       "main_info_title": "Informations principales",
       "url_label": "URL de la source",
       "live_label": "Transcription en direct",
-      "name_label": "Nom du média"
+      "name_label": "Nom du média",
+      "get_button": "Ajouter le média depuis l'URL"
+    },
+    "offline": {
+      "label_icon_source": {
+        "microphone": "Microphone",
+        "file": "Fichier",
+        "url": "URL"
+      },
+      "tabs_upload": {
+        "microphone": "Microphone",
+        "file": "Fichier",
+        "url": "URL"
+      }
     }
   },
   "createaccount": {

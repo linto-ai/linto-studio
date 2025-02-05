@@ -1,7 +1,3 @@
-.audio-upload-form {
-  min-height: 8rem;
-}
-
 .audio-upload__record {
   border: 1px solid lightgray;
 
@@ -23,6 +19,8 @@
   position: absolute;
   top: 0;
   opacity: 0.4;
+  left: calc(25px + 0.5rem);
+  width: calc(100% - 25px - 0.5rem);
 }
 
 .audio-upload__record {
@@ -47,6 +45,51 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.audio-upload-form {
+  height: 8rem;
+  border-radius: 4px 0px 0px 4px;
+
+  & .droparea__description {
+    background-color: transparent !important;
+  }
+}
+
+.upload-tabs {
+  .tabs {
+    height: 100%;
+  }
+
+  .tab:first-child {
+    border-top: var(--border-button-flat);
+    border-radius: 0px 4px 0px 0px;
+  }
+
+  .tab:last-child {
+    border-radius: 0px 0px 4px 0px;
+  }
+
+  .tab {
+    border-bottom: var(--border-button-flat);
+    border-right: var(--border-button-flat);
+    border-left: var(--border-button-flat);
+    flex: 1;
+    margin: 0;
+    align-items: center;
+    padding-left: calc(2rem + 2px);
+  }
+
+  .tab[selected] {
+    border-left: 3px solid var(--primary-color);
+    padding-left: calc(2rem);
+  }
+}
+
+.audio-upload__link_create-btn {
+  align-self: center;
+  min-width: 10rem;
+  text-align: center;
 }
 
 .conversation-create-footer {

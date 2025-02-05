@@ -19,6 +19,7 @@
         :disabled="disabled"
         :id="id"
         :autocomplete="autocomplete"
+        :placeholder="placeholder"
         ref="input"
         v-model="value"
         @change="($event) => $emit('change', $event)"
@@ -111,6 +112,9 @@ export default {
     },
     autocomplete() {
       return this.field.autocomplete || null
+    },
+    placeholder() {
+      return this.field?.placeholder || null
     },
   },
   watch: {

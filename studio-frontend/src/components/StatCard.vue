@@ -15,7 +15,7 @@
 <script>
 export default {
   props: {
-    count: { type: Number, required: true },
+    count: { type: Number, required: false },
     title: { type: String, required: true },
     icon: { type: String, required: true },
     to: { type: Object, default: null },
