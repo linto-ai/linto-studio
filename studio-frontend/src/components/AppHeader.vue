@@ -25,9 +25,7 @@
     </div>
     <ThemeSwitcher v-if="darkThemeFeatureEnabled"></ThemeSwitcher>
     <LocalSwitcher></LocalSwitcher>
-    <UserSettingsMenu
-      :userInfo="userInfo"
-      :isBackofficePage="isBackofficePage" />
+    <UserSettingsMenu :userInfo="userInfo" />
   </nav>
 </template>
 <script>
@@ -43,9 +41,7 @@ import ThemeSwitcher from "./ThemeSwitcher.vue"
 export default {
   props: {
     userInfo: { type: Object, required: true },
-    currentOrganization: { type: Object, required: true },
     userOrganizations: { type: Array, required: true },
-    currentOrganizationScope: { type: String, required: true },
   },
   computed: {
     currentRoute() {

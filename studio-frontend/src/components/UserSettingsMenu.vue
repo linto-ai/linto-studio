@@ -35,7 +35,6 @@ export default {
   mixins: [platformRoleMixin],
   props: {
     userInfo: { type: Object, required: true },
-    isBackofficePage: { type: Boolean, default: false },
   },
   data() {
     return {

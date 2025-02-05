@@ -109,17 +109,24 @@ export default {
     isPrivateRoute() {
       return !this.$route?.meta?.public
     },
+    isBackOfficeRoute() {
+      return this.$route?.meta?.backoffice
+    },
     userInfo() {
       return this.$store.state.userInfo
     },
     dataLoaded() {
+      if (this.isBackOfficeRoute) {
+        return !!this.userInfo && this.appMounted
+      }
+
       if (this.isPrivateRoute || this.isAuthenticated()) {
         return (
           !!this.userInfo &&
           this.appMounted &&
           this.userOrgasLoaded &&
           this.currentOrganizationScope &&
-          this.currentOrganization._id
+          this.currentOrganization?._id
         )
       }
       return true
