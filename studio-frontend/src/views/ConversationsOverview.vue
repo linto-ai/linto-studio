@@ -19,7 +19,7 @@
       </h1>
       <div class="flex row conversation-actions gap-small">
         <router-link
-          :to="`/interface/conversations/${conversation._id}/transcription`"
+          :to="`/interface/conversations/${rootConversation._id}/transcription`"
           class="btn green"
           :is="status !== 'done' ? 'span' : 'router-link'"
           :disabled="status !== 'done'">
@@ -49,6 +49,23 @@
       <ConversationOverviewLinks
         :conversation="rootConversation"></ConversationOverviewLinks>
     </div>
+
+    <section>
+      <h2>Canaux</h2>
+      <Tabs :tabs="tabs" v-model="selectedChannel" secondary></Tabs>
+      <div class="tab-container-content">
+        Le Lorem Ipsum est simplement du faux texte employé dans la composition
+        et la mise en page avant impression. Le Lorem Ipsum est le faux texte
+        standard de l'imprimerie depuis les années 1500, quand un imprimeur
+        anonyme assembla ensemble des morceaux de texte pour réaliser un livre
+        spécimen de polices de texte. Il n'a pas fait que survivre cinq siècles,
+        mais s'est aussi adapté à la bureautique informatique, sans que son
+        contenu n'en soit modifié. Il a été popularisé dans les années 1960
+        grâce à la vente de feuilles Letraset contenant des passages du Lorem
+        Ipsum, et, plus récemment, par son inclusion dans des applications de
+        mise en page de texte, comme Aldus PageMaker.
+      </div>
+    </section>
   </MainContentConversation>
 </template>
 <script>
@@ -61,17 +78,13 @@ import { debounceMixin } from "@/mixins/debounce.js"
 import { timeToHMS } from "@/tools/timeToHMS"
 
 import Loading from "@/components/Loading.vue"
-import Modal from "@/components/Modal.vue"
-import ConversationShare from "@/components/ConversationShare.vue"
-import UserInfoInline from "@/components/UserInfoInline.vue"
 import CollaborativeField from "@/components/CollaborativeField.vue"
 import MainContentConversation from "@/components/MainContentConversation.vue"
-import ConversationStatus from "@/components/ConversationStatus.vue"
 import ConversationOverviewMainInfos from "@/components/ConversationOverviewMainInfos.vue"
 import ConversationOverviewMetadata from "@/components/ConversationOverviewMetadata.vue"
-import LabeledValue from "@/components/LabeledValue.vue"
-import ConversationOverviewLinks from "../components/ConversationOverviewLinks.vue"
-import ConversationOverviewRights from "../components/ConversationOverviewRights.vue"
+import ConversationOverviewLinks from "@/components/ConversationOverviewLinks.vue"
+import ConversationOverviewRights from "@/components/ConversationOverviewRights.vue"
+import Tabs from "@/components/Tabs.vue"
 
 export default {
   props: {
@@ -91,6 +104,8 @@ export default {
       rigthsList: RIGHTS_LIST((key) => this.$i18n.t(key)),
       status: null,
       loadingAudio: false,
+      tabs: [],
+      selectedChannel: null,
     }
   },
   mounted() {},
@@ -99,6 +114,21 @@ export default {
       if (data) {
         this.status = this.computeStatus(this.conversation?.jobs?.transcription)
       }
+    },
+    channels() {
+      let tabs = []
+      for (const channel of this.channels) {
+        let nameBefore = channel.name
+        const nameSplit = channel.name.split("-")
+        const nameFinal = nameSplit.length > 1 ? nameSplit[1] : nameSplit[0]
+        tabs.push({
+          name: channel._id,
+          label: nameFinal.trim(),
+          id: channel._id,
+        })
+      }
+      this.tabs = structuredClone(tabs)
+      this.selectedChannel = this.tabs[0].id
     },
   },
   computed: {
@@ -138,18 +168,14 @@ export default {
     },
   },
   components: {
-    ConversationShare,
-    Modal,
-    UserInfoInline,
     CollaborativeField,
     Loading,
     MainContentConversation,
-    ConversationStatus,
     ConversationOverviewMainInfos,
     ConversationOverviewMetadata,
     ConversationOverviewLinks,
     ConversationOverviewRights,
-    LabeledValue,
+    Tabs,
   },
 }
 </script>

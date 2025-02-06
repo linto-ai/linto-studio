@@ -30,6 +30,37 @@
   }
 }
 
+.horizontal-tabs-secondary {
+  .tab {
+    border-bottom: var(--border-block);
+    padding: calc(0.25rem + 1px) calc(1rem + 1px);
+
+    cursor: pointer;
+
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .tab[selected] {
+    border: var(--border-block);
+    border-bottom: 0px solid;
+    padding-bottom: calc(0.25rem + 2px);
+    padding-top: calc(0.25rem + 0px);
+    padding-left: calc(1rem + 0px);
+    padding-right: calc(1rem + 0px);
+    //border-top-color: var(--primary-color);
+    background-color: var(--background-inset-section);
+  }
+}
+
+.tab-container-content {
+  border: var(--border-block);
+  border-top: 0px solid;
+  padding: 1rem;
+  background-color: var(--background-inset-section);
+}
+
 .tabs[squareTabs] {
   box-shadow: none;
   gap: 1rem;

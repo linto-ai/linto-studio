@@ -10,33 +10,30 @@
         <span>{{ convOwner.fullName }}</span>
       </div>
     </div>
+    <div class="flex gap-medium align-end">
+      <div class="form-field flex col">
+        <label class="form-label">
+          {{ $t("conversation_overview.rights.orga_right_label") }}
+        </label>
 
-    <div class="form-field flex col">
-      <label class="form-label">
-        {{ $t("conversation_overview.rights.orga_right_label") }}
-      </label>
-      <select v-model="membersRight.value">
-        <option
-          v-for="uright in membersRight.list"
-          :key="uright.value"
-          :value="uright.value">
-          {{ uright.txt }}
-        </option>
-      </select>
-    </div>
+        <select v-model="membersRight.value">
+          <option
+            v-for="uright in membersRight.list"
+            :key="uright.value"
+            :value="uright.value">
+            {{ uright.txt }}
+          </option>
+        </select>
+      </div>
 
-    <div class="form-field flex">
-      <ConversationShareMultiple
-        :currentOrganizationScope="currentOrganizationScope"
-        :userInfo="userInfo"
-        :selectedConversations="selectedConversations" />
+      <div class="form-field flex col">
+        <ConversationShareMultiple
+          :currentOrganizationScope="currentOrganizationScope"
+          :userInfo="userInfo"
+          :selectedConversations="selectedConversations" />
+      </div>
 
-      <!-- <button>
-            <span class="icon share"></span>
-            <span class="label">{{
-              $t("conversation_overview.rights.share_right_label")
-            }}</span>
-          </button> -->
+      <div></div>
     </div>
   </section>
 </template>
@@ -59,7 +56,6 @@ export default {
     userInfo: { type: Object, required: true },
   },
   data() {
-    console.log(this.conversation)
     return {
       membersRight: {
         ...EMPTY_FIELD,
