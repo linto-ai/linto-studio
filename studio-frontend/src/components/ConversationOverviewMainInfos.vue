@@ -1,23 +1,25 @@
 <template>
   <form @submit="update">
-    <section class="overview__main-section">
+    <section>
       <h2>
-        {{ $t("conversation.information_label") }}
+        {{ $t("conversation_overview.main_information.title") }}
       </h2>
       <div></div>
       <FormInput
+        inputFullWidth
         :field="nameField"
         v-model="nameField.value"
         :readonly="!canEdit" />
       <FormInput
+        inputFullWidth
         :field="descriptionField"
         v-model="descriptionField.value"
         textarea
         :readonly="!canEdit" />
-      <button type="submit" class="btn" v-if="canEdit">
+      <button type="submit" class="btn green" v-if="canEdit">
         <span class="icon apply"></span>
         <span class="label">{{
-          $t("conversation.update_information_button")
+          $t("conversation_overview.main_information.update_information_button")
         }}</span>
       </button>
     </section>
@@ -26,8 +28,8 @@
 <script>
 import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
-import { apiUpdateConversation } from "../api/conversation"
-import EMPTY_FIELD from "../const/emptyField"
+import { apiUpdateConversation } from "@/api/conversation"
+import EMPTY_FIELD from "@/const/emptyField"
 import { testName } from "@/tools/fields/testName"
 
 import { formsMixin } from "@/mixins/forms.js"
@@ -60,13 +62,15 @@ export default {
       nameField: {
         ...EMPTY_FIELD,
         value: "",
-        label: this.$t("conversation.name_label"),
+        label: this.$t("conversation_overview.main_information.name_label"),
         testField: testName,
       },
       descriptionField: {
         ...EMPTY_FIELD,
         value: "",
-        label: this.$t("conversation.description_label"),
+        label: this.$t(
+          "conversation_overview.main_information.description_label",
+        ),
       },
       fields: ["nameField", "descriptionField"],
     }
@@ -91,14 +95,16 @@ export default {
           bus.$emit("app_notif", {
             status: "error",
             message: this.$i18n.t(
-              "conversation.update_information_error_notif",
+              "conversation_overview.main_information.error_notif",
             ),
             redirect: false,
           })
         } else {
           bus.$emit("app_notif", {
             status: "success",
-            message: this.$i18n.t("conversation.update_information_done_notif"),
+            message: this.$i18n.t(
+              "conversation_overview.main_information.done_notif",
+            ),
             redirect: false,
           })
         }
