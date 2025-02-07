@@ -1,6 +1,6 @@
 <template>
   <section>
-    <h2>Droits sur la conversation</h2>
+    <h2>{{ $t("conversation_overview.rights.title") }}</h2>
     <div class="form-field flex col">
       <label class="form-label">
         {{ $t("conversation_overview.rights.owner_label") }}

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex col select popover-parent"
+    class="flex col popover-parent"
     ref="conversation-share"
     v-click-outside="close">
     <button

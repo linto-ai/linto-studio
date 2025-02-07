@@ -50,20 +50,17 @@
         :conversation="rootConversation"></ConversationOverviewLinks>
     </div>
 
-    <section>
+    <section v-if="conversation">
       <h2>Canaux</h2>
+      <div v-if="tabs.length == 0">
+        {{ $t("conversation_overview.channel.only_one") }}
+      </div>
       <Tabs :tabs="tabs" v-model="selectedChannel" secondary></Tabs>
-      <div class="tab-container-content">
-        Le Lorem Ipsum est simplement du faux texte employé dans la composition
-        et la mise en page avant impression. Le Lorem Ipsum est le faux texte
-        standard de l'imprimerie depuis les années 1500, quand un imprimeur
-        anonyme assembla ensemble des morceaux de texte pour réaliser un livre
-        spécimen de polices de texte. Il n'a pas fait que survivre cinq siècles,
-        mais s'est aussi adapté à la bureautique informatique, sans que son
-        contenu n'en soit modifié. Il a été popularisé dans les années 1960
-        grâce à la vente de feuilles Letraset contenant des passages du Lorem
-        Ipsum, et, plus récemment, par son inclusion dans des applications de
-        mise en page de texte, comme Aldus PageMaker.
+      <div class="tab-container-content" :key="conversation._id">
+        <ConversationOverviewChannel
+          :root="tabs.length == 0"
+          :conversation="conversation"
+          @update_channel_name="updateChannelName" />
       </div>
     </section>
   </MainContentConversation>
@@ -85,6 +82,7 @@ import ConversationOverviewMetadata from "@/components/ConversationOverviewMetad
 import ConversationOverviewLinks from "@/components/ConversationOverviewLinks.vue"
 import ConversationOverviewRights from "@/components/ConversationOverviewRights.vue"
 import Tabs from "@/components/Tabs.vue"
+import ConversationOverviewChannel from "@/components/ConversationOverviewChannel.vue"
 
 export default {
   props: {
@@ -104,8 +102,6 @@ export default {
       rigthsList: RIGHTS_LIST((key) => this.$i18n.t(key)),
       status: null,
       loadingAudio: false,
-      tabs: [],
-      selectedChannel: null,
     }
   },
   mounted() {},
@@ -115,23 +111,22 @@ export default {
         this.status = this.computeStatus(this.conversation?.jobs?.transcription)
       }
     },
-    channels() {
+  },
+  computed: {
+    tabs() {
       let tabs = []
       for (const channel of this.channels) {
-        let nameBefore = channel.name
-        const nameSplit = channel.name.split("-")
-        const nameFinal = nameSplit.length > 1 ? nameSplit[1] : nameSplit[0]
+        //let nameBefore = channel.name
+        //const nameSplit = channel.name.split("-")
+        //const nameFinal = nameSplit.length > 1 ? nameSplit[1] : nameSplit[0]
         tabs.push({
           name: channel._id,
-          label: nameFinal.trim(),
+          label: channel.name.trim(),
           id: channel._id,
         })
       }
-      this.tabs = structuredClone(tabs)
-      this.selectedChannel = this.tabs[0].id
+      return structuredClone(tabs)
     },
-  },
-  computed: {
     dataLoaded() {
       return this.conversationLoaded
     },
@@ -153,6 +148,9 @@ export default {
     },
   },
   methods: {
+    updateChannelName({ id, newName }) {
+      this.tabs.find((t) => (t.id = id)).label = newName
+    },
     updateConversationName() {
       bus.$emit("update_conversation_name", {})
     },
@@ -175,6 +173,7 @@ export default {
     ConversationOverviewMetadata,
     ConversationOverviewLinks,
     ConversationOverviewRights,
+    ConversationOverviewChannel,
     Tabs,
   },
 }
