@@ -5,9 +5,10 @@ const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
 
 function logger(req, res, next) {
   let logger_message = `[${Date.now()}] - ${req.method} : ${req.url}`
-
   if (req.body && Object.keys(req.body).length > 0) {
-    logger_message += ` | ${JSON.stringify(req.body)}`
+    if (req.url == "/auth/login")
+      logger_message += ` | {"email" : ${req.body.email}}`
+    else logger_message += ` | ${JSON.stringify(req.body)}`
   }
 
   if (req?.payload?.data?.userId)
