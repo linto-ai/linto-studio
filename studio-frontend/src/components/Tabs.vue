@@ -1,7 +1,11 @@
 <template>
   <div>
     <div
-      class="flex row tabs horizontal-tabs"
+      class="flex row tabs"
+      :class="{
+        'horizontal-tabs': !secondary,
+        'horizontal-tabs-secondary': secondary,
+      }"
       role="tablist"
       :squareTabs="squareTabs">
       <div
@@ -24,6 +28,8 @@
           tab.badge
         }}</Badge>
       </div>
+
+      <div class="flex1 tab" v-if="secondary"></div>
     </div>
   </div>
 </template>
@@ -36,6 +42,7 @@ export default {
     value: { type: String, required: true }, // selected tab
     squareTabs: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false },
+    secondary: { type: Boolean, default: false },
   },
   data() {
     return {}

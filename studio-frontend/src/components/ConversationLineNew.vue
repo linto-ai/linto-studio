@@ -168,7 +168,8 @@
           </div>
         </router-link>
 
-        <router-link
+        <component
+          :is="isFromSession ? 'span' : 'router-link'"
           :disabled="isFromSession"
           :to="{
             name: 'conversations subtitles',
@@ -179,7 +180,7 @@
             <span class="label">{{ $t("conversation.open_subtitles") }}</span>
             <span class="icon subtitle"></span>
           </div>
-        </router-link>
+        </component>
 
         <router-link
           :to="{

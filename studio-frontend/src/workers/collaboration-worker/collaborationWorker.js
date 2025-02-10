@@ -56,6 +56,8 @@ let conversationFormat = null
 
 const infoWorker = customDebug("Worker:info")
 const debugWorker = customDebug("Worker:debug")
+const debugWorkerDestroy = customDebug("Worker:debug:destroy")
+
 const debugFocusWorker = customDebug("Worker:debug:focus")
 const debugRightWorker = customDebug("Worker:debug:right")
 const debugJobsWorker = customDebug("Worker:debug:jobs")
@@ -63,6 +65,8 @@ const debugJobsWorker = customDebug("Worker:debug:jobs")
 Debug.enable(process.env.VUE_APP_DEBUG)
 
 function connect(event) {
+  disconnect()
+
   // get conversationID and userToken
   conversationId = event.data?.params?.conversationId
   userToken = event.data?.params?.userToken
@@ -102,7 +106,7 @@ onmessage = (event) => {
         event.data.params,
         conversationId,
         conversation.getYdoc(),
-        syllabic
+        syllabic,
       )
       break
     case "turn_insert_paragraph":
@@ -110,7 +114,7 @@ onmessage = (event) => {
         event.data.params,
         conversationId,
         conversation.getYdoc(),
-        syllabic
+        syllabic,
       )
       break
     case "turn_merge_paragraph":
@@ -118,7 +122,7 @@ onmessage = (event) => {
         event.data.params,
         conversationId,
         conversation.getYdoc(),
-        syllabic
+        syllabic,
       )
       break
     case "turn_edit_speaker":
@@ -128,35 +132,35 @@ onmessage = (event) => {
       turnMergeSpeaker(
         event.data.params,
         conversationId,
-        conversation.getYdoc()
+        conversation.getYdoc(),
       )
       break
     case "update_conversation_title":
       updateConversationTitle(
         event.data.params,
         conversationId,
-        conversation.getYdoc()
+        conversation.getYdoc(),
       )
       break
     case "update_conversation_description":
       updateConversationDescription(
         event.data.params,
         conversationId,
-        conversation.getYdoc()
+        conversation.getYdoc(),
       )
       break
     case "update_conversation_speaker_name":
       updateConversationSpeakerName(
         event.data.params,
         conversationId,
-        conversation.getYdoc()
+        conversation.getYdoc(),
       )
       break
     case "update_conversation_add_speaker":
       updateConversationAddSpeaker(
         event.data.params,
         conversationId,
-        conversation.getYdoc()
+        conversation.getYdoc(),
       )
       break
     case "update_conversation_users":
@@ -166,7 +170,7 @@ onmessage = (event) => {
       updateOrganizationRight(
         event.data.params,
         conversationId,
-        conversation.getYdoc()
+        conversation.getYdoc(),
       )
       break
     case "focus_field":
@@ -180,7 +184,7 @@ onmessage = (event) => {
         userToken,
         conversationId,
         event.data.params.subtitleId,
-        socket
+        socket,
       )
       break
     case "generate_subtitles":
@@ -188,7 +192,7 @@ onmessage = (event) => {
         userToken,
         conversationId,
         event.data.params.data,
-        socket
+        socket,
       )
       break
     case "copy_subtitles":
@@ -197,7 +201,7 @@ onmessage = (event) => {
         conversationId,
         event.data.params.subtitleId,
         event.data.params.data,
-        socket
+        socket,
       )
       break
     case "delete_subtitles":
@@ -205,7 +209,7 @@ onmessage = (event) => {
         userToken,
         conversationId,
         event.data.params.subtitleIds,
-        socket
+        socket,
       )
       break
     case "update_screen":
@@ -243,7 +247,7 @@ onmessage = (event) => {
         conversationId,
         subtitleId,
         event.data.params,
-        socket
+        socket,
       )
       break
     default:
@@ -253,9 +257,12 @@ onmessage = (event) => {
 
 function disconnect() {
   shouldDisconnect = true
+  debugWorkerDestroy("Start stopping worker...")
   if (socket) socket?.disconnect()
+  debugWorkerDestroy("WS should be off")
   if (conversation !== null) {
     conversation.destroy()
+    debugWorkerDestroy("Internal data has been clean")
   }
   conversation = null
   conversationId = ""
@@ -284,7 +291,7 @@ function setSocketListeners(socket) {
       debugWorker(
         "'%s', %s user(s) connected",
         data?.conversation?.name,
-        data?.users?.length
+        data?.users?.length,
       )
       // Send conversation to front-end
       sendMessage("conversation_loaded", data.conversation)
@@ -293,7 +300,7 @@ function setSocketListeners(socket) {
         .getYdoc()
         .on(
           "update",
-          sendDocUpdateToWebsocketWrapper(socket, conversationId, userToken)
+          sendDocUpdateToWebsocketWrapper(socket, conversationId, userToken),
         )
 
       conversation
@@ -392,7 +399,7 @@ function setSocketListeners(socket) {
         .getYdoc()
         .on(
           "update",
-          sendDocUpdateToWebsocketWrapper(socket, subtitleId, userToken)
+          sendDocUpdateToWebsocketWrapper(socket, subtitleId, userToken),
         )
       subtitle
         .getYdoc()

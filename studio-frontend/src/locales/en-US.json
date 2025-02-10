@@ -77,7 +77,6 @@
     "audio_file_upload_label_multiple": "Choose one or multiple files...",
     "back_conversation_button": "Media overview",
     "close_editor": "Close editor",
-    "close_overview": "Close overview",
     "close_publish": "Close",
     "conversation_creation_button": {
       "create": "Start transcription",
@@ -123,9 +122,6 @@
     },
     "delete_mutltiple": "Delete a media | Delete {count} media",
     "delete_success_message": "Media successfully deleted | {count} media successfully deleted",
-    "description_description": "A short text describing the context of the media",
-    "description_label": "Description",
-    "description_title": "Sharing parameter",
     "description_empty": "No description",
     "duration": "Duration {duration}",
     "duration_label": "Duration",
@@ -145,8 +141,6 @@
       "vtt": "Export VTT"
     },
     "export_json_button": "Export JSON",
-    "filter_speakers_label": "Filter",
-    "grant_organization_members": "Grant access to members of the organisation",
     "highlight_toolbox": {
       "add_metadata_modal": {
         "button_first": "Add metadata",
@@ -159,8 +153,6 @@
       "no-metadata": "No metadata",
       "title": "Add an highlight"
     },
-    "highlights_label": "Highlights",
-    "information_label": "Global information",
     "keyword_list": {
       "error": {
         "button": "Retry",
@@ -182,23 +174,6 @@
       "conversation_data": "Loading conversation data",
       "llm_services": "Loading summary services"
     },
-    "media": {
-      "duration_label_inline": "Duration : ",
-      "file_description": "allows you to upload a media file to be transcripted (audio or video)",
-      "file_label": "File",
-      "file_label_inline": "File : ",
-      "microphone_description": "allows you to record an audio file directly from your microphone",
-      "microphone_label": "Microphone",
-      "microphone_label_inline": "Microphone : ",
-      "no_file": "No file",
-      "replay_label": "Replay",
-      "type_label": "Source"
-    },
-    "media_error": "Please add an audio",
-    "media_label": "Media",
-    "media_title": "Upload your files or record your voice",
-    "members_right_description": "By default, organisation members cannot access the media. Check this option to grant access to organisation members and select them default rights on the media (read, write, ...)",
-    "members_right_label": "Grant access to members of the organisation",
     "members_right_txt": {
       "comment": "Comment",
       "delete": "Delete",
@@ -215,9 +190,6 @@
       "medium": "Medium"
     },
     "model_quality_label": "Model quality:",
-    "my_rights_label": "My rights",
-    "name_description": "The title of your media",
-    "name_label": "Title",
     "no_conversation_found": "No media found",
     "no_search_criterion": "No search criterion",
     "number_of_conversations_selected": "0 media selected | 1 media selected | {count} media selected",
@@ -225,10 +197,6 @@
     "open_overview": "Media overview",
     "open_publish": "Publish",
     "open_subtitles": "Edit subtitles",
-    "organization_description": "Choose the organisation scope of your media",
-    "organization_label": "organisation",
-    "organization_members": "organisation members",
-    "owner_label": "Owner",
     "publish_document": "Publish document",
     "record": "Record",
     "recording": "Recording...",
@@ -367,10 +335,6 @@
     "transcription_settings_label": "Transcription settings",
     "turn_cant_merge": "There are too many caracteres in the turn to merge it",
     "turn_sync_error_title": "The turn is not well synchronized",
-
-    "update_information_button": "Update information",
-    "update_information_done_notif": "Information updated",
-    "update_information_error_notif": "An error has occured while updating information",
     "update_label": "Updated",
     "updated": "Last update : {date}",
     "websocket_error_content": "Document update failed, save your change and reload the page.",
@@ -407,6 +371,44 @@
         "file": "File",
         "url": "URL"
       }
+    }
+  },
+  "conversation_overview": {
+    "title": "Media overview",
+    "close_overview": "Back to medias list",
+    "main_information": {
+      "title": "General information",
+      "update_information_button": "Update informations",
+      "name_label": "Media name",
+      "description_label": "Description",
+      "error_notif": "An error has occurred, the media information has not been updated.",
+      "done_notif": "The information has been updated."
+    },
+    "tools_links": {
+      "title": "Tools",
+      "transcription": "Go to transcript",
+      "subtitles": "Subtitle editor",
+      "export": "Exports and summaries"
+    },
+    "rights": {
+      "title": "Media rights",
+      "owner_label": "Media owner",
+      "orga_right_label": "Rights of other members of the organization",
+      "share_right_label": "Manage custom rights",
+      "orga_right_update_success": "The rights for members of the organization have been updated.",
+      "orga_right_update_error": "An error has occurred, the rights for organization members have not been modified"
+    },
+    "audio": {
+      "file_label_inline": "Audio file",
+      "duration_label_inline": "Duration"
+    },
+    "channel": {
+      "title": "Channels",
+      "name_label": "Channel name",
+      "apply_name": "Update channel name",
+      "error_notif": "An error has occurred, the channel information has not been updated.",
+      "done_notif": "The channel information has been updated.",
+      "only_one": "Media has only one transcription channel"
     }
   },
   "createaccount": {

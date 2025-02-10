@@ -123,7 +123,6 @@ export const genericConversationMixin = {
       }
     },
     async switchChannel(channelId) {
-      workerDisconnect()
       this.conversationId = channelId
       this.translations = await apiGetConversationChild(channelId, [
         "_id",
@@ -139,7 +138,6 @@ export const genericConversationMixin = {
       if (id == "original") {
         nextId = this.conversation.type.from_parent_id
       }
-      workerDisconnect()
       this.conversationId = nextId
       this.connectToWorker(this.initConversation)
     },
