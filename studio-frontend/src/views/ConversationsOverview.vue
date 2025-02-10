@@ -51,7 +51,7 @@
     </div>
 
     <section v-if="conversation">
-      <h2>Canaux</h2>
+      <h2>{{ $t("conversation_overview.channel.title") }}</h2>
       <div v-if="tabs.length == 0">
         {{ $t("conversation_overview.channel.only_one") }}
       </div>

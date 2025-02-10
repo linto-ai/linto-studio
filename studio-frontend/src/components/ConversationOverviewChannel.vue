@@ -14,9 +14,7 @@
         </button>
       </section>
     </form>
-    <section
-      class="flex overview__main-section gap-medium"
-      v-if="conversation.metadata.audio.filename">
+    <section class="flex overview__main-section gap-medium" v-if="audio">
       <LabeledValue
         :label="$t('conversation_overview.audio.duration_label_inline')"
         :value="duration"></LabeledValue>
@@ -76,7 +74,7 @@ export default {
   },
   computed: {
     audio() {
-      return this.conversation.metadata.audio
+      return this.conversation?.metadata?.audio
     },
     filePath() {
       const BASE_API = getEnv("VUE_APP_CONVO_API")

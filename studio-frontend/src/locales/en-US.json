@@ -403,6 +403,7 @@
       "duration_label_inline": "Duration"
     },
     "channel": {
+      "title": "Channels",
       "name_label": "Channel name",
       "apply_name": "Update channel name",
       "error_notif": "An error has occurred, the channel information has not been updated.",
