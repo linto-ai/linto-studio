@@ -75,11 +75,6 @@ export default {
               "quick_session.creation.microphone_source_label",
             ),
           },
-          // {
-          //   name: "visio",
-          //   label: this.$i18n.t("quick_session.creation.visio_source_label"),
-          //   disabled: false,
-          // },
         ],
         testField: testFieldEmpty,
       },
