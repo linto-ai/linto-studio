@@ -74,7 +74,8 @@
       <QuickSessionCreateContent
         v-if="currentTab === 'live' && !loadingSessionData"
         :transcriberProfiles="transcriberProfilesQuickMeeting"
-        :currentOrganizationScope="currentOrganizationScope" />
+        :currentOrganizationScope="currentOrganizationScope"
+        :transcriptionServices="fieldTranscriptionService.list" />
 
       <VisioCreateContent
         v-if="currentTab === 'visio' && !loadingSessionData"

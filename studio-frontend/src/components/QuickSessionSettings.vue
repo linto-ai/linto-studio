@@ -1,5 +1,6 @@
 <template>
   <div>
+    <h2>{{ $t("quick_session.creation.transcription_settings_title") }}</h2>
     <!-- -- -- -- -- LIVE transcription -- -- -- -- -->
 
     <section>
@@ -12,6 +13,7 @@
           {{ $t("quick_session.creation.live_options_title") }}
         </h3>
         <FormCheckbox
+          v-if="source === 'visio'"
           :field="fieldSubInVisio"
           v-model="fieldSubInVisio.value" />
         <FormCheckbox
@@ -65,6 +67,9 @@
         </div>
       </div>
     </section>
+    <span class="error-field" v-if="field.error !== null">{{
+      field.error
+    }}</span>
   </div>
 </template>
 <script>
@@ -90,6 +95,14 @@ export default {
     },
     transcriptionServices: {
       type: Array,
+      required: true,
+    },
+    field: {
+      type: Object,
+      required: true,
+    },
+    source: {
+      type: String, // "micro" | "visio"
       required: true,
     },
   },
@@ -184,6 +197,9 @@ export default {
           this.fieldKeepAudio.disabledReason = this.$t(
             "quick_session.creation.keep_audio_disabled_because_offline",
           )
+        } else {
+          this.fieldKeepAudio.disabled = false
+          this.fieldKeepAudio.disabledReason = ""
         }
 
         this.sendUpdate()

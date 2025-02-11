@@ -26,7 +26,9 @@
     <QuickSessionSettings
       :transcriberProfiles="transcriberProfiles"
       :transcriptionServices="transcriptionServices"
-      v-model="quicMeetingSettingsField.value" />
+      :field="quickSessionSettingsField"
+      source="visio"
+      v-model="quickSessionSettingsField.value" />
 
     <div
       class="flex gap-small align-center conversation-create-footer"
@@ -51,17 +53,17 @@ import EMPTY_FIELD from "@/const/emptyField.js"
 import { testVisioUrl } from "@/tools/fields/testVisioUrl"
 import { formsMixin } from "@/mixins/forms.js"
 import generateServiceConfig from "@/tools/generateServiceConfig"
-
-import FormInput from "@/components/FormInput.vue"
-import FormCheckbox from "@/components/FormCheckbox.vue"
-import TranscriberProfileSelector from "@/components/TranscriberProfileSelector.vue"
-
 import {
   apiCreateQuickSession,
   apiStartBot,
   apiDeleteQuickSession,
 } from "@/api/session.js"
-import QuickSessionSettings from "./QuickSessionSettings.vue"
+import { testQuickSessionSettings } from "@/tools/fields/testQuickSessionSettings"
+
+import FormInput from "@/components/FormInput.vue"
+import FormCheckbox from "@/components/FormCheckbox.vue"
+import TranscriberProfileSelector from "@/components/TranscriberProfileSelector.vue"
+import QuickSessionSettings from "@/components/QuickSessionSettings.vue"
 
 export default {
   mixins: [formsMixin],
@@ -81,7 +83,7 @@ export default {
   },
   data() {
     return {
-      fields: ["visioLinkField"],
+      fields: ["visioLinkField", "quickSessionSettingsField"],
       visioTypeField: {
         ...EMPTY_FIELD,
         value: "jitsi",
@@ -94,7 +96,7 @@ export default {
         label: this.$i18n.t("quick_session.setup_visio.link_label"),
         testField: testVisioUrl,
       },
-      quicMeetingSettingsField: {
+      quickSessionSettingsField: {
         ...EMPTY_FIELD,
         value: {
           keepAudio: true,
@@ -108,10 +110,9 @@ export default {
               ? generateServiceConfig(this.transcriptionServices[0])
               : null,
         },
-        testField: () => true,
+        testField: testQuickSessionSettings,
       },
       supportedVisioServices: ["jitsi", "bigbluebutton"],
-      selectedProfile: this.transcriberProfiles[0],
       formSubmitLabel: this.$t("quick_session.setup_visio.join_meeting"),
       formError: null,
       formState: "idle",
@@ -122,24 +123,15 @@ export default {
     async createSession(event) {
       event?.preventDefault()
 
-      if (!this.selectedProfile) {
-        this.formError = this.$i18n.t(
-          "quick_session.creation.no_profile_selected_error",
-        )
-        this.formState = "error"
-        return false
-      }
-
-      console.log(structuredClone(this.quicMeetingSettingsField.value))
-      return
       if (this.testFields()) {
+        const settings = this.quickSessionSettingsField.value
         const channels = [
           {
             name: "Main",
-            transcriberProfileId: this.selectedProfile.id,
-            translations: this.selectedProfile.translations ?? [],
-            diarization: this.fieldDiarizationEnabled.value ?? false,
-            keepAudio: this.fieldKeepAudio.value,
+            transcriberProfileId: settings.selectedProfile.id,
+            translations: settings.selectedProfile.translations ?? [],
+            diarization: settings.diarization ?? false,
+            keepAudio: settings.keepAudio,
           },
         ]
         const requestSession = await apiCreateQuickSession(
@@ -155,8 +147,8 @@ export default {
           const requestBot = await apiStartBot({
             url: this.visioLinkField.value,
             channelId: session.channels[0].id,
-            enableLiveTranscripts: this.subInStudio.value,
-            enableDisplaySub: this.subInVisioField.value,
+            enableLiveTranscripts: settings.subInStudio,
+            enableDisplaySub: settings.subInVisio,
             subSource: null,
             provider: this.visioTypeField.value,
           })
