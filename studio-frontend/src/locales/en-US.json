@@ -331,7 +331,7 @@
     "transcription_service_error": "Please select a transcription service",
     "transcription_service_label": "Transcription service",
     "transcription_service_list_empty": "No transcription service available",
-    "transcription_service_title": "Transcription service selection",
+    "transcription_service_title": "Transcription service",
     "transcription_settings_label": "Transcription settings",
     "turn_cant_merge": "There are too many caracteres in the turn to merge it",
     "turn_sync_error_title": "The turn is not well synchronized",
@@ -922,8 +922,8 @@
   },
   "quick_session": {
     "creation": {
-      "transcription_settings_title": "Transcription mode selection",
-      "profile_selector_title": "Transcription profile selection",
+      "transcription_settings_title": "Transcription mode",
+      "profile_selector_title": "Transcription profile",
       "no_profile_selected_error": "No transcription profile selected",
       "quick_meeting_already_start_title": "A recording has already been started.",
       "quick_meeting_already_start_button": "Join the quick meeting",

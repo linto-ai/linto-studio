@@ -925,7 +925,7 @@
   },
   "quick_session": {
     "creation": {
-      "transcription_settings_title": "Sélection du mode de transcription",
+      "transcription_settings_title": "Méthode de transcription",
       "profile_selector_title": "Sélection du profil de transcription",
       "no_profile_selected_error": "Aucun profil de transcription selectionné",
       "quick_meeting_already_start_title": "Un enregistrement est déjà démarré.",
