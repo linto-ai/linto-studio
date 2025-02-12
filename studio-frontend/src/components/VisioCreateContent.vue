@@ -132,6 +132,10 @@ export default {
             translations: settings.selectedProfile.translations ?? [],
             diarization: settings.diarization ?? false,
             keepAudio: settings.keepAudio,
+            async: settings.offlineTranscription,
+            meta: {
+              transcriptionService: settings.transcriptionService,
+            },
           },
         ]
         const requestSession = await apiCreateQuickSession(
