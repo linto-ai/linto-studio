@@ -4,6 +4,7 @@ const debug = require("debug")(
 const passport = require("passport")
 const { expressjwt: jwt } = require("express-jwt")
 const jwtDecode = require("jwt-decode")
+const verifyJwt = require("jsonwebtoken")
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const {
@@ -13,6 +14,7 @@ const {
   UserNotFound,
 } = require(`${process.cwd()}/components/WebServer/error/exception/auth`)
 const refreshToken = require("./token/refresh")
+const { getUserValueFromCookies } = require("./token/cookie")
 
 require("./strategies/local")
 if (process.env.OIDC_TYPE === "linagora") {
@@ -35,6 +37,7 @@ const authenticateUser = (strategy, req, res, next) => {
 }
 
 const extractToken = (req) => {
+  if (req.cookie) debug("cookie", req.cookie)
   if (req.headers.authorization) {
     return req.headers.authorization.split(" ")[1]
   } else if (req?.session?.passport?.user?.auth_token) {
@@ -103,6 +106,37 @@ module.exports = {
       next()
     },
   ],
+
+  // Socket middleware need to return an expcetion in case of error
+  isAuthenticateSocket: async (socket, next) => {
+    try {
+      const cookie = socket.handshake.headers.cookie
+      const token = cookie ? getUserValueFromCookies(cookie, "authToken") : null
+      if (!token) {
+        return next(new Error("Authentication token is missing"))
+      }
+      const tokenData = jwtDecode(token + "")
+      if (!tokenData?.data?.userId || !tokenData?.data?.tokenId) {
+        return next(new Error("Malformed token"))
+      }
+
+      const secret = await generateSecretFromHeaders(undefined, {
+        payload: tokenData,
+      })
+
+      verifyJwt.verify(
+        token,
+        secret,
+        { algorithms: ["HS256"] },
+        (err, decoded) => {
+          if (err) return next(new Error("Invalid or expired token"))
+          next() // Authentication successful
+        },
+      )
+    } catch (err) {
+      next(new Error("Authentication failed"))
+    }
+  },
 }
 
 const generateSecret = async (req, token, secretType) => {

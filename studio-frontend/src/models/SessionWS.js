@@ -24,7 +24,11 @@ export default class SessionWS {
 
   connect() {
     return new Promise((resolve, reject) => {
-      this.socket = io(socketioUrl, { path: socketioPath })
+      this.socket = io(socketioUrl, {
+        path: socketioPath,
+        withCredentials: true,
+        transports: ["websocket"],
+      })
       this.socket.on("connect", (msg) => {
         debugWS("connected to socket.io server", msg)
         this.state.isConnected = true

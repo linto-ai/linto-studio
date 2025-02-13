@@ -8,6 +8,10 @@ const { diffSessions, groupSessionsByOrg } = require(
   `${process.cwd()}/components/IoHandler/controllers/SessionHandling`,
 )
 
+const auth_middlewares = require(
+  `${process.cwd()}/components/WebServer/config/passport/local/middleware`,
+)
+
 class IoHandler extends Component {
   constructor(app) {
     super(app, "WebServer") // Relies on a WebServer component to be registrated
@@ -22,8 +26,11 @@ class IoHandler extends Component {
       cors: {
         origin: process.env.CORS_API_WHITELIST.split(","),
         methods: ["GET", "POST"],
+        credentials: true,
       },
     })
+
+    this.io.use(auth_middlewares.isAuthenticateSocket)
 
     this.io.on("connection", (socket) => {
       appLogger.debug(`New client connected : ${socket.id}`)
