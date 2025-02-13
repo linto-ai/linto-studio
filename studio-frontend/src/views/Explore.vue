@@ -34,13 +34,17 @@
 
     <template v-slot:sidebar>
       <div class="sidebar-divider"></div>
-
-      <SidebarTagList
+      <SidebarFilters
+        :custom-filters="customFilters"
+        :selected-tags="selectedTags"
+        @onUpdateSelectedTags="onUpdateSelectedTags"
+        @addSearchCriterion="openExploreModal" />
+      <!-- <SidebarTagList
         :selected-tags="selectedTags"
         :custom-filters="customFilters"
         @addSearchCriterion="openExploreModal"
-        @onUpdateSelectedTags="onUpdateSelectedTags"
-        @onUpdateCustomFilters="onUpdateCustomFilters"></SidebarTagList>
+        
+        @onUpdateCustomFilters="onUpdateCustomFilters"></SidebarTagList> -->
     </template>
 
     <section class="flex col flex1 gap-small reset-overflows">
@@ -94,6 +98,7 @@ import { apiSearchTagsById, apiCategoriesTree } from "@/api/tag.js"
 import {
   apiGetConversationsByTags,
   apiGetConversationsByOrganization,
+  apiGetConversationsWithoutTagsByOrganization,
 } from "@/api/conversation.js"
 import { debounceMixin } from "@/mixins/debounce"
 import { conversationListOrgaMixin } from "@/mixins/conversationListOrga.js"
@@ -110,7 +115,7 @@ import ModalDeleteConversations from "@/components/ModalDeleteConversations.vue"
 import ConversationShareMultiple from "@/components/ConversationShareMultiple.vue"
 import SelectedConversationIndicator from "@/components/SelectedConversationIndicator.vue"
 import ConversationListHeader from "@/components/ConversationListHeader.vue"
-import { apiGetConversationsWithoutTagsByOrganization } from "../api/conversation"
+import SidebarFilters from "@/components/SidebarFilters.vue"
 
 export default {
   mixins: [debounceMixin, conversationListOrgaMixin],
@@ -274,6 +279,7 @@ export default {
     ConversationShareMultiple,
     SelectedConversationIndicator,
     ConversationListHeader,
+    SidebarFilters,
   },
 }
 </script>
