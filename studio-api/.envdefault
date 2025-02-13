@@ -86,6 +86,8 @@ BROKER_PROTOCOL=mqtt
 TOKEN_DAYS_TIME=7d
 REFRESH_TOKEN_DAYS_TIME=14d
 
+# Authentification settings
+LOCAL_AUTH_ENABLED=true
 # OIDC Type supported are : linagora
 OIDC_TYPE=
 OIDC_URL=

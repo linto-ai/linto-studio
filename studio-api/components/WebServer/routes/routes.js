@@ -4,10 +4,7 @@ module.exports = (webServer) => {
   let api_routes = {
     "/": require("./root")(webServer),
     "/healthcheck": require("./api/healthcheck/healthcheck")(webServer),
-    "/auth": [
-      ...require("./auth/index.js")(webServer),
-      ...require("./auth/local.js")(webServer),
-    ],
+    "/auth": [...require("./auth/index.js")(webServer)],
     "/api/users/self/favorites": require("./api/users/favorites.js")(webServer),
     "/api/users": require("./api/users/users.js")(webServer),
     "/api/organizations": require("./api/organization/organizations")(
@@ -43,6 +40,12 @@ module.exports = (webServer) => {
     proxy_routes.push(require("./proxy/sessions/session.js")(webServer))
   }
 
+  if (process.env.LOCAL_AUTH_ENABLED === "true") {
+    api_routes["/auth"] = [
+      ...api_routes["/auth"],
+      ...require("./auth/local.js")(webServer),
+    ]
+  }
   if (process.env.OIDC_TYPE !== "") {
     api_routes["/auth"] = [
       ...api_routes["/auth"],
