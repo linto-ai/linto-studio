@@ -6,6 +6,8 @@ const { expressjwt: jwt } = require("express-jwt")
 const jwtDecode = require("jwt-decode")
 const verifyJwt = require("jsonwebtoken")
 
+const algorithm = process.env.JWT_ALGORITHM || "HS256"
+
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const {
   MalformedToken,
@@ -68,7 +70,7 @@ module.exports = {
   isAuthenticate: [
     jwt({
       secret: generateSecretFromHeaders,
-      algorithms: ["HS256"],
+      algorithms: [algorithm],
       getToken: extractToken,
     }),
     (req, res, next) => {
@@ -90,7 +92,7 @@ module.exports = {
   refresh_token: [
     jwt({
       secret: generateRefreshSecretFromHeaders,
-      algorithms: ["HS256"],
+      algorithms: [algorithm],
       getToken: extractToken,
     }),
     async (req, res, next) => {
@@ -127,7 +129,7 @@ module.exports = {
       verifyJwt.verify(
         token,
         secret,
-        { algorithms: ["HS256"] },
+        { algorithms: [algorithm] },
         (err, decoded) => {
           if (err) return next(new Error("Invalid or expired token"))
           next() // Authentication successful
