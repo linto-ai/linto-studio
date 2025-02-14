@@ -30,13 +30,6 @@ async function updateOrganization(req, res, next) {
       throw new OrganizationError("Organization not found")
     organization = organization[0]
 
-    const isOrgaFound = await model.organizations.getByName(req.body.name)
-    if (
-      isOrgaFound.length === 1 &&
-      organization._id.toString() !== isOrgaFound[0]._id.toString()
-    )
-      throw new OrganizationConflict("Organization name already exists")
-
     if (req.body.token) organization.token = req.body.token
     if (req.body.description) organization.description = req.body.description
     if (req.body.name) organization.name = req.body.name

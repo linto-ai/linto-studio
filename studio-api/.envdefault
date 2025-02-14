@@ -21,7 +21,7 @@ DB_PASS=example
 DB_NAME=conversations
 
 # Request a specific version of the database (optional)
-DB_MIGRATION_TARGET=1.5.4
+DB_MIGRATION_TARGET=1.5.6
 
 # STT Config
 GATEWAY_SERVICES=https://api.linto.ai
@@ -62,6 +62,7 @@ VOLUME_AUDIO_PATH=audios
 VOLUME_PROFILE_PICTURE_PATH=pictures
 
 DISABLE_USER_CREATION=false
+DISABLE_DEFAULT_ORGANIZATION_CREATION=false
 
 EXPORT_TEMPLATE=default
 
