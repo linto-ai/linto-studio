@@ -112,8 +112,7 @@ module.exports = {
   // Socket middleware need to return an expcetion in case of error
   isAuthenticateSocket: async (socket, next) => {
     try {
-      const cookie = socket.handshake.headers.cookie
-      const token = cookie ? getUserValueFromCookies(cookie, "authToken") : null
+      const token = socket?.handshake?.auth?.token
       if (!token) {
         return next(new Error("Authentication token is missing"))
       }

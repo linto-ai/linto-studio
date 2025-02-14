@@ -1,7 +1,8 @@
 import io from "socket.io-client"
 import Vue from "vue"
-import { customDebug } from "../tools/customDebug"
-import { bus } from "../main"
+import { customDebug } from "@/tools/customDebug"
+import { bus } from "@/main"
+import { getCookie } from "@/tools/getCookie"
 
 const socketioUrl = process.env.VUE_APP_SESSION_WS
 const socketioPath = process.env.VUE_APP_SESSION_WS_PATH
@@ -24,9 +25,12 @@ export default class SessionWS {
 
   connect() {
     return new Promise((resolve, reject) => {
+      const userToken = getCookie("authToken")
       this.socket = io(socketioUrl, {
         path: socketioPath,
-        withCredentials: true,
+        auth: {
+          token: userToken,
+        },
         transports: ["websocket"],
       })
       this.socket.on("connect", (msg) => {
