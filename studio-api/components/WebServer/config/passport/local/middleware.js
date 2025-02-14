@@ -16,7 +16,6 @@ const {
   UserNotFound,
 } = require(`${process.cwd()}/components/WebServer/error/exception/auth`)
 const refreshToken = require("./token/refresh")
-const { getUserValueFromCookies } = require("./token/cookie")
 
 require("./strategies/local")
 if (process.env.OIDC_TYPE === "linagora") {
