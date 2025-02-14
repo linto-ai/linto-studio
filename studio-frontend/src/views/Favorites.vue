@@ -13,12 +13,19 @@
     <template v-slot:sidebar>
       <div class="sidebar-divider"></div>
 
-      <SidebarTagList
+      <SidebarFilters
+        :custom-filters="customFilters"
+        :selected-tags="selectedTags"
+        @onUpdateSelectedTags="onUpdateSelectedTags"
+        @onUpdateCustomFilters="onUpdateCustomFilters"
+        @addSearchCriterion="openExploreModal" />
+
+      <!-- <SidebarTagList
         :selected-tags="selectedTags"
         :custom-filters="customFilters"
         @addSearchCriterion="openExploreModal"
         @onUpdateSelectedTags="onUpdateSelectedTags"
-        @onUpdateCustomFilters="onUpdateCustomFilters"></SidebarTagList>
+        @onUpdateCustomFilters="onUpdateCustomFilters"></SidebarTagList> -->
     </template>
 
     <section class="flex col flex1 gap-small reset-overflows">
@@ -87,6 +94,7 @@ import ConversationListSearch from "@/components/ConversationListSearch.vue"
 import Pagination from "@/components/Pagination.vue"
 import ConversationListHeader from "@/components/ConversationListHeader.vue"
 import Svglogo from "@/svg/Favorite.vue"
+import SidebarFilters from "@/components/SidebarFilters.vue"
 
 export default {
   mixins: [debounceMixin, conversationListMixin],
@@ -140,7 +148,7 @@ export default {
           this.customFilters?.textConversation?.value,
           this.customFilters?.titleConversation?.value,
           this.currentPageNb,
-          { sortField: this.selectedOption }
+          { sortField: this.selectedOption },
         )
       } catch (error) {
         this.error = error
@@ -181,6 +189,7 @@ export default {
     Pagination,
     ConversationListHeader,
     Svglogo,
+    SidebarFilters,
   },
 }
 </script>

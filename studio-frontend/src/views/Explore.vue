@@ -38,6 +38,7 @@
         :custom-filters="customFilters"
         :selected-tags="selectedTags"
         @onUpdateSelectedTags="onUpdateSelectedTags"
+        @onUpdateCustomFilters="onUpdateCustomFilters"
         @addSearchCriterion="openExploreModal" />
       <!-- <SidebarTagList
         :selected-tags="selectedTags"

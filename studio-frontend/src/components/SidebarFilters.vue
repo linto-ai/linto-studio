@@ -1,23 +1,22 @@
 <template>
-  <div class="sidebar__section">
+  <div class="sidebar__section flex1">
     <h3 class="flex align-center">
       <span class="flex1">Filtres</span>
-      <button class="icon-only transparent">
+      <button class="icon-only transparent" @click="resetFilters">
         <span class="icon clear-history"></span>
       </button>
     </h3>
-    <div>
+    <div class="flex wrap gap-small"></div>
+
+    <div class="flex wrap gap-small">
       <Tag
         v-for="customfilter of customFilters"
         :key="customfilter._id"
         size="normal"
         :value="customfilter.value"
         :categoryName="customfilter.title"
-        :removable="true"
-        @remove="removeCustomFilter(customfilter)" />
-    </div>
-
-    <div class="flex wrap gap-small">
+        :deletable="true"
+        @delete="removeCustomFilter(customfilter)" />
       <Tag
         v-for="tag of selectedTags"
         :key="tag._id"
@@ -60,12 +59,21 @@ export default {
   },
   mounted() {},
   methods: {
+    removeCustomFilter(filter) {
+      const newValue = Object.assign({}, this.customFilters)
+      delete newValue[filter.key]
+      this.$emit("onUpdateCustomFilters", newValue)
+    },
     addSearchCriterion() {
       this.$emit("addSearchCriterion")
     },
     removeTag(tag) {
       const newValue = this.selectedTags.filter((t) => t._id != tag._id)
       this.$emit("onUpdateSelectedTags", newValue)
+    },
+    resetFilters() {
+      this.$emit("onUpdateSelectedTags", [])
+      this.$emit("onUpdateCustomFilters", {})
     },
   },
   components: {

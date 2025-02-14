@@ -197,6 +197,7 @@ input:checked + .conversation-line .conversation-line__open-with {
   //border-top: var(--divider);
   margin: 1em;
   padding: 0;
+  overflow: auto;
 }
 
 .sidebar-divider {
