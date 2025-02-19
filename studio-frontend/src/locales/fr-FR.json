@@ -408,7 +408,7 @@
       "apply_name": "Mettre à jour le nom du canal",
       "error_notif": "Un erreur est survenu, les informations du canal n'ont pas été mis à jour.",
       "done_notif": "Les informations du canal ont été mis à jour.",
-      "only_one": "Le media a un seul canal de transcription"
+      "only_one": "Le média a un seul canal de transcription"
     }
   },
   "createaccount": {

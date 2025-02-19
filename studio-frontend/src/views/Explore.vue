@@ -34,13 +34,12 @@
 
     <template v-slot:sidebar>
       <div class="sidebar-divider"></div>
-
-      <SidebarTagList
-        :selected-tags="selectedTags"
+      <SidebarFilters
         :custom-filters="customFilters"
-        @addSearchCriterion="openExploreModal"
+        :selected-tags="selectedTags"
         @onUpdateSelectedTags="onUpdateSelectedTags"
-        @onUpdateCustomFilters="onUpdateCustomFilters"></SidebarTagList>
+        @onUpdateCustomFilters="onUpdateCustomFilters"
+        @addSearchCriterion="openExploreModal" />
     </template>
 
     <section class="flex col flex1 gap-small reset-overflows">
@@ -94,6 +93,7 @@ import { apiSearchTagsById, apiCategoriesTree } from "@/api/tag.js"
 import {
   apiGetConversationsByTags,
   apiGetConversationsByOrganization,
+  apiGetConversationsWithoutTagsByOrganization,
 } from "@/api/conversation.js"
 import { debounceMixin } from "@/mixins/debounce"
 import { conversationListOrgaMixin } from "@/mixins/conversationListOrga.js"
@@ -103,14 +103,13 @@ import Tag from "@/components/Tag.vue"
 import MainContent from "@/components/MainContent.vue"
 import ExploreModalVue from "@/components/ExploreModal.vue"
 import { extractTagsFromCategoryTree } from "@/tools/extractTagsFromCategoryTree"
-import SidebarTagList from "@/components/SidebarTagList.vue"
 import ConversationListSearch from "@/components/ConversationListSearch.vue"
 import Pagination from "@/components/Pagination.vue"
 import ModalDeleteConversations from "@/components/ModalDeleteConversations.vue"
 import ConversationShareMultiple from "@/components/ConversationShareMultiple.vue"
 import SelectedConversationIndicator from "@/components/SelectedConversationIndicator.vue"
 import ConversationListHeader from "@/components/ConversationListHeader.vue"
-import { apiGetConversationsWithoutTagsByOrganization } from "../api/conversation"
+import SidebarFilters from "@/components/SidebarFilters.vue"
 
 export default {
   mixins: [debounceMixin, conversationListOrgaMixin],
@@ -267,13 +266,13 @@ export default {
     ConversationList,
     Tag,
     ExploreModalVue,
-    SidebarTagList,
     ConversationListSearch,
     Pagination,
     ModalDeleteConversations,
     ConversationShareMultiple,
     SelectedConversationIndicator,
     ConversationListHeader,
+    SidebarFilters,
   },
 }
 </script>

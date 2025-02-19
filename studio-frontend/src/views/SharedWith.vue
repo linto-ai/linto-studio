@@ -22,13 +22,12 @@
 
     <template v-slot:sidebar>
       <div class="sidebar-divider"></div>
-
-      <SidebarTagList
-        :selected-tags="selectedTags"
+      <SidebarFilters
         :custom-filters="customFilters"
-        @addSearchCriterion="openExploreModal"
+        :selected-tags="selectedTags"
         @onUpdateSelectedTags="onUpdateSelectedTags"
-        @onUpdateCustomFilters="onUpdateCustomFilters"></SidebarTagList>
+        @onUpdateCustomFilters="onUpdateCustomFilters"
+        @addSearchCriterion="openExploreModal" />
     </template>
 
     <section class="flex col flex1 gap-small reset-overflows">
@@ -99,13 +98,13 @@ import { debounceMixin } from "@/mixins/debounce"
 import { conversationListMixin } from "@/mixins/conversationList"
 
 import MainContent from "@/components/MainContent.vue"
-import SidebarTagList from "@/components/SidebarTagList.vue"
 import ExploreModalVue from "@/components/ExploreModal.vue"
 import ConversationListSearch from "@/components/ConversationListSearch.vue"
 import Pagination from "@/components/Pagination.vue"
 import ConversationShareMultiple from "@/components/ConversationShareMultiple.vue"
 import SelectedConversationIndicator from "@/components/SelectedConversationIndicator.vue"
 import ConversationListHeader from "@/components/ConversationListHeader.vue"
+import SidebarFilters from "@/components/SidebarFilters.vue"
 import Svglogo from "@/svg/ShareBalloon.vue"
 
 export default {
@@ -160,7 +159,7 @@ export default {
           this.customFilters?.textConversation?.value,
           this.customFilters?.titleConversation?.value,
           this.currentPageNb,
-          { sortField: this.selectedOption }
+          { sortField: this.selectedOption },
         )
       } catch (error) {
         this.error = error
@@ -195,7 +194,6 @@ export default {
   components: {
     ConversationList,
     MainContent,
-    SidebarTagList,
     ExploreModalVue,
     ConversationListSearch,
     Pagination,
@@ -203,6 +201,7 @@ export default {
     SelectedConversationIndicator,
     ConversationListHeader,
     Svglogo,
+    SidebarFilters,
   },
 }
 </script>
