@@ -18,9 +18,6 @@ async function createOrganization(req, res, next) {
   try {
     if (!req.body.name) throw new OrganizationUnsupportedMediaType()
 
-    const isOrgaFound = await model.organizations.getByName(req.body.name)
-    if (isOrgaFound.length === 1) throw new OrganizationConflict()
-
     const organization = {
       name: req.body.name,
       description: req.body.description ? req.body.description : "",

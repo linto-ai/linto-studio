@@ -3,10 +3,13 @@ const path = require("path")
 const EventEmitter = require("eventemitter3")
 const { componentMissingError } = require(`../lib/error/customErrors.js`)
 const ignoredFilesExt = [".docx"]
-
 class Component extends EventEmitter {
+  _state = null
+
   constructor(app, ...requiredComponents) {
     super()
+    this.state = "uninitialized"
+    this.app = app
     let missingComponents = []
     requiredComponents.every((component) => {
       if (app.components.hasOwnProperty(component)) {
@@ -46,13 +49,32 @@ class Component extends EventEmitter {
     return new Promise(async (resolve, reject) => {
       try {
         await this.loadEventControllers(
-          path.join(__dirname, this.constructor.name, "/controllers"),
+          path.join(
+            path.dirname(require.main.filename),
+            "components",
+            this.constructor.name,
+            "/controllers",
+          ),
         )
         resolve(this)
       } catch (e) {
         reject(e)
       }
     })
+  }
+
+  // state getter/setter
+  // any state change emits an event from the component with the new state
+  get state() {
+    return this._state
+  }
+
+  set state(newState) {
+    const oldState = this._state
+    this._state = newState
+    if (oldState !== newState) {
+      this.emit(newState)
+    }
   }
 }
 

@@ -4,6 +4,9 @@ const debug = require("debug")(
 const passport = require("passport")
 const { expressjwt: jwt } = require("express-jwt")
 const jwtDecode = require("jwt-decode")
+const verifyJwt = require("jsonwebtoken")
+
+const algorithm = process.env.JWT_ALGORITHM || "HS256"
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const {
@@ -35,6 +38,7 @@ const authenticateUser = (strategy, req, res, next) => {
 }
 
 const extractToken = (req) => {
+  if (req.cookie) debug("cookie", req.cookie)
   if (req.headers.authorization) {
     return req.headers.authorization.split(" ")[1]
   } else if (req?.session?.passport?.user?.auth_token) {
@@ -65,7 +69,7 @@ module.exports = {
   isAuthenticate: [
     jwt({
       secret: generateSecretFromHeaders,
-      algorithms: ["HS256"],
+      algorithms: [algorithm],
       getToken: extractToken,
     }),
     (req, res, next) => {
@@ -87,7 +91,7 @@ module.exports = {
   refresh_token: [
     jwt({
       secret: generateRefreshSecretFromHeaders,
-      algorithms: ["HS256"],
+      algorithms: [algorithm],
       getToken: extractToken,
     }),
     async (req, res, next) => {
@@ -103,6 +107,36 @@ module.exports = {
       next()
     },
   ],
+
+  // Socket middleware need to return an expcetion in case of error
+  isAuthenticateSocket: async (socket, next) => {
+    try {
+      const token = socket?.handshake?.auth?.token
+      if (!token) {
+        return next(new Error("Authentication token is missing"))
+      }
+      const tokenData = jwtDecode(token + "")
+      if (!tokenData?.data?.userId || !tokenData?.data?.tokenId) {
+        return next(new Error("Malformed token"))
+      }
+
+      const secret = await generateSecretFromHeaders(undefined, {
+        payload: tokenData,
+      })
+
+      verifyJwt.verify(
+        token,
+        secret,
+        { algorithms: [algorithm] },
+        (err, decoded) => {
+          if (err) return next(new Error("Invalid or expired token"))
+          next() // Authentication successful
+        },
+      )
+    } catch (err) {
+      next(new Error("Authentication failed"))
+    }
+  },
 }
 
 const generateSecret = async (req, token, secretType) => {

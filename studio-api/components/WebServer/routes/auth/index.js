@@ -31,7 +31,10 @@ module.exports = (webServer) => {
       method: "get",
       requireAuth: false,
       controller: (req, res, next) => {
-        let list = [{ path: "local", from: "studio", name: "studio" }]
+        let list = []
+        if (process.env.LOCAL_AUTH_ENABLED === "true") {
+          list.push({ path: "local", from: "studio", name: "studio" })
+        }
         if (process.env.OIDC_TYPE !== "") {
           list.push({
             path: "oidc",
@@ -39,6 +42,7 @@ module.exports = (webServer) => {
             name: process.env.OIDC_TYPE,
           })
         }
+
         res.status(200).send(list)
       },
     },

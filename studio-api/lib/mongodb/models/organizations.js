@@ -21,6 +21,7 @@ class OrganizationModel extends MongoModel {
       const dateTime = moment().format()
       payload.created = dateTime
       payload.last_update = dateTime
+      payload.personal = false
 
       return await this.mongoInsert(payload)
     } catch (error) {
@@ -35,6 +36,7 @@ class OrganizationModel extends MongoModel {
         owner: userId,
         name: organizationName,
         users: [{ userId: userId, role: ROLES.ADMIN }],
+        personal: true,
         ...oPayload,
       }
       const dateTime = moment().format()

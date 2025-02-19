@@ -1,11 +1,15 @@
 const debug = require("debug")("linto:components:socketio")
-const path = require("path")
-const { Component } = require("live-srt-lib")
+const Component = require(`../component.js`)
 const socketIO = require("socket.io")
 const axios = require(`${process.cwd()}/lib/utility/axios`)
+const appLogger = require(`${process.cwd()}/lib/logger/logger.js`)
 
 const { diffSessions, groupSessionsByOrg } = require(
   `${process.cwd()}/components/IoHandler/controllers/SessionHandling`,
+)
+
+const auth_middlewares = require(
+  `${process.cwd()}/components/WebServer/config/passport/local/middleware`,
 )
 
 class IoHandler extends Component {
@@ -22,34 +26,41 @@ class IoHandler extends Component {
       cors: {
         origin: process.env.CORS_API_WHITELIST.split(","),
         methods: ["GET", "POST"],
+        credentials: true,
       },
     })
 
+    this.io.use(auth_middlewares.isAuthenticateSocket)
+
     this.io.on("connection", (socket) => {
-      debug(`New client connected : ${socket.id}`)
+      appLogger.debug(`New client connected : ${socket.id}`)
 
       socket.on("join_room", (roomId) => {
-        debug(`Client ${socket.id} joins room ${roomId}`)
+        appLogger.debug(`Client ${socket.id} joins room ${roomId}`)
         this.addSocketInRoom(roomId, socket)
       })
 
       socket.on("leave_room", (roomId) => {
-        debug(`Client ${socket.id} leaves room ${roomId}`)
+        appLogger.debug(`Client ${socket.id} leaves room ${roomId}`)
         this.removeSocketFromRoom(roomId, socket)
       })
 
       socket.on("watch_organization", (orgaId) => {
-        debug(`Client ${socket.id} joins watcher session of orga ${orgaId}`)
+        appLogger.debug(
+          `Client ${socket.id} joins watcher session of orga ${orgaId}`,
+        )
         this.addSocketInOrga(orgaId, socket)
       })
 
       socket.on("unwatch_organization", (orgaId) => {
-        debug(`Client ${socket.id} leaves watcher session of orga ${orgaId}`)
+        appLogger.debug(
+          `Client ${socket.id} leaves watcher session of orga ${orgaId}`,
+        )
         this.removeSocketFromOrga(orgaId, socket)
       })
 
       socket.on("disconnect", () => {
-        debug(`Client ${socket.id} disconnected`)
+        appLogger.debug(`Client ${socket.id} disconnected`)
         this.searchAndRemoveSocketFromRooms(socket)
       })
     })
@@ -74,7 +85,9 @@ class IoHandler extends Component {
             }
           })
         } catch (err) {
-          debug(`Error getting organization ID from the orga ${orgaId}: ${err}`)
+          appLogger.debug(
+            `Error getting organization ID from the orga ${orgaId}: ${err}`,
+          )
         }
       }
     }

@@ -90,6 +90,7 @@ async function getOrgaIdFromReq(req) {
   return organizationId
 }
 
+// Add user to all organization with the same email domain
 async function populateUserToOrganization(user) {
   const matchingMail = "@" + user.email.split("@")[1]
 

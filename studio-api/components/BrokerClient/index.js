@@ -1,5 +1,7 @@
 const debug = require("debug")(`linto:components:BrokerClient`)
-const { MqttClient, Component } = require("live-srt-lib")
+
+const Component = require(`../component.js`)
+const MqttClient = require(`${process.cwd()}/lib/mqtt/mqtt.js`)
 
 class BrokerClient extends Component {
   static states = {

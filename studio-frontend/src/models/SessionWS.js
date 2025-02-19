@@ -1,7 +1,9 @@
 import io from "socket.io-client"
 import Vue from "vue"
-import { customDebug } from "../tools/customDebug"
-import { bus } from "../main"
+import { customDebug } from "@/tools/customDebug"
+import { bus } from "@/main"
+import { getCookie } from "@/tools/getCookie"
+import { getEnv } from "@/tools/getEnv"
 
 const socketioUrl = process.env.VUE_APP_SESSION_WS
 const socketioPath = process.env.VUE_APP_SESSION_WS_PATH
@@ -24,7 +26,15 @@ export default class SessionWS {
 
   connect() {
     return new Promise((resolve, reject) => {
-      this.socket = io(socketioUrl, { path: socketioPath })
+      const userToken = getCookie("authToken")
+      const transports = getEnv("VUE_APP_WEBSOCKET_TRANSPORTS").split(",")
+      this.socket = io(socketioUrl, {
+        path: socketioPath,
+        auth: {
+          token: userToken,
+        },
+        transports: transports,
+      })
       this.socket.on("connect", (msg) => {
         debugWS("connected to socket.io server", msg)
         this.state.isConnected = true

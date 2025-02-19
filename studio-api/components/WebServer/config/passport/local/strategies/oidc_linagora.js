@@ -27,7 +27,9 @@ const STRATEGY = new Strategy(
     clientID: process.env.OIDC_CLIENT_ID,
     clientSecret: process.env.OIDC_CLIENT_SECRET,
     callbackURL: process.env.OIDC_CALLBACK_URI,
-    scope: ["openid", "email", "profile"],
+    scope: process.env.OIDC_SCOPE
+      ? process.env.OIDC_SCOPE.split(",")
+      : ["openid", "email", "profile"],
   },
   async function verify(
     openid,
