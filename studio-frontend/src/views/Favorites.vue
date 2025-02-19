@@ -19,13 +19,6 @@
         @onUpdateSelectedTags="onUpdateSelectedTags"
         @onUpdateCustomFilters="onUpdateCustomFilters"
         @addSearchCriterion="openExploreModal" />
-
-      <!-- <SidebarTagList
-        :selected-tags="selectedTags"
-        :custom-filters="customFilters"
-        @addSearchCriterion="openExploreModal"
-        @onUpdateSelectedTags="onUpdateSelectedTags"
-        @onUpdateCustomFilters="onUpdateCustomFilters"></SidebarTagList> -->
     </template>
 
     <section class="flex col flex1 gap-small reset-overflows">
@@ -88,7 +81,6 @@ import { debounceMixin } from "@/mixins/debounce"
 import { conversationListMixin } from "@/mixins/conversationList"
 
 import MainContent from "@/components/MainContent.vue"
-import SidebarTagList from "@/components/SidebarTagList.vue"
 import ExploreModalVue from "@/components/ExploreModal.vue"
 import ConversationListSearch from "@/components/ConversationListSearch.vue"
 import Pagination from "@/components/Pagination.vue"
@@ -183,7 +175,6 @@ export default {
   components: {
     ConversationList,
     MainContent,
-    SidebarTagList,
     ExploreModalVue,
     ConversationListSearch,
     Pagination,

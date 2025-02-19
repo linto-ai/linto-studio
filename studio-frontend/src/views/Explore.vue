@@ -40,12 +40,6 @@
         @onUpdateSelectedTags="onUpdateSelectedTags"
         @onUpdateCustomFilters="onUpdateCustomFilters"
         @addSearchCriterion="openExploreModal" />
-      <!-- <SidebarTagList
-        :selected-tags="selectedTags"
-        :custom-filters="customFilters"
-        @addSearchCriterion="openExploreModal"
-        
-        @onUpdateCustomFilters="onUpdateCustomFilters"></SidebarTagList> -->
     </template>
 
     <section class="flex col flex1 gap-small reset-overflows">
@@ -109,7 +103,6 @@ import Tag from "@/components/Tag.vue"
 import MainContent from "@/components/MainContent.vue"
 import ExploreModalVue from "@/components/ExploreModal.vue"
 import { extractTagsFromCategoryTree } from "@/tools/extractTagsFromCategoryTree"
-import SidebarTagList from "@/components/SidebarTagList.vue"
 import ConversationListSearch from "@/components/ConversationListSearch.vue"
 import Pagination from "@/components/Pagination.vue"
 import ModalDeleteConversations from "@/components/ModalDeleteConversations.vue"
@@ -273,7 +266,6 @@ export default {
     ConversationList,
     Tag,
     ExploreModalVue,
-    SidebarTagList,
     ConversationListSearch,
     Pagination,
     ModalDeleteConversations,
