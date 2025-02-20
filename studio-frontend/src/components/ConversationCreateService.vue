@@ -34,9 +34,7 @@
 
     <!-- -- -- language -- -- -->
     <!-- todo: reactivate lang selector when supported by api-->
-    <div
-      class="form-field flex col"
-      v-if="false && isWhisper && language === '*'">
+    <div class="form-field flex col" v-if="isWhisper && language === '*'">
       <label :for="`service-${value.name}-language`">
         {{ $t("conversation.transcription.language_label") }}
       </label>
@@ -200,6 +198,9 @@ export default {
     "speakersNumber.value"() {
       this.select(null)
     },
+    "languageField.value"() {
+      this.select(null)
+    },
     multiTrack() {
       this.diarization.value = "disabled"
     },
@@ -215,7 +216,6 @@ export default {
 
     select(event) {
       event?.preventDefault()
-      console.log("select !!!!", this.value.language)
       this.$emit(
         "select",
         generateServiceConfig(this.value, {
