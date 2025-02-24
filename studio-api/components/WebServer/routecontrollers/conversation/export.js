@@ -156,6 +156,7 @@ async function handleLLMService(res, query, conversation, metadata) {
     conversationExport = {
       convId: conversation._id.toString(),
       format: query.format,
+      llmOutputType: query.llmOutputType || "abstractive",
       status: "processing",
       processing: 0,
     }
@@ -169,8 +170,12 @@ async function handleLLMService(res, query, conversation, metadata) {
     conversationExport[0].status === "complete"
   ) {
     conversationExport = conversationExport[0]
-    const file = await docx.generateDocxOnFormat(query, conversationExport)
-    sendFileAsResponse(res, file, query.preview)
+    if (conversationExport.llmOutputType === "markdown") {
+      handleMarkdownFormat(res, conversationExport)
+    } else {
+      const file = await docx.generateDocxOnFormat(query, conversationExport)
+      sendFileAsResponse(res, file, query.preview)
+    }
   } else {
     if (
       conversationExport[0].status === "unknown" ||
@@ -217,6 +222,11 @@ async function handleJsonFormat(res, metadata, conversation) {
 
   res.setHeader("Content-Type", "application/json")
   res.status(200).send(output)
+}
+
+async function handleMarkdownFormat(res, conversationExport) {
+  res.setHeader("Content-Type", "text/plain")
+  res.status(200).send(conversationExport.data)
 }
 
 async function handleTextFormat(res, metadata, conversation) {
