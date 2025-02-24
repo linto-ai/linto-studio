@@ -916,7 +916,8 @@
         "value_label": "Value",
         "modal_title": "Set metadatas",
         "button_edition": "Set metadatas",
-        "confirm_button": "Apply"
+        "confirm_button": "Apply",
+        "no_metadata": "No metadata"
       },
       "title": "Session settings",
       "visibility_private_label": "Private",

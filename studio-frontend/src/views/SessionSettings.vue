@@ -53,7 +53,13 @@
               v-model="fieldIsPublic.value"
               :disabled="isActive"></FormCheckbox>
           </section>
-
+          <section>
+            <h2 class="flex align-center gap-medium">
+              <span>{{ $t("session.settings_page.metadata.title") }}</span>
+            </h2>
+            <MetadataList :field="fieldMetadata" />
+            <!-- <MetadataEditor v-model="fieldMetadata.value" :field="fieldMetadata" /> -->
+          </section>
           <!-- Auto start and datetime-->
           <section>
             <h2>{{ $t("session.settings_page.time_informations_title") }}</h2>
@@ -195,6 +201,7 @@ import AppointmentSelector from "@/components/AppointmentSelector.vue"
 import ModalForceDeleteSession from "@/components/ModalForceDeleteSession.vue"
 import MainContent from "@/components/MainContent.vue"
 import SessionStatus from "@/components/SessionStatus.vue"
+import MetadataList from "@/components/MetadataList.vue"
 
 export default {
   mixins: [sessionMixin, formsMixin],
@@ -237,6 +244,11 @@ export default {
         error: null,
         valid: false,
         label: this.$t("session.settings_page.autoStart_label"),
+      },
+      fieldMetadata: {
+        ...EMPTY_FIELD,
+        value: [],
+        label: this.$t("session.create_page.metadata_label"),
       },
       linkHasBeenCopied: false,
       showModalDeleteSession: false,
@@ -304,6 +316,8 @@ export default {
 
       this.fieldAppointment.value = [this.startTime, this.endTime]
       this.localChannels = structuredClone(this.session.channels)
+
+      this.fieldMetadata.value = Object.entries(this.metadata)
     },
     updateChannelName(index, value) {
       this.localChannels[index].name = value
@@ -386,6 +400,7 @@ export default {
     SessionChannelsTable,
     AppointmentSelector,
     ModalForceDeleteSession,
+    MetadataList,
   },
 }
 </script>

@@ -5,6 +5,10 @@
       v-for="(pairs, index) in field.value"
       :value="pairs[1]"
       :categoryName="pairs[0]" />
+
+    <div v-if="field.value.length == 0">
+      {{ $t("session.settings_page.metadata.no_metadata") }}
+    </div>
   </div>
 </template>
 <script>

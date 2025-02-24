@@ -920,7 +920,8 @@
         "value_label": "valeur",
         "modal_title": "Définir les métadonnées",
         "button_edition": "Définir les métadonnées",
-        "confirm_button": "valider"
+        "confirm_button": "valider",
+        "no_metadata": "Aucune métadonnée"
       },
       "visibility_private_label": "Privée",
       "visibility_organization_label": "Interne",
