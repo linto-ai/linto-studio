@@ -27,7 +27,10 @@ export default {
   mounted() {},
   methods: {
     confirm() {
-      this.$emit("on-confirm", this.l_field.value)
+      this.$emit(
+        "on-confirm",
+        this.l_field.value.filter((pair) => pair[0] !== ""),
+      )
     },
   },
   components: {

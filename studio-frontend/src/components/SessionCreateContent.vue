@@ -53,7 +53,7 @@
       <!-- Channels section -->
       <section class="flex col">
         <div>
-          <div class="flex row gap-medium">
+          <div class="flex row gap-medium align-center">
             <h2 style="width: auto">
               {{ $t("session.channels_list.title") }}
             </h2>
@@ -141,6 +141,7 @@
 import { bus } from "../main.js"
 
 import { testName } from "@/tools/fields/testName"
+import { getEnv } from "@/tools/getEnv"
 
 import EMPTY_FIELD from "@/const/emptyField"
 
@@ -178,6 +179,20 @@ export default {
     },
   },
   data() {
+    let defaultMetadata = []
+    try {
+      console.log(
+        "VUE_APP_DEFAULT_METADATA",
+        getEnv("VUE_APP_DEFAULT_METADATA"),
+      )
+      defaultMetadata = getEnv("VUE_APP_DEFAULT_METADATA")
+        .split(",")
+        .filter((k) => k)
+        .map((k) => [k, ""])
+    } catch (error) {
+      console.error("Error while parsing VUE_APP_DEFAULT_METADATA", error)
+      defaultMetadata = []
+    }
     return {
       localSessionTemplates: structuredClone(this.sessionTemplates),
       selectedTemplateId: "",
@@ -246,7 +261,7 @@ export default {
       },
       fieldMetadata: {
         ...EMPTY_FIELD,
-        value: [],
+        value: defaultMetadata,
         label: this.$t("session.create_page.metadata_label"),
       },
       modalEditMetadataIsOpen: false,
@@ -258,6 +273,7 @@ export default {
       formError: null,
     }
   },
+  mounted() {},
   watch: {
     selectedProfiles() {
       this.channelsError = null
@@ -309,7 +325,7 @@ export default {
       }
     },
   },
-  mounted() {},
+
   methods: {
     applyTemplate(template) {
       let nameToApply

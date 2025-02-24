@@ -1,6 +1,7 @@
 <template>
   <div class="flex wrap gap-small">
     <Tag
+      :key="index"
       v-for="(pairs, index) in field.value"
       :value="pairs[1]"
       :categoryName="pairs[0]" />

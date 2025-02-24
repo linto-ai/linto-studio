@@ -918,8 +918,8 @@
         "title": "Métadonnées",
         "key_label": "clé",
         "value_label": "valeur",
-        "modal_title": "Modifier les métadonnées",
-        "button_edition": "Modifier les métadonnées",
+        "modal_title": "Définir les métadonnées",
+        "button_edition": "Définir les métadonnées",
         "confirm_button": "valider"
       },
       "visibility_private_label": "Privée",
