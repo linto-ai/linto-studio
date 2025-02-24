@@ -1,15 +1,22 @@
 <template>
-  <div class="flex gap-medium align-center">
+  <div class="flex gap-medium align-bottom metadata-editor-line">
+    <!-- <legend>Meta-donnée {{ this.index + 1 }}</legend> -->
     <FormInput
       :field="fieldName"
       @input="updateName"
       class="flex1 metadata-line__key"
-      inputFullWidth></FormInput>
+      inputFullWidth>
+      <!-- <template v-slot:content-after-input>
+        <span class="metadata-line__separator">:</span>
+      </template> -->
+    </FormInput>
     <FormInput
       :field="fieldValue"
       @input="updateValue"
       class="flex1 metadata-line__value"
-      inputFullWidth></FormInput>
+      inputFullWidth>
+      <template v-slot:content-after-input> </template
+    ></FormInput>
     <div>
       <button class="icon-only" @click="deleteRow">
         <span class="icon trash"></span>
@@ -64,12 +71,12 @@ export default {
       this.$emit("onDelete")
     },
     updateName(value) {
-      console.log("updateName 1", value)
       this.$emit("input", [value, this.value[1]])
     },
     updateValue(value) {
-      console.log("updateValue 1", value)
-      this.$emit("input", [this.value[0], value])
+      if (this.value[0]) {
+        this.$emit("input", [this.value[0], value])
+      }
     },
   },
   components: {

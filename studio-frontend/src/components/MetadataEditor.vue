@@ -1,5 +1,5 @@
 <template>
-  <div class="subSection">
+  <div class="subSection metadata-container flex col gap-small">
     <MetadataEditorLine
       v-for="(pairs, index) in value"
       :key="index"

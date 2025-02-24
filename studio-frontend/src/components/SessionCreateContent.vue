@@ -246,10 +246,7 @@ export default {
       },
       fieldMetadata: {
         ...EMPTY_FIELD,
-        value: [
-          ["key", "value"],
-          ["key2", "value2"],
-        ],
+        value: [],
         label: this.$t("session.create_page.metadata_label"),
       },
       modalEditMetadataIsOpen: false,
@@ -317,11 +314,13 @@ export default {
     applyTemplate(template) {
       let nameToApply
       let channelsToApply
+      let metadataToApply
       try {
         nameToApply = template.name
         channelsToApply = template.channelTemplates.map(
           this.convertTemplateChannelToEditableChannel,
         )
+        metadataToApply = Object.entries(template.meta)
       } catch (error) {
         console.error(error)
         bus.$emit("app_notif", {
@@ -335,6 +334,7 @@ export default {
 
       this.name.value = nameToApply
       this.channels = structuredClone(channelsToApply)
+      this.fieldMetadata.value = metadataToApply
 
       bus.$emit("app_notif", {
         status: "success",
@@ -388,6 +388,7 @@ export default {
           this.currentOrganizationScope,
           {
             name: this.name.value,
+            meta: Object.fromEntries(this.fieldMetadata.value),
             channels: this.channels.map(
               ({ profileId, name, translations }) => ({
                 transcriberProfileId: profileId,
@@ -432,11 +433,11 @@ export default {
       this.modalEditMetadataIsOpen = true
     },
     closeModalEditMetadata() {
-      console.log("close !")
       this.modalEditMetadataIsOpen = false
     },
     confirmEditMetadata(metadata) {
-      console.log("confirm", metadata)
+      this.fieldMetadata.value = metadata
+      this.closeModalEditMetadata()
     },
     async createSession(e) {
       e.preventDefault()
@@ -466,6 +467,7 @@ export default {
             diarization: this.fieldDiarizationEnabled.value,
             keepAudio: this.fieldKeepAudio.value,
           })),
+          meta: Object.fromEntries(this.fieldMetadata.value),
           scheduleOn: startDateTime,
           endOn: endDateTime,
           autoStart: true,

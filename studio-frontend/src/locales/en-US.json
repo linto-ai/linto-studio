@@ -910,6 +910,14 @@
         "content": "An audio stream is connected. Are you sure you want to delete the session? The content will be saved in your media library.",
         "title": "Confirm session deletion"
       },
+      "metadata": {
+        "title": "Metadata",
+        "key_label": "Key",
+        "value_label": "Value",
+        "modal_title": "Edit metadatas",
+        "button_edition": "Edit metadatas",
+        "confirm_button": "Apply"
+      },
       "title": "Session settings",
       "visibility_private_label": "Private",
       "visibility_organization_label": "Internal",
@@ -1011,6 +1019,7 @@
     "edit_category_title": "Edit category",
     "edit_tag_title": "Edit tag",
     "empty_category": "category yet to define",
+    "empty_value": "No value",
     "error_creating_tag": "An error occurred while creating the tag",
     "manage_tags": "Manage tags",
     "new_tag_name": "Tag name",

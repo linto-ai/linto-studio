@@ -5,12 +5,16 @@
   // padding: 1rem;
   // box-shadow: var(--box-shadow-inset);
   // background-color: var(--background-inset-section);
+  .form-field {
+  }
 }
 
-.metadata-line__key {
-  //max-width: 20rem;
-}
-
+.metadata-line__key,
 .metadata-line__value {
-  //max-width: 20rem;
+  margin: 0 !important ;
+}
+
+.metadata-editor-line {
+  padding: 0;
+  border: none;
 }
