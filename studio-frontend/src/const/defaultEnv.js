@@ -6,4 +6,5 @@ export default {
   VUE_APP_ENABLE_SESSION: "false",
   VUE_APP_SHOW_LOGIN_FOOTER: "false",
   VUE_APP_WEBSOCKET_TRANSPORTS: "websocket",
+  VUE_APP_DEFAULT_METADATA: "",
 }
