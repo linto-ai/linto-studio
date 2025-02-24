@@ -4,6 +4,7 @@
       class="flex col flex1"
       @submit="createSession"
       :disabled="formState === 'sending'">
+      <!-- Template selection section -->
       <section>
         <h2>{{ $t("session.create_page.template_selection_title") }}</h2>
         <CustomSelect
@@ -11,6 +12,8 @@
           id="template-selector"
           v-model="selectedTemplateId" />
       </section>
+
+      <!-- Main info section -->
       <section>
         <h2>{{ $t("session.create_page.main_info_title") }}</h2>
         <FormInput :field="name" v-model="name.value" />
@@ -24,6 +27,21 @@
           v-model="fieldAutoStop.value"></FormCheckbox>
       </section>
 
+      <section>
+        <h2 class="flex align-center gap-medium">
+          <span>{{ $t("session.settings_page.metadata.title") }}</span>
+          <button type="button" class="" @click="startMedatadaEdition">
+            <span class="icon edit" />
+            <span class="label">{{
+              $t("session.settings_page.metadata.button_edition")
+            }}</span>
+          </button>
+        </h2>
+        <MetadataList :field="fieldMetadata" />
+        <!-- <MetadataEditor v-model="fieldMetadata.value" :field="fieldMetadata" /> -->
+      </section>
+
+      <!-- Visibility section -->
       <section class="flex col gap-medium">
         <h2>{{ $t("session.settings_page.visibility_title") }}</h2>
         <FormRadio
@@ -32,6 +50,7 @@
           v-model="fieldSessionVisibility.value" />
       </section>
 
+      <!-- Channels section -->
       <section class="flex col">
         <div>
           <div class="flex row gap-medium">
@@ -66,6 +85,7 @@
         </div>
       </section>
 
+      <!-- Bottom footer-->
       <div class="flex gap-medium align-center conversation-create-footer">
         <button
           type="button"
@@ -98,6 +118,11 @@
         </button>
       </div>
     </form>
+    <ModalEditMetadata
+      v-if="modalEditMetadataIsOpen"
+      :field="fieldMetadata"
+      @on-confirm="confirmEditMetadata"
+      @on-cancel="closeModalEditMetadata"></ModalEditMetadata>
     <ModalAddSessionChannels
       v-if="modalAddChannelsIsOpen"
       :transcriberProfiles="transcriberProfiles"
@@ -132,6 +157,9 @@ import AppointmentSelector from "@/components/AppointmentSelector.vue"
 import FormRadio from "@/components/FormRadio.vue"
 import CustomSelect from "@/components/CustomSelect.vue"
 import ModalDeleteTemplate from "@/components/ModalDeleteTemplate.vue"
+import MetadataEditor from "@/components/MetadataEditor.vue"
+import MetadataList from "@/components/MetadataList.vue"
+import ModalEditMetadata from "@/components/ModalEditMetadata.vue"
 
 export default {
   mixins: [formsMixin],
@@ -216,6 +244,15 @@ export default {
         value: false,
         label: this.$t("session.create_page.auto_stop_label"),
       },
+      fieldMetadata: {
+        ...EMPTY_FIELD,
+        value: [
+          ["key", "value"],
+          ["key2", "value2"],
+        ],
+        label: this.$t("session.create_page.metadata_label"),
+      },
+      modalEditMetadataIsOpen: false,
       channels: [],
       selectedProfiles: [],
       modalAddChannelsIsOpen: false,
@@ -227,6 +264,12 @@ export default {
   watch: {
     selectedProfiles() {
       this.channelsError = null
+    },
+    "fieldMetadata.value": {
+      handler(value) {
+        console.log("fieldMetadata.value", value)
+      },
+      deep: true,
     },
     "fieldAppointment.value": {
       handler(value) {
@@ -385,6 +428,16 @@ export default {
         this.formState = "error"
       }
     },
+    startMedatadaEdition() {
+      this.modalEditMetadataIsOpen = true
+    },
+    closeModalEditMetadata() {
+      console.log("close !")
+      this.modalEditMetadataIsOpen = false
+    },
+    confirmEditMetadata(metadata) {
+      console.log("confirm", metadata)
+    },
     async createSession(e) {
       e.preventDefault()
       this.formState = "sending"
@@ -493,6 +546,9 @@ export default {
     FormRadio,
     AppointmentSelector,
     CustomSelect,
+    MetadataEditor,
+    MetadataList,
+    ModalEditMetadata,
   },
 }
 </script>

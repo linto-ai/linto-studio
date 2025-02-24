@@ -119,7 +119,9 @@ export default {
   },
   watch: {
     value() {
-      if (!this.withConfirmation) this.$emit("input", this.value)
+      if (this.field.value !== this.value) {
+        if (!this.withConfirmation) this.$emit("input", this.value)
+      }
     },
     "field.value"() {
       this.value = this.field.value
