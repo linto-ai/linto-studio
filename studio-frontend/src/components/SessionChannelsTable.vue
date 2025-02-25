@@ -80,6 +80,7 @@
         v-for="(channel, index) in channelsList"
         @removeChannel="removeChannel(index)"
         @updateName="updateName(index, $event)"
+        @updateDiarization="updateDiarization(index, $event)"
         :key="channel.id"
         :from="from"
         :item="channel" />
@@ -120,6 +121,9 @@ export default {
     },
     updateName(index, value) {
       this.$emit("updateName", index, value)
+    },
+    updateDiarization(index, value) {
+      this.$emit("updateDiarization", index, value)
     },
   },
   components: { Fragment, ArrayHeader, SessionChannelsLine },

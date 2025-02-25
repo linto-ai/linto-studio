@@ -153,6 +153,7 @@
             v-if="channels.length > 0"
             from="sessionSettings"
             @updateName="updateChannelName"
+            @updateDiarization="updateChannelDiarization"
             :channelsList="localChannels"></SessionChannelsTable>
         </div>
       </section>
@@ -321,6 +322,10 @@ export default {
     },
     updateChannelName(index, value) {
       this.localChannels[index].name = value
+      this.channelsHasChanged = true
+    },
+    updateChannelDiarization(index, value) {
+      this.localChannels[index].diarization = value
       this.channelsHasChanged = true
     },
     openModalDeleteSession() {

@@ -32,7 +32,7 @@
       {{ translations }}
     </td>
     <td v-if="from === 'sessionSettings'" class="text-center">
-      <Checkbox v-model="item.diarization" />
+      <Checkbox v-model="item.diarization" id="diarizationCheckboxId" />
     </td>
     <td class="content-size" v-if="from === 'formCreateSession'">
       <button class="btn red-border" @click="removeChannel" type="button">
@@ -94,6 +94,9 @@ export default {
     }
   },
   computed: {
+    diarizationCheckboxId() {
+      return "diarization-" + this.channelId
+    },
     type() {
       return transriberImageFromtype(this.channelType)
     },
@@ -134,6 +137,9 @@ export default {
     },
     selectedTranslations(value) {
       this.item.translations = value // shallow copy, parent will be updated
+    },
+    "item.diarization"(value) {
+      this.$emit("updateDiarization", value)
     },
   },
   mounted() {},
