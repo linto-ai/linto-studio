@@ -815,7 +815,7 @@
       "submit_label": "Créer la session",
       "success_message": "La session a été créée avec succès",
       "title": "Créer une session",
-      "template_selection_title": "Selection d'un modèle",
+      "template_selection_title": "Selection d'un modèle de session",
       "template_selection_placeholder": "Pas de modèle",
       "template_apply_success": "Le modèle a été appliqué",
       "template_apply_error": "Le modèle n'a pas pu être appliqué",
@@ -913,6 +913,15 @@
         "action": "Supprimer",
         "content": "Un flux audio est connecté. Êtes-vous sûr de vouloir supprimer la session ? Le contenu sera sauvegardé dans votre bibliothèque de médias.",
         "title": "Confirmer la suppression de la session"
+      },
+      "metadata": {
+        "title": "Métadonnées",
+        "key_label": "clé",
+        "value_label": "valeur",
+        "modal_title": "Définir les métadonnées",
+        "button_edition": "Définir les métadonnées",
+        "confirm_button": "valider",
+        "no_metadata": "Aucune métadonnée"
       },
       "visibility_private_label": "Privée",
       "visibility_organization_label": "Interne",
@@ -1014,6 +1023,7 @@
     "edit_category_title": "Modifier la categorie",
     "edit_tag_title": "Modifier le tag",
     "empty_category": "catégorie à définir",
+    "empty_value": "vide",
     "error_creating_tag": "Erreur lors de la création du tag",
     "manage_tags": "Gérer les tags",
     "new_tag_name": "Nom du tag",

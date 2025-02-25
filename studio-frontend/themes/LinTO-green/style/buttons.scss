@@ -75,11 +75,12 @@ button,
     background-color: transparent;
     background-image: none;
     text-decoration: underline;
-    border: none;
+    border-color: transparent;
     box-shadow: none;
     &:hover {
       background-color: transparent;
       text-decoration: underline;
+      //border: var(--border-button-flat);
     }
 
     &:before {

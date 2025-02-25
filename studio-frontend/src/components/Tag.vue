@@ -15,7 +15,9 @@
       class="tag__value flex align-center"
       :class="[classTextSize, classBackgroundColor, classTextColor]">
       <!-- <span class="tag__triangle" /> -->
-      <span class="flex1 tag__value__main">{{ value }}</span>
+      <span class="flex1 tag__value__main" :class="{ 'no-value': !value }">{{
+        l_value
+      }}</span>
       <button
         @click="$emit('remove')"
         v-if="removable"
@@ -67,6 +69,9 @@ export default {
     },
     classCategoryColor() {
       return `color-${this.color}-900`
+    },
+    l_value() {
+      return this.value || this.$t("tags.empty_value")
     },
   },
   mounted() {},

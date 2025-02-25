@@ -1,0 +1,20 @@
+.metadata-container {
+  overflow: auto;
+  // border-top: var(--divider);
+  // border: var(--divider);
+  // padding: 1rem;
+  // box-shadow: var(--box-shadow-inset);
+  // background-color: var(--background-inset-section);
+  .form-field {
+  }
+}
+
+.metadata-line__key,
+.metadata-line__value {
+  margin: 0 !important ;
+}
+
+.metadata-editor-line {
+  padding: 0;
+  border: none;
+}

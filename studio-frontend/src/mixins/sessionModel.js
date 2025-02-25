@@ -94,5 +94,8 @@ export const sessionModelMixin = {
     room() {
       return this.$t("session.room_undefined")
     },
+    metadata() {
+      return this?.session?.meta ?? {}
+    },
   },
 }
