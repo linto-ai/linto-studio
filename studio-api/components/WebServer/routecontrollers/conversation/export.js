@@ -6,13 +6,13 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 const webSocketSingleton = require(
   `${process.cwd()}/components/WebServer/controllers/llm//llm_ws`,
 )
-
 const docx = require(
   `${process.cwd()}/components/WebServer/controllers/export/docx`,
 )
 const llm = require(
   `${process.cwd()}/components/WebServer/controllers/llm/index`,
 )
+const { mdToPdf } = require("md-to-pdf")
 
 const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
 
@@ -171,7 +171,12 @@ async function handleLLMService(res, query, conversation, metadata) {
   ) {
     conversationExport = conversationExport[0]
     if (conversationExport.llmOutputType === "markdown") {
-      handleMarkdownFormat(res, conversationExport)
+      handleMarkdownFormat(
+        res,
+        conversationExport,
+        conversation.name,
+        query.preview,
+      )
     } else {
       const file = await docx.generateDocxOnFormat(query, conversationExport)
       sendFileAsResponse(res, file, query.preview)
@@ -224,9 +229,28 @@ async function handleJsonFormat(res, metadata, conversation) {
   res.status(200).send(output)
 }
 
-async function handleMarkdownFormat(res, conversationExport) {
-  res.setHeader("Content-Type", "text/plain")
-  res.status(200).send(conversationExport.data)
+async function handleMarkdownFormat(
+  res,
+  conversationExport,
+  name,
+  preview = "false",
+) {
+  if (preview === "true") {
+    const tempFile = "/tmp/"
+    const fileName = conversationExport._id + ".pdf"
+
+    await mdToPdf(
+      { content: "# " + name + "\n" + conversationExport.data },
+      { dest: tempFile + fileName },
+    )
+
+    res.setHeader("Content-Type", "application/pdf")
+    res.setHeader("Content-disposition", "attachment; filename=" + fileName)
+    res.sendFile(tempFile + fileName)
+  } else {
+    res.setHeader("Content-Type", "text/plain")
+    res.status(200).send("# " + name + "\n" + conversationExport.data)
+  }
 }
 
 async function handleTextFormat(res, metadata, conversation) {
