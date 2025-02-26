@@ -33,6 +33,8 @@ const STRATEGY = new Strategy(
     scope: process.env.OIDC_SCOPE
       ? process.env.OIDC_SCOPE.split(",")
       : ["openid", "email", "profile"],
+    code_challenge: codeChallenge,
+    code_challenge_method: process.env.OIDC_CODE_CHALLENGE_METHOD || "S256",
     authorizationParams: () => ({
       code_challenge: codeChallenge,
       code_challenge_method: process.env.OIDC_CODE_CHALLENGE_METHOD || "S256",
