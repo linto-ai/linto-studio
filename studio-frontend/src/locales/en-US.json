@@ -515,7 +515,8 @@
       "description": "Open source innovations powered by LINAGORA on EXAION infrastructures"
     },
     "sso": {
-      "linagora": "Sign in with Linagora"
+      "linagora": "Sign in with Linagora",
+      "default": "Single Sign-On (SSO)"
     },
     "teaser": {
       "transcribe": {

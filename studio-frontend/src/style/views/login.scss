@@ -19,6 +19,10 @@
 .btn.sso {
   width: 320px;
   box-sizing: border-box;
+
+  & .label {
+    text-align: center;
+  }
 }
 
 .login-page__logo {

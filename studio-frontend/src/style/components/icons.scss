@@ -268,6 +268,9 @@
   &.visio {
     @include maskImage("../public/img/visio.svg");
   }
+  &.lock-off {
+    @include maskImage("../public/img/lock-off.svg");
+  }
 }
 
 .icon.small {
