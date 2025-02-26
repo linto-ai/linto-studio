@@ -4,7 +4,7 @@ const { logout, recoveryAuth } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/users/users.js`,
 )
 const auth_middleware = require(
-  `${process.cwd()}/components/WebServer/config/passport/local/middleware`,
+  `${process.cwd()}/components/WebServer/config/passport/middleware`,
 )
 
 module.exports = (webServer) => {

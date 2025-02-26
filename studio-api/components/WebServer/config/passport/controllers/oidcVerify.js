@@ -1,13 +1,4 @@
-const debug = require("debug")(
-  "linto:conversation-manager:components:webserver:config:passport:oidc",
-)
-
-const passport = require("passport")
 const randomstring = require("randomstring")
-
-const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
-
-const Strategy = require("passport-openidconnect")
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const TokenGenerator = require("../token/generator")
 
@@ -19,56 +10,64 @@ const { populateUserToOrganization } = require(
   `${process.cwd()}/components/WebServer/controllers/organization/utility`,
 )
 
-const STRATEGY = new Strategy(
-  {
-    issuer: process.env.OIDC_URL,
-    authorizationURL: process.env.OIDC_URL + "/oauth2/authorize",
-    tokenURL: process.env.OIDC_URL + "/oauth2/token",
-    clientID: process.env.OIDC_CLIENT_ID,
-    clientSecret: process.env.OIDC_CLIENT_SECRET,
-    callbackURL: process.env.OIDC_CALLBACK_URI,
-    scope: process.env.OIDC_SCOPE
-      ? process.env.OIDC_SCOPE.split(",")
-      : ["openid", "email", "profile"],
-  },
-  async function verify(
-    openid,
-    email,
-    profile,
-    accessToken,
-    refreshToken,
-    issuer,
-    params,
-    cb,
-  ) {
+/**
+ * @param {Object} req - Express request object (needed for session)
+ * @param {String} openid - OpenID identifier
+ * @param {Object} email - User email from OpenID provider
+ * @param {Object} profile - User profile from OpenID provider
+ * @param {String} accessToken - Access token from OpenID provider
+ * @param {String} refreshToken - Refresh token from OpenID provider
+ * @param {String} issuer - Issuer URL
+ * @param {Object} params - Additional authentication parameters
+ * @param {Function} cb - Passport callback
+ */
+module.exports = async function oidcVerify(
+  req,
+  openid,
+  email,
+  profile,
+  accessToken,
+  refreshToken,
+  issuer,
+  params,
+  cb,
+) {
+  try {
     let user
     let users = await model.users.getTokenByEmail(email?.emails[0]?.value)
-    if (users.length === 1) user = users[0]
-    else if (users?.length > 1) throw new MultipleUserFound()
-    else if (user?.suspend) throw new DisabledUser()
-    else {
+
+    if (users.length === 1) {
+      user = users[0]
+    } else if (users?.length > 1) {
+      throw new MultipleUserFound()
+    } else if (user?.suspend) {
+      throw new DisabledUser()
+    } else {
       const createdUser = await model.users.createExternal(
         {
           email: email?.emails[0]?.value,
           lastname: email?.name?.familyName || "",
           firstname: email?.name?.givenName || "",
         },
-        true, // User come from an SSO, we disable the mail update
+        true, // User comes from SSO, mail update disabled
       )
-      if (createdUser.insertedCount !== 1) throw new UserError()
+      if (createdUser.insertedCount !== 1)
+        throw new Error("User creation failed")
+
       users = await model.users.getTokenByEmail(email?.emails[0]?.value)
       user = users[0]
 
-      populateUserToOrganization(user) // Only on user creation
+      populateUserToOrganization(user) // Run only on user creation
     }
 
+    // Update user status if needed
     if (!user.fromSSO && !user.emailIsVerified) {
       let emailList = user.verifiedEmail
       if (!user.verifiedEmail.includes(user.email)) {
         emailList = user.verifiedEmail.concat(user.email)
       }
 
-      model.users.update({
+      await model.users.update({
         _id: user._id,
         fromSso: true,
         emailIsVerified: true,
@@ -76,6 +75,7 @@ const STRATEGY = new Strategy(
       })
     }
 
+    // Generate session token
     const token_salt = randomstring.generate(12)
     let token = await model.tokens.insert(user._id, token_salt)
 
@@ -92,16 +92,7 @@ const STRATEGY = new Strategy(
       null,
       TokenGenerator(tokenData, { expires_in: expires_in, refresh: false }),
     )
-  },
-)
-passport.use("oidc", STRATEGY)
-
-// Serialize user into session
-passport.serializeUser((user, done) => {
-  done(null, user)
-})
-
-// Deserialize user from session
-passport.deserializeUser((user, done) => {
-  done(null, user)
-})
+  } catch (error) {
+    return cb(error)
+  }
+}
