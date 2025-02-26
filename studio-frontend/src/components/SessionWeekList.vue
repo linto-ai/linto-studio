@@ -35,7 +35,7 @@
   </div>
 </template>
 <script>
-import getStartOfWeek from "../tools/getStartOfWeek"
+import getStartOfWeek from "@/tools/date/getStartOfWeek"
 import { apiGetSessionsBetweenDates } from "@/api/session.js"
 
 import WeekSelector from "@/components/WeekSelector.vue"
@@ -67,8 +67,13 @@ export default {
           this.sundayDate,
         )
 
-        console.log(response)
-        this.sessionList = response.sessions.filter((s) => s.name[0] != "@")
+        this.sessionList = response.sessions.filter(
+          (s) =>
+            s.name[0] != "@" &&
+            s.scheduleOn &&
+            new Date(s.scheduleOn) >= this.mondayDate &&
+            new Date(s.scheduleOn) <= this.sundayDate,
+        )
         this.loading = false
       } catch (error) {
         this.error = error
@@ -76,7 +81,6 @@ export default {
       }
     },
     filterSessionsByDay(day) {
-      console.log(this.sessionList)
       return this.sessionList
         .filter((session) => new Date(session.scheduleOn).getDay() === day)
         .sort((a, b) => {
@@ -85,7 +89,7 @@ export default {
     },
   },
   watch: {
-    startDate() {
+    startDate(value) {
       this.fetchSessions()
     },
   },

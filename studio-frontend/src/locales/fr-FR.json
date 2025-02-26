@@ -815,7 +815,7 @@
       "submit_label": "Créer la session",
       "success_message": "La session a été créée avec succès",
       "title": "Créer une session",
-      "template_selection_title": "Selection d'un modèle de session",
+      "template_selection_title": "Sélection d'un modèle de session",
       "template_selection_placeholder": "Pas de modèle",
       "template_apply_success": "Le modèle a été appliqué",
       "template_apply_error": "Le modèle n'a pas pu être appliqué",
