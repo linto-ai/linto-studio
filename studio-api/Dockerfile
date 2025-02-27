@@ -7,6 +7,7 @@ RUN apt-get update -y && \
   cron \
   zip \
   build-essential \
+  gosu \
   libboost-program-options-dev \
   libboost-filesystem-dev \
   libboost-date-time-dev \
@@ -31,9 +32,6 @@ RUN chmod 0644 config/cron/backup-cron && \
   crontab config/cron/backup-cron
 
 RUN service cron start
-
-RUN chown -R node:node /usr/src/app/
-USER node
 
 HEALTHCHECK CMD curl -f http://localhost || exit 1
 EXPOSE 80
