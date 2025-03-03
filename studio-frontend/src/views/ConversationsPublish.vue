@@ -82,7 +82,6 @@
         v-if="tabs && tabs.length > 0"></Tabs>
       <ConversationPublishContent
         :mardownContent="mardownContent"
-        :outputFormating="outputFormating"
         :status="currentStatus"
         :blobUrl="blobUrl"
         :pdfPercentage="generationPercentage" />
@@ -177,6 +176,14 @@ export default {
           break
 
         default:
+          if (this.mardownContent) {
+            return {
+              actions: [
+                { value: "md", text: this.$t("conversation.export.md") },
+                { value: "pdf", text: this.$t("conversation.export.pdf") },
+              ],
+            }
+          }
           return {
             actions: [
               { value: "docx", text: this.$t("conversation.export.docx") },
@@ -308,9 +315,29 @@ export default {
         case "pdf":
           this.exportPdf()
           break
+        case "md":
+          this.exportMarkdown()
+          break
         default:
           break
       }
+    },
+    async exportMarkdown() {
+      this.loadingDownload = true
+      let req = await apiGetGenericFileFromConversation(
+        this.conversationId,
+        this.selectedRoute || this.activeTab,
+        this.selectedFlavor,
+        {
+          preview: false,
+          title: this.label_format,
+        },
+      )
+
+      if (req?.status === "success") {
+        this.exportBlobFile(req.data, ".md")
+      }
+      this.loadingDownload = false
     },
     async exportJson() {
       this.loadingDownload = true
@@ -414,7 +441,8 @@ export default {
     },
     async getPreview(regenerate = false) {
       let currentTab = this.activeTab
-
+      this.mardownContent = null
+      this.blobUrl = null
       let req = await apiGetGenericFileFromConversation(
         this.conversationId,
         this.selectedRoute || this.activeTab,

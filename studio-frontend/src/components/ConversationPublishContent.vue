@@ -15,7 +15,8 @@
     <div
       v-else-if="status === 'complete' && mardownContent"
       class="publish-main__content publish__markdown-wrapper">
-      <div v-html="htmlFromMarkdown"></div>
+      <MarkdownEditor :value="mardownContent"></MarkdownEditor>
+      <!-- <div v-html="htmlFromMarkdown"></div> -->
     </div>
     <div
       v-else-if="status === 'complete'"
@@ -53,7 +54,7 @@
 <script>
 import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
-import showdown from "showdown"
+import MarkdownEditor from "./MarkdownEditor.vue"
 export default {
   props: {
     status: {
@@ -76,9 +77,7 @@ export default {
   data() {
     return {
       loading: true,
-      //blobUrl: null,
       currentStatus: null,
-      htmlFromMarkdown: null,
     }
   },
   computed: {
@@ -86,16 +85,8 @@ export default {
       return this.status === "error" || this.status === "unknown"
     },
   },
-  watch: {
-    mardownContent() {
-      const converter = new showdown.Converter({
-        headerLevelStart: 1,
-      })
-      this.htmlFromMarkdown = converter.makeHtml(this.mardownContent)
-      console.log("markdown content changed")
-    },
-  },
+
   mounted() {},
-  components: { Fragment },
+  components: { Fragment, MarkdownEditor },
 }
 </script>

@@ -41,6 +41,8 @@
     }
   },
   "dependencies": {
+    "@codemirror/lang-markdown": "^6.3.2",
+    "@codemirror/language-data": "^6.5.1",
     "@linto-ai/webvoicesdk": "github:linto-ai/WebVoiceSDK",
     "@vue/cli-plugin-babel": "^5.0.4",
     "@vue/cli-plugin-router": "^5.0.4",
@@ -50,6 +52,7 @@
     "@vue/eslint-config-prettier": "^6.0.0",
     "axios": "^0.27.2",
     "babel-eslint": "^10.1.0",
+    "codemirror": "^6.0.1",
     "debounce": "^1.2.1",
     "debug": "^4.3.4",
     "diff": "^5.1.0",

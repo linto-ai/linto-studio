@@ -138,7 +138,8 @@
       "srt": "Export SRT",
       "title": "Export",
       "txt": "Export TXT",
-      "vtt": "Export VTT"
+      "vtt": "Export VTT",
+      "md": "Export Markdown"
     },
     "export_json_button": "Export JSON",
     "highlight_toolbox": {
@@ -561,6 +562,10 @@
       "title": "Edit tag \"{name}\""
     },
     "subtitle": "Move tags between categories or edit attributes"
+  },
+  "markdown_editor": {
+    "source": "Source",
+    "preview": "Preview"
   },
   "modal": {
     "cancel": "Cancel",

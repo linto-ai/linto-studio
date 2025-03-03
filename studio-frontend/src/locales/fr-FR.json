@@ -138,7 +138,8 @@
       "srt": "Télécharger en SRT",
       "title": "Télécharger",
       "txt": "Télécharger en TXT",
-      "vtt": "Télécharger en VTT"
+      "vtt": "Télécharger en VTT",
+      "md": "Télécharger en Markdown"
     },
     "export_json_button": "Exporter en JSON",
     "highlight_toolbox": {
@@ -561,6 +562,10 @@
       "title": "Modifier le tag \"{name}\""
     },
     "subtitle": "Déplacer les tags entre les catégories ou modifiez les."
+  },
+  "markdown_editor": {
+    "source": "Source",
+    "preview": "Aperçu"
   },
   "modal": {
     "cancel": "Annuler",
