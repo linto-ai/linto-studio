@@ -71,9 +71,13 @@ export default {
       type: String,
       required: true,
     },
+    currentChannel: {
+      type: Object,
+      required: false,
+    },
   },
   data() {
-    const currentChannel = this.session.channels[0]
+    const currentChannel = this.currentChannel || this.session.channels[0]
     return {
       debugQuickSession: customDebug("vue:debug:quickSession"),
       selectedTranslation: "original",
@@ -81,7 +85,7 @@ export default {
       displaySubtitles: true,
       fontSize: "40",
       selectedChannel: currentChannel,
-      channelWebsocket: new ChannelWS(currentChannel),
+      channelWebsocket: new ChannelWS(currentChannel), // websocket to send audio data
       isRecording: false,
     }
   },

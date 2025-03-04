@@ -24,36 +24,14 @@
     </template>
 
     <template v-slot:sidebar>
-      <!-- <div
-        class="flex col medium-padding gap-medium"
-        v-if="isStarted || isTerminated"
-      > -->
-      <div class="flex col medium-padding gap-medium">
-        <SessionChannelsSelector
-          v-if="sessionLoaded && selectedChannel"
-          :channels="channels"
-          v-model="selectedChannel"></SessionChannelsSelector>
-
-        <SessionTranslationSelection
-          v-if="sessionLoaded && selectedChannel"
-          :selectedChannel="selectedChannel"
-          v-model="selectedTranslations"></SessionTranslationSelection>
-
-        <h3>{{ $t("session.detail_page.title_interface_settings") }}</h3>
-        <FormCheckbox
-          :field="displayLiveTranscriptionField"
-          switchDisplay
-          v-model="displayLiveTranscriptionField.value" />
-        <FormCheckbox
-          :field="displaySubtitlesField"
-          switchDisplay
-          v-model="displaySubtitlesField.value" />
-
-        <FormInput
-          :field="fontSizeField"
-          v-model="fontSizeField.value"
-          v-if="displaySubtitlesField.value" />
-      </div>
+      <SessionLiveToolbar
+        v-if="sessionLoaded"
+        :channels="channels"
+        v-bind:selectedTranslation.sync="selectedTranslation"
+        v-bind:displayLiveTranscription.sync="displayLiveTranscription"
+        v-bind:displaySubtitles.sync="displaySubtitles"
+        v-bind:fontSize.sync="fontSize"
+        v-bind:selectedChannel.sync="selectedChannel" />
     </template>
 
     <div class="relative flex flex1 col">
@@ -68,11 +46,11 @@
 
       <SessionLiveContent
         v-else
-        :selectedTranslations="selectedTranslations"
+        :selectedTranslations="selectedTranslation"
         :organizationId="organizationId"
-        :fontSize="fontSizeField.value"
-        :displaySubtitles="displaySubtitlesField.value"
-        :displayLiveTranscription="displayLiveTranscriptionField.value"
+        :fontSize="fontSize"
+        :displaySubtitles="displaySubtitles"
+        :displayLiveTranscription="displayLiveTranscription"
         :session="session"
         :selectedChannel="selectedChannel" />
     </div>
@@ -97,6 +75,7 @@ import FormInput from "@/components/FormInput.vue"
 import FormCheckbox from "@/components/FormCheckbox.vue"
 import SessionEnded from "@/components/SessionEnded.vue"
 import SessionStatus from "@/components/SessionStatus.vue"
+import SessionLiveToolbar from "@/components/SessionLiveToolbar.vue"
 
 export default {
   mixins: [sessionMixin, orgaRoleMixin],
@@ -106,27 +85,10 @@ export default {
 
     return {
       selectedChannel: null,
-      selectedTranslations: null,
-      fontSizeField: {
-        ...EMPTY_FIELD,
-        value: "40",
-        label: this.$t("session.detail_page.font_size_label"),
-        type: "number",
-        customParams: {
-          min: 12,
-          max: 68,
-        },
-      },
-      displaySubtitlesField: {
-        ...EMPTY_FIELD,
-        value: subtitles === "true",
-        label: this.$t("session.detail_page.display_subtitles_label"),
-      },
-      displayLiveTranscriptionField: {
-        ...EMPTY_FIELD,
-        value: liveTranscription === "true",
-        label: this.$t("session.detail_page.display_live_transcription_label"),
-      },
+      selectedTranslation: null,
+      fontSize: "40",
+      displaySubtitles: subtitles === "true",
+      displayLiveTranscription: liveTranscription === "true",
     }
   },
   created() {
@@ -139,17 +101,17 @@ export default {
     sessionLoaded() {
       if (this.sessionLoaded) {
         this.selectedChannel = this.channels[0]
-        this.selectedTranslations = "original"
+        this.selectedTranslation = "original"
       }
     },
-    "displaySubtitlesField.value"(value) {
+    displaySubtitles(value) {
       this.updateUrl()
     },
-    "displayLiveTranscriptionField.value"(value) {
+    displayLiveTranscription(value) {
       this.updateUrl()
     },
     selectedChannel() {
-      this.selectedTranslations = "original"
+      this.selectedTranslation = "original"
     },
   },
   methods: {
@@ -158,7 +120,7 @@ export default {
       history.pushState(
         {},
         "",
-        `${this.$route.path}?subtitles=${this.displaySubtitlesField.value}&liveTranscription=${this.displayLiveTranscriptionField.value}`,
+        `${this.$route.path}?subtitles=${this.displaySubtitles}&liveTranscription=${this.displayLiveTranscription}`,
       )
     },
   },
@@ -169,6 +131,7 @@ export default {
     SessionChannelsSelector,
     SessionTranslationSelection,
     SessionLiveContent,
+    SessionLiveToolbar,
     Loading,
     FormInput,
     FormCheckbox,
