@@ -1,14 +1,17 @@
 <template>
   <Loading v-if="loading" />
-  <SessionSetupMicrophone
-    ref="sessionSetupMicrophone"
+  <MainContent
     v-else-if="state == 'microphone-selection'"
-    :recover="recover"
-    @trash-session="trashSession"
-    @save-session="onSaveSession"
-    @start-session="startSession"
-    @back="backToStart"></SessionSetupMicrophone>
-
+    :sidebar="!recover"
+    box>
+    <SessionSetupMicrophone
+      ref="sessionSetupMicrophone"
+      :recover="recover"
+      @trash-session="trashSession"
+      @save-session="onSaveSession"
+      @start-session="startSession"
+      @back="backToStart"></SessionSetupMicrophone>
+  </MainContent>
   <SessionLiveMicrophone
     v-else-if="state == 'session-live'"
     ref="sessionLiveMicrophone"
@@ -56,6 +59,8 @@ import SessionSetupMicrophone from "@/components/SessionSetupMicrophone.vue"
 import SessionLiveMicrophone from "@/components/SessionLiveMicrophone.vue"
 import SessionLiveVisio from "@/components/SessionLiveVisio.vue"
 import Loading from "@/components/Loading.vue"
+import MainContent from "@/components/MainContent.vue"
+
 export default {
   props: {
     userInfo: {
@@ -160,6 +165,7 @@ export default {
     SessionSetupMicrophone,
     SessionLiveMicrophone,
     SessionLiveVisio,
+    MainContent,
     Loading,
   },
 }

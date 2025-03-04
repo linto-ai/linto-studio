@@ -1,5 +1,5 @@
 <template>
-  <MainContent :sidebar="!recover" box>
+  <div class="flex col flex1">
     <h1 class="medium-margin-top" v-if="recover">
       {{ $t("quick_session.restore.title") }}
     </h1>
@@ -107,7 +107,7 @@
         </span>
       </button>
     </div>
-  </MainContent>
+  </div>
 </template>
 <script>
 import { bus } from "../main.js"
