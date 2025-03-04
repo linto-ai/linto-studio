@@ -1,16 +1,24 @@
 <template>
   <div class="flex" id="markdown-editor-container">
-    <div id="markdown-editor-source" class="flex col flex1">
-      <header>{{ $t("markdown_editor.source") }}</header>
+    <section
+      id="markdown-editor-source"
+      class="flex col flex1 no-margin no-padding">
+      <header>
+        <h4>{{ $t("markdown_editor.source") }}</h4>
+      </header>
       <div id="markdown-editor-source__content" class="flex1"></div>
-    </div>
-    <div id="markdown-editor-preview" class="flex col flex1">
-      <header>{{ $t("markdown_editor.preview") }}</header>
-      <div
+    </section>
+    <section
+      id="markdown-editor-preview"
+      class="flex col flex1 no-margin no-padding">
+      <header>
+        <h4>{{ $t("markdown_editor.preview") }}</h4>
+      </header>
+      <article
         v-html="htmlFromMarkdown"
         class="flex1"
-        id="markdown-editor-preview__content"></div>
-    </div>
+        id="markdown-editor-preview__content"></article>
+    </section>
   </div>
 </template>
 <script>
