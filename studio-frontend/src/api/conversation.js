@@ -385,18 +385,19 @@ export async function apiGetDocxFileFromConversation(
 export async function apiGetGenericFileFromConversation(
   conversationId,
   format,
-  service,
+  flavor,
   {
     speakers = [],
     keywords = [],
     preview = false,
     regenerate = false,
     title = "",
+    llmOutputType = "",
   } = {},
   notif,
 ) {
   return await sendRequest(
-    `${BASE_API}/conversations/${conversationId}/download?format=${format}&preview=${preview}&flavor=${service}&regenerate=${regenerate}&title=${title}`,
+    `${BASE_API}/conversations/${conversationId}/download?format=${format}&preview=${preview}&flavor=${flavor}&regenerate=${regenerate}&title=${title}&llmOutputType=${llmOutputType}`,
     { method: "post", responseType: "blob" },
     {
       filter: { speaker: speakers.join(","), keyword: keywords.join(",") },
