@@ -19,3 +19,11 @@
 .microphone-sound-detector__ok-icon {
   background-color: $greenChart;
 }
+
+// in modal
+
+.modal {
+  .permission-microphone {
+    padding-bottom: 2rem;
+  }
+}

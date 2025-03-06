@@ -77,7 +77,11 @@
         }}</span>
       </button>
       <div class="flex1"></div>
-      <button class="btn" :disabled="!microphoneWorked" @click="setupSession">
+      <button
+        class="btn green"
+        type="submit"
+        :disabled="!microphoneWorked"
+        @click="setupSession">
         <span class="icon apply"></span>
         <span class="label"
           >{{ $t("quick_session.setup_microphone.start_meeting") }}
@@ -100,7 +104,11 @@
       </button>
 
       <div class="flex1"></div>
-      <button class="btn" @click="setupSession" :disabled="!microphoneWorked">
+      <button
+        class="btn"
+        @click="setupSession"
+        :disabled="!microphoneWorked"
+        type="submit">
         <span class="icon apply"></span>
         <span class="label">
           {{ $t("quick_session.restore.continue_button") }}
@@ -137,6 +145,7 @@ export default {
     }
   },
   mounted() {
+    this.initMicrophone()
     this.getDeviceList()
   },
   computed: {
@@ -163,6 +172,7 @@ export default {
         source: "microphone",
         deviceId: this.selectedDeviceId,
       })
+      return false
     },
     trashSession() {
       this.$emit("trash-session")

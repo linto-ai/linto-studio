@@ -10,41 +10,44 @@ export const microphoneMixin = {
       speaking: false,
     }
   },
-  mounted() {
-    this.recorder = new WebVoiceSDK.Recorder()
-    this.downSampler = new WebVoiceSDK.DownSampler({
-      targetSampleRate: 16000,
-      targetFrameSize: 4096,
-      Int16Convert: true,
-    })
-    this.mic = new WebVoiceSDK.Mic({
-      frameSize: 4096,
-    })
-    this.vad = new WebVoiceSDK.Vad({
-      threshold: 0.85,
-      timeAfterStop: 1000,
-    })
-    this.vad.addEventListener("speakingStatus", this.p_onVadEvent.bind(this))
-  },
+  mounted() {},
   destroyed() {
     this.p_close()
   },
   methods: {
+    initMicrophone() {
+      this.recorder = new WebVoiceSDK.Recorder()
+      this.downSampler = new WebVoiceSDK.DownSampler({
+        targetSampleRate: 16000,
+        targetFrameSize: 4096,
+        Int16Convert: true,
+      })
+      this.mic = new WebVoiceSDK.Mic({
+        frameSize: 4096,
+      })
+      this.vad = new WebVoiceSDK.Vad({
+        threshold: 0.85,
+        timeAfterStop: 1000,
+      })
+      this.vad.addEventListener("speakingStatus", this.p_onVadEvent.bind(this))
+    },
     p_close() {
-      this.vad.removeEventListener("speakingStatus", this.p_onVadEvent)
-      if (this.vad.stop) {
-        this.vad.stop()
+      if (this?.vad) {
+        this.vad.removeEventListener("speakingStatus", this.p_onVadEvent)
+        if (this?.vad?.stop) {
+          this.vad.stop()
+        }
       }
 
-      if (this.mic.stop) {
+      if (this?.mic?.stop) {
         this.mic.stop()
       }
 
-      if (this.recorder?.stop) {
+      if (this?.recorder?.stop) {
         this.recorder.stop()
       }
 
-      if (this.onClose) {
+      if (this?.onClose) {
         this.onClose()
       }
     },

@@ -81,6 +81,11 @@ button,
     justify-content: center;
   }
 
+  &:hover > .icon {
+    //transform: scale(1.1);
+    opacity: 0.8;
+  }
+
   &.icon-only.small {
     height: 2rem;
     width: 2rem;

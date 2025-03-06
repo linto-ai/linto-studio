@@ -152,6 +152,7 @@
           <SessionChannelsTable
             v-if="channels.length > 0"
             from="sessionSettings"
+            @connectMicrophone="connectMicrophone"
             @updateName="updateChannelName"
             @updateDiarization="updateChannelDiarization"
             :channelsList="localChannels"></SessionChannelsTable>
@@ -323,6 +324,14 @@ export default {
     updateChannelName(index, value) {
       this.localChannels[index].name = value
       this.channelsHasChanged = true
+    },
+    connectMicrophone(index) {
+      const route = this.liveRoute
+      route["query"] = {
+        channelId: this.localChannels[index].id,
+        microphone: "true",
+      }
+      this.$router.push(route)
     },
     updateChannelDiarization(index, value) {
       this.localChannels[index].diarization = value

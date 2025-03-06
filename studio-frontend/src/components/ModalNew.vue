@@ -21,7 +21,7 @@
       <div class="modal-body flex col flex1">
         <slot></slot>
       </div>
-      <div class="modal-footer flex row gap-small">
+      <div class="modal-footer flex row gap-small" v-if="!noAction">
         <button
           class="btn secondary"
           @click="close()"
@@ -57,6 +57,7 @@ export default {
     noApply: { type: Boolean, default: false },
     customModalClass: { type: String, default: "" },
     isForm: { type: Boolean, default: false },
+    noAction: { type: Boolean, default: false },
   },
   mounted() {
     document.onkeydown = (e) => {
