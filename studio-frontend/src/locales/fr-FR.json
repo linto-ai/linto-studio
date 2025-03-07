@@ -866,6 +866,8 @@
     },
     "end_undefined": "Non définie",
     "room_undefined": "Lieu non défini",
+    "microphone_apply_button": "Enregistrer le microphone",
+    "record_to_chanel_name_info": "Vers \"{name}\"",
     "list_page": {
       "no_sessions": "Aucune session trouvée",
       "no_sessions_this_day": "Aucune session prévue pour ce jour",
@@ -984,7 +986,7 @@
     },
     "live": {
       "status_no_websocket": "Déconnecté du serveur audio",
-      "status_recording": "En cours d'enregistrement",
+      "status_recording": "Microphone en cours d'enregistrement",
       "status_muted": "Muet",
       "save_button": "Sauvegarder et quitter"
     },

@@ -20,9 +20,21 @@
   background-color: $greenChart;
 }
 
+.setup-microphone-cancel {
+  display: none;
+}
+
 // in modal
 
 .modal {
+  .setup-microphone-back {
+    display: none;
+  }
+
+  .setup-microphone-cancel {
+    display: block;
+  }
+
   .permission-microphone {
     padding-bottom: 2rem;
   }

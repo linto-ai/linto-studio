@@ -30,6 +30,15 @@
         :speaking="speaking"
         :isRecording="isRecording"
         :channelWebsocket="channelAudioWebsocket" />
+      <div
+        class="session-microphone-status__channel"
+        v-if="useMicrophone && currentChannelMicrophone">
+        {{
+          $t("session.record_to_chanel_name_info", {
+            name: currentChannelMicrophone.name,
+          })
+        }}
+      </div>
       <SessionLiveToolbar
         v-if="sessionLoaded"
         :channels="channels"
@@ -60,9 +69,15 @@
         :session="session"
         :selectedChannel="selectedChannel" />
 
-      <ModalNew noAction title="Setup microphone" v-if="showMicrophoneSetup">
+      <ModalNew
+        noAction
+        title="Setup microphone"
+        v-if="showMicrophoneSetup"
+        @on-cancel="cancelRecordSettings">
         <SessionSetupMicrophone
-          @start-session="startRecordFromMicrophone"></SessionSetupMicrophone>
+          :applyLabel="$t('session.microphone_apply_button')"
+          @start-session="startRecordFromMicrophone"
+          @trash-session="cancelRecordSettings"></SessionSetupMicrophone>
       </ModalNew>
     </div>
   </MainContent>
@@ -115,6 +130,7 @@ export default {
       startChannelId: Number(channelId),
       deviceId: null,
       showMicrophoneSetup: false,
+      currentChannelMicrophone: null,
     }
   },
   created() {
@@ -159,8 +175,16 @@ export default {
     startRecordFromMicrophone({ deviceId }) {
       this.showMicrophoneSetup = false
       this.deviceId = deviceId
+      console.log("currentChannelMicrophone", this.selectedChannel)
+      this.currentChannelMicrophone = this.selectedChannel
       this.initMicrophone()
       this.setupRecording(this.selectedChannel)
+      this.updateUrl()
+    },
+    cancelRecordSettings() {
+      this.showMicrophoneSetup = false
+      this.useMicrophone = false
+      this.updateUrl()
     },
   },
   components: {
