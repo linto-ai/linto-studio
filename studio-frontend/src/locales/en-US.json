@@ -794,7 +794,8 @@
       "remove": "Remove",
       "title": "Channels linked to the session",
       "multiple_endpoint": "1 endpoint | {count} endpoints",
-      "no_translations": "No translation"
+      "no_translations": "No translation",
+      "connect_microphone": "Connect microphone"
     },
     "create_page": {
       "error_message": "An error occurred while creating the session",
@@ -861,6 +862,8 @@
     },
     "end_undefined": "Not defined",
     "room_undefined": "Place not defined",
+    "microphone_apply_button": "Record microphone",
+    "record_to_chanel_name_info": "To \"{name}\"",
     "list_page": {
       "no_sessions": "No sessions found",
       "no_sessions_this_day": "No sessions planned for this day",
@@ -980,8 +983,8 @@
     },
     "live": {
       "status_no_websocket": "Not connected to audio server",
-      "status_recording": "Recording.",
-      "status_muted": "Micro is muted.",
+      "status_recording": "Recording microphone",
+      "status_muted": "Microphone is muted",
       "save_button": "Save and quit"
     },
     "live_visio": {

@@ -169,7 +169,13 @@ export const sessionMixin = {
       return `/interface/${this.sessionOrganizationId}/sessions/${this.sessionId}/settings`
     },
     liveRoute() {
-      return `/interface/${this.sessionOrganizationId}/sessions/${this.sessionId}`
+      return {
+        name: "sessions live",
+        params: {
+          sessionId: this.sessionId,
+          organizationId: this.sessionOrganizationId,
+        },
+      }
     },
     readyForWSConnection() {
       return this.sessionLoaded && this.$sessionWS.state.isConnected

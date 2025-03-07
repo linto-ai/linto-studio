@@ -1,5 +1,5 @@
 <template>
-  <MainContent :sidebar="!recover" box>
+  <div class="flex col flex1">
     <h1 class="medium-margin-top" v-if="recover">
       {{ $t("quick_session.restore.title") }}
     </h1>
@@ -69,19 +69,26 @@
       </section>
     </div>
 
-    <div class="flex medium-margin-top" v-if="!recover">
-      <button class="btn secondary" @click="trashSession">
+    <div class="flex medium-margin-top gap-small" v-if="!recover">
+      <button class="btn secondary setup-microphone-back" @click="trashSession">
         <span class="icon back"></span>
         <span class="label">{{
           $t("quick_session.setup_microphone.back")
         }}</span>
       </button>
       <div class="flex1"></div>
-      <button class="btn" :disabled="!microphoneWorked" @click="setupSession">
+      <button
+        class="btn secondary setup-microphone-cancel"
+        @click="trashSession">
+        <span class="label">{{ $t("modal.cancel") }}</span>
+      </button>
+      <button
+        class="btn green"
+        type="submit"
+        :disabled="!microphoneWorked"
+        @click="setupSession">
         <span class="icon apply"></span>
-        <span class="label"
-          >{{ $t("quick_session.setup_microphone.start_meeting") }}
-        </span>
+        <span class="label">{{ l_applyLabel }} </span>
       </button>
     </div>
 
@@ -100,14 +107,18 @@
       </button>
 
       <div class="flex1"></div>
-      <button class="btn" @click="setupSession" :disabled="!microphoneWorked">
+      <button
+        class="btn"
+        @click="setupSession"
+        :disabled="!microphoneWorked"
+        type="submit">
         <span class="icon apply"></span>
         <span class="label">
           {{ $t("quick_session.restore.continue_button") }}
         </span>
       </button>
     </div>
-  </MainContent>
+  </div>
 </template>
 <script>
 import { bus } from "../main.js"
@@ -125,6 +136,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    applyLabel: {
+      type: String,
+      required: false,
+    },
   },
   data() {
     return {
@@ -134,9 +149,13 @@ export default {
       selectedDeviceId: "default",
       microphoneWorked: false,
       audioDevices: null,
+      l_applyLabel:
+        this.applyLabel ||
+        this.$t("quick_session.setup_microphone.start_meeting"),
     }
   },
   mounted() {
+    this.initMicrophone()
     this.getDeviceList()
   },
   computed: {
@@ -163,6 +182,7 @@ export default {
         source: "microphone",
         deviceId: this.selectedDeviceId,
       })
+      return false
     },
     trashSession() {
       this.$emit("trash-session")

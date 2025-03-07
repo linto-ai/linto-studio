@@ -40,6 +40,17 @@
         <span class="label">{{ $t("session.channels_list.remove") }}</span>
       </button>
     </td>
+
+    <td v-if="from === 'sessionSettings'">
+      <button
+        @click="$emit('connectMicrophone')"
+        class="icon-only only-border"
+        :title="$t('session.channels_list.connect_microphone')"
+        :aria-label="$t('session.channels_list.connect_microphone')"
+        type="button">
+        <span class="icon record"></span>
+      </button>
+    </td>
   </tr>
 </template>
 <script>

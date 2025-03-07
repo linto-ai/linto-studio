@@ -24,6 +24,21 @@
     </template>
 
     <template v-slot:sidebar>
+      <SessionLiveMicrophoneStatus
+        v-if="useMicrophone && sessionLoaded"
+        @toggle-microphone="toggleMicrophone"
+        :speaking="speaking"
+        :isRecording="isRecording"
+        :channelWebsocket="channelAudioWebsocket" />
+      <div
+        class="session-microphone-status__channel"
+        v-if="useMicrophone && currentChannelMicrophone">
+        {{
+          $t("session.record_to_chanel_name_info", {
+            name: currentChannelMicrophone.name,
+          })
+        }}
+      </div>
       <SessionLiveToolbar
         v-if="sessionLoaded"
         :channels="channels"
@@ -53,17 +68,29 @@
         :displayLiveTranscription="displayLiveTranscription"
         :session="session"
         :selectedChannel="selectedChannel" />
+
+      <ModalNew
+        noAction
+        title="Setup microphone"
+        v-if="showMicrophoneSetup"
+        @on-cancel="cancelRecordSettings">
+        <SessionSetupMicrophone
+          :applyLabel="$t('session.microphone_apply_button')"
+          @start-session="startRecordFromMicrophone"
+          @trash-session="cancelRecordSettings"></SessionSetupMicrophone>
+      </ModalNew>
     </div>
   </MainContent>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
 
 import EMPTY_FIELD from "@/const/emptyField"
 
 import { sessionMixin } from "@/mixins/session.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole"
+import { microphoneMixin } from "@/mixins/microphone.js"
+import { sessionMicrophoneMixin } from "@/mixins/sessionMicrophone.js"
 
 import MainContent from "@/components/MainContent.vue"
 import SessionNotStarted from "@/components/SessionNotStarted.vue"
@@ -71,17 +98,27 @@ import SessionChannelsSelector from "@/components/SessionChannelsSelector.vue"
 import SessionTranslationSelection from "@/components/SessionTranslationSelection.vue"
 import SessionLiveContent from "@/components/SessionLiveContent.vue"
 import Loading from "@/components/Loading.vue"
-import FormInput from "@/components/FormInput.vue"
-import FormCheckbox from "@/components/FormCheckbox.vue"
 import SessionEnded from "@/components/SessionEnded.vue"
 import SessionStatus from "@/components/SessionStatus.vue"
 import SessionLiveToolbar from "@/components/SessionLiveToolbar.vue"
-
+import ModalNew from "@/components/ModalNew.vue"
+import SessionSetupMicrophone from "@/components/SessionSetupMicrophone.vue"
+import SessionLiveMicrophoneStatus from "@/components/SessionLiveMicrophoneStatus.vue"
 export default {
-  mixins: [sessionMixin, orgaRoleMixin],
+  mixins: [
+    sessionMixin,
+    orgaRoleMixin,
+    microphoneMixin,
+    sessionMicrophoneMixin,
+  ],
   props: {},
   data() {
-    const { subtitles, liveTranscription = "true" } = this.$route.query
+    const {
+      subtitles,
+      liveTranscription = "true",
+      channelId = null,
+      microphone = false,
+    } = this.$route.query
 
     return {
       selectedChannel: null,
@@ -89,6 +126,11 @@ export default {
       fontSize: "40",
       displaySubtitles: subtitles === "true",
       displayLiveTranscription: liveTranscription === "true",
+      useMicrophone: microphone === "true",
+      startChannelId: Number(channelId),
+      deviceId: null,
+      showMicrophoneSetup: false,
+      currentChannelMicrophone: null,
     }
   },
   created() {
@@ -100,8 +142,15 @@ export default {
   watch: {
     sessionLoaded() {
       if (this.sessionLoaded) {
-        this.selectedChannel = this.channels[0]
+        this.selectedChannel =
+          (this.startChannelId &&
+            this.channels.find((c) => c.id === this.startChannelId)) ||
+          this.channels[0]
         this.selectedTranslation = "original"
+
+        if (this.useMicrophone) {
+          this.showMicrophoneSetup = true
+        }
       }
     },
     displaySubtitles(value) {
@@ -123,9 +172,22 @@ export default {
         `${this.$route.path}?subtitles=${this.displaySubtitles}&liveTranscription=${this.displayLiveTranscription}`,
       )
     },
+    startRecordFromMicrophone({ deviceId }) {
+      this.showMicrophoneSetup = false
+      this.deviceId = deviceId
+      console.log("currentChannelMicrophone", this.selectedChannel)
+      this.currentChannelMicrophone = this.selectedChannel
+      this.initMicrophone()
+      this.setupRecording(this.selectedChannel)
+      this.updateUrl()
+    },
+    cancelRecordSettings() {
+      this.showMicrophoneSetup = false
+      this.useMicrophone = false
+      this.updateUrl()
+    },
   },
   components: {
-    Fragment,
     MainContent,
     SessionNotStarted,
     SessionChannelsSelector,
@@ -133,10 +195,11 @@ export default {
     SessionLiveContent,
     SessionLiveToolbar,
     Loading,
-    FormInput,
-    FormCheckbox,
     SessionEnded,
     SessionStatus,
+    ModalNew,
+    SessionSetupMicrophone,
+    SessionLiveMicrophoneStatus,
   },
 }
 </script>

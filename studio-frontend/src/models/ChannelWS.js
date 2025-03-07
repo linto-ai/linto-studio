@@ -5,14 +5,14 @@ const debugWS = customDebug("Websocket:Channel:debug")
 
 // Websocket to session transcriber to send audio
 export default class ChannelWS {
-  constructor(channel) {
+  constructor() {
     this.state = Vue.observable({
       isConnected: false,
       receivedACK: false,
     })
 
     this.socket = null
-    this.channel = channel
+    this.channel = null
     this.currentConfig = null
   }
 
@@ -36,6 +36,11 @@ export default class ChannelWS {
   }
 
   connect() {
+    if (this.channel === null) {
+      console.error("Try to connect to websocket without channel")
+      return
+    }
+
     return new Promise((resolve, reject) => {
       const url = this.channel?.streamEndpoints?.ws
       if (!url) {
@@ -87,7 +92,9 @@ export default class ChannelWS {
   }
 
   close() {
-    this.socket.close()
+    if (this.socket) {
+      this.socket.close()
+    }
     this.state.isConnected = false
     this.state.receivedACK = false
   }
