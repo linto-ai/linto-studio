@@ -54,7 +54,8 @@
 <script>
 import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
-import MarkdownEditor from "./MarkdownEditor.vue"
+import MarkdownEditor from "./MardownWYSIWYGEditor.vue"
+
 export default {
   props: {
     status: {

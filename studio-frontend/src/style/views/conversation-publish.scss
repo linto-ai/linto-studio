@@ -47,7 +47,7 @@
   width: 50rem;
   margin-inline: auto;
   //font-family: luciole;
-  flex: 1;
+  //flex: 1;
   //display: flex;
   // border-radius: 4px;
   max-width: 100%;
@@ -87,6 +87,12 @@
     text-align: center;
     border-bottom: var(--border-block);
     padding: 0.25rem;
+  }
+
+  .tiptap.ProseMirror {
+    width: 100%;
+    overflow: auto;
+    padding: 1rem;
   }
   //overflow-y: auto;
 
