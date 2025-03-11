@@ -15,7 +15,7 @@
     <div
       v-else-if="status === 'complete' && mardownContent"
       class="publish-main__content publish__markdown-wrapper">
-      <MarkdownEditor :value="mardownContent"></MarkdownEditor>
+      <MarkdownEditor :value="mardownContent" readonly></MarkdownEditor>
       <!-- <div v-html="htmlFromMarkdown"></div> -->
     </div>
     <div
@@ -53,8 +53,8 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
-import MarkdownEditor from "./MarkdownEditor.vue"
+import MarkdownEditor from "@/components/MardownWYSIWYGEditor.vue"
+
 export default {
   props: {
     status: {
