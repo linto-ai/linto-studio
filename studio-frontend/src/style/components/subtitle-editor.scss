@@ -81,7 +81,9 @@
 }
 
 .screen-timestamp {
-  font-family: Noto Sans Mono, monospace;
+  font-family:
+    Noto Sans Mono,
+    monospace;
   margin: 0.25rem 0;
   width: 6rem;
   margin-right: 2rem;
@@ -129,7 +131,7 @@
   overflow: auto;
 
   &.current {
-    border: 1px solid var(--green-chart);
+    border: 1px solid var(--primary-color);
     border-radius: 3px;
     background-color: var(--input-background);
   }
