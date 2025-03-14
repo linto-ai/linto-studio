@@ -4,13 +4,13 @@
       class="flex1"
       :channels="channels"
       :selectedChannel="selectedChannel"
-      v-model="selectedChannel"></SessionChannelsSelector>
+      v-model="p_selectedChannel"></SessionChannelsSelector>
 
     <SessionTranslationSelection
       class="flex1"
       :selectedChannel="selectedChannel"
       :selectedTranslation="selectedTranslation"
-      v-model="selectedTranslation"></SessionTranslationSelection>
+      v-model="p_selectedTranslation"></SessionTranslationSelection>
   </div>
 </template>
 <script>
@@ -34,7 +34,24 @@ export default {
     },
   },
   data() {
-    return {}
+    return {
+      p_selectedTranslation: this.selectedTranslation,
+      p_selectedChannel: this.selectedChannel,
+    }
+  },
+  watch: {
+    p_selectedTranslation(value) {
+      this.$emit("update:selectedTranslation", value)
+    },
+    p_selectedChannel(value) {
+      this.$emit("update:selectedChannel", value)
+    },
+    selectedTranslation(value) {
+      this.p_selectedTranslation = value
+    },
+    selectedChannel(value) {
+      this.p_selectedChannel = value
+    },
   },
   mounted() {},
   methods: {},
