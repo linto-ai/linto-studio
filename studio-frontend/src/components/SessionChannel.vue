@@ -4,22 +4,44 @@
     <div
       class="session-content__action-bar flex align-center gap-medium"
       v-if="this.selectedTurns.length > 0">
-      <button class="red-border" @click="clearSelectedTurns">
+      <button
+        class="red-border session-content__action-bar__reset-btn-desktop"
+        @click="clearSelectedTurns">
+        <span class="icon close"></span>
         <span class="label">{{
           $tc("session.detail_page.clear_turn_selection")
         }}</span>
       </button>
 
-      <button @click="copyTurns">
+      <button
+        class="red-border session-content__action-bar__reset-btn-mobile mobile only-icon"
+        @click="clearSelectedTurns">
+        <span class="icon close"></span>
+      </button>
+
+      <button
+        @click="copyTurns"
+        class="session-content__action-bar__copy-btn-desktop">
         <span class="icon apply" v-if="copyState"></span>
         <span class="icon copy" v-else></span>
         <span class="label">{{
           $tc("session.detail_page.copy_turns_text")
         }}</span>
       </button>
-      <span>{{
-        $tc("session.detail_page.n_turns_selected", this.selectedTurns.length)
-      }}</span>
+
+      <span
+        class="session-content__action-bar__label-selected flex1 text-cut"
+        >{{
+          $tc("session.detail_page.n_turns_selected", this.selectedTurns.length)
+        }}</span
+      >
+
+      <button
+        @click="copyTurns"
+        class="session-content__action-bar__copy-btn-mobile mobile only-icon">
+        <span class="icon apply" v-if="copyState"></span>
+        <span class="icon copy" v-else></span>
+      </button>
     </div>
 
     <div
@@ -57,7 +79,7 @@
       v-else
       class="flex align-center justify-center flex1 col center-text gap-medium">
       <h2>{{ $t("session.detail_page.no_transcription") }}</h2>
-      <Svglogo style="max-height: 6rem; margin: 2rem" />
+      <Svglogo style="max-height: 6rem; margin: 2rem; max-width: 100%" />
       <div ref="bottom"></div>
     </div>
 

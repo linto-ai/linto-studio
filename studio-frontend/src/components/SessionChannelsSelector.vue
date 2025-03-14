@@ -1,6 +1,6 @@
 <template>
   <div class="flex col">
-    <label for="channel-selector">{{
+    <label for="channel-selector" class="text-cut">{{
       $t("session.live_page.channel_selector.label")
     }}</label>
     <CustomSelect

@@ -1,17 +1,23 @@
 <template>
   <div class="dropdown-channel-selector">
-    <div class="dropdown-channel-selector__bar flex align-center">
-      <div class="dropdown-channel-selector__bar__channel flex1">
-        <span>{{ selectedChannel.name }}</span>
-      </div>
-      <button class="only-icon transparent">
-        <span class="icon top-arrow" />
-      </button>
-    </div>
+    <SessionChannelsSelector
+      class="flex1"
+      :channels="channels"
+      :selectedChannel="selectedChannel"
+      v-model="selectedChannel"></SessionChannelsSelector>
+
+    <SessionTranslationSelection
+      class="flex1"
+      :selectedChannel="selectedChannel"
+      :selectedTranslation="selectedTranslation"
+      v-model="selectedTranslation"></SessionTranslationSelection>
   </div>
 </template>
 <script>
 import { bus } from "@/main.js"
+import SessionChannelsSelector from "@/components/SessionChannelsSelector.vue"
+import SessionTranslationSelection from "@/components/SessionTranslationSelection.vue"
+
 export default {
   props: {
     channels: {
@@ -28,13 +34,13 @@ export default {
     },
   },
   data() {
-    console.log("channels", this.channels)
-    console.log("selectedChannel", this.selectedChannel)
-    console.log("selectedTranslation", this.selectedTranslation)
     return {}
   },
   mounted() {},
   methods: {},
-  components: {},
+  components: {
+    SessionChannelsSelector,
+    SessionTranslationSelection,
+  },
 }
 </script>
