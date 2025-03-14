@@ -33,7 +33,7 @@
               :title="
                 $t('conversation.search_in_transcription.exact_word_match')
               "
-              class="icon-only small only-border"
+              class="only-icon small only-border"
               :class="{ 'green-border': exactMatching }"
               @click="toggleExactMatching">
               <span class="icon equal"></span>
@@ -41,7 +41,7 @@
             <button
               v-if="transcriptionSearch"
               :title="$t('conversation.search_in_transcription.clear_search')"
-              class="icon-only small only-border"
+              class="only-icon small only-border"
               @click="resetSearch">
               <span class="icon close"></span>
             </button>

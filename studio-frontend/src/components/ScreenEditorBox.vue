@@ -7,7 +7,7 @@
         :for="flag">
         {{ label }}
       </label>
-      <!-- <button class="red-border icon-only small">
+      <!-- <button class="red-border only-icon small">
         <span class="icon trash"></span>
       </button> -->
       <div
@@ -122,11 +122,11 @@ export default {
       },
       throttleKeepFocus: throttleObjectFocus.createThrottle(
         this.keepFocus,
-        15000
+        15000,
       ),
       throttleChange: throttleObjectChange.createThrottle(
         this.handleChange,
-        500
+        500,
       ),
       currentValue: this.screen.text.join("\n"),
     }
@@ -163,7 +163,7 @@ export default {
       const isFocus = this.focusFields?.[this.flag]
       if (isFocus) {
         const user = this.conversationUsers.find(
-          (usr) => usr._id === isFocus.userId
+          (usr) => usr._id === isFocus.userId,
         )
         return user.firstname + " " + user.lastname
       }

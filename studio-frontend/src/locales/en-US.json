@@ -858,7 +858,8 @@
       "translation_bot": "Automatic translation",
       "session_already_started": "Session already started",
       "session_auto_start_helper": "Session will start automatically at start time",
-      "stop_button_title_session_running": "The session cannot be stopped while streams are being sent."
+      "stop_button_title_session_running": "The session cannot be stopped while streams are being sent.",
+      "scroll_to_bottom": "Scroll to bottom"
     },
     "end_undefined": "Not defined",
     "room_undefined": "Place not defined",

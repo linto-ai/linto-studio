@@ -1,26 +1,46 @@
 <template>
   <MainContent noBreadcrumb :organizationPage="false" fullwidthContent sidebar>
     <template v-slot:breadcrumb-actions>
-      <router-link :to="sessionListRoute" class="btn secondary">
-        <span class="icon back"></span>
-        <span class="label">{{
-          $t("session.detail_page.back_to_listing")
-        }}</span>
-      </router-link>
+      <div class="flex flex1 session-header-desktop">
+        <router-link :to="sessionListRoute" class="btn secondary">
+          <span class="icon back"></span>
+          <span class="label">{{
+            $t("session.detail_page.back_to_listing")
+          }}</span>
+        </router-link>
 
-      <!-- title -->
-      <SessionStatus
-        v-if="sessionLoaded"
-        :session="session"
-        withText
-        class="flex1" />
+        <!-- title -->
+        <SessionStatus
+          v-if="sessionLoaded"
+          :session="session"
+          withText
+          class="flex1" />
 
-      <router-link :to="settingsRoute" class="btn" v-if="isAtLeastMaintainer">
-        <span class="icon settings"></span>
-        <span class="label">{{
-          $t("session.detail_page.settings_button")
-        }}</span>
-      </router-link>
+        <router-link :to="settingsRoute" class="btn" v-if="isAtLeastMaintainer">
+          <span class="icon settings"></span>
+          <span class="label">{{
+            $t("session.detail_page.settings_button")
+          }}</span>
+        </router-link>
+      </div>
+
+      <div class="flex flex1 mobile session-header-mobile align-center">
+        <router-link :to="sessionListRoute" class="btn secondary only-icon">
+          <span class="icon back"></span>
+        </router-link>
+
+        <h1 class="center-text">{{ name }}</h1>
+
+        <router-link
+          :to="settingsRoute"
+          class="btn secondary only-icon"
+          v-if="isAtLeastMaintainer">
+          <span class="icon settings"></span>
+          <!-- <span class="label">{{
+            $t("session.detail_page.settings_button")
+          }}</span> -->
+        </router-link>
+      </div>
     </template>
 
     <template v-slot:sidebar>
@@ -69,6 +89,13 @@
         :session="session"
         :selectedChannel="selectedChannel" />
 
+      <SessionDropdownChannelSelector
+        class="mobile"
+        v-if="sessionLoaded"
+        :channels="channels"
+        v-bind:selectedChannel.sync="selectedChannel"
+        v-bind:selectedTranslation.sync="selectedTranslation" />
+
       <ModalNew
         noAction
         title="Setup microphone"
@@ -104,6 +131,8 @@ import SessionLiveToolbar from "@/components/SessionLiveToolbar.vue"
 import ModalNew from "@/components/ModalNew.vue"
 import SessionSetupMicrophone from "@/components/SessionSetupMicrophone.vue"
 import SessionLiveMicrophoneStatus from "@/components/SessionLiveMicrophoneStatus.vue"
+
+import SessionDropdownChannelSelector from "@/components-mobile/SessionDropdownChannelSelector.vue"
 export default {
   mixins: [
     sessionMixin,
@@ -200,6 +229,7 @@ export default {
     ModalNew,
     SessionSetupMicrophone,
     SessionLiveMicrophoneStatus,
+    SessionDropdownChannelSelector,
   },
 }
 </script>

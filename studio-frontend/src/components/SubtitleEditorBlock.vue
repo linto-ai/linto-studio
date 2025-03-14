@@ -27,7 +27,7 @@
       </div>
     </div>
 
-    <button :class="['icon-only', 'black', 'hover-red']" @click="deletescreen">
+    <button :class="['only-icon', 'black', 'hover-red']" @click="deletescreen">
       <span class="icon trash"></span>
     </button>
   </div>
@@ -67,7 +67,7 @@ export default {
     },
     stime() {
       let ms = Math.floor(
-        (this.screen.stime - Math.floor(this.screen.stime)) * 100
+        (this.screen.stime - Math.floor(this.screen.stime)) * 100,
       )
       return timeToHMS(this.screen.stime, {
         stripHourZeros: true,
@@ -76,7 +76,7 @@ export default {
     },
     etime() {
       let ms = Math.floor(
-        (this.screen.etime - Math.floor(this.screen.etime)) * 100
+        (this.screen.etime - Math.floor(this.screen.etime)) * 100,
       )
       return timeToHMS(this.screen.etime, {
         stripHourZeros: true,

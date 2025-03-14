@@ -32,6 +32,14 @@ button,
     outline: none;
   }
 
+  &.circle {
+    border-radius: 50%;
+
+    &:before {
+      border-radius: 50%;
+    }
+  }
+
   &.inline {
     display: inline-flex;
     padding: 0;

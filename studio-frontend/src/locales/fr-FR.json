@@ -862,7 +862,8 @@
       "translation_bot": "Traduction automatique",
       "session_already_started": "La session a déjà démarrée",
       "session_auto_start_helper": "La session démmarera automatiquement à l'heure de début",
-      "stop_button_title_session_running": "La session ne peut pas être arrêtée tant que des flux sont envoyés."
+      "stop_button_title_session_running": "La session ne peut pas être arrêtée tant que des flux sont envoyés.",
+      "scroll_to_bottom": "Descendre en bas"
     },
     "end_undefined": "Non définie",
     "room_undefined": "Lieu non défini",

@@ -62,11 +62,13 @@
 @import "./components/status-led.scss";
 @import "./components/metadata-editor.scss";
 
-@import "./views/app-mobile.scss";
+//@import "./views/app-mobile.scss";
+// @import "./components/app-header-mobile.scss";
+// @import "./components/tabs-mobile.scss";
+// @import "./components/conversations-list-mobile.scss";
 
-@import "./components/app-header-mobile.scss";
-@import "./components/tabs-mobile.scss";
-@import "./components/conversations-list-mobile.scss";
+@import "./components-mobile/sidebar.scss";
+@import "./components-mobile/session.scss";
 
 @layer base {
   @import "./components/icons.scss";

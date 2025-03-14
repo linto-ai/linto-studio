@@ -89,7 +89,18 @@
     <button
       v-if="!isBottom"
       @click="scrollToBottom(true)"
-      class="bottom-session-button"
+      class="bottom-session-button bottom-session-button-desktop"
+      :class="{ has_subtitles: displaySubtitles }">
+      <span class="icon bottom-arrow"></span>
+      <span class="label">{{
+        $tc("session.detail_page.scroll_to_bottom")
+      }}</span>
+    </button>
+
+    <button
+      v-if="!isBottom"
+      @click="scrollToBottom(true)"
+      class="mobile bottom-session-button bottom-session-button-mobile only-icon green circle"
       :class="{ has_subtitles: displaySubtitles }">
       <span class="icon bottom-arrow"></span>
     </button>

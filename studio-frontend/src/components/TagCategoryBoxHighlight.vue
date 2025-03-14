@@ -29,7 +29,7 @@
     </template>
 
     <template v-slot:content-after-tag="slotProps">
-      <button class="icon-only small transparent" @click="deleteTag(slotProps)">
+      <button class="only-icon small transparent" @click="deleteTag(slotProps)">
         <span class="icon trash"></span>
       </button>
     </template>
