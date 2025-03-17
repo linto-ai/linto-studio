@@ -1,54 +1,32 @@
 <template>
   <MainContent noBreadcrumb :organizationPage="false" fullwidthContent sidebar>
     <template v-slot:breadcrumb-actions>
-      <div class="flex flex1 session-header-desktop">
-        <router-link
-          :to="sessionListRoute"
-          class="btn secondary"
-          v-if="isAuthenticated">
-          <span class="icon back"></span>
-          <span class="label">{{
-            $t("session.detail_page.back_to_listing")
-          }}</span>
-        </router-link>
-
-        <!-- title -->
-        <SessionStatus
-          v-if="sessionLoaded"
-          :session="session"
-          withText
-          class="flex1" />
-
-        <router-link :to="settingsRoute" class="btn" v-if="isAtLeastMaintainer">
-          <span class="icon settings"></span>
-          <span class="label">{{
-            $t("session.detail_page.settings_button")
-          }}</span>
-        </router-link>
-      </div>
-
-      <div class="flex flex1 mobile session-header-mobile align-center">
-        <router-link
-          :to="sessionListRoute"
-          class="btn secondary only-icon"
-          v-if="isAuthenticated"
-          :aria-label="$t('session.detail_page.back_to_listing')">
-          <span class="icon back"></span>
-        </router-link>
-        <div
-          class="flex1 text-cut center-text flex align-center justify-center">
-          <SessionStatus v-if="sessionLoaded" :session="session" small />
-          <h1 style="min-width: 0; width: fit-content">{{ name }}</h1>
-        </div>
-
-        <router-link
-          :to="settingsRoute"
-          class="btn secondary only-icon"
-          v-if="isAtLeastMaintainer"
-          :aria-label="$t('session.detail_page.settings_button')">
-          <span class="icon settings"></span>
-        </router-link>
-      </div>
+      <SessionHeader
+        :sessionListRoute="sessionListRoute"
+        :sessionLoaded="sessionLoaded"
+        :name="name"
+        :session="session">
+        <template v-slot:right-button-desktop>
+          <router-link
+            :to="settingsRoute"
+            class="btn"
+            v-if="isAtLeastMaintainer">
+            <span class="icon settings"></span>
+            <span class="label">{{
+              $t("session.detail_page.settings_button")
+            }}</span>
+          </router-link>
+        </template>
+        <template v-slot:right-button-mobile>
+          <router-link
+            :to="settingsRoute"
+            class="btn secondary only-icon"
+            v-if="isAtLeastMaintainer"
+            :aria-label="$t('session.detail_page.settings_button')">
+            <span class="icon settings"></span>
+          </router-link>
+        </template>
+      </SessionHeader>
     </template>
 
     <template v-slot:sidebar>
@@ -121,7 +99,6 @@
 import { bus } from "../main.js"
 
 import EMPTY_FIELD from "@/const/emptyField"
-import { getCookie } from "@/tools/getCookie"
 
 import { sessionMixin } from "@/mixins/session.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole"
@@ -140,6 +117,7 @@ import SessionLiveToolbar from "@/components/SessionLiveToolbar.vue"
 import ModalNew from "@/components/ModalNew.vue"
 import SessionSetupMicrophone from "@/components/SessionSetupMicrophone.vue"
 import SessionLiveMicrophoneStatus from "@/components/SessionLiveMicrophoneStatus.vue"
+import SessionHeader from "@/components/SessionHeader.vue"
 
 import SessionDropdownChannelSelector from "@/components-mobile/SessionDropdownChannelSelector.vue"
 export default {
@@ -177,11 +155,6 @@ export default {
     // if stopped, redirect to conversation
   },
   mounted() {},
-  computed: {
-    isAuthenticated() {
-      return getCookie("authToken") !== null
-    },
-  },
   watch: {
     sessionLoaded() {
       if (this.sessionLoaded) {
@@ -244,6 +217,7 @@ export default {
     SessionSetupMicrophone,
     SessionLiveMicrophoneStatus,
     SessionDropdownChannelSelector,
+    SessionHeader,
   },
 }
 </script>
