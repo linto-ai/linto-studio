@@ -18,13 +18,20 @@
           </router-link>
         </template>
         <template v-slot:right-button-mobile>
-          <router-link
-            :to="settingsRoute"
-            class="btn secondary only-icon"
-            v-if="isAtLeastMaintainer"
-            :aria-label="$t('session.detail_page.settings_button')">
-            <span class="icon settings"></span>
-          </router-link>
+          <div class="flex gap-small">
+            <router-link
+              :to="settingsRoute"
+              class="btn secondary only-icon"
+              v-if="isAtLeastMaintainer"
+              :aria-label="$t('session.detail_page.settings_button')">
+              <span class="icon settings"></span>
+            </router-link>
+            <button
+              class="btn secondary only-icon"
+              @click="showMobileSubtitles">
+              <span class="icon subtitle"></span>
+            </button>
+          </div>
         </template>
       </SessionHeader>
     </template>
@@ -67,6 +74,8 @@
 
       <SessionLiveContent
         v-else
+        @closeSubtitleFullscreen="closeSubtitleFullscreen"
+        :showSubtitlesFullscreen="showSubtitlesFullscreen"
         :selectedTranslations="selectedTranslation"
         :organizationId="organizationId"
         :fontSize="fontSize"
@@ -146,6 +155,7 @@ export default {
       startChannelId: Number(channelId),
       deviceId: null,
       showMicrophoneSetup: false,
+      showSubtitlesFullscreen: false,
       currentChannelMicrophone: null,
     }
   },
@@ -201,6 +211,12 @@ export default {
       this.showMicrophoneSetup = false
       this.useMicrophone = false
       this.updateUrl()
+    },
+    showMobileSubtitles() {
+      this.showSubtitlesFullscreen = true
+    },
+    closeSubtitleFullscreen() {
+      this.showSubtitlesFullscreen = false
     },
   },
   components: {

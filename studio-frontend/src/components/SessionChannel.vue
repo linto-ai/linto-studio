@@ -93,7 +93,11 @@
       :fontSize="fontSize"
       :key="fontSize"
       :selectedTranslations="selectedTranslations" />
-
+    <SubtitleFullscreen
+      v-if="showSubtitlesFullscreen"
+      :partialText="partialText"
+      :finalText="finalText"
+      @close="closeSubtitleFullscreen" />
     <!-- <div
       class="session-content__subtitle"
       :style="style"
@@ -129,10 +133,13 @@
   </div>
 </template>
 <script>
+import uuidv4 from "uuid/v4.js"
+
 import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
 
-import { sessionChannelModelMixin } from "../mixins/sessionChannelModel.js"
+import { sessionChannelModelMixin } from "@/mixins/sessionChannelModel.js"
+import getTextTurnWithTranslation from "@/tools/getTextTurnWithTranslation.js"
 
 import {
   apiGetSessionChannel,
@@ -144,9 +151,7 @@ import SessionChannelTurnPartial from "@/components/SessionChannelTurnPartial.vu
 import Svglogo from "@/svg/Microphone.vue"
 import SessionSubtitle from "@/components/SessionSubtitle.vue"
 import Loading from "@/components/Loading.vue"
-import uuidv4 from "uuid/v4.js"
-
-import getTextTurnWithTranslation from "@/tools/getTextTurnWithTranslation.js"
+import SubtitleFullscreen from "@/components-mobile/SubtitleFullscreen.vue"
 
 export default {
   mixins: [sessionChannelModelMixin],
@@ -183,6 +188,10 @@ export default {
       type: String,
       required: false,
       default: "original",
+    },
+    showSubtitlesFullscreen: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -450,11 +459,15 @@ export default {
         this.copyTurns()
       }
     },
+    closeSubtitleFullscreen() {
+      this.$emit("closeSubtitleFullscreen")
+    },
   },
   components: {
     Fragment,
     SessionChannelTurn,
     SessionChannelTurnPartial,
+    SubtitleFullscreen,
     Svglogo,
     SessionSubtitle,
     Loading,

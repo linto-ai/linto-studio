@@ -7,7 +7,7 @@
       <slot name="content-after-label"></slot>
     </div>
 
-    <div class="flex gap-small align-center">
+    <div class="flex gap-small align-center wrap">
       <slot></slot>
       <input
         v-if="!textarea"

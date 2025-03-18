@@ -99,6 +99,10 @@ h4 {
   min-height: 0; // it force the flex to not grow bigger than the parent
   min-width: 0; // same as above
   //overflow: auto;
+
+  .fit-content {
+    flex-basis: fit-content;
+  }
 }
 
 .flex2 {

@@ -31,7 +31,9 @@
       </router-link>
       <div class="flex1 text-cut center-text flex align-center justify-center">
         <SessionStatus v-if="sessionLoaded" :session="session" small />
-        <h1 style="min-width: 0; width: fit-content">{{ name }}</h1>
+        <h1 class="text-cut" style="min-width: 0; width: fit-content">
+          {{ name }}
+        </h1>
       </div>
 
       <slot name="right-button-mobile"></slot>

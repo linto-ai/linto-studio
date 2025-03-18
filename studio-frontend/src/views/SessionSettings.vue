@@ -46,8 +46,8 @@
 
     <div class="flex1 medium-padding" v-if="sessionLoaded">
       <h1 class="center-text">{{ name }}</h1>
-      <div class="flex">
-        <div class="flex1">
+      <div class="flex wrap">
+        <div class="flex1 fit-content">
           <!-- General informations -->
           <section>
             <h2>
