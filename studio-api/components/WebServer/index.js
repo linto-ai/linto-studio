@@ -78,6 +78,7 @@ class WebServer extends Component {
 
     this.express.use(passport.initialize())
     this.express.use(passport.session())
+    this.express.use(passport.authenticate("session"))
 
     this.express.use(
       "/media/pictures",

@@ -18,11 +18,12 @@ const {
 const refreshToken = require("./token/refresh")
 
 require("./strategies/local")
+
 if (process.env.OIDC_TYPE === "linagora") require("./strategies/oidc_linagora")
 else if (process.env.OIDC_TYPE === "eu") require("./strategies/oidc_eu")
 
 const authenticateUser = (strategy, req, res, next) => {
-  passport.authenticate(strategy, { session: false }, (err, user) => {
+  passport.authenticate(strategy, { session: true }, (err, user) => {
     if (err) {
       next(err)
     } else if (!user) {
