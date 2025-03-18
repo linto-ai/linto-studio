@@ -271,6 +271,10 @@ button,
     background-image: none;
     padding: 0.3rem 0.6rem;
   }
+
+  &.only-icon {
+    padding: 0;
+  }
 }
 
 #upload-media-button {

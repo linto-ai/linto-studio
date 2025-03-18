@@ -38,20 +38,18 @@ export default {
   },
   mounted() {
     const container = this.$refs.fullscreenContainer
-    try {
-      container.requestFullscreen()
-    } catch (e) {
-      console.error(e)
-    }
+
+    container.requestFullscreen().catch((err) => {
+      console.log(err)
+    })
   },
   methods: {
     close() {
-      try {
-        document.exitFullscreen()
-      } catch (e) {
-      } finally {
-        this.$emit("close")
-      }
+      document.exitFullscreen().catch((err) => {
+        console.log(err)
+      })
+
+      this.$emit("close")
     },
   },
   components: {

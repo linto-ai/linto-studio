@@ -2,13 +2,18 @@
   .main__breadcrumb-bar {
     padding: 0.5rem 1rem !important;
   }
-}
 
-@media only screen and (max-width: 800px) {
   #app-header {
     display: none; // will be replace by hamburger menu
   }
 
+  .burger-button {
+    display: block;
+    margin-right: 0.5rem;
+  }
+}
+
+@media only screen and (max-width: 800px) {
   .app-view-content {
     & main.box > .main__content {
       margin: 0.5rem;
