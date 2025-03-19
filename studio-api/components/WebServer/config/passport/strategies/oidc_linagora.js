@@ -1,13 +1,13 @@
 const debug = require("debug")(
   "linto:conversation-manager:components:webserver:config:passport:oidc",
 )
+const crypto = require("crypto")
 
+const axios = require("axios")
 const passport = require("passport")
 const randomstring = require("randomstring")
 
-const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
-
-const Strategy = require("passport-openidconnect")
+const OAuth2Strategy = require("passport-oauth2")
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const TokenGenerator = require("../token/generator")
 
@@ -19,7 +19,7 @@ const { populateUserToOrganization } = require(
   `${process.cwd()}/components/WebServer/controllers/organization/utility`,
 )
 
-const STRATEGY = new Strategy(
+const STRATEGY = new OAuth2Strategy(
   {
     issuer: process.env.OIDC_URL,
     authorizationURL: process.env.OIDC_URL + "/oauth2/authorize",
@@ -30,19 +30,23 @@ const STRATEGY = new Strategy(
     scope: process.env.OIDC_SCOPE
       ? process.env.OIDC_SCOPE.split(",")
       : ["openid", "email", "profile"],
+    pkce: true,
+    state: true,
   },
-  async function verify(
-    openid,
-    email,
-    profile,
-    accessToken,
-    refreshToken,
-    issuer,
-    params,
-    cb,
-  ) {
+  async function (accessToken, refreshToken, profile, cb) {
+    // Fetch user info from OIDC UserInfo Endpoint
+    const userInfoResponse = await axios.get(
+      process.env.OIDC_URL + "/oauth2/userinfo",
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    )
+
     let user
-    let users = await model.users.getTokenByEmail(email?.emails[0]?.value)
+    let users = await model.users.getTokenByEmail(userInfoResponse.data.email)
+
     if (users.length === 1) user = users[0]
     else if (users?.length > 1) throw new MultipleUserFound()
     else if (user?.suspend) throw new DisabledUser()
@@ -58,7 +62,6 @@ const STRATEGY = new Strategy(
       if (createdUser.insertedCount !== 1) throw new UserError()
       users = await model.users.getTokenByEmail(email?.emails[0]?.value)
       user = users[0]
-
       populateUserToOrganization(user) // Only on user creation
     }
 
@@ -79,7 +82,7 @@ const STRATEGY = new Strategy(
     const token_salt = randomstring.generate(12)
     let token = await model.tokens.insert(user._id, token_salt)
 
-    let expires_in = params.expires_in || process.env.TOKEN_EXPIRES_IN || 3600
+    let expires_in = process.env.TOKEN_EXPIRES_IN || 3600
     let tokenData = {
       salt: token_salt,
       tokenId: token.insertedId,
@@ -94,6 +97,16 @@ const STRATEGY = new Strategy(
     )
   },
 )
+
+// Override authorizationParams to add `nonce` inside `state`
+STRATEGY.authorizationParams = function (options) {
+  const params = {}
+  // Generate a random nonce
+  const nonce = crypto.randomBytes(16).toString("hex")
+  params.nonce = nonce
+  return params
+}
+
 passport.use("oidc", STRATEGY)
 
 // Serialize user into session
