@@ -33,68 +33,70 @@ const STRATEGY = new OAuth2Strategy(
     pkce: true,
     state: true,
   },
-  async function (accessToken, refreshToken, profile, cb) {
-    // Fetch user info from OIDC UserInfo Endpoint
-    const userInfoResponse = await axios.get(
-      process.env.OIDC_URL + "/oauth2/userinfo",
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      },
-    )
-
-    let user
-    let users = await model.users.getTokenByEmail(userInfoResponse.data.email)
-
-    if (users.length === 1) user = users[0]
-    else if (users?.length > 1) throw new MultipleUserFound()
-    else if (user?.suspend) throw new DisabledUser()
-    else {
-      const createdUser = await model.users.createExternal(
+  async function (accessToken, refreshToken, profile, done) {
+    try {
+      // Fetch user info from OIDC UserInfo Endpoint
+      const userInfoResponse = await axios.get(
+        process.env.OIDC_URL + "/oauth2/userinfo",
         {
-          email: email?.emails[0]?.value,
-          lastname: email?.name?.familyName || "",
-          firstname: email?.name?.givenName || "",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
         },
-        true, // User come from an SSO, we disable the mail update
       )
-      if (createdUser.insertedCount !== 1) throw new UserError()
-      users = await model.users.getTokenByEmail(email?.emails[0]?.value)
-      user = users[0]
-      populateUserToOrganization(user) // Only on user creation
-    }
-
-    if (!user.fromSSO && !user.emailIsVerified) {
-      let emailList = user.verifiedEmail
-      if (!user.verifiedEmail.includes(user.email)) {
-        emailList = user.verifiedEmail.concat(user.email)
+      let user
+      let users = await model.users.getTokenByEmail(userInfoResponse.data.email)
+      if (users.length === 1) user = users[0]
+      else if (users?.length > 1) throw new MultipleUserFound()
+      else if (user?.suspend) throw new DisabledUser()
+      else {
+        const createdUser = await model.users.createExternal(
+          {
+            email: userInfoResponse?.data?.email,
+            lastname: userInfoResponse?.data?.family_name || "",
+            firstname: userInfoResponse?.data?.given_name || "",
+          },
+          true, // User come from an SSO, we disable the mail update
+        )
+        if (createdUser.insertedCount !== 1) throw new UserError()
+        users = await model.users.getTokenByEmail(userInfoResponse?.data?.email)
+        user = users[0]
+        populateUserToOrganization(user) // Only on user creation
       }
 
-      model.users.update({
-        _id: user._id,
-        fromSso: true,
-        emailIsVerified: true,
-        verifiedEmail: emailList,
-      })
+      if (!user.fromSSO && !user.emailIsVerified) {
+        let emailList = user.verifiedEmail
+        if (!user.verifiedEmail.includes(user.email)) {
+          emailList = user.verifiedEmail.concat(user.email)
+        }
+
+        model.users.update({
+          _id: user._id,
+          fromSso: true,
+          emailIsVerified: true,
+          verifiedEmail: emailList,
+        })
+      }
+
+      const token_salt = randomstring.generate(12)
+      let token = await model.tokens.insert(user._id, token_salt)
+
+      let expires_in = process.env.TOKEN_EXPIRES_IN || 3600
+      let tokenData = {
+        salt: token_salt,
+        tokenId: token.insertedId,
+        email: user.email,
+        userId: user._id,
+        role: user.role,
+      }
+
+      return done(
+        null,
+        TokenGenerator(tokenData, { expires_in: expires_in, refresh: false }),
+      )
+    } catch (err) {
+      done(err)
     }
-
-    const token_salt = randomstring.generate(12)
-    let token = await model.tokens.insert(user._id, token_salt)
-
-    let expires_in = process.env.TOKEN_EXPIRES_IN || 3600
-    let tokenData = {
-      salt: token_salt,
-      tokenId: token.insertedId,
-      email: user.email,
-      userId: user._id,
-      role: user.role,
-    }
-
-    return cb(
-      null,
-      TokenGenerator(tokenData, { expires_in: expires_in, refresh: false }),
-    )
   },
 )
 
