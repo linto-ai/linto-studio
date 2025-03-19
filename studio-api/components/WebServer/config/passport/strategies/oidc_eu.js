@@ -2,6 +2,7 @@ const debug = require("debug")(
   "linto:conversation-manager:components:webserver:config:passport:oidc",
 )
 const randomstring = require("randomstring")
+const appLogger = require(`${process.cwd()}/lib/logger/logger.js`)
 
 const passport = require("passport")
 const model = require(`${process.cwd()}/lib/mongodb/models`)
@@ -106,7 +107,7 @@ async function initStrategy() {
       }),
     )
   } catch (err) {
-    console.error("Error while initializing OIDC strategy")
+    appLogger.error("Error while initializing OIDC strategy", err)
   }
 }
 
