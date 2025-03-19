@@ -27,6 +27,12 @@
     box-shadow: var(--shadow-block-left);
     z-index: 10;
 
+    #upload-media-button {
+      width: calc(100% - 2rem);
+      margin: 0 1rem;
+      margin-bottom: 1rem;
+    }
+
     .burger-menu__header {
       padding-top: 1rem;
     }

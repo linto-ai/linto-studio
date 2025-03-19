@@ -10,10 +10,18 @@
   .burger-button {
     display: block;
     margin-right: 0.5rem;
+    flex-shrink: 0;
   }
 
   .breadcrumb {
-    display: none;
+    .organization-selector {
+      display: none;
+    }
+
+    .breadcrumb__separator {
+      display: none;
+    }
+    //display: none;
   }
 }
 

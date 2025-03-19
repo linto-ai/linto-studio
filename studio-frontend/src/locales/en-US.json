@@ -446,7 +446,11 @@
     },
     "title": "Something went wrong",
     "required": "This field is required",
-    "invalidVisioUrl": "Invalid visio URL"
+    "invalidVisioUrl": "Invalid visio URL",
+    "not_responsive": {
+      "title": "Your device is not compatible with {app_name}",
+      "description": "We are actively working to make {app_name} compatible with mobile devices and tablets."
+    }
   },
   "explore": {
     "delete_conversation_button": "Delete ",

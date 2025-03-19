@@ -21,7 +21,7 @@
       <slot name="right-button-desktop"></slot>
     </div>
 
-    <div class="flex flex1 mobile session-header-mobile align-center">
+    <div class="flex flex1 mobile session-header-mobile align-center gap-small">
       <router-link
         :to="sessionListRoute"
         class="btn secondary only-icon"

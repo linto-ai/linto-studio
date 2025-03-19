@@ -12,6 +12,7 @@
         class="flex row align-center main__breadcrumb-bar"
         v-if="!fullscreen">
         <button
+          v-if="isAuthenticated"
           class="transparent only-icon mobile burger-button"
           @click="toggleBurger">
           <span class="icon burger"></span>
@@ -40,9 +41,11 @@
 <script>
 import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
-import Breadcrumb from "./Breadcrumb.vue"
-import OrganizationSidebar from "./OrganizationSidebar.vue"
+import { getCookie } from "@/tools/getCookie"
+
 import BurgerMenu from "@/components-mobile/BurgerMenu.vue"
+import OrganizationSidebar from "@/components/OrganizationSidebar.vue"
+import Breadcrumb from "@/components/Breadcrumb.vue"
 
 export default {
   props: {
@@ -83,6 +86,11 @@ export default {
     return {
       showBurger: false,
     }
+  },
+  computed: {
+    isAuthenticated() {
+      return getCookie("authToken") !== null
+    },
   },
   mounted() {},
   methods: {

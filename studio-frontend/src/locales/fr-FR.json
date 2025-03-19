@@ -446,7 +446,11 @@
     },
     "title": "Nous avons rencontré un problème",
     "required": "Ce champ est requis",
-    "invalidVisioUrl": "L'url de la visio n'est pas valide"
+    "invalidVisioUrl": "L'url de la visio n'est pas valide",
+    "not_responsive": {
+      "title": "Votre appareil n'est pas compatible avec {app_name}",
+      "description": "Nous travaillons activement pour rendre {app_name} compatible avec les appareils mobiles et tablettes."
+    }
   },
   "explore": {
     "delete_conversation_button": "Supprimer des médias",

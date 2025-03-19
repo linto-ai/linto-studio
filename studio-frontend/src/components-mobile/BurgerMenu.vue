@@ -18,7 +18,21 @@
       fullwidth
       :currentOrganizationScope="currentOrganizationScope"
       :currentOrganization="currentOrganization" />
-
+    <router-link
+      id="upload-media-button"
+      :title="createTitle"
+      to="/interface/conversations/create"
+      class="btn nav-link green no-shrink"
+      tag="button"
+      v-if="
+        (mainListingPage || sessionListingPage) &&
+        isAtLeastUploader &&
+        (canUploadInCurrentOrganization || canSessionInCurrentOrganization)
+      ">
+      <span class="icon new"></span>
+      <!-- <span class="label">{{ $t("navigation.conversation.create") }}</span> -->
+      <span class="label">{{ $t("navigation.conversation.start") }}</span>
+    </router-link>
     <div class="tabs col flex1">
       <!-- <router-link
         :to="{ name: 'inbox' }"
@@ -128,6 +142,12 @@ export default {
     imgUrl() {
       const imageUrl = this.userInfo.img ?? "pictures/default.jpg"
       return `${process.env.VUE_APP_PUBLIC_MEDIA}/${imageUrl}`
+    },
+    mainListingPage() {
+      return this.$route.meta?.mainListingPage
+    },
+    sessionListingPage() {
+      return this.$route.meta?.sessionListingPage
     },
   },
   components: {
