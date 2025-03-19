@@ -3,12 +3,17 @@
     <OrganizationSidebar v-if="sidebar" :organizationPage="organizationPage">
       <slot name="sidebar"></slot>
     </OrganizationSidebar>
-    <BurgerMenu />
+    <BurgerMenu
+      @close="toggleBurger"
+      v-click-outside="toggleBurger"
+      v-if="showBurger" />
     <main class="flex col scrollable" :class="{ box: box, flex1: flex }">
       <div
         class="flex row align-center main__breadcrumb-bar"
         v-if="!fullscreen">
-        <button class="transparent only-icon mobile burger-button">
+        <button
+          class="transparent only-icon mobile burger-button"
+          @click="toggleBurger">
           <span class="icon burger"></span>
         </button>
         <div
@@ -75,10 +80,17 @@ export default {
     },
   },
   data() {
-    return {}
+    return {
+      showBurger: false,
+    }
   },
   mounted() {},
-  methods: {},
+  methods: {
+    toggleBurger() {
+      this.showBurger = !this.showBurger
+      bus.$emit("toggle-burger", this.showBurger)
+    },
+  },
   components: { Fragment, Breadcrumb, OrganizationSidebar, BurgerMenu },
 }
 </script>

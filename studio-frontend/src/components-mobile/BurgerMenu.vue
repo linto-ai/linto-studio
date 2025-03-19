@@ -1,7 +1,7 @@
 <template>
   <nav class="burger-menu mobile">
     <div class="flex align-center burger-menu__header">
-      <button class="transparent only-icon">
+      <button class="transparent only-icon" @click="closeBurger">
         <span class="icon back"></span>
       </button>
       <router-link
@@ -61,7 +61,7 @@
         </router-link>
         <div class="sidebar-divider"></div>
         <router-link
-          :to="{ name: 'shared with me' }"
+          :to="{ name: 'user settings' }"
           class="flex row align-center gap-medium tab">
           <span class="icon settings"></span>
           <span class="tab__label">{{
@@ -69,7 +69,9 @@
           }}</span>
         </router-link>
 
-        <button class="flex row align-center gap-medium tab transparent">
+        <button
+          class="flex row align-center gap-medium tab transparent"
+          @click="logout">
           <span class="icon logout"></span>
           <span class="tab__label">{{ $t("navigation.account.logout") }}</span>
         </button>
@@ -84,6 +86,7 @@ import OrganizationSelector from "@/components/OrganizationSelector.vue"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"
 import { userName } from "@/tools/userName.js"
+import { logout } from "@/tools/logout"
 
 export default {
   mixins: [orgaRoleMixin, organizationPermissionsMixin],
@@ -92,7 +95,14 @@ export default {
     return {}
   },
   mounted() {},
-  methods: {},
+  methods: {
+    logout() {
+      logout()
+    },
+    closeBurger() {
+      this.$emit("close")
+    },
+  },
   computed: {
     logo() {
       return `/img/${getEnv("VUE_APP_LOGO")}`

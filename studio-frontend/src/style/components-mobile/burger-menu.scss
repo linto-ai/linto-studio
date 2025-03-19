@@ -1,10 +1,23 @@
 @media only screen and (max-width: 1100px) {
+  @keyframes openBurgerMenu {
+    from {
+      left: -20rem;
+    }
+    to {
+      left: 0;
+    }
+  }
+
   .burger-menu {
+    position: absolute;
+    top: 0;
+    left: 0rem;
+    animation: openBurgerMenu 0.5s;
     box-sizing: border-box;
     padding-bottom: 0.5rem;
     display: flex;
     flex-direction: column;
-    position: absolute;
+
     height: 100%;
     overflow: auto;
     width: 20rem;
