@@ -271,6 +271,9 @@
   &.burger {
     @include maskImage("../public/img/burger.svg");
   }
+  &.lock-off {
+    @include maskImage("../public/img/lock-off.svg");
+  }
 }
 
 .icon.small {

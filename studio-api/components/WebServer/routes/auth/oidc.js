@@ -5,7 +5,7 @@ const { Unauthorized } = require(
 )
 
 const auth_middleware = require(
-  `${process.cwd()}/components/WebServer/config/passport/local/middleware`,
+  `${process.cwd()}/components/WebServer/config/passport/middleware`,
 )
 var passport = require("passport")
 

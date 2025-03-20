@@ -520,7 +520,8 @@
       "description": "Innovations Open source propulsées par LINAGORA sur les infrastructures EXAION"
     },
     "sso": {
-      "linagora": "Se connecter avec Linagora"
+      "linagora": "Se connecter avec Linagora",
+      "default": "Authentification externe (SSO)"
     },
     "teaser": {
       "transcribe": {

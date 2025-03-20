@@ -109,6 +109,9 @@ async function access(next, convId, userId, restricted, right, rightException) {
       if (lconv.length !== 1) return next(new ConversationNotShared())
       else {
         const conv = lconv[0]
+        if (conv.owner === userId) {
+          return next()
+        }
         if (conv.organization.organizationId === undefined)
           return next(new rightException())
         if (!restricted)

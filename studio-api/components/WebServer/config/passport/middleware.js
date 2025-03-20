@@ -7,6 +7,7 @@ const jwtDecode = require("jwt-decode")
 const verifyJwt = require("jsonwebtoken")
 
 const algorithm = process.env.JWT_ALGORITHM || "HS256"
+let { generators } = require("openid-client")
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const {
@@ -18,12 +19,23 @@ const {
 const refreshToken = require("./token/refresh")
 
 require("./strategies/local")
-if (process.env.OIDC_TYPE === "linagora") {
-  require("./strategies/oidc_linagora")
-}
+
+if (process.env.OIDC_TYPE === "linagora") require("./strategies/oidc_linagora")
+else if (process.env.OIDC_TYPE === "eu") require("./strategies/oidc_eu")
 
 const authenticateUser = (strategy, req, res, next) => {
-  passport.authenticate(strategy, { session: false }, (err, user) => {
+  if (
+    process.env.OIDC_TYPE === "eu" &&
+    !req.session.code_verifier &&
+    strategy === "oidc"
+  ) {
+    const code_verifier = generators.codeVerifier()
+    const code_challenge = generators.codeChallenge(code_verifier)
+    req.session.code_verifier = code_verifier
+    req.session.code_challenge = code_challenge
+  }
+
+  passport.authenticate(strategy, (err, user) => {
     if (err) {
       next(err)
     } else if (!user) {

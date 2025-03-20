@@ -510,7 +510,7 @@
   "login": {
     "create_account_button": "Create an account",
     "email_label": "Email :",
-    "login_button": "login",
+    "login_button": "Login",
     "password_label": "Password :",
     "recover_password": "Forgot your password?",
     "recover_password_btn_label": "Send recovery link",
@@ -520,7 +520,8 @@
       "description": "Open source innovations powered by LINAGORA on EXAION infrastructures"
     },
     "sso": {
-      "linagora": "Sign in with Linagora"
+      "linagora": "Sign in with Linagora",
+      "default": "Single Sign-On (SSO)"
     },
     "teaser": {
       "transcribe": {

@@ -9,7 +9,7 @@ const { diffSessions, groupSessionsByOrg } = require(
 )
 
 const auth_middlewares = require(
-  `${process.cwd()}/components/WebServer/config/passport/local/middleware`,
+  `${process.cwd()}/components/WebServer/config/passport/middleware`,
 )
 
 class IoHandler extends Component {
