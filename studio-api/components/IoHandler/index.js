@@ -12,6 +12,21 @@ const auth_middlewares = require(
   `${process.cwd()}/components/WebServer/config/passport/middleware`,
 )
 
+async function checkSocketAccess(socket, roomId) {
+  const auth = await auth_middlewares.checkSocket(socket)
+  if (auth === false) {
+    const sessions = await axios.get(
+      process.env.SESSION_API_ENDPOINT + `/sessions/${roomId.split("/")[0]}`,
+    )
+    if (sessions.visibility !== "public") {
+      socket.emit("unauthorized")
+      socket.disconnect(true) // Force disconnection
+      return false
+    }
+  }
+  return true
+}
+
 class IoHandler extends Component {
   constructor(app) {
     super(app, "WebServer") // Relies on a WebServer component to be registrated
@@ -30,12 +45,14 @@ class IoHandler extends Component {
       },
     })
 
-    this.io.use(auth_middlewares.isAuthenticateSocket)
+    // this.io.use(auth_middlewares.isAuthenticateSocket)
 
     this.io.on("connection", (socket) => {
       appLogger.debug(`New client connected : ${socket.id}`)
 
-      socket.on("join_room", (roomId) => {
+      socket.on("join_room", async (roomId) => {
+        if (!(await checkSocketAccess(socket, roomId))) return
+
         appLogger.debug(`Client ${socket.id} joins room ${roomId}`)
         this.addSocketInRoom(roomId, socket)
       })
