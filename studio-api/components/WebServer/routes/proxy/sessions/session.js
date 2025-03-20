@@ -9,6 +9,9 @@ const { storeSessionFromStop, storeQuickMeetingFromStop } = require(
 const { forceQueryParams } = require(
   `${process.cwd()}/components/WebServer/controllers/session/session.js`,
 )
+const { Unauthorized } = require(
+  `${process.cwd()}/components/WebServer/error/exception/auth`,
+)
 
 const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
 
@@ -105,6 +108,17 @@ module.exports = (webServer) => {
             path: "/sessions/:id/public",
             method: ["get"],
             addParams: [{ "body.visibility": "public" }],
+            executeAfterResult: [
+              (jsonString) => {
+                try {
+                  const session = JSON.parse(jsonString)
+                  if (session.visibility === "public") return jsonString
+                  throw new Unauthorized()
+                } catch (err) {
+                  throw err
+                }
+              },
+            ],
           },
         ],
         requireAuth: false,
