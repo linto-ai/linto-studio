@@ -63,7 +63,7 @@ export default {
       error: false,
       resetKey: 1,
       noOrganization: false,
-      isMobile: window.innerWidth < 800,
+      isMobile: window.innerWidth < 800 || window.innerHeight < 800,
     }
   },
   mounted() {
