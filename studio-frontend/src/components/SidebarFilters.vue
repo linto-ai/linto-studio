@@ -2,7 +2,7 @@
   <div class="sidebar__section flex1">
     <h3 class="flex align-center">
       <span class="flex1">Filtres</span>
-      <button class="icon-only transparent" @click="resetFilters">
+      <button class="only-icon transparent" @click="resetFilters">
         <span class="icon clear-history"></span>
       </button>
     </h3>

@@ -1,7 +1,7 @@
 <template>
   <MainContent noBreadcrumb :organizationPage="false" box>
     <template v-slot:breadcrumb-actions>
-      <div class="flex flex1 gap-medium align-center justify-center">
+      <!-- <div class="flex flex1 gap-medium align-center justify-center">
         <router-link :to="sessionListRoute" class="btn secondary">
           <span class="icon back"></span>
           <span class="label">{{
@@ -10,25 +10,44 @@
         </router-link>
 
         <!-- title -->
-        <SessionStatus
+      <!-- <SessionStatus
           v-if="sessionLoaded"
           :session="session"
           withText
           class="flex1" />
 
-        <router-link :to="liveRoute" class="btn">
-          <span class="icon text"></span>
-          <span class="label">{{
-            $t("session.detail_page.back_to_live")
-          }}</span>
-        </router-link>
-      </div>
+        
+      </div> -->
+
+      <SessionHeader
+        :sessionListRoute="sessionListRoute"
+        :isAuthenticated="isAuthenticated"
+        :sessionLoaded="sessionLoaded"
+        :name="name"
+        :session="session">
+        <template v-slot:right-button-desktop>
+          <router-link :to="liveRoute" class="btn">
+            <span class="icon text"></span>
+            <span class="label">{{
+              $t("session.detail_page.back_to_live")
+            }}</span>
+          </router-link>
+        </template>
+        <template v-slot:right-button-mobile>
+          <router-link
+            :to="liveRoute"
+            class="btn secondary only-icon"
+            :aria-label="$t('session.detail_page.back_to_live')">
+            <span class="icon text"></span>
+          </router-link>
+        </template>
+      </SessionHeader>
     </template>
 
     <div class="flex1 medium-padding" v-if="sessionLoaded">
       <h1 class="center-text">{{ name }}</h1>
-      <div class="flex">
-        <div class="flex1">
+      <div class="flex wrap">
+        <div class="flex1 fit-content">
           <!-- General informations -->
           <section>
             <h2>
@@ -204,6 +223,7 @@ import ModalForceDeleteSession from "@/components/ModalForceDeleteSession.vue"
 import MainContent from "@/components/MainContent.vue"
 import SessionStatus from "@/components/SessionStatus.vue"
 import MetadataList from "@/components/MetadataList.vue"
+import SessionHeader from "@/components/SessionHeader.vue"
 
 export default {
   mixins: [sessionMixin, formsMixin],
@@ -415,6 +435,7 @@ export default {
     AppointmentSelector,
     ModalForceDeleteSession,
     MetadataList,
+    SessionHeader,
   },
 }
 </script>

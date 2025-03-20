@@ -32,6 +32,14 @@ button,
     outline: none;
   }
 
+  &.circle {
+    border-radius: 50%;
+
+    &:before {
+      border-radius: 50%;
+    }
+  }
+
   &.inline {
     display: inline-flex;
     padding: 0;
@@ -262,6 +270,10 @@ button,
     background-color: var(--input-background);
     background-image: none;
     padding: 0.3rem 0.6rem;
+  }
+
+  &.only-icon {
+    padding: 0;
   }
 }
 

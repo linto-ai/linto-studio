@@ -1,5 +1,6 @@
 button,
 .btn {
+  box-sizing: border-box;
   cursor: pointer;
   display: inline-flex;
   margin: 0;
@@ -73,7 +74,11 @@ button,
     flex: 1;
   }
 
-  &.icon-only {
+  &.circle {
+    border-radius: 50%;
+  }
+
+  &.only-icon {
     height: 2.5rem;
     width: 2.5rem;
     display: flex;
@@ -86,7 +91,7 @@ button,
     opacity: 0.8;
   }
 
-  &.icon-only.small {
+  &.only-icon.small {
     height: 2rem;
     width: 2rem;
   }

@@ -276,7 +276,7 @@ let router = new Router({
         ...defaultComponents,
       },
       props: defaultProps,
-      meta: { public: true, sessionPage: true },
+      meta: { public: true, sessionPage: true, responsive: true },
     },
     {
       path: "/interface/:organizationId/sessions/:sessionId/settings",

@@ -4,22 +4,44 @@
     <div
       class="session-content__action-bar flex align-center gap-medium"
       v-if="this.selectedTurns.length > 0">
-      <button class="red-border" @click="clearSelectedTurns">
+      <button
+        class="red-border session-content__action-bar__reset-btn-desktop"
+        @click="clearSelectedTurns">
+        <span class="icon close"></span>
         <span class="label">{{
           $tc("session.detail_page.clear_turn_selection")
         }}</span>
       </button>
 
-      <button @click="copyTurns">
+      <button
+        class="red-border session-content__action-bar__reset-btn-mobile mobile only-icon"
+        @click="clearSelectedTurns">
+        <span class="icon close"></span>
+      </button>
+
+      <button
+        @click="copyTurns"
+        class="session-content__action-bar__copy-btn-desktop">
         <span class="icon apply" v-if="copyState"></span>
         <span class="icon copy" v-else></span>
         <span class="label">{{
           $tc("session.detail_page.copy_turns_text")
         }}</span>
       </button>
-      <span>{{
-        $tc("session.detail_page.n_turns_selected", this.selectedTurns.length)
-      }}</span>
+
+      <span
+        class="session-content__action-bar__label-selected flex1 text-cut"
+        >{{
+          $tc("session.detail_page.n_turns_selected", this.selectedTurns.length)
+        }}</span
+      >
+
+      <button
+        @click="copyTurns"
+        class="session-content__action-bar__copy-btn-mobile mobile only-icon">
+        <span class="icon apply" v-if="copyState"></span>
+        <span class="icon copy" v-else></span>
+      </button>
     </div>
 
     <div
@@ -57,7 +79,7 @@
       v-else
       class="flex align-center justify-center flex1 col center-text gap-medium">
       <h2>{{ $t("session.detail_page.no_transcription") }}</h2>
-      <Svglogo style="max-height: 6rem; margin: 2rem" />
+      <Svglogo style="max-height: 6rem; margin: 2rem; max-width: 100%" />
       <div ref="bottom"></div>
     </div>
 
@@ -71,7 +93,11 @@
       :fontSize="fontSize"
       :key="fontSize"
       :selectedTranslations="selectedTranslations" />
-
+    <SubtitleFullscreen
+      v-if="showSubtitlesFullscreen"
+      :partialText="partialText"
+      :finalText="finalText"
+      @close="closeSubtitleFullscreen" />
     <!-- <div
       class="session-content__subtitle"
       :style="style"
@@ -89,17 +115,31 @@
     <button
       v-if="!isBottom"
       @click="scrollToBottom(true)"
-      class="bottom-session-button"
+      class="bottom-session-button bottom-session-button-desktop"
+      :class="{ has_subtitles: displaySubtitles }">
+      <span class="icon bottom-arrow"></span>
+      <span class="label">{{
+        $tc("session.detail_page.scroll_to_bottom")
+      }}</span>
+    </button>
+
+    <button
+      v-if="!isBottom"
+      @click="scrollToBottom(true)"
+      class="mobile bottom-session-button bottom-session-button-mobile only-icon green circle"
       :class="{ has_subtitles: displaySubtitles }">
       <span class="icon bottom-arrow"></span>
     </button>
   </div>
 </template>
 <script>
+import uuidv4 from "uuid/v4.js"
+
 import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
 
-import { sessionChannelModelMixin } from "../mixins/sessionChannelModel.js"
+import { sessionChannelModelMixin } from "@/mixins/sessionChannelModel.js"
+import getTextTurnWithTranslation from "@/tools/getTextTurnWithTranslation.js"
 
 import {
   apiGetSessionChannel,
@@ -111,9 +151,7 @@ import SessionChannelTurnPartial from "@/components/SessionChannelTurnPartial.vu
 import Svglogo from "@/svg/Microphone.vue"
 import SessionSubtitle from "@/components/SessionSubtitle.vue"
 import Loading from "@/components/Loading.vue"
-import uuidv4 from "uuid/v4.js"
-
-import getTextTurnWithTranslation from "@/tools/getTextTurnWithTranslation.js"
+import SubtitleFullscreen from "@/components-mobile/SubtitleFullscreen.vue"
 
 export default {
   mixins: [sessionChannelModelMixin],
@@ -150,6 +188,10 @@ export default {
       type: String,
       required: false,
       default: "original",
+    },
+    showSubtitlesFullscreen: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -417,11 +459,15 @@ export default {
         this.copyTurns()
       }
     },
+    closeSubtitleFullscreen() {
+      this.$emit("closeSubtitleFullscreen")
+    },
   },
   components: {
     Fragment,
     SessionChannelTurn,
     SessionChannelTurnPartial,
+    SubtitleFullscreen,
     Svglogo,
     SessionSubtitle,
     Loading,

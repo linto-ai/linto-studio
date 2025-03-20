@@ -44,7 +44,7 @@
     <td v-if="from === 'sessionSettings'">
       <button
         @click="$emit('connectMicrophone')"
-        class="icon-only only-border"
+        class="only-icon only-border"
         :title="$t('session.channels_list.connect_microphone')"
         :aria-label="$t('session.channels_list.connect_microphone')"
         type="button">

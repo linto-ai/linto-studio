@@ -1,26 +1,39 @@
 <template>
   <MainContent noBreadcrumb :organizationPage="false" fullwidthContent sidebar>
     <template v-slot:breadcrumb-actions>
-      <router-link :to="sessionListRoute" class="btn secondary">
-        <span class="icon back"></span>
-        <span class="label">{{
-          $t("session.detail_page.back_to_listing")
-        }}</span>
-      </router-link>
-
-      <!-- title -->
-      <SessionStatus
-        v-if="sessionLoaded"
-        :session="session"
-        withText
-        class="flex1" />
-
-      <router-link :to="settingsRoute" class="btn" v-if="isAtLeastMaintainer">
-        <span class="icon settings"></span>
-        <span class="label">{{
-          $t("session.detail_page.settings_button")
-        }}</span>
-      </router-link>
+      <SessionHeader
+        :sessionListRoute="sessionListRoute"
+        :sessionLoaded="sessionLoaded"
+        :name="name"
+        :session="session">
+        <template v-slot:right-button-desktop>
+          <router-link
+            :to="settingsRoute"
+            class="btn"
+            v-if="isAtLeastMaintainer">
+            <span class="icon settings"></span>
+            <span class="label">{{
+              $t("session.detail_page.settings_button")
+            }}</span>
+          </router-link>
+        </template>
+        <template v-slot:right-button-mobile>
+          <div class="flex gap-small">
+            <router-link
+              :to="settingsRoute"
+              class="btn secondary only-icon"
+              v-if="isAtLeastMaintainer"
+              :aria-label="$t('session.detail_page.settings_button')">
+              <span class="icon settings"></span>
+            </router-link>
+            <button
+              class="btn secondary only-icon"
+              @click="showMobileSubtitles">
+              <span class="icon subtitle"></span>
+            </button>
+          </div>
+        </template>
+      </SessionHeader>
     </template>
 
     <template v-slot:sidebar>
@@ -61,6 +74,8 @@
 
       <SessionLiveContent
         v-else
+        @closeSubtitleFullscreen="closeSubtitleFullscreen"
+        :showSubtitlesFullscreen="showSubtitlesFullscreen"
         :selectedTranslations="selectedTranslation"
         :organizationId="organizationId"
         :fontSize="fontSize"
@@ -68,6 +83,13 @@
         :displayLiveTranscription="displayLiveTranscription"
         :session="session"
         :selectedChannel="selectedChannel" />
+
+      <SessionDropdownChannelSelector
+        class="mobile"
+        v-if="sessionLoaded"
+        :channels="channels"
+        v-bind:selectedChannel.sync="selectedChannel"
+        v-bind:selectedTranslation.sync="selectedTranslation" />
 
       <ModalNew
         noAction
@@ -104,6 +126,9 @@ import SessionLiveToolbar from "@/components/SessionLiveToolbar.vue"
 import ModalNew from "@/components/ModalNew.vue"
 import SessionSetupMicrophone from "@/components/SessionSetupMicrophone.vue"
 import SessionLiveMicrophoneStatus from "@/components/SessionLiveMicrophoneStatus.vue"
+import SessionHeader from "@/components/SessionHeader.vue"
+
+import SessionDropdownChannelSelector from "@/components-mobile/SessionDropdownChannelSelector.vue"
 export default {
   mixins: [
     sessionMixin,
@@ -130,6 +155,7 @@ export default {
       startChannelId: Number(channelId),
       deviceId: null,
       showMicrophoneSetup: false,
+      showSubtitlesFullscreen: false,
       currentChannelMicrophone: null,
     }
   },
@@ -186,6 +212,12 @@ export default {
       this.useMicrophone = false
       this.updateUrl()
     },
+    showMobileSubtitles() {
+      this.showSubtitlesFullscreen = true
+    },
+    closeSubtitleFullscreen() {
+      this.showSubtitlesFullscreen = false
+    },
   },
   components: {
     MainContent,
@@ -200,6 +232,8 @@ export default {
     ModalNew,
     SessionSetupMicrophone,
     SessionLiveMicrophoneStatus,
+    SessionDropdownChannelSelector,
+    SessionHeader,
   },
 }
 </script>

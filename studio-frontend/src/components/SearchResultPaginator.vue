@@ -8,10 +8,10 @@
         $tc("conversation.search_in_transcription.n_found", numberFound)
       }}</span
     >
-    <button class="icon-only small" @click="previousResult">
+    <button class="only-icon small" @click="previousResult">
       <span class="icon previous"></span>
     </button>
-    <button class="icon-only small" @click="nextResult">
+    <button class="only-icon small" @click="nextResult">
       <span class="icon next"></span>
     </button>
   </div>

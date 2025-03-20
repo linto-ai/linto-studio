@@ -5,6 +5,8 @@
     </div>
     <SessionChannel
       v-if="isConnected"
+      @closeSubtitleFullscreen="closeSubtitleFullscreen"
+      :showSubtitlesFullscreen="showSubtitlesFullscreen"
       :selectedTranslations="selectedTranslations"
       :sessionId="session.id"
       :organizationId="organizationId"
@@ -64,6 +66,11 @@ export default {
       type: String,
       required: false,
     },
+    showSubtitlesFullscreen: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
@@ -94,6 +101,9 @@ export default {
       if (isBottom !== this.isBottom) {
         this.isBottom = isBottom
       }
+    },
+    closeSubtitleFullscreen() {
+      this.$emit("closeSubtitleFullscreen")
     },
   },
   components: { Fragment, SessionChannel, Loading },

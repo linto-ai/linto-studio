@@ -1,7 +1,7 @@
 <template>
   <div class="context-menu__element flex gap-small" @click="copyEndpoint">
     <pre class="flex1 overflow-horizontal-auto">{{ endpoint }}</pre>
-    <button class="icon-only">
+    <button class="only-icon">
       <span class="icon copy" v-if="!endpointHasbeenCopied"></span>
       <span class="icon apply" v-else></span>
     </button>

@@ -18,7 +18,7 @@
       <template v-slot:content-after-input> </template
     ></FormInput>
     <div>
-      <button class="icon-only" @click="deleteRow">
+      <button class="only-icon" @click="deleteRow">
         <span class="icon trash"></span>
       </button>
     </div>

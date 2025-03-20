@@ -1,7 +1,7 @@
 <template>
   <div class="flex align-center justify-center gap-medium">
     <button
-      class="icon-only"
+      class="only-icon"
       @click="previousWeek"
       :title="$t('week_selector.previous_button_title')">
       <span class="icon left-arrow"></span>
@@ -18,7 +18,7 @@
       }}
     </h3>
     <button
-      class="icon-only"
+      class="only-icon"
       @click="nextWeek"
       :title="$t('week_selector.next_button_title')">
       <span class="icon right-arrow"></span>
