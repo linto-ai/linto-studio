@@ -179,7 +179,7 @@ module.exports = {
         )
       })
 
-      return isValid
+      return { isAuth: isValid, userId: tokenData.data.userId }
     } catch (err) {
       return false
     }

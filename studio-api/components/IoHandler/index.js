@@ -1,6 +1,7 @@
 const debug = require("debug")("linto:components:socketio")
 const Component = require(`../component.js`)
 const socketIO = require("socket.io")
+const organization = require("../WebServer/middlewares/access/organization.js")
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 const appLogger = require(`${process.cwd()}/lib/logger/logger.js`)
 
@@ -11,20 +12,42 @@ const { diffSessions, groupSessionsByOrg } = require(
 const auth_middlewares = require(
   `${process.cwd()}/components/WebServer/config/passport/middleware`,
 )
+const { sessionSocketAccess } = require(
+  `${process.cwd()}/components/WebServer/middlewares/access/organization.js`,
+)
 
 async function checkSocketAccess(socket, roomId) {
-  const auth = await auth_middlewares.checkSocket(socket)
-  if (auth === false) {
-    const sessions = await axios.get(
-      process.env.SESSION_API_ENDPOINT + `/sessions/${roomId.split("/")[0]}`,
-    )
-    if (sessions.visibility !== "public") {
+  const session = await axios.get(
+    process.env.SESSION_API_ENDPOINT + `/sessions/${roomId.split("/")[0]}`,
+  )
+
+  if (session.visibility === "public") {
+    return true
+  } else {
+    const { isAuth, userId } = await auth_middlewares.checkSocket(socket)
+    if (isAuth === false) {
       socket.emit("unauthorized")
-      socket.disconnect(true) // Force disconnection
+      socket.disconnect(true)
+      return false
+    }
+
+    const access = await sessionSocketAccess(session, userId)
+    if (access === false) {
+      socket.emit("unauthorized")
+      socket.disconnect(true)
+      return false
+    }
+
+    if (session.visibility === "organization") {
+      return true
+    } else if (session.visibility === "private" && session.owner === userId) {
+      return true
+    } else {
+      socket.emit("unauthorized")
+      socket.disconnect(true)
       return false
     }
   }
-  return true
 }
 
 class IoHandler extends Component {
@@ -45,8 +68,7 @@ class IoHandler extends Component {
       },
     })
 
-    // this.io.use(auth_middlewares.isAuthenticateSocket)
-
+    // this.io.use(auth_middlewares.isAuthenticateSocket) // Used initialy to require authentication, disabling annonymous sessions
     this.io.on("connection", (socket) => {
       appLogger.debug(`New client connected : ${socket.id}`)
 
