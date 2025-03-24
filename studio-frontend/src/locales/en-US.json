@@ -37,7 +37,8 @@
     "navigation": {
       "home": "Home",
       "users": "Users",
-      "organisations": "Organisations"
+      "organisations": "Organisations",
+      "transcriberProfiles": "Transcriber Profiles"
     },
     "user_list": {
       "title": "Users",
@@ -899,7 +900,8 @@
         "selected": "Selected",
         "type": "Type",
         "translations": "Translations",
-        "diarization": "Diarization"
+        "diarization": "Diarization",
+        "organization": "Organisation"
       },
       "title": "Selection of transcription profiles",
       "translation_not_available": "No translation available",

@@ -37,7 +37,8 @@
     "navigation": {
       "home": "Accueil",
       "users": "Utilisateurs",
-      "organisations": "Organisations"
+      "organisations": "Organisations",
+      "transcriberProfiles": "Profiles de transcription"
     },
     "user_list": {
       "title": "Utilisateurs",
@@ -903,7 +904,8 @@
         "selected": "Selectionné",
         "type": "Type",
         "translations": "Traductions",
-        "diarization": "Séparation des locuteurs"
+        "diarization": "Séparation des locuteurs",
+        "organization": "Organisation"
       },
       "title": "Choix des profils de transcription",
       "translation_not_available": "Non disponible",

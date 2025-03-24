@@ -24,6 +24,15 @@
           $t("backoffice.navigation.organisations")
         }}</span>
       </router-link>
+      <router-link
+        v-if="isAtLeastSystemAdministrator"
+        :to="{ name: 'backoffice-transcriberProfilesList' }"
+        class="flex row align-center gap-medium tab">
+        <span class="icon category"></span>
+        <span class="tab__label">{{
+          $t("backoffice.navigation.transcriberProfiles")
+        }}</span>
+      </router-link>
     </nav>
   </aside>
 </template>

@@ -54,9 +54,9 @@ import CustomSelect from "@/components/CustomSelect.vue"
 import Checkbox from "@/components/Checkbox.vue"
 import SwitchInput from "@/components/SwitchInput.vue"
 import Radio from "./Radio.vue"
-import transriberImageFromtype from "@/tools/transriberImageFromtype.js"
-
+import { transcriberProfileModelMixin } from "@/mixins/transcriberProfileModel.js"
 export default {
+  mixins: [transcriberProfileModelMixin],
   props: {
     profile: {
       type: Object,
@@ -135,24 +135,6 @@ export default {
     },
     sortListKey() {
       return "profileSelector"
-    },
-    name() {
-      return this.profile.config.name || ""
-    },
-    description() {
-      return this.profile.config.description || ""
-    },
-    type() {
-      return transriberImageFromtype(this.profile.config.type)
-    },
-    alternativeTextForType() {
-      return this.profile.config.type || ""
-    },
-    languages() {
-      const langs_str = this.profile.config.languages.map(
-        (lang) => lang.candidate,
-      )
-      return langs_str.join(", ")
     },
   },
   methods: {

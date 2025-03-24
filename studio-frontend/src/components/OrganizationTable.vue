@@ -2,7 +2,7 @@
   <table
     class="table-grid"
     style="grid-template-columns: auto 1fr 1fr 1fr auto; width: 100%">
-    <OrganizationTableHeaders
+    <OrganizationTableHeader
       @list_sort_by="sortBy"
       :sortListKey="sortListKey"
       :sortListDirection="sortListDirection" />
@@ -20,7 +20,7 @@
   </table>
 </template>
 <script>
-import OrganizationTableHeaders from "./OrganizationTableHeaders.vue"
+import OrganizationTableHeader from "./OrganizationTableHeader.vue"
 import OrganizationTableLine from "./OrganizationTableLine.vue"
 import Loading from "./Loading.vue"
 export default {
@@ -71,6 +71,6 @@ export default {
       },
     },
   },
-  components: { OrganizationTableHeaders, OrganizationTableLine, Loading },
+  components: { OrganizationTableHeader, OrganizationTableLine, Loading },
 }
 </script>
