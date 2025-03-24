@@ -70,7 +70,7 @@ export const sessionMixin = {
         sessionRequest = await apiGetPublicSession(this.sessionId)
       }
 
-      if (sessionRequest.status === "error") {
+      if (sessionRequest.status === "error" || typeof sessionRequest.data === "string") {
         this.$router.replace({ name: "not_found" })
         return
       }

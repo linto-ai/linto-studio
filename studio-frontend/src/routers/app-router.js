@@ -95,6 +95,7 @@ let router = new Router({
         ...defaultComponents,
       },
       defaultProps,
+      meta: { responsive: true },
     },
     {
       path: "/login",
