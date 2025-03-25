@@ -98,7 +98,7 @@ class DisabledUser extends Error {
 class Unauthorized extends Error {
   constructor(message, err) {
     super()
-    this.name = "DisabledUser"
+    this.name = "Unauthorized"
     this.type = ExceptionType
     this.status = 401
     if (message) this.message = message

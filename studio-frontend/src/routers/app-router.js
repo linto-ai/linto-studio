@@ -95,6 +95,7 @@ let router = new Router({
         ...defaultComponents,
       },
       defaultProps,
+      meta: { responsive: true },
     },
     {
       path: "/login",
@@ -286,7 +287,7 @@ let router = new Router({
         ...defaultComponents,
       },
       props: defaultProps,
-      meta: { public: true, sessionPage: true },
+      meta: { public: false, sessionPage: true },
     },
     {
       path: "/interface/:organizationId/quick-session",

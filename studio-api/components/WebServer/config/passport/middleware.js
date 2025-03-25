@@ -149,6 +149,41 @@ module.exports = {
       next(new Error("Authentication failed"))
     }
   },
+  checkSocket: async (socket) => {
+    try {
+      const token = socket?.handshake?.auth?.token
+      if (!token) {
+        return next(new Error("Authentication token is missing"))
+      }
+      const tokenData = jwtDecode(token + "")
+      if (!tokenData?.data?.userId || !tokenData?.data?.tokenId) {
+        return next(new Error("Malformed token"))
+      }
+
+      const secret = await generateSecretFromHeaders(undefined, {
+        payload: tokenData,
+      })
+
+      const isValid = await new Promise((resolve) => {
+        verifyJwt.verify(
+          token,
+          secret,
+          { algorithms: [algorithm] },
+          (err, decoded) => {
+            if (err) {
+              resolve(false)
+            } else {
+              resolve(true)
+            }
+          },
+        )
+      })
+
+      return { isAuth: isValid, userId: tokenData.data.userId }
+    } catch (err) {
+      return false
+    }
+  },
 }
 
 const generateSecret = async (req, token, secretType) => {
