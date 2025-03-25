@@ -36,7 +36,36 @@ module.exports = (webServer) => {
       /*************************/
       {
         paths: [
-          { path: "/transcriber_profiles", method: ["get", "post"] },
+          {
+            path: "/transcriber_profiles",
+            method: ["get"],
+            executeAfterResult: [
+              (jsonString, req) => {
+                try {
+                  const sessions = JSON.parse(jsonString)
+
+                  if (req.query.organizationId) {
+                    return JSON.stringify(
+                      sessions.filter(
+                        (session) =>
+                          session.organizationId === req.query.organizationId ||
+                          session.organizationId === null,
+                      ),
+                    )
+                  } else {
+                    return JSON.stringify(
+                      sessions.filter(
+                        (session) => session.organizationId === null,
+                      ),
+                    )
+                  }
+                } catch (err) {
+                  return jsonString
+                }
+              },
+            ],
+          },
+          { path: "/transcriber_profiles", method: ["post"] },
           {
             path: "/transcriber_profiles/:id",
             method: ["get", "put", "delete"],
