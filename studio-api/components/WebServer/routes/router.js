@@ -21,6 +21,10 @@ const platform_middlewares = require(
   `${process.cwd()}/components/WebServer/middlewares/access/platform.js`,
 )
 
+const { Unauthorized } = require(
+  `${process.cwd()}/components/WebServer/error/exception/auth`,
+)
+
 const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
 
 const permissionMiddlewareMap = {
@@ -207,7 +211,11 @@ const createProxyRoutes = (webServer, proxy_routes) => {
                       return responseBuffer
                     }
                   } catch (error) {
-                    return responseBuffer
+                    if (error instanceof Unauthorized) {
+                      return error.toString()
+                    } else {
+                      return responseBuffer
+                    }
                   }
                 },
               ),

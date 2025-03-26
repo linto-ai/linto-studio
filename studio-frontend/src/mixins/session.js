@@ -47,13 +47,13 @@ export const sessionMixin = {
     // then fetch session
     if (this.session === null) this.fetchSession()
     bus.$on(
-      `websocket/orga_${this.currentOrganizationScope}_session_update`,
+      `websocket/orga_${this.organizationId}_session_update`,
       this.onSessionUpdateEvent.bind(this),
     )
   },
   beforeDestroy() {
     //this.$sessionWS.unSubscribeOrganization()
-    bus.$off(`websocket/orga_${this.currentOrganizationScope}_session_update`)
+    bus.$off(`websocket/orga_${this.organizationId}_session_update`)
   },
   methods: {
     async fetchSession() {
@@ -70,7 +70,7 @@ export const sessionMixin = {
         sessionRequest = await apiGetPublicSession(this.sessionId)
       }
 
-      if (sessionRequest.status === "error") {
+      if (sessionRequest.status === "error" || typeof sessionRequest.data === "string") {
         this.$router.replace({ name: "not_found" })
         return
       }
@@ -147,7 +147,7 @@ export const sessionMixin = {
       this.isDeleting = false
     },
     subscribeToWebsocket() {
-      this.$sessionWS.subscribeOrganization(this.currentOrganizationScope)
+      this.$sessionWS.subscribeOrganization(this.organizationId)
     },
     onSessionUpdateEvent(value) {
       for (const updatedSession of value.updated) {

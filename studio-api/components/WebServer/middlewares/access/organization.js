@@ -96,6 +96,9 @@ module.exports = {
   permissionSession: async (req, res, next) => {
     await permissionAccess(req, res, next, PERMISSIONS.SESSION)
   },
+  sessionSocketAccess: async (session, userId) => {
+    return await sessionSocketAccess(session, userId, ROLES.MEMBER)
+  },
 }
 
 async function permissionAccess(req, res, next, access) {
@@ -145,5 +148,28 @@ async function access(req, next, organizationId, userId, right) {
     }
   } catch (err) {
     return next(err)
+  }
+}
+
+async function sessionSocketAccess(session, userId, right) {
+  try {
+    if (!session && session.organizationId) {
+      return false
+    }
+    const organization = await model.organizations.getById(
+      session.organizationId,
+    )
+    if (organization.length !== 1) return false
+    else {
+      const isUserFound = organization[0].users.filter(
+        (user) =>
+          user.userId === userId && ROLES.hasRoleAccess(user.role, right),
+      )
+      if (isUserFound.length !== 0) {
+        return true
+      } else return false
+    }
+  } catch (err) {
+    return false
   }
 }
