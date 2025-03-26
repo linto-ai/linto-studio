@@ -52,6 +52,7 @@
         v-for="turn in previousTurns"
         v-if="displayLiveTranscription && shouldDisplayTurn(turn)"
         :key="turn.uuid"
+        :channelLanguages="channelLanguages"
         :selectedTranslations="selectedTranslations"
         :turn="turn"
         :selected="selectedTurns.includes(turn.uuid)"
@@ -61,6 +62,7 @@
         v-for="turn in turns"
         v-if="displayLiveTranscription && shouldDisplayTurn(turn)"
         :key="turn.uuid"
+        :channelLanguages="channelLanguages"
         :selectedTranslations="selectedTranslations"
         :turn="turn"
         :selected="selectedTurns.includes(turn.uuid)"
@@ -69,6 +71,7 @@
       <SessionChannelTurnPartial
         v-if="displayLiveTranscription && partialText !== ''"
         ref="partial"
+        :channelLanguages="channelLanguages"
         :selectedTranslations="selectedTranslations"
         :partialObject="partialObject"
         :partialText="partialText"></SessionChannelTurnPartial>
@@ -347,6 +350,7 @@ export default {
       this.partialText = getTextTurnWithTranslation(
         content,
         this.selectedTranslations,
+        this.channelLanguages,
       )
       this.partialObject = content
       this.scrollToBottom()
@@ -359,6 +363,7 @@ export default {
       this.finalText = getTextTurnWithTranslation(
         content,
         this.selectedTranslations,
+        this.channelLanguages,
       )
       this.finalObject = content
       this.turns.push(content)
@@ -436,7 +441,7 @@ export default {
       const text = previousSelectedTurns
         .concat(selectedTurns)
         .map((turn) =>
-          getTextTurnWithTranslation(turn, this.selectedTranslations),
+          getTextTurnWithTranslation(turn, this.selectedTranslations, this.channelLanguages),
         )
         .join("\n\n")
 
