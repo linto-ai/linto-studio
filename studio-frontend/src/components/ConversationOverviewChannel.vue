@@ -117,7 +117,7 @@ export default {
     },
     async getAudioFile() {
       let req = await apiGetAudioFileFromConversation(
-        this.conversationId,
+        this.conversation._id,
         false,
       )
       if (req?.status === "success") {
