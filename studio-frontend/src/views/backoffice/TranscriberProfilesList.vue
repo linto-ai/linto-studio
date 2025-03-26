@@ -4,6 +4,7 @@
       <TranscriberProfileTable
         :transcriberProfilesList="transcriberProfiles"
         :loading="loading"
+        :linkTo="{ name: 'backoffice-transcriberProfileDetail' }"
         v-model="selectedProfiles" />
     </div>
   </MainContentBackoffice>
@@ -13,6 +14,7 @@ import { bus } from "@/main.js"
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import { apiGetTranscriberProfiles } from "@/api/session.js"
 import TranscriberProfileTable from "@/components/TranscriberProfileTable.vue"
+import HeaderTable from "@/components/HeaderTable.vue"
 
 export default {
   props: {},
@@ -37,6 +39,7 @@ export default {
   components: {
     MainContentBackoffice,
     TranscriberProfileTable,
+    HeaderTable,
   },
 }
 </script>

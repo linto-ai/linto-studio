@@ -23,7 +23,7 @@
       <ArrayHeader
         @list_sort_by="sortBy"
         eventLabel="languages"
-        :label="$t('session.profile_selector.labels.languages')"
+        :label="$t('session.profile_selector.labels.organization')"
         :sortListDirection="sortListDirection"
         :sortListKey="sortListKey" />
       <th class="no-size"></th>

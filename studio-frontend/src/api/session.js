@@ -15,6 +15,25 @@ export async function apiGetTranscriberProfiles(notif) {
   return getTranscriberProfiles?.data ?? []
 }
 
+export async function apiGetTranscriberProfilesById(transcriberId, notif) {
+  return await sendRequest(
+    `${BASE_API}/transcriber_profiles/${transcriberId}`,
+    { method: "get" },
+    {},
+    notif,
+  ) 
+}
+
+export async function apiUpdateTranscriberProfile(transcriberId, data, notif) {
+  return await sendRequest(
+    `${BASE_API}/transcriber_profiles/${transcriberId}`,
+    { method: "put" },
+    data,
+    notif,
+  )
+}
+
+
 export async function apiGetSessionTemplates(organizationScope, notif) {
   const getSessionTemplates = await sendRequest(
     `${BASE_API}/organizations/${organizationScope}/templates`,

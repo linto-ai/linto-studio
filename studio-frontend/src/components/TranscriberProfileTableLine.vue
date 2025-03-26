@@ -7,13 +7,17 @@
         :checkboxValue="id"></Checkbox>
     </td>
     <td>
-      {{ name }}
+      <router-link :to="to">{{ name }}</router-link>
+      
     </td>
     <td>
-      {{ description }}
+      <router-link :to="to">{{ description }}</router-link>
     </td>
-    <td>{{ languages }}</td>
-    <td>{{ languages }}</td>
+    <td>
+      <router-link :to="to">{{ languages }}</router-link>
+      </td>
+    <td>
+      {{ transcriberOrganizationId || "–" }}</td>
     <td>
       <button>
         <span class="label">Edit</span>
@@ -33,6 +37,10 @@ export default {
       type: Object,
       required: true,
     },
+    linkTo: {
+      type: Object,
+      required: false,
+    },
   },
   data() {
     return {}
@@ -46,6 +54,12 @@ export default {
       set(value) {
         this.$emit("input", value)
       },
+    },
+    to() {
+      return {
+        ...this.linkTo,
+        params: { transcriberProfileId: this.id },
+      }
     },
   },
   methods: {},

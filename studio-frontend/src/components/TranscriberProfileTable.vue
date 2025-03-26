@@ -1,7 +1,7 @@
 <template>
   <table
     class="table-grid"
-    style="grid-template-columns: auto 1fr 1fr 1fr auto; width: 100%">
+    style="grid-template-columns: auto 1fr 1fr 1fr 1fr auto; width: 100%">
     <TranscriberProfileTableHeader />
     <tbody>
       <div class="table-loader" v-if="loading">
@@ -11,6 +11,7 @@
         v-for="profile in transcriberProfilesList"
         v-model="p_selectedProfiles"
         :key="profile.id"
+        :linkTo="linkTo"
         :profile="profile" />
     </tbody>
   </table>
