@@ -5,6 +5,7 @@
       v-model="p_selectedChannel"></SessionChannelsSelector>
 
     <SessionTranslationSelection
+      :qualifiedForCrossSubtitles="qualifiedForCrossSubtitles"
       :selectedChannel="selectedChannel"
       v-model="p_selectedTranslation"></SessionTranslationSelection>
 
@@ -58,6 +59,10 @@ export default {
     channels: {
       type: Array,
       required: true,
+    },
+    qualifiedForCrossSubtitles: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
