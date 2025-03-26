@@ -3,6 +3,7 @@
     <template v-slot:sidebar>
       <SessionLiveToolbar
         :channels="channels"
+        :qualifiedForCrossSubtitles="qualifiedForCrossSubtitles"
         v-bind:selectedTranslation.sync="selectedTranslation"
         v-bind:displayLiveTranscription.sync="displayLiveTranscription"
         v-bind:displaySubtitles.sync="displaySubtitles"
@@ -67,6 +68,16 @@ export default {
   },
   mounted() {},
   methods: {},
+  computed: {
+    qualifiedForCrossSubtitles() {
+      let res = true
+      res = res && this.selectedChannel.languages.length == 2
+      //res = res && this.selectedChannel.translations.length == 2
+      res = res && !!this.selectedChannel.translations.find((t) => t.split("-")[0] === this.selectedChannel.languages[0].split("-")[0])
+      res = res && !!this.selectedChannel.translations.find((t) => t.split("-")[0] === this.selectedChannel.languages[1].split("-")[0])
+      return res
+    },
+  },
   components: {
     MainContent,
     SessionLiveToolbar,
