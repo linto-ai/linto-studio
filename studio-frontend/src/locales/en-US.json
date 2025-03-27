@@ -56,6 +56,10 @@
       "notif_error": "An error occurred",
       "type_label": "Profile type",
       "quick_meeting_label": "Enabled for quick meetings"
+    },
+    "transcriber_profile_list": {
+      "title": "Transcriber Profiles",
+      "add_transcriber_profile_button": "Add a transcriber profile"
     }
   },
   "breadcrumb": {
@@ -589,6 +593,11 @@
     "title": "Create new organisation",
     "label_name": "Name",
     "action_btn": "Create"
+  },
+  "modal_create_transcriber_profile": {
+    "title": "Create new transcriber profile",
+    "action_btn": "Create profile",
+    "notif_error": "An error occurred while creating the transcriber profile"
   },
   "modal_delete_users": {
     "title": "Delete user | Delete {count} users",

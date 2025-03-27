@@ -21,7 +21,7 @@ export async function apiGetTranscriberProfilesById(transcriberId, notif) {
     { method: "get" },
     {},
     notif,
-  ) 
+  )
 }
 
 export async function apiUpdateTranscriberProfile(transcriberId, data, notif) {
@@ -33,6 +33,14 @@ export async function apiUpdateTranscriberProfile(transcriberId, data, notif) {
   )
 }
 
+export async function apiCreateTranscriberProfile(data, notif) {
+  return await sendRequest(
+    `${BASE_API}/transcriber_profiles`,
+    { method: "post" },
+    data,
+    notif,
+  )
+}
 
 export async function apiGetSessionTemplates(organizationScope, notif) {
   const getSessionTemplates = await sendRequest(

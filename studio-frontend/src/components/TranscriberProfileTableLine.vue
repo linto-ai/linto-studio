@@ -8,18 +8,18 @@
     </td>
     <td>
       <router-link :to="to">{{ name }}</router-link>
-      
     </td>
     <td>
       <router-link :to="to">{{ description }}</router-link>
     </td>
     <td>
       <router-link :to="to">{{ languages }}</router-link>
-      </td>
+    </td>
     <td>
-      {{ transcriberOrganizationId || "–" }}</td>
+      {{ transcriberOrganizationId || "–" }}
+    </td>
     <td>
-      <button>
+      <button @click="editProfile">
         <span class="label">Edit</span>
         <span class="icon edit"></span>
       </button>
@@ -62,7 +62,11 @@ export default {
       }
     },
   },
-  methods: {},
+  methods: {
+    editProfile() {
+      this.$router.push(this.to)
+    },
+  },
   components: {
     Checkbox,
   },

@@ -56,6 +56,10 @@
       "notif_error": "Une erreur est survenue lors de la mise à jour des informations",
       "type_label": "Type de profil",
       "quick_meeting_label": "Activé pour les quick meetings"
+    },
+    "transcriber_profile_list": {
+      "title": "Profiles de transcription",
+      "add_transcriber_profile_button": "Ajouter un profile de transcription"
     }
   },
   "breadcrumb": {
@@ -589,6 +593,11 @@
     "title": "Créer une organisation",
     "label_name": "Nom de l'organisation",
     "action_btn": "Créer"
+  },
+  "modal_create_transcriber_profile": {
+    "title": "Créer un profil de transcription",
+    "action_btn": "Créer le profil",
+    "notif_error": "Une erreur s'est produite lors de la création du profil de transcription"
   },
   "modal_delete_users": {
     "title": "Supprimer un utilisateur | Supprimer {count} utilisateurs",

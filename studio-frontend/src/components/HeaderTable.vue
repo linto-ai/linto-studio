@@ -5,7 +5,7 @@
       <h2>{{ title }}</h2>
       <span class="backoffice-listing-header__total">{{ count }}</span>
     </div>
-    <form class="flex align-center gap-small">
+    <form class="flex align-center gap-small" v-if="search !== undefined">
       <input
         type="text"
         placeholder="Search"

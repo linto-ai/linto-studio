@@ -35,7 +35,10 @@ export default {
   props: {
     transcriberProfile: {
       type: Object,
-      required: true,
+      required: false,
+      default: () => {
+        return TRANSCRIBER_PROFILES_TEMPLATES.linto
+      },
     },
   },
   data() {
