@@ -893,7 +893,7 @@
       "translation_selector": {
         "label": "Choisir la langue de traduction",
         "original_language": "Langue originale",
-        "cross_subtitles": "Sous-titres croisés"
+        "cross_translation": "Traduction croisée"
       }
     },
     "profile_selector": {

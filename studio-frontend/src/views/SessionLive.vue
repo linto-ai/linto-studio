@@ -27,6 +27,7 @@
               <span class="icon settings"></span>
             </router-link>
             <button
+              v-if="enableMobileSubtitles"
               class="btn secondary only-icon"
               @click="showMobileSubtitles">
               <span class="icon subtitle"></span>
@@ -107,10 +108,6 @@
   </MainContent>
 </template>
 <script>
-import { bus } from "../main.js"
-
-import EMPTY_FIELD from "@/const/emptyField"
-
 import { sessionMixin } from "@/mixins/session.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole"
 import { microphoneMixin } from "@/mixins/microphone.js"
@@ -229,6 +226,10 @@ export default {
       res = res && !!this.selectedChannel.translations.find((t) => t.split("-")[0] === this.selectedChannel.languages[0].split("-")[0])
       res = res && !!this.selectedChannel.translations.find((t) => t.split("-")[0] === this.selectedChannel.languages[1].split("-")[0])
       return res
+    },
+    enableMobileSubtitles() {
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.platform) || /iPad|iPhone|iPod/.test(navigator.userAgent); // maybe not perfect but should works on most cases
+      return !isIOS
     },
   },
   components: {

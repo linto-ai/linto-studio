@@ -58,7 +58,7 @@ export default {
           {
             value: "crossSubtitles",
             text: this.$i18n.t(
-              "session.live_page.translation_selector.cross_subtitles",
+              "session.live_page.translation_selector.cross_translation",
             ),
           },
         )
