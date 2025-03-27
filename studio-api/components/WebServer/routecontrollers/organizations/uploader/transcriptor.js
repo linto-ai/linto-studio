@@ -9,7 +9,11 @@ const { addFileMetadataToConversation, initConversation } = require(
   `${process.cwd()}/components/WebServer/controllers/conversation/generator`,
 )
 
-const { prepareFileFormData, prepareRequest } = require(
+const {
+  prepareFileFormData,
+  prepareRequest,
+  getTranscriptionService,
+} = require(
   `${process.cwd()}/components/WebServer/controllers/conversation/upload`,
 )
 
@@ -29,15 +33,13 @@ const { OrganizationNotFound } = require(
 
 async function transcribeReq(req, res, next) {
   try {
-    if (req.body.url || (req.files && Object.keys(req.files).length !== 0)) {
-      if (req.body.url)
-        await transcribe(true, req, res, next) // Considered as a single file
-      else if (req.files && Array.isArray(req.files.file))
-        // Multifile
-        await transcribe(false, req, res, next)
-      // Single file
-      else await transcribe(true, req, res, next)
-    } else throw new ConversationNoFileUploaded()
+    if (!(req.body.url || (req.files && Object.keys(req.files).length !== 0))) {
+      throw new ConversationNoFileUploaded()
+    }
+
+    const isSingleFile =
+      req.body.url || !(req.files && Array.isArray(req.files.file))
+    await transcribe(isSingleFile, req, res, next)
   } catch (err) {
     next(err)
   }
@@ -46,58 +48,49 @@ async function transcribeReq(req, res, next) {
 async function transcribe(isSingleFile, req, res, next) {
   try {
     const userId = req.payload.data.userId
-
     if (!req.body.name)
       throw new ConversationMetadataRequire("name param is required")
     if (!req.body.lang)
       throw new ConversationMetadataRequire("lang param is required")
-    if (!req.body.membersRight || isNaN(req.body.membersRight))
-      req.body.membersRight = CONVERSATION_RIGHT.READ
-    else req.body.membersRight = parseInt(req.body.membersRight)
     if (!req.body.endpoint)
       throw new ConversationMetadataRequire("serviceEndpoint param is required")
     if (!req.params.organizationId)
       throw new ConversationMetadataRequire("organizationId param is required")
 
-    if (
-      (
-        await model.organizations.getByIdAndUser(
-          req.params.organizationId,
-          userId,
-        )
-      ).length !== 1
-    )
-      throw new OrganizationNotFound()
+    req.body.membersRight = isNaN(req.body.membersRight)
+      ? CONVERSATION_RIGHT.READ
+      : parseInt(req.body.membersRight)
     req.body.userId = userId
     req.body.organizationId = req.params.organizationId
-
     req.body.filter = {}
 
-    let service = process.env.GATEWAY_SERVICES + "/" + req.body.endpoint
-    let transcription_service = service
+    const orgExists = await model.organizations.getByIdAndUser(
+      req.params.organizationId,
+      userId,
+    )
+    if (orgExists.length !== 1) throw new OrganizationNotFound()
 
-    const form_data = await prepareFileFormData(req.files, req.body.url)
+    const transcriptionService = getTranscriptionService(
+      req.body.endpoint,
+      isSingleFile,
+    )
+    const formData = await prepareFileFormData(req.files, req.body.url)
     const options = await prepareRequest(
-      form_data.form,
+      formData.form,
       req.body.transcriptionConfig,
       isSingleFile,
     )
+    req.body.file_data = formData.file_data
 
-    isSingleFile
-      ? (transcription_service += "/transcribe")
-      : (transcription_service += "/transcribe-multi")
-    req.body.file_data = form_data.file_data
-
-    const processing_job = await axios.postFormData(
-      transcription_service,
+    const processingJob = await axios.postFormData(
+      transcriptionService,
       options,
     )
+    await createConversation(processingJob, req.body)
 
-    await createConversation(processing_job, req.body)
-
-    res.status(201).send({
-      message: "A conversation is currently being processed",
-    })
+    res
+      .status(201)
+      .send({ message: "A conversation is currently being processed" })
   } catch (err) {
     next(err)
   }
@@ -127,6 +120,8 @@ async function createConversation(processing_job, body) {
     )
 
     return conversation
+  } else {
+    throw new ConversationError("Processing job ID is required")
   }
 }
 
