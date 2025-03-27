@@ -53,7 +53,9 @@
       "save_button": "Save Transcriber Profile",
       "reset_button": "Reset",
       "notif_success": "Transcriber profile successfully updated",
-      "notif_error": "An error occurred"
+      "notif_error": "An error occurred",
+      "type_label": "Profile type",
+      "quick_meeting_label": "Enabled for quick meetings"
     }
   },
   "breadcrumb": {
