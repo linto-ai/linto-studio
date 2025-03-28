@@ -29,6 +29,10 @@ export default {
       required: false,
       default: false,
     },
+    channelLanguages: {
+      type: Array,
+      required: false,
+    },
   },
   data() {
     return {}
@@ -36,7 +40,7 @@ export default {
   mounted() {},
   computed: {
     text() {
-      return getTextTurnWithTranslation(this.turn, this.selectedTranslations)
+      return getTextTurnWithTranslation(this.turn, this.selectedTranslations, this.channelLanguages)
     },
     speaker() {
       if (this.selectedTranslations !== "original") {

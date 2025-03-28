@@ -53,7 +53,7 @@ import ErrorView from "@/views/Error.vue"
 import NoOrganizationComponent from "@/views/NoOrganization.vue"
 
 export default {
-  data() {
+  data() {    
     return {
       appMounted: false,
       orgasLoaded: false,
@@ -63,7 +63,7 @@ export default {
       error: false,
       resetKey: 1,
       noOrganization: false,
-      isMobile: window.innerWidth < 800 || window.innerHeight < 800,
+      isMobile: Math.min(window.innerWidth, window.innerHeight) < 500,
     }
   },
   mounted() {

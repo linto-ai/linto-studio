@@ -917,7 +917,8 @@
       },
       "translation_selector": {
         "label": "Choisir la langue de traduction",
-        "original_language": "Langue originale"
+        "original_language": "Langue originale",
+        "cross_translation": "Traduction croisée"
       }
     },
     "profile_selector": {

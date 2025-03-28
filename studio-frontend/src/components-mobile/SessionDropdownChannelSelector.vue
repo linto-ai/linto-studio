@@ -8,6 +8,7 @@
 
     <SessionTranslationSelection
       class="flex1"
+      :qualifiedForCrossSubtitles="qualifiedForCrossSubtitles"
       :selectedChannel="selectedChannel"
       :selectedTranslation="selectedTranslation"
       v-model="p_selectedTranslation"></SessionTranslationSelection>
@@ -31,6 +32,10 @@ export default {
     selectedTranslation: {
       type: String,
       default: "original",
+    },
+    qualifiedForCrossSubtitles: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

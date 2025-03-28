@@ -1,7 +1,8 @@
 <template>
   <SessionChannelTurn
     :turn="turn"
-    :selectedTranslations="selectedTranslations" />
+    :selectedTranslations="selectedTranslations"
+    :channelLanguages="channelLanguages" />
 </template>
 <script>
 import { Fragment } from "vue-fragment"
@@ -23,6 +24,10 @@ export default {
       type: String,
       required: false,
       default: "original",
+    },
+    channelLanguages: {
+      type: Array,
+      required: false,
     },
   },
   data() {

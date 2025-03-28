@@ -913,7 +913,8 @@
       },
       "translation_selector": {
         "label": "Choose a translation",
-        "original_language": "Original language"
+        "original_language": "Original language",
+        "cross_translation": "Cross translation"
       }
     },
     "profile_selector": {
