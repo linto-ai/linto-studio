@@ -5,9 +5,16 @@
         :title="$t('backoffice.transcriber_profile_list.title')"
         :count="count"
         @on-create="showModalCreateTranscriberProfile"
+        @on-delete="deleteSelectedProfiles"
         :add_button_label="
           $t(
             'backoffice.transcriber_profile_list.add_transcriber_profile_button',
+          )
+        "
+        :remove_button_label="
+          $tc(
+            'backoffice.transcriber_profile_list.remove_transcriber_profile_button',
+            selectedProfiles.length,
           )
         "></HeaderTable>
     </template>
@@ -29,11 +36,16 @@
 </template>
 <script>
 import { bus } from "@/main.js"
+import {
+  apiGetTranscriberProfiles,
+  apiDeleteTranscriberProfile,
+} from "@/api/session.js"
+import bulkRequest from "@/tools/bulkRequest.js"
+
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
-import { apiGetTranscriberProfiles } from "@/api/session.js"
 import TranscriberProfileTable from "@/components/TranscriberProfileTable.vue"
 import HeaderTable from "@/components/HeaderTable.vue"
-import ModalCreateTranscriberProfiles from "../../components/ModalCreateTranscriberProfiles.vue"
+import ModalCreateTranscriberProfiles from "@/components/ModalCreateTranscriberProfiles.vue"
 
 export default {
   props: {},
@@ -65,6 +77,43 @@ export default {
     },
     cancelCreation() {
       this.showModalCreate = false
+    },
+    async deleteSelectedProfiles() {
+      const req = await bulkRequest(
+        apiDeleteTranscriberProfile,
+        this.selectedProfiles.map((id) => [id]),
+        (count) => {
+          bus.$emit("app_notif", {
+            status: "loading",
+            message: this.$i18n.t(
+              "backoffice.transcriber_profile_list.bulk_remove_loading_notification",
+              { count, total: this.selectedProfiles.length },
+            ),
+            timeout: -1,
+            cantBeClosed: true,
+          })
+        },
+      )
+
+      if (req.status === "success") {
+        bus.$emit("app_notif", {
+          status: "success",
+          message: this.$i18n.t(
+            "backoffice.transcriber_profile_list.bulk_remove_success_notification",
+          ),
+        })
+        this.fetchTranscriberProfiles()
+        this.selectedProfiles = []
+      } else {
+        bus.$emit("app_notif", {
+          status: "error",
+          message: this.$i18n.t(
+            "backoffice.transcriber_profile_list.bulk_remove_error_notification",
+          ),
+        })
+        this.fetchTranscriberProfiles()
+        this.selectedProfiles = []
+      }
     },
   },
   computed: {

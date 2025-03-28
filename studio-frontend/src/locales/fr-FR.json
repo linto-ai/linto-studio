@@ -62,7 +62,11 @@
     },
     "transcriber_profile_list": {
       "title": "Profiles de transcription",
-      "add_transcriber_profile_button": "Ajouter un profile de transcription"
+      "add_transcriber_profile_button": "Ajouter un profile de transcription",
+      "remove_transcriber_profile_button": "Supprimer le profile | Supprimer les {count} profiles",
+      "bulk_remove_loading_notification": "Suppresion du profile {count} sur {total}.",
+      "bulk_remove_success_notification": "Les profiles ont été supprimés avec succès",
+      "bulk_remove_error_notification": "Une erreur est survenue lors de la suppression des profiles"
     }
   },
   "breadcrumb": {

@@ -1,5 +1,5 @@
 <template>
-  <tr>
+  <tr @click="selectTranscriberProfile">
     <td>
       <Checkbox
         class="line-selector"
@@ -41,6 +41,11 @@ export default {
       type: Object,
       required: false,
     },
+    value: {
+      //selectedProfiles
+      type: Array,
+      required: true,
+    },
   },
   data() {
     return {}
@@ -65,6 +70,11 @@ export default {
   methods: {
     editProfile() {
       this.$router.push(this.to)
+    },
+    selectTranscriberProfile() {
+      this.p_selectedProfiles = this.p_selectedProfiles.includes(this.id)
+        ? this.p_selectedProfiles.filter((id) => id !== this.id)
+        : [...this.p_selectedProfiles, this.id]
     },
   },
   components: {
