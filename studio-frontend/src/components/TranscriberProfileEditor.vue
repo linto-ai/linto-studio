@@ -2,10 +2,12 @@
   <div class="flex col transcriber-profile-editor">
     <div class="flex gap-medium align-end">
       <div class="form-field flex col">
-        <label class="form-label">Type de transcriber:</label>
+        <label class="form-label">{{ $t(
+          "backoffice.transcriber_profile_detail.type_label",
+        ), }}</label>
         <select v-model="currentType">
           <option v-for="type in types" :key="type" :value="type">
-            {{ type }}
+            {{ typesLabels[type] }}
           </option>
         </select>
       </div>
@@ -44,6 +46,10 @@ export default {
   data() {
     return {
       types: ["linto", "microsoft"],
+      typesLabels: {
+        linto: "LinTO",
+        microsoft: "Microsoft",
+      },
       quickMeetingField: {
         ...EMPTY_FIELD,
         value: this.transcriberProfile.quickMeeting,
