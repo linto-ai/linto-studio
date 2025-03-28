@@ -93,7 +93,7 @@ module.exports = (webserver) => {
       controller: importConversation,
     },
     {
-      path: "/:organizationId/conversations/:conversationId/offline",
+      path: "/:organizationId/conversations/:conversationId/regenerate",
       method: "get",
       requireAuth: true,
       requireOrganizationUploaderAccess: true,
