@@ -16,6 +16,10 @@ const { SessionError } = require(
   `${process.cwd()}/components/WebServer/error/exception/session`,
 )
 
+const { sessionReq } = require(
+  `${process.cwd()}/components/WebServer/routecontrollers/organizations/uploader/offline.js`,
+)
+
 function initConversationMultiChannel(
   session,
   name = undefined,
@@ -51,46 +55,59 @@ function initConversationMultiChannel(
   }
 }
 
-function initCaptionsForConversation(sessionData, name = undefined) {
-  try {
-    let session = JSON.parse(JSON.stringify(sessionData))
-    let captions = []
+function generateAudioMetadata(audioId) {
+  return {
+    filename: `${audioId}.mp3`,
+    duration: 0, // Duration generated when conversation is fetched
+    mimetype: "audio/mpeg",
+    filepath: `${process.env.VOLUME_AUDIO_SESSION_PATH}/${audioId}.mp3`,
+  }
+}
 
-    for (let channel of session.channels) {
-      if (!channel.closedCaptions) {
+async function initCaptionsForConversation(sessionData, name) {
+  try {
+    const session = JSON.parse(JSON.stringify(sessionData))
+    const captions = []
+    name = name || session.name || ""
+
+    for (const channel of session.channels) {
+      const caption = initializeCaption(session, channel, name)
+      const audioId = `${session.id}-${channel.id}`
+
+      if (channel.async && channel.keepAudio) {
+        caption.metadata.audio = generateAudioMetadata(audioId)
+
+        const { serviceName, endpoint, lang, config } =
+          channel.meta.transcriptionService
+        caption.metadata.transcription = {
+          serviceName,
+          endpoint,
+          lang,
+          transcriptionConfig: config,
+        }
+        caption.jobs.transcription.state = "waiting"
+
+        captions.push(caption)
         continue
       }
 
-      if (name === undefined) {
-        name = session.name || ""
-      }
+      if (!channel.closedCaptions) continue
 
-      let caption = initializeCaption(session, channel, name)
       processChannelCaptions(channel, caption, true)
 
-      if (channel.translations.length !== 0) {
-        for (let translation of channel.translations) {
-          let tlCaption = initializeCaption(session, channel, name, translation)
-          processChannelCaptions(channel, tlCaption, false)
-
-          tlCaption.parentName = caption.name
-          captions.push(tlCaption)
-        }
+      for (const translation of channel.translations || []) {
+        const tlCaption = initializeCaption(session, channel, name, translation)
+        processChannelCaptions(channel, tlCaption, false)
+        tlCaption.parentName = caption.name
+        captions.push(tlCaption)
       }
 
-      if (channel.keepAudio === true) {
-        let audioId = `${session.id}-${channel.id}`
-        const audioData = {
-          filename: audioId + ".mp3",
-          duration: 0, // We generate duration when the conversation is fetch, audio don't exist now
-          mimetype: "audio/mpeg",
-          filepath: `${process.env.VOLUME_AUDIO_SESSION_PATH}/${audioId}.mp3`,
-        }
-        caption.metadata.audio = { ...audioData }
-      }
+      if (channel.keepAudio)
+        caption.metadata.audio = generateAudioMetadata(audioId)
 
       captions.push(caption)
     }
+
     return captions
   } catch (err) {
     throw err
@@ -125,6 +142,7 @@ function initializeCaption(session, channel, name, translation) {
         channel_start_time: session.startTime,
         channel_end_time: session.endTime,
       },
+      normalize: { filter: {} },
     },
     sharedWithUsers: [],
     description: "",
@@ -226,7 +244,7 @@ function createTurn(
 
 async function storeSession(session, name = undefined) {
   try {
-    const captions = initCaptionsForConversation(session, name)
+    const captions = await initCaptionsForConversation(session, name)
     let conversationMemory = []
     const { canonicalCount, translationCount } = countCaptions(captions)
 
@@ -266,6 +284,14 @@ function countCaptions(captions) {
   return { canonicalCount, translationCount }
 }
 
+function startOfflineJob(conversationId) {
+  try {
+    sessionReq(conversationId)
+  } catch (err) {
+    throw err
+  }
+}
+
 async function storeSingleConversation(captions, conversationMemory) {
   let result
   for (let caption of captions) {
@@ -276,6 +302,9 @@ async function storeSingleConversation(captions, conversationMemory) {
         convId: result.insertedId.toString(),
         name: caption.name,
       })
+      if (caption.jobs.transcription.state === "waiting") {
+        startOfflineJob(result.insertedId.toString())
+      }
     }
   }
   return result
@@ -303,6 +332,10 @@ async function storeMultiChannelConversation(
       convId: caption_result.insertedId.toString(),
       name: caption.name,
     })
+
+    if ((caption.jobs.transcription.state = "waiting")) {
+      startOfflineJob(caption_result.insertedId.toString())
+    }
   }
 
   let result = await model.conversations.create(main_conversation)
