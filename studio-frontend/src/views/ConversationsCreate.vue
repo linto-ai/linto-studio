@@ -241,7 +241,7 @@ export default {
       return false
     },
     async fetchProfiles() {
-      const res = await apiGetTranscriberProfiles()
+      const res = await apiGetTranscriberProfiles(this.currentOrganizationScope)
       this.transcriberProfiles = res
       this.loadingTranscriberProfiles = false
     },

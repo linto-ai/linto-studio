@@ -4,11 +4,11 @@ import { getEnv } from "@/tools/getEnv"
 
 const BASE_API = getEnv("VUE_APP_CONVO_API")
 
-export async function apiGetTranscriberProfiles(notif) {
+export async function apiGetTranscriberProfiles(organizationId = null, notif) {
   const getTranscriberProfiles = await sendRequest(
     `${BASE_API}/transcriber_profiles`,
     { method: "get" },
-    {},
+    { organizationId },
     notif,
   )
 
