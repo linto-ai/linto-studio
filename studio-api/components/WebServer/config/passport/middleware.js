@@ -4,6 +4,10 @@ const debug = require("debug")(
 const passport = require("passport")
 const { expressjwt: jwt } = require("express-jwt")
 const jwtDecode = require("jwt-decode")
+const verifyJwt = require("jsonwebtoken")
+
+const algorithm = process.env.JWT_ALGORITHM || "HS256"
+let { generators } = require("openid-client")
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const {
@@ -15,12 +19,23 @@ const {
 const refreshToken = require("./token/refresh")
 
 require("./strategies/local")
-if (process.env.OIDC_TYPE === "linagora") {
-  require("./strategies/oidc_linagora")
-}
+
+if (process.env.OIDC_TYPE === "linagora") require("./strategies/oidc_linagora")
+else if (process.env.OIDC_TYPE === "eu") require("./strategies/oidc_eu")
 
 const authenticateUser = (strategy, req, res, next) => {
-  passport.authenticate(strategy, { session: false }, (err, user) => {
+  if (
+    process.env.OIDC_TYPE === "eu" &&
+    !req.session.code_verifier &&
+    strategy === "oidc"
+  ) {
+    const code_verifier = generators.codeVerifier()
+    const code_challenge = generators.codeChallenge(code_verifier)
+    req.session.code_verifier = code_verifier
+    req.session.code_challenge = code_challenge
+  }
+
+  passport.authenticate(strategy, (err, user) => {
     if (err) {
       next(err)
     } else if (!user) {
@@ -35,6 +50,7 @@ const authenticateUser = (strategy, req, res, next) => {
 }
 
 const extractToken = (req) => {
+  if (req.cookie) debug("cookie", req.cookie)
   if (req.headers.authorization) {
     return req.headers.authorization.split(" ")[1]
   } else if (req?.session?.passport?.user?.auth_token) {
@@ -65,7 +81,7 @@ module.exports = {
   isAuthenticate: [
     jwt({
       secret: generateSecretFromHeaders,
-      algorithms: ["HS256"],
+      algorithms: [algorithm],
       getToken: extractToken,
     }),
     (req, res, next) => {
@@ -87,7 +103,7 @@ module.exports = {
   refresh_token: [
     jwt({
       secret: generateRefreshSecretFromHeaders,
-      algorithms: ["HS256"],
+      algorithms: [algorithm],
       getToken: extractToken,
     }),
     async (req, res, next) => {
@@ -103,6 +119,71 @@ module.exports = {
       next()
     },
   ],
+
+  // Socket middleware need to return an expcetion in case of error
+  isAuthenticateSocket: async (socket, next) => {
+    try {
+      const token = socket?.handshake?.auth?.token
+      if (!token) {
+        return next(new Error("Authentication token is missing"))
+      }
+      const tokenData = jwtDecode(token + "")
+      if (!tokenData?.data?.userId || !tokenData?.data?.tokenId) {
+        return next(new Error("Malformed token"))
+      }
+
+      const secret = await generateSecretFromHeaders(undefined, {
+        payload: tokenData,
+      })
+
+      verifyJwt.verify(
+        token,
+        secret,
+        { algorithms: [algorithm] },
+        (err, decoded) => {
+          if (err) return next(new Error("Invalid or expired token"))
+          next() // Authentication successful
+        },
+      )
+    } catch (err) {
+      next(new Error("Authentication failed"))
+    }
+  },
+  checkSocket: async (socket) => {
+    try {
+      const token = socket?.handshake?.auth?.token
+      if (!token) {
+        return next(new Error("Authentication token is missing"))
+      }
+      const tokenData = jwtDecode(token + "")
+      if (!tokenData?.data?.userId || !tokenData?.data?.tokenId) {
+        return next(new Error("Malformed token"))
+      }
+
+      const secret = await generateSecretFromHeaders(undefined, {
+        payload: tokenData,
+      })
+
+      const isValid = await new Promise((resolve) => {
+        verifyJwt.verify(
+          token,
+          secret,
+          { algorithms: [algorithm] },
+          (err, decoded) => {
+            if (err) {
+              resolve(false)
+            } else {
+              resolve(true)
+            }
+          },
+        )
+      })
+
+      return { isAuth: isValid, userId: tokenData.data.userId }
+    } catch (err) {
+      return false
+    }
+  },
 }
 
 const generateSecret = async (req, token, secretType) => {

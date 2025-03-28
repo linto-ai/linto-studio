@@ -23,7 +23,10 @@
         <span class="icon right-arrow"></span>
       </button>
 
-      <ContextMenu name="change-speaker" v-if="state == STATES.CHANGE_SPEAKER">
+      <ContextMenu
+        name="change-speaker"
+        v-if="state == STATES.CHANGE_SPEAKER"
+        class="overflow-vertical-auto">
         <div class="flex col gap-small">
           <button
             v-for="spk of speakersList"
@@ -98,7 +101,10 @@
         <span class="icon right-arrow"></span>
       </button>
 
-      <ContextMenu name="change-speaker" v-if="state == STATES.MERGE_SPEAKER">
+      <ContextMenu
+        name="change-speaker"
+        v-if="state == STATES.MERGE_SPEAKER"
+        class="overflow-vertical-auto">
         <div class="flex col gap-small">
           <button
             v-for="spk of speakersList"

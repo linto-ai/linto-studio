@@ -1,5 +1,6 @@
 <template>
-  <div id="app" v-if="dataLoaded || noOrganization">
+  <ErrorNotResponsive v-if="dataLoaded && isMobile && !isResponsivePage" />
+  <div id="app" v-else-if="dataLoaded || noOrganization">
     <div id="app-view" class="flex col flex1">
       <!-- HEADER -->
       <keep-alive>
@@ -42,16 +43,17 @@
 <script>
 import { bus } from "./main.js"
 import { getEnv } from "@/tools/getEnv"
-
-import LoadingOverlay from "@/components/LoadingOverlay.vue"
-import ErrorView from "./views/Error.vue"
-import ErrorPage from "./components/ErrorPage.vue"
-import Loading from "./components/Loading.vue"
-import PUBLIC_ROUTES from "./const/publicRoutes.js"
-import NoOrganizationComponent from "./views/NoOrganization.vue"
 import { getCookie } from "./tools/getCookie"
+
+import ErrorNotResponsive from "@/components/ErrorNotResponsive.vue"
+import ErrorPage from "@/components/ErrorPage.vue"
+import Loading from "@/components/Loading.vue"
+import LoadingOverlay from "@/components/LoadingOverlay.vue"
+import ErrorView from "@/views/Error.vue"
+import NoOrganizationComponent from "@/views/NoOrganization.vue"
+
 export default {
-  data() {
+  data() {    
     return {
       appMounted: false,
       orgasLoaded: false,
@@ -61,6 +63,7 @@ export default {
       error: false,
       resetKey: 1,
       noOrganization: false,
+      isMobile: Math.min(window.innerWidth, window.innerHeight) < 500,
     }
   },
   mounted() {
@@ -111,6 +114,9 @@ export default {
     },
     isBackOfficeRoute() {
       return this.$route?.meta?.backoffice
+    },
+    isResponsivePage() {
+      return this.$route?.meta?.responsive
     },
     userInfo() {
       return this.$store.state.userInfo
@@ -222,6 +228,7 @@ export default {
     ErrorView,
     ErrorPage,
     NoOrganizationComponent,
+    ErrorNotResponsive,
   },
   errorCaptured(error) {
     console.error("errorCaptured: ", error)

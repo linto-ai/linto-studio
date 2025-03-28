@@ -65,13 +65,15 @@ async function createUser(req, res, next) {
     const createdUser = await model.users.createUser(user)
     if (createdUser.insertedCount !== 1) throw new UserError()
 
-    const createdOrganization = await model.organizations.createDefault(
-      createdUser.insertedId.toString(),
-      organizationName,
-    )
-    if (createdOrganization.insertedCount !== 1) {
-      model.users.delete(createdUser.insertedId.toString())
-      throw new UserError()
+    if (process.env.DISABLE_DEFAULT_ORGANIZATION_CREATION !== "true") {
+      const createdOrganization = await model.organizations.createDefault(
+        createdUser.insertedId.toString(),
+        organizationName,
+      )
+      if (createdOrganization.insertedCount !== 1) {
+        model.users.delete(createdUser.insertedId.toString())
+        throw new UserError()
+      }
     }
 
     let myCreatedUser = await model.users.getById(

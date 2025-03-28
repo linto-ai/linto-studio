@@ -1,12 +1,54 @@
 const debug = require("debug")("linto:components:socketio")
-const path = require("path")
-const { Component } = require("live-srt-lib")
+const Component = require(`../component.js`)
 const socketIO = require("socket.io")
+const organization = require("../WebServer/middlewares/access/organization.js")
 const axios = require(`${process.cwd()}/lib/utility/axios`)
+const appLogger = require(`${process.cwd()}/lib/logger/logger.js`)
 
 const { diffSessions, groupSessionsByOrg } = require(
   `${process.cwd()}/components/IoHandler/controllers/SessionHandling`,
 )
+
+const auth_middlewares = require(
+  `${process.cwd()}/components/WebServer/config/passport/middleware`,
+)
+const { sessionSocketAccess } = require(
+  `${process.cwd()}/components/WebServer/middlewares/access/organization.js`,
+)
+
+async function checkSocketAccess(socket, roomId) {
+  const session = await axios.get(
+    process.env.SESSION_API_ENDPOINT + `/sessions/${roomId.split("/")[0]}`,
+  )
+
+  if (session.visibility === "public") {
+    return true
+  } else {
+    const { isAuth, userId } = await auth_middlewares.checkSocket(socket)
+    if (isAuth === false) {
+      socket.emit("unauthorized")
+      socket.disconnect(true)
+      return false
+    }
+
+    const access = await sessionSocketAccess(session, userId)
+    if (access === false) {
+      socket.emit("unauthorized")
+      socket.disconnect(true)
+      return false
+    }
+
+    if (session.visibility === "organization") {
+      return true
+    } else if (session.visibility === "private" && session.owner === userId) {
+      return true
+    } else {
+      socket.emit("unauthorized")
+      socket.disconnect(true)
+      return false
+    }
+  }
+}
 
 class IoHandler extends Component {
   constructor(app) {
@@ -22,34 +64,42 @@ class IoHandler extends Component {
       cors: {
         origin: process.env.CORS_API_WHITELIST.split(","),
         methods: ["GET", "POST"],
+        credentials: true,
       },
     })
 
+    // this.io.use(auth_middlewares.isAuthenticateSocket) // Used initialy to require authentication, disabling annonymous sessions
     this.io.on("connection", (socket) => {
-      debug(`New client connected : ${socket.id}`)
+      appLogger.debug(`New client connected : ${socket.id}`)
 
-      socket.on("join_room", (roomId) => {
-        debug(`Client ${socket.id} joins room ${roomId}`)
+      socket.on("join_room", async (roomId) => {
+        if (!(await checkSocketAccess(socket, roomId))) return
+
+        appLogger.debug(`Client ${socket.id} joins room ${roomId}`)
         this.addSocketInRoom(roomId, socket)
       })
 
       socket.on("leave_room", (roomId) => {
-        debug(`Client ${socket.id} leaves room ${roomId}`)
+        appLogger.debug(`Client ${socket.id} leaves room ${roomId}`)
         this.removeSocketFromRoom(roomId, socket)
       })
 
       socket.on("watch_organization", (orgaId) => {
-        debug(`Client ${socket.id} joins watcher session of orga ${orgaId}`)
+        appLogger.debug(
+          `Client ${socket.id} joins watcher session of orga ${orgaId}`,
+        )
         this.addSocketInOrga(orgaId, socket)
       })
 
       socket.on("unwatch_organization", (orgaId) => {
-        debug(`Client ${socket.id} leaves watcher session of orga ${orgaId}`)
+        appLogger.debug(
+          `Client ${socket.id} leaves watcher session of orga ${orgaId}`,
+        )
         this.removeSocketFromOrga(orgaId, socket)
       })
 
       socket.on("disconnect", () => {
-        debug(`Client ${socket.id} disconnected`)
+        appLogger.debug(`Client ${socket.id} disconnected`)
         this.searchAndRemoveSocketFromRooms(socket)
       })
     })
@@ -74,7 +124,9 @@ class IoHandler extends Component {
             }
           })
         } catch (err) {
-          debug(`Error getting organization ID from the orga ${orgaId}: ${err}`)
+          appLogger.debug(
+            `Error getting organization ID from the orga ${orgaId}: ${err}`,
+          )
         }
       }
     }

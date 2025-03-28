@@ -1,59 +1,67 @@
 <template>
   <MainContent noBreadcrumb :organizationPage="false" fullwidthContent sidebar>
     <template v-slot:breadcrumb-actions>
-      <router-link :to="sessionListRoute" class="btn secondary">
-        <span class="icon back"></span>
-        <span class="label">{{
-          $t("session.detail_page.back_to_listing")
-        }}</span>
-      </router-link>
-
-      <!-- title -->
-      <SessionStatus
-        v-if="sessionLoaded"
-        :session="session"
-        withText
-        class="flex1" />
-
-      <router-link :to="settingsRoute" class="btn" v-if="isAtLeastMaintainer">
-        <span class="icon settings"></span>
-        <span class="label">{{
-          $t("session.detail_page.settings_button")
-        }}</span>
-      </router-link>
+      <SessionHeader
+        :sessionListRoute="sessionListRoute"
+        :sessionLoaded="sessionLoaded"
+        :name="name"
+        :session="session">
+        <template v-slot:right-button-desktop>
+          <router-link
+            :to="settingsRoute"
+            class="btn"
+            v-if="isAtLeastMaintainer">
+            <span class="icon settings"></span>
+            <span class="label">{{
+              $t("session.detail_page.settings_button")
+            }}</span>
+          </router-link>
+        </template>
+        <template v-slot:right-button-mobile>
+          <div class="flex gap-small">
+            <router-link
+              :to="settingsRoute"
+              class="btn secondary only-icon"
+              v-if="isAtLeastMaintainer"
+              :aria-label="$t('session.detail_page.settings_button')">
+              <span class="icon settings"></span>
+            </router-link>
+            <button
+              v-if="enableMobileSubtitles"
+              class="btn secondary only-icon"
+              @click="showMobileSubtitles">
+              <span class="icon subtitle"></span>
+            </button>
+          </div>
+        </template>
+      </SessionHeader>
     </template>
 
     <template v-slot:sidebar>
-      <!-- <div
-        class="flex col medium-padding gap-medium"
-        v-if="isStarted || isTerminated"
-      > -->
-      <div class="flex col medium-padding gap-medium">
-        <SessionChannelsSelector
-          v-if="sessionLoaded && selectedChannel"
-          :channels="channels"
-          v-model="selectedChannel"></SessionChannelsSelector>
-
-        <SessionTranslationSelection
-          v-if="sessionLoaded && selectedChannel"
-          :selectedChannel="selectedChannel"
-          v-model="selectedTranslations"></SessionTranslationSelection>
-
-        <h3>{{ $t("session.detail_page.title_interface_settings") }}</h3>
-        <FormCheckbox
-          :field="displayLiveTranscriptionField"
-          switchDisplay
-          v-model="displayLiveTranscriptionField.value" />
-        <FormCheckbox
-          :field="displaySubtitlesField"
-          switchDisplay
-          v-model="displaySubtitlesField.value" />
-
-        <FormInput
-          :field="fontSizeField"
-          v-model="fontSizeField.value"
-          v-if="displaySubtitlesField.value" />
+      <SessionLiveMicrophoneStatus
+        v-if="useMicrophone && sessionLoaded"
+        @toggle-microphone="toggleMicrophone"
+        :speaking="speaking"
+        :isRecording="isRecording"
+        :channelWebsocket="channelAudioWebsocket" />
+      <div
+        class="session-microphone-status__channel"
+        v-if="useMicrophone && currentChannelMicrophone">
+        {{
+          $t("session.record_to_chanel_name_info", {
+            name: currentChannelMicrophone.name,
+          })
+        }}
       </div>
+      <SessionLiveToolbar
+        v-if="sessionLoaded"
+        :channels="channels"
+        :qualifiedForCrossSubtitles="qualifiedForCrossSubtitles"
+        v-bind:selectedTranslation.sync="selectedTranslation"
+        v-bind:displayLiveTranscription.sync="displayLiveTranscription"
+        v-bind:displaySubtitles.sync="displaySubtitles"
+        v-bind:fontSize.sync="fontSize"
+        v-bind:selectedChannel.sync="selectedChannel" />
     </template>
 
     <div class="relative flex flex1 col">
@@ -68,24 +76,42 @@
 
       <SessionLiveContent
         v-else
-        :selectedTranslations="selectedTranslations"
+        @closeSubtitleFullscreen="closeSubtitleFullscreen"
+        :showSubtitlesFullscreen="showSubtitlesFullscreen"
+        :selectedTranslations="selectedTranslation"
         :organizationId="organizationId"
-        :fontSize="fontSizeField.value"
-        :displaySubtitles="displaySubtitlesField.value"
-        :displayLiveTranscription="displayLiveTranscriptionField.value"
+        :fontSize="fontSize"
+        :displaySubtitles="displaySubtitles"
+        :displayLiveTranscription="displayLiveTranscription"
         :session="session"
         :selectedChannel="selectedChannel" />
+
+      <SessionDropdownChannelSelector
+        class="mobile"
+        v-if="sessionLoaded"
+        :channels="channels"
+        :qualifiedForCrossSubtitles="qualifiedForCrossSubtitles"
+        v-bind:selectedChannel.sync="selectedChannel"
+        v-bind:selectedTranslation.sync="selectedTranslation" />
+
+      <ModalNew
+        noAction
+        title="Setup microphone"
+        v-if="showMicrophoneSetup"
+        @on-cancel="cancelRecordSettings">
+        <SessionSetupMicrophone
+          :applyLabel="$t('session.microphone_apply_button')"
+          @start-session="startRecordFromMicrophone"
+          @trash-session="cancelRecordSettings"></SessionSetupMicrophone>
+      </ModalNew>
     </div>
   </MainContent>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
-
-import EMPTY_FIELD from "@/const/emptyField"
-
 import { sessionMixin } from "@/mixins/session.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole"
+import { microphoneMixin } from "@/mixins/microphone.js"
+import { sessionMicrophoneMixin } from "@/mixins/sessionMicrophone.js"
 
 import MainContent from "@/components/MainContent.vue"
 import SessionNotStarted from "@/components/SessionNotStarted.vue"
@@ -93,40 +119,43 @@ import SessionChannelsSelector from "@/components/SessionChannelsSelector.vue"
 import SessionTranslationSelection from "@/components/SessionTranslationSelection.vue"
 import SessionLiveContent from "@/components/SessionLiveContent.vue"
 import Loading from "@/components/Loading.vue"
-import FormInput from "@/components/FormInput.vue"
-import FormCheckbox from "@/components/FormCheckbox.vue"
 import SessionEnded from "@/components/SessionEnded.vue"
 import SessionStatus from "@/components/SessionStatus.vue"
+import SessionLiveToolbar from "@/components/SessionLiveToolbar.vue"
+import ModalNew from "@/components/ModalNew.vue"
+import SessionSetupMicrophone from "@/components/SessionSetupMicrophone.vue"
+import SessionLiveMicrophoneStatus from "@/components/SessionLiveMicrophoneStatus.vue"
+import SessionHeader from "@/components/SessionHeader.vue"
 
+import SessionDropdownChannelSelector from "@/components-mobile/SessionDropdownChannelSelector.vue"
 export default {
-  mixins: [sessionMixin, orgaRoleMixin],
+  mixins: [
+    sessionMixin,
+    orgaRoleMixin,
+    microphoneMixin,
+    sessionMicrophoneMixin,
+  ],
   props: {},
   data() {
-    const { subtitles, liveTranscription = "true" } = this.$route.query
+    const {
+      subtitles,
+      liveTranscription = "true",
+      channelId = null,
+      microphone = false,
+    } = this.$route.query
 
     return {
       selectedChannel: null,
-      selectedTranslations: null,
-      fontSizeField: {
-        ...EMPTY_FIELD,
-        value: "40",
-        label: this.$t("session.detail_page.font_size_label"),
-        type: "number",
-        customParams: {
-          min: 12,
-          max: 68,
-        },
-      },
-      displaySubtitlesField: {
-        ...EMPTY_FIELD,
-        value: subtitles === "true",
-        label: this.$t("session.detail_page.display_subtitles_label"),
-      },
-      displayLiveTranscriptionField: {
-        ...EMPTY_FIELD,
-        value: liveTranscription === "true",
-        label: this.$t("session.detail_page.display_live_transcription_label"),
-      },
+      selectedTranslation: null,
+      fontSize: "40",
+      displaySubtitles: subtitles === "true",
+      displayLiveTranscription: liveTranscription === "true",
+      useMicrophone: microphone === "true",
+      startChannelId: Number(channelId),
+      deviceId: null,
+      showMicrophoneSetup: false,
+      showSubtitlesFullscreen: false,
+      currentChannelMicrophone: null,
     }
   },
   created() {
@@ -138,18 +167,25 @@ export default {
   watch: {
     sessionLoaded() {
       if (this.sessionLoaded) {
-        this.selectedChannel = this.channels[0]
-        this.selectedTranslations = "original"
+        this.selectedChannel =
+          (this.startChannelId &&
+            this.channels.find((c) => c.id === this.startChannelId)) ||
+          this.channels[0]
+        this.selectedTranslation = "original"
+
+        if (this.useMicrophone) {
+          this.showMicrophoneSetup = true
+        }
       }
     },
-    "displaySubtitlesField.value"(value) {
+    displaySubtitles(value) {
       this.updateUrl()
     },
-    "displayLiveTranscriptionField.value"(value) {
+    displayLiveTranscription(value) {
       this.updateUrl()
     },
     selectedChannel() {
-      this.selectedTranslations = "original"
+      this.selectedTranslation = "original"
     },
   },
   methods: {
@@ -158,22 +194,59 @@ export default {
       history.pushState(
         {},
         "",
-        `${this.$route.path}?subtitles=${this.displaySubtitlesField.value}&liveTranscription=${this.displayLiveTranscriptionField.value}`,
+        `${this.$route.path}?subtitles=${this.displaySubtitles}&liveTranscription=${this.displayLiveTranscription}`,
       )
+    },
+    startRecordFromMicrophone({ deviceId }) {
+      this.showMicrophoneSetup = false
+      this.deviceId = deviceId
+      console.log("currentChannelMicrophone", this.selectedChannel)
+      this.currentChannelMicrophone = this.selectedChannel
+      this.initMicrophone()
+      this.setupRecording(this.selectedChannel)
+      this.updateUrl()
+    },
+    cancelRecordSettings() {
+      this.showMicrophoneSetup = false
+      this.useMicrophone = false
+      this.updateUrl()
+    },
+    showMobileSubtitles() {
+      this.showSubtitlesFullscreen = true
+    },
+    closeSubtitleFullscreen() {
+      this.showSubtitlesFullscreen = false
+    },
+  },
+  computed: {
+    qualifiedForCrossSubtitles() {
+      let res = true
+      res = res && this.selectedChannel.languages.length == 2
+      //res = res && this.selectedChannel.translations.length == 2
+      res = res && !!this.selectedChannel.translations.find((t) => t.split("-")[0] === this.selectedChannel.languages[0].split("-")[0])
+      res = res && !!this.selectedChannel.translations.find((t) => t.split("-")[0] === this.selectedChannel.languages[1].split("-")[0])
+      return res
+    },
+    enableMobileSubtitles() {
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.platform) || /iPad|iPhone|iPod/.test(navigator.userAgent); // maybe not perfect but should works on most cases
+      return !isIOS
     },
   },
   components: {
-    Fragment,
     MainContent,
     SessionNotStarted,
     SessionChannelsSelector,
     SessionTranslationSelection,
     SessionLiveContent,
+    SessionLiveToolbar,
     Loading,
-    FormInput,
-    FormCheckbox,
     SessionEnded,
     SessionStatus,
+    ModalNew,
+    SessionSetupMicrophone,
+    SessionLiveMicrophoneStatus,
+    SessionDropdownChannelSelector,
+    SessionHeader,
   },
 }
 </script>

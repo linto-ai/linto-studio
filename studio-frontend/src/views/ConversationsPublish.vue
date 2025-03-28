@@ -81,15 +81,10 @@
         :tabs="tabs"
         v-if="tabs && tabs.length > 0"></Tabs>
       <ConversationPublishContent
+        :mardownContent="mardownContent"
         :status="currentStatus"
         :blobUrl="blobUrl"
-        :format="activeTab"
-        :conversationId="conversationId"
-        :conversation="conversation"
-        :filterSpeakers="filterSpeakers"
-        :service="selectedService"
-        :pdfPercentage="generationPercentage"
-        :filterTags="filterTags" />
+        :pdfPercentage="generationPercentage" />
     </div>
   </MainContentConversation>
 </template>
@@ -142,6 +137,7 @@ export default {
       currentTabId: null,
       loadingDownload: false,
       pollingJob: null,
+      mardownContent: null,
     }
   },
   mounted() {
@@ -179,6 +175,14 @@ export default {
           break
 
         default:
+          if (this.mardownContent) {
+            return {
+              actions: [
+                { value: "md", text: this.$t("conversation.export.md") },
+                { value: "pdf", text: this.$t("conversation.export.pdf") },
+              ],
+            }
+          }
           return {
             actions: [
               { value: "docx", text: this.$t("conversation.export.docx") },
@@ -239,9 +243,13 @@ export default {
       }
       return res
     },
-    selectedService() {
+    selectedFlavor() {
       // return string like "llama3"
-      return this.indexedFormat[this.activeTab]?.services[0]
+      return this.indexedFormat[this.activeTab]?.flavor[0].name
+    },
+    outputFormating() {
+      // abstractive / markdown
+      return this.indexedFormat[this.activeTab]?.flavor[0].type
     },
     selectedRoute() {
       return this.indexedFormat[this.activeTab]?.route
@@ -306,9 +314,29 @@ export default {
         case "pdf":
           this.exportPdf()
           break
+        case "md":
+          this.exportMarkdown()
+          break
         default:
           break
       }
+    },
+    async exportMarkdown() {
+      this.loadingDownload = true
+      let req = await apiGetGenericFileFromConversation(
+        this.conversationId,
+        this.selectedRoute || this.activeTab,
+        this.selectedFlavor,
+        {
+          preview: false,
+          title: this.label_format,
+        },
+      )
+
+      if (req?.status === "success") {
+        this.exportBlobFile(req.data, ".md")
+      }
+      this.loadingDownload = false
     },
     async exportJson() {
       this.loadingDownload = true
@@ -344,7 +372,7 @@ export default {
       let req = await apiGetGenericFileFromConversation(
         this.conversationId,
         this.selectedRoute || this.activeTab,
-        this.selectedService,
+        this.selectedFlavor,
         {
           preview: false,
           title: this.label_format,
@@ -361,7 +389,7 @@ export default {
       let req = await apiGetGenericFileFromConversation(
         this.conversationId,
         this.selectedRoute || this.activeTab,
-        this.selectedService,
+        this.selectedFlavor,
         {
           preview: true,
           title: this.label_format,
@@ -398,9 +426,10 @@ export default {
           if (res[format] === undefined) {
             res[format] = {}
           }
-          res[format]["services"] = service.flavor.map((flavor) => flavor.name)
+          res[format]["flavor"] = service.flavor
           res[format]["description"] = service.description
           res[format]["route"] = service.route
+          res[format]["format"] = service.format
         }
         this.indexedFormat = res
       } catch (e) {
@@ -411,15 +440,17 @@ export default {
     },
     async getPreview(regenerate = false) {
       let currentTab = this.activeTab
-
+      this.mardownContent = null
+      this.blobUrl = null
       let req = await apiGetGenericFileFromConversation(
         this.conversationId,
         this.selectedRoute || this.activeTab,
-        this.selectedService,
+        this.selectedFlavor,
         {
-          preview: true,
+          preview: this.outputFormating !== "markdown",
           title: this.label_format,
           regenerate,
+          llmOutputType: this.outputFormating,
         },
       )
 
@@ -433,6 +464,10 @@ export default {
           return
         } else if (req.data.type === "application/pdf") {
           this.blobUrl = URL.createObjectURL(req.data)
+        } else if (req.data.type === "text/plain") {
+          this.blobUrl = null
+          console.log(req)
+          this.mardownContent = await req.data.text()
         } else {
           this.blobUrl = null
           console.log("error", req)

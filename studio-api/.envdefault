@@ -21,7 +21,7 @@ DB_PASS=example
 DB_NAME=conversations
 
 # Request a specific version of the database (optional)
-DB_MIGRATION_TARGET=1.5.4
+DB_MIGRATION_TARGET=1.5.6
 
 # STT Config
 GATEWAY_SERVICES=https://api.linto.ai
@@ -62,6 +62,7 @@ VOLUME_AUDIO_PATH=audios
 VOLUME_PROFILE_PICTURE_PATH=pictures
 
 DISABLE_USER_CREATION=false
+DISABLE_DEFAULT_ORGANIZATION_CREATION=false
 
 EXPORT_TEMPLATE=default
 
@@ -86,9 +87,15 @@ BROKER_PROTOCOL=mqtt
 TOKEN_DAYS_TIME=7d
 REFRESH_TOKEN_DAYS_TIME=14d
 
+# Authentification settings
+JWT_ALGORITHM=HS256
+LOCAL_AUTH_ENABLED=true
+
 # OIDC Type supported are : linagora
 OIDC_TYPE=
+OIDC_ISSUER_URL=
 OIDC_URL=
 OIDC_CLIENT_ID=
 OIDC_CLIENT_SECRET=
 OIDC_CALLBACK_URI=
+OIDC_SCOPE=openid,email,profile

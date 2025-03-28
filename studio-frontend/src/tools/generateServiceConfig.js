@@ -14,6 +14,7 @@ export default function generateServiceConfig(
     endpoint: removeLeadingSlash(service.endpoints[0].endpoint),
     lang: languageValue,
     config: {
+      language: languageValue,
       punctuationConfig: {
         enablePunctuation: punctuationValue !== "disabled",
         serviceName: punctuationValue !== "disabled" ? punctuationValue : null,

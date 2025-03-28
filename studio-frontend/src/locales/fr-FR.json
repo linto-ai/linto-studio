@@ -138,7 +138,8 @@
       "srt": "Télécharger en SRT",
       "title": "Télécharger",
       "txt": "Télécharger en TXT",
-      "vtt": "Télécharger en VTT"
+      "vtt": "Télécharger en VTT",
+      "md": "Télécharger en Markdown"
     },
     "export_json_button": "Exporter en JSON",
     "highlight_toolbox": {
@@ -408,7 +409,7 @@
       "apply_name": "Mettre à jour le nom du canal",
       "error_notif": "Un erreur est survenu, les informations du canal n'ont pas été mis à jour.",
       "done_notif": "Les informations du canal ont été mis à jour.",
-      "only_one": "Le media a un seul canal de transcription"
+      "only_one": "Le média a un seul canal de transcription"
     }
   },
   "createaccount": {
@@ -447,7 +448,11 @@
     "required": "Ce champ est requis",
     "invalidVisioUrl": "L'url de la visio n'est pas valide",
     "unauthorized_caracters": "Caractères non autorisé",
-    "invalid_email": "Adresse email invalide"
+    "invalid_email": "Adresse email invalide",
+    "not_responsive": {
+      "title": "Votre appareil n'est pas compatible avec {app_name}",
+      "description": "Nous travaillons activement pour rendre {app_name} compatible avec les appareils mobiles et tablettes."
+    }
   },
   "explore": {
     "delete_conversation_button": "Supprimer des médias",
@@ -517,7 +522,8 @@
       "description": "Innovations Open source propulsées par LINAGORA sur les infrastructures EXAION"
     },
     "sso": {
-      "linagora": "Se connecter avec Linagora"
+      "linagora": "Se connecter avec Linagora",
+      "default": "Authentification externe (SSO)"
     },
     "teaser": {
       "transcribe": {
@@ -563,6 +569,10 @@
       "title": "Modifier le tag \"{name}\""
     },
     "subtitle": "Déplacer les tags entre les catégories ou modifiez les."
+  },
+  "markdown_editor": {
+    "source": "Source",
+    "preview": "Aperçu"
   },
   "modal": {
     "cancel": "Annuler",
@@ -791,7 +801,8 @@
       "remove": "Retirer",
       "title": "Canaux attachés à la session",
       "multiple_endpoint": "1 flux | {count} flux",
-      "no_translations": "Aucune traduction"
+      "no_translations": "Aucune traduction",
+      "connect_microphone": "Connecter le microphone"
     },
     "create_page": {
       "error_message": "Une erreur s'est produite lors de la création de la session",
@@ -817,7 +828,7 @@
       "submit_label": "Créer la session",
       "success_message": "La session a été créée avec succès",
       "title": "Créer une session",
-      "template_selection_title": "Selection d'un modèle",
+      "template_selection_title": "Sélection d'un modèle de session",
       "template_selection_placeholder": "Pas de modèle",
       "template_apply_success": "Le modèle a été appliqué",
       "template_apply_error": "Le modèle n'a pas pu être appliqué",
@@ -858,10 +869,13 @@
       "translation_bot": "Traduction automatique",
       "session_already_started": "La session a déjà démarrée",
       "session_auto_start_helper": "La session démmarera automatiquement à l'heure de début",
-      "stop_button_title_session_running": "La session ne peut pas être arrêtée tant que des flux sont envoyés."
+      "stop_button_title_session_running": "La session ne peut pas être arrêtée tant que des flux sont envoyés.",
+      "scroll_to_bottom": "Descendre en bas"
     },
     "end_undefined": "Non définie",
     "room_undefined": "Lieu non défini",
+    "microphone_apply_button": "Enregistrer le microphone",
+    "record_to_chanel_name_info": "Vers \"{name}\"",
     "list_page": {
       "no_sessions": "Aucune session trouvée",
       "no_sessions_this_day": "Aucune session prévue pour ce jour",
@@ -880,7 +894,8 @@
       },
       "translation_selector": {
         "label": "Choisir la langue de traduction",
-        "original_language": "Langue originale"
+        "original_language": "Langue originale",
+        "cross_translation": "Traduction croisée"
       }
     },
     "profile_selector": {
@@ -915,6 +930,15 @@
         "action": "Supprimer",
         "content": "Un flux audio est connecté. Êtes-vous sûr de vouloir supprimer la session ? Le contenu sera sauvegardé dans votre bibliothèque de médias.",
         "title": "Confirmer la suppression de la session"
+      },
+      "metadata": {
+        "title": "Métadonnées",
+        "key_label": "clé",
+        "value_label": "valeur",
+        "modal_title": "Définir les métadonnées",
+        "button_edition": "Définir les métadonnées",
+        "confirm_button": "valider",
+        "no_metadata": "Aucune métadonnée"
       },
       "visibility_private_label": "Privée",
       "visibility_organization_label": "Interne",
@@ -973,7 +997,7 @@
     },
     "live": {
       "status_no_websocket": "Déconnecté du serveur audio",
-      "status_recording": "En cours d'enregistrement",
+      "status_recording": "Microphone en cours d'enregistrement",
       "status_muted": "Muet",
       "save_button": "Sauvegarder et quitter"
     },
@@ -1018,6 +1042,7 @@
     "edit_category_title": "Modifier la categorie",
     "edit_tag_title": "Modifier le tag",
     "empty_category": "catégorie à définir",
+    "empty_value": "vide",
     "error_creating_tag": "Erreur lors de la création du tag",
     "manage_tags": "Gérer les tags",
     "new_tag_name": "Nom du tag",

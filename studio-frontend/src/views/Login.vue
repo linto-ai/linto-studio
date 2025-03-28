@@ -30,20 +30,12 @@
       </router-link>
     </form>
     <div class="login-separator" v-if="hasLocalLogin"></div>
-    <!-- <button class="btn primary">
-      <span class="label">EU Login</span>
-    </button> -->
-    <a
-      :href="BASE_AUTH + '/' + oidcInfo.path + '/login'"
-      class="btn sso"
-      :class="oidcInfo.name"
-      v-for="oidcInfo of oidcList">
-      <span class="label">{{ $t(`login.sso.${oidcInfo.name}`) }}</span>
-      <span class="icon linagora-small" />
-    </a>
 
-    <!-- 
-    > -->
+    <OidcLoginButton
+      v-for="oidcInfo of oidcList"
+      :key="oidcInfo.name"
+      :path="oidcInfo.path"
+      :name="oidcInfo.name"></OidcLoginButton>
   </MainContentPublic>
 
   <!--
@@ -67,6 +59,7 @@ import MainContentPublic from "@/components/MainContentPublic.vue"
 import { testEmail } from "@/tools/fields/testEmail"
 import { testFieldEmpty } from "@/tools/fields/testEmpty"
 import FormInput from "@/components/FormInput.vue"
+import OidcLoginButton from "@/components/OidcLoginButton.vue"
 
 export default {
   data() {
@@ -173,6 +166,6 @@ export default {
       this.loginMethodsIndexedByPath = indexedByPath
     },
   },
-  components: { LocalSwitcher, MainContentPublic, FormInput },
+  components: { LocalSwitcher, MainContentPublic, FormInput, OidcLoginButton },
 }
 </script>

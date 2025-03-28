@@ -1,8 +1,10 @@
 const debug = require("debug")(
   "linto:components:WebServer:controller:file:urlExtractor",
 )
+const MODULE_NAME = "yt-dlp"
 
 const { spawn } = require("child_process")
+
 const { v4: uuidv4 } = require("uuid")
 const { getAudioFolder, getStorageFolder } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
@@ -30,7 +32,11 @@ async function downloadAudio(url, domain) {
       "--audio-format",
       "mp3",
     ]
-    let streamProcess = spawn("yt-dlp", args)
+
+    let streamProcess = spawn(MODULE_NAME, args)
+    streamProcess.on("error", (err) => {
+      console.error("Failed to start " + MODULE_NAME + " : ", err.message)
+    })
     await handleStreamProcess(streamProcess)
 
     return {
@@ -54,10 +60,14 @@ async function handleStreamProcess(streamProcess) {
       })
 
       streamProcess.on("close", (code) => {
-        if (code !== 0) {
-          reject(new Error(`Process exited with code: ${code}`))
-        } else {
-          resolve()
+        try {
+          if (code !== 0) {
+            reject(new Error(`Process exited with code: ${code}`))
+          } else {
+            resolve()
+          }
+        } catch (err) {
+          reject(err)
         }
       })
     })
@@ -67,5 +77,3 @@ async function handleStreamProcess(streamProcess) {
 }
 
 module.exports = { downloadAudio }
-
-// downloadAudio('https://www.youtube.com/watch?v=zwMeYjQOBjk', 'all')

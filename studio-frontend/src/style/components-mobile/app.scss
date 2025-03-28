@@ -1,0 +1,39 @@
+@media only screen and (max-width: 1100px) {
+  .main__breadcrumb-bar {
+    padding: 0.5rem 1rem !important;
+  }
+
+  #app-header {
+    display: none; // will be replace by hamburger menu
+  }
+
+  .burger-button {
+    display: block;
+    margin-right: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .breadcrumb {
+    .organization-selector {
+      display: none;
+    }
+
+    .breadcrumb__separator {
+      display: none;
+    }
+    //display: none;
+  }
+}
+
+@media only screen and (max-width: 800px) {
+  .app-view-content {
+    & main.box > .main__content {
+      margin: 0.5rem;
+      max-width: calc(100% - 1rem);
+    }
+
+    & main > .main__content {
+      padding: 0.5rem;
+    }
+  }
+}

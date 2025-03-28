@@ -8,6 +8,8 @@
   @import "text.scss";
   @import "login.scss";
 
+  @import "mobile/text.scss";
+
   body {
     --yellow-chart: #feb11d;
     --green-chart: #11977c;
@@ -24,19 +26,23 @@
     --dark-80: #666;
     --dark-60: #ccc;
 
-    --neutral-60: #ccc;
+    --neutral-60: #c2c2c2;
 
     --background-app: rgb(250, 250, 250);
 
     --background-primary: #fff;
     --background-primary-with-small-opacity: rgba(255, 255, 255, 0.85);
 
-    --button-background: #f3f3f3;
+    --button-background: #fafafa;
     --button-image-background: linear-gradient(#fcfcfc, #f3f3f3);
-    --button-background-hover: #eee;
+    --button-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.08);
+    //--border-button-flat: 1px solid #bdbdbd;
+
+    --button-background-hover: #f0f0f0;
     --border-button-glass: 1px solid rgba(255, 255, 255, 0.4);
 
     --input-background: #f7faff;
+    //--border-input: 1px solid var(--neutral-60) !important;
 
     --selected-background: rgba(40, 153, 131, 0.0784313725);
   }

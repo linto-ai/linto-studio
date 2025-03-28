@@ -1,7 +1,7 @@
 <template>
   <div class="flex align-center justify-center gap-medium">
     <button
-      class="icon-only"
+      class="only-icon"
       @click="previousWeek"
       :title="$t('week_selector.previous_button_title')">
       <span class="icon left-arrow"></span>
@@ -18,7 +18,7 @@
       }}
     </h3>
     <button
-      class="icon-only"
+      class="only-icon"
       @click="nextWeek"
       :title="$t('week_selector.next_button_title')">
       <span class="icon right-arrow"></span>
@@ -29,8 +29,8 @@
 import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
 
-import getWeekNumberFromDate from "@/tools/getWeekNumberFromDate.js"
-import getDayListFromWeekNumber from "@/tools/getDayListFromWeekNumber.js"
+import getWeekNumberFromDate from "@/tools/date/getWeekNumberFromDate.js"
+import getDayListFromWeekNumber from "@/tools/date/getDayListFromWeekNumber.js"
 
 export default {
   props: {

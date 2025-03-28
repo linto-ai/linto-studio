@@ -1,7 +1,7 @@
 <template>
   <MainContent noBreadcrumb :organizationPage="false" box>
     <template v-slot:breadcrumb-actions>
-      <div class="flex flex1 gap-medium align-center justify-center">
+      <!-- <div class="flex flex1 gap-medium align-center justify-center">
         <router-link :to="sessionListRoute" class="btn secondary">
           <span class="icon back"></span>
           <span class="label">{{
@@ -10,25 +10,44 @@
         </router-link>
 
         <!-- title -->
-        <SessionStatus
+      <!-- <SessionStatus
           v-if="sessionLoaded"
           :session="session"
           withText
           class="flex1" />
 
-        <router-link :to="liveRoute" class="btn">
-          <span class="icon text"></span>
-          <span class="label">{{
-            $t("session.detail_page.back_to_live")
-          }}</span>
-        </router-link>
-      </div>
+        
+      </div> -->
+
+      <SessionHeader
+        :sessionListRoute="sessionListRoute"
+        :isAuthenticated="isAuthenticated"
+        :sessionLoaded="sessionLoaded"
+        :name="name"
+        :session="session">
+        <template v-slot:right-button-desktop>
+          <router-link :to="liveRoute" class="btn">
+            <span class="icon text"></span>
+            <span class="label">{{
+              $t("session.detail_page.back_to_live")
+            }}</span>
+          </router-link>
+        </template>
+        <template v-slot:right-button-mobile>
+          <router-link
+            :to="liveRoute"
+            class="btn secondary only-icon"
+            :aria-label="$t('session.detail_page.back_to_live')">
+            <span class="icon text"></span>
+          </router-link>
+        </template>
+      </SessionHeader>
     </template>
 
     <div class="flex1 medium-padding" v-if="sessionLoaded">
       <h1 class="center-text">{{ name }}</h1>
-      <div class="flex">
-        <div class="flex1">
+      <div class="flex wrap">
+        <div class="flex1 fit-content">
           <!-- General informations -->
           <section>
             <h2>
@@ -53,7 +72,13 @@
               v-model="fieldIsPublic.value"
               :disabled="isActive"></FormCheckbox>
           </section>
-
+          <section>
+            <h2 class="flex align-center gap-medium">
+              <span>{{ $t("session.settings_page.metadata.title") }}</span>
+            </h2>
+            <MetadataList :field="fieldMetadata" />
+            <!-- <MetadataEditor v-model="fieldMetadata.value" :field="fieldMetadata" /> -->
+          </section>
           <!-- Auto start and datetime-->
           <section>
             <h2>{{ $t("session.settings_page.time_informations_title") }}</h2>
@@ -146,7 +171,9 @@
           <SessionChannelsTable
             v-if="channels.length > 0"
             from="sessionSettings"
+            @connectMicrophone="connectMicrophone"
             @updateName="updateChannelName"
+            @updateDiarization="updateChannelDiarization"
             :channelsList="localChannels"></SessionChannelsTable>
         </div>
       </section>
@@ -195,6 +222,8 @@ import AppointmentSelector from "@/components/AppointmentSelector.vue"
 import ModalForceDeleteSession from "@/components/ModalForceDeleteSession.vue"
 import MainContent from "@/components/MainContent.vue"
 import SessionStatus from "@/components/SessionStatus.vue"
+import MetadataList from "@/components/MetadataList.vue"
+import SessionHeader from "@/components/SessionHeader.vue"
 
 export default {
   mixins: [sessionMixin, formsMixin],
@@ -237,6 +266,11 @@ export default {
         error: null,
         valid: false,
         label: this.$t("session.settings_page.autoStart_label"),
+      },
+      fieldMetadata: {
+        ...EMPTY_FIELD,
+        value: [],
+        label: this.$t("session.create_page.metadata_label"),
       },
       linkHasBeenCopied: false,
       showModalDeleteSession: false,
@@ -304,9 +338,23 @@ export default {
 
       this.fieldAppointment.value = [this.startTime, this.endTime]
       this.localChannels = structuredClone(this.session.channels)
+
+      this.fieldMetadata.value = Object.entries(this.metadata)
     },
     updateChannelName(index, value) {
       this.localChannels[index].name = value
+      this.channelsHasChanged = true
+    },
+    connectMicrophone(index) {
+      const route = this.liveRoute
+      route["query"] = {
+        channelId: this.localChannels[index].id,
+        microphone: "true",
+      }
+      this.$router.push(route)
+    },
+    updateChannelDiarization(index, value) {
+      this.localChannels[index].diarization = value
       this.channelsHasChanged = true
     },
     openModalDeleteSession() {
@@ -386,6 +434,8 @@ export default {
     SessionChannelsTable,
     AppointmentSelector,
     ModalForceDeleteSession,
+    MetadataList,
+    SessionHeader,
   },
 }
 </script>

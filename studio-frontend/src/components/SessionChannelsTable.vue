@@ -66,6 +66,9 @@
         <!-- remove button -->
         <th v-if="from === 'formCreateSession'"></th>
 
+        <!-- connect microphone -->
+        <th v-if="from === 'sessionSettings'"></th>
+
         <!-- <ArrayHeader
           class="no-size"
           @list_sort_by="sortBy"
@@ -80,6 +83,8 @@
         v-for="(channel, index) in channelsList"
         @removeChannel="removeChannel(index)"
         @updateName="updateName(index, $event)"
+        @connectMicrophone="connectMicrophone(index)"
+        @updateDiarization="updateDiarization(index, $event)"
         :key="channel.id"
         :from="from"
         :item="channel" />
@@ -120,6 +125,12 @@ export default {
     },
     updateName(index, value) {
       this.$emit("updateName", index, value)
+    },
+    updateDiarization(index, value) {
+      this.$emit("updateDiarization", index, value)
+    },
+    connectMicrophone(index) {
+      this.$emit("connectMicrophone", index)
     },
   },
   components: { Fragment, ArrayHeader, SessionChannelsLine },

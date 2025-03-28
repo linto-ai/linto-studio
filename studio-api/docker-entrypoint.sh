@@ -25,7 +25,9 @@ done
 
 echo "RUNNING : $script"
 cd /usr/src/app/conversation-manager
-
 mkdir -p storages/audios/original storages/pictures storages/audiowaveform
+
+# We make sure that a docker volume will not overwrite the default image
+cp /usr/src/app/conversation-manager/config/pictures/default.jpg /usr/src/app/conversation-manager/storages/pictures/default.jpg
 
 eval "$script"

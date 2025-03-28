@@ -3,6 +3,7 @@ const debug = require("debug")(
 )
 
 const jwt = require("jsonwebtoken")
+const algorithm = process.env.JWT_ALGORITHM || "HS256"
 
 const DEFAULT_TOKEN_EXPIRATION = "7d"
 const DEFAULT_REFRESH_TOKEN_EXPIRATION = "14d"
@@ -38,7 +39,7 @@ module.exports = function generateTokens(
 // Helper function to generate a single JWT
 function generateJWT(payload, secret, expiresIn) {
   return jwt.sign({ data: payload }, secret, {
-    algorithm: "HS256",
+    algorithm: algorithm,
     expiresIn:
       expiresIn || process.env.TOKEN_DAYS_TIME || DEFAULT_TOKEN_EXPIRATION,
   })

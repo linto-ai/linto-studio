@@ -35,6 +35,21 @@ form-field[select-like] .form-value,
   }
 }
 
+// .flex:not(.col) {
+//   input[type="text"],
+//   input[type="search"],
+//   input[type="number"],
+//   input[type="email"],
+//   input[type="password"],
+//   input[type="datetime-local"],
+//   input[type="date"],
+//   input[type="time"],
+//   select,
+//   textarea {
+//     flex-basis: 10rem !important;
+//   }
+// }
+
 textarea {
   font-family: $mainFont;
   font: inherit;

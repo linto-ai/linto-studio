@@ -131,7 +131,7 @@
             :title="$t('conversation.add_tag')"
             v-if="canEditTag && !tagsReadOnly"
             @click="showDropDown"
-            class="only-border conversation-line__add-tag-btn">
+            class="only-border conversation-line__add-tag-btn no-propagation">
             <span class="icon add no-propagation" />
             <span class="label no-propagation">{{ $t("tags.add_tags") }}</span>
           </button>
@@ -154,7 +154,7 @@
       </div>
       <!-- secondary actions -->
       <div
-        class="flex col gap-small justify-center conversation-line__secondary-action-container">
+        class="flex col gap-small justify-center conversation-line__secondary-action-container no-propagation">
         <!-- TODO: put in blue like link-->
         <router-link
           :to="{

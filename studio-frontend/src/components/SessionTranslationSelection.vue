@@ -1,6 +1,6 @@
 <template>
   <div class="flex col">
-    <label for="channel-selector">{{
+    <label for="channel-selector" class="text-cut">{{
       $t("session.live_page.translation_selector.label")
     }}</label>
     <CustomSelect
@@ -26,6 +26,10 @@ export default {
       type: String,
       required: true,
     },
+    qualifiedForCrossSubtitles: {
+      type: Boolean,
+      required: true,
+    },
   },
   data() {
     return {}
@@ -39,24 +43,37 @@ export default {
         type: "language",
       })
 
-      return {
-        original: [
+      let res = {}
+      res["original"] = [
+        {
+          value: "original",
+          text: this.$i18n.t(
+            "session.live_page.translation_selector.original_language",
+          ),
+        },
+      ]
+
+      if(this.qualifiedForCrossSubtitles) {
+        res["original"].push(
           {
-            value: "original",
+            value: "crossSubtitles",
             text: this.$i18n.t(
-              "session.live_page.translation_selector.original_language",
+              "session.live_page.translation_selector.cross_translation",
             ),
           },
-        ],
-        translations: this.selectedChannel.translations
-          .map((translation) => {
-            return {
-              value: translation,
-              text: languageNames.of(translation),
-            }
-          })
-          .sort((t1, t2) => t1.text.localeCompare(t2.text)),
+        )
       }
+
+      res["translations"] = this.selectedChannel.translations
+        .map((translation) => {
+          return {
+            value: translation,
+            text: languageNames.of(translation),
+          }
+        })
+        .sort((t1, t2) => t1.text.localeCompare(t2.text))
+
+      return res
     },
     selectedTranslations: {
       get() {

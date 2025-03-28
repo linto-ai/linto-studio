@@ -49,6 +49,7 @@ progress.hoverInput,
   background-color: var(--background-disabled);
   display: flex;
   align-items: center;
+  cursor: not-allowed;
 }
 
 progress.hoverInput {

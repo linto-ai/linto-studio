@@ -7,7 +7,7 @@
       <slot name="content-after-label"></slot>
     </div>
 
-    <div class="flex gap-small align-center">
+    <div class="flex gap-small align-center wrap">
       <slot></slot>
       <input
         v-if="!textarea"
@@ -119,7 +119,9 @@ export default {
   },
   watch: {
     value() {
-      if (!this.withConfirmation) this.$emit("input", this.value)
+      if (this.field.value !== this.value) {
+        if (!this.withConfirmation) this.$emit("input", this.value)
+      }
     },
     "field.value"() {
       this.value = this.field.value

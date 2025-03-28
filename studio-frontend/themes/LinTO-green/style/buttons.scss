@@ -22,13 +22,22 @@ button,
   font-weight: 500;
   border: var(--border-button-flat);
   background-color: var(--button-background);
-  background-image: var(--button-image-background);
+  //background-image: var(--button-image-background);
+  box-shadow: var(--button-shadow);
   color: var(--text-primary);
   text-decoration: none;
 
   &:focus,
   &:active {
     outline: none;
+  }
+
+  &.circle {
+    border-radius: 50%;
+
+    &:before {
+      border-radius: 50%;
+    }
   }
 
   &.inline {
@@ -50,7 +59,7 @@ button,
   }
 
   &:hover {
-    //background-color: var(--button-background-hover);
+    background-color: var(--button-background-hover);
     background-image: none;
     text-decoration: none;
   }
@@ -74,10 +83,12 @@ button,
     background-color: transparent;
     background-image: none;
     text-decoration: underline;
-    border: none;
+    border-color: transparent;
+    box-shadow: none;
     &:hover {
       background-color: transparent;
       text-decoration: underline;
+      //border: var(--border-button-flat);
     }
 
     &:before {
@@ -95,9 +106,10 @@ button,
   }
 
   &.only-border {
+    box-shadow: none;
     background-color: transparent;
     background-image: none;
-    border: var(--border-button);
+    //border: var(--border-button);
     &:hover {
       background-color: transparent;
       text-decoration: underline;
@@ -258,6 +270,10 @@ button,
     background-color: var(--input-background);
     background-image: none;
     padding: 0.3rem 0.6rem;
+  }
+
+  &.only-icon {
+    padding: 0;
   }
 }
 
