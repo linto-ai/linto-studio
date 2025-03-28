@@ -52,8 +52,11 @@
     "transcriber_profile_detail": {
       "save_button": "Save Transcriber Profile",
       "reset_button": "Reset",
+      "delete_button": "Delete Transcriber Profile",
       "notif_success": "Transcriber profile successfully updated",
       "notif_error": "An error occurred",
+      "notif_delete_success": "Transcriber profile successfully deleted",
+      "notif_delete_error": "An error occured while deleting the profile",
       "type_label": "Profile type",
       "quick_meeting_label": "Enabled for quick meetings"
     },

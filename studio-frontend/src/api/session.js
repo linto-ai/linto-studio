@@ -42,6 +42,15 @@ export async function apiCreateTranscriberProfile(data, notif) {
   )
 }
 
+export async function apiDeleteTranscriberProfile(transcriberId, notif) {
+  return await sendRequest(
+    `${BASE_API}/transcriber_profiles/${transcriberId}`,
+    { method: "delete" },
+    {},
+    notif,
+  )
+}
+
 export async function apiGetSessionTemplates(organizationScope, notif) {
   const getSessionTemplates = await sendRequest(
     `${BASE_API}/organizations/${organizationScope}/templates`,

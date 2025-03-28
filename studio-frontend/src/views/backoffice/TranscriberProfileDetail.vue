@@ -5,14 +5,24 @@
         v-bind:transcriberProfile.sync="transcriberProfile"
         class="flex1" />
       <div class="flex gap-medium transcriber-profile-detail__footer">
+        <button class="red-border" @click="deleteProfile">
+          <span class="icon trash"></span>
+          <span class="label">{{
+            $t("backoffice.transcriber_profile_detail.delete_button")
+          }}</span>
+        </button>
         <div class="flex1 small-padding-left"></div>
         <button class="btn secondary" :disabled="!hasChanged" @click="reset">
-          <span class="label">{{ $t("backoffice.transcriber_profile_detail.reset_button")}}</span>
+          <span class="label">{{
+            $t("backoffice.transcriber_profile_detail.reset_button")
+          }}</span>
         </button>
 
         <button class="btn green" :disabled="!hasChanged" @click="save">
           <span class="icon apply"></span>
-          <span class="label">{{ $t("backoffice.transcriber_profile_detail.save_button")}}</span>
+          <span class="label">{{
+            $t("backoffice.transcriber_profile_detail.save_button")
+          }}</span>
         </button>
       </div>
     </div>
@@ -22,7 +32,11 @@
 import { bus } from "@/main.js"
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import TranscriberProfileEditor from "@/components/TranscriberProfileEditor.vue"
-import { apiGetTranscriberProfilesById, apiUpdateTranscriberProfile } from "@/api/session.js"
+import {
+  apiGetTranscriberProfilesById,
+  apiUpdateTranscriberProfile,
+  apiDeleteTranscriberProfile,
+} from "@/api/session.js"
 
 export default {
   props: {},
@@ -55,11 +69,16 @@ export default {
     },
     async save() {
       this.loading = true
-      const req = await apiUpdateTranscriberProfile(this.transcriberProfileId, this.transcriberProfile)
-      if(req.status === "success") {
+      const req = await apiUpdateTranscriberProfile(
+        this.transcriberProfileId,
+        this.transcriberProfile,
+      )
+      if (req.status === "success") {
         bus.$emit("app_notif", {
           status: "success",
-          message: this.$t("backoffice.transcriber_profile_detail.notif_success"),
+          message: this.$t(
+            "backoffice.transcriber_profile_detail.notif_success",
+          ),
         })
       } else {
         bus.$emit("app_notif", {
@@ -68,11 +87,35 @@ export default {
         })
       }
       this.loading = false
-    }
+    },
+    async deleteProfile() {
+      this.loading = true
+      const req = await apiDeleteTranscriberProfile(this.transcriberProfileId)
+      if (req.status === "success") {
+        bus.$emit("app_notif", {
+          status: "success",
+          message: this.$t(
+            "backoffice.transcriber_profile_detail.notif_delete_success",
+          ),
+        })
+        this.$router.push({ name: "backoffice-transcriberProfilesList" })
+      } else {
+        bus.$emit("app_notif", {
+          status: "error",
+          message: this.$t(
+            "backoffice.transcriber_profile_detail.notif_delete_error",
+          ),
+        })
+      }
+      this.loading = false
+    },
   },
   computed: {
     hasChanged() {
-      return JSON.stringify(this.transcriberProfile, null, 2) !== JSON.stringify(this.transcriberProfileOriginal, null, 2)
+      return (
+        JSON.stringify(this.transcriberProfile, null, 2) !==
+        JSON.stringify(this.transcriberProfileOriginal, null, 2)
+      )
     },
   },
   components: {

@@ -50,10 +50,13 @@
       "add_organisation_button": "Ajouter une organisation"
     },
     "transcriber_profile_detail": {
-      "save_button": "Enregistrer",
+      "save_button": "Enregistrer le profile",
       "reset_button": "Réinitialiser",
+      "delete_button": "Supprimer le profile",
       "notif_success": "Les informations ont été mises à jour",
       "notif_error": "Une erreur est survenue lors de la mise à jour des informations",
+      "notif_delete_success": "Le profile a été supprimé",
+      "notif_delete_error": "Une erreur est survenue lors de la suppression du profile",
       "type_label": "Type de profil",
       "quick_meeting_label": "Activé pour les quick meetings"
     },
