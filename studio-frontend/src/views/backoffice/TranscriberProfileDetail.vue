@@ -83,6 +83,8 @@ export default {
             "backoffice.transcriber_profile_detail.notif_success",
           ),
         })
+        this.transcriberProfile = req.data
+        this.transcriberProfileOriginal = structuredClone(req.data)
       } else {
         bus.$emit("app_notif", {
           status: "error",
@@ -116,8 +118,8 @@ export default {
   computed: {
     hasChanged() {
       return (
-        JSON.stringify(this.transcriberProfile, null, 2) !==
-        JSON.stringify(this.transcriberProfileOriginal, null, 2)
+        JSON.stringify(this.transcriberProfile) !==
+        JSON.stringify(this.transcriberProfileOriginal)
       )
     },
   },
