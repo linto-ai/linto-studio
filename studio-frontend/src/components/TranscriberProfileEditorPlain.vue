@@ -1,8 +1,10 @@
 <template>
-    <textarea v-model="transcriberProfile" class="transcriber-profile-editor__plain"></textarea>
+  <textarea
+    v-model="json_value"
+    class="transcriber-profile-editor__plain"
+    @keydown="keydown"></textarea>
 </template>
 <script>
-
 import { bus } from "@/main.js"
 export default {
   props: {
@@ -13,24 +15,29 @@ export default {
     },
   },
   data() {
-    return {}
+    return {
+      json_value: JSON.stringify(this.value, null, 2),
+    }
   },
-  mounted() {
+  mounted() {},
+  methods: {
+    keydown(e) {
+      e.stopPropagation()
+    },
+    resetValue() {
+      this.json_value = JSON.stringify(this.value, null, 2)
+    },
   },
-  methods: {},
-  computed: {
-    transcriberProfile: {
-      get() {
-        return JSON.stringify(this.value, null, 2)
-      },
-      set(value) {
-        let res;
+  watch: {
+    json_value: {
+      handler(value) {
+        let res
         try {
           res = JSON.parse(value)
           this.$emit("input", res)
         } catch (e) {}
-        
       },
+      deep: true,
     },
   },
   components: {},

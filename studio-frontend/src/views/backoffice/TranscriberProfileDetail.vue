@@ -2,6 +2,7 @@
   <MainContentBackoffice :loading="loading">
     <div class="flex col gap-medium" style="width: 100%; height: 100%">
       <TranscriberProfileEditor
+        ref="editor"
         v-bind:transcriberProfile.sync="transcriberProfile"
         class="flex1" />
       <div class="flex gap-medium transcriber-profile-detail__footer">
@@ -12,7 +13,7 @@
           }}</span>
         </button>
         <div class="flex1 small-padding-left"></div>
-        <button class="btn secondary" :disabled="!hasChanged" @click="reset">
+        <button class="btn secondary" @click="reset">
           <span class="label">{{
             $t("backoffice.transcriber_profile_detail.reset_button")
           }}</span>
@@ -56,6 +57,7 @@ export default {
       this.loading = true
       const req = await apiGetTranscriberProfilesById(this.transcriberProfileId)
       if (req.status === "success") {
+        delete req.data.id
         this.transcriberProfile = req.data
         this.transcriberProfileOriginal = structuredClone(req.data)
       } else {
@@ -66,6 +68,7 @@ export default {
     },
     reset() {
       this.transcriberProfile = structuredClone(this.transcriberProfileOriginal)
+      this.$refs.editor.reset()
     },
     async save() {
       this.loading = true

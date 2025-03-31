@@ -22,7 +22,8 @@
     </div>
     <TranscriberProfileEditorPlain
       v-model="l_transcriberProfile"
-      class="flex1" />
+      class="flex1"
+      ref="editorPlain" />
   </div>
 </template>
 <script>
@@ -57,28 +58,30 @@ export default {
           "backoffice.transcriber_profile_detail.quick_meeting_label",
         ),
       },
+      l_transcriberProfile: structuredClone(this.transcriberProfile),
     }
   },
   mounted() {},
   computed: {
-    l_transcriberProfile: {
-      get() {
-        return this.transcriberProfile
-      },
-      set(value) {
-        this.$emit("update:transcriberProfile", value)
-      },
-    },
     currentType: {
       get() {
         return this.transcriberProfile.config.type
       },
       set(value) {
-        this.l_transcriberProfile = TRANSCRIBER_PROFILES_TEMPLATES[value]
+        this.$emit(
+          "update:transcriberProfile",
+          TRANSCRIBER_PROFILES_TEMPLATES[value],
+        )
       },
     },
   },
   watch: {
+    l_transcriberProfile: {
+      handler(value) {
+        this.$emit("update:transcriberProfile", value)
+      },
+      deep: true,
+    },
     "quickMeetingField.value"(value) {
       this.l_transcriberProfile.quickMeeting = value
     },
@@ -86,7 +89,12 @@ export default {
       this.quickMeetingField.value = value
     },
   },
-  methods: {},
+  methods: {
+    reset() {
+      this.l_transcriberProfile = structuredClone(this.transcriberProfile)
+      this.$refs.editorPlain.resetValue()
+    },
+  },
   components: {
     Tabs,
     TranscriberProfileEditorPlain,
