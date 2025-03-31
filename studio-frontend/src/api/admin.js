@@ -12,6 +12,7 @@ export async function apiGetAllOrganizations(
     pageSize = DEFAULT_PAGE_SIZE,
     sortField = "last_update",
     sortOrder = -1,
+    hidePersonal = false,
   } = {},
   search,
 ) {
@@ -22,7 +23,13 @@ export async function apiGetAllOrganizations(
       {
         method: "get",
       },
-      { page, size: pageSize, sortField, sortCriteria: sortOrder },
+      {
+        page,
+        size: pageSize,
+        sortField,
+        sortCriteria: sortOrder,
+        hidePersonal,
+      },
     )
   } else {
     res = await sendRequest(

@@ -47,7 +47,9 @@
     },
     "organisation_list": {
       "title": "Organisations",
-      "add_organisation_button": "Ajouter une organisation"
+      "add_organisation_button": "Ajouter une organisation",
+      "personal_organizations_shown": "organizations personnels affichées",
+      "personal_organizations_hidden": "organizations personnels cachées"
     },
     "transcriber_profile_detail": {
       "save_button": "Enregistrer le profile",

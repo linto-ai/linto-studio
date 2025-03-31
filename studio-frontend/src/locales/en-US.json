@@ -47,7 +47,9 @@
     },
     "organisation_list": {
       "title": "Organisations",
-      "add_organisation_button": "Add an organisation"
+      "add_organisation_button": "Add an organisation",
+      "personal_organizations_shown": "Personal organisations shown",
+      "personal_organizations_hidden": "Personal organisations hidden"
     },
     "transcriber_profile_detail": {
       "save_button": "Save Transcriber Profile",
