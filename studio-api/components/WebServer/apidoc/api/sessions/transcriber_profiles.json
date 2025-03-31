@@ -131,5 +131,37 @@
         }
       }
     }
+  },
+  "/api/organizations/{organizationId}/transcriber_profiles": {
+    "get": {
+      "tags": ["transcriber_profiles"],
+      "summary": "Get all transcriber configs for the desired organization",
+      "parameters": [
+        {
+          "name": "organizationId",
+          "in": "path",
+          "description": "Organization ID",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The list of transcriber configs",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TranscriberProfileAnswer"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }
