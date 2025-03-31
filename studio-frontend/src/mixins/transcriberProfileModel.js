@@ -24,7 +24,7 @@ export const transcriberProfileModelMixin = {
       return this.profile.id
     },
     transcriberOrganizationId() {
-      return this.profile.transcriberOrganizationId
-    }
+      return this.profile.organizationId
+    },
   },
 }
