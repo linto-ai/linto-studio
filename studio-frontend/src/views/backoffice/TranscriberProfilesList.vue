@@ -44,12 +44,12 @@ import {
   apiDeleteTranscriberProfile,
 } from "@/api/session.js"
 import bulkRequest from "@/tools/bulkRequest.js"
+import { sortArray } from "@/tools/sortList.js"
 
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import TranscriberProfileTable from "@/components/TranscriberProfileTable.vue"
 import HeaderTable from "@/components/HeaderTable.vue"
 import ModalCreateTranscriberProfiles from "@/components/ModalCreateTranscriberProfiles.vue"
-import { sortArray } from "@/tools/sortList.js"
 
 export default {
   props: {},
@@ -136,7 +136,6 @@ export default {
       return this.transcriberProfiles.length
     },
     sortedTranscriberProfiles() {
-      console.log("hoo", this.sortListKey, this.sortListDirection)
       let res = sortArray(
         this.transcriberProfiles,
         this.sortListKey,

@@ -3,32 +3,31 @@
     <thead>
       <tr>
         <ArrayHeader
-          @list_sort_by="sortBy"
           eventLabel="selected"
           :label="$t('session.profile_selector.labels.selected')"
           :sortListDirection="sortListDirection"
           :sortListKey="sortListKey" />
         <ArrayHeader
           @list_sort_by="sortBy"
-          eventLabel="type"
+          eventLabel="config.type"
           :label="$t('session.profile_selector.labels.type')"
           :sortListDirection="sortListDirection"
           :sortListKey="sortListKey" />
         <ArrayHeader
           @list_sort_by="sortBy"
-          eventLabel="name"
+          eventLabel="config.name"
           :label="$t('session.profile_selector.labels.name')"
           :sortListDirection="sortListDirection"
           :sortListKey="sortListKey" />
         <ArrayHeader
           @list_sort_by="sortBy"
-          eventLabel="description"
+          eventLabel="config.description"
           :label="$t('session.profile_selector.labels.description')"
           :sortListDirection="sortListDirection"
           :sortListKey="sortListKey" />
         <ArrayHeader
           @list_sort_by="sortBy"
-          eventLabel="languages"
+          eventLabel="config.languages.0.candidate"
           :label="$t('session.profile_selector.labels.languages')"
           :sortListDirection="sortListDirection"
           :sortListKey="sortListKey" />
@@ -50,9 +49,9 @@
     </thead>
     <tbody>
       <TranscriberProfileSelectorLine
-        v-for="profile in l_profilesList"
+        v-for="profile in sortedTranscriberProfiles"
         :multiple="multiple"
-        :profilesList="l_profilesList"
+        :profilesList="sortedTranscriberProfiles"
         :key="profile.id"
         :profile="profile"
         v-model="selectedProfiles" />
@@ -62,9 +61,10 @@
 <script>
 import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
+import { sortArray } from "@/tools/sortList.js"
 
-import ArrayHeader from "./ArrayHeader.vue"
-import TranscriberProfileSelectorLine from "./TranscriberProfileSelectorLine.vue"
+import ArrayHeader from "@/components/ArrayHeader.vue"
+import TranscriberProfileSelectorLine from "@/components/TranscriberProfileSelectorLine.vue"
 
 export default {
   props: {
@@ -97,11 +97,24 @@ export default {
         this.$emit("input", value)
       },
     },
+    sortedTranscriberProfiles() {
+      return sortArray(
+        this.l_profilesList,
+        this.sortListKey,
+        this.sortListDirection,
+      )
+    },
   },
   mounted() {},
   methods: {
     sortBy(key) {
-      console.log("sortBy", key)
+      if (key === this.sortListKey) {
+        this.sortListDirection =
+          this.sortListDirection === "desc" ? "asc" : "desc"
+      } else {
+        this.sortListDirection = "desc"
+      }
+      this.sortListKey = key
     },
   },
   components: { Fragment, ArrayHeader, TranscriberProfileSelectorLine },
