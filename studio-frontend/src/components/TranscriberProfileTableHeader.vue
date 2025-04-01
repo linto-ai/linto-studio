@@ -4,25 +4,25 @@
       <th class="no-size"></th>
       <ArrayHeader
         @list_sort_by="sortBy"
-        eventLabel="name"
+        eventLabel="config.name"
         :label="$t('session.profile_selector.labels.name')"
         :sortListDirection="sortListDirection"
         :sortListKey="sortListKey" />
       <ArrayHeader
         @list_sort_by="sortBy"
-        eventLabel="description"
+        eventLabel="config.description"
         :label="$t('session.profile_selector.labels.description')"
         :sortListDirection="sortListDirection"
         :sortListKey="sortListKey" />
       <ArrayHeader
         @list_sort_by="sortBy"
-        eventLabel="languages"
+        eventLabel="config.languages.0.candidate"
         :label="$t('session.profile_selector.labels.languages')"
         :sortListDirection="sortListDirection"
         :sortListKey="sortListKey" />
       <ArrayHeader
         @list_sort_by="sortBy"
-        eventLabel="languages"
+        eventLabel="organizationId"
         :label="$t('session.profile_selector.labels.organization')"
         :sortListDirection="sortListDirection"
         :sortListKey="sortListKey" />
@@ -35,12 +35,20 @@ import { bus } from "@/main.js"
 import ArrayHeader from "@/components/ArrayHeader.vue"
 
 export default {
-  props: {},
+  props: {
+    sortListKey: {
+      type: String,
+      required: false,
+      default: "name",
+    },
+    sortListDirection: {
+      type: String,
+      required: false,
+      default: "asc",
+    },
+  },
   data() {
-    return {
-      sortListKey: "name",
-      sortListDirection: "asc",
-    }
+    return {}
   },
   mounted() {},
   methods: {

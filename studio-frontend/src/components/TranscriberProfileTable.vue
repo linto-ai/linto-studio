@@ -2,7 +2,10 @@
   <table
     class="table-grid"
     style="grid-template-columns: auto 1fr 1fr 1fr 1fr auto; width: 100%">
-    <TranscriberProfileTableHeader />
+    <TranscriberProfileTableHeader
+      @list_sort_by="sortBy"
+      :sortListKey="sortListKey"
+      :sortListDirection="sortListDirection" />
     <tbody>
       <div class="table-loader" v-if="loading">
         <Loading />
@@ -42,6 +45,16 @@ export default {
       required: false,
       default: false,
     },
+    sortListKey: {
+      type: String,
+      required: false,
+      default: "name",
+    },
+    sortListDirection: {
+      type: String,
+      required: false,
+      default: "asc",
+    },
   },
   data() {
     return {}
@@ -57,7 +70,11 @@ export default {
       },
     },
   },
-  methods: {},
+  methods: {
+    sortBy(event) {
+      this.$emit("list_sort_by", event)
+    },
+  },
   components: {
     TranscriberProfileTableHeader,
     TranscriberProfileTableLine,

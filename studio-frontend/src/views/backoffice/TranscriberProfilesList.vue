@@ -21,7 +21,10 @@
 
     <div class="backoffice-listing-container">
       <TranscriberProfileTable
-        :transcriberProfilesList="transcriberProfiles"
+        @list_sort_by="sortBy"
+        :sortListKey="sortListKey"
+        :sortListDirection="sortListDirection"
+        :transcriberProfilesList="sortedTranscriberProfiles"
         :loading="loading"
         :linkTo="{ name: 'backoffice-transcriberProfileDetail' }"
         v-model="selectedProfiles" />
@@ -46,6 +49,7 @@ import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import TranscriberProfileTable from "@/components/TranscriberProfileTable.vue"
 import HeaderTable from "@/components/HeaderTable.vue"
 import ModalCreateTranscriberProfiles from "@/components/ModalCreateTranscriberProfiles.vue"
+import { sortArray } from "@/tools/sortList.js"
 
 export default {
   props: {},
@@ -56,6 +60,8 @@ export default {
       selectedProfiles: [],
       search: "",
       showModalCreate: false,
+      sortListKey: "config.name",
+      sortListDirection: "asc",
     }
   },
   mounted() {
@@ -115,10 +121,29 @@ export default {
         this.selectedProfiles = []
       }
     },
+    sortBy(key) {
+      if (key === this.sortListKey) {
+        this.sortListDirection =
+          this.sortListDirection === "desc" ? "asc" : "desc"
+      } else {
+        this.sortListDirection = "desc"
+      }
+      this.sortListKey = key
+    },
   },
   computed: {
     count() {
       return this.transcriberProfiles.length
+    },
+    sortedTranscriberProfiles() {
+      console.log("hoo", this.sortListKey, this.sortListDirection)
+      let res = sortArray(
+        this.transcriberProfiles,
+        this.sortListKey,
+        this.sortListDirection,
+      )
+      console.log("res", res)
+      return res
     },
   },
   components: {
