@@ -1,5 +1,5 @@
 <template>
-  <div class="form-field flex row align-center form-field-checkbox gap-small">
+  <div :class="classes">
     <div class="flex align-center">
       <!-- <input
         type="checkbox"
@@ -64,11 +64,18 @@ export default {
       type: Boolean,
       default: false,
     },
+    column: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
       value: this.field.value,
       id: this.inputId || Math.random().toString(36).substr(2, 9),
+      classes: this.column
+        ? "form-field flex col-reverse"
+        : "form-field flex row align-center form-field-checkbox gap-small",
     }
   },
   watch: {

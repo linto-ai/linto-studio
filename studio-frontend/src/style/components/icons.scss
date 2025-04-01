@@ -274,6 +274,9 @@
   &.lock-off {
     @include maskImage("../public/img/lock-off.svg");
   }
+  &.category {
+    @include maskImage("../public/img/category.svg");
+  }
 }
 
 .icon.small {

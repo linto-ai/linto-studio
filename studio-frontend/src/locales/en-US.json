@@ -37,7 +37,8 @@
     "navigation": {
       "home": "Home",
       "users": "Users",
-      "organisations": "Organisations"
+      "organisations": "Organisations",
+      "transcriberProfiles": "Transcriber Profiles"
     },
     "user_list": {
       "title": "Users",
@@ -46,7 +47,28 @@
     },
     "organisation_list": {
       "title": "Organisations",
-      "add_organisation_button": "Add an organisation"
+      "add_organisation_button": "Add an organisation",
+      "personal_organizations_shown": "Personal organisations shown",
+      "personal_organizations_hidden": "Personal organisations hidden"
+    },
+    "transcriber_profile_detail": {
+      "save_button": "Save Transcriber Profile",
+      "reset_button": "Reset",
+      "delete_button": "Delete Transcriber Profile",
+      "notif_success": "Transcriber profile successfully updated",
+      "notif_error": "An error occurred",
+      "notif_delete_success": "Transcriber profile successfully deleted",
+      "notif_delete_error": "An error occured while deleting the profile",
+      "type_label": "Profile type",
+      "quick_meeting_label": "Enabled for quick meetings"
+    },
+    "transcriber_profile_list": {
+      "title": "Transcriber Profiles",
+      "add_transcriber_profile_button": "Add a transcriber profile",
+      "remove_transcriber_profile_button": "Delete a transcriber profile | Delete {count} transcriber profiles",
+      "bulk_remove_loading_notification": "Deletion of profile {count} of {total}.",
+      "bulk_remove_success_notification": "Profiles successfully deleted",
+      "bulk_remove_error_notification": "An error occurred while deleting profiles"
     }
   },
   "breadcrumb": {
@@ -581,6 +603,11 @@
     "label_name": "Name",
     "action_btn": "Create"
   },
+  "modal_create_transcriber_profile": {
+    "title": "Create new transcriber profile",
+    "action_btn": "Create profile",
+    "notif_error": "An error occurred while creating the transcriber profile"
+  },
   "modal_delete_users": {
     "title": "Delete user | Delete {count} users",
     "content": "Are you sure you want to delete this user ? | Are you sure you want to delete {count} users ?",
@@ -900,7 +927,8 @@
         "selected": "Selected",
         "type": "Type",
         "translations": "Translations",
-        "diarization": "Diarization"
+        "diarization": "Diarization",
+        "organization": "Organisation"
       },
       "title": "Selection of transcription profiles",
       "translation_not_available": "No translation available",

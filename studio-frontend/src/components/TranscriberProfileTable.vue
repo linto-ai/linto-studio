@@ -1,8 +1,8 @@
 <template>
   <table
     class="table-grid"
-    style="grid-template-columns: auto 1fr 1fr 1fr auto; width: 100%">
-    <OrganizationTableHeader
+    style="grid-template-columns: auto 1fr 1fr 1fr 1fr auto; width: 100%">
+    <TranscriberProfileTableHeader
       @list_sort_by="sortBy"
       :sortListKey="sortListKey"
       :sortListDirection="sortListDirection" />
@@ -10,22 +10,24 @@
       <div class="table-loader" v-if="loading">
         <Loading />
       </div>
-      <OrganizationTableLine
-        v-for="organization in organizationList"
-        v-model="p_selectedOrganizations"
+      <TranscriberProfileTableLine
+        v-for="profile in transcriberProfilesList"
+        v-model="p_selectedProfiles"
+        :key="profile.id"
         :linkTo="linkTo"
-        :key="organization.id"
-        :organization="organization" />
+        :profile="profile" />
     </tbody>
   </table>
 </template>
 <script>
-import OrganizationTableHeader from "./OrganizationTableHeader.vue"
-import OrganizationTableLine from "./OrganizationTableLine.vue"
+import { bus } from "@/main.js"
+import TranscriberProfileTableHeader from "./TranscriberProfileTableHeader.vue"
+import TranscriberProfileTableLine from "./TranscriberProfileTableLine.vue"
 import Loading from "./Loading.vue"
+
 export default {
   props: {
-    organizationList: {
+    transcriberProfilesList: {
       type: Array,
       required: true,
     },
@@ -38,31 +40,28 @@ export default {
       type: Array,
       required: true,
     },
-    sortListKey: {
-      type: String,
-      required: true,
-    },
-    sortListDirection: {
-      type: String,
-      required: true,
-    },
     loading: {
       type: Boolean,
       required: false,
       default: false,
+    },
+    sortListKey: {
+      type: String,
+      required: false,
+      default: "name",
+    },
+    sortListDirection: {
+      type: String,
+      required: false,
+      default: "asc",
     },
   },
   data() {
     return {}
   },
   mounted() {},
-  methods: {
-    sortBy(event) {
-      this.$emit("list_sort_by", event)
-    },
-  },
   computed: {
-    p_selectedOrganizations: {
+    p_selectedProfiles: {
       get() {
         return this.value
       },
@@ -71,6 +70,15 @@ export default {
       },
     },
   },
-  components: { OrganizationTableHeader, OrganizationTableLine, Loading },
+  methods: {
+    sortBy(event) {
+      this.$emit("list_sort_by", event)
+    },
+  },
+  components: {
+    TranscriberProfileTableHeader,
+    TranscriberProfileTableLine,
+    Loading,
+  },
 }
 </script>

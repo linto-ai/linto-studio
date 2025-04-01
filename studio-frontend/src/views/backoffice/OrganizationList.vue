@@ -8,7 +8,28 @@
         @on-create="showModalCreateOrganization"
         :add_button_label="
           $t('backoffice.organisation_list.add_organisation_button')
-        "></HeaderTable>
+        ">
+        <template v-slot:right-header>
+          <button
+            v-if="showPersonalOrganizations"
+            @click="changeShowPersonalOrganizations">
+            <span class="icon show"></span>
+            <span class="label">
+              {{
+                $t("backoffice.organisation_list.personal_organizations_shown")
+              }}
+            </span>
+          </button>
+          <button v-else @click="changeShowPersonalOrganizations">
+            <span class="icon hide"></span>
+            <span class="label">
+              {{
+                $t("backoffice.organisation_list.personal_organizations_hidden")
+              }}
+            </span>
+          </button>
+        </template>
+      </HeaderTable>
     </template>
 
     <div class="backoffice-listing-container">
@@ -56,6 +77,7 @@ export default {
       search: "",
       sortListKey: "name",
       sortListDirection: "asc",
+      showPersonalOrganizations: false,
     }
   },
   mounted() {
@@ -71,6 +93,7 @@ export default {
         {
           sortField: this.sortListKey,
           sortOrder: this.sortListDirection === "asc" ? 1 : -1,
+          hidePersonal: !this.showPersonalOrganizations,
         },
         search,
         signal,
@@ -105,6 +128,10 @@ export default {
         this.sortListDirection = "desc"
       }
       this.sortListKey = key
+      this.debouncedFetchAllOrganizations()
+    },
+    changeShowPersonalOrganizations() {
+      this.showPersonalOrganizations = !this.showPersonalOrganizations
       this.debouncedFetchAllOrganizations()
     },
   },

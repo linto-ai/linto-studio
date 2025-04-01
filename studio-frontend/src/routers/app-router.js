@@ -86,6 +86,28 @@ let router = new Router({
       defaultProps,
       meta: { backoffice: true },
     },
+    {
+      path: "/backoffice/transcriberProfiles",
+      name: "backoffice-transcriberProfilesList",
+      components: {
+        default: () =>
+          import("../views/backoffice/TranscriberProfilesList.vue"),
+        ...defaultComponents,
+      },
+      defaultProps,
+      meta: { backoffice: true },
+    },
+    {
+      path: "/backoffice/transcriberProfiles/:transcriberProfileId",
+      name: "backoffice-transcriberProfileDetail",
+      components: {
+        default: () =>
+          import("../views/backoffice/TranscriberProfileDetail.vue"),
+        ...defaultComponents,
+      },
+      defaultProps,
+      meta: { backoffice: true },
+    },
     // PUBLIC ROUTES
     {
       path: "/interface/404",

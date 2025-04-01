@@ -44,7 +44,6 @@
 <script>
 // TODO:
 // - use https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog
-// - when isForm is true, set the modal as a form tag so button are submit buttons instead of regular buttons (with https://v2.vuejs.org/v2/guide/components#Dynamic-Components ?)
 export default {
   props: {
     title: { type: String, required: true },

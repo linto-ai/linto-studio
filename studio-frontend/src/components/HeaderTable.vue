@@ -4,8 +4,9 @@
       class="flex1 flex gap-small backoffice-listing-header__title align-center">
       <h2>{{ title }}</h2>
       <span class="backoffice-listing-header__total">{{ count }}</span>
+      <slot name="right-header"></slot>
     </div>
-    <form class="flex align-center gap-small">
+    <form class="flex align-center gap-small" v-if="search !== undefined">
       <input
         type="text"
         placeholder="Search"

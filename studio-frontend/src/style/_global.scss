@@ -41,6 +41,10 @@ h4 {
       align-self: stretch;
     }
   }
+
+  &.col-reverse {
+    flex-direction: column-reverse;
+  }
   &.row {
     flex-direction: row;
   }

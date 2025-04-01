@@ -102,6 +102,10 @@ class OrganizationModel extends MongoModel {
         }
       }
 
+      if (filter.hidePersonal === "true") {
+        query.personal = false
+      }
+
       if (!filter) return await this.mongoRequest(query)
       else
         return await this.mongoAggregatePaginate(
