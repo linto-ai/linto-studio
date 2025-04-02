@@ -596,7 +596,8 @@
   },
   "modal": {
     "cancel": "Cancel",
-    "close_title": "Close modal"
+    "close_title": "Close modal",
+    "delete": "Delete"
   },
   "modal_create_organization": {
     "title": "Create new organisation",
@@ -941,6 +942,7 @@
       "copy_link_button": "Copy link",
       "copy_link_button_done": "Link copied",
       "end_time_label": "End time",
+      "edit_alias_button": "Manage the aliase",
       "global_informations_title": "General information",
       "time_informations_title": "Start and stop settings",
       "isPublic_label": "Allow anonymous access to the session",
@@ -953,6 +955,7 @@
         "content": "An audio stream is connected. Are you sure you want to delete the session? The content will be saved in your media library.",
         "title": "Confirm session deletion"
       },
+
       "metadata": {
         "title": "Metadatas",
         "key_label": "Key",
@@ -961,6 +964,12 @@
         "button_edition": "Set metadatas",
         "confirm_button": "Apply",
         "no_metadata": "No metadata"
+      },
+      "modal_edit_session_alias": {
+        "title": "Manage the aliase",
+        "name_label": "Alias name",
+        "link_label": "Final link",
+        "confirm_button": "Apply"
       },
       "title": "Session settings",
       "visibility_private_label": "Private",

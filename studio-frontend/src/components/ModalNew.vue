@@ -23,6 +23,14 @@
       </div>
       <div class="modal-footer flex row gap-small" v-if="!noAction">
         <button
+          class="red-border"
+          @click="deleteHandler()"
+          v-if="deleteButton"
+          type="button">
+          <span class="label">{{ $t("modal.delete") }}</span>
+        </button>
+        <div class="flex1"></div>
+        <button
           class="btn secondary"
           @click="close()"
           v-if="cancelButton"
@@ -49,6 +57,7 @@ export default {
     title: { type: String, required: true },
     actionBtnLabel: { type: String, required: true },
     cancelButton: { type: Boolean, default: true },
+    deleteButton: { type: Boolean, default: false },
     small: { type: Boolean, default: false },
     large: { type: Boolean, default: false },
     fullHeight: { type: Boolean, default: false },
@@ -91,6 +100,10 @@ export default {
     },
     apply(e) {
       this.$emit("on-confirm")
+      e?.preventDefault()
+    },
+    deleteHandler(e) {
+      this.$emit("on-delete")
       e?.preventDefault()
     },
   },

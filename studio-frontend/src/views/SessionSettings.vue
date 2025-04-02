@@ -65,6 +65,12 @@
                     $t("session.settings_page.copy_link_button")
                   }}</span>
                 </button>
+                <button class="btn" @click="openModalEditSessionAlias">
+                  <span class="icon edit"></span>
+                  <span class="label">{{
+                    $t("session.settings_page.edit_alias_button")
+                  }}</span>
+                </button>
               </template>
             </FormInput>
             <FormCheckbox
@@ -197,6 +203,11 @@
         v-if="showModalDeleteSession"
         @on-close="closeModalDeleteSession"
         @on-confirm="stopSession" />
+
+      <ModalEditSessionAlias
+        v-if="showModalEditSessionAlias"
+        @on-cancel="closeModalEditSessionAlias"
+        @on-confirm="updateSessionAlias" />
     </div>
   </MainContent>
 </template>
@@ -224,6 +235,7 @@ import MainContent from "@/components/MainContent.vue"
 import SessionStatus from "@/components/SessionStatus.vue"
 import MetadataList from "@/components/MetadataList.vue"
 import SessionHeader from "@/components/SessionHeader.vue"
+import ModalEditSessionAlias from "@/components/ModalEditSessionAlias.vue"
 
 export default {
   mixins: [sessionMixin, formsMixin],
@@ -274,6 +286,7 @@ export default {
       },
       linkHasBeenCopied: false,
       showModalDeleteSession: false,
+      showModalEditSessionAlias: false,
       formState: "idle",
       localChannels: [],
       channelsHasChanged: false,
@@ -363,6 +376,12 @@ export default {
     closeModalDeleteSession() {
       this.showModalDeleteSession = false
     },
+    openModalEditSessionAlias() {
+      this.showModalEditSessionAlias = true
+    },
+    closeModalEditSessionAlias() {
+      this.showModalEditSessionAlias = false
+    },
     copyPublicLink() {
       navigator.clipboard.writeText(this.publicLink)
       this.linkHasBeenCopied = true
@@ -436,6 +455,7 @@ export default {
     ModalForceDeleteSession,
     MetadataList,
     SessionHeader,
+    ModalEditSessionAlias,
   },
 }
 </script>
