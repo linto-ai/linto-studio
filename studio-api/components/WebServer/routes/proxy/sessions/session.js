@@ -39,13 +39,19 @@ module.exports = (webServer) => {
       /*************************/
       {
         paths: [
-          { path: "/transcriber_profiles", method: ["get", "post"] },
+          {
+            path: "/transcriber_profiles",
+            method: ["get"],
+          },
+
+          { path: "/transcriber_profiles", method: ["post"] },
           {
             path: "/transcriber_profiles/:id",
             method: ["get", "put", "delete"],
           },
         ],
         requireAuth: true,
+        requireSessionOperator: true,
       },
 
       /*************************/
@@ -60,6 +66,7 @@ module.exports = (webServer) => {
           },
         ],
         requireAuth: true,
+        requireSessionOperator: true,
       },
       /*************************/
       /******* template  *******/
@@ -68,6 +75,26 @@ module.exports = (webServer) => {
         //member access
         scrapPath: /^\/organizations\/[^/]+/,
         paths: [
+          {
+            path: "/organizations/:organizationId/transcriber_profiles",
+            method: ["get"],
+            executeAfterResult: [
+              (jsonString, req) => {
+                try {
+                  const transcribers = JSON.parse(jsonString)
+                  return JSON.stringify(
+                    transcribers.filter(
+                      (session) =>
+                        session.organizationId === req.params.organizationId ||
+                        session.organizationId === null,
+                    ),
+                  )
+                } catch (err) {
+                  return jsonString
+                }
+              },
+            ],
+          },
           {
             path: "/organizations/:organizationId/templates",
             method: ["get"],

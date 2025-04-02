@@ -99,7 +99,7 @@ import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"
 
 import {
-  apiGetTranscriberProfiles,
+  apiGetTranscriberProfilesByOrganization,
   apiGetSessionTemplates,
   apiGetQuickSessionByOrganization,
 } from "@/api/session.js"
@@ -250,7 +250,9 @@ export default {
       return false
     },
     async fetchProfiles() {
-      const res = await apiGetTranscriberProfiles()
+      const res = await apiGetTranscriberProfilesByOrganization(
+        this.currentOrganizationScope,
+      )
       this.transcriberProfiles = res
       this.loadingTranscriberProfiles = false
     },

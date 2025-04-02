@@ -15,6 +15,56 @@ export async function apiGetTranscriberProfiles(notif) {
   return getTranscriberProfiles?.data ?? []
 }
 
+export async function apiGetTranscriberProfilesByOrganization(
+  organizationId,
+  notif,
+) {
+  const getTranscriberProfiles = await sendRequest(
+    `${BASE_API}/organizations/${organizationId}/transcriber_profiles`,
+    { method: "get" },
+    {},
+    notif,
+  )
+
+  return getTranscriberProfiles?.data ?? []
+}
+
+export async function apiGetTranscriberProfilesById(transcriberId, notif) {
+  return await sendRequest(
+    `${BASE_API}/transcriber_profiles/${transcriberId}`,
+    { method: "get" },
+    {},
+    notif,
+  )
+}
+
+export async function apiUpdateTranscriberProfile(transcriberId, data, notif) {
+  return await sendRequest(
+    `${BASE_API}/transcriber_profiles/${transcriberId}`,
+    { method: "put" },
+    data,
+    notif,
+  )
+}
+
+export async function apiCreateTranscriberProfile(data, notif) {
+  return await sendRequest(
+    `${BASE_API}/transcriber_profiles`,
+    { method: "post" },
+    data,
+    notif,
+  )
+}
+
+export async function apiDeleteTranscriberProfile(transcriberId, notif) {
+  return await sendRequest(
+    `${BASE_API}/transcriber_profiles/${transcriberId}`,
+    { method: "delete" },
+    {},
+    notif,
+  )
+}
+
 export async function apiGetSessionTemplates(organizationScope, notif) {
   const getSessionTemplates = await sendRequest(
     `${BASE_API}/organizations/${organizationScope}/templates`,

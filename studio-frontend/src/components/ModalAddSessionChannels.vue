@@ -44,15 +44,8 @@ export default {
       loading: false,
     }
   },
-  mounted() {
-    //this.fetchProfiles()
-  },
+  mounted() {},
   methods: {
-    async fetchProfiles() {
-      const res = await apiGetTranscriberProfiles()
-      this.profilesList = res
-      this.loading = false
-    },
     addChannels() {
       const newChannels = this.selectedProfiles.map((profile) => {
         return {

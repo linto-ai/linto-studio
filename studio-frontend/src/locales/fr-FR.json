@@ -37,7 +37,8 @@
     "navigation": {
       "home": "Accueil",
       "users": "Utilisateurs",
-      "organisations": "Organisations"
+      "organisations": "Organisations",
+      "transcriberProfiles": "Profiles de transcription"
     },
     "user_list": {
       "title": "Utilisateurs",
@@ -46,7 +47,28 @@
     },
     "organisation_list": {
       "title": "Organisations",
-      "add_organisation_button": "Ajouter une organisation"
+      "add_organisation_button": "Ajouter une organisation",
+      "personal_organizations_shown": "organizations personnels affichées",
+      "personal_organizations_hidden": "organizations personnels cachées"
+    },
+    "transcriber_profile_detail": {
+      "save_button": "Enregistrer le profile",
+      "reset_button": "Réinitialiser",
+      "delete_button": "Supprimer le profile",
+      "notif_success": "Les informations ont été mises à jour",
+      "notif_error": "Une erreur est survenue lors de la mise à jour des informations",
+      "notif_delete_success": "Le profile a été supprimé",
+      "notif_delete_error": "Une erreur est survenue lors de la suppression du profile",
+      "type_label": "Type de profil",
+      "quick_meeting_label": "Activé pour les quick meetings"
+    },
+    "transcriber_profile_list": {
+      "title": "Profiles de transcription",
+      "add_transcriber_profile_button": "Ajouter un profile de transcription",
+      "remove_transcriber_profile_button": "Supprimer le profile | Supprimer les {count} profiles",
+      "bulk_remove_loading_notification": "Suppresion du profile {count} sur {total}.",
+      "bulk_remove_success_notification": "Les profiles ont été supprimés avec succès",
+      "bulk_remove_error_notification": "Une erreur est survenue lors de la suppression des profiles"
     }
   },
   "breadcrumb": {
@@ -583,6 +605,11 @@
     "label_name": "Nom de l'organisation",
     "action_btn": "Créer"
   },
+  "modal_create_transcriber_profile": {
+    "title": "Créer un profil de transcription",
+    "action_btn": "Créer le profil",
+    "notif_error": "Une erreur s'est produite lors de la création du profil de transcription"
+  },
   "modal_delete_users": {
     "title": "Supprimer un utilisateur | Supprimer {count} utilisateurs",
     "content": "Êtes-vous sûr de vouloir supprimer cet utilisateur ? | Êtes-vous sûr de vouloir supprimer les {count} utilisateurs sélectionnés ?",
@@ -906,7 +933,8 @@
         "selected": "Selectionné",
         "type": "Type",
         "translations": "Traductions",
-        "diarization": "Séparation des locuteurs"
+        "diarization": "Séparation des locuteurs",
+        "organization": "Organisation"
       },
       "title": "Choix des profils de transcription",
       "translation_not_available": "Non disponible",
