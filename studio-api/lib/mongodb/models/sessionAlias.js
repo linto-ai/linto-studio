@@ -1,11 +1,11 @@
 const debug = require("debug")(
-  "linto:conversation-manager:models:mongodb:models:sessionLinks",
+  "linto:conversation-manager:models:mongodb:models:sessionAlias",
 )
 const MongoModel = require(`../model`)
 
-class SessionLink extends MongoModel {
+class SessionAlias extends MongoModel {
   constructor() {
-    super("sessionLinks") // define name of 'users' collection elsewhere?
+    super("sessionAlias") // define name of 'users' collection elsewhere?
   }
 
   async create(payload) {
@@ -86,6 +86,19 @@ class SessionLink extends MongoModel {
       throw error
     }
   }
+
+  async deleteByOrganizationAndSession(organizationId, sessionId) {
+    try {
+      const query = { organizationId, sessionId }
+      return await this.mongoDeleteMany(query)
+    } catch (error) {
+      debug(
+        "Error deleting session links by organizationId and sessionId:",
+        error,
+      )
+      throw error
+    }
+  }
 }
 
-module.exports = new SessionLink()
+module.exports = new SessionAlias()

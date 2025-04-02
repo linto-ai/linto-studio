@@ -1,11 +1,11 @@
 const debug = require("debug")(
-  `linto:components:MongoMigration:controllers:version:1.5.6::sessionLinks`,
+  `linto:components:MongoMigration:controllers:version:1.5.6::sessionAlias`,
 )
 
 const initDb = require(
   `${process.cwd()}/components/MongoMigration/controllers/migration/init`,
 )
-const collectionName = "sessionLinks"
+const collectionName = "sessionAlias"
 
 module.exports = {
   async up(db) {

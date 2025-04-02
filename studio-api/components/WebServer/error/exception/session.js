@@ -16,6 +16,18 @@ class SessionError extends Error {
   }
 }
 
+class SessionUnsupportedMediaType extends Error {
+  constructor(message, err) {
+    super()
+    this.name = "SessionUnsupportedMediaType"
+    this.type = ExceptionType
+    this.status = 415
+    if (message) this.message = message
+    else this.message = "Metadata was not provided."
+    if (err) this.err = err
+  }
+}
+
 class SessionNotFound extends Error {
   constructor(message, err) {
     super()
@@ -64,10 +76,24 @@ class TranscriberUnavailable extends Error {
   }
 }
 
+class SessionConflict extends Error {
+  constructor(message, err) {
+    super()
+    this.name = "OrganSessionConflictizationConflict"
+    this.type = ExceptionType
+    this.status = 409
+    if (message) this.message = message
+    else this.message = "Session already exists"
+    if (err) this.err = err
+  }
+}
+
 module.exports = {
   SessionError,
+  SessionUnsupportedMediaType,
   SessionNotFound,
   SessionForbidden,
   SessionNotStarted,
+  SessionConflict,
   TranscriberUnavailable,
 }
