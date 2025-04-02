@@ -15,8 +15,9 @@ const {
 
 async function createSessionAlias(req, res, next) {
   try {
-    const { sessionId, name } = req.body
+    let { sessionId, name } = req.body
     if (!sessionId || !name) throw new SessionUnsupportedMediaType()
+    name = name.replace(/\s+/g, "_")
 
     const existingSession = await model.sessionAlias.getByName(name)
     if (existingSession.length > 0)
@@ -93,6 +94,8 @@ async function updateSessionAlias(req, res, next) {
     )
     if (sessionAlias.length === 0) throw new SessionNotFound()
     if (req.body.name !== undefined) {
+      req.body.name = req.body.name.replace(/\s+/g, "_")
+
       const existingSession = await model.sessionAlias.getByName(req.body.name)
       if (existingSession.length > 0) throw new SessionConflict()
     }
