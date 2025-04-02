@@ -16,6 +16,7 @@ import ModalNew from "./ModalNew.vue"
 import TranscriberProfileEditor from "@/components/TranscriberProfileEditor.vue"
 import TRANSCRIBER_PROFILES_TEMPLATES from "@/const/transcriberProfilesTemplates"
 import { apiCreateTranscriberProfile } from "@/api/session.js"
+import { bus } from "@/main.js"
 
 export default {
   props: {},

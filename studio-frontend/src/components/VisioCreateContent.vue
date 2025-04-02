@@ -132,7 +132,8 @@ export default {
             translations: settings.selectedProfile.translations ?? [],
             diarization: settings.diarization ?? false,
             keepAudio: settings.keepAudio,
-            async: settings.offlineTranscription,
+            compressAudio: !settings.offlineTranscription,
+            //async: settings.offlineTranscription,
             meta: {
               transcriptionService: settings.transcriptionService,
             },
@@ -151,7 +152,6 @@ export default {
           const requestBot = await apiStartBot({
             url: this.visioLinkField.value,
             channelId: session.channels[0].id,
-            enableLiveTranscripts: settings.subInStudio,
             enableDisplaySub: settings.subInVisio,
             subSource: null,
             provider: this.visioTypeField.value,
