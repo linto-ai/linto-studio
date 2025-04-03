@@ -79,7 +79,7 @@ class TranscriberUnavailable extends Error {
 class SessionConflict extends Error {
   constructor(message, err) {
     super()
-    this.name = "OrganSessionConflictizationConflict"
+    this.name = "SessionConflict"
     this.type = ExceptionType
     this.status = 409
     if (message) this.message = message
