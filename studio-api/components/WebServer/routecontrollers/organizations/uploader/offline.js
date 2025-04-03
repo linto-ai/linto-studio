@@ -2,6 +2,9 @@ const debug = require("debug")(
   `linto:conversation-manager:components:WebServer:routeControllers:conversation:transcriptor`,
 )
 const axios = require(`${process.cwd()}/lib/utility/axios`)
+const { storeFile } = require(
+  `${process.cwd()}/components/WebServer/controllers/files/store`,
+)
 const {
   validateConversation,
   getTranscriptionService,
@@ -9,6 +12,11 @@ const {
 } = require(
   `${process.cwd()}/components/WebServer/controllers/conversation/upload`,
 )
+
+const { addFileMetadataToConversation } = require(
+  `${process.cwd()}/components/WebServer/controllers/conversation/generator`,
+)
+
 const fs = require("fs")
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
@@ -29,6 +37,20 @@ async function offline(conversation, isConversation = true) {
       await model.conversations.update(conversation)
     }
 
+    const audio = conversation.metadata.audio
+    if (audio.mimetype === "audio/wav" || audio.filename.endsWith(".wav")) {
+      let file_data = await storeFile(
+        conversation.metadata.audio,
+        "audio_session",
+      )
+      conversation = await addFileMetadataToConversation(
+        conversation,
+        file_data,
+        conversation.metadata.transcription.endpoint,
+      )
+      await model.conversations.update(conversation)
+    }
+
     return conversation
   } catch (err) {
     throw err
@@ -37,7 +59,7 @@ async function offline(conversation, isConversation = true) {
 
 async function sessionReq(conversationId) {
   try {
-    const conversation = await validateConversation(conversationId)
+    let conversation = await validateConversation(conversationId)
     const filePath = `${process.cwd()}/${process.env.VOLUME_FOLDER}/${conversation.metadata.audio.filepath}`
     if (!filePath) return
 
@@ -51,7 +73,7 @@ async function sessionReq(conversationId) {
       attempts++
     }
     if (attempts === maxAttempts) return
-    offline(conversation, true)
+    offline(conversation, false)
   } catch (err) {
     debug(err)
   }

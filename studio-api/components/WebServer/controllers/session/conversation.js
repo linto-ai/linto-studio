@@ -55,7 +55,16 @@ function initConversationMultiChannel(
   }
 }
 
-function generateAudioMetadata(audioId) {
+function generateAudioMetadata(audioId, format = "mp3") {
+  if (format === "wav") {
+    return {
+      filename: `${audioId}.wav`,
+      duration: 0, // Duration generated when conversation is fetched
+      mimetype: "audio/wav",
+      filepath: `${process.env.VOLUME_AUDIO_SESSION_PATH}/${audioId}.wav`,
+    }
+  }
+  // Default to mp3
   return {
     filename: `${audioId}.mp3`,
     duration: 0, // Duration generated when conversation is fetched
@@ -74,9 +83,8 @@ async function initCaptionsForConversation(sessionData, name) {
       const caption = initializeCaption(session, channel, name)
       const audioId = `${session.id}-${channel.id}`
 
-      if (channel.async && channel.keepAudio) {
-        caption.metadata.audio = generateAudioMetadata(audioId)
-
+      if (!channel.compressAudio && channel.keepAudio) {
+        caption.metadata.audio = generateAudioMetadata(audioId, "wav")
         const { serviceName, endpoint, lang, config } =
           channel.meta.transcriptionService
         caption.metadata.transcription = {

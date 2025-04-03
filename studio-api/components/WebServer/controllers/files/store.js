@@ -73,6 +73,19 @@ async function storeFile(files, type = "audio") {
         storageFilePath: output_audio,
         filename: files.name,
       }
+    } else if (type === "audio_session") {
+      const store_path = `${getStorageFolder()}/${getAudioFolder()}/${fileName}`
+      const output_audio = `${store_path}.mp3`
+      let filePath = `${getStorageFolder()}/${files.filepath}`
+
+      await transformAudio(filePath, output_audio)
+      deleteFile(filePath)
+
+      return {
+        filename: fileName + ".mp3",
+        filePath: `${process.env.VOLUME_AUDIO_PATH}/${fileName}.mp3`,
+        storageFilePath: output_audio,
+      }
     }
   } catch (error) {
     throw error
