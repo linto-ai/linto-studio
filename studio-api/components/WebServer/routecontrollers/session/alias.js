@@ -4,13 +4,10 @@ const debug = require("debug")(
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const {
-  SessionError,
   SessionNotFound,
   SessionForbidden,
-  SessionNotStarted,
   SessionUnsupportedMediaType,
   SessionConflict,
-  TranscriberUnavailable,
 } = require(`${process.cwd()}/components/WebServer/error/exception/session`)
 
 async function createSessionAlias(req, res, next) {
@@ -63,7 +60,7 @@ async function getSessionAliasById(req, res, next) {
     if (sessionAlias.length === 0) throw new SessionNotFound()
     res.status(200).json(sessionAlias[0])
   } catch (err) {
-    next(err)
+    next(new SessionNotFound())
   }
 }
 
