@@ -1,8 +1,7 @@
 FROM node:20.15.1 as builder
 
 RUN apt-get update -y && \
-  apt-get install gettext -y && \
-  apt-get install nginx -y
+  apt-get install -y gettext nginx gosu
 
 # Copy project in default workdir
 WORKDIR /usr/src/app/conversation-manager-front
@@ -16,9 +15,7 @@ RUN chown node:node /etc/nginx/nginx.conf \
 
 COPY ./docker-entrypoint.sh /
 
-RUN chown -R node:node /usr/src/app /usr/share/nginx/html /var/lib/nginx /var/log/nginx && \
-  touch /run/nginx.pid && chown -R node:node /run/nginx.pid
-USER node
+RUN touch /run/nginx.pid
 
 HEALTHCHECK CMD curl -f http://localhost
 
