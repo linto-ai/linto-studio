@@ -14,6 +14,7 @@ import TableRow from "@tiptap/extension-table-row"
 import ListItem from "@tiptap/extension-list-item"
 import BulletList from "@tiptap/extension-bullet-list"
 import Heading from "@tiptap/extension-heading"
+
 export default {
   props: {
     value: {
