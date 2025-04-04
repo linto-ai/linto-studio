@@ -41,27 +41,51 @@ class SessionAlias extends MongoModel {
   }
 
   async getById(id) {
-    return this.getByField({ _id: id })
+    try {
+      return this.getByField({ _id: id })
+    } catch (error) {
+      throw error
+    }
   }
 
   async getBySessionId(sessionId) {
-    return this.getByField({ sessionId })
+    try {
+      return this.getByField({ sessionId })
+    } catch (error) {
+      throw error
+    }
   }
 
   async getByName(name) {
-    return this.getByField({ name }, false)
+    try {
+      return this.getByField({ name }, false)
+    } catch (error) {
+      throw error
+    }
   }
 
   async getByOrganizationAndName(organizationId, name) {
-    return this.getByField({ organizationId, name })
+    try {
+      return this.getByField({ organizationId, name })
+    } catch (error) {
+      throw error
+    }
   }
 
   async getByOrganizationAndId(organizationId, id) {
-    return this.getByField({ organizationId, _id: id })
+    try {
+      return this.getByField({ organizationId, _id: id })
+    } catch (error) {
+      throw error
+    }
   }
 
   async getByOrganization(organizationId, query) {
-    return this.getByField({ organizationId, ...query })
+    try {
+      return this.getByField({ organizationId, ...query })
+    } catch (error) {
+      throw error
+    }
   }
 
   async update(id, payload) {

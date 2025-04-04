@@ -67,6 +67,7 @@
     "path": "^0.12.7",
     "randomstring": "^1.1.5",
     "socket.io": "^4.7.5",
+    "speakingurl": "^14.0.1",
     "subtitle": "^4.2.1",
     "swagger-jsdoc": "^6.2.5",
     "swagger-ui-express": "^4.6.0",

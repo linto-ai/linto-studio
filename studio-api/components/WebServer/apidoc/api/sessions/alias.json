@@ -62,7 +62,9 @@
       },
       "responses": {
         "201": {
-          "description": "Alias updated"
+          "description": "Alias created",
+          "name": "alias name",
+          "sessionId": "session id"
         },
         "403": {
           "$ref": "#/components/responses/Forbidden"
@@ -178,9 +180,6 @@
               "type": "object",
               "properties": {
                 "name": {
-                  "type": "string"
-                },
-                "sessionId": {
                   "type": "string"
                 }
               },
