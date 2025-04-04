@@ -972,7 +972,10 @@
         "title": "Ajouter un alias",
         "name_label": "Nom de l'alias",
         "link_label": "Lien final",
-        "confirm_button": "Enregistrer"
+        "confirm_button": "Enregistrer",
+        "success_message": "L'alias a été mis à jour",
+        "error_message": "L'alias n'a pas pu être mis à jour",
+        "name_already_exists": "Un alias avec ce nom existe déjà"
       },
       "visibility_private_label": "Privée",
       "visibility_organization_label": "Interne",

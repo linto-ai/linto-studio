@@ -4,6 +4,31 @@ import { getEnv } from "@/tools/getEnv"
 
 const BASE_API = getEnv("VUE_APP_CONVO_API")
 
+export async function createSessionAlias(organizationScope, data, notif) {
+  const createSessionAlias = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/alias`,
+    { method: "post" },
+    data,
+    notif,
+  )
+
+  return createSessionAlias
+}
+
+export async function apiGetSessionAliases(
+  organizationScope,
+  sessionId,
+  notif,
+) {
+  const getSessionAliases = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/alias/${sessionId}`,
+    { method: "get" },
+    {},
+    notif,
+  )
+  return getSessionAliases?.data ?? { aliases: [], totalItems: 0 }
+}
+
 export async function apiGetTranscriberProfiles(notif) {
   const getTranscriberProfiles = await sendRequest(
     `${BASE_API}/transcriber_profiles`,

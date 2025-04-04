@@ -20,6 +20,7 @@
       </div> -->
 
       <SessionHeader
+        v-if="sessionLoaded"
         :sessionListRoute="sessionListRoute"
         :isAuthenticated="isAuthenticated"
         :sessionLoaded="sessionLoaded"
@@ -205,6 +206,8 @@
         @on-confirm="stopSession" />
 
       <ModalEditSessionAlias
+        :organizationId="organizationId"
+        :sessionId="session.id"
         v-if="showModalEditSessionAlias"
         @on-cancel="closeModalEditSessionAlias"
         @on-confirm="updateSessionAlias" />
@@ -221,6 +224,7 @@ import EMPTY_FIELD from "@/const/emptyField"
 import { formsMixin } from "@/mixins/forms.js"
 
 import isSameDateTimeWithoutSeconds from "@/tools/isSameDateTimeWithoutSeconds.js"
+import isAuthenticated from "@/tools/isAuthenticated.js"
 
 import { apiUpdateSession } from "@/api/session.js"
 
@@ -292,9 +296,7 @@ export default {
       channelsHasChanged: false,
     }
   },
-  created() {
-    // if not started, redirect to home
-  },
+  created() {},
   computed: {
     hasChanged() {
       const publicChanged = this.fieldIsPublic.value !== this.isPublic
@@ -324,6 +326,9 @@ export default {
         ? this.$t("session.detail_page.stop_button_title_session_running")
         : null
     },
+    isAuthenticated() {
+      return isAuthenticated()
+    },
   },
   mounted() {},
   watch: {
@@ -342,6 +347,9 @@ export default {
   methods: {
     onSessionUpdatePostProcess(newSession) {
       this.initValues()
+    },
+    updateSessionAlias(alias) {
+      this.closeModalEditSessionAlias()
     },
     initValues() {
       this.fieldAutoStart.value = this.autoStart

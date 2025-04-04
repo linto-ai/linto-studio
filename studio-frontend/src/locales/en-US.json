@@ -969,7 +969,10 @@
         "title": "Manage the aliase",
         "name_label": "Alias name",
         "link_label": "Final link",
-        "confirm_button": "Apply"
+        "confirm_button": "Apply",
+        "success_message": "The alias has been updated",
+        "error_message": "The alias could not be updated",
+        "name_already_exists": "An alias with this name already exists"
       },
       "title": "Session settings",
       "visibility_private_label": "Private",

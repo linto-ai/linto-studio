@@ -5,6 +5,7 @@ import {
   apiStopSession,
   apiDeleteSession,
   apiGetPublicSession,
+  apiGetSessionAliases,
 } from "../api/session"
 
 import { sessionModelMixin } from "./sessionModel"
@@ -15,7 +16,8 @@ export const sessionMixin = {
   mixins: [sessionModelMixin],
   props: {
     userInfo: { type: Object, required: true },
-    // orga id from scope (cookie)
+    // orga id from scope (cookie) => could be null in annonymous mode so better to use "organizationId".
+    // If no null, organizationId and currentOrganizationScope should be equal
     currentOrganizationScope: {
       type: String,
       required: false,
@@ -46,6 +48,7 @@ export const sessionMixin = {
     // TODO: check rights
     // then fetch session
     if (this.session === null) this.fetchSession()
+
     bus.$on(
       `websocket/orga_${this.organizationId}_session_update`,
       this.onSessionUpdateEvent.bind(this),
@@ -70,20 +73,24 @@ export const sessionMixin = {
         sessionRequest = await apiGetPublicSession(this.sessionId)
       }
 
-      if (sessionRequest.status === "error" || typeof sessionRequest.data === "string") {
+      if (
+        sessionRequest.status === "error" ||
+        typeof sessionRequest.data === "string"
+      ) {
         this.$router.replace({ name: "not_found" })
         return
       }
 
       this.session = sessionRequest.data
+      this.fetchAliases()
       this.sessionLoaded = true
+    },
+    async fetchAliases() {
+      let aliases = await apiGetSessionAliases(this.organizationId, this.id)
     },
     async startSession() {
       this.isStarting = true
-      const start = await apiStartSession(
-        this.currentOrganizationScope,
-        this.sessionId,
-      )
+      const start = await apiStartSession(this.organizationId, this.sessionId)
 
       if (start.status === "error") {
         console.error("Error starting session", start)
@@ -95,10 +102,7 @@ export const sessionMixin = {
     },
     async stopSession() {
       this.isStoping = true
-      const start = await apiDeleteSession(
-        this.currentOrganizationScope,
-        this.sessionId,
-      )
+      const start = await apiDeleteSession(this.organizationId, this.sessionId)
 
       if (start.status === "error") {
         console.error("Error stoping session", start)
@@ -125,7 +129,7 @@ export const sessionMixin = {
     async deleteSession() {
       this.isDeleting = true
       const deleteSession = await apiDeleteSession(
-        this.currentOrganizationScope,
+        this.organizationId,
         this.sessionId,
       )
 

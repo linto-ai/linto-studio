@@ -19,16 +19,28 @@
 </template>
 <script>
 import { bus } from "@/main.js"
-import ModalNew from "@/components/ModalNew.vue"
-import FormInput from "./FormInput.vue"
 import EMPTY_FIELD from "@/const/emptyField"
-import LabeledValue from "@/components/LabeledValue.vue"
 import { testFieldEmpty } from "@/tools/fields/testEmpty.js"
+import { createSessionAlias } from "@/api/session.js"
+
 import { formsMixin } from "@/mixins/forms.js"
+
+import ModalNew from "@/components/ModalNew.vue"
+import FormInput from "@/components/FormInput.vue"
+import LabeledValue from "@/components/LabeledValue.vue"
 
 export default {
   mixins: [formsMixin],
-  props: {},
+  props: {
+    organizationId: {
+      type: String,
+      default: "",
+    },
+    sessionId: {
+      type: String,
+      default: "",
+    },
+  },
   data() {
     return {
       nameField: {
@@ -43,10 +55,36 @@ export default {
   },
   mounted() {},
   methods: {
-    confirm(e) {
+    async confirm(e) {
       e?.preventDefault()
       if (this.testFields()) {
-        this.$emit("on-confirm", this.nameField.value)
+        const req = await createSessionAlias(this.organizationId, {
+          sessionId: this.sessionId,
+          name: this.nameField.value,
+        })
+        if (req.status === "success") {
+          bus.$emit("app_notif", {
+            status: "success",
+            message: this.$t(
+              "session.settings_page.modal_edit_session_alias.success_message",
+            ),
+            redirect: false,
+          })
+        } else {
+          if (req.error.response.status === 409) {
+            this.nameField.error = this.$t(
+              "session.settings_page.modal_edit_session_alias.name_already_exists",
+            )
+          }
+          bus.$emit("app_notif", {
+            status: "error",
+            message: this.$t(
+              "session.settings_page.modal_edit_session_alias.error_message",
+            ),
+            redirect: false,
+          })
+        }
+        //this.$emit("on-confirm", this.nameField.value)
       }
       return false
     },
