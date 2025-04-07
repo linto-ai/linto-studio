@@ -22,6 +22,15 @@ class SessionAlias extends MongoModel {
     }
   }
 
+  async getAll() {
+    try {
+      return await this.mongoRequest({})
+    } catch (error) {
+      debug("Error getting all session names:", error)
+      throw error
+    }
+  }
+
   async getByField(fields, queryMatching = true) {
     try {
       let query = { ...fields }
