@@ -1,7 +1,7 @@
 {
   "/api/administration/alias": {
     "get": {
-      "tags": ["administration"],
+      "tags": ["administration_alias"],
       "summary": "List all existing session alias",
       "responses": {
         "200": {

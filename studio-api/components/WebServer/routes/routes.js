@@ -30,7 +30,6 @@ module.exports = (webServer) => {
     "/api/administration": [
       ...require("./api/administration/users")(webServer),
       ...require("./api/administration/organizations")(webServer),
-      ...require("./api/administration/alias")(webServer),
     ],
     "/api/nlp": require("./api/nlp/nlp")(webServer),
     "/api/services": require("./api/service/services")(webServer, this),
@@ -41,6 +40,10 @@ module.exports = (webServer) => {
     proxy_routes.push(require("./proxy/sessions/session.js")(webServer))
     api_routes["/api/organizations/:organizationId/sessions"] =
       require("./api/sessions/alias.js")(webServer)
+    api_routes["/api/administration"] = [
+      ...api_routes["/api/administration"],
+      ...require("./api/administration/alias")(webServer),
+    ]
   }
 
   if (process.env.LOCAL_AUTH_ENABLED === "true") {
