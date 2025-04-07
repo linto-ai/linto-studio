@@ -3,6 +3,18 @@
     "get": {
       "tags": ["administration"],
       "summary": "List all organizations of the platform",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
+          "required": true,
+          "description": "Scope of the user, must be 'backoffice'"
+        }
+      ],
       "responses": {
         "200": {
           "description": "OK",
@@ -31,6 +43,18 @@
     "post": {
       "tags": ["administration"],
       "summary": "Create an organization",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
+          "required": true,
+          "description": "Scope of the user, must be 'backoffice'"
+        }
+      ],
       "requestBody": {
         "content": {
           "application/json": {
@@ -97,6 +121,16 @@
           "format": "uuid",
           "required": true,
           "description": "uuid string identifier for an organization"
+        },
+        {
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
+          "required": true,
+          "description": "Scope of the user, must be 'backoffice'"
         }
       ],
       "requestBody": {
@@ -161,6 +195,16 @@
           "format": "uuid",
           "required": true,
           "description": "uuid string identifier for an organization"
+        },
+        {
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
+          "required": true,
+          "description": "Scope of the user, must be 'backoffice'"
         }
       ],
       "responses": {

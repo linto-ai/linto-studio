@@ -12,8 +12,6 @@ const docx = require(
 const llm = require(
   `${process.cwd()}/components/WebServer/controllers/llm/index`,
 )
-const { mdToPdf } = require("md-to-pdf")
-
 const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
 
 const { jsonToPlainText } = require("json-to-plain-text")
@@ -143,60 +141,65 @@ async function callLlmAPI(query, conversation, metadata, conversationExport) {
 }
 
 async function handleLLMService(res, query, conversation, metadata) {
-  if (query.flavor === undefined)
-    throw new ConversationMetadataRequire("flavor is required")
+  try {
+    if (query.flavor === undefined)
+      throw new ConversationMetadataRequire("flavor is required")
 
-  let conversationExport = await model.conversationExport.getByConvAndFormat(
-    conversation._id,
-    query.format,
-  )
-  if (query.regenerate === "true" || conversationExport.length === 0) {
-    if (conversationExport.length !== 0)
-      await model.conversationExport.delete(conversationExport[0]._id)
-    conversationExport = {
-      convId: conversation._id.toString(),
-      format: query.format,
-      llmOutputType: query.llmOutputType || "abstractive",
-      status: "processing",
-      processing: 0,
-    }
-    exportResult = await model.conversationExport.create(conversationExport)
-    conversationExport._id = exportResult.insertedId.toString()
+    let conversationExport = await model.conversationExport.getByConvAndFormat(
+      conversation._id,
+      query.format,
+    )
+    if (query.regenerate === "true" || conversationExport.length === 0) {
+      if (conversationExport.length !== 0)
+        await model.conversationExport.delete(conversationExport[0]._id)
+      conversationExport = {
+        convId: conversation._id.toString(),
+        format: query.format,
+        llmOutputType: query.llmOutputType || "abstractive",
+        status: "processing",
+        processing: 0,
+      }
+      exportResult = await model.conversationExport.create(conversationExport)
+      conversationExport._id = exportResult.insertedId.toString()
 
-    callLlmAPI(query, conversation, metadata, conversationExport)
-    res.status(200).send({ status: "processing", processing: 0 })
-  } else if (
-    conversationExport[0].status === "done" ||
-    conversationExport[0].status === "complete"
-  ) {
-    conversationExport = conversationExport[0]
-    if (conversationExport.llmOutputType === "markdown") {
-      handleMarkdownFormat(
-        res,
-        conversationExport,
-        conversation.name,
-        query.preview,
-      )
-    } else {
-      const file = await docx.generateDocxOnFormat(query, conversationExport)
-      sendFileAsResponse(res, file, query.preview)
-    }
-  } else {
-    if (
-      conversationExport[0].status === "unknown" ||
-      (conversationExport[0].status === "error" && conversationExport[0].error)
+      callLlmAPI(query, conversation, metadata, conversationExport)
+      res.status(200).send({ status: "processing", processing: 0 })
+    } else if (
+      conversationExport[0].status === "done" ||
+      conversationExport[0].status === "complete"
     ) {
-      res.status(400).send({
-        status: conversationExport[0].status,
-        error: conversationExport[0].error,
-      })
+      conversationExport = conversationExport[0]
+      if (conversationExport.llmOutputType === "markdown") {
+        handleMarkdownFormat(
+          res,
+          conversationExport,
+          conversation.name,
+          query.preview,
+        )
+      } else {
+        const file = await docx.generateDocxOnFormat(query, conversationExport)
+        sendFileAsResponse(res, file, query.preview)
+      }
     } else {
-      llm.pollingLlm(conversationExport[0].jobId, conversationExport[0])
-      res.status(200).send({
-        status: conversationExport[0].status,
-        processing: conversationExport[0].processing,
-      })
+      if (
+        conversationExport[0].status === "unknown" ||
+        (conversationExport[0].status === "error" &&
+          conversationExport[0].error)
+      ) {
+        res.status(400).send({
+          status: conversationExport[0].status,
+          error: conversationExport[0].error,
+        })
+      } else {
+        llm.pollingLlm(conversationExport[0].jobId, conversationExport[0])
+        res.status(200).send({
+          status: conversationExport[0].status,
+          processing: conversationExport[0].processing,
+        })
+      }
     }
+  } catch (err) {
+    throw err
   }
 }
 
@@ -235,22 +238,8 @@ async function handleMarkdownFormat(
   name,
   preview = "false",
 ) {
-  if (preview === "true") {
-    const tempFile = "/tmp/"
-    const fileName = conversationExport._id + ".pdf"
-
-    await mdToPdf(
-      { content: "# " + name + "\n" + conversationExport.data },
-      { dest: tempFile + fileName },
-    )
-
-    res.setHeader("Content-Type", "application/pdf")
-    res.setHeader("Content-disposition", "attachment; filename=" + fileName)
-    res.sendFile(tempFile + fileName)
-  } else {
-    res.setHeader("Content-Type", "text/plain")
-    res.status(200).send("# " + name + "\n" + conversationExport.data)
-  }
+  res.setHeader("Content-Type", "text/plain")
+  res.status(200).send("# " + name + "\n" + conversationExport.data)
 }
 
 async function handleTextFormat(res, metadata, conversation) {
