@@ -21,7 +21,11 @@
 import { bus } from "@/main.js"
 import EMPTY_FIELD from "@/const/emptyField"
 import { testFieldEmpty } from "@/tools/fields/testEmpty.js"
-import { createSessionAlias } from "@/api/session.js"
+import {
+  createSessionAlias,
+  apiUpdateSessionAliase,
+  apiDeleteSessionAliase,
+} from "@/api/session.js"
 
 import { formsMixin } from "@/mixins/forms.js"
 
@@ -40,6 +44,10 @@ export default {
       type: String,
       default: "",
     },
+    sessionAliases: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {
@@ -49,6 +57,7 @@ export default {
           "session.settings_page.modal_edit_session_alias.name_label",
         ),
         testField: testFieldEmpty,
+        value: this.sessionAliases.length ? this.sessionAliases[0].name : "",
       },
       fields: ["nameField"],
     }
@@ -58,10 +67,22 @@ export default {
     async confirm(e) {
       e?.preventDefault()
       if (this.testFields()) {
-        const req = await createSessionAlias(this.organizationId, {
-          sessionId: this.sessionId,
-          name: this.nameField.value,
-        })
+        let req
+        if (this.sessionAliases.length == 0) {
+          req = await createSessionAlias(this.organizationId, {
+            sessionId: this.sessionId,
+            name: this.nameField.value,
+          })
+        } else {
+          req = await apiUpdateSessionAliase(
+            this.organizationId,
+            this.sessionAliases[0]._id,
+            {
+              sessionId: this.sessionId,
+              name: this.nameField.value,
+            },
+          )
+        }
         if (req.status === "success") {
           bus.$emit("app_notif", {
             status: "success",
@@ -70,6 +91,7 @@ export default {
             ),
             redirect: false,
           })
+          this.$emit("on-confirm")
         } else {
           if (req.error.response.status === 409) {
             this.nameField.error = this.$t(
@@ -84,12 +106,32 @@ export default {
             redirect: false,
           })
         }
-        //this.$emit("on-confirm", this.nameField.value)
       }
       return false
     },
-    deleteHandler() {
-      this.$emit("on-delete")
+    async deleteHandler() {
+      const req = await apiDeleteSessionAliase(
+        this.organizationId,
+        this.sessionAliases[0]._id,
+      )
+      if (req.status === "success") {
+        bus.$emit("app_notif", {
+          status: "success",
+          message: this.$t(
+            "session.settings_page.modal_edit_session_alias.delete_success_message",
+          ),
+          redirect: false,
+        })
+      } else {
+        bus.$emit("app_notif", {
+          status: "error",
+          message: this.$t(
+            "session.settings_page.modal_edit_session_alias.delete_error_message",
+          ),
+          redirect: false,
+        })
+      }
+      this.$emit("on-confirm")
     },
   },
   components: {

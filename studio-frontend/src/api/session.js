@@ -15,18 +15,54 @@ export async function createSessionAlias(organizationScope, data, notif) {
   return createSessionAlias
 }
 
-export async function apiGetSessionAliases(
+export async function apiDeleteSessionAliase(organizationScope, aliasId) {
+  const deleteSessionAliase = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/alias/${aliasId}`,
+    { method: "delete" },
+    {},
+  )
+
+  return deleteSessionAliase
+}
+
+export async function apiUpdateSessionAliase(
+  organizationScope,
+  aliasId,
+  data,
+  notif,
+) {
+  const updateSessionAliase = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/alias/${aliasId}`,
+    { method: "put" },
+    data,
+    notif,
+  )
+
+  return updateSessionAliase
+}
+
+export async function apiGetSessionAliase(organizationScope, aliasId, notif) {
+  const getSessionAliase = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/alias/${aliasId}`,
+    { method: "get" },
+    {},
+    notif,
+  )
+  return getSessionAliase
+}
+
+export async function apiGetSessionAliasesBySessionId(
   organizationScope,
   sessionId,
   notif,
 ) {
   const getSessionAliases = await sendRequest(
-    `${BASE_API}/organizations/${organizationScope}/sessions/alias/${sessionId}`,
+    `${BASE_API}/organizations/${organizationScope}/sessions/alias`,
     { method: "get" },
-    {},
+    { sessionId: sessionId },
     notif,
   )
-  return getSessionAliases?.data ?? { aliases: [], totalItems: 0 }
+  return getSessionAliases?.data ?? []
 }
 
 export async function apiGetTranscriberProfiles(notif) {

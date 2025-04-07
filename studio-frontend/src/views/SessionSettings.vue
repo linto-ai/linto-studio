@@ -208,6 +208,7 @@
       <ModalEditSessionAlias
         :organizationId="organizationId"
         :sessionId="session.id"
+        :sessionAliases="sessionAliases"
         v-if="showModalEditSessionAlias"
         @on-cancel="closeModalEditSessionAlias"
         @on-confirm="updateSessionAlias" />
@@ -348,8 +349,11 @@ export default {
     onSessionUpdatePostProcess(newSession) {
       this.initValues()
     },
-    updateSessionAlias(alias) {
+    async updateSessionAlias(alias) {
       this.closeModalEditSessionAlias()
+      this.sessionLoaded = false
+      await this.fetchAliases()
+      this.sessionLoaded = true
     },
     initValues() {
       this.fieldAutoStart.value = this.autoStart

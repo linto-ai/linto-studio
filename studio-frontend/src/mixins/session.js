@@ -5,7 +5,7 @@ import {
   apiStopSession,
   apiDeleteSession,
   apiGetPublicSession,
-  apiGetSessionAliases,
+  apiGetSessionAliasesBySessionId,
 } from "../api/session"
 
 import { sessionModelMixin } from "./sessionModel"
@@ -36,6 +36,7 @@ export const sessionMixin = {
       isStoping: false,
       isDeleting: false,
       isFromPublicLink: false,
+      sessionAliases: null,
     }
 
     if (!this.session) {
@@ -82,11 +83,14 @@ export const sessionMixin = {
       }
 
       this.session = sessionRequest.data
-      this.fetchAliases()
+      await this.fetchAliases()
       this.sessionLoaded = true
     },
     async fetchAliases() {
-      let aliases = await apiGetSessionAliases(this.organizationId, this.id)
+      this.sessionAliases = await apiGetSessionAliasesBySessionId(
+        this.organizationId,
+        this.session.id,
+      )
     },
     async startSession() {
       this.isStarting = true

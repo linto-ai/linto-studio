@@ -972,7 +972,9 @@
         "confirm_button": "Apply",
         "success_message": "The alias has been updated",
         "error_message": "The alias could not be updated",
-        "name_already_exists": "An alias with this name already exists"
+        "name_already_exists": "An alias with this name already exists",
+        "delete_success_message": "The alias has been deleted",
+        "delete_error_message": "The alias could not be deleted"
       },
       "title": "Session settings",
       "visibility_private_label": "Private",

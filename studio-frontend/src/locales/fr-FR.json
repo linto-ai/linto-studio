@@ -975,7 +975,9 @@
         "confirm_button": "Enregistrer",
         "success_message": "L'alias a été mis à jour",
         "error_message": "L'alias n'a pas pu être mis à jour",
-        "name_already_exists": "Un alias avec ce nom existe déjà"
+        "name_already_exists": "Un alias avec ce nom existe déjà",
+        "delete_success_message": "L'alias a été supprimé",
+        "delete_error_message": "L'alias n'a pas pu être supprimé"
       },
       "visibility_private_label": "Privée",
       "visibility_organization_label": "Interne",
