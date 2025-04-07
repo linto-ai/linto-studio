@@ -30,6 +30,7 @@ module.exports = (webServer) => {
     "/api/administration": [
       ...require("./api/administration/users")(webServer),
       ...require("./api/administration/organizations")(webServer),
+      ...require("./api/administration/alias")(webServer),
     ],
     "/api/nlp": require("./api/nlp/nlp")(webServer),
     "/api/services": require("./api/service/services")(webServer, this),

@@ -48,6 +48,15 @@ async function createSessionAlias(req, res, next) {
   }
 }
 
+async function getAllSessionAlias(req, res, next) {
+  try {
+    const sessionAlias = await model.sessionAlias.getAll()
+    res.status(200).json(sessionAlias)
+  } catch (err) {
+    next(err)
+  }
+}
+
 async function getSessionAlias(req, res, next) {
   try {
     const { organizationId } = req.params
@@ -124,6 +133,7 @@ async function updateSessionAlias(req, res, next) {
 }
 
 module.exports = {
+  getAllSessionAlias,
   getSessionAliasById,
   getSessionAlias,
   createSessionAlias,

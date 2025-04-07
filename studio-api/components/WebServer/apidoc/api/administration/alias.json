@@ -1,0 +1,27 @@
+{
+  "/api/administration/alias": {
+    "get": {
+      "tags": ["administration"],
+      "summary": "List all existing session alias",
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/SessionAlias"
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    }
+  }
+}
