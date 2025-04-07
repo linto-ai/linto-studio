@@ -82,7 +82,11 @@ class SessionAlias extends MongoModel {
 
   async getByOrganization(organizationId, query) {
     try {
-      return this.getByField({ organizationId, ...query })
+      let customQuery = {}
+      if (query.sessionId) customQuery.sessionId = query.sessionId
+      if (query.name) customQuery.name = query.name
+
+      return this.getByField({ organizationId, ...customQuery })
     } catch (error) {
       throw error
     }
