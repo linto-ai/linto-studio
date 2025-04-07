@@ -35,7 +35,7 @@ async function forwardSessioAlias(req, next) {
     if (uuidV4Pattern.test(req.params.id)) {
       next()
     } else if (req.params.id) {
-      const existingSession = await model.sessionLinks.getByName(req.params.id)
+      const existingSession = await model.sessionAlias.getByName(req.params.id)
 
       if (existingSession.length > 0) {
         req.url = req.url.replace(req.params.id, existingSession[0].sessionId)
