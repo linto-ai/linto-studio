@@ -49,7 +49,8 @@
       "title": "Organisations",
       "add_organisation_button": "Ajouter une organisation",
       "personal_organizations_shown": "organizations personnels affichées",
-      "personal_organizations_hidden": "organizations personnels cachées"
+      "personal_organizations_hidden": "organizations personnels cachées",
+      "remove_organisation_button": "Supprimer l'organisation | Supprimer les {count} organisations"
     },
     "transcriber_profile_detail": {
       "save_button": "Enregistrer le profile",
@@ -614,6 +615,14 @@
     "content": "Êtes-vous sûr de vouloir supprimer cet utilisateur ? | Êtes-vous sûr de vouloir supprimer les {count} utilisateurs sélectionnés ?",
     "action_btn": "Confirmer la suppression",
     "error": "Une erreur s'est produite lors de la suppression de l'utilisateur | {count} utilisateurs n'ont pas pu être supprimés"
+  },
+  "modal_delete_multiple_organizations": {
+    "title": "Supprimer l'organisation | Supprimer {count} organisations",
+    "content": "Êtes-vous sûr de vouloir supprimer cette organisation ? | Êtes-vous sûr de vouloir supprimer les {count} organisations sélectionnées ?",
+    "action_btn": "Confirmer la suppression",
+    "error": "Une erreur s'est produite lors de la suppression de l'organisation | {count} organisations n'ont pas pu être supprimées",
+    "loading_notification": "Suppression de l'organisation {count} sur {total}.",
+    "success_notification": "L'organisation a été supprimée avec succès | {count} organisations ont été supprimées avec succès"
   },
   "navigation": {
     "account": {

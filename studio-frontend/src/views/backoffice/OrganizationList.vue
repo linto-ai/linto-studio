@@ -6,6 +6,13 @@
         :count="count"
         v-bind:search.sync="search"
         @on-create="showModalCreateOrganization"
+        @on-delete="showModalDeleteMultipleOrganizations"
+        :remove_button_label="
+          $tc(
+            'backoffice.organisation_list.remove_organisation_button',
+            selectedOrganizations.length,
+          )
+        "
         :add_button_label="
           $t('backoffice.organisation_list.add_organisation_button')
         ">
@@ -50,6 +57,14 @@
       @on-confirm="newOrganization"
       @on-cancel="hideModalCreateOrganization"
       v-if="modalCreateOrganizationIsVisible"></ModalCreateOrganization>
+
+    <ModalDeleteMultipleOrganizations
+      @on-close="hideModalDeleteMultipleOrganizations"
+      @on-confirm="reload"
+      :selectedOrganizations="selectedOrganizations"
+      v-if="
+        modalDeleteMultipleOrganizationsIsVisible
+      "></ModalDeleteMultipleOrganizations>
   </MainContentBackoffice>
 </template>
 <script>
@@ -62,6 +77,7 @@ import HeaderTable from "@/components/HeaderTable.vue"
 import OrganizationTable from "@/components/OrganizationTable.vue"
 import ModalCreateOrganization from "@/components/ModalCreateOrganization.vue"
 import Pagination from "@/components/Pagination.vue"
+import ModalDeleteMultipleOrganizations from "@/components/ModalDeleteMultipleOrganizations.vue"
 export default {
   mixins: [platformRoleMixin, debounceMixin],
   props: {},
@@ -78,6 +94,7 @@ export default {
       sortListKey: "name",
       sortListDirection: "asc",
       showPersonalOrganizations: false,
+      modalDeleteMultipleOrganizationsIsVisible: false,
     }
   },
   mounted() {
@@ -134,6 +151,17 @@ export default {
       this.showPersonalOrganizations = !this.showPersonalOrganizations
       this.debouncedFetchAllOrganizations()
     },
+    showModalDeleteMultipleOrganizations() {
+      this.modalDeleteMultipleOrganizationsIsVisible = true
+    },
+    hideModalDeleteMultipleOrganizations() {
+      this.modalDeleteMultipleOrganizationsIsVisible = false
+    },
+    reload() {
+      this.hideModalDeleteMultipleOrganizations()
+      this.debouncedFetchAllOrganizations()
+      this.selectedOrganizations = []
+    },
   },
   computed: {},
   watch: {
@@ -150,6 +178,7 @@ export default {
     HeaderTable,
     ModalCreateOrganization,
     Pagination,
+    ModalDeleteMultipleOrganizations,
   },
 }
 </script>

@@ -49,7 +49,8 @@
       "title": "Organisations",
       "add_organisation_button": "Add an organisation",
       "personal_organizations_shown": "Personal organisations shown",
-      "personal_organizations_hidden": "Personal organisations hidden"
+      "personal_organizations_hidden": "Personal organisations hidden",
+      "remove_organisation_button": "Delete an organisation | Delete {count} organisations"
     },
     "transcriber_profile_detail": {
       "save_button": "Save Transcriber Profile",
@@ -614,6 +615,14 @@
     "content": "Are you sure you want to delete this user ? | Are you sure you want to delete {count} users ?",
     "action_btn": "Confirm deletion",
     "error": "An error occurred while deleting the user | An error occurred while deleting {count} users"
+  },
+  "modal_delete_multiple_organizations": {
+    "title": "Delete organisation | Delete {count} organisations",
+    "content": "Are you sure you want to delete this organisation ? | Are you sure you want to delete {count} organisations ?",
+    "action_btn": "Confirm deletion",
+    "error": "An error occurred while deleting the organisation | An error occurred while deleting {count} organisations",
+    "loading_notification": "Deleting organisation {count} of {total}.",
+    "success_notification": "Organisations successfully deleted"
   },
   "navigation": {
     "account": {
