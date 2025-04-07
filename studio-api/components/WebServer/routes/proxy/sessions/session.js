@@ -6,7 +6,7 @@ const proxyForwardParams = [
 const { storeSessionFromStop, storeQuickMeetingFromStop } = require(
   `${process.cwd()}/components/WebServer/controllers/session/conversation.js`,
 )
-const { forceQueryParams } = require(
+const { forceQueryParams, forwardSessioAlias } = require(
   `${process.cwd()}/components/WebServer/controllers/session/session.js`,
 )
 const { Unauthorized } = require(
@@ -146,6 +146,7 @@ module.exports = (webServer) => {
                 }
               },
             ],
+            executeBeforeResult: forwardSessioAlias,
           },
         ],
         requireAuth: false,
@@ -158,6 +159,7 @@ module.exports = (webServer) => {
             path: "/organizations/:organizationId/sessions/:id",
             method: ["get"],
             forwardParams: proxyForwardParams,
+            executeBeforeResult: forwardSessioAlias,
           },
           {
             path: "/organizations/:organizationId/sessions",

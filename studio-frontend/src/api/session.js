@@ -4,6 +4,67 @@ import { getEnv } from "@/tools/getEnv"
 
 const BASE_API = getEnv("VUE_APP_CONVO_API")
 
+export async function createSessionAlias(organizationScope, data, notif) {
+  const createSessionAlias = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/alias`,
+    { method: "post" },
+    data,
+    notif,
+  )
+
+  return createSessionAlias
+}
+
+export async function apiDeleteSessionAliase(organizationScope, aliasId) {
+  const deleteSessionAliase = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/alias/${aliasId}`,
+    { method: "delete" },
+    {},
+  )
+
+  return deleteSessionAliase
+}
+
+export async function apiUpdateSessionAliase(
+  organizationScope,
+  aliasId,
+  data,
+  notif,
+) {
+  const updateSessionAliase = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/alias/${aliasId}`,
+    { method: "put" },
+    data,
+    notif,
+  )
+
+  return updateSessionAliase
+}
+
+export async function apiGetSessionAliase(organizationScope, aliasId, notif) {
+  const getSessionAliase = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/alias/${aliasId}`,
+    { method: "get" },
+    {},
+    notif,
+  )
+  return getSessionAliase
+}
+
+export async function apiGetSessionAliasesBySessionId(
+  organizationScope,
+  sessionId,
+  notif,
+) {
+  const getSessionAliases = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/alias`,
+    { method: "get" },
+    { sessionId: sessionId },
+    notif,
+  )
+  return getSessionAliases?.data ?? []
+}
+
 export async function apiGetTranscriberProfiles(notif) {
   const getTranscriberProfiles = await sendRequest(
     `${BASE_API}/transcriber_profiles`,

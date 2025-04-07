@@ -20,6 +20,7 @@
       </div> -->
 
       <SessionHeader
+        v-if="sessionLoaded"
         :sessionListRoute="sessionListRoute"
         :isAuthenticated="isAuthenticated"
         :sessionLoaded="sessionLoaded"
@@ -63,6 +64,12 @@
                   }}</span>
                   <span class="label" v-else>{{
                     $t("session.settings_page.copy_link_button")
+                  }}</span>
+                </button>
+                <button class="btn" @click="openModalEditSessionAlias">
+                  <span class="icon edit"></span>
+                  <span class="label">{{
+                    $t("session.settings_page.edit_alias_button")
                   }}</span>
                 </button>
               </template>
@@ -197,6 +204,14 @@
         v-if="showModalDeleteSession"
         @on-close="closeModalDeleteSession"
         @on-confirm="stopSession" />
+
+      <ModalEditSessionAlias
+        :organizationId="organizationId"
+        :sessionId="session.id"
+        :sessionAliases="sessionAliases"
+        v-if="showModalEditSessionAlias"
+        @on-cancel="closeModalEditSessionAlias"
+        @on-confirm="updateSessionAlias" />
     </div>
   </MainContent>
 </template>
@@ -210,6 +225,7 @@ import EMPTY_FIELD from "@/const/emptyField"
 import { formsMixin } from "@/mixins/forms.js"
 
 import isSameDateTimeWithoutSeconds from "@/tools/isSameDateTimeWithoutSeconds.js"
+import isAuthenticated from "@/tools/isAuthenticated.js"
 
 import { apiUpdateSession } from "@/api/session.js"
 
@@ -224,6 +240,7 @@ import MainContent from "@/components/MainContent.vue"
 import SessionStatus from "@/components/SessionStatus.vue"
 import MetadataList from "@/components/MetadataList.vue"
 import SessionHeader from "@/components/SessionHeader.vue"
+import ModalEditSessionAlias from "@/components/ModalEditSessionAlias.vue"
 
 export default {
   mixins: [sessionMixin, formsMixin],
@@ -274,14 +291,13 @@ export default {
       },
       linkHasBeenCopied: false,
       showModalDeleteSession: false,
+      showModalEditSessionAlias: false,
       formState: "idle",
       localChannels: [],
       channelsHasChanged: false,
     }
   },
-  created() {
-    // if not started, redirect to home
-  },
+  created() {},
   computed: {
     hasChanged() {
       const publicChanged = this.fieldIsPublic.value !== this.isPublic
@@ -311,6 +327,9 @@ export default {
         ? this.$t("session.detail_page.stop_button_title_session_running")
         : null
     },
+    isAuthenticated() {
+      return isAuthenticated()
+    },
   },
   mounted() {},
   watch: {
@@ -329,6 +348,12 @@ export default {
   methods: {
     onSessionUpdatePostProcess(newSession) {
       this.initValues()
+    },
+    async updateSessionAlias(alias) {
+      this.closeModalEditSessionAlias()
+      this.sessionLoaded = false
+      await this.fetchAliases()
+      this.sessionLoaded = true
     },
     initValues() {
       this.fieldAutoStart.value = this.autoStart
@@ -362,6 +387,12 @@ export default {
     },
     closeModalDeleteSession() {
       this.showModalDeleteSession = false
+    },
+    openModalEditSessionAlias() {
+      this.showModalEditSessionAlias = true
+    },
+    closeModalEditSessionAlias() {
+      this.showModalEditSessionAlias = false
     },
     copyPublicLink() {
       navigator.clipboard.writeText(this.publicLink)
@@ -436,6 +467,7 @@ export default {
     ModalForceDeleteSession,
     MetadataList,
     SessionHeader,
+    ModalEditSessionAlias,
   },
 }
 </script>

@@ -596,6 +596,7 @@
   },
   "modal": {
     "cancel": "Annuler",
+    "delete": "Supprimer",
     "close_title": "Fermer la modale"
   },
   "modal_create_organization": {
@@ -944,6 +945,7 @@
       "copy_link_button": "Copier le lien",
       "copy_link_button_done": "Lien copié",
       "end_time_label": "Heure de fin",
+      "edit_alias_button": "Gérer l'alias",
       "global_informations_title": "Informations générales",
       "time_informations_title": "Démarrage et arrêt",
       "isPublic_label": "Autoriser l'accès anonyme à la session",
@@ -965,6 +967,17 @@
         "button_edition": "Définir les métadonnées",
         "confirm_button": "valider",
         "no_metadata": "Aucune métadonnée"
+      },
+      "modal_edit_session_alias": {
+        "title": "Ajouter un alias",
+        "name_label": "Nom de l'alias",
+        "link_label": "Lien final",
+        "confirm_button": "Enregistrer",
+        "success_message": "L'alias a été mis à jour",
+        "error_message": "L'alias n'a pas pu être mis à jour",
+        "name_already_exists": "Un alias avec ce nom existe déjà",
+        "delete_success_message": "L'alias a été supprimé",
+        "delete_error_message": "L'alias n'a pas pu être supprimé"
       },
       "visibility_private_label": "Privée",
       "visibility_organization_label": "Interne",

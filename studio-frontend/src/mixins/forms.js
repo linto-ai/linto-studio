@@ -1,6 +1,10 @@
 export const formsMixin = {
   methods: {
     testFields({ fieldsToTest = this.fields, autoContains = false } = {}) {
+      if (!fieldsToTest) {
+        console.error("No fields to test, this.fields is undefined")
+        return false
+      }
       this.debug("testing fields %o", fieldsToTest)
       return fieldsToTest.every((fieldName) => {
         if (!autoContains) {

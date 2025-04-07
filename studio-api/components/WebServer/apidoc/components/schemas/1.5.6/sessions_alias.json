@@ -1,0 +1,29 @@
+{
+  "SessionAlias": {
+    "type": "object",
+    "properties": {
+      "_id": {
+        "type": "string",
+        "description": "The session alias id"
+      },
+      "name": {
+        "type": "string",
+        "description": "The session alias name"
+      },
+      "sessionId": {
+        "type": "string",
+        "description": "The sessionId related to the alias"
+      },
+      "organizationId": {
+        "type": "string",
+        "description": "The organization id attached to the category"
+      }
+    },
+    "example": {
+      "_id": "5f9f9b9b7d1b424dccabc375",
+      "name": "My_session",
+      "sessionId": "3f4d9ed7d1b424dccabc782",
+      "organizationId": "63f4d9ed7d1b424dccabc128"
+    }
+  }
+}
