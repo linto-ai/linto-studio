@@ -72,6 +72,9 @@ export default {
           "update:transcriberProfile",
           TRANSCRIBER_PROFILES_TEMPLATES[value],
         )
+        this.$nextTick(() => {
+          this.reset()
+        })
       },
     },
   },
@@ -84,6 +87,9 @@ export default {
     },
     "quickMeetingField.value"(value) {
       this.l_transcriberProfile.quickMeeting = value
+      this.$nextTick(() => {
+        this.reset()
+      })
     },
     "transcriberProfile.quickMeeting"(value) {
       this.quickMeetingField.value = value
@@ -92,7 +98,9 @@ export default {
   methods: {
     reset() {
       this.l_transcriberProfile = structuredClone(this.transcriberProfile)
-      this.$refs.editorPlain.resetValue()
+      this.$nextTick(() => {
+        this.$refs.editorPlain.resetValue()
+      })
     },
   },
   components: {
