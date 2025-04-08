@@ -1,9 +1,7 @@
 {
-  "/bots": {
+  "/api/organizations/{organizationId}/bots": {
     "get": {
-      "tags": [
-        "bots"
-      ],
+      "tags": ["bots"],
       "summary": "Get all bots",
       "parameters": [
         {
@@ -32,7 +30,16 @@
           "schema": {
             "type": "integer"
           }
-      }],
+        },
+        {
+          "in": "path",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an organization"
+        }
+      ],
       "responses": {
         "200": {
           "description": "The list of bots",
@@ -50,10 +57,18 @@
       }
     },
     "post": {
-      "tags": [
-        "bots"
-      ],
+      "tags": ["bots"],
       "summary": "Create a new bot",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an organization"
+        }
+      ],
       "requestBody": {
         "content": {
           "application/json": {
@@ -77,11 +92,9 @@
       }
     }
   },
-  "/bots/{id}": {
+  "/api/organizations/{organizationId}/bots/{id}": {
     "get": {
-      "tags": [
-        "bots"
-      ],
+      "tags": ["bots"],
       "summary": "Get a bot by ID",
       "parameters": [
         {
@@ -92,6 +105,14 @@
           "schema": {
             "type": "integer"
           }
+        },
+        {
+          "in": "path",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an organization"
         }
       ],
       "responses": {
@@ -111,9 +132,7 @@
       }
     },
     "delete": {
-      "tags": [
-        "bots"
-      ],
+      "tags": ["bots"],
       "summary": "Delete a bot by ID",
       "parameters": [
         {
@@ -124,6 +143,14 @@
           "schema": {
             "type": "integer"
           }
+        },
+        {
+          "in": "path",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an organization"
         }
       ],
       "responses": {
