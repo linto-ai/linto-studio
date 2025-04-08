@@ -80,11 +80,13 @@ async function initCaptionsForConversation(sessionData, name) {
     name = name || session.name || ""
 
     for (const channel of session.channels) {
-      const caption = initializeCaption(session, channel, name)
       const audioId = `${session.id}-${channel.id}`
+      const audioFormat = channel.compressAudio ? "mp3" : "wav"
 
       if (!channel.compressAudio && channel.keepAudio) {
-        caption.metadata.audio = generateAudioMetadata(audioId, "wav")
+        const caption = initializeCaption(session, channel, name + "offline")
+
+        caption.metadata.audio = generateAudioMetadata(audioId, audioFormat)
         const { serviceName, endpoint, lang, config } =
           channel.meta.transcriptionService
         caption.metadata.transcription = {
@@ -94,12 +96,15 @@ async function initCaptionsForConversation(sessionData, name) {
           transcriptionConfig: config,
         }
         caption.jobs.transcription.state = "waiting"
-
         captions.push(caption)
-        continue
+
+        if (!channel.closedCaptions) {
+          continue
+        }
       }
 
       if (!channel.closedCaptions) continue
+      const caption = initializeCaption(session, channel, name)
 
       processChannelCaptions(channel, caption, true)
 
@@ -111,7 +116,7 @@ async function initCaptionsForConversation(sessionData, name) {
       }
 
       if (channel.keepAudio)
-        caption.metadata.audio = generateAudioMetadata(audioId)
+        caption.metadata.audio = generateAudioMetadata(audioId, audioFormat)
 
       captions.push(caption)
     }
@@ -325,7 +330,7 @@ async function storeMultiChannelConversation(
   conversationMemory,
 ) {
   const main_conversation = initConversationMultiChannel(session, name)
-
+  const offline = []
   for (let caption of captions) {
     if (caption.type.mode === TYPES.TRANSLATION) continue
     let caption_result = await model.conversations.create(caption)
@@ -341,8 +346,8 @@ async function storeMultiChannelConversation(
       name: caption.name,
     })
 
-    if ((caption.jobs.transcription.state = "waiting")) {
-      startOfflineJob(caption_result.insertedId.toString())
+    if (caption.jobs.transcription.state === "waiting") {
+      offline.push(caption_result.insertedId.toString())
     }
   }
 
@@ -356,6 +361,10 @@ async function storeMultiChannelConversation(
     main_conversation.type.child_conversations,
     result.insertedId.toString(),
   )
+
+  for (let childId of offline) {
+    startOfflineJob(childId)
+  }
 
   return result
 }
