@@ -180,7 +180,7 @@ export default {
         if (requestSession.status == "success") {
           const session = requestSession.data
 
-          const requestBot = await apiStartBot({
+          const requestBot = await apiStartBot(this.currentOrganizationScope, {
             url: this.visioLinkField.value,
             channelId: session.channels[0].id,
             enableLiveTranscripts: this.subInStudio.value,

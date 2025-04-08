@@ -490,9 +490,9 @@ export async function apiDeleteQuickSession(
   return resRequest
 }
 
-export async function apiStartBot(payload, notif) {
+export async function apiStartBot(organizationScope, payload, notif) {
   const startBot = await sendRequest(
-    `${BASE_API}/bots`,
+    `${BASE_API}/organizations/${organizationScope}/bots`,
     { method: "post" },
     payload,
     notif,
@@ -501,18 +501,18 @@ export async function apiStartBot(payload, notif) {
   return startBot
 }
 
-export async function getBotForChannelId(channelId, notif) {
+export async function getBotForChannelId(organizationScope, channelId, notif) {
   return await sendRequest(
-    `${BASE_API}/bots`,
+    `${BASE_API}/organizations/${organizationScope}/bots`,
     { method: "get" },
     { channelId: channelId },
     notif,
   )
 }
 
-export async function apiStopBot(botId, notif) {
+export async function apiStopBot(organizationScope, botId, notif) {
   return await sendRequest(
-    `${BASE_API}/bots/${botId}`,
+    `${BASE_API}/organizations/${organizationScope}/bots/${botId}`,
     { method: "delete" },
     {},
     notif,

@@ -95,7 +95,10 @@ export default {
       if (this.session) {
         this.selectedChannel = this.session.channels[0]
 
-        const botReq = await getBotForChannelId(this.selectedChannel.id)
+        const botReq = await getBotForChannelId(
+          this.currentOrganizationScope,
+          this.selectedChannel.id,
+        )
         if (
           botReq.status == "success" &&
           botReq.data &&
@@ -135,7 +138,7 @@ export default {
     async onSaveBotSession() {
       console.log("todo !")
       this.loading = true
-      await apiStopBot(this.sessionBot.id)
+      await apiStopBot(this.currentOrganizationScope, this.sessionBot.id)
       this.onSaveSession()
     },
     async onSaveSession(trash = false) {
