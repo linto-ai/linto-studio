@@ -20,6 +20,13 @@
 
       <div></div>
     </div>
+    <div class="fixed-notif small-margin-bottom" v-if="!organizationId">
+      <div class="app-notif__message">
+        {{ $t("backoffice.transcriber_profile_detail.warning_global.line_1") }}
+        <br />
+        {{ $t("backoffice.transcriber_profile_detail.warning_global.line_2") }}
+      </div>
+    </div>
     <TranscriberProfileEditorPlain
       v-model="l_transcriberProfile"
       class="flex1"
@@ -42,6 +49,10 @@ export default {
       default: () => {
         return TRANSCRIBER_PROFILES_TEMPLATES.linto
       },
+    },
+    organizationId: {
+      type: String,
+      required: false,
     },
   },
   data() {

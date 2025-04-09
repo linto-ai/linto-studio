@@ -12,6 +12,8 @@
     <UpdateOrganizationUsers
       :currentOrganization="organization"
       :userInfo="userInfo" />
+
+    <UpdateOrganizationTranscriberProfiles :organizationId="organizationId" />
     <section>
       <h2 class="medium-margin-bottom">Danger zone</h2>
       <button @click="openDeleteModal" class="btn red-border">
@@ -40,6 +42,7 @@ import ModalDeleteOrganization from "@/components/ModalDeleteOrganization.vue"
 import UpdateOrganizationPermissions from "@/components/UpdateOrganizationPermissions.vue"
 import UpdateOrganizationMatchingUsers from "@/components/UpdateOrganizationMatchingUsers.vue"
 import OrganizationStats from "@/components/OrganizationStats.vue"
+import UpdateOrganizationTranscriberProfiles from "@/components/UpdateOrganizationTranscriberProfiles.vue"
 export default {
   mixins: [platformRoleMixin],
   props: {
@@ -88,6 +91,7 @@ export default {
     UpdateOrganizationForm,
     UpdateOrganizationUsers,
     UpdateOrganizationPermissions,
+    UpdateOrganizationTranscriberProfiles,
     UpdateOrganizationMatchingUsers,
     ModalDeleteOrganization,
     OrganizationStats,

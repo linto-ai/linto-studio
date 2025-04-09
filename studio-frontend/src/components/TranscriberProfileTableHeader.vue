@@ -20,12 +20,12 @@
         :label="$t('session.profile_selector.labels.languages')"
         :sortListDirection="sortListDirection"
         :sortListKey="sortListKey" />
-      <ArrayHeader
+      <!-- <ArrayHeader
         @list_sort_by="sortBy"
         eventLabel="organizationId"
         :label="$t('session.profile_selector.labels.organization')"
         :sortListDirection="sortListDirection"
-        :sortListKey="sortListKey" />
+        :sortListKey="sortListKey" /> -->
       <th class="no-size"></th>
     </tr>
   </thead>

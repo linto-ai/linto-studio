@@ -61,7 +61,11 @@
       "notif_delete_success": "Transcriber profile successfully deleted",
       "notif_delete_error": "An error occured while deleting the profile",
       "type_label": "Profile type",
-      "quick_meeting_label": "Enabled for quick meetings"
+      "quick_meeting_label": "Enabled for quick meetings",
+      "warning_global": {
+        "line_1": "This profile will be visible in all organizations.",
+        "line_2": "To manage an organization's transcription profiles, go to the \"Organizations\" tab in the navigation bar."
+      }
     },
     "transcriber_profile_list": {
       "title": "Transcriber Profiles",
@@ -69,7 +73,11 @@
       "remove_transcriber_profile_button": "Delete a transcriber profile | Delete {count} transcriber profiles",
       "bulk_remove_loading_notification": "Deletion of profile {count} of {total}.",
       "bulk_remove_success_notification": "Profiles successfully deleted",
-      "bulk_remove_error_notification": "An error occurred while deleting profiles"
+      "bulk_remove_error_notification": "An error occurred while deleting profiles",
+      "warning_global": {
+        "line_1": "Listed transcriber profiles are enabled for all organisations.",
+        "line_2": "To manage an organization's transcription profiles, go to the \"Organizations\" tab in the navigation bar."
+      }
     }
   },
   "breadcrumb": {
@@ -734,6 +742,10 @@
     "organization_stats": {
       "title": "Organisation statistics",
       "medias": "Medias"
+    },
+    "transcriber_profiles": {
+      "title": "Transcriber profiles",
+      "no_profiles": "No transcriber profiles link to this organisation"
     },
     "update": {
       "title": "organisation : {name}"

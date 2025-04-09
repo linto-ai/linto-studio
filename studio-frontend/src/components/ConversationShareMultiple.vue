@@ -145,10 +145,6 @@
               :readOnly="!canUpdateRights(slotProps.user)"
               :isOwner="false" />
           </UserList>
-
-          <!-- <div class="fixed-notif">
-            <div class="app-notif__message">hey ho</div>
-          </div> -->
         </div>
       </div>
     </ContextMenu>
@@ -290,10 +286,6 @@
               :readOnly="!canUpdateRights(slotProps.user)"
               :isOwner="false" />
           </UserList>
-
-          <!-- <div class="fixed-notif">
-            <div class="app-notif__message">hey ho</div>
-          </div> -->
         </div>
       </div>
     </div>

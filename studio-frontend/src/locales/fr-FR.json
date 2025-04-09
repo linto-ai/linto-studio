@@ -48,8 +48,8 @@
     "organisation_list": {
       "title": "Organisations",
       "add_organisation_button": "Ajouter une organisation",
-      "personal_organizations_shown": "organizations personnels affichées",
-      "personal_organizations_hidden": "organizations personnels cachées",
+      "personal_organizations_shown": "organisations personnelles affichées",
+      "personal_organizations_hidden": "organisations personnelles cachées",
       "remove_organisation_button": "Supprimer l'organisation | Supprimer les {count} organisations"
     },
     "transcriber_profile_detail": {
@@ -61,7 +61,11 @@
       "notif_delete_success": "Le profile a été supprimé",
       "notif_delete_error": "Une erreur est survenue lors de la suppression du profile",
       "type_label": "Type de profil",
-      "quick_meeting_label": "Activé pour les quick meetings"
+      "quick_meeting_label": "Activé pour les quick meetings",
+      "warning_global": {
+        "line_1": "Ce profile sera visible dans toutes les organisations.",
+        "line_2": "Pour gérer les profiles de transcription d'une organisation, allez dans l'onglet \"Organisations\" de la barre de navigation."
+      }
     },
     "transcriber_profile_list": {
       "title": "Profiles de transcription",
@@ -69,7 +73,11 @@
       "remove_transcriber_profile_button": "Supprimer le profile | Supprimer les {count} profiles",
       "bulk_remove_loading_notification": "Suppresion du profile {count} sur {total}.",
       "bulk_remove_success_notification": "Les profiles ont été supprimés avec succès",
-      "bulk_remove_error_notification": "Une erreur est survenue lors de la suppression des profiles"
+      "bulk_remove_error_notification": "Une erreur est survenue lors de la suppression des profiles",
+      "warning_global": {
+        "line_1": "Ces profils sont visibles dans toutes les organisations.",
+        "line_2": "Pour gérer les profils de transcription d'une organisation, allez dans l'onglet \"Organisations\" de la barre de navigation."
+      }
     }
   },
   "breadcrumb": {
@@ -734,6 +742,10 @@
     "organization_stats": {
       "title": "Statistiques de l'organisation",
       "medias": "Médias"
+    },
+    "transcriber_profiles": {
+      "title": "Profils de transcription",
+      "no_profiles": "Aucun profils de transcription liés à cette organisation"
     },
     "update": {
       "title": "Organisation : {name}"

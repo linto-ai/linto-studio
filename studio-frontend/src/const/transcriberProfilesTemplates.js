@@ -13,7 +13,6 @@ const TRANSCRIBER_PROFILES_TEMPLATES = {
       availableTranslations: [],
       hasDiarization: false,
     },
-    organizationId: null,
     quickMeeting: true,
   },
   microsoft: {
@@ -77,7 +76,6 @@ const TRANSCRIBER_PROFILES_TEMPLATES = {
       ],
       hasDiarization: true,
     },
-    organizationId: null,
     quickMeeting: true,
   },
 }
