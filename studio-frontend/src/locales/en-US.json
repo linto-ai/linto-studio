@@ -377,7 +377,7 @@
       "file": "File",
       "microphone": "Microphone",
       "url": "Import URL",
-      "quick_meeting": "Live record",
+      "quick_meeting": "Live transcript",
       "coming_soon": "Coming soon",
       "session": "Session",
       "visio": "Videoconference"
@@ -1035,7 +1035,8 @@
       "sound_detector_value_ok": "Your microphone works",
       "sound_detector_value_wait": "Waiting sound from microphone...",
       "start_meeting": "Start the meeting",
-      "back": "Back"
+      "back": "Back",
+      "bypass": "Continue despite muted microphone"
     },
     "restore": {
       "title": "A quick meeting is already in progress",

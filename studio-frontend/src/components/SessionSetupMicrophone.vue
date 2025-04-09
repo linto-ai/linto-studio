@@ -82,6 +82,11 @@
         @click="trashSession">
         <span class="label">{{ $t("modal.cancel") }}</span>
       </button>
+      <button class="secondary" v-if="!microphoneWorked">
+        <span class="label">{{
+          $t("quick_session.setup_microphone.bypass")
+        }}</span>
+      </button>
       <button
         class="btn green"
         type="submit"

@@ -377,7 +377,7 @@
       "file": "Fichier",
       "microphone": "Microphone",
       "url": "Médias depuis internet",
-      "quick_meeting": "Enregistrement en direct",
+      "quick_meeting": "Transcription en direct",
       "visio": "Visioconférence",
       "session": "Session",
       "coming_soon": "Bientôt disponible"
@@ -1038,7 +1038,8 @@
       "sound_detector_value_ok": "Votre microphone fonctionne",
       "sound_detector_value_wait": "En attente de son du microphone...",
       "start_meeting": "Démarrer la réunion",
-      "back": "Retour"
+      "back": "Retour",
+      "bypass": "Continuer malgré le microphone muet"
     },
     "restore": {
       "title": "Un Quick meeting est déjà en cours",

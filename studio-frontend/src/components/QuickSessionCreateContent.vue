@@ -108,7 +108,7 @@ export default {
         value: {
           keepAudio: true,
           diarization: false,
-          subInStudio: false,
+          subInStudio: true,
           offlineTranscription: false,
           selectedProfile: this.transcriberProfiles?.[0] ?? null,
           transcriptionService:
