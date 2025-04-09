@@ -42,6 +42,7 @@ async function offline(conversation, isConversation = true) {
       let file_data = await storeFile(
         conversation.metadata.audio,
         "audio_session",
+        conversation.type.from_session_id,
       )
       conversation = await addFileMetadataToConversation(
         conversation,

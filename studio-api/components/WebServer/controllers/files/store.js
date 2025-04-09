@@ -14,9 +14,10 @@ ffmpeg -i in.whatever -vn -c:a aac -ar 16000 -ac 1 -b:a 64k out.m4a
 ffmpeg -i in.whatever -vn -c:a libfdk_aac -ar 16000 -ac 1 -b:a 64k out.m4a (best version, requires specific build for ffmpeg)
 */
 
-async function storeFile(files, type = "audio") {
+async function storeFile(files, type = "audio", name = undefined) {
   try {
-    const fileName = uuidv4()
+    let fileName = uuidv4()
+    if (name !== undefined) fileName = name
 
     if (type === "picture") {
       const fileExtension = path.extname(files.name)

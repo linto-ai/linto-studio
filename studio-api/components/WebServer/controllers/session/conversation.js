@@ -55,13 +55,16 @@ function initConversationMultiChannel(
   }
 }
 
-function generateAudioMetadata(audioId, format = "mp3") {
+function generateAudioMetadata(audioId, format = "mp3", folder = "session") {
+  if (folder === "session") folder = process.env.VOLUME_AUDIO_SESSION_PATH
+  else folder = process.env.VOLUME_AUDIO_PATH
+
   if (format === "wav") {
     return {
       filename: `${audioId}.wav`,
       duration: 0, // Duration generated when conversation is fetched
       mimetype: "audio/wav",
-      filepath: `${process.env.VOLUME_AUDIO_SESSION_PATH}/${audioId}.wav`,
+      filepath: `${folder}/${audioId}.wav`,
     }
   }
   // Default to mp3
@@ -69,7 +72,7 @@ function generateAudioMetadata(audioId, format = "mp3") {
     filename: `${audioId}.mp3`,
     duration: 0, // Duration generated when conversation is fetched
     mimetype: "audio/mpeg",
-    filepath: `${process.env.VOLUME_AUDIO_SESSION_PATH}/${audioId}.mp3`,
+    filepath: `${folder}/${audioId}.mp3`,
   }
 }
 
@@ -115,8 +118,15 @@ async function initCaptionsForConversation(sessionData, name) {
         captions.push(tlCaption)
       }
 
-      if (channel.keepAudio)
+      if (channel.compressAudio && channel.keepAudio)
         caption.metadata.audio = generateAudioMetadata(audioId, audioFormat)
+      if (!channel.compressAudio && channel.keepAudio) {
+        caption.metadata.audio = generateAudioMetadata(
+          session.id,
+          "mp3", //we force mp3, it's encoded in studio-api
+          "audio",
+        )
+      }
 
       captions.push(caption)
     }
@@ -330,7 +340,7 @@ async function storeMultiChannelConversation(
   conversationMemory,
 ) {
   const main_conversation = initConversationMultiChannel(session, name)
-  const offline = []
+  const offlineList = []
   for (let caption of captions) {
     if (caption.type.mode === TYPES.TRANSLATION) continue
     let caption_result = await model.conversations.create(caption)
@@ -347,7 +357,7 @@ async function storeMultiChannelConversation(
     })
 
     if (caption.jobs.transcription.state === "waiting") {
-      offline.push(caption_result.insertedId.toString())
+      offlineList.push(caption_result.insertedId.toString())
     }
   }
 
@@ -362,7 +372,7 @@ async function storeMultiChannelConversation(
     result.insertedId.toString(),
   )
 
-  for (let childId of offline) {
+  for (let childId of offlineList) {
     startOfflineJob(childId)
   }
 
