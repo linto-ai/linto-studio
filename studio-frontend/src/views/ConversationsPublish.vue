@@ -90,6 +90,8 @@
 </template>
 <script>
 import moment from "moment"
+import { jsPDF } from "jspdf"
+
 import { conversationMixin } from "../mixins/conversation.js"
 import {
   apiGetJsonFileFromConversation,
@@ -384,21 +386,49 @@ export default {
       }
       this.loadingDownload = false
     },
+    exportPdfFromEditor(element, title) {
+      const doc = new jsPDF("p", "pt", "letter")
+      doc.html(element, {
+        callback: function (doc) {
+          doc.save(title)
+        },
+        margin: [72, 72, 72, 72],
+        autoPaging: "text",
+        width: 600,
+        windowWidth: 750,
+        html2canvas: {
+          allowTaint: true,
+          dpi: 600,
+          letterRendering: true,
+          logging: false,
+          scale: 0.625,
+        },
+      })
+    },
     async exportPdf() {
       this.loadingDownload = true
-      let req = await apiGetGenericFileFromConversation(
-        this.conversationId,
-        this.selectedRoute || this.activeTab,
-        this.selectedFlavor,
-        {
-          preview: true,
-          title: this.label_format,
-        },
-      )
 
-      if (req?.status === "success") {
-        this.exportBlobFile(req.data, ".pdf")
+      if (document.getElementById("markdown-editor-container")) {
+        this.exportPdfFromEditor(
+          document.getElementById("markdown-editor-container"),
+          this.exportFileTitle,
+        )
+      } else {
+        let req = await apiGetGenericFileFromConversation(
+          this.conversationId,
+          this.selectedRoute || this.activeTab,
+          this.selectedFlavor,
+          {
+            preview: true,
+            title: this.label_format,
+          },
+        )
+
+        if (req?.status === "success") {
+          this.exportBlobFile(req.data, ".pdf")
+        }
       }
+
       this.loadingDownload = false
     },
     exportBlobFile(blob, ext) {

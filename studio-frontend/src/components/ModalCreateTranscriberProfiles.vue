@@ -7,6 +7,7 @@
     <div style="height: 100vh" class="flex col">
       <TranscriberProfileEditor
         class="flex1"
+        :organizationId="organizationId"
         v-bind:transcriberProfile.sync="transcriberProfile" />
     </div>
   </ModalNew>
@@ -19,7 +20,12 @@ import { apiCreateTranscriberProfile } from "@/api/session.js"
 import { bus } from "@/main.js"
 
 export default {
-  props: {},
+  props: {
+    organizationId: {
+      type: String,
+      required: false,
+    },
+  },
   data() {
     return {
       state: "idle",
@@ -30,7 +36,10 @@ export default {
   methods: {
     async createTranscriberProfile(event) {
       this.state = "loading"
-      const res = await apiCreateTranscriberProfile(this.transcriberProfile)
+      const res = await apiCreateTranscriberProfile({
+        ...this.transcriberProfile,
+        organizationId: this.organizationId,
+      })
       if (res.status === "success") {
         this.$emit("on-confirm", res)
       } else {

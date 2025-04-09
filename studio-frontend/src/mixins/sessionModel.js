@@ -77,7 +77,8 @@ export const sessionModelMixin = {
     },
     publicLink() {
       const baseUrl = window.location.origin
-      return `${baseUrl}/interface/${this.sessionOrganizationId}/sessions/${this.id}`
+      const name = this?.sessionAliases?.[0]?.name ?? this.id
+      return `${baseUrl}/interface/${this.sessionOrganizationId}/sessions/${name}`
     },
     channels() {
       return this?.session?.channels ?? []

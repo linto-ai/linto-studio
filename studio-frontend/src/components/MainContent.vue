@@ -41,7 +41,7 @@
 <script>
 import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
-import { getCookie } from "@/tools/getCookie"
+import isAuthenticated from "@/tools/isAuthenticated.js"
 
 import BurgerMenu from "@/components-mobile/BurgerMenu.vue"
 import OrganizationSidebar from "@/components/OrganizationSidebar.vue"
@@ -89,7 +89,7 @@ export default {
   },
   computed: {
     isAuthenticated() {
-      return getCookie("authToken") !== null
+      return isAuthenticated()
     },
   },
   mounted() {},

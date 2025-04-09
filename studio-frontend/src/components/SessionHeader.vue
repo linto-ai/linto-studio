@@ -42,7 +42,7 @@
 </template>
 <script>
 import { bus } from "@/main.js"
-import { getCookie } from "@/tools/getCookie"
+import isAuthenticated from "@/tools/isAuthenticated.js"
 
 import SessionStatus from "@/components/SessionStatus.vue"
 
@@ -72,7 +72,7 @@ export default {
   methods: {},
   computed: {
     isAuthenticated() {
-      return getCookie("authToken") !== null
+      return isAuthenticated()
     },
   },
   components: {

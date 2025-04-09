@@ -10,7 +10,7 @@
         selectedProfiles.length,
       )
     ">
-    <section>
+    <section class="flex1 flex col" style="overflow: auto">
       <h3>{{ $t("session.profile_selector.title") }}</h3>
       <TranscriberProfileSelector
         v-model="selectedProfiles"

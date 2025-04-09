@@ -49,7 +49,8 @@
       "title": "Organisations",
       "add_organisation_button": "Add an organisation",
       "personal_organizations_shown": "Personal organisations shown",
-      "personal_organizations_hidden": "Personal organisations hidden"
+      "personal_organizations_hidden": "Personal organisations hidden",
+      "remove_organisation_button": "Delete an organisation | Delete {count} organisations"
     },
     "transcriber_profile_detail": {
       "save_button": "Save Transcriber Profile",
@@ -60,7 +61,11 @@
       "notif_delete_success": "Transcriber profile successfully deleted",
       "notif_delete_error": "An error occured while deleting the profile",
       "type_label": "Profile type",
-      "quick_meeting_label": "Enabled for quick meetings"
+      "quick_meeting_label": "Enabled for quick meetings",
+      "warning_global": {
+        "line_1": "This profile will be visible in all organizations.",
+        "line_2": "To manage an organization's transcription profiles, go to the \"Organizations\" tab in the navigation bar."
+      }
     },
     "transcriber_profile_list": {
       "title": "Transcriber Profiles",
@@ -68,7 +73,11 @@
       "remove_transcriber_profile_button": "Delete a transcriber profile | Delete {count} transcriber profiles",
       "bulk_remove_loading_notification": "Deletion of profile {count} of {total}.",
       "bulk_remove_success_notification": "Profiles successfully deleted",
-      "bulk_remove_error_notification": "An error occurred while deleting profiles"
+      "bulk_remove_error_notification": "An error occurred while deleting profiles",
+      "warning_global": {
+        "line_1": "Listed transcriber profiles are enabled for all organisations.",
+        "line_2": "To manage an organization's transcription profiles, go to the \"Organizations\" tab in the navigation bar."
+      }
     }
   },
   "breadcrumb": {
@@ -598,7 +607,8 @@
   },
   "modal": {
     "cancel": "Cancel",
-    "close_title": "Close modal"
+    "close_title": "Close modal",
+    "delete": "Delete"
   },
   "modal_create_organization": {
     "title": "Create new organisation",
@@ -615,6 +625,14 @@
     "content": "Are you sure you want to delete this user ? | Are you sure you want to delete {count} users ?",
     "action_btn": "Confirm deletion",
     "error": "An error occurred while deleting the user | An error occurred while deleting {count} users"
+  },
+  "modal_delete_multiple_organizations": {
+    "title": "Delete organisation | Delete {count} organisations",
+    "content": "Are you sure you want to delete this organisation ? | Are you sure you want to delete {count} organisations ?",
+    "action_btn": "Confirm deletion",
+    "error": "An error occurred while deleting the organisation | An error occurred while deleting {count} organisations",
+    "loading_notification": "Deleting organisation {count} of {total}.",
+    "success_notification": "Organisations successfully deleted"
   },
   "navigation": {
     "account": {
@@ -726,6 +744,10 @@
     "organization_stats": {
       "title": "Organisation statistics",
       "medias": "Medias"
+    },
+    "transcriber_profiles": {
+      "title": "Transcriber profiles",
+      "no_profiles": "No transcriber profiles link to this organisation"
     },
     "update": {
       "title": "organisation : {name}"
@@ -943,6 +965,7 @@
       "copy_link_button": "Copy link",
       "copy_link_button_done": "Link copied",
       "end_time_label": "End time",
+      "edit_alias_button": "Manage the aliase",
       "global_informations_title": "General information",
       "time_informations_title": "Start and stop settings",
       "isPublic_label": "Allow anonymous access to the session",
@@ -955,6 +978,7 @@
         "content": "An audio stream is connected. Are you sure you want to delete the session? The content will be saved in your media library.",
         "title": "Confirm session deletion"
       },
+
       "metadata": {
         "title": "Metadatas",
         "key_label": "Key",
@@ -963,6 +987,17 @@
         "button_edition": "Set metadatas",
         "confirm_button": "Apply",
         "no_metadata": "No metadata"
+      },
+      "modal_edit_session_alias": {
+        "title": "Manage the aliase",
+        "name_label": "Alias name",
+        "link_label": "Final link",
+        "confirm_button": "Apply",
+        "success_message": "The alias has been updated",
+        "error_message": "The alias could not be updated",
+        "name_already_exists": "An alias with this name already exists",
+        "delete_success_message": "The alias has been deleted",
+        "delete_error_message": "The alias could not be deleted"
       },
       "title": "Session settings",
       "visibility_private_label": "Private",

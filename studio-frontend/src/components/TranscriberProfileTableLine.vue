@@ -15,9 +15,9 @@
     <td>
       <router-link :to="to">{{ languages }}</router-link>
     </td>
-    <td>
+    <!-- <td>
       {{ transcriberOrganizationId || "–" }}
-    </td>
+    </td> -->
     <td>
       <button @click="editProfile">
         <span class="label">Edit</span>

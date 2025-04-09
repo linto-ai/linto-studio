@@ -17,6 +17,13 @@
             selectedProfiles.length,
           )
         "></HeaderTable>
+      <div class="fixed-notif small-margin-bottom">
+        <div class="app-notif__message">
+          {{ $t("backoffice.transcriber_profile_list.warning_global.line_1") }}
+          <br />
+          {{ $t("backoffice.transcriber_profile_list.warning_global.line_2") }}
+        </div>
+      </div>
     </template>
 
     <div class="backoffice-listing-container">
@@ -71,7 +78,7 @@ export default {
     async fetchTranscriberProfiles() {
       this.loading = true
       const res = await apiGetTranscriberProfiles()
-      this.transcriberProfiles = res
+      this.transcriberProfiles = res.filter((t) => !t.organizationId)
       this.loading = false
     },
     showModalCreateTranscriberProfile() {
@@ -141,7 +148,6 @@ export default {
         this.sortListKey,
         this.sortListDirection,
       )
-      console.log("res", res)
       return res
     },
   },

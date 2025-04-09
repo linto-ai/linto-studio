@@ -44,6 +44,7 @@
 import { bus } from "./main.js"
 import { getEnv } from "@/tools/getEnv"
 import { getCookie } from "./tools/getCookie"
+import isAuthenticated from "@/tools/isAuthenticated.js"
 
 import ErrorNotResponsive from "@/components/ErrorNotResponsive.vue"
 import ErrorPage from "@/components/ErrorPage.vue"
@@ -53,7 +54,7 @@ import ErrorView from "@/views/Error.vue"
 import NoOrganizationComponent from "@/views/NoOrganization.vue"
 
 export default {
-  data() {    
+  data() {
     return {
       appMounted: false,
       orgasLoaded: false,
@@ -190,7 +191,7 @@ export default {
       }
     },
     isAuthenticated() {
-      return getCookie("authToken") !== null
+      return isAuthenticated()
     },
     async setOrganizationScope(organizationId, redirect = true) {
       this.$options.filters.setCookie("cm_orga_scope", organizationId, 7)

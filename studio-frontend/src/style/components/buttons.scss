@@ -28,6 +28,13 @@ button,
   }
 }
 
+.flex:not(.col) {
+  & > button,
+  & > .btn {
+    align-self: center;
+  }
+}
+
 .btn.placeholder {
   cursor: default !important;
   pointer-events: none !important;

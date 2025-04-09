@@ -1,3 +1,10 @@
+.table-grid-container {
+  background-color: var(--background-primary);
+  border: var(--border-block);
+  margin: 0;
+  border-radius: 4px;
+}
+
 table.table-grid {
   display: grid;
   grid-template-columns: auto 1fr 1fr 1fr 1fr auto; // need to be overwritten in the component depending on the number of columns
