@@ -893,6 +893,10 @@
       "display_subtitles_label": "Display subtitles",
       "end_time_not_defined": "Not defined",
       "font_size_label": "Font size",
+      "live_transcript_disabled": {
+        "title": "Live transcription is disabled",
+        "description": "The audio stream is recorded and will be transcribed at the end of the session."
+      },
       "no_transcription": "Nothing has been transcribed yet for this channel",
       "n_turns_selected": "0 turn selected | 1 turn selected | {count} turns selected",
       "copy_turns_text": "Copy content",

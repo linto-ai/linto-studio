@@ -8,7 +8,7 @@
       v-model="selectedChannel"
       id="channel-selector"
       :aria-label="$t('session.live_page.channel_selector.label')"
-      :valueKey="(c) => c.transcriberProfileId"
+      :valueKey="(c) => c.id"
       :options="channelsList" />
   </div>
 </template>
@@ -29,6 +29,7 @@ export default {
     },
   },
   data() {
+    console.log("SessionChannelsSelector", this.channels)
     return {}
   },
   computed: {

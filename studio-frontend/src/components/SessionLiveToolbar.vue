@@ -1,10 +1,12 @@
 <template>
   <div class="flex col medium-padding gap-medium">
     <SessionChannelsSelector
+      v-if="channels.length > 1"
       :channels="channels"
       v-model="p_selectedChannel"></SessionChannelsSelector>
 
     <SessionTranslationSelection
+      v-if="hasTranslations"
       :qualifiedForCrossSubtitles="qualifiedForCrossSubtitles"
       :selectedChannel="selectedChannel"
       v-model="p_selectedTranslation"></SessionTranslationSelection>
@@ -93,6 +95,11 @@ export default {
   },
   mounted() {},
   methods: {},
+  computed: {
+    hasTranslations() {
+      return this.selectedChannel?.translations?.length > 0
+    },
+  },
   watch: {
     selectedTranslation(value) {
       this.p_selectedTranslation = value
