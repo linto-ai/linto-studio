@@ -101,7 +101,6 @@ async function cleanConversation(conversation, processing_job) {
     transcription: {
       job_id: processing_job.jobid,
       state: "pending",
-      steps: {},
       endpoint: conversation.metadata.transcription.endpoint,
     },
     keyword: {},
