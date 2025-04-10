@@ -104,7 +104,11 @@ async function getConversation(req, res, next) {
     )
     if (conversation.length !== 1) throw new ConversationNotFound()
 
-    if (conversation[0].type.mode === "canonical")
+    if (
+      conversation[0].type.mode === "canonical" ||
+      (conversation[0].type.mode === "child" &&
+        conversation[0].jobs?.transcription?.job_id !== undefined)
+    )
       await fetchJob(req.params.conversationId, conversation[0].jobs)
 
     if (req?.query?.key && typeof req.query.key === "string") {

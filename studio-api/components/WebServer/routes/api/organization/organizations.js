@@ -28,6 +28,10 @@ const { transcribeReq } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/organizations/uploader/transcriptor.js`,
 )
 
+const { offlineReq } = require(
+  `${process.cwd()}/components/WebServer/routecontrollers/organizations/uploader/offline.js`,
+)
+
 const { importConversation } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/organizations/uploader/import.js`,
 )
@@ -87,6 +91,14 @@ module.exports = (webserver) => {
       requireOrganizationUploaderAccess: true,
       orgaPermissionAccess: PERMISSIONS.UPLOAD,
       controller: importConversation,
+    },
+    {
+      path: "/:organizationId/conversations/:conversationId/regenerate",
+      method: "get",
+      requireAuth: true,
+      requireOrganizationUploaderAccess: true,
+      orgaPermissionAccess: PERMISSIONS.UPLOAD,
+      controller: offlineReq,
     },
 
     /* Maintainer right*/

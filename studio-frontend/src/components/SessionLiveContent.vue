@@ -1,7 +1,9 @@
 <template>
   <div class="session-content flex flex1 col" @scroll="handleScroll">
     <div class="medium-margin">
-      <h1 class="center-text session-content__title">{{ title }}</h1>
+      <h1 class="center-text session-content__title" v-if="!noTitle">
+        {{ title }}
+      </h1>
     </div>
     <SessionChannel
       v-if="isConnected"
@@ -67,6 +69,11 @@ export default {
       required: false,
     },
     showSubtitlesFullscreen: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    noTitle: {
       type: Boolean,
       required: false,
       default: false,

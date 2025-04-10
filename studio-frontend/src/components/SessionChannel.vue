@@ -1,6 +1,7 @@
 <template>
   <Loading v-if="loading" />
   <div class="flex col flex1 reset-overflows" v-else>
+    <!-- copy bar-->
     <div
       class="session-content__action-bar flex align-center gap-medium"
       v-if="this.selectedTurns.length > 0">
@@ -44,8 +45,17 @@
       </button>
     </div>
 
+    <!-- content -->
     <div
-      v-if="hasText"
+      v-if="!liveTranscript"
+      class="flex align-center justify-center flex1 col center-text">
+      <h2>{{ $t("session.detail_page.live_transcript_disabled.title") }}</h2>
+      <p>
+        {{ $t("session.detail_page.live_transcript_disabled.description") }}
+      </p>
+    </div>
+    <div
+      v-else-if="hasText"
       class="flex col flex1 session-content__turns reset-overflows"
       :class="{ has_subtitles: displaySubtitles }">
       <SessionChannelTurn
@@ -218,6 +228,7 @@ export default {
     //     uuid: uuidv4(),
     //   }
     // })
+    console.log(this.channel)
     this.loading = false
     this.init()
 
@@ -441,7 +452,11 @@ export default {
       const text = previousSelectedTurns
         .concat(selectedTurns)
         .map((turn) =>
-          getTextTurnWithTranslation(turn, this.selectedTranslations, this.channelLanguages),
+          getTextTurnWithTranslation(
+            turn,
+            this.selectedTranslations,
+            this.channelLanguages,
+          ),
         )
         .join("\n\n")
 
