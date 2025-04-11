@@ -163,11 +163,7 @@
             }}</span>
           </button> -->
           </div>
-          <!-- it's not a vueJS component, it's a webcomponent. Code is imported in index.html -->
-
-          <qr-code
-            :contents="publicLink"
-            class="session-settings-qr-code"></qr-code>
+          <Qrcode :value="publicLink" class="session-settings-qr-code" />
         </div>
       </div>
 
@@ -241,6 +237,7 @@ import SessionStatus from "@/components/SessionStatus.vue"
 import MetadataList from "@/components/MetadataList.vue"
 import SessionHeader from "@/components/SessionHeader.vue"
 import ModalEditSessionAlias from "@/components/ModalEditSessionAlias.vue"
+import Qrcode from "@/components/Qrcode.vue"
 
 export default {
   mixins: [sessionMixin, formsMixin],
@@ -468,6 +465,7 @@ export default {
     MetadataList,
     SessionHeader,
     ModalEditSessionAlias,
+    Qrcode,
   },
 }
 </script>

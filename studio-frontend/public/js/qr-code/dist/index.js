@@ -1,1 +1,0 @@
-// QrCode: CommonJS Main
