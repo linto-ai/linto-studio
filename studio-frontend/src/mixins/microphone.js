@@ -61,16 +61,15 @@ export const microphoneMixin = {
     async connectToMicrophone(deviceId) {
       const deviceIdConfig =
         deviceId && deviceId !== "default" ? { exact: deviceId } : null
-
       await this.mic.stop()
-      await this.vad.stop()
+
       await this.downSampler.stop()
       await this.mic.start(deviceIdConfig, {
         echoCancellation: false,
         noiseSuppression: false,
         autoGainControl: true,
       })
-      //
+      await this.vad.stop()
       this.vad.start(this.mic)
       this.microphoneWorked = false
     },

@@ -132,7 +132,7 @@ function transcriptionToConversation(transcript, conversation) {
 }
 
 // Add file metadata to the conversation object
-async function addFileMetadataToConversation(conversation, file) {
+async function addFileMetadataToConversation(conversation, file, endpoint) {
   const file_metadata = await mm.parseStream(
     fs.createReadStream(file.storageFilePath),
     { mimeType: "audio/mpeg" },
@@ -147,6 +147,7 @@ async function addFileMetadataToConversation(conversation, file) {
   }
 
   conversation.metadata.file = { ...file_metadata }
+  conversation.metadata.transcription.endpoint = endpoint
   return conversation
 }
 

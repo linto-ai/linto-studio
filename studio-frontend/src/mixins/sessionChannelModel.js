@@ -33,5 +33,8 @@ export const sessionChannelModelMixin = {
     hasDiarization() {
       return !!this?.p_channelObj?.diarization
     },
+    liveTranscript() {
+      return this?.p_channelObj?.enableLiveTranscripts
+    },
   },
 }
