@@ -15,5 +15,8 @@ export const organizationModelMixin = {
     creationDateFormatted() {
       return new Date(this.creationDate).toLocaleDateString()
     },
+    isPersonal() {
+      return this?.organization?.personal ?? false
+    },
   },
 }

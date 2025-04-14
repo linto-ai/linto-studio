@@ -136,6 +136,11 @@ table {
   padding-left: 5px;
 }
 
+button.table-header-button,
+.table-header-button.btn {
+  min-width: auto;
+}
+
 .table-header-button {
   background-color: transparent;
   background-image: none;
