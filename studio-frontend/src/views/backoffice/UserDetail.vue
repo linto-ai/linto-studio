@@ -3,6 +3,7 @@
     <UserSettingsRights :userInfo="user" />
     <UserSettingsPersonal :userInfo="user" isAdminPage />
     <UserSettingsPassword :userInfo="user" isAdminPage />
+    <UserSettingsOrganization :userInfo="user" isAdminPage />
   </MainContentBackoffice>
 </template>
 <script>
@@ -13,6 +14,7 @@ import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import UserSettingsPersonal from "@/components/UserSettingsPersonal.vue"
 import UserSettingsPassword from "@/components/UserSettingsPassword.vue"
 import UserSettingsRights from "@/components/UserSettingsRights.vue"
+import UserSettingsOrganization from "@/components/UserSettingsOrganization.vue"
 export default {
   mixins: [platformRoleMixin],
   props: {},
@@ -46,6 +48,7 @@ export default {
     UserSettingsPersonal,
     UserSettingsPassword,
     UserSettingsRights,
+    UserSettingsOrganization,
   },
 }
 </script>

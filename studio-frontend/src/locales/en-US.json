@@ -1150,6 +1150,9 @@
     },
     "notif_success": "User informations updated",
     "notif_error": "An error occurred while updating user informations",
+    "organizations_section": {
+      "title": "Organisations"
+    },
     "personal_information": "Personal information",
     "picture_label": "Picture",
     "private_label": "Set profile private",

@@ -24,6 +24,16 @@ export async function apiGetOrganizationById(organizationId, notif) {
 //   return getOrganization?.data
 // }
 
+export async function apiGetOrganizationsFromUser(userId, notif) {
+  const getOrganizations = await sendRequest(
+    `${BASE_API}/organizations`,
+    { method: "get" },
+    { impersonateUser: userId },
+    notif,
+  )
+  return getOrganizations
+}
+
 export async function apiGetUserOrganizations(notif) {
   const getUserOrganizations = await sendRequest(
     `${BASE_API}/organizations`,
