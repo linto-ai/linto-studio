@@ -7,6 +7,10 @@
         :checkboxValue="id"></Checkbox>
     </td>
     <td>
+      <span v-if="isPersonal" class="icon apply" />
+      <span v-else class="icon close" />
+    </td>
+    <td>
       <router-link :to="to">{{ creationDateFormatted }}</router-link>
     </td>
     <td>

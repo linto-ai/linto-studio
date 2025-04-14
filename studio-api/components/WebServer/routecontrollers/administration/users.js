@@ -131,9 +131,19 @@ async function updateUser(req, res, next) {
   }
 }
 
+async function listUserOrganization(req, res, next) {
+  try {
+    let organizations = await model.organizations.listSelf(req.params.userId)
+    return res.status(200).send(organizations)
+  } catch (err) {
+    next(err)
+  }
+}
+
 module.exports = {
   createSuperUser,
   listAllUser,
   deleteUser,
   updateUser,
+  listUserOrganization,
 }

@@ -261,5 +261,47 @@
         }
       }
     }
+  },
+  "/api/administration/users/{userId}/organizations/": {
+    "get": {
+      "tags": ["administration"],
+      "summary": "List organizations where the user is part of",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
+          "required": true,
+          "description": "Scope of the user, must be 'backoffice'"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userOrganizations": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/OrganizationUsers"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    }
   }
 }

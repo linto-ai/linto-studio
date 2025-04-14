@@ -3,6 +3,14 @@
     <tr>
       <th class="no-size"></th>
       <ArrayHeader
+        class="no-size"
+        @list_sort_by="sortBy"
+        eventLabel="personal"
+        :sortListKey="sortListKey"
+        :sortListDirection="sortListDirection">
+        <span class="icon profile" />
+      </ArrayHeader>
+      <ArrayHeader
         @list_sort_by="sortBy"
         eventLabel="created"
         :label="$t('orgaTable.header.creation_date')"

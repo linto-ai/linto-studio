@@ -18,6 +18,17 @@ module.exports = {
         },
       },
     )
+    await db.collection(collections_name).updateMany(
+      { "users.1": { $exists: true } }, // Ensures only one user in the array
+      {
+        $set: {
+          personal: false,
+          created: moment().format(),
+          last_update: moment().format(),
+          matchingMail: "",
+        },
+      },
+    )
   },
 
   down: async (db) => {

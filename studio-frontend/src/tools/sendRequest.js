@@ -26,8 +26,8 @@ export async function sendRequest(
         req = await axios.get(url, {
           ...params,
           params: {
-            ...data,
             ...defaultQueryParams,
+            ...data,
             t: Date.now(),
           },
         })
@@ -35,8 +35,8 @@ export async function sendRequest(
         req = await axios.get(url, {
           ...params,
           params: {
-            ...data,
             ...defaultQueryParams,
+            ...data,
             t: Date.now(),
           },
           headers: {

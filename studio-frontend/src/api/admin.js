@@ -120,3 +120,13 @@ export async function apiAdminCreateUser(data) {
 
   return res
 }
+
+export async function apiGetUserOrganizations(userId) {
+  const res = await sendRequest(
+    `${BASE_API}/administration/users/${userId}/organizations`,
+    {
+      method: "get",
+    },
+  )
+  return res
+}
