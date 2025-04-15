@@ -98,10 +98,14 @@ export default {
   watch: {
     selectedTranslations: {
       handler(value) {
+        for (const profile of this.profilesList) {
+          if (profile.id === this.profile.id) {
+            profile.translations = value
+          }
+        }
+        this.emitNewValue(this.selectedProfiles)
+
         this.selectProfile()
-        // it uses shallow copy so profile from parent is updated (it's an optimisation feature instead of emiting update event...)
-        // maybe use https://v2.vuejs.org/v2/guide/components-custom-events.html#sync-Modifier instead ?
-        this.profile.translations = value
       },
       deep: true,
     },
@@ -120,17 +124,7 @@ export default {
         }
       },
       set(value) {
-        if (this.multiple) {
-          const list = value.map((id) =>
-            this.profilesList.find((p) => p.id === id),
-          )
-          this.$emit("input", list)
-        } else {
-          this.$emit(
-            "input",
-            value ? this.profilesList.find((p) => p.id === value) : null,
-          )
-        }
+        this.emitNewValue(value)
       },
     },
     sortListKey() {
@@ -175,6 +169,18 @@ export default {
       } else {
         this.selectedProfiles = this.id_profile
       }
+    },
+    emitNewValue(value) {
+      let res
+      if (this.multiple) {
+        const list = value.map((id) =>
+          this.profilesList.find((p) => p.id === id),
+        )
+        res = list
+      } else {
+        res = value ? this.profilesList.find((p) => p.id === value) : null
+      }
+      this.$emit("input", structuredClone(res))
     },
   },
   components: {
