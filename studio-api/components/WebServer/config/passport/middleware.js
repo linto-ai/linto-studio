@@ -18,6 +18,8 @@ const {
 } = require(`${process.cwd()}/components/WebServer/error/exception/auth`)
 const refreshToken = require("./token/refresh")
 
+const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
+
 require("./strategies/local")
 
 if (process.env.OIDC_TYPE === "linagora") require("./strategies/oidc_linagora")
@@ -84,7 +86,7 @@ module.exports = {
       algorithms: [algorithm],
       getToken: extractToken,
     }),
-    (req, res, next) => {
+    async (req, res, next) => {
       const token = extractToken(req)
       if (!token) throw new MalformedToken()
 
@@ -96,6 +98,16 @@ module.exports = {
           role: tokenData.data.role,
         },
       }
+
+      if (req.query.impersonateUser) {
+        const user = await model.users.getById(tokenData.data.userId, true)
+        // We need to check if the user is a super admin
+        if (user[0].role >= ROLE.SYSTEM_ADMINISTRATOR) {
+          req.payload.data.adminId = tokenData.data.userId
+          req.payload.data.userId = req.query.impersonateUser
+        }
+      }
+
       next()
     },
   ],

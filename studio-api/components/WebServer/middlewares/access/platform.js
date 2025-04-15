@@ -44,8 +44,6 @@ async function checkAccess(req, role) {
     if (userRole && ROLE.hasPlatformRoleAccess(userRole, role)) {
       if (ROLE.ORGANIZATION_INITIATOR === role) {
         return true // No impersonate require for organization initiator
-      } else if (req.query.impersonateUser) {
-        impersonate(req, req.query.impersonateUser)
       } else if (req.query.userScope === "backoffice") {
         await impersonateOwner(req) // Only impersonate if the user has a super role
       } else {
