@@ -39,9 +39,19 @@ export default {
   mounted() {
     const container = this.$refs.fullscreenContainer
 
-    container.requestFullscreen().catch((err) => {
+    try {
+      if (container.requestFullscreen) {
+        container.requestFullscreen().catch((err) => {
+          console.log(err)
+        })
+      } else if (container.webkitRequestFullscreen) {
+          container.webkitRequestFullscreen()
+      } else {
+        console.warn("Fullscreen API is not supported on this browser.")
+      }
+    } catch (err) {
       console.log(err)
-    })
+    }
   },
   methods: {
     close() {
