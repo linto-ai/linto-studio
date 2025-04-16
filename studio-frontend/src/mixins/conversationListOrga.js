@@ -19,7 +19,14 @@ export const conversationListOrgaMixin = {
   },
   methods: {
     conversationIsDeletable(conversation) {
-      const userRight = getUserRightFromConversation(conversation)
+      const userRight = getUserRightFromConversation(
+        conversation,
+        this.userInfo._id,
+      )
+
+      if (conversation.owner == this.userInfo._id) {
+        return true
+      }
 
       if (this.hasDeleteRight(userRight)) {
         return true
@@ -39,14 +46,14 @@ export const conversationListOrgaMixin = {
         const res = await apiDeleteMultipleConversation(
           this.currentOrganizationScope,
           conversationsIds,
-          null
+          null,
         )
         if (res.status == "success") {
           bus.$emit("app_notif", {
             status: "success",
             message: this.$i18n.tc(
               "conversation.delete_success_message",
-              conversationsIds.length
+              conversationsIds.length,
             ),
             timeout: null,
           })
@@ -57,7 +64,7 @@ export const conversationListOrgaMixin = {
             status: "error",
             message: this.$i18n.tc(
               "conversation.delete_error_message",
-              conversationsIds.length
+              conversationsIds.length,
             ),
             timeout: null,
           })
@@ -68,7 +75,7 @@ export const conversationListOrgaMixin = {
           status: "error",
           message: this.$i18n.tc(
             "conversation.delete_error_message",
-            conversationsIds.length
+            conversationsIds.length,
           ),
           timeout: null,
         })
@@ -76,6 +83,7 @@ export const conversationListOrgaMixin = {
         this.loading = false
         this.selectedConversations.clear()
         this.selectedConversationsSize = 0
+        this.selectedConversationsList = []
       }
     },
   },
