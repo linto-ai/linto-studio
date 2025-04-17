@@ -88,6 +88,7 @@ export default {
       this.$options.filters.testPasswordConfirm(
         this.newPasswordConfirm,
         this.newPassword,
+        (key) => this.$t(key),
       )
       if (this.newPassword.valid && this.newPasswordConfirm.valid) {
         await this.updatePassword()

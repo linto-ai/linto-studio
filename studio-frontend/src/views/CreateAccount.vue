@@ -198,7 +198,7 @@ import MainContentPublic from "@/components/MainContentPublic.vue"
 import { testEmail } from "@/tools/fields/testEmail.js"
 import { testName } from "@/tools/fields/testName.js"
 import { testPassword } from "@/tools/fields/testPassword.js"
-
+import { testPasswordConfirm } from "@/tools/fields/testPasswordConfirm.js"
 export default {
   data() {
     return {
@@ -255,6 +255,7 @@ export default {
 
   methods: {
     async handlePersonalForm(event) {
+      // TODO: refactore with forms mixin
       event.preventDefault()
       try {
         this.formError = null
@@ -349,7 +350,7 @@ export default {
       return testPassword(obj, (key) => this.$t(key))
     },
     testPasswordConfirm(obj, password) {
-      return testPasswordConfirm(obj, password)
+      return testPasswordConfirm(obj, password, (key) => this.$t(key))
     },
   },
   components: {

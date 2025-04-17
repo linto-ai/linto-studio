@@ -13,6 +13,7 @@ import { testContent } from "../tools/fields/testContent.js"
 import { testName } from "../tools/fields/testName.js"
 import { testEmail } from "../tools/fields/testEmail.js"
 import { testPassword } from "../tools/fields/testPassword.js"
+import { testPasswordConfirm } from "../tools/fields/testPasswordConfirm.js"
 // Send request
 
 Vue.filter("sendRequest", sendRequest)
@@ -88,20 +89,7 @@ Vue.filter("testContent", testContent)
 Vue.filter("testPassword", testPassword)
 
 // Test confirmation password field
-Vue.filter("testPasswordConfirm", function (obj, password) {
-  obj.valid = false
-  obj.error = null
-  obj.value = obj.value.trim()
-  if (obj.value.length === 0) {
-    obj.error = "This field is required"
-  } else {
-    if (obj.value !== password.value) {
-      obj.error = "Passwords must be the same"
-    } else {
-      obj.valid = true
-    }
-  }
-})
+Vue.filter("testPasswordConfirm", testPasswordConfirm)
 
 // Test email field
 Vue.filter("testEmail", testEmail)

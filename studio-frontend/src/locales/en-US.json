@@ -483,7 +483,9 @@
     "not_responsive": {
       "title": "Your device is not compatible with {app_name}",
       "description": "We are actively working to make {app_name} compatible with mobile devices and tablets."
-    }
+    },
+    "passwordsMustBeTheSame": "Passwords must be the same",
+    "passwordLength": "This field must contain at least 6 characters"
   },
   "explore": {
     "delete_conversation_button": "Delete ",
