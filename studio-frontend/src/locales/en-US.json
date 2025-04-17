@@ -914,6 +914,10 @@
       "stop_force_button": "Force stop and save session to library",
       "stop_session_error_message": "The session could not be stopped",
       "stop_session_success": "The session has been stopped and saved",
+      "subtitle": {
+        "watermark_1": "Transcription by LinTO.ai",
+        "watermark_2": "AI Open Source by"
+      },
       "title_interface_settings": "Interface settings",
       "undefined_lang": "Unknown language",
       "undefined_speaker": "Unknown speaker",

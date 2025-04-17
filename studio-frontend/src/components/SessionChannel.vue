@@ -99,7 +99,6 @@
     <!-- Subtitles -->
     <SessionSubtitle
       v-if="displaySubtitles"
-      class="session-content__subtitle"
       :previousTurns="previousTurns"
       :partialText="partialText"
       :finalText="finalText"
