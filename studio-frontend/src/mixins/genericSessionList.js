@@ -39,7 +39,6 @@ export const genericSessionList = {
       }
 
       for (const updatedSession of value.updated) {
-        console.log("update session", updatedSession)
         const sessionIndex = sessionIndexes[updatedSession.id]
         const currentSession = this.sessionList[sessionIndex]
         this.$set(this.sessionList, sessionIndex, {

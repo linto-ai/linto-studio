@@ -323,7 +323,6 @@ export default {
     },
     async setMetadata(fields, schema) {
       this.showMetadataModal = false
-      console.log("set-metadata", fields, schema, this.metadataModalData)
       apiPostMetadata(
         this.conversationId,
         this.metadataModalData.tag._id,

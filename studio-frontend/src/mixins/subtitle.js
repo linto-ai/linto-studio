@@ -63,7 +63,6 @@ export const subtitleMixin = {
           this.screenAddFromWebsocket(event.data.params)
           break
         case "screen_delete":
-          console.log("screen_delete", event.data.params)
           this.screenDeleteFromWebsocket(event.data.params)
           break
         case "merge_screen":

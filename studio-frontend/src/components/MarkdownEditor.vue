@@ -77,7 +77,6 @@ export default {
           tables: true,
         })
         this.htmlFromMarkdown = converter.makeHtml(newValue)
-        console.log("markdown content changed")
       },
       immediate: true,
     },

@@ -60,7 +60,6 @@ export default {
   },
   methods: {
     handleFocus() {
-      console.log("handleFocus")
       this.searchTextDropdownOpen = true
     },
     closeSearchTextDropdown() {

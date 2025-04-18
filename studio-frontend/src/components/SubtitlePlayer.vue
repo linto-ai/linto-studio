@@ -66,7 +66,6 @@ export default {
     await this.initAudioPlayer()
     bus.$on("refresh_screen", (data) => {
       let region = this.getRegion(data.screenId)
-      console.log(region)
       this.refreshRegion(region, this.formatScreen(data.changes))
     })
     bus.$on("player_set_time", (data) => {
@@ -276,7 +275,6 @@ export default {
       }
     },
     deleteScreen(screenId) {
-      console.log(screenId)
       let region = this.getRegion(screenId)
       this.blocksSettings.delete(screenId)
       region.remove()

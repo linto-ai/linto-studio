@@ -3,6 +3,14 @@
     <tr>
       <th class="no-size"></th>
       <ArrayHeader
+        class="no-size"
+        @list_sort_by="sortBy"
+        eventLabel="organizationId"
+        :sortListKey="sortListKey"
+        :sortListDirection="sortListDirection">
+        <span class="icon work" />
+      </ArrayHeader>
+      <ArrayHeader
         @list_sort_by="sortBy"
         eventLabel="config.name"
         :label="$t('session.profile_selector.labels.name')"

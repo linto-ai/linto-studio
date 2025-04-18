@@ -3,7 +3,6 @@ export default async function bulkRequest(
   requestParams,
   callback,
 ) {
-  console.log("bulkRequest", requestParams)
   for (let i = 0; i < requestParams.length; i++) {
     try {
       let req = await requestFunction.apply(null, requestParams[i])

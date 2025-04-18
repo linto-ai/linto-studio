@@ -74,10 +74,9 @@ export default {
       this.loading = true
       const res = await apiGetTranscriberProfilesByOrganization(
         this.organizationId,
+        true,
       )
-      this.transcriberProfiles = res.filter(
-        (t) => t.organizationId === this.organizationId,
-      )
+      this.transcriberProfiles = res
       this.loading = false
     },
     showModalCreateTranscriberProfile() {

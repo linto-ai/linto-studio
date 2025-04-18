@@ -85,7 +85,7 @@ export default {
       throttleUpdateField: throttleObject.createThrottle(this.updateField, 500),
       throttleKeepFocus: throttleObjectFocus.createThrottle(
         this.keepFocus,
-        15000
+        15000,
       ),
       debugCollaborativeField: customDebug("vue:debug:field"),
       stackLetter: [],
@@ -105,7 +105,7 @@ export default {
         this.setCursorFromWordIndex(
           this.cursorPosition.wordIndex,
           this.cursorPosition.wordCharIndex,
-          this.cursorPosition.lineIndex
+          this.cursorPosition.lineIndex,
         )
       })
     }
@@ -122,11 +122,11 @@ export default {
         this.usersConnected.map((user) => {
           if (user.inputField === this.flag) {
             let userOnField = this.conversationUsers.find(
-              (usr) => usr._id === user.userId
+              (usr) => usr._id === user.userId,
             )
             if (userOnField)
               usersConnectedNames.push(
-                userOnField.firstname + " " + userOnField.lastname
+                userOnField.firstname + " " + userOnField.lastname,
               )
           }
         })
@@ -157,7 +157,7 @@ export default {
         this.setCursorFromWordIndex(
           data.wordIndex,
           data.wordCharIndex,
-          data.lineIndex
+          data.lineIndex,
         )
       }
     },
@@ -290,10 +290,8 @@ export default {
         inputField.target,
         currentCursorPosition,
         initialLineIndex,
-        this.enableMultiLine
+        this.enableMultiLine,
       )
-
-      console.log(lineIndex, cursorPosition)
 
       this.currentValue = formatedText
       this.$emit("contentUpdate", formatedText)
@@ -308,7 +306,7 @@ export default {
           this.debugCollaborativeField(
             "applyChangesFromWorker",
             data.delta,
-            data.value
+            data.value,
           )
           this.toggleCursorPos(data.delta, data.value)
         } else {
@@ -325,7 +323,7 @@ export default {
       this.debugCollaborativeField(
         "new cursor position %n to %n",
         baseIndex,
-        newIndex
+        newIndex,
       )
       this.currentValue = value
       this.$emit("contentUpdate", value)

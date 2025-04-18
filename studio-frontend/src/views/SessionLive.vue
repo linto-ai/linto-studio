@@ -199,7 +199,6 @@ export default {
     startRecordFromMicrophone({ deviceId }) {
       this.showMicrophoneSetup = false
       this.deviceId = deviceId
-      console.log("currentChannelMicrophone", this.selectedChannel)
       this.currentChannelMicrophone = this.selectedChannel
       this.initMicrophone()
       this.setupRecording(this.selectedChannel)
@@ -222,8 +221,18 @@ export default {
       let res = true
       res = res && this.selectedChannel.languages.length == 2
       //res = res && this.selectedChannel.translations.length == 2
-      res = res && !!this.selectedChannel.translations.find((t) => t.split("-")[0] === this.selectedChannel.languages[0].split("-")[0])
-      res = res && !!this.selectedChannel.translations.find((t) => t.split("-")[0] === this.selectedChannel.languages[1].split("-")[0])
+      res =
+        res &&
+        !!this.selectedChannel.translations.find(
+          (t) =>
+            t.split("-")[0] === this.selectedChannel.languages[0].split("-")[0],
+        )
+      res =
+        res &&
+        !!this.selectedChannel.translations.find(
+          (t) =>
+            t.split("-")[0] === this.selectedChannel.languages[1].split("-")[0],
+        )
       return res
     },
   },

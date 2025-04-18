@@ -77,7 +77,9 @@
       "warning_global": {
         "line_1": "Listed transcriber profiles are enabled for all organisations.",
         "line_2": "To manage an organization's transcription profiles, go to the \"Organizations\" tab in the navigation bar."
-      }
+      },
+      "all_profiles_shown": "All profiles are shown",
+      "global_profiles_shown": "Only global profiles are shown"
     }
   },
   "breadcrumb": {

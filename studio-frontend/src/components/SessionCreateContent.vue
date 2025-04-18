@@ -181,10 +181,6 @@ export default {
   data() {
     let defaultMetadata = []
     try {
-      console.log(
-        "VUE_APP_DEFAULT_METADATA",
-        getEnv("VUE_APP_DEFAULT_METADATA"),
-      )
       defaultMetadata = getEnv("VUE_APP_DEFAULT_METADATA")
         .split(",")
         .filter((k) => k)
@@ -277,12 +273,6 @@ export default {
   watch: {
     selectedProfiles() {
       this.channelsError = null
-    },
-    "fieldMetadata.value": {
-      handler(value) {
-        console.log("fieldMetadata.value", value)
-      },
-      deep: true,
     },
     "fieldAppointment.value": {
       handler(value) {

@@ -78,12 +78,15 @@ export async function apiGetTranscriberProfiles(notif) {
 
 export async function apiGetTranscriberProfilesByOrganization(
   organizationId,
+  withoutGlobal = false,
   notif,
 ) {
   const getTranscriberProfiles = await sendRequest(
     `${BASE_API}/organizations/${organizationId}/transcriber_profiles`,
     { method: "get" },
-    {},
+    {
+      organizationId: withoutGlobal ? organizationId : null,
+    },
     notif,
   )
 

@@ -78,7 +78,6 @@ export default {
     async handleInputChange(e) {
       e.stopPropagation()
       let input = document.getElementById("fileInput")
-      console.log("input.files 0", input.files)
       if (input.files.length > 0) {
         if (await this.checkFilesValidity(input.files)) {
           this.$emit("drop", input.files)

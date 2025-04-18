@@ -112,7 +112,6 @@ export default {
   data() {
     const throttleObjectFocus = new Throttle()
     const throttleObjectChange = new Throttle()
-    console.log(this.screen)
     return {
       focused: false,
       cursorPosition: {

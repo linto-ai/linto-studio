@@ -69,7 +69,6 @@ export default {
   async mounted() {},
   methods: {
     close() {
-      console.log("on-cancel")
       this.$emit("on-cancel")
     },
     done() {

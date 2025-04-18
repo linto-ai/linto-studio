@@ -3,7 +3,6 @@ export function testQuickSessionSettings(field, t) {
   field.error = null
   const value = field.value
 
-  console.log(value?.subInStudio, value?.offlineTranscription)
   if (!value?.subInStudio && !value?.offlineTranscription) {
     // need to check one of the two options
     field.error = t("quick_session.creation.live_or_offline_should_be_selected")

@@ -16,8 +16,25 @@
             'backoffice.transcriber_profile_list.remove_transcriber_profile_button',
             selectedProfiles.length,
           )
-        "></HeaderTable>
-      <div class="fixed-notif small-margin-bottom">
+        ">
+        <template v-slot:right-header>
+          <button v-if="showAllProfiles" @click="changeShowAllProfiles">
+            <span class="icon show"></span>
+            <span class="label">
+              {{ $t("backoffice.transcriber_profile_list.all_profiles_shown") }}
+            </span>
+          </button>
+          <button v-else @click="changeShowAllProfiles">
+            <span class="icon hide"></span>
+            <span class="label">
+              {{
+                $t("backoffice.transcriber_profile_list.global_profiles_shown")
+              }}
+            </span>
+          </button>
+        </template>
+      </HeaderTable>
+      <div class="fixed-notif small-margin-bottom" v-if="!showAllProfiles">
         <div class="app-notif__message">
           {{ $t("backoffice.transcriber_profile_list.warning_global.line_1") }}
           <br />
@@ -57,8 +74,10 @@ import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import TranscriberProfileTable from "@/components/TranscriberProfileTable.vue"
 import HeaderTable from "@/components/HeaderTable.vue"
 import ModalCreateTranscriberProfiles from "@/components/ModalCreateTranscriberProfiles.vue"
+import { debounceMixin } from "@/mixins/debounce.js"
 
 export default {
+  mixins: [debounceMixin],
   props: {},
   data() {
     return {
@@ -69,16 +88,32 @@ export default {
       showModalCreate: false,
       sortListKey: "config.name",
       sortListDirection: "asc",
+      showAllProfiles: false,
     }
   },
   mounted() {
-    this.fetchTranscriberProfiles()
+    this.debouncedFetchTranscriberProfiles()
   },
   methods: {
+    changeShowAllProfiles() {
+      this.showAllProfiles = !this.showAllProfiles
+      this.debouncedFetchTranscriberProfiles()
+    },
     async fetchTranscriberProfiles() {
-      this.loading = true
       const res = await apiGetTranscriberProfiles()
-      this.transcriberProfiles = res.filter((t) => !t.organizationId)
+      return res
+    },
+    async debouncedFetchTranscriberProfiles() {
+      this.loading = true
+      const res = await this.debouncedSearch(
+        this.fetchTranscriberProfiles.bind(this),
+        this.search,
+      )
+      if (!this.showAllProfiles) {
+        this.transcriberProfiles = res.filter((t) => !t.organizationId)
+      } else {
+        this.transcriberProfiles = res
+      }
       this.loading = false
     },
     showModalCreateTranscriberProfile() {

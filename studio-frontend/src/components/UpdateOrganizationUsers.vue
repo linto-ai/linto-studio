@@ -219,7 +219,6 @@ export default {
       this.displayRemoveUserModal = true
     },
     closeRemoveFromMembersModal(apiRes) {
-      console.log("apiRes", apiRes)
       if (apiRes) {
         if (apiRes.status === "success") {
           const userId = this.userToRemove._id

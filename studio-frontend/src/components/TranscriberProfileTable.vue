@@ -1,7 +1,7 @@
 <template>
   <table
     class="table-grid"
-    style="grid-template-columns: auto 1fr 1fr 1fr auto; width: 100%">
+    style="grid-template-columns: auto auto 1fr 1fr 1fr auto; width: 100%">
     <TranscriberProfileTableHeader
       @list_sort_by="sortBy"
       :sortListKey="sortListKey"
@@ -59,9 +59,7 @@ export default {
   data() {
     return {}
   },
-  mounted() {
-    console.log("mounted", this.transcriberProfilesList.length)
-  },
+  mounted() {},
   computed: {
     p_selectedProfiles: {
       get() {

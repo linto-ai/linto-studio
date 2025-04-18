@@ -496,7 +496,6 @@ export default {
           this.blobUrl = URL.createObjectURL(req.data)
         } else if (req.data.type === "text/plain") {
           this.blobUrl = null
-          console.log(req)
           this.mardownContent = await req.data.text()
         } else {
           this.blobUrl = null

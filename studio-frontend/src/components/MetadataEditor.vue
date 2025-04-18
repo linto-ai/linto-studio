@@ -47,7 +47,6 @@ export default {
         return [...this.field.value, [this.defaultKey, this.defaultValue]]
       },
       set: function (value) {
-        console.log("changed", value)
         //this.$emit("input", value)
       },
     },

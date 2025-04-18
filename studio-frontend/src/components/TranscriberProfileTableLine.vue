@@ -7,6 +7,10 @@
         :checkboxValue="id"></Checkbox>
     </td>
     <td>
+      <span v-if="hasOrganization" class="icon apply" />
+      <span v-else class="icon close" />
+    </td>
+    <td>
       <router-link :to="to">{{ name }}</router-link>
     </td>
     <td>
