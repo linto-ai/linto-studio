@@ -99,7 +99,6 @@
     <!-- Subtitles -->
     <SessionSubtitle
       v-if="displaySubtitles"
-      class="session-content__subtitle"
       :previousTurns="previousTurns"
       :partialText="partialText"
       :finalText="finalText"
@@ -228,7 +227,6 @@ export default {
     //     uuid: uuidv4(),
     //   }
     // })
-    console.log(this.channel)
     this.loading = false
     this.init()
 

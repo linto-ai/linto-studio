@@ -483,7 +483,9 @@
     "not_responsive": {
       "title": "Votre appareil n'est pas compatible avec {app_name}",
       "description": "Nous travaillons activement pour rendre {app_name} compatible avec les appareils mobiles et tablettes."
-    }
+    },
+    "passwordsMustBeTheSame": "Les mots de passe doivent être identiques",
+    "passwordLength": "Ce champ doit contenir au moins 6 caractères"
   },
   "explore": {
     "delete_conversation_button": "Supprimer des médias",
@@ -916,6 +918,10 @@
       "stop_force_button": "Forcer l'arrêt de la session",
       "stop_session_error_message": "La session n'a pas pu être arrêtée",
       "stop_session_success": "La session a été arrétée et sauvegardée",
+      "subtitle": {
+        "watermark_1": "Transcription par LinTO.ai",
+        "watermark_2": "IA Open Source par"
+      },
       "title_interface_settings": "Paramètre d'interface",
       "undefined_lang": "Langage inconnu",
       "undefined_speaker": "Locuteur inconnu",
