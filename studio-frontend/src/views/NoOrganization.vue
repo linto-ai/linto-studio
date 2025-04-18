@@ -53,7 +53,7 @@ export default {
         value: "",
         testField: testFieldEmpty,
         autocomplete: "off",
-        label: this.$t("no_orga.label"),
+        label: this.$t("no_orga.can_create.label"),
       },
       state: "idle",
     }
