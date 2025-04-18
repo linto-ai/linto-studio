@@ -227,7 +227,6 @@ export default {
     //     uuid: uuidv4(),
     //   }
     // })
-    console.log(this.channel)
     this.loading = false
     this.init()
 
