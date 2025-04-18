@@ -1,7 +1,10 @@
 <template>
   <div class="flex col">
-    <label for="channel-selector" class="text-cut">{{
+    <label for="channel-selector" class="text-cut" v-if="!customLabel">{{
       $t("session.live_page.translation_selector.label")
+    }}</label>
+    <label for="channel-selector" class="text-cut" v-else>{{
+      customLabel
     }}</label>
     <CustomSelect
       class="fullwidth"
@@ -28,7 +31,13 @@ export default {
     },
     qualifiedForCrossSubtitles: {
       type: Boolean,
-      required: true,
+      required: false,
+      default: false,
+    },
+    customLabel: {
+      type: String,
+      required: false,
+      default: null,
     },
   },
   data() {
@@ -53,15 +62,13 @@ export default {
         },
       ]
 
-      if(this.qualifiedForCrossSubtitles) {
-        res["original"].push(
-          {
-            value: "crossSubtitles",
-            text: this.$i18n.t(
-              "session.live_page.translation_selector.cross_translation",
-            ),
-          },
-        )
+      if (this.qualifiedForCrossSubtitles) {
+        res["original"].push({
+          value: "crossSubtitles",
+          text: this.$i18n.t(
+            "session.live_page.translation_selector.cross_translation",
+          ),
+        })
       }
 
       res["translations"] = this.selectedChannel.translations

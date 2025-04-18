@@ -6,7 +6,7 @@ const proxyForwardParams = [
 const { storeSessionFromStop, storeQuickMeetingFromStop } = require(
   `${process.cwd()}/components/WebServer/controllers/session/conversation.js`,
 )
-const { forceQueryParams, forwardSessioAlias } = require(
+const { forceQueryParams } = require(
   `${process.cwd()}/components/WebServer/controllers/session/session.js`,
 )
 const { Unauthorized } = require(
@@ -54,23 +54,6 @@ module.exports = (webServer) => {
         requireSessionOperator: true,
       },
 
-      /*************************/
-      /********* Bots  *********/
-      /*************************/
-      {
-        paths: [
-          { path: "/bots", method: ["get", "post"] },
-          {
-            path: "/bots/:id",
-            method: ["get", "delete"],
-          },
-        ],
-        requireAuth: true,
-        requireSessionOperator: true,
-      },
-      /*************************/
-      /******* template  *******/
-      /*************************/
       {
         //member access
         scrapPath: /^\/organizations\/[^/]+/,
@@ -95,6 +78,18 @@ module.exports = (webServer) => {
               },
             ],
           },
+        ],
+        requireAuth: true,
+        requireOrganizationQuickMeetingAccess: true,
+      },
+
+      /*************************/
+      /******* template  *******/
+      /*************************/
+      {
+        //member access
+        scrapPath: /^\/organizations\/[^/]+/,
+        paths: [
           {
             path: "/organizations/:organizationId/templates",
             method: ["get"],
@@ -127,7 +122,8 @@ module.exports = (webServer) => {
       },
       /*************************/
       /******** sessions *******/
-      /*************************/ {
+      /*************************/
+      {
         //public access
         scrapPath: /\/public$/,
         paths: [
@@ -146,7 +142,6 @@ module.exports = (webServer) => {
                 }
               },
             ],
-            executeBeforeResult: forwardSessioAlias,
           },
         ],
         requireAuth: false,
@@ -159,7 +154,6 @@ module.exports = (webServer) => {
             path: "/organizations/:organizationId/sessions/:id",
             method: ["get"],
             forwardParams: proxyForwardParams,
-            executeBeforeResult: forwardSessioAlias,
           },
           {
             path: "/organizations/:organizationId/sessions",
@@ -208,6 +202,16 @@ module.exports = (webServer) => {
             method: ["delete"],
             forwardParams: proxyForwardParams,
             executeBeforeResult: storeQuickMeetingFromStop,
+          },
+          {
+            path: "/organizations/:organizationId/bots",
+            method: ["get", "post"],
+            forwardParams: proxyForwardParams,
+          },
+          {
+            path: "/organizations/:organizationId/bots/:id",
+            method: ["get", "delete"],
+            forwardParams: proxyForwardParams,
           },
         ],
         requireAuth: true,

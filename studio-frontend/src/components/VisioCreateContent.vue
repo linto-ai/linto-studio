@@ -109,6 +109,7 @@ export default {
             this.transcriptionServices.length > 0
               ? generateServiceConfig(this.transcriptionServices[0])
               : null,
+          subSource: "original",
         },
         testField: testQuickSessionSettings,
       },
@@ -122,7 +123,6 @@ export default {
   methods: {
     async createSession(event) {
       event?.preventDefault()
-
       if (this.testFields()) {
         const settings = this.quickSessionSettingsField.value
         const channels = [
@@ -149,11 +149,12 @@ export default {
         if (requestSession.status == "success") {
           const session = requestSession.data
 
-          const requestBot = await apiStartBot({
+          const requestBot = await apiStartBot(this.currentOrganizationScope, {
             url: this.visioLinkField.value,
             channelId: session.channels[0].id,
             enableDisplaySub: settings.subInVisio,
-            subSource: null,
+            subSource:
+              settings.subSource === "original" ? null : settings.subSource,
             provider: this.visioTypeField.value,
           })
           if (requestBot.status == "success") {

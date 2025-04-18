@@ -16,6 +16,15 @@
           v-if="source === 'visio'"
           :field="fieldSubInVisio"
           v-model="fieldSubInVisio.value" />
+        <div class="form-field">
+          <SessionTranslationSelection
+            v-if="field.value.selectedProfile.translations"
+            :selectedChannel="field.value.selectedProfile"
+            :customLabel="$t('quick_session.setup_visio.bot_lang_label')"
+            v-model="selectedTranslation">
+          </SessionTranslationSelection>
+        </div>
+
         <FormCheckbox
           class=""
           :field="fieldDiarizationEnabled"
@@ -74,14 +83,14 @@
 </template>
 <script>
 import EMPTY_FIELD from "@/const/emptyField.js"
-import { formsMixin } from "@/mixins/forms.js"
+import { testService } from "@/tools/fields/testService.js"
+import RIGHTS_LIST from "@/const/rigthsList"
 
+import SessionTranslationSelection from "@/components/SessionTranslationSelection.vue"
 import FormInput from "@/components/FormInput.vue"
 import FormCheckbox from "@/components/FormCheckbox.vue"
 import TranscriberProfileSelector from "@/components/TranscriberProfileSelector.vue"
-import { testService } from "@/tools/fields/testService.js"
 import ConversationCreateServices from "@/components/ConversationCreateServices.vue"
-import RIGHTS_LIST from "@/const/rigthsList"
 
 export default {
   props: {
@@ -150,25 +159,17 @@ export default {
         value: 1,
         list: RIGHTS_LIST((key) => this.$i18n.t(key)),
       },
+      selectedTranslation: this.value.subSource,
     }
   },
 
   mounted() {},
   watch: {
-    // value: {
-    //   handler(newValue) {
-    //     console.log(" -> ", newValue.transcriptionService)
-    //     this.fieldSubInVisio.value = newValue.subInVisio ?? true
-    //     this.fieldSubInStudio.value = newValue.subInStudio ?? true
-    //     this.fieldDiarizationEnabled.value = newValue.diarization ?? false
-    //     this.fieldKeepAudio.value = newValue.keepAudio ?? true
-    //     this.fieldOfflineTranscription.value =
-    //       newValue.offlineTranscription ?? false
-    //     this.selectedProfile = newValue.selectedProfile
-    //     this.fieldTranscriptionService.value = newValue.transcriptionService
-    //   },
-    //   deep: true,
-    // },
+    selectedTranslation: {
+      handler() {
+        this.sendUpdate()
+      },
+    },
     "fieldSubInVisio.value": {
       handler() {
         this.sendUpdate()
@@ -213,7 +214,6 @@ export default {
     },
     fieldTranscriptionService: {
       handler(value) {
-        console.log(" <- ", value)
         this.sendUpdate()
       },
       deep: true,
@@ -237,6 +237,7 @@ export default {
           this.fieldTranscriptionService.value,
         ),
         membersRight: this.membersRight.value,
+        subSource: this.selectedTranslation,
       })
     },
   },
@@ -245,6 +246,7 @@ export default {
     FormCheckbox,
     TranscriberProfileSelector,
     ConversationCreateServices,
+    SessionTranslationSelection,
   },
 }
 </script>

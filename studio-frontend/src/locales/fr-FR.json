@@ -1066,7 +1066,8 @@
       "display_transcription_in_visio_label": "Afficher les sous-titres dans la visioconférence",
       "back": "Retour",
       "join_meeting": "Rejoindre la visio-conférence",
-      "error_bot_setup": "An error occurred while joining the videoconference"
+      "error_bot_setup": "Une erreur s'est produite lors de la connexion à la vidéoconférence",
+      "bot_lang_label": "Choisir la langue d'affichage dans la visio-conférence"
     },
     "live": {
       "status_no_websocket": "Déconnecté du serveur audio",

@@ -1063,7 +1063,8 @@
       "display_transcription_in_visio_label": "Display subtitles in the videoconference",
       "back": "Back",
       "join_meeting": "Join the meeting",
-      "error_bot_setup": "An error occurred while joining the videoconference"
+      "error_bot_setup": "An error occurred while joining the videoconference",
+      "bot_lang_label": "Choose language used for videoconference subtitle"
     },
     "live": {
       "status_no_websocket": "Not connected to audio server",
