@@ -159,6 +159,7 @@ input[type="checkbox"].conversation-line__checkbox {
   padding: 0.25rem 0.5rem !important;
   height: auto !important;
   min-height: auto !important;
+  align-self: end;
 }
 
 input:checked + .conversation-line .conversation-line__open-with {

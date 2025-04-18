@@ -86,7 +86,7 @@ table {
   tbody {
     tr {
       &:hover {
-        background: #f2f2f2;
+        background: var(--button-background-hover);
       }
       td {
         padding: 5px;

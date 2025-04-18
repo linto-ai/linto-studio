@@ -25,7 +25,6 @@
     --dark-100: #333;
     --dark-80: #666;
     --dark-60: #ccc;
-
     --neutral-60: #c2c2c2;
 
     --background-app: rgb(250, 250, 250);
@@ -48,6 +47,7 @@
   }
 
   html[data-theme="dark"] body {
+    --yellow-chart: #976400;
     --blue-chart: #479ae4;
     --green-chart: #139177;
     --red-chart: #c42653;
@@ -55,6 +55,7 @@
     --dark-100: #ccc;
     --dark-80: #aaa;
     --dark-60: #666;
+    --neutral-60: #686868;
 
     --background-app: rgb(48, 48, 48);
     --background-primary: #252525;
@@ -65,5 +66,7 @@
     --button-background-hover: #333;
 
     --input-background: #1a1a1a;
+
+    --selected-background: #13917833;
   }
 }

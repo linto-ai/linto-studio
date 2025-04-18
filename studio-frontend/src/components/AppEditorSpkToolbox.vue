@@ -234,7 +234,6 @@ export default {
   mounted() {},
   methods: {
     stopPropagation(e) {
-      console.log("stopPropagation")
       e.stopPropagation()
     },
     enterChangeSpeaker(e) {
@@ -279,7 +278,6 @@ export default {
       e?.preventDefault()
       e?.stopPropagation()
       testFieldEmpty(this.editSpeakerName, (key) => this.$t(key))
-      console.log("editSpeaker", this.editSpeakerName)
       if (this.editSpeakerName.valid) {
         let speakersNames = this.speakers.map((spk) => spk.speaker_name)
         // TODO: put this logic in testName ?
