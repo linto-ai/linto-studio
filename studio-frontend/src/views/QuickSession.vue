@@ -138,11 +138,6 @@ export default {
       this.onSaveSession()
     },
     async onSaveSession(trash = false) {
-      if (this.$refs.sessionLiveMicrophone) {
-        await this.$refs.sessionLiveMicrophone.p_close()
-      } else if (this.$refs.sessionSetupMicrophone) {
-        await this.$refs.sessionSetupMicrophone.p_close()
-      }
       await this.$nextTick()
       this.isSavingSession = true
       const now = new Date()
