@@ -17,36 +17,45 @@ const { sessionSocketAccess } = require(
 )
 
 async function checkSocketAccess(socket, roomId) {
-  const session = await axios.get(
-    process.env.SESSION_API_ENDPOINT + `/sessions/${roomId.split("/")[0]}`,
-  )
+  try {
+    const session = await axios.get(
+      process.env.SESSION_API_ENDPOINT + `/sessions/${roomId.split("/")[0]}`,
+    )
 
-  if (session.visibility === "public") {
-    return true
-  } else {
-    const { isAuth, userId } = await auth_middlewares.checkSocket(socket)
-    if (isAuth === false) {
-      socket.emit("unauthorized")
-      socket.disconnect(true)
-      return false
-    }
-
-    const access = await sessionSocketAccess(session, userId)
-    if (access === false) {
-      socket.emit("unauthorized")
-      socket.disconnect(true)
-      return false
-    }
-
-    if (session.visibility === "organization") {
-      return true
-    } else if (session.visibility === "private" && session.owner === userId) {
+    if (session.visibility === "public") {
       return true
     } else {
-      socket.emit("unauthorized")
-      socket.disconnect(true)
-      return false
+      const { isAuth, userId } = await auth_middlewares.checkSocket(socket)
+      if (isAuth === false) {
+        socket.emit("unauthorized")
+        socket.disconnect(true)
+        return false
+      }
+
+      const access = await sessionSocketAccess(session, userId)
+      if (access === false) {
+        socket.emit("unauthorized")
+        socket.disconnect(true)
+        return false
+      }
+
+      if (session.visibility === "organization") {
+        return true
+      } else if (session.visibility === "private" && session.owner === userId) {
+        return true
+      } else {
+        socket.emit("unauthorized")
+        socket.disconnect(true)
+        return false
+      }
     }
+  } catch (err) {
+    appLogger.error(
+      `Error getting session ${roomId.split("/")[0]} from the session API: ${err}`,
+    )
+    socket.emit("unauthorized")
+    socket.disconnect(true)
+    return false
   }
 }
 
