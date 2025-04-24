@@ -203,11 +203,13 @@ async function inviteNewUser(email) {
   if (process.env.DISABLE_USER_CREATION === "true")
     throw new UserError("User creation is disabled")
   const createdUser = await model.users.createExternal({ email })
-
   // Create new user personal organization
+
   if (createdUser.insertedCount !== 1) throw new UserError()
   const userId = createdUser.insertedId.toString()
-  const magicId = createdUser.ops[0].authLink.magicId
+
+  const invitedUser = await model.users.getById(userId, true)
+  const magicId = invitedUser[0].authLink.magicId
 
   if (magicId) {
     const createOrganization = await model.organizations.createDefault(
