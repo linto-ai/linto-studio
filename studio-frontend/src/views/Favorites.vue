@@ -39,6 +39,7 @@
         :conversations="conversations"
         :loading="loading"
         :currentOrganizationScope="currentOrganizationScope"
+        :userInfo="userInfo"
         :indexedTags="tagsDatabase"
         :error="error"
         @clickOnTag="clickOnTag">

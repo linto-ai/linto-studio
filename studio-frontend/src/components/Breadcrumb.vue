@@ -52,9 +52,6 @@ export default {
     currentRoute() {
       return this.$route
     },
-    conversationName() {
-      return this.$store.state.currentConversationName
-    },
     currentOrganization() {
       return this.$store.state.currentOrganization
     },
@@ -63,9 +60,6 @@ export default {
     },
     currentOrganizationScope() {
       return this.currentOrganization._id
-    },
-    userOrganizations() {
-      return this.$store.state.userOrganizations
     },
     userName() {
       return userName(this.user)

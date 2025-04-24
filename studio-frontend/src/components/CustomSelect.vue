@@ -119,14 +119,14 @@ export default {
   beforeDestroy() {
     bus.$off("navigation", this.close)
   },
-  // watch: {
-  //   options: {
-  //     immediate: true,
-  //     handler: function (data) {
-  //       console.log("options changed", data)
-  //     },
-  //   },
-  // },
+  watch: {
+    value: {
+      immediate: true,
+      handler: function (data) {
+        console.log("v changed", data)
+      },
+    },
+  },
   computed: {
     _valueText() {
       if (this.valueText) return this.valueText

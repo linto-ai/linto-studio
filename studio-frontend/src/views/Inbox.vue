@@ -48,6 +48,7 @@
         :conversations="conversations"
         :loading="loading"
         :currentOrganizationScope="currentOrganizationScope"
+        :userInfo="userInfo"
         :error="error"
         :selectable="true"
         :selectedConversations="selectedConversationsList"
@@ -126,13 +127,13 @@ export default {
       if (this.selectedOption == "notags") {
         return await apiGetConversationsWithoutTagsByOrganization(
           this.currentOrganizationScope,
-          this.currentPageNb
+          this.currentPageNb,
         )
       } else {
         return await apiGetConversationsByOrganization(
           this.currentOrganizationScope,
           this.currentPageNb,
-          { sortField: this.selectedOption }
+          { sortField: this.selectedOption },
         )
       }
     },
@@ -142,7 +143,7 @@ export default {
       try {
         res = await this.debouncedSearch(
           this.apiFetchConversations.bind(this),
-          this.selectedOption
+          this.selectedOption,
         )
       } catch (error) {
         console.error(error)

@@ -93,7 +93,7 @@ export default new Vuex.Store({
           })
           commit(
             "SET_FAVORITES_CONVERSATIONS",
-            getUserInfos.data.favorites ?? []
+            getUserInfos.data.favorites ?? [],
           )
           return state.userInfo
         }
@@ -108,7 +108,7 @@ export default new Vuex.Store({
 
         let indexedOrganizations = indexOrganizationsRoles(
           userOrganizations,
-          state.userInfo._id
+          state.userInfo._id,
         )
         commit("SET_ROLES_IN_ORGANIZATIONS", indexedOrganizations)
         return state.userOrganizations
@@ -151,7 +151,7 @@ export default new Vuex.Store({
       await apiRemoveConversationFromFavorites(conversationId)
       commit(
         "SET_FAVORITES_CONVERSATIONS",
-        state.favoritesConversationsId.filter((id) => id !== conversationId)
+        state.favoritesConversationsId.filter((id) => id !== conversationId),
       )
     },
   },
@@ -214,7 +214,7 @@ export default new Vuex.Store({
     isFavoriteConversation: (state) => (conversationId) => {
       return (
         state.favoritesConversationsId.findIndex(
-          (id) => id == conversationId
+          (id) => id == conversationId,
         ) >= 0
       )
     },

@@ -17,12 +17,7 @@
       <span class="icon new"></span>
       <span class="label">{{ $t("navigation.conversation.create") }}</span>
     </router-link> -->
-    <div class="flex1 flex align-center justify-center">
-      <!--<AppHeaderTabs />
-      <Breadcrumb
-        :currentRoute="currentRoute"
-        :currentOrganization="currentOrganization" />-->
-    </div>
+    <div class="flex1 flex align-center justify-center"></div>
     <ThemeSwitcher v-if="darkThemeFeatureEnabled"></ThemeSwitcher>
     <LocalSwitcher></LocalSwitcher>
     <UserSettingsMenu :userInfo="userInfo" />

@@ -88,9 +88,9 @@ export default {
         case "delete_multiple_conversation":
           await this.deleteMutipleConversation()
           break
-        case "delete_organization":
-          await this.deleteOrganization()
-          break
+        // case "delete_organization":
+        //   await this.deleteOrganization()
+        //   break
         default:
           this.$emit("apply")
           this.modalShow = false

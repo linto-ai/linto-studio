@@ -51,6 +51,7 @@
         :conversations="conversations"
         :loading="loading"
         :currentOrganizationScope="currentOrganizationScope"
+        :userInfo="userInfo"
         :selectable="true"
         :selectedConversations="selectedConversationsList"
         @onSelectConversation="onSelectConversation"

@@ -68,6 +68,7 @@
         :error="error"
         :selectable="true"
         :selectedConversations="selectedConversationsList"
+        :userInfo="userInfo"
         @onSelectConversation="onSelectConversation"
         @clickOnTag="clickOnTag" />
 

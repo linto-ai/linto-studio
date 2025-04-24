@@ -17,6 +17,7 @@
         v-for="conv of conversations"
         :key="conv._id + conv.last_update + conv.tags.length"
         :currentOrganizationScope="currentOrganizationScope"
+        :userInfo="userInfo"
         :conversation="conv"
         :pageSharedWith="pageSharedWith"
         :displayTags="displayTags"
@@ -52,7 +53,7 @@
 import { Fragment } from "vue-fragment"
 
 import Loading from "@/components/Loading.vue"
-import ConversationLineNew from "@/components/ConversationLineNew.vue"
+import ConversationLine from "@/components/ConversationLine.vue"
 import ErrorPage from "./ErrorPage.vue"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 
@@ -62,6 +63,7 @@ export default {
     conversations: { type: Array, required: false },
     loading: { type: Boolean, required: true },
     currentOrganizationScope: { type: String, required: true },
+    userInfo: { type: Object, required: true },
     displayTags: { type: Boolean, default: true },
     pageSharedWith: { type: Boolean, default: false },
     indexedTags: { type: Object, required: false }, // tags indexed by id, if not provided will be fetched
@@ -92,7 +94,7 @@ export default {
   },
   components: {
     Loading,
-    ConversationLine: ConversationLineNew,
+    ConversationLine,
     ErrorPage,
   },
 }
