@@ -2,12 +2,21 @@
   border-radius: 4px;
   background-color: var(--material-grey-300);
   padding: 0.25rem;
+  font-variant: small-caps;
+  line-height: 1em;
   &[primary] {
     border-radius: 100px;
     padding: 0 0.5rem;
-    border: 2px solid;
+    //border: 2px solid;
     background-color: var(--primary-color);
     color: var(--primary-contrast);
+  }
+
+  &[red] {
+    background-color: var(--red-chart);
+    color: var(--primary-contrast);
+    border-radius: 100px;
+    padding: 0 0.5rem;
   }
 }
 

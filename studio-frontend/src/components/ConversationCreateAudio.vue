@@ -62,6 +62,11 @@ export default {
     value: {
       required: true,
     },
+    enableMicrophone: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     // mode: {
     //   type: String,
     //   required: false,
@@ -73,25 +78,38 @@ export default {
       mediaType: "file",
       indexPlaying: -1,
       multipleFiles: true, //process.env.VUE_APP_MULTIFILE == "true",
-      uploadTabs: [
-        {
-          icon: "upload",
-          label: this.$t("conversation_creation.offline.tabs_upload.file"),
-          name: "file",
-        },
-        {
-          icon: "record",
-          label: this.$t(
-            "conversation_creation.offline.tabs_upload.microphone",
-          ),
-          name: "microphone",
-        },
-        {
-          icon: "link",
-          label: this.$t("conversation_creation.offline.tabs_upload.url"),
-          name: "url",
-        },
-      ],
+      uploadTabs: this.enableMicrophone
+        ? [
+            {
+              icon: "upload",
+              label: this.$t("conversation_creation.offline.tabs_upload.file"),
+              name: "file",
+            },
+            {
+              icon: "record",
+              label: this.$t(
+                "conversation_creation.offline.tabs_upload.microphone",
+              ),
+              name: "microphone",
+            },
+            {
+              icon: "link",
+              label: this.$t("conversation_creation.offline.tabs_upload.url"),
+              name: "url",
+            },
+          ]
+        : [
+            {
+              icon: "upload",
+              label: this.$t("conversation_creation.offline.tabs_upload.file"),
+              name: "file",
+            },
+            {
+              icon: "link",
+              label: this.$t("conversation_creation.offline.tabs_upload.url"),
+              name: "url",
+            },
+          ],
       uploadType: "file",
     }
   },

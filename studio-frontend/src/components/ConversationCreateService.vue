@@ -16,20 +16,20 @@
     </h4>
 
     <div class="form-field flex col small-padding-top">
-      <div>
+      <!-- <div>
         <label>{{ $t("conversation.acoustic_label") }}</label>
         {{ acoustic_value[value.accoustic] }}
-      </div>
+      </div> -->
 
       <!-- <div>
         <label>{{ $t("conversation.language_label") }}</label>
         {{ language_formatted }}
       </div> -->
 
-      <div>
+      <!-- <div>
         <label>{{ $t("conversation.model_quality_label") }}</label>
         {{ audio_quality_value[value.model_quality] }}
-      </div>
+      </div> -->
     </div>
 
     <!-- -- -- language -- -- -->
