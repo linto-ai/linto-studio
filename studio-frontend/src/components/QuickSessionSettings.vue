@@ -7,38 +7,49 @@
       <FormCheckbox
         :field="fieldSubInStudio"
         v-model="fieldSubInStudio.value"
-        switchDisplay />
-      <div v-if="fieldSubInStudio.value" class="subSection">
-        <h3 class="small-margin-bottom">
-          {{ $t("quick_session.creation.live_options_title") }}
-        </h3>
-        <FormCheckbox
-          v-if="source === 'visio'"
-          :field="fieldSubInVisio"
-          v-model="fieldSubInVisio.value" />
-        <div class="form-field">
-          <SessionTranslationSelection
-            v-if="field.value.selectedProfile.translations"
-            :selectedChannel="field.value.selectedProfile"
-            :customLabel="$t('quick_session.setup_visio.bot_lang_label')"
-            v-model="selectedTranslation">
-          </SessionTranslationSelection>
-        </div>
-
-        <FormCheckbox
-          class=""
-          :field="fieldDiarizationEnabled"
-          v-model="fieldDiarizationEnabled.value"></FormCheckbox>
-        <FormCheckbox
-          :field="fieldKeepAudio"
-          v-model="fieldKeepAudio.value"></FormCheckbox>
-        <div class="medium-margin-top">
+        switchDisplay>
+        <template v-slot:content-after-label>
+          <Chip value="beta" red class="small-margin-left">Beta</Chip>
+        </template>
+      </FormCheckbox>
+      <div v-if="fieldSubInStudio.value" class="subSection flex col gap-small">
+        <!-- -- -- -- -- Profile selector -- -- -- -- -->
+        <div>
           <h3>{{ $t("quick_session.creation.profile_selector_title") }}</h3>
 
           <TranscriberProfileSelector
             :multiple="false"
             v-model="selectedProfile"
             :profilesList="transcriberProfiles" />
+        </div>
+
+        <!-- Options for live transcription -->
+        <div>
+          <h3>
+            {{ $t("quick_session.creation.live_options_title") }}
+          </h3>
+          <FormCheckbox
+            v-if="source === 'visio'"
+            :field="fieldSubInVisio"
+            v-model="fieldSubInVisio.value">
+          </FormCheckbox>
+          <div class="form-field">
+            <SessionTranslationSelection
+              v-if="field.value.selectedProfile.translations"
+              :selectedChannel="field.value.selectedProfile"
+              :customLabel="$t('quick_session.setup_visio.bot_lang_label')"
+              v-model="selectedTranslation">
+            </SessionTranslationSelection>
+          </div>
+
+          <FormCheckbox
+            v-if="isCompatibleWithDiarization"
+            class=""
+            :field="fieldDiarizationEnabled"
+            v-model="fieldDiarizationEnabled.value"></FormCheckbox>
+          <FormCheckbox
+            :field="fieldKeepAudio"
+            v-model="fieldKeepAudio.value"></FormCheckbox>
         </div>
       </div>
     </section>
@@ -91,6 +102,8 @@ import FormInput from "@/components/FormInput.vue"
 import FormCheckbox from "@/components/FormCheckbox.vue"
 import TranscriberProfileSelector from "@/components/TranscriberProfileSelector.vue"
 import ConversationCreateServices from "@/components/ConversationCreateServices.vue"
+import Badge from "./Badge.vue"
+import Chip from "./Chip.vue"
 
 export default {
   props: {
@@ -241,12 +254,19 @@ export default {
       })
     },
   },
+  computed: {
+    isCompatibleWithDiarization() {
+      return this.selectedProfile?.config?.hasDiarization
+    },
+  },
   components: {
     FormInput,
     FormCheckbox,
     TranscriberProfileSelector,
     ConversationCreateServices,
     SessionTranslationSelection,
+    Badge,
+    Chip,
   },
 }
 </script>

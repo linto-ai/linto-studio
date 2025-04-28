@@ -365,7 +365,7 @@
     "transcription_service_error": "Please select a transcription service",
     "transcription_service_label": "Transcription service",
     "transcription_service_list_empty": "No transcription service available",
-    "transcription_service_title": "Transcription service",
+    "transcription_service_title": "Transcription AI selection",
     "transcription_settings_label": "Transcription settings",
     "turn_cant_merge": "There are too many caracteres in the turn to merge it",
     "turn_sync_error_title": "The turn is not well synchronized",
@@ -379,7 +379,7 @@
       "file": "File",
       "microphone": "Microphone",
       "url": "Import URL",
-      "quick_meeting": "Live transcript",
+      "quick_meeting": "Microphone",
       "coming_soon": "Coming soon",
       "session": "Session",
       "visio": "Videoconference"
@@ -862,7 +862,7 @@
       "name_field": {
         "label": "Session name"
       },
-      "diarization_label": "Activate speakers detection (if available per channels)",
+      "diarization_label": "Activate speakers detection",
       "keep_audio_label": "Keep audio when session ends",
       "channels_error": "Please add at least one channel to create the session",
       "save_as_template_button": "Save as template",
@@ -1022,7 +1022,7 @@
   "quick_session": {
     "creation": {
       "transcription_settings_title": "Transcription mode",
-      "profile_selector_title": "Transcription profile",
+      "profile_selector_title": "Transcription AI selection",
       "no_profile_selected_error": "No transcription profile selected",
       "quick_meeting_already_start_title": "A recording has already been started.",
       "quick_meeting_already_start_button": "Join the quick meeting",

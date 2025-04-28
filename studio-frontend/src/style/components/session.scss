@@ -3,6 +3,16 @@
   font-size: 18px;
 }
 
+.session-live__title {
+  font-size: 1.5rem;
+  margin: 0.5rem;
+  width: auto;
+  line-height: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 .session-content__turns {
   container-type: inline-size;
   container-name: session-content;
@@ -10,7 +20,7 @@
 }
 
 .session-content__action-bar {
-  position: absolute;
+  position: sticky;
   top: 0;
   background-color: var(--background-primary);
   border-bottom: var(--divider);
@@ -20,6 +30,7 @@
   padding: 0.5rem;
   box-sizing: border-box;
   padding: 0.5rem 2rem;
+  margin-bottom: 1rem;
 }
 
 .channel-turn {

@@ -365,7 +365,7 @@
     "transcription_service_error": "Veuillez sélectionner un service de transcription",
     "transcription_service_label": "Service de transcription",
     "transcription_service_list_empty": "Aucun service de transcription disponible",
-    "transcription_service_title": "Selection du service de transcription",
+    "transcription_service_title": "Selection de l'IA de transcription",
     "transcription_settings_label": "Paramètres de transcription",
     "turn_cant_merge": "Le nombre de caractères est trop élevé pour fusionner les tours de parole",
     "turn_sync_error_title": "Le tour de parole n'est pas synchronisé correctement",
@@ -379,7 +379,7 @@
       "file": "Fichier",
       "microphone": "Microphone",
       "url": "Médias depuis internet",
-      "quick_meeting": "Transcription en direct",
+      "quick_meeting": "Microphone",
       "visio": "Visioconférence",
       "session": "Session",
       "coming_soon": "Bientôt disponible"
@@ -862,7 +862,7 @@
       "name_field": {
         "label": "Nom de la session"
       },
-      "diarization_label": "Activer la séparation des locuteurs (si disponible dans le canal)",
+      "diarization_label": "Activer la séparation des locuteurs",
       "keep_audio_label": "Conserver l'audio à la fin de la session",
       "start_timestamp_label": "Heure de début",
       "end_timestamp_label": "Heure de fin",
@@ -1024,7 +1024,7 @@
   "quick_session": {
     "creation": {
       "transcription_settings_title": "Méthode de transcription",
-      "profile_selector_title": "Sélection du profil de transcription",
+      "profile_selector_title": "Sélection de l'IA de transcription",
       "no_profile_selected_error": "Aucun profil de transcription selectionné",
       "quick_meeting_already_start_title": "Un enregistrement est déjà démarré.",
       "quick_meeting_already_start_button": "Rejoindre le Quick meeting",

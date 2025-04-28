@@ -1,4 +1,3 @@
-const debug = require("debug")("linto:components:utility:axios")
 const axios = require("axios").default
 
 class Axios {

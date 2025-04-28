@@ -37,6 +37,9 @@
     </template>
 
     <template v-slot:sidebar>
+      <h1 v-if="sessionLoaded" class="center-text session-live__title">
+        {{ name }}
+      </h1>
       <SessionLiveMicrophoneStatus
         v-if="useMicrophone && sessionLoaded"
         @toggle-microphone="toggleMicrophone"

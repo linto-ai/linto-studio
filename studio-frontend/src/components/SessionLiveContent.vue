@@ -1,10 +1,10 @@
 <template>
   <div class="session-content flex flex1 col" @scroll="handleScroll">
-    <div class="medium-margin">
+    <!-- <div class="medium-margin">
       <h1 class="center-text session-content__title" v-if="!noTitle">
         {{ title }}
       </h1>
-    </div>
+    </div> -->
     <SessionChannel
       v-if="isConnected"
       @closeSubtitleFullscreen="closeSubtitleFullscreen"

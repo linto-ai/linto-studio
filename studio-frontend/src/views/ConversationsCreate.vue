@@ -21,6 +21,7 @@
         <div class="flex col gap-small">
           <ConversationCreateAudio
             class="flex1"
+            :enableMicrophone="!canCreateSession"
             :disabled="formState === 'sending'"
             v-model="audioFiles" />
         </div>
