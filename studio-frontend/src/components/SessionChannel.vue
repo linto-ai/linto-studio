@@ -45,7 +45,8 @@
       </button>
     </div>
 
-    <!-- content -->
+    <!-- content if live transcript is disabled -->
+
     <div
       v-if="!liveTranscript"
       class="flex align-center justify-center flex1 col center-text">
@@ -54,6 +55,9 @@
         {{ $t("session.detail_page.live_transcript_disabled.description") }}
       </p>
     </div>
+
+    <!-- content live -->
+
     <div
       v-else-if="hasText"
       class="flex col flex1 session-content__turns reset-overflows"
@@ -437,7 +441,14 @@ export default {
         return
       }
 
-      this.selectedTurns = [turnId]
+      if (
+        this.selectedTurns.includes(turnId) &&
+        this.selectedTurns.length === 1
+      ) {
+        this.selectedTurns = this.selectedTurns.filter((id) => id !== turnId)
+      } else {
+        this.selectedTurns = [turnId]
+      }
     },
     copyTurns() {
       const selectedTurns = this.turns.filter((turn) =>
