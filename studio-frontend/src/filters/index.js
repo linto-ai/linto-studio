@@ -1,5 +1,5 @@
 import Vue from "vue"
-import store from "../store.js"
+import store from "../store.old.js"
 import moment from "moment"
 import { getCookie } from "../tools/getCookie"
 import { sendRequest } from "../tools/sendRequest"
