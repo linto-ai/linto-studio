@@ -5,11 +5,10 @@ import { apiGetPersonalUserInfo } from "@/api/user"
 const actions = {
   async fetchUser({ commit }) {
     const getUserInfos = await apiGetPersonalUserInfo()
-    if (getUserInfos?.error) {
-      throw getUserInfos
-    } else {
+    if (getUserInfos.status === "success") {
       commit("setUserInfos", getUserInfos.data)
     }
+    return getUserInfos
   },
   async login({ commit }, payload) {},
   async logout({ commit }) {},

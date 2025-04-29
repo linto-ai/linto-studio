@@ -1,0 +1,14 @@
+const mutations = {
+  setOrganizationsFromList(state, organizationsList) {
+    let organizations = {}
+    organizationsList.forEach((organization) => {
+      organizations[organization._id] = organization
+    })
+    state.organizations = organizations
+  },
+  updateOrganization(state, id, organization) {
+    state.organizations[id] = organization
+  },
+}
+
+export default mutations

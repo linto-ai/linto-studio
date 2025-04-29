@@ -1,13 +1,15 @@
 import Vue from "vue"
 import Router from "vue-router"
-import { getEnv } from "@/tools/getEnv.js"
 
+import { getEnv } from "@/tools/getEnv.js"
+import store from "@/store/index.js"
 import { getCookie } from "@/tools/getCookie"
 import { setCookie } from "@/tools/setCookie"
 import { apiLoginUserMagicLink } from "@/api/user"
 import { apiGetUserRightFromConversation } from "@/api/conversation"
 import PUBLIC_ROUTES from "../const/publicRoutes"
 import { apiGetQuickSession } from "@/api/session.js"
+import { logout } from "../tools/logout"
 
 const defaultComponents = {
   AppHeader: () => import("@/components/AppHeader.vue"),
@@ -178,12 +180,12 @@ let router = new Router({
 
     // PRIVATE ROUTES FOR MAIN APP
     {
-      path: "/interface/inbox",
+      path: "/interface/:organizationId/inbox",
       name: "inbox",
       redirect: { name: "explore" },
     },
     {
-      path: "/interface/explore",
+      path: "/interface/:organizationId/explore",
       name: "explore",
       components: {
         default: () => import("../views/Explore.vue"),
@@ -193,7 +195,7 @@ let router = new Router({
       meta: { mainListingPage: true },
     },
     {
-      path: "/interface/sessionsList",
+      path: "/interface/:organizationId/sessionsList",
       name: "sessionsList",
       components: {
         default: () => import("../views/SessionsList.vue"),
@@ -223,7 +225,7 @@ let router = new Router({
       meta: { userPage: true },
     },
     {
-      path: "/interface/conversations/create",
+      path: "/interface/:organizationId/conversations/create",
       name: "conversations create",
       components: {
         default: () => import("../views/ConversationsCreate.vue"),
@@ -232,7 +234,7 @@ let router = new Router({
       props: defaultProps,
     },
     {
-      path: "/interface/conversations/:conversationId",
+      path: "/interface/:organizationId/conversations/:conversationId",
       name: "conversations overview",
       components: {
         default: () => import("../views/ConversationsOverview.vue"),
@@ -242,7 +244,7 @@ let router = new Router({
       meta: { conversationDetailPage: true },
     },
     {
-      path: "/interface/conversations/:conversationId/transcription",
+      path: "/interface/:organizationId/conversations/:conversationId/transcription",
       name: "conversations transcription",
       components: {
         default: () => import("../views/ConversationsTranscription.vue"),
@@ -252,7 +254,7 @@ let router = new Router({
       meta: { conversationDetailPage: true },
     },
     {
-      path: "/interface/conversations/:conversationId/subtitles",
+      path: "/interface/:organizationId/conversations/:conversationId/subtitles",
       name: "conversations subtitles",
       components: {
         default: () => import("../views/ConversationsSubtitlesMenu.vue"),
@@ -262,7 +264,7 @@ let router = new Router({
       meta: { conversationDetailPage: true },
     },
     {
-      path: "/interface/conversations/:conversationId/subtitles/:subtitleId",
+      path: "/interface/:organizationId/conversations/:conversationId/subtitles/:subtitleId",
       name: "conversations subtitle",
       components: {
         default: () => import("../views/ConversationsSubtitle.vue"),
@@ -272,7 +274,7 @@ let router = new Router({
       meta: { conversationDetailPage: true },
     },
     {
-      path: "/interface/conversations/:conversationId/publish",
+      path: "/interface/:organizationId/conversations/:conversationId/publish",
       name: "conversations publish",
       components: {
         default: () => import("../views/ConversationsPublish.vue"),
@@ -282,7 +284,7 @@ let router = new Router({
       meta: { conversationDetailPage: true },
     },
     {
-      path: "/interface/sessions/create",
+      path: "/interface/:organizationId/sessions/create",
       name: "sessions create",
       components: {
         default: () => import("../views/SessionsCreate.vue"),
@@ -329,6 +331,7 @@ let router = new Router({
         ...defaultComponents,
       },
       props: defaultProps,
+      meta: { userPage: true },
     },
     {
       path: "/interface/organizations/:organizationId",
@@ -350,7 +353,7 @@ let router = new Router({
       meta: { userPage: true },
     },
     {
-      path: "/interface/tags/settings",
+      path: "/interface/:organizationId/tags/settings",
       name: "tags settings",
       components: {
         default: () => import("../views/ManageTags.vue"),
@@ -373,16 +376,19 @@ let router = new Router({
 
 router.beforeEach(async (to, from, next) => {
   const enableSession = getEnv("VUE_APP_ENABLE_SESSION") === "true"
-
   try {
     if (!enableSession && to.meta?.sessionPage) {
       next({ name: "not_found" })
+      return
     }
+
     // Redirections 404
     if (to.name === "not_found_redirect") {
       next({ name: "not_found" })
+      return
     }
-    /* MAGIC LINK AUTH */
+
+    // -- Magic link authentication --
     if (to.name === "magic-link-login") {
       const conversationId = to?.query?.conversationId
       const magicId = to?.params?.magicId
@@ -402,71 +408,104 @@ router.beforeEach(async (to, from, next) => {
           redirect = { name: "inbox" }
         }
         next(redirect)
+        return
       } else {
         next({ name: "magic-link-error" })
-      }
-    }
-    // CHECK AUTH + REDIRECTIONS
-    else {
-      if (!isAuthenticated()) {
-        if (to.meta?.public) {
-          next()
-        } else {
-          next({ name: "login", query: { next: to.fullPath } })
-        }
         return
       }
+    }
 
-      // If user is authenticated
-      if (isAuthenticated()) {
-        if (from.query.next && from.query.next !== to.fullPath) {
-          next(from.query.next)
-        }
-
-        // if quick session is running, redirect to session live
-        if (enableSession && to.name !== "quick session") {
-          const quickSession = await apiGetQuickSession()
-          if (quickSession) {
-            next({
-              name: "quick session",
-              params: { organizationId: quickSession.organizationId },
-              query: { recover: "true" },
-            })
-          }
-        }
-        // If user try to access an auth route > redirect to conversations
-        if (
-          to.fullPath === "/" ||
-          to.fullPath === "/interface" ||
-          to.meta?.authRoute
-        ) {
-          next({ name: "explore" })
-          return
-        }
-
-        // check if user is allowed to access conversation detail pages
-        if (to.meta?.conversationDetailPage) {
-          const conversationId = to.params.conversationId
-          let userRight = 0
-
-          let getUserRight =
-            await apiGetUserRightFromConversation(conversationId)
-
-          if (getUserRight) {
-            userRight = getUserRight?.right
-          }
-
-          if (userRight > 0) {
-            next()
-          } else {
-            next({ name: "not_found" })
-          }
-        } else if (to.meta?.backoffice) {
-          next()
-        } else {
-          next()
-        }
+    // -- User is not authenticated: redirect to login except if public page --
+    if (!isAuthenticated()) {
+      if (to.meta?.public) {
+        next()
+      } else {
+        next({ name: "login", query: { next: from.query.next || to.fullPath } })
       }
+      return
+    }
+
+    // -- User is authenticated --
+
+    // fetch user
+    const reqUser = await store.dispatch("user/fetchUser")
+    if (reqUser.status === "error") {
+      // For now logout
+      // TODO: handle error if api is down -> error page. Only logout if user is not found
+      logout()
+      next({ name: "login", query: { next: from.query.next || to.fullPath } })
+      return
+    }
+
+    // fetch organizations
+    const reqOrganizations = await store.dispatch(
+      "organizations/fetchOrganizations",
+    )
+    if (reqOrganizations.status === "error") {
+      // For now logout
+      // TODO: redirect to page to create organization
+      logout()
+      next({ name: "login", query: { next: from.query.next || to.fullPath } })
+      return
+    }
+
+    if (from.query.next && from.query.next !== to.fullPath) {
+      next(from.query.next)
+      return
+    }
+
+    if (!to.params.organizationId && !to.meta?.userPage) {
+      next({
+        ...to,
+        params: {
+          organizationId:
+            store.getters["organizations/getDefaultOrganization"].id,
+        },
+      })
+    }
+
+    // if quick session is running, redirect to session live
+    if (enableSession && to.name !== "quick session") {
+      const quickSession = await apiGetQuickSession()
+      if (quickSession) {
+        next({
+          name: "quick session",
+          params: { organizationId: quickSession.organizationId },
+          query: { recover: "true" },
+        })
+        return
+      }
+    }
+    // If user try to access an auth route > redirect to conversations
+    if (
+      to.fullPath === "/" ||
+      to.fullPath === "/interface" ||
+      to.meta?.authRoute
+    ) {
+      next({ name: "explore" })
+      return
+    }
+
+    // check if user is allowed to access conversation detail pages
+    if (to.meta?.conversationDetailPage) {
+      const conversationId = to.params.conversationId
+      let userRight = 0
+
+      let getUserRight = await apiGetUserRightFromConversation(conversationId)
+
+      if (getUserRight) {
+        userRight = getUserRight?.right
+      }
+
+      if (userRight > 0) {
+        next()
+      } else {
+        next({ name: "not_found" })
+      }
+    } else if (to.meta?.backoffice) {
+      next()
+    } else {
+      next()
     }
   } catch (error) {
     console.error(error)

@@ -54,7 +54,7 @@
           v-if="categories.length == 0"
           class="flex1 flex col align-center justify-center fullwidth center-text">
           <h2>{{ $t("explore.no_categories_modal") }}</h2>
-          <router-link :to="`/interface/inbox`" class="underline">
+          <router-link :to="{ name: 'inbox' }" class="underline">
             <span>{{ $t("explore.link_to_inbox") }}</span>
           </router-link>
         </div>
@@ -121,7 +121,7 @@ export default {
     },
     unSelectTag(tag) {
       this.tempSelectedTags = this.tempSelectedTags.filter(
-        (t) => t._id !== tag._id
+        (t) => t._id !== tag._id,
       )
     },
   },
