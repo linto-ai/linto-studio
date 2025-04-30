@@ -121,7 +121,7 @@ export default {
     },
     confirmCreation() {
       this.showModalCreate = false
-      this.fetchTranscriberProfiles()
+      this.debouncedFetchTranscriberProfiles()
     },
     cancelCreation() {
       this.showModalCreate = false

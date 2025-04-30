@@ -6,7 +6,7 @@ const TRANSCRIBER_PROFILES_TEMPLATES = {
       description: "asr description",
       languages: [
         {
-          candidate: "fr-fr",
+          candidate: "fr-FR",
           endpoint: "ws://127.0.0.1:8080/streaming",
         },
       ],
@@ -23,11 +23,7 @@ const TRANSCRIBER_PROFILES_TEMPLATES = {
       languages: [
         {
           candidate: "en-GB",
-          endpoint: "f9e2c544-f6f7-4b74-89cc-67f8a722a358",
-        },
-        {
-          candidate: "fr-FR",
-          endpoint: "f8a073cb-27ea-45c4-80fb-c44a55297c95",
+          endpoint: "endpoint-id",
         },
       ],
       region: "westeurope",
