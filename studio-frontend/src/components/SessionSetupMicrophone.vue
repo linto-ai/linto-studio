@@ -220,16 +220,18 @@ export default {
           value: d.deviceId,
         }))
       }
+
+      // Add default value if not present (Chrome has default value, Firefox not)
+      if (!res.find((d) => d.value === "default")) {
+        res.unshift({
+          text: this.$t(
+            "quick_session.setup_microphone.microphone_default_value",
+          ),
+          value: "default",
+        })
+      }
       this.optionsDeviceList = {
-        devices: [
-          {
-            text: this.$t(
-              "quick_session.setup_microphone.microphone_default_value",
-            ),
-            value: "default",
-          },
-          ...res,
-        ],
+        devices: [...res],
       }
     },
     onVadEvent(speaking) {
