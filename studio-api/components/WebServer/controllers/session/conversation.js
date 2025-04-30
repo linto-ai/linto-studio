@@ -87,7 +87,12 @@ async function initCaptionsForConversation(sessionData, name) {
       const audioFormat = channel.compressAudio ? "mp3" : "wav"
 
       if (!channel.compressAudio && channel.keepAudio) {
-        const caption = initializeCaption(session, channel, name + "offline")
+        const caption = initializeCaption(
+          session,
+          channel,
+          name,
+          session.channels.length,
+        )
 
         caption.metadata.audio = generateAudioMetadata(audioId, audioFormat)
         const { serviceName, endpoint, lang, config } =
@@ -107,12 +112,23 @@ async function initCaptionsForConversation(sessionData, name) {
       }
 
       if (!channel.closedCaptions) continue
-      const caption = initializeCaption(session, channel, name)
+      const caption = initializeCaption(
+        session,
+        channel,
+        name,
+        session.channels.length,
+      )
 
       processChannelCaptions(channel, caption, true)
 
       for (const translation of channel.translations || []) {
-        const tlCaption = initializeCaption(session, channel, name, translation)
+        const tlCaption = initializeCaption(
+          session,
+          channel,
+          name,
+          session.channels.length,
+          translation,
+        )
         processChannelCaptions(channel, tlCaption, false)
         tlCaption.parentName = caption.name
         captions.push(tlCaption)
@@ -137,7 +153,13 @@ async function initCaptionsForConversation(sessionData, name) {
   }
 }
 
-function initializeCaption(session, channel, name, translation) {
+function initializeCaption(
+  session,
+  channel,
+  name,
+  channelCount = 1,
+  translation,
+) {
   let caption = {
     name: `${name} - ${channel.name}`,
     owner: session.owner,
@@ -171,6 +193,11 @@ function initializeCaption(session, channel, name, translation) {
     description: "",
   }
 
+  if (channelCount === 1) {
+    caption.name = `${name}`
+  } else {
+    caption.name = `${name} - ${channel.name}`
+  }
   if (translation) {
     caption.name = `${name} - ${channel.name} - ${translation}`
     caption.locale = translation
