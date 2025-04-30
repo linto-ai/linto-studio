@@ -10,6 +10,7 @@ import { apiGetUserRightFromConversation } from "@/api/conversation"
 import PUBLIC_ROUTES from "../const/publicRoutes"
 import { apiGetQuickSession } from "@/api/session.js"
 import { logout } from "../tools/logout"
+import { customDebug } from "@/tools/customDebug.js"
 
 const defaultComponents = {
   AppHeader: () => import("@/components/AppHeader.vue"),
@@ -37,6 +38,8 @@ let isAuthenticated = function () {
 let router = new Router({
   mode: "history",
   routes: [
+    { path: "/", redirect: { name: "explore" } },
+    { path: "/interface", redirect: { name: "explore" } },
     // BACKOFFICE ROUTES
     {
       path: "/backoffice",
@@ -375,8 +378,11 @@ let router = new Router({
 })
 
 router.beforeEach(async (to, from, next) => {
+  const routerDebug = customDebug("vue:debug:router")
   const enableSession = getEnv("VUE_APP_ENABLE_SESSION") === "true"
   try {
+    routerDebug("beforeEach", to.fullPath, from.fullPath)
+    // Redirections 404
     if (!enableSession && to.meta?.sessionPage) {
       next({ name: "not_found" })
       return
@@ -437,31 +443,47 @@ router.beforeEach(async (to, from, next) => {
       return
     }
 
+    routerDebug("User fetched")
+
     // fetch organizations
     const reqOrganizations = await store.dispatch(
       "organizations/fetchOrganizations",
     )
     if (reqOrganizations.status === "error") {
       // For now logout
-      // TODO: redirect to page to create organization
+      // TODO: redirect to some error page
+      logout()
+      next({ name: "login", query: { next: from.query.next || to.fullPath } })
+      return
+    }
+
+    routerDebug("Organizations fetched")
+
+    if (store.getters["organizations/getOrganizationLength"] === 0) {
+      // TODO: page to create organization
+      routerDebug("No organization")
       logout()
       next({ name: "login", query: { next: from.query.next || to.fullPath } })
       return
     }
 
     if (from.query.next && from.query.next !== to.fullPath) {
+      routerDebug("Redirect to next", from.query.next)
       next(from.query.next)
       return
     }
 
+    console.log(store.getters["organizations/getDefaultOrganization"])
     if (!to.params.organizationId && !to.meta?.userPage) {
+      routerDebug("Redirect to default organization")
       next({
         ...to,
         params: {
           organizationId:
-            store.getters["organizations/getDefaultOrganization"].id,
+            store.getters["organizations/getDefaultOrganization"]._id,
         },
       })
+      return
     }
 
     // if quick session is running, redirect to session live
@@ -499,13 +521,17 @@ router.beforeEach(async (to, from, next) => {
 
       if (userRight > 0) {
         next()
-      } else {
-        next({ name: "not_found" })
+        return
       }
+
+      next({ name: "not_found" })
+      return
     } else if (to.meta?.backoffice) {
       next()
+      return
     } else {
       next()
+      return
     }
   } catch (error) {
     console.error(error)

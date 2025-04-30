@@ -112,7 +112,6 @@ export default {
   mixins: [debounceMixin, conversationListMixin],
   props: {
     userInfo: { type: Object, required: true },
-    currentOrgaPersonal: { type: Boolean, required: true },
     currentOrganizationScope: { type: String, required: true },
   },
   data() {

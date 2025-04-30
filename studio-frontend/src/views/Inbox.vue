@@ -91,7 +91,6 @@ export default {
   props: {
     userInfo: { type: Object, required: true },
     currentOrganizationScope: { type: String, required: true },
-    currentOrgaPersonal: { type: Boolean, required: true },
   },
   data() {
     return {

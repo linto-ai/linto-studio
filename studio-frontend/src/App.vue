@@ -1,9 +1,19 @@
 <template>
   <div id="app">
     <div id="app-view" class="flex col flex1">
+      <keep-alive>
+        <router-view
+          v-if="isAuthenticated"
+          name="AppHeader"
+          :currentOrganizationScope="currentOrganizationScope"
+          :userInfo="user"
+          :userOrganizations="userOrganizations"
+          :currentOrganization="currentOrganization"></router-view>
+      </keep-alive>
       <div class="app-view-content flex col flex1">
         <router-view
           :userInfo="user"
+          :userOrganizations="userOrganizations"
           :currentOrganizationScope="currentOrganizationScope"
           :currentOrganization="currentOrganization" />
       </div>
@@ -14,6 +24,7 @@
 import { bus } from "@/main.js"
 import { mapActions, mapGetters } from "vuex"
 import { customDebug } from "@/tools/customDebug.js"
+import isAuthenticated from "@/tools/isAuthenticated.js"
 
 export default {
   props: {},
@@ -30,6 +41,9 @@ export default {
   },
   computed: {
     ...mapGetters("user", { user: "getUserInfos" }),
+    ...mapGetters("organizations", {
+      userOrganizations: "getOrganizationsAsArray",
+    }),
     currentOrganizationScope: function () {
       return this.$route.params.organizationId
     },
@@ -37,6 +51,12 @@ export default {
       return this.$store.getters["organizations/getOrganizationById"](
         this.currentOrganizationScope,
       )
+    },
+    isPublicPage: function () {
+      return this.$route.meta.public
+    },
+    isAuthenticated: function () {
+      return isAuthenticated()
     },
   },
   components: {},
