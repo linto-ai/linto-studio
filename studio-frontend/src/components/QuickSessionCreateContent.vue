@@ -161,6 +161,7 @@ export default {
         })
 
         if (res.status == "success") {
+          sessionStorage.setItem("startQuickSession", true)
           this.$router.push({
             name: "quick session",
             query: {},

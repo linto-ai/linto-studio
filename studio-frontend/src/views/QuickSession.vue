@@ -1,9 +1,6 @@
 <template>
   <Loading v-if="loading" />
-  <MainContent
-    v-else-if="state == 'microphone-selection'"
-    :sidebar="!recover"
-    box>
+  <MainContent v-else-if="state == 'microphone-selection'" fullscreen box>
     <SessionSetupMicrophone
       ref="sessionSetupMicrophone"
       :recover="recover"
@@ -80,12 +77,15 @@ export default {
       state: null, // microphone-selection, session-live, session-live-visio
       session: null,
       isSavingSession: false,
-      recover: this.$route.query.recover == "true",
+      recover: sessionStorage.getItem("startQuickSession") !== "true",
+      selectedChannel: null,
+      selectedTranslations: null,
       loading: true,
       sessionBot: null,
     }
   },
   mounted() {
+    sessionStorage.setItem("startQuickSession", false)
     this.fetchData()
   },
   methods: {
