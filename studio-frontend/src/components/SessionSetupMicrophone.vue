@@ -82,16 +82,12 @@
         @click="trashSession">
         <span class="label">{{ $t("modal.cancel") }}</span>
       </button>
-      <button class="secondary" v-if="!microphoneWorked" @click="setupSession">
+      <!-- <button class="secondary" v-if="!microphoneWorked" @click="setupSession">
         <span class="label">{{
           $t("quick_session.setup_microphone.bypass")
         }}</span>
-      </button>
-      <button
-        class="btn green"
-        type="submit"
-        :disabled="!microphoneWorked"
-        @click="setupSession">
+      </button> -->
+      <button class="btn green" type="submit" @click="setupSession">
         <span class="icon apply"></span>
         <span class="label">{{ l_applyLabel }} </span>
       </button>
@@ -112,11 +108,7 @@
       </button>
 
       <div class="flex1"></div>
-      <button
-        class="btn"
-        @click="setupSession"
-        :disabled="!microphoneWorked"
-        type="submit">
+      <button class="btn green" @click="setupSession" type="submit">
         <span class="icon apply"></span>
         <span class="label">
           {{ $t("quick_session.restore.continue_button") }}

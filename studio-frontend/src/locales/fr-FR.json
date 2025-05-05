@@ -1072,12 +1072,16 @@
       "bot_lang_label": "Choisir la langue d'affichage dans la visio-conférence"
     },
     "live": {
+      "default_name": "Enregistrement sans titre",
       "status_no_websocket": "Déconnecté du serveur audio",
       "status_recording": "Microphone en cours d'enregistrement",
       "status_muted": "Muet",
-      "save_button": "Sauvegarder et quitter"
+      "save_button": "Sauvegarder et quitter",
+      "pause_button": "Pause",
+      "start_button": "Démarrer"
     },
     "live_visio": {
+      "default_name": "Réunion {type} sans titre",
       "status_recording_visio": "Enregistrement de la visio-conférence en cours"
     }
   },

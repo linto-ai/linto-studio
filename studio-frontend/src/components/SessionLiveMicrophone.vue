@@ -27,7 +27,11 @@
       :fontSize="fontSize"
       noTitle
       :selectedTranslations="selectedTranslation"
-      :selectedChannel="selectedChannel" />
+      :selectedChannel="selectedChannel"
+      fromMicrophone
+      @toggleMicrophone="toggleMicrophone"
+      :isRecording="isRecording"
+      @onSave="$emit('onSave')" />
   </MainContent>
 </template>
 <script>
@@ -67,7 +71,7 @@ export default {
     return {
       selectedTranslation: "original",
       displayLiveTranscription: true,
-      displaySubtitles: true,
+      displaySubtitles: false,
       fontSize: "40",
       selectedChannel: currentChannel,
     }

@@ -15,6 +15,7 @@
   <SessionLiveMicrophone
     v-else-if="state == 'session-live'"
     ref="sessionLiveMicrophone"
+    @onSave="onSaveMicroSession"
     :deviceId="selectedDeviceId"
     :currentOrganizationScope="currentOrganizationScope"
     :session="session">
@@ -54,6 +55,7 @@ import {
   apiStopBot,
 } from "@/api/session.js"
 import { userName } from "@/tools/userName.js"
+import { capitalizeFirstLetter } from "@/tools/capitalizeFirstLetter.js"
 
 import SessionSetupMicrophone from "@/components/SessionSetupMicrophone.vue"
 import SessionLiveMicrophone from "@/components/SessionLiveMicrophone.vue"
@@ -144,7 +146,15 @@ export default {
       await this.$nextTick()
       this.isSavingSession = true
       const now = new Date()
-      const conversationName = `Meeting from ${userName(this.userInfo)}, ${now.toLocaleString()} `
+      let conversationName = ""
+      if (this.sessionBot) {
+        conversationName = this.$t("quick_session.live_visio.default_name", {
+          type: capitalizeFirstLetter(this.sessionBot.provider),
+        })
+      } else {
+        conversationName = this.$t("quick_session.live.default_name")
+      }
+
       const sessionToDelete = this.session
       await apiDeleteQuickSession(
         this.currentOrganizationScope,

@@ -1,6 +1,40 @@
 <template>
   <div>
     <h2>{{ $t("quick_session.creation.transcription_settings_title") }}</h2>
+    <!-- -- -- -- -- OFFLINE Transcription -- -- -- -- -- -->
+
+    <section>
+      <FormCheckbox
+        :field="fieldOfflineTranscription"
+        v-model="fieldOfflineTranscription.value"
+        switchDisplay />
+      <div v-if="fieldOfflineTranscription.value" class="subSection">
+        <h3>{{ $t("conversation.conversation_creation_right_title") }}</h3>
+        <div class="form-field flex col">
+          <label class="form-label">
+            {{ $t("conversation.conversation_creation_right_label") }}
+          </label>
+          <select v-model="membersRight.value">
+            <option
+              v-for="uright in membersRight.list"
+              :key="uright.value"
+              :value="uright.value">
+              {{ uright.txt }}
+            </option>
+          </select>
+        </div>
+        <div class="medium-margin-top flex col gap-small">
+          <h3>{{ $t("conversation.transcription_service_title") }}</h3>
+          <div class="error-field" v-if="fieldTranscriptionService.error">
+            {{ fieldTranscriptionService.error }}
+          </div>
+          <ConversationCreateServices
+            :serviceList="fieldTranscriptionService.list"
+            v-model="fieldTranscriptionService.value" />
+        </div>
+      </div>
+    </section>
+
     <!-- -- -- -- -- LIVE transcription -- -- -- -- -->
 
     <section>
@@ -54,39 +88,6 @@
       </div>
     </section>
 
-    <!-- -- -- -- -- OFFLINE Transcription -- -- -- -- -- -->
-
-    <section>
-      <FormCheckbox
-        :field="fieldOfflineTranscription"
-        v-model="fieldOfflineTranscription.value"
-        switchDisplay />
-      <div v-if="fieldOfflineTranscription.value" class="subSection">
-        <h3>{{ $t("conversation.conversation_creation_right_title") }}</h3>
-        <div class="form-field flex col">
-          <label class="form-label">
-            {{ $t("conversation.conversation_creation_right_label") }}
-          </label>
-          <select v-model="membersRight.value">
-            <option
-              v-for="uright in membersRight.list"
-              :key="uright.value"
-              :value="uright.value">
-              {{ uright.txt }}
-            </option>
-          </select>
-        </div>
-        <div class="medium-margin-top flex col gap-small">
-          <h3>{{ $t("conversation.transcription_service_title") }}</h3>
-          <div class="error-field" v-if="fieldTranscriptionService.error">
-            {{ fieldTranscriptionService.error }}
-          </div>
-          <ConversationCreateServices
-            :serviceList="fieldTranscriptionService.list"
-            v-model="fieldTranscriptionService.value" />
-        </div>
-      </div>
-    </section>
     <span class="error-field" v-if="field.error !== null">{{
       field.error
     }}</span>
@@ -132,14 +133,14 @@ export default {
     return {
       fieldSubInVisio: {
         ...EMPTY_FIELD,
-        value: this.value.subInVisio ?? true,
+        value: this.value.subInVisio ?? false,
         label: this.$i18n.t(
           "quick_session.setup_visio.display_transcription_in_visio_label",
         ),
       },
       fieldSubInStudio: {
         ...EMPTY_FIELD,
-        value: this.value.subInStudio ?? true,
+        value: this.value.subInStudio ?? false,
         label: this.$i18n.t("quick_session.creation.live_transcription_label"),
       },
       fieldDiarizationEnabled: {
@@ -150,13 +151,15 @@ export default {
       fieldKeepAudio: {
         ...EMPTY_FIELD,
         value: this.value.keepAudio ?? true,
-        disabled: false,
-        disabledReason: "",
+        disabled: true,
+        disabledReason: this.$t(
+          "quick_session.creation.keep_audio_disabled_because_offline",
+        ),
         label: this.$t("session.create_page.keep_audio_label"),
       },
       fieldOfflineTranscription: {
         ...EMPTY_FIELD,
-        value: this.value.offlineTranscription ?? false,
+        value: this.value.offlineTranscription ?? true,
         label: this.$t("quick_session.creation.offline_transcription_label"),
       },
       selectedProfile: this.value.selectedProfile,
@@ -189,7 +192,10 @@ export default {
       },
     },
     "fieldSubInStudio.value": {
-      handler() {
+      handler(value) {
+        if (value) {
+          this.fieldSubInVisio.value = true
+        }
         this.sendUpdate()
       },
     },

@@ -101,9 +101,9 @@ export default {
         value: {
           keepAudio: true,
           diarization: false,
-          subInStudio: true,
-          subInVisio: true,
-          offlineTranscription: false,
+          subInStudio: false,
+          subInVisio: false,
+          offlineTranscription: true,
           selectedProfile: this.transcriberProfiles?.[0] ?? null,
           transcriptionService:
             this.transcriptionServices.length > 0
@@ -133,6 +133,7 @@ export default {
             diarization: settings.diarization ?? false,
             keepAudio: settings.keepAudio,
             compressAudio: !settings.offlineTranscription,
+            enableLiveTranscripts: settings.subInStudio,
             //async: settings.offlineTranscription,
             meta: {
               transcriptionService: settings.transcriptionService,
