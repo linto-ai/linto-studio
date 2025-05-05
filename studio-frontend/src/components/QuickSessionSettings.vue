@@ -43,7 +43,13 @@
         v-model="fieldSubInStudio.value"
         switchDisplay>
         <template v-slot:content-after-label>
-          <Chip value="beta" red class="small-margin-left">Beta</Chip>
+          <Chip
+            value="beta"
+            red
+            class="small-margin-left"
+            v-if="showBetaLiveTranscription">
+            Beta
+          </Chip>
         </template>
       </FormCheckbox>
       <div v-if="fieldSubInStudio.value" class="subSection flex col gap-small">
@@ -97,6 +103,7 @@
 import EMPTY_FIELD from "@/const/emptyField.js"
 import { testService } from "@/tools/fields/testService.js"
 import RIGHTS_LIST from "@/const/rigthsList"
+import { getEnv } from "@/tools/getEnv"
 
 import SessionTranslationSelection from "@/components/SessionTranslationSelection.vue"
 import FormInput from "@/components/FormInput.vue"
@@ -263,6 +270,9 @@ export default {
   computed: {
     isCompatibleWithDiarization() {
       return this.selectedProfile?.config?.hasDiarization
+    },
+    showBetaLiveTranscription() {
+      return getEnv("VUE_APP_SHOW_BETA_LIVE_TRANSCRIPTION") === "true"
     },
   },
   components: {
