@@ -3,8 +3,8 @@
     "openapi": "3.0.3",
     "info": {
       "version": "1.0.0",
-      "title": "Conversation manager API client",
-      "description": "A tool allowing to play with the conversation manage",
+      "title": "Studio API client",
+      "description": "A tool that allows interaction with the Studio API",
       "termsOfService": "https://doc.linto.ai/#/?id=gnu-affero-general-public-licence-v3",
       "contact": {
         "name": "LINAGORA",
