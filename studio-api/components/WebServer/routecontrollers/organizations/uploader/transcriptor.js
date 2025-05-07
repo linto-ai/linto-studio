@@ -9,6 +9,10 @@ const { addFileMetadataToConversation, initConversation } = require(
   `${process.cwd()}/components/WebServer/controllers/conversation/generator`,
 )
 
+const { deleteFile } = require(
+  `${process.cwd()}/components/WebServer/controllers/files/store`,
+)
+
 const {
   prepareFileFormData,
   prepareRequest,
@@ -104,11 +108,19 @@ async function createConversation(processing_job, body) {
       filter: {},
     }
     let conversation = initConversation(body, body.userId, job.job_id)
-    conversation = await addFileMetadataToConversation(
-      conversation,
-      body.file_data,
-      body.endpoint,
-    )
+
+    // We don't store the audio file when we it's coming from a URL
+    if (body.url) {
+      conversation.metadata.audio.fromUrl = body.url
+      conversation.metadata.transcription.endpoint = body.endpoint
+      deleteFile(body.file_data.storageFilePath)
+    } else {
+      conversation = await addFileMetadataToConversation(
+        conversation,
+        body.file_data,
+        body.endpoint,
+      )
+    }
 
     const result = await model.conversations.create(conversation)
     if (result.insertedCount !== 1) throw new ConversationError()

@@ -101,7 +101,7 @@ function deleteFile(filePath) {
   try {
     fs.unlinkSync(filePath)
   } catch (error) {
-    debug("File not found to be deleted : ", filePath)
+    debug("File not found for deletion : ", filePath)
   }
 }
 
