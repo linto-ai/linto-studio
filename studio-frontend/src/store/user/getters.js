@@ -3,7 +3,10 @@ const getters = {
     return state.userInfos
   },
   getUserId(state) {
-    return state.userInfos.id
+    return state.userInfos._id
+  },
+  getUserPlatformRole(state) {
+    return state.userInfos.role
   },
 }
 

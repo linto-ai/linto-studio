@@ -25,6 +25,8 @@
   -->
 </template>
 <script>
+import { mapActions, mapGetters } from "vuex"
+
 import { bus } from "../main.js"
 import { userName } from "@/tools/userName.js"
 import CustomSelect from "@/components/CustomSelect.vue"
@@ -49,9 +51,7 @@ export default {
     bus.$off("navigation", this.closeMenu)
   },
   computed: {
-    user() {
-      return this.$store.state.userInfo
-    },
+    ...mapGetters("user", { user: "getUserInfos" }),
     imgUrl() {
       const imageUrl = this.userInfo.img ?? "pictures/default.jpg"
       return `${process.env.VUE_APP_PUBLIC_MEDIA}/${imageUrl}`

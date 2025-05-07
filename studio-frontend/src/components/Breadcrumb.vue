@@ -36,7 +36,7 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-
+import { mapGetters } from "vuex"
 import { userName } from "@/tools/userName"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"
@@ -52,20 +52,13 @@ export default {
     currentRoute() {
       return this.$route
     },
-    currentOrganization() {
-      return this.$store.state.currentOrganization
-    },
-    userInfo() {
-      return this.$store.state.userInfo
-    },
-    currentOrganizationScope() {
-      return this.currentOrganization._id
-    },
+    ...mapGetters("organizations", {
+      currentOrganization: "getCurrentOrganization",
+      currentOrganizationScope: "getCurrentOrganizationScope",
+    }),
+    ...mapGetters("user", { userInfo: "getUserInfos" }),
     userName() {
       return userName(this.user)
-    },
-    user() {
-      return this.$store.state.userInfo
     },
     isUserPage() {
       return this.$route.meta?.userPage

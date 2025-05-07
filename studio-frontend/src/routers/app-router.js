@@ -473,7 +473,6 @@ router.beforeEach(async (to, from, next) => {
       return
     }
 
-    console.log(store.getters["organizations/getDefaultOrganization"])
     if (!to.params.organizationId && !to.meta?.userPage) {
       routerDebug("Redirect to default organization")
       next({
@@ -484,6 +483,11 @@ router.beforeEach(async (to, from, next) => {
         },
       })
       return
+    } else {
+      store.dispatch(
+        "organizations/setCurrentOrganizationScope",
+        to.params.organizationId,
+      )
     }
 
     // if quick session is running, redirect to session live

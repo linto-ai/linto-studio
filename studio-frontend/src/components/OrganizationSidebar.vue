@@ -65,6 +65,7 @@
 <script>
 import { Fragment } from "vue-fragment"
 import { getEnv } from "@/tools/getEnv.js"
+import { mapActions, mapGetters } from "vuex"
 
 import { bus } from "@/main.js"
 import { userName } from "@/tools/userName"
@@ -82,20 +83,14 @@ export default {
     return {}
   },
   computed: {
-    currentOrganization() {
-      return this.$store.state.currentOrganization
-    },
-    currentOrganizationScope() {
-      return this.currentOrganization._id
-    },
-    userOrganizations() {
-      return this.$store.state.userOrganizations
-    },
+    ...mapGetters("organizations", {
+      currentOrganization: "getCurrentOrganization",
+    }),
     selectedTab() {
       return this.$route.name
     },
     userInfo() {
-      return this.$store.state.userInfo
+      return this.$store.getters["user/getUserInfos"]
     },
     userName() {
       return userName(this.userInfo)

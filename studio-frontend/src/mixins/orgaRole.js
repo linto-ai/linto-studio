@@ -1,3 +1,5 @@
+import { mapActions, mapGetters } from "vuex"
+
 const ROLES = [
   {
     name: "Member",
@@ -33,19 +35,21 @@ const ROLES_INDEXED_BY_VALUE = ROLES.reduce((acc, role) => {
 export const orgaRoleMixin = {
   methods: {
     isInOrganization(organizationId) {
-      return this.$store.state.rolesInOrganizations.has(organizationId)
+      return this.$store.getters["organizations/isInOrganization"](
+        organizationId,
+      )
     },
     isAtLeastMaintainerOfOrganization(organizationId) {
-      if (!this.isInOrganization(organizationId)) return false
-      return (
-        this.$store.state.rolesInOrganizations.get(organizationId).myrole >= 4
-      )
+      return this.$store.getters[
+        "organizations/isAtLeastMaintainerOfOrganization"
+      ](organizationId)
     },
   },
   computed: {
-    userRole() {
-      return this.$store.getters.getUserRoleInOrganization()
-    },
+    ...mapGetters("organizations", {
+      userRole: "getUserRoleInOrganization",
+      userOrganizations: "getOrganizationsAsArray",
+    }),
     isMember() {
       return this.userRole === 1
     },
@@ -87,11 +91,7 @@ export const orgaRoleMixin = {
     },
     roleToString() {
       if (this.userRole > 6 || this.userRole < 1) return this.$t("Unknown")
-
       return ROLES_INDEXED_BY_VALUE[this.userRole].name
-    },
-    userOrganizations() {
-      return this.$store.state.userOrganizations
     },
   },
 }

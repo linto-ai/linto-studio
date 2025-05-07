@@ -9,6 +9,12 @@ const mutations = {
   updateOrganization(state, id, organization) {
     state.organizations[id] = organization
   },
+  setRolesInOrganizations(state, indexedOrganizations) {
+    state.rolesInOrganizations = indexedOrganizations
+  },
+  setCurrentOrganizationScope(state, organizationId) {
+    state.currentOrganizationScope = organizationId
+  },
 }
 
 export default mutations

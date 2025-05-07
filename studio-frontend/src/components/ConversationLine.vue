@@ -353,7 +353,8 @@ export default {
       }
     },
     isFavorite() {
-      return this.$store.getters.isFavoriteConversation(this.conversation._id)
+      return false
+      //return this.$store.getters.isFavoriteConversation(this.conversation._id)
     },
     _selectedConversation: {
       get() {

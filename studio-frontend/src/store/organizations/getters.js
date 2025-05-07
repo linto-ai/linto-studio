@@ -1,3 +1,4 @@
+import { getUserRoleInOrganization } from "@/tools/getUserRoleInOrganization"
 const getters = {
   getOrganizations(state) {
     return state.organizations
@@ -12,8 +13,25 @@ const getters = {
     return Object.values(state.organizations)
   },
   getOrganizationLength(state) {
-    console.log(state.organizations)
     return Object.keys(state.organizations).length
+  },
+  getCurrentOrganizationScope(state) {
+    return state.currentOrganizationScope
+  },
+  getCurrentOrganization(state) {
+    return state.organizations[state.currentOrganizationScope]
+  },
+  getUserRoleInOrganization: (state, getters, rootState, rootGetters) => {
+    let organization = getters.getCurrentOrganization
+    const userId = rootGetters["user/getUserId"]
+    return getUserRoleInOrganization(organization, userId)
+  },
+  isInOrganization: (state) => (organizationId) => {
+    return state.rolesInOrganizations.has(organizationId)
+  },
+  isAtLeastMaintainerOfOrganization: (state, getters) => (organizationId) => {
+    if (!getters.isInOrganization(organizationId)) return false
+    return state.rolesInOrganizations.get(organizationId).myrole >= 4
   },
 }
 
