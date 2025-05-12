@@ -49,7 +49,13 @@
             <!-- title -->
             <router-link
               :title="conversation.name"
-              :to="`/interface/conversations/${conversation._id}/transcription`"
+              :to="{
+                name: 'conversations transcription',
+                params: {
+                  conversationId: conversation._id,
+                  organizationId: currentOrganizationScope,
+                },
+              }"
               class="conversation-line__title no-padding no-propagation text-cut">
               {{ conversation.name }}
             </router-link>
@@ -159,7 +165,10 @@
         <router-link
           :to="{
             name: 'conversations overview',
-            params: { conversationId: this.conversation._id },
+            params: {
+              conversationId: this.conversation._id,
+              organizationId: this.currentOrganizationScope,
+            },
           }"
           class="conversation-line__secondary-action">
           <div class="conversation-line__secondary-action__button">
@@ -173,7 +182,10 @@
           :disabled="isFromSession"
           :to="{
             name: 'conversations subtitles',
-            params: { conversationId: this.conversation._id },
+            params: {
+              conversationId: this.conversation._id,
+              organizationId: this.currentOrganizationScope,
+            },
           }"
           class="conversation-line__secondary-action">
           <div class="conversation-line__secondary-action__button">
@@ -185,7 +197,10 @@
         <router-link
           :to="{
             name: 'conversations publish',
-            params: { conversationId: this.conversation._id },
+            params: {
+              conversationId: this.conversation._id,
+              organizationId: this.currentOrganizationScope,
+            },
           }"
           class="conversation-line__secondary-action">
           <div class="conversation-line__secondary-action__button">

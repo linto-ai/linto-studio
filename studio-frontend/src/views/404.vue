@@ -5,7 +5,7 @@ import { RouterLink } from 'vue-router';
     <h2>{{ $t("globalError.page_not_found") }}</h2>
     <Svglogo style="max-height: 15rem" />
 
-    <RouterLink to="/" class="btn primary">
+    <RouterLink :to="{ name: 'explore' }" class="btn primary">
       {{ $t("globalError.back_to_home") }}
     </RouterLink>
   </div>

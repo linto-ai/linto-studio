@@ -7,7 +7,11 @@ const getters = {
     return state.organizations[id]
   },
   getDefaultOrganization(state) {
-    return Object.values(state.organizations)?.[0] || null
+    return (
+      state.currentOrganizationScope ||
+      Object.values(state.organizations)?.[0] ||
+      null
+    )
   },
   getOrganizationsAsArray(state) {
     return Object.values(state.organizations)
