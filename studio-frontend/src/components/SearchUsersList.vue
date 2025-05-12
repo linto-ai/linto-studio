@@ -45,7 +45,7 @@ export default {
       if (this.searchMemberValue.length > 0) {
         return this.searchUsersList.map((user) => {
           const existingUserIndex = this.currentUser.findIndex(
-            (usr) => usr._id === user._id
+            (usr) => usr._id === user._id,
           )
           if (existingUserIndex < 0) {
             return {
@@ -63,7 +63,7 @@ export default {
       return []
     },
     userInfo() {
-      return this.$store.state.userInfo
+      return this.$store.getters["user/getUserInfos"]
     },
   },
   watch: {

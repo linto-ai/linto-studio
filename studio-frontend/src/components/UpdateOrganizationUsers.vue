@@ -165,9 +165,6 @@ export default {
     }
   },
   computed: {
-    userRole() {
-      return this.$store.getters.getUserRoleInOrganization()
-    },
     sortedUsers() {
       return sortArray(
         this.orgaMembers,

@@ -7,29 +7,6 @@
     <SessionActiveList
       v-else
       :currentOrganizationScope="currentOrganizationScope"></SessionActiveList>
-    <!-- <Loading v-if="loading" />
-    <ErrorPage v-else-if="error" :error="error" />
-    <div v-else class="flex flex1">
-      <div v-if="sessionList.length > 0" class="flex col gap-medium flex1">
-        <SessionListLine
-          v-for="session in sessionList"
-          :key="session.id"
-          :session="session"></SessionListLine>
-        <SessionWeekList></SessionWeekList>
-      </div>
-      <div class="flex col align-center justify-center flex1" v-else>
-        <h2 class="center-text">
-          {{ $t("session.list_page.no_sessions") }}
-        </h2>
-        <router-link
-          :title="$t('navigation.conversation.create')"
-          to="/interface/conversations/create"
-          class="btn green-border">
-          <span class="label">{{ $t("navigation.conversation.create") }}</span>
-          <span class="icon new"></span>
-        </router-link>
-      </div>
-    </div> -->
   </MainContent>
 </template>
 <script>

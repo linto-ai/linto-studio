@@ -43,14 +43,10 @@ export default {
     ...mapGetters("user", { user: "getUserInfos" }),
     ...mapGetters("organizations", {
       userOrganizations: "getOrganizationsAsArray",
+      currentOrganization: "getCurrentOrganization",
     }),
     currentOrganizationScope: function () {
       return this.$route.params.organizationId
-    },
-    currentOrganization: function () {
-      return this.$store.getters["organizations/getOrganizationById"](
-        this.currentOrganizationScope,
-      )
     },
     isPublicPage: function () {
       return this.$route.meta.public

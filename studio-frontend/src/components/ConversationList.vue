@@ -36,7 +36,10 @@
       <router-link
         v-if="isAtLeastUploader"
         :title="$t('navigation.conversation.create')"
-        to="/interface/conversations/create"
+        :to="{
+          name: 'conversations create',
+          params: { organizationId: currentOrganizationScope },
+        }"
         class="btn green-border">
         <span class="label">{{ $t("navigation.conversation.create") }}</span>
         <span class="icon new"></span>

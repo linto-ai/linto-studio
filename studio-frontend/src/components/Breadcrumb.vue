@@ -20,7 +20,10 @@
     <router-link
       id="upload-media-button"
       :title="createTitle"
-      to="/interface/conversations/create"
+      :to="{
+        name: 'conversations create',
+        params: { organizationId: currentOrganizationScope },
+      }"
       class="btn nav-link green no-shrink"
       tag="button"
       v-if="

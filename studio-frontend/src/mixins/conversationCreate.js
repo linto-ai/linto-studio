@@ -25,10 +25,10 @@ export default {
       type: String,
       required: true,
     },
-    userOrganizations: {
-      type: Array,
-      required: true,
-    },
+    // userOrganizations: {
+    //   type: Array,
+    //   required: true,
+    // },
   },
   data() {
     return {
@@ -205,14 +205,15 @@ export default {
 
           if (this.audioFiles.length === 0) {
             this.formState = "success"
-            bus.$emit("set_organization_scope", {
-              organizationId: this.conversationOrganization.value,
-            })
             bus.$emit("app_notif", {
               status: "success",
               message: this.$i18n.t("conversation.creation_success_message"),
               redirect: false,
               cantBeClosed: true,
+            })
+            this.$router.push({
+              name: "explore",
+              params: { organizationId: this.conversationOrganization.value },
             })
           }
         } else {
@@ -257,14 +258,19 @@ export default {
 
           if (conversationHasBeenCreated) {
             this.formState = "success"
-            bus.$emit("set_organization_scope", {
-              organizationId: this.conversationOrganization.value,
-            })
+            // bus.$emit("set_organization_scope", {
+            //   organizationId: this.conversationOrganization.value,
+            // })
+
             bus.$emit("app_notif", {
               status: "success",
               message: this.$i18n.t("conversation.creation_success_message"),
               redirect: false,
               cantBeClosed: true,
+            })
+            this.$router.push({
+              name: "explore",
+              params: { organizationId: this.conversationOrganization.value },
             })
           } else {
             this.emitError(

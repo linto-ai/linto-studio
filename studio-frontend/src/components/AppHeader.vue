@@ -9,14 +9,6 @@
         {{ title }}
       </h1>
     </router-link>
-    <!-- <router-link
-      :title="$t('navigation.conversation.create')"
-      to="/interface/conversations/create"
-      class="btn nav-link green-border"
-      id="main-create-conv-button">
-      <span class="icon new"></span>
-      <span class="label">{{ $t("navigation.conversation.create") }}</span>
-    </router-link> -->
     <div class="flex1 flex align-center justify-center"></div>
     <ThemeSwitcher v-if="darkThemeFeatureEnabled"></ThemeSwitcher>
     <LocalSwitcher></LocalSwitcher>

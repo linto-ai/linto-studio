@@ -94,6 +94,8 @@
   </nav>
 </template>
 <script>
+import { mapActions, mapGetters } from "vuex"
+
 import { bus } from "@/main.js"
 import { getEnv } from "@/tools/getEnv"
 import OrganizationSelector from "@/components/OrganizationSelector.vue"
@@ -118,20 +120,16 @@ export default {
     },
   },
   computed: {
+    ...mapGetters("organizations", {
+      currentOrganization: "getCurrentOrganization",
+      currentOrganizationScope: "getCurrentOrganizationScope",
+    }),
+    ...mapGetters("user", { userInfo: "getUserInfos" }),
     logo() {
       return `/img/${getEnv("VUE_APP_LOGO")}`
     },
     title() {
       return getEnv("VUE_APP_NAME")
-    },
-    currentOrganization() {
-      return this.$store.state.currentOrganization
-    },
-    userInfo() {
-      return this.$store.state.userInfo
-    },
-    currentOrganizationScope() {
-      return this.currentOrganization._id
     },
     sessionEnable() {
       return getEnv("VUE_APP_ENABLE_SESSION") === "true"

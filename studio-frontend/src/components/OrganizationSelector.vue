@@ -10,10 +10,13 @@
     @input="onClickMenu" />
 </template>
 <script>
+import { mapActions, mapGetters } from "vuex"
 import { bus } from "../main.js"
-import CustomSelect from "./CustomSelect.vue"
+
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
+
+import CustomSelect from "./CustomSelect.vue"
 
 export default {
   mixins: [orgaRoleMixin, platformRoleMixin],
@@ -61,13 +64,11 @@ export default {
           value: "settings",
           icon: "settings",
           text: this.$t("navigation.organisation.setting"),
-          link: `/interface/organizations/${this.currentOrganizationScope}`,
         },
         {
           value: "tags",
           icon: "tag",
           text: this.$t("navigation.tabs.manage_tags"),
-          link: "/interface/tags/settings",
         },
       ]
 
@@ -76,7 +77,6 @@ export default {
           value: "create",
           icon: "new",
           text: this.$t("navigation.organisation.create"),
-          link: "/interface/organizations/create",
         })
       }
       return {
@@ -86,25 +86,33 @@ export default {
     },
   },
   methods: {
+    ...mapActions("organizations", ["setCurrentOrganizationScope"]),
     closeMenu() {
       this.navOrganizationVisible = false
     },
     onClickMenu(value) {
       if (value === "settings") {
-        this.$router.push(
-          `/interface/organizations/${this.currentOrganizationScope}`,
-        )
+        this.$router.push({
+          name: "organizations update",
+          params: { organizationId: this.currentOrganizationScope },
+        })
       } else if (value === "create") {
-        this.$router.push(`/interface/organizations/create`)
+        this.$router.push({
+          name: "conversations create",
+          params: { organizationId: currentOrganizationScope },
+        })
       } else if (value === "tags") {
-        this.$router.push(`/interface/tags/settings`)
+        this.$router.push(
+          `/interface/${this.currentOrganizationScope}/tags/settings`,
+        )
       } else {
-        this.setOrganizationScope(value)
+        this.setCurrentOrganizationScope(value)
+        this.$router.push({
+          name: "explore",
+          params: { organizationId: value },
+        })
+        this.navOrganizationVisible = false
       }
-    },
-    setOrganizationScope(organizationId) {
-      bus.$emit("set_organization_scope", { organizationId })
-      this.navOrganizationVisible = false
     },
   },
   components: {

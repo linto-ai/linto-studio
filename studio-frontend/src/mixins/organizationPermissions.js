@@ -35,7 +35,8 @@ export const organizationPermissionsMixin = {
   },
   computed: {
     organizationPermissions() {
-      return this.$store.state.currentOrganization.permissions
+      return this.$store.getters["organizations/getCurrentOrganization"]
+        .permissions
     },
     canUploadInCurrentOrganization() {
       return this.hasUploadPermission(this.organizationPermissions)
