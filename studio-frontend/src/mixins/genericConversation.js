@@ -4,6 +4,7 @@ import {
   apiGetConversationById,
   apiGetConversationChild,
 } from "../api/conversation.js"
+import userRights from "../const/userRights.js"
 import { bus } from "../main.js"
 import { getCookie } from "../tools/getCookie.js"
 import { workerDisconnect } from "../tools/worker-message.js"
@@ -53,7 +54,7 @@ export const genericConversationMixin = {
   },
   computed: {
     userRights() {
-      return this.$store.state.userRights
+      return userRights
     },
     conversationUsers() {
       if (this.conversationUsersLoaded) {

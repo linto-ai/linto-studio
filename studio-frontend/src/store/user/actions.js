@@ -4,9 +4,13 @@ import { apiGetPersonalUserInfo } from "@/api/user"
 
 const actions = {
   async fetchUser({ commit }) {
+    const token = getCookie("authToken")
     const getUserInfos = await apiGetPersonalUserInfo()
     if (getUserInfos.status === "success") {
-      commit("setUserInfos", getUserInfos.data)
+      commit("setUserInfos", {
+        token,
+        ...getUserInfos.data,
+      })
     }
     return getUserInfos
   },
