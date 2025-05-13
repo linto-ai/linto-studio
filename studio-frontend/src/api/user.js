@@ -36,7 +36,12 @@ export async function apiGetUsersByConversationId(conversationId, notif) {
     notif,
   )
 
-  return res?.data?.conversationUsers
+  return (
+    res?.data?.conversationUsers ?? {
+      organization_members: [],
+      external_members: [],
+    }
+  )
 }
 
 export async function apiUpdateUserRightInConversation(

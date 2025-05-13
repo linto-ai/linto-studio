@@ -3,12 +3,14 @@ import {
   apiGetUserRightFromConversation,
   apiGetConversationById,
   apiGetConversationChild,
-} from "../api/conversation.js"
-import userRights from "../const/userRights.js"
-import { bus } from "../main.js"
-import { getCookie } from "../tools/getCookie.js"
-import { workerDisconnect } from "../tools/worker-message.js"
-import EditorWorker from "../workers/collaboration-worker"
+} from "@/api/conversation.js"
+import { apiGetUsersByConversationId } from "@/api/user.js"
+
+import userRights from "@/const/userRights.js"
+import { bus } from "@/main.js"
+import { getCookie } from "@/tools/getCookie.js"
+import { workerDisconnect } from "@/tools/worker-message.js"
+import EditorWorker from "@/workers/collaboration-worker"
 import { conversationModelMixin } from "./conversationModel.js"
 
 export const genericConversationMixin = {
@@ -24,6 +26,7 @@ export const genericConversationMixin = {
       usersConnected: [],
       focusFields: {},
       conversationUsersLoaded: false,
+      conversationUsers: [],
       conversation: null,
       rootConversation: null,
       canonicalConversation: null,
@@ -55,18 +58,6 @@ export const genericConversationMixin = {
   computed: {
     userRights() {
       return userRights
-    },
-    conversationUsers() {
-      if (this.conversationUsersLoaded) {
-        let convUsers = this.$store.state.conversationUsers ?? {
-          organization_members: [],
-          external_members: [],
-        }
-        return (
-          [...convUsers.organization_members, ...convUsers.external_members] ||
-          []
-        )
-      } else return []
     },
   },
   methods: {
@@ -246,10 +237,13 @@ export const genericConversationMixin = {
       return this.$options.filters.getTimeDiffText(dateVal)
     },
     async dispatchConversationUsers() {
-      this.conversationUsersLoaded = await this.$options.filters.dispatchStore(
-        "getUsersByConversationId",
-        { conversationId: this.conversationId },
-      )
+      this.conversationUsersLoaded = false
+      let convUsers = await apiGetUsersByConversationId(this.conversationId)
+      this.conversationUsers = [
+        ...convUsers.organization_members,
+        ...convUsers.external_members,
+      ]
+      this.conversationUsersLoaded = true
     },
     async getAudioFile() {
       if (this.audioFile === "") {
