@@ -277,6 +277,12 @@
   &.category {
     @include maskImage("../public/img/category.svg");
   }
+  &.pin {
+    @include maskImage("../public/img/pin.svg");
+  }
+  &.pin-on {
+    @include maskImage("../public/img/pin-angle-fill.svg");
+  }
 }
 
 .icon.small {

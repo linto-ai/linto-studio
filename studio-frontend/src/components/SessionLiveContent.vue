@@ -20,6 +20,10 @@
       fromMicrophone
       @toggleMicrophone="$emit('toggleMicrophone')"
       @onSave="$emit('onSave')"
+      :watermarkFrequency="watermarkFrequency"
+      :watermarkDuration="watermarkDuration"
+      :watermarkContent="watermarkContent"
+      :watermarkPinned="watermarkPinned"
       :isRecording="isRecording"></SessionChannel>
     <Loading v-else></Loading>
   </div>
@@ -91,6 +95,22 @@ export default {
       type: Boolean,
       required: false,
       default: false,
+    },
+    watermarkFrequency: {
+      type: Number,
+      required: true,
+    },
+    watermarkDuration: {
+      type: Number,
+      required: true,
+    },
+    watermarkContent: {
+      type: String,
+      required: true,
+    },
+    watermarkPinned: {
+      type: Boolean,
+      required: true,
     },
   },
   data() {

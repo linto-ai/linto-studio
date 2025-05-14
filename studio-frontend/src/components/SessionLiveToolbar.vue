@@ -25,6 +25,48 @@
       :field="fontSizeField"
       v-model="fontSizeField.value"
       v-if="displaySubtitlesField.value" />
+
+    <FormCheckbox
+      v-if="displaySubtitlesField.value"
+      :field="displayWatermarkField"
+      switchDisplay
+      v-model="displayWatermarkField.value">
+      <template v-slot:content-after-label>
+        <button
+          class="only-icon transparent"
+          :aria-label="
+            $t('session.live_page.watermark_settings.settings_button')
+          "
+          :title="$t('session.live_page.watermark_settings.settings_button')"
+          @click="showWatermarkSettings = true">
+          <span class="icon settings" />
+        </button>
+        <button
+          class="only-icon transparent"
+          :aria-label="$t('session.live_page.watermark_settings.unpin_button')"
+          :title="$t('session.live_page.watermark_settings.unpin_button')"
+          @click="togglePin"
+          v-if="watermarkPinned">
+          <span class="icon pin-on" />
+        </button>
+        <button
+          class="only-icon transparent"
+          :aria-label="$t('session.live_page.watermark_settings.pin_button')"
+          :title="$t('session.live_page.watermark_settings.pin_button')"
+          @click="togglePin"
+          v-else>
+          <span class="icon pin" />
+        </button>
+      </template>
+    </FormCheckbox>
+
+    <ModalWatermarkSettings
+      v-if="showWatermarkSettings"
+      @on-cancel="closeWatermarkSettings"
+      @on-confirm="updateWatermarkSettings"
+      :watermarkFrequency="watermarkFrequency"
+      :watermarkDuration="watermarkDuration"
+      :watermarkContent="watermarkContent" />
   </div>
 </template>
 <script>
@@ -35,6 +77,7 @@ import FormInput from "@/components/FormInput.vue"
 import FormCheckbox from "@/components/FormCheckbox.vue"
 import SessionTranslationSelection from "@/components/SessionTranslationSelection.vue"
 import SessionChannelsSelector from "@/components/SessionChannelsSelector.vue"
+import ModalWatermarkSettings from "./ModalWatermarkSettings.vue"
 
 export default {
   props: {
@@ -54,6 +97,10 @@ export default {
       type: Boolean,
       default: true,
     },
+    displayWatermark: {
+      type: Boolean,
+      default: true,
+    },
     fontSize: {
       type: String,
       default: "40",
@@ -65,6 +112,26 @@ export default {
     qualifiedForCrossSubtitles: {
       type: Boolean,
       default: false,
+    },
+    watermarkFrequency: {
+      type: Number,
+      required: true,
+    },
+    watermarkDuration: {
+      type: Number,
+      required: true,
+    },
+    watermarkContent: {
+      type: String,
+      required: true,
+    },
+    displayWatermark: {
+      type: Boolean,
+      required: true,
+    },
+    watermarkPinned: {
+      type: Boolean,
+      required: true,
     },
   },
   data() {
@@ -89,12 +156,31 @@ export default {
         value: this.displayLiveTranscription,
         label: this.$t("session.detail_page.display_live_transcription_label"),
       },
+      displayWatermarkField: {
+        ...EMPTY_FIELD,
+        value: this.displayWatermark,
+        label: this.$t("session.detail_page.display_watermark_label"),
+      },
       p_selectedTranslation: this.selectedTranslation,
       p_selectedChannel: this.selectedChannel,
+      showWatermarkSettings: false,
     }
   },
   mounted() {},
-  methods: {},
+  methods: {
+    updateWatermarkSettings({ frequency, duration, text }) {
+      this.$emit("update:watermarkFrequency", frequency)
+      this.$emit("update:watermarkDuration", duration)
+      this.$emit("update:watermarkContent", text)
+      this.closeWatermarkSettings()
+    },
+    closeWatermarkSettings() {
+      this.showWatermarkSettings = false
+    },
+    togglePin() {
+      this.$emit("update:watermarkPinned", !this.watermarkPinned)
+    },
+  },
   computed: {
     hasTranslations() {
       return this.selectedChannel?.translations?.length > 0
@@ -112,6 +198,9 @@ export default {
     },
     displaySubtitles(value) {
       this.displaySubtitlesField.value = value
+    },
+    displayWatermark(value) {
+      this.displayWatermarkField.value = value
     },
     fontSize(value) {
       this.fontSizeField.value = value
@@ -131,12 +220,16 @@ export default {
     "fontSizeField.value"(value) {
       this.$emit("update:fontSize", value)
     },
+    "displayWatermarkField.value"(value) {
+      this.$emit("update:displayWatermark", value)
+    },
   },
   components: {
     FormInput,
     FormCheckbox,
     SessionTranslationSelection,
     SessionChannelsSelector,
+    ModalWatermarkSettings,
   },
 }
 </script>

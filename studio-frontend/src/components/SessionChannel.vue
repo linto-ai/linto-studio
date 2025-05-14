@@ -133,7 +133,11 @@
       :finalText="finalText"
       :fontSize="fontSize"
       :key="fontSize"
-      :selectedTranslations="selectedTranslations" />
+      :selectedTranslations="selectedTranslations"
+      :watermarkFrequency="watermarkFrequency"
+      :watermarkDuration="watermarkDuration"
+      :watermarkContent="watermarkContent"
+      :watermarkPinned="watermarkPinned" />
     <SubtitleFullscreen
       v-if="showSubtitlesFullscreen"
       :partialText="partialText"
@@ -243,6 +247,22 @@ export default {
       type: Boolean,
       required: false,
       default: false,
+    },
+    watermarkFrequency: {
+      type: Number,
+      required: true,
+    },
+    watermarkDuration: {
+      type: Number,
+      required: true,
+    },
+    watermarkContent: {
+      type: String,
+      required: true,
+    },
+    watermarkPinned: {
+      type: Boolean,
+      required: true,
     },
   },
   data() {

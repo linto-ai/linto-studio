@@ -557,7 +557,7 @@
       "description": "Open source innovations powered by LINAGORA on EXAION infrastructures"
     },
     "sso": {
-      "linagora": "Sign in with Linagora",
+      "linagora": "Sign in with LINAGORA",
       "default": "Single Sign-On (SSO)"
     },
     "teaser": {
@@ -894,6 +894,7 @@
       "delete_button": "Delete session",
       "delete_session_error_message": "The session could not be deleted",
       "display_live_transcription_label": "Display live transcription",
+      "display_watermark_label": "Display watermark",
       "display_subtitles_label": "Display subtitles",
       "end_time_not_defined": "Not defined",
       "font_size_label": "Font size",
@@ -916,10 +917,6 @@
       "stop_force_button": "Force stop and save session to library",
       "stop_session_error_message": "The session could not be stopped",
       "stop_session_success": "The session has been stopped and saved",
-      "subtitle": {
-        "watermark_1": "Transcription by LinTO.ai",
-        "watermark_2": "Open Source AI by"
-      },
       "title_interface_settings": "Interface settings",
       "undefined_lang": "Unknown language",
       "undefined_speaker": "Unknown speaker",
@@ -953,6 +950,16 @@
         "label": "Choose a translation",
         "original_language": "Original language",
         "cross_translation": "Cross translation"
+      },
+      "watermark_settings": {
+        "title": "Watermark settings",
+        "text": "Text",
+        "frequency": "Frequency (seconds)",
+        "duration": "Duration (seconds)",
+        "apply_button": "Apply",
+        "pin_button": "Pin watermark",
+        "unpin_button": "Unpin watermark",
+        "settings_button": "Open watermark settings"
       }
     },
     "profile_selector": {

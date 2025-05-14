@@ -11,4 +11,6 @@ export default {
   VUE_APP_WATERMARK_FREQUENCY: "60",
   VUE_APP_WATERMARK_DURATION: "10",
   VUE_APP_SHOW_BETA_LIVE_TRANSCRIPTION: "false",
+  VUE_APP_WATERMARK_CONTENT:
+    "Transcription by LinTO.ai $linto Open Source AI by $linagora",
 }

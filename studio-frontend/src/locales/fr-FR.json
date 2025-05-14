@@ -557,7 +557,7 @@
       "description": "Innovations Open source propulsées par LINAGORA sur les infrastructures EXAION"
     },
     "sso": {
-      "linagora": "Se connecter avec Linagora",
+      "linagora": "Se connecter avec LINAGORA",
       "default": "Authentification externe (SSO)"
     },
     "teaser": {
@@ -897,6 +897,7 @@
       "delete_session_error_message": "La session n'a pas pu être supprimée",
       "display_live_transcription_label": "Afficher la transcription",
       "display_subtitles_label": "Afficher le sous-titre",
+      "display_watermark_label": "Afficher le filigrane",
       "end_time_not_defined": "Non défini",
       "font_size_label": "Taille de la police",
       "live_transcript_disabled": {
@@ -920,10 +921,6 @@
       "stop_force_button": "Forcer l'arrêt de la session",
       "stop_session_error_message": "La session n'a pas pu être arrêtée",
       "stop_session_success": "La session a été arrétée et sauvegardée",
-      "subtitle": {
-        "watermark_1": "Transcription par LinTO.ai",
-        "watermark_2": "IA Open Source par"
-      },
       "title_interface_settings": "Paramètre d'interface",
       "undefined_lang": "Langage inconnu",
       "undefined_speaker": "Locuteur inconnu",
@@ -957,6 +954,16 @@
         "label": "Choisir la langue de traduction",
         "original_language": "Langue originale",
         "cross_translation": "Traduction croisée"
+      },
+      "watermark_settings": {
+        "title": "Paramètres du filigrane",
+        "text": "Texte",
+        "frequency": "Fréquence (secondes)",
+        "duration": "Durée (secondes)",
+        "apply_button": "Appliquer",
+        "pin_button": "Épingler le filigrane",
+        "unpin_button": "Désépingler le filigrane",
+        "settings_button": "Ouvrir les paramètres du filigrane"
       }
     },
     "profile_selector": {

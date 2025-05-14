@@ -63,7 +63,12 @@
         v-bind:displayLiveTranscription.sync="displayLiveTranscription"
         v-bind:displaySubtitles.sync="displaySubtitles"
         v-bind:fontSize.sync="fontSize"
-        v-bind:selectedChannel.sync="selectedChannel" />
+        v-bind:selectedChannel.sync="selectedChannel"
+        v-bind:watermarkContent.sync="watermarkContent"
+        v-bind:watermarkDuration.sync="watermarkDuration"
+        v-bind:watermarkFrequency.sync="watermarkFrequency"
+        v-bind:displayWatermark.sync="displayWatermark"
+        v-bind:watermarkPinned.sync="watermarkPinned" />
     </template>
 
     <div class="relative flex flex1 col">
@@ -86,7 +91,11 @@
         :displaySubtitles="displaySubtitles"
         :displayLiveTranscription="displayLiveTranscription"
         :session="session"
-        :selectedChannel="selectedChannel" />
+        :selectedChannel="selectedChannel"
+        :watermarkFrequency="watermarkFrequency"
+        :watermarkDuration="watermarkDuration"
+        :watermarkContent="watermarkContent"
+        :watermarkPinned="watermarkPinned" />
 
       <SessionDropdownChannelSelector
         class="mobile"
@@ -114,6 +123,8 @@ import { sessionMixin } from "@/mixins/session.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole"
 import { microphoneMixin } from "@/mixins/microphone.js"
 import { sessionMicrophoneMixin } from "@/mixins/sessionMicrophone.js"
+
+import { getEnv } from "@/tools/getEnv"
 
 import MainContent from "@/components/MainContent.vue"
 import SessionNotStarted from "@/components/SessionNotStarted.vue"
@@ -158,6 +169,11 @@ export default {
       showMicrophoneSetup: false,
       showSubtitlesFullscreen: false,
       currentChannelMicrophone: null,
+      watermarkFrequency: Number(getEnv("VUE_APP_WATERMARK_FREQUENCY")),
+      watermarkDuration: Number(getEnv("VUE_APP_WATERMARK_DURATION")),
+      watermarkContent: getEnv("VUE_APP_WATERMARK_CONTENT"),
+      displayWatermark: true,
+      watermarkPinned: false,
     }
   },
   created() {
