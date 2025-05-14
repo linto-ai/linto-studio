@@ -33,27 +33,6 @@ module.exports = (webServer) => {
         disabled: true,
         requireAuth: false,
       },
-
-      /*************************/
-      /** transcriber profiles */
-      /*************************/
-      {
-        paths: [
-          {
-            path: "/transcriber_profiles",
-            method: ["get"],
-          },
-
-          { path: "/transcriber_profiles", method: ["post"] },
-          {
-            path: "/transcriber_profiles/:id",
-            method: ["get", "put", "delete"],
-          },
-        ],
-        requireAuth: true,
-        requireSessionOperator: true,
-      },
-
       {
         //member access
         scrapPath: /^\/organizations\/[^/]+/,

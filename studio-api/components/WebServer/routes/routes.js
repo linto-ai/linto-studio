@@ -38,6 +38,9 @@ module.exports = (webServer) => {
   let proxy_routes = []
   if (process.env.SESSION_API_ENDPOINT !== "") {
     proxy_routes.push(require("./proxy/sessions/session.js")(webServer))
+    proxy_routes.push(require("./proxy/sessions/sessionAdmin.js")(webServer))
+
+    /* Alias are api only on the studio side */
     api_routes["/api/organizations/:organizationId/sessions"] =
       require("./api/sessions/alias.js")(webServer)
     api_routes["/api/administration"] = [
