@@ -959,9 +959,9 @@
         "apply_button": "Apply",
         "pin_button": "Pin watermark",
         "unpin_button": "Unpin watermark",
-        "settings_button": "Open watermark settings",
-        "clear_subtitle": "Clear subtitles"
-      }
+        "settings_button": "Open watermark settings"
+      },
+      "clear_subtitle": "Clear subtitles"
     },
     "profile_selector": {
       "labels": {

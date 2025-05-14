@@ -32,6 +32,7 @@
       <FormInput :field="fontSizeField" v-model="fontSizeField.value" />
 
       <FormCheckbox
+        v-if="enableWatermark"
         :field="displayWatermarkField"
         switchDisplay
         v-model="displayWatermarkField.value">
@@ -84,6 +85,7 @@
 import { bus } from "@/main.js"
 
 import EMPTY_FIELD from "@/const/emptyField"
+import { getEnv } from "@/tools/getEnv"
 
 import FormInput from "@/components/FormInput.vue"
 import FormCheckbox from "@/components/FormCheckbox.vue"
@@ -199,6 +201,9 @@ export default {
   computed: {
     hasTranslations() {
       return this.selectedChannel?.translations?.length > 0
+    },
+    enableWatermark() {
+      return getEnv("VUE_APP_ENABLE_WATERMARK") === "true"
     },
   },
   watch: {

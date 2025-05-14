@@ -172,7 +172,7 @@ export default {
       watermarkFrequency: Number(getEnv("VUE_APP_WATERMARK_FREQUENCY")),
       watermarkDuration: Number(getEnv("VUE_APP_WATERMARK_DURATION")),
       watermarkContent: getEnv("VUE_APP_WATERMARK_CONTENT"),
-      displayWatermark: true,
+      displayWatermark: getEnv("VUE_APP_ENABLE_WATERMARK") === "true",
       watermarkPinned: false,
     }
   },
