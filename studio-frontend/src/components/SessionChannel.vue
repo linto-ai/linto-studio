@@ -137,7 +137,8 @@
       :watermarkFrequency="watermarkFrequency"
       :watermarkDuration="watermarkDuration"
       :watermarkContent="watermarkContent"
-      :watermarkPinned="watermarkPinned" />
+      :watermarkPinned="watermarkPinned"
+      :displayWatermark="displayWatermark" />
     <SubtitleFullscreen
       v-if="showSubtitlesFullscreen"
       :partialText="partialText"
@@ -261,6 +262,10 @@ export default {
       required: true,
     },
     watermarkPinned: {
+      type: Boolean,
+      required: true,
+    },
+    displayWatermark: {
       type: Boolean,
       required: true,
     },

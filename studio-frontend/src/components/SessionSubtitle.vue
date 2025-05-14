@@ -49,6 +49,10 @@ export default {
       type: Boolean,
       required: true,
     },
+    displayWatermark: {
+      type: Boolean,
+      required: true,
+    },
   },
   data() {
     return {
@@ -68,10 +72,13 @@ export default {
       fontSize: Number(this.fontSize),
       lineHeight: this.lineHeight,
     })
-    this.watermarkShowTimeout = setTimeout(
-      this.drawWatermark.bind(this),
-      this.watermarkFrequency * 1000,
-    )
+
+    if (this.displayWatermark) {
+      this.watermarkShowTimeout = setTimeout(
+        this.drawWatermark.bind(this),
+        this.watermarkFrequency * 1000,
+      )
+    }
 
     bus.$on("clear-session-subtitles", this.reset)
   },
@@ -84,6 +91,11 @@ export default {
     },
     finalText: function (newVal, oldVal) {
       this.subtitleDrawer.newFinal(newVal)
+    },
+    displayWatermark: function (newVal, oldVal) {
+      clearTimeout(this.watermarkShowTimeout)
+      clearTimeout(this.watermarkHideTimeout)
+      this.hideWatermark()
     },
     watermarkFrequency: function (newVal, oldVal) {
       clearTimeout(this.watermarkShowTimeout)
@@ -150,7 +162,7 @@ export default {
       )
       const scrollerContainer = document.getElementById("scroller-container")
 
-      if (!watermark || !scrollerContainer) return
+      if (!watermark || !scrollerContainer || !this.displayWatermark) return
 
       watermark.classList.add("displayed-watermark")
       watermark.classList.remove("hidden-watermark")
@@ -178,6 +190,7 @@ export default {
       watermark.classList.remove("displayed-watermark")
       scrollerContainer.classList.add("scroller-bigger")
       scrollerContainer.classList.remove("scroller-smaller")
+
       this.watermarkShowTimeout = setTimeout(
         this.drawWatermark.bind(this),
         this.watermarkFrequency * 1000,

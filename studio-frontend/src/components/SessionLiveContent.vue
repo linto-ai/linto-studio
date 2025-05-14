@@ -24,6 +24,7 @@
       :watermarkDuration="watermarkDuration"
       :watermarkContent="watermarkContent"
       :watermarkPinned="watermarkPinned"
+      :displayWatermark="displayWatermark"
       :isRecording="isRecording"></SessionChannel>
     <Loading v-else></Loading>
   </div>
@@ -33,6 +34,7 @@ import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
 
 import SessionWS from "@/models/SessionWS.js"
+import { getEnv } from "@/tools/getEnv"
 
 import { sessionModelMixin } from "@/mixins/sessionModel.js"
 import { sessionChannelModelMixin } from "../mixins/sessionChannelModel.js"
@@ -98,19 +100,28 @@ export default {
     },
     watermarkFrequency: {
       type: Number,
-      required: true,
+      required: false,
+      default: Number(getEnv("VUE_APP_WATERMARK_FREQUENCY")),
     },
     watermarkDuration: {
       type: Number,
       required: true,
+      default: Number(getEnv("VUE_APP_WATERMARK_DURATION")),
     },
     watermarkContent: {
       type: String,
       required: true,
+      default: getEnv("VUE_APP_WATERMARK_CONTENT"),
     },
     watermarkPinned: {
       type: Boolean,
       required: true,
+      default: false,
+    },
+    displayWatermark: {
+      type: Boolean,
+      required: true,
+      default: false,
     },
   },
   data() {

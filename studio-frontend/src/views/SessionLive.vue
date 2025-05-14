@@ -92,6 +92,7 @@
         :displayLiveTranscription="displayLiveTranscription"
         :session="session"
         :selectedChannel="selectedChannel"
+        :displayWatermark="displayWatermark"
         :watermarkFrequency="watermarkFrequency"
         :watermarkDuration="watermarkDuration"
         :watermarkContent="watermarkContent"
