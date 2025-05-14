@@ -231,16 +231,6 @@ module.exports = (webServer) => {
             method: ["post"],
             forwardParams: proxyForwardParams,
           },
-          {
-            path: "/organizations/:organizationId/sessions/:id/start-bot",
-            method: ["post"],
-            forwardParams: proxyForwardParams,
-          },
-          {
-            path: "/organizations/:organizationId/sessions/:id/stop-bot",
-            method: ["post"],
-            forwardParams: proxyForwardParams,
-          },
         ],
         requireAuth: true,
         orgaPermissionAccess: PERMISSIONS.SESSION,

@@ -46,7 +46,7 @@ module.exports = (webServer) => {
       {
         paths: [
           {
-            path: "/sessions/",
+            path: "/sessions",
             method: ["get", "post"],
           },
           {
@@ -60,6 +60,24 @@ module.exports = (webServer) => {
           {
             path: "/sessions/:id/stop",
             method: ["put"],
+          },
+        ],
+        requireAuth: true,
+        requireSessionOperator: true,
+      },
+
+      /*************************/
+      /********  Bots  *********/
+      /*************************/
+      {
+        paths: [
+          {
+            path: "/bots",
+            method: ["get", "post"],
+          },
+          {
+            path: "bots/:id",
+            method: ["get", "delete"],
           },
         ],
         requireAuth: true,
