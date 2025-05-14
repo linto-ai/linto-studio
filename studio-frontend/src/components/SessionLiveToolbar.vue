@@ -19,65 +19,77 @@
     <FormCheckbox
       :field="displaySubtitlesField"
       switchDisplay
-      v-model="displaySubtitlesField.value" />
-
-    <FormInput
-      :field="fontSizeField"
-      v-model="fontSizeField.value"
-      v-if="displaySubtitlesField.value" />
-
-    <FormCheckbox
-      v-if="displaySubtitlesField.value"
-      :field="displayWatermarkField"
-      switchDisplay
-      v-model="displayWatermarkField.value">
+      v-model="displaySubtitlesField.value">
       <template v-slot:content-after-label>
-        <button
-          class="only-icon transparent"
-          :aria-label="
-            $t('session.live_page.watermark_settings.settings_button')
-          "
-          :title="$t('session.live_page.watermark_settings.settings_button')"
-          @click="showWatermarkSettings = true">
-          <span class="icon settings" />
-        </button>
-        <button
-          class="only-icon transparent"
-          :aria-label="$t('session.live_page.watermark_settings.unpin_button')"
-          :title="$t('session.live_page.watermark_settings.unpin_button')"
-          @click="togglePin"
-          v-if="watermarkPinned">
-          <span class="icon pin-on" />
-        </button>
-        <button
-          class="only-icon transparent"
-          :aria-label="$t('session.live_page.watermark_settings.pin_button')"
-          :title="$t('session.live_page.watermark_settings.pin_button')"
-          @click="togglePin"
-          v-else>
-          <span class="icon pin" />
-        </button>
+        <!-- <button class="only-icon transparent">
+          <span class="icon clear-history" />
+        </button> -->
       </template>
     </FormCheckbox>
+    <div
+      class="subSection flex col gap-small"
+      v-if="displaySubtitlesField.value">
+      <FormInput :field="fontSizeField" v-model="fontSizeField.value" />
 
-    <ModalWatermarkSettings
-      v-if="showWatermarkSettings"
-      @on-cancel="closeWatermarkSettings"
-      @on-confirm="updateWatermarkSettings"
-      :watermarkFrequency="watermarkFrequency"
-      :watermarkDuration="watermarkDuration"
-      :watermarkContent="watermarkContent" />
+      <FormCheckbox
+        :field="displayWatermarkField"
+        switchDisplay
+        v-model="displayWatermarkField.value">
+        <template v-slot:content-after-label>
+          <button
+            class="only-icon transparent"
+            :aria-label="
+              $t('session.live_page.watermark_settings.settings_button')
+            "
+            :title="$t('session.live_page.watermark_settings.settings_button')"
+            @click="showWatermarkSettings = true">
+            <span class="icon settings" />
+          </button>
+          <button
+            class="only-icon transparent"
+            :aria-label="
+              $t('session.live_page.watermark_settings.unpin_button')
+            "
+            :title="$t('session.live_page.watermark_settings.unpin_button')"
+            @click="togglePin"
+            v-if="watermarkPinned">
+            <span class="icon pin-on" />
+          </button>
+          <button
+            class="only-icon transparent"
+            :aria-label="$t('session.live_page.watermark_settings.pin_button')"
+            :title="$t('session.live_page.watermark_settings.pin_button')"
+            @click="togglePin"
+            v-else>
+            <span class="icon pin" />
+          </button>
+        </template>
+      </FormCheckbox>
+
+      <button @click="clearSubtitles">
+        <span class="icon clear-history" />
+        <span class="label">{{ $t("session.live_page.clear_subtitle") }}</span>
+      </button>
+      <ModalWatermarkSettings
+        v-if="showWatermarkSettings"
+        @on-cancel="closeWatermarkSettings"
+        @on-confirm="updateWatermarkSettings"
+        :watermarkFrequency="watermarkFrequency"
+        :watermarkDuration="watermarkDuration"
+        :watermarkContent="watermarkContent" />
+    </div>
   </div>
 </template>
 <script>
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import EMPTY_FIELD from "@/const/emptyField"
+
 import FormInput from "@/components/FormInput.vue"
 import FormCheckbox from "@/components/FormCheckbox.vue"
 import SessionTranslationSelection from "@/components/SessionTranslationSelection.vue"
 import SessionChannelsSelector from "@/components/SessionChannelsSelector.vue"
-import ModalWatermarkSettings from "./ModalWatermarkSettings.vue"
+import ModalWatermarkSettings from "@/components/ModalWatermarkSettings.vue"
 
 export default {
   props: {
@@ -179,6 +191,9 @@ export default {
     },
     togglePin() {
       this.$emit("update:watermarkPinned", !this.watermarkPinned)
+    },
+    clearSubtitles() {
+      bus.$emit("clear-session-subtitles")
     },
   },
   computed: {

@@ -17,6 +17,7 @@
         :session="session"
         withText
         class="flex1" />
+      <div class="flex1" v-else></div>
 
       <slot name="right-button-desktop"></slot>
     </div>
@@ -58,7 +59,7 @@ export default {
     },
     session: {
       type: Object,
-      required: true,
+      required: false,
     },
     name: {
       type: String,

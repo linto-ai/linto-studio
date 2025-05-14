@@ -11,7 +11,7 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import { SubtitleScroller } from "@/models/SubtitleDrawer.js"
 import { getEnv } from "@/tools/getEnv"
 
@@ -72,6 +72,11 @@ export default {
       this.drawWatermark.bind(this),
       this.watermarkFrequency * 1000,
     )
+
+    bus.$on("clear-session-subtitles", this.reset)
+  },
+  beforeDestroy() {
+    bus.$off("clear-session-subtitles", this.reset)
   },
   watch: {
     partialText: function (newVal, oldVal) {
@@ -133,6 +138,10 @@ export default {
   },
 
   methods: {
+    reset() {
+      this.subtitleDrawer.resetDrawing()
+      this.subtitleDrawer.resetAll()
+    },
     drawWatermark(pinned = false) {
       if (this.isUnmounted) return
 

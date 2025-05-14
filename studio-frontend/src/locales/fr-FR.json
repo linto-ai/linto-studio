@@ -897,7 +897,7 @@
       "delete_session_error_message": "La session n'a pas pu être supprimée",
       "display_live_transcription_label": "Afficher la transcription",
       "display_subtitles_label": "Afficher le sous-titre",
-      "display_watermark_label": "Afficher le filigrane",
+      "display_watermark_label": "Filigrane",
       "end_time_not_defined": "Non défini",
       "font_size_label": "Taille de la police",
       "live_transcript_disabled": {
@@ -964,7 +964,8 @@
         "pin_button": "Épingler le filigrane",
         "unpin_button": "Désépingler le filigrane",
         "settings_button": "Ouvrir les paramètres du filigrane"
-      }
+      },
+      "clear_subtitle": "Effacer les sous-titres"
     },
     "profile_selector": {
       "labels": {

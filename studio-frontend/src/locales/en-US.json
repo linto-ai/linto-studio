@@ -894,7 +894,7 @@
       "delete_button": "Delete session",
       "delete_session_error_message": "The session could not be deleted",
       "display_live_transcription_label": "Display live transcription",
-      "display_watermark_label": "Display watermark",
+      "display_watermark_label": "Watermark",
       "display_subtitles_label": "Display subtitles",
       "end_time_not_defined": "Not defined",
       "font_size_label": "Font size",
@@ -959,7 +959,8 @@
         "apply_button": "Apply",
         "pin_button": "Pin watermark",
         "unpin_button": "Unpin watermark",
-        "settings_button": "Open watermark settings"
+        "settings_button": "Open watermark settings",
+        "clear_subtitle": "Clear subtitles"
       }
     },
     "profile_selector": {
