@@ -349,7 +349,7 @@ async function updateScreen(req, res, next) {
         req.params.screenId,
         req.body,
       )
-      if (result.result && result.result.nModified === 1) res.status(200).send()
+      if (result?.modifiedCount === 1) res.status(200).send()
       else res.status(304).send()
     }
   } catch (err) {
@@ -392,7 +392,7 @@ async function addScreen(req, res, next) {
         req.body,
         position,
       )
-      if (result.result && result.result.nModified === 1)
+      if (result?.modifiedCount === 1)
         res.status(200).json({ _id: req.body.screen_id })
       else res.status(304).send()
     }
@@ -417,7 +417,7 @@ async function deleteScreen(req, res, next) {
         req.params.subtitleId,
         req.params.screenId,
       )
-      if (result.result && result.result.nModified === 1) res.status(200).send()
+      if (result?.modifiedCount === 1) res.status(200).send()
       else res.status(304).send()
     }
   } catch (err) {
