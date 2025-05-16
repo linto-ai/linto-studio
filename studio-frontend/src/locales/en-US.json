@@ -993,6 +993,7 @@
       "publicLink_label": "Session link",
       "start_time_label": "Start time",
       "success_message": "Session successfully updated",
+      "error_update_message": "Session has not been updated",
       "force_delete_modal": {
         "action": "Delete",
         "content": "An audio stream is connected. Are you sure you want to delete the session? The content will be saved in your media library.",

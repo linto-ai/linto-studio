@@ -32,7 +32,7 @@
       <FormInput :field="fontSizeField" v-model="fontSizeField.value" />
 
       <FormCheckbox
-        v-if="enableWatermark"
+        v-if="enableWatermark && isAtLeastMeetingManager && !quickSession"
         :field="displayWatermarkField"
         switchDisplay
         v-model="displayWatermarkField.value">
@@ -86,6 +86,7 @@ import { bus } from "@/main.js"
 
 import EMPTY_FIELD from "@/const/emptyField"
 import { getEnv } from "@/tools/getEnv"
+import { orgaRoleMixin } from "@/mixins/orgaRole"
 
 import FormInput from "@/components/FormInput.vue"
 import FormCheckbox from "@/components/FormCheckbox.vue"
@@ -94,6 +95,7 @@ import SessionChannelsSelector from "@/components/SessionChannelsSelector.vue"
 import ModalWatermarkSettings from "@/components/ModalWatermarkSettings.vue"
 
 export default {
+  mixins: [orgaRoleMixin],
   props: {
     selectedChannel: {
       type: Object,
@@ -129,23 +131,27 @@ export default {
     },
     watermarkFrequency: {
       type: Number,
-      required: true,
+      required: false,
     },
     watermarkDuration: {
       type: Number,
-      required: true,
+      required: false,
     },
     watermarkContent: {
       type: String,
-      required: true,
+      required: false,
     },
     displayWatermark: {
       type: Boolean,
-      required: true,
+      required: false,
     },
     watermarkPinned: {
       type: Boolean,
-      required: true,
+      required: false,
+    },
+    quickSession: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -183,16 +189,26 @@ export default {
   mounted() {},
   methods: {
     updateWatermarkSettings({ frequency, duration, text }) {
-      this.$emit("update:watermarkFrequency", frequency)
-      this.$emit("update:watermarkDuration", duration)
-      this.$emit("update:watermarkContent", text)
+      this.$emit("updateWatermarkSettings", {
+        frequency,
+        duration,
+        text,
+        pinned: this.watermarkPinned,
+        display: this.displayWatermarkField.value,
+      })
       this.closeWatermarkSettings()
     },
     closeWatermarkSettings() {
       this.showWatermarkSettings = false
     },
     togglePin() {
-      this.$emit("update:watermarkPinned", !this.watermarkPinned)
+      this.$emit("updateWatermarkSettings", {
+        frequency: this.watermarkFrequency,
+        duration: this.watermarkDuration,
+        text: this.watermarkContent,
+        pinned: !this.watermarkPinned,
+        display: this.displayWatermarkField.value,
+      })
     },
     clearSubtitles() {
       bus.$emit("clear-session-subtitles")
@@ -241,7 +257,13 @@ export default {
       this.$emit("update:fontSize", value)
     },
     "displayWatermarkField.value"(value) {
-      this.$emit("update:displayWatermark", value)
+      this.$emit("updateWatermarkSettings", {
+        frequency: this.watermarkFrequency,
+        duration: this.watermarkDuration,
+        text: this.watermarkContent,
+        pinned: !this.watermarkPinned,
+        display: value,
+      })
     },
   },
   components: {

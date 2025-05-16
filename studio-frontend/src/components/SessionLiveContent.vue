@@ -98,31 +98,6 @@ export default {
       required: false,
       default: false,
     },
-    watermarkFrequency: {
-      type: Number,
-      required: false,
-      default: Number(getEnv("VUE_APP_WATERMARK_FREQUENCY")),
-    },
-    watermarkDuration: {
-      type: Number,
-      required: true,
-      default: Number(getEnv("VUE_APP_WATERMARK_DURATION")),
-    },
-    watermarkContent: {
-      type: String,
-      required: true,
-      default: getEnv("VUE_APP_WATERMARK_CONTENT"),
-    },
-    watermarkPinned: {
-      type: Boolean,
-      required: true,
-      default: false,
-    },
-    displayWatermark: {
-      type: Boolean,
-      required: true,
-      default: false,
-    },
   },
   data() {
     return {

@@ -6,6 +6,7 @@ import {
   apiDeleteSession,
   apiGetPublicSession,
   apiGetSessionAliasesBySessionId,
+  apiUpdateSession,
 } from "../api/session"
 
 import { sessionModelMixin } from "./sessionModel"
@@ -166,6 +167,47 @@ export const sessionMixin = {
 
       if (this.onSessionUpdatePostProcess) {
         this.onSessionUpdatePostProcess(this.session)
+      }
+    },
+    async syncWatermarkSettings({
+      frequency,
+      duration,
+      text,
+      pinned,
+      display,
+    }) {
+      let req = await apiUpdateSession(
+        this.currentOrganizationScope,
+        this.sessionId,
+        {
+          ...this.session,
+          meta: {
+            ...this.session.meta,
+            "@watermark": { frequency, duration, text, pinned, display },
+          },
+        },
+      )
+
+      if (req.status === "error") {
+        console.error("Error updating session", req)
+        bus.$emit("app_notif", {
+          status: "error",
+          message: this.$i18n.t("session.settings_page.error_update_message"),
+          timeout: null,
+        })
+        return
+      }
+      bus.$emit("app_notif", {
+        status: "success",
+        message: this.$i18n.t("session.settings_page.success_message"),
+        timeout: 3000,
+      })
+      this.session.meta["@watermark"] = {
+        frequency,
+        duration,
+        text,
+        pinned,
+        display,
       }
     },
   },

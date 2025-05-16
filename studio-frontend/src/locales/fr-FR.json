@@ -38,7 +38,7 @@
       "home": "Accueil",
       "users": "Utilisateurs",
       "organisations": "Organisations",
-      "transcriberProfiles": "Profiles de transcription"
+      "transcriberProfiles": "Profils de transcription"
     },
     "user_list": {
       "title": "Utilisateurs",
@@ -64,22 +64,22 @@
       "quick_meeting_label": "Activé pour les quick meetings",
       "warning_global": {
         "line_1": "Ce profile sera visible dans toutes les organisations.",
-        "line_2": "Pour gérer les profiles de transcription d'une organisation, allez dans l'onglet \"Organisations\" de la barre de navigation."
+        "line_2": "Pour gérer les profils de transcription d'une organisation, allez dans l'onglet \"Organisations\" de la barre de navigation."
       }
     },
     "transcriber_profile_list": {
       "title": "Profiles de transcription",
       "add_transcriber_profile_button": "Ajouter un profile de transcription",
-      "remove_transcriber_profile_button": "Supprimer le profile | Supprimer les {count} profiles",
+      "remove_transcriber_profile_button": "Supprimer le profile | Supprimer les {count} profils",
       "bulk_remove_loading_notification": "Suppresion du profile {count} sur {total}.",
-      "bulk_remove_success_notification": "Les profiles ont été supprimés avec succès",
-      "bulk_remove_error_notification": "Une erreur est survenue lors de la suppression des profiles",
+      "bulk_remove_success_notification": "Les profils ont été supprimés avec succès",
+      "bulk_remove_error_notification": "Une erreur est survenue lors de la suppression des profils",
       "warning_global": {
         "line_1": "Ces profils sont visibles dans toutes les organisations.",
         "line_2": "Pour gérer les profils de transcription d'une organisation, allez dans l'onglet \"Organisations\" de la barre de navigation."
       },
-      "all_profiles_shown": "Tout les profiles sont affichés",
-      "global_profiles_shown": "Seulement les profiles globaux sont affichés"
+      "all_profiles_shown": "Tout les profils sont affichés",
+      "global_profiles_shown": "Seulement les profils globaux sont affichés"
     }
   },
   "breadcrumb": {
@@ -995,8 +995,8 @@
       "diarization_label": "Séparation des locuteurs",
       "publicLink_label": "Lien de la session",
       "start_time_label": "Heure de début",
-      "success_message": "Session successfully updated",
-      "error_update_message": "Session has not been updated",
+      "success_message": "Session mise à jour avec succès",
+      "error_update_message": "La session n'a pas été mise à jour",
       "force_delete_modal": {
         "action": "Supprimer",
         "content": "Un flux audio est connecté. Êtes-vous sûr de vouloir supprimer la session ? Le contenu sera sauvegardé dans votre bibliothèque de médias.",
