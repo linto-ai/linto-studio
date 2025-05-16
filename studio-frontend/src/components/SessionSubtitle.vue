@@ -73,11 +73,15 @@ export default {
       lineHeight: this.lineHeight,
     })
 
-    if (this.displayWatermark) {
+    if (this.displayWatermark && !this.watermarkPinned) {
       this.watermarkShowTimeout = setTimeout(
         this.drawWatermark.bind(this),
         this.watermarkFrequency * 1000,
       )
+    }
+
+    if (this.displayWatermark && this.watermarkPinned) {
+      this.drawWatermark()
     }
 
     bus.$on("clear-session-subtitles", this.reset)

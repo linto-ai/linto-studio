@@ -8,8 +8,8 @@
     <div class="modal-watermark-settings">
       <FormInput
         inputFullWidth
-        :field="watermarkTextField"
-        v-model="watermarkTextField.value" />
+        :field="watermarkContentField"
+        v-model="watermarkContentField.value" />
       <FormInput
         inputFullWidth
         :field="watermarkFrequencyField"
@@ -29,36 +29,27 @@ import FormInput from "@/components/FormInput.vue"
 
 export default {
   props: {
-    watermarkFrequency: {
-      type: Number,
-      required: true,
-    },
-    watermarkDuration: {
-      type: Number,
-      required: true,
-    },
-    watermarkContent: {
-      type: String,
-      required: true,
+    field: {
+      type: Object,
     },
   },
   data() {
     return {
-      watermarkTextField: {
+      watermarkContentField: {
         ...EMPTY_FIELD,
-        value: this.watermarkContent,
+        value: this.field.value.content,
         label: this.$t("session.live_page.watermark_settings.text"),
         type: "text",
       },
       watermarkFrequencyField: {
         ...EMPTY_FIELD,
-        value: this.watermarkFrequency,
+        value: this.field.value.frequency,
         label: this.$t("session.live_page.watermark_settings.frequency"),
         type: "number",
       },
       watermarkDurationField: {
         ...EMPTY_FIELD,
-        value: this.watermarkDuration,
+        value: this.field.value.duration,
         label: this.$t("session.live_page.watermark_settings.duration"),
         type: "number",
       },
@@ -67,11 +58,12 @@ export default {
   mounted() {},
   methods: {
     applyWatermarkSettings() {
-      this.$emit("on-confirm", {
-        text: this.watermarkTextField.value,
+      this.$emit("input", {
+        content: this.watermarkContentField.value,
         frequency: Number(this.watermarkFrequencyField.value),
         duration: Number(this.watermarkDurationField.value),
       })
+      this.$emit("on-confirm")
     },
   },
   components: {

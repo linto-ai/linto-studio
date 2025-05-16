@@ -172,7 +172,7 @@ export const sessionMixin = {
     async syncWatermarkSettings({
       frequency,
       duration,
-      text,
+      content,
       pinned,
       display,
     }) {
@@ -183,7 +183,7 @@ export const sessionMixin = {
           ...this.session,
           meta: {
             ...this.session.meta,
-            "@watermark": { frequency, duration, text, pinned, display },
+            "@watermark": { frequency, duration, content, pinned, display },
           },
         },
       )
@@ -205,7 +205,7 @@ export const sessionMixin = {
       this.session.meta["@watermark"] = {
         frequency,
         duration,
-        text,
+        content,
         pinned,
         display,
       }

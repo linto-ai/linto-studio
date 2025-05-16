@@ -74,10 +74,9 @@
       <ModalWatermarkSettings
         v-if="showWatermarkSettings"
         @on-cancel="closeWatermarkSettings"
-        @on-confirm="updateWatermarkSettings"
-        :watermarkFrequency="watermarkFrequency"
-        :watermarkDuration="watermarkDuration"
-        :watermarkContent="watermarkContent" />
+        @on-confirm="closeWatermarkSettings"
+        :field="watermarkSettingsField"
+        v-model="watermarkSettingsField.value" />
     </div>
   </div>
 </template>
@@ -181,6 +180,14 @@ export default {
         value: this.displayWatermark,
         label: this.$t("session.detail_page.display_watermark_label"),
       },
+      watermarkSettingsField: {
+        ...EMPTY_FIELD,
+        value: {
+          frequency: this.watermarkFrequency,
+          duration: this.watermarkDuration,
+          content: this.watermarkContent,
+        },
+      },
       p_selectedTranslation: this.selectedTranslation,
       p_selectedChannel: this.selectedChannel,
       showWatermarkSettings: false,
@@ -188,16 +195,16 @@ export default {
   },
   mounted() {},
   methods: {
-    updateWatermarkSettings({ frequency, duration, text }) {
-      this.$emit("updateWatermarkSettings", {
-        frequency,
-        duration,
-        text,
-        pinned: this.watermarkPinned,
-        display: this.displayWatermarkField.value,
-      })
-      this.closeWatermarkSettings()
-    },
+    // updateWatermarkSettings({ frequency, duration, text }) {
+    //   this.$emit("updateWatermarkSettings", {
+    //     frequency,
+    //     duration,
+    //     text,
+    //     pinned: this.watermarkPinned,
+    //     display: this.displayWatermarkField.value,
+    //   })
+    //   this.closeWatermarkSettings()
+    // },
     closeWatermarkSettings() {
       this.showWatermarkSettings = false
     },
@@ -247,6 +254,15 @@ export default {
     p_selectedChannel(value) {
       this.$emit("update:selectedChannel", value)
     },
+    watermarkFrequency(value) {
+      this.watermarkSettingsField.value.frequency = value
+    },
+    watermarkDuration(value) {
+      this.watermarkSettingsField.value.duration = value
+    },
+    watermarkContent(value) {
+      this.watermarkSettingsField.value.content = value
+    },
     "displayLiveTranscriptionField.value"(value) {
       this.$emit("update:displayLiveTranscription", value)
     },
@@ -260,9 +276,18 @@ export default {
       this.$emit("updateWatermarkSettings", {
         frequency: this.watermarkFrequency,
         duration: this.watermarkDuration,
-        text: this.watermarkContent,
+        content: this.watermarkContent,
         pinned: !this.watermarkPinned,
         display: value,
+      })
+    },
+    "watermarkSettingsField.value"(value) {
+      this.$emit("updateWatermarkSettings", {
+        frequency: value.frequency,
+        duration: value.duration,
+        content: value.content,
+        pinned: this.watermarkPinned,
+        display: this.displayWatermarkField.value,
       })
     },
   },
