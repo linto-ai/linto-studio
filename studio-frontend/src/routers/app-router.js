@@ -183,12 +183,14 @@ let router = new Router({
 
     // PRIVATE ROUTES FOR MAIN APP
     {
-      path: "/interface/:organizationId/inbox",
+      path: "/interface/:organizationId?/inbox",
       name: "inbox",
-      redirect: { name: "explore" },
+      redirect: (to) => {
+        return { name: "explore", params: to.params }
+      },
     },
     {
-      path: "/interface/:organizationId/explore",
+      path: "/interface/:organizationId?/explore",
       name: "explore",
       components: {
         default: () => import("../views/Explore.vue"),
@@ -198,7 +200,7 @@ let router = new Router({
       meta: { mainListingPage: true },
     },
     {
-      path: "/interface/:organizationId/sessionsList",
+      path: "/interface/:organizationId?/sessionsList",
       name: "sessionsList",
       components: {
         default: () => import("../views/SessionsList.vue"),
@@ -228,7 +230,7 @@ let router = new Router({
       meta: { userPage: true },
     },
     {
-      path: "/interface/:organizationId/conversations/create",
+      path: "/interface/:organizationId?/conversations/create",
       name: "conversations create",
       components: {
         default: () => import("../views/ConversationsCreate.vue"),
@@ -237,7 +239,7 @@ let router = new Router({
       props: defaultProps,
     },
     {
-      path: "/interface/:organizationId/conversations/:conversationId",
+      path: "/interface/:organizationId?/conversations/:conversationId",
       name: "conversations overview",
       components: {
         default: () => import("../views/ConversationsOverview.vue"),
@@ -247,7 +249,7 @@ let router = new Router({
       meta: { conversationDetailPage: true },
     },
     {
-      path: "/interface/:organizationId/conversations/:conversationId/transcription",
+      path: "/interface/:organizationId?/conversations/:conversationId/transcription",
       name: "conversations transcription",
       components: {
         default: () => import("../views/ConversationsTranscription.vue"),
@@ -257,7 +259,7 @@ let router = new Router({
       meta: { conversationDetailPage: true },
     },
     {
-      path: "/interface/:organizationId/conversations/:conversationId/subtitles",
+      path: "/interface/:organizationId?/conversations/:conversationId/subtitles",
       name: "conversations subtitles",
       components: {
         default: () => import("../views/ConversationsSubtitlesMenu.vue"),
@@ -267,7 +269,7 @@ let router = new Router({
       meta: { conversationDetailPage: true },
     },
     {
-      path: "/interface/:organizationId/conversations/:conversationId/subtitles/:subtitleId",
+      path: "/interface/:organizationId?/conversations/:conversationId/subtitles/:subtitleId",
       name: "conversations subtitle",
       components: {
         default: () => import("../views/ConversationsSubtitle.vue"),
@@ -277,7 +279,7 @@ let router = new Router({
       meta: { conversationDetailPage: true },
     },
     {
-      path: "/interface/:organizationId/conversations/:conversationId/publish",
+      path: "/interface/:organizationId?/conversations/:conversationId/publish",
       name: "conversations publish",
       components: {
         default: () => import("../views/ConversationsPublish.vue"),
@@ -287,7 +289,7 @@ let router = new Router({
       meta: { conversationDetailPage: true },
     },
     {
-      path: "/interface/:organizationId/sessions/create",
+      path: "/interface/:organizationId?/sessions/create",
       name: "sessions create",
       components: {
         default: () => import("../views/SessionsCreate.vue"),
@@ -297,7 +299,7 @@ let router = new Router({
       meta: { sessionPage: true },
     },
     {
-      path: "/interface/:organizationId/sessions/:sessionId",
+      path: "/interface/:organizationId?/sessions/:sessionId",
       name: "sessions live",
       components: {
         default: () => import("../views/SessionLive.vue"),
@@ -307,7 +309,7 @@ let router = new Router({
       meta: { public: true, sessionPage: true, responsive: true },
     },
     {
-      path: "/interface/:organizationId/sessions/:sessionId/settings",
+      path: "/interface/:organizationId?/sessions/:sessionId/settings",
       name: "sessions settings",
       components: {
         default: () => import("../views/SessionSettings.vue"),
@@ -317,7 +319,7 @@ let router = new Router({
       meta: { public: false, sessionPage: true },
     },
     {
-      path: "/interface/:organizationId/quick-session",
+      path: "/interface/:organizationId?/quick-session",
       name: "quick session",
       components: {
         default: () => import("../views/QuickSession.vue"),
@@ -356,7 +358,7 @@ let router = new Router({
       meta: { userPage: true },
     },
     {
-      path: "/interface/:organizationId/tags/settings",
+      path: "/interface/:organizationId?/tags/settings",
       name: "tags settings",
       components: {
         default: () => import("../views/ManageTags.vue"),
@@ -378,10 +380,11 @@ let router = new Router({
 })
 
 router.beforeEach(async (to, from, next) => {
-  const routerDebug = customDebug("vue:debug:router")
+  const randomId = Math.random().toString(36).substring(7)
+  const routerDebug = customDebug("vue:debug:router:" + randomId)
   const enableSession = getEnv("VUE_APP_ENABLE_SESSION") === "true"
   try {
-    routerDebug("beforeEach", to.fullPath, from.fullPath)
+    routerDebug("beforeEach from", from.fullPath, "to", to.fullPath)
     // Redirections 404
     if (!enableSession && to.meta?.sessionPage) {
       next({ name: "not_found" })
@@ -473,17 +476,35 @@ router.beforeEach(async (to, from, next) => {
       return
     }
 
+    // If user try to access an auth route > redirect to conversations
+    if (
+      to.fullPath === "/" ||
+      to.fullPath === "/interface" ||
+      to.meta?.authRoute
+    ) {
+      routerDebug("Redirect to explore from auth route or root")
+      // organizationId is setted in the next step
+      next({
+        name: "explore",
+      })
+      return
+    }
+
+    routerDebug("Check organizationId in params", to.params.organizationId)
     if (!to.params.organizationId && !to.meta?.userPage) {
-      routerDebug("Redirect to default organization")
+      const defaultOrganizationId =
+        store.getters["organizations/getDefaultOrganizationId"]
+      routerDebug("Redirect to default organization", defaultOrganizationId)
       next({
         ...to,
         params: {
-          organizationId:
-            store.getters["organizations/getDefaultOrganization"]._id,
+          ...to.params,
+          organizationId: defaultOrganizationId,
         },
       })
       return
     } else {
+      routerDebug("Set current organization scope", to.params.organizationId)
       store.dispatch(
         "organizations/setCurrentOrganizationScope",
         to.params.organizationId,
@@ -492,8 +513,10 @@ router.beforeEach(async (to, from, next) => {
 
     // if quick session is running, redirect to session live
     if (enableSession && to.name !== "quick session") {
+      routerDebug("Check quick session")
       const quickSession = await apiGetQuickSession()
       if (quickSession) {
+        routerDebug("Quick session found > redirect to quick session")
         next({
           name: "quick session",
           params: { organizationId: quickSession.organizationId },
@@ -502,18 +525,10 @@ router.beforeEach(async (to, from, next) => {
         return
       }
     }
-    // If user try to access an auth route > redirect to conversations
-    if (
-      to.fullPath === "/" ||
-      to.fullPath === "/interface" ||
-      to.meta?.authRoute
-    ) {
-      next({ name: "explore" })
-      return
-    }
 
     // check if user is allowed to access conversation detail pages
     if (to.meta?.conversationDetailPage) {
+      routerDebug("Check conversation detail page")
       const conversationId = to.params.conversationId
       let userRight = 0
 
@@ -524,16 +539,20 @@ router.beforeEach(async (to, from, next) => {
       }
 
       if (userRight > 0) {
+        routerDebug("User has right > next")
         next()
         return
       }
 
+      routerDebug("User has no right > redirect to not found")
       next({ name: "not_found" })
       return
     } else if (to.meta?.backoffice) {
+      routerDebug("Check backoffice route")
       next()
       return
     } else {
+      routerDebug("No specific route > next")
       next()
       return
     }

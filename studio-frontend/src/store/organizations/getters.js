@@ -6,12 +6,12 @@ const getters = {
   getOrganizationById: (state) => (id) => {
     return state.organizations[id]
   },
-  getDefaultOrganization(state) {
-    return (
+  getDefaultOrganizationId(state) {
+    const res =
       state.currentOrganizationScope ||
-      Object.values(state.organizations)?.[0] ||
+      Object.values(state.organizations)?.[0]._id ||
       null
-    )
+    return res
   },
   getOrganizationsAsArray(state) {
     return Object.values(state.organizations)
