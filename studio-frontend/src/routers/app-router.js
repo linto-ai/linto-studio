@@ -387,14 +387,12 @@ router.beforeEach(async (to, from, next) => {
     routerDebug("beforeEach from", from.fullPath, "to", to.fullPath)
     // Redirections 404
     if (!enableSession && to.meta?.sessionPage) {
-      next({ name: "not_found" })
-      return
+      return next({ name: "not_found" })
     }
 
     // Redirections 404
     if (to.name === "not_found_redirect") {
-      next({ name: "not_found" })
-      return
+      return next({ name: "not_found" })
     }
 
     // -- Magic link authentication --
@@ -416,22 +414,22 @@ router.beforeEach(async (to, from, next) => {
         } else {
           redirect = { name: "inbox" }
         }
-        next(redirect)
-        return
+        return next(redirect)
       } else {
-        next({ name: "magic-link-error" })
-        return
+        return next({ name: "magic-link-error" })
       }
     }
 
     // -- User is not authenticated: redirect to login except if public page --
     if (!isAuthenticated()) {
       if (to.meta?.public) {
-        next()
+        return next()
       } else {
-        next({ name: "login", query: { next: from.query.next || to.fullPath } })
+        return next({
+          name: "login",
+          query: { next: from.query.next || to.fullPath },
+        })
       }
-      return
     }
 
     // -- User is authenticated --
@@ -442,8 +440,10 @@ router.beforeEach(async (to, from, next) => {
       // For now logout
       // TODO: handle error if api is down -> error page. Only logout if user is not found
       logout()
-      next({ name: "login", query: { next: from.query.next || to.fullPath } })
-      return
+      return next({
+        name: "login",
+        query: { next: from.query.next || to.fullPath },
+      })
     }
 
     routerDebug("User fetched")
@@ -456,8 +456,10 @@ router.beforeEach(async (to, from, next) => {
       // For now logout
       // TODO: redirect to some error page
       logout()
-      next({ name: "login", query: { next: from.query.next || to.fullPath } })
-      return
+      return next({
+        name: "login",
+        query: { next: from.query.next || to.fullPath },
+      })
     }
 
     routerDebug("Organizations fetched")
@@ -466,14 +468,15 @@ router.beforeEach(async (to, from, next) => {
       // TODO: page to create organization
       routerDebug("No organization")
       logout()
-      next({ name: "login", query: { next: from.query.next || to.fullPath } })
-      return
+      return next({
+        name: "login",
+        query: { next: from.query.next || to.fullPath },
+      })
     }
 
     if (from.query.next && from.query.next !== to.fullPath) {
       routerDebug("Redirect to next", from.query.next)
-      next(from.query.next)
-      return
+      return next(from.query.next)
     }
 
     // If user try to access an auth route > redirect to conversations
@@ -484,31 +487,36 @@ router.beforeEach(async (to, from, next) => {
     ) {
       routerDebug("Redirect to explore from auth route or root")
       // organizationId is setted in the next step
-      next({
+      return next({
         name: "explore",
       })
-      return
     }
 
-    routerDebug("Check organizationId in params", to.params.organizationId)
-    if (!to.params.organizationId && !to.meta?.userPage) {
-      const defaultOrganizationId =
-        store.getters["organizations/getDefaultOrganizationId"]
-      routerDebug("Redirect to default organization", defaultOrganizationId)
-      next({
-        ...to,
-        params: {
-          ...to.params,
-          organizationId: defaultOrganizationId,
-        },
-      })
-      return
-    } else {
-      routerDebug("Set current organization scope", to.params.organizationId)
-      store.dispatch(
-        "organizations/setCurrentOrganizationScope",
-        to.params.organizationId,
-      )
+    if (!to.meta?.userPage) {
+      routerDebug("Check organizationId in params", to.params.organizationId)
+      if (
+        !to.params.organizationId ||
+        store.getters["organizations/getOrganizationById"](
+          to.params.organizationId,
+        ) === undefined
+      ) {
+        const defaultOrganizationId =
+          store.getters["organizations/getDefaultOrganizationId"]
+        routerDebug("Redirect to default organization", defaultOrganizationId)
+        return next({
+          ...to,
+          params: {
+            ...to.params,
+            organizationId: defaultOrganizationId,
+          },
+        })
+      } else {
+        routerDebug("Set current organization scope", to.params.organizationId)
+        store.dispatch(
+          "organizations/setCurrentOrganizationScope",
+          to.params.organizationId,
+        )
+      }
     }
 
     // if quick session is running, redirect to session live
@@ -517,12 +525,11 @@ router.beforeEach(async (to, from, next) => {
       const quickSession = await apiGetQuickSession()
       if (quickSession) {
         routerDebug("Quick session found > redirect to quick session")
-        next({
+        return next({
           name: "quick session",
           params: { organizationId: quickSession.organizationId },
           query: { recover: "true" },
         })
-        return
       }
     }
 
@@ -540,21 +547,17 @@ router.beforeEach(async (to, from, next) => {
 
       if (userRight > 0) {
         routerDebug("User has right > next")
-        next()
-        return
+        return next()
       }
 
       routerDebug("User has no right > redirect to not found")
-      next({ name: "not_found" })
-      return
+      return next({ name: "not_found" })
     } else if (to.meta?.backoffice) {
       routerDebug("Check backoffice route")
-      next()
-      return
+      return next()
     } else {
       routerDebug("No specific route > next")
-      next()
-      return
+      return next()
     }
   } catch (error) {
     console.error(error)

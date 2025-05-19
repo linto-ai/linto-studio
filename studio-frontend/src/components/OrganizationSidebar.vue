@@ -18,14 +18,20 @@
         <span class="tab__label">{{ $t("navigation.tabs.inbox") }}</span>
       </router-link> -->
       <router-link
-        :to="{ name: 'explore' }"
+        :to="{
+          name: 'explore',
+          params: { organizationId: currentOrganizationScope },
+        }"
         class="flex row align-center gap-medium tab">
         <span class="icon discover"></span>
         <span class="tab__label">{{ $t("navigation.tabs.explore") }}</span>
       </router-link>
       <router-link
         v-if="sessionEnable"
-        :to="{ name: 'sessionsList' }"
+        :to="{
+          name: 'sessionsList',
+          params: { organizationId: currentOrganizationScope },
+        }"
         class="flex row align-center gap-medium tab">
         <span class="icon session"></span>
         <span class="tab__label">{{ $t("navigation.tabs.sessions") }}</span>
@@ -85,6 +91,7 @@ export default {
   computed: {
     ...mapGetters("organizations", {
       currentOrganization: "getCurrentOrganization",
+      currentOrganizationScope: "getCurrentOrganizationScope",
     }),
     selectedTab() {
       return this.$route.name
