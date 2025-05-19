@@ -54,6 +54,31 @@
       <p>
         {{ $t("session.detail_page.live_transcript_disabled.description") }}
       </p>
+      <div class="flex gap-medium" v-if="fromMicrophone">
+        <div
+          class="btn circle only-icon primary"
+          @click="toggleMicrophone"
+          :title="$t('quick_session.live.pause_button')"
+          :aria-label="$t('quick_session.live.pause_button')"
+          v-if="isRecording">
+          <span class="icon pause"></span>
+        </div>
+        <div
+          class="btn circle only-icon"
+          @click="toggleMicrophone"
+          :title="$t('quick_session.live.start_button')"
+          :aria-label="$t('quick_session.live.start_button')"
+          v-else>
+          <span class="icon play"></span>
+        </div>
+        <div
+          class="btn circle only-icon red"
+          @click="onSave"
+          :title="$t('quick_session.live.save_button')"
+          :aria-label="$t('quick_session.live.save_button')">
+          <span class="icon stop"></span>
+        </div>
+      </div>
     </div>
 
     <!-- content live -->
@@ -207,6 +232,16 @@ export default {
     },
     showSubtitlesFullscreen: {
       type: Boolean,
+      default: false,
+    },
+    isRecording: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    fromMicrophone: {
+      type: Boolean,
+      required: false,
       default: false,
     },
   },
@@ -490,6 +525,12 @@ export default {
     },
     closeSubtitleFullscreen() {
       this.$emit("closeSubtitleFullscreen")
+    },
+    toggleMicrophone() {
+      this.$emit("toggleMicrophone")
+    },
+    onSave() {
+      this.$emit("onSave")
     },
   },
   components: {

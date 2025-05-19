@@ -16,7 +16,11 @@
       :channel="selectedChannel"
       :displaySubtitles="displaySubtitles"
       :displayLiveTranscription="displayLiveTranscription"
-      :isBottom="isBottom"></SessionChannel>
+      :isBottom="isBottom"
+      fromMicrophone
+      @toggleMicrophone="$emit('toggleMicrophone')"
+      @onSave="$emit('onSave')"
+      :isRecording="isRecording"></SessionChannel>
     <Loading v-else></Loading>
   </div>
 </template>
@@ -74,6 +78,16 @@ export default {
       default: false,
     },
     noTitle: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    isRecording: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    fromMicrophone: {
       type: Boolean,
       required: false,
       default: false,

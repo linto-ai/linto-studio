@@ -1069,12 +1069,16 @@
       "bot_lang_label": "Choose language used for videoconference subtitle"
     },
     "live": {
+      "default_name": "Untitle record",
       "status_no_websocket": "Not connected to audio server",
       "status_recording": "Recording microphone",
       "status_muted": "Microphone is muted",
-      "save_button": "Save and quit"
+      "save_button": "Save and quit",
+      "pause_button": "Pause",
+      "start_button": "Start"
     },
     "live_visio": {
+      "default_name": "Untitle {type} meeting",
       "status_recording_visio": "Recording videoconference"
     }
   },

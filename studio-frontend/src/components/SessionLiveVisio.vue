@@ -61,7 +61,7 @@ export default {
       debugQuickSession: customDebug("vue:debug:quickSession"),
       selectedTranslation: "original",
       displayLiveTranscription: true,
-      displaySubtitles: true,
+      displaySubtitles: false,
       fontSize: "40",
       selectedChannel: currentChannel,
     }
@@ -73,8 +73,18 @@ export default {
       let res = true
       res = res && this.selectedChannel.languages.length == 2
       //res = res && this.selectedChannel.translations.length == 2
-      res = res && !!this.selectedChannel.translations.find((t) => t.split("-")[0] === this.selectedChannel.languages[0].split("-")[0])
-      res = res && !!this.selectedChannel.translations.find((t) => t.split("-")[0] === this.selectedChannel.languages[1].split("-")[0])
+      res =
+        res &&
+        !!this.selectedChannel.translations.find(
+          (t) =>
+            t.split("-")[0] === this.selectedChannel.languages[0].split("-")[0],
+        )
+      res =
+        res &&
+        !!this.selectedChannel.translations.find(
+          (t) =>
+            t.split("-")[0] === this.selectedChannel.languages[1].split("-")[0],
+        )
       return res
     },
   },
