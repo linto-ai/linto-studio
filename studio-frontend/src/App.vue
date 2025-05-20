@@ -1,15 +1,15 @@
 <template>
   <div id="app">
     <div id="app-view" class="flex col flex1">
-      <keep-alive>
+      <!-- <keep-alive>
         <router-view
           v-if="isAuthenticated"
           name="AppHeader"
           :currentOrganizationScope="currentOrganizationScope"
           :userInfo="user"
           :userOrganizations="userOrganizations"
-          :currentOrganization="currentOrganization"></router-view>
-      </keep-alive>
+          :currentOrganization="currentOrganization"></router-view> 
+      </keep-alive> -->
       <div class="app-view-content flex col flex1">
         <router-view
           :userInfo="user"

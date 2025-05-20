@@ -1,5 +1,7 @@
 import uuid from "uuid/v4"
-import conversationsPerPage from "../const/conversationsPerPage"
+import conversationsPerPage from "@/const/conversationsPerPage"
+import USER_RIGHTS from "@/const/userRights.js"
+
 import { bus } from "@/main.js"
 
 // fetchConversations() is required,
@@ -43,7 +45,7 @@ export const conversationListMixin = {
       return Math.ceil(this.totalElementsNumber / conversationsPerPage)
     },
     userRights() {
-      return this.$store.state.userRights
+      return USER_RIGHTS
     },
     noConversations() {
       return this.totalElementsNumber === 0
@@ -94,7 +96,7 @@ export const conversationListMixin = {
     },
     async getSelectedTags() {
       const tagsFromStorage = JSON.parse(
-        localStorage.getItem(this.selectedTagsKey)
+        localStorage.getItem(this.selectedTagsKey),
       )
       if (tagsFromStorage && tagsFromStorage.length > 0) {
         if (this.verifyTags) {
@@ -114,7 +116,7 @@ export const conversationListMixin = {
     saveCustomFilters() {
       localStorage.setItem(
         this.customFiltersKey,
-        JSON.stringify(this.customFilters)
+        JSON.stringify(this.customFilters),
       )
     },
     onSearchInConversationsTitle(searchText) {
@@ -174,14 +176,14 @@ export const conversationListMixin = {
       this.selectedConversations.set(id, conversation)
       this.selectedConversationsSize = this.selectedConversations.size
       this.selectedConversationsList = Array.from(
-        this.selectedConversations.keys()
+        this.selectedConversations.keys(),
       )
     },
     unSelectConversation(id) {
       this.selectedConversations.delete(id)
       this.selectedConversationsSize = this.selectedConversations.size
       this.selectedConversationsList = Array.from(
-        this.selectedConversations.keys()
+        this.selectedConversations.keys(),
       )
     },
     onSelectConversation({ value, conversation }) {

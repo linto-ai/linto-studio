@@ -1,15 +1,15 @@
 <template>
-  <nav class="burger-menu mobile">
+  <nav class="burger-menu">
     <div class="flex align-center burger-menu__header">
-      <button class="transparent only-icon" @click="closeBurger">
+      <button class="transparent only-icon mobile" @click="closeBurger">
         <span class="icon back"></span>
       </button>
       <router-link
         :title="$t('navigation.home')"
         to="/interface"
-        class="flex align-center gap-small">
+        class="flex align-center gap-small flex1 justify-center">
         <img :src="logo" style="height: 3rem" />
-        <h1>
+        <h1 id="main-title">
           {{ title }}
         </h1>
       </router-link>
@@ -20,12 +20,10 @@
       :currentOrganization="currentOrganization" />
     <router-link
       id="upload-media-button"
-      :title="createTitle"
       to="/interface/conversations/create"
       class="btn nav-link green no-shrink"
       tag="button"
       v-if="
-        (mainListingPage || sessionListingPage) &&
         isAtLeastUploader &&
         (canUploadInCurrentOrganization || canSessionInCurrentOrganization)
       ">
@@ -41,14 +39,20 @@
         <span class="tab__label">{{ $t("navigation.tabs.inbox") }}</span>
       </router-link> -->
       <router-link
-        :to="{ name: 'explore' }"
+        :to="{
+          name: 'explore',
+          params: { organizationId: currentOrganizationScope },
+        }"
         class="flex row align-center gap-medium tab">
         <span class="icon discover"></span>
         <span class="tab__label">{{ $t("navigation.tabs.explore") }}</span>
       </router-link>
       <router-link
         v-if="sessionEnable"
-        :to="{ name: 'sessionsList' }"
+        :to="{
+          name: 'sessionsList',
+          params: { organizationId: currentOrganizationScope },
+        }"
         class="flex row align-center gap-medium tab">
         <span class="icon session"></span>
         <span class="tab__label">{{ $t("navigation.tabs.sessions") }}</span>
@@ -61,34 +65,42 @@
       </div>
 
       <div class="tabs col">
-        <router-link
-          :to="{ name: 'shared with me' }"
-          class="flex row align-center gap-medium tab">
-          <span class="icon share"></span>
-          <span class="tab__label">{{ $t("navigation.tabs.shared") }}</span>
-        </router-link>
-        <router-link
-          :to="{ name: 'favorites' }"
-          class="flex row align-center gap-medium tab">
-          <span class="icon star"></span>
-          <span class="tab__label">{{ $t("navigation.tabs.favorites") }}</span>
-        </router-link>
+        <div class="small-margin-bottom">
+          <router-link
+            :to="{ name: 'shared with me' }"
+            class="flex row align-center gap-medium tab">
+            <span class="icon share"></span>
+            <span class="tab__label">{{ $t("navigation.tabs.shared") }}</span>
+          </router-link>
+          <router-link
+            :to="{ name: 'favorites' }"
+            class="flex row align-center gap-medium tab">
+            <span class="icon star"></span>
+            <span class="tab__label">{{
+              $t("navigation.tabs.favorites")
+            }}</span>
+          </router-link>
+        </div>
         <div class="sidebar-divider"></div>
-        <router-link
-          :to="{ name: 'user settings' }"
-          class="flex row align-center gap-medium tab">
-          <span class="icon settings"></span>
-          <span class="tab__label">{{
-            $t("navigation.account.account_link")
-          }}</span>
-        </router-link>
+        <div class="small-margin-top">
+          <router-link
+            :to="{ name: 'user settings' }"
+            class="flex row align-center gap-medium tab">
+            <span class="icon settings"></span>
+            <span class="tab__label">{{
+              $t("navigation.account.account_link")
+            }}</span>
+          </router-link>
 
-        <button
-          class="flex row align-center gap-medium tab transparent"
-          @click="logout">
-          <span class="icon logout"></span>
-          <span class="tab__label">{{ $t("navigation.account.logout") }}</span>
-        </button>
+          <button
+            class="flex row align-center gap-medium tab transparent"
+            @click="logout">
+            <span class="icon logout"></span>
+            <span class="tab__label">{{
+              $t("navigation.account.logout")
+            }}</span>
+          </button>
+        </div>
       </div>
     </div>
   </nav>
@@ -106,7 +118,12 @@ import { logout } from "@/tools/logout"
 
 export default {
   mixins: [orgaRoleMixin, organizationPermissionsMixin],
-  props: {},
+  props: {
+    organizationPage: {
+      type: Boolean,
+      default: true,
+    },
+  },
   data() {
     return {}
   },

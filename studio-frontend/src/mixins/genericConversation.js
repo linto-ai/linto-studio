@@ -6,7 +6,7 @@ import {
 } from "@/api/conversation.js"
 import { apiGetUsersByConversationId } from "@/api/user.js"
 
-import userRights from "@/const/userRights.js"
+import USER_RIGHTS from "@/const/userRights.js"
 import { bus } from "@/main.js"
 import { getCookie } from "@/tools/getCookie.js"
 import { workerDisconnect } from "@/tools/worker-message.js"
@@ -57,7 +57,7 @@ export const genericConversationMixin = {
   },
   computed: {
     userRights() {
-      return userRights
+      return USER_RIGHTS
     },
   },
   methods: {

@@ -116,3 +116,8 @@
 #loading-overlay[visible] {
   display: flex;
 }
+
+.sidebar-divider {
+  border-top: var(--divider);
+  margin: 0 1em;
+}

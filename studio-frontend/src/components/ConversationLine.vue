@@ -53,7 +53,7 @@
                 name: 'conversations transcription',
                 params: {
                   conversationId: conversation._id,
-                  organizationId: currentOrganizationScope,
+                  organizationId: organizationId,
                 },
               }"
               class="conversation-line__title no-padding no-propagation text-cut">
@@ -167,7 +167,7 @@
             name: 'conversations overview',
             params: {
               conversationId: this.conversation._id,
-              organizationId: this.currentOrganizationScope,
+              organizationId: this.organizationId,
             },
           }"
           class="conversation-line__secondary-action">
@@ -184,7 +184,7 @@
             name: 'conversations subtitles',
             params: {
               conversationId: this.conversation._id,
-              organizationId: this.currentOrganizationScope,
+              organizationId: this.organizationId,
             },
           }"
           class="conversation-line__secondary-action">
@@ -199,7 +199,7 @@
             name: 'conversations publish',
             params: {
               conversationId: this.conversation._id,
-              organizationId: this.currentOrganizationScope,
+              organizationId: this.organizationId,
             },
           }"
           class="conversation-line__secondary-action">
@@ -214,6 +214,8 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex"
+
 import {
   apiAddTagToConversation,
   apiDeleteTagFromConversation,
@@ -223,6 +225,7 @@ import { apiSearchTagsById } from "@/api/tag.js"
 
 import { extractTagsFromCategoryTree } from "@/tools/extractTagsFromCategoryTree.js"
 import { getUserRightFromConversation } from "@/tools/getUserRightFromConversation.js"
+import { userName } from "@/tools/userName"
 
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { convRoleMixin } from "@/mixins/convRole.js"
@@ -233,13 +236,11 @@ import CustomSelect from "@/components/CustomSelect.vue"
 import LabeledValueSmall from "@/components/LabeledValueSmall.vue"
 import FormInput from "@/components/FormInput.vue"
 import ContextMenu from "./ContextMenu.vue"
-import { userName } from "../tools/userName"
 
 export default {
   mixins: [orgaRoleMixin, convRoleMixin],
   props: {
     conversation: { type: Object, required: true },
-    currentOrganizationScope: { type: String, required: true },
     userInfo: { type: Object, required: true },
     displayTags: { type: Boolean, default: true },
     pageSharedWith: { type: Boolean, default: false },
@@ -271,6 +272,9 @@ export default {
     })
   },
   computed: {
+    ...mapGetters("organizations", {
+      currentOrganizationUsers: "getCurrentOrganizationUsers",
+    }),
     userRightInConv() {
       return getUserRightFromConversation(this.conversation, this.userInfo._id)
     },
@@ -353,7 +357,7 @@ export default {
         }
       }
 
-      const userList = this.$store.state?.currentOrganization?.users ?? []
+      const userList = this.currentOrganizationUsers
       const owner = userList.find((u) => u._id == this.conversation.owner)
       if (owner) {
         return {
@@ -368,8 +372,9 @@ export default {
       }
     },
     isFavorite() {
-      return false
-      //return this.$store.getters.isFavoriteConversation(this.conversation._id)
+      return this.$store.getters["user/isFavoriteConversation"](
+        this.conversation._id,
+      )
     },
     _selectedConversation: {
       get() {
@@ -408,11 +413,15 @@ export default {
         ],
       }
     },
+    organizationId() {
+      return this.conversation.organization._id
+    },
   },
   watch: {
     tags: function (newTags, oldTags) {},
   },
   methods: {
+    ...mapActions("user", ["toggleFavoriteConversation"]),
     selectLine(e) {
       if (e.target.classList.contains("no-propagation")) return
       this.$emit("onSelect", {
@@ -432,14 +441,7 @@ export default {
       this.dropDownVisible = false
     },
     toggleFavorite(e) {
-      if (this.isFavorite) {
-        this.$store.dispatch(
-          "removeFavoriteConversation",
-          this.conversation._id,
-        )
-      } else {
-        this.$store.dispatch("addFavoriteConversation", this.conversation)
-      }
+      this.toggleFavoriteConversation(this.conversation._id)
       e.stopPropagation()
     },
     async loadTags() {

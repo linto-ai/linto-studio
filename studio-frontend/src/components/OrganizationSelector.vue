@@ -21,9 +21,9 @@ import CustomSelect from "./CustomSelect.vue"
 export default {
   mixins: [orgaRoleMixin, platformRoleMixin],
   props: {
-    currentOrganizationScope: { type: String, required: true },
+    currentOrganizationScope: { type: String, required: false },
     // userOrganizations: { type: Array, required: true },
-    currentOrganization: { type: Object, required: true },
+    currentOrganization: { type: Object, required: false },
   },
   data() {
     return {
@@ -39,18 +39,15 @@ export default {
     bus.$off("navigation", this.closeMenu)
   },
   computed: {
-    dataLoaded() {
-      return this.currentOrganization !== null
-    },
     name() {
-      if (this.$route.name === "shared with me") {
-        return this.$t("navigation.tabs.shared")
-      } else if (this.$route.name === "favorites") {
-        return this.$t("navigation.tabs.favorites")
-      } else if (this.$route.meta.userPage) {
-        return this.$t("navigation.tabs.user_page")
-      }
-      return `${this.currentOrganization.name} (${this.roleToString})`
+      // if (this.$route.name === "shared with me") {
+      //   return this.$t("navigation.tabs.shared")
+      // } else if (this.$route.name === "favorites") {
+      //   return this.$t("navigation.tabs.favorites")
+      // } else if (this.$route.meta.userPage) {
+      //   return this.$t("navigation.tabs.user_page")
+      // }
+      return `${this.currentOrganization?.name} (${this.roleToString})`
     },
     navOrganizationList() {
       const organisationItems = this.userOrganizations.map((orga) => {

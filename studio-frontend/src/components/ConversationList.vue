@@ -65,7 +65,7 @@ export default {
   props: {
     conversations: { type: Array, required: false },
     loading: { type: Boolean, required: true },
-    currentOrganizationScope: { type: String, required: true },
+    currentOrganizationScope: { type: String, required: false },
     userInfo: { type: Object, required: true },
     displayTags: { type: Boolean, default: true },
     pageSharedWith: { type: Boolean, default: false },

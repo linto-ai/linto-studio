@@ -1,5 +1,5 @@
 <template>
-  <aside class="organization-sidebar flex col gap-medium">
+  <aside class="burger-menu flex col gap-medium">
     <nav class="tabs col">
       <router-link
         :to="{ name: 'backoffice' }"

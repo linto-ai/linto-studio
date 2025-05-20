@@ -492,6 +492,8 @@ router.beforeEach(async (to, from, next) => {
       })
     }
 
+    const defaultOrganizationId =
+      store.getters["organizations/getDefaultOrganizationId"]
     if (!to.meta?.userPage) {
       routerDebug("Check organizationId in params", to.params.organizationId)
       if (
@@ -500,8 +502,6 @@ router.beforeEach(async (to, from, next) => {
           to.params.organizationId,
         ) === undefined
       ) {
-        const defaultOrganizationId =
-          store.getters["organizations/getDefaultOrganizationId"]
         routerDebug("Redirect to default organization", defaultOrganizationId)
         return next({
           ...to,
@@ -517,6 +517,11 @@ router.beforeEach(async (to, from, next) => {
           to.params.organizationId,
         )
       }
+    } else {
+      store.dispatch(
+        "organizations/setCurrentOrganizationScope",
+        defaultOrganizationId,
+      )
     }
 
     // if quick session is running, redirect to session live

@@ -1,22 +1,12 @@
 <template>
-  <aside class="organization-sidebar flex col gap-medium">
+  <aside class="main-sidebar flex col gap-medium">
     <div style="padding-left: 1rem !important" v-if="organizationPage">
       <h3 class="fullwidth no-padding">
         {{ currentOrganization.name }}
       </h3>
     </div>
-    <!-- <OrganizationSelector
-      v-if="organizationPage"
-      :currentOrganizationScope="currentOrganizationScope"
-      :userOrganizations="userOrganizations"
-      :currentOrganization="currentOrganization" /> -->
+
     <nav class="tabs col" v-if="organizationPage">
-      <!-- <router-link
-        :to="{ name: 'inbox' }"
-        class="flex row align-center gap-medium tab">
-        <span class="icon home"></span>
-        <span class="tab__label">{{ $t("navigation.tabs.inbox") }}</span>
-      </router-link> -->
       <router-link
         :to="{
           name: 'explore',

@@ -1,12 +1,13 @@
 <template>
   <div class="flex flex1">
-    <OrganizationSidebar v-if="sidebar" :organizationPage="organizationPage">
-      <slot name="sidebar"></slot>
-    </OrganizationSidebar>
+    <!-- <OrganizationSidebar v-if="sidebar" :organizationPage="organizationPage">
+    </OrganizationSidebar> -->
     <BurgerMenu
       @close="toggleBurger"
       v-click-outside="toggleBurger"
-      v-if="showBurger" />
+      :organizationPage="organizationPage">
+      <slot name="sidebar"></slot>
+    </BurgerMenu>
     <main class="flex col scrollable" :class="{ box: box, flex1: flex }">
       <div
         class="flex row align-center main__breadcrumb-bar"
@@ -20,8 +21,9 @@
         <div
           class="flex row align-center flex1 reset-overflows"
           v-if="!noBreadcrumb">
-          <Breadcrumb />
+          <!-- <Breadcrumb /> -->
         </div>
+
         <slot name="breadcrumb-actions"></slot>
       </div>
       <div

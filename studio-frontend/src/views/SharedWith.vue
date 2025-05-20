@@ -1,13 +1,13 @@
 <template>
   <MainContent sidebar>
     <template v-slot:breadcrumb-actions>
-      <div class="flex align-center gap-small">
+      <!-- <div class="flex align-center gap-small">
         <ConversationShareMultiple
           v-if="!noConversations"
           :currentOrganizationScope="currentOrganizationScope"
           :userInfo="userInfo"
           :selectedConversations="selectedConversations" />
-      </div>
+      </div> -->
     </template>
 
     <ExploreModalVue

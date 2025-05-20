@@ -19,11 +19,14 @@ const getters = {
   getOrganizationLength(state) {
     return Object.keys(state.organizations).length
   },
-  getCurrentOrganizationScope(state) {
-    return state.currentOrganizationScope
+  getCurrentOrganizationScope(state, getters) {
+    return state.currentOrganizationScope ?? getters.getDefaultOrganizationId
   },
   getCurrentOrganization(state) {
-    return state.organizations[state.currentOrganizationScope]
+    return state.currentOrganization
+  },
+  getCurrentOrganizationUsers(state) {
+    return state.currentOrganization?.users ?? []
   },
   getUserRoleInOrganization: (state, getters, rootState, rootGetters) => {
     let organization = getters.getCurrentOrganization

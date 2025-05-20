@@ -15,6 +15,9 @@ const mutations = {
   setCurrentOrganizationScope(state, organizationId) {
     state.currentOrganizationScope = organizationId
   },
+  setCurrentOrganization(state, organization) {
+    state.currentOrganization = organization
+  },
 }
 
 export default mutations

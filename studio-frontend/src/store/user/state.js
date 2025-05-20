@@ -1,5 +1,6 @@
 const state = {
   userInfos: {},
+  favoritesConversationIds: [],
 }
 
 export default () => {

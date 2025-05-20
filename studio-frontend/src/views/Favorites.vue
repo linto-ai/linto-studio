@@ -38,7 +38,6 @@
       <ConversationList
         :conversations="conversations"
         :loading="loading"
-        :currentOrganizationScope="currentOrganizationScope"
         :userInfo="userInfo"
         :indexedTags="tagsDatabase"
         :error="error"
@@ -93,7 +92,6 @@ export default {
   mixins: [debounceMixin, conversationListMixin],
   props: {
     userInfo: { type: Object, required: true },
-    currentOrganizationScope: { type: String, required: true },
   },
   data() {
     return {

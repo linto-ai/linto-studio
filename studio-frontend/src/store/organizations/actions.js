@@ -21,6 +21,8 @@ const actions = {
   async updateOrganization({ commit }, id, payload) {},
   async deleteOrganization({ commit }, id) {},
   async setCurrentOrganizationScope({ commit }, organizationId) {
+    let organization = await apiGetOrganizationById(organizationId)
+    commit("setCurrentOrganization", organization)
     commit("setCurrentOrganizationScope", organizationId)
   },
 }

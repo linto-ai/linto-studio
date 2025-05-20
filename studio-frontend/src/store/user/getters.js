@@ -8,6 +8,9 @@ const getters = {
   getUserPlatformRole(state) {
     return state.userInfos.role
   },
+  isFavoriteConversation: (state) => (id) => {
+    return state.favoritesConversationIds.includes(id)
+  },
 }
 
 export default getters
