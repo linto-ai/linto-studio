@@ -27,7 +27,7 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import { apiUpdateConversation } from "@/api/conversation"
 import EMPTY_FIELD from "@/const/emptyField"
 import { testName } from "@/tools/fields/testName"
@@ -35,7 +35,7 @@ import { testName } from "@/tools/fields/testName"
 import { formsMixin } from "@/mixins/forms.js"
 import { conversationModelMixin } from "@/mixins/conversationModel.js"
 
-import FormInput from "@/components/FormInput.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 
 export default {
   mixins: [formsMixin, conversationModelMixin],

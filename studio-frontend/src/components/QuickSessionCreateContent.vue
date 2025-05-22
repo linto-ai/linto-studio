@@ -53,9 +53,9 @@ import generateServiceConfig from "@/tools/generateServiceConfig"
 
 import { formsMixin } from "@/mixins/forms.js"
 
-import FormRadio from "@/components/FormRadio.vue"
+import FormRadio from "@/components/molecules/FormRadio.vue"
 import TranscriberProfileSelector from "@/components/TranscriberProfileSelector.vue"
-import FormCheckbox from "@/components/FormCheckbox.vue"
+import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import QuickSessionSettings from "@/components/QuickSessionSettings.vue"
 
 import { apiCreateQuickSession } from "@/api/session.js"

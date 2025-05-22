@@ -34,7 +34,7 @@
   </div>
 </template>
 <script>
-import Badge from "@/components/Badge.vue"
+import Badge from "@/components/atoms/Badge.vue"
 
 export default {
   props: {

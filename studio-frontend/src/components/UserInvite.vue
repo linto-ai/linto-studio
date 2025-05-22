@@ -71,7 +71,7 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import EMPTY_FIELD from "../const/emptyField"
 import SearchUsersListComponent from "@/components/SearchUsersList.vue"
 import { testEmail } from "@/tools/fields/testEmail"

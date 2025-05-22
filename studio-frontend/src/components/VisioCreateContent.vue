@@ -60,8 +60,8 @@ import {
 } from "@/api/session.js"
 import { testQuickSessionSettings } from "@/tools/fields/testQuickSessionSettings"
 
-import FormInput from "@/components/FormInput.vue"
-import FormCheckbox from "@/components/FormCheckbox.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
+import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import TranscriberProfileSelector from "@/components/TranscriberProfileSelector.vue"
 import QuickSessionSettings from "@/components/QuickSessionSettings.vue"
 

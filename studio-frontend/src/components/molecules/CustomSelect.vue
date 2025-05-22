@@ -8,6 +8,17 @@
     @keydown="onKeyDown"
     role="menu">
     <button
+      v-if="this.$slots['button-content']"
+      @click="toggleMenu"
+      class="select__head flex row no-propagation"
+      :class="buttonClass"
+      aria-haspopup="true"
+      :disabled="disabled"
+      :aria-expanded="showList">
+      <slot name="button-content"></slot>
+    </button>
+    <button
+      v-else="!this.$slots['button-content']"
       @click="toggleMenu"
       class="select__head flex row no-propagation"
       :class="buttonClass"
@@ -81,12 +92,12 @@ TODO :
 - keyboard navigation
 */
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
-import Checkbox from "@/components/Checkbox.vue"
-import Chip from "@/components/Chip.vue"
-import Badge from "@/components/Badge.vue"
-import ContextMenu from "@/components/ContextMenu.vue"
+import Checkbox from "@/components/atoms/Checkbox.vue"
+import Chip from "@/components/atoms/Chip.vue"
+import Badge from "@/components/atoms/Badge.vue"
+import ContextMenu from "@/components/atoms/ContextMenu.vue"
 
 export default {
   props: {

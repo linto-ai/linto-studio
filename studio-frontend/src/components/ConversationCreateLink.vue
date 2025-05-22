@@ -21,9 +21,9 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
-import FormInput from "./FormInput.vue"
-import FormCheckbox from "./FormCheckbox.vue"
+import { bus } from "@/main.js"
+import FormInput from "@/components/molecules/FormInput.vue"
+import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import EMPTY_FIELD from "@/const/emptyField"
 import { testFieldEmpty } from "@/tools/fields/testEmpty.js"
 import { formsMixin } from "@/mixins/forms.js"

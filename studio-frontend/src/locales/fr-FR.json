@@ -511,7 +511,7 @@
     "enabled": "Actif",
     "this_field_is_required": "Ce champ est requis"
   },
-  "globalError": {
+  "global_error": {
     "auth_magic_link": "Le lien d'authentification a expiré, veuillez refaire une | demande de lien d'authentification",
     "back_to_home": "Retour à la page d'accueil",
     "page_not_found": "La page à laquelle vous tentez d'accéder n'existe pas ou requiert des droits que vous n'avez pas."
@@ -1099,11 +1099,15 @@
     "user_not_found": "L'utilisateur n'existe pas",
     "user_right_updated": "Les droits de l'utilisateur ont été mis à jour"
   },
-  "sharedWithTab": {
+  "shared_with_me": {
     "subtitle": "Tout les médias partagés avec vous en dehors d'une organisation sont réunis ici.",
     "title": "Médias partagés avec moi",
     "no_media_title": " Aucun média n'a été partagé avec vous",
     "no_media_subtitle": "D'autres utilisateurs peuvent partager des médias avec vous grâce au bouton 'partager' dans leur bibliothèque de médias. "
+  },
+  "sidebar_filters": {
+    "title": "Filtres",
+    "add_criterions_button": "Choisir des tags"
   },
   "tags": {
     "add_tag_to_conversation": "Ajouter le tag",
@@ -1139,7 +1143,7 @@
     "select_tag_title": "Sélectionner le tag",
     "tags": "Tags"
   },
-  "usersettings": {
+  "user_settings": {
     "change_password_label": "Modifier le mot de passe",
     "check_verify_email": "Veuillez vérifier votre boîte de réception et cliquer sur le lien de vérification que nous venons de vous envoyer.",
     "email_label": "Courriel",
@@ -1196,14 +1200,14 @@
     "update_pswd_notif_dismiss_btn": "Ne plus afficher",
     "verify_email_notif": "Veuillez vérifier votre adresse email"
   },
-  "userCreation": {
+  "user_creation": {
     "title": "Nouvel utilisateur",
     "confirm_button": "Créer l'utilisateur",
     "email_already_exists": "Un utilisateur avec cet email existe déjà",
     "passwords_do_not_match": "Les mots de passe ne correspondent pas",
     "error_message": "Une erreur s'est produite lors de la création de l'utilisateur"
   },
-  "userTable": {
+  "user_table": {
     "header": {
       "id": "ID",
       "email": "Email",
@@ -1217,7 +1221,7 @@
     "edit_button_label": "Modifier",
     "delete_button_label": "Supprimer"
   },
-  "orgaTable": {
+  "orga_table": {
     "header": {
       "creation_date": "Date de création",
       "id": "ID",

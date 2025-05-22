@@ -42,7 +42,7 @@
   </SessionLiveVisio>
 </template>
 <script>
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import {
   apiGetQuickSessionByOrganization,

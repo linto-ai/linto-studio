@@ -2,6 +2,7 @@
   <CustomSelect
     :valueText="localTxt"
     :value="local"
+    :buttonClass="buttonClass"
     icon="flag"
     iconText="Lang"
     aria-label="Language selector"
@@ -14,10 +15,13 @@
     @input="setLocale" />
 </template>
 <script>
-import { bus } from "../main.js"
-import CustomSelect from "./CustomSelect.vue"
+import { bus } from "@/main.js"
+import CustomSelect from "@/components/molecules/CustomSelect.vue"
 
 export default {
+  props: {
+    buttonClass: { type: String, default: "" },
+  },
   watch: {
     "$i18n.locale": function (newVal) {
       localStorage.setItem("lang", newVal)

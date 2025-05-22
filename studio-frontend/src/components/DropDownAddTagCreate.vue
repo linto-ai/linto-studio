@@ -42,9 +42,9 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import TagCategorySearch from "./TagCategorySearch.vue"
-import Tag from "./Tag.vue"
+import Tag from "@/components/molecules/Tag.vue"
 export default {
   props: {
     tagValue: { type: String, required: true },

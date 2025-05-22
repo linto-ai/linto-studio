@@ -41,7 +41,7 @@
   </MainContent>
 </template>
 <script>
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 

@@ -13,7 +13,7 @@
 </template>
 <script>
 import ModalNew from "./ModalNew.vue"
-import FormInput from "@/components/FormInput.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 import { formsMixin } from "@/mixins/forms.js"
 import { testName } from "../tools/fields/testName"
 import { workerSendMessage } from "../tools/worker-message"

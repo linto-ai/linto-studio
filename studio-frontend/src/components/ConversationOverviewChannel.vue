@@ -42,9 +42,9 @@ import {
   apiGetAudioFileFromConversation,
   apiUpdateConversation,
 } from "../api/conversation.js"
-import LabeledValue from "@/components/LabeledValue.vue"
+import LabeledValue from "@/components/atoms/LabeledValue.vue"
 import EMPTY_FIELD from "@/const/emptyField"
-import FormInput from "@/components/FormInput.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 import { testName } from "@/tools/fields/testName"
 
 export default {

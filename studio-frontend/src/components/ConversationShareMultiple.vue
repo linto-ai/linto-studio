@@ -301,7 +301,7 @@ import {
 } from "../api/conversation.js"
 import { apiUpdateMultipleUsersInMultipleConversations } from "../api/user.js"
 
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import { getUserRightFromConversation } from "@/tools/getUserRightFromConversation.js"
 import { indexConversationRightByUsers } from "@/tools/indexConversationRightByUsers.js"
 
@@ -309,11 +309,11 @@ import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { convRoleMixin } from "@/mixins/convRole.js"
 import { debounceMixin } from "@/mixins/debounce.js"
 
-import UserInfoInline from "./UserInfoInline.vue"
+import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
 import UserList from "./UserList.vue"
 import ConversationShareRightSelector from "./ConversationShareRightSelector.vue"
 import SearchUsersListComponent from "@/components/SearchUsersList.vue"
-import ContextMenu from "@/components/ContextMenu.vue"
+import ContextMenu from "@/components/atoms/ContextMenu.vue"
 
 export default {
   props: {

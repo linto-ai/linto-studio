@@ -28,11 +28,11 @@
   </div>
 </template>
 <script>
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import EMPTY_FIELD from "@/const/emptyField"
-import FormInput from "@/components/FormInput.vue"
-import FormCheckbox from "@/components/FormCheckbox.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
+import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import SessionTranslationSelection from "@/components/SessionTranslationSelection.vue"
 import SessionChannelsSelector from "@/components/SessionChannelsSelector.vue"
 

@@ -1,3 +1,6 @@
+import { userName } from "@/tools/userName.js"
+import userAvatar from "@/tools/userAvatar"
+
 const getters = {
   getUserInfos(state) {
     return state.userInfos

@@ -27,9 +27,9 @@
 <script>
 import { mapActions, mapGetters } from "vuex"
 
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import { userName } from "@/tools/userName.js"
-import CustomSelect from "@/components/CustomSelect.vue"
+import CustomSelect from "@/components/molecules/CustomSelect.vue"
 
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 

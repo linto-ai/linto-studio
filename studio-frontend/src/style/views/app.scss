@@ -78,7 +78,7 @@
     .main__breadcrumb-bar {
       position: sticky;
       top: 0;
-      padding: 0.5rem 2rem;
+      padding: 0.5rem 1rem;
       background-color: var(--background-primary);
       z-index: 3;
       border-bottom: var(--divider);
@@ -119,5 +119,5 @@
 
 .sidebar-divider {
   border-top: var(--divider);
-  margin: 0 1em;
+  margin: 0.5rem 1rem;
 }

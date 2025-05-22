@@ -140,7 +140,7 @@
 import moment from "moment"
 import { nextTick } from "vue"
 
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import { apiPostMetadata, apiUpdateMetadata } from "@/api/metadata.js"
 import findExpressionInWordsList from "@/tools/findExpressionInWordsList.js"
 
@@ -148,7 +148,7 @@ import { conversationMixin } from "@/mixins/conversation.js"
 
 import Loading from "@/components/Loading.vue"
 import Modal from "@/components/Modal.vue"
-import UserInfoInline from "@/components/UserInfoInline.vue"
+import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
 import AppEditor from "@/components/AppEditor.vue"
 import MainContentConversation from "@/components/MainContentConversation.vue"
 import HighlightsList from "@/components/HighlightsList.vue"

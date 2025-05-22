@@ -11,7 +11,7 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import {
   apiCountFutureSessions,
@@ -19,7 +19,7 @@ import {
 } from "@/api/session.js"
 
 import MainContent from "@/components/MainContent.vue"
-import Tabs from "@/components/Tabs.vue"
+import Tabs from "@/components/molecules/Tabs.vue"
 import Loading from "@/components/Loading.vue"
 import ErrorPage from "@/components/ErrorPage.vue"
 import SessionListLine from "@/components/SessionListLine.vue"

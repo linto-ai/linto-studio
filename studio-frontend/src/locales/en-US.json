@@ -511,7 +511,7 @@
     "enabled": "enabled",
     "this_field_is_required": "This field is required"
   },
-  "globalError": {
+  "global_error": {
     "auth_magic_link": "The authentication link as expired, please request again for an authentication link",
     "back_to_home": "Back to home",
     "page_not_found": "The page is not found, or you don't have the rights to access it"
@@ -1096,11 +1096,15 @@
     "user_not_found": "User not found",
     "user_right_updated": "User rights have been updated"
   },
-  "sharedWithTab": {
+  "shared_with_me": {
     "subtitle": "All media shared with you (from outside the organisation)",
     "title": "Media shared with me",
     "no_media_title": "No media has been shared with you",
     "no_media_subtitle": "Other users can share media with you using the 'share' button in their media library."
+  },
+  "sidebar_filters": {
+    "title": "Filters",
+    "add_criterions_button": "Select tags"
   },
   "tags": {
     "add_tag_to_conversation": "Add tag",
@@ -1136,7 +1140,7 @@
     "select_tag_title": "Select this tag",
     "tags": "Tags"
   },
-  "usersettings": {
+  "user_settings": {
     "change_password_label": "Change password",
     "check_verify_email": "Please check your emails and click on the link we've sent to you in order to verify your email address.",
     "email_label": "Email",
@@ -1191,14 +1195,14 @@
     "update_pswd_notif_dismiss_btn": "Dismiss",
     "verify_email_notif": "Please verify your email address"
   },
-  "userCreation": {
+  "user_creation": {
     "title": "New user",
     "confirm_button": "Create user",
     "email_already_exists": "This email is already used",
     "passwords_do_not_match": "Passwords do not match",
     "error_message": "An error occurred while creating the user"
   },
-  "userTable": {
+  "user_table": {
     "header": {
       "id": "ID",
       "email": "Email",
@@ -1212,7 +1216,7 @@
     "edit_button_label": "Edit",
     "delete_button_label": "Delete"
   },
-  "orgaTable": {
+  "orga_table": {
     "header": {
       "creation_date": "Creation date",
       "id": "ID",

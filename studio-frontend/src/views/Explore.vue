@@ -2,7 +2,12 @@
   <MainContent sidebar>
     <!-- TODO: put in a component?-->
     <template v-slot:breadcrumb-actions>
-      <div class="flex align-center gap-small">
+      <input type="search" class="flex1 fullwidth" />
+      <button class="only-icon btn">
+        <span class="icon filters"></span>
+      </button>
+
+      <!-- <div class="flex align-center gap-small">
         <button class="red-border btn" @click="clickDeleteConvButton">
           <span class="icon trash"></span>
           <span class="label">{{
@@ -13,7 +18,7 @@
           :currentOrganizationScope="currentOrganizationScope"
           :userInfo="userInfo"
           :selectedConversations="selectedConversations" />
-      </div>
+      </div> -->
     </template>
 
     <ModalDeleteConversations
@@ -33,18 +38,18 @@
       @cancel="closeExploreModal" />
 
     <template v-slot:sidebar>
-      <div class="sidebar-divider"></div>
+      <!-- <div class="sidebar-divider"></div>
       <SidebarFilters
         :custom-filters="customFilters"
         :selected-tags="selectedTags"
         @onUpdateSelectedTags="onUpdateSelectedTags"
         @onUpdateCustomFilters="onUpdateCustomFilters"
-        @addSearchCriterion="openExploreModal" />
+        @addSearchCriterion="openExploreModal" /> -->
     </template>
 
     <section class="flex col flex1 gap-small reset-overflows">
       <!-- title -->
-      <ConversationListHeader
+      <!-- <ConversationListHeader
         :options="options"
         v-model="selectedOption"
         with-search
@@ -53,10 +58,8 @@
         <h2>
           {{ $t("explore.title") }}
         </h2>
-        <!-- <span>
-          {{ $t("explore.subtitle") }}
-        </span> -->
-      </ConversationListHeader>
+        
+      </ConversationListHeader> -->
 
       <!-- search -->
 
@@ -100,12 +103,12 @@ import { debounceMixin } from "@/mixins/debounce"
 import { conversationListOrgaMixin } from "@/mixins/conversationListOrga.js"
 
 import ConversationList from "@/components/ConversationList.vue"
-import Tag from "@/components/Tag.vue"
+import Tag from "@/components/molecules/Tag.vue"
 import MainContent from "@/components/MainContent.vue"
 import ExploreModalVue from "@/components/ExploreModal.vue"
 import { extractTagsFromCategoryTree } from "@/tools/extractTagsFromCategoryTree"
 import ConversationListSearch from "@/components/ConversationListSearch.vue"
-import Pagination from "@/components/Pagination.vue"
+import Pagination from "@/components/molecules/pagination.vue"
 import ModalDeleteConversations from "@/components/ModalDeleteConversations.vue"
 import ConversationShareMultiple from "@/components/ConversationShareMultiple.vue"
 import SelectedConversationIndicator from "@/components/SelectedConversationIndicator.vue"

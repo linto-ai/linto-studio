@@ -157,12 +157,12 @@
 </template>
 <script>
 import { workerSendMessage } from "../tools/worker-message.js"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import EMPTY_FIELD from "@/const/emptyField.js"
 import { testFieldEmpty } from "@/tools/fields/testEmpty.js"
 
-import ContextMenu from "./ContextMenu.vue"
-import FormInput from "./FormInput.vue"
+import ContextMenu from "@/components/atoms/Chip.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 
 const STATES = {
   CHANGE_SPEAKER: 1,

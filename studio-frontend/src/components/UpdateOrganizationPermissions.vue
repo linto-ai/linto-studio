@@ -37,8 +37,8 @@ import EMPTY_FIELD from "@/const/emptyField"
 
 import { apiAdminUpdateOrganisation } from "@/api/organisation.js"
 
-import FormRadio from "@/components/FormRadio.vue"
-import FormCheckbox from "@/components/FormCheckbox.vue"
+import FormRadio from "@/components/molecules/FormRadio.vue"
+import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 
 export default {
   mixins: [organizationPermissionsMixin, orgaRoleMixin, platformRoleMixin],

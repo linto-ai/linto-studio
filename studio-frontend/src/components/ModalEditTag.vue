@@ -11,14 +11,14 @@
 <script>
 import { Fragment } from "vue-fragment"
 
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import EMPTY_FIELD from "@/const/emptyField"
 import { apiUpdateTag } from "@/api/tag.js"
 import { testFieldEmpty } from "@/tools/fields/testEmpty.js"
 import { formsMixin } from "@/mixins/forms.js"
 
 import ModalNew from "./ModalNew.vue"
-import FormInput from "../components/FormInput.vue"
+import FormInput from "./molecules/FormInput.vue"
 
 export default {
   mixins: [formsMixin],
@@ -53,7 +53,7 @@ export default {
           this.tag._id,
           {
             name: this.name.value,
-          }
+          },
         )
         if (res.status == "error") {
           // TODO: handle other errors

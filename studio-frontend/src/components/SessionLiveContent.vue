@@ -26,7 +26,7 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import SessionWS from "@/models/SessionWS.js"
 

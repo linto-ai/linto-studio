@@ -22,7 +22,7 @@
 import { Fragment } from "vue-fragment"
 import { Compact as ColorPicker } from "vue-color"
 
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import EMPTY_FIELD from "../const/emptyField"
 import COLORS_VALUE from "../const/colorsValue"
 import { apiUpdateCategory } from "@/api/tag.js"
@@ -30,7 +30,7 @@ import { testFieldEmpty } from "@/tools/fields/testEmpty.js"
 import { formsMixin } from "@/mixins/forms.js"
 
 import ModalNew from "./ModalNew.vue"
-import FormInput from "./FormInput.vue"
+import FormInput from "./molecules/FormInput.vue"
 export default {
   mixins: [formsMixin],
   props: {
@@ -94,7 +94,7 @@ export default {
                 ? this.name.value
                 : undefined,
             color: this.paletteToColorName[color],
-          }
+          },
         )
 
         if (res.status == "error") {

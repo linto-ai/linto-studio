@@ -58,7 +58,7 @@ import { apiLoginUser, getLoginMethods } from "@/api/user"
 import MainContentPublic from "@/components/MainContentPublic.vue"
 import { testEmail } from "@/tools/fields/testEmail"
 import { testFieldEmpty } from "@/tools/fields/testEmpty"
-import FormInput from "@/components/FormInput.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 import OidcLoginButton from "@/components/OidcLoginButton.vue"
 
 export default {

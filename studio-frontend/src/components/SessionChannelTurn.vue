@@ -11,7 +11,7 @@
   </div>
 </template>
 <script>
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import getTextTurnWithTranslation from "@/tools/getTextTurnWithTranslation.js"
 export default {
   props: {
@@ -40,7 +40,11 @@ export default {
   mounted() {},
   computed: {
     text() {
-      return getTextTurnWithTranslation(this.turn, this.selectedTranslations, this.channelLanguages)
+      return getTextTurnWithTranslation(
+        this.turn,
+        this.selectedTranslations,
+        this.channelLanguages,
+      )
     },
     speaker() {
       if (this.selectedTranslations !== "original") {

@@ -15,7 +15,7 @@
   </ModalNew>
 </template>
 <script>
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import { formsMixin } from "@/mixins/forms.js"
 import { apiDeleteSessionTemplate } from "@/api/session.js"

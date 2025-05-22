@@ -76,7 +76,7 @@ import { debounceMixin } from "@/mixins/debounce.js"
 import HeaderTable from "@/components/HeaderTable.vue"
 import OrganizationTable from "@/components/OrganizationTable.vue"
 import ModalCreateOrganization from "@/components/ModalCreateOrganization.vue"
-import Pagination from "@/components/Pagination.vue"
+import Pagination from "@/components/molecules/pagination.vue"
 import ModalDeleteMultipleOrganizations from "@/components/ModalDeleteMultipleOrganizations.vue"
 export default {
   mixins: [platformRoleMixin, debounceMixin],

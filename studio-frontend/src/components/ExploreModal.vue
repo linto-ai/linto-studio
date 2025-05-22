@@ -67,7 +67,7 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import TagCategoryBoxSelectable from "@/components/TagCategoryBoxSelectable.vue"
 import Loading from "./Loading.vue"
 import TagSearch from "./TagSearch.vue"

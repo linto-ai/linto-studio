@@ -27,7 +27,7 @@
   </div>
 </template>
 <script>
-import Radio from "./Radio.vue"
+import Radio from "@/components/atoms/Radio.vue"
 export default {
   props: {
     /*

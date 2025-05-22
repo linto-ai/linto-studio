@@ -107,7 +107,7 @@
   </div>
 </template>
 <script>
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import { workerSendMessage } from "../tools/worker-message.js"
 import CollaborativeField from "@/components/CollaborativeField.vue"
 import AppEditorSpkToolbox from "@/components/AppEditorSpkToolbox.vue"

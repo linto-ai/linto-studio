@@ -33,7 +33,7 @@
 </template>
 <script>
 import { sessionModelMixin } from "@/mixins/sessionModel.js"
-import StatusLed from "./StatusLed.vue"
+import StatusLed from "@/components/atoms/StatusLed.vue"
 
 export default {
   mixins: [sessionModelMixin],

@@ -17,7 +17,7 @@
 <script>
 import { Fragment } from "vue-fragment"
 
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import { apiDeleteTag } from "@/api/tag.js"
 import { formsMixin } from "@/mixins/forms.js"
 import { apiCountConversation } from "@/api/conversation.js"
@@ -49,7 +49,7 @@ export default {
     async deleteTag() {
       const res = await apiDeleteTag(
         this.currentOrganizationScope,
-        this.tag._id
+        this.tag._id,
       )
       //TODO: handle error
       this.$emit("on-confirm", res)

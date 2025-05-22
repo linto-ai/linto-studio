@@ -138,7 +138,7 @@
   </div>
 </template>
 <script>
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import { testName } from "@/tools/fields/testName"
 import { getEnv } from "@/tools/getEnv"
@@ -150,13 +150,13 @@ import { apiCreateSession, apiCreateSessionTemplate } from "@/api/session.js"
 import { formsMixin } from "@/mixins/forms.js"
 
 import MainContent from "@/components/MainContent.vue"
-import FormInput from "@/components/FormInput.vue"
-import FormCheckbox from "@/components/FormCheckbox.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
+import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import SessionChannelsTable from "@/components/SessionChannelsTable.vue"
 import ModalAddSessionChannels from "@/components/ModalAddSessionChannels.vue"
 import AppointmentSelector from "@/components/AppointmentSelector.vue"
-import FormRadio from "@/components/FormRadio.vue"
-import CustomSelect from "@/components/CustomSelect.vue"
+import FormRadio from "@/components/molecules/FormRadio.vue"
+import CustomSelect from "@/components/molecules/CustomSelect.vue"
 import ModalDeleteTemplate from "@/components/ModalDeleteTemplate.vue"
 import MetadataEditor from "@/components/MetadataEditor.vue"
 import MetadataList from "@/components/MetadataList.vue"

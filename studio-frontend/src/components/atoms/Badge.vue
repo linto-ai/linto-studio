@@ -7,7 +7,6 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
 export default {
   props: {
     size: { type: String, default: "small" }, // small, medium, large

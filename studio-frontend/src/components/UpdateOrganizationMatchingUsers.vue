@@ -37,7 +37,7 @@ import {
   apiInviteUsersMachingEmail,
 } from "@/api/organisation.js"
 
-import FormInput from "@/components/FormInput.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 
 export default {
   mixins: [formsMixin, orgaRoleMixin, platformRoleMixin],

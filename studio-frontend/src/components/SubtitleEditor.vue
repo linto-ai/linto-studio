@@ -44,7 +44,7 @@
   </div>
 </template>
 <script>
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import SubtitleEditorBlock from "./SubtitleEditorBlock.vue"
 import SubtitlePlayer from "@/components/SubtitlePlayer.vue"
 import VideoPlayer from "./VideoPlayer.vue"

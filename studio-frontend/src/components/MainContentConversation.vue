@@ -16,23 +16,25 @@
     <slot></slot>
     <Modal></Modal>
   </MainContent>
-  <div v-else-if="dataLoaded && status != 'done' && status != 'error'">
+  <div
+    v-else-if="dataLoaded && status != 'done' && status != 'error'"
+    class="flex flex1">
     <ConversationStatus :conversation="conversation"></ConversationStatus>
   </div>
-  <div v-else-if="dataLoaded && status == 'error'">
+  <div v-else-if="dataLoaded && status == 'error'" class="flex flex1">
     <conversationStatusError
       :conversation="conversation"></conversationStatusError>
   </div>
-  <div v-else-if="!error" id="conversation-is-loading">
+  <div v-else-if="!error" id="conversation-is-loading" class="flex flex1" s>
     <Loading :title="dataLoadedStatus"></Loading>
   </div>
-  <div v-else>
+  <div v-else class="flex flex1">
     <ErrorView></ErrorView>
   </div>
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import MainContent from "./MainContent.vue"
 import ConversationStatus from "../components/ConversationStatus.vue"

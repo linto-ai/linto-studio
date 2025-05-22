@@ -1,5 +1,5 @@
 import axios from "axios"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import { getCookie } from "./getCookie"
 
 export async function sendRequest(

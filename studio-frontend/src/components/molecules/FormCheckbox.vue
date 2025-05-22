@@ -38,11 +38,11 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
-import LabeledValue from "@/components/LabeledValue.vue"
-import SwitchInput from "@/components/SwitchInput.vue"
-import Checkbox from "./Checkbox.vue"
+import LabeledValue from "@/components/atoms/LabeledValue.vue"
+import SwitchInput from "@/components/atoms/SwitchInput.vue"
+import Checkbox from "@/components/atoms/Checkbox.vue"
 export default {
   props: {
     /*

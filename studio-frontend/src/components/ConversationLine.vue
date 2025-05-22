@@ -28,11 +28,14 @@
           <!-- 1st line: owner + title + metadata -->
           <div class="flex align-center">
             <!-- owner -->
-            <div
+            <!-- <div
               class="list-profil-picture-container conversation-line__owner"
               :data-info="convOwner.fullName">
               <img :src="convOwner.img" class="list-profil-picture" />
-            </div>
+            </div> -->
+            <UserProfilePicture
+              :user="convOwner"
+              class="conversation-line__owner" />
             <!-- type -->
             <div
               v-if="isFromSession"
@@ -230,12 +233,13 @@ import { userName } from "@/tools/userName"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { convRoleMixin } from "@/mixins/convRole.js"
 
-import Tag from "@/components/Tag.vue"
+import Tag from "@/components/molecules/Tag.vue"
 import DropDownAddTag from "@/components/DropDownAddTag.vue"
-import CustomSelect from "@/components/CustomSelect.vue"
-import LabeledValueSmall from "@/components/LabeledValueSmall.vue"
-import FormInput from "@/components/FormInput.vue"
-import ContextMenu from "./ContextMenu.vue"
+import CustomSelect from "@/components/molecules/CustomSelect.vue"
+import LabeledValueSmall from "@/components/atoms/LabeledValueSmall.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
+import ContextMenu from "@/components/atoms/Chip.vue"
+import UserProfilePicture from "@/components/atoms/UserProfilePicture.vue"
 
 export default {
   mixins: [orgaRoleMixin, convRoleMixin],
@@ -521,6 +525,7 @@ export default {
     LabeledValueSmall,
     FormInput,
     ContextMenu,
+    UserProfilePicture,
   },
 }
 </script>

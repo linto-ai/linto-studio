@@ -17,7 +17,7 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import ModalNew from "./ModalNew.vue"
 export default {
@@ -33,14 +33,14 @@ export default {
       if (this.conversationsInError.length > 0) {
         return this.$i18n.tc(
           "conversation.delete_modal_multiple_error.title",
-          this.conversationsInError.length
+          this.conversationsInError.length,
         )
       }
 
       if (this.conversationsCount > 0) {
         return this.$i18n.tc(
           "conversation.delete_modal_multiple.title",
-          this.conversationsCount
+          this.conversationsCount,
         )
       }
 
@@ -50,14 +50,14 @@ export default {
       if (this.conversationsInError.length > 0) {
         return this.$i18n.tc(
           "conversation.delete_modal_multiple_error.content",
-          this.conversationsInError.length
+          this.conversationsInError.length,
         )
       }
 
       if (this.conversationsCount > 0) {
         return this.$i18n.tc(
           "conversation.delete_modal_multiple.content",
-          this.conversationsCount
+          this.conversationsCount,
         )
       }
 
@@ -67,14 +67,14 @@ export default {
       if (this.conversationsInError.length > 0) {
         return this.$i18n.tc(
           "conversation.delete_modal_multiple_error.button",
-          this.conversationsInError.length
+          this.conversationsInError.length,
         )
       }
 
       if (this.conversationsCount > 0) {
         return this.$i18n.tc(
           "conversation.delete_modal_multiple.button",
-          this.conversationsCount
+          this.conversationsCount,
         )
       }
 

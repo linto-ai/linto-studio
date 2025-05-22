@@ -58,7 +58,7 @@
 </template>
 <script>
 import { ScreenList } from "../models/screenList"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import ScreenActions from "./ScreenActions.vue"
 import ScreenEditorBox from "./ScreenEditorBox.vue"
 

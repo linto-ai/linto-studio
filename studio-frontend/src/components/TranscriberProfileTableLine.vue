@@ -33,7 +33,7 @@
 <script>
 import { bus } from "@/main.js"
 import { transcriberProfileModelMixin } from "@/mixins/transcriberProfileModel.js"
-import Checkbox from "@/components/Checkbox.vue"
+import Checkbox from "@/components/atoms/Checkbox.vue"
 export default {
   mixins: [transcriberProfileModelMixin],
   props: {

@@ -7,24 +7,27 @@
     :iconText="$t('navigation.organisation.title')"
     :aria-label="$t('navigation.organisation.aria_organisations_selector')"
     :options="navOrganizationList"
-    @input="onClickMenu" />
+    @input="onClickMenu">
+    <template slot="button-content">
+      <UserProfilePicture
+        :user="userInfo"
+        class="organization-selector__profile-picture" />
+      <span class="organization-selector__name">{{ name }}</span>
+    </template>
+  </CustomSelect>
 </template>
 <script>
 import { mapActions, mapGetters } from "vuex"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 
-import CustomSelect from "./CustomSelect.vue"
-
+import CustomSelect from "./molecules/CustomSelect.vue"
+import UserProfilePicture from "@/components/atoms/UserProfilePicture.vue"
 export default {
   mixins: [orgaRoleMixin, platformRoleMixin],
-  props: {
-    currentOrganizationScope: { type: String, required: false },
-    // userOrganizations: { type: Array, required: true },
-    currentOrganization: { type: Object, required: false },
-  },
+  props: {},
   data() {
     return {
       orgasLoaded: false,
@@ -39,6 +42,13 @@ export default {
     bus.$off("navigation", this.closeMenu)
   },
   computed: {
+    ...mapGetters("organizations", {
+      currentOrganization: "getCurrentOrganization",
+      currentOrganizationScope: "getCurrentOrganizationScope",
+    }),
+    ...mapGetters("user", {
+      userInfo: "getUserInfos",
+    }),
     name() {
       // if (this.$route.name === "shared with me") {
       //   return this.$t("navigation.tabs.shared")
@@ -114,6 +124,7 @@ export default {
   },
   components: {
     CustomSelect,
+    UserProfilePicture,
   },
 }
 </script>

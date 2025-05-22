@@ -47,13 +47,13 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import ArrayHeader from "@/components/ArrayHeader.vue"
-import CustomSelect from "@/components/CustomSelect.vue"
-import Checkbox from "@/components/Checkbox.vue"
-import SwitchInput from "@/components/SwitchInput.vue"
-import Radio from "./Radio.vue"
+import CustomSelect from "@/components/molecules/CustomSelect.vue"
+import Checkbox from "@/components/atoms/Checkbox.vue"
+import SwitchInput from "@/components/atoms/SwitchInput.vue"
+import Radio from "@/components/atoms/Radio.vue"
 import { transcriberProfileModelMixin } from "@/mixins/transcriberProfileModel.js"
 export default {
   mixins: [transcriberProfileModelMixin],

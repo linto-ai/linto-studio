@@ -61,14 +61,14 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import EMPTY_FIELD from "../const/emptyField"
 
 import { apiCreateTag } from "../api/tag"
 
 import TagCategoryBox from "./TagCategoryBox.vue"
-import FormInput from "./FormInput.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 
 export default {
   props: {
@@ -121,7 +121,7 @@ export default {
         this.organizationId,
         this.newTagName.value,
         this.category._id,
-        "organization"
+        "organization",
       )
       if (res.status == "error") {
         this.newTagName.error = "error"

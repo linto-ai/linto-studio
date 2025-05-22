@@ -64,7 +64,7 @@
 import uuidv4 from "uuid/v4.js"
 
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import {
   apiGetCategoryById,
@@ -74,7 +74,7 @@ import {
 } from "../api/tag"
 import EMPTY_FIELD from "../const/emptyField"
 
-import Tag from "./Tag.vue"
+import Tag from "@/components/molecules/Tag.vue"
 
 export default {
   props: {
@@ -205,7 +205,7 @@ export default {
             linkedTags: this.linkedTags.map((t) => t._id),
             possess: this.possess,
           },
-          this.scope
+          this.scope,
         )
         this.displayedCategory = {
           ...this.category,
@@ -216,7 +216,7 @@ export default {
           this.scopeId,
           this.category._id,
           this.scope,
-          { metadata: this.withMetadata, possess: this.possess }
+          { metadata: this.withMetadata, possess: this.possess },
         )
       }
     },

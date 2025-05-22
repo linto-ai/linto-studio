@@ -14,12 +14,12 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import EMPTY_FIELD from "@/const/emptyField"
 import { testFieldEmpty } from "@/tools/fields/testEmpty.js"
 import { formsMixin } from "@/mixins/forms.js"
 
-import FormInput from "../components/FormInput.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 import { apiCreateOrganisation } from "../api/organisation"
 import ModalNew from "./ModalNew.vue"
 

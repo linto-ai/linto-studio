@@ -20,7 +20,7 @@
     <td>
       <button @click="editOrganization">
         <span class="icon edit"></span>
-        <span class="label">{{ $t("orgaTable.edit_button_label") }}</span>
+        <span class="label">{{ $t("orga_table.edit_button_label") }}</span>
       </button>
     </td>
   </tr>
@@ -29,7 +29,7 @@
 import { organizationModelMixin } from "@/mixins/organizationModel"
 import router from "../routers/app-router"
 
-import Checkbox from "@/components/Checkbox.vue"
+import Checkbox from "@/components/atoms/Checkbox.vue"
 
 export default {
   mixins: [organizationModelMixin],

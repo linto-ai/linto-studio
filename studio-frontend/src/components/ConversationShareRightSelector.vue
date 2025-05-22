@@ -14,7 +14,7 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import { workerSendMessage } from "../tools/worker-message.js"
 

@@ -134,7 +134,7 @@
 // could be rename tagSelector or something like that
 import { Fragment } from "vue-fragment"
 
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import {
   apiCreateCategory,
   apiCreateTag,
@@ -143,9 +143,9 @@ import {
 
 import TagSearch from "./TagSearch.vue"
 import TagCategorySearch from "./TagCategorySearch.vue"
-import Tag from "./Tag.vue"
+import Tag from "@/components/molecules/Tag.vue"
 import TagCategoryBox from "./TagCategoryBox.vue"
-import ContextMenu from "./ContextMenu.vue"
+import ContextMenu from "@/components/atoms/Chip.vue"
 import DropDownAddTagCreate from "./DropDownAddTagCreate.vue"
 import TagCategoryBoxSelectable from "./TagCategoryBoxSelectable.vue"
 
@@ -226,7 +226,7 @@ export default {
         name,
         this.searchCategoryType,
         "conversation",
-        null
+        null,
       )
 
       if (res.status == "error") {
@@ -254,7 +254,7 @@ export default {
         this.cleanSearchValueForTag,
         this.selectedCategory._id,
         "conversation",
-        null
+        null,
       )
       if (res.status == "error") {
         bus.$emit("app_notif", {
@@ -290,7 +290,7 @@ export default {
         this.searchCategoryType,
         "conversation",
         false,
-        this.possess
+        this.possess,
       )
       this.loading = false
     },

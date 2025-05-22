@@ -212,7 +212,7 @@
   </MainContent>
 </template>
 <script>
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import { sessionMixin } from "@/mixins/session.js"
 
@@ -226,9 +226,9 @@ import isAuthenticated from "@/tools/isAuthenticated.js"
 import { apiUpdateSession } from "@/api/session.js"
 
 import SessionNotStarted from "@/components/SessionNotStarted.vue"
-import LabeledValue from "@/components/LabeledValue.vue"
-import FormInput from "@/components/FormInput.vue"
-import FormCheckbox from "@/components/FormCheckbox.vue"
+import LabeledValue from "@/components/atoms/LabeledValue.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
+import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import SessionChannelsTable from "@/components/SessionChannelsTable.vue"
 import AppointmentSelector from "@/components/AppointmentSelector.vue"
 import ModalForceDeleteSession from "@/components/ModalForceDeleteSession.vue"
@@ -237,7 +237,7 @@ import SessionStatus from "@/components/SessionStatus.vue"
 import MetadataList from "@/components/MetadataList.vue"
 import SessionHeader from "@/components/SessionHeader.vue"
 import ModalEditSessionAlias from "@/components/ModalEditSessionAlias.vue"
-import Qrcode from "@/components/Qrcode.vue"
+import Qrcode from "@/components/atoms/Qrcode.vue"
 
 export default {
   mixins: [sessionMixin, formsMixin],

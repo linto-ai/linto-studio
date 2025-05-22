@@ -17,7 +17,7 @@
   </div>
 </template>
 <script>
-import { getUserInfo } from "../tools/getUserInfo.js"
+import { getUserInfo } from "@/tools/getUserInfo.js"
 export default {
   props: {
     userId: { required: true },

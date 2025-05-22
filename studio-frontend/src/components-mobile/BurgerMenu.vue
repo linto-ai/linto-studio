@@ -27,7 +27,7 @@
         isAtLeastUploader &&
         (canUploadInCurrentOrganization || canSessionInCurrentOrganization)
       ">
-      <span class="icon new"></span>
+      <!-- <span class="icon new"></span> -->
       <!-- <span class="label">{{ $t("navigation.conversation.create") }}</span> -->
       <span class="label">{{ $t("navigation.conversation.start") }}</span>
     </router-link>
@@ -57,6 +57,19 @@
         <span class="icon session"></span>
         <span class="tab__label">{{ $t("navigation.tabs.sessions") }}</span>
       </router-link>
+      <router-link
+        :to="{ name: 'shared with me' }"
+        class="flex row align-center gap-medium tab">
+        <span class="icon share"></span>
+        <span class="tab__label">{{ $t("navigation.tabs.shared") }}</span>
+      </router-link>
+      <router-link
+        :to="{ name: 'favorites' }"
+        class="flex row align-center gap-medium tab">
+        <span class="icon star"></span>
+        <span class="tab__label">{{ $t("navigation.tabs.favorites") }}</span>
+      </router-link>
+      <div class="flex col flex1"><slot class=""></slot></div>
     </div>
 
     <div class="burger-menu__footer">
@@ -65,24 +78,9 @@
       </div>
 
       <div class="tabs col">
-        <div class="small-margin-bottom">
-          <router-link
-            :to="{ name: 'shared with me' }"
-            class="flex row align-center gap-medium tab">
-            <span class="icon share"></span>
-            <span class="tab__label">{{ $t("navigation.tabs.shared") }}</span>
-          </router-link>
-          <router-link
-            :to="{ name: 'favorites' }"
-            class="flex row align-center gap-medium tab">
-            <span class="icon star"></span>
-            <span class="tab__label">{{
-              $t("navigation.tabs.favorites")
-            }}</span>
-          </router-link>
-        </div>
+        <div class=""></div>
         <div class="sidebar-divider"></div>
-        <div class="small-margin-top">
+        <div class="">
           <router-link
             :to="{ name: 'user settings' }"
             class="flex row align-center gap-medium tab">
@@ -91,6 +89,12 @@
               $t("navigation.account.account_link")
             }}</span>
           </router-link>
+
+          <div class="tab">
+            <LocalSwitcher
+              class="fullwidth"
+              buttonClass="flex row align-center gap-medium transparent no-padding"></LocalSwitcher>
+          </div>
 
           <button
             class="flex row align-center gap-medium tab transparent"
@@ -115,6 +119,7 @@ import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"
 import { userName } from "@/tools/userName.js"
 import { logout } from "@/tools/logout"
+import LocalSwitcher from "@/components/LocalSwitcher.vue"
 
 export default {
   mixins: [orgaRoleMixin, organizationPermissionsMixin],
@@ -154,10 +159,7 @@ export default {
     userName() {
       return userName(this.userInfo)
     },
-    imgUrl() {
-      const imageUrl = this.userInfo.img ?? "pictures/default.jpg"
-      return `${process.env.VUE_APP_PUBLIC_MEDIA}/${imageUrl}`
-    },
+    imgUrl() {},
     mainListingPage() {
       return this.$route.meta?.mainListingPage
     },
@@ -167,6 +169,7 @@ export default {
   },
   components: {
     OrganizationSelector,
+    LocalSwitcher,
   },
 }
 </script>

@@ -1,10 +1,10 @@
 <template>
   <form @submit="updateNotifications">
     <section>
-      <h2>{{ $t("usersettings.notifications.title") }}</h2>
+      <h2>{{ $t("user_settings.notifications.title") }}</h2>
       <fieldset class="small-margin">
         <legend>
-          {{ $t("usersettings.notifications.conversations.title") }}
+          {{ $t("user_settings.notifications.conversations.title") }}
         </legend>
         <FormCheckbox
           :field="fieldConvShareAdd"
@@ -19,7 +19,7 @@
 
       <fieldset class="small-margin">
         <legend>
-          {{ $t("usersettings.notifications.organizations.title") }}
+          {{ $t("user_settings.notifications.organizations.title") }}
         </legend>
         <FormCheckbox
           :field="fieldOrgaAdd"
@@ -35,7 +35,7 @@
       <button type="submit" class="btn small-margin">
         <span class="icon apply"></span>
         <span class="label">{{
-          $t("usersettings.notifications.submit_button")
+          $t("user_settings.notifications.submit_button")
         }}</span>
       </button>
     </section>
@@ -43,8 +43,8 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
-import FormCheckbox from "./FormCheckbox.vue"
+import { bus } from "@/main.js"
+import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import { apiUpdateUserInfo } from "../api/user"
 export default {
   props: {
@@ -61,7 +61,7 @@ export default {
           false,
         error: null,
         valid: false,
-        label: this.$t("usersettings.notifications.conversations.add_label"),
+        label: this.$t("user_settings.notifications.conversations.add_label"),
       },
       fieldConvShareDel: {
         value:
@@ -69,7 +69,7 @@ export default {
           false,
         error: null,
         valid: false,
-        label: this.$t("usersettings.notifications.conversations.del_label"),
+        label: this.$t("user_settings.notifications.conversations.del_label"),
       },
       fieldConvShareUpdate: {
         value:
@@ -77,27 +77,31 @@ export default {
           false,
         error: null,
         valid: false,
-        label: this.$t("usersettings.notifications.conversations.update_label"),
+        label: this.$t(
+          "user_settings.notifications.conversations.update_label",
+        ),
       },
       fieldOrgaAdd: {
         value: this.userInfo?.emailNotifications?.organizations?.add || false,
         error: null,
         valid: false,
-        label: this.$t("usersettings.notifications.organizations.add_label"),
+        label: this.$t("user_settings.notifications.organizations.add_label"),
       },
       fieldOrgaDel: {
         value:
           this.userInfo?.emailNotifications?.organizations?.delete || false,
         error: null,
         valid: false,
-        label: this.$t("usersettings.notifications.organizations.del_label"),
+        label: this.$t("user_settings.notifications.organizations.del_label"),
       },
       fieldOrgaUpdate: {
         value:
           this.userInfo?.emailNotifications?.organizations?.update || false,
         error: null,
         valid: false,
-        label: this.$t("usersettings.notifications.organizations.update_label"),
+        label: this.$t(
+          "user_settings.notifications.organizations.update_label",
+        ),
       },
     }
   },

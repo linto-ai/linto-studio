@@ -33,7 +33,7 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import { formsMixin } from "@/mixins/forms.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
@@ -46,8 +46,8 @@ import { testContent } from "@/tools/fields/testContent"
 
 import { apiUpdateOrganisation } from "@/api/organisation.js"
 
-import FormInput from "@/components/FormInput.vue"
-import LabeledValue from "@/components/LabeledValue.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
+import LabeledValue from "@/components/atoms/LabeledValue.vue"
 export default {
   mixins: [formsMixin, orgaRoleMixin, platformRoleMixin],
   props: {

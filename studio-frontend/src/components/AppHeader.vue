@@ -16,7 +16,7 @@
   </nav>
 </template>
 <script>
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import { getEnv } from "@/tools/getEnv"
 
 import Breadcrumb from "@/components/Breadcrumb.vue"

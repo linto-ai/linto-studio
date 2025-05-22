@@ -13,7 +13,7 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import { SubtitleScroller } from "@/models/SubtitleDrawer.js"
 import { getEnv } from "@/tools/getEnv"
 

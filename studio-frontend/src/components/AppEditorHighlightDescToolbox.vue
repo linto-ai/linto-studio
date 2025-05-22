@@ -39,11 +39,11 @@
 </template>
 <script>
 import CATEGORY_NAME_FROM_SCOPE from "../const/categoryNameFromScope"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
-import ContextMenu from "./ContextMenu.vue"
-import LabeledValue from "./LabeledValue.vue"
-import Tag from "./Tag.vue"
+import ContextMenu from "@/components/atoms/Chip.vue"
+import LabeledValue from "@/components/atoms/LabeledValue.vue"
+import Tag from "@/components/molecules/Tag.vue"
 import MetadataComment from "./MetadataComment.vue"
 
 export default {

@@ -21,7 +21,7 @@
 import { debounceMixin } from "../mixins/debounce"
 import Loading from "@/components/Loading.vue"
 import { apiSearchUser } from "../api/user.js"
-import UserInfoInline from "./UserInfoInline.vue"
+import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
 export default {
   props: {
     searchMemberValue: { required: true },

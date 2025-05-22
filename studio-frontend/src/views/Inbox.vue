@@ -78,7 +78,7 @@ import { debounceMixin } from "@/mixins/debounce"
 
 import ConversationList from "@/components/ConversationList.vue"
 import MainContent from "@/components/MainContent.vue"
-import Pagination from "@/components/Pagination.vue"
+import Pagination from "@/components/molecules/pagination.vue"
 import ModalDeleteConversations from "@/components/ModalDeleteConversations.vue"
 import ConversationShareMultiple from "@/components/ConversationShareMultiple.vue"
 import { apiGetConversationsWithoutTagsByOrganization } from "@/api/conversation.js"

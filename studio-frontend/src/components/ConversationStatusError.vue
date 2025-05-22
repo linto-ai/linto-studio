@@ -44,7 +44,7 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import MainContent from "./MainContent.vue"
 
 // todo: fetch log from https://alpha.api.linto.ai/stt-french-generic/job-log/<job_id>

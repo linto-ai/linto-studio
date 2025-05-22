@@ -298,7 +298,7 @@ export default {
         })
         if (res.message === "User address already use") {
           this.state = "personal-information"
-          this.email.error = this.$t("userCreation.email_already_exists")
+          this.email.error = this.$t("user_creation.email_already_exists")
         } else if (res.status === "success") {
           this.firstname = { ...EMPTY_FIELD }
           this.lastname = { ...EMPTY_FIELD }
@@ -310,7 +310,7 @@ export default {
           this.state = "email-verification"
         } else {
           this.state = "personal-information"
-          this.formError = this.$t("userCreation.error_message")
+          this.formError = this.$t("user_creation.error_message")
         }
       } else {
         console.log("invalid form")

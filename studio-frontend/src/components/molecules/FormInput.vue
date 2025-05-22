@@ -56,8 +56,8 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
-import LabeledValue from "@/components/LabeledValue.vue"
+import { bus } from "@/main.js"
+import LabeledValue from "@/components/atoms/LabeledValue.vue"
 export default {
   props: {
     /*

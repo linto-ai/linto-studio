@@ -32,7 +32,7 @@ import {
   apiLeaveOrganisation,
 } from "../api/organisation.js"
 import { apiRemoveUserFromOrganisation } from "../api/user.js"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 // Outdated component, use ModalNew instead and put the logic outside of the modal.
 // See Modal**.vue components for examples.

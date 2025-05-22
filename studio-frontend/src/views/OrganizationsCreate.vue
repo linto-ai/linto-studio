@@ -116,7 +116,7 @@
 </template>
 <script>
 import { apiCreateOrganisation } from "../api/organisation.js"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import SearchUsersListComponent from "@/components/SearchUsersList.vue"
 import { sortArray } from "../tools/sortList.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"

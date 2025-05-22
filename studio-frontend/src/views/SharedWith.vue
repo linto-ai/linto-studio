@@ -1,14 +1,6 @@
 <template>
   <MainContent sidebar>
-    <template v-slot:breadcrumb-actions>
-      <!-- <div class="flex align-center gap-small">
-        <ConversationShareMultiple
-          v-if="!noConversations"
-          :currentOrganizationScope="currentOrganizationScope"
-          :userInfo="userInfo"
-          :selectedConversations="selectedConversations" />
-      </div> -->
-    </template>
+    <template v-slot:breadcrumb-actions> </template>
 
     <ExploreModalVue
       :value="selectedTags"
@@ -40,10 +32,10 @@
         @searchInConversationsTitle="onSearchInConversationsTitle"
         @searchInConversationsText="onSearchInConversationsText">
         <h2>
-          {{ $t("sharedWithTab.title") }}
+          {{ $t("shared_with_me.title") }}
         </h2>
         <span>
-          {{ $t("sharedWithTab.subtitle") }}
+          {{ $t("shared_with_me.subtitle") }}
         </span>
       </ConversationListHeader>
 
@@ -62,11 +54,11 @@
         <template v-slot:emptyPlaceholder>
           <div class="flex col align-center justify-center flex1">
             <h2 class="center-text">
-              {{ $t("sharedWithTab.no_media_title") }}
+              {{ $t("shared_with_me.no_media_title") }}
             </h2>
             <Svglogo style="max-height: 15rem" />
             <div>
-              {{ $t("sharedWithTab.no_media_subtitle") }}
+              {{ $t("shared_with_me.no_media_subtitle") }}
             </div>
           </div>
         </template>
@@ -101,7 +93,7 @@ import { conversationListMixin } from "@/mixins/conversationList"
 import MainContent from "@/components/MainContent.vue"
 import ExploreModalVue from "@/components/ExploreModal.vue"
 import ConversationListSearch from "@/components/ConversationListSearch.vue"
-import Pagination from "@/components/Pagination.vue"
+import Pagination from "@/components/molecules/pagination.vue"
 import ConversationShareMultiple from "@/components/ConversationShareMultiple.vue"
 import SelectedConversationIndicator from "@/components/SelectedConversationIndicator.vue"
 import ConversationListHeader from "@/components/ConversationListHeader.vue"

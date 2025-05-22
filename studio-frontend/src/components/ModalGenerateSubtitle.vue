@@ -34,10 +34,10 @@
 </template>
 <script>
 import ModalNew from "./ModalNew.vue"
-import FormInput from "@/components/FormInput.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 import { formsMixin } from "@/mixins/forms.js"
 import { testName } from "../tools/fields/testName"
-import CustomSelect from "./CustomSelect.vue"
+import CustomSelect from "@/components/molecules/CustomSelect.vue"
 import { workerSendMessage } from "../tools/worker-message"
 export default {
   mixins: [formsMixin],
@@ -80,19 +80,19 @@ export default {
           {
             value: 1,
             text: this.$i18n.t(
-              "conversation.subtitles.split_selection.no_split"
+              "conversation.subtitles.split_selection.no_split",
             ),
           },
           {
             value: 2,
             text: this.$i18n.t(
-              "conversation.subtitles.split_selection.split_over_two_lines"
+              "conversation.subtitles.split_selection.split_over_two_lines",
             ),
           },
           {
             value: 3,
             text: this.$i18n.t(
-              "conversation.subtitles.split_selection.split_over_three_lines"
+              "conversation.subtitles.split_selection.split_over_three_lines",
             ),
           },
         ],
@@ -108,7 +108,7 @@ export default {
     },
     selectedOPtion() {
       return this.selectOptions.action.find(
-        (elem) => elem.value === this.selectedOptionValue
+        (elem) => elem.value === this.selectedOptionValue,
       )
     },
   },

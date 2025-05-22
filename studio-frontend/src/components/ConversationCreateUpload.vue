@@ -9,7 +9,7 @@
 </template>
 <script>
 import EMPTY_FIELD from "@/const/emptyField.js"
-import Droparea from "./Droparea.vue"
+import Droparea from "@/components/molecules/Droparea.vue"
 export default {
   props: {
     disabled: {

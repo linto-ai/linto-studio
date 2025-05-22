@@ -2,13 +2,13 @@
   <MainContent sidebar box v-if="dataLoaded">
     <!--
     <div class="flex col">
-      <h1>{{ $t("usersettings.title") }}</h1>
+      <h1>{{ $t("user_settings.title") }}</h1>
     </div>
      LEFT COLUMN -->
     <div class="flex row" v-if="isInviteAccount">
       <div class="user-settings-notification">
         <span class="content">
-          {{ $t("usersettings.invite_account_notif") }}
+          {{ $t("user_settings.invite_account_notif") }}
         </span>
       </div>
     </div>
@@ -17,7 +17,7 @@
 
     <!-- Profil picture -->
     <section class="">
-      <h2>{{ $t("usersettings.picture_label") }}</h2>
+      <h2>{{ $t("user_settings.picture_label") }}</h2>
       <div>
         <img :src="imgUrl" class="user-settings-img" />
       </div>
@@ -42,7 +42,7 @@
         </span>
 
         <button v-if="picture.valid" @click="updateProfilPicture()">
-          {{ $t("usersettings.update_picture_button") }}
+          {{ $t("user_settings.update_picture_button") }}
         </button>
       </div>
     </section>
@@ -52,7 +52,7 @@
 
     <!-- Profile visibility -->
     <section>
-      <h2>{{ $t("usersettings.profil_visibility.title") }}</h2>
+      <h2>{{ $t("user_settings.profil_visibility.title") }}</h2>
       <FormCheckbox
         :field="profilePrivate"
         @input="updateVisibility"
@@ -80,7 +80,7 @@ import MainContent from "@/components/MainContent.vue"
 import UserSettingsPersonal from "@/components/UserSettingsPersonal.vue"
 import UserSettingsPassword from "@/components/UserSettingsPassword.vue"
 import UserSettingsNotifications from "@/components/UserSettingsNotifications.vue"
-import FormCheckbox from "@/components/FormCheckbox.vue"
+import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import ErrorView from "@/views/Error.vue"
 
 export default {
@@ -101,9 +101,9 @@ export default {
         value: this.userInfo.private ?? false,
         valid: true,
         error: null,
-        label: this.$t("usersettings.profil_visibility.label_private"),
+        label: this.$t("user_settings.profil_visibility.label_private"),
       },
-      pictureUploadLabel: this.$t("usersettings.profile_image_button"),
+      pictureUploadLabel: this.$t("user_settings.profile_image_button"),
     }
   },
   computed: {

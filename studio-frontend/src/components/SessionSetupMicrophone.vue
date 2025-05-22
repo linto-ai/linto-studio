@@ -118,14 +118,14 @@
   </div>
 </template>
 <script>
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import { customDebug } from "@/tools/customDebug.js"
 
 import { microphoneMixin } from "@/mixins/microphone.js"
 import MainContent from "@/components/MainContent.vue"
-import CustomSelect from "@/components/CustomSelect.vue"
-import StatusLed from "@/components/StatusLed.vue"
+import CustomSelect from "@/components/molecules/CustomSelect.vue"
+import StatusLed from "@/components/atoms/StatusLed.vue"
 export default {
   mixins: [microphoneMixin],
   props: {

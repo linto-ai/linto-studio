@@ -21,7 +21,7 @@
   </div>
 </template>
 <script>
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import { convertHexToRGBA } from "../tools/convertHexToRGBA.js"
 import { timeToHMS } from "../tools/timeToHMS.js"
 import { playerMixin } from "@/mixins/player.js"

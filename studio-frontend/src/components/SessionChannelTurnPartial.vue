@@ -6,7 +6,7 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import SessionChannelTurn from "@/components/SessionChannelTurn.vue"
 

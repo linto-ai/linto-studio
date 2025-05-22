@@ -66,7 +66,7 @@
   </MainContentConversation>
 </template>
 <script>
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import { getEnv } from "@/tools/getEnv"
 import RIGHTS_LIST from "@/const/rigthsList.js"
@@ -81,7 +81,7 @@ import ConversationOverviewMainInfos from "@/components/ConversationOverviewMain
 import ConversationOverviewMetadata from "@/components/ConversationOverviewMetadata.vue"
 import ConversationOverviewLinks from "@/components/ConversationOverviewLinks.vue"
 import ConversationOverviewRights from "@/components/ConversationOverviewRights.vue"
-import Tabs from "@/components/Tabs.vue"
+import Tabs from "@/components/molecules/Tabs.vue"
 import ConversationOverviewChannel from "@/components/ConversationOverviewChannel.vue"
 
 export default {

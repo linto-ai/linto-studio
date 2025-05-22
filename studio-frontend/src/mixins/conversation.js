@@ -1,5 +1,5 @@
 import CONVERSATION_FORMATS from "../const/conversationFormat.js"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import { workerConnect } from "../tools/worker-message.js"
 import { genericConversationMixin } from "./genericConversation.js"
 import { apiGetAllCategories } from "../api/tag.js"
@@ -21,7 +21,7 @@ export const conversationMixin = {
         conversationId,
         token,
         userId,
-        CONVERSATION_FORMATS.transcription
+        CONVERSATION_FORMATS.transcription,
       )
     },
     async specificWorkerOnMessage(event) {
@@ -29,14 +29,14 @@ export const conversationMixin = {
         case "speaker_name_updated":
           this.updateSpeakerName(
             event.data.params.value.speaker_id,
-            event.data.params.value.speaker_name
+            event.data.params.value.speaker_name,
           )
           bus.$emit("conversation_user_update", { ...event.data.params })
           break
         case "turn_speaker_update":
           this.updateSpeakerTurn(
             event.data.params.turnId,
-            event.data.params.value
+            event.data.params.value,
           )
           bus.$emit("turn_speaker_update", event.data.params)
           break
@@ -94,12 +94,12 @@ export const conversationMixin = {
     },
     updateSpeakerName(speakerId, speakerName) {
       this.conversation.speakers.find(
-        (spk) => spk.speaker_id === speakerId
+        (spk) => spk.speaker_id === speakerId,
       ).speaker_name = speakerName
     },
     updateSpeakerTurn(turnId, speakerId) {
       this.conversation.text.find(
-        (turn) => turn.turn_id === turnId
+        (turn) => turn.turn_id === turnId,
       ).speaker_id = speakerId
     },
     async fetchHightlightsCategories(conversationId) {
@@ -108,10 +108,10 @@ export const conversationMixin = {
         "highlight",
         "conversation",
         true,
-        true
+        true,
       )
       this.hightlightsCategories = req.filter(
-        (cat) => cat.tags.length > 0 || cat.scope
+        (cat) => cat.tags.length > 0 || cat.scope,
       )
     },
   },

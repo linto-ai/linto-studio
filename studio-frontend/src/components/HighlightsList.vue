@@ -52,7 +52,7 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import { apiGetNlpService } from "../api/service.js"
 import TagCategoryBoxHighlight from "./TagCategoryBoxHighlight.vue"
 import AppEditorHighLightModal from "./AppEditorHighLightModal.vue"
@@ -99,7 +99,7 @@ export default {
           this.jobs[key].state &&
           this.jobs[key].state != "error" &&
           this.jobs[key].state != "done" &&
-          key != "transcription"
+          key != "transcription",
       )
       return res
     },

@@ -48,7 +48,7 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import MainContent from "./MainContent.vue"
 import DrawingLogo from "@/svg/Drawing.vue"

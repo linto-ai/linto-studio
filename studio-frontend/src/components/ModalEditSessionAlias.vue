@@ -30,8 +30,8 @@ import {
 import { formsMixin } from "@/mixins/forms.js"
 
 import ModalNew from "@/components/ModalNew.vue"
-import FormInput from "@/components/FormInput.vue"
-import LabeledValue from "@/components/LabeledValue.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
+import LabeledValue from "@/components/atoms/LabeledValue.vue"
 
 export default {
   mixins: [formsMixin],

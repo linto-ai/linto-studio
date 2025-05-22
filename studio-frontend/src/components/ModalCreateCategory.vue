@@ -11,14 +11,14 @@
 <script>
 import { Fragment } from "vue-fragment"
 
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import EMPTY_FIELD from "@/const/emptyField"
 import { apiCreateCategory } from "@/api/tag.js"
 import { testFieldEmpty } from "@/tools/fields/testEmpty.js"
 import { formsMixin } from "@/mixins/forms.js"
 
 import ModalNew from "./ModalNew.vue"
-import FormInput from "../components/FormInput.vue"
+import FormInput from "./molecules/FormInput.vue"
 
 export default {
   mixins: [formsMixin],
@@ -49,7 +49,7 @@ export default {
           this.name.value,
           "conversation_metadata",
           "organization",
-          null
+          null,
         )
         if (res.status == "error") {
           this.name.error = "Name already exist"

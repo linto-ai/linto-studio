@@ -1,7 +1,7 @@
 .tabs.col {
   .tab {
     border-left: 3px solid var(--neutral-60);
-    padding: 0.5rem 2rem;
+    padding: 0.5rem calc(2rem - 1px);
     margin: 0px;
     font-weight: normal;
 
@@ -54,10 +54,14 @@
     //margin: 1px;
     font-weight: normal;
 
-    transition: color 0.15s ease-in, background-color 0.15s ease-in;
+    transition:
+      color 0.15s ease-in,
+      background-color 0.15s ease-in;
 
     .icon {
-      transition: color 0.15s ease-in, background-color 0.15s ease-in;
+      transition:
+        color 0.15s ease-in,
+        background-color 0.15s ease-in;
     }
 
     .tab__label {

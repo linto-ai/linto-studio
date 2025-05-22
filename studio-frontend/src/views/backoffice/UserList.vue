@@ -52,7 +52,7 @@ import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import UserTable from "@/components/UserTable.vue"
 import HeaderTable from "@/components/HeaderTable.vue"
 import ModalDeleteUsers from "@/components/ModalDeleteUsers.vue"
-import Pagination from "@/components/Pagination.vue"
+import Pagination from "@/components/molecules/pagination.vue"
 import ModalCreateUser from "@/components/ModalCreateUser.vue"
 
 export default {

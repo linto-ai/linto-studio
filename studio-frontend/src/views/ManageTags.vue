@@ -79,7 +79,7 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import { apiGetAllCategories } from "@/api/tag.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 
