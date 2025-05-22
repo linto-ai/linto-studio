@@ -3,16 +3,23 @@
     class="organization-selector"
     :valueText="name"
     :value="currentOrganizationScope"
+    buttonClass="transparent"
     icon="work"
     :iconText="$t('navigation.organisation.title')"
     :aria-label="$t('navigation.organisation.aria_organisations_selector')"
     :options="navOrganizationList"
     @input="onClickMenu">
     <template slot="button-content">
-      <UserProfilePicture
-        :user="userInfo"
-        class="organization-selector__profile-picture" />
-      <span class="organization-selector__name">{{ name }}</span>
+      <div class="flex1 flex gap-small align-center">
+        <UserProfilePicture
+          :hover="false"
+          :user="userInfo"
+          class="organization-selector__profile-picture" />
+        <span class="organization-selector__name flex1">{{ UserName }}</span>
+        <OrganizationBadge
+          :organization="currentOrganization"></OrganizationBadge>
+        <span class="icon small-arrow-down no-propagation"></span>
+      </div>
     </template>
   </CustomSelect>
 </template>
@@ -22,9 +29,12 @@ import { bus } from "@/main.js"
 
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
+import { userName } from "@/tools/userName"
 
-import CustomSelect from "./molecules/CustomSelect.vue"
+import CustomSelect from "@/components/molecules/CustomSelect.vue"
 import UserProfilePicture from "@/components/atoms/UserProfilePicture.vue"
+import OrganizationBadge from "@/components/atoms/OrganizationBadge.vue"
+
 export default {
   mixins: [orgaRoleMixin, platformRoleMixin],
   props: {},
@@ -49,6 +59,9 @@ export default {
     ...mapGetters("user", {
       userInfo: "getUserInfos",
     }),
+    UserName() {
+      return userName(this.userInfo)
+    },
     name() {
       // if (this.$route.name === "shared with me") {
       //   return this.$t("navigation.tabs.shared")
@@ -79,6 +92,31 @@ export default {
         },
       ]
 
+      const userMenu = [
+        {
+          value: "account",
+          text: this.$t("navigation.account.account_link"),
+          icon: "speaker",
+          iconText: "Account",
+          badge: this.badgeValue,
+        },
+        {
+          value: "logout",
+          text: this.$t("navigation.account.logout"),
+          icon: "logout",
+          iconText: "Logout",
+        },
+      ]
+
+      if (this.isSessionOperator || this.isSystemAdministrator) {
+        userMenu.unshift({
+          value: "backoffice",
+          text: this.$t("navigation.backoffice.link_title"),
+          icon: "settings",
+          iconText: "Backoffice",
+        })
+      }
+
       if (this.isAtLeastOrganizationInitiator) {
         settingsItems.push({
           value: "create",
@@ -89,6 +127,7 @@ export default {
       return {
         organisationItems,
         settingsItems,
+        userMenu,
       }
     },
   },
@@ -125,6 +164,7 @@ export default {
   components: {
     CustomSelect,
     UserProfilePicture,
+    OrganizationBadge,
   },
 }
 </script>

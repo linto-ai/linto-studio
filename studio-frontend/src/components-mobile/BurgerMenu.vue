@@ -1,6 +1,6 @@
 <template>
   <nav class="burger-menu">
-    <div class="flex align-center burger-menu__header">
+    <div class="flex burger-menu__header">
       <button class="transparent only-icon mobile" @click="closeBurger">
         <span class="icon back"></span>
       </button>
@@ -14,24 +14,28 @@
         </h1>
       </router-link>
     </div>
-    <OrganizationSelector
-      fullwidth
-      :currentOrganizationScope="currentOrganizationScope"
-      :currentOrganization="currentOrganization" />
-    <router-link
-      id="upload-media-button"
-      to="/interface/conversations/create"
-      class="btn nav-link green no-shrink"
-      tag="button"
-      v-if="
-        isAtLeastUploader &&
-        (canUploadInCurrentOrganization || canSessionInCurrentOrganization)
-      ">
-      <!-- <span class="icon new"></span> -->
-      <!-- <span class="label">{{ $t("navigation.conversation.create") }}</span> -->
-      <span class="label">{{ $t("navigation.conversation.start") }}</span>
-    </router-link>
-    <div class="tabs col flex1">
+    <div class="sidebar-divider"></div>
+
+    <div class="medium-margin-left medium-margin-right flex col gap-small">
+      <OrganizationSelector
+        fullwidth
+        :currentOrganizationScope="currentOrganizationScope"
+        :currentOrganization="currentOrganization" />
+      <router-link
+        id="upload-media-button"
+        to="/interface/conversations/create"
+        class="btn nav-link green no-shrink"
+        tag="button"
+        v-if="
+          isAtLeastUploader &&
+          (canUploadInCurrentOrganization || canSessionInCurrentOrganization)
+        ">
+        <!-- <span class="icon new"></span> -->
+        <!-- <span class="label">{{ $t("navigation.conversation.create") }}</span> -->
+        <span class="label">{{ $t("navigation.conversation.start") }}</span>
+      </router-link>
+    </div>
+    <div class="tabs col flex1 flex">
       <!-- <router-link
         :to="{ name: 'inbox' }"
         class="flex row align-center gap-medium tab">
@@ -71,8 +75,12 @@
       </router-link>
       <div class="flex col flex1"><slot class=""></slot></div>
     </div>
-
-    <div class="burger-menu__footer">
+    <div class="medium-margin-left medium-margin-right">
+      <LocalSwitcher
+        class="fullwidth"
+        buttonClass="flex row align-center gap-medium"></LocalSwitcher>
+    </div>
+    <!-- <div class="burger-menu__footer">
       <div class="flex align-center gap-medium burger-menu__footer__title">
         <img :src="imgUrl" class="avatar" /> {{ userName }}
       </div>
@@ -91,9 +99,7 @@
           </router-link>
 
           <div class="tab">
-            <LocalSwitcher
-              class="fullwidth"
-              buttonClass="flex row align-center gap-medium transparent no-padding"></LocalSwitcher>
+            
           </div>
 
           <button
@@ -106,7 +112,7 @@
           </button>
         </div>
       </div>
-    </div>
+    </div> -->
   </nav>
 </template>
 <script>

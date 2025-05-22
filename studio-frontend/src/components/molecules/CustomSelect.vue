@@ -119,12 +119,14 @@ export default {
   data() {
     return {
       showList: false,
+      // find the right index
       highlightedIndex: 0,
       highlightedSection: Object.keys(this.options)[0],
       p_id: this.id || "select-" + Math.floor(Math.random() * 1000000000),
     }
   },
   mounted() {
+    this.findStartIndex()
     bus.$on("navigation", this.close)
   },
   beforeDestroy() {
@@ -239,6 +241,22 @@ export default {
             this.options[this.highlightedSection].length - 1
         }
       }
+    },
+    findStartIndex() {
+      const sectionKeys = Object.keys(this.options)
+      for (let i = 0; i < sectionKeys.length; i++) {
+        const section = sectionKeys[i]
+        const index = this.options[section].findIndex(
+          (option) => option.value === this.value,
+        )
+        if (index !== -1) {
+          this.highlightedSection = section
+          this.highlightedIndex = index
+          return
+        }
+      }
+      this.highlightedSection = sectionKeys[0]
+      this.highlightedIndex = 0
     },
     close() {
       this.showList = false

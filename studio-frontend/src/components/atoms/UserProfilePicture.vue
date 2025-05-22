@@ -1,5 +1,7 @@
 <template>
-  <div class="list-profil-picture-container" :data-info="userName">
+  <div
+    class="list-profil-picture-container"
+    :data-info="hover ? userName : false">
     <img :src="userAvatar" class="list-profil-picture" />
   </div>
 </template>
@@ -13,6 +15,10 @@ export default {
     user: {
       type: Object,
       required: true,
+    },
+    hover: {
+      type: Boolean,
+      default: true,
     },
   },
   data() {
