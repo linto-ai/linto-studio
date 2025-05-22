@@ -56,7 +56,7 @@ import { debounceMixin } from "../mixins/debounce.js"
 
 import AppEditorTurn from "@/components/AppEditorTurn.vue"
 import AppEditorPlayer from "@/components/AppEditorPlayer.vue"
-import AppEditorPagination from "@/components/molecules/pagination.vue"
+import AppEditorPagination from "@/components/molecules/Pagination.vue"
 import ModalDeleteTagHighlight from "@/components/ModalDeleteTagHighlight.vue"
 
 export default {
