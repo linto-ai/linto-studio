@@ -26,9 +26,9 @@ export default {
     return {
       filterOptions: {
         tags: [
-          { value: "all", text: "All" },
-          { value: "active", text: "Active" },
-          { value: "inactive", text: "Inactive" },
+          { value: "tag1", text: "tag1" },
+          { value: "tag2", text: "tag2" },
+          { value: "tag3", text: "tag3" },
         ],
       },
       selectedFilters: [],
