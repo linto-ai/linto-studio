@@ -76,6 +76,7 @@ export default {
       const organisationItems = this.userOrganizations.map((orga) => {
         return {
           value: orga._id,
+          icon: "work",
           text: `${orga.name}`,
         }
       })

@@ -277,6 +277,9 @@
   &.category {
     @include maskImage("../public/img/category.svg");
   }
+  &.filter {
+    @include maskImage("../public/img/sorting.svg");
+  }
 }
 
 .icon.small {

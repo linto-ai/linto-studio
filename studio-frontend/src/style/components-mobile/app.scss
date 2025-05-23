@@ -1,8 +1,4 @@
 @media only screen and (max-width: 1100px) {
-  .main__breadcrumb-bar {
-    padding: 0.5rem 1rem !important;
-  }
-
   #app-header {
     display: none; // will be replace by hamburger menu
   }
@@ -11,17 +7,6 @@
     display: block;
     margin-right: 0.5rem;
     flex-shrink: 0;
-  }
-
-  .breadcrumb {
-    .organization-selector {
-      display: none;
-    }
-
-    .breadcrumb__separator {
-      display: none;
-    }
-    //display: none;
   }
 }
 

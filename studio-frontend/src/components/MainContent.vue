@@ -3,19 +3,19 @@
     <!-- <OrganizationSidebar v-if="sidebar" :organizationPage="organizationPage">
     </OrganizationSidebar> -->
     <BurgerMenu
-      v-if="showBurger"
+      v-if="showBurgerMenu"
       @close="toggleBurger"
       v-click-outside="clickOutsideBurgerMenu"
       :organizationPage="organizationPage">
       <slot name="sidebar"></slot>
     </BurgerMenu>
     <main class="flex col scrollable" :class="{ box: box, flex1: flex }">
-      <div
+      <!-- <div
         class="flex row align-center main__breadcrumb-bar gap-small"
         v-if="!fullscreen && this.$slots['breadcrumb-actions']">
         <button
           v-if="isAuthenticated"
-          class="transparent only-icon burger-button"
+          class="transparent only-icon burger-button mobile"
           @click="toggleBurger">
           <span class="icon burger"></span>
         </button>
@@ -24,9 +24,10 @@
           v-if="!noBreadcrumb">
           <!-- <Breadcrumb /> 
         </div> -->
-
+      <!--  
         <slot name="breadcrumb-actions"></slot>
-      </div>
+      </div> -->
+      <HeaderBar />
       <div
         :class="[
           'flex',
@@ -49,6 +50,7 @@ import isAuthenticated from "@/tools/isAuthenticated.js"
 import BurgerMenu from "@/components-mobile/BurgerMenu.vue"
 import OrganizationSidebar from "@/components/OrganizationSidebar.vue"
 import Breadcrumb from "@/components/Breadcrumb.vue"
+import HeaderBar from "@/components/HeaderBar.vue"
 
 export default {
   props: {
@@ -87,7 +89,7 @@ export default {
   },
   data() {
     return {
-      showBurger: this.organizationPage,
+      showBurgerMenu: true,
     }
   },
   computed: {
@@ -98,15 +100,24 @@ export default {
   mounted() {},
   methods: {
     clickOutsideBurgerMenu() {
-      if (this.showBurger && window.matchMedia("(max-width: 1100px)").matches) {
+      if (
+        this.showBurgerMenu &&
+        window.matchMedia("(max-width: 1100px)").matches
+      ) {
         this.toggleBurger()
       }
     },
     toggleBurger() {
-      this.showBurger = !this.showBurger
-      bus.$emit("toggle-burger", this.showBurger)
+      this.showBurgerMenu = !this.showBurgerMenu
+      bus.$emit("toggle-burger", this.showBurgerMenu)
     },
   },
-  components: { Fragment, Breadcrumb, OrganizationSidebar, BurgerMenu },
+  components: {
+    Fragment,
+    Breadcrumb,
+    OrganizationSidebar,
+    BurgerMenu,
+    HeaderBar,
+  },
 }
 </script>

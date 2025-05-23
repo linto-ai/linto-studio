@@ -71,7 +71,7 @@
           :hovered="
             highlightedIndex == index && highlightedSection == sectionName
           "
-          class="select__list__item"
+          class="select__list__item flex gap-small"
           role="option">
           <Checkbox
             v-if="multipleSelection"
@@ -260,6 +260,13 @@ export default {
     },
     close() {
       this.showList = false
+    },
+  },
+  watch: {
+    showList(value) {
+      if (value) {
+        this.findStartIndex()
+      }
     },
   },
   components: { Fragment, Checkbox, Chip, Badge, ContextMenu },

@@ -1,0 +1,12 @@
+.header-bar {
+  box-shadow: var(--shadow-block);
+  background-color: var(--background-primary);
+  padding: 0.5rem 1rem;
+  border-bottom: var(--border-block);
+  height: 2.5rem;
+}
+
+.header-bar__search {
+  box-shadow: var(--shadow-block);
+  width: 20rem;
+}

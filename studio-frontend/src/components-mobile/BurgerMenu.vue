@@ -1,6 +1,6 @@
 <template>
   <nav class="burger-menu">
-    <div class="flex burger-menu__header">
+    <!-- <div class="flex burger-menu__header">
       <button class="transparent only-icon mobile" @click="closeBurger">
         <span class="icon back"></span>
       </button>
@@ -14,9 +14,10 @@
         </h1>
       </router-link>
     </div>
-    <div class="sidebar-divider"></div>
+    <div class="sidebar-divider"></div> -->
 
-    <div class="medium-margin-left medium-margin-right flex col gap-small">
+    <div
+      class="medium-margin-left medium-margin-right flex col gap-small medium-margin-bottom">
       <OrganizationSelector
         fullwidth
         :currentOrganizationScope="currentOrganizationScope"
