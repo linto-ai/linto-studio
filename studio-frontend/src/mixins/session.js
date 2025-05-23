@@ -7,6 +7,7 @@ import {
   apiGetPublicSession,
   apiGetSessionAliasesBySessionId,
   apiUpdateSession,
+  apiPatchSession,
 } from "../api/session"
 
 import { sessionModelMixin } from "./sessionModel"
@@ -176,11 +177,10 @@ export const sessionMixin = {
       pinned,
       display,
     }) {
-      let req = await apiUpdateSession(
+      let req = await apiPatchSession(
         this.currentOrganizationScope,
         this.sessionId,
         {
-          ...this.session,
           meta: {
             ...this.session.meta,
             "@watermark": { frequency, duration, content, pinned, display },
