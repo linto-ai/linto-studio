@@ -233,7 +233,7 @@ module.exports = (webServer) => {
           },
           {
             path: "/organizations/:organizationId/sessions/:id",
-            method: ["put"],
+            method: ["put", "patch"],
             forwardParams: proxyForwardParams,
           },
           {

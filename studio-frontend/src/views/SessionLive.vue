@@ -10,7 +10,7 @@
           <router-link
             :to="settingsRoute"
             class="btn"
-            v-if="isAtLeastMaintainer">
+            v-if="isAtLeastMeetingManager">
             <span class="icon settings"></span>
             <span class="label">{{
               $t("session.detail_page.settings_button")
@@ -22,7 +22,7 @@
             <router-link
               :to="settingsRoute"
               class="btn secondary only-icon"
-              v-if="isAtLeastMaintainer"
+              v-if="isAtLeastMeetingManager"
               :aria-label="$t('session.detail_page.settings_button')">
               <span class="icon settings"></span>
             </router-link>
@@ -63,7 +63,13 @@
         v-bind:displayLiveTranscription.sync="displayLiveTranscription"
         v-bind:displaySubtitles.sync="displaySubtitles"
         v-bind:fontSize.sync="fontSize"
-        v-bind:selectedChannel.sync="selectedChannel" />
+        v-bind:selectedChannel.sync="selectedChannel"
+        :watermarkContent="watermarkContent"
+        :watermarkDuration="watermarkDuration"
+        :watermarkFrequency="watermarkFrequency"
+        :displayWatermark="displayWatermark"
+        :watermarkPinned="watermarkPinned"
+        @updateWatermarkSettings="syncWatermarkSettings" />
     </template>
 
     <div class="relative flex flex1 col">
@@ -86,7 +92,12 @@
         :displaySubtitles="displaySubtitles"
         :displayLiveTranscription="displayLiveTranscription"
         :session="session"
-        :selectedChannel="selectedChannel" />
+        :selectedChannel="selectedChannel"
+        :displayWatermark="displayWatermark"
+        :watermarkFrequency="watermarkFrequency"
+        :watermarkDuration="watermarkDuration"
+        :watermarkContent="watermarkContent"
+        :watermarkPinned="watermarkPinned" />
 
       <SessionDropdownChannelSelector
         class="mobile"
@@ -114,6 +125,8 @@ import { sessionMixin } from "@/mixins/session.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole"
 import { microphoneMixin } from "@/mixins/microphone.js"
 import { sessionMicrophoneMixin } from "@/mixins/sessionMicrophone.js"
+
+import { getEnv } from "@/tools/getEnv"
 
 import MainContent from "@/components/MainContent.vue"
 import SessionNotStarted from "@/components/SessionNotStarted.vue"

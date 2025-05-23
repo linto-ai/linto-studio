@@ -3,17 +3,15 @@
     <div :style="style" id="scroller-container">
       <canvas id="scroller" width="100%" :height="canvaHeight"></canvas>
     </div>
-    <div id="session-content__subtitle__watermark" class="hidden-watermark">
-      {{ $t("session.detail_page.subtitle.watermark_1") }}
-      <img id="logo-linto-inline" src="/img/linto.svg" />,
-      {{ $t("session.detail_page.subtitle.watermark_2") }}
-      <img src="/img/linagora.png" id="logo-linagora-inline" />
-    </div>
+    <div
+      id="session-content__subtitle__watermark"
+      class="hidden-watermark"
+      v-html="watermarkWithImages"></div>
   </div>
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import { SubtitleScroller } from "@/models/SubtitleDrawer.js"
 import { getEnv } from "@/tools/getEnv"
 
@@ -35,6 +33,26 @@ export default {
       type: Array,
       default: () => [],
     },
+    watermarkFrequency: {
+      type: Number,
+      required: true,
+    },
+    watermarkDuration: {
+      type: Number,
+      required: true,
+    },
+    watermarkContent: {
+      type: String,
+      required: true,
+    },
+    watermarkPinned: {
+      type: Boolean,
+      required: true,
+    },
+    displayWatermark: {
+      type: Boolean,
+      required: true,
+    },
   },
   data() {
     return {
@@ -44,6 +62,8 @@ export default {
       canvaHeight: 2.4 * this.fontSize,
       watermarkInterval: null,
       isUnmounted: false,
+      watermarkShowTimeout: null,
+      watermarkHideTimeout: null,
     }
   },
   async mounted() {
@@ -52,10 +72,22 @@ export default {
       fontSize: Number(this.fontSize),
       lineHeight: this.lineHeight,
     })
-    setTimeout(
-      this.drawWatermark.bind(this),
-      getEnv("VUE_APP_WATERMARK_FREQUENCY") * 1000,
-    )
+
+    if (this.displayWatermark && !this.watermarkPinned) {
+      this.watermarkShowTimeout = setTimeout(
+        this.drawWatermark.bind(this),
+        this.watermarkFrequency * 1000,
+      )
+    }
+
+    if (this.displayWatermark && this.watermarkPinned) {
+      this.drawWatermark()
+    }
+
+    bus.$on("clear-session-subtitles", this.reset)
+  },
+  beforeDestroy() {
+    bus.$off("clear-session-subtitles", this.reset)
   },
   watch: {
     partialText: function (newVal, oldVal) {
@@ -63,6 +95,34 @@ export default {
     },
     finalText: function (newVal, oldVal) {
       this.subtitleDrawer.newFinal(newVal)
+    },
+    displayWatermark: function (newVal, oldVal) {
+      clearTimeout(this.watermarkShowTimeout)
+      clearTimeout(this.watermarkHideTimeout)
+      this.hideWatermark()
+    },
+    watermarkFrequency: function (newVal, oldVal) {
+      clearTimeout(this.watermarkShowTimeout)
+      clearTimeout(this.watermarkHideTimeout)
+      if (!this.watermarkPinned) {
+        this.hideWatermark()
+      }
+    },
+    watermarkDuration: function (newVal, oldVal) {
+      clearTimeout(this.watermarkShowTimeout)
+      clearTimeout(this.watermarkHideTimeout)
+      if (!this.watermarkPinned) {
+        this.hideWatermark()
+      }
+    },
+    watermarkPinned: function (newVal, oldVal) {
+      clearTimeout(this.watermarkShowTimeout)
+      clearTimeout(this.watermarkHideTimeout)
+      if (newVal) {
+        this.drawWatermark(true)
+      } else {
+        this.hideWatermark()
+      }
     },
   },
   computed: {
@@ -72,10 +132,33 @@ export default {
         //lineHeight: this.lineHeight,
       }
     },
+    watermarkWithImages() {
+      // <img id="logo-linto-inline" src="/img/linto.svg" />
+      // <img src="/img/linagora.png" id="logo-linagora-inline" />
+      // replace $linto and $linagora with the images and sanitize the string
+      return this.watermarkContent
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;")
+        .replace(
+          "$linto",
+          '<img id="logo-linto-inline" src="/img/linto.svg" />',
+        )
+        .replace(
+          "$linagora",
+          '<img src="/img/linagora.png" id="logo-linagora-inline" />',
+        )
+    },
   },
 
   methods: {
-    drawWatermark() {
+    reset() {
+      this.subtitleDrawer.resetDrawing()
+      this.subtitleDrawer.resetAll()
+    },
+    drawWatermark(pinned = false) {
       if (this.isUnmounted) return
 
       const watermark = document.getElementById(
@@ -83,16 +166,19 @@ export default {
       )
       const scrollerContainer = document.getElementById("scroller-container")
 
-      if (!watermark || !scrollerContainer) return
+      if (!watermark || !scrollerContainer || !this.displayWatermark) return
 
       watermark.classList.add("displayed-watermark")
       watermark.classList.remove("hidden-watermark")
       scrollerContainer.classList.add("scroller-smaller")
       scrollerContainer.classList.remove("scroller-bigger")
-      setTimeout(
-        this.hideWatermark.bind(this),
-        getEnv("VUE_APP_WATERMARK_DURATION") * 1000,
-      )
+
+      if (!pinned) {
+        this.watermarkHideTimeout = setTimeout(
+          this.hideWatermark.bind(this),
+          this.watermarkDuration * 1000,
+        )
+      }
     },
     hideWatermark() {
       if (this.isUnmounted) return
@@ -108,9 +194,10 @@ export default {
       watermark.classList.remove("displayed-watermark")
       scrollerContainer.classList.add("scroller-bigger")
       scrollerContainer.classList.remove("scroller-smaller")
-      setTimeout(
+
+      this.watermarkShowTimeout = setTimeout(
         this.drawWatermark.bind(this),
-        getEnv("VUE_APP_WATERMARK_FREQUENCY") * 1000,
+        this.watermarkFrequency * 1000,
       )
     },
   },

@@ -20,6 +20,11 @@
       fromMicrophone
       @toggleMicrophone="$emit('toggleMicrophone')"
       @onSave="$emit('onSave')"
+      :watermarkFrequency="watermarkFrequency"
+      :watermarkDuration="watermarkDuration"
+      :watermarkContent="watermarkContent"
+      :watermarkPinned="watermarkPinned"
+      :displayWatermark="displayWatermark"
       :isRecording="isRecording"></SessionChannel>
     <Loading v-else></Loading>
   </div>
@@ -29,6 +34,7 @@ import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
 
 import SessionWS from "@/models/SessionWS.js"
+import { getEnv } from "@/tools/getEnv"
 
 import { sessionModelMixin } from "@/mixins/sessionModel.js"
 import { sessionChannelModelMixin } from "../mixins/sessionChannelModel.js"

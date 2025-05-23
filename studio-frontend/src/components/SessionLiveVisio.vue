@@ -8,7 +8,8 @@
         v-bind:displayLiveTranscription.sync="displayLiveTranscription"
         v-bind:displaySubtitles.sync="displaySubtitles"
         v-bind:fontSize.sync="fontSize"
-        v-bind:selectedChannel.sync="selectedChannel" />
+        v-bind:selectedChannel.sync="selectedChannel"
+        quickSession />
     </template>
     <template v-slot:breadcrumb-actions>
       <slot name="breadcrumb-actions"></slot>
