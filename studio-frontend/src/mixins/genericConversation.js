@@ -67,6 +67,16 @@ export const genericConversationMixin = {
         )
       } else return []
     },
+    canEdit() {
+      if (!this.userRights || !this.userRight) return false
+
+      if (this.conversation?.owner == this.userInfo._id) return true
+
+      return this.userRights.hasRightAccess(
+        this.userRight,
+        this.userRights.WRITE,
+      )
+    },
   },
   methods: {
     async setupConversationTree() {

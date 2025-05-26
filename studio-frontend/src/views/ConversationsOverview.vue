@@ -40,7 +40,7 @@
           :conversation="conversation"
           :rootConversation="rootConversation"
           :channels="channels"
-          :canEdit="userRights.hasRightAccess(userRight, userRights.WRITE)" />
+          :canEdit="canEdit" />
         <ConversationOverviewRights
           :conversation="rootConversation"
           :currentOrganizationScope="currentOrganizationScope"

@@ -112,7 +112,7 @@
         :filterSpeakers="filterSpeakers"
         :turnPages="turnPages"
         :turns="turns"
-        :canEdit="userRights.hasRightAccess(userRight, userRights.WRITE)"
+        :canEdit="canEdit"
         :hightlightsCategories="hightlightsCategories"
         :hightlightsCategoriesVisibility="hightlightsCategoriesVisibility"
         @newHighlight="handleNewHighlight"

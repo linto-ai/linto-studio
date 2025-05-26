@@ -265,6 +265,9 @@ export default {
       return getUserRightFromConversation(this.conversation, this.userInfo._id)
     },
     canEditConv() {
+      if (this.conversation.owner == this.userInfo._id) {
+        return true
+      }
       if (this.hasWriteRight(this.userRightInConv)) {
         return true
       }

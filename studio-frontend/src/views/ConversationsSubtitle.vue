@@ -47,7 +47,7 @@
       :conversation="conversation"
       :userInfo="userInfo"
       :blocks="screens"
-      :canEdit="userRights.hasRightAccess(userRight, userRights.WRITE)"
+      :canEdit="canEdit"
       :conversation-users="conversationUsers"
       :users-connected="usersConnected"
       :focusFields="focusFields"
@@ -91,7 +91,7 @@ export default {
           })
         } else {
           this.status = this.computeStatus(
-            this.conversation?.jobs?.transcription
+            this.conversation?.jobs?.transcription,
           )
           workerSendMessage("get_subtitle", { subtitleId: this.subtitleId })
         }
@@ -133,12 +133,12 @@ export default {
       let req = await apiGetFileFromConversationSubtitle(
         this.conversation._id,
         this.subtitleId,
-        type
+        type,
       )
 
       if (req?.status === "success") {
         const file = URL.createObjectURL(
-          new Blob([req?.data], { type: "text/plain" })
+          new Blob([req?.data], { type: "text/plain" }),
         )
         const link = document.createElement("a")
         link.href = file
@@ -173,7 +173,7 @@ export default {
           status: "error",
           message: this.$i18n.t(
             "conversation.subtitles.error.too_much_lines_to_merge",
-            { maxLines: this.versionSettings.screenLines }
+            { maxLines: this.versionSettings.screenLines },
           ),
           timout: null,
           redirect: false,
@@ -187,7 +187,7 @@ export default {
         bus.$emit("app_notif", {
           status: "error",
           message: this.$i18n.t(
-            "conversation.subtitles.error.cannot_merge_non_consecutive_screens"
+            "conversation.subtitles.error.cannot_merge_non_consecutive_screens",
           ),
           timout: null,
           redirect: false,
@@ -213,7 +213,7 @@ export default {
         bus.$emit("app_notif", {
           status: "error",
           message: this.$i18n.t(
-            "conversation.subtitles.error.no_enough_place_new_screen"
+            "conversation.subtitles.error.no_enough_place_new_screen",
           ),
           timout: null,
           redirect: false,
