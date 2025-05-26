@@ -36,7 +36,7 @@ module.exports = (webserver) => {
       method: "delete",
       controller: deleteTag,
       requireAuth: true,
-      requireOrganizationMaintainerAccess: true,
+      requireOrganizationMemberAccess: true,
     },
   ]
 }

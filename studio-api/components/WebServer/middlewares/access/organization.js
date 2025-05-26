@@ -144,7 +144,19 @@ async function access(req, next, organizationId, userId, right) {
         if (req) req.userRole = isUserFound[0].role
 
         return next()
-      } else return next(new OrganizationForbidden())
+      } else {
+        // Special case if the user is owner of an action regarding some conversation
+        if (req?.body?.conversationsId) {
+          const conv = await model.conversations.listConvFromOwner(
+            req.body.conversationsId,
+            userId,
+          )
+          if (conv.length >= 1) {
+            return next()
+          }
+        }
+        return next(new OrganizationForbidden())
+      }
     }
   } catch (err) {
     return next(err)
