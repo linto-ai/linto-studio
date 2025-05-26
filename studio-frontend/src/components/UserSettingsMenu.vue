@@ -25,7 +25,7 @@
   -->
 </template>
 <script>
-import { mapActions, mapGetters } from "vuex"
+import { mapGetters } from "vuex"
 
 import { bus } from "@/main.js"
 import { userName } from "@/tools/userName.js"
@@ -35,9 +35,7 @@ import { platformRoleMixin } from "@/mixins/platformRole.js"
 
 export default {
   mixins: [platformRoleMixin],
-  props: {
-    userInfo: { type: Object, required: true },
-  },
+  props: {},
   data() {
     return {
       userMenuOpened: false,
@@ -51,7 +49,7 @@ export default {
     bus.$off("navigation", this.closeMenu)
   },
   computed: {
-    ...mapGetters("user", { user: "getUserInfos" }),
+    ...mapGetters("user", { userInfo: "getUserInfos" }),
     imgUrl() {
       const imageUrl = this.userInfo.img ?? "pictures/default.jpg"
       return `${process.env.VUE_APP_PUBLIC_MEDIA}/${imageUrl}`
@@ -68,7 +66,7 @@ export default {
       )
     },
     UserName() {
-      return userName(this.user)
+      return userName(this.userInfo)
     },
     badgeValue() {
       if (

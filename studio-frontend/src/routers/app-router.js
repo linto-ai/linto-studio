@@ -380,6 +380,8 @@ let router = new Router({
 })
 
 router.beforeEach(async (to, from, next) => {
+  document.nextRoute = to
+  document.prevRoute = from
   const randomId = Math.random().toString(36).substring(7)
   const routerDebug = customDebug("vue:debug:router:" + randomId)
   const enableSession = getEnv("VUE_APP_ENABLE_SESSION") === "true"
@@ -494,7 +496,7 @@ router.beforeEach(async (to, from, next) => {
 
     const defaultOrganizationId =
       store.getters["organizations/getDefaultOrganizationId"]
-    if (!to.meta?.userPage) {
+    if (!to.meta?.userPage && !to.meta?.backoffice) {
       routerDebug("Check organizationId in params", to.params.organizationId)
       if (
         !to.params.organizationId ||

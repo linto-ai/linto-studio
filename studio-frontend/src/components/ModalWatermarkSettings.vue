@@ -25,7 +25,7 @@
 import { bus } from "@/main.js"
 import ModalNew from "./ModalNew.vue"
 import EMPTY_FIELD from "@/const/emptyField"
-import FormInput from "@/components/FormInput.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 
 export default {
   props: {

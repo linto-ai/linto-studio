@@ -1,5 +1,8 @@
 <template>
   <aside class="burger-menu flex col gap-medium">
+    <div class="medium-margin">
+      <UserSettingsMenu />
+    </div>
     <nav class="tabs col">
       <router-link
         :to="{ name: 'backoffice' }"
@@ -38,6 +41,7 @@
 </template>
 <script>
 import { platformRoleMixin } from "@/mixins/platformRole.js"
+import UserSettingsMenu from "@/components/UserSettingsMenu.vue"
 export default {
   mixins: [platformRoleMixin],
   props: {},
@@ -46,6 +50,8 @@ export default {
   },
   mounted() {},
   methods: {},
-  components: {},
+  components: {
+    UserSettingsMenu,
+  },
 }
 </script>

@@ -15,9 +15,12 @@
           :hover="false"
           :user="userInfo"
           class="organization-selector__profile-picture" />
-        <span class="organization-selector__name flex1">{{ UserName }}</span>
-        <OrganizationBadge
-          :organization="currentOrganization"></OrganizationBadge>
+        <div class="flex col flex1">
+          <span class="organization-selector__name flex1">{{ UserName }}</span>
+          <span class="organization-selector__organization">Linagora</span>
+        </div>
+        <!-- <OrganizationBadge
+          :organization="currentOrganization"></OrganizationBadge> -->
         <span class="icon small-arrow-down no-propagation"></span>
       </div>
     </template>
@@ -152,6 +155,10 @@ export default {
         this.$router.push(
           `/interface/${this.currentOrganizationScope}/tags/settings`,
         )
+      } else if (value === "backoffice") {
+        this.$router.push({
+          name: "backoffice",
+        })
       } else {
         this.setCurrentOrganizationScope(value)
         this.$router.push({

@@ -62,6 +62,7 @@
         <span class="icon session"></span>
         <span class="tab__label">{{ $t("navigation.tabs.sessions") }}</span>
       </router-link>
+      <!-- <div class="sidebar-divider"></div> -->
       <router-link
         :to="{ name: 'shared with me' }"
         class="flex row align-center gap-medium tab">
