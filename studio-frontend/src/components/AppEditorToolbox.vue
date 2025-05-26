@@ -16,7 +16,7 @@
 </template>
 <script>
 import { bus } from "@/main.js"
-import ContextMenu from "@/components/atoms/Chip.vue"
+import ContextMenu from "@/components/atoms/ContextMenu.vue"
 import DropDownAddTag from "./DropDownAddTag.vue"
 
 export default {

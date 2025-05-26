@@ -145,7 +145,7 @@ import TagSearch from "./TagSearch.vue"
 import TagCategorySearch from "./TagCategorySearch.vue"
 import Tag from "@/components/molecules/Tag.vue"
 import TagCategoryBox from "./TagCategoryBox.vue"
-import ContextMenu from "@/components/atoms/Chip.vue"
+import ContextMenu from "@/components/atoms/ContextMenu.vue"
 import DropDownAddTagCreate from "./DropDownAddTagCreate.vue"
 import TagCategoryBoxSelectable from "./TagCategoryBoxSelectable.vue"
 

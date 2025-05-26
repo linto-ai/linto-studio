@@ -21,7 +21,7 @@
 <script>
 import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
-import ContextMenu from "@/components/atoms/Chip.vue"
+import ContextMenu from "@/components/atoms/ContextMenu.vue"
 import SessionChannelsEndpointsLine from "./SessionChannelsEndpointsLine.vue"
 
 export default {
@@ -36,18 +36,18 @@ export default {
       menuIsVisible: false,
     }
   },
-  mounted() {},
   computed: {
     endpoints_list() {
       return Object.values(this.endpoints)
     },
   },
+  // TODO: add copy to clipboard on click on endpoin
   methods: {
     displayMenu() {
       this.menuIsVisible = true
     },
     hideMenu() {
-      this.menuIsVisible = false
+      //this.menuIsVisible = false
     },
   },
   components: { Fragment, ContextMenu, SessionChannelsEndpointsLine },

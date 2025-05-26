@@ -238,7 +238,7 @@ import DropDownAddTag from "@/components/DropDownAddTag.vue"
 import CustomSelect from "@/components/molecules/CustomSelect.vue"
 import LabeledValueSmall from "@/components/atoms/LabeledValueSmall.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
-import ContextMenu from "@/components/atoms/Chip.vue"
+import ContextMenu from "@/components/atoms/ContextMenu.vue"
 import UserProfilePicture from "@/components/atoms/UserProfilePicture.vue"
 
 export default {

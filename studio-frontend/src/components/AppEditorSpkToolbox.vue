@@ -161,7 +161,7 @@ import { bus } from "@/main.js"
 import EMPTY_FIELD from "@/const/emptyField.js"
 import { testFieldEmpty } from "@/tools/fields/testEmpty.js"
 
-import ContextMenu from "@/components/atoms/Chip.vue"
+import ContextMenu from "@/components/atoms/ContextMenu.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
 
 const STATES = {
