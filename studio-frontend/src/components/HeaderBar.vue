@@ -1,5 +1,6 @@
 <template>
   <div class="flex align-center header-bar">
+    <slot name="start"></slot>
     <form class="flex row align-center flex1 gap-small" @submit="handleSearch">
       <div class="flex row align-center">
         <input
@@ -26,6 +27,7 @@
         :options="filterOptions">
         <template slot="button-content"><span class="icon filter" /></template>
       </CustomSelect> -->
+      <slot name="end"></slot>
     </form>
   </div>
 </template>

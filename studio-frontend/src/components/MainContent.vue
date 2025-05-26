@@ -13,12 +13,7 @@
       <!-- <div
         class="flex row align-center main__breadcrumb-bar gap-small"
         v-if="!fullscreen && this.$slots['breadcrumb-actions']">
-        <button
-          v-if="isAuthenticated"
-          class="transparent only-icon burger-button mobile"
-          @click="toggleBurger">
-          <span class="icon burger"></span>
-        </button>
+        
         <!-- <div
           class="flex row align-center flex1 reset-overflows"
           v-if="!noBreadcrumb">
@@ -27,7 +22,16 @@
       <!--  
         <slot name="breadcrumb-actions"></slot>
       </div> -->
-      <HeaderBar />
+      <HeaderBar>
+        <template v-slot:start>
+          <button
+            v-if="isAuthenticated"
+            class="transparent only-icon burger-button mobile"
+            @click="toggleBurger">
+            <span class="icon burger"></span>
+          </button>
+        </template>
+      </HeaderBar>
       <div
         :class="[
           'flex',
@@ -89,7 +93,7 @@ export default {
   },
   data() {
     return {
-      showBurgerMenu: true,
+      showBurgerMenu: !window.matchMedia("(max-width: 1100px)").matches,
     }
   },
   computed: {
