@@ -3,6 +3,7 @@
     <Tag
       :key="index"
       v-for="(pairs, index) in field.value"
+      v-if="!isPrivateMetadata(pairs[0])"
       :value="pairs[1]"
       :categoryName="pairs[0]" />
 
@@ -25,7 +26,11 @@ export default {
     return {}
   },
   mounted() {},
-  methods: {},
+  methods: {
+    isPrivateMetadata(key) {
+      return key.startsWith("@")
+    },
+  },
   components: {
     Tag,
   },

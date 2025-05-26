@@ -193,6 +193,22 @@ export async function apiUpdateSession(
   return createSession
 }
 
+export async function apiPatchSession(
+  organizationScope,
+  sessionId,
+  data,
+  notif,
+) {
+  const createSession = await sendRequest(
+    `${BASE_API}/organizations/${organizationScope}/sessions/${sessionId}`,
+    { method: "patch" },
+    data,
+    notif,
+  )
+
+  return createSession
+}
+
 export async function apiSearchSessionByName(
   organizationScope,
   sessionName,

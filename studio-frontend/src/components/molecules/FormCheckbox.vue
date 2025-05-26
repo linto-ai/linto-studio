@@ -22,7 +22,7 @@
     </div>
 
     <div
-      class="flex row"
+      class="flex row align-center"
       v-if="field.label"
       :title="p_disabled ? p_disabledReason : ''">
       <label class="form-label" :for="id">

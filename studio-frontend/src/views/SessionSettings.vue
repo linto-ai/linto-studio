@@ -78,6 +78,25 @@
               :field="fieldIsPublic"
               v-model="fieldIsPublic.value"
               :disabled="isActive"></FormCheckbox>
+
+            <FormCheckbox
+              v-if="enableWatermark"
+              :field="fieldDisplayWatermark"
+              v-model="fieldDisplayWatermark.value">
+              <template v-slot:content-after-label>
+                <button
+                  class="only-icon transparent"
+                  :aria-label="
+                    $t('session.live_page.watermark_settings.settings_button')
+                  "
+                  :title="
+                    $t('session.live_page.watermark_settings.settings_button')
+                  "
+                  @click="showWatermarkSettings = true">
+                  <span class="icon settings" />
+                </button>
+              </template>
+            </FormCheckbox>
           </section>
           <section>
             <h2 class="flex align-center gap-medium">
@@ -116,17 +135,6 @@
         </div>
         <div class="flex col gap-medium session-settings-right align-center">
           <div class="flex col gap-medium">
-            <!-- <button
-            class="btn flex1"
-            v-if="isPending"
-            @click="startSession"
-            :disabled="isStarting">
-            <span class="icon play"></span>
-            <span class="label">{{
-              $t("session.detail_page.start_button")
-            }}</span>
-          </button> -->
-
             <!-- Delete and save -->
             <button
               class="btn flex1 red-border flex"
@@ -151,17 +159,6 @@
                 $t("session.detail_page.stop_force_button")
               }}</span>
             </button>
-
-            <!-- <button
-            class="btn red-border flex1"
-            :disabled="isDeleting || isActive"
-            :title="titleButtonDelete"
-            @click="openModalDeleteSession">
-            <span class="icon trash"></span>
-            <span class="label">{{
-              $t("session.detail_page.delete_button")
-            }}</span>
-          </button> -->
           </div>
           <Qrcode :value="publicLink" class="session-settings-qr-code" />
         </div>
@@ -208,6 +205,13 @@
         v-if="showModalEditSessionAlias"
         @on-cancel="closeModalEditSessionAlias"
         @on-confirm="updateSessionAlias" />
+
+      <ModalWatermarkSettings
+        v-if="showWatermarkSettings"
+        @on-cancel="closeWatermarkSettings"
+        @on-confirm="closeWatermarkSettings"
+        :field="fieldWatermarkSettings"
+        v-model="fieldWatermarkSettings.value" />
     </div>
   </MainContent>
 </template>
@@ -222,6 +226,7 @@ import { formsMixin } from "@/mixins/forms.js"
 
 import isSameDateTimeWithoutSeconds from "@/tools/isSameDateTimeWithoutSeconds.js"
 import isAuthenticated from "@/tools/isAuthenticated.js"
+import { getEnv } from "@/tools/getEnv"
 
 import { apiUpdateSession } from "@/api/session.js"
 
@@ -238,7 +243,7 @@ import MetadataList from "@/components/MetadataList.vue"
 import SessionHeader from "@/components/SessionHeader.vue"
 import ModalEditSessionAlias from "@/components/ModalEditSessionAlias.vue"
 import Qrcode from "@/components/atoms/Qrcode.vue"
-
+import ModalWatermarkSettings from "@/components/ModalWatermarkSettings.vue"
 export default {
   mixins: [sessionMixin, formsMixin],
   props: {},
@@ -263,6 +268,22 @@ export default {
         error: null,
         valid: false,
         label: this.$t("session.settings_page.isPublic_label"),
+      },
+      fieldDisplayWatermark: {
+        value: null,
+        error: null,
+        valid: false,
+        label: this.$t("session.settings_page.displayWatermark_label"),
+      },
+      fieldWatermarkSettings: {
+        value: {
+          content: null,
+          frequency: null,
+          duration: null,
+        },
+        error: null,
+        valid: false,
+        label: this.$t("session.settings_page.watermarkSettings_label"),
       },
       fieldAppointment: {
         ...EMPTY_FIELD,
@@ -292,12 +313,21 @@ export default {
       formState: "idle",
       localChannels: [],
       channelsHasChanged: false,
+      showWatermarkSettings: false,
     }
   },
   created() {},
   computed: {
     hasChanged() {
       const publicChanged = this.fieldIsPublic.value !== this.isPublic
+      const displayWatermarkChanged =
+        this.fieldDisplayWatermark.value !== this.displayWatermark
+      const watermarkContentChanged =
+        this.fieldWatermarkSettings.value.content !== this.watermarkContent
+      const watermarkFrequencyChanged =
+        this.fieldWatermarkSettings.value.frequency !== this.watermarkFrequency
+      const watermarkDurationChanged =
+        this.fieldWatermarkSettings.value.duration !== this.watermarkDuration
       const autoStartChanged = this.fieldAutoStart.value !== this.autoStart
       const autoStopChanged = this.fieldAutoStop.value !== this.autoStop
       const startDateChanged = !isSameDateTimeWithoutSeconds(
@@ -312,6 +342,10 @@ export default {
 
       return (
         publicChanged ||
+        displayWatermarkChanged ||
+        watermarkContentChanged ||
+        watermarkFrequencyChanged ||
+        watermarkDurationChanged ||
         autoStartChanged ||
         autoStopChanged ||
         startDateChanged ||
@@ -326,6 +360,9 @@ export default {
     },
     isAuthenticated() {
       return isAuthenticated()
+    },
+    enableWatermark() {
+      return getEnv("VUE_APP_ENABLE_WATERMARK") === "true"
     },
   },
   mounted() {},
@@ -353,6 +390,12 @@ export default {
       this.sessionLoaded = true
     },
     initValues() {
+      this.fieldDisplayWatermark.value = this.displayWatermark
+      this.fieldWatermarkSettings.value = {
+        content: this.watermarkContent,
+        frequency: this.watermarkFrequency,
+        duration: this.watermarkDuration,
+      }
       this.fieldAutoStart.value = this.autoStart
       this.fieldAutoStop.value = this.autoStop
       this.fieldPublicLink.value = this.publicLink
@@ -400,6 +443,12 @@ export default {
         } catch (error) {}
       }, 2000)
     },
+    closeWatermarkSettings() {
+      this.showWatermarkSettings = false
+    },
+    openWatermarkSettings() {
+      this.showWatermarkSettings = true
+    },
     resetSession() {
       this.initValues()
     },
@@ -416,6 +465,16 @@ export default {
       if (this.testFields()) {
         let newValues = {
           ...this.session,
+          meta: {
+            ...this.session.meta,
+            "@watermark": {
+              ...this?.session?.meta?.["@watermark"],
+              display: this.fieldDisplayWatermark.value,
+              frequency: this.fieldWatermarkSettings.value.frequency,
+              duration: this.fieldWatermarkSettings.value.duration,
+              content: this.fieldWatermarkSettings.value.content,
+            },
+          },
           scheduleOn: startDateTime,
           endOn: endDateTime,
           autoStart: this.fieldAutoStart.value,
@@ -466,6 +525,7 @@ export default {
     SessionHeader,
     ModalEditSessionAlias,
     Qrcode,
+    ModalWatermarkSettings,
   },
 }
 </script>

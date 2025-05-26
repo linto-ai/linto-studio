@@ -280,6 +280,12 @@
   &.filter {
     @include maskImage("../public/img/sorting.svg");
   }
+  &.pin {
+    @include maskImage("../public/img/pin.svg");
+  }
+  &.pin-on {
+    @include maskImage("../public/img/pin-angle-fill.svg");
+  }
 }
 
 .icon.small {
