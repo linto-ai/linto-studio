@@ -282,12 +282,14 @@ function createTurn(
   )
     return
 
-  turn.raw_segment.split(" ").forEach((word) => {
-    turn.words.push({
-      wid: uuidv4(),
-      word: word,
+  if (turn.raw_segment !== undefined) {
+    turn.raw_segment.split(" ").forEach((word) => {
+      turn.words.push({
+        wid: uuidv4(),
+        word: word,
+      })
     })
-  })
+  }
 
   return turn
 }
