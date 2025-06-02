@@ -19,7 +19,7 @@ import { apiDeleteOrganisation } from "@/api/organisation.js"
 import bulkRequest from "@/tools/bulkRequest.js"
 import { bus } from "@/main"
 
-import ModalNew from "@/components/ModalNew.vue"
+import ModalNew from "@/components/molecules/Modal.vue"
 
 export default {
   props: {

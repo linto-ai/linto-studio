@@ -94,7 +94,7 @@
           name: 'conversations publish',
           params: { conversationId: conversation._id },
         }"
-        class="btn green">
+        class="btn primary">
         <span class="icon document"></span>
         <span class="label">{{ $t("conversation.publish_document") }}</span>
       </router-link>

@@ -9,7 +9,7 @@
   </ModalNew>
 </template>
 <script>
-import ModalNew from "./ModalNew.vue"
+import ModalNew from "@/components/molecules/Modal.vue"
 export default {
   props: {},
   data() {

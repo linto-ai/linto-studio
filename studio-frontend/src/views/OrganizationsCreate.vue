@@ -105,7 +105,7 @@
           </table>
         </div>-->
         <div class="flex row">
-          <button class="btn green" type="submit" :disabled="buttonDisabled">
+          <button class="btn primary" type="submit" :disabled="buttonDisabled">
             <span class="icon apply"></span>
             <span class="label">{{ formSubmitLabel }}</span>
           </button>

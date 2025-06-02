@@ -23,33 +23,17 @@
     --secondary-color: var(--blue-chart);
     --tertiary-color: var(--red-chart);
 
-    --dark-100: #333;
-    --dark-80: #666;
-    --dark-60: #ccc;
-    --dark-40: #e1e1e1;
-    --dark-20: #f5f5f5;
-    --dark-10: #fafafa;
-    --neutral-100: #333;
-    --neutral-80: #666;
-    --neutral-60: #c2c2c2;
-    --neutral-40: #e1e1e1;
-    --neutral-20: #f5f5f5;
-    --neutral-10: #fafafa;
-
     --background-app: rgb(250, 250, 250);
 
     --background-primary: var(--primary-color);
     --background-primary-with-small-opacity: rgba(255, 255, 255, 0.85);
 
-    --button-background: var(--primary-soft);
     --button-image-background: linear-gradient(var(--neutral-100), var(--neutral-200));
     --button-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.08);
-    //--border-button-flat: 1px solid #bdbdbd;
+    //--border-button: 1px solid #bdbdbd;
 
-    --button-background-hover: var(--neutral-20);
     --border-button-glass: 1px solid rgba(255, 255, 255, 0.4);
 
-    --input-background: var(--primary-soft);
     //--border-input: 1px solid var(--neutral-60) !important;
 
     --selected-background: rgba(40, 153, 131, 0.0784313725);

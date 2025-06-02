@@ -1,8 +1,8 @@
 body {
   font-family: $mainFont;
-  //font-family: "Architects Daughter", cursive;
   color: var(--text-primary);
   accent-color: var(--primary-color);
+  font-size: 14px;
   font-weight: 400;
   padding: 0;
   margin: 0;
@@ -10,6 +10,9 @@ body {
   position: relative;
   z-index: 1;
   background-color: var(--background-app);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 h1,
@@ -35,6 +38,7 @@ h4 {
 
 .flex {
   display: flex;
+
   &.col {
     flex-direction: column;
 
@@ -105,28 +109,30 @@ h4 {
   }
 }
 
-.flex1 {
+.flex1,
+.flex-1 {
   flex: 1;
   min-height: 0; // it force the flex to not grow bigger than the parent
   min-width: 0; // same as above
-  //overflow: auto;
-
   .fit-content {
     flex-basis: fit-content;
   }
 }
 
-.flex2 {
+.flex2,
+.flex-2 {
   flex: 2;
   overflow: auto;
 }
 
-.flex3 {
+.flex3,
+.flex-3 {
   flex: 3;
   overflow: auto;
 }
 
-.flex4 {
+.flex4,
+.flex-4 {
   flex: 4;
   overflow: auto;
 }
@@ -137,6 +143,10 @@ h4 {
 
 .hidden {
   display: none !important;
+}
+
+.absolute {
+  position: absolute;
 }
 
 .relative {
@@ -315,6 +325,46 @@ li:last-child {
 
 .reset-color {
   color: var(--text-primary);
+}
+
+.background-primary-soft {
+  background-color: var(--background-primary-soft);
+}
+
+.background-primary-hard {
+  background-color: var(--background-primary-hard);
+}
+
+.background-secondary-soft {
+  background-color: var(--background-secondary-soft);
+}
+
+.background-secondary-hard {
+  background-color: var(--background-secondary-hard);
+}
+
+.background-tertiary-soft {
+  background-color: var(--background-tertiary-soft);
+}
+
+.background-tertiary-hard {
+  background-color: var(--background-tertiary-hard);
+}
+
+.background-yellow-soft {
+  background-color: var(--background-yellow-soft);
+}
+
+.background-yellow-hard {
+  background-color: var(--background-yellow-hard);
+}
+
+.background-green-soft {
+  background-color: var(--background-green-soft);
+}
+
+.background-green-hard {
+  background-color: var(--background-green-hard);
 }
 
 *[data-info] {

@@ -19,7 +19,7 @@
     </form>
     <button
       v-if="add_button_label"
-      class="btn green"
+      class="btn primary"
       @click="$emit('on-create')">
       <span class="icon plus"></span>
       <span class="label">{{ add_button_label }}</span>

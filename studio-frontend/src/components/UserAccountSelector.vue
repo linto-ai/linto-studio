@@ -1,5 +1,5 @@
 <template>
-    <div class="user-account-selector" :class="{ active: active }">
+    <div class="user-account-selector background-primary-soft" :class="{ active: active }">
         <div class="overlay" v-if="active" @click="active = false"></div>
         <div class="root block" @click="active = !active">
             <div class="btn head flex align-center gap-small">
@@ -8,7 +8,7 @@
                         class="user-account-selector__profile-picture" />
                     <span class="user-account-selector__name">{{ UserName }}</span>
                 </div>
-                <button class="btn sm only-icon outline">
+                <button class="btn sm only-icon">
                     <ph-icon :name="active ? 'caret-up' : 'caret-down'"></ph-icon>
                 </button>
             </div>

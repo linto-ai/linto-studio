@@ -62,7 +62,7 @@
   }
 
   .tab:first-child {
-    border-top: var(--border-button-flat);
+    border-top: var(--border-button);
     border-radius: 0px 4px 0px 0px;
   }
 
@@ -71,9 +71,9 @@
   }
 
   .tab {
-    border-bottom: var(--border-button-flat);
-    border-right: var(--border-button-flat);
-    border-left: var(--border-button-flat);
+    border-bottom: var(--border-button);
+    border-right: var(--border-button);
+    border-left: var(--border-button);
     flex: 1;
     margin: 0;
     align-items: center;
@@ -97,7 +97,7 @@
   //position: sticky;
   bottom: 0.5rem;
   padding: 0.25rem 0rem;
-  //border: var(--border-button-flat);
+  //border: var(--border-button);
   //background-color: var(--background-primary);
   //box-shadow: var(--shadow-block);
   border-radius: 4px;

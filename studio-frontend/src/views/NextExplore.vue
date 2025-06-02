@@ -7,7 +7,9 @@
       <template v-slot:before>
         <div v-if="initialPage > 0 && showPreviousButton" class="explore-next__previous-items"
           @click="loadPreviousItems">
-          ({{ initialPage * 12 }}) previous items
+          <a href="#" class="btn xs outline primary">
+            <span class="label">Load previous items ({{ initialPage * 12 }})</span>
+          </a>
         </div>
       </template>
       <template v-slot:after>

@@ -9,7 +9,7 @@
 </template>
 <script>
 import { bus } from "@/main.js"
-import ModalNew from "@/components/ModalNew.vue"
+import ModalNew from "@/components/molecules/Modal.vue"
 import MetadataEditor from "@/components/MetadataEditor.vue"
 
 export default {

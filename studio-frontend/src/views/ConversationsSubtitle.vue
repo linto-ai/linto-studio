@@ -22,7 +22,7 @@
           :valueText="versionName"
           :options="versionList"
           @input="loadNewSubtitles"></CustomSelect>
-        <!-- <button class="btn green" @click="downloadSrt" v-if="screens"> -->
+        <!-- <button class="btn primary" @click="downloadSrt" v-if="screens"> -->
         <!--   <span class="icon upload"></span> -->
         <!--   <span class="label">{{ $t("conversation.export.title") }}</span> -->
         <!-- </button> -->

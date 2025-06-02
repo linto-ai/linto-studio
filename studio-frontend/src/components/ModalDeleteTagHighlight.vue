@@ -20,7 +20,7 @@ import { Fragment } from "vue-fragment"
 
 import { formsMixin } from "@/mixins/forms.js"
 
-import ModalNew from "./ModalNew.vue"
+import ModalNew from "@/components/molecules/Modal.vue"
 import { workerSendMessage } from "../tools/worker-message"
 export default {
   mixins: [formsMixin],

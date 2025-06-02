@@ -14,7 +14,7 @@
         <button class="btn secondary" @click="close()" v-if="cancelButton">
           <span class="label">{{ $t("modal.cancel") }}</span>
         </button>
-        <button class="btn green" @click="exec(actionName)">
+        <button class="btn primary" @click="exec(actionName)">
           <span class="label">{{ actionBtnLabel }}</span>
           <span class="icon apply"></span>
         </button>

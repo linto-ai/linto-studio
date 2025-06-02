@@ -24,7 +24,7 @@
         name: 'conversations create',
         params: { organizationId: currentOrganizationScope },
       }"
-      class="btn nav-link green no-shrink"
+      class="btn primary no-shrink"
       tag="button"
       v-if="
         (mainListingPage || sessionListingPage) &&

@@ -12,7 +12,7 @@
 <script>
 import { apiDeleteMultipleUsers } from "@/api/admin.js"
 
-import ModalNew from "@/components/ModalNew.vue"
+import ModalNew from "@/components/molecules/Modal.vue"
 import { bus } from "../main"
 
 export default {

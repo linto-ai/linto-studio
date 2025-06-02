@@ -40,10 +40,7 @@
                         <button class="btn xs" @click.stop="handleShare">Share</button>
                     </li>
                     <li>
-                        <button class="btn xs" @click.stop="handleArchive">Archive</button>
-                    </li>
-                    <li>
-                        <button class="btn xs tertiary" @click.stop="handleDelete">Delete</button>
+                        <button class="btn xs tertiary" @click.stop="handleArchive">Archive</button>
                     </li>
                 </ul>
             </nav>
@@ -195,7 +192,7 @@ export default {
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    border: 1px solid #e1e1e1;
+    border: 1px solid var(--neutral-10);
     padding: .5rem;
     position: relative;
     border-radius: 4px;
@@ -217,7 +214,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #e1e1e1;
+    background-color: var(--neutral-10);
     border-radius: 2px;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
@@ -252,7 +249,7 @@ export default {
     position: relative;
     width: 24px;
     height: 24px;
-    background-color: #e1e1e1;
+    background-color: var(--neutral-10);
 }
 
 .media-explorer-item__inline__selection.selected {
@@ -426,7 +423,7 @@ export default {
     flex-direction: row;
     gap: 0.5rem;
     position: absolute;
-    right: -100%;
+    display: none;
     top: 0;
     height: 100%;
     transition: right 0.1s ease-in-out;
@@ -463,8 +460,6 @@ export default {
     padding: 0;
     margin: 0;
 }
-
-.media-explorer-item__header__actions nav ul li a:hover {}
 
 .media-explorer-item--hover .media-explorer-item__header__actions {
     display: flex;

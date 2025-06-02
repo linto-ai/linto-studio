@@ -10,7 +10,7 @@
       <FormInput :field="password" v-model="password.value" />
 
       <div class="form-field flex row">
-        <button class="btn green fullwidth" type="submit">
+        <button class="btn primary fullwidth" type="submit">
           <span class="label">{{ $t("login.login_button") }}</span>
           <span class="icon apply"></span>
         </button>

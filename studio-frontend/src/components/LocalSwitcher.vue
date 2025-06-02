@@ -13,12 +13,11 @@
     @input="setLocale" />
 </template>
 <script>
-import { bus } from "@/main.js"
 import CustomSelect from "@/components/molecules/CustomSelect.vue"
 
 export default {
   props: {
-    buttonClass: { type: String, default: "outline" },
+    buttonClass: { type: String },
   },
   watch: {
     "$i18n.locale": function (newVal) {

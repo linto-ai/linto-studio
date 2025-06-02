@@ -121,7 +121,7 @@
       </div>
 
       <div class="form-field flex row">
-        <button type="submit" class="btn green fullwidth">
+        <button type="submit" class="btn primary fullwidth">
           <span class="label">
             {{ $t("createaccount.personal_button") }}
           </span>
@@ -158,7 +158,7 @@
 
       <button
         type="submit"
-        class="btn green fullwidth"
+        class="btn primary fullwidth"
         v-if="state !== 'sending'">
         <span class="label">
           {{ $t("createaccount.create_account_button") }}
@@ -166,7 +166,7 @@
         <span class="icon apply"></span>
       </button>
 
-      <button type="submit" class="btn green fullwidth" disabled v-else>
+      <button type="submit" class="btn primary fullwidth" disabled v-else>
         <span class="label"> Creating account... </span>
         <span class="icon loading"></span>
       </button>

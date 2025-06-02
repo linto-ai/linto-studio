@@ -23,7 +23,7 @@
           }}</span>
         </div>
         <div class="form-field flex row">
-          <button type="submit" :disabled="sending" class="btn green">
+          <button type="submit" :disabled="sending" class="btn primary">
             <span class="label">{{
               $t("login.recover_password_btn_label")
             }}</span>

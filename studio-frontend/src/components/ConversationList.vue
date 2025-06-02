@@ -40,7 +40,7 @@
           name: 'conversations create',
           params: { organizationId: currentOrganizationScope },
         }"
-        class="btn green-border">
+        class="btn primary-border">
         <span class="label">{{ $t("navigation.conversation.create") }}</span>
         <span class="icon new"></span>
       </router-link>

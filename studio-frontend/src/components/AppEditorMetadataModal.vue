@@ -52,7 +52,7 @@ import jsonSchemaToFields from "@/tools/jsonSchemaToFields.js"
 
 import { formsMixin } from "@/mixins/forms.js"
 
-import ModalNew from "./ModalNew.vue"
+import ModalNew from "@/components/molecules/Modal.vue"
 // import ServiceBox from "./ServiceBox.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
 

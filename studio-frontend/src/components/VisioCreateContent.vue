@@ -37,7 +37,7 @@
       <div v-else class="flex1"></div>
       <button
         type="submit"
-        class="btn green upload-media-button"
+        class="btn primary upload-media-button"
         id="upload-media-button"
         :disabled="formState === 'sending'">
         <span class="icon apply"></span>

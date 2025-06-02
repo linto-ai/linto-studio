@@ -187,7 +187,7 @@
           <span class="label">Reset</span>
         </button>
 
-        <button @click="updateSession" class="btn green">
+        <button @click="updateSession" class="btn primary">
           <span class="icon apply"></span>
           <span class="label">Sauvegarder</span>
         </button>

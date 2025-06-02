@@ -6,7 +6,7 @@
           inputFullWidth
           :field="nameField"
           v-model="nameField.value" />
-        <button type="submit" class="btn green">
+        <button type="submit" class="btn primary">
           <span class="icon apply"></span>
           <span class="label">{{
             $t("conversation_overview.channel.apply_name")

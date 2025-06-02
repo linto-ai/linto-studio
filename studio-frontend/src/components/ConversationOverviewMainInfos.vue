@@ -16,7 +16,7 @@
         v-model="descriptionField.value"
         textarea
         :readonly="!canEdit" />
-      <button type="submit" class="btn green" v-if="canEdit">
+      <button type="submit" class="btn primary" v-if="canEdit">
         <span class="icon apply"></span>
         <span class="label">{{
           $t("conversation_overview.main_information.update_information_button")

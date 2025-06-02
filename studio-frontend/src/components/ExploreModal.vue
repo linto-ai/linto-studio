@@ -71,7 +71,7 @@ import { bus } from "@/main.js"
 import TagCategoryBoxSelectable from "@/components/TagCategoryBoxSelectable.vue"
 import Loading from "./Loading.vue"
 import TagSearch from "./TagSearch.vue"
-import ModalNew from "./ModalNew.vue"
+import ModalNew from "@/components/molecules/Modal.vue"
 
 export default {
   props: {

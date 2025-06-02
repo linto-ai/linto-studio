@@ -1,13 +1,7 @@
 <template>
-  <div class="flex align-center header-bar button-group">
+  <div class="flex align-center header-bar">
     <div class="flex align-center header-bar__left">
-      <button-popover></button-popover>
-      <custom-select :options="filterOptions" :value="selectedFilters">
-        <template #button-content>
-          <ph-icon name="user" size="md" />
-          <span class="label">User</span>
-        </template>
-      </custom-select>
+      <action-conversation-create />
       <!--
       <form class="flex row align-center flex1" @submit="handleSearch">
         <input v-model="search" type="search" name="q" placeholder="Search something…" class="header-bar__search flex1"
@@ -37,7 +31,7 @@
 <script>
 import { mapGetters } from "vuex"
 
-import ButtonPopover from "./atoms/ButtonPopover.vue"
+import ActionConversationCreate from "./molecules/ActionConversationCreate.vue"
 import CustomSelect from "./molecules/CustomSelect.vue"
 import PhIcon from "./atoms/PhIcon.vue"
 import MediaExplorerStorageSize from "./MediaExplorerStorageSize.vue"
@@ -89,9 +83,9 @@ export default {
     },
   },
   components: {
+    ActionConversationCreate,
     PhIcon,
     CustomSelect,
-    ButtonPopover,
     MediaExplorerStorageSize,
   },
 }

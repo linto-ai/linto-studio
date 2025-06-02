@@ -6,7 +6,7 @@
       <FormInput :field="matchingMail" v-model="matchingMail.value" />
 
       <div class="flex gap-small wrap">
-        <button type="submit" class="btn green">
+        <button type="submit" class="btn primary">
           <span class="icon apply"></span>
           <span class="label">{{
             $t("organisation.matching_users.update_button")

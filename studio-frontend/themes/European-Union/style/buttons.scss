@@ -144,7 +144,7 @@ button,
 
   &[disabled] {
     background-color: var(--background-disabled);
-    border: var(--border-button-flat);
+    border: var(--border-button);
     color: var(--text-secondary);
     .icon {
       background-color: var(--text-secondary);

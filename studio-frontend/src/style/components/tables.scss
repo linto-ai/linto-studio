@@ -5,6 +5,33 @@
   border-radius: 4px;
 }
 
+table.table {
+  border: 1px solid var(--neutral-20);
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 4px;
+  overflow: hidden;
+
+  thead,
+  tbody {
+    display: contents;
+  }
+
+  th,
+  td {
+    padding: 0.5rem;
+  }
+
+  th {
+    background-color: var(--neutral-10);
+    text-transform: none;
+  }
+
+  td {
+    border-bottom: 1px solid var(--neutral-10);
+  }
+}
+
 table.table-grid {
   display: grid;
   grid-template-columns: auto 1fr 1fr 1fr 1fr auto; // need to be overwritten in the component depending on the number of columns
@@ -44,7 +71,7 @@ table.table-grid {
   }
 
   th {
-    background-color: var(--neutral-100);
+    background-color: var(--neutral-20);
   }
 
   .table-loader {
@@ -54,141 +81,4 @@ table.table-grid {
     background-color: #ffffff82;
     z-index: 2;
   }
-}
-
-table {
-  width: auto;
-  //table-layout: fixed;
-  border-collapse: collapse;
-  &.fullwidth {
-    width: 100%;
-  }
-
-  // select tr that has th (header row)
-  tr:has(th) {
-    border-bottom: var(--border-button);
-    th {
-      padding: 5px 0.25rem;
-      font-size: 14px;
-      text-transform: uppercase;
-      //color: var(--text-secondary);
-      font-weight: 600;
-      &.center {
-        text-align: center;
-      }
-    }
-  }
-
-  th.no-size {
-    width: 0;
-  }
-
-  tbody {
-    tr {
-      &:hover {
-        background: var(--button-background-hover);
-      }
-      td {
-        padding: 5px;
-
-        .table-link {
-          font-weight: 600;
-          color: var(--text-primary);
-        }
-        &.center {
-          text-align: center;
-        }
-        .state-icon {
-          display: inline-block;
-          width: 20px;
-          height: 20px;
-          &.done {
-            @include maskImage("../public/img/state-done.svg");
-            background-color: var(--green-chart);
-          }
-          &.error {
-            @include maskImage("../public/img/state-error.svg");
-            background-color: var(--red-chart);
-          }
-          &.started,
-          &.pending {
-            @include maskImage("../public/img/state-loading.svg");
-            background-color: var(--yellow-chart);
-          }
-        }
-        &.description {
-          max-width: 200px;
-        }
-      }
-      &:first-child {
-        td {
-          padding-top: 10px;
-        }
-      }
-      &.currentuser {
-        background-color: #ddd;
-      }
-    }
-  }
-}
-
-.table-header-checkbox {
-  padding-left: 5px;
-}
-
-button.table-header-button,
-.table-header-button.btn {
-  min-width: auto;
-}
-
-.table-header-button {
-  background-color: transparent;
-  background-image: none;
-  box-shadow: none;
-  border: none;
-  padding: 5px 0;
-  font-size: 14px;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  font-weight: 600;
-  position: relative;
-  overflow: visible;
-
-  &.active {
-    color: var(--text-primary);
-    &:after {
-      content: "";
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      background: var(--text-primary);
-      top: 4px;
-      left: 100%;
-      margin-left: 0;
-      position: absolute;
-      @include maskImage("../public/img/line-arrow.svg");
-      @include transition(all 0.3s ease);
-      top: 50%;
-      transform: translateY(-50%);
-    }
-    &.asc {
-      &:after {
-        transform: rotate(180deg) translateY(50%);
-      }
-    }
-  }
-  &:hover {
-    background-color: transparent;
-    color: var(--text-primary);
-  }
-}
-
-td.content-size {
-  width: 1%;
-  white-space: nowrap;
-}
-
-// :has selector does not work for old version of firefox, but it's not critical feature (latest ESR of 2024 should work fine)
-tr:has(.line-selector input:checked) {
-  background-color: var(--selected-background);
 }

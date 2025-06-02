@@ -19,7 +19,7 @@
           }}</span>
         </button>
 
-        <button class="btn green" :disabled="!hasChanged" @click="save">
+        <button class="btn primary" :disabled="!hasChanged" @click="save">
           <span class="icon apply"></span>
           <span class="label">{{
             $t("backoffice.transcriber_profile_detail.save_button")

@@ -29,7 +29,7 @@ import {
 
 import { formsMixin } from "@/mixins/forms.js"
 
-import ModalNew from "@/components/ModalNew.vue"
+import ModalNew from "@/components/molecules/Modal.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
 import LabeledValue from "@/components/atoms/LabeledValue.vue"
 

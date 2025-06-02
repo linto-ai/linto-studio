@@ -33,7 +33,7 @@
   </ModalNew>
 </template>
 <script>
-import ModalNew from "./ModalNew.vue"
+import ModalNew from "@/components/molecules/Modal.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
 import { formsMixin } from "@/mixins/forms.js"
 import { testName } from "../tools/fields/testName"

@@ -13,7 +13,7 @@
   </ModalNew>
 </template>
 <script>
-import ModalNew from "./ModalNew.vue"
+import ModalNew from "@/components/molecules/Modal.vue"
 import TranscriberProfileEditor from "@/components/TranscriberProfileEditor.vue"
 import TRANSCRIBER_PROFILES_TEMPLATES from "@/const/transcriberProfilesTemplates"
 import { apiCreateTranscriberProfile } from "@/api/session.js"

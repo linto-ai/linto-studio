@@ -23,7 +23,7 @@
         :value="orgaDescription.value" />
       <button
         type="submit"
-        class="btn green"
+        class="btn primary"
         v-if="isAdmin || (isSystemAdministrator && isBackofficePage)">
         <span class="icon apply"></span>
         <span class="label">{{ $t("organisation.update_button") }}</span>

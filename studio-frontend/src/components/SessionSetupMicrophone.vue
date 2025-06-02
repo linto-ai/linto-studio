@@ -87,7 +87,7 @@
           $t("quick_session.setup_microphone.bypass")
         }}</span>
       </button> -->
-      <button class="btn green" type="submit" @click="setupSession">
+      <button class="btn primary" type="submit" @click="setupSession">
         <span class="icon apply"></span>
         <span class="label">{{ l_applyLabel }} </span>
       </button>
@@ -108,7 +108,7 @@
       </button>
 
       <div class="flex1"></div>
-      <button class="btn green" @click="setupSession" type="submit">
+      <button class="btn primary" @click="setupSession" type="submit">
         <span class="icon apply"></span>
         <span class="label">
           {{ $t("quick_session.restore.continue_button") }}

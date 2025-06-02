@@ -20,7 +20,7 @@ button,
   font-family: inherit;
   font-size: 15px;
   font-weight: 500;
-  border: var(--border-button-flat);
+  border: var(--border-button);
   background-color: var(--button-background);
   //background-image: var(--button-image-background);
   box-shadow: var(--button-shadow);
@@ -88,7 +88,7 @@ button,
     &:hover {
       background-color: transparent;
       text-decoration: underline;
-      //border: var(--border-button-flat);
+      //border: var(--border-button);
     }
 
     &:before {
@@ -243,7 +243,7 @@ button,
 
   &[disabled] {
     background-color: var(--background-disabled);
-    border: var(--border-button-flat);
+    border: var(--border-button);
     color: var(--text-secondary);
     .icon {
       background-color: var(--text-secondary);

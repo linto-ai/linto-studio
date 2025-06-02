@@ -21,7 +21,7 @@ import { formsMixin } from "@/mixins/forms.js"
 
 import FormInput from "@/components/molecules/FormInput.vue"
 import { apiCreateOrganisation } from "../api/organisation"
-import ModalNew from "./ModalNew.vue"
+import ModalNew from "@/components/molecules/Modal.vue"
 
 export default {
   mixins: [formsMixin],

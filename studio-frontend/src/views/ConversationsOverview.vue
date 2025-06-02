@@ -20,7 +20,7 @@
       <div class="flex row conversation-actions gap-small">
         <router-link
           :to="`/interface/conversations/${rootConversation._id}/transcription`"
-          class="btn green"
+          class="btn primary"
           :is="status !== 'done' ? 'span' : 'router-link'"
           :disabled="status !== 'done'">
           <span class="icon conv-list"></span>

@@ -15,7 +15,7 @@
 
     <button
       type="submit"
-      class="btn green"
+      class="btn primary"
       @click="updateOrganization"
       v-if="isAdmin || isSystemAdministrator">
       <span class="icon apply"></span>

@@ -62,7 +62,7 @@
               id="dropdown-search-tags" />
             <button
               type="submit"
-              class="btn green"
+              class="btn primary"
               :title="
                 enable_inscription
                   ? null
@@ -203,7 +203,7 @@
               id="dropdown-search-tags" />
             <button
               type="submit"
-              class="btn green"
+              class="btn primary"
               :title="
                 enable_inscription
                   ? null

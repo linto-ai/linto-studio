@@ -12,12 +12,12 @@
         :field="orgaName"
         inputId="organisation-name"
         required />
-      <button type="submit" class="btn green" v-if="state !== 'sending'">
+      <button type="submit" class="btn primary" v-if="state !== 'sending'">
         <span class="label"> {{ $t("no_orga.can_create.create") }} </span>
         <span class="icon apply"></span>
       </button>
 
-      <button type="submit" class="btn green" disabled v-else>
+      <button type="submit" class="btn primary" disabled v-else>
         <span class="label"> {{ $t("no_orga.can_create.creating") }} </span>
         <span class="icon loading"></span>
       </button>

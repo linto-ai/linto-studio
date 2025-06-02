@@ -2,7 +2,7 @@
   <div>
     <button
       id="generate-subtitle-btn"
-      class="btn green"
+      class="btn primary"
       @click="openGenerateModal"
       v-if="canEdit">
       <span class="icon new"></span>

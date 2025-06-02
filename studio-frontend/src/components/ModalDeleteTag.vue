@@ -22,7 +22,7 @@ import { apiDeleteTag } from "@/api/tag.js"
 import { formsMixin } from "@/mixins/forms.js"
 import { apiCountConversation } from "@/api/conversation.js"
 
-import ModalNew from "./ModalNew.vue"
+import ModalNew from "@/components/molecules/Modal.vue"
 export default {
   mixins: [formsMixin],
   props: {

@@ -29,7 +29,7 @@
 <script>
 import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
-import ModalNew from "./ModalNew.vue"
+import ModalNew from "@/components/molecules/Modal.vue"
 import ServiceBox from "./ServiceBox.vue"
 import { apiGetNlpService } from "../api/service.js"
 

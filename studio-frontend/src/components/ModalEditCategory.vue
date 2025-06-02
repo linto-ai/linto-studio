@@ -29,7 +29,7 @@ import { apiUpdateCategory } from "@/api/tag.js"
 import { testFieldEmpty } from "@/tools/fields/testEmpty.js"
 import { formsMixin } from "@/mixins/forms.js"
 
-import ModalNew from "./ModalNew.vue"
+import ModalNew from "@/components/molecules/Modal.vue"
 import FormInput from "./molecules/FormInput.vue"
 export default {
   mixins: [formsMixin],

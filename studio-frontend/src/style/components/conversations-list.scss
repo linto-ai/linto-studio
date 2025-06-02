@@ -76,7 +76,7 @@ input[type="checkbox"].conversation-line__checkbox {
 }
 
 .conversation-line__secondary-action-container {
-  border-left: var(--border-button-flat);
+  border-left: var(--border-button);
   padding-left: 1rem;
 }
 
@@ -122,7 +122,7 @@ input[type="checkbox"].conversation-line__checkbox {
 .conversation-line__secondary-action:not([disabled]):hover {
   & .conversation-line__secondary-action__button {
     background-color: var(--background-primary);
-    border: var(--border-button-flat);
+    border: var(--border-button);
     box-shadow: var(--shadow-block);
     padding: 0px;
     padding-right: calc(0.25rem - 1px);
@@ -164,7 +164,7 @@ input[type="checkbox"].conversation-line__checkbox {
 
 input:checked + .conversation-line .conversation-line__open-with {
   .select__head {
-    border: var(--border-button-flat) !important;
+    border: var(--border-button) !important;
   }
 }
 

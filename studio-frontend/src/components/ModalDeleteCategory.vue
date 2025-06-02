@@ -15,7 +15,7 @@ import { Fragment } from "vue-fragment"
 
 import { formsMixin } from "@/mixins/forms.js"
 import { apiDeleteCategory } from "@/api/tag.js"
-import ModalNew from "./ModalNew.vue"
+import ModalNew from "@/components/molecules/Modal.vue"
 export default {
   mixins: [formsMixin],
   props: {

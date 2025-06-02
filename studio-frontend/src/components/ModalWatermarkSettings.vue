@@ -23,7 +23,7 @@
 </template>
 <script>
 import { bus } from "@/main.js"
-import ModalNew from "./ModalNew.vue"
+import ModalNew from "@/components/molecules/Modal.vue"
 import EMPTY_FIELD from "@/const/emptyField"
 import FormInput from "@/components/molecules/FormInput.vue"
 

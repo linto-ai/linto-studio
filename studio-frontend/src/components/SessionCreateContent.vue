@@ -108,7 +108,7 @@
         </button>
         <button
           type="submit"
-          class="btn green"
+          class="btn primary"
           id="upload-media-button"
           :disabled="formState === 'sending'">
           <span class="icon apply"></span>

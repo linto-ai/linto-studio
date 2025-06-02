@@ -23,6 +23,7 @@ button,
   box-sizing: border-box;
   cursor: pointer;
   display: inline-flex;
+  align-items: center;
   margin: 0;
   position: relative;
   z-index: 1;
@@ -30,22 +31,20 @@ button,
   white-space: nowrap;
   text-decoration: none;
   text-overflow: ellipsis;
-  align-items: center;
   position: relative;
   padding: 0.5rem 1rem;
-  border-radius: 4px;
   font-family: inherit;
-  font-size: 15px;
   font-weight: 500;
-  border: var(--border-button-flat);
-  background-color: var(--button-background, var(--neutral-100));
+  border: var(--border-button);
+  border-radius: 4px;
+  background-color: var(--button-background, transparent);
   color: var(--text-primary);
   transition: all 0.2s ease;
 
   /* Hover, focus, active states */
   &:hover {
     cursor: pointer;
-    background-color: var(--button-background-hover, var(--neutral-20));
+    background-color: var(--button-background-hover, var(--neutral-10));
     text-decoration: none;
   }
   &:focus,
@@ -57,7 +56,7 @@ button,
   &[disabled] {
     cursor: not-allowed;
     background-color: var(--background-disabled);
-    border: var(--border-button-flat);
+    border: var(--border-button);
     color: var(--text-disabled);
     .icon {
       background-color: var(--text-disabled);
@@ -71,7 +70,7 @@ button,
   /* Size variants */
   &.xs {
     padding: 0.25rem 0.5rem;
-    font-size: 12px;
+    font-size: 0.8rem;
 
     &.icon-only {
       padding: 0.25rem;
@@ -80,22 +79,22 @@ button,
 
   &.sm {
     padding: 0.35rem 0.75rem;
-    font-size: 14px;
+    font-size: 0.9rem;
   }
 
   &.md {
     padding: 0.5rem 1rem;
-    font-size: 15px;
+    font-size: 1rem;
   }
 
   &.lg {
     padding: 0.75rem 1.25rem;
-    font-size: 16px;
+    font-size: 1.1rem;
   }
 
   &.xl {
     padding: 1rem 1.5rem;
-    font-size: 18px;
+    font-size: 1.2rem;
   }
 
   /* Color variants using CSS variables */
@@ -107,7 +106,7 @@ button,
       background-color: var(--primary-contrast, #fff);
     }
     &:hover {
-      background-color: transparent;
+      background-color: var(--primary-soft);
       color: var(--primary-color);
       .icon {
         background-color: var(--primary-color);
@@ -296,24 +295,36 @@ button,
     display: inline-block;
     width: 1.25rem;
     height: 1.25rem;
+
     &.xs { width: 0.75rem; height: 0.75rem; }
     &.sm { width: 1rem; height: 1rem; }
     &.md { width: 1.25rem; height: 1.25rem; }
     &.lg { width: 1.5rem; height: 1.5rem; }
     &.xl { width: 1.75rem; height: 1.75rem; }
+
+    &.xs + .label {
+      padding-left: 0.25rem;
+    }
+    &.sm + .label {
+      padding-left: 0.5rem;
+    }
+    &.md + .label {
+      padding-left: 0.75rem;
+    }
+    &.lg + .label {
+      padding-left: 1rem;
+    }
+    &.xl + .label {
+      padding-left: 1.25rem;
+    }
   }
 
   & > .label {
     display: inline-block;
-    padding-left: 0.5rem;
     flex: 1;
     font-size: inherit;
     position: relative;
     top: var(--text-vertical-center-offset);
-  }
-
-  &.xs > .label {
-    padding-left: 0.25rem;
   }
 
   /* Spacing for icons and text */
@@ -353,9 +364,22 @@ a {
   text-overflow: ellipsis;
   text-decoration: none;
   font-weight: 500;
-  color: var(--primary-color);
+  color: var(--text-color);
+
   &:hover {
     text-decoration: underline;
+  }
+
+  &.primary {
+    color: var(--primary-color);
+  }
+
+  &.secondary {
+    color: var(--secondary-color);
+  }
+
+  &.tertiary {
+    color: var(--tertiary-color);
   }
 }
 
