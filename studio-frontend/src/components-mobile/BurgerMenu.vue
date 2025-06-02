@@ -16,70 +16,62 @@
     </div>
     <div class="sidebar-divider"></div> -->
 
-    <div
-      class="medium-margin-left medium-margin-right flex col gap-small medium-margin-bottom">
-      <OrganizationSelector
-        fullwidth
-        :currentOrganizationScope="currentOrganizationScope"
-        :currentOrganization="currentOrganization" />
-      <router-link
-        id="upload-media-button"
-        to="/interface/conversations/create"
-        class="btn nav-link green no-shrink"
-        tag="button"
-        v-if="
-          isAtLeastUploader &&
-          (canUploadInCurrentOrganization || canSessionInCurrentOrganization)
-        ">
-        <!-- <span class="icon new"></span> -->
-        <!-- <span class="label">{{ $t("navigation.conversation.create") }}</span> -->
-        <span class="label">{{ $t("navigation.conversation.start") }}</span>
-      </router-link>
-    </div>
-    <div class="tabs col flex1 flex">
-      <!-- <router-link
-        :to="{ name: 'inbox' }"
-        class="flex row align-center gap-medium tab">
-        <span class="icon home"></span>
-        <span class="tab__label">{{ $t("navigation.tabs.inbox") }}</span>
-      </router-link> -->
-      <router-link
-        :to="{
+    <div>
+      <div class="burger-menu__header">
+        <div class="burger-menu__header__title">
+          <div class="flex row align-center gap-medium flex1">
+            <img :src="logo" style="height: 3rem" />
+            <h1 id="main-title">
+              {{ title }}
+            </h1>
+          </div>
+        </div>
+        <LocalSwitcher class="local-switcher"></LocalSwitcher>
+      </div>
+      <div class="user-account-selector-container">
+        <UserAccountSelector />
+      </div>
+
+      <fieldset>
+        <div class="explorer-menu">
+          <MediaExplorerMenu :organizationId="currentOrganization._id" />
+        </div>
+      </fieldset>
+
+      <!--
+      <div class="tabs col flex1 flex">
+        <router-link :to="{
           name: 'explore',
           params: { organizationId: currentOrganizationScope },
-        }"
-        class="flex row align-center gap-medium tab">
-        <span class="icon discover"></span>
-        <span class="tab__label">{{ $t("navigation.tabs.explore") }}</span>
-      </router-link>
-      <router-link
-        v-if="sessionEnable"
-        :to="{
+        }" class="flex row align-center gap-medium tab">
+          <ph-icon name="playlist"></ph-icon>
+          <span class="tab__label">{{ $t("navigation.tabs.explore") }}</span>
+        </router-link>
+        <router-link v-if="sessionEnable" :to="{
           name: 'sessionsList',
           params: { organizationId: currentOrganizationScope },
-        }"
-        class="flex row align-center gap-medium tab">
-        <span class="icon session"></span>
-        <span class="tab__label">{{ $t("navigation.tabs.sessions") }}</span>
-      </router-link>
-      <router-link
-        :to="{ name: 'shared with me' }"
-        class="flex row align-center gap-medium tab">
-        <span class="icon share"></span>
-        <span class="tab__label">{{ $t("navigation.tabs.shared") }}</span>
-      </router-link>
-      <router-link
-        :to="{ name: 'favorites' }"
-        class="flex row align-center gap-medium tab">
-        <span class="icon star"></span>
-        <span class="tab__label">{{ $t("navigation.tabs.favorites") }}</span>
-      </router-link>
-      <div class="flex col flex1"><slot class=""></slot></div>
+        }" class="flex row align-center gap-medium tab">
+          <ph-icon name="broadcast"></ph-icon>
+          <span class="tab__label">{{ $t("navigation.tabs.sessions") }}</span>
+        </router-link>
+        <router-link :to="{ name: 'shared with me' }" class="flex row align-center gap-medium tab">
+          <ph-icon name="share"></ph-icon>
+          <span class="tab__label">{{ $t("navigation.tabs.shared") }}</span>
+        </router-link>
+        <router-link :to="{ name: 'favorites' }" class="flex row align-center gap-medium tab">
+          <ph-icon name="star"></ph-icon>
+          <span class="tab__label">{{ $t("navigation.tabs.favorites") }}</span>
+        </router-link>
+        <div class="flex col flex1">
+          <slot class=""></slot>
+        </div>
+      </div>
+      -->
     </div>
-    <div class="medium-margin-left medium-margin-right">
-      <LocalSwitcher
-        class="fullwidth"
-        buttonClass="flex row align-center gap-medium"></LocalSwitcher>
+    <div>
+      <is-cloud>
+        <cloud-card-credits />
+      </is-cloud>
     </div>
     <!-- <div class="burger-menu__footer">
       <div class="flex align-center gap-medium burger-menu__footer__title">
@@ -117,16 +109,18 @@
   </nav>
 </template>
 <script>
-import { mapActions, mapGetters } from "vuex"
+import { mapGetters } from "vuex"
 
-import { bus } from "@/main.js"
 import { getEnv } from "@/tools/getEnv"
-import OrganizationSelector from "@/components/OrganizationSelector.vue"
+import UserAccountSelector from "@/components/UserAccountSelector.vue"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"
 import { userName } from "@/tools/userName.js"
 import { logout } from "@/tools/logout"
+
 import LocalSwitcher from "@/components/LocalSwitcher.vue"
+import CloudCardCredits from "@/components-cloud/CardCredits.vue"
+import MediaExplorerMenu from "@/components/MediaExplorerMenu.vue"
 
 export default {
   mixins: [orgaRoleMixin, organizationPermissionsMixin],
@@ -139,23 +133,30 @@ export default {
   data() {
     return {}
   },
-  mounted() {},
+  mounted() { },
   methods: {
     logout() {
       logout()
     },
-    closeBurger() {
-      this.$emit("close")
+    handleOpenOrganization() {
+      this.$router.push({
+        name: "organization",
+        params: { organizationId: this.currentOrganizationScope },
+      })
     },
   },
   computed: {
     ...mapGetters("organizations", {
+      organizations: "getOrganizations",
       currentOrganization: "getCurrentOrganization",
       currentOrganizationScope: "getCurrentOrganizationScope",
     }),
     ...mapGetters("user", { userInfo: "getUserInfos" }),
     logo() {
       return `/img/${getEnv("VUE_APP_LOGO")}`
+    },
+    organizationsList() {
+      return Object.values(this.organizations);
     },
     title() {
       return getEnv("VUE_APP_NAME")
@@ -166,7 +167,7 @@ export default {
     userName() {
       return userName(this.userInfo)
     },
-    imgUrl() {},
+    imgUrl() { },
     mainListingPage() {
       return this.$route.meta?.mainListingPage
     },
@@ -175,8 +176,113 @@ export default {
     },
   },
   components: {
-    OrganizationSelector,
+    UserAccountSelector,
     LocalSwitcher,
+    CloudCardCredits,
+    MediaExplorerMenu,
   },
 }
 </script>
+
+<style lang="scss">
+.burger-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+
+  .burger-menu__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1em;
+    background-color: white;
+    border-bottom: 1px solid var(--primary-soft);
+    height: 56px;
+    box-shadow: var(--shadow-block);
+  }
+
+  .burger-menu__header__title {
+    display: flex;
+    align-items: center;
+    gap: .5em;
+
+    img {
+      height: 1.5rem !important;
+    }
+
+    h1 {
+      font-size: 1rem !important;
+    }
+  }
+
+  .local-switcher {
+    display: flex;
+    justify-content: flex-end;
+    width: 54px;
+  }
+
+  fieldset {
+    border: 1px solid #E0E0E0;
+    border-radius: 4px;
+    margin: .5em;
+    padding: 0;
+    position: relative;
+
+    &.active {
+      border-color: var(--primary-soft);
+    }
+
+    legend {
+      position: absolute;
+      font-size: 0.8em;
+      font-weight: 600;
+      left: 1em;
+      top: -10px;
+      background-color: var(--primary-soft);
+      padding: 0 0.5em;
+      border-radius: 1px;
+    }
+  }
+
+  .user-account-selector-container {
+    padding: 0;
+    display: flex;
+    align-items: center;
+    border-bottom: var(--border-block);
+    & > * {
+      flex: 1;
+    }
+  }
+
+  .explorer-menu {
+    padding: 0em;
+  }
+
+  .org-cloud {
+    padding: 1em;
+    background-color: #f5f5f5;
+    border-top: 1px solid var(--primary-soft);
+    border-radius: 4px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    font-size: 0.8em;
+    font-weight: 600;
+
+    &__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    &__body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5em;
+      padding: 1em;
+      background-color: #fff;
+      border-radius: 4px;
+      margin-top: 1em;
+    }
+  }
+}
+</style>

@@ -22,7 +22,7 @@
 
     <div v-else class="flex align-center col center-text">
       <h3>{{ $t("app_editor_highlights_modal.loading_services") }}</h3>
-      <span class="icon loading"></span>
+      <ph-icon name="spinner" size="lg" color="primary" weight="bold" />
     </div>
   </ModalNew>
 </template>

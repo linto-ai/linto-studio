@@ -2,6 +2,9 @@ import { userName } from "@/tools/userName.js"
 import userAvatar from "@/tools/userAvatar"
 
 const getters = {
+  isAuthenticated(state) {
+    return state.isAuthenticated
+  },
   getUserInfos(state) {
     return state.userInfos
   },

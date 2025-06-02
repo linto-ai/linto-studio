@@ -1,5 +1,5 @@
 <template>
-  <MainContent sidebar>
+  <LayoutV2 sidebar>
     <template v-slot:breadcrumb-actions> </template>
 
     <ExploreModalVue
@@ -75,7 +75,7 @@
           :selectedConversationsSize="selectedConversationsSize" />
       </div>
     </section>
-  </MainContent>
+  </LayoutV2>
 </template>
 
 <script>
@@ -90,6 +90,7 @@ import { indexTags } from "@/tools/indexTags"
 import { debounceMixin } from "@/mixins/debounce"
 import { conversationListMixin } from "@/mixins/conversationList"
 
+import LayoutV2 from "@/layouts/v2-layout.vue"
 import MainContent from "@/components/MainContent.vue"
 import ExploreModalVue from "@/components/ExploreModal.vue"
 import ConversationListSearch from "@/components/ConversationListSearch.vue"
@@ -184,6 +185,7 @@ export default {
     },
   },
   components: {
+    LayoutV2,
     ConversationList,
     MainContent,
     ExploreModalVue,

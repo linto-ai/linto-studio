@@ -17,6 +17,7 @@
           :currentOrganizationScope="currentOrganizationScope"
           :currentOrganization="currentOrganization" />
       </div>
+      <AppSettingsModal />
     </div>
   </div>
 </template>
@@ -25,6 +26,7 @@ import { bus } from "@/main.js"
 import { mapActions, mapGetters } from "vuex"
 import { customDebug } from "@/tools/customDebug.js"
 import isAuthenticated from "@/tools/isAuthenticated.js"
+import AppSettingsModal from "@/components/AppSettingsModal.vue"
 
 export default {
   props: {},
@@ -55,7 +57,9 @@ export default {
       return isAuthenticated()
     },
   },
-  components: {},
+  components: {
+    AppSettingsModal,
+  },
 }
 </script>
 <style lang="scss">

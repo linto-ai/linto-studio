@@ -671,7 +671,8 @@
       "create_no_rights_error": "Vous n'avez pas les droits pour créer une session dans cette organisation. Veuillez contacter un administrateur."
     },
     "tabs": {
-      "explore": "Médiathèque",
+      "explore": "Inbox",
+      "explore_labels": "Labels",
       "favorites": "Favoris",
       "inbox": "Accueil",
       "manage_tags": "Administrer les tags de médias",

@@ -18,11 +18,57 @@ $primaryColor: $greenChart;
 $secondaryColor: $blueChart;
 $primaryContrast: #fff;
 
+// Fonction pour générer des versions soft d'une couleur (plus claire)
+@function soft-color($color, $amount: 40%) {
+  @return mix(white, $color, $amount);
+}
+
+// Fonction pour générer des versions hard d'une couleur (plus foncée)
+@function hard-color($color, $amount: 40%) {
+  @return mix(black, $color, $amount);
+}
+
+// Génération des variantes de couleurs
+$primarySoft: soft-color($primaryColor, 94%);
+$primaryHard: hard-color($primaryColor);
+$secondarySoft: soft-color($secondaryColor);
+$secondaryHard: hard-color($secondaryColor);
+$tertiarySoft: soft-color($redChart);
+$tertiaryHard: hard-color($redChart);
+$yellowSoft: soft-color($yellowChart);
+$yellowHard: hard-color($yellowChart);
+$greenSoft: soft-color($greenChart);
+$greenHard: hard-color($greenChart);
+$redSoft: soft-color($redChart);
+$redHard: hard-color($redChart);
+$blueSoft: soft-color($blueChart);
+$blueHard: hard-color($blueChart);
+
 body {
-  --background-header: var(--background-primary);
+  --background-primary: rgb(244, 244, 244);
+  --background-secondary: #fff;
 
   --text-vertical-center-offset: 0px;
 
+  --primary-color: #000e55;
+  --secondary-color: var(--blue-chart);
+  --tertiary-color: var(--red-chart);
+  
+  --primary-soft: #{$primarySoft};
+  --primary-hard: #{$primaryHard};
+  --secondary-soft: #{$secondarySoft};
+  --secondary-hard: #{$secondaryHard};
+  --tertiary-soft: #{$tertiarySoft};
+  --tertiary-hard: #{$tertiaryHard};
+  --yellow-soft: #{$yellowSoft};
+  --yellow-hard: #{$yellowHard};
+  --green-soft: #{$greenSoft};
+  --green-hard: #{$greenHard};
+  --red-soft: #{$redSoft};
+  --red-hard: #{$redHard};
+  --blue-soft: #{$blueSoft};
+  --blue-hard: #{$blueHard};
+  
   --text-primary: var(--dark-100);
   --text-secondary: var(--dark-80);
   --text-disabled: #aaa;
@@ -34,13 +80,13 @@ body {
   --border-lock-turn: 1px solid #848484;
 
   --background-inset-section: rgb(249, 249, 249);
-  --box-shadow-inset: 0px 0px 1px 0 rgba(67, 76, 95, 0.44) inset;
+  --box-shadow-inset: 0px 0px 1px 0 var(--primary-soft) inset;
 
-  --border-button: 1px solid var(--dark-80);
-  --border-button-flat: 1px solid var(--neutral-60);
-  --border-input: 1px solid var(--dark-80);
-  --border-block: 1px solid var(--neutral-60);
-  --divider: 1px solid var(--neutral-60);
+  --border-button: 1px solid var(--primary-color);
+  --border-button-flat: 1px solid var(--primary-color);
+  --border-input: 1px solid var(--primary-color);
+  --border-block: 1px solid var(--neutral-40);
+  --divider: 1px solid var(--primary-soft);
 
   --input-focus: #f7faff;
 

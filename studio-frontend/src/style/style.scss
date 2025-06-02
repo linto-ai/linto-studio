@@ -12,6 +12,12 @@
 @import "./_global.scss";
 @import "./_material-colors.scss";
 
+// Base components with higher priority
+@import "./components/icons.scss";
+@import "./components/icon-system.scss";
+@import "./components/forms.scss";
+@import "./components/buttons.scss";
+
 // Views
 @import "./views/login.scss";
 @import "./views/app.scss";
@@ -65,6 +71,7 @@
 @import "./components/organization-badge.scss";
 @import "./components/organization-selector.scss";
 @import "./components/header-bar.scss";
+@import "./components/explore.scss";
 
 //@import "./views/app-mobile.scss";
 // @import "./components/app-header-mobile.scss";
@@ -75,8 +82,8 @@
 @import "./components-mobile/session.scss";
 @import "./components-mobile/burger-menu.scss";
 
-@layer base {
-  @import "./components/icons.scss";
-  @import "./components/forms.scss";
-  @import "./components/buttons.scss";
-}
+// @layer base {
+//   @import "./components/icons.scss";
+//   @import "./components/forms.scss";
+//   @import "./components/buttons.scss";
+// }

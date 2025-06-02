@@ -1,4 +1,7 @@
 const mutations = {
+  setIsAuthenticated(state, isAuthenticated) {
+    state.isAuthenticated = isAuthenticated
+  },
   setUserInfos(state, userInfos) {
     state.userInfos = userInfos
   },

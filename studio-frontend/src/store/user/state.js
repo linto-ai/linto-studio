@@ -1,4 +1,5 @@
-const state = {
+export const state = {
+  isAuthenticated: false,
   userInfos: {},
   favoritesConversationIds: [],
 }

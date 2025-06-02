@@ -31,8 +31,117 @@ const defaultProps = {
 
 Vue.use(Router)
 
-let isAuthenticated = function () {
-  return getCookie("authToken") !== null
+// Helper functions for router guards
+const authGuards = {
+  isAuthenticated: () => {
+    return getCookie("authToken") !== null
+  },
+  
+  async handleMagicLinkAuth(to, next) {
+    const conversationId = to?.query?.conversationId
+    const magicId = to?.params?.magicId
+    
+    const login = await apiLoginUserMagicLink(magicId)
+    if (login.status === "success") {
+      setCookie("userId", login.data.user_id, 7)
+      setCookie("authToken", login.data.auth_token, 7)
+      setCookie("refreshToken", login.data.refresh_token, 14)
+      setCookie("cm_orga_scope", "")
+      
+      let redirect = conversationId 
+        ? { path: "/interface/conversations/" + conversationId }
+        : { name: "inbox" }
+        
+      return next(redirect)
+    } else {
+      return next({ name: "magic-link-error" })
+    }
+  },
+  
+  async checkUserAuth(next, to, from) {
+    const reqUser = await store.dispatch("user/fetchUser")
+    if (reqUser.status === "error") {
+      logout()
+      return next({
+        name: "login",
+        query: { next: from.query.next || to.fullPath },
+      })
+    }
+    
+    return reqUser
+  },
+  
+  handleOrganizationScope(to, next) {
+    const defaultOrganizationId = store.getters["organizations/getDefaultOrganizationId"]
+    
+    if (!to.meta?.userPage) {
+      if (
+        !to.params.organizationId ||
+        store.getters["organizations/getOrganizationById"](
+          to.params.organizationId,
+        ) === undefined
+      ) {
+        return {
+          redirect: true,
+          nextRoute: {
+            ...to,
+            params: {
+              ...to.params,
+              organizationId: defaultOrganizationId,
+            },
+          }
+        }
+      } else {
+        store.dispatch(
+          "organizations/setCurrentOrganizationScope",
+          to.params.organizationId,
+        )
+        return { redirect: false }
+      }
+    } else {
+      store.dispatch(
+        "organizations/setCurrentOrganizationScope",
+        defaultOrganizationId,
+      )
+      return { redirect: false }
+    }
+  },
+  
+  async checkQuickSession(to) {
+    const enableSession = getEnv("VUE_APP_ENABLE_SESSION") === "true"
+    
+    if (enableSession && to.name !== "quick session") {
+      const quickSession = await apiGetQuickSession()
+      if (quickSession) {
+        return {
+          redirect: true,
+          nextRoute: {
+            name: "quick session",
+            params: { organizationId: quickSession.organizationId },
+            query: { recover: "true" },
+          }
+        }
+      }
+    }
+    
+    return { redirect: false }
+  },
+  
+  async checkConversationAccess(to) {
+    if (to.meta?.conversationDetailPage) {
+      const conversationId = to.params.conversationId
+      const getUserRight = await apiGetUserRightFromConversation(conversationId)
+      const userRight = getUserRight?.right || 0
+      
+      if (userRight > 0) {
+        return { hasAccess: true }
+      }
+      
+      return { hasAccess: false }
+    }
+    
+    return { hasAccess: true }
+  }
 }
 
 let router = new Router({
@@ -193,7 +302,34 @@ let router = new Router({
       path: "/interface/:organizationId?/explore",
       name: "explore",
       components: {
-        default: () => import("../views/Explore.vue"),
+        default: () => import("../views/NextExplore.vue"),
+        ...defaultComponents,
+      },
+      props: {
+        ...defaultProps,
+      },
+      meta: { mainListingPage: true },
+      query: {
+        favorites: false,
+      },
+    },
+    {
+      path: "/interface/:organizationId?/explore/favorites",
+      name: "explore-favorites",
+      components: {
+        default: () => import("../views/NextExplore.vue"),
+        ...defaultComponents,
+      },
+      props: {
+        ...defaultProps,
+      },
+      meta: { mainListingPage: true, favorites: true },
+    },
+    {
+      path: "/interface/:organizationId?/old-explore",
+      name: "explore-old",
+      components: {
+        default: () => import("../views/OldExplore.vue"),
         ...defaultComponents,
       },
       props: defaultProps,
@@ -383,45 +519,27 @@ router.beforeEach(async (to, from, next) => {
   const randomId = Math.random().toString(36).substring(7)
   const routerDebug = customDebug("vue:debug:router:" + randomId)
   const enableSession = getEnv("VUE_APP_ENABLE_SESSION") === "true"
+  
   try {
     routerDebug("beforeEach from", from.fullPath, "to", to.fullPath)
-    // Redirections 404
+    
+    // Redirect to 404 if sessions are disabled but trying to access session page
     if (!enableSession && to.meta?.sessionPage) {
       return next({ name: "not_found" })
     }
 
-    // Redirections 404
+    // Redirect to 404
     if (to.name === "not_found_redirect") {
       return next({ name: "not_found" })
     }
 
-    // -- Magic link authentication --
+    // Handle magic link authentication
     if (to.name === "magic-link-login") {
-      const conversationId = to?.query?.conversationId
-      const magicId = to?.params?.magicId
-
-      const login = await apiLoginUserMagicLink(magicId)
-      if (login.status === "success") {
-        setCookie("userId", login.data.user_id, 7)
-        setCookie("authToken", login.data.auth_token, 7)
-        setCookie("refreshToken", login.data.refresh_token, 14)
-        setCookie("cm_orga_scope", "")
-        let redirect = {}
-        if (conversationId) {
-          redirect = {
-            path: "/interface/conversations/" + conversationId,
-          }
-        } else {
-          redirect = { name: "inbox" }
-        }
-        return next(redirect)
-      } else {
-        return next({ name: "magic-link-error" })
-      }
+      return await authGuards.handleMagicLinkAuth(to, next)
     }
 
-    // -- User is not authenticated: redirect to login except if public page --
-    if (!isAuthenticated()) {
+    // Handle non-authenticated users
+    if (!authGuards.isAuthenticated()) {
       if (to.meta?.public) {
         return next()
       } else {
@@ -432,40 +550,19 @@ router.beforeEach(async (to, from, next) => {
       }
     }
 
-    // -- User is authenticated --
-
-    // fetch user
-    const reqUser = await store.dispatch("user/fetchUser")
-    if (reqUser.status === "error") {
-      // For now logout
-      // TODO: handle error if api is down -> error page. Only logout if user is not found
-      logout()
-      return next({
-        name: "login",
-        query: { next: from.query.next || to.fullPath },
-      })
-    }
-
+    // User is authenticated
+    
+    // Fetch user data
+    routerDebug("Fetching user data")
+    const reqUser = await authGuards.checkUserAuth(next, to, from)
     routerDebug("User fetched")
 
-    // fetch organizations
-    const reqOrganizations = await store.dispatch(
-      "organizations/fetchOrganizations",
-    )
-    if (reqOrganizations.status === "error") {
-      // For now logout
-      // TODO: redirect to some error page
-      logout()
-      return next({
-        name: "login",
-        query: { next: from.query.next || to.fullPath },
-      })
-    }
-
+    // Fetch organizations
+    await store.dispatch("organizations/fetchOrganizations")
     routerDebug("Organizations fetched")
 
+    // Check if user has organizations
     if (store.getters["organizations/getOrganizationLength"] === 0) {
-      // TODO: page to create organization
       routerDebug("No organization")
       logout()
       return next({
@@ -474,98 +571,50 @@ router.beforeEach(async (to, from, next) => {
       })
     }
 
+    // Handle direct "next" query parameter
     if (from.query.next && from.query.next !== to.fullPath) {
       routerDebug("Redirect to next", from.query.next)
       return next(from.query.next)
     }
 
-    // If user try to access an auth route > redirect to conversations
-    if (
-      to.fullPath === "/" ||
-      to.fullPath === "/interface" ||
-      to.meta?.authRoute
-    ) {
+    // Redirect auth routes to main app
+    if (to.fullPath === "/" || to.fullPath === "/interface" || to.meta?.authRoute) {
       routerDebug("Redirect to explore from auth route or root")
-      // organizationId is setted in the next step
-      return next({
-        name: "explore",
-      })
+      return next({ name: "explore" })
     }
 
-    const defaultOrganizationId =
-      store.getters["organizations/getDefaultOrganizationId"]
-    if (!to.meta?.userPage) {
-      routerDebug("Check organizationId in params", to.params.organizationId)
-      if (
-        !to.params.organizationId ||
-        store.getters["organizations/getOrganizationById"](
-          to.params.organizationId,
-        ) === undefined
-      ) {
-        routerDebug("Redirect to default organization", defaultOrganizationId)
-        return next({
-          ...to,
-          params: {
-            ...to.params,
-            organizationId: defaultOrganizationId,
-          },
-        })
-      } else {
-        routerDebug("Set current organization scope", to.params.organizationId)
-        store.dispatch(
-          "organizations/setCurrentOrganizationScope",
-          to.params.organizationId,
-        )
-      }
-    } else {
-      store.dispatch(
-        "organizations/setCurrentOrganizationScope",
-        defaultOrganizationId,
-      )
+    // Handle organization scope
+    const orgScopeResult = authGuards.handleOrganizationScope(to, next)
+    if (orgScopeResult.redirect) {
+      routerDebug("Redirect to default organization")
+      return next(orgScopeResult.nextRoute)
     }
 
-    // if quick session is running, redirect to session live
-    if (enableSession && to.name !== "quick session") {
-      routerDebug("Check quick session")
-      const quickSession = await apiGetQuickSession()
-      if (quickSession) {
-        routerDebug("Quick session found > redirect to quick session")
-        return next({
-          name: "quick session",
-          params: { organizationId: quickSession.organizationId },
-          query: { recover: "true" },
-        })
-      }
+    // Fetch tags
+    await store.dispatch("tags/fetchTags")
+    routerDebug("Tags fetched")
+
+    // Check for quick session
+    const quickSessionResult = await authGuards.checkQuickSession(to)
+    if (quickSessionResult.redirect) {
+      routerDebug("Quick session found > redirect to quick session")
+      return next(quickSessionResult.nextRoute)
     }
 
-    // check if user is allowed to access conversation detail pages
-    if (to.meta?.conversationDetailPage) {
-      routerDebug("Check conversation detail page")
-      const conversationId = to.params.conversationId
-      let userRight = 0
-
-      let getUserRight = await apiGetUserRightFromConversation(conversationId)
-
-      if (getUserRight) {
-        userRight = getUserRight?.right
-      }
-
-      if (userRight > 0) {
-        routerDebug("User has right > next")
-        return next()
-      }
-
+    // Check conversation access permissions
+    const conversationAccess = await authGuards.checkConversationAccess(to)
+    if (!conversationAccess.hasAccess) {
       routerDebug("User has no right > redirect to not found")
       return next({ name: "not_found" })
-    } else if (to.meta?.backoffice) {
-      routerDebug("Check backoffice route")
-      return next()
-    } else {
-      routerDebug("No specific route > next")
-      return next()
     }
+
+    // All checks passed
+    routerDebug("All checks passed > next")
+    return next()
+    
   } catch (error) {
     console.error(error)
+    return next({ name: "not_found" })
   }
 })
 export default router

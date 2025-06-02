@@ -671,7 +671,8 @@
       "create_no_rights_error": "You don't have the rights to create a media. Please contact your organisation administrator."
     },
     "tabs": {
-      "explore": "Media library",
+      "explore": "Inbox",
+      "explore_labels": "Labels",
       "favorites": "Favorites",
       "inbox": "Homepage",
       "manage_tags": "Manage tags",

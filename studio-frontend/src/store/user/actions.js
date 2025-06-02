@@ -1,21 +1,28 @@
 import { getCookie } from "@/tools/getCookie"
-import { setCookie } from "@/tools/setCookie"
 import { apiGetPersonalUserInfo } from "@/api/user"
 import {
   apiRemoveConversationFromFavorites,
   apiAddConversationToFavorites,
 } from "@/api/conversation"
+import { state as defaultState } from "./state"
+
 const actions = {
-  async fetchUser({ commit }) {
+  resetState({ state }) {
+    Object.assign(state, defaultState)
+  },
+  async fetchUser({ commit, dispatch }) {
     const token = getCookie("authToken")
     const getUserInfos = await apiGetPersonalUserInfo()
+
     if (getUserInfos.status === "success") {
+      commit("setIsAuthenticated", true)
       commit("setUserInfos", {
         token,
         ...getUserInfos.data,
       })
       commit("setFavoritesConversationIds", getUserInfos.data.favorites ?? [])
     }
+
     return getUserInfos
   },
   async login({ commit }, payload) {},

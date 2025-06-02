@@ -2,6 +2,7 @@ import path from "path"
 import { fileURLToPath } from "url"
 import { dirname } from "path"
 import getCurrentTheme from "./src/tools/getCurrentTheme.js"
+import webpack from "webpack"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -10,6 +11,22 @@ const STYLE_PATH = getCurrentTheme()["stylePath"]
 
 export default {
   configureWebpack: (config) => {
+    config.resolve.fallback = {
+      crypto: "crypto-browserify",
+      path: "path-browserify",
+      os: "os-browserify/browser",
+      stream: "stream-browserify",
+      process: "process/browser",
+      buffer: "buffer",
+      ...config.resolve.fallback,
+    }
+    config.plugins = [
+      ...(config.plugins || []),
+      new webpack.ProvidePlugin({
+        process: "process/browser",
+        Buffer: ["buffer", "Buffer"],
+      }),
+    ]
     ;(config.devtool = false),
       (config.optimization = {
         splitChunks: false,

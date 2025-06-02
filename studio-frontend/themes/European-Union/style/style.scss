@@ -1,7 +1,8 @@
 @layer base, theme;
 
 @layer theme {
-  @import "buttons.scss";
+  // Don't import to avoid conflicts
+  // @import "buttons.scss";
   @import "checkbox.scss";
   @import "forms.scss";
   @import "tabs.scss";
@@ -21,6 +22,7 @@
     --primary-contrast: #fff;
 
     --secondary-color: #ffcb7c;
+    --tertiary-color: var(--red-chart);
 
     --dark-100: #26324b;
     --dark-80: #546fa6;

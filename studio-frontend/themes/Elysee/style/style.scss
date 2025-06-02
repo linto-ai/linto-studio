@@ -1,7 +1,7 @@
 @layer base, theme;
 
 @layer theme {
-  @import "../../European-Union/style/buttons.scss";
+  // @import "../../European-Union/style/buttons.scss";
   @import "../../European-Union/style/checkbox.scss";
   @import "../../European-Union/style/forms.scss";
   @import "../../European-Union/style/tabs.scss";
@@ -20,6 +20,7 @@
     --primary-contrast: #fff;
 
     --secondary-color: #ffcb7c;
+    --tertiary-color: var(--red-chart);
 
     --dark-100: #26324b;
     --dark-80: #546fa6;

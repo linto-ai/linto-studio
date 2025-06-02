@@ -1,45 +1,31 @@
 <template>
-  <div class="flex flex1">
-    <!-- <OrganizationSidebar v-if="sidebar" :organizationPage="organizationPage">
+  <div class="main-content-container">
+    <div class="main-content">
+      <!-- <OrganizationSidebar v-if="sidebar" :organizationPage="organizationPage">
     </OrganizationSidebar> -->
-    <BurgerMenu
-      v-if="showBurgerMenu"
-      @close="toggleBurger"
-      v-click-outside="clickOutsideBurgerMenu"
-      :organizationPage="organizationPage">
-      <slot name="sidebar"></slot>
-    </BurgerMenu>
-    <main class="flex col scrollable" :class="{ box: box, flex1: flex }">
-      <!-- <div
-        class="flex row align-center main__breadcrumb-bar gap-small"
-        v-if="!fullscreen && this.$slots['breadcrumb-actions']">
-        <button
-          v-if="isAuthenticated"
-          class="transparent only-icon burger-button mobile"
-          @click="toggleBurger">
-          <span class="icon burger"></span>
-        </button>
-        <!-- <div
-          class="flex row align-center flex1 reset-overflows"
-          v-if="!noBreadcrumb">
-          <!-- <Breadcrumb /> 
-        </div> -->
-      <!--  
-        <slot name="breadcrumb-actions"></slot>
-      </div> -->
-      <HeaderBar />
-      <div
-        :class="[
+      <aside class="main-content__sidebar">
+        <BurgerMenu v-if="showBurgerMenu" @close="toggleBurger" v-click-outside="clickOutsideBurgerMenu"
+          :organizationPage="organizationPage">
+          <slot name="sidebar"></slot>
+        </BurgerMenu>
+      </aside>
+      <main class="main-content__main flex col" :class="{ box: box, flex1: flex }">
+        <HeaderBar />
+        <div :class="[
           'flex',
           'col',
           'flex1',
           'main__content',
           customClass ? customClass : '',
-        ]"
-        :fullwidth="fullwidthContent">
-        <slot></slot>
-      </div>
-    </main>
+          'scrollable',
+        ]" :fullwidth="fullwidthContent">
+          <slot></slot>
+        </div>
+      </main>
+    </div>
+    <div class="main-content-footer">
+      &copy; 2020 - {{ new Date().getFullYear() }} - Linto API
+    </div>
   </div>
 </template>
 <script>
@@ -97,7 +83,7 @@ export default {
       return isAuthenticated()
     },
   },
-  mounted() {},
+  mounted() { },
   methods: {
     clickOutsideBurgerMenu() {
       if (
@@ -121,3 +107,66 @@ export default {
   },
 }
 </script>
+
+<style lang="scss">
+.main-content-container {
+  background-color: var(--background-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  display: flex;
+  margin: 1em;
+  box-sizing: border-box;
+  gap: 1em;
+  position: relative;
+  padding-left: 21em;
+  flex: 1 1 auto;
+  min-height: 0;
+
+  .main-content__sidebar {
+    background-color: white;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: inset -.1em 0 0 rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 20em;
+    height: 100%;
+    overflow: auto;
+  }
+
+  .main-content__main {
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: inset -.1em 0 0 rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.main-content-footer {
+  padding: 1em;
+  padding-top: 0;
+  font-size: .8em;
+  color: var(--text-secondary);
+  display: flex;
+  justify-content: flex-end;
+  height: 3em;
+}
+
+.scrollable {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+</style>

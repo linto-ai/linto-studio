@@ -8,6 +8,7 @@
 <script>
 import { Fragment } from "vue-fragment"
 export default {
+  name: "Badge",
   props: {
     size: { type: String, default: "small" }, // small, medium, large
     primary: { type: Boolean, default: false },

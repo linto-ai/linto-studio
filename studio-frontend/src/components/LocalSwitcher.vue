@@ -3,13 +3,11 @@
     :valueText="localTxt"
     :value="local"
     :buttonClass="buttonClass"
-    icon="flag"
-    iconText="Lang"
     aria-label="Language selector"
     :options="{
       lang: [
-        { value: 'fr-FR', text: 'Français' },
-        { value: 'en-US', text: 'English' },
+        { value: 'fr-FR', text: '🇫🇷' },
+        { value: 'en-US', text: '🇺🇸' },
       ],
     }"
     @input="setLocale" />
@@ -20,7 +18,7 @@ import CustomSelect from "@/components/molecules/CustomSelect.vue"
 
 export default {
   props: {
-    buttonClass: { type: String, default: "" },
+    buttonClass: { type: String, default: "outline" },
   },
   watch: {
     "$i18n.locale": function (newVal) {
@@ -31,7 +29,7 @@ export default {
   },
   computed: {
     localTxt() {
-      return this.$i18n.locale === "fr-FR" ? "Français" : "English"
+      return this.$i18n.locale === "fr-FR" ? "🇫🇷" : "🇺🇸"
     },
     local() {
       return this.$i18n.locale
@@ -48,3 +46,47 @@ export default {
   },
 }
 </script>
+
+<style>
+.select__head {
+  width: 54px;
+}
+
+.select > div {
+  padding: 0;
+}
+
+.select > div button {
+  padding: 0 0.5em;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.select > button {
+  padding: 0 0.5em;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.select > button span {
+  padding: 0;
+  text-align: center;
+}
+
+.select > button span.icon {
+  display: none;
+}
+
+.select > div button:hover {
+  background-color: var(--primary-soft);
+}
+
+.select > div button span {
+  padding: 0;
+  text-align: center;
+}
+</style>

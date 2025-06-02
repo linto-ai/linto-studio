@@ -1,5 +1,4 @@
 import Vue from "vue"
-import store from "../store.old.js"
 import moment from "moment"
 import { getCookie } from "../tools/getCookie"
 import { sendRequest } from "../tools/sendRequest"
@@ -42,24 +41,6 @@ Vue.filter("dateToJMYHMS", function (date) {
 
 Vue.filter("CapitalizeFirstLetter", function (string) {
   return capitalizeFirstLetter(string)
-})
-
-// DISPATCH STORE
-Vue.filter("dispatchStore", async function (label, options) {
-  try {
-    const req = await store.dispatch(label, options)
-    if (req?.error) {
-      throw req.error
-    }
-    if (typeof req !== "undefined") {
-      return true
-    } else {
-      throw "an error has occured"
-    }
-  } catch (error) {
-    console.error(error)
-    return false
-  }
 })
 
 // Test if required filed is empty

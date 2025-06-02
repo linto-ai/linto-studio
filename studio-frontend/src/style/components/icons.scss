@@ -19,9 +19,6 @@
   &.settings {
     @include maskImage("../public/img/gear.svg");
   }
-  &.search {
-    @include maskImage("../public/img/search.svg");
-  }
   &.conv-list {
     @include maskImage("../public/img/conv-list.svg");
   }

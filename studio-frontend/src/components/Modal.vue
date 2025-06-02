@@ -153,11 +153,10 @@ export default {
     async deleteMutipleConversation() {},
     // TODO: delete this 3 functions ?
     async dispatchUserOrganizations() {
-      await this.$options.filters.dispatchStore("getUserOrganizations")
+      console.log("dispatchUserOrganizations")
     },
     async dispatchUserRights() {
-      this.userRightsLoaded =
-        await this.$options.filters.dispatchStore("getUserRights")
+      console.log("dispatchUserRights")
     },
   },
 }

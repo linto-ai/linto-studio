@@ -1,24 +1,14 @@
 <template>
-  <CustomSelect
-    class="organization-selector"
-    :valueText="name"
-    :value="currentOrganizationScope"
-    buttonClass="transparent"
-    icon="work"
-    :iconText="$t('navigation.organisation.title')"
-    :aria-label="$t('navigation.organisation.aria_organisations_selector')"
-    :options="navOrganizationList"
+  <CustomSelect class="organization-selector" :valueText="name" :value="currentOrganizationScope"
+    buttonClass="transparent" icon="work" :iconText="$t('navigation.organisation.title')"
+    :aria-label="$t('navigation.organisation.aria_organisations_selector')" :options="navOrganizationList"
     @input="onClickMenu">
     <template slot="button-content">
       <div class="flex1 flex gap-small align-center">
-        <UserProfilePicture
-          :hover="false"
-          :user="userInfo"
-          class="organization-selector__profile-picture" />
+        <OrganizationBadge :organization="currentOrganization"></OrganizationBadge>
         <span class="organization-selector__name flex1">{{ UserName }}</span>
-        <OrganizationBadge
-          :organization="currentOrganization"></OrganizationBadge>
-        <span class="icon small-arrow-down no-propagation"></span>
+        <UserProfilePicture :hover="false" :user="userInfo" class="organization-selector__profile-picture" />
+        <ph-icon name="caret-down"></ph-icon>
       </div>
     </template>
   </CustomSelect>

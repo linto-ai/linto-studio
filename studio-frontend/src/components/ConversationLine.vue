@@ -140,7 +140,7 @@
             :title="$t('conversation.add_tag')"
             v-if="canEditTag && !tagsReadOnly"
             @click="showDropDown"
-            class="only-border conversation-line__add-tag-btn no-propagation">
+            class="only-border outline primary conversation-line__add-tag-btn no-propagation">
             <span class="icon add no-propagation" />
             <span class="label no-propagation">{{ $t("tags.add_tags") }}</span>
           </button>
