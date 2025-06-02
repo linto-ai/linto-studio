@@ -1,5 +1,6 @@
 <template>
   <CustomSelect
+    id="lang-selector"
     :valueText="localTxt"
     :value="local"
     :buttonClass="buttonClass"
@@ -46,46 +47,48 @@ export default {
 }
 </script>
 
-<style>
-.select__head {
-  width: 54px;
-}
+<style lang="scss">
+#lang-selector {
+  &.select__head {
+    width: 54px;
+  }
 
-.select > div {
-  padding: 0;
-}
+  &.select > div {
+    padding: 0;
+  }
 
-.select > div button {
-  padding: 0 0.5em;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+  &.select > div button {
+    padding: 0 0.5em;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-.select > button {
-  padding: 0 0.5em;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+  &.select > button {
+    padding: 0 0.5em;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-.select > button span {
-  padding: 0;
-  text-align: center;
-}
+  &.select > button span {
+    padding: 0;
+    text-align: center;
+  }
 
-.select > button span.icon {
-  display: none;
-}
+  &.select > button span.icon {
+    display: none;
+  }
 
-.select > div button:hover {
-  background-color: var(--primary-soft);
-}
+  &.select > div button:hover {
+    background-color: var(--primary-soft);
+  }
 
-.select > div button span {
-  padding: 0;
-  text-align: center;
+  &.select > div button span {
+    padding: 0;
+    text-align: center;
+  }
 }
 </style>

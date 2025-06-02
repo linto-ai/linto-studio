@@ -37,36 +37,7 @@
           <MediaExplorerMenu :organizationId="currentOrganization._id" />
         </div>
       </fieldset>
-
-      <!--
-      <div class="tabs col flex1 flex">
-        <router-link :to="{
-          name: 'explore',
-          params: { organizationId: currentOrganizationScope },
-        }" class="flex row align-center gap-medium tab">
-          <ph-icon name="playlist"></ph-icon>
-          <span class="tab__label">{{ $t("navigation.tabs.explore") }}</span>
-        </router-link>
-        <router-link v-if="sessionEnable" :to="{
-          name: 'sessionsList',
-          params: { organizationId: currentOrganizationScope },
-        }" class="flex row align-center gap-medium tab">
-          <ph-icon name="broadcast"></ph-icon>
-          <span class="tab__label">{{ $t("navigation.tabs.sessions") }}</span>
-        </router-link>
-        <router-link :to="{ name: 'shared with me' }" class="flex row align-center gap-medium tab">
-          <ph-icon name="share"></ph-icon>
-          <span class="tab__label">{{ $t("navigation.tabs.shared") }}</span>
-        </router-link>
-        <router-link :to="{ name: 'favorites' }" class="flex row align-center gap-medium tab">
-          <ph-icon name="star"></ph-icon>
-          <span class="tab__label">{{ $t("navigation.tabs.favorites") }}</span>
-        </router-link>
-        <div class="flex col flex1">
-          <slot class=""></slot>
-        </div>
-      </div>
-      -->
+      <slot></slot>
     </div>
     <div>
       <is-cloud>
@@ -133,7 +104,7 @@ export default {
   data() {
     return {}
   },
-  mounted() { },
+  mounted() {},
   methods: {
     logout() {
       logout()
@@ -156,7 +127,7 @@ export default {
       return `/img/${getEnv("VUE_APP_LOGO")}`
     },
     organizationsList() {
-      return Object.values(this.organizations);
+      return Object.values(this.organizations)
     },
     title() {
       return getEnv("VUE_APP_NAME")
@@ -167,7 +138,7 @@ export default {
     userName() {
       return userName(this.userInfo)
     },
-    imgUrl() { },
+    imgUrl() {},
     mainListingPage() {
       return this.$route.meta?.mainListingPage
     },
@@ -204,7 +175,7 @@ export default {
   .burger-menu__header__title {
     display: flex;
     align-items: center;
-    gap: .5em;
+    gap: 0.5em;
 
     img {
       height: 1.5rem !important;
@@ -222,9 +193,9 @@ export default {
   }
 
   fieldset {
-    border: 1px solid #E0E0E0;
+    border: 1px solid #e0e0e0;
     border-radius: 4px;
-    margin: .5em;
+    margin: 0.5em;
     padding: 0;
     position: relative;
 

@@ -15,7 +15,7 @@
   }
 
   .mobile.session-header-mobile {
-    display: flex;
+    display: flex !important;
   }
 
   .bottom-session-button-desktop {
@@ -67,7 +67,7 @@
   }
 
   .mobile.session-content__action-bar__copy-btn-mobile {
-    display: flex;
+    display: flex !important;
   }
 
   .session-content__action-bar__reset-btn-desktop {
@@ -75,7 +75,7 @@
   }
 
   .mobile.session-content__action-bar__reset-btn-mobile {
-    display: flex;
+    display: flex !important;
   }
 }
 

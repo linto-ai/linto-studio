@@ -1,5 +1,5 @@
 <template>
-  <div class="flex col medium-padding gap-medium">
+  <div class="flex col small-padding gap-medium">
     <SessionChannelsSelector
       v-if="channels.length > 1"
       :channels="channels"

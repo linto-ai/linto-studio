@@ -161,7 +161,7 @@
     <button
       v-if="!isBottom"
       @click="scrollToBottom(true)"
-      class="bottom-session-button bottom-session-button-desktop"
+      class="bottom-session-button bottom-session-button-desktop outline"
       :class="{ has_subtitles: displaySubtitles }">
       <span class="icon bottom-arrow"></span>
       <span class="label">{{
