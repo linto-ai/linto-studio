@@ -36,28 +36,28 @@ const authGuards = {
   isAuthenticated: () => {
     return getCookie("authToken") !== null
   },
-  
+
   async handleMagicLinkAuth(to, next) {
     const conversationId = to?.query?.conversationId
     const magicId = to?.params?.magicId
-    
+
     const login = await apiLoginUserMagicLink(magicId)
     if (login.status === "success") {
       setCookie("userId", login.data.user_id, 7)
       setCookie("authToken", login.data.auth_token, 7)
       setCookie("refreshToken", login.data.refresh_token, 14)
       setCookie("cm_orga_scope", "")
-      
-      let redirect = conversationId 
+
+      let redirect = conversationId
         ? { path: "/interface/conversations/" + conversationId }
         : { name: "inbox" }
-        
+
       return next(redirect)
     } else {
       return next({ name: "magic-link-error" })
     }
   },
-  
+
   async checkUserAuth(next, to, from) {
     const reqUser = await store.dispatch("user/fetchUser")
     if (reqUser.status === "error") {
@@ -67,14 +67,15 @@ const authGuards = {
         query: { next: from.query.next || to.fullPath },
       })
     }
-    
+
     return reqUser
   },
-  
+
   handleOrganizationScope(to, next) {
-    const defaultOrganizationId = store.getters["organizations/getDefaultOrganizationId"]
-    
-    if (!to.meta?.userPage) {
+    const defaultOrganizationId =
+      store.getters["organizations/getDefaultOrganizationId"]
+
+    if (!to.meta?.userPage && !to.meta?.backoffice) {
       if (
         !to.params.organizationId ||
         store.getters["organizations/getOrganizationById"](
@@ -89,7 +90,7 @@ const authGuards = {
               ...to.params,
               organizationId: defaultOrganizationId,
             },
-          }
+          },
         }
       } else {
         store.dispatch(
@@ -106,10 +107,10 @@ const authGuards = {
       return { redirect: false }
     }
   },
-  
+
   async checkQuickSession(to) {
     const enableSession = getEnv("VUE_APP_ENABLE_SESSION") === "true"
-    
+
     if (enableSession && to.name !== "quick session") {
       const quickSession = await apiGetQuickSession()
       if (quickSession) {
@@ -119,29 +120,29 @@ const authGuards = {
             name: "quick session",
             params: { organizationId: quickSession.organizationId },
             query: { recover: "true" },
-          }
+          },
         }
       }
     }
-    
+
     return { redirect: false }
   },
-  
+
   async checkConversationAccess(to) {
     if (to.meta?.conversationDetailPage) {
       const conversationId = to.params.conversationId
       const getUserRight = await apiGetUserRightFromConversation(conversationId)
       const userRight = getUserRight?.right || 0
-      
+
       if (userRight > 0) {
         return { hasAccess: true }
       }
-      
+
       return { hasAccess: false }
     }
-    
+
     return { hasAccess: true }
-  }
+  },
 }
 
 let router = new Router({
@@ -519,10 +520,13 @@ router.beforeEach(async (to, from, next) => {
   const randomId = Math.random().toString(36).substring(7)
   const routerDebug = customDebug("vue:debug:router:" + randomId)
   const enableSession = getEnv("VUE_APP_ENABLE_SESSION") === "true"
-  
+
+  document.nextRoute = to
+  document.prevRoute = from
+
   try {
     routerDebug("beforeEach from", from.fullPath, "to", to.fullPath)
-    
+
     // Redirect to 404 if sessions are disabled but trying to access session page
     if (!enableSession && to.meta?.sessionPage) {
       return next({ name: "not_found" })
@@ -551,7 +555,7 @@ router.beforeEach(async (to, from, next) => {
     }
 
     // User is authenticated
-    
+
     // Fetch user data
     routerDebug("Fetching user data")
     const reqUser = await authGuards.checkUserAuth(next, to, from)
@@ -578,7 +582,11 @@ router.beforeEach(async (to, from, next) => {
     }
 
     // Redirect auth routes to main app
-    if (to.fullPath === "/" || to.fullPath === "/interface" || to.meta?.authRoute) {
+    if (
+      to.fullPath === "/" ||
+      to.fullPath === "/interface" ||
+      to.meta?.authRoute
+    ) {
       routerDebug("Redirect to explore from auth route or root")
       return next({ name: "explore" })
     }
@@ -611,7 +619,6 @@ router.beforeEach(async (to, from, next) => {
     // All checks passed
     routerDebug("All checks passed > next")
     return next()
-    
   } catch (error) {
     console.error(error)
     return next({ name: "not_found" })

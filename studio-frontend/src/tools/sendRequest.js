@@ -10,8 +10,9 @@ export async function sendRequest(
   headers,
   withoutToken = false,
 ) {
-  // TODO: try to use $route singleton to check $route.meta.backoffice instead
-  const isBackOfficePage = location.pathname.startsWith("/backoffice")
+  const location = document?.nextRoute?.path || window.location.pathname
+  const isBackOfficePage = location.startsWith("/backoffice")
+
   const defaultQueryParams = {}
   if (isBackOfficePage) {
     defaultQueryParams["userScope"] = "backoffice"
