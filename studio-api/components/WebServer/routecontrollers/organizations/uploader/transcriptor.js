@@ -5,7 +5,11 @@ const axios = require(`${process.cwd()}/lib/utility/axios`)
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
-const { addFileMetadataToConversation, initConversation } = require(
+const {
+  addFileMetadataToConversation,
+  addAudioDuration,
+  initConversation,
+} = require(
   `${process.cwd()}/components/WebServer/controllers/conversation/generator`,
 )
 
@@ -113,6 +117,8 @@ async function createConversation(processing_job, body) {
     if (body.url) {
       conversation.metadata.audio.fromUrl = body.url
       conversation.metadata.transcription.endpoint = body.endpoint
+      // we want the length of the audio file
+      conversation = await addAudioDuration(conversation, body.file_data)
       deleteFile(body.file_data.storageFilePath)
     } else {
       conversation = await addFileMetadataToConversation(
