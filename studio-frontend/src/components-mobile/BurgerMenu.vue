@@ -32,10 +32,14 @@
         <UserAccountSelector />
       </div>
 
-      <fieldset>
+      <fieldset v-if="!backoffice">
         <div class="explorer-menu">
           <MediaExplorerMenu :organizationId="currentOrganization._id" />
         </div>
+      </fieldset>
+
+      <fieldset v-if="backoffice">
+        <BackofficeSidebar />
       </fieldset>
       <slot></slot>
     </div>
@@ -92,13 +96,14 @@ import { logout } from "@/tools/logout"
 import LocalSwitcher from "@/components/LocalSwitcher.vue"
 import CloudCardCredits from "@/components-cloud/CardCredits.vue"
 import MediaExplorerMenu from "@/components/MediaExplorerMenu.vue"
+import BackofficeSidebar from "@/components/BackofficeSidebar.vue"
 
 export default {
   mixins: [orgaRoleMixin, organizationPermissionsMixin],
   props: {
-    organizationPage: {
+    backoffice: {
       type: Boolean,
-      default: true,
+      default: false,
     },
   },
   data() {
@@ -151,6 +156,7 @@ export default {
     LocalSwitcher,
     CloudCardCredits,
     MediaExplorerMenu,
+    BackofficeSidebar,
   },
 }
 </script>

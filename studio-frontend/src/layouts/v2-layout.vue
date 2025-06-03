@@ -2,7 +2,7 @@
   <div class="v2-layout">
     <div class="v2-layout__content">
       <aside class="v2-layout__sidebar">
-        <BurgerMenu :organizationPage="organizationPage">
+        <BurgerMenu :backoffice="backoffice">
           <slot name="sidebar"></slot>
         </BurgerMenu>
       </aside>
@@ -35,37 +35,13 @@ import HeaderBar from "@/components/HeaderBar.vue"
 
 export default {
   props: {
-    box: {
-      type: Boolean,
-      default: false,
-    },
-    sidebar: {
-      type: Boolean,
-      default: false,
-    },
-    flex: {
-      type: Boolean,
-      default: false,
-    },
-    organizationPage: {
-      type: Boolean,
-      default: true,
-    },
-    fullscreen: {
-      type: Boolean,
-      default: false,
-    },
-    noBreadcrumb: {
-      type: Boolean,
-      default: false,
-    },
-    fullwidthContent: {
-      type: Boolean,
-      default: false,
-    },
     customClass: {
       type: String,
       default: "",
+    },
+    backoffice: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

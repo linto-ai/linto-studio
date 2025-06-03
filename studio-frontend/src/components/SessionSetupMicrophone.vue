@@ -95,7 +95,7 @@
 
     <div class="flex medium-margin-top gap-small" v-else>
       <button class="btn secondary" @click="trashSession">
-        <span class="icon trash"></span>
+        <ph-icon name="trash"></ph-icon>
         <span class="label">
           {{ $t("quick_session.restore.trash_button") }}
         </span>

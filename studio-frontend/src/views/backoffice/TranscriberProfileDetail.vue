@@ -6,8 +6,8 @@
         v-bind:transcriberProfile.sync="transcriberProfile"
         class="flex1" />
       <div class="flex gap-medium transcriber-profile-detail__footer">
-        <button class="red-border" @click="deleteProfile">
-          <span class="icon trash"></span>
+        <button class="tertiary outline" @click="deleteProfile">
+          <ph-icon name="trash"></ph-icon>
           <span class="label">{{
             $t("backoffice.transcriber_profile_detail.delete_button")
           }}</span>

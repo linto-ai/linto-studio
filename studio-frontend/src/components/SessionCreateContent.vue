@@ -89,7 +89,7 @@
       <div class="flex gap-medium align-center conversation-create-footer">
         <button
           type="button"
-          class="red-border"
+          class="tertiary outline"
           :disabled="formState === 'sending' || selectedTemplateId == ''"
           @click="deleteSelectedTemplate">
           <span class="label">
