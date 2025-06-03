@@ -146,7 +146,6 @@ async function initCaptionsForConversation(sessionData, name) {
 
       captions.push(caption)
     }
-
     return captions
   } catch (err) {
     throw err
@@ -207,24 +206,6 @@ function initializeCaption(
   return caption
 }
 
-function processChannelCaptions(channel, caption, main = true) {
-  let closedCaptions = channel.closedCaptions
-
-  for (const channel_caption of closedCaptions) {
-    let spk_id = ensureSpeaker(caption, channel_caption)
-
-    let turn = createTurn(
-      channel_caption,
-      spk_id,
-      main,
-      channel.diarization,
-      caption,
-    )
-    if (!turn) continue
-    caption.text.push(turn)
-  }
-}
-
 function ensureSpeaker(caption, channel_caption) {
   let speakerName
   if (caption.type.mode === TYPES.TRANSLATION)
@@ -250,6 +231,46 @@ function ensureSpeaker(caption, channel_caption) {
   return existingSpeaker.speaker_id
 }
 
+function processChannelCaptions(channel, caption, main = true) {
+  let closedCaptions = []
+  let offset = 0
+  channel.closedCaptions.map((segment) => {
+    if (segment.locutor === "bot" && segment.aend) {
+      // Calculate duration and add it to offset when caption was cut off
+      const startDate = new Date(segment.astart)
+      const endDate = new Date(segment.aend)
+      const durationSeconds = (endDate - startDate) / 1000
+      offset += durationSeconds
+    } else {
+      // Adjust timing for non-bot segments on multiple captions
+      if (offset > 0) {
+        segment.start = Number((segment.start + offset).toFixed(2))
+        segment.end = Number((segment.end + offset).toFixed(2))
+      }
+      closedCaptions.push(segment) // Only push non-bot segments
+    }
+  })
+
+  let prevSegmentWithTimestamps = undefined
+
+  for (const channel_caption of closedCaptions) {
+    let spk_id = ensureSpeaker(caption, channel_caption)
+    if (channel_caption.locutor === "bot") {
+      prevSegmentWithTimestamps = channel_caption
+    }
+    let turn = createTurn(
+      channel_caption,
+      spk_id,
+      main,
+      channel.diarization,
+      caption,
+      prevSegmentWithTimestamps,
+    )
+    if (!turn) continue
+    caption.text.push(turn)
+  }
+}
+
 function createTurn(
   channel_caption,
   spk_id,
@@ -260,6 +281,7 @@ function createTurn(
   if (main && diarization && !channel_caption.locutor) {
     return
   }
+
   let turn = {
     speaker_id: spk_id,
     turn_id: uuidv4(),
@@ -270,6 +292,7 @@ function createTurn(
     lang: channel_caption.lang,
     words: [],
   }
+
   if (
     caption.type.mode === TYPES.TRANSLATION &&
     channel_caption.translations[caption.locale]
