@@ -94,7 +94,7 @@ async function transcribe(isSingleFile, req, res, next) {
       transcriptionService,
       options,
     )
-    await createConversation(processingJob, req.body, formData)
+    await createConversation(processingJob, req.body)
 
     res
       .status(201)
