@@ -119,7 +119,7 @@ export default {
       clearTimeout(this.watermarkShowTimeout)
       clearTimeout(this.watermarkHideTimeout)
       if (newVal) {
-        this.drawWatermark(true)
+        this.drawWatermark()
       } else {
         this.hideWatermark()
       }
@@ -158,7 +158,7 @@ export default {
       this.subtitleDrawer.resetDrawing()
       this.subtitleDrawer.resetAll()
     },
-    drawWatermark(pinned = false) {
+    drawWatermark() {
       if (this.isUnmounted) return
 
       const watermark = document.getElementById(
@@ -173,7 +173,7 @@ export default {
       scrollerContainer.classList.add("scroller-smaller")
       scrollerContainer.classList.remove("scroller-bigger")
 
-      if (!pinned) {
+      if (!this.watermarkPinned) {
         this.watermarkHideTimeout = setTimeout(
           this.hideWatermark.bind(this),
           this.watermarkDuration * 1000,
