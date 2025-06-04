@@ -53,8 +53,8 @@
             <button
               v-else-if="isAlreadyInvited(slotProps.user)"
               @click="removeUser(slotProps.user)"
-              class="red-border">
-              <span class="icon remove" />
+              class="tertiary outline">
+              <ph-icon name="trash"></ph-icon>
               <span class="label">
                 {{ $t("organisation.user.remove_button") }}</span
               >

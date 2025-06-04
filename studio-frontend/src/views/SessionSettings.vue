@@ -1,50 +1,29 @@
 <template>
-  <MainContent noBreadcrumb :organizationPage="false" box>
-    <template v-slot:breadcrumb-actions>
-      <!-- <div class="flex flex1 gap-medium align-center justify-center">
-        <router-link :to="sessionListRoute" class="btn secondary">
-          <span class="icon back"></span>
+  <LayoutV2>
+    <SessionHeader
+      v-if="sessionLoaded"
+      :sessionListRoute="sessionListRoute"
+      :isAuthenticated="isAuthenticated"
+      :sessionLoaded="sessionLoaded"
+      :name="name"
+      :session="session">
+      <template v-slot:right-button-desktop>
+        <router-link :to="liveRoute" class="btn">
+          <span class="icon text"></span>
           <span class="label">{{
-            $t("session.detail_page.back_to_listing")
+            $t("session.detail_page.back_to_live")
           }}</span>
         </router-link>
-
-        <!-- title -->
-      <!-- <SessionStatus
-          v-if="sessionLoaded"
-          :session="session"
-          withText
-          class="flex1" />
-
-        
-      </div> -->
-
-      <SessionHeader
-        v-if="sessionLoaded"
-        :sessionListRoute="sessionListRoute"
-        :isAuthenticated="isAuthenticated"
-        :sessionLoaded="sessionLoaded"
-        :name="name"
-        :session="session">
-        <template v-slot:right-button-desktop>
-          <router-link :to="liveRoute" class="btn">
-            <span class="icon text"></span>
-            <span class="label">{{
-              $t("session.detail_page.back_to_live")
-            }}</span>
-          </router-link>
-        </template>
-        <template v-slot:right-button-mobile>
-          <router-link
-            :to="liveRoute"
-            class="btn secondary only-icon"
-            :aria-label="$t('session.detail_page.back_to_live')">
-            <span class="icon text"></span>
-          </router-link>
-        </template>
-      </SessionHeader>
-    </template>
-
+      </template>
+      <template v-slot:right-button-mobile>
+        <router-link
+          :to="liveRoute"
+          class="btn secondary only-icon"
+          :aria-label="$t('session.detail_page.back_to_live')">
+          <span class="icon text"></span>
+        </router-link>
+      </template>
+    </SessionHeader>
     <div class="flex1 medium-padding" v-if="sessionLoaded">
       <h1 class="center-text">{{ name }}</h1>
       <div class="flex wrap">
@@ -137,7 +116,7 @@
           <div class="flex col gap-medium">
             <!-- Delete and save -->
             <button
-              class="btn flex1 red-border flex"
+              class="btn flex1 tertiary flex"
               v-if="isStarted && !isActive"
               @click="stopSession"
               :title="titleButtonDelete"
@@ -149,7 +128,7 @@
             </button>
             <!-- Force delete and save -->
             <button
-              class="btn flex1 red-border flex"
+              class="btn flex1 tertiary flex"
               v-if="isActive"
               @click="openModalDeleteSession"
               :title="titleButtonDelete"
@@ -213,7 +192,7 @@
         :field="fieldWatermarkSettings"
         v-model="fieldWatermarkSettings.value" />
     </div>
-  </MainContent>
+  </LayoutV2>
 </template>
 <script>
 import { bus } from "@/main.js"
@@ -244,6 +223,8 @@ import SessionHeader from "@/components/SessionHeader.vue"
 import ModalEditSessionAlias from "@/components/ModalEditSessionAlias.vue"
 import Qrcode from "@/components/atoms/Qrcode.vue"
 import ModalWatermarkSettings from "@/components/ModalWatermarkSettings.vue"
+import LayoutV2 from "@/layouts/v2-layout.vue"
+
 export default {
   mixins: [sessionMixin, formsMixin],
   props: {},
@@ -526,6 +507,7 @@ export default {
     ModalEditSessionAlias,
     Qrcode,
     ModalWatermarkSettings,
+    LayoutV2,
   },
 }
 </script>

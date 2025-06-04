@@ -9,8 +9,8 @@
         <button
           v-if="isAdmin"
           @click="deleteOrganization()"
-          class="btn red-border">
-          <span class="icon trash"></span>
+          class="btn tertiary outline">
+          <ph-icon name="trash"></ph-icon>
           <span class="label">{{
             $t("organisation.delete_organization")
           }}</span>

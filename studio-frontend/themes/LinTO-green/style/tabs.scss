@@ -1,21 +1,3 @@
-.tabs.col {
-  .tab {
-    border-left: 3px solid transparent;
-    padding: 0.5rem calc(2rem - 3px);
-    margin: 1px;
-    font-weight: normal;
-  }
-
-  .tab[selected],
-  .tab.router-link-active {
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-    .icon {
-      background-color: var(--primary-color);
-    }
-  }
-}
-
 .horizontal-tabs {
   width: fit-content;
   margin: auto;

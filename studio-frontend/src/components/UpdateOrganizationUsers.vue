@@ -82,8 +82,8 @@
                   (isSystemAdministrator && isBackofficePage)
                 "
                 @click="removeFromMembers(user)"
-                class="red-border">
-                <span class="icon remove" />
+                class="tertiary outline">
+                <ph-icon name="trash"></ph-icon>
                 <span class="label">{{
                   $t("organisation.user.remove_button")
                 }}</span>

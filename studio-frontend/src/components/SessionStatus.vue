@@ -1,7 +1,7 @@
 <template>
   <div
     @click="onClick"
-    class="flex align-center justify-center session-status gap-small"
+    class="flex align-center session-status gap-small"
     :title="text">
     <span class="session-on-air flex align-center gap-small" v-if="isActive">
       <span v-if="!small">[</span>

@@ -19,7 +19,7 @@
         :id="tab.id ? tab.id : undefined"
         :aria-controls="tab.ariaControl ? tab.ariaControl : undefined"
         @click="!disabled && !tab.disabled && $emit('input', tab.name)">
-        <span class="icon" :class="tab.icon" v-if="tab.icon"></span>
+        <ph-icon :name="tab.icon" size="md" v-if="tab.icon"></ph-icon>
         <img :src="tab.img" v-else-if="tab.img" class="icon" />
         <div class="flex flex1 col justify-center">
           <span class="tab__label">{{ tab.label }}</span>

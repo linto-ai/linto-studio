@@ -4,7 +4,7 @@
       class="only-icon"
       @click="previousWeek"
       :title="$t('week_selector.previous_button_title')">
-      <span class="icon left-arrow"></span>
+      <ph-icon name="arrow-left"></ph-icon>
     </button>
     <h3 style="width: auto">
       <!-- Week {{ weekNumber }} of {{ year }} from {{ firstDay }} to {{ lastDay }} -->
@@ -21,7 +21,7 @@
       class="only-icon"
       @click="nextWeek"
       :title="$t('week_selector.next_button_title')">
-      <span class="icon right-arrow"></span>
+      <ph-icon name="arrow-right"></ph-icon>
     </button>
   </div>
 </template>

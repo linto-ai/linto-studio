@@ -19,7 +19,7 @@
     ></FormInput>
     <div>
       <button class="only-icon" @click="deleteRow">
-        <span class="icon trash"></span>
+        <ph-icon name="trash"></ph-icon>
       </button>
     </div>
   </div>

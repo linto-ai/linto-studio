@@ -1,45 +1,44 @@
 <template>
-  <MainContent noBreadcrumb :organizationPage="false" fullwidthContent sidebar>
-    <template v-slot:breadcrumb-actions>
-      <SessionHeader
-        :sessionListRoute="sessionListRoute"
-        :sessionLoaded="sessionLoaded"
-        :name="name"
-        :session="session">
-        <template v-slot:right-button-desktop>
+  <LayoutV2>
+    <!-- <template v-slot:breadcrumb-actions> -->
+    <SessionHeader
+      :sessionListRoute="sessionListRoute"
+      :sessionLoaded="sessionLoaded"
+      :name="name"
+      :session="session">
+      <template v-slot:right-button-desktop>
+        <router-link
+          :to="settingsRoute"
+          class="btn"
+          v-if="isAtLeastMeetingManager">
+          <span class="icon settings"></span>
+          <span class="label">{{
+            $t("session.detail_page.settings_button")
+          }}</span>
+        </router-link>
+      </template>
+      <template v-slot:right-button-mobile>
+        <div class="flex gap-small">
           <router-link
             :to="settingsRoute"
-            class="btn"
-            v-if="isAtLeastMeetingManager">
+            class="btn secondary only-icon"
+            v-if="isAtLeastMeetingManager"
+            :aria-label="$t('session.detail_page.settings_button')">
             <span class="icon settings"></span>
-            <span class="label">{{
-              $t("session.detail_page.settings_button")
-            }}</span>
           </router-link>
-        </template>
-        <template v-slot:right-button-mobile>
-          <div class="flex gap-small">
-            <router-link
-              :to="settingsRoute"
-              class="btn secondary only-icon"
-              v-if="isAtLeastMeetingManager"
-              :aria-label="$t('session.detail_page.settings_button')">
-              <span class="icon settings"></span>
-            </router-link>
-            <button
-              class="btn secondary only-icon"
-              @click="showMobileSubtitles">
-              <span class="icon subtitle"></span>
-            </button>
-          </div>
-        </template>
-      </SessionHeader>
-    </template>
+          <button class="btn secondary only-icon" @click="showMobileSubtitles">
+            <span class="icon subtitle"></span>
+          </button>
+        </div>
+      </template>
+    </SessionHeader>
+    <!-- </template> -->
 
     <template v-slot:sidebar>
-      <h1 v-if="sessionLoaded" class="center-text session-live__title">
+      <div class="sidebar-divider"></div>
+      <!-- <h1 v-if="sessionLoaded" class="center-text session-live__title">
         {{ name }}
-      </h1>
+      </h1> -->
       <SessionLiveMicrophoneStatus
         v-if="useMicrophone && sessionLoaded"
         @toggle-microphone="toggleMicrophone"
@@ -118,7 +117,7 @@
           @trash-session="cancelRecordSettings"></SessionSetupMicrophone>
       </ModalNew>
     </div>
-  </MainContent>
+  </LayoutV2>
 </template>
 <script>
 import { sessionMixin } from "@/mixins/session.js"
@@ -141,7 +140,7 @@ import ModalNew from "@/components/molecules/Modal.vue"
 import SessionSetupMicrophone from "@/components/SessionSetupMicrophone.vue"
 import SessionLiveMicrophoneStatus from "@/components/SessionLiveMicrophoneStatus.vue"
 import SessionHeader from "@/components/SessionHeader.vue"
-
+import LayoutV2 from "@/layouts/v2-layout.vue"
 import SessionDropdownChannelSelector from "@/components-mobile/SessionDropdownChannelSelector.vue"
 export default {
   mixins: [
@@ -253,7 +252,7 @@ export default {
     },
   },
   components: {
-    MainContent,
+    LayoutV2,
     SessionNotStarted,
     SessionChannelsSelector,
     SessionTranslationSelection,

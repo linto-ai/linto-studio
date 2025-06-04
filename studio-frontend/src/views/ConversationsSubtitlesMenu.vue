@@ -14,7 +14,7 @@
         {{ conversation.name }}
       </h1>
       <button
-        class="btn red-border"
+        class="btn tertiary outline"
         v-if="canEdit"
         @click="() => (deleteModal = true)">
         <span class="icon trash"></span
@@ -61,7 +61,7 @@ export default {
     canEdit() {
       return this.userRights.hasRightAccess(
         this.userRight,
-        this.userRights.WRITE
+        this.userRights.WRITE,
       )
     },
     conversationListRoute() {

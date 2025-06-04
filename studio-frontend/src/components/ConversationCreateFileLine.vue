@@ -43,7 +43,7 @@
         @click="deleteFile"
         v-if="!disabled"
         type="button">
-        <span class="icon trash"></span>
+        <ph-icon name="trash"></ph-icon>
       </button>
       <button
         type="button"

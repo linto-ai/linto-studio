@@ -1,7 +1,7 @@
 <template>
   <Loading v-if="loading" />
   <ErrorPage v-else-if="error" :error="error" />
-  <div v-else-if="sessionList.length > 0" class="flex flex1 col gap-small">
+  <div v-else-if="sessionList.length > 0" class="flex flex1 col">
     <SessionListLine
       v-if="sessionList.length > 0"
       v-for="session in sessionList"

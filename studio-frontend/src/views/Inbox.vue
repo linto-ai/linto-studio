@@ -2,8 +2,8 @@
   <MainContent sidebar>
     <template v-slot:breadcrumb-actions>
       <div class="flex align-center gap-small">
-        <button class="red-border btn" @click="clickDeleteConvButton">
-          <span class="icon trash"></span>
+        <button class="tertiary outline btn" @click="clickDeleteConvButton">
+          <ph-icon name="trash"></ph-icon>
           <span class="label">{{
             $t("explore.delete_conversation_button")
           }}</span>

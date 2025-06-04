@@ -30,7 +30,7 @@
 
     <template v-slot:content-after-tag="slotProps">
       <button class="only-icon small transparent" @click="deleteTag(slotProps)">
-        <span class="icon trash"></span>
+        <ph-icon name="trash"></ph-icon>
       </button>
     </template>
     <template v-slot:content-under-tag="slotProps">

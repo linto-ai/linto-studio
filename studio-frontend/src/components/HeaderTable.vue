@@ -26,7 +26,7 @@
     </button>
     <button
       v-if="remove_button_label"
-      class="btn red-border"
+      class="btn tertiary outline"
       @click="$emit('on-delete')"
       :disabled="disableDelete">
       <span class="icon delete"></span>

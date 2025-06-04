@@ -1,5 +1,5 @@
 <template>
-  <MainContent sidebar>
+  <LayoutV2>
     <Tabs v-model="activeTab" :tabs="tabs"></Tabs>
     <SessionWeekList
       v-if="activeTab == 'timeline'"
@@ -7,7 +7,7 @@
     <SessionActiveList
       v-else
       :currentOrganizationScope="currentOrganizationScope"></SessionActiveList>
-  </MainContent>
+  </LayoutV2>
 </template>
 <script>
 import { Fragment } from "vue-fragment"
@@ -25,6 +25,8 @@ import ErrorPage from "@/components/ErrorPage.vue"
 import SessionListLine from "@/components/SessionListLine.vue"
 import SessionWeekList from "@/components/SessionWeekList.vue"
 import SessionActiveList from "@/components/SessionActiveList.vue"
+import LayoutV2 from "@/layouts/v2-layout.vue"
+
 export default {
   props: {
     currentOrganizationScope: {
@@ -100,7 +102,7 @@ export default {
         {
           name: "started",
           label: this.$i18n.t("session.list_page.tabs.ongoing_sessions"),
-          icon: "record",
+          icon: "broadcast",
           //badge: this.countActiveSessions,
         },
         {
@@ -121,6 +123,7 @@ export default {
     SessionListLine,
     SessionWeekList,
     SessionActiveList,
+    LayoutV2,
   },
 }
 </script>

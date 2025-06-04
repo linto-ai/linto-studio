@@ -28,7 +28,7 @@
     </div>
 
     <button :class="['only-icon', 'black', 'hover-red']" @click="deletescreen">
-      <span class="icon trash"></span>
+      <ph-icon name="trash"></ph-icon>
     </button>
   </div>
 </template>

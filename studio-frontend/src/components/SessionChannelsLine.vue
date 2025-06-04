@@ -35,7 +35,7 @@
       <Checkbox v-model="item.diarization" id="diarizationCheckboxId" />
     </td>
     <td class="content-size" v-if="from === 'formCreateSession'">
-      <button class="btn red-border" @click="removeChannel" type="button">
+      <button class="btn tertiary outline" @click="removeChannel" type="button">
         <span class="icon remove"></span>
         <span class="label">{{ $t("session.channels_list.remove") }}</span>
       </button>
