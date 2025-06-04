@@ -9,7 +9,6 @@ const { storeSessionFromStop, storeQuickMeetingFromStop } = require(
 const {
   forceQueryParams,
   forwardSessionAlias,
-  removeTranscriberProfileData,
   checkTranscriberProfileAccess,
 } = require(
   `${process.cwd()}/components/WebServer/controllers/session/session.js`,
@@ -47,13 +46,11 @@ module.exports = (webServer) => {
           {
             path: "/transcriber_profiles",
             method: ["get"],
-            executeAfterResult: [removeTranscriberProfileData],
           },
           { path: "/transcriber_profiles", method: ["post"] },
           {
             path: "/transcriber_profiles/:id",
             method: ["get", "put", "delete"],
-            executeAfterResult: [removeTranscriberProfileData],
           },
         ],
         requireAuth: true,

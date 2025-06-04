@@ -49,42 +49,14 @@ async function forwardSessionAlias(req, next) {
   }
 }
 
-async function removeTranscriberProfileData(jsonString, req) {
-  try {
-    const parsed = JSON.parse(jsonString)
-    const isArray = Array.isArray(parsed)
-
-    const cleaned = (isArray ? parsed : [parsed]).map((session) => {
-      const sessionCopy = { ...session }
-      if (sessionCopy.config && sessionCopy.config.key) {
-        delete sessionCopy.config.key
-      }
-      return sessionCopy
-    })
-
-    return JSON.stringify(isArray ? cleaned : cleaned[0])
-  } catch (err) {
-    return jsonString // fallback: return original string on error
-  }
-}
-
 async function checkTranscriberProfileAccess(jsonString, req) {
   try {
     const transcribers = JSON.parse(jsonString)
-    const filtered = transcribers
-      .filter(
-        (session) =>
-          session.organizationId === req.params.organizationId ||
-          session.organizationId === null,
-      )
-      .map((session) => {
-        const sessionCopy = { ...session }
-        if (sessionCopy.config && sessionCopy.config.key) {
-          delete sessionCopy.config.key
-        }
-
-        return sessionCopy
-      })
+    const filtered = transcribers.filter(
+      (session) =>
+        session.organizationId === req.params.organizationId ||
+        session.organizationId === null,
+    )
     return JSON.stringify(filtered)
   } catch (err) {
     return jsonString
@@ -94,6 +66,5 @@ async function checkTranscriberProfileAccess(jsonString, req) {
 module.exports = {
   forceQueryParams,
   forwardSessionAlias,
-  removeTranscriberProfileData,
   checkTranscriberProfileAccess,
 }
