@@ -180,7 +180,7 @@ export default {
             this.navUserAccountVisible = false
         },
         openSettingsModal() {
-            this.$store.dispatch("settings/openModal")
+            this.$store.dispatch("settings/setModalOpen", true)
         },
         logout() {
             this.$store.dispatch("user/logout")

@@ -14,6 +14,7 @@ import Radio from './Radio.vue';
 import StatusLed from './StatusLed.vue';
 import Badge from './Badge.vue';
 import IsCloud from './IsCloud.vue';
+import Tag from './Tag.vue';
 
 const components = [
   PhIcon,
@@ -31,7 +32,8 @@ const components = [
   Radio,
   StatusLed,
   Badge,
-  IsCloud
+  IsCloud,
+  Tag,
 ];
 
 const validateComponents = c => c && typeof c.name === 'string' && c.name.length > 0

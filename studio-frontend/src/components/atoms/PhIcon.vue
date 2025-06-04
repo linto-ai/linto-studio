@@ -16,7 +16,7 @@ export default {
   name: 'PhIcon',
   props: {
     name: { type: String, required: true }, // ex: 'House', 'User', etc.
-    size: { type: String, default: 'md' }, // xs, sm, md, lg, xl
+    size: { type: String, default: 'sm' }, // xs, sm, md, lg, xl
     color: { type: String, default: '' }, // primary, secondary, etc.
     weight: { type: String, default: 'regular' }, // thin, light, regular, bold, fill, duotone
     mirrored: { type: Boolean, default: false },
@@ -66,6 +66,26 @@ export default {
     100% {
       transform: rotate(360deg);
     }
+  }
+
+  &.lg {
+    width: 24px;
+    height: 24px;
+  }
+
+  &.md {
+    width: 20px;
+    height: 20px;
+  }
+
+  &.sm {
+    width: 16px;
+    height: 16px;
+  }
+
+  &.xs {
+    width: 12px;
+    height: 12px;
   }
 }
 

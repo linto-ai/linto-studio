@@ -3,7 +3,7 @@
         <div class="card-credits__content">
             <div class="card-credits__content__label">
                 <img :src="logo" alt="LinTO Studio" class="card-credits__content__label__logo">
-                You enjoy LinTO BETA
+                You enjoy LinTO Cloud BETA
             </div>
             <div class="card-credits__content__credits">
                 With unlimited access to all features

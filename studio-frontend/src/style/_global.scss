@@ -367,6 +367,46 @@ li:last-child {
   background-color: var(--background-green-hard);
 }
 
+.mb-xs {
+  margin-bottom: var(--xs-gap);
+}
+
+.mb-sm {
+  margin-bottom: var(--sm-gap);
+}
+
+.mb-md {
+  margin-bottom: var(--md-gap);
+}
+
+.mb-lg {
+  margin-bottom: var(--lg-gap);
+}
+
+.mb-xl {
+  margin-bottom: var(--xl-gap);
+}
+
+.mt-xs {
+  margin-top: var(--xs-gap);
+}
+
+.mt-sm {
+  margin-top: var(--sm-gap);
+}
+
+.mt-md {
+  margin-top: var(--md-gap);
+}
+
+.mt-lg {
+  margin-top: var(--lg-gap);
+}
+
+.mt-xl {
+  margin-top: var(--xl-gap);
+}
+
 *[data-info] {
   position: relative;
   z-index: 2;

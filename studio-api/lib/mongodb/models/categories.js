@@ -48,6 +48,33 @@ class CategoryModel extends MongoModel {
     }
   }
 
+  async getSystemCategories(organizationId = undefined) {
+    try {
+      let query = {
+        type: TYPE.SYSTEM,
+      }
+      if (organizationId) {
+        query.organizationId = organizationId
+      }
+      return await this.mongoRequest(query)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async getByOrganizationId(organizationId) {
+    try {
+      let query = {
+        organizationId: organizationId,
+      }
+      return await this.mongoRequest(query)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   async getByScope(id) {
     try {
       let query = {

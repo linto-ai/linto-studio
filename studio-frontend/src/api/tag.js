@@ -82,6 +82,16 @@ export async function apiGetAllCategories(
   }
 }
 
+export async function apiGetSystemCategories(organizationId) {
+  const requestRes = await sendRequest(
+    `${BASE_API}/organizations/${organizationId}/categories/system`,
+    { method: "get" },
+    {}
+  )
+
+  return requestRes?.data || []
+}
+
 export async function apiGetCategoryById(
   scopeId,
   categoryId,

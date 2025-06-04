@@ -305,17 +305,15 @@ let router = new Router({
       components: {
         default: () => import("../views/NextExplore.vue"),
         ...defaultComponents,
+        favorites: false,
       },
       props: {
         ...defaultProps,
       },
       meta: { mainListingPage: true },
-      query: {
-        favorites: false,
-      },
     },
     {
-      path: "/interface/:organizationId?/explore/favorites",
+      path: "/interface/favorites",
       name: "explore-favorites",
       components: {
         default: () => import("../views/NextExplore.vue"),
@@ -323,8 +321,22 @@ let router = new Router({
       },
       props: {
         ...defaultProps,
+        default: { favorites: true },
       },
-      meta: { mainListingPage: true, favorites: true },
+      meta: { mainListingPage: true },
+    },
+    {
+      path: "/interface/shared",
+      name: "explore-shared",
+      components: {
+        default: () => import("../views/NextExplore.vue"),
+        ...defaultComponents,
+      },
+      props: {
+        ...defaultProps,
+        default: { shared: true },
+      },
+      meta: { mainListingPage: true },
     },
     {
       path: "/interface/:organizationId?/old-explore",
@@ -356,16 +368,16 @@ let router = new Router({
       props: defaultProps,
       meta: { userPage: true },
     },
-    {
-      path: "/interface/shared",
-      name: "shared with me",
-      components: {
-        default: () => import("../views/SharedWith.vue"),
-        ...defaultComponents,
-      },
-      props: defaultProps,
-      meta: { userPage: true },
-    },
+    // {
+    //   path: "/interface/shared",
+    //   name: "shared with me",
+    //   components: {
+    //     default: () => import("../views/SharedWith.vue"),
+    //     ...defaultComponents,
+    //   },
+    //   props: defaultProps,
+    //   meta: { userPage: true },
+    // },
     {
       path: "/interface/:organizationId?/conversations/create",
       name: "conversations create",

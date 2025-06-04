@@ -1,22 +1,41 @@
 <template>
   <LayoutV2 customClass="explore-next">
-    <template v-slot:sidebar>
-      <div class="sidebar-divider"></div>
-    </template>
-    <MediaExplorer :medias="conversations" :loading="loadingConversations" :error="error">
+    <MediaExplorer
+      :medias="conversations"
+      :loading="loadingConversations"
+      :error="error">
       <template v-slot:before>
-        <div v-if="initialPage > 0 && showPreviousButton" class="explore-next__previous-items"
+        <div
+          v-if="initialPage > 0 && showPreviousButton"
+          class="explore-next__previous-items"
           @click="loadPreviousItems">
           <a href="#" class="btn xs outline primary">
-            <span class="label">Load previous items ({{ initialPage * 12 }})</span>
+            <span class="label"
+              >Load previous items ({{ initialPage * 12 }})</span
+            >
           </a>
         </div>
       </template>
       <template v-slot:after>
-        <div class="explore-next__infinite-loading" ref="infiniteLoadingTrigger">
-          <span v-if="hasMoreItems && !loadingConversations">Loading more...</span>
+        <div
+          class="explore-next__infinite-loading"
+          ref="infiniteLoadingTrigger">
+          <span v-if="hasMoreItems && !loadingConversations"
+            >Loading more...</span
+          >
           <span v-else-if="!hasMoreItems">End of results</span>
           <span v-else>Loading...</span>
+        </div>
+      </template>
+      <template v-slot:empty>
+        <div class="explore-next__empty">
+          <div class="explore-next__empty__icon">
+            <ph-icon name="folder" size="lg"></ph-icon>
+          </div>
+          <div class="explore-next__empty__text mt-md">
+            <h3>No conversations found</h3>
+            <p class="text-sm">Create a new conversation to get started</p>
+          </div>
         </div>
       </template>
     </MediaExplorer>
@@ -32,10 +51,13 @@ import MediaExplorer from "@/components/MediaExplorer.vue"
 import { debounceMixin } from "@/mixins/debounce"
 import { conversationListOrgaMixin } from "@/mixins/conversationListOrga"
 import { fromConversations } from "@/store/inbox"
+import ActionConversationCreate from "@/components/molecules/ActionConversationCreate.vue"
 
 import {
+  apiGetFavoritesConversations,
   apiGetConversationsByTags,
   apiGetConversationsByOrganization,
+  apiGetConversationsSharedWith,
 } from "@/api/conversation.js"
 
 export default {
@@ -44,14 +66,16 @@ export default {
     LayoutV2,
     SidebarFilters,
     MediaExplorer,
+    ActionConversationCreate,
   },
   props: {
     userInfo: { type: Object, required: true },
     currentOrganizationScope: { type: String, required: true },
-    favorites: { type: Boolean, required: false, default: false }
+    favorites: { type: Boolean, required: false, default: false },
+    shared: { type: Boolean, required: false, default: false },
   },
   data() {
-    console.log('f', this.favorites);
+    console.log("f", this)
     return {
       conversations: [],
       loadingConversations: false,
@@ -67,12 +91,14 @@ export default {
       totalItemsCount: 0,
       options: {
         favorites: false,
-      }
+        shared: false,
+      },
     }
   },
   mixins: [debounceMixin, conversationListOrgaMixin],
   async mounted() {
-    this.options.favorites = this.$route.query.favorites === 'true'
+    this.options.favorites = this.favorites
+    this.options.shared = this.shared
     await this.initPageFromUrl()
     this.setupIntersectionObserver()
   },
@@ -85,10 +111,14 @@ export default {
     selectedTags() {
       this.resetSearch()
     },
-    'customFilters.textConversation.value'() {
+    favorites(newValue) {
+      this.options.favorites = newValue
       this.resetSearch()
     },
-    'customFilters.titleConversation.value'() {
+    "customFilters.textConversation.value"() {
+      this.resetSearch()
+    },
+    "customFilters.titleConversation.value"() {
       this.resetSearch()
     },
     selectedOption() {
@@ -96,13 +126,13 @@ export default {
     },
     page(newPage) {
       this.updatePageUrl(newPage)
-    }
+    },
   },
   methods: {
-    ...mapMutations('inbox', ['setMedias', 'clearSelectedMedias']),
+    ...mapMutations("inbox", ["setMedias", "clearSelectedMedias"]),
     async initPageFromUrl() {
       const urlParams = new URLSearchParams(window.location.search)
-      const pageParam = urlParams.get('page')
+      const pageParam = urlParams.get("page")
 
       if (pageParam && !isNaN(parseInt(pageParam))) {
         const targetPage = parseInt(pageParam)
@@ -127,11 +157,11 @@ export default {
     updatePageUrl(page) {
       const url = new URL(window.location)
       if (page > 0) {
-        url.searchParams.set('page', page)
+        url.searchParams.set("page", page)
       } else {
-        url.searchParams.delete('page')
+        url.searchParams.delete("page")
       }
-      window.history.replaceState({}, '', url)
+      window.history.replaceState({}, "", url)
     },
 
     async apiSearchConversations(page = this.page) {
@@ -143,14 +173,38 @@ export default {
         !this.customFilters?.textConversation?.value &&
         !this.customFilters?.titleConversation?.value
       ) {
-        res = await apiGetConversationsByOrganization(
-          this.currentOrganizationScope,
-          page,
-          {
-            pageSize: 12,
-            sortField: this.selectedOption,
-          },
-        )
+        if (this.options.favorites) {
+          res = await apiGetFavoritesConversations(
+            this.selectedTags.map((tag) => tag._id),
+            this.customFilters?.textConversation?.value,
+            this.customFilters?.titleConversation?.value,
+            page,
+            {
+              sortField: this.selectedOption,
+            },
+          )
+        } else {
+          if (this.options.shared) {
+            res = await apiGetConversationsSharedWith(
+              this.selectedTags.map((tag) => tag._id),
+              this.customFilters?.textConversation?.value,
+              this.customFilters?.titleConversation?.value,
+              page,
+              {
+                sortField: this.selectedOption,
+              },
+            )
+          } else {
+            res = await apiGetConversationsByOrganization(
+              this.currentOrganizationScope,
+              page,
+              {
+                pageSize: 12,
+                sortField: this.selectedOption,
+              },
+            )
+          }
+        }
       } else {
         res = await apiGetConversationsByTags(
           this.currentOrganizationScope,
@@ -171,7 +225,7 @@ export default {
 
     async fetchConversations(page = 0, append = false) {
       try {
-        const data = await this.apiSearchConversations(page);
+        const data = await this.apiSearchConversations(page)
         const newConversations = data?.list || []
 
         if (append) {
@@ -182,7 +236,7 @@ export default {
 
         this.setMedias(fromConversations(newConversations))
 
-        this.hasMoreItems = (data?.count - (12 * (page + 1))) > 0
+        this.hasMoreItems = data?.count - 12 * (page + 1) > 0
 
         return newConversations
       } catch (error) {
@@ -207,23 +261,38 @@ export default {
     },
 
     setupIntersectionObserver() {
-      if (!this.$refs.infiniteLoadingTrigger || !window.IntersectionObserver) return
+      if (!this.$refs.infiniteLoadingTrigger || !window.IntersectionObserver)
+        return
 
       if (this.observer) {
         this.observer.disconnect()
       }
 
-      this.observer = new IntersectionObserver((entries) => {
-        console.log("entries", entries, this.hasMoreItems, this.loadingConversations, this.isInitialLoad)
-        if (entries[0].isIntersecting && this.hasMoreItems && !this.loadingConversations && !this.isInitialLoad) {
-          console.log("load more")
-          this.handleLoadMore()
-        }
-      }, {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.1
-      })
+      this.observer = new IntersectionObserver(
+        (entries) => {
+          console.log(
+            "entries",
+            entries,
+            this.hasMoreItems,
+            this.loadingConversations,
+            this.isInitialLoad,
+          )
+          if (
+            entries[0].isIntersecting &&
+            this.hasMoreItems &&
+            !this.loadingConversations &&
+            !this.isInitialLoad
+          ) {
+            console.log("load more")
+            this.handleLoadMore()
+          }
+        },
+        {
+          root: null,
+          rootMargin: "0px",
+          threshold: 0.1,
+        },
+      )
 
       this.observer.observe(this.$refs.infiniteLoadingTrigger)
     },
@@ -245,7 +314,7 @@ export default {
           this.setupIntersectionObserver()
         })
       })
-    }
+    },
   },
 }
 </script>
@@ -255,7 +324,6 @@ export default {
   .main__content {
     padding: 0;
   }
-
 }
 
 .explore-next__infinite-loading {

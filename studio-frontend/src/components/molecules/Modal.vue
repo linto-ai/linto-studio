@@ -1,50 +1,66 @@
 <template>
-  <div class="modal-wrapper flex col" :class="{ open: value }">
-    <div class="modal-overlay"></div>
+  <div class="modal-wrapper" :class="{ open: value }">
+    <div
+      class="modal-overlay"
+      v-if="overlay"
+      @click="overlayClose ? close() : null"></div>
     <component
       aria-modal="true"
       aria-labelledby="modal-title"
       class="modal flex col"
       :is="modalComponentType"
       :class="{ [`${size}`]: true, [customModalClass]: true }"
-      v-click-outside="close">
+      @submit.prevent="isForm ? apply() : null">
       <div class="modal-header flex row align-center justify-between">
         <div class="flex col">
           <span class="title flex1" id="modal-title">{{ title }}</span>
           <span class="subtitle" v-if="subtitle">{{ subtitle }}</span>
         </div>
-        <button class="btn outline only-icon sm" @click="close()" type="button">
-          <ph-icon name="x" size="sm"></ph-icon>
-        </button>
+        <template v-if="withClose">
+          <button
+            class="btn outline only-icon sm"
+            @click="close()"
+            type="button">
+            <ph-icon name="x" size="sm"></ph-icon>
+          </button>
+        </template>
       </div>
       <div class="modal-body flex col flex1">
         <slot></slot>
       </div>
-      <div class="modal-footer flex row gap-small" v-if="noAction === false">
-        <button
-          class="btn tertiary"
-          @click="deleteHandler()"
-          v-if="deleteButton"
-          type="button">
-          <span class="label">{{ $t("modal.delete") }}</span>
-        </button>
+      <div class="modal-footer flex row gap-small" v-if="withActions">
+        <template v-if="withActionDelete">
+          <button class="btn tertiary" @click="deleteHandler()" type="button">
+            <span class="label">{{
+              textActionDelete || $t("modal.delete")
+            }}</span>
+          </button>
+        </template>
         <div class="flex1"></div>
-        <button
-          class="btn secondary outline"
-          @click="close()"
-          v-if="cancelButton"
-          type="button">
-          <span class="label">{{ $t("modal.cancel") }}</span>
-        </button>
-        <button
-          class="btn primary"
-          :class="customClass"
-          @click="apply"
-          v-if="!noApply"
-          type="submit">
-          <ph-icon name="check"></ph-icon>
-          <span class="label">{{ actionBtnLabel || $t("modal.apply") }}</span>
-        </button>
+        <div class="button-group">
+          <template v-if="withActionCancel">
+            <button
+              class="btn secondary outline"
+              @click="close()"
+              type="button">
+              <span class="label">{{
+                textActionCancel || $t("modal.cancel")
+              }}</span>
+            </button>
+          </template>
+          <template v-if="withActionApply">
+            <button
+              class="btn primary"
+              :class="customClass"
+              @click="apply"
+              type="submit">
+              <ph-icon name="check"></ph-icon>
+              <span class="label">{{
+                textActionApply || $t("modal.apply")
+              }}</span>
+            </button>
+          </template>
+        </div>
       </div>
     </component>
   </div>
@@ -56,24 +72,25 @@ export default {
   props: {
     title: { type: String, required: true },
     subtitle: { type: String, required: false },
-    actionBtnLabel: { type: String, required: true },
-    cancelButton: { type: Boolean, default: true },
-    deleteButton: { type: Boolean, default: false },
-    small: { type: Boolean, default: false },
-    large: { type: Boolean, default: false },
-    fullHeight: { type: Boolean, default: false },
-    customClassButton: { type: Object, default: () => ({}) },
-    noApply: { type: Boolean, default: false },
+    withActions: { type: Boolean, default: true },
+    withActionDelete: { type: Boolean, default: false },
+    withActionCancel: { type: Boolean, default: true },
+    withActionApply: { type: Boolean, default: true },
+    withClose: { type: Boolean, default: true },
     customModalClass: { type: String, default: "" },
     isForm: { type: Boolean, default: false },
-    noAction: { type: Boolean, default: false },
     size: { type: String, default: "md" },
+    value: { type: Boolean, default: false },
+    overlay: { type: Boolean, default: true },
+    overlayClose: { type: Boolean, default: true },
+    textActionApply: { type: String, default: "Apply" },
+    textActionCancel: { type: String, default: "Cancel" },
+    textActionDelete: { type: String, default: "Delete" },
   },
-  mounted() {
-    document.addEventListener("keydown", this.attachEvents)
-  },
-  unmounted() {
-    document.removeEventListener("keydown", this.attachEvents)
+  data() {
+    return {
+      isClickOutsideEnabled: false,
+    }
   },
   computed: {
     customClass() {
@@ -84,7 +101,7 @@ export default {
         return this.customClassButton
       }
       return {
-        green: true,
+        primary: true,
       }
     },
     modalComponentType() {
@@ -92,24 +109,19 @@ export default {
     },
   },
   methods: {
-    attachEvents(e) {
-      if (e.key === "Escape") {
-        this.close()
-      }
-      if (e.key === "Enter") {
-        this.apply()
-      }
-    },
     close(e) {
-      this.$emit("on-cancel")
+      this.$emit("on-cancel", e)
+      this.$emit("input", false)
       e?.preventDefault()
     },
     apply(e) {
-      this.$emit("on-confirm")
+      this.$emit("on-confirm", e)
+      this.$emit("input", false)
       e?.preventDefault()
     },
     deleteHandler(e) {
-      this.$emit("on-delete")
+      this.$emit("on-delete", e)
+      this.$emit("input", false)
       e?.preventDefault()
     },
   },
@@ -130,7 +142,7 @@ export default {
 }
 
 .modal-wrapper.open {
-  display: none;
+  display: flex;
 }
 
 .modal-overlay {
@@ -178,7 +190,7 @@ export default {
 }
 
 .modal-header {
-  padding: 0.5rem;
+  padding: 1rem;
   position: sticky;
   top: 0;
   background: var(--background-secondary);
@@ -206,27 +218,14 @@ export default {
 .modal-body {
   border-top: 1px solid var(--neutral-20);
   background: var(--primary-soft);
-  padding: 0.5rem;
+  padding: 1em;
   overflow-y: auto;
   flex: 1;
-
-  p {
-    font-size: 1rem;
-    line-height: 1.5rem;
-    margin: 0.5rem 0;
-
-    strong {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--red-chart);
-      line-height: 1.5rem;
-    }
-  }
 }
 
 .modal-footer {
   justify-content: flex-end;
-  padding: 0.5rem;
+  padding: 1em;
 
   .modal--footer-btn-splitted {
     display: flex;

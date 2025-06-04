@@ -9,16 +9,11 @@ export default {
     },
   },
   actions: {
+    setModalOpen({ commit, state }, isModalOpen) {
+      commit("setIsModalOpen", isModalOpen)
+    },
     toggleIsModalOpen({ commit, state }) {
       commit("setIsModalOpen", !state.isModalOpen)
-    },
-    openModal({ commit, state }) {
-      commit("setIsModalOpen", true)
-      console.log("openModal", state.isModalOpen)
-    },
-    closeModal({ commit, state }) {
-      commit("setIsModalOpen", false)
-      console.log("closeModal", state.isModalOpen)
     },
   },
   getters: {

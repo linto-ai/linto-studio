@@ -21,8 +21,8 @@
     </div>
   </div>
 </template>
+
 <script>
-import { bus } from "@/main.js"
 import { mapActions, mapGetters } from "vuex"
 import { customDebug } from "@/tools/customDebug.js"
 import isAuthenticated from "@/tools/isAuthenticated.js"

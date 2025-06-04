@@ -1,8 +1,16 @@
 <template>
-  <modal v-if="false" v-model="isModalOpen" title="Settings" subtitle="Manage your account and preferences" size="md">
+  <Modal v-model="isModalOpen" title="Settings" subtitle="Manage your account and preferences" size="lg">
     <div class="app-settings">
       <aside>
         <ul>
+          <li>
+            <div class="app-settings__user-info flex align-center gap-small">
+                <div class="flex flex1 align-center gap-small">
+                    <UserProfilePicture :hover="false" :user="user" />
+                    <span class="user-account-selector__name">{{ userName }}</span>
+                </div>
+            </div>
+          </li>
           <li :class="{ active: selectedTab === 'account-information' }">
             <a href="#" @click="selectTab('account-information')">
               <ph-icon name="user"></ph-icon>
@@ -59,17 +67,19 @@
         :class="{ active: selectedTab === 'billing' }">
       </div>
     </div>
-  </modal>
+  </Modal>
 </template>
 
 <script>
 import { mapGetters } from "vuex"
 import Modal from "./molecules/Modal.vue"
+import UserProfilePicture from "./atoms/UserProfilePicture.vue"
 
 export default {
   name: "AppSettingsModal",
   components: {
     Modal,
+    UserProfilePicture,
   },
   data() {
     return {
@@ -78,16 +88,26 @@ export default {
   },
   computed: {
     ...mapGetters({
-      isModalOpen: "settings/isModalOpen",
       user: "user/getUserInfos",
     }),
+    isModalOpen: {
+      get() {
+        return this.$store.state.settings.isModalOpen
+      },
+      set(value) {
+        this.$store.dispatch("settings/setModalOpen", value)
+      },
+    },
+    userName() {
+      return this.user.firstname + " " + this.user.lastname
+    },
   },
   methods: {
     selectTab(tab) {
       this.selectedTab = tab
     },
     closeModal() {
-      this.$store.dispatch("settings/closeModal")
+      this.$store.dispatch("settings/setModalOpen", false)
     },
   },
 }
@@ -186,6 +206,21 @@ export default {
         text-align: right;
         padding: 10px;
       }
+    }
+  }
+
+  &__user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0.5em;
+
+    & > div {
+      background-color: var(--background-secondary);
+      flex: 1;
+      padding: 0.5em;
+      border-radius: 4px;
+      border: 1px solid var(--neutral-60);
     }
   }
 }
