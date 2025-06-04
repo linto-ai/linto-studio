@@ -26,7 +26,7 @@ async function forceQueryParams(req, next) {
   }
 }
 
-async function forwardSessioAlias(req, next) {
+async function forwardSessionAlias(req, next) {
   try {
     const uuidV4Pattern =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -51,5 +51,5 @@ async function forwardSessioAlias(req, next) {
 
 module.exports = {
   forceQueryParams,
-  forwardSessioAlias,
+  forwardSessionAlias,
 }

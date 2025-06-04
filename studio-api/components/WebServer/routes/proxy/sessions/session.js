@@ -6,7 +6,7 @@ const proxyForwardParams = [
 const { storeSessionFromStop, storeQuickMeetingFromStop } = require(
   `${process.cwd()}/components/WebServer/controllers/session/conversation.js`,
 )
-const { forceQueryParams } = require(
+const { forceQueryParams, forwardSessionAlias } = require(
   `${process.cwd()}/components/WebServer/controllers/session/session.js`,
 )
 const { Unauthorized } = require(
@@ -43,7 +43,6 @@ module.exports = (webServer) => {
             path: "/transcriber_profiles",
             method: ["get"],
           },
-
           { path: "/transcriber_profiles", method: ["post"] },
           {
             path: "/transcriber_profiles/:id",
@@ -131,6 +130,7 @@ module.exports = (webServer) => {
             path: "/sessions/:id/public",
             method: ["get"],
             addParams: [{ "body.visibility": "public" }],
+            executeBeforeResult: forwardSessionAlias,
             executeAfterResult: [
               (jsonString) => {
                 try {
@@ -153,6 +153,7 @@ module.exports = (webServer) => {
           {
             path: "/organizations/:organizationId/sessions/:id",
             method: ["get"],
+            executeBeforeResult: forwardSessionAlias,
             forwardParams: proxyForwardParams,
           },
           {
