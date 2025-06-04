@@ -47,7 +47,7 @@
       :conversation="conversation"
       :userInfo="userInfo"
       :blocks="screens"
-      :canEdit="userRights.hasRightAccess(userRight, userRights.WRITE)"
+      :canEdit="canEdit"
       :conversation-users="conversationUsers"
       :users-connected="usersConnected"
       :focusFields="focusFields"

@@ -10,7 +10,12 @@
         <SessionSubtitle
           :partialText="partialText"
           :finalText="finalText"
-          :fontSize="fontSize"></SessionSubtitle>
+          :fontSize="fontSize"
+          :watermarkFrequency="watermarkFrequency"
+          :watermarkDuration="watermarkDuration"
+          :watermarkContent="watermarkContent"
+          :watermarkPinned="watermarkPinned"
+          :displayWatermark="displayWatermark"></SessionSubtitle>
       </div>
     </div>
   </div>
@@ -30,6 +35,26 @@ export default {
       type: String,
       required: true,
     },
+    watermarkFrequency: {
+      type: Number,
+      required: true,
+    },
+    watermarkDuration: {
+      type: Number,
+      required: true,
+    },
+    watermarkContent: {
+      type: String,
+      required: true,
+    },
+    watermarkPinned: {
+      type: Boolean,
+      required: true,
+    },
+    displayWatermark: {
+      type: Boolean,
+      required: true,
+    },
   },
   data() {
     return {
@@ -45,7 +70,7 @@ export default {
           console.log(err)
         })
       } else if (container.webkitRequestFullscreen) {
-          container.webkitRequestFullscreen()
+        container.webkitRequestFullscreen()
       } else {
         console.warn("Fullscreen API is not supported on this browser.")
       }

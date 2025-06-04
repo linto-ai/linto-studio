@@ -211,7 +211,7 @@ export default {
         label: this.$t("session.settings_page.isPublic_label"),
       },
       fieldSessionVisibility: {
-        value: "organization",
+        value: "public",
         error: null,
         valid: true,
         options: [

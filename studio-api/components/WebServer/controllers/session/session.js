@@ -26,7 +26,7 @@ async function forceQueryParams(req, next) {
   }
 }
 
-async function forwardSessioAlias(req, next) {
+async function forwardSessionAlias(req, next) {
   try {
     const uuidV4Pattern =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -49,7 +49,22 @@ async function forwardSessioAlias(req, next) {
   }
 }
 
+async function checkTranscriberProfileAccess(jsonString, req) {
+  try {
+    const transcribers = JSON.parse(jsonString)
+    const filtered = transcribers.filter(
+      (session) =>
+        session.organizationId === req.params.organizationId ||
+        session.organizationId === null,
+    )
+    return JSON.stringify(filtered)
+  } catch (err) {
+    return jsonString
+  }
+}
+
 module.exports = {
   forceQueryParams,
-  forwardSessioAlias,
+  forwardSessionAlias,
+  checkTranscriberProfileAccess,
 }

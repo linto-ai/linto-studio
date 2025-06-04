@@ -96,7 +96,7 @@ export const sessionMixin = {
     },
     async startSession() {
       this.isStarting = true
-      const start = await apiStartSession(this.organizationId, this.sessionId)
+      const start = await apiStartSession(this.organizationId, this.id)
 
       if (start.status === "error") {
         console.error("Error starting session", start)
@@ -108,7 +108,7 @@ export const sessionMixin = {
     },
     async stopSession() {
       this.isStoping = true
-      const start = await apiDeleteSession(this.organizationId, this.sessionId)
+      const start = await apiDeleteSession(this.organizationId, this.id)
 
       if (start.status === "error") {
         console.error("Error stoping session", start)
@@ -134,10 +134,7 @@ export const sessionMixin = {
     },
     async deleteSession() {
       this.isDeleting = true
-      const deleteSession = await apiDeleteSession(
-        this.organizationId,
-        this.sessionId,
-      )
+      const deleteSession = await apiDeleteSession(this.organizationId, this.id)
 
       if (deleteSession.status === "error") {
         console.error("Error deleting session", deleteSession)
@@ -161,7 +158,7 @@ export const sessionMixin = {
     },
     onSessionUpdateEvent(value) {
       for (const updatedSession of value.updated) {
-        if (updatedSession.id === this.sessionId) {
+        if (updatedSession.id === this.id) {
           this.session = mergeSession(this.session, updatedSession)
         }
       }
@@ -170,24 +167,10 @@ export const sessionMixin = {
         this.onSessionUpdatePostProcess(this.session)
       }
     },
-    async syncWatermarkSettings({
-      frequency,
-      duration,
-      content,
-      pinned,
-      display,
-    }) {
-      let req = await apiPatchSession(
-        this.currentOrganizationScope,
-        this.sessionId,
-        {
-          meta: {
-            ...this.session.meta,
-            "@watermark": { frequency, duration, content, pinned, display },
-          },
-        },
-      )
-
+    async syncVisibility(visibility) {
+      let req = await apiPatchSession(this.currentOrganizationScope, this.id, {
+        visibility,
+      })
       if (req.status === "error") {
         console.error("Error updating session", req)
         bus.$emit("app_notif", {
@@ -202,6 +185,37 @@ export const sessionMixin = {
         message: this.$i18n.t("session.settings_page.success_message"),
         timeout: 3000,
       })
+      this.session.visibility = visibility
+    },
+    async syncWatermarkSettings(
+      { frequency, duration, content, pinned, display },
+      silent = false,
+    ) {
+      let req = await apiPatchSession(this.currentOrganizationScope, this.id, {
+        meta: {
+          ...this.session.meta,
+          "@watermark": { frequency, duration, content, pinned, display },
+        },
+      })
+
+      if (req.status === "error") {
+        console.error("Error updating session", req)
+        if (!silent) {
+          bus.$emit("app_notif", {
+            status: "error",
+            message: this.$i18n.t("session.settings_page.error_update_message"),
+            timeout: null,
+          })
+        }
+        return
+      }
+      if (!silent) {
+        bus.$emit("app_notif", {
+          status: "success",
+          message: this.$i18n.t("session.settings_page.success_message"),
+          timeout: 3000,
+        })
+      }
       this.session.meta["@watermark"] = {
         frequency,
         duration,

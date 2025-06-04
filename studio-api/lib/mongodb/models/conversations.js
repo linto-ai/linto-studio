@@ -685,6 +685,25 @@ class ConvoModel extends MongoModel {
       return error
     }
   }
+
+  async listConvFromOwner(convIds, userId) {
+    try {
+      const objectIds = convIds
+        .split(",")
+        .map((id) => (typeof id === "string" ? this.getObjectId(id) : id))
+      const query = {
+        _id: { $in: objectIds },
+        owner: userId.toString(),
+      }
+
+      const result = await this.mongoRequest(query, {})
+      if (result.length === objectIds.length) return result
+      else return []
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
 }
 
 module.exports = new ConvoModel()
