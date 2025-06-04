@@ -287,7 +287,7 @@ export default {
   },
   methods: {
     initConversationHook() {
-      this.initGeneration()
+      // this.initGeneration()
     },
     showHelper() {
       this.helperVisible = true
