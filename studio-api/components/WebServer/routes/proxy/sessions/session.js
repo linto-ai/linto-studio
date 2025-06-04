@@ -6,7 +6,12 @@ const proxyForwardParams = [
 const { storeSessionFromStop, storeQuickMeetingFromStop } = require(
   `${process.cwd()}/components/WebServer/controllers/session/conversation.js`,
 )
-const { forceQueryParams, forwardSessionAlias } = require(
+const {
+  forceQueryParams,
+  forwardSessionAlias,
+  removeTranscriberProfileData,
+  checkTranscriberProfileAccess,
+} = require(
   `${process.cwd()}/components/WebServer/controllers/session/session.js`,
 )
 const { Unauthorized } = require(
@@ -42,11 +47,13 @@ module.exports = (webServer) => {
           {
             path: "/transcriber_profiles",
             method: ["get"],
+            executeAfterResult: [removeTranscriberProfileData],
           },
           { path: "/transcriber_profiles", method: ["post"] },
           {
             path: "/transcriber_profiles/:id",
             method: ["get", "put", "delete"],
+            executeAfterResult: [removeTranscriberProfileData],
           },
         ],
         requireAuth: true,
@@ -60,22 +67,7 @@ module.exports = (webServer) => {
           {
             path: "/organizations/:organizationId/transcriber_profiles",
             method: ["get"],
-            executeAfterResult: [
-              (jsonString, req) => {
-                try {
-                  const transcribers = JSON.parse(jsonString)
-                  return JSON.stringify(
-                    transcribers.filter(
-                      (session) =>
-                        session.organizationId === req.params.organizationId ||
-                        session.organizationId === null,
-                    ),
-                  )
-                } catch (err) {
-                  return jsonString
-                }
-              },
-            ],
+            executeAfterResult: [checkTranscriberProfileAccess],
           },
         ],
         requireAuth: true,
