@@ -1,42 +1,51 @@
-.table-grid-container {
-  background-color: var(--background-primary);
+table {
+  border-spacing: 0px;
   border: var(--border-block);
-  margin: 0;
   border-radius: 4px;
-}
-
-table.table {
-  border: 1px solid var(--neutral-20);
+  overflow: auto;
   width: 100%;
-  box-sizing: border-box;
-  border-radius: 4px;
-  overflow: hidden;
+  th {
+    text-transform: uppercase;
+    background-color: var(--background-primary-soft);
+    text-transform: none;
 
-  thead,
-  tbody {
-    display: contents;
+    & > button {
+      border: none;
+      padding: 0;
+
+      &.active {
+        //text-decoration: underline;
+        font-weight: 800;
+
+        &.asc::after {
+          content: " ⯅";
+          padding-left: 0.25rem;
+          text-decoration: none !important;
+          vertical-align: top;
+        }
+
+        &.desc::after {
+          content: " ⯆";
+          padding-left: 0.25rem;
+          text-decoration: none;
+        }
+      }
+    }
+  }
+
+  tr td {
+    border-top: 1px solid var(--neutral-20);
+  }
+
+  tr:nth-child(even) td {
+    background-color: var(--neutral-10);
   }
 
   th,
-  td {
+  tr td {
     padding: 0.5rem;
   }
 
-  th {
-    background-color: var(--neutral-10);
-    text-transform: none;
-  }
-
-  td {
-    border-bottom: 1px solid var(--neutral-10);
-  }
-}
-
-table.table-grid {
-  display: grid;
-  grid-template-columns: auto 1fr 1fr 1fr 1fr auto; // need to be overwritten in the component depending on the number of columns
-  gap: 1px;
-  position: relative;
   .fit-content {
     width: fit-content;
   }
@@ -44,6 +53,13 @@ table.table-grid {
   .no-size {
     width: auto;
   }
+}
+
+table.table-grid {
+  display: grid;
+  grid-template-columns: auto 1fr 1fr 1fr 1fr auto; // need to be overwritten in the component depending on the number of columns
+  //gap: 1px;
+  position: relative;
 
   thead,
   tbody {
@@ -64,14 +80,6 @@ table.table-grid {
     align-items: center;
     padding-left: 1rem;
     padding-right: 1rem;
-  }
-
-  td {
-    outline: 1px solid var(--neutral-60);
-  }
-
-  th {
-    background-color: var(--neutral-20);
   }
 
   .table-loader {

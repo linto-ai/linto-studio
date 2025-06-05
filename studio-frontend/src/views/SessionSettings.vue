@@ -46,7 +46,7 @@
                   }}</span>
                 </button>
                 <button class="btn" @click="openModalEditSessionAlias">
-                  <span class="icon edit"></span>
+                  <ph-icon name="pencil"></ph-icon>
                   <span class="label">{{
                     $t("session.settings_page.edit_alias_button")
                   }}</span>

@@ -24,8 +24,8 @@
     </td> -->
     <td>
       <button @click="editProfile">
+        <ph-icon name="pencil"></ph-icon>
         <span class="label">Edit</span>
-        <span class="icon edit"></span>
       </button>
     </td>
   </tr>
