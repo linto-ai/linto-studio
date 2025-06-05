@@ -53,13 +53,10 @@
                 </button>
               </template>
             </FormInput>
-            <FormCheckbox
-              :field="fieldIsPublic"
-              v-model="fieldIsPublic.value"
-              :disabled="isActive"></FormCheckbox>
 
             <FormCheckbox
               v-if="enableWatermark"
+              switchDisplay
               :field="fieldDisplayWatermark"
               v-model="fieldDisplayWatermark.value">
               <template v-slot:content-after-label>
@@ -74,8 +71,38 @@
                   @click="showWatermarkSettings = true">
                   <span class="icon settings" />
                 </button>
+
+                <button
+                  class="only-icon transparent"
+                  :aria-label="
+                    $t('session.live_page.watermark_settings.unpin_button')
+                  "
+                  :title="
+                    $t('session.live_page.watermark_settings.unpin_button')
+                  "
+                  @click="togglePin"
+                  v-if="fieldWatermarkPinned.value">
+                  <span class="icon pin-on" />
+                </button>
+                <button
+                  class="only-icon transparent"
+                  :aria-label="
+                    $t('session.live_page.watermark_settings.pin_button')
+                  "
+                  :title="$t('session.live_page.watermark_settings.pin_button')"
+                  @click="togglePin"
+                  v-else>
+                  <span class="icon pin" />
+                </button>
               </template>
             </FormCheckbox>
+          </section>
+          <section class="flex col gap-medium">
+            <h2>{{ $t("session.settings_page.visibility_title") }}</h2>
+            <FormRadio
+              inline
+              :field="fieldSessionVisibility"
+              v-model="fieldSessionVisibility.value" />
           </section>
           <section>
             <h2 class="flex align-center gap-medium">
@@ -213,6 +240,8 @@ import SessionNotStarted from "@/components/SessionNotStarted.vue"
 import LabeledValue from "@/components/atoms/LabeledValue.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
 import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
+import FormRadio from "@/components/molecules/FormRadio.vue"
+
 import SessionChannelsTable from "@/components/SessionChannelsTable.vue"
 import AppointmentSelector from "@/components/AppointmentSelector.vue"
 import ModalForceDeleteSession from "@/components/ModalForceDeleteSession.vue"
@@ -230,13 +259,7 @@ export default {
   props: {},
   data() {
     return {
-      fields: [
-        "name",
-        "fieldIsPublic",
-        "fieldAppointment",
-        "fieldAutoStop",
-        "fieldAutoStart",
-      ],
+      fields: ["name", "fieldAppointment", "fieldAutoStop", "fieldAutoStart"],
       fieldPublicLink: {
         value: null,
         error: null,
@@ -244,11 +267,30 @@ export default {
         readOnly: true,
         label: this.$t("session.settings_page.publicLink_label"),
       },
-      fieldIsPublic: {
-        value: null,
+      fieldSessionVisibility: {
+        value: "public",
         error: null,
-        valid: false,
-        label: this.$t("session.settings_page.isPublic_label"),
+        valid: true,
+        options: [
+          {
+            name: "private",
+            label: this.$i18n.t(
+              "session.settings_page.visibility_private_label",
+            ),
+          },
+          {
+            name: "organization",
+            label: this.$i18n.t(
+              "session.settings_page.visibility_organization_label",
+            ),
+          },
+          {
+            name: "public",
+            label: this.$i18n.t(
+              "session.settings_page.visibility_public_label",
+            ),
+          },
+        ],
       },
       fieldDisplayWatermark: {
         value: null,
@@ -265,6 +307,12 @@ export default {
         error: null,
         valid: false,
         label: this.$t("session.settings_page.watermarkSettings_label"),
+      },
+      fieldWatermarkPinned: {
+        value: null,
+        error: null,
+        valid: false,
+        label: this.$t("session.settings_page.watermarkPinned_label"),
       },
       fieldAppointment: {
         ...EMPTY_FIELD,
@@ -300,15 +348,8 @@ export default {
   created() {},
   computed: {
     hasChanged() {
-      const publicChanged = this.fieldIsPublic.value !== this.isPublic
-      const displayWatermarkChanged =
-        this.fieldDisplayWatermark.value !== this.displayWatermark
-      const watermarkContentChanged =
-        this.fieldWatermarkSettings.value.content !== this.watermarkContent
-      const watermarkFrequencyChanged =
-        this.fieldWatermarkSettings.value.frequency !== this.watermarkFrequency
-      const watermarkDurationChanged =
-        this.fieldWatermarkSettings.value.duration !== this.watermarkDuration
+      //const publicChanged = this.fieldIsPublic.value !== this.isPublic
+
       const autoStartChanged = this.fieldAutoStart.value !== this.autoStart
       const autoStopChanged = this.fieldAutoStop.value !== this.autoStop
       const startDateChanged = !isSameDateTimeWithoutSeconds(
@@ -322,11 +363,7 @@ export default {
       )
 
       return (
-        publicChanged ||
-        displayWatermarkChanged ||
-        watermarkContentChanged ||
-        watermarkFrequencyChanged ||
-        watermarkDurationChanged ||
+        //publicChanged ||
         autoStartChanged ||
         autoStopChanged ||
         startDateChanged ||
@@ -359,6 +396,26 @@ export default {
       },
       deep: true,
     },
+    "fieldDisplayWatermark.value": {
+      handler(value) {
+        if (value != this.displayWatermark) {
+          this.syncWatermarkSettings({
+            display: this.fieldDisplayWatermark.value,
+            frequency: this.fieldWatermarkSettings.value.frequency,
+            duration: this.fieldWatermarkSettings.value.duration,
+            content: this.fieldWatermarkSettings.value.content,
+            pinned: this.fieldWatermarkPinned.value,
+          })
+        }
+      },
+    },
+    "fieldSessionVisibility.value": {
+      handler(value) {
+        if (value != this.visibility) {
+          this.syncVisibility(this.fieldSessionVisibility.value)
+        }
+      },
+    },
   },
   methods: {
     onSessionUpdatePostProcess(newSession) {
@@ -377,10 +434,11 @@ export default {
         frequency: this.watermarkFrequency,
         duration: this.watermarkDuration,
       }
+      this.fieldWatermarkPinned.value = this.watermarkPinned
       this.fieldAutoStart.value = this.autoStart
       this.fieldAutoStop.value = this.autoStop
       this.fieldPublicLink.value = this.publicLink
-      this.fieldIsPublic.value = this.isPublic
+      this.fieldSessionVisibility.value = this.visibility
 
       this.fieldAppointment.value = [this.startTime, this.endTime]
       this.localChannels = structuredClone(this.session.channels)
@@ -425,7 +483,25 @@ export default {
       }, 2000)
     },
     closeWatermarkSettings() {
+      this.syncWatermarkSettings({
+        display: this.fieldDisplayWatermark.value,
+        frequency: this.fieldWatermarkSettings.value.frequency,
+        duration: this.fieldWatermarkSettings.value.duration,
+        content: this.fieldWatermarkSettings.value.content,
+        pinned: this.fieldWatermarkPinned.value,
+      })
       this.showWatermarkSettings = false
+    },
+    togglePin() {
+      this.fieldWatermarkPinned.value = !this.fieldWatermarkPinned.value
+      this.syncWatermarkSettings({
+        display: this.fieldDisplayWatermark.value,
+        frequency: this.fieldWatermarkSettings.value.frequency,
+        duration: this.fieldWatermarkSettings.value.duration,
+        content: this.fieldWatermarkSettings.value.content,
+        pinned: this.fieldWatermarkPinned.value,
+      })
+      this.session.meta["@watermark"].pinned = this.fieldWatermarkPinned.value
     },
     openWatermarkSettings() {
       this.showWatermarkSettings = true
@@ -454,6 +530,7 @@ export default {
               frequency: this.fieldWatermarkSettings.value.frequency,
               duration: this.fieldWatermarkSettings.value.duration,
               content: this.fieldWatermarkSettings.value.content,
+              pinned: this.fieldWatermarkPinned.value,
             },
           },
           scheduleOn: startDateTime,
@@ -499,6 +576,7 @@ export default {
     LabeledValue,
     FormInput,
     FormCheckbox,
+    FormRadio,
     SessionChannelsTable,
     AppointmentSelector,
     ModalForceDeleteSession,

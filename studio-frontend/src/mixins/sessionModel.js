@@ -87,6 +87,9 @@ export const sessionModelMixin = {
     isPublic() {
       return this?.session?.visibility === "public"
     },
+    visibility() {
+      return this?.session?.visibility ?? "private"
+    },
     sessionOrganizationId() {
       return this?.session?.organizationId
     },
@@ -100,10 +103,7 @@ export const sessionModelMixin = {
       return this?.session?.meta ?? {}
     },
     displayWatermark() {
-      return (
-        this?.session?.meta?.["@watermark"]?.display ??
-        getEnv("VUE_APP_ENABLE_WATERMARK") === "true"
-      )
+      return this?.session?.meta?.["@watermark"]?.display ?? false
     },
     watermarkContent() {
       return (

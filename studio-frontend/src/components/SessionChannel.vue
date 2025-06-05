@@ -127,22 +127,26 @@
 
     <!-- Subtitles -->
     <SessionSubtitle
-      v-if="displaySubtitles"
+      v-if="displaySubtitles && !isMobile"
       :previousTurns="previousTurns"
       :partialText="partialText"
       :finalText="finalText"
       :fontSize="fontSize"
       :key="fontSize"
-      :selectedTranslations="selectedTranslations"
       :watermarkFrequency="watermarkFrequency"
       :watermarkDuration="watermarkDuration"
       :watermarkContent="watermarkContent"
       :watermarkPinned="watermarkPinned"
       :displayWatermark="displayWatermark" />
     <SubtitleFullscreen
-      v-if="showSubtitlesFullscreen"
+      v-if="showSubtitlesFullscreen && isMobile"
       :partialText="partialText"
       :finalText="finalText"
+      :watermarkFrequency="watermarkFrequency"
+      :watermarkDuration="watermarkDuration"
+      :watermarkContent="watermarkContent"
+      :watermarkPinned="watermarkPinned"
+      :displayWatermark="displayWatermark"
       @close="closeSubtitleFullscreen" />
     <!-- <div
       class="session-content__subtitle"
@@ -319,6 +323,10 @@ export default {
         this.previousTurns.length > 0 ||
         this.partialText !== ""
       )
+    },
+    isMobile() {
+      // test mediaquery
+      return window.matchMedia("(max-width: 1100px)").matches
     },
   },
   watch: {

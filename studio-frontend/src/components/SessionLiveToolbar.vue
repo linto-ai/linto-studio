@@ -209,13 +209,17 @@ export default {
       this.showWatermarkSettings = false
     },
     togglePin() {
-      this.$emit("updateWatermarkSettings", {
-        frequency: this.watermarkFrequency,
-        duration: this.watermarkDuration,
-        text: this.watermarkContent,
-        pinned: !this.watermarkPinned,
-        display: this.displayWatermarkField.value,
-      })
+      this.$emit(
+        "updateWatermarkSettings",
+        {
+          frequency: this.watermarkFrequency,
+          duration: this.watermarkDuration,
+          text: this.watermarkContent,
+          pinned: !this.watermarkPinned,
+          display: this.displayWatermarkField.value,
+        },
+        true,
+      )
     },
     clearSubtitles() {
       bus.$emit("clear-session-subtitles")
@@ -273,22 +277,30 @@ export default {
       this.$emit("update:fontSize", value)
     },
     "displayWatermarkField.value"(value) {
-      this.$emit("updateWatermarkSettings", {
-        frequency: this.watermarkFrequency,
-        duration: this.watermarkDuration,
-        content: this.watermarkContent,
-        pinned: !this.watermarkPinned,
-        display: value,
-      })
+      this.$emit(
+        "updateWatermarkSettings",
+        {
+          frequency: this.watermarkFrequency,
+          duration: this.watermarkDuration,
+          content: this.watermarkContent,
+          pinned: !this.watermarkPinned,
+          display: value,
+        },
+        true,
+      )
     },
     "watermarkSettingsField.value"(value) {
-      this.$emit("updateWatermarkSettings", {
-        frequency: value.frequency,
-        duration: value.duration,
-        content: value.content,
-        pinned: this.watermarkPinned,
-        display: this.displayWatermarkField.value,
-      })
+      this.$emit(
+        "updateWatermarkSettings",
+        {
+          frequency: value.frequency,
+          duration: value.duration,
+          content: value.content,
+          pinned: this.watermarkPinned,
+          display: this.displayWatermarkField.value,
+        },
+        true,
+      )
     },
   },
   components: {
