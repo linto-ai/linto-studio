@@ -16,6 +16,7 @@
 <script>
 import { Fragment } from "vue-fragment"
 export default {
+  name: "Radio",
   props: {
     value: { type: [String, Object, Number], default: null },
     id: { type: String, default: "" },

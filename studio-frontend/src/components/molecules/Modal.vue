@@ -107,6 +107,7 @@ export default {
     disabledActionDelete: { type: Boolean, default: false },
     disabledActionCancel: { type: Boolean, default: false },
     disabledActionApply: { type: Boolean, default: false },
+    disabledClose: { type: Boolean, default: false },
   },
   data() {
     return {

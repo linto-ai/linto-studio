@@ -16,6 +16,7 @@
 <script>
 import { Fragment } from "vue-fragment"
 export default {
+  name: "Checkbox",
   props: {
     value: { type: [Boolean, Array], default: false },
     id: { type: String, default: "" },

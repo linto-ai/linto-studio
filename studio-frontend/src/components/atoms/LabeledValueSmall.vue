@@ -5,7 +5,8 @@
   </div>
 </template>
 <script>
-export default {
+export default {  
+  name: "LabeledValueSmall",
   props: {
     value: { required: false },
     label: { required: false },

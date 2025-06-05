@@ -4,8 +4,7 @@
         <div class="root block" @click="active = !active">
             <div class="btn head flex align-center gap-small">
                 <div class="flex flex1 align-center gap-small">
-                    <UserProfilePicture :hover="false" :user="userInfo"
-                        class="user-account-selector__profile-picture" />
+                    <Avatar :text="uname" :src="userAvatar" size="sm" :color="getColorFromText(UserName)" />
                     <span class="user-account-selector__name">{{ UserName }}</span>
                 </div>
                 <button class="btn sm only-icon">
@@ -76,8 +75,7 @@
         z-index: 1000;
         display: none;
         border-radius: 4px;
-        border: 2px solid var(--primary-color);
-        padding: 1em;
+        border: 2px solid var(--primary-hard);
         width: 100%;
         box-sizing: border-box;
         justify-content: flex-start;
@@ -103,6 +101,8 @@ import { bus } from "@/main.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 import { userName } from "@/tools/userName"
+import userAvatar from "@/tools/userAvatar"
+import { getColorFromText } from "@/tools/colors"
 
 import UserProfilePicture from "@/components/atoms/UserProfilePicture.vue"
 
@@ -126,6 +126,12 @@ export default {
         }),
         UserName() {
             return userName(this.userInfo)
+        },
+        uname() {
+            return this.UserName.length > 2 ? this.UserName.slice(0, 2) : this.UserName
+        },
+        userAvatar() {
+            return userAvatar(this.userInfo)
         },
         name() {
             // if (this.$route.name === "shared with me") {
@@ -185,6 +191,7 @@ export default {
         logout() {
             this.$store.dispatch("user/logout")
         },
+        getColorFromText,
     },
     components: {
         UserProfilePicture,

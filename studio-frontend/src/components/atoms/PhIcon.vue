@@ -5,6 +5,7 @@
     :weight="weight"
     :mirrored="mirrored"
     :class="['icon-svg', size, color, animation]"
+    :style="{ color: color }"
   />
   <span v-else class="icon-svg missing-icon" :class="[size, color]">?</span>
 </template>

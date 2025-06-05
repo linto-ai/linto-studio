@@ -16,6 +16,7 @@
 <script>
 import { Fragment } from "vue-fragment"
 export default {
+  name: "SwitchInput",
   props: {
     value: { type: [Boolean, Array], default: false },
     id: { type: String, default: "" },

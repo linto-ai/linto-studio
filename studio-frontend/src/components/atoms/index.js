@@ -1,3 +1,4 @@
+import Avatar from './Avatar.vue';
 import PhIcon from './PhIcon.vue';
 import ButtonPopover from './ButtonPopover.vue';
 import TimeDuration from './TimeDuration.vue';
@@ -17,6 +18,7 @@ import IsCloud from './IsCloud.vue';
 import Tag from './Tag.vue';
 
 const components = [
+  Avatar,
   PhIcon,
   ButtonPopover,
   TimeDuration,
@@ -45,7 +47,7 @@ export default {
       if (validateComponents(component)) {
         Vue.component(component.name, component);
       } else {
-        console.error(`Component ${component.name} is missing a name property`);
+        console.error(`Component ${JSON.stringify(component)} is missing a name property`);
       }
     });
   },

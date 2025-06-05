@@ -18,7 +18,8 @@
                 <input
                   type="checkbox"
                   @change="handleSelectAll"
-                  :checked="isSelectAll" />
+                  :checked="isSelectAll"
+                  :disabled="loading || medias.length === 0" />
                 <span v-if="selectedMedias.length > 0"
                   >{{ selectedMedias.length }} selected</span
                 >
@@ -207,7 +208,6 @@ export default {
       })
     },
     observeMediaItems() {
-      console.log("Setting up observers for", this.medias.length, "items")
       this.medias.forEach((_, index) => {
         const itemRef = this.$refs["mediaItem" + index]
         if (itemRef && itemRef[0].$el) {

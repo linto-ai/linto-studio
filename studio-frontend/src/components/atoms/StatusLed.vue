@@ -4,6 +4,7 @@
 </template>
 <script>
 export default {
+  name: "StatusLed",
   props: {
     on: { type: Boolean, default: false },
   },

@@ -407,6 +407,22 @@ li:last-child {
   margin-top: var(--xl-gap);
 }
 
+.color-white {
+  color: white;
+}
+
+.color-black {
+  color: black;
+}
+
+.white {
+  background-color: white;
+}
+
+.black {
+  background-color: black;
+}
+
 *[data-info] {
   position: relative;
   z-index: 2;

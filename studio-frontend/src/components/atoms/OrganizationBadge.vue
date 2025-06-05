@@ -6,6 +6,7 @@
 <script>
 import { bus } from "@/main.js"
 export default {
+  name: "OrganizationBadge",
   props: {
     organization: {
       type: Object,

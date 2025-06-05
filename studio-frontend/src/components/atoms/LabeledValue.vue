@@ -9,6 +9,7 @@
 </template>
 <script>
 export default {
+  name: "LabeledValue",
   props: {
     value: { required: false },
     label: { required: false },

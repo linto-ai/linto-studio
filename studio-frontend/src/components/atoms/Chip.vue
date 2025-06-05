@@ -7,6 +7,7 @@
 <script>
 import { Fragment } from "vue-fragment"
 export default {
+  name: "Chip",
   props: {
     value: { type: String, default: "" },
     removable: { type: Boolean, default: false },

@@ -40,6 +40,7 @@
 import { Fragment } from "vue-fragment"
 
 export default {
+    name: "ButtonPopover",
     components: { Fragment },
     data() {
         return {

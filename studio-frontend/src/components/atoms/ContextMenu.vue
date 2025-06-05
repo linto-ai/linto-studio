@@ -41,7 +41,8 @@ import { bus } from "@/main.js"
     </ContextMenu>
   </container>
 */
-export default {
+export default {  
+  name: "ContextMenu",
   props: {
     x: {
       type: Number,

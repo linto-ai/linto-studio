@@ -75,7 +75,6 @@ export default {
     shared: { type: Boolean, required: false, default: false },
   },
   data() {
-    console.log("f", this)
     return {
       conversations: [],
       loadingConversations: false,
@@ -270,20 +269,12 @@ export default {
 
       this.observer = new IntersectionObserver(
         (entries) => {
-          console.log(
-            "entries",
-            entries,
-            this.hasMoreItems,
-            this.loadingConversations,
-            this.isInitialLoad,
-          )
           if (
             entries[0].isIntersecting &&
             this.hasMoreItems &&
             !this.loadingConversations &&
             !this.isInitialLoad
           ) {
-            console.log("load more")
             this.handleLoadMore()
           }
         },

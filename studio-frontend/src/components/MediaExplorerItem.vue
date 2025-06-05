@@ -23,7 +23,7 @@
                         <TimeDuration :duration="duration" />
                     </span>
                     <span class="media-explorer-item__inline__infos__tags">
-                        tags
+                        <MediaExplorerItemTags :tags="media.tags" />
                     </span>
                     <span v-if="createdAt" class="media-explorer-item__inline__infos__dates">
                         {{ createdAt }}
@@ -51,6 +51,7 @@
 <script>
 import { mapMutations, mapGetters } from 'vuex'
 
+import MediaExplorerItemTags from './MediaExplorerItemTags.vue'
 import UserProfilePicture from './atoms/UserProfilePicture.vue'
 import TimeDuration from './atoms/TimeDuration.vue'
 import { userName } from "@/tools/userName"
@@ -62,7 +63,8 @@ export default {
     components: {
         PhStar,
         UserProfilePicture,
-        TimeDuration
+        TimeDuration,
+        MediaExplorerItemTags
     },
     props: {
         media: {

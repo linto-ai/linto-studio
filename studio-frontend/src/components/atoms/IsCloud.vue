@@ -15,7 +15,6 @@ export default {
     },
     computed: {
         isCloud() {
-            console.log(IS_MODE_CLOUD, getEnv("VUE_APP_MODE"))
             return IS_MODE_CLOUD
         }
     }

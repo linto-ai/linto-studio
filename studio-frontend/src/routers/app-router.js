@@ -506,15 +506,15 @@ let router = new Router({
       props: defaultProps,
       meta: { userPage: true },
     },
-    {
-      path: "/interface/:organizationId?/tags/settings",
-      name: "tags settings",
-      components: {
-        default: () => import("../views/ManageTags.vue"),
-        ...defaultComponents,
-      },
-      props: defaultProps,
-    },
+    // {
+    //   path: "/interface/:organizationId?/tags/settings",
+    //   name: "tags settings",
+    //   components: {
+    //     default: () => import("../views/ManageTags.vue"),
+    //     ...defaultComponents,
+    //   },
+    //   props: defaultProps,
+    // },
     {
       path: "*",
       name: "not_found_redirect",

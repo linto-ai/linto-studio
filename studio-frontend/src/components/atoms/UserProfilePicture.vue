@@ -11,6 +11,7 @@ import { userName } from "@/tools/userName.js"
 import userAvatar from "@/tools/userAvatar"
 
 export default {
+  name: "UserProfilePicture",
   props: {
     user: {
       type: Object,
