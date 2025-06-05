@@ -21,41 +21,52 @@ form-field[select-like] .form-value,
   height: 38.5px;
 
   &.error {
+    border-color: var(--red-chart);
   }
 
   &:focus,
   &:active {
+    border-color: var(--primary-color);
+    background-color: var(--background-primary);
+    color: var(--text-primary);
   }
 
   &[disabled] {
+    border-color: var(--neutral-60);
+    background-color: var(--neutral-20);
+    color: var(--neutral-60);
   }
 
+  &.full-width,
   &.fullwidth {
     width: 100%;
     max-width: none;
+    box-sizing: border-box;
   }
 }
 
-// .flex:not(.col) {
-//   input[type="text"],
-//   input[type="search"],
-//   input[type="number"],
-//   input[type="email"],
-//   input[type="password"],
-//   input[type="datetime-local"],
-//   input[type="date"],
-//   input[type="time"],
-//   select,
-//   textarea {
-//     flex-basis: 10rem !important;
-//   }
-// }
-
 textarea {
-  font-family: $mainFont;
+  font-family: var(--font-family);
   font: inherit;
   height: 6rem;
 }
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25em;
+
+  label,
+  .label {
+    font-weight: 600;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    font-size: var(--text-xs);
+  }
+}
+
+
+/** specific styles for forms below: */
 
 .collab-input {
   position: relative;

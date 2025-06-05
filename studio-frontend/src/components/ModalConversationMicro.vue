@@ -1,7 +1,7 @@
 <template>
     <Modal
       v-bind="$attrs"
-      v-model="value"
+      v-model="isModalOpen"
       title="Microphone"
       subtitle="Connectez votre microphone…"
       size="lg"
@@ -27,6 +27,16 @@
     },
     props: {
       value: { type: Boolean, default: false },
+    },
+    computed: {
+      isModalOpen: {
+        get() {
+          return this.value
+        },
+        set(value) {
+          this.$emit("input", value)
+        },
+      },
     },
   }
   </script>

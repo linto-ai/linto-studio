@@ -63,13 +63,16 @@ button,
   }
 
   /* Disabled state */
-  &[disabled] {
+  &[disabled],
+  &.disabled {
     cursor: not-allowed;
-    background-color: var(--background-disabled);
-    border: var(--border-button);
-    color: var(--text-disabled);
-    .icon {
-      background-color: var(--text-disabled);
+    background-color: var(--neutral-10) !important;
+    border: 1px solid var(--neutral-40) !important;
+    color: var(--neutral-70) !important;
+
+    .icon,
+    svg {
+      fill: var(--neutral-60) !important;
     }
     &:hover {
       cursor: not-allowed;

@@ -6,7 +6,8 @@
     subtitle="Fichiers audio ou vidéo, depuis votre ordinateur ou une URL…"
     size="lg"
     @on-confirm="$emit('on-confirm')"
-    @on-cancel="$emit('on-cancel')">
+    @on-cancel="$emit('on-cancel')"
+    @on-close="$emit('on-close')">
     <div class="flex row gap-small">
       <div class="upload-container">
         <input type="file" class="upload-input" />
@@ -22,17 +23,20 @@
       subtitle="Entrez l'URL de votre fichier audio ou vidéo…"
       size="sm"
       is-form
+      :disabled-action-apply="!url"
       @on-confirm="handleLoadUrl"
-      @on-cancel="isModalOpenUrl = false">
+      @on-cancel="isModalOpenUrl = false"
+      @close="url = ''">
       <div>
         <p class="notice text-sm">
           <ph-icon name="info" size="sm"></ph-icon>
           <span>
-            Vous pouvez également utiliser l'URL d'un fichier audio ou vidéo hébergé sur un site web.
+            Vous pouvez également utiliser l'URL d'un fichier audio ou vidéo hébergé sur un site web tel que YouTube, SoundCloud, etc.
           </span>
         </p>
-        <div class="flex1">
-          <input type="text" placeholder="URL" v-model="url" />
+        <div class="input-group">
+          <label for="field-url">URL du fichier</label>
+          <input type="text" placeholder="URL" v-model="url" class="full-width" id="field-url" />
         </div>
       </div>
     </Modal>

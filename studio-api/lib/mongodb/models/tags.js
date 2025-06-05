@@ -18,6 +18,26 @@ class TagModel extends MongoModel {
     super("tags") // define name of 'users' collection elsewhere?
   }
 
+  async createDefaultTags(organizationId, categoryId) {
+    try {
+      const tags = [
+        {
+          name: "urgent",
+          organizationId: organizationId,
+          categoryId: categoryId,
+        },
+        {
+          name: "draft",
+          organizationId: organizationId,
+          categoryId: categoryId,
+        },
+      ]
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   async create(payload) {
     try {
       const dateTime = moment().format()

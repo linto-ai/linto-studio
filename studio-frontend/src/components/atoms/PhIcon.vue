@@ -18,7 +18,7 @@ export default {
     name: { type: String, required: true }, // ex: 'House', 'User', etc.
     size: { type: String, default: 'sm' }, // xs, sm, md, lg, xl
     color: { type: String, default: '' }, // primary, secondary, etc.
-    weight: { type: String, default: 'regular' }, // thin, light, regular, bold, fill, duotone
+    weight: { type: String, default: 'fill' }, // thin, light, regular, bold, fill, duotone
     mirrored: { type: Boolean, default: false },
     animation: { type: String, default: '' } // spin, pulse
   },
@@ -39,11 +39,11 @@ export default {
   justify-content: center;
   vertical-align: middle;
 
-  &.pulse {
+  &.pulse :deep(svg) {
     animation: pulse 2s infinite;
   }
 
-  &.spin {
+  &.spin :deep(svg) {
     animation: spin 2s infinite;
   }
 

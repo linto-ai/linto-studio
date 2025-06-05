@@ -10,7 +10,12 @@
 <script>
 import EMPTY_FIELD from "@/const/emptyField.js"
 import Droparea from "@/components/molecules/Droparea.vue"
+
 export default {
+  name: "ConversationCreateUpload",
+  components: {
+    Droparea,
+  },
   props: {
     disabled: {
       type: Boolean,
@@ -47,9 +52,6 @@ export default {
         this.$emit("input", filesArray)
       }
     },
-  },
-  components: {
-    Droparea,
   },
 }
 </script>

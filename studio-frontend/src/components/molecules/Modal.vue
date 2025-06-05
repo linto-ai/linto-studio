@@ -1,5 +1,5 @@
 <template>
-  <div class="modal-wrapper" :class="{ open: value }">
+  <div class="modal-wrapper" :class="{ open: isModalOpen }">
     <div
       class="modal-overlay"
       v-if="overlay"
@@ -9,7 +9,7 @@
       aria-labelledby="modal-title"
       class="modal flex col"
       :is="modalComponentType"
-      :class="{ [`${size}`]: true, [customModalClass]: true }"
+      :class="{ [`${size}`]: true, [customModalClass]: true, loading }"
       @submit.prevent="isForm ? apply() : null">
       <div class="modal-header flex row align-center justify-between">
         <div class="flex col">
@@ -19,18 +19,27 @@
         <template v-if="withClose">
           <button
             class="btn outline only-icon sm"
+            :class="[customClassClose, { disabled: disabledClose }]"
             @click="close()"
             type="button">
             <ph-icon name="x" size="sm"></ph-icon>
           </button>
         </template>
       </div>
+      <div v-if="loading" class="modal-loading">
+        <ph-icon name="spinner" size="lg" animation="spin" color="primary"></ph-icon>
+      </div>
       <div class="modal-body flex col flex1">
         <slot></slot>
       </div>
       <div class="modal-footer flex row gap-small" v-if="withActions">
         <template v-if="withActionDelete">
-          <button class="btn tertiary" @click="deleteHandler()" type="button">
+          <button
+            class="btn tertiary"
+            :class="[customClassActionDelete, { disabled: disabledActionDelete || disabledActions }]"
+            :disabled="disabledActionDelete || disabledActions"
+            @click="deleteHandler()"
+            type="button">
             <span class="label">{{
               textActionDelete || $t("modal.delete")
             }}</span>
@@ -41,6 +50,8 @@
           <template v-if="withActionCancel">
             <button
               class="btn secondary outline"
+              :class="[customClassActionCancel, { disabled: disabledActionCancel || disabledActions }]"
+              :disabled="disabledActionCancel || disabledActions"
               @click="close()"
               type="button">
               <span class="label">{{
@@ -51,7 +62,8 @@
           <template v-if="withActionApply">
             <button
               class="btn primary"
-              :class="customClass"
+              :class="[customClassActionApply, { disabled: disabledActionApply || disabledActions }]"
+              :disabled="disabledActionApply || disabledActions"
               @click="apply"
               type="submit">
               <ph-icon name="check"></ph-icon>
@@ -70,6 +82,7 @@
 export default {
   name: "Modal",
   props: {
+    loading: { type: Boolean, default: false },
     title: { type: String, required: true },
     subtitle: { type: String, required: false },
     withActions: { type: Boolean, default: true },
@@ -86,6 +99,14 @@ export default {
     textActionApply: { type: String, default: "Apply" },
     textActionCancel: { type: String, default: "Cancel" },
     textActionDelete: { type: String, default: "Delete" },
+    customClassClose: { type: String, default: "" },
+    customClassActionApply: { type: String, default: "" },
+    customClassActionCancel: { type: String, default: "" },
+    customClassActionDelete: { type: String, default: "" },
+    disabledActions: { type: Boolean, default: false },
+    disabledActionDelete: { type: Boolean, default: false },
+    disabledActionCancel: { type: Boolean, default: false },
+    disabledActionApply: { type: Boolean, default: false },
   },
   data() {
     return {
@@ -104,24 +125,35 @@ export default {
         primary: true,
       }
     },
+    isModalOpen: {
+      get() {
+        return this.value
+      },
+      set(value) {
+        this.$emit("input", value)
+      },
+    },
     modalComponentType() {
       return this.isForm ? "form" : "div"
     },
   },
   methods: {
     close(e) {
-      this.$emit("on-cancel", e)
-      this.$emit("input", false)
+      this.$emit("on-close", e)
+      this.$emit("close", e);
+      this.isModalOpen = false
       e?.preventDefault()
     },
     apply(e) {
       this.$emit("on-confirm", e)
-      this.$emit("input", false)
+      this.$emit("confirm", e);
+      this.close(e)
       e?.preventDefault()
     },
     deleteHandler(e) {
       this.$emit("on-delete", e)
-      this.$emit("input", false)
+      this.$emit("delete", e);
+      this.close(e)
       e?.preventDefault()
     },
   },
@@ -165,6 +197,56 @@ export default {
   z-index: 991;
   border: 1px solid var(--primary-soft);
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+
+  &.loading {
+    position: relative;
+
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+      filter: blur(1px);
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--background-secondary);
+      opacity: 0.5;
+      z-index: 10;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--background-secondary);
+      opacity: 0.5;
+      z-index: 11;
+    }
+  }
+
+  .modal-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--background-secondary);
+    border-radius: 4px;
+    padding: 1rem;
+    box-shadow: var(--shadow-block);
+    border: 1px solid var(--primary-hard);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 12;
+  }
 
   &.fullscreen {
     width: 100%;
