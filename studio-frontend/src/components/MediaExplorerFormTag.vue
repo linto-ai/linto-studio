@@ -1,28 +1,46 @@
 <template>
-  <Modal title="Créer un tag" isForm @submit="onSubmit" :loading="loading" :overlay="false" :overlayClose="false">
+  <Modal title="Créer un tag" isForm @submit="onSubmit" :loading="loading">
     <template #trigger="{ open }">
       <slot name="trigger" :open="open"></slot>
     </template>
     <template #content>
       <div class="media-explorer-form-tag__content">
         <p>
-            Les tags vous permettent de créer des collections de médias. Demain ils seront utiles pour automatiser des actions.
+          Les tags vous permettent de créer des collections de médias. Demain
+          ils seront utiles pour automatiser des actions.
         </p>
         <div class="input-group">
           <label for="tag-name">Attributs du tag</label>
           <span class="input-item">
-            <Popover ref="emojiPopover" position="bottom">
+            <Popover position="bottom">
               <template #trigger>
-                <span class="emoji-popover-trigger">
-                  {{ selectedEmoji ? selectedEmoji.native : '?' }}
+                <span
+                  class="emoji-popover-trigger"
+                  @click="toggleEmojiPopover"
+                  ref="emojiTrigger">
+                  {{ selectedEmoji ? selectedEmoji.native : "🙂" }}
                 </span>
               </template>
               <template #content>
-                <Picker @select="onSelectEmoji" :showPreview="false" :showSkinTones="false" :title="'Choisir un emoji'" :emoji="selectedEmoji ? selectedEmoji.id : 'smile'" @click.stop />
+                <Picker
+                  @select="onSelectEmoji"
+                  :showPreview="false"
+                  :showSkinTones="false"
+                  :title="'Choisir un emoji'"
+                  :emoji="selectedEmoji ? selectedEmoji.id : 'smile'"
+                  @click.stop />
               </template>
             </Popover>
-            <input type="color" placeholder="orange" class="input-item__prefix" v-model="color" />
-            <input type="text" placeholder="Tag name" class="input-item__input" v-model="name" />
+            <input
+              type="color"
+              placeholder="orange"
+              class="input-item__prefix"
+              v-model="color" />
+            <input
+              type="text"
+              placeholder="Tag name"
+              class="input-item__input"
+              v-model="name" />
           </span>
         </div>
       </div>
@@ -32,55 +50,59 @@
 
 <script>
 import Modal from "@/components/molecules/Modal.vue"
-import { Picker } from 'emoji-mart-vue'
-import 'emoji-mart-vue/css/emoji-mart.css'
+import Popover from "@/components/atoms/Popover.vue"
+import { Picker } from "emoji-mart-vue"
+import "emoji-mart-vue/css/emoji-mart.css"
 
 export default {
-    name: "MediaExplorerFormTag",
-    components: {
-        Modal,
-        Picker,
+  name: "MediaExplorerFormTag",
+  components: {
+    Modal,
+    Picker,
+    Popover,
+  },
+  props: {
+    loading: {
+      type: Boolean,
+      default: false,
     },
-    props: {
-      loading: {
-        type: Boolean,
-        default: false,
-      },
+  },
+  data() {
+    return {
+      selectedEmoji: null,
+      name: "",
+      color: "#11977c",
+      emojiPopoverOpen: false,
+    }
+  },
+  methods: {
+    toggleEmojiPopover() {
+      this.emojiPopoverOpen = !this.emojiPopoverOpen
+      console.log("toggleEmojiPopover", this.emojiPopoverOpen)
     },
-    data() {
-      return {
-        selectedEmoji: null,
-        name: "",
-        color: "#11977c",
-      }
+    onSelectEmoji(emoji) {
+      this.selectedEmoji = emoji
+      this.emojiPopoverOpen = false
     },
-    methods: {
-      onSelectEmoji(emoji) {
-        console.log("onSelectEmoji", emoji)
-        this.selectedEmoji = emoji
-        if (this.$refs.emojiPopover) {
-          this.$refs.emojiPopover.closePopover()
-        }
-      },
-      onSubmit() {
-        this.$emit("submit", {
-          name: this.name,
-          color: this.color,
-          emoji: this.selectedEmoji?.unified || "",
-        })
-      },
+    onSubmit() {
+      this.$emit("submit", {
+        name: this.name,
+        color: this.color,
+        emoji: this.selectedEmoji?.unified || "",
+      })
     },
+  },
 }
 </script>
 
 <style lang="scss" scoped>
 .media-explorer-form-tag {
-    &__content {
-        text-align: left;
-        display: flex;
-        flex-direction: column;
-        gap: 0.25em;
-    }
+  &__content {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25em;
+  }
 }
 .emoji-popover-trigger {
   font-size: 2em;
@@ -104,27 +126,27 @@ export default {
 
 <style lang="scss">
 .input-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25em;
 }
 
 .input-group input[type="color"] {
-    width: 32px;
-    height: 32px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: var(--border-input);
+  background-color: transparent;
+  border-radius: 4px;
+  border: none;
+
+  &::-webkit-color-swatch-wrapper {
     padding: 0;
-    border: var(--border-input);
-    background-color: transparent;
+  }
+
+  &::-webkit-color-swatch {
+    border: 1px solid var(--neutral-90);
     border-radius: 4px;
-    border: none;
-
-    &::-webkit-color-swatch-wrapper {
-        padding: 0;
-    }
-
-    &::-webkit-color-swatch {
-        border: 1px solid var(--neutral-90);
-        border-radius: 4px;
-    }
+  }
 }
 </style>

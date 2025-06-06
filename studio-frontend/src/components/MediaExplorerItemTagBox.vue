@@ -55,8 +55,8 @@
       <ModalTagManagement>
         <template #trigger="{ open }">
           <button
-            @click="open"
-            class="tag-box__button outline primary xs with-icon">
+            class="tag-box__button outline primary xs with-icon"
+            @click="open">
             <ph-icon name="tags" weight="bold" />
             <span class="tag-box__button-text">Manage tags</span>
           </button>
@@ -155,7 +155,8 @@ export default {
 
 <style lang="scss" scoped>
 .tag-box {
-  width: 260px;
+  width: 320px;
+  max-width: 100%;
 
   hr {
     margin: 0.25em 0;
@@ -242,12 +243,12 @@ export default {
 .footer-flex {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 0.5em;
 }
 .tag-box__search-input {
   flex: 1 1 0;
   min-width: 0;
-  max-width: 120px;
   font-size: 0.95em;
   padding: 0.2em 0.5em;
   border-radius: 4px;

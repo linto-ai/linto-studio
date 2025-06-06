@@ -1,34 +1,35 @@
 <template>
   <div>
-    <div class="popover-wrapper" ref="wrapper">
-      <!-- Trigger slot: the element that will open the popover -->
-      <div
-        class="popover-trigger"
-        ref="trigger"
-        @click="handleTrigger('click', $event)"
-        @contextmenu.prevent="handleTrigger('contextmenu', $event)"
-        @mouseenter="handleTrigger('mouseenter', $event)"
-        @mouseleave="handleTrigger('mouseleave', $event)"
-      >
-        <slot name="trigger"></slot>
-      </div>
+    <div
+      class="popover-trigger"
+      ref="trigger"
+      v-on="triggerHandlers"
+      @mouseenter="onPopoverMouseEnter"
+      @mouseleave="onPopoverMouseLeave"
+    >
+      <slot name="trigger"></slot>
     </div>
     <portal to="body">
-      <div
-        v-if="isOpen"
-        class="popover-content"
-        :class="position"
-        ref="content"
-        :style="popoverStyle"
-      >
-        <slot name="content"></slot>
+      <div v-if="isOpen">
+        <div
+          class="popover-wrapper"
+          ref="wrapper"
+          :style="popoverStyle"
+          @mouseenter="onPopoverMouseEnter"
+          @mouseleave="onPopoverMouseLeave">
+          <div class="popover-content" :class="position" ref="content">
+            <slot name="content"></slot>
+          </div>
+        </div>
       </div>
-      <div v-if="isOpen && overlay" class="popover-overlay" ref="overlay"></div>
     </portal>
   </div>
 </template>
 
 <script>
+import popupManager from "@/tools/popupManager"
+import PopoverRenderer from "./PopoverRenderer.vue"
+
 export default {
   name: "Popover",
   props: {
@@ -48,104 +49,128 @@ export default {
       validator: (value) => ["click", "contextmenu", "hover"].includes(value),
     },
     /**
-     * If true, the popover follows the mouse position
-     */
-    trackMouse: {
-      type: Boolean,
-      default: false,
-    },
-    /**
      * Position of the popover when not tracking the mouse
      * Possible values: 'top', 'bottom', 'left', 'right'
      */
     position: {
       type: String,
-      default: "top",
-      validator: (value) => ["top", "bottom", "left", "right"].includes(value),
+      default: "bottom",
+      validator: (value) =>
+        ["top", "bottom", "left", "right"].includes(value),
+    },
+    /**
+     * Use v-model to control the popover visibility
+     */
+    value: {
+      type: Boolean,
+      default: false,
+    },
+    triggerElement: {
+      type: HTMLElement,
+      default: null,
     },
   },
   data() {
     return {
-      isOpen: false, // Controls popover visibility
-      mouseInside: false, // For hover logic
-      popoverCoords: { top: 0, left: 0 }, // Coordinates for fixed position
-      popoverWidth: null, // Optionally set width
-    };
+      isOpen: false,
+      mouseInside: false,
+      popoverCoords: { top: 0, left: 0 },
+    }
   },
-  computed: {
-    popoverStyle() {
-      if (!this.isOpen) return {}
-      const style = {
-        position: 'fixed',
-        zIndex: 3000,
-        minWidth: this.popoverWidth ? this.popoverWidth + 'px' : undefined,
-        left: this.popoverCoords.left + 'px',
-        top: this.popoverCoords.top + 'px',
-      }
-      return style
+  watch: {
+    value: {
+      handler(newVal) {
+        if (newVal !== this.isOpen) {
+          this.toggle(newVal)
+        }
+      },
+      immediate: true,
     },
-  },
-  methods: {
-    handleTrigger(type, event) {
-      event.stopPropagation()
-      if (this.trigger === "click" && type === "click") {
-        console.log("click")
-        this.togglePopover(event)
-      } else if (this.trigger === "contextmenu" && type === "contextmenu") {
-        console.log("contextmenu")
-        this.togglePopover(event)
-      } else if (this.trigger === "hover") {
-        if (type === "mouseenter") {
-          this.openPopover(event)
-        } else if (type === "mouseleave") {
-          // Delay to allow moving to popover content
-          setTimeout(() => {
-            if (!this.mouseInside) this.closePopover()
-          }, 150)
+    isOpen(isOpen) {
+      console.log(`[Popover.vue _uid:${this._uid}] isOpen watcher fired. New state:`, isOpen);
+      if (isOpen) {
+        popupManager.register({
+          id: this._uid,
+          controller: this,
+          component: PopoverRenderer,
+          props: {
+            ...this.$props,
+            popoverCoords: this.popoverCoords,
+          },
+          slots: {
+            default: this.$scopedSlots.content
+              ? this.$scopedSlots.content()
+              : this.$slots.default || [],
+          },
+          triggerEl: this.triggerElement || this.$refs.trigger,
+        });
+
+        this.$nextTick(() => {
+          this.updatePopoverPosition();
+        });
+
+        window.addEventListener("resize", this.updatePopoverPosition, { passive: true });
+        window.addEventListener("scroll", this.updatePopoverPosition, true);
+      } else {
+        popupManager.unregister(this);
+        window.removeEventListener("resize", this.updatePopoverPosition);
+        window.removeEventListener("scroll", this.updatePopoverPosition, true);
+      }
+    },
+    popoverCoords() {
+      if (this.isOpen) {
+        const popup = popupManager.stack.find(p => p.id === this._uid)
+        if (popup) {
+          popup.props.popoverCoords = this.popoverCoords
         }
       }
     },
-    openPopover(event) {
-      this.isOpen = true
-      this.$nextTick(() => {
-        this.$nextTick(() => {
-          this.updatePopoverPosition(event)
-        })
-      })
-      document.addEventListener("mousedown", this.handleClickOutside)
-      document.addEventListener("keydown", this.handleKeydown)
-      window.addEventListener("resize", this.updatePopoverPosition)
-      window.addEventListener("scroll", this.updatePopoverPosition, true)
+  },
+  computed: {
+    triggerHandlers() {
+      const handlers = {}
+      if (this.trigger === "click") {
+        handlers.click = this.handleClick
+      } else if (this.trigger === "contextmenu") {
+        handlers.contextmenu = this.handleContextmenu
+      } else if (this.trigger === "hover") {
+        handlers.mouseenter = this.handleMouseenter
+        handlers.mouseleave = this.handleMouseleave
+      }
+      return handlers
     },
-    closePopover() {
-      console.log("closePopover")
-      this.isOpen = false
-      document.removeEventListener("mousedown", this.handleClickOutside)
-      document.removeEventListener("keydown", this.handleKeydown)
-      window.removeEventListener("resize", this.updatePopoverPosition)
-      window.removeEventListener("scroll", this.updatePopoverPosition, true)
-    },
-    togglePopover(event) {
-      if (this.isOpen) {
-        this.closePopover()
-      } else {
-        this.openPopover(event)
+    popoverStyle() {
+      return {
+        position: "fixed",
+        left: `${this.popoverCoords.left}px`,
+        top: `${this.popoverCoords.top}px`,
       }
     },
-    handleClickOutside(event) {
-      const wrapper = this.$refs.wrapper;
-      const content = this.$refs.content;
-      if (
-        (wrapper && wrapper.contains(event.target)) ||
-        (content && content.contains(event.target))
-      ) {
-        return; // Do nothing if the click is inside the popover or the trigger
-      }
-      this.closePopover();
+  },
+  methods: {
+    toggle(newState) {
+      if (this.isOpen === newState) return;
+      this.isOpen = newState;
+      this.$emit("input", this.isOpen);
+      this.mouseInside = false;
+      this.handleMouseleave(); // Re-check if we should close
     },
-    handleKeydown(event) {
-      if (event.key === "Escape") {
-        this.closePopover()
+    handleClick(event) {
+      event.preventDefault()
+      this.toggle(!this.isOpen)
+    },
+    handleContextmenu(event) {
+      event.preventDefault()
+      this.toggle(!this.isOpen)
+    },
+    handleMouseenter() {
+      if (this.trigger === 'hover') this.toggle(true)
+    },
+    handleMouseleave() {
+      if (this.trigger === 'hover') {
+        setTimeout(() => {
+          if (!this.mouseInside) this.toggle(false)
+        }, 150)
       }
     },
     onPopoverMouseEnter() {
@@ -153,99 +178,85 @@ export default {
     },
     onPopoverMouseLeave() {
       this.mouseInside = false
-      if (this.trigger === "hover") {
-        setTimeout(() => {
-          if (!this.mouseInside) this.closePopover()
-        }, 150)
-      }
+      this.handleMouseleave()
     },
-    updatePopoverPosition(event) {
-      // Get trigger element position
-      const trigger = this.$refs.trigger
-      const content = this.$refs.content
-      if (!trigger || !content) return
-      const rect = trigger.getBoundingClientRect()
-      const popoverRect = content.getBoundingClientRect()
-      let top = 0, left = 0
-      // Calculate position based on prop
+    closeOnClickOutside() {
+      this.toggle(false);
+    },
+    closeOnEscape() {
+      this.toggle(false)
+    },
+    updatePopoverPosition() {
+      if (!this.isOpen) return;
+      const trigger = this.$refs.trigger;
+      if (!trigger) return;
+
+      const popup = popupManager.stack.find(p => p.id === this._uid);
+      let popoverRect = { width: 0, height: 0 };
+
+      if (popup && popup.rendererInstance && popup.rendererInstance.$refs.content) {
+        popoverRect = popup.rendererInstance.$refs.content.getBoundingClientRect();
+      }
+
+      const rect = trigger.getBoundingClientRect();
+      const { innerWidth: viewportWidth, innerHeight: viewportHeight } = window;
+      let top = 0, left = 0;
+
       switch (this.position) {
-        case 'top':
-          top = rect.top - popoverRect.height
-          left = rect.left + rect.width / 2 - popoverRect.width / 2
-          break
-        case 'bottom':
-          top = rect.bottom
-          left = rect.left + rect.width / 2 - popoverRect.width / 2
-          break
-        case 'left':
-          top = rect.top + rect.height / 2 - popoverRect.height / 2
-          left = rect.left - popoverRect.width
-          break
-        case 'right':
-          top = rect.top + rect.height / 2 - popoverRect.height / 2
-          left = rect.right
-          break
-        default:
-          top = rect.bottom
-          left = rect.left
+        case "top":
+          top = rect.top - popoverRect.height;
+          left = rect.left + rect.width / 2 - popoverRect.width / 2;
+          break;
+        case "bottom":
+          top = rect.bottom;
+          left = rect.left + rect.width / 2 - popoverRect.width / 2;
+          break;
+        case "left":
+          top = rect.top + rect.height / 2 - popoverRect.height / 2;
+          left = rect.left - popoverRect.width;
+          break;
+        case "right":
+          top = rect.top + rect.height / 2 - popoverRect.height / 2;
+          left = rect.right;
+          break;
       }
-      // Prevent overflow (optional: clamp to viewport)
-      top = Math.max(0, top)
-      left = Math.max(0, left)
-      this.popoverCoords = { top, left }
-      // Optionally set minWidth to match trigger
-      this.popoverWidth = rect.width
+
+      const margin = 8;
+      left = Math.max(margin, Math.min(left, viewportWidth - popoverRect.width - margin));
+      top = Math.max(margin, Math.min(top, viewportHeight - popoverRect.height - margin));
+
+      const newCoords = { top: Math.round(top), left: Math.round(left) };
+      if (this.popoverCoords.top !== newCoords.top || this.popoverCoords.left !== newCoords.left) {
+        this.popoverCoords = newCoords;
+      }
     },
-  },
-  mounted() {
-    // For hover: track mouse over popover content
-    if (this.trigger === "hover") {
-      this.$nextTick(() => {
-        const content = this.$refs.content
-        if (content) {
-          content.addEventListener("mouseenter", this.onPopoverMouseEnter)
-          content.addEventListener("mouseleave", this.onPopoverMouseLeave)
-        }
-      })
-    }
   },
   beforeDestroy() {
-    document.removeEventListener("mousedown", this.handleClickOutside)
-    document.removeEventListener("keydown", this.handleKeydown)
-    window.removeEventListener("resize", this.updatePopoverPosition)
-    window.removeEventListener("scroll", this.updatePopoverPosition, true)
-    if (this.trigger === "hover") {
-      const content = this.$refs.content
-      if (content) {
-        content.removeEventListener("mouseenter", this.onPopoverMouseEnter)
-        content.removeEventListener("mouseleave", this.onPopoverMouseLeave)
-      }
-    }
+    this.toggle(false)
   },
 }
 </script>
 
 <style lang="scss">
-.popover-wrapper {
-  display: inline-block;
-  position: relative;
-}
 .popover-trigger {
   display: inline-block;
 }
+
+.popover-wrapper {
+  position: absolute; /* Will be positioned by 'top' and 'left' from style */
+}
+
 .popover-content {
-  position: fixed;
-  z-index: 3000;
-  background: white;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.2);
-  background-color: var(--neutral-10);
+  background: var(--neutral-10);
+  border: 1px solid var(--primary-color);
   border-radius: 6px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
   min-width: 120px;
   max-width: 90vw;
   max-height: 90vh;
   overflow: auto;
-  border: 1px solid var(--primary-color);
 }
+
 .popover-overlay {
   position: fixed;
   top: 0;
@@ -253,7 +264,6 @@ export default {
   width: 100vw;
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.1);
-  z-index: 2999;
   backdrop-filter: blur(0.5px);
 }
 </style>

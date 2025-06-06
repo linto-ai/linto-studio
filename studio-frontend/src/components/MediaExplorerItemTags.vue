@@ -4,20 +4,24 @@
     :class="{ 'media-explorer-item-tags--empty': mediatags.length === 0 }"
     @click.stop>
     <span v-if="mediatags.length > 0" class="media-explorer-item-tags__list">
-      <span
-        class="tag"
-        v-for="tag in mediatags"
-        :key="tag._id"
-        :style="{ backgroundColor: getTagColor(tag) }"
-        :data-info="tag.name"
-        @mouseenter.prevent
-        @mouseleave.prevent
-        @click.prevent="(event) => handleTagClick(event, tag)">
-        <span class="tag__name">{{ displayIfEmoji(tag) }}</span>
-        <span class="tag__delete">
-          <ph-icon name="x" color="var(--neutral-80)" size="12" weight="bold" />
+      <Tooltip v-for="tag in mediatags" :emoji="tag.emoji" :text="getTagTooltip(tag)" position="bottom" :key="tag._id" :background-color="getTagColor(tag)">
+        <span
+          class="tag"
+          :style="{ backgroundColor: getTagColor(tag) }"
+          :data-info="tag.name"
+          @mouseenter.prevent
+          @mouseleave.prevent
+          @click.prevent="(event) => handleTagClick(event, tag)">
+          <span class="tag__name">{{ displayIfEmoji(tag) }}</span>
+          <span class="tag__delete">
+            <ph-icon
+              name="x"
+              color="var(--neutral-80)"
+              size="12"
+              weight="bold" />
+          </span>
         </span>
-      </span>
+      </Tooltip>
     </span>
     <span class="media-explorer-item-tags__actions">
       <!-- Popover for add tag button -->
@@ -32,18 +36,9 @@
         </template>
         <template #content>
           <!-- Tag selector popover content -->
-          <MediaExplorerItemTagBox
-            :media-id="mediaId" />
+          <MediaExplorerItemTagBox :media-id="mediaId" />
         </template>
       </Popover>
-      <span
-        v-if="hiddenCount > 0"
-        class="tag tag--more"
-        :data-info="hiddenTagsTooltip"
-        @mouseenter.prevent
-        @mouseleave.prevent>
-        >+{{ hiddenCount }}</span
-      >
     </span>
   </span>
 </template>
@@ -62,7 +57,7 @@ export default {
   props: {
     maxVisible: {
       type: Number,
-      default: 5,
+      default: 3,
     },
     mediaId: {
       type: String,
@@ -92,7 +87,9 @@ export default {
     },
     hiddenTags() {
       // Tags not shown
-      return this.showAllTags ? this.mediatags : this.mediatags.slice(this.maxVisible)
+      return this.showAllTags
+        ? this.mediatags
+        : this.mediatags.slice(this.maxVisible)
     },
     hiddenTagsTooltip() {
       // Tooltip for the "+N" pill
@@ -110,11 +107,14 @@ export default {
     mediatags() {
       if (!this.media || !this.media.tags) return []
       return this.media.tags
-        .map(tagId => this.tags.find(t => t._id === tagId))
+        .map((tagId) => this.tags.find((t) => t._id === tagId))
         .filter(Boolean)
     },
   },
   methods: {
+    getTagTooltip(tag) {
+      return tag.name
+    },
     getTagColor(tag) {
       return tag.color || "var(--neutral-20)"
     },
@@ -137,7 +137,7 @@ export default {
       this.showAllTags = !this.showAllTags
     },
     displayIfEmoji(tag) {
-        return this.unifiedToEmoji(tag.emoji)
+      return this.unifiedToEmoji(tag.emoji)
       const value = tag.emoji ? tag.emoji : tag.name
       const emojiRegex = /([\u203C-\u3299]|[\uD83C-\uDBFF\uDC00-\uDFFF]+)/g
       return emojiRegex.test(value) ? "?" : "1" //this.unifiedToEmoji(value) : ""

@@ -1,8 +1,8 @@
 <template>
   <Modal
     size="md"
-    :title="$t('tagManagement.title')"
-    :subtitle="$t('tagManagement.subtitle')"
+    title="Gestion des tags"
+    subtitle="Gérez vos tags"
     :loading="loading">
     <template #trigger="{ open }">
       <slot name="trigger" :open="open" />
@@ -12,8 +12,8 @@
         <MediaExplorerFormTag @submit="onSubmit" :loading="loading">
           <template #trigger="{ open }">
             <button
-              @click="open"
-              class="tag-box__button outline primary xs with-icon">
+              class="tag-box__button outline primary xs with-icon"
+              @click.stop="open">
               <ph-icon name="plus" weight="bold" />
               <span class="tag-box__button-text">Create a new tag</span>
             </button>

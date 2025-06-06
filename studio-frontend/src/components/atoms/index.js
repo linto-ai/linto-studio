@@ -20,6 +20,8 @@ import Popover from './Popover.vue';
 import Box from './Box.vue';
 import ChipTag from './ChipTag.vue';
 import Alert from './Alert.vue';
+import Tooltip from './Tooltip.vue';
+import Emoji from './Emoji.vue';
 
 const components = [
   Avatar,
@@ -44,6 +46,8 @@ const components = [
   Box,
   ChipTag,
   Alert,
+  Tooltip,
+  Emoji,
 ];
 
 const validateComponents = c => c && typeof c.name === 'string' && c.name.length > 0
