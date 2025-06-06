@@ -1188,7 +1188,11 @@
       "label_private": "Private profile",
       "title": "Profile visibility"
     },
-    "profile_image_button": "Choose a file",
+    "profile_avatar": {
+      "profile_image_button": "Choose a file",
+      "update_picture_button": "Update picture"
+    },
+    "profile_image_reset_button": "Reset picture",
     "role_section": {
       "title": "Platform role",
       "submit_button": "Update role",
@@ -1201,7 +1205,7 @@
     "update_email_label": "Update email",
     "update_password_button": "Update password",
     "update_personal_information_button": "Update personal information",
-    "update_picture_button": "Update picture",
+
     "update_pswd_notif": "You recently requested a recovery link for your password. You might think about updating your password.",
     "update_pswd_notif_dismiss_btn": "Dismiss",
     "verify_email_notif": "Please verify your email address"

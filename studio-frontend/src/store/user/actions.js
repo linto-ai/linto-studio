@@ -1,5 +1,9 @@
 import { getCookie } from "@/tools/getCookie"
-import { apiGetPersonalUserInfo } from "@/api/user"
+import {
+  apiGetPersonalUserInfo,
+  apiUpdateUserInfo,
+  apiUpdateUserImage,
+} from "@/api/user"
 import {
   apiRemoveConversationFromFavorites,
   apiAddConversationToFavorites,
@@ -15,11 +19,12 @@ const actions = {
     const getUserInfos = await apiGetPersonalUserInfo()
 
     if (getUserInfos.status === "success") {
-      commit("setIsAuthenticated", true)
+      console.log("setuserinfo", getUserInfos.data)
       commit("setUserInfos", {
         token,
         ...getUserInfos.data,
       })
+      commit("setIsAuthenticated", true)
       commit("setFavoritesConversationIds", getUserInfos.data.favorites ?? [])
     }
 
@@ -28,7 +33,30 @@ const actions = {
   async login({ commit }, payload) {},
   async logout({ commit }) {},
   async register({ commit }, payload) {},
-  async updateUser({ commit }, payload) {},
+  async updateUser({ commit }, payload) {
+    const req = await apiUpdateUserInfo(payload, null)
+
+    if (req.status === "success") {
+      const newValue = {
+        ...this.state.user.userInfos,
+        ...payload,
+      }
+      commit("setUserInfos", newValue)
+    }
+
+    return req
+  },
+  async updateUserImage({ commit }, image) {
+    const req = await apiUpdateUserImage(image, null)
+    if (req.status === "success") {
+      const localImageUrl = URL.createObjectURL(image)
+      commit("setUserInfos", {
+        ...this.state.user.userInfos,
+        img: localImageUrl,
+      })
+    }
+    return req
+  },
   async toggleFavoriteConversation({ commit, getters, dispatch }, id) {
     const isFavorite = getters.isFavoriteConversation(id)
     if (isFavorite) {

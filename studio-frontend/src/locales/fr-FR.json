@@ -1192,7 +1192,12 @@
       "label_private": "Profil privé",
       "title": "Visibilité du profil"
     },
-    "profile_image_button": "Choisir une image",
+    "profile_avatar": {
+      "profile_image_button": "Choisir une image",
+      "update_picture_button": "Mettre à jour"
+    },
+
+    "profile_image_reset_button": "Réinitialiser l'image",
     "role_section": {
       "title": "Rôle d'administration",
       "submit_button": "Sauvegarder les rôles",
@@ -1203,9 +1208,8 @@
     "share_notification_label": "Recevez une notification par e-mail lorsqu'un média vous est partagé",
     "title": "Paramètres utilisateur",
     "update_email_label": "Mettre à jour l'email",
-    "update_password_button": "Mettre à jour",
+    "update_password_button": "Mettre à jour le mot de passe",
     "update_personal_information_button": "Mettre à jour les informations personnelles",
-    "update_picture_button": "Mettre à jour",
     "update_pswd_notif": "Vous avez récemment fait une demande suite à un mot de passe oublié, pensez à actualiser votre mot de passe.",
     "update_pswd_notif_dismiss_btn": "Ne plus afficher",
     "verify_email_notif": "Veuillez vérifier votre adresse email"

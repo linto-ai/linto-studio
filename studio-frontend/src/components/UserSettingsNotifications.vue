@@ -1,5 +1,5 @@
 <template>
-  <form @submit="updateNotifications">
+  <form @submit="updateNotifications" class="user-settings-notifications">
     <section>
       <h2>{{ $t("user_settings.notifications.title") }}</h2>
       <fieldset class="small-margin">
@@ -32,7 +32,7 @@
           v-model="fieldOrgaUpdate.value"></FormCheckbox>
       </fieldset>
 
-      <button type="submit" class="btn small-margin">
+      <button type="submit" class="btn small-margin primary">
         <span class="icon apply"></span>
         <span class="label">{{
           $t("user_settings.notifications.submit_button")
@@ -43,9 +43,11 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
+import { mapActions } from "vuex"
 import { bus } from "@/main.js"
+import { apiUpdateUserInfo } from "@/api/user"
+
 import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
-import { apiUpdateUserInfo } from "../api/user"
 export default {
   props: {
     userInfo: {
@@ -107,6 +109,7 @@ export default {
   },
   mounted() {},
   methods: {
+    ...mapActions("user", ["updateUser"]),
     async updateNotifications(event) {
       event?.preventDefault()
       const payload = {
@@ -125,14 +128,22 @@ export default {
           },
         },
       }
-
-      let req = await apiUpdateUserInfo(payload, {
-        timeout: 3000,
-        redirect: false,
-      })
-
+      let req = null
+      if (!this.isAdminPage) {
+        req = await this.updateUser(payload)
+      } else {
+        req = await apiAdminUpdateUser(this.userInfo._id, payload)
+      }
       if (req.status === "success") {
-        bus.$emit("user_settings_update", {})
+        bus.$emit("app_notif", {
+          status: "success",
+          message: this.$t("user_settings.notif_success"),
+        })
+      } else {
+        bus.$emit("app_notif", {
+          status: "error",
+          message: this.$t("user_settings.notif_error"),
+        })
       }
 
       return false
@@ -141,3 +152,13 @@ export default {
   components: { Fragment, FormCheckbox },
 }
 </script>
+
+<style lang="scss">
+.user-settings-notifications {
+  fieldset {
+    border: 1px solid #e0e0e0;
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+</style>

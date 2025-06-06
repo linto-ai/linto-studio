@@ -30,7 +30,7 @@
         }}</span>
         <button
           v-if="!userInfo.emailIsVerified && !emailSent"
-          class="btn yellow"
+          class="btn secondary"
           @click="sendVerificationEmail()"
           style="margin: 0 5px">
           <span
@@ -41,7 +41,7 @@
         </button>
       </div>
 
-      <button type="submit" class="btn">
+      <button type="submit" class="btn primary">
         <span class="icon apply"></span>
         <span class="label">{{
           $t("user_settings.update_personal_information_button")
@@ -53,10 +53,11 @@
 <script>
 import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
+import { mapActions } from "vuex"
 
 import { formsMixin } from "@/mixins/forms.js"
 
-import { apiUpdateUserInfo, apiSendVerificationLink } from "@/api/user.js"
+import { apiSendVerificationLink } from "@/api/user.js"
 import { apiAdminUpdateUser } from "@/api/admin.js"
 
 import { testName } from "@/tools/fields/testName"
@@ -111,6 +112,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions("user", ["updateUser"]),
     async update(event) {
       event?.preventDefault()
 
@@ -127,10 +129,7 @@ export default {
         let req = null
 
         if (!this.isAdminPage) {
-          req = await apiUpdateUserInfo(payload, {
-            timeout: 3000,
-            redirect: false,
-          })
+          req = await this.updateUser(payload)
 
           if (req.status === "success") {
             if (this.email.value !== this.userInfo.email) {

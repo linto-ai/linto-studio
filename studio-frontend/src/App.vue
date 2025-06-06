@@ -19,6 +19,7 @@
       </div>
       <AppSettingsModal />
       <portal-target name="body"></portal-target>
+      <AppNotif />
     </div>
   </div>
 </template>
@@ -28,6 +29,7 @@ import { mapActions, mapGetters } from "vuex"
 import { customDebug } from "@/tools/customDebug.js"
 import isAuthenticated from "@/tools/isAuthenticated.js"
 import AppSettingsModal from "@/components/AppSettingsModal.vue"
+import AppNotif from "@/components/AppNotif.vue"
 
 export default {
   props: {},
@@ -60,6 +62,7 @@ export default {
   },
   components: {
     AppSettingsModal,
+    AppNotif,
   },
 }
 </script>
