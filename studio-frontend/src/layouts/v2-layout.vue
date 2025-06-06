@@ -85,6 +85,7 @@ export default {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  flex: 1;
 }
 
 .v2-layout__content {

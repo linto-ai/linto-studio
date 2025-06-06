@@ -97,10 +97,11 @@
       <div class="turn-actions flex row">
         <button
           v-if="!lastTurn && canEdit"
-          class="centered-inline only-icon small black"
+          class="centered-inline only-icon sm"
           @click="mergeTurn"
           data-info="Fusionner les tours">
-          <span class="icon merge"></span>
+          <ph-icon name="link"></ph-icon>
+          <!-- <span class="icon merge"></span> -->
         </button>
       </div>
     </div>
