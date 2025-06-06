@@ -16,6 +16,10 @@ import StatusLed from './StatusLed.vue';
 import Badge from './Badge.vue';
 import IsCloud from './IsCloud.vue';
 import Tag from './Tag.vue';
+import Popover from './Popover.vue';
+import Box from './Box.vue';
+import ChipTag from './ChipTag.vue';
+import Alert from './Alert.vue';
 
 const components = [
   Avatar,
@@ -36,6 +40,10 @@ const components = [
   Badge,
   IsCloud,
   Tag,
+  Popover,
+  Box,
+  ChipTag,
+  Alert,
 ];
 
 const validateComponents = c => c && typeof c.name === 'string' && c.name.length > 0

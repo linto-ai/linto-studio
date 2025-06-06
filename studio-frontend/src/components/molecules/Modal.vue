@@ -1,80 +1,95 @@
 <template>
-  <div class="modal-wrapper" :class="{ open: isModalOpen }">
-    <div
-      class="modal-overlay"
-      v-if="overlay"
-      @click="overlayClose ? close() : null"></div>
-    <component
-      aria-modal="true"
-      aria-labelledby="modal-title"
-      class="modal flex col"
-      :is="modalComponentType"
-      :class="{ [`${size}`]: true, [customModalClass]: true, loading }"
-      @submit.prevent="isForm ? apply() : null">
-      <div class="modal-header flex row align-center justify-between">
-        <div class="flex col">
-          <span class="title flex1" id="modal-title">{{ title }}</span>
-          <span class="subtitle" v-if="subtitle">{{ subtitle }}</span>
-        </div>
-        <template v-if="withClose">
-          <button
-            class="btn outline only-icon sm"
-            :class="[customClassClose, { disabled: disabledClose }]"
-            @click="close()"
-            type="button">
-            <ph-icon name="x" size="sm"></ph-icon>
-          </button>
-        </template>
+  <div>
+    <template v-if="hasTrigger">
+      <div>
+        <slot name="trigger" :open="openModal">
+          <template v-if="$scopedSlots.trigger">
+            {{$scopedSlots.trigger({ open: openModal })}}
+          </template>
+        </slot>
       </div>
-      <div v-if="loading" class="modal-loading">
-        <ph-icon name="spinner" size="lg" animation="spin" color="primary"></ph-icon>
-      </div>
-      <div class="modal-body flex col flex1">
-        <slot></slot>
-      </div>
-      <div class="modal-footer flex row gap-small" v-if="withActions">
-        <template v-if="withActionDelete">
-          <button
-            class="btn tertiary"
-            :class="[customClassActionDelete, { disabled: disabledActionDelete || disabledActions }]"
-            :disabled="disabledActionDelete || disabledActions"
-            @click="deleteHandler()"
-            type="button">
-            <span class="label">{{
-              textActionDelete || $t("modal.delete")
-            }}</span>
-          </button>
-        </template>
-        <div class="flex1"></div>
-        <div class="button-group">
-          <template v-if="withActionCancel">
+    </template>
+    <div class="modal-wrapper" :class="{ open: isModalOpen }">
+      <div
+        class="modal-overlay"
+        v-if="overlay"
+        @click.stop="overlayClose ? close() : null"></div>
+      <component
+        aria-modal="true"
+        aria-labelledby="modal-title"
+        class="modal flex col"
+        :is="modalComponentType"
+        :class="{ [`${size}`]: true, [customModalClass]: true, loading }"
+        @submit.prevent="isForm ? apply() : null"
+        @click.stop>
+        <div class="modal-header flex row align-center justify-between">
+          <div class="flex col">
+            <span class="title flex1" id="modal-title">{{ title }}</span>
+            <span class="subtitle" v-if="subtitle">{{ subtitle }}</span>
+          </div>
+          <template v-if="withClose">
             <button
-              class="btn secondary outline"
-              :class="[customClassActionCancel, { disabled: disabledActionCancel || disabledActions }]"
-              :disabled="disabledActionCancel || disabledActions"
+              class="btn outline only-icon sm"
+              :class="[customClassClose, { disabled: disabledClose }]"
               @click="close()"
               type="button">
-              <span class="label">{{
-                textActionCancel || $t("modal.cancel")
-              }}</span>
-            </button>
-          </template>
-          <template v-if="withActionApply">
-            <button
-              class="btn primary"
-              :class="[customClassActionApply, { disabled: disabledActionApply || disabledActions }]"
-              :disabled="disabledActionApply || disabledActions"
-              @click="apply"
-              type="submit">
-              <ph-icon name="check"></ph-icon>
-              <span class="label">{{
-                textActionApply || $t("modal.apply")
-              }}</span>
+              <ph-icon name="x" size="sm"></ph-icon>
             </button>
           </template>
         </div>
-      </div>
-    </component>
+        <div v-if="loading" class="modal-loading">
+          <ph-icon name="spinner" size="lg" animation="spin" color="primary"></ph-icon>
+        </div>
+        <div class="modal-body flex col flex1">
+          <slot name="content">
+            <slot></slot>
+          </slot>
+        </div>
+        <div class="modal-footer flex row gap-small" v-if="withActions">
+          <template v-if="withActionDelete">
+            <button
+              class="btn tertiary"
+              :class="[customClassActionDelete, { disabled: disabledActionDelete || disabledActions }]"
+              :disabled="disabledActionDelete || disabledActions"
+              @click="deleteHandler()"
+              type="button">
+              <span class="label">{{
+                textActionDelete || $t("modal.delete")
+              }}</span>
+            </button>
+          </template>
+          <div class="flex1"></div>
+          <div class="button-group">
+            <template v-if="withActionCancel">
+              <button
+                class="btn neutral outline"
+                :class="[customClassActionCancel, colorActionCancel, { disabled: disabledActionCancel || disabledActions }]"
+                :disabled="disabledActionCancel || disabledActions"
+                @click="close()"
+                type="button">
+                <ph-icon v-if="iconActionCancel" :name="iconActionCancel"></ph-icon>
+                <span class="label">{{
+                  textActionCancel || $t("modal.cancel")
+                }}</span>
+              </button>
+            </template>
+            <template v-if="withActionApply">
+              <button
+                class="btn"
+                :class="[customClassActionApply, colorActionApply, { disabled: disabledActionApply || disabledActions }]"
+                :disabled="disabledActionApply || disabledActions"
+                @click="apply"
+                type="submit">
+                <ph-icon :name="iconActionApply"></ph-icon>
+                <span class="label">{{
+                  textActionApply || $t("modal.apply")
+                }}</span>
+              </button>
+            </template>
+          </div>
+        </div>
+      </component>
+    </div>
   </div>
 </template>
 
@@ -93,7 +108,7 @@ export default {
     customModalClass: { type: String, default: "" },
     isForm: { type: Boolean, default: false },
     size: { type: String, default: "md" },
-    value: { type: Boolean, default: false },
+    value: { type: Boolean, default: undefined },
     overlay: { type: Boolean, default: true },
     overlayClose: { type: Boolean, default: true },
     textActionApply: { type: String, default: "Apply" },
@@ -108,10 +123,17 @@ export default {
     disabledActionCancel: { type: Boolean, default: false },
     disabledActionApply: { type: Boolean, default: false },
     disabledClose: { type: Boolean, default: false },
+    iconActionApply: { type: String, default: "ph-icon-check" },
+    iconActionCancel: { type: String, default: "ph-icon-x" },
+    iconActionDelete: { type: String, default: "ph-icon-trash" },
+    colorActionApply: { type: String, default: "primary" },
+    colorActionCancel: { type: String, default: "var(--neutral-40)" },
+    colorActionDelete: { type: String, default: "var(--danger-color)" },
   },
   data() {
     return {
       isClickOutsideEnabled: false,
+      internalOpen: false,
     }
   },
   computed: {
@@ -128,24 +150,40 @@ export default {
     },
     isModalOpen: {
       get() {
+        if (typeof this.value === 'undefined') {
+          return this.internalOpen
+        }
         return this.value
       },
       set(value) {
-        this.$emit("input", value)
+        if (typeof this.value === 'undefined') {
+          this.internalOpen = value
+        } else {
+          this.$emit("input", value)
+        }
       },
     },
     modalComponentType() {
       return this.isForm ? "form" : "div"
     },
+    hasTrigger() {
+      return !!(this.$scopedSlots && this.$scopedSlots.trigger)
+    },
   },
   methods: {
+    openModal(e) {
+      this.isModalOpen = true
+      e?.preventDefault()
+    },
     close(e) {
+      console.log("close", e)
       this.$emit("on-close", e)
       this.$emit("close", e);
       this.isModalOpen = false
       e?.preventDefault()
     },
     apply(e) {
+      this.$emit("submit", e)
       this.$emit("on-confirm", e)
       this.$emit("confirm", e);
       this.close(e)
@@ -284,7 +322,6 @@ export default {
     font-weight: 600;
     color: var(--text-primary);
     overflow: hidden;
-    //white-space: nowrap;
     text-overflow: ellipsis;
   }
 

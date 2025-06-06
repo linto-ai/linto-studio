@@ -18,6 +18,7 @@
           :currentOrganization="currentOrganization" />
       </div>
       <AppSettingsModal />
+      <portal-target name="body"></portal-target>
     </div>
   </div>
 </template>

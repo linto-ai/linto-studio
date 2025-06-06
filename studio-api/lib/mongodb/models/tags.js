@@ -22,16 +22,35 @@ class TagModel extends MongoModel {
     try {
       const tags = [
         {
-          name: "urgent",
-          organizationId: organizationId,
-          categoryId: categoryId,
+          name: "red",
+          color: "red",
         },
         {
-          name: "draft",
-          organizationId: organizationId,
-          categoryId: categoryId,
+          name: "blue",
+          color: "blue",
         },
-      ]
+        {
+          name: "green",
+          color: "green",
+        },
+        {
+          name: "yellow",
+          color: "yellow",
+        },
+        {
+          name: "purple",
+          color: "purple",
+        },
+        {
+          name: "orange",
+          color: "orange",
+        },
+      ].map((tag) => ({
+        ...tag,
+        organizationId: this.getObjectId(organizationId),
+        categoryId: this.getObjectId(categoryId),
+      }))
+      return await this.mongoInsertMany(tags)
     } catch (error) {
       console.error(error)
       return error
@@ -41,10 +60,16 @@ class TagModel extends MongoModel {
   async create(payload) {
     try {
       const dateTime = moment().format()
-      payload.created = dateTime
-      payload.last_update = dateTime
 
-      return await this.mongoInsert(payload)
+      return await this.mongoInsert({
+        created: dateTime,
+        last_update: dateTime,
+        name: payload.name,
+        color: payload.color,
+        emoji: payload.emoji,
+        categoryId: this.getObjectId(payload.categoryId),
+        organizationId: this.getObjectId(payload.organizationId),
+      })
     } catch (error) {
       console.error(error)
       return error
@@ -68,6 +93,44 @@ class TagModel extends MongoModel {
     try {
       let query = {
         categoryId: categoryId,
+      }
+      return await this.mongoRequest(query)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async getTagByCategoryAndProperties(properties) {
+    try {
+      let query = {
+        categoryId: this.getObjectId(properties.categoryId),
+        organizationId: this.getObjectId(properties.organizationId),
+      }
+      if (properties.name) {
+        query.name = {
+          $regex: properties.name,
+          $options: "i",
+        }
+      }
+      if (properties.color) {
+        query.color = properties.color
+      }
+      if (properties.emoji) {
+        query.emoji = properties.emoji
+      }
+      return await this.mongoRequest(query)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async getByOrgAndCategoryId(organizationId, categoryId) {
+    try {
+      let query = {
+        organizationId: this.getObjectId(organizationId),
+        categoryId: this.getObjectId(categoryId),
       }
       return await this.mongoRequest(query)
     } catch (error) {

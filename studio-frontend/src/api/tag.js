@@ -92,6 +92,15 @@ export async function apiGetSystemCategories(organizationId) {
   return requestRes?.data || []
 }
 
+export async function apiGetTagsByCategory(organizationId, categoryId) {
+  const requestRes = await sendRequest(
+    `${BASE_API}/organizations/${organizationId}/tags?categoryId=${categoryId}`,
+    { method: "get" },
+    {}
+  )
+  return requestRes?.data || []
+}
+
 export async function apiGetCategoryById(
   scopeId,
   categoryId,
@@ -288,6 +297,24 @@ export async function apiGetfavoritesCategoriesTree(tagsIds, signal, notif) {
 }
 
 // -- -- Tags -- -- //
+
+export async function apiCreateOrganizationTag(
+  organizationId,
+  categoryId,
+  name,
+  color,
+  emoji,
+  notif
+) {
+  const requestRes = await sendRequest(
+    `${BASE_API}/organizations/${organizationId}/tags`,
+    { method: "post" },
+    { name, categoryId, color, emoji, organizationId },
+    notif
+  )
+  if (requestRes.status == "error") return requestRes
+  return requestRes.data
+}
 
 export async function apiCreateTag(
   scopeId,

@@ -7,6 +7,7 @@ const DEFAULT_PERMISSION = require(
 ).getDefaultPermissions()
 const MongoModel = require(`../model`)
 const categoriesModel = require(`./categories`)
+const tagsModel = require(`./tags`)
 
 const moment = require("moment")
 
@@ -28,7 +29,7 @@ class OrganizationModel extends MongoModel {
       const result = await this.mongoInsert(payload)
 
       const { systemCategory, labelsCategory, tagsCategory } =
-        await this.createDefaultOrganizationCategories(
+        await this.createOrganizationSystemCategories(
           result.insertedId.toString(),
         )
 
@@ -45,7 +46,7 @@ class OrganizationModel extends MongoModel {
     }
   }
 
-  async createDefaultOrganizationCategories(organizationId) {
+  async createOrganizationSystemCategories(organizationId) {
     try {
       const systemCategory = await categoriesModel.create({
         color: "#000000",
@@ -54,23 +55,25 @@ class OrganizationModel extends MongoModel {
         type: "system",
       })
 
-      // Will contain two subcategories:
-      // - "labels"
-      // - "tags"
       const labelsCategory = await categoriesModel.create({
         color: "#000000",
         name: "labels",
         organizationId: organizationId,
         type: "system",
-        parentId: systemCategory._id,
+        parentId: systemCategory.insertedId,
       })
       const tagsCategory = await categoriesModel.create({
         color: "#000000",
         name: "tags",
         organizationId: organizationId,
         type: "system",
-        parentId: systemCategory._id,
+        parentId: systemCategory.insertedId,
       })
+
+      await tagsModel.createDefaultTags(
+        organizationId,
+        tagsCategory.insertedId,
+      )
 
       return { systemCategory, labelsCategory, tagsCategory }
     } catch (error) {
@@ -98,7 +101,7 @@ class OrganizationModel extends MongoModel {
 
       // When a new organization is created, we create the main category "system"
       const { systemCategory, labelsCategory, tagsCategory } =
-        await this.createDefaultOrganizationCategories(
+        await this.createOrganizationSystemCategories(
           result.insertedId.toString(),
         )
 

@@ -21,7 +21,7 @@
                   :checked="isSelectAll"
                   :disabled="loading || medias.length === 0" />
                 <span v-if="selectedMedias.length > 0"
-                  >{{ selectedMedias.length }} selected</span
+                  >{{ selectedMedias.length }} selection</span
                 >
               </div>
             </div>
@@ -316,7 +316,7 @@ export default {
   flex-direction: column;
   flex: 1;
   height: 100%;
-  overflow-y: auto;
+  overflow-y: visible;
 }
 
 .media-explorer__content__right__header {
@@ -370,18 +370,19 @@ export default {
 .media-explorer__content__right__header__left
   .media-explorer__content__right__header__select-all {
   position: relative;
-  margin-left: 1.2rem;
+  margin-left: 1.4rem;
   min-width: 0 !important;
   padding-left: 24px;
   width: auto !important;
   height: 24px !important;
-  background-color: #e1e1e1;
+  background-color: var(--neutral-20);
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 0.2rem;
   cursor: pointer;
   transition: background-color 0.3s ease-in-out;
+  border: 1px solid var(--neutral-40);
 }
 
 .media-explorer__content__right__header__left

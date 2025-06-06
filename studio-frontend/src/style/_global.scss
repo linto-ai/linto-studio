@@ -367,6 +367,30 @@ li:last-child {
   background-color: var(--background-green-hard);
 }
 
+.p-0 {
+  padding: 0;
+}
+
+.p-1 {
+  padding: var(--small-gap);
+}
+
+.p-2 {
+  padding: var(--medium-gap);
+}
+
+.p-3 {
+  padding: var(--large-gap);
+}
+
+.p-4 {
+  padding: var(--xl-gap);
+}
+
+.p-5 {
+  padding: var(--xxl-gap);
+}
+
 .mb-xs {
   margin-bottom: var(--xs-gap);
 }

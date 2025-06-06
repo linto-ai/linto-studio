@@ -3,7 +3,8 @@
     <MediaExplorer
       :medias="conversations"
       :loading="loadingConversations"
-      :error="error">
+      :error="error"
+      class="explore-next__media-explorer relative">
       <template v-slot:before>
         <div
           v-if="initialPage > 0 && showPreviousButton"
@@ -17,14 +18,16 @@
         </div>
       </template>
       <template v-slot:after>
-        <div
-          class="explore-next__infinite-loading"
-          ref="infiniteLoadingTrigger">
-          <span v-if="hasMoreItems && !loadingConversations"
-            >Loading more...</span
-          >
-          <span v-else-if="!hasMoreItems">End of results</span>
-          <span v-else>Loading...</span>
+        <div>
+          <div
+            class="explore-next__infinite-loading"
+            ref="infiniteLoadingTrigger">
+            <span v-if="hasMoreItems && !loadingConversations"
+              >Loading more...</span
+            >
+            <span v-else-if="!hasMoreItems">End of results</span>
+            <span v-else>Loading...</span>
+          </div>
         </div>
       </template>
       <template v-slot:empty>
@@ -128,7 +131,7 @@ export default {
     },
   },
   methods: {
-    ...mapMutations("inbox", ["setMedias", "clearSelectedMedias"]),
+    ...mapMutations("inbox", ["setMedias", "clearSelectedMedias", "appendMedias", "clearMedias"]),
     async initPageFromUrl() {
       const urlParams = new URLSearchParams(window.location.search)
       const pageParam = urlParams.get("page")
@@ -233,7 +236,7 @@ export default {
           this.conversations = newConversations
         }
 
-        this.setMedias(fromConversations(newConversations))
+        this.appendMedias(fromConversations(newConversations))
 
         this.hasMoreItems = data?.count - 12 * (page + 1) > 0
 
@@ -330,4 +333,5 @@ export default {
   color: #0066cc;
   font-weight: bold;
 }
+
 </style>

@@ -5,7 +5,7 @@
     :weight="weight"
     :mirrored="mirrored"
     :class="['icon-svg', size, color, animation]"
-    :style="{ color: color }"
+    :style="{ color: color, ...style }"
   />
   <span v-else class="icon-svg missing-icon" :class="[size, color]">?</span>
 </template>
@@ -17,7 +17,7 @@ export default {
   name: 'PhIcon',
   props: {
     name: { type: String, required: true }, // ex: 'House', 'User', etc.
-    size: { type: String, default: 'sm' }, // xs, sm, md, lg, xl
+    size: { type: [String, Number], default: 'sm' }, // xs, sm, md, lg, xl
     color: { type: String, default: '' }, // primary, secondary, etc.
     weight: { type: String, default: 'fill' }, // thin, light, regular, bold, fill, duotone
     mirrored: { type: Boolean, default: false },
@@ -28,6 +28,16 @@ export default {
       const camelCase = this.name.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
       const camelCaseName = camelCase.charAt(0).toUpperCase() + camelCase.slice(1);
       return PhIcons[`Ph${camelCaseName}`] || null;
+    },
+    style() {
+      const size = Number(this.size)
+      if (size) {
+        return {
+          width: size + 'px',
+          height: size + 'px',
+        }
+      }
+      return {}
     }
   }
 };

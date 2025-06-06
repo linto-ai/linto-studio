@@ -19,6 +19,10 @@ form-field[select-like] .form-value,
   box-sizing: border-box;
   position: relative;
   height: 38.5px;
+  border-radius: 4px;
+  font-size: 0.95em;
+  padding: 0.2em 0.5em;
+  outline: none;
 
   &.error {
     border-color: var(--red-chart);
@@ -161,7 +165,6 @@ label,
 }
 
 /* input file */
-
 input[type="file"] {
   position: absolute;
   z-index: -1;
@@ -172,6 +175,60 @@ input[type="file"] {
   padding: 0;
   margin: 0;
   cursor: pointer;
+}
+
+.input-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25em;
+  width: 100%;
+  box-sizing: border-box;
+  border: var(--border-input);
+  border-radius: 4px;
+  padding: 0.25em;
+  background-color: var(--background-primary);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-weight: 500;
+
+  &:focus-within {
+    border-color: var(--primary-color);
+    background-color: var(--background-primary);
+    color: var(--text-primary);
+  }
+}
+
+.input-item__prefix {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: var(--border-input);
+  background-color: transparent;
+  border-radius: 4px;
+  margin-left: 0.25em;
+}
+
+.input-item__input {
+  flex: 1 1 0%;
+  min-width: 0;
+  width: 100%;
+  max-width: none;
+  border: none;
+  background-color: transparent;
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-weight: 500;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.input-item .input-item__input[type="text"] {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  flex: 1 1 0%;
 }
 
 /*** FORM INFO ***/
