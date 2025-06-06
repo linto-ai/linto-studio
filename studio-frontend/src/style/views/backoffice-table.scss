@@ -1,6 +1,7 @@
 .backoffice-listing-header {
   //padding: 1rem;
-  padding-bottom: 1rem;
+  //padding-bottom: 1rem;
+  align-self: center;
 }
 
 .backoffice-listing-header__title h2 {
@@ -16,7 +17,7 @@
 
 .backoffice-listing-container {
   background-color: var(--background-primary);
-  border: var(--border-block);
+  //border: var(--border-block);
   margin: 0;
   border-radius: 4px;
   overflow: auto;

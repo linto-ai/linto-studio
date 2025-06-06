@@ -30,7 +30,7 @@
     </td>
     <td class="fit-content">
       <button @click="editUser">
-        <span class="icon edit"></span>
+        <ph-icon name="pencil"></ph-icon>
         <span class="label">{{ $t("user_table.edit_button_label") }}</span>
       </button>
     </td>

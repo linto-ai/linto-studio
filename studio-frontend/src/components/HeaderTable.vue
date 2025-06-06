@@ -1,5 +1,5 @@
 <template>
-  <div class="flex gap-medium backoffice-listing-header align-center">
+  <div class="flex gap-medium backoffice-listing-header align-center flex1">
     <div
       class="flex1 flex gap-small backoffice-listing-header__title align-center">
       <h2>{{ title }}</h2>
@@ -29,7 +29,7 @@
       class="btn tertiary outline"
       @click="$emit('on-delete')"
       :disabled="disableDelete">
-      <span class="icon delete"></span>
+      <ph-icon name="trash"></ph-icon>
       <span class="label">{{ remove_button_label }}</span>
     </button>
   </div>

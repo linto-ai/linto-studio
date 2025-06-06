@@ -46,7 +46,7 @@
         class="transparent flex context-menu__action wrap"
         :selected="state == STATES.EDIT_SPEAKER"
         @click="enterEditSpeaker">
-        <span class="icon edit"></span>
+        <ph-icon name="pencil"></ph-icon>
         <span class="label flex1">
           {{
             $t("conversation.speaker_toolbox.edit_speaker_button", {

@@ -19,7 +19,7 @@
     <td>{{ userNumber }}</td>
     <td>
       <button @click="editOrganization">
-        <span class="icon edit"></span>
+        <ph-icon name="pencil"></ph-icon>
         <span class="label">{{ $t("orga_table.edit_button_label") }}</span>
       </button>
     </td>
