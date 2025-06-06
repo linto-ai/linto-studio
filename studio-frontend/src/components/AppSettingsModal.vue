@@ -1,14 +1,18 @@
 <template>
-  <Modal v-model="isModalOpen" title="Settings" subtitle="Manage your account and preferences" size="lg">
+  <Modal
+    v-model="isModalOpen"
+    title="Settings"
+    subtitle="Manage your account and preferences"
+    size="lg">
     <div class="app-settings">
       <aside>
         <ul>
           <li>
             <div class="app-settings__user-info flex align-center gap-small">
-                <div class="flex flex1 align-center gap-small">
-                    <UserProfilePicture :hover="false" :user="user" />
-                    <span class="user-account-selector__name">{{ userName }}</span>
-                </div>
+              <div class="flex flex1 align-center gap-small">
+                <UserProfilePicture :hover="false" :user="user" />
+                <span class="user-account-selector__name">{{ userName }}</span>
+              </div>
             </div>
           </li>
           <li :class="{ active: selectedTab === 'account-information' }">
@@ -36,36 +40,19 @@
       <div
         class="app-settings__section"
         :class="{ active: selectedTab === 'account-information' }">
-        <pre>{{ user }}</pre>
-        <table class="table">
-          <tr>
-            <th>Name</th>
-            <td>
-              <input type="text" id="name" class="input" :value="user.name" placeholder="Name" autocomplete="off" />
-            </td>
-          </tr>
-          <tr>
-            <th>Email</th>
-            <td>
-              <input type="text" id="email" class="input" :value="user.email" placeholder="Email" autocomplete="off" />
-            </td>
-          </tr>
-          <tr>
-            <th>Password</th>
-            <td>
-              <span class="input">********</span>
-            </td>
-          </tr>
-        </table>
+        <!-- <pre>{{ user }}</pre> -->
+        <UserSettingsAvatar :userInfo="user" v-if="isAuthenticated" />
+        <UserSettingsPersonal :userInfo="user" v-if="isAuthenticated" />
+        <UserSettingsVisibility :userInfo="user" v-if="isAuthenticated" />
+        <UserSettingsPassword :userInfo="user" v-if="isAuthenticated" />
+        <UserSettingsNotifications :userInfo="user" v-if="isAuthenticated" />
       </div>
       <div
         class="app-settings__section"
-        :class="{ active: selectedTab === 'preferences' }">
-      </div>
+        :class="{ active: selectedTab === 'preferences' }"></div>
       <div
         class="app-settings__section"
-        :class="{ active: selectedTab === 'billing' }">
-      </div>
+        :class="{ active: selectedTab === 'billing' }"></div>
     </div>
   </Modal>
 </template>
@@ -73,13 +60,22 @@
 <script>
 import { mapGetters } from "vuex"
 import Modal from "./molecules/Modal.vue"
-import UserProfilePicture from "./atoms/UserProfilePicture.vue"
-
+import UserProfilePicture from "@/components/atoms/UserProfilePicture.vue"
+import UserSettingsPersonal from "@/components/UserSettingsPersonal.vue"
+import UserSettingsPassword from "@/components/UserSettingsPassword.vue"
+import UserSettingsNotifications from "@/components/UserSettingsNotifications.vue"
+import UserSettingsVisibility from "@/components/UserSettingsVisibility.vue"
+import UserSettingsAvatar from "@/components/UserSettingsAvatar.vue"
 export default {
   name: "AppSettingsModal",
   components: {
     Modal,
     UserProfilePicture,
+    UserSettingsPersonal,
+    UserSettingsPassword,
+    UserSettingsNotifications,
+    UserSettingsVisibility,
+    UserSettingsAvatar,
   },
   data() {
     return {
@@ -89,6 +85,7 @@ export default {
   computed: {
     ...mapGetters({
       user: "user/getUserInfos",
+      isAuthenticated: "user/isAuthenticated",
     }),
     isModalOpen: {
       get() {

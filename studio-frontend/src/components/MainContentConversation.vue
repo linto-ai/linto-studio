@@ -1,21 +1,16 @@
 <template>
-  <MainContent
-    noBreadcrumb
-    :organizationPage="organizationPage"
-    :sidebar="sidebar"
-    :box="box"
-    :fullwidthContent="!box"
-    v-if="dataLoaded && status == 'done'">
+  <V2Layout v-if="dataLoaded && status == 'done'">
     <template v-slot:breadcrumb-actions>
       <slot name="breadcrumb-actions"></slot>
     </template>
 
     <template v-slot:sidebar>
+      <div class="sidebar-divider"></div>
       <slot name="sidebar"></slot>
     </template>
     <slot></slot>
     <Modal></Modal>
-  </MainContent>
+  </V2Layout>
   <div
     v-else-if="dataLoaded && status != 'done' && status != 'error'"
     class="flex flex1">
@@ -37,11 +32,13 @@ import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 
 import MainContent from "./MainContent.vue"
-import ConversationStatus from "../components/ConversationStatus.vue"
-import ConversationStatusError from "../components/ConversationStatusError.vue"
-import Loading from "./Loading.vue"
+import ConversationStatus from "@/components/ConversationStatus.vue"
+import ConversationStatusError from "@/components/ConversationStatusError.vue"
+import Loading from "@/components/Loading.vue"
 import ErrorView from "@/views/Error.vue"
 import Modal from "@/components/Modal.vue"
+import V2Layout from "@/layouts/v2-layout.vue"
+
 export default {
   props: {
     status: {
@@ -90,6 +87,7 @@ export default {
     Loading,
     ErrorView,
     Modal,
+    V2Layout,
   },
 }
 </script>

@@ -165,6 +165,17 @@ export async function apiUpdateUserInfo(payload, notif) {
   )
 }
 
+export async function apiUpdateUserImage(file, notif) {
+  let formData = new FormData()
+  formData.append("file", file)
+  return await sendMultipartFormData(
+    `${BASE_API}/users/self/picture`,
+    "put",
+    formData,
+    notif,
+  )
+}
+
 export async function apiRecoverPassword(email, notif) {
   return await sendRequest(
     `${BASE_API}/users/self/reset-password`,

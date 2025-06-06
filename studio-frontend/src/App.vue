@@ -29,6 +29,7 @@ import { customDebug } from "@/tools/customDebug.js"
 import isAuthenticated from "@/tools/isAuthenticated.js"
 import AppSettingsModal from "@/components/AppSettingsModal.vue"
 import PopupHost from "@/components/PopupHost.vue";
+import AppNotif from "@/components/AppNotif.vue"
 
 export default {
   props: {},
@@ -62,6 +63,7 @@ export default {
   components: {
     AppSettingsModal,
     PopupHost,
+    AppNotif,
   },
 }
 </script>
