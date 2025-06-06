@@ -1,5 +1,6 @@
 <template>
   <SessionChannelTurn
+    :previous="previous"
     :turn="turn"
     :selectedTranslations="selectedTranslations"
     :channelLanguages="channelLanguages" />
@@ -12,6 +13,10 @@ import SessionChannelTurn from "@/components/SessionChannelTurn.vue"
 
 export default {
   props: {
+    previous: {
+      type: Object,
+      required: false,
+    },
     partialText: {
       type: String,
       required: true,
