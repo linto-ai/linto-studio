@@ -73,6 +73,12 @@ BROKER_KEEPALIVE=60
 BROKER_PROTOCOL=mqtt
 ```
 
+### Usage Metrics API
+
+The API exposes monitoring endpoints under `/api/monitoring` to track platform usage.
+These routes allow the back office to retrieve the number of media uploaded per
+organization and statistics about websocket subtitle streaming sessions.
+
 ### Back Office Access
 
 #### Creating a Superuser for Back Office Access

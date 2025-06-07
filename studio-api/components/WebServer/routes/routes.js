@@ -33,6 +33,7 @@ module.exports = (webServer) => {
     ],
     "/api/nlp": require("./api/nlp/nlp")(webServer),
     "/api/services": require("./api/service/services")(webServer, this),
+    "/api/monitoring": require("./api/monitoring/metrics")(webServer),
   }
 
   let proxy_routes = []

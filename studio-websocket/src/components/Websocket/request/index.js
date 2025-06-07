@@ -388,3 +388,23 @@ export async function apiDeleteTagFromConversation(
     userToken,
   )
 }
+
+export async function apiStartWsMetric(payload) {
+  return await sendRequest(
+    `${BASE_API}/monitoring/websocket/start`,
+    { method: "post" },
+    payload,
+    null,
+    null,
+  )
+}
+
+export async function apiEndWsMetric(id) {
+  return await sendRequest(
+    `${BASE_API}/monitoring/websocket/${id}/end`,
+    { method: "patch" },
+    {},
+    null,
+    null,
+  )
+}

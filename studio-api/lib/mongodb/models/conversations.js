@@ -704,6 +704,26 @@ class ConvoModel extends MongoModel {
       return error
     }
   }
+
+  async countByOrganization(organizationId) {
+    try {
+      const pipeline = [
+        {
+          $match: {
+            "organization.organizationId": organizationId.toString(),
+            "type.mode": TYPE.CANONICAL,
+          },
+        },
+        { $count: "count" },
+      ]
+
+      const result = await this.mongoAggregate(pipeline)
+      return result[0] ? result[0].count : 0
+    } catch (error) {
+      console.error(error)
+      return 0
+    }
+  }
 }
 
 module.exports = new ConvoModel()

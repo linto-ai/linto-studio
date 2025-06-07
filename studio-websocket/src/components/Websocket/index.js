@@ -16,7 +16,11 @@ import SubtitleHelper from "./models/subtitles.js"
 import updateSubtitlesController from "./controllers/updateSubtitlesController.js"
 import hightLightController from "./controllers/highLightController.js"
 import addScreenController from "./controllers/addScreenController.js"
-import { apiDeleteTagFromConversation } from "./request/index.js"
+import {
+  apiDeleteTagFromConversation,
+  apiStartWsMetric,
+  apiEndWsMetric,
+} from "./request/index.js"
 
 const info = Debug("Websocket:info")
 const debug = Debug("Websocket:debug:websocket")
@@ -40,10 +44,24 @@ export default class Websocket extends Component {
     this.app.io.on("connection", async (socket) => {
       try {
         debug("Socket CONNECTED")
-        await this.initConversation(socket)
+        const { conversationId, userId } = socket.handshake.query
+        const conversation = await this.initConversation(socket)
+        if (conversation) {
+          const res = await apiStartWsMetric({
+            conversationId: conversationId,
+            organizationId: conversation.getOrganizationId(),
+            userId: userId,
+          })
+          if (res && res.status === "success") {
+            socket.wsMetricId = res.data.id
+          }
+        }
 
-        socket.on("disconnect", () => {
+        socket.on("disconnect", async () => {
           debug("Socket DISCONNECTED")
+          if (socket.wsMetricId) {
+            await apiEndWsMetric(socket.wsMetricId)
+          }
         })
 
         // Update user rights (share/members)
@@ -265,5 +283,6 @@ export default class Websocket extends Component {
       userToken,
       this.app.io,
     )
+    return conversation
   }
 }

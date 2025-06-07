@@ -9,6 +9,7 @@ module.exports = {
   sessionAlias: require("./sessionAlias.js"),
   tags: require("./tags.js"),
   tokens: require("./tokens.js"),
+  metrics: require("./metrics.js"),
   users: require("./users.js"),
   search: {
     conversations: require("./search/conversations.js"),
