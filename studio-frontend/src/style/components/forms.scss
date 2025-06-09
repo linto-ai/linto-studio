@@ -191,6 +191,14 @@ input[type="file"] {
   font-size: var(--text-sm);
   font-weight: 500;
 
+  &.border-0 {
+    border: 0;
+  }
+
+  &.background-transparent {
+    background-color: transparent;
+  }
+
   &:focus-within {
     border-color: var(--primary-color);
     background-color: var(--background-primary);
@@ -206,6 +214,12 @@ input[type="file"] {
   background-color: transparent;
   border-radius: 4px;
   margin-left: 0.25em;
+}
+
+.input-item__prefix-group {
+  display: flex;
+  align-items: center;
+  gap: 0.25em;
 }
 
 .input-item__input {

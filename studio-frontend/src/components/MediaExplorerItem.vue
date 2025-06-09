@@ -33,7 +33,10 @@
         <Avatar
           :text="title.substring(0, 1)"
           class="media-explorer-item__inline__infos__user" />
-        <a :href="`/interface/${organizationId}/conversations/${media._id}/transcription`">{{ title }}</a>
+        <a
+          :href="`/interface/${organizationId}/conversations/${media._id}/transcription`"
+          >{{ title }}</a
+        >
         <div class="media-explorer-item__inline__infos">
           <span
             v-if="duration"
@@ -46,17 +49,18 @@
             {{ createdAt }}
           </span>
         </div>
-      <div class="media-explorer-item__inline__tags">
-        <MediaExplorerItemTags
-          class="media-explorer-item__inline__tags__tags"
-          :mediatags="mediatags"
-          :media-id="media._id" />
-      </div>
+        <div class="media-explorer-item__inline__tags">
+          <MediaExplorerItemTags
+            class="media-explorer-item__inline__tags__tags"
+            :mediatags="mediatags"
+            :media-id="media._id" />
+        </div>
         <div class="media-explorer-item__inline__more">
           <div class="media-explorer-item__inline__more__owner">
             <Avatar
               :text="convOwner.fullName.substring(0, 1)"
-              class="media-explorer-item__inline__more__owner__avatar" />
+              class="media-explorer-item__inline__more__owner__avatar"
+              size="xs" />
             <span class="media-explorer-item__inline__more__owner__name">
               {{ convOwner.fullName }}
             </span>
@@ -125,7 +129,9 @@ export default {
       currentOrganization: "getCurrentOrganization",
     }),
     mediatags() {
-      return this.media.tags.map((t) => this.$store.getters["tags/getTagById"](t))
+      return this.media.tags.map((t) =>
+        this.$store.getters["tags/getTagById"](t),
+      )
     },
     title() {
       return this.media.title || this.media.name
@@ -219,7 +225,9 @@ export default {
     },
 
     handleEdit() {
-      this.$router.push(`/interface/${this.organizationId}/conversations/${this.media._id}/transcription`)
+      this.$router.push(
+        `/interface/${this.organizationId}/conversations/${this.media._id}/transcription`,
+      )
     },
 
     handleShare() {

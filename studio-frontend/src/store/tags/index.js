@@ -1,4 +1,4 @@
-import { apiGetTagsByCategory, apiGetSystemCategories, apiCreateOrganizationTag } from "@/api/tag"
+import { apiGetTagsByCategory, apiGetSystemCategories, apiCreateOrganizationTag, apiDeleteTag, apiUpdateOrganizationTag } from "@/api/tag"
 import { apiAddTagToConversation, apiDeleteTagFromConversation } from "@/api/conversation"
 
 export default {
@@ -46,7 +46,6 @@ export default {
           rootGetters["organizations/getCurrentOrganizationScope"],
         )
 
-        console.log("categories", data)
         commit("setCategories", data)
 
         const tags = await apiGetTagsByCategory(
@@ -55,8 +54,11 @@ export default {
         )
 
         commit("setTags", tags)
+        return { categories: data, tags }
       } catch (error) {
+        console.error("Error fetching tags:", error)
         commit("setError", error)
+        throw error
       } finally {
         commit("setLoading", false)
       }
@@ -64,7 +66,6 @@ export default {
     async createTag({ commit, getters, rootGetters, state }, tag) {
       commit("setLoading", true)
       try {
-        console.log("tag", tag)
         const data = await apiCreateOrganizationTag(
           rootGetters["organizations/getCurrentOrganizationScope"],
           getters.getCategoryByName('tags')._id,
@@ -74,9 +75,11 @@ export default {
         )
 
         commit("setTags", [...state.tags, data])
+        return data
       } catch (error) {
-        console.log("error", error)
+        console.error("Error creating tag in store:", error)
         commit("setError", error)
+        throw error
       } finally {
         commit("setLoading", false)
       }
@@ -85,9 +88,11 @@ export default {
       commit("setLoading", true)
       try {
         const data = await apiUpdateOrganizationTag(rootGetters["organizations/getCurrentOrganizationScope"], tag)
+        return data
       } catch (error) {
-        console.log("error", error)
+        console.error("Error updating tag in store:", error)
         commit("setError", error)
+        throw error
       } finally {
         commit("setLoading", false)
       }
@@ -95,10 +100,15 @@ export default {
     async deleteTag({ commit, getters, rootGetters, state }, tag) {
       commit("setLoading", true)
       try {
-        const data = await apiDeleteOrganizationTag(rootGetters["organizations/getCurrentOrganizationScope"], tag)
+        const data = await apiDeleteTag(rootGetters["organizations/getCurrentOrganizationScope"], tag._id)
+        console.log("Tag deleted from API:", tag.name, data)
+        commit("setTags", state.tags.filter((t) => t._id !== tag._id))
+        return data
       } catch (error) {
-        console.log("error", error)
+        console.error("Error deleting tag in store:", error)
         commit("setError", error)
+        // Re-throw the error so the component can handle it
+        throw error
       } finally {
         commit("setLoading", false)
       }

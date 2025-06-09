@@ -54,24 +54,71 @@
       </div>
     </div>
 
-    <!-- Upload overlay -->
-    <MediaExplorerUpload
-      v-if="isDraggingOver"
-      :upload-progress="uploadProgress" />
+    <!-- Upload Modal -->
+    <Modal
+      v-model="showUploadModal"
+      title="Téléversement de fichiers"
+      subtitle="Téléversez vos médias audio ou vidéo pour les transcrire"
+      size="xl"
+      :with-actions="false"
+      overlay>
+      
+      <template v-slot:content>
+        <MediaExplorerAppUpload
+          ref="uploadComponent"
+          :transcriptionServices="transcriptionServices"
+          :loadingServices="loadingServices"
+          :disabled="uploadInProgress"
+          :currentOrganizationScope="currentOrganizationScope"
+          @upload-complete="handleUploadComplete"
+          @error="handleUploadError" />
+
+        <div class="modal-actions">
+          <div class="error-message" v-if="uploadError">
+            <ph-icon name="warning" color="error" />
+            <span>{{ uploadError }}</span>
+          </div>
+          <div class="flex1" v-else></div>
+          
+          <div class="actions-buttons">
+            <Button
+              color="secondary"
+              variant="outline"
+              @click="closeUploadModal"
+              :disabled="uploadInProgress">
+              Fermer
+            </Button>
+          </div>
+        </div>
+      </template>
+    </Modal>
+
+    <!-- Upload overlay for drag feedback -->
+    <div v-if="isDraggingOver && !showUploadModal" class="upload-overlay">
+      <div class="upload-overlay-content">
+        <ph-icon name="cloud-arrow-up" size="xl" color="primary" />
+        <h3>Déposez vos fichiers ici</h3>
+        <p>Les fichiers seront ajoutés pour transcription</p>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import MediaExplorerHeader from "./MediaExplorerHeader.vue"
 import MediaExplorerItem from "./MediaExplorerItem.vue"
-import MediaExplorerUpload from "./MediaExplorerUpload.vue"
+import MediaExplorerAppUpload from "./MediaExplorerAppUpload.vue"
+import Modal from "./molecules/Modal.vue"
+import Button from "./atoms/Button.vue"
 
 export default {
   name: "MediaExplorer",
   components: {
     MediaExplorerHeader,
     MediaExplorerItem,
-    MediaExplorerUpload,
+    MediaExplorerAppUpload,
+    Modal,
+    Button,
   },
   props: {
     medias: {
@@ -99,6 +146,19 @@ export default {
     pageSize: {
       type: Number,
       default: 20,
+    },
+    // Upload-related props
+    transcriptionServices: {
+      type: Array,
+      default: () => [],
+    },
+    loadingServices: {
+      type: Boolean,
+      default: false,
+    },
+    currentOrganizationScope: {
+      type: String,
+      required: false,
     },
   },
   computed: {
@@ -132,7 +192,9 @@ export default {
     return {
       page: 1,
       isDraggingOver: false,
-      uploadProgress: [],
+      showUploadModal: false,
+      uploadInProgress: false,
+      uploadError: '',
       isSelectAll: false,
       observer: null,
       selectedTagIds: [], // Track selected tag IDs for filtering
@@ -189,11 +251,12 @@ export default {
       const mediaFiles = this.filterMediaFiles(files)
 
       if (mediaFiles.length === 0) {
-        this.$emit("upload-error", "Seuls les fichiers audio et vidéo sont acceptés.")
+        this.handleUploadError("Seuls les fichiers audio et vidéo sont acceptés.")
         return
       }
 
-      this.uploadFiles(mediaFiles)
+      // Open upload modal with dropped files
+      this.openUploadModalWithFiles(mediaFiles)
     },
 
     // File filtering
@@ -203,47 +266,50 @@ export default {
       })
     },
 
-    // Selection handlers
-    handleSelectAll() {
-      this.isSelectAll = !this.isSelectAll
-    },
-
-    // Upload handling
-    uploadFiles(files) {
-      this.uploadProgress = files.map((file) => ({
-        name: file.name,
-        progress: 0,
-        file,
-      }))
-
-      this.isDraggingOver = true
-
-      // Simulate upload progress
-      files.forEach((file, index) => {
-        this.simulateFileUpload(file, index)
+    // Upload modal management
+    openUploadModalWithFiles(files) {
+      this.showUploadModal = true
+      this.uploadError = ''
+      
+      // Wait for modal to be mounted then add files
+      this.$nextTick(() => {
+        // Find the MediaExplorerAppUpload component and add files to it
+        const uploadComponent = this.$refs["uploadComponent"]
+        
+        if (uploadComponent) {
+          // Process files directly in the upload component
+          uploadComponent.processFiles(files)
+        }
       })
     },
 
-    simulateFileUpload(file, index) {
-      const interval = setInterval(() => {
-        if (this.uploadProgress[index].progress < 100) {
-          this.uploadProgress[index].progress += 5
-        } else {
-          clearInterval(interval)
-          this.checkUploadCompletion()
-        }
-      }, 200)
+    closeUploadModal() {
+      this.showUploadModal = false
+      this.uploadError = ''
     },
 
-    checkUploadCompletion() {
-      if (this.uploadProgress.every((item) => item.progress === 100)) {
-        setTimeout(() => {
-          this.isDraggingOver = false
-          const files = this.uploadProgress.map(item => item.file)
-          this.uploadProgress = []
-          this.$emit("upload-complete", files)
-        }, 1000)
-      }
+    handleUploadComplete(data) {
+      console.log('Upload completed:', data)
+      
+      // Emit upload complete event for parent components
+      this.$emit('upload-complete', data)
+      
+      // Close modal
+      this.closeUploadModal()
+      
+      // Show success message
+      this.$emit('success', `${data.files.length} fichier(s) téléversé(s) avec succès`)
+    },
+
+    handleUploadError(error) {
+      this.uploadError = error
+      console.error('Upload error:', error)
+      this.$emit('upload-error', error)
+    },
+
+    // Selection handlers
+    handleSelectAll() {
+      this.isSelectAll = !this.isSelectAll
     },
 
     // Pagination & Intersection Observer
@@ -458,5 +524,66 @@ export default {
 .empty-state p {
   margin: 0;
   font-size: 1rem;
+}
+
+/* Upload overlay styles */
+.upload-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.upload-overlay-content {
+  background-color: var(--neutral-10);
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.upload-overlay-content h3 {
+  margin: 1rem 0 0.5rem 0;
+  color: var(--neutral-100);
+  font-size: 1.2rem;
+}
+
+.upload-overlay-content p {
+  margin: 0;
+  color: var(--neutral-70);
+  font-size: 0.9rem;
+}
+
+/* Modal actions styles */
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--neutral-30);
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--error);
+  font-size: 0.9rem;
+}
+
+.actions-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.flex1 {
+  flex: 1;
 }
 </style>

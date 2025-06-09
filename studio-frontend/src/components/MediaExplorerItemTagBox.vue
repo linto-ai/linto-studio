@@ -58,6 +58,7 @@
       <ModalTagManagement>
         <template #trigger="{ open }">
           <button
+            v-if="showManageButton"
             class="tag-box__button outline primary xs with-icon"
             @click="open">
             <ph-icon name="tags" weight="bold" />
@@ -89,6 +90,10 @@ export default {
       required: false,
       default: () => [],
     },
+    showManageButton: {
+      type: Boolean,
+      default: true,
+    },
   },
   data() {
     return {
@@ -102,14 +107,16 @@ export default {
       tags: (state) => state.tags,
     }),
     media() {
-      return this.$store.getters["inbox/getMediaById"](this.mediaId)
+      return this.mediaId ? this.$store.getters["inbox/getMediaById"](this.mediaId) : null
     },
     orderedTags() {
       return [...this.tags].sort((a, b) => a.name.localeCompare(b.name))
     },
     orderedMediaTags() {
+      if (!this.media || !this.media.tags) return []
       return [...this.media.tags]
         .map((tagId) => this.tags.find((t) => t._id === tagId))
+        .filter((tag) => tag !== undefined)
         .sort((a, b) => a.name.localeCompare(b.name))
     },
     filteredTags() {
@@ -124,9 +131,9 @@ export default {
       })
     },
     selectedTagsObjects() {
-      return this.orderedMediaTags
-        .filter((tag) => this.selectedTagsIds.includes(tag._id))
-        .map((tag) => this.tags.find((t) => t._id === tag._id))
+      return this.orderedMediaTags.filter((tag) => 
+        tag && this.selectedTagsIds.includes(tag._id)
+      )
     },
     unselectedTagsObjects() {
       return this.filteredTags.filter(
@@ -137,7 +144,7 @@ export default {
       if (this.selectedTags.length) {
         return [...this.selectedTags]
       }
-      return this.media.tags
+      return this.media?.tags || []
     },
   },
   methods: {

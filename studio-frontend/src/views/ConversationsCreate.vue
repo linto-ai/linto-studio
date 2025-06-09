@@ -1,6 +1,13 @@
 <template>
   <MainContent sidebar box>
-    <template v-slot:breadcrumb-actions> </template>
+    <template v-slot:breadcrumb-actions>
+      <ActionConversationCreate
+        :transcriptionServices="fieldTranscriptionService.list"
+        :loadingServices="fieldTranscriptionService.loading"
+        :currentOrganizationScope="currentOrganizationScope"
+        @upload-complete="handleNewUploadComplete"
+        @success="handleNewUploadSuccess" />
+    </template>
 
     <div class="flex col flex1">
       <Tabs
@@ -117,6 +124,7 @@ import QuickSessionCreateContent from "@/components/QuickSessionCreateContent.vu
 import VisioCreateContent from "@/components/VisioCreateContent.vue"
 import TabsVertical from "@/components/TabsVertical.vue"
 import ConversationCreateFileLine from "@/components/ConversationCreateFileLine.vue"
+import ActionConversationCreate from "@/components/molecules/ActionConversationCreate.vue"
 
 export default {
   mixins: [
@@ -272,6 +280,22 @@ export default {
 
       this.loadingQuickSession = false
     },
+    handleNewUploadComplete(data) {
+      console.log('New upload workflow completed:', data)
+      
+      this.$router.push({
+        name: "explore",
+        params: { organizationId: this.currentOrganizationScope },
+      })
+    },
+    
+    handleNewUploadSuccess(message) {
+      this.$emit('app_notif', {
+        status: 'success',
+        message: message,
+        timeout: 5000,
+      })
+    },
   },
   components: {
     ConversationCreateAudio,
@@ -285,6 +309,7 @@ export default {
     VisioCreateContent,
     TabsVertical,
     ConversationCreateFileLine,
+    ActionConversationCreate,
   },
 }
 </script>

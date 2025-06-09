@@ -1,5 +1,5 @@
 <template>
-  <Modal title="Créer un tag" isForm @submit="onSubmit" :loading="loading">
+  <Modal title="Créer un tag" isForm @submit="onSubmit" :loading="loading" overlay @close="onClose">
     <template #trigger="{ open }">
       <slot name="trigger" :open="open"></slot>
     </template>
@@ -12,7 +12,7 @@
         <div class="input-group">
           <label for="tag-name">Attributs du tag</label>
           <span class="input-item">
-            <Popover position="bottom">
+            <Popover position="bottom" v-model="emojiPopoverOpen">
               <template #trigger>
                 <span
                   class="emoji-popover-trigger"
@@ -75,10 +75,27 @@ export default {
       emojiPopoverOpen: false,
     }
   },
+  mounted() {
+    // Add the escape key listener when component is mounted
+    document.addEventListener("keydown", this.handleEscapeKey)
+  },
+  beforeDestroy() {
+    // Clean up the event listener when component is destroyed
+    document.removeEventListener("keydown", this.handleEscapeKey)
+  },
   methods: {
+    onClose() {
+      this.emojiPopoverOpen = false
+    },
+    handleEscapeKey(e) {
+      if (e.key === "Escape" && this.emojiPopoverOpen) {
+        e.preventDefault()
+        e.stopPropagation()
+        this.emojiPopoverOpen = false
+      }
+    },
     toggleEmojiPopover() {
       this.emojiPopoverOpen = !this.emojiPopoverOpen
-      console.log("toggleEmojiPopover", this.emojiPopoverOpen)
     },
     onSelectEmoji(emoji) {
       this.selectedEmoji = emoji

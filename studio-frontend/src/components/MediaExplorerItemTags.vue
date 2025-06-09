@@ -39,7 +39,9 @@
           </button>
         </template>
         <template #content>
-          <MediaExplorerItemTagBox :media-id="mediaId" />
+          <MediaExplorerItemTagBox 
+            :media-id="mediaId" 
+            :show-manage-button="false" />
         </template>
       </Popover>
     </span>
@@ -108,7 +110,9 @@ export default {
       return this.$store.getters["inbox/getMediaById"](this.mediaId)
     },
     mediatags() {
-      return this.media.tags.map((tagId) => this.tags.find((t) => t._id === tagId))
+      return this.media.tags
+        .map((tagId) => this.tags.find((t) => t._id === tagId))
+        .filter((t) => t !== undefined)
     },
     mediatagsIds() {
       return [...this.mediatags.map((tag) => tag._id)]

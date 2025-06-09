@@ -26,18 +26,21 @@
         </Alert>
       </div>
     </template>
-    <slot name="actions">
+    <template #actions>
       <MediaExplorerFormTag @submit="onSubmit" :loading="loading">
         <template #trigger="{ open }">
-          <button
-            class="tag-box__button outline primary xs with-icon"
+          <Button
+            variant="outline"
+            color="primary"
+            icon="plus"
+            icon-position="left"
+            size="sm"
             @click.stop="open">
-            <ph-icon name="plus" weight="bold" />
-            <span class="tag-box__button-text">Create a new tag</span>
-          </button>
+            Create a new tag
+          </Button>
         </template>
       </MediaExplorerFormTag>
-    </slot>
+    </template>
   </Modal>
 </template>
 
@@ -54,7 +57,7 @@ export default {
   },
   computed: {
     ...mapState("tags", {
-      tags: (state) => state.tags,
+      tags: (state) => [...state.tags].sort((a, b) => a.name.localeCompare(b.name)),
     }),
   },
   data() {
@@ -63,18 +66,29 @@ export default {
     }
   },
   methods: {
-    onSubmit(tag) {
-      this.loading = true
-      this.$store.dispatch("tags/createTag", tag).then(() => {
-        this.loading = false
+    async onSubmit(tag) {
+      try {
+        this.loading = true
+        await this.$store.dispatch("tags/createTag", tag)
         this.$emit("submit", tag)
-      })
+      } catch (error) {
+        console.error("Error creating tag", error)
+      } finally {
+        this.loading = false
+      }
     },
-    onTagDelete(tag) {
-      console.log("onTagDelete", tag)
-      this.$store.dispatch("tags/deleteTag", tag).then(() => {
-        // Tag deleted successfully
-      })
+    async onTagDelete(tag) {
+      try {
+        this.loading = true
+        await this.$store.dispatch("tags/deleteTag", tag)
+        console.log("Tag deleted successfully:", tag.name)
+      } catch (error) {
+        console.error("Error deleting tag", error)
+        // Re-throw the error to prevent the UI from thinking the deletion was successful
+        throw error
+      } finally {
+        this.loading = false
+      }
     },
   },
 }

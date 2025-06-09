@@ -9,8 +9,7 @@
       :style="{ zIndex: zIndex + 1 }"
       @submit.prevent="isForm ? apply() : null"
       ref="modalContent"
-      @click.stop
-    >
+      @click.stop>
       <div class="modal-header flex row align-center justify-between">
         <div class="flex col">
           <span class="title flex1" id="modal-title">{{ title }}</span>
@@ -21,8 +20,7 @@
             class="btn outline only-icon sm"
             :class="[customClassClose, { disabled: disabledClose }]"
             @click="close()"
-            type="button"
-          >
+            type="button">
             <ph-icon name="x" size="sm"></ph-icon>
           </button>
         </template>
@@ -32,8 +30,7 @@
           name="spinner"
           size="lg"
           animation="spin"
-          color="primary"
-        ></ph-icon>
+          color="primary"></ph-icon>
       </div>
       <div class="modal-body flex col flex1">
         <VNodeRenderer :nodes="slots.default" />
@@ -48,21 +45,18 @@
             ]"
             :disabled="disabledActionDelete || disabledActions"
             @click="deleteHandler"
-            type="button"
-          >
+            type="button">
             <span class="label">{{
               textActionDelete || $t("modal.delete")
             }}</span>
           </button>
         </template>
         <div class="flex1"></div>
-        <template v-if="$slots.actions">
-            <slot name="actions"></slot>
-          </template>
-        <div class="button-group" v-if="withActions">
+        <div class="button-group">
           <template v-if="withActionCancel">
-            <button
-              class="btn neutral outline"
+            <Button
+              variant="outline"
+              color="neutral-soft"
               :class="[
                 customClassActionCancel,
                 colorActionCancel,
@@ -70,13 +64,14 @@
               ]"
               :disabled="disabledActionCancel || disabledActions"
               @click="close"
-              type="button"
-            >
-              <ph-icon v-if="iconActionCancel" :name="iconActionCancel"></ph-icon>
+              type="button">
+              <ph-icon
+                v-if="iconActionCancel"
+                :name="iconActionCancel"></ph-icon>
               <span class="label">{{
                 textActionCancel || $t("modal.cancel")
               }}</span>
-            </button>
+            </Button>
           </template>
           <template v-if="withActionApply">
             <button
@@ -88,8 +83,7 @@
               ]"
               :disabled="disabledActionApply || disabledActions"
               @click="apply"
-              type="submit"
-            >
+              type="submit">
               <ph-icon :name="iconActionApply"></ph-icon>
               <span class="label">{{
                 textActionApply || $t("modal.apply")
@@ -98,12 +92,17 @@
           </template>
         </div>
       </div>
+      <template v-if="slots.actions && slots.actions.length > 0">
+        <div class="modal-footer">
+          <VNodeRenderer :nodes="slots.actions" />
+        </div>
+      </template>
     </component>
   </div>
 </template>
 
 <script>
-import VNodeRenderer from "@/components/atoms/VNodeRenderer.vue";
+import VNodeRenderer from "@/components/atoms/VNodeRenderer.vue"
 
 export default {
   name: "ModalRenderer",
@@ -150,169 +149,175 @@ export default {
   },
   computed: {
     modalComponentType() {
-      return this.isForm ? "form" : "div";
+      return this.isForm ? "form" : "div"
     },
   },
   methods: {
     // Delegate events to the controller
-    close(e) { this.controller.close(e); },
-    apply(e) { this.controller.apply(e); },
-    deleteHandler(e) { this.controller.deleteHandler(e); },
-    
+    close(e) {
+      this.controller.close(e)
+    },
+    apply(e) {
+      this.controller.apply(e)
+    },
+    deleteHandler(e) {
+      this.controller.deleteHandler(e)
+    },
+
     closeOnClickOutside() {
       if (this.overlayClose) {
-        this.controller.close();
+        this.controller.close()
       }
     },
     closeOnEscape() {
       if (this.withClose) {
-        this.controller.close();
+        this.controller.close()
       }
     },
   },
-};
+}
 </script>
 
-// We keep the styles from Modal.vue, but they might need adjustments.
-// For now, let's copy them over.
+// We keep the styles from Modal.vue, but they might need adjustments. // For
+now, let's copy them over.
 <style lang="scss" scoped>
-  .modal-wrapper {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+.modal-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  pointer-events: none;
+}
+
+.modal {
+  pointer-events: all;
+  background: var(--background-secondary);
+  max-height: calc(100% - 4rem);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border: 1px solid var(--primary-soft);
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+
+  &.loading {
+    position: relative;
+
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+      filter: blur(1px);
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--background-secondary);
+      opacity: 0.5;
+      z-index: 10;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--background-secondary);
+      opacity: 0.5;
+      z-index: 11;
+    }
+  }
+
+  .modal-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--background-secondary);
+    border-radius: 4px;
+    padding: 1rem;
+    box-shadow: var(--shadow-block);
+    border: 1px solid var(--primary-hard);
+    display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 12;
+  }
+
+  &.fullscreen {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+  }
+
+  &.lg {
+    width: 940px;
+    max-width: calc(100% - 4rem);
+  }
+
+  &.md {
+    width: 640px;
+    max-width: calc(100% - 4rem);
+  }
+
+  &.sm {
+    width: 480px;
+    max-width: calc(100% - 4rem);
+  }
+}
+
+.modal-header {
+  padding: 1rem;
+  position: sticky;
+  top: 0;
+  background: var(--background-secondary);
+  z-index: 1;
+
+  .title {
+    display: inline-block;
+    font-weight: 600;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .subtitle {
+    display: inline-block;
+    font-weight: 400;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.modal-body {
+  border-top: 1px solid var(--neutral-20);
+  background: var(--primary-soft);
+  padding: 1em;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.modal-footer {
+  justify-content: flex-end;
+  padding: 1em;
+
+  .modal--footer-btn-splitted {
     display: flex;
-    pointer-events: none;
+    flex-direction: row;
+    justify-content: space-between;
   }
-
-  .modal {
-    pointer-events: all;
-    background: var(--background-secondary);
-    max-height: calc(100% - 4rem);
-    border-radius: 4px;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    border: 1px solid var(--primary-soft);
-    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
-
-    &.loading {
-      position: relative;
-
-      .modal-header,
-      .modal-body,
-      .modal-footer {
-        filter: blur(1px);
-      }
-
-      &::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: var(--background-secondary);
-        opacity: 0.5;
-        z-index: 10;
-      }
-
-      &::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: var(--background-secondary);
-        opacity: 0.5;
-        z-index: 11;
-      }
-    }
-
-    .modal-loading {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: var(--background-secondary);
-      border-radius: 4px;
-      padding: 1rem;
-      box-shadow: var(--shadow-block);
-      border: 1px solid var(--primary-hard);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 12;
-    }
-
-    &.fullscreen {
-      width: 100%;
-      max-width: 100%;
-      height: 100%;
-      max-height: 100%;
-    }
-
-    &.lg {
-      width: 940px;
-      max-width: calc(100% - 4rem);
-    }
-
-    &.md {
-      width: 640px;
-      max-width: calc(100% - 4rem);
-    }
-
-    &.sm {
-      width: 480px;
-      max-width: calc(100% - 4rem);
-    }
-  }
-
-  .modal-header {
-    padding: 1rem;
-    position: sticky;
-    top: 0;
-    background: var(--background-secondary);
-    z-index: 1;
-
-    .title {
-      display: inline-block;
-      font-weight: 600;
-      color: var(--text-primary);
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .subtitle {
-      display: inline-block;
-      font-weight: 400;
-      font-size: 0.8rem;
-      color: var(--text-secondary);
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-  }
-
-  .modal-body {
-    border-top: 1px solid var(--neutral-20);
-    background: var(--primary-soft);
-    padding: 1em;
-    overflow-y: auto;
-    flex: 1;
-  }
-
-  .modal-footer {
-    justify-content: flex-end;
-    padding: 1em;
-
-    .modal--footer-btn-splitted {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-    }
-  }
-</style> 
+}
+</style>

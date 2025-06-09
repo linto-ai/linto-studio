@@ -5,7 +5,7 @@
     :weight="weight"
     :mirrored="mirrored"
     :class="['icon-svg', size, color, animation]"
-    :style="{ color: color, ...style }"
+    :style="{ color: computedColor, ...style }"
   />
   <span v-else class="icon-svg missing-icon" :class="[size, color]">?</span>
 </template>
@@ -38,17 +38,25 @@ export default {
         }
       }
       return {}
+    },
+    computedColor() {
+      return this.color || 'currentColor';
     }
   }
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .icon-svg {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   vertical-align: middle;
+  background: none;
+
+  :deep(svg) {
+    fill: currentColor;
+  }
 
   &.pulse :deep(svg) {
     animation: pulse 2s infinite;
@@ -97,6 +105,23 @@ export default {
   &.xs {
     width: 12px;
     height: 12px;
+  }
+
+  /* Color variants */
+  &.primary {
+    color: var(--primary-color);
+  }
+
+  &.secondary {
+    color: var(--secondary-color);
+  }
+
+  &.tertiary {
+    color: var(--tertiary-color);
+  }
+
+  &.neutral {
+    color: var(--neutral-80);
   }
 }
 

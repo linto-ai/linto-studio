@@ -367,6 +367,22 @@ li:last-child {
   background-color: var(--background-green-hard);
 }
 
+.background-transparent {
+  background-color: transparent;
+}
+
+.border-0 {
+  border: 0;
+}
+
+.border-1 {
+  border: 1px solid var(--border-block);
+}
+
+.border-2 {
+  border: 2px solid var(--border-block);
+}
+
 .p-0 {
   padding: 0;
 }

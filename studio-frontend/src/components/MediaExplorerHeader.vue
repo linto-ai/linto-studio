@@ -1,7 +1,7 @@
 <template>
   <div class="media-explorer-header" :style="{ top: formattedStickyTop }">
     <div class="media-explorer-header__content">
-      <div class="flex row align-center gap-medium">
+      <div class="flex flex-1 row align-center gap-medium">
         <div class="media-explorer-header__selection">
           <div
             class="select-all-control"
@@ -26,10 +26,17 @@
 
         <!-- Tags filter selector -->
         <div class="media-explorer-header__filters">
-          <MediaExplorerTagsSelector
-            :medias="allMedias"
-            :selected-tag-ids="selectedTagIds"
-            @filter-change="handleFilterChange" />
+          <div class="input-item border-0 background-transparent">
+            <div class="input-item__prefix-group">
+              <MediaExplorerTagsSelector
+                class="label"
+              :medias="allMedias"
+              :selected-tag-ids="selectedTagIds"
+              @filter-change="handleFilterChange" />
+            </div>
+
+            <input type="text" id="search" placeholder="Search" class="input-item__input" />
+          </div>
         </div>
       </div>
 
@@ -123,6 +130,7 @@ export default {
   min-height: 54px;
   box-sizing: border-box;
   gap: 1rem;
+  flex: 1;
 }
 
 .media-explorer-header__selection {
@@ -203,6 +211,10 @@ export default {
   font-size: 0.875rem;
   color: var(--text-muted, #999);
   font-style: italic;
+}
+
+.input-item {
+    padding: 0;
 }
 
 /* Responsive design */

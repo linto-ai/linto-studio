@@ -97,20 +97,11 @@ const popupManager = new Vue({
         return
       }
 
-      // Find the topmost modal first, as modals should have priority over other popups
+      // Find the topmost popup first, giving priority to the most recent one
       let targetPopup = null
       
-      // First, look for modals (they have overlay = true typically)
-      for (let i = this.stack.length - 1; i >= 0; i--) {
-        const popup = this.stack[i]
-        if (popup.component.name === 'ModalRenderer') {
-          targetPopup = popup
-          break
-        }
-      }
-      
-      // If no modal found, take the topmost popup
-      if (!targetPopup && this.stack.length > 0) {
+      // Take the topmost popup (most recently opened)
+      if (this.stack.length > 0) {
         targetPopup = this.stack[this.stack.length - 1]
       }
 

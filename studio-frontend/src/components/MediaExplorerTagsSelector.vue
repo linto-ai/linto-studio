@@ -1,35 +1,5 @@
 <template>
   <div class="media-explorer-tags-selector">
-    <div class="selected-filters" v-if="selectedTagIds.length > 0">
-      <Tooltip
-        v-for="tagId in selectedTagIds"
-        :key="'filter-tag-' + tagId"
-        :text="getTagTooltip(getTagById(tagId))"
-        position="bottom"
-        :border-color="getTagColor(getTagById(tagId))">
-        <span
-          class="filter-tag"
-          :style="{ backgroundColor: getTagColor(getTagById(tagId)) }"
-          @click="removeTagFilter(tagId)">
-          <span class="filter-tag__name">{{ displayTagEmoji(getTagById(tagId)) }}</span>
-          <span class="filter-tag__delete">
-            <ph-icon
-              name="x"
-              color="var(--neutral-80)"
-              size="10"
-              weight="bold" />
-          </span>
-        </span>
-      </Tooltip>
-      
-      <button 
-        class="clear-filters-btn"
-        @click="clearAllFilters"
-        title="Effacer tous les filtres">
-        <ph-icon name="x-circle" size="16" weight="bold" />
-      </button>
-    </div>
-
     <Popover 
       trigger="click" 
       :track-mouse="false" 
@@ -37,17 +7,16 @@
       overlay
       :class="{ 'has-filters': selectedTagIds.length > 0 }">
       <template #trigger>
-        <button
-          class="btn outline add-filter-btn"
-          :class="{ 
-            'primary-soft': selectedTagIds.length === 0,
-            'primary-color': selectedTagIds.length > 0 
-          }"
+        <Button
+          variant="outline"
+          :color="selectedTagIds.length > 0 ? 'primary' : 'primary-soft'"
+          icon="funnel"
+          icon-position="left"
+          size="sm"
           title="Filtrer par tags">
-          <ph-icon name="funnel" size="16" />
-          <span v-if="selectedTagIds.length === 0">Filtrer</span>
-          <span v-else class="filter-count">{{ selectedTagIds.length }}</span>
-        </button>
+          <template v-if="selectedTagIds.length === 0">Filtrer</template>
+          <template v-else class="filter-count">{{ selectedTagIds.length }}</template>
+        </Button>
       </template>
       
       <template #content>
@@ -90,6 +59,36 @@
         </div>
       </template>
     </Popover>
+
+    <div class="selected-filters" v-if="selectedTagIds.length > 0">
+      <Tooltip
+        v-for="tagId in selectedTagIds"
+        :key="'filter-tag-' + tagId"
+        :text="getTagTooltip(getTagById(tagId))"
+        position="bottom"
+        :border-color="getTagColor(getTagById(tagId))">
+        <span
+          class="filter-tag"
+          :style="{ backgroundColor: getTagColor(getTagById(tagId)) }"
+          @click="removeTagFilter(tagId)">
+          <span class="filter-tag__name">{{ displayTagEmoji(getTagById(tagId)) }}</span>
+          <span class="filter-tag__delete">
+            <ph-icon
+              name="x"
+              color="var(--neutral-80)"
+              size="10"
+              weight="bold" />
+          </span>
+        </span>
+      </Tooltip>
+      
+      <button 
+        class="clear-filters-btn"
+        @click="clearAllFilters"
+        title="Effacer tous les filtres">
+        <ph-icon name="x-circle" size="16" weight="bold" />
+      </button>
+    </div>
   </div>
 </template>
 
