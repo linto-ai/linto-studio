@@ -1,6 +1,12 @@
 <template>
-  <div class="popover-wrapper" :style="popoverStyle" ref="wrapper">
-    <div class="popover-content" :class="position" ref="content">
+  <div
+    class="popover-wrapper"
+    :style="popoverStyle"
+    ref="wrapper"
+    @mouseenter="controller.onContentEnter"
+    @mouseleave="controller.onContentLeave"
+  >
+    <div class="popover-content" :class="[position, contentClass]" ref="content">
       <VNodeRenderer :nodes="slots.default" />
     </div>
   </div>
@@ -18,6 +24,7 @@ export default {
     zIndex: { type: Number, default: 0 },
     position: { type: String, default: "bottom" },
     popoverCoords: { type: Object, required: true },
+    contentClass: { type: String, default: "" },
   },
   computed: {
     popoverStyle() {
@@ -28,12 +35,6 @@ export default {
         zIndex: this.zIndex,
       };
     },
-  },
-  created() {
-    console.log('[PopoverRenderer] CREATED for controller:', this.controller._uid);
-  },
-  mounted() {
-    console.log('[PopoverRenderer] MOUNTED for controller:', this.controller._uid);
   },
   methods: {
     closeOnClickOutside() {

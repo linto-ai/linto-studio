@@ -45,27 +45,22 @@
           </span>
         </router-link>
       </div>
-      <div class="media-explorer-menu__item">
-        <a
-          href="#"
-          class="flex row justify-between gap-medium tab"
-          :class="{ active: activeLabels }"
-          @click="toggleLabels">
-          <span class="flex row align-center gap-medium">
-            <ph-icon name="tag"></ph-icon>
-            <span class="media-explorer-menu__item__sub__item__text">
-              {{ $t("navigation.tabs.explore_labels") }}
+      
+      <ModalTagManagement class="media-explorer-menu__item" overlay>
+        <template #trigger="{ open }">
+          <a
+            href="#"
+            class="flex row justify-between gap-medium tab"
+            @click="open">
+            <span class="flex row align-center gap-medium">
+              <ph-icon name="tag"></ph-icon>
+              <span class="media-explorer-menu__item__sub__item__text">
+                {{ $t("navigation.tabs.explore_labels") }}
+              </span>
             </span>
-          </span>
-          <span class="flex row align-center gap-small">
-            <ph-icon
-              :name="activeLabels ? 'caret-down' : 'caret-up'"
-              color="var(--neutral-80)"
-              size="xs"></ph-icon>
-          </span>
-        </a>
-        <MediaExplorerMenuLabels v-if="activeLabels" />
-      </div>
+          </a>
+        </template>
+      </ModalTagManagement>
     </div>
     <hr />
     <small>Private Inbox</small>
@@ -88,7 +83,7 @@
             params: { organizationId: currentOrganizationScope },
           }"
           class="flex row align-center gap-medium tab">
-          <ph-icon name="star"></ph-icon>
+          <ph-icon name="share-network"></ph-icon>
           <span class="media-explorer-menu__item__sub__item__text">
             {{ $t("navigation.tabs.shared") }}
           </span>
@@ -101,13 +96,13 @@
 <script>
 import { mapGetters } from "vuex"
 import ModalSwitchOrg from "@/components/ModalSwitchOrg.vue"
-import MediaExplorerMenuLabels from "@/components/MediaExplorerMenuLabels.vue"
+import ModalTagManagement from "@/components/ModalTagManagement.vue"
 
 export default {
   name: "MediaExplorerMenu",
   components: {
     ModalSwitchOrg,
-    MediaExplorerMenuLabels,
+    ModalTagManagement,
   },
   computed: {
     colors() {

@@ -8,20 +8,26 @@
     :textActionApply="confirmText"
     :textActionCancel="cancelText"
     :withClose="closable"
-    :value="visible"
+    :value="internalVisible"
     :size="size"
     :customModalClass="`alert-modal alert-${type}`"
     iconActionApply="ph-icon-trash"
     iconActionCancel="ph-icon-x"
     colorActionApply="tertiary"
     colorActionCancel="primary"
+    @input="internalVisible = $event"
     @confirm="onConfirm"
     @close="onCancel"
     @cancel="onCancel"
   >
+    <template #trigger="{ open }">
+      <span @click="(event) => handleTriggerClick(event, open)" class="alert-trigger">
+        <slot></slot>
+      </span>
+    </template>
     <template #content>
       <div class="alert-content">
-        <slot>
+        <slot name="content">
           <div class="alert-message">{{ message }}</div>
         </slot>
       </div>
@@ -48,15 +54,35 @@ export default {
     showActions: { type: Boolean, default: true },
     closable: { type: Boolean, default: true },
     size: { type: String, default: 'sm' },
+    triggerMode: { type: String, default: 'auto' }, // 'auto' for trigger slot, 'controlled' for visible prop
+  },
+  data() {
+    return {
+      internalVisible: this.visible,
+    }
+  },
+  watch: {
+    visible(newVal) {
+      this.internalVisible = newVal;
+    },
+    internalVisible(newVal) {
+      if (newVal !== this.visible) {
+        this.$emit('update:visible', newVal);
+      }
+    }
   },
   methods: {
     onConfirm(e) {
       this.$emit('confirm', e)
-      this.$emit('update:visible', false)
+      this.internalVisible = false
     },
     onCancel(e) {
       this.$emit('cancel', e)
-      this.$emit('update:visible', false)
+      this.internalVisible = false
+    },
+    handleTriggerClick(event, open) {
+      event.stopPropagation();
+      open(event);
     },
   },
 }
@@ -90,5 +116,10 @@ export default {
 }
 .alert-message {
   flex: 1;
+}
+
+.alert-trigger {
+  display: inline-block;
+  cursor: pointer;
 }
 </style> 

@@ -6,25 +6,42 @@ const popupManager = new Vue({
   },
   methods: {
     register(popup) {
-      if (this.stack.some(p => p.id === popup.id)) return
-      console.log('[popupManager] Registering popup:', popup.id, 'Component:', popup.component.name);
+      if (this.stack.some((p) => p.id === popup.id)) return
+      console.log(
+        "[popupManager] Registering popup:",
+        popup.id,
+        "Component:",
+        popup.component.name,
+      )
       this.stack.push(popup)
-      console.log('[popupManager] New stack:', this.stack.map(p => ({id: p.id, name: p.component.name})));
+      console.log(
+        "[popupManager] New stack:",
+        this.stack.map((p) => ({ id: p.id, name: p.component.name })),
+      )
       this.updateZIndexes()
     },
 
     unregister(controller) {
-      const index = this.stack.findIndex(p => p.id === controller._uid)
-      console.log('[popupManager] Unregistering popup:', controller._uid, 'at index:', index);
+      const index = this.stack.findIndex((p) => p.id === controller._uid)
+      console.log(
+        "[popupManager] Unregistering popup:",
+        controller._uid,
+        "at index:",
+        index,
+      )
       if (index !== -1) {
         this.stack.splice(index, 1)
       }
-      console.log('[popupManager] New stack:', this.stack.map(p => ({id: p.id, name: p.component.name})));
+      console.log(
+        "[popupManager] New stack:",
+        this.stack.map((p) => ({ id: p.id, name: p.component.name })),
+      )
       this.updateZIndexes()
     },
 
     handleGlobalClick(event) {
       let topPopupObject = null
+      let clickedOnTooltipTrigger = false
 
       for (let i = this.stack.length - 1; i >= 0; i--) {
         const popup = this.stack[i]
@@ -38,7 +55,14 @@ const popupManager = new Vue({
 
         // Check 2: Is click on the popup's registered trigger?
         if (popup.triggerEl && popup.triggerEl.contains(event.target)) {
-          topPopupObject = popup
+          // Special case for tooltips: if this is a tooltip (hover trigger with closeOnClick), 
+          // we want to close it even when clicking on the trigger
+          if (popup.props.trigger === 'hover' && popup.props.closeOnClick) {
+            clickedOnTooltipTrigger = true
+            // Don't set topPopupObject so it will be closed
+          } else {
+            topPopupObject = popup
+          }
           break
         }
       }
@@ -50,7 +74,19 @@ const popupManager = new Vue({
         if (popup === topPopupObject) {
           break
         }
-        if (popup.rendererInstance && popup.rendererInstance.closeOnClickOutside) {
+        
+        // For tooltips clicked on trigger, always close them
+        if (clickedOnTooltipTrigger && popup.props.trigger === 'hover' && popup.props.closeOnClick) {
+          if (popup.rendererInstance && popup.rendererInstance.closeOnClickOutside) {
+            popup.rendererInstance.closeOnClickOutside()
+          }
+          continue
+        }
+        
+        if (
+          popup.rendererInstance &&
+          popup.rendererInstance.closeOnClickOutside
+        ) {
           popup.rendererInstance.closeOnClickOutside()
         }
       }
@@ -61,11 +97,31 @@ const popupManager = new Vue({
         return
       }
 
-      const topPopup = this.stack[this.stack.length - 1]
-      if (topPopup && topPopup.rendererInstance && topPopup.rendererInstance.closeOnEscape) {
+      // Find the topmost modal first, as modals should have priority over other popups
+      let targetPopup = null
+      
+      // First, look for modals (they have overlay = true typically)
+      for (let i = this.stack.length - 1; i >= 0; i--) {
+        const popup = this.stack[i]
+        if (popup.component.name === 'ModalRenderer') {
+          targetPopup = popup
+          break
+        }
+      }
+      
+      // If no modal found, take the topmost popup
+      if (!targetPopup && this.stack.length > 0) {
+        targetPopup = this.stack[this.stack.length - 1]
+      }
+
+      if (
+        targetPopup &&
+        targetPopup.rendererInstance &&
+        targetPopup.rendererInstance.closeOnEscape
+      ) {
         event.preventDefault()
         event.stopPropagation()
-        topPopup.rendererInstance.closeOnEscape()
+        targetPopup.rendererInstance.closeOnEscape()
       }
     },
 
@@ -78,12 +134,12 @@ const popupManager = new Vue({
     },
 
     setRendererInstance(id, instance) {
-      const popup = this.stack.find(p => p.id === id);
+      const popup = this.stack.find((p) => p.id === id)
       if (popup) {
-        Vue.set(popup, 'rendererInstance', instance);
+        Vue.set(popup, "rendererInstance", instance)
       }
-    }
+    },
   },
 })
 
-export default popupManager 
+export default popupManager

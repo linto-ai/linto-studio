@@ -44,6 +44,10 @@ export default {
             type: String,
             default: "neutral-40",
         },
+        borderRadius: {
+            type: String,
+            default: "4px",
+        },
         color: {
             type: String,
             default: "neutral-10",
@@ -75,6 +79,8 @@ export default {
                 backgroundColor: `var(--${this.backgroundColor})`,
                 color: `var(--${this.textColor})`,
                 borderColor: `var(--${this.borderColor})`,
+                borderWidth: this.borderSize,
+                borderRadius: this.borderRadius,
             }
         },
     },
@@ -83,7 +89,6 @@ export default {
 
 <style lang="scss" scoped>
 .box {
-    border-radius: 4px;
     border: 1px solid var(--neutral-10);
 
     &.outline {

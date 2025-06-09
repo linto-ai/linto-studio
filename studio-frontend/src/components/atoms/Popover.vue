@@ -4,25 +4,9 @@
       class="popover-trigger"
       ref="trigger"
       v-on="triggerHandlers"
-      @mouseenter="onPopoverMouseEnter"
-      @mouseleave="onPopoverMouseLeave"
     >
-      <slot name="trigger"></slot>
+      <slot name="trigger" :open="isOpen"></slot>
     </div>
-    <portal to="body">
-      <div v-if="isOpen">
-        <div
-          class="popover-wrapper"
-          ref="wrapper"
-          :style="popoverStyle"
-          @mouseenter="onPopoverMouseEnter"
-          @mouseleave="onPopoverMouseLeave">
-          <div class="popover-content" :class="position" ref="content">
-            <slot name="content"></slot>
-          </div>
-        </div>
-      </div>
-    </portal>
   </div>
 </template>
 
@@ -69,12 +53,24 @@ export default {
       type: HTMLElement,
       default: null,
     },
+    contentClass: {
+      type: String,
+      default: "",
+    },
+    /**
+     * If true, clicking on the trigger will close the popover (useful for tooltips)
+     */
+    closeOnClick: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
       isOpen: false,
       mouseInside: false,
       popoverCoords: { top: 0, left: 0 },
+      hoverTimeout: null,
     }
   },
   watch: {
@@ -87,7 +83,6 @@ export default {
       immediate: true,
     },
     isOpen(isOpen) {
-      console.log(`[Popover.vue _uid:${this._uid}] isOpen watcher fired. New state:`, isOpen);
       if (isOpen) {
         popupManager.register({
           id: this._uid,
@@ -117,13 +112,16 @@ export default {
         window.removeEventListener("scroll", this.updatePopoverPosition, true);
       }
     },
-    popoverCoords() {
-      if (this.isOpen) {
-        const popup = popupManager.stack.find(p => p.id === this._uid)
-        if (popup) {
-          popup.props.popoverCoords = this.popoverCoords
+    popoverCoords: {
+      handler() {
+        if (this.isOpen) {
+          const popup = popupManager.stack.find((p) => p.id === this._uid);
+          if (popup) {
+            popup.props.popoverCoords = this.popoverCoords;
+          }
         }
-      }
+      },
+      deep: true,
     },
   },
   computed: {
@@ -136,14 +134,14 @@ export default {
       } else if (this.trigger === "hover") {
         handlers.mouseenter = this.handleMouseenter
         handlers.mouseleave = this.handleMouseleave
+        handlers.click = this.handleClickOnHover
       }
       return handlers
     },
-    popoverStyle() {
+    style() {
       return {
-        position: "fixed",
-        left: `${this.popoverCoords.left}px`,
-        top: `${this.popoverCoords.top}px`,
+        borderSize: this.borderSize,
+        padding: this.padding,
       }
     },
   },
@@ -152,8 +150,6 @@ export default {
       if (this.isOpen === newState) return;
       this.isOpen = newState;
       this.$emit("input", this.isOpen);
-      this.mouseInside = false;
-      this.handleMouseleave(); // Re-check if we should close
     },
     handleClick(event) {
       event.preventDefault()
@@ -164,19 +160,48 @@ export default {
       this.toggle(!this.isOpen)
     },
     handleMouseenter() {
-      if (this.trigger === 'hover') this.toggle(true)
+      if (this.trigger === 'hover') {
+        // Clear any pending close timeout
+        if (this.hoverTimeout) {
+          clearTimeout(this.hoverTimeout)
+          this.hoverTimeout = null
+        }
+        
+        this.hoverTimeout = setTimeout(() => {
+          if (!this.isOpen) {
+            this.toggle(true)
+          }
+          this.hoverTimeout = null
+        }, 50)
+      }
     },
     handleMouseleave() {
       if (this.trigger === 'hover') {
-        setTimeout(() => {
-          if (!this.mouseInside) this.toggle(false)
-        }, 150)
+        // Clear any pending open timeout
+        if (this.hoverTimeout) {
+          clearTimeout(this.hoverTimeout)
+          this.hoverTimeout = null
+        }
+        
+        this.hoverTimeout = setTimeout(() => {
+          if (!this.mouseInside) {
+            this.toggle(false)
+          }
+          this.hoverTimeout = null
+        }, 50)
       }
     },
-    onPopoverMouseEnter() {
+    handleClickOnHover(event) {
+      // For tooltips with closeOnClick, the popupManager will handle the closing
+      // This handler is just here to prevent default behavior if needed
+      if (this.trigger === 'hover' && this.closeOnClick) {
+        event.preventDefault()
+      }
+    },
+    onContentEnter() {
       this.mouseInside = true
     },
-    onPopoverMouseLeave() {
+    onContentLeave() {
       this.mouseInside = false
       this.handleMouseleave()
     },
@@ -188,19 +213,20 @@ export default {
     },
     updatePopoverPosition() {
       if (!this.isOpen) return;
-      const trigger = this.$refs.trigger;
-      if (!trigger) return;
 
-      const popup = popupManager.stack.find(p => p.id === this._uid);
-      let popoverRect = { width: 0, height: 0 };
+      const triggerElement = this.triggerElement || this.$refs.trigger;
+      if (!triggerElement) return;
 
-      if (popup && popup.rendererInstance && popup.rendererInstance.$refs.content) {
-        popoverRect = popup.rendererInstance.$refs.content.getBoundingClientRect();
+      const popup = popupManager.stack.find((p) => p.id === this._uid);
+      if (!popup || !popup.rendererInstance || !popup.rendererInstance.$refs.content) {
+        return;
       }
 
-      const rect = trigger.getBoundingClientRect();
+      const popoverRect = popup.rendererInstance.$refs.content.getBoundingClientRect();
+      const rect = triggerElement.getBoundingClientRect();
       const { innerWidth: viewportWidth, innerHeight: viewportHeight } = window;
-      let top = 0, left = 0;
+      let top = 0,
+        left = 0;
 
       switch (this.position) {
         case "top":
@@ -222,16 +248,30 @@ export default {
       }
 
       const margin = 8;
-      left = Math.max(margin, Math.min(left, viewportWidth - popoverRect.width - margin));
-      top = Math.max(margin, Math.min(top, viewportHeight - popoverRect.height - margin));
+      left = Math.max(
+        margin,
+        Math.min(left, viewportWidth - popoverRect.width - margin)
+      );
+      top = Math.max(
+        margin,
+        Math.min(top, viewportHeight - popoverRect.height - margin)
+      );
 
       const newCoords = { top: Math.round(top), left: Math.round(left) };
-      if (this.popoverCoords.top !== newCoords.top || this.popoverCoords.left !== newCoords.left) {
+      if (
+        this.popoverCoords.top !== newCoords.top ||
+        this.popoverCoords.left !== newCoords.left
+      ) {
         this.popoverCoords = newCoords;
       }
     },
   },
   beforeDestroy() {
+    // Clear any pending timeout
+    if (this.hoverTimeout) {
+      clearTimeout(this.hoverTimeout)
+      this.hoverTimeout = null
+    }
     this.toggle(false)
   },
 }
@@ -248,8 +288,8 @@ export default {
 
 .popover-content {
   background: var(--neutral-10);
-  border: 1px solid var(--primary-color);
-  border-radius: 6px;
+  border: 1px solid var(--neutral-20);
+  border-radius: 2px;
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
   min-width: 120px;
   max-width: 90vw;

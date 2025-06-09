@@ -2,11 +2,11 @@
   <Box
     class="tag-box p-0"
     type="shadow"
-    border-size="2px"
-    border-color="primary-hard"
+    border-size="0px"
+    border-radius="0px"
     @click.stop>
     <div class="tag-box__content">
-      <div class="flex row gap-small flex-wrap selected-tags">
+      <div v-if="selectedTagsObjects.length" class="flex row gap-small flex-wrap selected-tags">
         <span class="tag-box__selected-tags-icon">
           <ph-icon name="tag" weight="bold" color="var(--primary-soft)" />
         </span>
@@ -80,13 +80,16 @@ export default {
   props: {
     mediaId: {
       type: String,
+    },
+    selectedTags: {
+      type: Array,
       required: true,
     },
   },
   data() {
     return {
-      loadingTagId: null,
       search: '',
+      loadingTagId: null,
     }
   },
   computed: {
@@ -99,9 +102,6 @@ export default {
     },
     media() {
       return this.$store.getters["inbox/getMediaById"](this.mediaId)
-    },
-    selectedTags() {
-      return this.media && this.media.tags ? this.media.tags : []
     },
     orderedTags() {
       return [...this.tags].sort((a, b) => a.name.localeCompare(b.name))
@@ -131,22 +131,28 @@ export default {
       return tag.color || "var(--neutral-20)"
     },
     async onTagClick(tag) {
-      if (this.loadingTagId) return
-      this.loadingTagId = tag._id
-      try {
-        if (this.selectedTags.includes(tag._id)) {
-          await this.$store.dispatch("tags/removeTagFromMedia", {
-            mediaId: this.mediaId,
-            tagId: tag._id,
-          })
-        } else {
-          await this.$store.dispatch("tags/addTagToMedia", {
-            mediaId: this.mediaId,
-            tagId: tag._id,
-          })
+      // Always emit the event for parent components that need it
+      this.$emit("tag-click", tag)
+      
+      // If we have a mediaId, also handle the tag management automatically
+      if (this.mediaId) {
+        if (this.loadingTagId) return
+        this.loadingTagId = tag._id
+        try {
+          if (this.selectedTags.includes(tag._id)) {
+            await this.$store.dispatch("tags/removeTagFromMedia", {
+              mediaId: this.mediaId,
+              tagId: tag._id,
+            })
+          } else {
+            await this.$store.dispatch("tags/addTagToMedia", {
+              mediaId: this.mediaId,
+              tagId: tag._id,
+            })
+          }
+        } finally {
+          this.loadingTagId = null
         }
-      } finally {
-        this.loadingTagId = null
       }
     },
   },

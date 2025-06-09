@@ -4,14 +4,19 @@
     :class="{ 'media-explorer-item-tags--empty': mediatags.length === 0 }"
     @click.stop>
     <span v-if="mediatags.length > 0" class="media-explorer-item-tags__list">
-      <Tooltip v-for="tag in mediatags" :emoji="tag.emoji" :text="getTagTooltip(tag)" position="bottom" :key="tag._id" :background-color="getTagColor(tag)">
+      <Tooltip
+        v-for="tag in mediatags"
+        :emoji="tag.emoji"
+        :text="getTagTooltip(tag)"
+        position="bottom"
+        :key="'media-explorer-item-tag-' + tag._id"
+        :border-color="getTagColor(tag)">
         <span
           class="tag"
           :style="{ backgroundColor: getTagColor(tag) }"
-          :data-info="tag.name"
           @mouseenter.prevent
           @mouseleave.prevent
-          @click.prevent="(event) => handleTagClick(event, tag)">
+          @click.stop="handleTagClick(tag)">
           <span class="tag__name">{{ displayIfEmoji(tag) }}</span>
           <span class="tag__delete">
             <ph-icon
@@ -24,7 +29,6 @@
       </Tooltip>
     </span>
     <span class="media-explorer-item-tags__actions">
-      <!-- Popover for add tag button -->
       <Popover trigger="click" :track-mouse="false" position="bottom" overlay>
         <template #trigger>
           <button
@@ -35,8 +39,10 @@
           </button>
         </template>
         <template #content>
-          <!-- Tag selector popover content -->
-          <MediaExplorerItemTagBox :media-id="mediaId" />
+          <MediaExplorerItemTagBox
+            :media-id="mediaId"
+            :selected-tags="mediatagsIds"
+            @tag-click="handleTagClick" />
         </template>
       </Popover>
     </span>
@@ -66,7 +72,7 @@ export default {
   },
   data() {
     return {
-      isModalOpen: true,
+      loadingTagId: null,
       showAllTags: false,
     }
   },
@@ -99,16 +105,16 @@ export default {
       tags: (state) => state.tags,
     }),
     medias() {
-      return this.$store.state.inbox.medias
+      return [...this.$store.state.inbox.medias]
     },
     media() {
       return this.$store.getters["inbox/getMediaById"](this.mediaId)
     },
     mediatags() {
-      if (!this.media || !this.media.tags) return []
-      return this.media.tags
-        .map((tagId) => this.tags.find((t) => t._id === tagId))
-        .filter(Boolean)
+      return this.media.tags.map((tagId) => this.tags.find((t) => t._id === tagId))
+    },
+    mediatagsIds() {
+      return this.mediatags.map((tag) => tag._id)
     },
   },
   methods: {
@@ -118,18 +124,35 @@ export default {
     getTagColor(tag) {
       return tag.color || "var(--neutral-20)"
     },
-    handleTagClick(event, tag) {
-      event.preventDefault()
-      event.stopPropagation()
-      this.$store.dispatch("tags/removeTagFromMedia", {
-        mediaId: this.mediaId,
-        tagId: tag._id,
-      })
-    },
-    handleTagAdd(event) {
-      event.preventDefault()
-      event.stopPropagation()
-      console.log("add tag")
+    async handleTagClick(tag) {
+      if (this.loadingTagId) return
+      this.loadingTagId = tag._id
+
+      const isTagInMedia = this.mediatags.some((mtag) => mtag._id === tag._id)
+
+      console.log("isTagInMedia", isTagInMedia)
+      console.log("mediatags", this.mediatags)
+      console.log("tag", tag)
+      console.log("mediatagsIds", this.mediatagsIds)
+      console.log("tag._id", tag._id)
+
+      try {
+        if (isTagInMedia) {
+          console.log("remove tag", tag._id)
+          await this.$store.dispatch("tags/removeTagFromMedia", {
+            mediaId: this.mediaId,
+            tagId: tag._id,
+          })
+        } else {
+          console.log("add tag", tag, tag._id)
+          await this.$store.dispatch("tags/addTagToMedia", {
+            mediaId: this.mediaId,
+            tagId: tag._id,
+          })
+        }
+      } finally {
+        this.loadingTagId = null
+      }
     },
     handleTagMore(event) {
       event.preventDefault()
@@ -138,9 +161,6 @@ export default {
     },
     displayIfEmoji(tag) {
       return this.unifiedToEmoji(tag.emoji)
-      const value = tag.emoji ? tag.emoji : tag.name
-      const emojiRegex = /([\u203C-\u3299]|[\uD83C-\uDBFF\uDC00-\uDFFF]+)/g
-      return emojiRegex.test(value) ? "?" : "1" //this.unifiedToEmoji(value) : ""
     },
     unifiedToEmoji(unified) {
       if (!unified) return ""
@@ -153,7 +173,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .media-explorer-item-tags {
   display: flex;
   align-items: center;
@@ -168,8 +188,12 @@ export default {
     max-width: calc(24px * 3 + 0.5em);
     overflow: hidden;
 
-    & > * {
+    & > *,
+    .popover-trigger {
       flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
   }
 
@@ -185,7 +209,6 @@ export default {
     align-items: center;
     justify-content: flex-end;
     z-index: 1;
-    width: 72px;
   }
 
   &--empty {
@@ -235,18 +258,27 @@ export default {
     font-size: 0.9em;
     font-weight: 600;
     display: flex;
+    transition: opacity 150ms ease-in-out;
   }
 
   &__delete {
-    display: none;
+    display: flex;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 150ms ease-in-out;
+    pointer-events: none;
   }
 
   &:hover {
     .tag__name {
-      display: none;
+      opacity: 0;
     }
     .tag__delete {
-      display: flex;
+      opacity: 1;
+      pointer-events: all;
     }
   }
 

@@ -21,26 +21,22 @@
         </MediaExplorerFormTag>
       </div>
       <div class="tags-list">
-        <ChipTag
+        <Alert
           v-for="tag in tags"
           :key="tag._id"
-          :name="tag.name"
-          :emoji="tag.emoji"
-          :color="tag.color"
-          :active="false"
-          size="lg"
-          @click="onTagClick(tag)"
-        >
-        </ChipTag>
-        <Alert
-          :visible="!!tagToDelete"
-          :title="`Delete tag ${tagToDelete?.name}`"
-          :message="`Are you sure you want to delete the tag ${tagToDelete?.name} ?`"
+          :title="`Delete tag ${tag.name}`"
+          :message="`Are you sure you want to delete the tag ${tag.name}?`"
           type="danger"
-          @confirm="onTagDelete"
-          @cancel="tagToDelete = null"
-          @close="tagToDelete = null"
-        />
+          @confirm="() => onTagDelete(tag)"
+        >
+          <ChipTag
+            :name="tag.name"
+            :emoji="tag.emoji"
+            :color="tag.color"
+            :active="false"
+            size="lg"
+          />
+        </Alert>
       </div>
     </template>
   </Modal>
@@ -65,7 +61,6 @@ export default {
   data() {
     return {
       loading: false,
-      tagToDelete: null,
     }
   },
   methods: {
@@ -76,12 +71,10 @@ export default {
         this.$emit("submit", tag)
       })
     },
-    onTagClick(tag) {
-      this.tagToDelete = tag
-    },
-    onTagDelete() {
-      this.$store.dispatch("tags/deleteTag", this.tagToDelete).then(() => {
-        this.tagToDelete = null
+    onTagDelete(tag) {
+      console.log("onTagDelete", tag)
+      this.$store.dispatch("tags/deleteTag", tag).then(() => {
+        // Tag deleted successfully
       })
     },
   },

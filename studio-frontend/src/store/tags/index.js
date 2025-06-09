@@ -27,6 +27,7 @@ export default {
     },
   },
   getters: {
+    getTags: (state) => state.tags,
     getCategoryById: (state) => (id) => {
       return state.categories.find((category) => category._id === id)
     },

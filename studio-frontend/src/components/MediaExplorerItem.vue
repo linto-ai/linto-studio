@@ -73,13 +73,13 @@
             <button class="btn xs" @click.stop="handleEdit">Edit</button>
           </li>
           <li>
-            <button class="btn xs" @click.stop="handleShare">Export</button>
+            <button class="btn xs" @click.stop="handleExport">Export</button>
           </li>
           <li>
             <button class="btn xs" @click.stop="handleShare">Share</button>
           </li>
           <li>
-            <button class="btn xs tertiary" @click.stop="handleArchive">
+            <button class="btn xs tertiary outline" @click.stop="handleArchive">
               Archive
             </button>
           </li>

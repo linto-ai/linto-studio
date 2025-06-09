@@ -91,7 +91,6 @@ export default {
   background: var(--neutral-10);
   font-size: 0.9em;
   font-weight: 600;
-  user-select: none;
   transition: border-color 0.2s, background 0.2s;
 
   &.sm {
