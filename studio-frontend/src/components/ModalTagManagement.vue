@@ -3,23 +3,12 @@
     size="md"
     title="Gestion des tags"
     subtitle="Gérez vos tags"
-    :loading="loading">
+    :loading="loading"
+    :with-actions="false">
     <template #trigger="{ open }">
       <slot name="trigger" :open="open" />
     </template>
     <template #content>
-      <div class="flex col gap-small">
-        <MediaExplorerFormTag @submit="onSubmit" :loading="loading">
-          <template #trigger="{ open }">
-            <button
-              class="tag-box__button outline primary xs with-icon"
-              @click.stop="open">
-              <ph-icon name="plus" weight="bold" />
-              <span class="tag-box__button-text">Create a new tag</span>
-            </button>
-          </template>
-        </MediaExplorerFormTag>
-      </div>
       <div class="tags-list">
         <Alert
           v-for="tag in tags"
@@ -27,18 +16,28 @@
           :title="`Delete tag ${tag.name}`"
           :message="`Are you sure you want to delete the tag ${tag.name}?`"
           type="danger"
-          @confirm="() => onTagDelete(tag)"
-        >
+          @confirm="() => onTagDelete(tag)">
           <ChipTag
             :name="tag.name"
             :emoji="tag.emoji"
             :color="tag.color"
             :active="false"
-            size="lg"
-          />
+            size="lg" />
         </Alert>
       </div>
     </template>
+    <slot name="actions">
+      <MediaExplorerFormTag @submit="onSubmit" :loading="loading">
+        <template #trigger="{ open }">
+          <button
+            class="tag-box__button outline primary xs with-icon"
+            @click.stop="open">
+            <ph-icon name="plus" weight="bold" />
+            <span class="tag-box__button-text">Create a new tag</span>
+          </button>
+        </template>
+      </MediaExplorerFormTag>
+    </slot>
   </Modal>
 </template>
 

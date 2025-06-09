@@ -5,7 +5,7 @@
 </template>
 
 <script>
-const BORDER_SIZES = ["1px", "2px", "3px", "4px", "5px"]
+const BORDER_SIZES = ["1px", "2px", "3px", "4px", "5px", "0px"]
 const COLORS = [
     "white",
     "black",

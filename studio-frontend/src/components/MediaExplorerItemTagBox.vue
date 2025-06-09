@@ -6,7 +6,9 @@
     border-radius="0px"
     @click.stop>
     <div class="tag-box__content">
-      <div v-if="selectedTagsObjects.length" class="flex row gap-small flex-wrap selected-tags">
+      <div
+        v-if="selectedTagsObjects.length"
+        class="flex row gap-small flex-wrap selected-tags">
         <span class="tag-box__selected-tags-icon">
           <ph-icon name="tag" weight="bold" color="var(--primary-soft)" />
         </span>
@@ -28,7 +30,9 @@
         v-if="selectedTagsObjects.length && unselectedTagsObjects.length">
         <div class="tag-box__separator"></div>
       </template>
-      <div class="flex row gap-small flex-wrap unselected-tags">
+      <div
+        v-if="unselectedTagsObjects.length"
+        class="flex row gap-small flex-wrap unselected-tags">
         <ChipTag
           v-for="tag in unselectedTagsObjects"
           :key="tag._id"
@@ -50,8 +54,7 @@
         v-model="search"
         type="text"
         class="tag-box__search-input"
-        placeholder="Rechercher un tag..."
-      />
+        placeholder="Rechercher un tag..." />
       <ModalTagManagement>
         <template #trigger="{ open }">
           <button
@@ -83,12 +86,13 @@ export default {
     },
     selectedTags: {
       type: Array,
-      required: true,
+      required: false,
+      default: () => [],
     },
   },
   data() {
     return {
-      search: '',
+      search: "",
       loadingTagId: null,
     }
   },
@@ -97,33 +101,43 @@ export default {
       categories: (state) => state.categories,
       tags: (state) => state.tags,
     }),
-    medias() {
-      return this.$store.state.inbox.medias
-    },
     media() {
       return this.$store.getters["inbox/getMediaById"](this.mediaId)
     },
     orderedTags() {
       return [...this.tags].sort((a, b) => a.name.localeCompare(b.name))
     },
+    orderedMediaTags() {
+      return [...this.media.tags]
+        .map((tagId) => this.tags.find((t) => t._id === tagId))
+        .sort((a, b) => a.name.localeCompare(b.name))
+    },
     filteredTags() {
       if (!this.search) return this.orderedTags
       const searchLower = this.search.toLowerCase()
-      return this.orderedTags.filter(tag => {
-        const nameMatch = tag.name && tag.name.toLowerCase().includes(searchLower)
-        const emojiMatch = tag.emoji && tag.emoji.toLowerCase().includes(searchLower)
+      return this.orderedTags.filter((tag) => {
+        const nameMatch =
+          tag.name && tag.name.toLowerCase().includes(searchLower)
+        const emojiMatch =
+          tag.emoji && tag.emoji.toLowerCase().includes(searchLower)
         return nameMatch || emojiMatch
       })
     },
     selectedTagsObjects() {
-      return this.filteredTags.filter((tag) =>
-        this.selectedTags.includes(tag._id),
-      )
+      return this.orderedMediaTags
+        .filter((tag) => this.selectedTagsIds.includes(tag._id))
+        .map((tag) => this.tags.find((t) => t._id === tag._id))
     },
     unselectedTagsObjects() {
       return this.filteredTags.filter(
-        (tag) => !this.selectedTags.includes(tag._id),
+        (tag) => !this.selectedTagsIds.includes(tag._id),
       )
+    },
+    selectedTagsIds() {
+      if (this.selectedTags.length) {
+        return [...this.selectedTags]
+      }
+      return this.media.tags
     },
   },
   methods: {
@@ -133,13 +147,13 @@ export default {
     async onTagClick(tag) {
       // Always emit the event for parent components that need it
       this.$emit("tag-click", tag)
-      
+
       // If we have a mediaId, also handle the tag management automatically
       if (this.mediaId) {
         if (this.loadingTagId) return
         this.loadingTagId = tag._id
         try {
-          if (this.selectedTags.includes(tag._id)) {
+          if (this.selectedTagsIds.includes(tag._id)) {
             await this.$store.dispatch("tags/removeTagFromMedia", {
               mediaId: this.mediaId,
               tagId: tag._id,
@@ -186,7 +200,6 @@ export default {
 }
 
 .tag-box__content {
-
   .selected-tags {
     padding: 0.25em;
     flex-direction: row;

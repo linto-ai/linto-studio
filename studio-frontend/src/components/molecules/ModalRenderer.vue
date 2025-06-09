@@ -56,7 +56,10 @@
           </button>
         </template>
         <div class="flex1"></div>
-        <div class="button-group">
+        <template v-if="$slots.actions">
+            <slot name="actions"></slot>
+          </template>
+        <div class="button-group" v-if="withActions">
           <template v-if="withActionCancel">
             <button
               class="btn neutral outline"

@@ -39,10 +39,7 @@
           </button>
         </template>
         <template #content>
-          <MediaExplorerItemTagBox
-            :media-id="mediaId"
-            :selected-tags="mediatagsIds"
-            @tag-click="handleTagClick" />
+          <MediaExplorerItemTagBox :media-id="mediaId" />
         </template>
       </Popover>
     </span>
@@ -114,7 +111,7 @@ export default {
       return this.media.tags.map((tagId) => this.tags.find((t) => t._id === tagId))
     },
     mediatagsIds() {
-      return this.mediatags.map((tag) => tag._id)
+      return [...this.mediatags.map((tag) => tag._id)]
     },
   },
   methods: {
@@ -128,7 +125,7 @@ export default {
       if (this.loadingTagId) return
       this.loadingTagId = tag._id
 
-      const isTagInMedia = this.mediatags.some((mtag) => mtag._id === tag._id)
+      const isTagInMedia = this.mediatagsIds.includes(tag._id)
 
       console.log("isTagInMedia", isTagInMedia)
       console.log("mediatags", this.mediatags)
