@@ -1,5 +1,13 @@
-import { apiGetTagsByCategory, apiGetSystemCategories, apiCreateOrganizationTag, apiDeleteTag, apiUpdateOrganizationTag } from "@/api/tag"
-import { apiAddTagToConversation, apiDeleteTagFromConversation } from "@/api/conversation"
+import {
+  apiGetTagsByCategory,
+  apiGetSystemCategories,
+  apiCreateOrganizationTag,
+  apiDeleteTag,
+} from "@/api/tag"
+import {
+  apiAddTagToConversation,
+  apiDeleteTagFromConversation,
+} from "@/api/conversation"
 
 export default {
   namespaced: true,
@@ -32,14 +40,16 @@ export default {
       return state.categories.find((category) => category._id === id)
     },
     getCategoryByName: (state) => (name) => {
-      return state.categories.find((category) => category.name.toLowerCase() === name.toLowerCase())
+      return state.categories.find(
+        (category) => category.name.toLowerCase() === name.toLowerCase(),
+      )
     },
     getTagById: (state) => (id) => {
       return state.tags.find((tag) => tag._id === id)
     },
   },
   actions: {
-    async fetchTags({ commit, getters, rootGetters }) {
+    async fetchTags({ commit, getters, state, rootGetters }) {
       commit("setLoading", true)
       try {
         const data = await apiGetSystemCategories(
@@ -48,13 +58,19 @@ export default {
 
         commit("setCategories", data)
 
-        const tags = await apiGetTagsByCategory(
-          rootGetters["organizations/getCurrentOrganizationScope"],
-          data[2]._id,
+        const tagsCategory = data.find(
+          (category) => category.name.toLowerCase() === "tags",
         )
 
-        commit("setTags", tags)
-        return { categories: data, tags }
+        if (tagsCategory) {
+          const tags = await apiGetTagsByCategory(
+            rootGetters["organizations/getCurrentOrganizationScope"],
+            tagsCategory._id,
+          )
+          commit("setTags", tags)
+        }
+
+        return { categories: data, tags: state.tags }
       } catch (error) {
         console.error("Error fetching tags:", error)
         commit("setError", error)
@@ -68,7 +84,7 @@ export default {
       try {
         const data = await apiCreateOrganizationTag(
           rootGetters["organizations/getCurrentOrganizationScope"],
-          getters.getCategoryByName('tags')._id,
+          getters.getCategoryByName("tags")._id,
           tag.name,
           tag.color,
           tag.emoji,
@@ -84,25 +100,18 @@ export default {
         commit("setLoading", false)
       }
     },
-    async updateTag({ commit, getters, rootGetters, state }, tag) {
-      commit("setLoading", true)
-      try {
-        const data = await apiUpdateOrganizationTag(rootGetters["organizations/getCurrentOrganizationScope"], tag)
-        return data
-      } catch (error) {
-        console.error("Error updating tag in store:", error)
-        commit("setError", error)
-        throw error
-      } finally {
-        commit("setLoading", false)
-      }
-    },
     async deleteTag({ commit, getters, rootGetters, state }, tag) {
       commit("setLoading", true)
       try {
-        const data = await apiDeleteTag(rootGetters["organizations/getCurrentOrganizationScope"], tag._id)
+        const data = await apiDeleteTag(
+          rootGetters["organizations/getCurrentOrganizationScope"],
+          tag._id,
+        )
         console.log("Tag deleted from API:", tag.name, data)
-        commit("setTags", state.tags.filter((t) => t._id !== tag._id))
+        commit(
+          "setTags",
+          state.tags.filter((t) => t._id !== tag._id),
+        )
         return data
       } catch (error) {
         console.error("Error deleting tag in store:", error)
@@ -113,7 +122,10 @@ export default {
         commit("setLoading", false)
       }
     },
-    async addTagToMedia({ commit, getters, rootGetters, state }, { mediaId, tagId }) {
+    async addTagToMedia(
+      { commit, getters, rootGetters, state },
+      { mediaId, tagId },
+    ) {
       commit("setLoading", true)
       try {
         console.log("addTagToMedia", mediaId, tagId)
@@ -121,7 +133,11 @@ export default {
         const media = rootGetters["inbox/getMediaById"](mediaId)
         const newMedia = { ...media, tags: [...media.tags, tagId] }
         console.log("newMedia", newMedia)
-        commit("inbox/updateMedia", { mediaId, media: newMedia }, { root: true })
+        commit(
+          "inbox/updateMedia",
+          { mediaId, media: newMedia },
+          { root: true },
+        )
       } catch (error) {
         console.log("error", error)
         commit("setError", error)
@@ -129,13 +145,23 @@ export default {
         commit("setLoading", false)
       }
     },
-    async removeTagFromMedia({ commit, getters, rootGetters, state }, { mediaId, tagId }) {
+    async removeTagFromMedia(
+      { commit, getters, rootGetters, state },
+      { mediaId, tagId },
+    ) {
       commit("setLoading", true)
       try {
         const data = await apiDeleteTagFromConversation(mediaId, tagId)
         const media = rootGetters["inbox/getMediaById"](mediaId)
-        const newMedia = { ...media, tags: media.tags.filter((t) => t !== tagId) }
-        commit("inbox/updateMedia", { mediaId, media: newMedia }, { root: true })
+        const newMedia = {
+          ...media,
+          tags: media.tags.filter((t) => t !== tagId),
+        }
+        commit(
+          "inbox/updateMedia",
+          { mediaId, media: newMedia },
+          { root: true },
+        )
       } catch (error) {
         console.log("error", error)
         commit("setError", error)
