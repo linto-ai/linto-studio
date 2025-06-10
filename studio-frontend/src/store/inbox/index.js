@@ -78,6 +78,8 @@ export default {
           commit('addToUploadQueue', file);
           commit('setUploadProgress', { fileId: file.id, progress: 0 });
           
+          // TODO: upload file to linto api
+          // Simulate upload progress
           for (let progress = 0; progress <= 100; progress += 10) {
             commit('setUploadProgress', { fileId: file.id, progress });
             await new Promise(resolve => setTimeout(resolve, 100));

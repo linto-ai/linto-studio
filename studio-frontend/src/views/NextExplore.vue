@@ -4,6 +4,7 @@
       :medias="conversations"
       :loading="loadingConversations"
       :error="error"
+      @search="handleSearch"
       class="explore-next__media-explorer relative">
       <template v-slot:before>
         <div
@@ -28,6 +29,7 @@
             <span v-else-if="!hasMoreItems">End of results</span>
             <span v-else>Loading...</span>
           </div>
+          <pre>{{ customFilters }}</pre>
         </div>
       </template>
       <template v-slot:empty>
@@ -83,7 +85,6 @@ export default {
       loadingConversations: false,
       page: 0,
       initialPage: 0,
-      customFilters: [],
       selectedTags: [],
       error: null,
       observer: null,
@@ -95,6 +96,9 @@ export default {
         favorites: false,
         shared: false,
       },
+      mode: "default", // default, search
+      search: "",
+      filters: [],
     }
   },
   mixins: [debounceMixin, conversationListOrgaMixin],
@@ -166,20 +170,22 @@ export default {
       window.history.replaceState({}, "", url)
     },
 
-    async apiSearchConversations(page = this.page) {
+    async apiSearchConversations(page = this.page, filters = []) {
       let res
       this.loadingConversations = true
 
+      const textFilter = filters.find((filter) => filter.key === "textConversation")?.value
+      const titleFilter = filters.find((filter) => filter.key === "titleConversation")?.value
+
       if (
         (!this.selectedTags || this.selectedTags.length == 0) &&
-        !this.customFilters?.textConversation?.value &&
-        !this.customFilters?.titleConversation?.value
+        filters.length == 0
       ) {
         if (this.options.favorites) {
           res = await apiGetFavoritesConversations(
             this.selectedTags.map((tag) => tag._id),
-            this.customFilters?.textConversation?.value,
-            this.customFilters?.titleConversation?.value,
+            textFilter,
+            titleFilter,
             page,
             {
               sortField: this.selectedOption,
@@ -189,8 +195,8 @@ export default {
           if (this.options.shared) {
             res = await apiGetConversationsSharedWith(
               this.selectedTags.map((tag) => tag._id),
-              this.customFilters?.textConversation?.value,
-              this.customFilters?.titleConversation?.value,
+              textFilter,
+              titleFilter,
               page,
               {
                 sortField: this.selectedOption,
@@ -211,8 +217,8 @@ export default {
         res = await apiGetConversationsByTags(
           this.currentOrganizationScope,
           this.selectedTags.map((tag) => tag._id),
-          this.customFilters?.textConversation?.value,
-          this.customFilters?.titleConversation?.value,
+          textFilter,
+          titleFilter,
           page,
           {
             sortField: this.selectedOption,
@@ -237,7 +243,6 @@ export default {
         }
 
         this.appendMedias(fromConversations(newConversations))
-
         this.hasMoreItems = data?.count - 12 * (page + 1) > 0
 
         return newConversations
@@ -291,19 +296,37 @@ export default {
       this.observer.observe(this.$refs.infiniteLoadingTrigger)
     },
 
+    handleSearch(search, filters) {
+      if (search.length === 0) {
+        this.mode = "default"
+        this.fetchConversations(0, false)
+        return
+      }
+
+      this.search = search
+      this.filters = filters
+      this.mode = "search"
+      this.resetSearch(filters)
+    },
+
     async handleLoadMore() {
       if (this.loadingConversations || !this.hasMoreItems) return
 
       this.page += 1
-      await this.fetchConversations(this.page, true)
+      if (this.mode == "search") {
+        await this.apiSearchConversations(this.page, this.filters)
+      } else {
+        await this.fetchConversations(this.page, true)
+      }
     },
 
-    resetSearch() {
+    resetSearch(filters = []) {
       this.page = 0
       this.conversations = []
-      this.hasMoreItems = true
+      this.showPreviousButton = false
+      this.hasMoreItems = false
       this.isInitialLoad = false
-      this.fetchConversations(this.page).then(() => {
+      return this.apiSearchConversations(0, filters).then(() => {
         this.$nextTick(() => {
           this.setupIntersectionObserver()
         })

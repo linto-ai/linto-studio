@@ -22,7 +22,8 @@
         :all-medias="medias"
         :selected-tag-ids="selectedTagIds"
         @select-all="handleSelectAll"
-        @filter-change="handleFilterChange">
+        @filter-change="handleFilterChange"
+        @search="handleSearch">
         <template #actions>
           <slot name="header-actions" />
         </template>
@@ -160,6 +161,10 @@ export default {
       type: String,
       required: false,
     },
+    customFilters: {
+      type: Object,
+      required: false,
+    },
   },
   computed: {
     selectedMedias() {
@@ -198,6 +203,7 @@ export default {
       isSelectAll: false,
       observer: null,
       selectedTagIds: [], // Track selected tag IDs for filtering
+      search: "",
     }
   },
   mounted() {
@@ -461,6 +467,10 @@ export default {
         this.observer.disconnect()
         this.observer = null
       }
+    },
+
+    handleSearch(search, filters) {
+      this.$emit("search", search, filters)
     },
   },
 }

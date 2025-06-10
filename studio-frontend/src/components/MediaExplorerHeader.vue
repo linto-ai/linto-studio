@@ -30,12 +30,19 @@
             <div class="input-item__prefix-group">
               <MediaExplorerTagsSelector
                 class="label"
-              :medias="allMedias"
-              :selected-tag-ids="selectedTagIds"
-              @filter-change="handleFilterChange" />
+                :medias="allMedias"
+                :search-value="search"
+                :selected-tag-ids="selectedTagIds"
+                @filter-change="handleFilterChange" />
             </div>
 
-            <input type="text" id="search" placeholder="Search" class="input-item__input" />
+            <input
+              v-model="search"
+              type="text"
+              id="search"
+              placeholder="Search"
+              class="input-item__input"
+              @keyup.enter="handleSearch" />
           </div>
         </div>
       </div>
@@ -49,6 +56,7 @@
 </template>
 
 <script>
+import { v4 as uuid } from "uuid"
 import MediaExplorerTagsSelector from "./MediaExplorerTagsSelector.vue"
 
 export default {
@@ -96,6 +104,11 @@ export default {
       return this.stickyTopOffset
     },
   },
+  data() {
+    return {
+      search: "",
+    }
+  },
   methods: {
     handleSelectAll() {
       this.$emit("select-all")
@@ -103,6 +116,29 @@ export default {
 
     handleFilterChange(selectedTagIds) {
       this.$emit("filter-change", selectedTagIds)
+    },
+
+    handleSearch() {
+      const formattedSearch = this.search.trim()
+
+      if (formattedSearch.length === 0) {
+        this.$emit("search", formattedSearch, [])
+      } else {
+        this.$emit("search", formattedSearch, [
+          {
+            title: "Title filter",
+            value: this.search,
+            _id: uuid(),
+            key: "titleConversation",
+          },
+          {
+            title: "Text filter",
+            value: this.search,
+            _id: uuid(),
+            key: "textConversation",
+          },
+        ])
+      }
     },
   },
 }
@@ -214,7 +250,10 @@ export default {
 }
 
 .input-item {
-    padding: 0;
+  padding: 0;
+  padding-left: 0.25rem;
+  border: 1px solid var(--neutral-40, #d0d0d0);
+  background-color: var(--neutral-10, #f5f5f5);
 }
 
 /* Responsive design */

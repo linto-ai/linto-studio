@@ -9,7 +9,7 @@
       <template #trigger>
         <Button
           variant="outline"
-          :color="selectedTagIds.length > 0 ? 'primary' : 'primary-soft'"
+          :color="selectedTagIds.length > 0 ? 'primary-hard' : 'primary'"
           icon="funnel"
           icon-position="left"
           size="sm"

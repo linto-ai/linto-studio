@@ -60,7 +60,7 @@
             <Avatar
               :text="convOwner.fullName.substring(0, 1)"
               class="media-explorer-item__inline__more__owner__avatar"
-              size="xs" />
+              size="xsmedi" />
             <span class="media-explorer-item__inline__more__owner__name">
               {{ convOwner.fullName }}
             </span>
