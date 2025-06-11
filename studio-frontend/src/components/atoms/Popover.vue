@@ -93,7 +93,7 @@ export default {
             popoverCoords: this.popoverCoords,
           },
           slots: {
-            default: this.$scopedSlots.content
+            default: () => this.$scopedSlots.content
               ? this.$scopedSlots.content()
               : this.$slots.default || [],
           },

@@ -7,7 +7,7 @@
     @mouseleave="controller.onContentLeave"
   >
     <div class="popover-content" :class="[position, contentClass]" ref="content">
-      <VNodeRenderer :nodes="slots.default" />
+      <VNodeRenderer :nodes="renderedSlots" />
     </div>
   </div>
 </template>
@@ -34,6 +34,12 @@ export default {
         top: `${this.popoverCoords.top}px`,
         zIndex: this.zIndex,
       };
+    },
+    renderedSlots() {
+      // Evaluate the slot function each time to maintain reactivity
+      return typeof this.slots.default === 'function' 
+        ? this.slots.default() 
+        : this.slots.default || [];
     },
   },
   methods: {

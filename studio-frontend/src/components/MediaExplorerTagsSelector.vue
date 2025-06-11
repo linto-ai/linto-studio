@@ -15,7 +15,7 @@
           size="sm"
           title="Filtrer par tags">
           <template v-if="selectedTagIds.length === 0">Filtrer</template>
-          <template v-else class="filter-count">{{ selectedTagIds.length }}</template>
+          <template v-else class="filter-count">x{{ selectedTagIds.length }}</template>
         </Button>
       </template>
       
@@ -24,7 +24,7 @@
           <div class="popover-header">
             <h4>Filtrer par tags</h4>
             <button 
-              v-if="selectedTagIds.length > 0"
+              v-if="hasSelectedFilters"
               class="clear-all-link"
               @click="clearAllFilters">
               Tout effacer
@@ -131,6 +131,11 @@ export default {
         return a.name.localeCompare(b.name)
       })
     },
+    
+    // Computed property to check if there are selected filters
+    hasSelectedFilters() {
+      return this.selectedTagIds && this.selectedTagIds.length > 0
+    },
   },
   methods: {
     getTagById(tagId) {
@@ -167,7 +172,7 @@ export default {
     },
     
     isTagSelected(tagId) {
-      return this.selectedTagIds.includes(tagId)
+      return this.selectedTagIds && this.selectedTagIds.includes(tagId)
     },
     
     toggleTagFilter(tagId) {
