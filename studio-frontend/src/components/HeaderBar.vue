@@ -1,9 +1,11 @@
 <template>
   <div class="flex align-center header-bar">
-    <div class="flex align-center header-bar__left">
+    <slot name="header-bar"></slot>
+
+    <div class="flex align-center header-bar__left" v-if="!hasHeaderBarSlot">
       <action-conversation-create />
     </div>
-    <div class="header-bar__right">
+    <div class="header-bar__right" v-if="!hasHeaderBarSlot">
       <MediaExplorerStorageSize />
     </div>
   </div>
@@ -44,6 +46,9 @@ export default {
     ...mapGetters("organizations", {
       currentOrganizationScope: "getCurrentOrganizationScope",
     }),
+    hasHeaderBarSlot() {
+      return !!this.$slots["header-bar"]
+    },
   },
   methods: {
     handleSearch(e) {

@@ -1,38 +1,40 @@
 <template>
   <LayoutV2>
-    <!-- <template v-slot:breadcrumb-actions> -->
-    <SessionHeader
-      :sessionListRoute="sessionListRoute"
-      :sessionLoaded="sessionLoaded"
-      :name="name"
-      :session="session">
-      <template v-slot:right-button-desktop>
-        <router-link
-          :to="settingsRoute"
-          class="btn"
-          v-if="isAtLeastMeetingManager">
-          <span class="icon settings"></span>
-          <span class="label">{{
-            $t("session.detail_page.settings_button")
-          }}</span>
-        </router-link>
-      </template>
-      <template v-slot:right-button-mobile>
-        <div class="flex gap-small">
+    <template v-slot:header-bar>
+      <SessionHeader
+        :sessionListRoute="sessionListRoute"
+        :sessionLoaded="sessionLoaded"
+        :name="name"
+        :session="session">
+        <template v-slot:right-button-desktop>
           <router-link
             :to="settingsRoute"
-            class="btn secondary only-icon"
-            v-if="isAtLeastMeetingManager"
-            :aria-label="$t('session.detail_page.settings_button')">
+            class="btn"
+            v-if="isAtLeastMeetingManager">
             <span class="icon settings"></span>
+            <span class="label">{{
+              $t("session.detail_page.settings_button")
+            }}</span>
           </router-link>
-          <button class="btn secondary only-icon" @click="showMobileSubtitles">
-            <span class="icon subtitle"></span>
-          </button>
-        </div>
-      </template>
-    </SessionHeader>
-    <!-- </template> -->
+        </template>
+        <template v-slot:right-button-mobile>
+          <div class="flex gap-small">
+            <router-link
+              :to="settingsRoute"
+              class="btn secondary only-icon"
+              v-if="isAtLeastMeetingManager"
+              :aria-label="$t('session.detail_page.settings_button')">
+              <span class="icon settings"></span>
+            </router-link>
+            <button
+              class="btn secondary only-icon"
+              @click="showMobileSubtitles">
+              <span class="icon subtitle"></span>
+            </button>
+          </div>
+        </template>
+      </SessionHeader>
+    </template>
 
     <template v-slot:sidebar>
       <div class="sidebar-divider"></div>

@@ -165,6 +165,7 @@ export default {
         transcriberProfile: "transcriberProfileId",
       }
 
+      if (!route.params) return null
       return route.params[paramMap[entityType]]
     },
 

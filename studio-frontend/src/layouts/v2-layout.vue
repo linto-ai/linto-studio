@@ -7,7 +7,11 @@
         </BurgerMenu>
       </aside>
       <main class="v2-layout__main">
-        <HeaderBar />
+        <HeaderBar>
+          <template v-slot:header-bar v-if="hasHeaderBarSlot">
+            <slot name="header-bar"></slot>
+          </template>
+        </HeaderBar>
         <Breadcrumb>
           <template v-slot:breadcrumb-actions>
             <slot name="breadcrumb-actions"></slot>
@@ -57,6 +61,9 @@ export default {
   computed: {
     isAuthenticated() {
       return isAuthenticated()
+    },
+    hasHeaderBarSlot() {
+      return !!this.$slots["header-bar"]
     },
   },
   mounted() {},
@@ -132,7 +139,7 @@ export default {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 .5rem;
+      padding: 0 0.5rem;
       border-bottom: 1px solid var(--border-color, #e9ecef);
       background-color: var(--background-breadcrumb, rgba(248, 249, 250, 0.8));
       flex-shrink: 0;

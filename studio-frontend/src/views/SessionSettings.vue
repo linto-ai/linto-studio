@@ -1,29 +1,30 @@
 <template>
   <LayoutV2>
-    <SessionHeader
-      v-if="sessionLoaded"
-      :sessionListRoute="sessionListRoute"
-      :isAuthenticated="isAuthenticated"
-      :sessionLoaded="sessionLoaded"
-      :name="name"
-      :session="session">
-      <template v-slot:right-button-desktop>
-        <router-link :to="liveRoute" class="btn">
-          <span class="icon text"></span>
-          <span class="label">{{
-            $t("session.detail_page.back_to_live")
-          }}</span>
-        </router-link>
-      </template>
-      <template v-slot:right-button-mobile>
-        <router-link
-          :to="liveRoute"
-          class="btn secondary only-icon"
-          :aria-label="$t('session.detail_page.back_to_live')">
-          <span class="icon text"></span>
-        </router-link>
-      </template>
-    </SessionHeader>
+    <template v-slot:header-bar>
+      <SessionHeader
+        :sessionListRoute="sessionListRoute"
+        :isAuthenticated="isAuthenticated"
+        :sessionLoaded="sessionLoaded"
+        :name="name"
+        :session="session">
+        <template v-slot:right-button-desktop>
+          <router-link :to="liveRoute" class="btn">
+            <span class="icon text"></span>
+            <span class="label">{{
+              $t("session.detail_page.back_to_live")
+            }}</span>
+          </router-link>
+        </template>
+        <template v-slot:right-button-mobile>
+          <router-link
+            :to="liveRoute"
+            class="btn secondary only-icon"
+            :aria-label="$t('session.detail_page.back_to_live')">
+            <span class="icon text"></span>
+          </router-link>
+        </template>
+      </SessionHeader>
+    </template>
     <div class="flex1 medium-padding" v-if="sessionLoaded">
       <h1 class="center-text">{{ name }}</h1>
       <div class="flex wrap">
