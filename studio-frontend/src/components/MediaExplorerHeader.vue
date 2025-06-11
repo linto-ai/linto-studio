@@ -183,6 +183,7 @@ export default {
   justify-content: space-between;
   padding: 0.5rem 1rem;
   min-height: 54px;
+  max-height: 54px;
   box-sizing: border-box;
   gap: 1rem;
   flex: 1;

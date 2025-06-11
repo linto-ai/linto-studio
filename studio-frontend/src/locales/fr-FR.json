@@ -83,16 +83,29 @@
     }
   },
   "breadcrumb": {
+    "backoffice": "Backoffice",
     "conversations": "Conversations",
     "create": "Importer un media",
+    "createConversation": "Créer une conversation",
     "createOrganization": "Créer une organisation",
-    "favorite": "Favoris de {name} ",
+    "createSession": "Créer une session",
+    "explore": "Explorer",
+    "exploreOld": "Explorer (ancien)",
+    "favorites": "Favoris",
     "media": "Médias de {organization}",
+    "organizations": "Organisations",
     "overview": "Synthèse",
+    "publish": "Publication",
+    "quickSession": "Session rapide",
+    "sessions": "Sessions",
+    "sessionSettings": "Paramètres",
     "settings": "Paramètres de {organization}",
-    "shared": "{name} guest medias",
+    "shared": "Partagés",
+    "subtitles": "Sous-titres",
     "tagsSettings": "Tags de {organization}",
     "transcription": "Transcription",
+    "transcriberProfiles": "Profils de transcription",
+    "users": "Utilisateurs",
     "userSettings": "Paramètres utilisateur"
   },
   "conversation": {
@@ -339,14 +352,14 @@
     "transcription_help": {
       "audio_player_shortcut_content": "Vous pouvez contrôler le player audio en utilisant les boutons du player en dessous de la transcription. | Vous pouvez également utiliser les raccourcis clavier suivant (hors mode \"Edition\") : ",
       "audio_player_shortcut_list1": "\"Espace\" (<span class=\"txt-icon key-space\"></span>) : <i>Play / Pause</i>",
-      "audio_player_shortcut_list2": "\"CTRL + \"Flèche droite\" (<span class=\"txt-icon key-ctrl\"></span> + <span class=\"txt-icon key-right-arrow\"></span>) : <i>Avancer l’audio de 60 secondes</i>",
-      "audio_player_shortcut_list3": "\"ALT\" + \"Flèche droite\" (<span class=\"txt-icon key-alt\"></span> + <span class=\"txt-icon key-right-arrow\"></span>) : <i>Avancer l’audio de 10 secondes</i>",
-      "audio_player_shortcut_list4": "\"SHIFT\" + \"Flèche droite\" (<span class=\"txt-icon key-shift\"></span> + <span class=\"txt-icon key-right-arrow\"></span>) : <i>Avancer l’audio de 3 secondes</i>",
-      "audio_player_shortcut_list5": "\"CTRL + \"Flèche gauche\" (<span class=\"txt-icon key-ctrl\"></span> + <span class=\"txt-icon key-left-arrow\"></span>) : <i>Reculer l’audio de 60 secondes</i>",
-      "audio_player_shortcut_list6": "\"ALT\" + \"Flèche gauche\" (<span class=\"txt-icon key-alt\"></span> + <span class=\"txt-icon key-left-arrow\"></span>) : <i>Reculer l’audio de 10 secondes</i>",
-      "audio_player_shortcut_list7": "\"SHIFT\" + \"Flèche gauche\" (<span class=\"txt-icon key-shift\"></span> + <span class=\"txt-icon key-left-arrow\"></span>) : <i>Reculer l’audio de 3 secondes</i>",
+      "audio_player_shortcut_list2": "\"CTRL + \"Flèche droite\" (<span class=\"txt-icon key-ctrl\"></span> + <span class=\"txt-icon key-right-arrow\"></span>) : <i>Avancer l'audio de 60 secondes</i>",
+      "audio_player_shortcut_list3": "\"ALT\" + \"Flèche droite\" (<span class=\"txt-icon key-alt\"></span> + <span class=\"txt-icon key-right-arrow\"></span>) : <i>Avancer l'audio de 10 secondes</i>",
+      "audio_player_shortcut_list4": "\"SHIFT\" + \"Flèche droite\" (<span class=\"txt-icon key-shift\"></span> + <span class=\"txt-icon key-right-arrow\"></span>) : <i>Avancer l'audio de 3 secondes</i>",
+      "audio_player_shortcut_list5": "\"CTRL + \"Flèche gauche\" (<span class=\"txt-icon key-ctrl\"></span> + <span class=\"txt-icon key-left-arrow\"></span>) : <i>Reculer l'audio de 60 secondes</i>",
+      "audio_player_shortcut_list6": "\"ALT\" + \"Flèche gauche\" (<span class=\"txt-icon key-alt\"></span> + <span class=\"txt-icon key-left-arrow\"></span>) : <i>Reculer l'audio de 10 secondes</i>",
+      "audio_player_shortcut_list7": "\"SHIFT\" + \"Flèche gauche\" (<span class=\"txt-icon key-shift\"></span> + <span class=\"txt-icon key-left-arrow\"></span>) : <i>Reculer l'audio de 3 secondes</i>",
       "audio_player_shortcut_title": "Lecteur audio / raccourcis clavier",
-      "edit_speaker_content": "Cliquez sur le nom du locuteur pour un tour de parole donné afin de le mettre à jour. Une fenêtre s’ouvrira vous permettant de choisir parmis différentes options :",
+      "edit_speaker_content": "Cliquez sur le nom du locuteur pour un tour de parole donné afin de le mettre à jour. Une fenêtre s'ouvrira vous permettant de choisir parmis différentes options :",
       "edit_speaker_content_list": "Pour remplacer un locteur sur un tour de parole, sélectionnez un locuteur existant pour remplacer le locuteur courant ou cliquez sur \"Ajouter un locuteur\" pour créer un nouveau locuteur. | Cliquez sur \"Modifier le locuteur\" pour modifier le nom du locuteur sur toute la transcription.",
       "edit_speaker_title": "édition des locuteurs",
       "edit_transcript_content": "Cliquez sur un mot pour placer le curseur d'édition sur ce dernier et réalisez vos modifications. | Le fait de cliquer sur un mot vous permet également de déplacer le curseur du player audio à l'endroit ou le mot est prononcé.",
@@ -475,7 +488,7 @@
     "bug_report": "Signaler un bug ou une erreur",
     "server_error": {
       "subtitle": "Nous sommes désolés pour la gêne occasionnée. Nous travaillons à résoudre le problème au plus vite.",
-      "title": "L’opération est indisponible pour le moment."
+      "title": "L'opération est indisponible pour le moment."
     },
     "title": "Nous avons rencontré un problème",
     "required": "Ce champ est requis",
@@ -525,7 +538,7 @@
       "last_update": "Dernière mise à jour",
       "notags": "Sans tags"
     },
-    "subtitle": "Vos médias récemment importés arrivent ici. Utilisez ”importer un media” ou {appLink} pour l'enrichir.",
+    "subtitle": "Vos médias récemment importés arrivent ici. Utilisez \"importer un media\" ou {appLink} pour l'enrichir.",
     "title": "Derniers médias"
   },
   "invite_user": {
@@ -777,7 +790,7 @@
     "user_description": "Prénom, nom, adresse électronique et image de l'utilisateur",
     "user_label": "Utilisateur",
     "user_label_inline": "\"Utilisateur\" : ",
-    "user_list_description": "Liste des utilisateurs de l’organisation",
+    "user_list_description": "Liste des utilisateurs de l'organisation",
     "user_list_label": "Liste des utilisateurs",
     "user_not_found": "L'utilisateur n'existe pas",
     "visibility": {
@@ -916,7 +929,7 @@
       "clear_turn_selection": "Déselectionner",
       "session_ended_title": "La session est terminée",
       "session_ended_subtitle": "La transcription a été sauvegardé dans votre bibliothèque de médias",
-      "session_ended_link_to_conversation_transcription": "Ouvrir la transcription dans l’éditeur",
+      "session_ended_link_to_conversation_transcription": "Ouvrir la transcription dans l'éditeur",
       "session_ended_link_to_inbox": "Accéder à la bibliothèque des médias",
       "session_not_started_title": "La session n'a pas encore commencé",
       "settings_button": "Paramètres",
@@ -1190,9 +1203,7 @@
     },
     "personal_information": "Informations personnelles",
     "picture_label": "Image de profil",
-
     "private_label": "Rendre le profil privée",
-
     "profil_visibility": {
       "label_private": "Profil privé",
       "title": "Visibilité du profil"
@@ -1201,7 +1212,6 @@
       "profile_image_button": "Choisir une image",
       "update_picture_button": "Mettre à jour"
     },
-
     "profile_image_reset_button": "Réinitialiser l'image",
     "role_section": {
       "title": "Rôle d'administration",

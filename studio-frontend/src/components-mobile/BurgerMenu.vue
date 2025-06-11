@@ -173,7 +173,6 @@ export default {
     justify-content: space-between;
     padding: 0 1em;
     background-color: white;
-    border-bottom: 1px solid var(--primary-soft);
     height: 56px;
     box-shadow: var(--shadow-block);
   }
@@ -225,7 +224,9 @@ export default {
     padding: 0;
     display: flex;
     align-items: center;
+    border-top: var(--border-block);
     border-bottom: var(--border-block);
+    height: 54px;
     & > * {
       flex: 1;
     }

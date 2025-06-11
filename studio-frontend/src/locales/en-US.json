@@ -83,16 +83,30 @@
     }
   },
   "breadcrumb": {
+    "backoffice": "Backoffice",
     "conversations": "Media",
     "create": "Upload media",
+    "createConversation": "Create a conversation",
     "createorganization": "Create an organisation",
-    "favorite": "{name} favorites",
+    "createOrganization": "Create an organisation",
+    "createSession": "Create a session",
+    "explore": "Explore",
+    "exploreOld": "Explore (legacy)",
+    "favorites": "Favorites",
     "media": "{organization} media",
+    "organizations": "Organizations",
     "overview": "Overview",
+    "publish": "Publish",
+    "quickSession": "Quick session",
+    "sessions": "Sessions",
+    "sessionSettings": "Settings",
     "settings": "{organization} Settings",
-    "shared": "{name} guest media",
+    "shared": "Shared",
+    "subtitles": "Subtitles",
     "tagsSettings": "{organization} tags",
     "transcription": "Transcription",
+    "transcriberProfiles": "Transcriber Profiles",
+    "users": "Users",
     "userSettings": "Profile settings"
   },
   "conversation": {
@@ -347,7 +361,7 @@
       "audio_player_shortcut_list7": "\"SHIFT\" + \"Left  arrow\" (<span class=\"txt-icon key-shift\"></span> + <span class=\"txt-icon key-left-arrow\"></span>) : <i>Move backward 3 seconds</i>",
       "audio_player_shortcut_title": "Audio player / Keyboard shortcuts",
       "edit_speaker_content": "To change the speaker for a given turn, click on the speaker name. This will open a drop-down menu with the following options:",
-      "edit_speaker_content_list": "To change the name for the current turn only, click directly on the desired name or click on “Add a speaker” to add a new speaker. | To change the name for the current turn only, click directly on the desired name.",
+      "edit_speaker_content_list": "To change the name for the current turn only, click directly on the desired name or click on \"Add a speaker\" to add a new speaker. | To change the name for the current turn only, click directly on the desired name.",
       "edit_speaker_title": "Edit speakers",
       "edit_transcript_content": "To edit the transcript, simply click on the word to place your cursor and start typing. | The audio player will automatically jump to the part of the audio in which that word was uttered.",
       "edit_transcript_title": "Edit the transcript",
@@ -498,7 +512,7 @@
     "search_text_label": "Search text",
     "sort_label": "Sort by",
     "subtitle": "Search and discover insights on transcribed media using meaningful semantics",
-    "title": "Explore the organisation’s media"
+    "title": "Explore the organisation's media"
   },
   "favorites": {
     "subtitle": "Your favourite media are here.",
@@ -525,7 +539,7 @@
       "last_update": "Last updated",
       "notags": "Without tags"
     },
-    "subtitle": "Your recently uploaded media lands here. Use “Upload media” or {appLink} to feed this.",
+    "subtitle": "Your recently uploaded media lands here. Use \"Upload media\" or {appLink} to feed this.",
     "title": "Inbox"
   },
   "invite_user": {

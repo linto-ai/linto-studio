@@ -159,7 +159,14 @@ let router = new Router({
         ...defaultComponents,
       },
       defaultProps,
-      meta: { backoffice: true },
+      meta: { 
+        backoffice: true,
+        breadcrumb: {
+          label: 'breadcrumb.backoffice',
+          parent: null,
+          showInBreadcrumb: true
+        }
+      },
     },
     {
       path: "/backoffice/users",
@@ -169,7 +176,14 @@ let router = new Router({
         ...defaultComponents,
       },
       defaultProps,
-      meta: { backoffice: true },
+      meta: { 
+        backoffice: true,
+        breadcrumb: {
+          label: 'breadcrumb.users',
+          parent: 'backoffice',
+          showInBreadcrumb: true
+        }
+      },
     },
     {
       path: "/backoffice/users/:userId",
@@ -179,7 +193,16 @@ let router = new Router({
         ...defaultComponents,
       },
       defaultProps,
-      meta: { backoffice: true },
+      meta: { 
+        backoffice: true,
+        breadcrumb: {
+          label: '',
+          parent: 'backoffice-userList',
+          dynamic: true,
+          entity: 'user',
+          showInBreadcrumb: true
+        }
+      },
     },
     {
       path: "/backoffice/organizations",
@@ -189,7 +212,14 @@ let router = new Router({
         ...defaultComponents,
       },
       defaultProps,
-      meta: { backoffice: true },
+      meta: { 
+        backoffice: true,
+        breadcrumb: {
+          label: 'breadcrumb.organizations',
+          parent: 'backoffice',
+          showInBreadcrumb: true
+        }
+      },
     },
     {
       path: "/backoffice/organizations/:organizationId",
@@ -199,7 +229,16 @@ let router = new Router({
         ...defaultComponents,
       },
       defaultProps,
-      meta: { backoffice: true },
+      meta: { 
+        backoffice: true,
+        breadcrumb: {
+          label: '',
+          parent: 'backoffice-organizationList',
+          dynamic: true,
+          entity: 'organization',
+          showInBreadcrumb: true
+        }
+      },
     },
     {
       path: "/backoffice/transcriberProfiles",
@@ -210,7 +249,14 @@ let router = new Router({
         ...defaultComponents,
       },
       defaultProps,
-      meta: { backoffice: true },
+      meta: { 
+        backoffice: true,
+        breadcrumb: {
+          label: 'breadcrumb.transcriberProfiles',
+          parent: 'backoffice',
+          showInBreadcrumb: true
+        }
+      },
     },
     {
       path: "/backoffice/transcriberProfiles/:transcriberProfileId",
@@ -221,7 +267,16 @@ let router = new Router({
         ...defaultComponents,
       },
       defaultProps,
-      meta: { backoffice: true },
+      meta: { 
+        backoffice: true,
+        breadcrumb: {
+          label: '',
+          parent: 'backoffice-transcriberProfilesList',
+          dynamic: true,
+          entity: 'transcriberProfile',
+          showInBreadcrumb: true
+        }
+      },
     },
     // PUBLIC ROUTES
     {
@@ -232,7 +287,12 @@ let router = new Router({
         ...defaultComponents,
       },
       defaultProps,
-      meta: { responsive: true },
+      meta: { 
+        responsive: true,
+        breadcrumb: {
+          showInBreadcrumb: false
+        }
+      },
     },
     {
       path: "/login",
@@ -242,7 +302,13 @@ let router = new Router({
         ...componentsWithoutHeader,
       },
       defaultProps,
-      meta: { public: true, authRoute: true },
+      meta: { 
+        public: true, 
+        authRoute: true,
+        breadcrumb: {
+          showInBreadcrumb: false
+        }
+      },
     },
     {
       path: "/login/oidc",
@@ -252,7 +318,13 @@ let router = new Router({
         ...componentsWithoutHeader,
       },
       defaultProps,
-      meta: { public: true, authRoute: true },
+      meta: { 
+        public: true, 
+        authRoute: true,
+        breadcrumb: {
+          showInBreadcrumb: false
+        }
+      },
     },
     {
       path: "/create-account",
@@ -262,7 +334,13 @@ let router = new Router({
         ...componentsWithoutHeader,
       },
       defaultProps,
-      meta: { public: true, authRoute: true },
+      meta: { 
+        public: true, 
+        authRoute: true,
+        breadcrumb: {
+          showInBreadcrumb: false
+        }
+      },
     },
     {
       path: "/reset-password",
@@ -272,13 +350,25 @@ let router = new Router({
         ...componentsWithoutHeader,
       },
       defaultProps,
-      meta: { public: true, authRoute: true },
+      meta: { 
+        public: true, 
+        authRoute: true,
+        breadcrumb: {
+          showInBreadcrumb: false
+        }
+      },
     },
     {
       path: "/magiclink-auth/:magicId",
       name: "magic-link-login",
       defaultProps,
-      meta: { public: true, authRoute: true },
+      meta: { 
+        public: true, 
+        authRoute: true,
+        breadcrumb: {
+          showInBreadcrumb: false
+        }
+      },
     },
     {
       path: "/magiclink-auth-invalid",
@@ -288,7 +378,13 @@ let router = new Router({
         ...componentsWithoutHeader,
       },
       defaultProps,
-      meta: { public: true, authRoute: true },
+      meta: { 
+        public: true, 
+        authRoute: true,
+        breadcrumb: {
+          showInBreadcrumb: false
+        }
+      },
     },
 
     // PRIVATE ROUTES FOR MAIN APP
@@ -310,7 +406,15 @@ let router = new Router({
       props: {
         ...defaultProps,
       },
-      meta: { mainListingPage: true },
+      meta: { 
+        mainListingPage: true,
+        breadcrumb: {
+          label: 'breadcrumb.explore',
+          parent: null,
+          showInBreadcrumb: true,
+          isRoot: true
+        }
+      },
     },
     {
       path: "/interface/favorites",
@@ -323,7 +427,15 @@ let router = new Router({
         ...defaultProps,
         default: { favorites: true },
       },
-      meta: { mainListingPage: true },
+      meta: { 
+        mainListingPage: true,
+        breadcrumb: {
+          label: 'breadcrumb.favorites',
+          parent: null,
+          showInBreadcrumb: true,
+          isRoot: true
+        }
+      },
     },
     {
       path: "/interface/shared",
@@ -336,7 +448,15 @@ let router = new Router({
         ...defaultProps,
         default: { shared: true },
       },
-      meta: { mainListingPage: true },
+      meta: { 
+        mainListingPage: true,
+        breadcrumb: {
+          label: 'breadcrumb.shared',
+          parent: null,
+          showInBreadcrumb: true,
+          isRoot: true
+        }
+      },
     },
     {
       path: "/interface/:organizationId?/old-explore",
@@ -346,7 +466,15 @@ let router = new Router({
         ...defaultComponents,
       },
       props: defaultProps,
-      meta: { mainListingPage: true },
+      meta: { 
+        mainListingPage: true,
+        breadcrumb: {
+          label: 'breadcrumb.exploreOld',
+          parent: null,
+          showInBreadcrumb: true,
+          isRoot: true
+        }
+      },
     },
     {
       path: "/interface/:organizationId?/sessionsList",
@@ -356,7 +484,15 @@ let router = new Router({
         ...defaultComponents,
       },
       props: defaultProps,
-      meta: { sessionListingPage: true, sessionPage: true },
+      meta: { 
+        sessionListingPage: true, 
+        sessionPage: true,
+        breadcrumb: {
+          label: 'breadcrumb.sessions',
+          parent: 'explore',
+          showInBreadcrumb: true
+        }
+      },
     },
     {
       path: "/interface/favorites",
@@ -366,7 +502,15 @@ let router = new Router({
         ...defaultComponents,
       },
       props: defaultProps,
-      meta: { userPage: true },
+      meta: { 
+        userPage: true,
+        breadcrumb: {
+          label: 'breadcrumb.favorites',
+          parent: null,
+          showInBreadcrumb: true,
+          isRoot: true
+        }
+      },
     },
     // {
     //   path: "/interface/shared",
@@ -386,6 +530,13 @@ let router = new Router({
         ...defaultComponents,
       },
       props: defaultProps,
+      meta: {
+        breadcrumb: {
+          label: 'breadcrumb.createConversation',
+          parent: 'explore',
+          showInBreadcrumb: true
+        }
+      },
     },
     {
       path: "/interface/:organizationId?/conversations/:conversationId",
@@ -395,7 +546,16 @@ let router = new Router({
         ...componentsWithoutHeader,
       },
       props: defaultProps,
-      meta: { conversationDetailPage: true },
+      meta: { 
+        conversationDetailPage: true,
+        breadcrumb: {
+          label: '',
+          parent: 'explore',
+          dynamic: true,
+          entity: 'conversation',
+          showInBreadcrumb: true
+        }
+      },
     },
     {
       path: "/interface/:organizationId?/conversations/:conversationId/transcription",
@@ -405,7 +565,14 @@ let router = new Router({
         ...componentsWithoutHeader,
       },
       props: defaultProps,
-      meta: { conversationDetailPage: true },
+      meta: { 
+        conversationDetailPage: true,
+        breadcrumb: {
+          label: 'breadcrumb.transcription',
+          parent: 'conversations overview',
+          showInBreadcrumb: true
+        }
+      },
     },
     {
       path: "/interface/:organizationId?/conversations/:conversationId/subtitles",
@@ -415,7 +582,14 @@ let router = new Router({
         ...defaultComponents,
       },
       props: defaultProps,
-      meta: { conversationDetailPage: true },
+      meta: { 
+        conversationDetailPage: true,
+        breadcrumb: {
+          label: 'breadcrumb.subtitles',
+          parent: 'conversations overview',
+          showInBreadcrumb: true
+        }
+      },
     },
     {
       path: "/interface/:organizationId?/conversations/:conversationId/subtitles/:subtitleId",
@@ -425,7 +599,16 @@ let router = new Router({
         ...componentsWithoutHeader,
       },
       props: defaultProps,
-      meta: { conversationDetailPage: true },
+      meta: { 
+        conversationDetailPage: true,
+        breadcrumb: {
+          label: '',
+          parent: 'conversations subtitles',
+          dynamic: true,
+          entity: 'subtitle',
+          showInBreadcrumb: true
+        }
+      },
     },
     {
       path: "/interface/:organizationId?/conversations/:conversationId/publish",
@@ -435,7 +618,14 @@ let router = new Router({
         ...componentsWithoutHeader,
       },
       props: defaultProps,
-      meta: { conversationDetailPage: true },
+      meta: { 
+        conversationDetailPage: true,
+        breadcrumb: {
+          label: 'breadcrumb.publish',
+          parent: 'conversations overview',
+          showInBreadcrumb: true
+        }
+      },
     },
     {
       path: "/interface/:organizationId?/sessions/create",
@@ -445,7 +635,14 @@ let router = new Router({
         ...defaultComponents,
       },
       props: defaultProps,
-      meta: { sessionPage: true },
+      meta: { 
+        sessionPage: true,
+        breadcrumb: {
+          label: 'breadcrumb.createSession',
+          parent: 'sessionsList',
+          showInBreadcrumb: true
+        }
+      },
     },
     {
       path: "/interface/:organizationId?/sessions/:sessionId",
@@ -455,7 +652,18 @@ let router = new Router({
         ...defaultComponents,
       },
       props: defaultProps,
-      meta: { public: true, sessionPage: true, responsive: true },
+      meta: { 
+        public: true, 
+        sessionPage: true, 
+        responsive: true,
+        breadcrumb: {
+          label: '',
+          parent: 'sessionsList',
+          dynamic: true,
+          entity: 'session',
+          showInBreadcrumb: true
+        }
+      },
     },
     {
       path: "/interface/:organizationId?/sessions/:sessionId/settings",
@@ -465,7 +673,15 @@ let router = new Router({
         ...defaultComponents,
       },
       props: defaultProps,
-      meta: { public: false, sessionPage: true },
+      meta: { 
+        public: false, 
+        sessionPage: true,
+        breadcrumb: {
+          label: 'breadcrumb.sessionSettings',
+          parent: 'sessions live',
+          showInBreadcrumb: true
+        }
+      },
     },
     {
       path: "/interface/:organizationId?/quick-session",
@@ -475,7 +691,15 @@ let router = new Router({
         ...defaultComponents,
       },
       props: defaultProps,
-      meta: { public: true, sessionPage: true },
+      meta: { 
+        public: true, 
+        sessionPage: true,
+        breadcrumb: {
+          label: 'breadcrumb.quickSession',
+          parent: 'explore',
+          showInBreadcrumb: true
+        }
+      },
     },
     {
       path: "/interface/organizations/create",
@@ -485,7 +709,14 @@ let router = new Router({
         ...defaultComponents,
       },
       props: defaultProps,
-      meta: { userPage: true },
+      meta: { 
+        userPage: true,
+        breadcrumb: {
+          label: 'breadcrumb.createOrganization',
+          parent: 'explore',
+          showInBreadcrumb: true
+        }
+      },
     },
     {
       path: "/interface/organizations/:organizationId",
@@ -495,6 +726,15 @@ let router = new Router({
         ...defaultComponents,
       },
       props: defaultProps,
+      meta: {
+        breadcrumb: {
+          label: '',
+          parent: 'explore',
+          dynamic: true,
+          entity: 'organization',
+          showInBreadcrumb: true
+        }
+      },
     },
     {
       path: "/interface/user/settings",
@@ -504,7 +744,14 @@ let router = new Router({
         ...defaultComponents,
       },
       props: defaultProps,
-      meta: { userPage: true },
+      meta: { 
+        userPage: true,
+        breadcrumb: {
+          label: 'breadcrumb.userSettings',
+          parent: 'explore',
+          showInBreadcrumb: true
+        }
+      },
     },
     // {
     //   path: "/interface/:organizationId?/tags/settings",
@@ -523,6 +770,11 @@ let router = new Router({
         default: false,
         AppHeader: false,
         AppNotif: false,
+      },
+      meta: {
+        breadcrumb: {
+          showInBreadcrumb: false
+        }
       },
     },
   ],

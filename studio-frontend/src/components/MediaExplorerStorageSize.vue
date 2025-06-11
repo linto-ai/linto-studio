@@ -11,9 +11,9 @@
       </span>
     </div>
     <is-cloud>
-      <a href="#" class="btn xs outline upgrade-button with-icon radium secondary">
+      <a href="#" class="btn xs outline upgrade-button with-icon radium">
         <span>
-          <ph-icon name="star" size="xs" color="primary"></ph-icon>
+          <ph-icon name="rocket" size="xs" color="primary"></ph-icon>
           <span class="label">Upgrade</span>
         </span>
       </a>
