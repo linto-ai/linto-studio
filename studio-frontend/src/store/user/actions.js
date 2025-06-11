@@ -42,6 +42,10 @@ const actions = {
         ...payload,
       }
       commit("setUserInfos", newValue)
+      commit("system/addNotification", {
+        message: "User profile updated successfully",
+        type: "success",
+      }, { root: true })
     }
 
     return req
@@ -54,24 +58,57 @@ const actions = {
         ...this.state.user.userInfos,
         img: localImageUrl,
       })
+      commit("system/addNotification", {
+        message: "User profile picture updated successfully",
+        type: "success",
+      }, { root: true })
     }
     return req
   },
   async toggleFavoriteConversation({ commit, getters, dispatch }, id) {
     const isFavorite = getters.isFavoriteConversation(id)
+
+    try {
     if (isFavorite) {
-      dispatch("removeFavoriteConversation", id)
+      await dispatch("removeFavoriteConversation", id)
+      commit("system/addNotification", {
+        message: "Conversation removed from favorites successfully",
+        type: "success",
+      }, { root: true })
     } else {
-      dispatch("addFavoriteConversation", id)
+      await dispatch("addFavoriteConversation", id)
+      commit("system/addNotification", {
+        message: "Conversation added to favorites successfully",
+        type: "success",
+      }, { root: true })
+    }
+    } catch (error) {
+      console.error("Error toggling conversation favorite status", error)
+      commit("system/addNotification", {
+        message: "Error toggling conversation favorite status",
+        type: "error",
+      }, { root: true })
     }
   },
   async addFavoriteConversation({ commit }, id) {
     const req = await apiAddConversationToFavorites(id)
-    if (req.status === "success") commit("setFavoritesConversationIds", id)
+    if (req.status === "success") {
+      commit("setFavoritesConversationIds", id)
+      commit("system/addNotification", {
+        message: "Conversation added to favorites successfully",
+        type: "success",
+      }, { root: true })
+    }
   },
   async removeFavoriteConversation({ commit }, id) {
     const req = await apiRemoveConversationFromFavorites(id)
-    if (req.status === "success") commit("removeFavoritesConversationId", id)
+    if (req.status === "success") {
+      commit("removeFavoritesConversationId", id)
+      commit("system/addNotification", {
+        message: "Conversation removed from favorites successfully",
+        type: "success",
+      }, { root: true })
+    }
   },
 }
 

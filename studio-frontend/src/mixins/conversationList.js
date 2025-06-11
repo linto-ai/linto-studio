@@ -51,17 +51,6 @@ export const conversationListMixin = {
       return this.totalElementsNumber === 0
     },
   },
-  watch: {
-    selectedTags(value) {
-      localStorage.setItem(this.selectedTagsKey, JSON.stringify(value))
-      this.queryCategoriesUnionSelectedtag()
-      //this.fetchConversations()
-    },
-    currentPageNb() {
-      this.fetchConversations()
-      this.addParamsToLocation({ page: this.currentPageNb + 1 })
-    },
-  },
   methods: {
     getCurrentPageNb() {
       if (this.$route.query.page) {

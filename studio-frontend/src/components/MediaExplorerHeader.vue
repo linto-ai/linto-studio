@@ -95,6 +95,11 @@ export default {
       type: Array,
       default: () => [],
     },
+    // Initial search value from URL
+    searchValue: {
+      type: String,
+      default: "",
+    },
   },
   computed: {
     formattedStickyTop() {
@@ -108,6 +113,20 @@ export default {
     return {
       search: "",
     }
+  },
+  mounted() {
+    // Initialize search value from prop (URL)
+    if (this.searchValue) {
+      this.search = this.searchValue
+    }
+  },
+  watch: {
+    searchValue: {
+      handler(newValue) {
+        this.search = newValue || ""
+      },
+      immediate: true,
+    },
   },
   methods: {
     handleSelectAll() {
@@ -131,12 +150,12 @@ export default {
             _id: uuid(),
             key: "titleConversation",
           },
-          {
-            title: "Text filter",
-            value: this.search,
-            _id: uuid(),
-            key: "textConversation",
-          },
+        //   {
+        //     title: "Text filter",
+        //     value: this.search,
+        //     _id: uuid(),
+        //     key: "textConversation",
+        //   },w
         ])
       }
     },

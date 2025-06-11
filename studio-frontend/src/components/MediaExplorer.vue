@@ -20,7 +20,8 @@
         :is-select-all="isSelectAll"
         :sticky-top-offset="stickyTopOffset"
         :all-medias="medias"
-        :selected-tag-ids="selectedTagIds"
+        :selected-tag-ids="activeSelectedTagIds"
+        :search-value="searchValue"
         @select-all="handleSelectAll"
         @filter-change="handleFilterChange"
         @search="handleSearch">
@@ -37,7 +38,7 @@
         <div v-if="filteredMedias.length === 0" class="media-explorer__body__empty">
           <slot name="empty">
             <div class="empty-state">
-              <p v-if="selectedTagIds.length > 0">Aucun média trouvé avec les tags sélectionnés</p>
+              <p v-if="activeSelectedTagIds.length > 0">Aucun média trouvé avec les tags sélectionnés</p>
               <p v-else>Aucun média trouvé</p>
             </div>
           </slot>
@@ -161,9 +162,15 @@ export default {
       type: String,
       required: false,
     },
-    customFilters: {
-      type: Object,
-      required: false,
+    // Search value from URL
+    searchValue: {
+      type: String,
+      default: "",
+    },
+    // Selected tag IDs passed from parent (optional)
+    selectedTagIds: {
+      type: Array,
+      default: () => [],
     },
   },
   computed: {
@@ -173,9 +180,13 @@ export default {
     totalPages() {
       return Math.ceil(this.filteredMedias.length / this.pageSize)
     },
+    // Use prop selectedTagIds if provided, otherwise use internal state
+    activeSelectedTagIds() {
+      return this.selectedTagIds.length > 0 ? this.selectedTagIds : this.internalSelectedTagIds
+    },
     filteredMedias() {
       // Filter medias based on selected tags
-      if (this.selectedTagIds.length === 0) {
+      if (this.activeSelectedTagIds.length === 0) {
         return this.medias
       }
       
@@ -186,8 +197,7 @@ export default {
         }
         
         // Check if media has ALL selected tags (AND logic)
-        // Change to .some() for OR logic if preferred
-        return this.selectedTagIds.every(tagId => 
+        return this.activeSelectedTagIds.every(tagId => 
           media.tags.includes(tagId)
         )
       })
@@ -202,17 +212,23 @@ export default {
       uploadError: '',
       isSelectAll: false,
       observer: null,
-      selectedTagIds: [], // Track selected tag IDs for filtering
       search: "",
+      internalSelectedTagIds: [], // Internal state when not managed by parent
     }
   },
   mounted() {
     if (this.enablePagination) {
       this.setupIntersectionObserver()
       this.initializePageFromURL()
+      // Only initialize filters from URL if pagination is enabled (meaning we manage our own state)
+      this.initializeFiltersFromURL()
+    } else {
+      // If pagination is disabled, the parent manages filters and passes them via props
+      // We still initialize filters if no selected-tag-ids prop is provided for backward compatibility
+      if (this.selectedTagIds.length === 0) {
+        this.initializeFiltersFromURL()
+      }
     }
-    // Always initialize filters from URL, even without pagination
-    this.initializeFiltersFromURL()
   },
   beforeDestroy() {
     this.cleanupObserver()
@@ -387,7 +403,10 @@ export default {
       if (tagsParam) {
         const tagIds = tagsParam.split(",").filter(id => id.trim())
         if (tagIds.length > 0) {
-          this.selectedTagIds = tagIds
+          // Only set internal state if parent is not managing the tags
+          if (this.selectedTagIds.length === 0) {
+            this.internalSelectedTagIds = tagIds
+          }
           // Emit filter change event after component is mounted
           this.$nextTick(() => {
             this.$emit("filter-change", {
@@ -401,10 +420,13 @@ export default {
     },
 
     updateFiltersInURL() {
+      // Don't update URL if parent is managing pagination and filters
+      if (!this.enablePagination) return
+      
       const url = new URL(window.location)
       
-      if (this.selectedTagIds.length > 0) {
-        url.searchParams.set("tags", this.selectedTagIds.join(","))
+      if (this.activeSelectedTagIds.length > 0) {
+        url.searchParams.set("tags", this.activeSelectedTagIds.join(","))
       } else {
         url.searchParams.delete("tags")
       }
@@ -421,8 +443,8 @@ export default {
         url.searchParams.set("page", validPage.toString())
         
         // Keep filter params in URL
-        if (this.selectedTagIds.length > 0) {
-          url.searchParams.set("tags", this.selectedTagIds.join(","))
+        if (this.activeSelectedTagIds.length > 0) {
+          url.searchParams.set("tags", this.activeSelectedTagIds.join(","))
         }
         
         window.history.replaceState({}, "", url)
@@ -431,13 +453,16 @@ export default {
     },
 
     handleFilterChange(newTagIds) {
-      this.selectedTagIds = [...newTagIds]
+      // Only update internal state if parent is not managing the tags
+      if (this.selectedTagIds.length === 0) {
+        this.internalSelectedTagIds = [...newTagIds]
+      }
       
-      // Update URL with new filters
-      this.updateFiltersInURL()
-      
-      // Reset to first page when filters change
+      // Update URL with new filters only if we manage our own state
       if (this.enablePagination) {
+        this.updateFiltersInURL()
+        
+        // Reset to first page when filters change
         this.updateURLPage(1)
       }
       

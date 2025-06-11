@@ -6,6 +6,7 @@ import organizations from "./organizations"
 import tags from "./tags"
 import inbox from "./inbox"
 import settings  from "./settings"
+import system from "./system"
 
 Vue.use(Vuex)
 
@@ -16,5 +17,6 @@ export default new Vuex.Store({
     tags,
     inbox,
     settings,
+    system,
   },
 })

@@ -19,6 +19,7 @@
       </div>
       <AppSettingsModal />
       <PopupHost />
+      <AppNotifications />
     </div>
   </div>
 </template>
@@ -29,7 +30,7 @@ import { customDebug } from "@/tools/customDebug.js"
 import isAuthenticated from "@/tools/isAuthenticated.js"
 import AppSettingsModal from "@/components/AppSettingsModal.vue"
 import PopupHost from "@/components/PopupHost.vue";
-import AppNotif from "@/components/AppNotif.vue"
+import AppNotifications from "@/components/AppNotifications.vue"
 
 export default {
   props: {},
@@ -60,10 +61,18 @@ export default {
       return isAuthenticated()
     },
   },
+  mounted() {
+    // notification usage
+    // this.$store.dispatch("system/addNotification", {
+    //   message: "Hello, world!",
+    //   type: "success",
+    //   timeout: 5000,
+    // })
+  },
   components: {
     AppSettingsModal,
     PopupHost,
-    AppNotif,
+    AppNotifications,
   },
 }
 </script>
