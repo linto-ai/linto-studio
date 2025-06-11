@@ -1,5 +1,5 @@
 <template>
-  <MainContent sidebar box>
+  <LayoutV2 customClass="explore-next">
     <template v-slot:breadcrumb-actions>
       <ActionConversationCreate
         :transcriptionServices="fieldTranscriptionService.list"
@@ -97,7 +97,7 @@
         :transcriberProfiles="transcriberProfiles"
         :currentOrganizationScope="currentOrganizationScope" />
     </div>
-  </MainContent>
+  </LayoutV2>
 </template>
 <script>
 import { getEnv } from "@/tools/getEnv.js"
@@ -113,6 +113,7 @@ import {
 } from "@/api/session.js"
 import { testService } from "@/tools/fields/testService.js"
 
+import LayoutV2 from "@/layouts/v2-layout.vue"
 import ConversationCreateAudio from "@/components/ConversationCreateAudio.vue"
 import ConversationCreateServices from "@/components/ConversationCreateServices.vue"
 import MainContent from "@/components/MainContent.vue"
@@ -298,6 +299,7 @@ export default {
     },
   },
   components: {
+    LayoutV2,
     ConversationCreateAudio,
     ConversationCreateServices,
     ConversationCreateLink,

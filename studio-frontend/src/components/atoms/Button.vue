@@ -11,6 +11,7 @@
       name="circle-notch"
       :weight="computedIconWeight"
       :color="computedIconColor"
+      :size="size"
       class="animate-spin" />
 
     <!-- Left icon -->
@@ -19,6 +20,7 @@
       :name="icon"
       :weight="computedIconWeight"
       :color="computedIconColor"
+      :size="size"
       :class="iconClasses" />
 
     <!-- Label/Content -->
@@ -32,6 +34,7 @@
       :name="icon"
       :weight="computedIconWeight"
       :color="computedIconColor"
+      :size="size"
       :class="iconClasses" />
   </button>
 </template>

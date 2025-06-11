@@ -1,14 +1,28 @@
 <template>
   <div class="action-conversation-create">
+    <!-- Create Conversation Button (old fashion) -->
     <Button
+      v-if="!isPageConversationCreate"
       color="primary"
       variant="solid"
-      size="sm"
+      size="md"
       :icon="icon"
-      @click="handleOpenModal">
+      @click="handleCreateConversation">
       {{ label }}
     </Button>
-    
+    <div v-else>
+      <div class="conversation-create-actions button-group">
+        <Button
+          color="neutral"
+          variant="outline"
+          size="sm"
+          icon="x-circle"
+          @click="handleCancelConversation">
+          Cancel
+        </Button>
+      </div>
+    </div>
+
     <!-- Main Action Selection Modal -->
     <Modal
       v-model="isModalOpen"
@@ -85,13 +99,14 @@
           @upload-complete="handleUploadComplete"
           @error="handleUploadError" />
 
-        <div class="modal-actions flex row justify-between align-center margin-top-medium">
+        <div
+          class="modal-actions flex row justify-between align-center margin-top-medium">
           <div class="error-message" v-if="uploadError">
             <ph-icon name="warning" color="error" />
             <span>{{ uploadError }}</span>
           </div>
           <div class="flex1" v-else></div>
-          
+
           <div class="flex row gap-small">
             <Button
               color="secondary"
@@ -165,26 +180,58 @@ export default {
       isModalOpenUpload: false,
       isModalOpenMicro: false,
       uploadInProgress: false,
-      uploadError: '',
+      uploadError: "",
     }
   },
+  computed: {
+    isPageConversationCreate() {
+      return this.$route.name === "conversations create"
+    },
+    getDefaultOrganizationId() {
+      const organizationId =
+        this.currentOrganizationScope ||
+        this.$route.params.organizationId ||
+        this.$store.getters["organizations/getCurrentOrganizationScope"] ||
+        this.$store.getters["organizations/getDefaultOrganizationId"]
+
+      return organizationId
+    },
+  },
   methods: {
+    handleCreateConversation() {
+      const targetRoute = {
+        name: "conversations create",
+        params: {
+          organizationId: this.getDefaultOrganizationId,
+        },
+      }
+
+      if (
+        this.$route.name === "conversations create" &&
+        this.$route.params.organizationId === this.getDefaultOrganizationId
+      ) {
+        return
+      }
+
+      this.$router.push(targetRoute)
+    },
+
     handleOpenModal() {
       this.isModalOpen = true
     },
-    
+
     handleOpenModalUpload() {
       this.isModalOpenUpload = true
-      this.uploadError = ''
+      this.uploadError = ""
     },
-    
+
     handleOpenModalMicro() {
       this.isModalOpenMicro = true
     },
-    
+
     handleClickCard(type) {
       this.isModalOpen = false
-      
+
       switch (type) {
         case "upload":
           this.handleOpenModalUpload()
@@ -204,35 +251,45 @@ export default {
           console.warn("Unknown card type:", type)
       }
     },
-    
+
     handleUploadComplete(data) {
       console.log("Upload completed:", data)
-      
+
       // TODO: Navigate to conversation or show success message
-      this.$emit('upload-complete', data)
-      
+      this.$emit("upload-complete", data)
+
       // Close modal
       this.isModalOpenUpload = false
-      
+
       // Show success message
-      this.$emit('success', `${data.files.length} fichier(s) téléversé(s) avec succès`)
+      this.$emit(
+        "success",
+        `${data.files.length} fichier(s) téléversé(s) avec succès`,
+      )
     },
-    
+
+    handleCancelConversation() {
+      this.$router.push({
+        name: "explore",
+        params: { organizationId: this.getDefaultOrganizationId },
+      })
+    },
+
     handleUploadError(error) {
       this.uploadError = error
     },
-    
+
     handleCancelUpload() {
       this.isModalOpenUpload = false
       this.isModalOpen = true
-      this.uploadError = ''
+      this.uploadError = ""
     },
-    
+
     handleConfirmMicro() {
       console.log("handleConfirmMicro")
       // TODO: Implement microphone recording logic
     },
-    
+
     handleCancelMicro() {
       this.isModalOpenMicro = false
       this.isModalOpen = true
@@ -242,6 +299,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.action-conversation-create {
+  display: flex;
+  align-items: center;
+}
+
+.conversation-create-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .card-title {
   font-weight: 600;
   color: var(--neutral-100);
@@ -262,7 +330,7 @@ export default {
 .modal-actions {
   padding-top: 1rem;
   border-top: 1px solid var(--neutral-30);
-  
+
   .error-message {
     display: flex;
     align-items: center;
@@ -273,12 +341,28 @@ export default {
 }
 
 // Utility classes
-.margin-top-medium { margin-top: 1rem; }
-.flex1 { flex: 1; }
-.justify-between { justify-content: space-between; }
-.justify-end { justify-content: flex-end; }
-.align-center { align-items: center; }
-.flex { display: flex; }
-.row { flex-direction: row; }
-.gap-small { gap: 0.5rem; }
+.margin-top-medium {
+  margin-top: 1rem;
+}
+.flex1 {
+  flex: 1;
+}
+.justify-between {
+  justify-content: space-between;
+}
+.justify-end {
+  justify-content: flex-end;
+}
+.align-center {
+  align-items: center;
+}
+.flex {
+  display: flex;
+}
+.row {
+  flex-direction: row;
+}
+.gap-small {
+  gap: 0.5rem;
+}
 </style>

@@ -356,6 +356,7 @@ button,
     background-color: var(--neutral-40);
     color: var(--neutral-80);
     .icon, .ph-icon, .icon-svg {
+      background-color: transparent;
       color: var(--neutral-80);
     }
 
@@ -372,6 +373,7 @@ button,
       border: 1px solid var(--primary-color);
       color: var(--primary-color);
       .icon, .ph-icon, .icon-svg {
+        background-color: transparent;
         color: var(--primary-color);
       }
       &:hover {
@@ -387,6 +389,7 @@ button,
         border: 1px solid var(--primary-soft);
         color: var(--primary-soft);
         .icon, .ph-icon, .icon-svg {
+          background-color: transparent;
           color: var(--primary-soft);
         }
         &:hover {
@@ -402,7 +405,8 @@ button,
         background-color: transparent;
         border: 1px solid var(--primary-hard);
         color: var(--primary-hard);
-        .icon, .ph-icon, .icon-svg {
+        .icon, .ph-icon, .icon-svg {  
+          background-color: transparent;
           color: var(--primary-hard);
         }
         &:hover {
@@ -420,6 +424,7 @@ button,
       border: 1px solid var(--secondary-color);
       color: var(--secondary-color);
       .icon, .ph-icon, .icon-svg {
+        background-color: transparent;
         color: var(--secondary-color);
       }
       &:hover {
@@ -434,7 +439,8 @@ button,
         background-color: transparent;
         border: 1px solid var(--secondary-soft);
         color: var(--secondary-soft);
-        .icon, .ph-icon, .icon-svg {
+        .icon, .ph-icon, .icon-svg {  
+          background-color: transparent;
           color: var(--secondary-soft);
         }
         &:hover {
@@ -451,6 +457,7 @@ button,
         border: 1px solid var(--secondary-hard);
         color: var(--secondary-hard);
         .icon, .ph-icon, .icon-svg {
+          background-color: transparent;
           color: var(--secondary-hard);
         }
         &:hover {
@@ -468,6 +475,7 @@ button,
       border: 1px solid var(--tertiary-color);
       color: var(--tertiary-color);
       .icon, .ph-icon, .icon-svg {
+        background-color: transparent;
         color: var(--tertiary-color);
       }
       &:hover {
@@ -483,6 +491,7 @@ button,
         border: 1px solid var(--tertiary-soft);
         color: var(--tertiary-soft);
         .icon, .ph-icon, .icon-svg {
+          background-color: transparent;
           color: var(--tertiary-soft);
         }
         &:hover {
@@ -499,6 +508,7 @@ button,
         border: 1px solid var(--tertiary-hard);
         color: var(--tertiary-hard);
         .icon, .ph-icon, .icon-svg {
+          background-color: transparent;
           color: var(--tertiary-hard);
         }
         &:hover {
@@ -515,7 +525,9 @@ button,
       background-color: transparent;
       border: 1px solid var(--neutral-60);
       color: var(--neutral-60);
+
       .icon, .ph-icon, .icon-svg {
+        background-color: transparent;
         color: var(--neutral-60);
       }
       &:hover {
@@ -531,6 +543,7 @@ button,
         border: 1px solid var(--neutral-soft);
         color: var(--neutral-soft);
         .icon, .ph-icon, .icon-svg {
+          background-color: transparent;
           color: var(--neutral-soft);
         }
         &:hover {
@@ -547,6 +560,7 @@ button,
         border: 1px solid var(--neutral-hard);
         color: var(--neutral-hard);
         .icon, .ph-icon, .icon-svg {
+          background-color: transparent;
           color: var(--neutral-hard);
         }
         &:hover {
