@@ -39,7 +39,7 @@
       </div>
 
       <button
-        class="btn black"
+        class="btn md only-icon"
         @click="deleteFile"
         v-if="!disabled"
         type="button">
@@ -47,10 +47,12 @@
       </button>
       <button
         type="button"
-        class="btn black"
+        class="btn md only-icon"
         @click="playOrStopFile"
         v-if="!disabled">
-        <span :class="`icon ${isPlaying ? 'pause' : 'play'}`"></span>
+        <!-- <span :class="`icon ${isPlaying ? 'pause' : 'play'}`"></span> -->
+        <ph-icon name="play" v-if="!isPlaying"></ph-icon>
+        <ph-icon name="pause" v-else></ph-icon>
       </button>
     </FormInput>
     <progress

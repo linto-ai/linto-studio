@@ -1,5 +1,6 @@
 <template>
   <ModalNew
+    value
     @on-cancel="($event) => this.$emit('on-cancel')"
     @on-confirm="createTranscriberProfile"
     :actionBtnLabel="$t('modal_create_transcriber_profile.action_btn')"

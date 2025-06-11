@@ -1,6 +1,7 @@
 <template>
   <ModalNew
     :title="title"
+    value
     @on-cancel="($event) => this.$emit('on-cancel')"
     @on-confirm="($event) => this.$emit('on-confirm')"
     :actionBtnLabel="button_label"

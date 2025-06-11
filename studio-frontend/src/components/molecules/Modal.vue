@@ -4,14 +4,13 @@
       name="trigger"
       :open="openModal"
       :close="close"
-      :is-open="isModalOpen"
-    ></slot>
+      :is-open="isModalOpen"></slot>
   </div>
 </template>
 
 <script>
-import popupManager from "@/tools/popupManager";
-import ModalRenderer from "./ModalRenderer.vue";
+import popupManager from "@/tools/popupManager"
+import ModalRenderer from "./ModalRenderer.vue"
 
 export default {
   name: "Modal",
@@ -53,84 +52,93 @@ export default {
     return {
       internalOpen: false,
       triggerEl: null,
-    };
+    }
   },
   computed: {
     isModalOpen: {
       get() {
         return typeof this.value === "undefined"
           ? this.internalOpen
-          : this.value;
+          : this.value
       },
       set(value) {
         if (typeof this.value === "undefined") {
-          this.internalOpen = value;
+          this.internalOpen = value
         } else {
-          this.$emit("input", value);
+          this.$emit("input", value)
         }
       },
     },
     hasTrigger() {
-      return !!(this.$scopedSlots && this.$scopedSlots.trigger);
+      return !!(this.$scopedSlots && this.$scopedSlots.trigger)
     },
   },
   watch: {
-    isModalOpen(isOpen) {
-      if (isOpen) {
-        popupManager.register({
-          id: this._uid,
-          controller: this,
-          component: ModalRenderer,
-          props: this.$props,
-          slots: {
-            default: this.$scopedSlots.content
-              ? this.$scopedSlots.content()
-              : this.$slots.content || this.$slots.default || [],
-            actions: this.$scopedSlots.actions
-              ? this.$scopedSlots.actions()
-              : this.$slots.actions || [],
-          },
-          triggerEl: this.triggerEl,
-        });
-      } else {
-        popupManager.unregister(this);
-      }
+    isModalOpen: {
+      handler(isOpen) {
+        if (isOpen) {
+          popupManager.register({
+            id: this._uid,
+            controller: this,
+            component: ModalRenderer,
+            props: this.$props,
+            slots: {
+              default: this.$scopedSlots.content
+                ? this.$scopedSlots.content()
+                : this.$slots.content || this.$slots.default || [],
+              actions: this.$scopedSlots.actions
+                ? this.$scopedSlots.actions()
+                : this.$slots.actions || [],
+            },
+            triggerEl: this.triggerEl,
+          })
+        } else {
+          popupManager.unregister(this)
+        }
+      },
+      immediate: true,
     },
   },
   methods: {
     openModal(e) {
-      if (this.isModalOpen) return;
-      e?.preventDefault();
-      this.triggerEl = e.currentTarget;
-      this.isModalOpen = true;
+      if (this.isModalOpen) return
+      e?.preventDefault()
+      this.triggerEl = e.currentTarget
+      this.isModalOpen = true
     },
     close(e) {
-      if (!this.isModalOpen) return;
-      this.$emit("on-close", e);
-      this.$emit("close", e);
-      e?.preventDefault();
-      this.isModalOpen = false;
+      if (!this.isModalOpen) return
+      this.$emit("on-close", e)
+      this.$emit("close", e)
+      e?.preventDefault()
+      this.isModalOpen = false
+    },
+    cancel(e) {
+      this.$emit("on-cancel", e)
+      this.$emit("cancel", e)
+      this.close(e)
+      e?.preventDefault()
     },
     apply(e) {
-      this.$emit("submit", e);
-      this.$emit("on-confirm", e);
-      this.$emit("confirm", e);
-      this.close(e);
-      e?.preventDefault();
+      this.$emit("submit", e)
+      this.$emit("on-confirm", e)
+      this.$emit("confirm", e)
+      this.close(e)
+      e?.preventDefault()
     },
     deleteHandler(e) {
-      this.$emit("on-delete", e);
-      this.$emit("delete", e);
-      this.close(e);
-      e?.preventDefault();
+      this.$emit("on-delete", e)
+      this.$emit("delete", e)
+      this.close(e)
+      e?.preventDefault()
     },
   },
   beforeDestroy() {
     if (this.isModalOpen) {
-      popupManager.unregister(this);
+      popupManager.unregister(this)
     }
   },
-};
+}
 </script>
 
 <style lang="scss" scoped>

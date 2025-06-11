@@ -1,10 +1,11 @@
 <template>
   <ModalNew
+    value
     @on-cancel="($event) => this.$emit('on-cancel')"
     @on-confirm="createCategory"
     :title="$t('manage_tags.create_category.title')"
     :actionBtnLabel="$t('manage_tags.create_category.save')"
-    small>
+    size="sm">
     <FormInput :field="name" v-model="name.value" />
   </ModalNew>
 </template>
