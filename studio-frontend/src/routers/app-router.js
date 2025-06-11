@@ -14,19 +14,15 @@ import { customDebug } from "@/tools/customDebug.js"
 
 const defaultComponents = {
   AppHeader: () => import("@/components/AppHeader.vue"),
-  AppNotif: () => import("@/components/AppNotif"),
 }
 
-const componentsWithoutHeader = {
-  AppNotif: () => import("@/components/AppNotif"),
-}
+const componentsWithoutHeader = {}
 
 // it's **not** a boolean do describe if the component is displayed or not
 // it tells if the route params will be passed to the components as props
 const defaultProps = {
   default: true,
   AppHeader: true,
-  AppNotif: true,
 }
 
 Vue.use(Router)
@@ -522,7 +518,6 @@ let router = new Router({
       props: {
         default: false,
         AppHeader: false,
-        AppNotif: false,
       },
     },
   ],
