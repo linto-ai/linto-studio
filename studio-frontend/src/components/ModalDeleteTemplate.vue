@@ -1,5 +1,6 @@
 <template>
   <ModalNew
+    value
     @on-cancel="($event) => this.$emit('on-cancel')"
     @on-confirm="deleteTemplate"
     :title="
@@ -8,7 +9,7 @@
       })
     "
     :actionBtnLabel="$t('session.create_page.delete_template_modal.action')"
-    small>
+    size="sm">
     <div class="form-field flex col">
       {{ $t("session.create_page.delete_template_modal.description") }}
     </div>

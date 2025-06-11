@@ -119,7 +119,7 @@
       </div>
     </form>
     <ModalEditMetadata
-      v-if="modalEditMetadataIsOpen"
+      v-model="modalEditMetadataIsOpen"
       :field="fieldMetadata"
       @on-confirm="confirmEditMetadata"
       @on-cancel="closeModalEditMetadata"></ModalEditMetadata>

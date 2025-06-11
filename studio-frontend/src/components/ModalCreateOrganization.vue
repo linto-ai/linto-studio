@@ -1,5 +1,6 @@
 <template>
   <ModalNew
+    value
     @on-cancel="($event) => this.$emit('on-cancel')"
     @on-confirm="createOrganisation"
     small

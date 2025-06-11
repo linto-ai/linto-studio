@@ -1,6 +1,7 @@
 <template>
   <ModalNew
     isForm
+    value
     @on-cancel="() => this.$emit('on-close')"
     @on-confirm="createUser"
     :title="title"

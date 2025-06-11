@@ -19,7 +19,7 @@
           <button
             class="btn outline only-icon sm"
             :class="[customClassClose, { disabled: disabledClose }]"
-            @click="close()"
+            @click="cancel"
             type="button">
             <ph-icon name="x" size="sm"></ph-icon>
           </button>
@@ -63,7 +63,7 @@
                 { disabled: disabledActionCancel || disabledActions },
               ]"
               :disabled="disabledActionCancel || disabledActions"
-              @click="close"
+              @click="cancel"
               type="button">
               <ph-icon
                 v-if="iconActionCancel"
@@ -163,15 +163,17 @@ export default {
     deleteHandler(e) {
       this.controller.deleteHandler(e)
     },
-
+    cancel(e) {
+      this.controller.cancel(e)
+    },
     closeOnClickOutside() {
       if (this.overlayClose) {
-        this.controller.close()
+        this.controller.cancel()
       }
     },
     closeOnEscape() {
       if (this.withClose) {
-        this.controller.close()
+        this.controller.cancel()
       }
     },
   },

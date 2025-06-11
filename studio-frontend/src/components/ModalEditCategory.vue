@@ -1,10 +1,11 @@
 <template>
   <ModalNew
+    value
     @on-cancel="($event) => this.$emit('on-cancel')"
     @on-confirm="updateCategory"
     :title="$t('manage_tags.edit_category.title', { name: category.name })"
     :actionBtnLabel="$t('manage_tags.edit_category.save')"
-    small>
+    size="sm">
     <FormInput :field="name" v-model="name.value" />
     <div class="form-field flex col">
       <label class="form-label" for="editCategoryColor">

@@ -1,11 +1,12 @@
 <template>
   <ModalNew
+    value
     :title="$t('conversation.subtitles.copy_label')"
     :actionBtnLabel="$t('conversation.subtitles.copy')"
     :cancelButton="false"
     @on-cancel="() => this.$emit('on-close')"
     @on-confirm="generateSubtitles"
-    small>
+    size="sm">
     <form action="">
       <FormInput :field="versionName" v-model="versionName.value" />
     </form>

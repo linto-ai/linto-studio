@@ -1,6 +1,7 @@
 <template>
   <ModalNew
-    small
+    size="sm"
+    value
     isForm
     deleteButton
     @on-delete="deleteHandler"

@@ -1,11 +1,12 @@
 <template>
   <ModalNew
+    value
     @on-cancel="() => this.$emit('on-close')"
     @on-confirm="deleteOrganizations"
     :title="title"
     :actionBtnLabel="actionBtnLabel"
     :customClassButton="{ red: true }"
-    small>
+    size="sm">
     {{
       $tc(
         "modal_delete_multiple_organizations.content",

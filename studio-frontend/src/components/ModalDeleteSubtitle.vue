@@ -1,5 +1,6 @@
 <template>
   <ModalNew
+    value
     @on-cancel="() => this.$emit('on-close')"
     @on-confirm="deleteSubtitle"
     :title="title"
@@ -8,7 +9,7 @@
       green: subtitleIds.length === 0,
       red: subtitleIds.length > 0,
     }"
-    small>
+    size="sm">
     <div class="form-field flex col">
       <span v-if="subtitleIds.length > 0">
         {{

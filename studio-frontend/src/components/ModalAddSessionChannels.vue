@@ -1,6 +1,7 @@
 <template>
   <ModalNew
-    large
+    size="lg"
+    value
     @on-cancel="($event) => this.$emit('on-cancel')"
     @on-confirm="addChannels"
     :title="$t('session.channels_list.modal_add.title')"

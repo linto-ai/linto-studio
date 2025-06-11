@@ -1,11 +1,12 @@
 <template>
   <ModalNew
+    value
     @on-cancel="($event) => this.$emit('on-cancel')"
     @on-confirm="deleteOrganization"
     :title="$t('organisation.leave_modal.title')"
     :actionBtnLabel="$t('organisation.leave_modal.action')"
     :custom-class-button="{ red: true }"
-    small>
+    size="sm">
     <p>
       {{
         $t("organisation.leave_modal.content", {

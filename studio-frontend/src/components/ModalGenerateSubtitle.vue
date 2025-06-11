@@ -1,11 +1,12 @@
 <template>
   <ModalNew
+    value
     :title="$t('conversation.subtitles.generate_subs')"
     :actionBtnLabel="$t('conversation.subtitles.generate')"
     :cancelButton="false"
     @on-cancel="() => this.$emit('on-close')"
     @on-confirm="generateSubtitles"
-    small>
+    size="sm">
     <form action="">
       <FormInput :field="versionName" v-model="versionName.value" />
       <label for="splitOptions">
