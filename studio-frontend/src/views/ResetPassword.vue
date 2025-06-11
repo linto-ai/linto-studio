@@ -40,13 +40,11 @@
         $t("login.create_account_button")
       }}</router-link>
     </div>
-    <AppNotif></AppNotif>
   </div>
 </template>
 <script>
 import { getEnv } from "@/tools/getEnv"
 
-import AppNotif from "@/components/AppNotif.vue"
 import LocalSwitcher from "@/components/LocalSwitcher.vue"
 import EMPTY_FIELD from "@/const/emptyField.js"
 import { apiRecoverPassword } from "../api/user"
@@ -103,7 +101,6 @@ export default {
     },
   },
   components: {
-    AppNotif,
     LocalSwitcher,
   },
 }
