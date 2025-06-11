@@ -88,21 +88,23 @@
       class="flex col flex1 session-content__turns reset-overflows"
       :class="{ has_subtitles: displaySubtitles }">
       <SessionChannelTurn
-        v-for="turn in previousTurns"
+        v-for="(turn, turnIndex) in previousTurns"
         v-if="displayLiveTranscription && shouldDisplayTurn(turn)"
         :key="turn.uuid"
         :channelLanguages="channelLanguages"
         :selectedTranslations="selectedTranslations"
+        :previous="turnIndex > 0 ? previousTurns[turnIndex - 1] : null"
         :turn="turn"
         :selected="selectedTurns.includes(turn.uuid)"
         @select="onSelectTurn(turn.uuid, $event)"></SessionChannelTurn>
 
       <SessionChannelTurn
-        v-for="turn in turns"
+        v-for="(turn, turnIndex) in turns"
         v-if="displayLiveTranscription && shouldDisplayTurn(turn)"
         :key="turn.uuid"
         :channelLanguages="channelLanguages"
         :selectedTranslations="selectedTranslations"
+        :previous="turnIndex > 0 ? turns[turnIndex - 1] : lastOfPreviousTurns"
         :turn="turn"
         :selected="selectedTurns.includes(turn.uuid)"
         @select="onSelectTurn(turn.uuid, $event)"></SessionChannelTurn>
@@ -110,6 +112,7 @@
       <SessionChannelTurnPartial
         v-if="displayLiveTranscription && partialText !== ''"
         ref="partial"
+        :previous="lastTurn || lastOfPreviousTurns"
         :channelLanguages="channelLanguages"
         :selectedTranslations="selectedTranslations"
         :partialObject="partialObject"
@@ -308,9 +311,6 @@ export default {
     channelIndex() {
       return this.channelId
     },
-    lastTwoTurns() {
-      return this.turns.slice(-2)
-    },
     style() {
       return {
         fontSize: this.fontSize + "px",
@@ -327,6 +327,12 @@ export default {
     isMobile() {
       // test mediaquery
       return window.matchMedia("(max-width: 1100px)").matches
+    },
+    lastTurn() {
+      return this.turns.slice(-1)[0]
+    },
+    lastOfPreviousTurns() {
+      return this.previousTurns.slice(-1)[0]
     },
   },
   watch: {

@@ -242,7 +242,7 @@ export default {
       },
       fieldKeepAudio: {
         ...EMPTY_FIELD,
-        value: true,
+        value: false,
         label: this.$t("session.create_page.keep_audio_label"),
       },
       fieldAppointment: {
@@ -472,6 +472,7 @@ export default {
             translations: translations ?? [],
             diarization: this.fieldDiarizationEnabled.value,
             keepAudio: this.fieldKeepAudio.value,
+            compressAudio: !this.fieldKeepAudio.value,
           })),
           meta: Object.fromEntries(this.fieldMetadata.value),
           scheduleOn: startDateTime,

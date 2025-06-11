@@ -278,43 +278,48 @@ function createTurn(
   diarization = false,
   caption,
 ) {
-  if (main && diarization && !channel_caption.locutor) {
-    return
-  }
+  try {
+    if (main && diarization && !channel_caption.locutor) {
+      return
+    }
 
-  let turn = {
-    speaker_id: spk_id,
-    turn_id: uuidv4(),
-    raw_segment: channel_caption.text,
-    segment: channel_caption.text,
-    stime: channel_caption.start,
-    etime: channel_caption.end,
-    lang: channel_caption.lang,
-    words: [],
-  }
+    let turn = {
+      speaker_id: spk_id,
+      turn_id: uuidv4(),
+      raw_segment: channel_caption.text,
+      segment: channel_caption.text,
+      stime: channel_caption.start,
+      etime: channel_caption.end,
+      lang: channel_caption.lang,
+      words: [],
+    }
 
-  if (
-    caption.type.mode === TYPES.TRANSLATION &&
-    channel_caption.translations[caption.locale]
-  ) {
-    turn.segment = channel_caption.translations[caption.locale] // || channel_caption.text
-    turn.raw_segment = channel_caption.translations[caption.locale] //|| channel_caption.text
-  } else if (
-    caption.type.mode === TYPES.TRANSLATION &&
-    !channel_caption.translations[caption.locale]
-  )
-    return
+    if (
+      caption.type.mode === TYPES.TRANSLATION &&
+      channel_caption?.translations[caption.locale]
+    ) {
+      turn.segment = channel_caption.translations[caption.locale]
+      turn.raw_segment = channel_caption.translations[caption.locale]
+    } else if (
+      caption.type.mode === TYPES.TRANSLATION &&
+      !channel_caption?.translations[caption.locale]
+    ) {
+      return
+    }
 
-  if (turn.raw_segment !== undefined) {
-    turn.raw_segment.split(" ").forEach((word) => {
-      turn.words.push({
-        wid: uuidv4(),
-        word: word,
+    if (turn.raw_segment !== undefined) {
+      turn.raw_segment.split(" ").forEach((word) => {
+        turn.words.push({
+          wid: uuidv4(),
+          word: word,
+        })
       })
-    })
-  }
+    }
 
-  return turn
+    return turn
+  } catch (err) {
+    return null
+  }
 }
 
 async function storeSession(session, name = undefined) {
