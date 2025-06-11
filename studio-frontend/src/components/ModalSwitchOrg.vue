@@ -1,26 +1,36 @@
 <template>
   <Modal
-    title="Switch Organization"
-    subtitle="Select the organization you want to switch to"
+    :title="$t('modal_switch_org.title')"
+    :subtitle="$t('modal_switch_org.subtitle')"
     v-model="isOpen"
     :with-actions="false"
     @close="close">
     <div class="modal-switch-org">
-      <div class="modal-switch-org__list">
-        <div
+      <div class="modal-switch-org__list flex col gap-small">
+        <router-link
+          :to="{
+            name: 'explore',
+            params: { organizationId: org._id },
+          }"
+          @click.native="close"
           v-for="org in organizations"
           :key="org._id"
           class="modal-switch-org__list__item">
-          <Avatar :text="org.name.slice(0, 1)" size="sm" />
-          <div class="modal-switch-org__list__item__name">
-            <div class="modal-switch-org__list__item__name__text">
+          <Avatar
+            :text="org.name.slice(0, 1)"
+            size="sm"
+            class="modal-switch-org__list__item__avatar" />
+          <div class="modal-switch-org__list__item__name flex flex1">
+            <div class="modal-switch-org__list__item__name__text flex1">
               {{ org.name }}
             </div>
-            <div v-if="org._id === currentOrganization._id" class="modal-switch-org__list__item__name__current">
-              Current
+            <div
+              v-if="org._id === currentOrganization._id"
+              class="modal-switch-org__list__item__name__current">
+              {{ $t("modal_switch_org.current") }}
             </div>
           </div>
-        </div>
+        </router-link>
       </div>
     </div>
   </Modal>
@@ -72,6 +82,9 @@ export default {
       display: flex;
       align-items: center;
       gap: 1em;
+      &__name__current {
+        color: var(--text-secondary);
+      }
     }
   }
 }

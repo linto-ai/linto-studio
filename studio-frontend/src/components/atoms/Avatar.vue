@@ -66,6 +66,12 @@ export default {
 </script>
 
 <style lang="scss">
+a:hover .avatar {
+  /* hack to make the avatar clickable without ugly underline */
+  text-decoration: underline overline;
+  text-decoration-color: var(--primary-color);
+}
+
 .avatar {
   position: relative;
   padding: 0;
