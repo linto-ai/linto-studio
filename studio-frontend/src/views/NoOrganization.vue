@@ -14,7 +14,7 @@
         required />
       <button type="submit" class="btn primary" v-if="state !== 'sending'">
         <span class="label"> {{ $t("no_orga.can_create.create") }} </span>
-        <span class="icon apply"></span>
+        <ph-icon name="check" size="md" />
       </button>
 
       <button type="submit" class="btn primary" disabled v-else>

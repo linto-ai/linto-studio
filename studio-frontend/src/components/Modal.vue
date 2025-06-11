@@ -16,7 +16,7 @@
         </button>
         <button class="btn primary" @click="exec(actionName)">
           <span class="label">{{ actionBtnLabel }}</span>
-          <span class="icon apply"></span>
+          <ph-icon name="check" size="md" />
         </button>
       </div>
     </div>

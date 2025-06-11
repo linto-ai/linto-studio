@@ -17,7 +17,7 @@
         textarea
         :readonly="!canEdit" />
       <button type="submit" class="btn primary" v-if="canEdit">
-        <span class="icon apply"></span>
+        <ph-icon name="check" size="md" />
         <span class="label">{{
           $t("conversation_overview.main_information.update_information_button")
         }}</span>

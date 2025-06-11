@@ -18,7 +18,7 @@
       class="btn primary"
       @click="updateOrganization"
       v-if="isAdmin || isSystemAdministrator">
-      <span class="icon apply"></span>
+      <ph-icon name="check" size="md" />
       <span class="label">{{
         $t("organisation.organization_permissions.update_button")
       }}</span>

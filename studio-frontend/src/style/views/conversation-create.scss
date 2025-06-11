@@ -77,12 +77,16 @@
     flex: 1;
     margin: 0;
     align-items: center;
-    padding-left: calc(2rem + 2px);
+    padding-left: calc(2px);
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    min-width: 10rem;
   }
 
   .tab[selected] {
     border-left: 3px solid var(--primary-color);
-    padding-left: calc(2rem);
+    padding-left: 0px;
   }
 }
 

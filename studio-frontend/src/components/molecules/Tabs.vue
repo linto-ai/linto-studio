@@ -19,9 +19,12 @@
         :id="tab.id ? tab.id : undefined"
         :aria-controls="tab.ariaControl ? tab.ariaControl : undefined"
         @click="!disabled && !tab.disabled && $emit('input', tab.name)">
-        <ph-icon :name="tab.icon" size="md" v-if="tab.icon"></ph-icon>
+        <ph-icon
+          :name="tab.icon"
+          :size="squareTabs ? 'lg' : 'md'"
+          v-if="tab.icon"></ph-icon>
         <img :src="tab.img" v-else-if="tab.img" class="icon" />
-        <div class="flex flex1 col justify-center">
+        <div class="flex col justify-center" :class="{ flex1: !squareTabs }">
           <span class="tab__label">{{ tab.label }}</span>
         </div>
         <Badge v-if="tab.badge" :inverted="value == tab.name">{{

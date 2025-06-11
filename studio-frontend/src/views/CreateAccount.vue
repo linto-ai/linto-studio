@@ -125,7 +125,7 @@
           <span class="label">
             {{ $t("createaccount.personal_button") }}
           </span>
-          <span class="icon apply"></span>
+          <ph-icon name="check" size="md" />
         </button>
       </div>
       <div class="form-field" v-if="formError !== null">
@@ -163,7 +163,7 @@
         <span class="label">
           {{ $t("createaccount.create_account_button") }}
         </span>
-        <span class="icon apply"></span>
+        <ph-icon name="check" size="md" />
       </button>
 
       <button type="submit" class="btn primary fullwidth" disabled v-else>

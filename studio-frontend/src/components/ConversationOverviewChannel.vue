@@ -7,7 +7,7 @@
           :field="nameField"
           v-model="nameField.value" />
         <button type="submit" class="btn primary">
-          <span class="icon apply"></span>
+          <ph-icon name="check" size="md" />
           <span class="label">{{
             $t("conversation_overview.channel.apply_name")
           }}</span>

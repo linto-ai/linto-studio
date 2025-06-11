@@ -39,7 +39,7 @@
         class="btn primary upload-media-button"
         id="upload-media-button"
         :disabled="formState === 'sending'">
-        <span class="icon apply"></span>
+        <ph-icon name="check" size="md" />
         <span class="label">{{ formSubmitLabel }}</span>
       </button>
     </div>

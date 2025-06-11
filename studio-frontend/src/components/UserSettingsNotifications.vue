@@ -33,7 +33,7 @@
       </fieldset>
 
       <button type="submit" class="btn small-margin primary">
-        <span class="icon apply"></span>
+        <ph-icon name="check" size="md" />
         <span class="label">{{
           $t("user_settings.notifications.submit_button")
         }}</span>

@@ -9,7 +9,7 @@
         @success="handleNewUploadSuccess" />
     </template>
 
-    <div class="flex col flex1">
+    <div class="flex col flex1 medium-margin">
       <Tabs
         v-model="currentTab"
         :tabs="mainTabs"
@@ -73,7 +73,8 @@
             class="btn primary upload-media-button"
             id="upload-media-button"
             :disabled="formState === 'sending'">
-            <span class="icon apply"></span>
+            <!-- <ph-icon name="check" size="md" /> -->
+            <ph-icon name="check" size="md" />
             <span class="label">{{ formSubmitLabel }}</span>
           </button>
         </div>
@@ -217,14 +218,14 @@ export default {
           res.push({
             name: "live",
             label: this.$t("conversation_creation.tabs.quick_meeting"),
-            icon: loading ? "loading" : "record-live",
+            icon: "microphone",
             disabled:
               this.transcriberProfilesQuickMeeting.length === 0 || loading,
           })
           res.push({
             name: "visio",
             label: this.$t("conversation_creation.tabs.visio"),
-            icon: loading ? "loading" : "visio",
+            icon: "webcam",
             disabled:
               this.transcriberProfilesQuickMeeting.length === 0 || loading,
           })
@@ -233,7 +234,7 @@ export default {
           res.push({
             name: "session",
             label: this.$i18n.t("conversation_creation.tabs.session"),
-            icon: loading ? "loading" : "session",
+            icon: "plugs-connected",
             disabled: this.transcriberProfiles.length === 0 || loading,
           })
         }
@@ -282,17 +283,17 @@ export default {
       this.loadingQuickSession = false
     },
     handleNewUploadComplete(data) {
-      console.log('New upload workflow completed:', data)
-      
+      console.log("New upload workflow completed:", data)
+
       this.$router.push({
         name: "explore",
         params: { organizationId: this.currentOrganizationScope },
       })
     },
-    
+
     handleNewUploadSuccess(message) {
-      this.$emit('app_notif', {
-        status: 'success',
+      this.$emit("app_notif", {
+        status: "success",
         message: message,
         timeout: 5000,
       })

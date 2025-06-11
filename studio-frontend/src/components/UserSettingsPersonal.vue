@@ -42,7 +42,7 @@
       </div>
 
       <button type="submit" class="btn primary">
-        <span class="icon apply"></span>
+        <ph-icon name="check" size="md" />
         <span class="label">{{
           $t("user_settings.update_personal_information_button")
         }}</span>

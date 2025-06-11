@@ -1,6 +1,6 @@
 <template>
   <V2Layout v-if="dataLoaded && status == 'done'">
-    <template v-slot:breadcrumb-actions>
+    <template v-slot:header-bar>
       <slot name="breadcrumb-actions"></slot>
     </template>
 

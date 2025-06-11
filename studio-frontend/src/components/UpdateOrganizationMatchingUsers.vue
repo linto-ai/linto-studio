@@ -7,7 +7,7 @@
 
       <div class="flex gap-small wrap">
         <button type="submit" class="btn primary">
-          <span class="icon apply"></span>
+          <ph-icon name="check" size="md" />
           <span class="label">{{
             $t("organisation.matching_users.update_button")
           }}</span>

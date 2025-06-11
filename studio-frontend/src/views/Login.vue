@@ -12,7 +12,7 @@
       <div class="form-field flex row">
         <button class="btn primary fullwidth" type="submit">
           <span class="label">{{ $t("login.login_button") }}</span>
-          <span class="icon apply"></span>
+          <ph-icon name="check" size="md" />
         </button>
       </div>
       <div class="form-field" v-if="formError !== null">

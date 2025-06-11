@@ -20,7 +20,7 @@
         </button>
 
         <button class="btn primary" :disabled="!hasChanged" @click="save">
-          <span class="icon apply"></span>
+          <ph-icon name="check" size="md" />
           <span class="label">{{
             $t("backoffice.transcriber_profile_detail.save_button")
           }}</span>
