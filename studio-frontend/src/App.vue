@@ -26,12 +26,13 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex"
+import { bus } from "@/main"
+
 import { customDebug } from "@/tools/customDebug.js"
 import isAuthenticated from "@/tools/isAuthenticated.js"
 import AppSettingsModal from "@/components/AppSettingsModal.vue"
-import PopupHost from "@/components/PopupHost.vue";
+import PopupHost from "@/components/PopupHost.vue"
 import AppNotifications from "@/components/AppNotifications.vue"
-
 export default {
   props: {},
   data() {
@@ -40,7 +41,6 @@ export default {
       noOrganization: false,
     }
   },
-  async mounted() {},
   methods: {
     ...mapActions("user", ["fetchUser"]),
     ...mapActions("organizations", ["fetchOrganizations"]),
@@ -68,6 +68,15 @@ export default {
     //   type: "success",
     //   timeout: 5000,
     // })
+
+    // keep compatibility with old notification system (don't use bus for new notifications)
+    bus.$on("app_notif", (data) => {
+      this.$store.dispatch("system/addNotification", {
+        message: data.message,
+        type: data.status,
+        timeout: data.timeout,
+      })
+    })
   },
   components: {
     AppSettingsModal,

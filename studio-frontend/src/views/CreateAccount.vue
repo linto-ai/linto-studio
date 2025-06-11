@@ -190,7 +190,6 @@
 <script>
 import { getEnv } from "@/tools/getEnv"
 
-import AppNotif from "@/components/AppNotif.vue"
 import LocalSwitcher from "@/components/LocalSwitcher.vue"
 import EMPTY_FIELD from "@/const/emptyField.js"
 import { apiCreateUser } from "@/api/user.js"
@@ -354,7 +353,6 @@ export default {
     },
   },
   components: {
-    AppNotif,
     LocalSwitcher,
     MainContentPublic,
   },
