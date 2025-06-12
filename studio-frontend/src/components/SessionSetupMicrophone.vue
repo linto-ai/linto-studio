@@ -88,7 +88,7 @@
         }}</span>
       </button> -->
       <button class="btn primary" type="submit" @click="setupSession">
-        <ph-icon name="check" size="md" />
+        <ph-icon name="check" size="md" class="icon" />
         <span class="label">{{ l_applyLabel }} </span>
       </button>
     </div>
@@ -109,7 +109,7 @@
 
       <div class="flex1"></div>
       <button class="btn primary" @click="setupSession" type="submit">
-        <ph-icon name="check" size="md" />
+        <ph-icon name="check" size="md" class="icon" />
         <span class="label">
           {{ $t("quick_session.restore.continue_button") }}
         </span>

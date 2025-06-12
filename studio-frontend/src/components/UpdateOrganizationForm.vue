@@ -25,7 +25,7 @@
         type="submit"
         class="btn primary"
         v-if="isAdmin || (isSystemAdministrator && isBackofficePage)">
-        <ph-icon name="check" size="md" />
+        <ph-icon name="check" size="md" class="icon" />
         <span class="label">{{ $t("organisation.update_button") }}</span>
       </button>
     </section>

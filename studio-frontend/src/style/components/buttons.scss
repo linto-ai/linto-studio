@@ -58,6 +58,15 @@ button,
   color: var(--text-primary);
   transition: all 0.2s ease;
 
+  // same as sm
+  padding: 0.35rem 0.75rem;
+  font-size: 0.9rem;
+  &.icon-only {
+    padding: 0;
+    width: 24px;
+    height: 24px;
+  }
+
   /* Hover, focus, active states */
   &:hover {
     cursor: pointer;
@@ -109,7 +118,6 @@ button,
   &.sm {
     padding: 0.35rem 0.75rem;
     font-size: 0.9rem;
-
     &.icon-only {
       padding: 0;
       width: 24px;

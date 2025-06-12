@@ -30,7 +30,7 @@
         }}</span>
         <button
           v-if="!userInfo.emailIsVerified && !emailSent"
-          class="btn secondary"
+          class="btn secondary sm"
           @click="sendVerificationEmail()"
           style="margin: 0 5px">
           <span
@@ -42,7 +42,7 @@
       </div>
 
       <button type="submit" class="btn primary">
-        <ph-icon name="check" size="md" />
+        <ph-icon name="check" size="md" class="icon" />
         <span class="label">{{
           $t("user_settings.update_personal_information_button")
         }}</span>

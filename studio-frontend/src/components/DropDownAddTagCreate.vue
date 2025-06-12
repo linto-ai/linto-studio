@@ -15,7 +15,7 @@
           :color="currentTagcategoryColor" />
       </label>
       <button @click="done" :disabled="selectedCategory == null" class="green">
-        <ph-icon name="check" size="md" />
+        <ph-icon name="check" size="md" class="icon" />
         <span class="label">{{ $t("tags.done_create_tag") }}</span>
       </button>
     </div>

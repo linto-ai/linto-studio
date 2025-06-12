@@ -1,6 +1,7 @@
 <template>
   <Modal
     v-model="isModalOpen"
+    :with-actions="false"
     title="Settings"
     subtitle="Manage your account and preferences"
     size="lg">

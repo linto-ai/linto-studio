@@ -111,7 +111,7 @@
           class="btn primary"
           id="upload-media-button"
           :disabled="formState === 'sending'">
-          <ph-icon name="check" size="md" />
+          <ph-icon name="check" size="md" class="icon" />
           <span class="label">
             {{ $t("session.create_page.submit_button") }}
           </span>
