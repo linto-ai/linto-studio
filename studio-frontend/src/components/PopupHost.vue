@@ -9,9 +9,8 @@
       v-for="popup in stack"
       :key="popup.id"
       :is="popup.component"
-      v-bind="popup.props"
+      v-bind="{ ...popup.props, slots: popup.slots, scopedSlots: popup.slots }"
       :controller="popup.controller"
-      :slots="popup.slots"
       :z-index="popup.zIndex"
       :ref="setRef(popup.id)"
     ></component>

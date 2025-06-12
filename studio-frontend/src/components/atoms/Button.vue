@@ -6,29 +6,49 @@
     v-bind="$attrs"
     v-on="$listeners">
     <!-- Loading icon -->
-    <ph-icon
-      v-if="loading"
-      name="circle-notch"
-      :weight="computedIconWeight"
-      :color="computedIconColor"
-      :size="size"
-      class="animate-spin" />
+    <span class="btn-prefix-label">
+      <span class="btn-prefix">
+        <ph-icon
+          v-if="loading"
+          name="circle-notch"
+          :weight="computedIconWeight"
+          :color="computedIconColor"
+          :size="size"
+          class="animate-spin" />
 
-    <!-- Left icon -->
+        <!-- Left icon or avatar -->
+        <ph-icon
+          v-else-if="icon && iconPosition === 'left'"
+          :name="icon"
+          :weight="computedIconWeight"
+          :color="computedIconColor"
+          :size="size"
+          :class="iconClasses" />
+
+        <!-- Left avatar -->
+        <Avatar
+          v-else-if="avatar"
+          class="avatar"
+          :text="avatarText"
+          :color="avatarColor"
+          :src="avatar"
+          :size="avatarSize" />
+      </span>
+
+      <!-- Label/Content -->
+      <span v-if="!isIconOnly" class="label">
+        <slot>{{ label }}</slot>
+      </span>
+    </span>
+
+    <!-- Right icon -->
     <ph-icon
-      v-else-if="icon && iconPosition === 'left'"
-      :name="icon"
+      v-if="!loading && iconRight"
+      :name="iconRight"
       :weight="computedIconWeight"
       :color="computedIconColor"
       :size="size"
       :class="iconClasses" />
-
-    <!-- Label/Content -->
-    <span v-if="!isIconOnly" class="label">
-      <slot>{{ label }}</slot>
-    </span>
-
-    <!-- Right icon -->
     <ph-icon
       v-if="!loading && icon && iconPosition === 'right'"
       :name="icon"
@@ -48,7 +68,29 @@ export default {
       type: String,
       required: false,
     },
+    avatar: {
+      type: String,
+      required: false,
+    },
+    avatarText: {
+      type: String,
+      required: false,
+    },
+    avatarColor: {
+      type: String,
+      required: false,
+    },
+    avatarSize: {
+      type: String,
+      required: false,
+      default: "sm",
+      validator: (value) => ["xs", "sm", "md", "lg", "xl"].includes(value),
+    },
     icon: {
+      type: String,
+      required: false,
+    },
+    iconRight: {
       type: String,
       required: false,
     },
@@ -221,6 +263,19 @@ export default {
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+.btn {
+  .label + .icon {
+    margin-left: 4px;
+  }
+
+  .btn-prefix-label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1 1 auto;
   }
 }
 </style>

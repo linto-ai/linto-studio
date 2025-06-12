@@ -64,6 +64,13 @@ export default {
       type: Boolean,
       default: false,
     },
+    /**
+     * width of the popover
+     */
+    width: {
+      type: [String, Number],
+      default: "auto", // will use the width of the trigger element
+    },
   },
   data() {
     return {

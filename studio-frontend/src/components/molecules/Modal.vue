@@ -83,12 +83,14 @@ export default {
             component: ModalRenderer,
             props: this.$props,
             slots: {
-              default: this.$scopedSlots.content
-                ? this.$scopedSlots.content()
-                : this.$slots.content || this.$slots.default || [],
-              actions: this.$scopedSlots.actions
-                ? this.$scopedSlots.actions()
-                : this.$slots.actions || [],
+              default: () =>
+                this.$scopedSlots.content
+                  ? this.$scopedSlots.content()
+                  : this.$slots.content || this.$slots.default || [],
+              actions: () =>
+                this.$scopedSlots.actions
+                  ? this.$scopedSlots.actions()
+                  : this.$slots.actions || [],
             },
             triggerEl: this.triggerEl,
           })

@@ -6,7 +6,7 @@
     @mouseenter="controller.onContentEnter"
     @mouseleave="controller.onContentLeave"
   >
-    <div class="popover-content" :class="[position, contentClass]" ref="content">
+    <div class="popover-content" :class="[position, contentClass]" ref="content" :style="{ width: computedWidth }">
       <VNodeRenderer :nodes="renderedSlots" />
     </div>
   </div>
@@ -25,6 +25,7 @@ export default {
     position: { type: String, default: "bottom" },
     popoverCoords: { type: Object, required: true },
     contentClass: { type: String, default: "" },
+    width: { type: [String, Number], default: "auto" },
   },
   computed: {
     popoverStyle() {
@@ -33,6 +34,7 @@ export default {
         left: `${this.popoverCoords.left}px`,
         top: `${this.popoverCoords.top}px`,
         zIndex: this.zIndex,
+        width: this.computedWidth,
       };
     },
     renderedSlots() {
@@ -40,6 +42,14 @@ export default {
       return typeof this.slots.default === 'function' 
         ? this.slots.default() 
         : this.slots.default || [];
+    },
+    computedWidth() {
+      if (this.width === "auto") {
+        // use the width of the trigger element
+        return this.controller.$refs.trigger.offsetWidth + 'px'
+      }
+
+      return this.width
     },
   },
   methods: {
