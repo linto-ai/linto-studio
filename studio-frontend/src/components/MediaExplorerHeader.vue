@@ -34,6 +34,7 @@
                 :search-value="search"
                 :selected-tag-ids="selectedTagIds"
                 @filter-change="handleFilterChange" />
+
             </div>
 
             <input

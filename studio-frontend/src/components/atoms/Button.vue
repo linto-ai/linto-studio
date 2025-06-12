@@ -81,9 +81,13 @@ export default {
           "tertiary",
           "neutral",
           "primary-soft",
+          "primary-hard",
           "secondary-soft",
+          "secondary-hard",
           "tertiary-soft",
+          "tertiary-hard",
           "neutral-soft",
+          "neutral-hard",
         ].includes(value),
     },
     size: {
