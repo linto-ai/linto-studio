@@ -28,7 +28,8 @@
     border: var(--border-input);
   }
 
-  .btn, button {
+  .btn,
+  button {
     border: var(--border-button);
   }
 }
@@ -172,7 +173,13 @@ button,
       left: -3px;
       width: calc(100% + 6px);
       height: calc(100% + 6px);
-      background: linear-gradient(90deg, #38ffbd 0%, #00ff84 30.43%, #00eb81 68.23%, #00ffaa 100%);
+      background: linear-gradient(
+        90deg,
+        #38ffbd 0%,
+        #00ff84 30.43%,
+        #00eb81 68.23%,
+        #00ffaa 100%
+      );
       background-size: 600% 600%;
       animation: AnimateBorder 4s ease infinite;
       -webkit-animation: AnimateBorder 4s ease infinite;
@@ -194,9 +201,15 @@ button,
     }
 
     @keyframes AnimateBorder {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
     }
   }
 
@@ -208,7 +221,8 @@ button,
     .icon {
       color: var(--primary-contrast, #fff);
     }
-    .icon-svg, .ph-icon {
+    .icon-svg,
+    .ph-icon {
       color: var(--primary-contrast, #fff);
     }
     &:hover {
@@ -217,7 +231,8 @@ button,
       .icon {
         color: var(--primary-color);
       }
-      .icon-svg, .ph-icon {
+      .icon-svg,
+      .ph-icon {
         color: var(--primary-color);
       }
     }
@@ -226,7 +241,8 @@ button,
       background-color: var(--primary-soft);
       border: 1px solid var(--primary-soft);
       color: var(--primary-color);
-      .icon-svg, .ph-icon {
+      .icon-svg,
+      .ph-icon {
         color: var(--primary-color);
       }
     }
@@ -235,7 +251,8 @@ button,
       background-color: var(--primary-hard);
       border: 1px solid var(--primary-hard);
       color: var(--primary-contrast, #fff);
-      .icon-svg, .ph-icon {
+      .icon-svg,
+      .ph-icon {
         color: var(--primary-contrast, #fff);
       }
     }
@@ -248,7 +265,8 @@ button,
     .icon {
       background-color: var(--primary-contrast, #fff);
     }
-    .icon-svg, .ph-icon {
+    .icon-svg,
+    .ph-icon {
       color: var(--primary-contrast, #fff);
     }
     &:hover {
@@ -257,7 +275,8 @@ button,
       .icon {
         background-color: var(--secondary-color);
       }
-      .icon-svg, .ph-icon {
+      .icon-svg,
+      .ph-icon {
         color: var(--secondary-color);
       }
     }
@@ -266,7 +285,8 @@ button,
       background-color: var(--secondary-soft);
       border: 1px solid var(--secondary-soft);
       color: var(--secondary-color);
-      .icon-svg, .ph-icon {
+      .icon-svg,
+      .ph-icon {
         color: var(--secondary-color);
       }
     }
@@ -275,7 +295,8 @@ button,
       background-color: var(--secondary-hard);
       border: 1px solid var(--secondary-hard);
       color: var(--primary-contrast, #fff);
-      .icon-svg, .ph-icon {
+      .icon-svg,
+      .ph-icon {
         color: var(--primary-contrast, #fff);
       }
     }
@@ -288,7 +309,8 @@ button,
     .icon {
       background-color: var(--primary-contrast, #fff);
     }
-    .icon-svg, .ph-icon {
+    .icon-svg,
+    .ph-icon {
       color: var(--primary-contrast, #fff);
     }
     &:hover {
@@ -297,7 +319,8 @@ button,
       .icon {
         background-color: var(--tertiary-color);
       }
-      .icon-svg, .ph-icon {
+      .icon-svg,
+      .ph-icon {
         color: var(--tertiary-color);
       }
     }
@@ -306,7 +329,8 @@ button,
       background-color: var(--tertiary-soft);
       border: 1px solid var(--tertiary-soft);
       color: var(--tertiary-color);
-      .icon-svg, .ph-icon {
+      .icon-svg,
+      .ph-icon {
         color: var(--tertiary-color);
       }
     }
@@ -315,7 +339,8 @@ button,
       background-color: var(--tertiary-hard);
       border: 1px solid var(--tertiary-hard);
       color: var(--primary-contrast, #fff);
-      .icon-svg, .ph-icon {
+      .icon-svg,
+      .ph-icon {
         color: var(--primary-contrast, #fff);
       }
     }
@@ -328,7 +353,8 @@ button,
     .icon {
       background-color: var(--neutral-80);
     }
-    .icon-svg, .ph-icon {
+    .icon-svg,
+    .ph-icon {
       color: var(--neutral-80);
     }
 
@@ -336,7 +362,8 @@ button,
       background-color: var(--neutral-10);
       border: 1px solid var(--neutral-40);
       color: var(--neutral-60);
-      .icon-svg, .ph-icon {
+      .icon-svg,
+      .ph-icon {
         color: var(--neutral-60);
       }
     }
@@ -345,7 +372,8 @@ button,
       background-color: var(--neutral-60);
       border: 1px solid var(--neutral-80);
       color: var(--neutral-10);
-      .icon-svg, .ph-icon {
+      .icon-svg,
+      .ph-icon {
         color: var(--neutral-10);
       }
     }
@@ -357,7 +385,9 @@ button,
     border: 1px solid transparent;
     background-color: var(--neutral-40);
     color: var(--neutral-80);
-    .icon, .ph-icon, .icon-svg {
+    .icon,
+    .ph-icon,
+    .icon-svg {
       background-color: transparent;
       color: var(--neutral-80);
     }
@@ -365,7 +395,9 @@ button,
     &:hover {
       background-color: var(--neutral-20);
       color: var(--neutral-80);
-      .icon, .ph-icon, .icon-svg {
+      .icon,
+      .ph-icon,
+      .icon-svg {
         color: var(--neutral-80);
       }
     }
@@ -374,14 +406,18 @@ button,
       background-color: transparent;
       border: 1px solid var(--primary-color);
       color: var(--primary-color);
-      .icon, .ph-icon, .icon-svg {
+      .icon,
+      .ph-icon,
+      .icon-svg {
         background-color: transparent;
         color: var(--primary-color);
       }
       &:hover {
         background-color: var(--primary-color);
         color: var(--primary-contrast, #fff);
-        .icon, .ph-icon, .icon-svg {
+        .icon,
+        .ph-icon,
+        .icon-svg {
           color: var(--primary-contrast, #fff);
         }
       }
@@ -390,14 +426,18 @@ button,
         background-color: transparent;
         border: 1px solid var(--primary-soft);
         color: var(--primary-soft);
-        .icon, .ph-icon, .icon-svg {
+        .icon,
+        .ph-icon,
+        .icon-svg {
           background-color: transparent;
           color: var(--primary-soft);
         }
         &:hover {
           background-color: var(--primary-soft);
           color: var(--primary-color);
-          .icon, .ph-icon, .icon-svg {
+          .icon,
+          .ph-icon,
+          .icon-svg {
             color: var(--primary-color);
           }
         }
@@ -407,14 +447,18 @@ button,
         background-color: transparent;
         border: 1px solid var(--primary-hard);
         color: var(--primary-hard);
-        .icon, .ph-icon, .icon-svg {  
+        .icon,
+        .ph-icon,
+        .icon-svg {
           background-color: transparent;
           color: var(--primary-hard);
         }
         &:hover {
           background-color: var(--primary-hard);
           color: var(--primary-contrast, #fff);
-          .icon, .ph-icon, .icon-svg {
+          .icon,
+          .ph-icon,
+          .icon-svg {
             color: var(--primary-contrast, #fff);
           }
         }
@@ -425,14 +469,18 @@ button,
       background-color: transparent;
       border: 1px solid var(--secondary-color);
       color: var(--secondary-color);
-      .icon, .ph-icon, .icon-svg {
+      .icon,
+      .ph-icon,
+      .icon-svg {
         background-color: transparent;
         color: var(--secondary-color);
       }
       &:hover {
         background-color: var(--secondary-color);
         color: var(--primary-contrast, #fff);
-        .icon, .ph-icon, .icon-svg {
+        .icon,
+        .ph-icon,
+        .icon-svg {
           color: var(--primary-contrast, #fff);
         }
       }
@@ -441,14 +489,18 @@ button,
         background-color: transparent;
         border: 1px solid var(--secondary-soft);
         color: var(--secondary-soft);
-        .icon, .ph-icon, .icon-svg {  
+        .icon,
+        .ph-icon,
+        .icon-svg {
           background-color: transparent;
           color: var(--secondary-soft);
         }
         &:hover {
           background-color: var(--secondary-soft);
           color: var(--secondary-color);
-          .icon, .ph-icon, .icon-svg {
+          .icon,
+          .ph-icon,
+          .icon-svg {
             color: var(--secondary-color);
           }
         }
@@ -458,32 +510,40 @@ button,
         background-color: transparent;
         border: 1px solid var(--secondary-hard);
         color: var(--secondary-hard);
-        .icon, .ph-icon, .icon-svg {
+        .icon,
+        .ph-icon,
+        .icon-svg {
           background-color: transparent;
           color: var(--secondary-hard);
         }
         &:hover {
           background-color: var(--secondary-hard);
           color: var(--primary-contrast, #fff);
-          .icon, .ph-icon, .icon-svg {
+          .icon,
+          .ph-icon,
+          .icon-svg {
             color: var(--primary-contrast, #fff);
           }
         }
       }
     }
 
-    &.tertiary {  
+    &.tertiary {
       background-color: transparent;
       border: 1px solid var(--tertiary-color);
       color: var(--tertiary-color);
-      .icon, .ph-icon, .icon-svg {
+      .icon,
+      .ph-icon,
+      .icon-svg {
         background-color: transparent;
         color: var(--tertiary-color);
       }
       &:hover {
         background-color: var(--tertiary-color);
         color: var(--primary-contrast, #fff);
-        .icon, .ph-icon, .icon-svg {
+        .icon,
+        .ph-icon,
+        .icon-svg {
           color: var(--primary-contrast, #fff);
         }
       }
@@ -492,14 +552,18 @@ button,
         background-color: transparent;
         border: 1px solid var(--tertiary-soft);
         color: var(--tertiary-soft);
-        .icon, .ph-icon, .icon-svg {
+        .icon,
+        .ph-icon,
+        .icon-svg {
           background-color: transparent;
           color: var(--tertiary-soft);
         }
         &:hover {
           background-color: var(--tertiary-soft);
           color: var(--tertiary-color);
-          .icon, .ph-icon, .icon-svg {
+          .icon,
+          .ph-icon,
+          .icon-svg {
             color: var(--tertiary-color);
           }
         }
@@ -509,14 +573,18 @@ button,
         background-color: transparent;
         border: 1px solid var(--tertiary-hard);
         color: var(--tertiary-hard);
-        .icon, .ph-icon, .icon-svg {
+        .icon,
+        .ph-icon,
+        .icon-svg {
           background-color: transparent;
           color: var(--tertiary-hard);
         }
         &:hover {
           background-color: var(--tertiary-hard);
           color: var(--primary-contrast, #fff);
-          .icon, .ph-icon, .icon-svg {
+          .icon,
+          .ph-icon,
+          .icon-svg {
             color: var(--primary-contrast, #fff);
           }
         }
@@ -528,14 +596,18 @@ button,
       border: 1px solid var(--neutral-60);
       color: var(--neutral-60);
 
-      .icon, .ph-icon, .icon-svg {
+      .icon,
+      .ph-icon,
+      .icon-svg {
         background-color: transparent;
         color: var(--neutral-60);
       }
       &:hover {
         background-color: var(--neutral-60);
         color: var(--neutral-10);
-        .icon, .ph-icon, .icon-svg {
+        .icon,
+        .ph-icon,
+        .icon-svg {
           color: var(--neutral-10);
         }
       }
@@ -544,14 +616,18 @@ button,
         background-color: transparent;
         border: 1px solid var(--neutral-soft);
         color: var(--neutral-soft);
-        .icon, .ph-icon, .icon-svg {
+        .icon,
+        .ph-icon,
+        .icon-svg {
           background-color: transparent;
           color: var(--neutral-soft);
         }
         &:hover {
           background-color: var(--neutral-soft);
           color: var(--neutral-60);
-          .icon, .ph-icon, .icon-svg {
+          .icon,
+          .ph-icon,
+          .icon-svg {
             color: var(--neutral-60);
           }
         }
@@ -561,14 +637,18 @@ button,
         background-color: transparent;
         border: 1px solid var(--neutral-hard);
         color: var(--neutral-hard);
-        .icon, .ph-icon, .icon-svg {
+        .icon,
+        .ph-icon,
+        .icon-svg {
           background-color: transparent;
           color: var(--neutral-hard);
         }
         &:hover {
           background-color: var(--neutral-hard);
           color: var(--neutral-10);
-          .icon, .ph-icon, .icon-svg {
+          .icon,
+          .ph-icon,
+          .icon-svg {
             color: var(--neutral-10);
           }
         }
@@ -592,11 +672,21 @@ button,
     align-items: center;
     justify-content: center;
     padding: 0;
-    &.xs { width: 1.5rem; }
-    &.sm { width: 2rem; }
-    &.md { width: 2.5rem; }
-    &.lg { width: 3rem; }
-    &.xl { width: 3.5rem; }
+    &.xs {
+      width: 1.5rem;
+    }
+    &.sm {
+      width: 2rem;
+    }
+    &.md {
+      width: 2.5rem;
+    }
+    &.lg {
+      width: 3rem;
+    }
+    &.xl {
+      width: 3.5rem;
+    }
   }
 
   /* Transparent variant */
@@ -647,11 +737,30 @@ button,
     align-items: center;
     justify-content: center;
     padding: 0;
-    &.xs { height: 1.5rem; width: 1.5rem; }
-    &.sm { height: 2rem; width: 2rem; }
-    &.md { height: 2.5rem; width: 2.5rem; }
-    &.lg { height: 3rem; width: 3rem; }
-    &.xl { height: 3.5rem; width: 3.5rem; }
+    &.xs {
+      height: 1.5rem;
+      width: 1.5rem;
+    }
+    &.sm {
+      height: 2rem;
+      width: 2rem;
+    }
+    &.md {
+      height: 2.5rem;
+      width: 2.5rem;
+    }
+    &.lg {
+      height: 3rem;
+      width: 3rem;
+    }
+    &.xl {
+      height: 3.5rem;
+      width: 3.5rem;
+    }
+
+    & .icon {
+      margin: 0px;
+    }
   }
 
   /* Icon handling */
@@ -667,11 +776,26 @@ button,
     width: 1.25rem;
     height: 1.25rem;
 
-    &.xs { width: 0.75rem; height: 0.75rem; }
-    &.sm { width: 1rem; height: 1rem; }
-    &.md { width: 1.25rem; height: 1.25rem; }
-    &.lg { width: 1.5rem; height: 1.5rem; }
-    &.xl { width: 1.75rem; height: 1.75rem; }
+    &.xs {
+      width: 0.75rem;
+      height: 0.75rem;
+    }
+    &.sm {
+      width: 1rem;
+      height: 1rem;
+    }
+    &.md {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+    &.lg {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+    &.xl {
+      width: 1.75rem;
+      height: 1.75rem;
+    }
   }
 
   & > .label {

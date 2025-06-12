@@ -1,7 +1,18 @@
 <template>
-  <div class="media-explorer-menu-container">
-    <small v-if="currentOrganization">
-      {{ currentOrganization.name }}
+  <div class="media-explorer-menu-container flex col">
+    <small v-if="currentOrganization" class="flex gap-medium">
+      <span class="flex1">{{ currentOrganization.name }}</span>
+      <router-link
+        class="media-explorer-menu__org-settings"
+        :ariaLabel="this.$t('navigation.organisation.setting')"
+        :title="this.$t('navigation.organisation.setting')"
+        :to="{
+          name: 'organizations update',
+          params: { organizationId: currentOrganizationScope },
+        }">
+        <ph-icon name="gear" class=""></ph-icon>
+      </router-link>
+
       <div class="org-avatar">
         <Avatar
           :text="orgSymbol"
@@ -45,7 +56,7 @@
           </span>
         </router-link>
       </div>
-      
+
       <ModalTagManagement class="media-explorer-menu__item" overlay>
         <template #trigger="{ open }">
           <a
@@ -97,7 +108,7 @@
 import { mapGetters } from "vuex"
 import ModalSwitchOrg from "@/components/ModalSwitchOrg.vue"
 import ModalTagManagement from "@/components/ModalTagManagement.vue"
-
+import Button from "@/components/atoms/Button.vue"
 export default {
   name: "MediaExplorerMenu",
   components: {
@@ -148,6 +159,10 @@ export default {
   display: flex;
   flex-direction: column;
 
+  &__org-settings {
+    color: var(--text-primary);
+  }
+
   &__item {
     display: flex;
     flex-direction: column;
@@ -174,7 +189,11 @@ export default {
 
     a.active {
       z-index: 1;
-      background-image: linear-gradient(to right, var(--primary-soft), var(--neutral-40));
+      background-image: linear-gradient(
+        to right,
+        var(--primary-soft),
+        var(--neutral-40)
+      );
       background-size: 200% 100%;
       background-position: 100% 0;
       animation: animate-background 5s infinite;

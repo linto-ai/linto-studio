@@ -4,8 +4,9 @@
     :class="classes"
     :disabled="disabled || loading"
     v-bind="$attrs"
+    :aria-disabled="disabled || loading"
+    :title="isIconOnly ? ariaLabel : ''"
     v-on="$listeners">
-    <!-- Loading icon -->
     <span class="btn-prefix-label">
       <span class="btn-prefix">
         <ph-icon
