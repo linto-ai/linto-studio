@@ -74,7 +74,8 @@ export default {
       this.$store.dispatch("system/addNotification", {
         message: data.message,
         type: data.status,
-        timeout: data.timeout,
+        timeout: data.timeout ?? 5000,
+        closable: data.cantBeClosed ?? true,
       })
     })
   },

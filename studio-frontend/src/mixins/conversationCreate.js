@@ -142,15 +142,16 @@ export default {
             audioFileIndex++
 
             const { value: convName, file, uploadType } = this.audioFiles[0]
-
-            bus.$emit("app_notif", {
-              status: "loading",
+            const notifId = Date.now() + Math.random()
+            this.$store.dispatch("system/addNotification", {
+              id: notifId,
+              type: "info",
               message: this.$i18n.t(
                 "conversation.conversation_creation_loading_multiple",
                 { count: audioFileIndex, total: total },
               ),
-              timeout: -1,
-              cantBeClosed: true,
+              timeout: 0,
+              closable: false,
             })
 
             let conversationHasBeenCreated = await apiCreateConversation(
@@ -201,6 +202,10 @@ export default {
               return
             }
             this.audioFiles.shift()
+
+            setTimeout(() => {
+              this.$store.dispatch("system/removeNotificationById", notifId)
+            }, 2000)
           }
 
           if (this.audioFiles.length === 0) {
