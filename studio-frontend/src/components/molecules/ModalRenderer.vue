@@ -33,9 +33,9 @@
           color="primary"></ph-icon>
       </div>
       <div class="modal-body flex col flex1">
-        <VNodeRenderer :nodes="slots.default" />
+        <v-node-renderer v-if="defaultNodes.length" :nodes="defaultNodes" />
       </div>
-      <div class="modal-footer flex row gap-small" v-if="withActions">
+      <div class="modal-footer flex row gap-small" v-if="withActions || actionsNodes.length">
         <template v-if="withActionDelete">
           <button
             class="btn tertiary"
@@ -92,9 +92,9 @@
           </template>
         </div>
       </div>
-      <template v-if="slots.actions && slots.actions.length > 0">
+      <template v-if="actionsNodes.length">
         <div class="modal-footer">
-          <VNodeRenderer :nodes="slots.actions" />
+          <v-node-renderer :nodes="actionsNodes" />
         </div>
       </template>
     </component>
@@ -148,6 +148,12 @@ export default {
     colorActionDelete: { type: String, default: "var(--danger-color)" },
   },
   computed: {
+    defaultNodes() {
+      return this.slots && this.slots.default ? this.slots.default() : []
+    },
+    actionsNodes() {
+      return this.slots && this.slots.actions ? this.slots.actions() : []
+    },
     modalComponentType() {
       return this.isForm ? "form" : "div"
     },

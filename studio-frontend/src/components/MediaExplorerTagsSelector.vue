@@ -5,7 +5,8 @@
       :track-mouse="false" 
       position="bottom" 
       overlay
-      :class="{ 'has-filters': selectedTagIds.length > 0 }">
+      :class="{ 'has-filters': selectedTagIds.length > 0 }"
+      width="280px">
       <template #trigger>
         <Button
           variant="outline"

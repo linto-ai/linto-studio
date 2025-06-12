@@ -6,7 +6,7 @@
       :error="error"
       :search-value="search"
       :enable-pagination="false"
-      :selected-tag-ids="selectedTags.map(tag => tag._id)"
+      :selected-tag-ids="selectedTags.map((tag) => tag._id)"
       @search="handleSearch"
       class="explore-next__media-explorer relative">
       <template v-slot:before>
@@ -124,7 +124,12 @@ export default {
     },
   },
   methods: {
-    ...mapMutations("inbox", ["setMedias", "clearSelectedMedias", "appendMedias", "clearMedias"]),
+    ...mapMutations("inbox", [
+      "setMedias",
+      "clearSelectedMedias",
+      "appendMedias",
+      "clearMedias",
+    ]),
     async initPageFromUrl() {
       const urlParams = new URLSearchParams(window.location.search)
       const pageParam = urlParams.get("page")
@@ -133,9 +138,9 @@ export default {
 
       // Handle tags parameter
       if (tagsParam && tagsParam.trim().length > 0) {
-        const tagIds = tagsParam.split(",").filter(id => id.trim())
+        const tagIds = tagsParam.split(",").filter((id) => id.trim())
         // Convert tag IDs to tag objects - assuming tags are available in store
-        this.selectedTags = tagIds.map(id => ({ _id: id }))
+        this.selectedTags = tagIds.map((id) => ({ _id: id }))
       }
 
       // Handle search parameter
@@ -191,15 +196,15 @@ export default {
       } else {
         url.searchParams.delete("page")
       }
-      
+
       // Keep tags in URL if present
       if (this.selectedTags.length > 0) {
-        const tagIds = this.selectedTags.map(tag => tag._id).join(",")
+        const tagIds = this.selectedTags.map((tag) => tag._id).join(",")
         url.searchParams.set("tags", tagIds)
       } else {
         url.searchParams.delete("tags")
       }
-      
+
       window.history.replaceState({}, "", url)
     },
 
@@ -210,52 +215,53 @@ export default {
       } else {
         url.searchParams.delete("search")
       }
-      
+
       // Keep tags in URL if present
       if (this.selectedTags.length > 0) {
-        const tagIds = this.selectedTags.map(tag => tag._id).join(",")
+        const tagIds = this.selectedTags.map((tag) => tag._id).join(",")
         url.searchParams.set("tags", tagIds)
       } else {
         url.searchParams.delete("tags")
       }
-      
+
       // Reset page when searching
       url.searchParams.delete("page")
       window.history.replaceState({}, "", url)
     },
 
     generateUuid() {
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-      });
+      return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+        /[xy]/g,
+        function (c) {
+          var r = (Math.random() * 16) | 0,
+            v = c == "x" ? r : (r & 0x3) | 0x8
+          return v.toString(16)
+        },
+      )
     },
 
-    async apiSearchConversations(page = this.page, filters = [], append = false) {
+    async apiSearchConversations(
+      page = this.page,
+      filters = [],
+      append = false,
+    ) {
       let res
       this.loadingConversations = true
 
-      const textFilter = filters.find((filter) => filter.key === "textConversation")?.value
-      const titleFilter = filters.find((filter) => filter.key === "titleConversation")?.value
+      const textFilter = filters.find(
+        (filter) => filter.key === "textConversation",
+      )?.value
+      const titleFilter = filters.find(
+        (filter) => filter.key === "titleConversation",
+      )?.value
 
       try {
-      if (
-        (!this.selectedTags || this.selectedTags.length == 0) &&
-        filters.length == 0
-      ) {
-        if (this.options.favorites) {
-          res = await apiGetFavoritesConversations(
-            this.selectedTags.map((tag) => tag._id),
-            textFilter,
-            titleFilter,
-            page,
-            {
-              sortField: this.selectedOption,
-            },
-          )
-        } else {
-          if (this.options.shared) {
-            res = await apiGetConversationsSharedWith(
+        if (
+          (!this.selectedTags || this.selectedTags.length == 0) &&
+          filters.length == 0
+        ) {
+          if (this.options.favorites) {
+            res = await apiGetFavoritesConversations(
               this.selectedTags.map((tag) => tag._id),
               textFilter,
               titleFilter,
@@ -265,44 +271,55 @@ export default {
               },
             )
           } else {
-            res = await apiGetConversationsByOrganization(
-              this.currentOrganizationScope,
-              page,
-              {
-                pageSize: 12,
-                sortField: this.selectedOption,
-              },
-            )
+            if (this.options.shared) {
+              res = await apiGetConversationsSharedWith(
+                this.selectedTags.map((tag) => tag._id),
+                textFilter,
+                titleFilter,
+                page,
+                {
+                  sortField: this.selectedOption,
+                },
+              )
+            } else {
+              res = await apiGetConversationsByOrganization(
+                this.currentOrganizationScope,
+                page,
+                {
+                  pageSize: 12,
+                  sortField: this.selectedOption,
+                },
+              )
+            }
           }
+        } else {
+          res = await apiGetConversationsByTags(
+            this.currentOrganizationScope,
+            this.selectedTags.map((tag) => tag._id),
+            textFilter,
+            titleFilter,
+            page,
+            {
+              sortField: this.selectedOption,
+            },
+          )
         }
-      } else {
-        res = await apiGetConversationsByTags(
-          this.currentOrganizationScope,
-          this.selectedTags.map((tag) => tag._id),
-          textFilter,
-          titleFilter,
-          page,
-          {
-            sortField: this.selectedOption,
-          },
-        )
-      }
-      this.loadingConversations = false
-      this.totalItemsCount = res?.count || 0
-      const newConversations = res?.list || []
-      if (append) {
-        this.conversations = [...this.conversations, ...newConversations]
+        this.loadingConversations = false
+        this.totalItemsCount = res?.count || 0
+        const newConversations = res?.list || []
+        if (append) {
+          this.conversations = [...this.conversations, ...newConversations]
+          this.appendMedias(fromConversations(newConversations))
+        } else {
+          this.conversations = newConversations
+        }
         this.appendMedias(fromConversations(newConversations))
-      } else {
-        this.conversations = newConversations
+        this.hasMoreItems = res?.count - 12 * (page + 1) > 0
+      } catch (error) {
+        this.error = error
+      } finally {
+        this.loadingConversations = false
       }
-      this.appendMedias(fromConversations(newConversations))
-      this.hasMoreItems = res?.count - 12 * (page + 1) > 0
-    } catch (error) {
-      this.error = error
-    } finally {
-      this.loadingConversations = false
-    }
 
       return res
     },
@@ -341,20 +358,20 @@ export default {
       this.mode = "default"
       this.search = ""
       this.filters = []
-      
+
       // Update URL - keep tags but remove page and search
       const url = new URL(window.location)
       url.searchParams.delete("page")
       url.searchParams.delete("search")
-      
+
       // Keep tags in URL if present
       if (this.selectedTags.length > 0) {
-        const tagIds = this.selectedTags.map(tag => tag._id).join(",")
+        const tagIds = this.selectedTags.map((tag) => tag._id).join(",")
         url.searchParams.set("tags", tagIds)
       }
-      
+
       window.history.replaceState({}, "", url)
-      
+
       this.resetSearch()
       this.clearSelectedMedias()
     },
@@ -390,7 +407,7 @@ export default {
 
     handleSearch(search, filters) {
       this.updateSearchUrl(search)
-      
+
       if (search.length === 0) {
         this.mode = "default"
         this.search = ""
@@ -452,5 +469,4 @@ export default {
   color: #0066cc;
   font-weight: bold;
 }
-
 </style>

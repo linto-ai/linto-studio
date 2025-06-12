@@ -29,7 +29,7 @@
       </Tooltip>
     </span>
     <span class="media-explorer-item-tags__actions">
-      <Popover trigger="click" :track-mouse="false" position="bottom" overlay>
+      <Popover trigger="click" :track-mouse="false" position="bottom" overlay width="280px">
         <template #trigger>
           <button
             class="tag--add btn sm icon-only primary outline"

@@ -1,6 +1,5 @@
 import Avatar from './Avatar.vue';
 import PhIcon from './PhIcon.vue';
-import ButtonPopover from './ButtonPopover.vue';
 import TimeDuration from './TimeDuration.vue';
 import SwitchInput from './SwitchInput.vue';
 import UserProfilePicture from './UserProfilePicture.vue';
@@ -27,7 +26,6 @@ import Button from './Button.vue';
 const components = [
   Avatar,
   PhIcon,
-  ButtonPopover,
   TimeDuration,
   SwitchInput,
   UserProfilePicture,
