@@ -4,6 +4,9 @@
     :class="classes"
     :disabled="disabled || loading"
     v-bind="$attrs"
+    :aria-label="ariaLabel"
+    :aria-disabled="disabled || loading"
+    :title="isIconOnly ? ariaLabel : ''"
     v-on="$listeners">
     <!-- Loading icon -->
     <ph-icon
@@ -47,6 +50,10 @@ export default {
     label: {
       type: String,
       required: false,
+    },
+    ariaLabel: {
+      type: String,
+      required: true, // Ensure this is always provided for accessibility
     },
     icon: {
       type: String,
