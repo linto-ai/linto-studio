@@ -1,5 +1,5 @@
 body {
-  font-family: $mainFont;
+  font-family: var(--font-family);
   color: var(--text-primary);
   accent-color: var(--primary-color);
   font-size: 14px;
@@ -283,7 +283,6 @@ li:last-child {
   z-index: 10;
   border: var(--border-block);
   overflow: auto;
-  @include blockShadow;
 
   .dropDown-section {
     padding: var(--small-gap);
@@ -488,7 +487,7 @@ li:last-child {
       color: #fff;
       padding: 0.25rem 0.5rem;
       white-space: nowrap;
-      @include borderRadius(5px);
+      border-radius: 4px;
     }
   }
 }

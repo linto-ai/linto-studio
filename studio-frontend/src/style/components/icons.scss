@@ -1,3 +1,5 @@
+@use "../mixin.scss";
+
 .icon {
   display: inline-block;
   width: 1.25rem;
@@ -7,281 +9,281 @@
   vertical-align: top;
   flex-shrink: 0;
   &.diarization {
-    @include maskImage("../public/img/speaker-diarization.svg");
+    @include mixin.maskImage("../public/img/speaker-diarization.svg");
   }
   &.add,
   &.new {
-    @include maskImage("../public/img/plus-rounded.svg");
+    @include mixin.maskImage("../public/img/plus-rounded.svg");
   }
   &.plus {
-    @include maskImage("../public/img/plus.svg");
+    @include mixin.maskImage("../public/img/plus.svg");
   }
   &.settings {
-    @include maskImage("../public/img/gear.svg");
+    @include mixin.maskImage("../public/img/gear.svg");
   }
   &.conv-list {
-    @include maskImage("../public/img/conv-list.svg");
+    @include mixin.maskImage("../public/img/conv-list.svg");
   }
   &.transcription {
-    @include maskImage("../public/img/transcription.svg");
+    @include mixin.maskImage("../public/img/transcription.svg");
   }
   &.delete,
   &.remove {
-    @include maskImage("../public/img/close-circle.svg");
+    @include mixin.maskImage("../public/img/close-circle.svg");
   }
   &.trash {
-    @include maskImage("../public/img/trash-simple.svg");
+    @include mixin.maskImage("../public/img/trash-simple.svg");
   }
   &.apply,
   &.valid {
-    @include maskImage("../public/img/apply.svg");
+    @include mixin.maskImage("../public/img/apply.svg");
   }
   &.edit {
-    @include maskImage("../public/img/edit.svg");
+    @include mixin.maskImage("../public/img/edit.svg");
   }
   &.copy {
-    @include maskImage("../public/img/copy.svg");
+    @include mixin.maskImage("../public/img/copy.svg");
   }
   &.help {
-    @include maskImage("../public/img/help.svg");
+    @include mixin.maskImage("../public/img/help.svg");
     margin-left: 0;
   }
   &.json {
-    @include maskImage("../public/img/json.svg");
+    @include mixin.maskImage("../public/img/json.svg");
   }
   &.speaker {
-    @include maskImage("../public/img/speaker.svg");
+    @include mixin.maskImage("../public/img/speaker.svg");
   }
   &.text {
-    @include maskImage("../public/img/text.svg");
+    @include mixin.maskImage("../public/img/text.svg");
   }
   &.back {
-    @include maskImage("../public/img/arrow-back.svg");
+    @include mixin.maskImage("../public/img/arrow-back.svg");
   }
   &.bottom-arrow {
-    @include maskImage("../public/img/line-arrow.svg");
-    @include transform(rotate(0deg));
+    @include mixin.maskImage("../public/img/line-arrow.svg");
+    @include mixin.transform(rotate(0deg));
   }
   &.top-arrow {
-    @include maskImage("../public/img/line-arrow.svg");
-    @include transform(rotate(180deg));
+    @include mixin.maskImage("../public/img/line-arrow.svg");
+    @include mixin.transform(rotate(180deg));
   }
   &.right-arrow {
-    @include maskImage("../public/img/line-arrow.svg");
-    @include transform(rotate(-90deg));
+    @include mixin.maskImage("../public/img/line-arrow.svg");
+    @include mixin.transform(rotate(-90deg));
   }
   &.left-arrow {
-    @include maskImage("../public/img/line-arrow.svg");
-    @include transform(rotate(90deg));
+    @include mixin.maskImage("../public/img/line-arrow.svg");
+    @include mixin.transform(rotate(90deg));
   }
   &.close {
-    @include maskImage("../public/img/close.svg");
+    @include mixin.maskImage("../public/img/close.svg");
     margin: 0;
   }
   &.zoom {
-    @include maskImage("../public/img/zoom.svg");
+    @include mixin.maskImage("../public/img/zoom.svg");
     margin: 0;
   }
   &.unzoom {
-    @include maskImage("../public/img/unzoom.svg");
+    @include mixin.maskImage("../public/img/unzoom.svg");
     margin: 0;
   }
   &.generate {
-    @include maskImage("../public/img/state-loading.svg");
+    @include mixin.maskImage("../public/img/state-loading.svg");
   }
   &.generating {
-    @include maskImage("../public/img/state-loading.svg");
-    @include rotate();
+    @include mixin.maskImage("../public/img/state-loading.svg");
+    @include mixin.rotate();
   }
   &.loading {
-    @include maskImage("../public/img/loading.svg");
-    @include rotate();
+    @include mixin.maskImage("../public/img/loading.svg");
+    @include mixin.rotate();
     margin: 0;
   }
   &.loading {
-    @include maskImage("../public/img/loading.svg");
-    @include rotate();
+    @include mixin.maskImage("../public/img/loading.svg");
+    @include mixin.rotate();
     margin: 0;
   }
   &.record {
-    @include maskImage("../public/img/microphone.svg");
+    @include mixin.maskImage("../public/img/microphone.svg");
   }
   &.record-live {
-    @include maskImage("../public/img/microphone-live.svg");
+    @include mixin.maskImage("../public/img/microphone-live.svg");
   }
   &.record-off {
-    @include maskImage("../public/img/microphone-off.svg");
+    @include mixin.maskImage("../public/img/microphone-off.svg");
   }
   &.upload {
-    @include maskImage("../public/img/upload.svg");
+    @include mixin.maskImage("../public/img/upload.svg");
   }
   &.download {
-    @include maskImage("../public/img/download.svg");
+    @include mixin.maskImage("../public/img/download.svg");
   }
   &.play {
-    @include maskImage("../public/img/play.svg");
+    @include mixin.maskImage("../public/img/play.svg");
   }
   &.pause {
-    @include maskImage("../public/img/pause.svg");
+    @include mixin.maskImage("../public/img/pause.svg");
   }
   &.stop {
-    @include maskImage("../public/img/stop.svg");
+    @include mixin.maskImage("../public/img/stop.svg");
   }
   &.email-verified {
     margin: -3px 5px 0 5px;
-    @include maskImage("../public/img/state-done.svg");
+    @include mixin.maskImage("../public/img/state-done.svg");
     background-color: var(--green-chart);
   }
   &.send-mail {
-    @include maskImage("../public/img/send-mail.svg");
+    @include mixin.maskImage("../public/img/send-mail.svg");
   }
   &.small-arrow-down {
-    @include maskImage("../public/img/triangle.svg");
+    @include mixin.maskImage("../public/img/triangle.svg");
   }
   &.discover {
-    @include maskImage("../public/img/discover.svg");
+    @include mixin.maskImage("../public/img/discover.svg");
   }
   &.box {
-    @include maskImage("../public/img/box.svg");
+    @include mixin.maskImage("../public/img/box.svg");
   }
   &.star {
-    @include maskImage("../public/img/star.svg");
+    @include mixin.maskImage("../public/img/star.svg");
   }
   &.star-filled {
-    @include maskImage("../public/img/star-filled.svg");
+    @include mixin.maskImage("../public/img/star-filled.svg");
   }
   &.flag {
-    @include maskImage("../public/img/flag.svg");
+    @include mixin.maskImage("../public/img/flag.svg");
   }
   &.work {
-    @include maskImage("../public/img/briefcase.svg");
+    @include mixin.maskImage("../public/img/briefcase.svg");
   }
   &.account {
-    @include maskImage("../public/img/edit.svg");
+    @include mixin.maskImage("../public/img/edit.svg");
   }
   &.logout {
-    @include maskImage("../public/img/logout.svg");
+    @include mixin.maskImage("../public/img/logout.svg");
   }
   &.home {
-    @include maskImage("../public/img/home.svg");
+    @include mixin.maskImage("../public/img/home.svg");
   }
   &.options {
-    @include maskImage("../public/img/options.svg");
+    @include mixin.maskImage("../public/img/options.svg");
   }
   &.share {
-    @include maskImage("../public/img/share.svg");
+    @include mixin.maskImage("../public/img/share.svg");
   }
   &.clock {
-    @include maskImage("../public/img/clock.svg");
+    @include mixin.maskImage("../public/img/clock.svg");
   }
   &.document {
-    @include maskImage("../public/img/document.svg");
+    @include mixin.maskImage("../public/img/document.svg");
   }
   &.tag {
-    @include maskImage("../public/img/badge.svg");
+    @include mixin.maskImage("../public/img/badge.svg");
   }
   &.error-death {
-    @include maskImage("../public/img/death.svg");
+    @include mixin.maskImage("../public/img/death.svg");
   }
   &.pen {
-    @include maskImage("../public/img/pen-fill.svg");
+    @include mixin.maskImage("../public/img/pen-fill.svg");
   }
   &.warning {
-    @include maskImage("../public/img/warning.svg");
+    @include mixin.maskImage("../public/img/warning.svg");
   }
   &.moon {
-    @include maskImage("../public/img/moon.svg");
+    @include mixin.maskImage("../public/img/moon.svg");
   }
   &.sun {
-    @include maskImage("../public/img/sun.svg");
+    @include mixin.maskImage("../public/img/sun.svg");
   }
   &.ai {
-    @include maskImage("../public/img/AI.svg");
+    @include mixin.maskImage("../public/img/AI.svg");
   }
   &.hide {
-    @include maskImage("../public/img/eye-off.svg");
+    @include mixin.maskImage("../public/img/eye-off.svg");
   }
   &.show {
-    @include maskImage("../public/img/eye.svg");
+    @include mixin.maskImage("../public/img/eye.svg");
   }
   &.merge {
-    @include maskImage("../public/img/link.svg");
+    @include mixin.maskImage("../public/img/link.svg");
   }
   &.link {
-    @include maskImage("../public/img/link.svg");
+    @include mixin.maskImage("../public/img/link.svg");
   }
   &.clear-history {
-    @include maskImage("../public/img/clear-history.svg");
+    @include mixin.maskImage("../public/img/clear-history.svg");
   }
   &.reload {
-    @include maskImage("../public/img/reload.svg");
+    @include mixin.maskImage("../public/img/reload.svg");
   }
   &.done {
-    @include maskImage("../public/img/state-done.svg");
+    @include mixin.maskImage("../public/img/state-done.svg");
   }
   &.next {
-    @include maskImage("../public/img/next.svg");
+    @include mixin.maskImage("../public/img/next.svg");
   }
 
   &.previous {
-    @include maskImage("../public/img/previous.svg");
+    @include mixin.maskImage("../public/img/previous.svg");
   }
   &.equal {
-    @include maskImage("../public/img/equal.svg");
+    @include mixin.maskImage("../public/img/equal.svg");
   }
   &.replace {
-    @include maskImage("../public/img/replace.svg");
+    @include mixin.maskImage("../public/img/replace.svg");
   }
   &.merge2 {
-    @include maskImage("../public/img/merge.svg");
+    @include mixin.maskImage("../public/img/merge.svg");
   }
   &.file-audio {
-    @include maskImage("../public/img/file-audio.svg");
+    @include mixin.maskImage("../public/img/file-audio.svg");
   }
   &.profile {
-    @include maskImage("../public/img/profile.svg");
+    @include mixin.maskImage("../public/img/profile.svg");
   }
   &.session {
-    @include maskImage("../public/img/session-2.svg");
+    @include mixin.maskImage("../public/img/session-2.svg");
   }
   &.save-cloud {
-    @include maskImage("../public/img/save-cloud.svg");
+    @include mixin.maskImage("../public/img/save-cloud.svg");
   }
   &.live {
-    @include maskImage("../public/img/live.svg");
+    @include mixin.maskImage("../public/img/live.svg");
   }
   &.save {
-    @include maskImage("../public/img/breeze/document-save.svg");
+    @include mixin.maskImage("../public/img/breeze/document-save.svg");
   }
   &.subtitle {
-    @include maskImage("../public/img/subtitle.svg");
+    @include mixin.maskImage("../public/img/subtitle.svg");
   }
   &.linagora-small {
-    @include maskImage("../public/img/logo_linagora.webp");
+    @include mixin.maskImage("../public/img/logo_linagora.webp");
   }
   &.information {
-    @include maskImage("../public/img/information.svg");
+    @include mixin.maskImage("../public/img/information.svg");
   }
   &.visio {
-    @include maskImage("../public/img/visio.svg");
+    @include mixin.maskImage("../public/img/visio.svg");
   }
   &.burger {
-    @include maskImage("../public/img/burger.svg");
+    @include mixin.maskImage("../public/img/burger.svg");
   }
   &.lock-off {
-    @include maskImage("../public/img/lock-off.svg");
+    @include mixin.maskImage("../public/img/lock-off.svg");
   }
   &.category {
-    @include maskImage("../public/img/category.svg");
+    @include mixin.maskImage("../public/img/category.svg");
   }
   &.filter {
-    @include maskImage("../public/img/sorting.svg");
+    @include mixin.maskImage("../public/img/sorting.svg");
   }
   &.pin {
-    @include maskImage("../public/img/pin.svg");
+    @include mixin.maskImage("../public/img/pin.svg");
   }
   &.pin-on {
-    @include maskImage("../public/img/pin-angle-fill.svg");
+    @include mixin.maskImage("../public/img/pin-angle-fill.svg");
   }
 }
 

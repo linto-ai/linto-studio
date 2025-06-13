@@ -1,3 +1,4 @@
+@use "sass:color";
 $montserrat: "Montserrat", "Arial", "Helvetica", "verdana";
 $luciole: "Luciole", "Arial", "Helvetica", "verdana";
 $lato: "Lato", "Arial", "Helvetica", "verdana";
@@ -19,11 +20,11 @@ $secondaryColor: $blueChart;
 $primaryContrast: #fff;
 
 @function soft-color($color, $amount: 40%) {
-  @return mix(white, $color, $amount);
+  @return color.mix(white, $color, $amount);
 }
 
 @function hard-color($color, $amount: 40%) {
-  @return mix(black, $color, $amount);
+  @return color.mix(black, $color, $amount);
 }
 
 $primarySoft: soft-color($primaryColor, 94%);
@@ -43,7 +44,7 @@ $blueHard: hard-color($blueChart);
 
 body {
   --font-family: "Noto Sans", "Arial", "Helvetica", "verdana";
-
+  --luciole-font-family: "Luciole", "Arial", "Helvetica", "verdana";
   --background-primary: white;
   --background-secondary: white;
 
@@ -69,6 +70,8 @@ body {
   --red-hard: #{$redHard};
   --blue-soft: #{$blueSoft};
   --blue-hard: #{$blueHard};
+
+  --green-chart: #{$greenChart};
 
   --dark-100: #333;
   --dark-90: #404040;

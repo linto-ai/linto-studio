@@ -224,7 +224,7 @@
 .session-on-air {
   border-radius: 55px;
   //background-color: red;
-  color: $redChart;
+  color: var(--red-chart);
   font-weight: bold;
   font-variant: all-petite-caps;
   .icon {

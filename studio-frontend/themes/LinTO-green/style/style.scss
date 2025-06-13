@@ -1,15 +1,14 @@
-@layer base, theme;
+//@layer base, theme;
 
+// @import "buttons.scss";
+@use "forms.scss" as forms-theme;
+@use "tabs.scss" as tabs-theme;
+@use "select.scss" as select-theme;
+@use "text.scss" as text-theme;
+@use "login.scss" as login-theme;
+
+@use "mobile/text.scss" as mobile-text-theme;
 @layer theme {
-  // @import "buttons.scss";
-  @import "forms.scss";
-  @import "tabs.scss";
-  @import "select.scss";
-  @import "text.scss";
-  @import "login.scss";
-
-  @import "mobile/text.scss";
-
   body {
     --yellow-chart: #feb11d;
     --green-chart: #11977c;

@@ -97,7 +97,7 @@
 .screen {
   border: 1px solid transparent;
   padding-right: 0.25rem;
-  font-family: $luciole;
+  font-family: var(--luciole-font-family);
   background-color: var(--background-primary);
   border: var(--border-block);
   margin-bottom: 0.5rem;

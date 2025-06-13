@@ -1,6 +1,4 @@
-$RobotoSlab: "Roboto Slab", arial, helvetica, verdana;
-$playingWord: #95fff0;
-$selectedWord: #0057f5;
+@use "../mixin.scss";
 
 /* GLOBAL */
 
@@ -55,13 +53,10 @@ $selectedWord: #0057f5;
   width: 40px;
   min-width: 40px;
   height: 40px;
-  @include borderRadius(20px);
-  @include buttonShadow();
+  border-radius: 20px;
+  box-shadow: var(--shadow-block);
   position: relative;
   margin: 0 10px;
-  &:hover {
-    @include buttonShadowHover();
-  }
   &:after {
     content: "";
     display: inline-block;
@@ -70,12 +65,12 @@ $selectedWord: #0057f5;
     position: absolute;
     top: 10px;
     left: 10px;
-    @include maskImage("../public/img/play.svg");
+    @include mixin.maskImage("../public/img/play.svg");
     background-color: var(--text-primary);
   }
   &.playing {
     &:after {
-      @include maskImage("../public/img/pause.svg");
+      @include mixin.maskImage("../public/img/pause.svg");
     }
   }
 }
@@ -180,7 +175,7 @@ $selectedWord: #0057f5;
 }
 .word {
   position: relative;
-  @include transition(all 0.2s ease);
+  @include mixin.transition(all 0.2s ease);
 
   &.selected .word_content {
     border-bottom: 2px solid var(--material-yellow-800);
@@ -256,7 +251,7 @@ $selectedWord: #0057f5;
       position: absolute;
       top: 4px;
       right: 5px;
-      @include maskImage("../public/img/triangle.svg");
+      //@include maskImage("../public/img/triangle.svg");
     }
     &:hover {
       background-color: #e2e2e2;
@@ -303,123 +298,8 @@ $selectedWord: #0057f5;
   font-weight: 800;
 }
 
-.text-toolbox {
-  position: absolute;
-  width: auto;
-  bottom: 1.5rem;
-  left: 0;
-  background: #fff;
-  z-index: 10;
-  width: 300px; //15rem
-  padding: 0.5rem;
-  border: var(--border-block);
-  box-shadow: var(--shadow-block);
-}
-
 .word[highlighted]:hover .conversation-highlight-toolbox {
   display: block;
-}
-
-#conversation-toolbox {
-  position: absolute;
-  width: auto;
-  bottom: 1.5rem;
-  left: 0;
-  background: #fff;
-  z-index: 10;
-}
-
-.toolbox-btn {
-  display: inline-block;
-  width: 40px;
-  height: 40px;
-  position: relative;
-  background-color: #fff;
-  &:after {
-    content: "";
-    display: inline-block;
-    width: 30px;
-    height: 30px;
-    position: absolute;
-    top: 5px;
-    left: 5px;
-  }
-  &.toolbox-btn-play {
-    &:after {
-      background-color: var(--text-primary);
-      @include maskImage("../public/img/play.svg");
-    }
-  }
-  &.toolbox-btn-close {
-    &:after {
-      background-color: var(--text-primary);
-      @include maskImage("../public/img/close.svg");
-    }
-  }
-  &:hover {
-    &:after {
-      background-color: blue;
-    }
-  }
-}
-
-.spk-toolbox {
-  position: absolute;
-  left: 0;
-  background: #ddd;
-  border: var(--border-button);
-  z-index: 10;
-  box-sizing: border-box;
-}
-
-.speaker-toolbox-list {
-  .speaker-toolbox-item {
-    padding: 5px 10px;
-    border: none;
-    margin: 0;
-    text-align: left;
-    @include borderRadius(0px);
-
-    .icon {
-      margin-left: 0;
-    }
-    &:hover {
-      background-color: var(--text-secondary);
-      .label {
-        color: #fff;
-      }
-      .icon {
-        background-color: #fff;
-      }
-    }
-  }
-}
-
-.speaker-toolbox-form {
-  padding: 10px;
-  box-sizing: border-box;
-
-  .speaker-toolbox-input-btn {
-    padding: 0;
-    width: 24px;
-    height: 24px;
-    .icon {
-      margin: 0;
-    }
-  }
-}
-/* Filters */
-.transcription-options {
-  height: 32px;
-  margin: 0;
-  padding: 10px;
-  border-bottom: var(--border-block);
-}
-.transcription-filters {
-  padding: 10px 20px;
-  select {
-    margin: 0 10px;
-  }
 }
 
 #conversation {

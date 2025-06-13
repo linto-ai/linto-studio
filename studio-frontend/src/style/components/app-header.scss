@@ -51,7 +51,7 @@
   display: inline-block;
   width: 15px;
   height: 15px;
-  @include borderRadius(10px);
+  border-radius: 10px;
   background: var(--red-chart);
   position: absolute;
   top: -5px;

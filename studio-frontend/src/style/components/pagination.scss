@@ -1,3 +1,5 @@
+@use "../mixin.scss";
+
 .pagination {
   display: flex;
   flex-direction: row;
@@ -36,11 +38,11 @@
 }
 
 .pagination__next {
-  @include maskImage("../public/img/next.svg");
+  @include mixin.maskImage("../public/img/next.svg");
 }
 
 .pagination__prev {
-  @include maskImage("../public/img/previous.svg");
+  @include mixin.maskImage("../public/img/previous.svg");
 }
 
 .pagination-btn {

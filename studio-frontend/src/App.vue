@@ -87,5 +87,7 @@ export default {
 }
 </script>
 <style lang="scss">
-@import "@/style/style.scss";
+@use "@/style/style.scss";
+// TODO: import from env variable instead of hardcoding
+@use "../themes/LinTO-green/style/style.scss" as style-theme;
 </style>

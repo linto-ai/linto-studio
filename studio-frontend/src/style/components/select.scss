@@ -48,7 +48,6 @@
   width: auto;
   min-width: 100%;
 
-  @include blockShadow;
   &.left {
     left: auto;
     right: 0;

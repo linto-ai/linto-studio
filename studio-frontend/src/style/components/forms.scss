@@ -12,7 +12,7 @@ progress.hoverInput,
 form-field[select-like] .form-value,
 .collab-input {
   display: inline-block;
-  @include cancelBoxShadow();
+  box-shadow: none;
   margin: 0px;
   max-width: 20rem;
   min-width: 10rem;
@@ -294,7 +294,7 @@ input[type="file"] {
     display: inline-block;
     font-size: 12px;
     padding: 0 3px;
-    @include borderRadius(3px);
+    border-radius: 3px;
     margin: 3px 3px 0 3px;
     background-color: var(--text-primary);
     color: #fff;
@@ -390,7 +390,7 @@ fieldset[role="listbox"] {
 .user-settings-notification {
   padding: 5px 10px;
   border: 1px solid var(--red-chart);
-  @include borderRadius(3px);
+  border-radius: 3px;
   margin: 5px 0;
   .content {
     font-size: 13px;
@@ -414,6 +414,6 @@ fieldset[role="listbox"] {
   color: var(--green-chart);
   border: 1px solid var(--green-chart);
   font-style: italic;
-  @include borderRadius(3px);
+  border-radius: 3px;
   margin: 5px 0;
 }

@@ -153,7 +153,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .user-settings-notifications {
   fieldset {
     border: 1px solid #e0e0e0;

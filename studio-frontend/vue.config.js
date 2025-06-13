@@ -51,7 +51,7 @@ export default {
   css: {
     loaderOptions: {
       scss: {
-        additionalData: `@import "${STYLE_PATH}";`,
+        // additionalData: `@use "test.scss" as style-theme;`,
       },
     },
   },
