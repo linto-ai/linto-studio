@@ -45,9 +45,7 @@ export default {
   data() {
     return {}
   },
-  mounted() {
-    console.log("p", this.previous)
-  },
+  mounted() {},
   computed: {
     text() {
       return getTextTurnWithTranslation(
