@@ -6,11 +6,7 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const PLATFORM_ROLES = require(`${process.cwd()}/lib/dao/users/platformRole`)
 
-const {
-  OrganizationError,
-  OrganizationUnsupportedMediaType,
-  OrganizationConflict,
-} = require(
+const { OrganizationError, OrganizationUnsupportedMediaType } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
 

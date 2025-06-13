@@ -1,9 +1,10 @@
 const debug = require("debug")("linto:components:socketio")
 const Component = require(`../component.js`)
 const socketIO = require("socket.io")
-const organization = require("../WebServer/middlewares/access/organization.js")
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 const appLogger = require(`${process.cwd()}/lib/logger/logger.js`)
+
+const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const { diffSessions, groupSessionsByOrg } = require(
   `${process.cwd()}/components/IoHandler/controllers/SessionHandling`,
@@ -16,6 +17,14 @@ const { sessionSocketAccess } = require(
   `${process.cwd()}/components/WebServer/middlewares/access/organization.js`,
 )
 
+async function registryMetrics(session, socket) {
+  model.metrics.startConnection({
+    sessionId: session.id,
+    socketId: socket.id,
+    organizationId: session.organizationId,
+  })
+}
+
 async function checkSocketAccess(socket, roomId) {
   try {
     const session = await axios.get(
@@ -23,6 +32,8 @@ async function checkSocketAccess(socket, roomId) {
     )
 
     if (session.visibility === "public") {
+      registryMetrics(session, socket)
+
       return true
     } else {
       const { isAuth, userId } = await auth_middlewares.checkSocket(socket)
@@ -39,9 +50,11 @@ async function checkSocketAccess(socket, roomId) {
         return false
       }
 
-      if (session.visibility === "organization") {
-        return true
-      } else if (session.visibility === "private" && session.owner === userId) {
+      if (
+        session.visibility === "organization" ||
+        (session.visibility === "private" && session.owner === userId)
+      ) {
+        registryMetrics(session, socket)
         return true
       } else {
         socket.emit("unauthorized")
@@ -91,6 +104,7 @@ class IoHandler extends Component {
       socket.on("leave_room", (roomId) => {
         appLogger.debug(`Client ${socket.id} leaves room ${roomId}`)
         this.removeSocketFromRoom(roomId, socket)
+        model.metrics.endConnection(socket.id)
       })
 
       socket.on("watch_organization", (orgaId) => {
@@ -105,10 +119,13 @@ class IoHandler extends Component {
           `Client ${socket.id} leaves watcher session of orga ${orgaId}`,
         )
         this.removeSocketFromOrga(orgaId, socket)
+        model.metrics.endConnection(socket.id)
       })
 
       socket.on("disconnect", () => {
         appLogger.debug(`Client ${socket.id} disconnected`)
+
+        model.metrics.endConnection(socket.id)
         this.searchAndRemoveSocketFromRooms(socket)
       })
     })
