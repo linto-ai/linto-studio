@@ -13,7 +13,6 @@ class MetricsModel extends MongoModel {
   async startConnection(payload) {
     payload.startTime = new Date().toISOString()
     payload.endTime = null
-    console.log("Should insert payload:", payload)
     return this.mongoInsert(payload)
   }
 
