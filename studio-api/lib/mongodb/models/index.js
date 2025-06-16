@@ -10,6 +10,7 @@ module.exports = {
   tags: require("./tags.js"),
   tokens: require("./tokens.js"),
   users: require("./users.js"),
+  metrics: require("./metrics.js"),
   search: {
     conversations: require("./search/conversations.js"),
     tags: require("./search/tags.js"),
