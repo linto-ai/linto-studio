@@ -1,5 +1,5 @@
 <template>
-  <Modal title="Créer un tag" isForm @submit="onSubmit" :loading="loading" overlay @close="onClose">
+  <Modal title="Créer un tag" isForm @submit="onSubmit" :loading="loading" overlay>
     <template #trigger="{ open }">
       <slot name="trigger" :open="open"></slot>
     </template>
@@ -12,14 +12,17 @@
         <div class="input-group">
           <label for="tag-name">Attributs du tag</label>
           <span class="input-item">
-            <Popover position="bottom" v-model="emojiPopoverOpen">
+            <Popover position="bottom" width="auto">
               <template #trigger>
-                <span
-                  class="emoji-popover-trigger"
-                  @click="toggleEmojiPopover"
-                  ref="emojiTrigger">
-                  {{ selectedEmoji ? selectedEmoji.native : "🙂" }}
-                </span>
+                <Button
+                  class="neutral outline icon-only"
+                  :icon="selectedEmoji ? null : 'smiley-blank'"
+                  :avatar-text="selectedEmoji ? selectedEmoji.native : null"
+                  :avatar-color="selectedEmoji ? 'primary-soft' : null"
+                  variant="outline"
+                  size="sm"
+                  @mouseenter.prevent
+                  @mouseleave.prevent />
               </template>
               <template #content>
                 <Picker
@@ -31,11 +34,20 @@
                   @click.stop />
               </template>
             </Popover>
-            <input
-              type="color"
-              placeholder="orange"
-              class="input-item__prefix"
-              v-model="color" />
+            <Popover position="bottom" v-model="colorPopoverOpen">
+              <template #trigger>
+                <Button
+                  class="neutral outline icon-only"
+                  variant="outline"
+                  size="sm"
+                  :avatar-color="color" />
+              </template>
+              <template #content>
+                <Box class="color-picker p-1">
+                  <div class="color-picker__color" v-for="color in TAG_COLORS" :key="color" :style="{ backgroundColor: color }" @click="handlePickColor(color)"></div>
+                </Box>
+              </template>
+            </Popover>
             <input
               type="text"
               placeholder="Tag name"
@@ -53,6 +65,33 @@ import Modal from "@/components/molecules/Modal.vue"
 import Popover from "@/components/atoms/Popover.vue"
 import { Picker } from "emoji-mart-vue"
 import "emoji-mart-vue/css/emoji-mart.css"
+
+const TAG_COLORS = [
+  "#931F1F",
+  "#933C1F",
+  "#93591F",
+  "#93761F",
+  "#93931F",
+  "#76931F",
+  "#59931F",
+  "#3C931F",
+  "#1F931F",
+  "#1F933C",
+  "#1F9359",
+  "#1F9376",
+  "#1F9393",
+  "#1F7693",
+  "#1F5993",
+  "#1F3C93",
+  "#1F1F93",
+  "#3C1F93",
+  "#591F93",
+  "#761F93",
+  "#931F93",
+  "#931F76",
+  "#931F59",
+  "#931F3C" 
+];
 
 export default {
   name: "MediaExplorerFormTag",
@@ -72,34 +111,17 @@ export default {
       selectedEmoji: null,
       name: "",
       color: "#11977c",
-      emojiPopoverOpen: false,
+      colorPopoverOpen: false,
+      TAG_COLORS,
     }
   },
-  mounted() {
-    // Add the escape key listener when component is mounted
-    document.addEventListener("keydown", this.handleEscapeKey)
-  },
-  beforeDestroy() {
-    // Clean up the event listener when component is destroyed
-    document.removeEventListener("keydown", this.handleEscapeKey)
-  },
   methods: {
-    onClose() {
-      this.emojiPopoverOpen = false
-    },
-    handleEscapeKey(e) {
-      if (e.key === "Escape" && this.emojiPopoverOpen) {
-        e.preventDefault()
-        e.stopPropagation()
-        this.emojiPopoverOpen = false
-      }
-    },
-    toggleEmojiPopover() {
-      this.emojiPopoverOpen = !this.emojiPopoverOpen
+    handlePickColor(color) {
+      this.color = color
+      this.colorPopoverOpen = false
     },
     onSelectEmoji(emoji) {
       this.selectedEmoji = emoji
-      this.emojiPopoverOpen = false
     },
     onSubmit() {
       this.$emit("submit", {
@@ -113,6 +135,27 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.color-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25em;
+  max-width: 200px;
+
+  &__color {
+    width: 24px;
+    height: 24px;
+    border-radius: 2px;
+    border: 1px solid var(--neutral-90);
+    cursor: pointer;
+    border: 1px solid transparent;
+
+    &:hover {
+      border: 1px solid var(--neutral-90);
+      box-shadow: 0 0 0 2px var(--neutral-10);
+    }
+  }
+}
+
 .media-explorer-form-tag {
   &__content {
     text-align: left;
@@ -138,32 +181,5 @@ export default {
 }
 .emoji-popover-trigger:hover {
   box-shadow: 0 0 0 2px var(--primary-color, #007bff);
-}
-</style>
-
-<style lang="scss">
-.input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25em;
-}
-
-.input-group input[type="color"] {
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  border: var(--border-input);
-  background-color: transparent;
-  border-radius: 4px;
-  border: none;
-
-  &::-webkit-color-swatch-wrapper {
-    padding: 0;
-  }
-
-  &::-webkit-color-swatch {
-    border: 1px solid var(--neutral-90);
-    border-radius: 4px;
-  }
 }
 </style>

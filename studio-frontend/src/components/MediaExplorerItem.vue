@@ -29,10 +29,18 @@
           </div>
         </div>
       </div>
-      <div class="media-explorer-item__inline__meta flex1 gap-small">
+      <div class="media-explorer-item__inline__meta gap-small">
         <Avatar
           :text="title.substring(0, 1)"
-          class="media-explorer-item__inline__infos__user" />
+          class="media-explorer-item__inline__infos__avatar">
+          <Tooltip :text="convOwner.fullName" position="bottom">
+            <Avatar
+              :text="convOwner.fullName.substring(0, 1)"
+              :src="convOwnerAvatar"
+              class="media-explorer-item__inline__more__owner__avatar"
+              size="xs" />
+          </Tooltip>
+        </Avatar>
         <a
           :href="`/interface/${organizationId}/conversations/${media._id}/transcription`"
           >{{ title }}</a
@@ -49,23 +57,12 @@
             {{ createdAt }}
           </span>
         </div>
-        <div class="media-explorer-item__inline__tags">
-          <MediaExplorerItemTags
-            class="media-explorer-item__inline__tags__tags"
-            :mediatags="mediatags"
-            :media-id="media._id" />
-        </div>
-        <div class="media-explorer-item__inline__more">
-          <div class="media-explorer-item__inline__more__owner">
-            <Avatar
-              :text="convOwner.fullName.substring(0, 1)"
-              class="media-explorer-item__inline__more__owner__avatar"
-              size="xsmedi" />
-            <span class="media-explorer-item__inline__more__owner__name">
-              {{ convOwner.fullName }}
-            </span>
-          </div>
-        </div>
+      </div>
+      <div class="media-explorer-item__inline__tags">
+        <MediaExplorerItemTags
+          class="media-explorer-item__inline__tags__tags"
+          :mediatags="mediatags"
+          :media-id="media._id" />
       </div>
     </div>
     <!-- Actions: visible only on hover, expand a menu with actions from the right -->
@@ -100,6 +97,7 @@ import MediaExplorerItemTags from "./MediaExplorerItemTags.vue"
 import UserProfilePicture from "./atoms/UserProfilePicture.vue"
 import TimeDuration from "./atoms/TimeDuration.vue"
 import { userName } from "@/tools/userName"
+import userAvatar from "@/tools/userAvatar"
 
 import { PhStar } from "phosphor-vue"
 
@@ -175,6 +173,9 @@ export default {
           img: process.env.VUE_APP_PUBLIC_MEDIA + "/pictures/default.jpg",
         }
       }
+    },
+    convOwnerAvatar() {
+      return userAvatar(this.convOwner)
     },
     createdAt() {
       const options = {
@@ -255,6 +256,13 @@ export default {
   padding: 0.5rem;
   position: relative;
   border-radius: 4px;
+  overflow: hidden;
+  transition: all 0.1s ease-in-out;
+
+  &:hover {
+    border-color: var(--neutral-40);
+    background-color: var(--neutral-10);
+  }
 }
 
 .media-explorer-item--selected {
@@ -266,6 +274,8 @@ export default {
   width: 100%;
   display: flex;
   box-sizing: border-box;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .media-explorer-item__inline__favorite {
@@ -278,6 +288,7 @@ export default {
   border-radius: 4px;
   cursor: pointer;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .media-explorer-item__inline__favorite:hover {
@@ -302,6 +313,7 @@ export default {
   height: 24px;
   border-radius: 12px;
   overflow: hidden;
+  flex-shrink: 0;
 
   .media-explorer-item__inline__checkbox {
     width: 16px;
@@ -312,6 +324,7 @@ export default {
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    flex-shrink: 0;
   }
 }
 
@@ -319,9 +332,8 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-
-  &__tags {
-  }
+  max-width: 50%;
+  flex-shrink: 0;
 }
 
 .media-explorer-item__inline__selection.selected {
@@ -337,10 +349,10 @@ export default {
 .media-explorer-item__inline__meta.actions {
   gap: 0;
   border: 1px solid var(--neutral-40);
-  border-radius: 4px;
+  border-radius: 2px;
   margin-right: 0.5rem;
   background-color: var(--primary-soft);
-  padding: 0 0.25rem;
+  height: 24px;
 }
 
 .user-profile-picture-container {
@@ -352,7 +364,7 @@ export default {
   padding: 0;
   padding: 0 0.5rem;
   font-weight: 600;
-  width: 200px;
+  width: 240px;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
@@ -365,6 +377,21 @@ export default {
   align-items: center;
   gap: 1rem;
   min-width: 200px;
+
+  &__avatar {
+    flex-shrink: 0;
+    position: relative;
+    overflow: visible;
+
+    .media-explorer-item__inline__more__owner__avatar {
+      position: absolute;
+      top: -0.5rem;
+      right: -0.5rem;
+      border: 1px solid var(--background-primary);
+      z-index: 1;
+      box-shadow: 0 0 0 1px var(--neutral-40);
+    }
+  }
 }
 
 .media-explorer-item__inline__more {
@@ -383,8 +410,7 @@ export default {
 }
 
 .media-explorer-item__inline__infos__duration,
-.media-explorer-item__inline__infos__dates,
-.media-explorer-item__inline__infos__tags {
+.media-explorer-item__inline__infos__dates {
   font-size: 0.75rem !important;
   display: inline-block;
   background-color: var(--neutral-10);
@@ -428,13 +454,6 @@ export default {
   font-size: 1rem;
   margin: 0;
   padding: 0;
-}
-
-.media-explorer-item__header__title {
-  display: flex;
-  flex: 1;
-  align-items: start;
-  flex-direction: column;
 }
 
 .media-explorer-item__header__title__sub {
@@ -521,12 +540,8 @@ export default {
   align-items: center;
   justify-content: center;
   flex-direction: row;
-  border: 1px dashed var(--neutral-10);
-  background-color: white;
   padding: 0.5rem;
   box-sizing: border-box;
-  height: 75%;
-  border-radius: 4px;
 }
 
 .media-explorer-item__header__actions nav ul {
@@ -554,9 +569,10 @@ export default {
   align-items: center;
   right: 0;
   top: 0;
-  background-color: white;
+  background-color: var(--primary-soft);
   padding: 0.5rem;
   box-sizing: border-box;
   height: 100%;
+  box-shadow: -4px 0 1px var(--primary-color);
 }
 </style>

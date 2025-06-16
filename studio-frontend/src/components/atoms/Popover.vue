@@ -1,12 +1,6 @@
 <template>
-  <div>
-    <div
-      class="popover-trigger"
-      ref="trigger"
-      v-on="triggerHandlers"
-    >
-      <slot name="trigger" :open="isOpen"></slot>
-    </div>
+  <div class="popover-trigger" ref="trigger" v-on="triggerHandlers">
+    <slot name="trigger" :open="isOpen"></slot>
   </div>
 </template>
 
@@ -39,8 +33,7 @@ export default {
     position: {
       type: String,
       default: "bottom",
-      validator: (value) =>
-        ["top", "bottom", "left", "right"].includes(value),
+      validator: (value) => ["top", "bottom", "left", "right"].includes(value),
     },
     /**
      * Use v-model to control the popover visibility
@@ -100,31 +93,34 @@ export default {
             popoverCoords: this.popoverCoords,
           },
           slots: {
-            default: () => this.$scopedSlots.content
-              ? this.$scopedSlots.content()
-              : this.$slots.default || [],
+            default: () =>
+              this.$scopedSlots.content
+                ? this.$scopedSlots.content()
+                : this.$slots.default || [],
           },
           triggerEl: this.triggerElement || this.$refs.trigger,
-        });
+        })
 
         this.$nextTick(() => {
-          this.updatePopoverPosition();
-        });
+          this.updatePopoverPosition()
+        })
 
-        window.addEventListener("resize", this.updatePopoverPosition, { passive: true });
-        window.addEventListener("scroll", this.updatePopoverPosition, true);
+        window.addEventListener("resize", this.updatePopoverPosition, {
+          passive: true,
+        })
+        window.addEventListener("scroll", this.updatePopoverPosition, true)
       } else {
-        popupManager.unregister(this);
-        window.removeEventListener("resize", this.updatePopoverPosition);
-        window.removeEventListener("scroll", this.updatePopoverPosition, true);
+        popupManager.unregister(this)
+        window.removeEventListener("resize", this.updatePopoverPosition)
+        window.removeEventListener("scroll", this.updatePopoverPosition, true)
       }
     },
     popoverCoords: {
       handler() {
         if (this.isOpen) {
-          const popup = popupManager.stack.find((p) => p.id === this._uid);
+          const popup = popupManager.stack.find((p) => p.id === this._uid)
           if (popup) {
-            popup.props.popoverCoords = this.popoverCoords;
+            popup.props.popoverCoords = this.popoverCoords
           }
         }
       },
@@ -154,9 +150,9 @@ export default {
   },
   methods: {
     toggle(newState) {
-      if (this.isOpen === newState) return;
-      this.isOpen = newState;
-      this.$emit("input", this.isOpen);
+      if (this.isOpen === newState) return
+      this.isOpen = newState
+      this.$emit("input", this.isOpen)
     },
     handleClick(event) {
       event.preventDefault()
@@ -167,13 +163,13 @@ export default {
       this.toggle(!this.isOpen)
     },
     handleMouseenter() {
-      if (this.trigger === 'hover') {
+      if (this.trigger === "hover") {
         // Clear any pending close timeout
         if (this.hoverTimeout) {
           clearTimeout(this.hoverTimeout)
           this.hoverTimeout = null
         }
-        
+
         this.hoverTimeout = setTimeout(() => {
           if (!this.isOpen) {
             this.toggle(true)
@@ -183,13 +179,13 @@ export default {
       }
     },
     handleMouseleave() {
-      if (this.trigger === 'hover') {
+      if (this.trigger === "hover") {
         // Clear any pending open timeout
         if (this.hoverTimeout) {
           clearTimeout(this.hoverTimeout)
           this.hoverTimeout = null
         }
-        
+
         this.hoverTimeout = setTimeout(() => {
           if (!this.mouseInside) {
             this.toggle(false)
@@ -201,7 +197,7 @@ export default {
     handleClickOnHover(event) {
       // For tooltips with closeOnClick, the popupManager will handle the closing
       // This handler is just here to prevent default behavior if needed
-      if (this.trigger === 'hover' && this.closeOnClick) {
+      if (this.trigger === "hover" && this.closeOnClick) {
         event.preventDefault()
       }
     },
@@ -213,63 +209,68 @@ export default {
       this.handleMouseleave()
     },
     closeOnClickOutside() {
-      this.toggle(false);
+      this.toggle(false)
     },
     closeOnEscape() {
       this.toggle(false)
     },
     updatePopoverPosition() {
-      if (!this.isOpen) return;
+      if (!this.isOpen) return
 
-      const triggerElement = this.triggerElement || this.$refs.trigger;
-      if (!triggerElement) return;
+      const triggerElement = this.triggerElement || this.$refs.trigger
+      if (!triggerElement) return
 
-      const popup = popupManager.stack.find((p) => p.id === this._uid);
-      if (!popup || !popup.rendererInstance || !popup.rendererInstance.$refs.content) {
-        return;
+      const popup = popupManager.stack.find((p) => p.id === this._uid)
+      if (
+        !popup ||
+        !popup.rendererInstance ||
+        !popup.rendererInstance.$refs.content
+      ) {
+        return
       }
 
-      const popoverRect = popup.rendererInstance.$refs.content.getBoundingClientRect();
-      const rect = triggerElement.getBoundingClientRect();
-      const { innerWidth: viewportWidth, innerHeight: viewportHeight } = window;
+      const popoverRect =
+        popup.rendererInstance.$refs.content.getBoundingClientRect()
+      const rect = triggerElement.getBoundingClientRect()
+      const { innerWidth: viewportWidth, innerHeight: viewportHeight } = window
       let top = 0,
-        left = 0;
+        left = 0
 
       switch (this.position) {
         case "top":
-          top = rect.top - popoverRect.height;
-          left = rect.left + rect.width / 2 - popoverRect.width / 2;
-          break;
+          top = rect.top - popoverRect.height
+          left = rect.left + rect.width / 2 - popoverRect.width / 2
+          break
         case "bottom":
-          top = rect.bottom;
-          left = rect.left + rect.width / 2 - popoverRect.width / 2;
-          break;
+          top = rect.bottom
+          left = rect.left + rect.width / 2 - popoverRect.width / 2
+          break
         case "left":
-          top = rect.top + rect.height / 2 - popoverRect.height / 2;
-          left = rect.left - popoverRect.width;
-          break;
+          top = rect.top + rect.height / 2 - popoverRect.height / 2
+          left = rect.left - popoverRect.width
+          break
         case "right":
-          top = rect.top + rect.height / 2 - popoverRect.height / 2;
-          left = rect.right;
-          break;
+          top = rect.top + rect.height / 2 - popoverRect.height / 2
+          left = rect.right
+          break
       }
 
-      const margin = 8;
+      const margin = 8
       left = Math.max(
         margin,
-        Math.min(left, viewportWidth - popoverRect.width - margin)
-      );
+        Math.min(left, viewportWidth - popoverRect.width - margin),
+      )
       top = Math.max(
         margin,
-        Math.min(top, viewportHeight - popoverRect.height - margin)
-      );
+        Math.min(top, viewportHeight - popoverRect.height - margin),
+      )
 
-      const newCoords = { top: Math.round(top), left: Math.round(left) };
+      const newCoords = { top: Math.round(top), left: Math.round(left) }
       if (
         this.popoverCoords.top !== newCoords.top ||
         this.popoverCoords.left !== newCoords.left
       ) {
-        this.popoverCoords = newCoords;
+        this.popoverCoords = newCoords
       }
     },
   },

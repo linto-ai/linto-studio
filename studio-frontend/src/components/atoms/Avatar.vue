@@ -34,7 +34,7 @@ export default {
     color: {
       type: String,
       required: false,
-      default: "primary", // primary, secondary, tertiary…
+      default: "primary", // primary, secondary, tertiary… or any hex color
     },
     colorIcon: {
       type: String,
@@ -83,6 +83,7 @@ a:hover .avatar {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 
   &.clickable {
     cursor: pointer;

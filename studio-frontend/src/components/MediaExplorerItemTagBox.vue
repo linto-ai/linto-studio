@@ -1,24 +1,38 @@
 <template>
-  <Box
-    class="tag-box p-0"
-    type="shadow"
-    border-size="0px"
-    border-radius="0px"
-    @click.stop>
+  <Box class="tag-box p-0" type="shadow" @click.stop>
     <div class="tag-box__content">
+      <div class="tag-box__footer footer-flex">
+        <input
+          v-model="search"
+          type="text"
+          class="tag-box__search-input"
+          placeholder="Rechercher un tag..." />
+        <ModalTagManagement>
+          <template #trigger="{ open }">
+            <button
+              v-if="showManageButton"
+              class="tag-box__button outline primary xs with-icon"
+              @click="open">
+              <ph-icon name="tags" weight="bold" />
+              <span class="tag-box__button-text">Manage tags</span>
+            </button>
+          </template>
+        </ModalTagManagement>
+      </div>
+      <hr />
       <div
-        v-if="selectedTagsObjects.length"
+        v-if="tagsObjects.length"
         class="flex row gap-small flex-wrap selected-tags">
         <span class="tag-box__selected-tags-icon">
-          <ph-icon name="tag" weight="bold" color="var(--primary-soft)" />
+          <ph-icon name="tag" weight="bold" color="primary" />
         </span>
         <ChipTag
-          v-for="tag in selectedTagsObjects"
+          v-for="tag in tagsObjects"
           :key="tag._id"
           :name="loadingTagId === tag._id ? '' : tag.name"
           :emoji="tag.emoji"
           :color="getTagColor(tag)"
-          :active="true"
+          :active="selectedTagsIds.includes(tag._id)"
           :class="{ 'is-loading': loadingTagId === tag._id }"
           @click="onTagClick(tag)">
           <span
@@ -26,46 +40,6 @@
             class="chip-tag__spinner"></span>
         </ChipTag>
       </div>
-      <template
-        v-if="selectedTagsObjects.length && unselectedTagsObjects.length">
-        <div class="tag-box__separator"></div>
-      </template>
-      <div
-        v-if="unselectedTagsObjects.length"
-        class="flex row gap-small flex-wrap unselected-tags">
-        <ChipTag
-          v-for="tag in unselectedTagsObjects"
-          :key="tag._id"
-          :name="loadingTagId === tag._id ? '' : tag.name"
-          :emoji="tag.emoji"
-          :color="getTagColor(tag)"
-          :active="false"
-          :class="{ 'is-loading': loadingTagId === tag._id }"
-          @click="onTagClick(tag)">
-          <span
-            v-if="loadingTagId === tag._id"
-            class="chip-tag__spinner"></span>
-        </ChipTag>
-      </div>
-    </div>
-    <hr />
-    <div class="tag-box__footer footer-flex">
-      <input
-        v-model="search"
-        type="text"
-        class="tag-box__search-input"
-        placeholder="Rechercher un tag..." />
-      <ModalTagManagement>
-        <template #trigger="{ open }">
-          <button
-            v-if="showManageButton"
-            class="tag-box__button outline primary xs with-icon"
-            @click="open">
-            <ph-icon name="tags" weight="bold" />
-            <span class="tag-box__button-text">Manage tags</span>
-          </button>
-        </template>
-      </ModalTagManagement>
     </div>
   </Box>
 </template>
@@ -107,7 +81,15 @@ export default {
       tags: (state) => state.tags,
     }),
     media() {
-      return this.mediaId ? this.$store.getters["inbox/getMediaById"](this.mediaId) : null
+      return this.mediaId
+        ? this.$store.getters["inbox/getMediaById"](this.mediaId)
+        : null
+    },
+    tagsObjects() {
+      return this.filteredTags.map((tag) => ({
+        ...tag,
+        color: this.getTagColor(tag),
+      }))
     },
     orderedTags() {
       return [...this.tags].sort((a, b) => a.name.localeCompare(b.name))
@@ -131,8 +113,8 @@ export default {
       })
     },
     selectedTagsObjects() {
-      return this.orderedMediaTags.filter((tag) => 
-        tag && this.selectedTagsIds.includes(tag._id)
+      return this.orderedMediaTags.filter(
+        (tag) => tag && this.selectedTagsIds.includes(tag._id),
       )
     },
     unselectedTagsObjects() {
@@ -214,8 +196,8 @@ export default {
     gap: 0.25em;
     flex-wrap: wrap;
     align-items: flex-start;
-    border: 1px solid var(--primary-color);
-    background-color: var(--primary-color);
+    border-bottom: 1px solid var(--primary-color);
+    background-color: var(--primary-soft);
     align-items: center;
 
     .tag-box__selected-tags-icon {

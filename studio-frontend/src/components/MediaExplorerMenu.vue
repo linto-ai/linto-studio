@@ -4,7 +4,7 @@
       <span class="flex1">{{ currentOrganization.name }}</span>
       <router-link
         class="media-explorer-menu__org-settings"
-        :ariaLabel="this.$t('navigation.organisation.setting')"
+        :aria-label="this.$t('navigation.organisation.setting')"
         :title="this.$t('navigation.organisation.setting')"
         :to="{
           name: 'organizations update',

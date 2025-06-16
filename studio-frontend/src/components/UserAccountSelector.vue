@@ -149,7 +149,12 @@ export default {
 
       & > .btn-prefix {
         flex: 0 0 42px;
+
       }
+        .label {
+          margin-left: .5em;
+          display: inline-block
+        }
     }
   }
 }

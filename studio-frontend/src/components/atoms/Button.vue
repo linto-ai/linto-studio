@@ -5,58 +5,86 @@
     :disabled="disabled || loading"
     v-bind="$attrs"
     :aria-disabled="disabled || loading"
-    :title="isIconOnly ? ariaLabel : ''"
+    :title="isIconOnly ? $attrs.ariaLabel : ''"
     v-on="$listeners">
-    <span class="btn-prefix-label">
-      <span class="btn-prefix">
-        <ph-icon
-          v-if="loading"
-          name="circle-notch"
-          :weight="computedIconWeight"
-          :color="computedIconColor"
-          :size="size"
-          class="animate-spin" />
+    <template v-if="isIconOnly">
+      <ph-icon
+        v-if="loading"
+        name="circle-notch"
+        :weight="computedIconWeight"
+        :color="computedIconColor"
+        :size="size"
+        class="animate-spin" />
 
-        <!-- Left icon or avatar -->
-        <ph-icon
-          v-else-if="icon && iconPosition === 'left'"
-          :name="icon"
-          :weight="computedIconWeight"
-          :color="computedIconColor"
-          :size="size"
-          :class="iconClasses" />
+      <ph-icon
+        v-else-if="icon"
+        :name="icon"
+        :weight="computedIconWeight"
+        :color="computedIconColor"
+        :size="size"
+        :class="iconClasses" />
 
-        <!-- Left avatar -->
-        <Avatar
-          v-else-if="avatar"
-          class="avatar"
-          :text="avatarText"
-          :color="avatarColor"
-          :src="avatar"
-          :size="avatarSize" />
+      <!-- Left avatar -->
+      <Avatar
+        v-else-if="avatar || avatarColor || avatarText"
+        class="avatar"
+        :text="avatarText"
+        :color="avatarColor"
+        :src="avatar"
+        :size="avatarSize" />
+    </template>
+    <template v-else>
+      <span class="btn-prefix-label">
+        <span class="btn-prefix">
+          <ph-icon
+            v-if="loading"
+            name="circle-notch"
+            :weight="computedIconWeight"
+            :color="computedIconColor"
+            :size="size"
+            class="animate-spin" />
+
+          <!-- Left icon or avatar -->
+          <ph-icon
+            v-else-if="icon && iconPosition === 'left'"
+            :name="icon"
+            :weight="computedIconWeight"
+            :color="computedIconColor"
+            :size="size"
+            :class="iconClasses" />
+
+          <!-- Left avatar -->
+          <Avatar
+            v-else-if="avatar || avatarColor || avatarText"
+            class="avatar"
+            :text="avatarText"
+            :color="avatarColor"
+            :src="avatar"
+            :size="avatarSize" />
+        </span>
+
+        <!-- Label/Content -->
+        <span class="label">
+          <slot>{{ label }}</slot>
+        </span>
       </span>
 
-      <!-- Label/Content -->
-      <span v-if="!isIconOnly" class="label">
-        <slot>{{ label }}</slot>
-      </span>
-    </span>
-
-    <!-- Right icon -->
-    <ph-icon
-      v-if="!loading && iconRight"
-      :name="iconRight"
-      :weight="computedIconWeight"
-      :color="computedIconColor"
-      :size="size"
-      :class="iconClasses" />
-    <ph-icon
-      v-if="!loading && icon && iconPosition === 'right'"
-      :name="icon"
-      :weight="computedIconWeight"
-      :color="computedIconColor"
-      :size="size"
-      :class="iconClasses" />
+      <!-- Right icon -->
+      <ph-icon
+        v-if="!loading && iconRight"
+        :name="iconRight"
+        :weight="computedIconWeight"
+        :color="computedIconColor"
+        :size="size"
+        :class="iconClasses" />
+      <ph-icon
+        v-if="!loading && icon && iconPosition === 'right'"
+        :name="icon"
+        :weight="computedIconWeight"
+        :color="computedIconColor"
+        :size="size"
+        :class="iconClasses" />
+    </template>
   </button>
 </template>
 
@@ -275,7 +303,6 @@ export default {
   .btn-prefix-label {
     display: flex;
     align-items: center;
-    gap: 4px;
     flex: 1 1 auto;
   }
 }

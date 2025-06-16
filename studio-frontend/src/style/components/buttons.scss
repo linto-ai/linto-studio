@@ -62,10 +62,19 @@ button,
   // same as sm
   padding: 0.35rem 0.75rem;
   font-size: 0.9rem;
+
   &.icon-only {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     padding: 0;
     width: 24px;
     height: 24px;
+
+    & svg {
+      margin: 0;
+      padding: 0;
+    }
   }
 
   /* Hover, focus, active states */
@@ -738,39 +747,6 @@ button,
     justify-content: center;
   }
 
-  &.only-icon {
-    height: 2.5rem;
-    width: 2.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    &.xs {
-      height: 1.5rem;
-      width: 1.5rem;
-    }
-    &.sm {
-      height: 2rem;
-      width: 2rem;
-    }
-    &.md {
-      height: 2.5rem;
-      width: 2.5rem;
-    }
-    &.lg {
-      height: 3rem;
-      width: 3rem;
-    }
-    &.xl {
-      height: 3.5rem;
-      width: 3.5rem;
-    }
-
-    & .icon {
-      margin: 0px;
-    }
-  }
-
   /* Icon handling */
   &:hover > .icon {
     opacity: 0.8;
@@ -783,6 +759,10 @@ button,
     display: inline-block;
     width: 1.25rem;
     height: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
 
     &.xs {
       width: 0.75rem;

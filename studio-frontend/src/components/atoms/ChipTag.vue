@@ -44,7 +44,7 @@ export default {
     },
     background: {
       type: String,
-      default: 'var(--neutral-10)',
+      default: 'var(--background-primary)',
     },
     active: {
       type: Boolean,
@@ -64,7 +64,7 @@ export default {
       return this.color
     },
     backgroundColor() {
-      return this.background
+      return this.active ? this.color : this.background
     },
   },
   methods: {
@@ -83,32 +83,34 @@ export default {
 .chip-tag {
   display: inline-flex;
   align-items: center;
-  gap: 0.5em;
-  padding: 0.1em 0.5em 0.1em 0.3em;
+  gap: 0.1em;
+  padding: 0.1em 0.25em 0.1em 0.25em;
   margin: 0.1em;
-  border-radius: 4px;
-  border: 2px solid var(--neutral-40);
-  background: var(--neutral-10);
+  border-radius: 2px;
+  border: 1px solid var(--neutral-40);
+  background: var(--background-primary);
   font-size: 0.9em;
   font-weight: 600;
   transition: border-color 0.2s, background 0.2s;
 
+  &.active {
+    .chip-tag__name {
+      color: var(--neutral-20);
+    }
+  }
+
   &.sm {
-    font-size: 0.8em;
+    font-size: 0.9em;
   }
   &.lg {
     font-size: 1.1em;
   }
   &.md {
-    font-size: 0.9em;
+    font-size: 1em;
   }
   
   &.clickable {
     cursor: pointer;
-  }
-  &.active {
-    border-color: var(--primary-hard);
-    background: var(--primary-soft);
   }
 
   &:hover {
@@ -121,7 +123,6 @@ export default {
     justify-content: center;
     width: 20px;
     height: 20px;
-    margin-right: 0.1em;
   }
   .chip-tag__icon-emoji {
     display: flex;
@@ -153,6 +154,7 @@ export default {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    text-transform: uppercase;
   }
 }
 </style> 

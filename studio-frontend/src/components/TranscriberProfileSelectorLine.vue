@@ -24,11 +24,13 @@
     <td>{{ description }}</td>
     <td>{{ languages }}</td>
     <td>
-      <CustomSelect
+      <PopoverList
         v-if="translationsOptions.channels.length > 0"
-        multipleSelection
+        selection
+        multiple
         v-model="selectedTranslations"
-        :options="translationsOptions" />
+        :items="translationsOptions.channels"
+        />
       <div v-else class="btn placeholder transparent">
         {{ $t("session.profile_selector.translation_not_available") }}
       </div>
@@ -54,6 +56,8 @@ import CustomSelect from "@/components/molecules/CustomSelect.vue"
 import Checkbox from "@/components/atoms/Checkbox.vue"
 import SwitchInput from "@/components/atoms/SwitchInput.vue"
 import Radio from "@/components/atoms/Radio.vue"
+import PopoverList from "@/components/molecules/PopoverList.vue"
+
 import { transcriberProfileModelMixin } from "@/mixins/transcriberProfileModel.js"
 export default {
   mixins: [transcriberProfileModelMixin],
@@ -87,7 +91,7 @@ export default {
         channels: translations
           .map((translation) => {
             return {
-              value: translation,
+              id: translation,
               text: languageNames.of(translation),
             }
           })
@@ -191,6 +195,7 @@ export default {
     CustomSelect,
     SwitchInput,
     Radio,
+    PopoverList,
   },
 }
 </script>

@@ -332,6 +332,7 @@ export default {
     // Selection handlers
     handleSelectAll() {
       this.isSelectAll = !this.isSelectAll
+      this.$emit("select-all", this.isSelectAll)
     },
 
     // Pagination & Intersection Observer

@@ -184,7 +184,7 @@ input[type="file"] {
   box-sizing: border-box;
   border: var(--border-input);
   border-radius: 4px;
-  padding: 0.25em;
+  padding: 0.25em 0.5em;
   background-color: var(--background-primary);
   color: var(--text-primary);
   font-size: var(--text-sm);
@@ -206,7 +206,7 @@ input[type="file"] {
 }
 
 .input-item__prefix {
-  width: 32px;
+  min-width: 32px;
   height: 32px;
   padding: 0;
   border: var(--border-input);
