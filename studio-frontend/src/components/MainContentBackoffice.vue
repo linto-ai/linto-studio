@@ -1,8 +1,8 @@
 <template>
   <V2Layout backoffice>
-    <ActionBar>
+    <template v-slot:header-bar>
       <slot name="header"></slot>
-    </ActionBar>
+    </template>
     <div class="flex1 backoffice-main">
       <slot v-if="!loading"></slot>
       <Loading v-else />
