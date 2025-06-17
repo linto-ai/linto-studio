@@ -101,6 +101,7 @@ export default {
       mode: "default", // default, search
       search: "",
       filters: [],
+      scrollContainer: null,
     }
   },
   mixins: [debounceMixin, conversationListOrgaMixin],
@@ -109,11 +110,13 @@ export default {
     this.options.shared = this.shared
     await this.initPageFromUrl()
     this.setupIntersectionObserver()
+    this.setupScrollListener()
   },
   beforeDestroy() {
     if (this.observer) {
       this.observer.disconnect()
     }
+    this.cleanupScrollListener()
   },
   watch: {
     selectedTags() {
@@ -323,7 +326,6 @@ export default {
         const newConversations = res?.list || []
         if (append) {
           this.conversations = [...this.conversations, ...newConversations]
-          this.appendMedias(fromConversations(newConversations))
         } else {
           this.conversations = newConversations
         }
@@ -340,19 +342,14 @@ export default {
 
     async fetchConversations(page = 0, append = false) {
       try {
-        const data = await this.apiSearchConversations(page)
-        const newConversations = data?.list || []
+        // Delegate the full logic to apiSearchConversations.
+        // Passing the append flag prevents the previous page from being overwritten
+        // and avoids adding duplicates to the store.
+        const data = await this.apiSearchConversations(page, [], append)
 
-        if (append) {
-          this.conversations = [...this.conversations, ...newConversations]
-        } else {
-          this.conversations = newConversations
-        }
-
-        this.appendMedias(fromConversations(newConversations))
-        this.hasMoreItems = data?.count - 12 * (page + 1) > 0
-
-        return newConversations
+        // apiSearchConversations already updates `this.conversations`, `hasMoreItems`,
+        // and the Vuex store, so we can simply return the list here.
+        return data?.list || []
       } catch (error) {
         if (page === 0) {
           this.conversations = []
@@ -458,6 +455,51 @@ export default {
           this.setupIntersectionObserver()
         })
       })
+    },
+
+    setupScrollListener() {
+      this.$nextTick(() => {
+        const explorer = this.$refs.mediaExplorer?.$el
+        if (!explorer) return
+
+        const container = explorer.querySelector(".media-explorer__body")
+        if (!container) return
+
+        this.scrollContainer = container
+        this.scrollContainer.addEventListener(
+          "scroll",
+          this.onScroll,
+          { passive: true },
+        )
+      })
+    },
+
+    cleanupScrollListener() {
+      if (this.scrollContainer) {
+        this.scrollContainer.removeEventListener("scroll", this.onScroll)
+        this.scrollContainer = null
+      }
+    },
+
+    onScroll() {
+      if (!this.scrollContainer) return
+
+      const items = this.scrollContainer.querySelectorAll(
+        ".media-explorer__body__item",
+      )
+
+      if (items.length === 0) return
+
+      const itemHeight = items[0].offsetHeight || 1
+
+      const firstVisibleIdx = Math.floor(
+        this.scrollContainer.scrollTop / itemHeight,
+      )
+
+      const newPage = Math.floor(firstVisibleIdx / 12)
+      if (newPage !== this.page) {
+        this.page = newPage
+      }
     },
   },
 }
