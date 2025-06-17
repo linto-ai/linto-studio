@@ -41,9 +41,9 @@ export default {
     disabledActionCancel: { type: Boolean, default: false },
     disabledActionApply: { type: Boolean, default: false },
     disabledClose: { type: Boolean, default: false },
-    iconActionApply: { type: String, default: "ph-icon-check" },
-    iconActionCancel: { type: String, default: "ph-icon-x" },
-    iconActionDelete: { type: String, default: "ph-icon-trash" },
+    iconActionApply: { type: String, default: "check-circle" },
+    iconActionCancel: { type: String, default: "x-circle" },
+    iconActionDelete: { type: String, default: "trash-circle" },
     colorActionApply: { type: String, default: "primary" },
     colorActionCancel: { type: String, default: "var(--neutral-40)" },
     colorActionDelete: { type: String, default: "var(--danger-color)" },
@@ -91,6 +91,14 @@ export default {
                 this.$scopedSlots.actions
                   ? this.$scopedSlots.actions()
                   : this.$slots.actions || [],
+              'actions-left': () =>
+                this.$scopedSlots['actions-left']
+                  ? this.$scopedSlots['actions-left']()
+                  : this.$slots['actions-left'] || [],
+              'actions-right': () =>
+                this.$scopedSlots['actions-right']
+                  ? this.$scopedSlots['actions-right']()
+                  : this.$slots['actions-right'] || [],
             },
             triggerEl: this.triggerEl,
           })

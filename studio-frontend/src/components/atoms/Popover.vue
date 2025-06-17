@@ -59,10 +59,13 @@ export default {
     },
     /**
      * width of the popover
+     * "auto", width of the content
+     * "ref", width of the trigger element
+     * a number, width in pixels
      */
     width: {
       type: [String, Number],
-      default: "auto", // will use the width of the trigger element
+      default: "auto",
     },
   },
   data() {
@@ -91,6 +94,7 @@ export default {
           props: {
             ...this.$props,
             popoverCoords: this.popoverCoords,
+            widthRef: this.triggerElement || this.$refs.trigger,
           },
           slots: {
             default: () =>

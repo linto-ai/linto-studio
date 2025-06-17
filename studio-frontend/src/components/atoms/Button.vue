@@ -304,6 +304,7 @@ export default {
     display: flex;
     align-items: center;
     flex: 1 1 auto;
+    gap: 0.25em;
   }
 }
 </style>

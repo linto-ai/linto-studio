@@ -25,9 +25,8 @@
       add tags
     </span>
     <span v-if="mediatags.length > 0" class="media-explorer-item-tags__list">
+      <Tooltip :key="`${mediaId}-tag-${tag._id}`" v-for="tag in mediatags" :text="tag.name">
         <ChipTag
-          v-for="tag in mediatags"
-          :key="tag._id"
           :name="loadingTagId === tag._id ? '' : tag.name"
           :emoji="tag.emoji"
           :color="getTagColor(tag)"
@@ -36,6 +35,7 @@
             v-if="loadingTagId === tag._id"
             class="chip-tag__spinner"></span>
         </ChipTag>
+      </Tooltip>
     </span>
   </span>
 </template>

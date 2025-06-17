@@ -4,7 +4,8 @@
     title="Gestion des tags"
     subtitle="Gérez vos tags"
     :loading="loading"
-    :with-actions="false">
+    :with-action-apply="false"
+    :with-action-cancel="false">
     <template #trigger="{ open }">
       <slot name="trigger" :open="open" />
     </template>
@@ -17,16 +18,18 @@
           :message="`Are you sure you want to delete the tag ${tag.name}?`"
           type="danger"
           @confirm="() => onTagDelete(tag)">
-          <ChipTag
-            :name="tag.name"
-            :emoji="tag.emoji"
-            :color="tag.color"
-            :active="false"
-            size="lg" />
+          <Tooltip :text="`${tag.name}`">
+            <ChipTag
+              :name="tag.name"
+              :emoji="tag.emoji"
+              :color="tag.color"
+              :active="false"
+              size="lg" />
+          </Tooltip>
         </Alert>
       </div>
     </template>
-    <template #actions>
+    <template #actions-right>
       <MediaExplorerFormTag @submit="onSubmit" :loading="loading">
         <template #trigger="{ open }">
           <Button
@@ -34,7 +37,6 @@
             color="primary"
             icon="plus"
             icon-position="left"
-            size="sm"
             @click.stop="open">
             Create a new tag
           </Button>
@@ -57,7 +59,7 @@ export default {
   },
   computed: {
     ...mapState("tags", {
-      tags: (state) => [...state.tags].sort((a, b) => a.name.localeCompare(b.name)),
+      tags: (state) => [...state.tags],
     }),
   },
   data() {

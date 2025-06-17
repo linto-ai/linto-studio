@@ -1,5 +1,9 @@
 <template>
-  <Popover :close-on-click-outside="closeOnClickOutside" :close-on-escape="closeOnEscape" :overlay="overlay">
+  <Popover
+    :close-on-click-outside="closeOnClickOutside"
+    :close-on-escape="closeOnEscape"
+    :overlay="overlay"
+    v-bind="$attrs">
     <template #trigger="{ open }">
       <slot name="trigger" :open="open">
         <Button v-bind="$attrs" :icon="open ? 'caret-up' : 'caret-down'" />
@@ -16,8 +20,7 @@
             :icon-right="item.iconRight"
             @click="handleClickItem(item)"
             :variant="selection ? 'solid' : 'outline'"
-            :size="size"
-            >
+            :size="size">
             {{ item.name || item.text }}
           </Button>
         </div>
@@ -110,7 +113,9 @@ export default {
     },
     toggleSelection(item) {
       if (this.multiple) {
-        const current = Array.isArray(this.modelValue) ? [...this.modelValue] : []
+        const current = Array.isArray(this.modelValue)
+          ? [...this.modelValue]
+          : []
         const selected = this.isSelected(item)
         let updated
         if (selected) {
@@ -123,7 +128,7 @@ export default {
       } else {
         // single selection: either select or deselect (null)
         const selected = this.isSelected(item)
-        const updated = selected ? null : (this.returnObjects ? item : item.id)
+        const updated = selected ? null : this.returnObjects ? item : item.id
         this.$emit("update:modelValue", updated)
         this.$emit("change", updated)
       }

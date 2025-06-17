@@ -3,7 +3,6 @@
     :position="position"
     content-class="tooltip-popover-container"
     trigger="hover"
-    :close-on-click="true"
   >
     <template #trigger>
       <span :class="['tooltip-trigger', mode]">

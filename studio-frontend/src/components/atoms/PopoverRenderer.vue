@@ -26,11 +26,20 @@ export default {
     popoverCoords: { type: Object, required: true },
     contentClass: { type: String, default: "" },
     width: { type: [String, Number], default: "auto" },
+    widthRef: { type: HTMLElement, default: null },
     /**
      * Maximum height for the popover content. If set to "auto" the component
      * will compute the available space based on viewport and popover position.
      */
     maxHeight: { type: [String, Number], default: "auto" },
+  },
+  data() {
+    return {
+      computedWidth: null,
+    }
+  },
+  mounted() {
+    this.computeWidth()
   },
   computed: {
     popoverStyle() {
@@ -47,18 +56,6 @@ export default {
       return typeof this.slots.default === 'function' 
         ? this.slots.default() 
         : this.slots.default || [];
-    },
-    computedWidth() {
-      if (this.width === "auto") {
-        return "auto";
-      }
-
-      if (this.width === "ref") {
-        // use the width of the trigger element
-        return this.controller.$refs.trigger.offsetWidth + 'px'
-      }
-
-      return this.width
     },
     computedMaxHeight() {
       // explicit value provided
@@ -91,6 +88,18 @@ export default {
     },
   },
   methods: {
+    computeWidth() {
+      if (this.width === "auto") {
+        this.computedWidth = "auto";
+        return;
+      }
+
+      if (this.width === "ref" && this.widthRef) {
+        this.computedWidth = this.widthRef.offsetWidth + 'px'
+      } else {
+        this.computedWidth = this.width
+      }
+    },
     closeOnClickOutside() {
       // Popovers always close on outside click
       this.controller.closeOnClickOutside();

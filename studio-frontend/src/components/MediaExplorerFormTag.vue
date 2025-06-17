@@ -1,5 +1,10 @@
 <template>
-  <Modal title="Créer un tag" isForm @submit="onSubmit" :loading="loading" overlay>
+  <Modal
+    title="Créer un tag"
+    isForm
+    @submit="onSubmit"
+    :loading="loading"
+    overlay>
     <template #trigger="{ open }">
       <slot name="trigger" :open="open"></slot>
     </template>
@@ -44,7 +49,12 @@
               </template>
               <template #content>
                 <Box class="color-picker p-1">
-                  <div class="color-picker__color" v-for="color in TAG_COLORS" :key="color" :style="{ backgroundColor: color }" @click="handlePickColor(color)"></div>
+                  <div
+                    class="color-picker__color"
+                    v-for="color in TAG_COLORS"
+                    :key="color"
+                    :style="{ backgroundColor: color }"
+                    @click="handlePickColor(color)"></div>
                 </Box>
               </template>
             </Popover>
@@ -90,8 +100,8 @@ const TAG_COLORS = [
   "#931F93",
   "#931F76",
   "#931F59",
-  "#931F3C" 
-];
+  "#931F3C",
+]
 
 export default {
   name: "MediaExplorerFormTag",

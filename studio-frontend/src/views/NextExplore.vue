@@ -122,6 +122,20 @@ export default {
     page(newPage) {
       this.updatePageUrl(newPage)
     },
+    favorites(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.options.favorites = newVal
+        this.options.shared = this.shared
+        this.resetSearch()
+      }
+    },
+    shared(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.options.shared = newVal
+        this.options.favorites = this.favorites
+        this.resetSearch()
+      }
+    },
   },
   methods: {
     ...mapMutations("inbox", [

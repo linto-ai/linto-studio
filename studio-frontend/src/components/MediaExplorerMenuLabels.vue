@@ -41,8 +41,6 @@ export default {
       } else {
         this.selectedTags = [...this.selectedTags, tag]
       }
-
-      console.log("selectedTags", this.selectedTags)
     },
   },
 }

@@ -7,35 +7,15 @@ const popupManager = new Vue({
   methods: {
     register(popup) {
       if (this.stack.some((p) => p.id === popup.id)) return
-      console.log(
-        "[popupManager] Registering popup:",
-        popup.id,
-        "Component:",
-        popup.component.name,
-      )
       this.stack.push(popup)
-      console.log(
-        "[popupManager] New stack:",
-        this.stack.map((p) => ({ id: p.id, name: p.component.name })),
-      )
       this.updateZIndexes()
     },
 
     unregister(controller) {
       const index = this.stack.findIndex((p) => p.id === controller._uid)
-      console.log(
-        "[popupManager] Unregistering popup:",
-        controller._uid,
-        "at index:",
-        index,
-      )
       if (index !== -1) {
         this.stack.splice(index, 1)
       }
-      console.log(
-        "[popupManager] New stack:",
-        this.stack.map((p) => ({ id: p.id, name: p.component.name })),
-      )
       this.updateZIndexes()
     },
 
@@ -46,18 +26,16 @@ const popupManager = new Vue({
       for (let i = this.stack.length - 1; i >= 0; i--) {
         const popup = this.stack[i]
 
-        // Check 1: Is click inside the rendered content?
         const renderer = popup.rendererInstance
         if (renderer && renderer.$el && renderer.$el.contains(event.target)) {
           topPopupObject = popup
           break
         }
 
-        // Check 2: Is click on the popup's registered trigger?
         if (popup.triggerEl && popup.triggerEl.contains(event.target)) {
-          // Special case for tooltips: if this is a tooltip (hover trigger with closeOnClick), 
+          // Special case for tooltips: if this is a tooltip (hover trigger with closeOnClick),
           // we want to close it even when clicking on the trigger
-          if (popup.props.trigger === 'hover' && popup.props.closeOnClick) {
+          if (popup.props.trigger === "hover" && popup.props.closeOnClick) {
             clickedOnTooltipTrigger = true
             // Don't set topPopupObject so it will be closed
           } else {
@@ -74,15 +52,22 @@ const popupManager = new Vue({
         if (popup === topPopupObject) {
           break
         }
-        
+
         // For tooltips clicked on trigger, always close them
-        if (clickedOnTooltipTrigger && popup.props.trigger === 'hover' && popup.props.closeOnClick) {
-          if (popup.rendererInstance && popup.rendererInstance.closeOnClickOutside) {
+        if (
+          clickedOnTooltipTrigger &&
+          popup.props.trigger === "hover" &&
+          popup.props.closeOnClick
+        ) {
+          if (
+            popup.rendererInstance &&
+            popup.rendererInstance.closeOnClickOutside
+          ) {
             popup.rendererInstance.closeOnClickOutside()
           }
           continue
         }
-        
+
         if (
           popup.rendererInstance &&
           popup.rendererInstance.closeOnClickOutside
@@ -99,7 +84,7 @@ const popupManager = new Vue({
 
       // Find the topmost popup first, giving priority to the most recent one
       let targetPopup = null
-      
+
       // Take the topmost popup (most recently opened)
       if (this.stack.length > 0) {
         targetPopup = this.stack[this.stack.length - 1]

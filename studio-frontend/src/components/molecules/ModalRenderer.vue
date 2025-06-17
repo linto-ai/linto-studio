@@ -36,23 +36,31 @@
         <v-node-renderer v-if="defaultNodes.length" :nodes="defaultNodes" />
       </div>
       <div class="modal-footer flex row gap-small" v-if="withActions || actionsNodes.length">
-        <template v-if="withActionDelete">
-          <button
-            class="btn tertiary"
+        <template>
+          <v-node-renderer
+            v-if="actionsLeftNodes.length"
+            :nodes="actionsLeftNodes"
+          />
+          <Button
+            v-if="withActionDelete"
+            variant="tertiary"
             :class="[
               customClassActionDelete,
               { disabled: disabledActionDelete || disabledActions },
             ]"
             :disabled="disabledActionDelete || disabledActions"
+            :icon="iconActionDelete"
             @click="deleteHandler"
             type="button">
-            <span class="label">{{
-              textActionDelete || $t("modal.delete")
-            }}</span>
-          </button>
+            {{ textActionDelete || $t("modal.delete") }}
+          </Button>
         </template>
         <div class="flex1"></div>
         <div class="button-group">
+          <v-node-renderer
+            v-if="actionsRightNodes.length"
+            :nodes="actionsRightNodes"
+          />
           <template v-if="withActionCancel">
             <Button
               variant="outline"
@@ -63,18 +71,14 @@
                 { disabled: disabledActionCancel || disabledActions },
               ]"
               :disabled="disabledActionCancel || disabledActions"
+              :icon="iconActionCancel"
               @click="cancel"
               type="button">
-              <ph-icon
-                v-if="iconActionCancel"
-                :name="iconActionCancel"></ph-icon>
-              <span class="label">{{
-                textActionCancel || $t("modal.cancel")
-              }}</span>
+              {{ textActionCancel || $t("modal.cancel") }}
             </Button>
           </template>
           <template v-if="withActionApply">
-            <button
+            <Button
               class="btn"
               :class="[
                 customClassActionApply,
@@ -82,13 +86,11 @@
                 { disabled: disabledActionApply || disabledActions },
               ]"
               :disabled="disabledActionApply || disabledActions"
+              :icon="iconActionApply"
               @click="apply"
               type="submit">
-              <ph-icon :name="iconActionApply"></ph-icon>
-              <span class="label">{{
-                textActionApply || $t("modal.apply")
-              }}</span>
-            </button>
+              {{ textActionApply || $t("modal.apply") }}
+            </Button>
           </template>
         </div>
       </div>
@@ -140,9 +142,9 @@ export default {
     disabledActionCancel: { type: Boolean, default: false },
     disabledActionApply: { type: Boolean, default: false },
     disabledClose: { type: Boolean, default: false },
-    iconActionApply: { type: String, default: "ph-icon-check" },
-    iconActionCancel: { type: String, default: "ph-icon-x" },
-    iconActionDelete: { type: String, default: "ph-icon-trash" },
+    iconActionApply: { type: String, default: "check-circle" },
+    iconActionCancel: { type: String, default: "x-circle" },
+    iconActionDelete: { type: String, default: "trash-circle" },
     colorActionApply: { type: String, default: "primary" },
     colorActionCancel: { type: String, default: "var(--neutral-40)" },
     colorActionDelete: { type: String, default: "var(--danger-color)" },
@@ -153,6 +155,16 @@ export default {
     },
     actionsNodes() {
       return this.slots && this.slots.actions ? this.slots.actions() : []
+    },
+    actionsLeftNodes() {
+      return this.slots && this.slots['actions-left']
+        ? this.slots['actions-left']()
+        : []
+    },
+    actionsRightNodes() {
+      return this.slots && this.slots['actions-right']
+        ? this.slots['actions-right']()
+        : []
     },
     modalComponentType() {
       return this.isForm ? "form" : "div"

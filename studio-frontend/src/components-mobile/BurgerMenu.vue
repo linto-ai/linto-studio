@@ -221,7 +221,7 @@ export default {
   }
 
   .user-account-selector-container {
-    padding: 0;
+    padding: 0 .5em;
     display: flex;
     align-items: center;
     border-top: var(--border-block);

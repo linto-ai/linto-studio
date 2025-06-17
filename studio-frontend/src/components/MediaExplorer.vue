@@ -47,7 +47,7 @@
         <!-- Media items -->
         <MediaExplorerItem
           v-for="(media, index) in filteredMedias"
-          :key="media._id"
+          :key="`media-explorer-item-${media._id}-${index}`"
           :media="media"
           :ref="'mediaItem' + index"
           class="media-explorer__body__item" />

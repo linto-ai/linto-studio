@@ -73,7 +73,6 @@ button,
 
     & svg {
       margin: 0;
-      padding: 0;
     }
   }
 
@@ -235,7 +234,7 @@ button,
     background-color: var(--primary-color);
     border: 1px solid var(--primary-color);
     color: var(--primary-contrast, #fff);
-    .icon {
+    &.outline .icon {
       color: var(--primary-contrast, #fff);
     }
     .icon-svg,
@@ -245,7 +244,7 @@ button,
     &:hover {
       background-color: var(--primary-soft);
       color: var(--primary-color);
-      .icon {
+      &.outline .icon {
         color: var(--primary-color);
       }
       .icon-svg,
@@ -279,7 +278,7 @@ button,
     background-color: var(--secondary-color);
     border: 1px solid var(--secondary-color);
     color: var(--primary-contrast, #fff);
-    .icon {
+    &.outline .icon {
       background-color: var(--primary-contrast, #fff);
     }
     .icon-svg,
@@ -289,7 +288,7 @@ button,
     &:hover {
       background-color: transparent;
       color: var(--secondary-color);
-      .icon {
+      &.outline .icon {
         background-color: var(--secondary-color);
       }
       .icon-svg,
@@ -323,7 +322,7 @@ button,
     background-color: var(--tertiary-color);
     border: 1px solid var(--tertiary-color);
     color: var(--primary-contrast, #fff);
-    .icon {
+    &.outline .icon {
       background-color: var(--primary-contrast, #fff);
     }
     .icon-svg,
@@ -333,7 +332,7 @@ button,
     &:hover {
       background-color: transparent;
       color: var(--tertiary-color);
-      .icon {
+      &.outline .icon {
         background-color: var(--tertiary-color);
       }
       .icon-svg,
