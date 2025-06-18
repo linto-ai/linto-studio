@@ -763,6 +763,10 @@ button,
     justify-content: center;
     padding: 0;
 
+    &:has(~ .label) {
+      margin-right: 0.25rem;
+    }
+
     &.xs {
       width: 0.75rem;
       height: 0.75rem;

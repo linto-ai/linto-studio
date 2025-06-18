@@ -4,7 +4,12 @@
     :class="{ 'media-explorer-item-tags--empty': mediatags.length === 0 }"
     @click.stop>
     <span class="media-explorer-item-tags__actions">
-      <Popover trigger="click" :track-mouse="false" position="bottom" overlay width="280px">
+      <Popover
+        trigger="click"
+        :track-mouse="false"
+        position="bottom"
+        overlay
+        width="280px">
         <template #trigger>
           <Button
             class="neutral outline icon-only"
@@ -15,8 +20,8 @@
             @mouseleave.prevent />
         </template>
         <template #content>
-          <MediaExplorerItemTagBox 
-            :media-id="mediaId" 
+          <MediaExplorerItemTagBox
+            :media-id="mediaId"
             :show-manage-button="false" />
         </template>
       </Popover>
@@ -25,7 +30,10 @@
       add tags
     </span>
     <span v-if="mediatags.length > 0" class="media-explorer-item-tags__list">
-      <Tooltip :key="`${mediaId}-tag-${tag._id}`" v-for="tag in mediatags" :text="tag.name">
+      <Tooltip
+        :key="`${mediaId}-tag-${tag._id}`"
+        v-for="tag in mediatags"
+        :text="tag.name">
         <ChipTag
           :name="loadingTagId === tag._id ? '' : tag.name"
           :emoji="tag.emoji"

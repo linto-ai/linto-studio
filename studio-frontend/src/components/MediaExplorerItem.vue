@@ -71,22 +71,49 @@
       <nav>
         <ul>
           <li>
-            <button class="btn xs" @click.stop="handleEdit">Edit</button>
-          </li>
-          <li>
-            <button class="btn xs" @click.stop="handleExport">Export</button>
-          </li>
-          <li>
-            <button class="btn xs" @click.stop="handleShare">Share</button>
-          </li>
-          <li>
-            <button class="btn xs tertiary outline" @click.stop="handleArchive">
-              Archive
+            <button class="btn xs" @click.stop="handleEdit">
+              <ph-icon name="pencil"></ph-icon>
+              <span class="label">
+                {{ $t("media_explorer.line.edit_transcription") }}
+              </span>
             </button>
           </li>
+          <li>
+            <button class="btn xs" @click.stop="handleSubtitles">
+              <ph-icon name="subtitles"></ph-icon>
+              <span class="label">
+                {{ $t("media_explorer.line.edit_subtitles") }}
+              </span>
+            </button>
+          </li>
+          <li>
+            <button class="btn xs" @click.stop="handleExport">
+              <ph-icon name="file"></ph-icon>
+              <span class="label">
+                {{ $t("media_explorer.line.export") }}
+              </span>
+            </button>
+          </li>
+          <li>
+            <button class="btn xs tertiary outline" @click.stop="handleDelete">
+              <ph-icon name="trash"></ph-icon>
+              <span class="label">
+                {{ $t("media_explorer.line.delete") }}
+              </span>
+            </button>
+          </li>
+          <!-- <li>
+            <button class="btn xs" @click.stop="handleShare">Share</button>
+          </li>
+           -->
         </ul>
       </nav>
     </div>
+
+    <ModalDeleteConversations
+      :visible="showDeleteModal"
+      :medias="[media]"
+      @close="showDeleteModal = false" />
   </div>
 </template>
 
@@ -100,6 +127,7 @@ import { userName } from "@/tools/userName"
 import userAvatar from "@/tools/userAvatar"
 
 import { PhStar } from "phosphor-vue"
+import ModalDeleteConversations from "./ModalDeleteConversations.vue"
 
 export default {
   name: "MediaExplorerItem",
@@ -108,6 +136,7 @@ export default {
     UserProfilePicture,
     TimeDuration,
     MediaExplorerItemTags,
+    ModalDeleteConversations,
   },
   props: {
     media: {
@@ -119,6 +148,7 @@ export default {
     return {
       isHover: false,
       isSelected: false,
+      showDeleteModal: false,
     }
   },
   computed: {
@@ -127,6 +157,7 @@ export default {
       currentOrganization: "getCurrentOrganization",
     }),
     mediatags() {
+      console.log("media", this.media)
       return this.media.tags.map((t) =>
         this.$store.getters["tags/getTagById"](t),
       )
@@ -226,21 +257,34 @@ export default {
     },
 
     handleEdit() {
-      this.$router.push(
-        `/interface/${this.organizationId}/conversations/${this.media._id}/transcription`,
-      )
+      this.$router.push({
+        name: "conversations transcription",
+        params: {
+          conversationId: this.media._id,
+          organizationId: this.organizationId,
+        },
+      })
     },
-
-    handleShare() {
-      console.log("share")
+    handleSubtitles() {
+      this.$router.push({
+        name: "conversations subtitles",
+        params: {
+          conversationId: this.media._id,
+          organizationId: this.organizationId,
+        },
+      })
     },
-
-    handleArchive() {
-      console.log("archive")
+    handleExport() {
+      this.$router.push({
+        name: "conversations export",
+        params: {
+          conversationId: this.media._id,
+          organizationId: this.organizationId,
+        },
+      })
     },
-
     handleDelete() {
-      console.log("delete")
+      this.showDeleteModal = true
     },
   },
 }
@@ -563,7 +607,7 @@ export default {
   margin: 0;
 }
 
-.media-explorer-item--hover .media-explorer-item__header__actions {
+.media-explorer-item:hover .media-explorer-item__header__actions {
   display: flex;
   position: absolute;
   align-items: center;
@@ -573,6 +617,6 @@ export default {
   padding: 0.5rem;
   box-sizing: border-box;
   height: 100%;
-  box-shadow: -4px 0 1px var(--primary-color);
+  box-shadow: -1px 0 1px 1px var(--primary-color);
 }
 </style>
