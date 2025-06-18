@@ -1,6 +1,7 @@
 import $set from "lodash.set"
 import { apiDeleteMultipleConversation } from "@/api/conversation.js"
 import i18n from "@/i18n"
+import { bus } from "@/main.js"
 export default {
   namespaced: true,
   state: {
@@ -43,6 +44,7 @@ export default {
     },
     deleteMedias(state, mediaIds) {
       state.medias = state.medias.filter((m) => !mediaIds.includes(m._id))
+      bus.$emit("medias/delete", mediaIds)
     },
     setSelectedMedias(state, selectedMedias) {
       state.selectedMedias = selectedMedias

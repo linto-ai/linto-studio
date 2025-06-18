@@ -1,6 +1,5 @@
 <template>
-  <div
-    class="media-explorer">
+  <div class="media-explorer">
     <!-- Optional outer header slot -->
     <div v-if="$slots.header" class="media-explorer__header">
       <slot name="header" />
@@ -59,6 +58,7 @@
 </template>
 
 <script>
+import { bus } from "@/main.js"
 import MediaExplorerHeader from "./MediaExplorerHeader.vue"
 import MediaExplorerItem from "./MediaExplorerItem.vue"
 import MediaExplorerAppUpload from "./MediaExplorerAppUpload.vue"
@@ -206,7 +206,6 @@ export default {
       this.isSelectAll = !this.isSelectAll
       this.$emit("select-all", this.isSelectAll)
     },
-
     // Pagination & Intersection Observer
     setupIntersectionObserver() {
       if (!this.enablePagination) return

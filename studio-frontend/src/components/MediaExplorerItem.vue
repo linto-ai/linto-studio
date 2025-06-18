@@ -157,7 +157,6 @@ export default {
       currentOrganization: "getCurrentOrganization",
     }),
     mediatags() {
-      console.log("media", this.media)
       return this.media.tags.map((t) =>
         this.$store.getters["tags/getTagById"](t),
       )
