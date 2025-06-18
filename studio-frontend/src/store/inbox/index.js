@@ -18,7 +18,19 @@ export default {
       state.medias = medias
     },
     appendMedias(state, medias) {
-      state.medias = [...state.medias, ...medias]
+      // Merge medias while avoiding duplicates based on the `_id` field.
+      const merged = [...state.medias, ...medias]
+      const unique = []
+      const seen = new Set()
+
+      for (const media of merged) {
+        if (!seen.has(media._id)) {
+          seen.add(media._id)
+          unique.push(media)
+        }
+      }
+
+      state.medias = unique
     },
     clearMedias(state) {
       state.medias = []
