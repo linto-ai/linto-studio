@@ -16,6 +16,10 @@
     <span class="chip-tag__name">
       {{ name }}
     </span>
+    <ph-icon v-if="active" name="trash" color="var(--neutral-20)" />
+    <Avatar v-if="count" class="chip-tag__count" size="xs" color="var(--neutral-20)" :color-text="color">
+      {{ count }}
+    </Avatar>
     <slot></slot>
   </div>
 </template>
@@ -34,11 +38,11 @@ export default {
     },
     color: {
       type: String,
-      default: 'var(--neutral-40)',
+      default: 'var(--primary)',
     },
     background: {
       type: String,
-      default: 'var(--background-primary)',
+      default: 'var(--primary)',
     },
     active: {
       type: Boolean,
@@ -48,6 +52,10 @@ export default {
       type: String,
       default: 'md',
       validator: (value) => ['sm', 'md', 'lg'].includes(value),
+    },
+    count: {
+      type: Number,
+      default: 0,
     },
   },
   computed: {
@@ -149,6 +157,12 @@ export default {
     text-overflow: ellipsis;
     white-space: nowrap;
     text-transform: uppercase;
+  }
+  .chip-tag__count {
+    font-size: 0.8em;
+    font-weight: 600;
+    opacity: 0.95;
+    margin-left: 0.25em;
   }
 }
 </style> 

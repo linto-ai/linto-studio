@@ -34,6 +34,7 @@ async function getTags(req, res, next) {
     const tags = await model.tags.getByOrgAndCategoryId(
       req.params.organizationId,
       req.query.categoryId,
+      req.query.withMediaCount
     )
     res.status(200).send(tags)
   } catch (err) {

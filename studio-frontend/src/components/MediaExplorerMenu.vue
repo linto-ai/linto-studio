@@ -57,21 +57,25 @@
         </router-link>
       </div>
 
-      <ModalTagManagement class="media-explorer-menu__item" overlay>
-        <template #trigger="{ open }">
-          <a
-            href="#"
-            class="flex row justify-between gap-medium tab"
-            @click="open">
-            <span class="flex row align-center gap-medium">
-              <ph-icon name="tag"></ph-icon>
-              <span class="media-explorer-menu__item__sub__item__text">
-                {{ $t("navigation.tabs.explore_labels") }}
-              </span>
+      <MediaExplorerMenuLabels class="media-explorer-menu__item" overlay>
+        <span href="#" class="flex row justify-between gap-medium tab">
+          <span class="flex row align-center gap-medium">
+            <ph-icon name="tag"></ph-icon>
+            <span class="media-explorer-menu__item__sub__item__text">
+              {{ $t("navigation.tabs.explore_labels") }}
             </span>
-          </a>
-        </template>
-      </ModalTagManagement>
+          </span>
+          <ModalTagManagement
+            :selected-tags="selectedTags"
+            @tag-click="handleTagClick">
+            <template #trigger>
+              <Button icon="plus" size="sm" color="primary">
+                Add tag
+              </Button>
+            </template>
+          </ModalTagManagement>
+        </span>
+      </MediaExplorerMenuLabels>
     </div>
     <hr />
     <small>Private Inbox</small>
@@ -107,12 +111,14 @@
 <script>
 import { mapGetters } from "vuex"
 import ModalSwitchOrg from "@/components/ModalSwitchOrg.vue"
+import MediaExplorerMenuLabels from "@/components/MediaExplorerMenuLabels.vue"
 import ModalTagManagement from "@/components/ModalTagManagement.vue"
 import Button from "@/components/atoms/Button.vue"
 export default {
   name: "MediaExplorerMenu",
   components: {
     ModalSwitchOrg,
+    MediaExplorerMenuLabels,
     ModalTagManagement,
   },
   computed: {

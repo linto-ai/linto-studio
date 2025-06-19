@@ -38,11 +38,11 @@
 }
 
 .pagination__next {
-  @include mixin.maskImage("../public/img/next.svg");
+  @include mixin.maskImage("@/../public/img/next.svg");
 }
 
 .pagination__prev {
-  @include mixin.maskImage("../public/img/previous.svg");
+  @include mixin.maskImage("@/../public/img/previous.svg");
 }
 
 .pagination-btn {

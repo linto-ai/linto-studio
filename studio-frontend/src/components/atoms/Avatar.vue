@@ -11,7 +11,7 @@
       class="avatar"
       :size="size"
       :color="colorIcon" />
-    <span v-else-if="text" class="avatar-text" :class="[colorText]">{{
+    <span v-else-if="text" class="avatar-text" :class="[colorText]" :style="{ color: colorText }">{{
       text
     }}</span>
     <slot></slot>

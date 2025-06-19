@@ -65,12 +65,12 @@
     position: absolute;
     top: 10px;
     left: 10px;
-    @include mixin.maskImage("../public/img/play.svg");
+    @include mixin.maskImage("@/../public/img/play.svg");
     background-color: var(--text-primary);
   }
   &.playing {
     &:after {
-      @include mixin.maskImage("../public/img/pause.svg");
+      @include mixin.maskImage("@/../public/img/pause.svg");
     }
   }
 }
@@ -251,7 +251,7 @@
       position: absolute;
       top: 4px;
       right: 5px;
-      //@include maskImage("../public/img/triangle.svg");
+      //@include maskImage("@/../public/img/triangle.svg");
     }
     &:hover {
       background-color: #e2e2e2;
@@ -334,10 +334,10 @@
     //   width: 22px;
     // }
     // .icon-merge {
-    //   @include maskImage("../public/img/merge-turn.svg");
+    //   @include maskImage("@/../public/img/merge-turn.svg");
     // }
     // .icon-add {
-    //   @include maskImage("../public/img/add.svg");
+    //   @include maskImage("@/../public/img/add.svg");
     // }
   }
 }

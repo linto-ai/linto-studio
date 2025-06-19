@@ -1,8 +1,19 @@
 <template>
   <div class="media-explorer-menu-labels">
-    <MediaExplorerItemTagBox
-      :selected-tags="selectedTags"
-      @tag-click="handleTagClick" />
+    <nav>
+      <ul>
+        <li v-for="tag in orderedTags" :key="tag._id">
+          <a href="#">
+            <ChipTag
+              :name="tag.name"
+              :emoji="tag.emoji"
+              :color="tag.color"
+              :count="tag.mediaCount"
+            />
+          </a>
+        </li>
+      </ul>
+    </nav>
   </div>
 </template>
 
@@ -26,6 +37,9 @@ export default {
     filteredTags() {
       return this.tags.filter((tag) => !this.selectedTags.includes(tag._id))
     },
+    orderedTags() {
+      return this.tags.sort((a, b) => a.name.localeCompare(b.name))
+    },
   },
   methods: {
     getTagColor(tag) {
@@ -45,12 +59,32 @@ export default {
 <style lang="scss" scoped>
 .media-explorer-menu-labels {
   display: flex;
-  flex-direction: column;
 
-  &__items {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
+  nav {
+    ul {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-small);
+      list-style: none;
+      padding-inline-start: 45px;
+    }
+    li {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-small);
+      padding: 0;
+      margin: 0;
+
+      a {
+        display: block;
+        width: 100%;
+        height: 100%;
+        padding: var(--spacing-small);
+        border-radius: var(--border-radius-small);
+        background-color: var(--background-primary);
+        color: var(--text-primary);
+      }
+    }
   }
 }
 </style>

@@ -126,13 +126,50 @@ class TagModel extends MongoModel {
     }
   }
 
-  async getByOrgAndCategoryId(organizationId, categoryId) {
+  async getByOrgAndCategoryId(organizationId, categoryId, withMediaCount = false) {
     try {
-      let query = {
-        organizationId: this.getObjectId(organizationId),
-        categoryId: this.getObjectId(categoryId),
+      const pipeline = []
+
+      pipeline.push({
+        $match: {
+          organizationId: this.getObjectId(organizationId),
+          categoryId: this.getObjectId(categoryId),
+        },
+      })
+
+      if (withMediaCount) {
+        pipeline.push({
+          $lookup: {
+            from: "conversations",
+            let: { tagId: { $toString: "$_id" } },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      {
+                        $eq: [
+                          "$organization.organizationId",
+                          organizationId.toString(),
+                        ],
+                      },
+                      { $in: ["$$tagId", "$tags"] },
+                    ],
+                  },
+                },
+              },
+            ],
+            as: "media",
+          },
+        })
+
+        pipeline.push({
+          $addFields: { mediaCount: { $size: "$media" } },
+        })
+        pipeline.push({ $project: { media: 0 } })
       }
-      return await this.mongoRequest(query)
+
+      return await this.mongoAggregate(pipeline)
     } catch (error) {
       console.error(error)
       return error

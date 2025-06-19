@@ -33,6 +33,10 @@ import isAuthenticated from "@/tools/isAuthenticated.js"
 import AppSettingsModal from "@/components/AppSettingsModal.vue"
 import PopupHost from "@/components/PopupHost.vue"
 import AppNotifications from "@/components/AppNotifications.vue"
+import getCurrentTheme from "@/tools/getCurrentTheme.js"
+
+import "@/style/style.scss"
+
 export default {
   props: {},
   data() {
@@ -61,6 +65,15 @@ export default {
       return isAuthenticated()
     },
   },
+  beforeCreate() {
+    // Limit the dynamic import context so that webpack only considers SCSS files inside the "themes" directory.
+    // This avoids having it try to parse unrelated files at the project root (Dockerfile, README.md, ...).
+    /* eslint-disable-next-line import/no-dynamic-require */
+    import(
+      /* webpackInclude: /themes\/.*\/style\/style\.scss$/ */
+      `../${getCurrentTheme()["stylePath"]}`
+    )
+  },
   mounted() {
     // notification usage
     // this.$store.dispatch("system/addNotification", {
@@ -87,7 +100,7 @@ export default {
 }
 </script>
 <style lang="scss">
-@use "@/style/style.scss";
+// @use "@/style/style.scss";
 // TODO: import from env variable instead of hardcoding
-@use "../themes/LinTO-green/style/style.scss" as style-theme;
+// @use "../themes/LinTO-green/style/style.scss" as style-theme;
 </style>

@@ -19,6 +19,7 @@
     --red-chart: #fe346e;
 
     --primary-color: #3860ed;
+    --primary-soft: #eff2ff;
     --primary-contrast: #fff;
 
     --secondary-color: #ffcb7c;
@@ -32,7 +33,7 @@
     --neutral-80: #cdd5ef;
     --neutral-60: #b9c5e9;
 
-    --background-app: rgb(250, 250, 250);
+    --background-app: var(--primary-color);
 
     --background-primary: #fff;
     --background-primary-with-small-opacity: rgba(255, 255, 255, 0.85);

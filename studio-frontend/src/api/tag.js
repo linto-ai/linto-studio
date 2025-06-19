@@ -94,7 +94,7 @@ export async function apiGetSystemCategories(organizationId) {
 
 export async function apiGetTagsByCategory(organizationId, categoryId) {
   const requestRes = await sendRequest(
-    `${BASE_API}/organizations/${organizationId}/tags?categoryId=${categoryId}`,
+    `${BASE_API}/organizations/${organizationId}/tags?categoryId=${categoryId}&withMediaCount=true`,
     { method: "get" },
     {}
   )
