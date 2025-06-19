@@ -68,7 +68,9 @@ async function addUserInOrganization(req, res, next) {
       // Create new user personal organization
       if (createdUser.insertedCount !== 1) throw new UserError()
       userId = createdUser.insertedId.toString()
-      magicId = createdUser.ops[0].authLink.magicId
+      const invitedUser = await model.users.getById(userId, true)
+      magicId = invitedUser[0].authLink.magicId
+
       if (magicId) {
         const createOrganization = await model.organizations.createDefault(
           userId,
