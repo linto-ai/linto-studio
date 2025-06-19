@@ -158,6 +158,12 @@ export default {
       this.isOpen = newState
       this.$emit("input", this.isOpen)
     },
+    close() {
+      this.toggle(false)
+    },
+    open() {
+      this.toggle(true)
+    },
     handleClick(event) {
       event.preventDefault()
       this.toggle(!this.isOpen)

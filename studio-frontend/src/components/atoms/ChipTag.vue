@@ -5,19 +5,13 @@
     :style="{ borderColor: borderColor, backgroundColor: backgroundColor }"
     @click="$emit('click')"
   >
-    <span class="chip-tag__icon-wrapper">
+    <span v-if="emoji" class="chip-tag__icon-wrapper">
       <span
-        v-if="emoji"
         class="chip-tag__icon-emoji"
         :style="{ backgroundColor: borderColor }"
       >
         {{ unifiedToEmoji(emoji) }}
       </span>
-      <span
-        v-else
-        class="chip-tag__icon-color"
-        :style="{ backgroundColor: borderColor }"
-      ></span>
     </span>
     <span class="chip-tag__name">
       {{ name }}
@@ -61,10 +55,10 @@ export default {
       return this.$listeners.click ? 'clickable' : ''
     },
     borderColor() {
-      return this.color
+      return this.active ? this.color : this.background
     },
     backgroundColor() {
-      return this.active ? this.color : this.background
+      return this.active ? this.background : this.color
     },
   },
   methods: {
@@ -87,7 +81,7 @@ export default {
   padding: 0.1em 0.25em 0.1em 0.25em;
   margin: 0.1em;
   border-radius: 2px;
-  border: 1px solid var(--neutral-40);
+  border: 1px transparent var(--neutral-40);
   background: var(--background-primary);
   font-size: 0.9em;
   font-weight: 600;
@@ -130,7 +124,7 @@ export default {
     justify-content: center;
     width: 16px;
     height: 16px;
-    border-radius: 4px;
+    border-radius: 2px;
     font-size: 1em;
     background: var(--neutral-40);
     color: #222;
@@ -138,7 +132,7 @@ export default {
   .chip-tag__icon-color {
     width: 16px;
     height: 16px;
-    border-radius: 4px;
+    border-radius: 2px;
     background: var(--neutral-40);
     display: inline-block;
   }
@@ -146,11 +140,11 @@ export default {
     display: inline-block;
     font-size: 0.9em;
     font-weight: 600;
-    color: var(--neutral-100);
+    color: var(--neutral-10);
     opacity: 0.95;
     padding: 0 0.1em;
     border-radius: 2px;
-    max-width: 8ch;
+    max-width: 21ch;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

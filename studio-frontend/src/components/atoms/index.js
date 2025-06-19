@@ -22,6 +22,7 @@ import Alert from './Alert.vue';
 import Tooltip from './Tooltip.vue';
 import Emoji from './Emoji.vue';
 import Button from './Button.vue';
+import Breadcrumb from './Breadcrumb.vue';
 
 const components = [
   Avatar,
@@ -48,6 +49,7 @@ const components = [
   Tooltip,
   Emoji,
   Button,
+  Breadcrumb,
 ];
 
 const validateComponents = c => c && typeof c.name === 'string' && c.name.length > 0

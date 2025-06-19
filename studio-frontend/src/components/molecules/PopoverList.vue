@@ -3,7 +3,8 @@
     :close-on-click-outside="closeOnClickOutside"
     :close-on-escape="closeOnEscape"
     :overlay="overlay"
-    v-bind="$attrs">
+    v-bind="$attrs"
+    ref="popover">
     <template #trigger="{ open }">
       <slot name="trigger" :open="open">
         <Button v-bind="$attrs" :icon="open ? 'caret-up' : 'caret-down'" />
@@ -16,6 +17,8 @@
             :icon="itemIcon(item)"
             :icon-position="item.iconPosition || 'left'"
             :icon-weight="item.iconWeight"
+            :avatar="item.avatar"
+            :avatar-text="item.avatarText"
             :color="itemColor(item)"
             :icon-right="item.iconRight"
             @click="handleClickItem(item)"
@@ -47,6 +50,10 @@ export default {
     items: {
       type: Array,
       required: true,
+    },
+    color: {
+      type: String,
+      default: "primary",
     },
     closeOnClickOutside: {
       type: Boolean,
@@ -80,9 +87,9 @@ export default {
     },
     /**
      * v-model binding of selected items.
-     * Can be an array of item ids (string) or an array of full item objects.
+     * Can be an object, a string, an array of item ids (string) or an array of full item objects.
      */
-    modelValue: {
+    value: {
       // Array for multi-select, otherwise single id/object or null
       type: [Array, String, Object, Number, null],
       default: () => [],
@@ -95,7 +102,7 @@ export default {
       default: false,
     },
   },
-  emits: ["click", "update:modelValue", "change"],
+  emits: ["click", "update:value", "change"],
   methods: {
     isSame(value, item) {
       if (typeof value === "object" && value !== null) {
@@ -123,13 +130,13 @@ export default {
         } else {
           updated = [...current, this.returnObjects ? item : item.id]
         }
-        this.$emit("update:modelValue", updated)
+        this.$emit("update:value", updated)
         this.$emit("change", updated)
       } else {
         // single selection: either select or deselect (null)
         const selected = this.isSelected(item)
         const updated = selected ? null : this.returnObjects ? item : item.id
-        this.$emit("update:modelValue", updated)
+        this.$emit("update:value", updated)
         this.$emit("change", updated)
       }
     },
@@ -144,8 +151,8 @@ export default {
      * Returns the computed color for an item based on selection mode.
      */
     itemColor(item) {
-      if (!this.selection) return item.color
-      return this.isSelected(item) ? "primary" : "primary-soft"
+      if (!this.selection) return item.color || this.color
+      return this.isSelected(item) ? this.color : this.color + "-soft"
     },
     /**
      * Returns the icon for an item based on selection mode.
@@ -164,8 +171,7 @@ export default {
 .popover-list__content {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 4px;
+  gap: 1px;
 }
 
 .popover-list__item {

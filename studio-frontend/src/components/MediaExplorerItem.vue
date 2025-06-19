@@ -61,6 +61,7 @@
       <div class="media-explorer-item__inline__tags">
         <MediaExplorerItemTags
           class="media-explorer-item__inline__tags__tags"
+          :hovered="isHover"
           :mediatags="mediatags"
           :media-id="media._id" />
       </div>

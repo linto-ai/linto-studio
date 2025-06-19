@@ -136,28 +136,6 @@ export default {
 <style lang="scss">
 .user-account-selector {
   position: relative;
-
-  .popover-trigger {
-    display: block;
-
-    .btn {
-      border-radius: 0;
-      border: none;
-      background-color: transparent;
-      width: 100%;
-      justify-content: flex-start;
-      padding: 0 1em;
-      height: 54px;
-
-      & > .btn-prefix {
-        flex: 0 0 42px;
-
-      }
-        .label {
-          margin-left: .5em;
-          display: inline-block
-        }
-    }
-  }
+  display: block;
 }
 </style>

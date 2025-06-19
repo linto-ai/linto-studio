@@ -2,11 +2,11 @@
   <div class="flex align-center header-bar">
     <slot name="header-bar"></slot>
 
-    <div class="flex align-center header-bar__left" v-if="!hasHeaderBarSlot">
-      <action-conversation-create />
+    <div v-if="!hasHeaderBarSlot" class="flex align-center header-bar__left">
+      <slot name="header-bar-left"></slot>
     </div>
-    <div class="header-bar__right" v-if="!hasHeaderBarSlot">
-      <MediaExplorerStorageSize />
+    <div v-if="!hasHeaderBarSlot" class="header-bar__right">
+      <slot name="header-bar-right"></slot>
     </div>
   </div>
 </template>
@@ -17,6 +17,7 @@ import ActionConversationCreate from "./molecules/ActionConversationCreate.vue"
 import CustomSelect from "./molecules/CustomSelect.vue"
 import PhIcon from "./atoms/PhIcon.vue"
 import MediaExplorerStorageSize from "./MediaExplorerStorageSize.vue"
+import LocalSwitcher from "./LocalSwitcher.vue"
 
 export default {
   props: {},
@@ -73,6 +74,7 @@ export default {
     PhIcon,
     CustomSelect,
     MediaExplorerStorageSize,
+    LocalSwitcher,
   },
 }
 </script>

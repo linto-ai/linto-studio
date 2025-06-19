@@ -6,13 +6,24 @@
       </div>
       <h3>Déposez vos fichiers médias ici</h3>
       <p>Formats acceptés : audio et vidéo</p>
-      <div v-if="uploadProgress.length > 0" class="media-explorer-upload__progress">
-        <div v-for="(file, index) in uploadProgress" :key="index" class="media-explorer-upload__progress-item">
-          <div class="media-explorer-upload__progress-item-name">{{ file.name }}</div>
-          <div class="media-explorer-upload__progress-item-bar">
-            <div class="media-explorer-upload__progress-item-bar-fill" :style="{ width: file.progress + '%' }"></div>
+      <div
+        v-if="uploadProgress.length > 0"
+        class="media-explorer-upload__progress">
+        <div
+          v-for="(file, index) in uploadProgress"
+          :key="index"
+          class="media-explorer-upload__progress-item">
+          <div class="media-explorer-upload__progress-item-name">
+            {{ file.name }}
           </div>
-          <div class="media-explorer-upload__progress-item-percentage">{{ file.progress }}%</div>
+          <div class="media-explorer-upload__progress-item-bar">
+            <div
+              class="media-explorer-upload__progress-item-bar-fill"
+              :style="{ width: file.progress + '%' }"></div>
+          </div>
+          <div class="media-explorer-upload__progress-item-percentage">
+            {{ file.progress }}%
+          </div>
         </div>
       </div>
     </div>
@@ -20,14 +31,16 @@
 </template>
 
 <script>
+/** UNUSED COMPONENT: to implement */
+
 export default {
   name: "MediaExplorerUpload",
   props: {
     uploadProgress: {
       type: Array,
-      default: () => []
-    }
-  }
+      default: () => [],
+    },
+  },
 }
 </script>
 
@@ -99,4 +112,4 @@ export default {
   width: 40px;
   text-align: right;
 }
-</style> 
+</style>

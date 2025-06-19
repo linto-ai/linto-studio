@@ -1,6 +1,25 @@
 <template>
-  <CustomSelect
-    id="lang-selector"
+  <PopoverList
+    :items="langList"
+    v-model="local"
+    @click="setLocale"
+    class="local-switcher"
+    width="ref"
+    color="neutral"
+    ref="popoverList">
+    <template #trigger="{ open }">
+      <Button
+        :avatar-text="localIcon"
+        :icon-right="open ? 'caret-up' : 'caret-down'"
+        variant="outline"
+        color="neutral"
+        size="sm"
+        block>
+        {{ localTxt }}
+      </Button>
+    </template>
+  </PopoverList>
+  <!--<PopoverList
     :valueText="localTxt"
     :value="local"
     :buttonClass="buttonClass"
@@ -11,38 +30,56 @@
         { value: 'en-US', text: '🇺🇸' },
       ],
     }"
-    @input="setLocale" />
+    @input="setLocale" />-->
 </template>
 <script>
 import CustomSelect from "@/components/molecules/CustomSelect.vue"
+import PopoverList from "@/components/molecules/PopoverList.vue"
 
 export default {
   props: {
     buttonClass: { type: String },
   },
+  data() {
+    return {
+      langList: [
+        { value: "fr-FR", text: "Français", avatarText: "🇫🇷" },
+        { value: "en-US", text: "English", avatarText: "🇬🇧" },
+      ],
+    }
+  },
   watch: {
     "$i18n.locale": function (newVal) {
+      // Persist the selected locale (string)
       localStorage.setItem("lang", newVal)
-      //reload page
-      location.reload()
+      // reload page
+      // location.reload()
     },
   },
   computed: {
+    localIcon() {
+      return this.$i18n.locale === "fr-FR" ? "🇫🇷" : "🇬🇧"
+    },
     localTxt() {
-      return this.$i18n.locale === "fr-FR" ? "🇫🇷" : "🇺🇸"
+      return this.$i18n.locale === "fr-FR" ? "Français" : "English"
     },
     local() {
+      console.log('local', this.$i18n.locale)
       return this.$i18n.locale
     },
   },
   methods: {
     setLocale(locale) {
-      this.$i18n.locale = locale
-      this.showList = false
+      // The emitted value can be either the full item object or the locale string.
+      // Accept both formats to avoid runtime errors.
+      const lang = typeof locale === "object" && locale !== null ? locale.value : locale
+      this.$i18n.locale = lang
+      this.$refs.popoverList.$refs.popover.close()
     },
   },
   components: {
     CustomSelect,
+    PopoverList,
   },
 }
 </script>

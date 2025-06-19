@@ -13,6 +13,7 @@ export default {
   namespaced: true,
   state: {
     categories: [],
+    exploreSelectedTags: [],
     tags: [],
     loading: false,
     error: null,
@@ -20,6 +21,10 @@ export default {
   mutations: {
     setCategories(state, categories) {
       state.categories = categories
+    },
+    setExploreSelectedTags(state, tags) {
+      console.log("[tags store] mutation setExploreSelectedTags", tags)
+      state.exploreSelectedTags = tags
     },
     clearTags(state) {
       state.tags = []
@@ -46,6 +51,10 @@ export default {
     },
     getTagById: (state) => (id) => {
       return state.tags.find((tag) => tag._id === id)
+    },
+    getExploreSelectedTags: (state) => state.exploreSelectedTags,
+    isExploreSelectedTag: (state) => (tagId) => {
+      return state.exploreSelectedTags.some((tag) => tag._id === tagId)
     },
   },
   actions: {
@@ -200,6 +209,20 @@ export default {
       } finally {
         commit("setLoading", false)
       }
+    },
+    setExploreSelectedTags({ commit }, tags) {
+      console.log("[tags store] setExploreSelectedTags", tags)
+      commit("setExploreSelectedTags", tags)
+    },
+    addExploreSelectedTag({ commit, state }, tag) {
+      console.log("[tags store] addExploreSelectedTag", tag)
+      commit("setExploreSelectedTags", [...state.exploreSelectedTags, tag])
+      console.log("addExploreSelectedTag", state.exploreSelectedTags)
+    },
+    removeExploreSelectedTag({ commit, state }, tag) {
+      console.log("[tags store] removeExploreSelectedTag", tag)
+      commit("setExploreSelectedTags", state.exploreSelectedTags.filter((t) => t._id !== tag._id))
+      console.log("removeExploreSelectedTag", state.exploreSelectedTags)
     },
   },
 }

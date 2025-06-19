@@ -1,7 +1,7 @@
 <template>
   <div class="media-explorer-menu-labels">
     <MediaExplorerItemTagBox
-      :selected-tags="selectedTagsAsIds"
+      :selected-tags="selectedTags"
       @tag-click="handleTagClick" />
   </div>
 </template>
@@ -15,14 +15,10 @@ export default {
   components: {
     MediaExplorerItemTagBox,
   },
-  data() {
-    return {
-      selectedTags: [],
-    }
-  },
   computed: {
     ...mapGetters("tags", {
       tags: "getTags",
+      selectedTags: "getExploreSelectedTags",
     }),
     selectedTagsAsIds() {
       return this.selectedTags.map((tag) => tag._id)

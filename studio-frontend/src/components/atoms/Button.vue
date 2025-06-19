@@ -58,7 +58,7 @@
             v-else-if="avatar || avatarColor || avatarText"
             class="avatar"
             :text="avatarText"
-            :color="avatarColor"
+            :color="avatarColor || color"
             :src="avatar"
             :size="avatarSize" />
         </span>

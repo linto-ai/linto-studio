@@ -6,7 +6,7 @@
       :error="error"
       :search-value="search"
       :enable-pagination="false"
-      :selected-tag-ids="selectedTags.map((tag) => tag._id)"
+      :selected-tag-ids="selectedTagIds"
       @search="handleSearch"
       class="explore-next__media-explorer relative">
       <template v-slot:before>
@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex"
+import { mapMutations, mapGetters } from "vuex"
 
 import LayoutV2 from "@/layouts/v2-layout.vue"
 import SidebarFilters from "@/components/SidebarFilters.vue"
@@ -87,7 +87,6 @@ export default {
       loadingConversations: false,
       page: 0,
       initialPage: 0,
-      selectedTags: [],
       error: null,
       observer: null,
       hasMoreItems: true,
@@ -105,22 +104,47 @@ export default {
     }
   },
   mixins: [debounceMixin, conversationListOrgaMixin],
+  computed: {
+    ...mapGetters("tags", ["getExploreSelectedTags"]),
+    selectedTags() {
+      return this.getExploreSelectedTags
+    },
+    selectedTagIds() {
+      return this.$store.state.tags.exploreSelectedTags.map((t) => t._id)
+    },
+  },
   async mounted() {
     this.options.favorites = this.favorites
     this.options.shared = this.shared
     await this.initPageFromUrl()
     this.setupIntersectionObserver()
     this.setupScrollListener()
+
+    // Debug: subscribe to store mutations related to tag selection
+    this._unsubscribeTagStore = this.$store.subscribe((mutation, state) => {
+      if (mutation.type === "tags/setExploreSelectedTags" || mutation.type === "setExploreSelectedTags") {
+        this.$nextTick(() => {
+          this.resetSearch()
+        })
+      }
+    })
   },
   beforeDestroy() {
     if (this.observer) {
       this.observer.disconnect()
     }
     this.cleanupScrollListener()
+    if (this._unsubscribeTagStore) {
+      this._unsubscribeTagStore()
+    }
   },
   watch: {
-    selectedTags() {
-      this.resetSearch()
+    selectedTags: {
+      handler() {
+        this.resetSearch()
+      },
+      deep: true,
+      immediate: false,
     },
     page(newPage) {
       this.updatePageUrl(newPage)
@@ -157,7 +181,10 @@ export default {
       if (tagsParam && tagsParam.trim().length > 0) {
         const tagIds = tagsParam.split(",").filter((id) => id.trim())
         // Convert tag IDs to tag objects - assuming tags are available in store
-        this.selectedTags = tagIds.map((id) => ({ _id: id }))
+        this.$store.dispatch(
+          "tags/setExploreSelectedTags",
+          tagIds.map((id) => ({ _id: id })),
+        )
       }
 
       // Handle search parameter
@@ -215,8 +242,8 @@ export default {
       }
 
       // Keep tags in URL if present
-      if (this.selectedTags.length > 0) {
-        const tagIds = this.selectedTags.map((tag) => tag._id).join(",")
+      if (this.selectedTagIds.length > 0) {
+        const tagIds = this.selectedTagIds.join(",")
         url.searchParams.set("tags", tagIds)
       } else {
         url.searchParams.delete("tags")
@@ -234,8 +261,8 @@ export default {
       }
 
       // Keep tags in URL if present
-      if (this.selectedTags.length > 0) {
-        const tagIds = this.selectedTags.map((tag) => tag._id).join(",")
+      if (this.selectedTagIds.length > 0) {
+        const tagIds = this.selectedTagIds.join(",")
         url.searchParams.set("tags", tagIds)
       } else {
         url.searchParams.delete("tags")
@@ -272,14 +299,15 @@ export default {
         (filter) => filter.key === "titleConversation",
       )?.value
 
+      const tagIds = this.selectedTagIds
       try {
         if (
-          (!this.selectedTags || this.selectedTags.length == 0) &&
+          tagIds.length === 0 &&
           filters.length == 0
         ) {
           if (this.options.favorites) {
             res = await apiGetFavoritesConversations(
-              this.selectedTags.map((tag) => tag._id),
+              tagIds,
               textFilter,
               titleFilter,
               page,
@@ -290,7 +318,7 @@ export default {
           } else {
             if (this.options.shared) {
               res = await apiGetConversationsSharedWith(
-                this.selectedTags.map((tag) => tag._id),
+                tagIds,
                 textFilter,
                 titleFilter,
                 page,
@@ -312,7 +340,7 @@ export default {
         } else {
           res = await apiGetConversationsByTags(
             this.currentOrganizationScope,
-            this.selectedTags.map((tag) => tag._id),
+            tagIds,
             textFilter,
             titleFilter,
             page,
@@ -376,8 +404,8 @@ export default {
       url.searchParams.delete("search")
 
       // Keep tags in URL if present
-      if (this.selectedTags.length > 0) {
-        const tagIds = this.selectedTags.map((tag) => tag._id).join(",")
+      if (this.selectedTagIds.length > 0) {
+        const tagIds = this.selectedTagIds.join(",")
         url.searchParams.set("tags", tagIds)
       }
 
@@ -430,7 +458,9 @@ export default {
       this.search = search
       this.filters = filters
       this.mode = "search"
-      this.resetSearch(filters, true)
+      this.$nextTick(() => {
+        this.resetSearch(filters, true)
+      })
     },
 
     async handleLoadMore() {
@@ -466,11 +496,9 @@ export default {
         if (!container) return
 
         this.scrollContainer = container
-        this.scrollContainer.addEventListener(
-          "scroll",
-          this.onScroll,
-          { passive: true },
-        )
+        this.scrollContainer.addEventListener("scroll", this.onScroll, {
+          passive: true,
+        })
       })
     },
 

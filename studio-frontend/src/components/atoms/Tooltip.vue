@@ -3,6 +3,7 @@
     :position="position"
     content-class="tooltip-popover-container"
     trigger="hover"
+    close-on-click
   >
     <template #trigger>
       <span :class="['tooltip-trigger', mode]">
@@ -104,9 +105,8 @@ export default {
 .tooltip-content {
   border-radius: 2px;
   white-space: nowrap;
-  pointer-events: none; /* Tooltip should not be interactive */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  padding: 2px; /* This creates the "border" effect */
+  pointer-events: none;
+  padding: 1px;
 }
 
 .tooltip-content__inner {

@@ -817,7 +817,7 @@ router.beforeEach(async (to, from, next) => {
 
     // Fetch user data
     routerDebug("Fetching user data")
-    const reqUser = await authGuards.checkUserAuth(next, to, from)
+    await authGuards.checkUserAuth(next, to, from)
     routerDebug("User fetched")
 
     // Fetch organizations

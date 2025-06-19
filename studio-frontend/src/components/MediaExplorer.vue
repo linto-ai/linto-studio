@@ -16,10 +16,8 @@
         :is-select-all="isSelectAll"
         :sticky-top-offset="stickyTopOffset"
         :all-medias="medias"
-        :selected-tag-ids="activeSelectedTagIds"
         :search-value="searchValue"
         @select-all="handleSelectAll"
-        @filter-change="handleFilterChange"
         @search="handleSearch">
         <template #actions>
           <slot name="header-actions" />
@@ -59,6 +57,8 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex"
+
 import MediaExplorerHeader from "./MediaExplorerHeader.vue"
 import MediaExplorerItem from "./MediaExplorerItem.vue"
 import MediaExplorerAppUpload from "./MediaExplorerAppUpload.vue"
@@ -119,24 +119,22 @@ export default {
       type: String,
       default: "",
     },
-    // Selected tag IDs passed from parent (optional)
-    selectedTagIds: {
-      type: Array,
-      default: () => [],
-    },
   },
   computed: {
     selectedMedias() {
       return this.$store.state.inbox.selectedMedias
     },
+    ...mapGetters("tags", ["getExploreSelectedTags"]),
+    selectedTagIds() {
+      return this.getExploreSelectedTags.map((t) => t._id)
+    },
     totalPages() {
       return Math.ceil(this.filteredMedias.length / this.pageSize)
     },
-    // Use prop selectedTagIds if provided, otherwise use internal state
+    // Replace old selectedTagIds getter with prop-based value
     activeSelectedTagIds() {
-      return this.selectedTagIds.length > 0
-        ? this.selectedTagIds
-        : this.internalSelectedTagIds
+      // Use the prop provided by parent as the single source of truth
+      return this.selectedTagIds
     },
     filteredMedias() {
       // Filter medias based on selected tags
@@ -163,21 +161,14 @@ export default {
       isSelectAll: false,
       observer: null,
       search: "",
-      internalSelectedTagIds: [], // Internal state when not managed by parent
+      // Internal state no longer required for tag selection
     }
   },
   mounted() {
+    // Remove initialization of filters from URL when parent manages tags
     if (this.enablePagination) {
       this.setupIntersectionObserver()
       this.initializePageFromURL()
-      // Only initialize filters from URL if pagination is enabled (meaning we manage our own state)
-      this.initializeFiltersFromURL()
-    } else {
-      // If pagination is disabled, the parent manages filters and passes them via props
-      // We still initialize filters if no selected-tag-ids prop is provided for backward compatibility
-      if (this.selectedTagIds.length === 0) {
-        this.initializeFiltersFromURL()
-      }
     }
   },
   beforeDestroy() {
@@ -268,30 +259,6 @@ export default {
       }
     },
 
-    initializeFiltersFromURL() {
-      const urlParams = new URLSearchParams(window.location.search)
-
-      // Initialize tag filters from URL
-      const tagsParam = urlParams.get("tags")
-      if (tagsParam) {
-        const tagIds = tagsParam.split(",").filter((id) => id.trim())
-        if (tagIds.length > 0) {
-          // Only set internal state if parent is not managing the tags
-          if (this.selectedTagIds.length === 0) {
-            this.internalSelectedTagIds = tagIds
-          }
-          // Emit filter change event after component is mounted
-          this.$nextTick(() => {
-            this.$emit("filter-change", {
-              selectedTagIds: tagIds,
-              filteredCount: this.filteredMedias.length,
-              totalCount: this.medias.length,
-            })
-          })
-        }
-      }
-    },
-
     updateFiltersInURL() {
       // Don't update URL if parent is managing pagination and filters
       if (!this.enablePagination) return
@@ -308,7 +275,6 @@ export default {
     },
 
     updateURLPage(page) {
-      console.log("updateURLPage", page)
       const validPage = Math.max(1, Math.min(page, this.totalPages))
 
       if (validPage !== this.page && validPage <= this.totalPages) {
@@ -326,39 +292,8 @@ export default {
       }
     },
 
-    handleFilterChange(newTagIds) {
-      // Only update internal state if parent is not managing the tags
-      if (this.selectedTagIds.length === 0) {
-        this.internalSelectedTagIds = [...newTagIds]
-      }
-
-      // Update URL with new filters only if we manage our own state
-      if (this.enablePagination) {
-        this.updateFiltersInURL()
-
-        // Reset to first page when filters change
-        this.updateURLPage(1)
-      }
-
-      // Clear current selection when filter changes
-      this.$store.commit("inbox/clearSelectedMedias")
-      this.isSelectAll = false
-
-      // Emit filter change event for parent components
-      this.$emit("filter-change", {
-        selectedTagIds: newTagIds,
-        filteredCount: this.filteredMedias.length,
-        totalCount: this.medias.length,
-      })
-
-      // Re-setup intersection observer for new filtered list
-      if (this.enablePagination) {
-        this.$nextTick(() => {
-          this.cleanupObserver()
-          this.setupIntersectionObserver()
-          this.observeMediaItems()
-        })
-      }
+    handleSearch(search, filters) {
+      this.$emit("search", search, filters)
     },
 
     cleanupObserver() {
@@ -366,10 +301,6 @@ export default {
         this.observer.disconnect()
         this.observer = null
       }
-    },
-
-    handleSearch(search, filters) {
-      this.$emit("search", search, filters)
     },
   },
 }

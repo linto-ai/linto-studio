@@ -7,16 +7,21 @@
         </BurgerMenu>
       </aside>
       <main class="v2-layout__main">
-        <HeaderBar>
-          <template v-slot:header-bar v-if="hasHeaderBarSlot">
-            <slot name="header-bar"></slot>
+        <HeaderBar :hasHeaderBarSlot="hasHeaderBarSlot">
+          <template v-if="!hasHeaderBarSlot" v-slot:header-bar-left>
+            <Breadcrumb />
+          </template>
+          <template v-if="!hasHeaderBarSlot" v-slot:header-bar-right>
+            <LocalSwitcher class="local-switcher"></LocalSwitcher>
+          </template>
+          <template v-slot:breadcrumb>
+            <Breadcrumb>
+              <template v-slot:breadcrumb-actions>
+                <slot name="breadcrumb-actions"></slot>
+              </template>
+            </Breadcrumb>
           </template>
         </HeaderBar>
-        <Breadcrumb>
-          <template v-slot:breadcrumb-actions>
-            <slot name="breadcrumb-actions"></slot>
-          </template>
-        </Breadcrumb>
         <div
           :class="[
             'flex',
@@ -41,6 +46,7 @@ import BurgerMenu from "@/components-mobile/BurgerMenu.vue"
 import OrganizationSidebar from "@/components/OrganizationSidebar.vue"
 import Breadcrumb from "@/components/atoms/Breadcrumb.vue"
 import HeaderBar from "@/components/HeaderBar.vue"
+import LocalSwitcher from "@/components/LocalSwitcher.vue"
 
 export default {
   props: {
@@ -87,6 +93,7 @@ export default {
     OrganizationSidebar,
     BurgerMenu,
     HeaderBar,
+    LocalSwitcher,
   },
 }
 </script>
@@ -160,5 +167,9 @@ export default {
 .scrollable {
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+.local-switcher {
+  margin-right: 0.5em;
 }
 </style>

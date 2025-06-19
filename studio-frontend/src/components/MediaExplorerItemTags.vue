@@ -1,10 +1,14 @@
 <template>
   <span
     class="media-explorer-item-tags"
-    :class="{ 'media-explorer-item-tags--empty': mediatags.length === 0 }"
     @click.stop>
     <span class="media-explorer-item-tags__actions">
-      <Popover trigger="click" :track-mouse="false" position="bottom" overlay width="280px">
+      <Popover
+        trigger="click"
+        :track-mouse="false"
+        position="bottom"
+        overlay
+        width="280px">
         <template #trigger>
           <Button
             class="neutral outline icon-only"
@@ -15,22 +19,25 @@
             @mouseleave.prevent />
         </template>
         <template #content>
-          <MediaExplorerItemTagBox 
-            :media-id="mediaId" 
+          <MediaExplorerItemTagBox
+            :media-id="mediaId"
             :show-manage-button="false" />
         </template>
       </Popover>
     </span>
-    <span v-if="mediatags.length === 0" class="media-explorer-item-tags__empty">
-      add tags
-    </span>
     <span v-if="mediatags.length > 0" class="media-explorer-item-tags__list">
-      <Tooltip :key="`${mediaId}-tag-${tag._id}`" v-for="tag in mediatags" :text="tag.name">
+      <Tooltip
+        :key="`${mediaId}-tag-${tag._id}`"
+        v-for="tag in mediatags"
+        :text="tag.name">
         <ChipTag
           :name="loadingTagId === tag._id ? '' : tag.name"
           :emoji="tag.emoji"
           :color="getTagColor(tag)"
-          :class="{ 'is-loading': loadingTagId === tag._id }">
+          :class="{ 'is-loading': loadingTagId === tag._id }"
+          clickable
+          @click="handleTagClick(tag)"
+        >
           <span
             v-if="loadingTagId === tag._id"
             class="chip-tag__spinner"></span>
@@ -59,6 +66,10 @@ export default {
     mediaId: {
       type: String,
       required: true,
+    },
+    hovered: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -117,28 +128,12 @@ export default {
     getTagColor(tag) {
       return tag.color || "var(--neutral-20)"
     },
-    async handleTagClick(tag) {
-      if (this.loadingTagId) return
-      this.loadingTagId = tag._id
-
-      const isTagInMedia = this.mediatagsIds.includes(tag._id)
-
-      try {
-        if (isTagInMedia) {
-          console.log("remove tag", tag._id)
-          await this.$store.dispatch("tags/removeTagFromMedia", {
-            mediaId: this.mediaId,
-            tagId: tag._id,
-          })
-        } else {
-          console.log("add tag", tag, tag._id)
-          await this.$store.dispatch("tags/addTagToMedia", {
-            mediaId: this.mediaId,
-            tagId: tag._id,
-          })
-        }
-      } finally {
-        this.loadingTagId = null
+    handleTagClick(tag) {
+      console.log("handleTagClick", tag)
+      if (this.$store.getters["tags/isExploreSelectedTag"](tag._id)) {
+        this.$store.dispatch("tags/removeExploreSelectedTag", tag)
+      } else {
+        this.$store.dispatch("tags/addExploreSelectedTag", tag)
       }
     },
     handleTagMore(event) {
@@ -209,6 +204,11 @@ export default {
 
   &--empty {
     height: 18px;
+    display: none !important;
+
+    &--hovered {
+      display: block !important;
+    }
   }
 }
 

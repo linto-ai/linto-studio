@@ -39,12 +39,13 @@
             
             <div 
               v-for="tag in availableTags"
-              :key="'filter-option-' + tag._id"
+              :key="'tag-selected-' + tag._id"
               class="tag-option"
               :class="{ active: isTagSelected(tag._id) }"
               @click="toggleTagFilter(tag._id)">
               <div class="tag-visual">
-                <span 
+                <span
+                  v-if="tag.emoji"
                   class="tag-emoji"
                   :style="{ backgroundColor: getTagColor(tag) }">
                   {{ displayTagEmoji(tag) }}
@@ -63,16 +64,17 @@
 
     <div class="selected-filters" v-if="selectedTagIds.length > 0">
       <Tooltip
-        v-for="tagId in selectedTagIds"
-        :key="'filter-tag-' + tagId"
-        :text="getTagTooltip(getTagById(tagId))"
+        v-for="tag in selectedTagIds"
+        :key="'filter-tag-' + tag._id"
+        :text="getTagTooltip(tag)"
         position="bottom"
-        :border-color="getTagColor(getTagById(tagId))">
+        :border-color="getTagColor(tag)">
         <span
           class="filter-tag"
-          :style="{ backgroundColor: getTagColor(getTagById(tagId)) }"
-          @click="removeTagFilter(tagId)">
-          <span class="filter-tag__name">{{ displayTagEmoji(getTagById(tagId)) }}</span>
+          :style="{ backgroundColor: getTagColor(tag) }"
+          @click="removeTagFilter(tag._id)">
+          <span v-if="tag.emoji" class="filter-tag__name">{{ displayTagEmoji(tag) }}</span>
+          <span class="filter-tag__name">{{ tag.name }}</span>
           <span class="filter-tag__delete">
             <ph-icon
               name="x"
@@ -94,18 +96,13 @@
 </template>
 
 <script>
-import { mapState } from "vuex"
+import { mapState, mapActions } from "vuex"
 
 export default {
   name: "MediaExplorerTagsSelector",
   props: {
     // Array of media objects to analyze for tag counts
     medias: {
-      type: Array,
-      default: () => [],
-    },
-    // Currently selected tag IDs for filtering
-    selectedTagIds: {
       type: Array,
       default: () => [],
     },
@@ -118,6 +115,7 @@ export default {
   computed: {
     ...mapState("tags", {
       allTags: (state) => state.tags,
+      selectedTagIds: (state) => state.exploreSelectedTags,
     }),
     
     // Show all available tags, not just those with media
@@ -139,6 +137,11 @@ export default {
     },
   },
   methods: {
+    ...mapActions("tags", [
+      "addExploreSelectedTag",
+      "removeExploreSelectedTag",
+      "setExploreSelectedTags",
+    ]),
     getTagById(tagId) {
       return this.allTags.find(tag => tag._id === tagId)
     },
@@ -173,34 +176,31 @@ export default {
     },
     
     isTagSelected(tagId) {
-      return this.selectedTagIds && this.selectedTagIds.includes(tagId)
+      return this.selectedTagIds.some(tag => tag._id === tagId)
     },
     
     toggleTagFilter(tagId) {
-      const newSelectedTags = [...this.selectedTagIds]
-      const index = newSelectedTags.indexOf(tagId)
-      
-      if (index > -1) {
-        // Remove tag
-        newSelectedTags.splice(index, 1)
+      console.log("[TagsSelector] toggleTagFilter", { tagId, selectedTagIds: this.selectedTagIds.map(t=>t._id) })
+      if (this.isTagSelected(tagId)) {
+        const tagObj = this.getTagById(tagId) || { _id: tagId }
+        console.log("[TagsSelector] remove tag", tagObj)
+        this.removeExploreSelectedTag(tagObj)
       } else {
-        // Add tag
-        newSelectedTags.push(tagId)
+        const tagObj = this.getTagById(tagId) || { _id: tagId }
+        console.log("[TagsSelector] add tag", tagObj)
+        this.addExploreSelectedTag(tagObj)
       }
-      
-      this.$emit("update:selectedTagIds", newSelectedTags)
-      this.$emit("filter-change", newSelectedTags)
     },
     
     removeTagFilter(tagId) {
-      const newSelectedTags = this.selectedTagIds.filter(id => id !== tagId)
-      this.$emit("update:selectedTagIds", newSelectedTags)
-      this.$emit("filter-change", newSelectedTags)
+      console.log("[TagsSelector] removeTagFilter", tagId)
+      const tagObj = this.getTagById(tagId) || { _id: tagId }
+      this.removeExploreSelectedTag(tagObj)
     },
     
     clearAllFilters() {
-      this.$emit("update:selectedTagIds", [])
-      this.$emit("filter-change", [])
+      console.log("[TagsSelector] clearAllFilters")
+      this.setExploreSelectedTags([])
     },
   },
 }

@@ -31,9 +31,7 @@
               <MediaExplorerTagsSelector
                 class="label"
                 :medias="allMedias"
-                :search-value="search"
-                :selected-tag-ids="selectedTagIds"
-                @filter-change="handleFilterChange" />
+                :search-value="search" />
 
             </div>
 
@@ -91,11 +89,6 @@ export default {
       type: Array,
       default: () => [],
     },
-    // Currently selected tag IDs for filtering
-    selectedTagIds: {
-      type: Array,
-      default: () => [],
-    },
     // Initial search value from URL
     searchValue: {
       type: String,
@@ -132,10 +125,6 @@ export default {
   methods: {
     handleSelectAll() {
       this.$emit("select-all")
-    },
-
-    handleFilterChange(selectedTagIds) {
-      this.$emit("filter-change", selectedTagIds)
     },
 
     handleSearch() {

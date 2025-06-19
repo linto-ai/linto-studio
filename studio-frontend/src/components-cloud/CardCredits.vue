@@ -38,12 +38,9 @@ export default {
 
 <style lang="scss" scoped>
 .card-credits {
-    margin: 1rem;
-    background-color: var(--primary-soft);
-    border-radius: 4px;
-    padding: .5em;
-    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
-    border: 1px solid var(--primary-color);
+    background-color: var(--neutral-10);
+    padding: 1em;
+    border-top: 1px solid var(--neutral-40);
 
     &__content__label {
         font-size: 0.9rem;

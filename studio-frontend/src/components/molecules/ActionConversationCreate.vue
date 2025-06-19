@@ -3,6 +3,7 @@
     <!-- Create Conversation Button (old fashion) -->
     <Button
       v-if="!isPageConversationCreate"
+      block
       color="primary"
       variant="solid"
       size="md"
@@ -10,18 +11,16 @@
       @click="handleCreateConversation">
       {{ label }}
     </Button>
-    <div v-else>
-      <div class="conversation-create-actions button-group">
-        <Button
-          color="neutral"
-          variant="outline"
-          size="sm"
-          icon="x-circle"
-          @click="handleCancelConversation">
-          Cancel
-        </Button>
-      </div>
-    </div>
+    <Button
+      v-else
+      block
+      color="neutral"
+      variant="outline"
+      size="md"
+      icon="x-circle"
+      @click="handleCancelConversation">
+      Annuler
+    </Button>
 
     <!-- Main Action Selection Modal -->
     <Modal

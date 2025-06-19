@@ -1,7 +1,7 @@
 <template>
   <nav
     class="breadcrumb"
-    v-if="breadcrumbItems.length > 1"
+    v-if="breadcrumbItems.length > 0"
     aria-label="Breadcrumb">
     <ol class="breadcrumb-list">
       <li
@@ -40,7 +40,13 @@ export default {
 
   data() {
     return {
-      breadcrumbItems: [],
+      breadcrumbItems: [
+        {
+          name: "Home",
+          label: "Home",
+          to: "/",
+        },
+      ],
       entityCache: new Map(),
     }
   },
@@ -275,7 +281,6 @@ export default {
     padding: 0;
     flex-wrap: wrap;
   }
-
   &-item {
     display: flex;
     align-items: center;

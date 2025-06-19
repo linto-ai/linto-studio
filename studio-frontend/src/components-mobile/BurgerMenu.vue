@@ -18,7 +18,7 @@
 
     <div>
       <div class="burger-menu__header">
-        <div class="burger-menu__header__title">
+        <!--<div class="burger-menu__header__title">
           <div class="flex row align-center gap-medium flex1">
             <img :src="logo" style="height: 3rem" />
             <h1 id="main-title">
@@ -26,10 +26,11 @@
             </h1>
           </div>
         </div>
-        <LocalSwitcher class="local-switcher"></LocalSwitcher>
+        <LocalSwitcher class="local-switcher"></LocalSwitcher>-->
+        <UserAccountSelector />
       </div>
       <div class="user-account-selector-container">
-        <UserAccountSelector />
+        <ActionConversationCreate />
       </div>
 
       <fieldset v-if="!backoffice">
@@ -97,6 +98,7 @@ import LocalSwitcher from "@/components/LocalSwitcher.vue"
 import CloudCardCredits from "@/components-cloud/CardCredits.vue"
 import MediaExplorerMenu from "@/components/MediaExplorerMenu.vue"
 import BackofficeSidebar from "@/components/BackofficeSidebar.vue"
+import ActionConversationCreate from "@/components/molecules/ActionConversationCreate.vue"
 
 export default {
   mixins: [orgaRoleMixin, organizationPermissionsMixin],
@@ -157,6 +159,7 @@ export default {
     CloudCardCredits,
     MediaExplorerMenu,
     BackofficeSidebar,
+    ActionConversationCreate,
   },
 }
 </script>
@@ -171,10 +174,14 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 1em;
+    padding: 0 .5em;
     background-color: white;
     height: 56px;
     box-shadow: var(--shadow-block);
+
+    & > * {
+      flex: 1;
+    }
   }
 
   .burger-menu__header__title {

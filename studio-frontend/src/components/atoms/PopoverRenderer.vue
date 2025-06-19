@@ -5,6 +5,7 @@
     ref="wrapper"
     @mouseenter="controller.onContentEnter"
     @mouseleave="controller.onContentLeave"
+    @click="handleClickInside"
   >
     <div class="popover-content" :class="[position, contentClass]" ref="content" :style="computedContentStyle">
       <VNodeRenderer :nodes="renderedSlots" />
@@ -98,6 +99,24 @@ export default {
         this.computedWidth = this.widthRef.offsetWidth + 'px'
       } else {
         this.computedWidth = this.width
+      }
+    },
+    /**
+     * Close the popover when clicking inside its content if the parent Popover
+     * has the `closeOnClick` option enabled. This is particularly useful for
+     * tooltips opened on hover that should disappear once the user interacts
+     * with their content (e.g. selecting a tag).
+     */
+    handleClickInside(event) {
+      if (
+        this.controller &&
+        this.controller.$props &&
+        this.controller.$props.closeOnClick === true
+      ) {
+        // Prevent the click from bubbling further to avoid unintended side-effects
+        // then ask the parent Popover to close itself.
+        event.stopPropagation()
+        this.controller.close()
       }
     },
     closeOnClickOutside() {
