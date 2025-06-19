@@ -177,7 +177,6 @@ export default {
           },
           { root: true },
         )
-        throw error
       }
     },
   },

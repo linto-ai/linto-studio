@@ -628,7 +628,9 @@
       "edit_subtitles": "Sous-titres",
       "export": "publication",
       "delete": "Supprimer"
-    }
+    },
+    "delete": "Supprimer",
+    "share": "Partager"
   },
   "modal": {
     "cancel": "Annuler",

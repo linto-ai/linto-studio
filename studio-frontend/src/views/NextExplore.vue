@@ -51,7 +51,7 @@
 
 <script>
 import { mapMutations, mapGetters } from "vuex"
-
+import { bus } from "@/main.js"
 import LayoutV2 from "@/layouts/v2-layout.vue"
 import SidebarFilters from "@/components/SidebarFilters.vue"
 import MediaExplorer from "@/components/MediaExplorer.vue"
@@ -59,7 +59,6 @@ import { debounceMixin } from "@/mixins/debounce"
 import { conversationListOrgaMixin } from "@/mixins/conversationListOrga"
 import { fromConversations } from "@/store/inbox"
 import ActionConversationCreate from "@/components/molecules/ActionConversationCreate.vue"
-
 import {
   apiGetFavoritesConversations,
   apiGetConversationsByTags,
@@ -122,12 +121,17 @@ export default {
 
     // Debug: subscribe to store mutations related to tag selection
     this._unsubscribeTagStore = this.$store.subscribe((mutation, state) => {
-      if (mutation.type === "tags/setExploreSelectedTags" || mutation.type === "setExploreSelectedTags") {
+      if (
+        mutation.type === "tags/setExploreSelectedTags" ||
+        mutation.type === "setExploreSelectedTags"
+      ) {
         this.$nextTick(() => {
           this.resetSearch()
         })
       }
     })
+
+    bus.$on("medias/delete", this.onMediasDeleted)
   },
   beforeDestroy() {
     if (this.observer) {
@@ -137,6 +141,7 @@ export default {
     if (this._unsubscribeTagStore) {
       this._unsubscribeTagStore()
     }
+    bus.$off("medias/delete", this.onMediasDeleted)
   },
   watch: {
     selectedTags: {
@@ -171,6 +176,11 @@ export default {
       "appendMedias",
       "clearMedias",
     ]),
+    onMediasDeleted(mediaIds) {
+      this.conversations = this.conversations.filter(
+        (m) => !mediaIds.includes(m._id),
+      )
+    },
     async initPageFromUrl() {
       const urlParams = new URLSearchParams(window.location.search)
       const pageParam = urlParams.get("page")
@@ -301,10 +311,7 @@ export default {
 
       const tagIds = this.selectedTagIds
       try {
-        if (
-          tagIds.length === 0 &&
-          filters.length == 0
-        ) {
+        if (tagIds.length === 0 && filters.length == 0) {
           if (this.options.favorites) {
             res = await apiGetFavoritesConversations(
               tagIds,

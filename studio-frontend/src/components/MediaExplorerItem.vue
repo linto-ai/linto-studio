@@ -294,8 +294,8 @@ export default {
 .media-explorer-item {
   margin: 0.1rem;
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  //flex-direction: column;
+  //gap: 1rem;
   border: 1px solid var(--neutral-10);
   padding: 0.5rem;
   position: relative;

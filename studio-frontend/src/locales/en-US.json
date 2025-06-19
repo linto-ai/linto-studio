@@ -623,6 +623,16 @@
     "source": "Source",
     "preview": "Preview"
   },
+  "media_explorer": {
+    "line": {
+      "edit_transcription": "Transcription",
+      "edit_subtitles": "Subtitles",
+      "export": "Publish",
+      "delete": "Delete"
+    },
+    "delete": "Delete",
+    "share": "Share"
+  },
   "modal": {
     "cancel": "Cancel",
     "close_title": "Close modal",

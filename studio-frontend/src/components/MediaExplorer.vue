@@ -19,7 +19,19 @@
         @select-all="handleSelectAll"
         @search="handleSearch">
         <template #actions>
-          <slot name="header-actions" />
+          <div class="flex gap-small" v-if="selectedMedias.length > 0">
+            <Button
+              :label="$t('media_explorer.share')"
+              icon="share-network"
+              variant="outline" />
+            <Button
+              @click="showDeleteModal = true"
+              :label="$t('media_explorer.delete')"
+              color="tertiary"
+              icon="trash"
+              variant="outline" />
+            <slot name="header-actions" />
+          </div>
         </template>
       </MediaExplorerHeader>
 
@@ -52,6 +64,10 @@
         <slot name="after" />
       </div>
     </div>
+    <ModalDeleteConversations
+      :visible="showDeleteModal"
+      :medias="selectedMedias"
+      @close="showDeleteModal = false" />
   </div>
 </template>
 
@@ -63,6 +79,7 @@ import MediaExplorerItem from "./MediaExplorerItem.vue"
 import MediaExplorerAppUpload from "./MediaExplorerAppUpload.vue"
 import Modal from "./molecules/Modal.vue"
 import Button from "./atoms/Button.vue"
+import ModalDeleteConversations from "./ModalDeleteConversations.vue"
 
 export default {
   name: "MediaExplorer",
@@ -72,6 +89,7 @@ export default {
     MediaExplorerAppUpload,
     Modal,
     Button,
+    ModalDeleteConversations,
   },
   props: {
     medias: {
@@ -160,6 +178,7 @@ export default {
       isSelectAll: false,
       observer: null,
       search: "",
+      showDeleteModal: false,
       // Internal state no longer required for tag selection
     }
   },
