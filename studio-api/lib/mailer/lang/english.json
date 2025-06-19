@@ -34,6 +34,13 @@
     "subject": "Revocation of Your Rights in an Organization",
     "email_info": "You have been removed from the organization {{orgaName}} on the LinTO Studio platform."
   },
+  "verify_address_email": {
+    "title": "Email Address Verification",
+    "subject": "Email Address Verification",
+    "email_info": "You have recently changed your email address on the LinTO Studio platform.",
+    "email_verification_cta": "Click the link below to verify that you are the rightful owner of the email address you provided.",
+    "email_expiry_notice": "This link is valid for 30 minutes."
+  },
   "share_conversation": {
     "title": "Conversation Sharing",
     "subject": "Conversation Sharing",
@@ -54,22 +61,15 @@
     "email_shared_by": "You have received an update of rights on a media transcription on the LinTO Studio platform from {{sharedByEmail}}.",
     "email_cta_intro": "Click the link to access the shared transcription:"
   },
-  "unshare_conversation": {
-    "title": "Revocation of Your Rights on a Conversation",
-    "subject": "Revocation of Your Rights on a Conversation",
-    "email_revocation": "Revocation of your rights on the media {{name}}."
-  },
-  "verify_address_email": {
-    "title": "Email Address Verification",
-    "subject": "Email Address Verification",
-    "email_info": "You have recently changed your email address on the LinTO Studio platform.",
-    "email_verification_cta": "Click the link below to verify that you are the rightful owner of the email address you provided.",
-    "email_expiry_notice": "This link is valid for 30 minutes."
-  },
   "share_multiple_conversation_right": {
     "title": "Update of Your Rights on Multiple Conversations",
     "subject": "Update of Your Rights on Multiple Conversations",
     "email_shared_by": "You have received a media transcription on the LinTO Studio platform from {{sharedByEmail}}.",
     "email_cta_intro": "Click the links to access the shared transcriptions:"
+  },
+  "unshare_conversation": {
+    "title": "Revocation of Your Rights on a Conversation",
+    "subject": "Revocation of Your Rights on a Conversation",
+    "email_revocation": "Revocation of your rights on the media {{name}}."
   }
 }

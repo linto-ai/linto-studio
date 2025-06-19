@@ -1,7 +1,4 @@
-const TITLE_NAME = "LinTO Studio"
-
 module.exports = Object.freeze({
-  TITLE_NAME: TITLE_NAME,
   ACCOUNT_CREATED: {
     type: `send_account_created`,
     action: `account_created`,

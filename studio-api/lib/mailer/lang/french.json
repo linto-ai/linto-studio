@@ -11,6 +11,14 @@
     "email_tip": "Si vous n’avez plus accès à votre mot de passe, pensez à le mettre à jour “Mon Compte” > “Modifier le mot de passe”.",
     "email_ignore": "Si vous n’avez pas fait de demande de mot de passe oublié, vous pouvez ignorer cet email."
   },
+  "account_create_invite_organization": {
+    "title": "Invitation dans une organisation",
+    "subject": "Invitation dans une organisation",
+    "email_invitation": "Vous avez reçu une invitation à l'organisation {{orgaName}} sur la plateforme LinTO Studio de la part de {{sharedByEmail}}.",
+    "email_account_linking": "Utilisez le lien unique ci-après pour accéder à cette ressource et lier un compte à votre adresse e-mail qui l’identifie. N'oubliez pas de définir un mot de passe pour les connexions futures en allant dans \"Mon Compte\" > \"Modifier le mot de passe\".",
+    "email_expiry_notice": "Ce lien a une validité de 48h.",
+    "email_cta_intro": "Cliquez sur le lien pour accéder à votre compte :"
+  },
   "invite_organization": {
     "title": "Invitation dans une organisation",
     "subject": "Invitation dans une organisation",
@@ -33,21 +41,6 @@
     "email_verification_cta": "Cliquez sur ce lien ci-dessous pour vérifier que vous êtes bien le propriétaire de l'adresse email que vous avez renseigné.",
     "email_expiry_notice": "Ce lien a une validité de 30 minutes."
   },
-  "account_create_invite_organization": {
-    "title": "Invitation dans une organisation",
-    "subject": "Invitation dans une organisation",
-    "email_invitation": "Vous avez reçu une invitation à l'organisation {{orgaName}} sur la plateforme LinTO Studio de la part de {{sharedByEmail}}.",
-    "email_account_linking": "Utilisez le lien unique ci-après pour accéder à cette ressource et lier un compte à votre adresse e-mail qui l’identifie. N'oubliez pas de définir un mot de passe pour les connexions futures en allant dans \"Mon Compte\" > \"Modifier le mot de passe\".",
-    "email_expiry_notice": "Ce lien a une validité de 48h.",
-    "email_cta_intro": "Cliquez sur le lien pour accéder à votre compte :"
-  },
-  "share_multiple_conversation_right": {
-    "title": "Modification de vos droits sur plusieurs conversations",
-    "subject": "Modification de vos droits sur plusieurs conversations",
-    "email_shared_by": "Vous avez reçu une transcription de média sur la plateforme LinTO Studio de la part de {{sharedByEmail}}.",
-    "email_cta_intro": "Cliquez sur les liens pour accéder aux transcriptions partagées :"
-  },
-
   "share_conversation": {
     "title": "Partage de conversation",
     "subject": "Partage d'une conversation",
@@ -67,6 +60,12 @@
     "subject": "Modification de vos droits sur une conversation",
     "email_shared_by": "Vous avez reçu une mise à jour de droits sur une transcription de média sur la plateforme LinTO Studio de la part de {{sharedByEmail}}.",
     "email_cta_intro": "Cliquez sur le lien pour accéder à la transcription partagée :"
+  },
+  "share_multiple_conversation_right": {
+    "title": "Modification de vos droits sur plusieurs conversations",
+    "subject": "Modification de vos droits sur plusieurs conversations",
+    "email_shared_by": "Vous avez reçu une transcription de média sur la plateforme LinTO Studio de la part de {{sharedByEmail}}.",
+    "email_cta_intro": "Cliquez sur les liens pour accéder aux transcriptions partagées :"
   },
   "unshare_conversation": {
     "title": "Révocation de vos droits sur une conversation",
