@@ -1,7 +1,11 @@
 module.exports = Object.freeze({
   account_created: `
     <mj-text>{{account_created.email_message_intro}}</mj-text>
-    <mj-text><a href=\"{{link}}\" target=\"_blank\">{{link}}</a></mj-text>
+    <mj-text>
+      <a href="{{origin}}/magiclink-auth/{{magicId}}?type=account_create" target="_blank">
+        {{origin}}/magiclink-auth/{{magicId}}
+      </a>
+    </mj-text>
   `,
   reset_password: `
     <mj-text>{{reset_password.email_intro}}</mj-text>
@@ -17,7 +21,9 @@ module.exports = Object.freeze({
     <mj-text>{{share_conversation.email_shared_by}}</mj-text>
     <mj-text>{{share_conversation.email_cta_intro}}</mj-text>
     <mj-text>
-      <a href="{{link}}" target="_blank">{{link}}</a>
+      <a href="{{origin}}/interface/conversations/{{conversationId}}" target="_blank">
+        {{origin}}/interface/conversations/{{conversationId}}
+      </a>
     </mj-text>
   `,
   share_conversation_right_update: `

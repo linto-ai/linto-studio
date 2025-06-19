@@ -7,6 +7,8 @@ const mjMailFooter = require("./mj-footer")
 const mjMailStyle = require("./mj-style")
 
 module.exports = function (Type, payload) {
+  const mailPayload = mjMailBody(Type, payload)
+
   const mailContent = `
   <mjml>
     <mj-head>
@@ -14,12 +16,15 @@ module.exports = function (Type, payload) {
     </mj-head>
     <mj-body>
       ${mjMailHeader(Type)}
-      ${mjMailBody(Type, payload)}
+      ${mailPayload.body}
       ${mjMailFooter(Type, payload)}
     </mj-body>
   </mjml>
   `
+  const html = mjml2html(mailContent).html
 
-  const mail = mjml2html(mailContent).html
-  return mail
+  return {
+    title: mailPayload.title,
+    html,
+  }
 }

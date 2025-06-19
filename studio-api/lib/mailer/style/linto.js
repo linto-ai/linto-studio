@@ -1,22 +1,23 @@
 module.exports = function () {
   return `
-    <mj-style inline="inline">
+    <mj-style>
       .mail-header {
         background-color: #f0f0f0;
-        text-align: "center";
-        font-style: "italic";
-        font-size: "20px";
-        color: "#626262";
+      }
+      .mail-header-text div {
+        font-size: 24px !important;
+        color: #626262;
+        text-align: center !important;
       }
       .mail-footer {
         background-color: #0aa9a5;
-        text-align: "center";
-        padding: 15px;
       }
       .mail-footer-text div {
         color: #ffffff !important;
-        font-size: 13px !important;
+        font-size: 16px !important;
+        text-align: center !important;
+        font-weight: bold !important;
       }
     </mj-style>
-    `
+  `
 }
