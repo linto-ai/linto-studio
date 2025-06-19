@@ -1,5 +1,7 @@
 import $set from "lodash.set"
-
+import { apiDeleteMultipleConversation } from "@/api/conversation.js"
+import i18n from "@/i18n"
+import { bus } from "@/main.js"
 export default {
   namespaced: true,
   state: {
@@ -39,6 +41,10 @@ export default {
       if (idx !== -1) {
         state.medias.splice(idx, 1, media)
       }
+    },
+    deleteMedias(state, mediaIds) {
+      state.medias = state.medias.filter((m) => !mediaIds.includes(m._id))
+      bus.$emit("medias/delete", mediaIds)
     },
     setSelectedMedias(state, selectedMedias) {
       state.selectedMedias = selectedMedias
@@ -133,6 +139,46 @@ export default {
     clearUploadState({ commit }) {
       commit("clearUploadQueue")
       commit("clearUploadProgress")
+    },
+    async deleteMedias({ commit, rootGetters }, mediaIds) {
+      const organizationScope =
+        rootGetters["organizations/getCurrentOrganizationScope"]
+      try {
+        let req = await apiDeleteMultipleConversation(
+          organizationScope,
+          mediaIds,
+        )
+        if (req.status === "success") {
+          commit("deleteMedias", mediaIds)
+          commit(
+            "system/addNotification",
+            {
+              message: i18n.tc(
+                "conversation.delete_success_message",
+                mediaIds.length,
+              ),
+              type: "success",
+            },
+            { root: true },
+          )
+        } else {
+          throw new Error("Failed to delete media", req)
+        }
+      } catch (error) {
+        console.error("Error deleting media:", error)
+        commit(
+          "system/addNotification",
+          {
+            message: i18n.tc(
+              "conversation.delete_error_message",
+              mediaIds.length,
+            ),
+            type: "error",
+          },
+          { root: true },
+        )
+        throw error
+      }
     },
   },
   getters: {

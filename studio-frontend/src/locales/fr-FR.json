@@ -622,6 +622,14 @@
     "source": "Source",
     "preview": "Aperçu"
   },
+  "media_explorer": {
+    "line": {
+      "edit_transcription": "Transcription",
+      "edit_subtitles": "Sous-titres",
+      "export": "publication",
+      "delete": "Supprimer"
+    }
+  },
   "modal": {
     "cancel": "Annuler",
     "delete": "Supprimer",

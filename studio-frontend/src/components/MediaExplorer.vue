@@ -1,6 +1,5 @@
 <template>
-  <div
-    class="media-explorer">
+  <div class="media-explorer">
     <!-- Optional outer header slot -->
     <div v-if="$slots.header" class="media-explorer__header">
       <slot name="header" />
@@ -197,7 +196,6 @@ export default {
       this.isSelectAll = !this.isSelectAll
       this.$emit("select-all", this.isSelectAll)
     },
-
     // Pagination & Intersection Observer
     setupIntersectionObserver() {
       if (!this.enablePagination) return
