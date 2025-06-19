@@ -24,15 +24,19 @@
           </div>
         </div>
 
+        <!-- Actions slot -->
+        <div class="media-explorer-header__actions" v-if="$slots.actions">
+          <slot name="actions" />
+        </div>
+
         <!-- Tags filter selector -->
-        <div class="media-explorer-header__filters">
+        <div class="media-explorer-header__filters" v-if="selectedCount === 0">
           <div class="input-item border-0 background-transparent">
             <div class="input-item__prefix-group">
               <MediaExplorerTagsSelector
                 class="label"
                 :medias="allMedias"
                 :search-value="search" />
-
             </div>
 
             <input
@@ -44,11 +48,6 @@
               @keyup.enter="handleSearch" />
           </div>
         </div>
-      </div>
-
-      <!-- Actions slot -->
-      <div class="media-explorer-header__actions">
-        <slot name="actions" />
       </div>
     </div>
   </div>
@@ -140,12 +139,12 @@ export default {
             _id: uuid(),
             key: "titleConversation",
           },
-        //   {
-        //     title: "Text filter",
-        //     value: this.search,
-        //     _id: uuid(),
-        //     key: "textConversation",
-        //   },w
+          //   {
+          //     title: "Text filter",
+          //     value: this.search,
+          //     _id: uuid(),
+          //     key: "textConversation",
+          //   },w
         ])
       }
     },

@@ -20,13 +20,16 @@
         @search="handleSearch">
         <template #actions>
           <div class="flex gap-small" v-if="selectedMedias.length > 0">
-            <Button
+            <!-- <Button
               :label="$t('media_explorer.share')"
               icon="share-network"
-              variant="outline" />
+              variant="outline" /> -->
+            <ConversationShareMultiple
+              :selectedConversations="selectedMedias" />
             <Button
               @click="showDeleteModal = true"
               :label="$t('media_explorer.delete')"
+              size="sm"
               color="tertiary"
               icon="trash"
               variant="outline" />
@@ -74,13 +77,13 @@
 <script>
 import { mapGetters } from "vuex"
 
-import MediaExplorerHeader from "./MediaExplorerHeader.vue"
-import MediaExplorerItem from "./MediaExplorerItem.vue"
-import MediaExplorerAppUpload from "./MediaExplorerAppUpload.vue"
-import Modal from "./molecules/Modal.vue"
-import Button from "./atoms/Button.vue"
-import ModalDeleteConversations from "./ModalDeleteConversations.vue"
-
+import MediaExplorerHeader from "@/components/MediaExplorerHeader.vue"
+import MediaExplorerItem from "@/components/MediaExplorerItem.vue"
+import MediaExplorerAppUpload from "@/components/MediaExplorerAppUpload.vue"
+import Modal from "@/components/molecules/Modal.vue"
+import Button from "@/components/atoms/Button.vue"
+import ModalDeleteConversations from "@/components/ModalDeleteConversations.vue"
+import ConversationShareMultiple from "@/components/ConversationShareMultiple.vue"
 export default {
   name: "MediaExplorer",
   components: {
@@ -90,6 +93,7 @@ export default {
     Modal,
     Button,
     ModalDeleteConversations,
+    ConversationShareMultiple,
   },
   props: {
     medias: {
