@@ -1,49 +1,4 @@
 @layer theme {
-  input[type="text"],
-  input[type="search"],
-  input[type="number"],
-  input[type="email"],
-  input[type="password"],
-  input[type="datetime-local"],
-  input[type="date"],
-  input[type="time"],
-  select,
-  textarea,
-  .form-field[select-like] .form-value,
-  progress.hoverInput,
-  .collab-input {
-    border: var(--border-input);
-    padding: 0.3rem 0.6rem;
-    max-width: 20rem;
-    min-width: 10rem;
-    line-height: 20px;
-    font-size: 14px;
-    border-radius: 4px;
-    //@include transition(all 0.2s ease);
-    background-color: var(--input-background);
-    color: var(--text-primary);
-    height: 2rem;
-    box-sizing: border-box;
-
-    &.error {
-      border: 1px solid var(--red-chart);
-    }
-
-    &:focus,
-    &:active {
-      outline: 1px solid var(--text-secondary);
-      background-color: var(--input-focus);
-    }
-    &[disabled] {
-      color: var(--text-disabled);
-      outline-color: var(--text-disabled);
-    }
-    &.fullwidth {
-      width: 100%;
-      max-width: none;
-    }
-  }
-
   .form-field[select-like] .form-value {
     border-color: var(--text-disabled);
     outline-color: var(--text-disabled);
@@ -68,7 +23,6 @@
     }
   }
 
-  label,
   .form-label {
     color: var(--text-secondary);
     font-size: 14px;

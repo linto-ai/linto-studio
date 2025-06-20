@@ -37,7 +37,7 @@
               type="text"
               id="search"
               placeholder="Search"
-              class="input-item__input"
+              class="input-item__input fullwidth"
               @keyup.enter="handleSearch" />
           </div>
         </div>

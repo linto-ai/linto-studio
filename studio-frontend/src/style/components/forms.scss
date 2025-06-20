@@ -25,6 +25,9 @@
     padding: 0.2em 0.5em;
     outline: none;
 
+    border: var(--border-input);
+    background-color: var(--input-background);
+    color: var(--text-primary);
     &.error {
       border-color: var(--red-chart);
     }
