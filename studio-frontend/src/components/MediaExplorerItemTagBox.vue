@@ -1,7 +1,15 @@
 <template>
   <Box class="tag-box p-0" type="shadow" @click.stop>
     <div class="tag-box__content">
-      <div class="tag-box__footer footer-flex">
+      <div class="tag-box__header">
+        <div class="tag-box__header-title">
+          <ph-icon name="tag-simple" weight="bold" />
+          <span class="tag-box__header-title-text">
+            Media tags
+          </span>
+        </div>
+      </div>
+      <div class="tax-box-search">
         <input
           v-model="search"
           type="text"
@@ -20,22 +28,42 @@
         </ModalTagManagement>
       </div>
       <hr />
-      <div
-        v-if="tagsObjects.length"
-        class="selected-tags">
-        <ChipTag
+      <div v-if="tagsObjects.length" class="tags-selection">
+        <div
           v-for="tag in tagsObjects"
           :key="tag._id"
-          :name="tag.name"
-          :emoji="tag.emoji"
-          :color="tag.color"
-          size="sm"
-          :active="selectedTagsIds.includes(tag._id)"
+          class="tags-selection__tag"
+          :class="{ 'tags-selection__tag--selected': selectedTagsIds.includes(tag._id) }"
           @click="onTagClick(tag)">
-        </ChipTag>
+          <span class="tags-selection__tag-meta">
+            <Avatar
+              :name="tag.name"
+              :emoji="tag.emoji"
+              :color="tag.color"
+              size="sm" />
+            <span
+              class="tag-box__selected-tag-name"
+              :style="{ color: `var(--material-${tag.color}-900)` }">
+              {{ tag.name }}
+            </span>
+          </span>
+          <Button
+            class="icon-only"
+            :icon="selectedTagsIds.includes(tag._id) ? 'minus-circle' : 'plus-circle'"
+            variant="outline"
+            :color="selectedTagsIds.includes(tag._id) ? 'tertiary-hard' : 'neutral-hard'"
+            size="xs"/>
+        </div>
       </div>
-      <div>
-        toto
+      <div v-if="false" class="tag-box__footer">
+        <ModalTagManagement>
+          <template #trigger="{ open }">
+            <button class="tag-box__button outline primary xs with-icon" @click="open">
+              <ph-icon name="plus" weight="bold" />
+              <span class="tag-box__button-text">Manage tags</span>
+            </button>
+          </template>
+        </ModalTagManagement>
       </div>
     </div>
   </Box>
@@ -83,10 +111,14 @@ export default {
         : null
     },
     tagsObjects() {
-      return this.filteredTags.map((tag) => ({
+      const tags = this.filteredTags.map((tag) => ({
         ...tag,
         color: this.getTagColor(tag),
+        active: this.selectedTagsIds.includes(tag._id),
       }))
+
+      // Active tags first
+      return tags.sort((a, b) => b.active - a.active)
     },
     orderedTags() {
       return [...this.tags].sort((a, b) => a.name.localeCompare(b.name))
@@ -205,17 +237,6 @@ export default {
       height: 24px;
     }
   }
-
-  .unselected-tags {
-    padding: 0.25em;
-    flex-direction: row;
-    display: flex;
-    gap: 0.25em;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    border: 1px solid var(--primary-soft);
-    background-color: var(--primary-soft);
-  }
 }
 
 .tag-box__separator {
@@ -223,6 +244,58 @@ export default {
   height: 1px;
   background: var(--neutral-30);
   margin: 0.25em 0 0.25em 0;
+}
+
+.tags-selection {
+  padding: 0.25em;
+  flex-direction: column;
+  display: flex;
+  gap: 0.25em;
+  align-items: flex-start;
+  max-height: 240px;
+  overflow-y: auto;
+
+  &__tag {
+    flex: 1;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.25em;
+    text-transform: uppercase;
+    padding: 0.25em;
+    background-color: var(--background-primary);
+    border: 1px solid var(--neutral-20);
+    border-radius: 2px;
+    cursor: pointer;
+
+    &--selected {
+      background-color: var(--primary-soft);
+      border-color: var(--primary-color);
+    }
+
+    &-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.25em;
+      font-size: 0.9em;
+    }
+  }
+}
+
+.tag-box__header {
+  display: flex;
+  align-items: center;
+  padding: 0.25em;
+  border-bottom: 1px solid var(--primary-color);
+  background-color: var(--primary-color);
+  color: var(--primary-soft);
+  font-size: 0.9em;
+}
+
+.tag-box__footer {
+  border-top: 1px solid var(--primary-color);
 }
 
 .chip-tag__spinner {
@@ -245,23 +318,13 @@ export default {
   }
 }
 
-.footer-flex {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.5em;
+.tax-box-search {
 }
 .tag-box__search-input {
-  flex: 1 1 0;
-  min-width: 0;
-  padding: 0.2em 0.5em;
-  border-radius: 4px;
-  border: 1px solid var(--neutral-30);
-  background: var(--neutral-10);
-  color: var(--neutral-100);
-  outline: none;
-  transition: border-color 0.2s;
   width: 100%;
+  border: none;
+  border-bottom: 1px solid var(--primary-color);
+  border-radius: 0;
 }
 .tag-box__search-input:focus {
   border-color: var(--primary-color);

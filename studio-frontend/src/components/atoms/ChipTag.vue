@@ -73,7 +73,7 @@ export default {
       return `var(--material-${this.color}-500)`
     },
     backgroundColor() {
-      return `var(--material-${this.color}-${this.active ? 500 : 100})`
+      return `var(--material-${this.color}-${this.active ? 400 : 100})`
     },
     colorText() {
       return `var(--material-${this.color}-900)`
