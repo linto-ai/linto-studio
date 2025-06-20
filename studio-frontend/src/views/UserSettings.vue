@@ -74,7 +74,7 @@ import { apiUpdateUserInfo, apiSendVerificationLink } from "@/api/user.js"
 import { bus } from "@/main.js"
 import { getEnv } from "@/tools/getEnv"
 
-import Loading from "@/components/Loading.vue"
+import Loading from "@/components/atoms/Loading.vue"
 import Breadcrumb from "@/components/Breadcrumb.vue"
 import MainContent from "@/components/MainContent.vue"
 import UserSettingsPersonal from "@/components/UserSettingsPersonal.vue"

@@ -146,7 +146,7 @@ import findExpressionInWordsList from "@/tools/findExpressionInWordsList.js"
 
 import { conversationMixin } from "@/mixins/conversation.js"
 
-import Loading from "@/components/Loading.vue"
+import Loading from "@/components/atoms/Loading.vue"
 import Modal from "@/components/Modal.vue"
 import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
 import AppEditor from "@/components/AppEditor.vue"

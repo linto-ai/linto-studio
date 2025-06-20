@@ -25,7 +25,7 @@ import { bus } from "@/main.js"
 
 import UserTableHeaders from "@/components/UserTableHeaders.vue"
 import UserTableLine from "@/components/UserTableLine.vue"
-import Loading from "./Loading.vue"
+import Loading from "@/components/atoms/Loading.vue"
 
 export default {
   props: {

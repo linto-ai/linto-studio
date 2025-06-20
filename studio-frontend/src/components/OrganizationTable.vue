@@ -22,7 +22,7 @@
 <script>
 import OrganizationTableHeader from "./OrganizationTableHeader.vue"
 import OrganizationTableLine from "./OrganizationTableLine.vue"
-import Loading from "./Loading.vue"
+import Loading from "@/components/atoms/Loading.vue"
 export default {
   props: {
     organizationList: {

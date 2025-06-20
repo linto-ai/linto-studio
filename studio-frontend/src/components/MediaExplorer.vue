@@ -41,10 +41,10 @@
       <!-- Media list body -->
       <div class="media-explorer__body">
         <slot name="before" />
-
+        <Loading v-if="loading && filteredMedias.length === 0" />
         <!-- Empty state -->
         <div
-          v-if="filteredMedias.length === 0"
+          v-else-if="filteredMedias.length === 0"
           class="media-explorer__body__empty">
           <slot name="empty">
             <div class="empty-state">
@@ -58,6 +58,7 @@
 
         <!-- Media items -->
         <MediaExplorerItem
+          v-else
           v-for="(media, index) in filteredMedias"
           :key="`media-explorer-item-${media._id}-${index}`"
           :media="media"
@@ -84,6 +85,8 @@ import Modal from "@/components/molecules/Modal.vue"
 import Button from "@/components/atoms/Button.vue"
 import ModalDeleteConversations from "@/components/ModalDeleteConversations.vue"
 import ConversationShareMultiple from "@/components/ConversationShareMultiple.vue"
+import Loading from "@/components/atoms/Loading.vue"
+
 export default {
   name: "MediaExplorer",
   components: {
@@ -94,6 +97,7 @@ export default {
     Button,
     ModalDeleteConversations,
     ConversationShareMultiple,
+    Loading,
   },
   props: {
     medias: {

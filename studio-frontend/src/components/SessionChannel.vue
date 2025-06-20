@@ -203,7 +203,7 @@ import SessionChannelTurn from "@/components/SessionChannelTurn.vue"
 import SessionChannelTurnPartial from "@/components/SessionChannelTurnPartial.vue"
 import Svglogo from "@/svg/Microphone.vue"
 import SessionSubtitle from "@/components/SessionSubtitle.vue"
-import Loading from "@/components/Loading.vue"
+import Loading from "@/components/atoms/Loading.vue"
 import SubtitleFullscreen from "@/components-mobile/SubtitleFullscreen.vue"
 
 export default {

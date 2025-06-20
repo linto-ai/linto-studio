@@ -59,6 +59,7 @@ export default {
     },
     clearSelectedMedias(state) {
       state.selectedMedias = []
+      state.autoselectMedias = false
     },
     addToUploadQueue(state, file) {
       state.uploadQueue.push(file)
@@ -178,6 +179,9 @@ export default {
           { root: true },
         )
       }
+    },
+    clearSelectedMedias({ commit }) {
+      commit("clearSelectedMedias")
     },
   },
   getters: {

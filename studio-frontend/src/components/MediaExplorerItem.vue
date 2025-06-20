@@ -29,18 +29,20 @@
           </div>
         </div>
       </div>
-      <div class="media-explorer-item__inline__meta gap-small">
+      <div
+        class="media-explorer-item__inline__meta flex gap-small align-center">
         <Avatar
-          :text="title.substring(0, 1)"
+          :icon="isFromSession ? 'microphone' : 'file-audio'"
+          color="neutral-10"
+          size="md"
           class="media-explorer-item__inline__infos__avatar">
-          <Tooltip :text="convOwner.fullName" position="bottom">
-            <Avatar
-              :text="convOwner.fullName.substring(0, 1)"
-              :src="convOwnerAvatar"
-              class="media-explorer-item__inline__more__owner__avatar"
-              size="xs" />
-          </Tooltip>
         </Avatar>
+        <Tooltip :text="convOwner.fullName" position="bottom">
+          <Avatar
+            color="#dadada"
+            :text="convOwner.fullName.substring(0, 1)"
+            :src="convOwnerAvatar" />
+        </Tooltip>
         <a
           :href="`/interface/${organizationId}/conversations/${media._id}/transcription`"
           >{{ title }}</a
@@ -223,6 +225,9 @@ export default {
     isSelectAll() {
       return this.$store.state.inbox.autoselectMedias
     },
+    isFromSession() {
+      return !!this.media?.type?.from_session_id
+    },
   },
   watch: {
     isSelectAll(value) {
@@ -276,7 +281,7 @@ export default {
     },
     handleExport() {
       this.$router.push({
-        name: "conversations export",
+        name: "conversations publish",
         params: {
           conversationId: this.media._id,
           organizationId: this.organizationId,
@@ -618,5 +623,6 @@ export default {
   box-sizing: border-box;
   height: 100%;
   box-shadow: -1px 0 1px 1px var(--primary-color);
+  z-index: 3;
 }
 </style>

@@ -23,7 +23,11 @@
   background-color: white;
   padding: 1rem;
   border: var(--border-block);
-  box-shadow: var(--shadow-block);
+  //box-shadow: var(--shadow-block);
+  max-width: 800px;
+  margin: 0 30px;
   white-space: pre-wrap;
   word-wrap: break-word;
+  flex: 1;
+  overflow: auto;
 }

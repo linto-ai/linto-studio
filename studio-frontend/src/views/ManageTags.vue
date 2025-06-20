@@ -85,7 +85,7 @@ import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 
 import MainContent from "@/components/MainContent.vue"
 import TagCategoryBoxEditable from "@/components/TagCategoryBoxEditable.vue"
-import Loading from "@/components/Loading.vue"
+import Loading from "@/components/atoms/Loading.vue"
 import ModalEditCategory from "../components/ModalEditCategory.vue"
 import ModalEditTag from "../components/ModalEditTag.vue"
 import ModalDeleteTag from "../components/ModalDeleteTag.vue"

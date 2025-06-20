@@ -21,7 +21,7 @@
 <script>
 import EMPTY_FIELD from "../const/emptyField"
 import ConversationCreateService from "@/components/ConversationCreateService.vue"
-import Loading from "@/components/Loading.vue"
+import Loading from "@/components/atoms/Loading.vue"
 
 export default {
   props: {

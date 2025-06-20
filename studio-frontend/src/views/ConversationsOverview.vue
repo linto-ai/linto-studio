@@ -74,7 +74,7 @@ import { conversationMixin } from "@/mixins/conversation.js"
 import { debounceMixin } from "@/mixins/debounce.js"
 import { timeToHMS } from "@/tools/timeToHMS"
 
-import Loading from "@/components/Loading.vue"
+import Loading from "@/components/atoms/Loading.vue"
 import CollaborativeField from "@/components/CollaborativeField.vue"
 import MainContentConversation from "@/components/MainContentConversation.vue"
 import ConversationOverviewMainInfos from "@/components/ConversationOverviewMainInfos.vue"

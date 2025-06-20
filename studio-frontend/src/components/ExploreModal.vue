@@ -69,7 +69,7 @@
 import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 import TagCategoryBoxSelectable from "@/components/TagCategoryBoxSelectable.vue"
-import Loading from "./Loading.vue"
+import Loading from "@/components/atoms/Loading.vue"
 import TagSearch from "./TagSearch.vue"
 import ModalNew from "@/components/molecules/Modal.vue"
 

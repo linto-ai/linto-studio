@@ -40,7 +40,7 @@ import { bus } from "@/main.js"
 import { apiSearchCategories, apiGetAllCategories } from "../api/tag.js"
 import { debounceMixin } from "../mixins/debounce"
 
-import Loading from "./Loading.vue"
+import Loading from "@/components/atoms/Loading.vue"
 
 export default {
   props: {

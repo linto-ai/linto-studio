@@ -20,7 +20,7 @@ import {
 
 import MainContent from "@/components/MainContent.vue"
 import Tabs from "@/components/molecules/Tabs.vue"
-import Loading from "@/components/Loading.vue"
+import Loading from "@/components/atoms/Loading.vue"
 import ErrorPage from "@/components/ErrorPage.vue"
 import SessionListLine from "@/components/SessionListLine.vue"
 import SessionWeekList from "@/components/SessionWeekList.vue"

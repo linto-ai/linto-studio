@@ -55,7 +55,7 @@
 <script>
 import { Fragment } from "vue-fragment"
 
-import Loading from "@/components/Loading.vue"
+import Loading from "@/components/atoms/Loading.vue"
 import ConversationLine from "@/components/ConversationLine.vue"
 import ErrorPage from "./ErrorPage.vue"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"

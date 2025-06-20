@@ -104,7 +104,7 @@ import { getLLMService, apiGetMetadataLLMService } from "@/api/service.js"
 
 import getDescriptionByLanguage from "@/tools/getDescriptionByLanguage.js"
 
-import Loading from "@/components/Loading.vue"
+import Loading from "@/components/atoms/Loading.vue"
 import Modal from "@/components/Modal.vue"
 import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
 import AppEditor from "@/components/AppEditor.vue"

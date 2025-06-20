@@ -19,7 +19,7 @@
 </template>
 <script>
 import { debounceMixin } from "../mixins/debounce"
-import Loading from "@/components/Loading.vue"
+import Loading from "@/components/atoms/Loading.vue"
 import { apiSearchUser } from "../api/user.js"
 import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
 export default {

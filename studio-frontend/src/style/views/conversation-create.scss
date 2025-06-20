@@ -16,11 +16,11 @@
 }
 
 .audio-upload-list__progress {
-  position: absolute;
+  position: absolute !important;
   top: 0;
   opacity: 0.4;
   left: calc(25px + 0.5rem);
-  width: calc(100% - 25px - 0.5rem);
+  width: calc(100% - 25px - 0.5rem) !important;
 }
 
 .audio-upload__record {

@@ -39,7 +39,7 @@ import { ScreenList } from "../models/screenList"
 import { timeToHMS } from "../tools/timeToHMS"
 
 import AppPlayerHeader from "@/components/AppPlayerHeader.vue"
-import Loading from "@/components/Loading.vue"
+import Loading from "@/components/atoms/Loading.vue"
 
 export default {
   mixins: [playerMixin],

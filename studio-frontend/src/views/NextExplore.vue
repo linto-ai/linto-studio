@@ -29,7 +29,9 @@
             <span v-if="hasMoreItems && !loadingConversations"
               >Loading more...</span
             >
-            <span v-else-if="!hasMoreItems">End of results</span>
+            <span v-else-if="!hasMoreItems && !loadingConversations"
+              >End of results</span
+            >
             <span v-else>Loading...</span>
           </div>
         </div>

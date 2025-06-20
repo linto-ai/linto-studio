@@ -28,7 +28,7 @@ import { playerMixin } from "@/mixins/player.js"
 import WaveSurfer from "wavesurfer.js"
 import RegionsPlugin from "../../node_modules/wavesurfer.js/dist/plugins/regions.js"
 import TimelinePlugin from "../../node_modules/wavesurfer.js/dist/plugins/timeline.js"
-import Loading from "@/components/Loading.vue"
+import Loading from "@/components/atoms/Loading.vue"
 import AppPlayerHeader from "@/components/AppPlayerHeader.vue"
 export default {
   mixins: [playerMixin],
