@@ -31,7 +31,14 @@ const actions = {
     return getUserInfos
   },
   async login({ commit }, payload) {},
-  async logout({ commit }) {},
+  async logout({ commit, dispatch }) {
+    document.cookie = "authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
+    dispatch("resetState")
+    commit("system/addNotification", {
+      message: "You have been logged out",
+      type: "success",
+    }, { root: true })
+  },
   async register({ commit }, payload) {},
   async updateUser({ commit }, payload) {
     const req = await apiUpdateUserInfo(payload, null)

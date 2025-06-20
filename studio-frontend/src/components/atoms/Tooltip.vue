@@ -14,11 +14,11 @@
       <div
         v-if="text && text.trim()"
         class="tooltip-content"
-        :style="{ backgroundColor: borderColor }"
+        :style="{ borderColor: borderColor }"
       >
         <span
           class="tooltip-content__inner"
-          :style="{ backgroundColor: backgroundColor }"
+          :style="{ backgroundColor: backgroundColor, color: color }"
         >
           <Emoji v-if="emoji" :unified="emoji" size="16" />
           <ph-icon v-if="icon" :name="icon" size="sm" />
@@ -58,6 +58,10 @@ export default {
       type: String,
       default: "inline",
       validator: (value) => ["block", "inline"].includes(value),
+    },
+    color: {
+      type: String,
+      default: "var(--primary-hard)",
     },
     borderColor: {
       type: String,

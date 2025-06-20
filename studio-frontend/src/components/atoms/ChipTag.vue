@@ -8,7 +8,7 @@
     <span v-if="emoji" class="chip-tag__icon-wrapper">
       <span
         class="chip-tag__icon-emoji"
-        :style="{ backgroundColor: borderColor }"
+        :style="{ borderColor: borderColor }"
       >
         {{ unifiedToEmoji(emoji) }}
       </span>
@@ -89,17 +89,11 @@ export default {
   padding: 0.1em 0.25em 0.1em 0.25em;
   margin: 0.1em;
   border-radius: 2px;
-  border: 1px transparent var(--neutral-40);
+  border: 1px solid var(--neutral-40);
   background: var(--background-primary);
   font-size: 0.9em;
   font-weight: 600;
   transition: border-color 0.2s, background 0.2s;
-
-  &.active {
-    .chip-tag__name {
-      color: var(--neutral-20);
-    }
-  }
 
   &.sm {
     font-size: 0.9em;

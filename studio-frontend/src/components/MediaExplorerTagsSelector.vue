@@ -245,6 +245,11 @@ export default {
   font-weight: 600;
   color: var(--neutral-10);
   transition: opacity 0.15s ease-in-out;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 1ch;
+  text-transform: uppercase;
 }
 
 .filter-tag__delete {

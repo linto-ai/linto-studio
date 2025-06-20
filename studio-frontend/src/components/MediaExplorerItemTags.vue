@@ -129,7 +129,6 @@ export default {
       return tag.color || "var(--neutral-20)"
     },
     handleTagClick(tag) {
-      console.log("handleTagClick", tag)
       if (this.$store.getters["tags/isExploreSelectedTag"](tag._id)) {
         this.$store.dispatch("tags/removeExploreSelectedTag", tag)
       } else {

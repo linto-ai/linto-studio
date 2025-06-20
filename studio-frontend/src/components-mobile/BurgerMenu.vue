@@ -1,32 +1,7 @@
 <template>
   <nav class="burger-menu">
-    <!-- <div class="flex burger-menu__header">
-      <button class="transparent only-icon mobile" @click="closeBurger">
-        <span class="icon back"></span>
-      </button>
-      <router-link
-        :title="$t('navigation.home')"
-        to="/interface"
-        class="flex align-center gap-small flex1 justify-center">
-        <img :src="logo" style="height: 3rem" />
-        <h1 id="main-title">
-          {{ title }}
-        </h1>
-      </router-link>
-    </div>
-    <div class="sidebar-divider"></div> -->
-
     <div>
       <div class="burger-menu__header">
-        <!--<div class="burger-menu__header__title">
-          <div class="flex row align-center gap-medium flex1">
-            <img :src="logo" style="height: 3rem" />
-            <h1 id="main-title">
-              {{ title }}
-            </h1>
-          </div>
-        </div>
-        <LocalSwitcher class="local-switcher"></LocalSwitcher>-->
         <UserAccountSelector />
       </div>
       <div class="user-account-selector-container">
@@ -49,39 +24,6 @@
         <cloud-card-credits />
       </is-cloud>
     </div>
-    <!-- <div class="burger-menu__footer">
-      <div class="flex align-center gap-medium burger-menu__footer__title">
-        <img :src="imgUrl" class="avatar" /> {{ userName }}
-      </div>
-
-      <div class="tabs col">
-        <div class=""></div>
-        <div class="sidebar-divider"></div>
-        <div class="">
-          <router-link
-            :to="{ name: 'user settings' }"
-            class="flex row align-center gap-medium tab">
-            <span class="icon settings"></span>
-            <span class="tab__label">{{
-              $t("navigation.account.account_link")
-            }}</span>
-          </router-link>
-
-          <div class="tab">
-            
-          </div>
-
-          <button
-            class="flex row align-center gap-medium tab transparent"
-            @click="logout">
-            <span class="icon logout"></span>
-            <span class="tab__label">{{
-              $t("navigation.account.logout")
-            }}</span>
-          </button>
-        </div>
-      </div>
-    </div> -->
   </nav>
 </template>
 <script>

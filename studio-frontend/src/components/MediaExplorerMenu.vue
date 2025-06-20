@@ -66,8 +66,7 @@
             </span>
           </span>
           <ModalTagManagement
-            :selected-tags="selectedTags"
-            @tag-click="handleTagClick">
+            :selected-tags="selectedTags">
             <template #trigger>
               <Button icon="plus" size="sm" color="primary">
                 Add tag

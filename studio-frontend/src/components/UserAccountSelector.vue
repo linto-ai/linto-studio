@@ -3,6 +3,7 @@
     :items="navList.userMenu"
     @click="handleClick"
     class="user-account-selector"
+    :close-on-click="true"
     width="ref">
     <template #trigger="{ open }">
       <Button
@@ -123,6 +124,7 @@ export default {
     },
     logout() {
       this.$store.dispatch("user/logout")
+      this.$router.push("/")
     },
     getColorFromText,
   },

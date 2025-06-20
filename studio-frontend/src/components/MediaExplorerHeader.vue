@@ -32,13 +32,6 @@
         <!-- Tags filter selector -->
         <div class="media-explorer-header__filters" v-if="selectedCount === 0">
           <div class="input-item border-0 background-transparent">
-            <div class="input-item__prefix-group">
-              <MediaExplorerTagsSelector
-                class="label"
-                :medias="allMedias"
-                :search-value="search" />
-            </div>
-
             <input
               v-model="search"
               type="text"

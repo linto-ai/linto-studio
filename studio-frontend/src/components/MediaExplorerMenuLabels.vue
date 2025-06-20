@@ -3,14 +3,14 @@
     <nav>
       <ul>
         <li v-for="tag in orderedTags" :key="tag._id">
-          <a href="#">
             <ChipTag
               :name="tag.name"
               :emoji="tag.emoji"
               :color="tag.color"
               :count="tag.mediaCount"
+              :active="selectedTags.some((t) => t._id === tag._id)"
+              @click="handleTagClick(tag)"
             />
-          </a>
         </li>
       </ul>
     </nav>
@@ -46,21 +46,18 @@ export default {
       return tag.color
     },
     handleTagClick(tag) {
-      if (this.selectedTags.find((t) => t._id === tag._id)) {
-        this.selectedTags = this.selectedTags.filter((t) => t._id !== tag._id)
-      } else {
-        this.selectedTags = [...this.selectedTags, tag]
-      }
+      this.$store.dispatch("tags/toggleTag", tag)
     },
   },
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .media-explorer-menu-labels {
   display: flex;
 
   nav {
+    padding: .5em 0;
     ul {
       display: flex;
       flex-direction: column;
@@ -75,14 +72,14 @@ export default {
       padding: 0;
       margin: 0;
 
-      a {
-        display: block;
+      & > div {
+        display: flex;
         width: 100%;
-        height: 100%;
-        padding: var(--spacing-small);
-        border-radius: var(--border-radius-small);
-        background-color: var(--background-primary);
-        color: var(--text-primary);
+
+        .chip-tag__name {
+          flex: 1;
+          max-width: 100% !important;
+        }
       }
     }
   }

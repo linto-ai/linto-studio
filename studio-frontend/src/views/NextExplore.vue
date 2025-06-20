@@ -193,7 +193,9 @@ export default {
         // Convert tag IDs to tag objects - assuming tags are available in store
         this.$store.dispatch(
           "tags/setExploreSelectedTags",
-          tagIds.map((id) => ({ _id: id })),
+          tagIds.map((id) => {
+            return this.$store.state.tags.tags.find((t) => t._id === id)
+          }),
         )
       }
 

@@ -23,7 +23,6 @@ export default {
       state.categories = categories
     },
     setExploreSelectedTags(state, tags) {
-      console.log("[tags store] mutation setExploreSelectedTags", tags)
       state.exploreSelectedTags = tags
     },
     clearTags(state) {
@@ -99,20 +98,28 @@ export default {
           tag.emoji,
         )
 
-        commit("system/addNotification", {
-          message: "Tag created successfully",
-          type: "success",
-        }, { root: true })
+        commit(
+          "system/addNotification",
+          {
+            message: "Tag created successfully",
+            type: "success",
+          },
+          { root: true },
+        )
 
         commit("setTags", [...state.tags, data])
         return data
       } catch (error) {
         console.error("Error creating tag in store:", error)
         commit("setError", error)
-        commit("system/addNotification", {
-          message: "Error creating tag",
-          type: "error",
-        }, { root: true })
+        commit(
+          "system/addNotification",
+          {
+            message: "Error creating tag",
+            type: "error",
+          },
+          { root: true },
+        )
         throw error
       } finally {
         commit("setLoading", false)
@@ -129,18 +136,26 @@ export default {
           "setTags",
           state.tags.filter((t) => t._id !== tag._id),
         )
-        commit("system/addNotification", {
-          message: "Tag deleted successfully",
-          type: "success",
-        }, { root: true })
+        commit(
+          "system/addNotification",
+          {
+            message: "Tag deleted successfully",
+            type: "success",
+          },
+          { root: true },
+        )
         return data
       } catch (error) {
         console.error("Error deleting tag in store:", error)
         commit("setError", error)
-        commit("system/addNotification", {
-          message: "Error deleting tag",
-          type: "error",
-        }, { root: true })
+        commit(
+          "system/addNotification",
+          {
+            message: "Error deleting tag",
+            type: "error",
+          },
+          { root: true },
+        )
         // Re-throw the error so the component can handle it
         throw error
       } finally {
@@ -163,17 +178,25 @@ export default {
           { mediaId, media: newMedia },
           { root: true },
         )
-        commit("system/addNotification", {
-          message: "Tag added to media successfully",
-          type: "success",
-        }, { root: true })
+        commit(
+          "system/addNotification",
+          {
+            message: "Tag added to media successfully",
+            type: "success",
+          },
+          { root: true },
+        )
       } catch (error) {
         console.log("error", error)
         commit("setError", error)
-        commit("system/addNotification", {
-          message: "Error adding tag to media",
-          type: "error",
-        }, { root: true })
+        commit(
+          "system/addNotification",
+          {
+            message: "Error adding tag to media",
+            type: "error",
+          },
+          { root: true },
+        )
       } finally {
         commit("setLoading", false)
       }
@@ -195,34 +218,55 @@ export default {
           { mediaId, media: newMedia },
           { root: true },
         )
-        commit("system/addNotification", {
-          message: "Tag removed from media successfully",
-          type: "success",
-        }, { root: true })
+        commit(
+          "system/addNotification",
+          {
+            message: "Tag removed from media successfully",
+            type: "success",
+          },
+          { root: true },
+        )
       } catch (error) {
         console.log("error", error)
         commit("setError", error)
-        commit("system/addNotification", {
-          message: "Error removing tag from media",
-          type: "error",
-        }, { root: true })
+        commit(
+          "system/addNotification",
+          {
+            message: "Error removing tag from media",
+            type: "error",
+          },
+          { root: true },
+        )
       } finally {
         commit("setLoading", false)
       }
     },
     setExploreSelectedTags({ commit }, tags) {
-      console.log("[tags store] setExploreSelectedTags", tags)
       commit("setExploreSelectedTags", tags)
     },
     addExploreSelectedTag({ commit, state }, tag) {
-      console.log("[tags store] addExploreSelectedTag", tag)
       commit("setExploreSelectedTags", [...state.exploreSelectedTags, tag])
-      console.log("addExploreSelectedTag", state.exploreSelectedTags)
+
+      const url = new URL(window.location.href)
+      url.searchParams.set("tags", [...state.exploreSelectedTags, tag].map((t) => t._id).join(","))
+      window.history.pushState({}, "", url)
     },
     removeExploreSelectedTag({ commit, state }, tag) {
-      console.log("[tags store] removeExploreSelectedTag", tag)
-      commit("setExploreSelectedTags", state.exploreSelectedTags.filter((t) => t._id !== tag._id))
-      console.log("removeExploreSelectedTag", state.exploreSelectedTags)
+      commit(
+        "setExploreSelectedTags",
+        state.exploreSelectedTags.filter((t) => t._id !== tag._id),
+      )
+
+      const url = new URL(window.location.href)
+      url.searchParams.set("tags", state.exploreSelectedTags.map((t) => t._id).join(","))
+      window.history.pushState({}, "", url)
+    },
+    toggleTag({ dispatch, state }, tag) {
+      if (state.exploreSelectedTags.some((t) => t._id === tag._id)) {
+        dispatch("removeExploreSelectedTag", tag)
+      } else {
+        dispatch("addExploreSelectedTag", tag)
+      }
     },
   },
 }

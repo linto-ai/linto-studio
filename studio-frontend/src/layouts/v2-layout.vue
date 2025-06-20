@@ -172,4 +172,14 @@ export default {
 .local-switcher {
   margin-right: 0.5em;
 }
+
+@media only screen and (max-width: 1100px) {
+  .v2-layout__sidebar {
+    width: 54px;
+  }
+
+  .v2-layout__content {
+    padding-left: 54px;
+  }
+}
 </style>

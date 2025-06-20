@@ -363,7 +363,7 @@ button,
   }
 
   &.neutral {
-    background-color: var(--neutral-40);
+    background-color: var(--neutral-20);
     border: 1px solid var(--neutral-60);
     color: var(--neutral-80);
     .icon {
@@ -399,7 +399,7 @@ button,
   &.outline {
     background-color: transparent;
     border: 1px solid transparent;
-    background-color: var(--neutral-40);
+    background-color: var(--neutral-20);
     color: var(--neutral-80);
     .icon,
     .ph-icon,
