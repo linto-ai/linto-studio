@@ -13,7 +13,7 @@ export async function apiCreateCategory(
   type,
   scope = "organization",
   notif,
-  color = null
+  color = null,
 ) {
   if (!color) color = COLORS[Math.floor(Math.random() * COLORS.length)]
 
@@ -27,7 +27,7 @@ export async function apiCreateCategory(
         color,
         type,
       },
-      notif
+      notif,
     )
   } else {
     requestRes = await sendRequest(
@@ -38,7 +38,7 @@ export async function apiCreateCategory(
         color,
         type,
       },
-      notif
+      notif,
     )
   }
 
@@ -53,7 +53,7 @@ export async function apiGetAllCategories(
   scope = "organization",
   expand = false,
   possess = false,
-  notif = null
+  notif = null,
 ) {
   if (scope === "organization") {
     const requestRes = await sendRequest(
@@ -64,7 +64,7 @@ export async function apiGetAllCategories(
         expand,
         possess,
       },
-      notif
+      notif,
     )
     return requestRes?.data || []
   } else if (scope === "conversation") {
@@ -76,7 +76,7 @@ export async function apiGetAllCategories(
         expand,
         possess,
       },
-      notif
+      notif,
     )
     return requestRes?.data || []
   }
@@ -86,7 +86,7 @@ export async function apiGetSystemCategories(organizationId) {
   const requestRes = await sendRequest(
     `${BASE_API}/organizations/${organizationId}/categories/system`,
     { method: "get" },
-    {}
+    {},
   )
 
   return requestRes?.data || []
@@ -96,7 +96,7 @@ export async function apiGetTagsByCategory(organizationId, categoryId) {
   const requestRes = await sendRequest(
     `${BASE_API}/organizations/${organizationId}/tags?categoryId=${categoryId}&withMediaCount=true`,
     { method: "get" },
-    {}
+    {},
   )
   return requestRes?.data || []
 }
@@ -106,14 +106,14 @@ export async function apiGetCategoryById(
   categoryId,
   scope = "organization",
   { metadata = false, possess = false },
-  notif
+  notif,
 ) {
   if (scope === "organization") {
     const requestRes = await sendRequest(
       `${BASE_API}/organizations/${scopeId}/categories/${categoryId}`,
       { method: "get" },
       {},
-      notif
+      notif,
     )
 
     return requestRes?.data || {}
@@ -125,7 +125,7 @@ export async function apiGetCategoryById(
         metadata,
         possess,
       },
-      notif
+      notif,
     )
 
     return requestRes?.data || {}
@@ -137,7 +137,7 @@ export async function apiUpdateCategory(orgaId, categoryId, payload, notif) {
     `${BASE_API}/organizations/${orgaId}/categories/${categoryId}`,
     { method: "patch" },
     payload,
-    notif
+    notif,
   )
   return requestRes
 }
@@ -147,7 +147,7 @@ export async function apiDeleteCategory(orgaId, categoryId, notif) {
     `${BASE_API}/organizations/${orgaId}/categories/${categoryId}`,
     { method: "delete" },
     {},
-    notif
+    notif,
   )
   return requestRes
 }
@@ -157,7 +157,7 @@ export async function apiGetTagsById(orgaId, tagId, notif) {
     `${BASE_API}/organizations/${orgaId}/tags/${tagId}`,
     { method: "get" },
     {},
-    notif
+    notif,
   )
 
   return requestRes?.data || {}
@@ -168,7 +168,7 @@ export async function apiGetTagsFromCategory(
   categoryId,
   { linkedTags = [], possess = false },
   scope = "organization",
-  notif
+  notif,
 ) {
   if (scope === "organization") {
     const requestRes = await sendRequest(
@@ -179,7 +179,7 @@ export async function apiGetTagsFromCategory(
         tags: linkedTags.toString(),
         possess,
       },
-      notif
+      notif,
     )
     return requestRes?.data || []
   } else {
@@ -191,7 +191,7 @@ export async function apiGetTagsFromCategory(
         tags: linkedTags.toString(),
         possess,
       },
-      notif
+      notif,
     )
     return requestRes?.data || []
   }
@@ -203,7 +203,7 @@ export async function apiSearchCategories(
   categoryType,
   { scope = "organization" } = {},
   signal,
-  notif
+  notif,
 ) {
   if (scope === "organization") {
     const requestRes = await sendRequest(
@@ -214,7 +214,7 @@ export async function apiSearchCategories(
         name,
         categoryType,
       },
-      notif
+      notif,
     )
     return requestRes?.data || []
   } else {
@@ -227,7 +227,7 @@ export async function apiSearchCategories(
         categoryType,
         expand: "true",
       },
-      notif
+      notif,
     )
     return requestRes?.data || []
   }
@@ -239,7 +239,7 @@ export async function apiCategoriesTree(
   categoriesIds,
   categoryType,
   signal,
-  notif
+  notif,
 ) {
   let requestRes
   if (!tagsIds || tagsIds.length === 0) {
@@ -250,7 +250,7 @@ export async function apiCategoriesTree(
         type: "explore",
         categoryType,
       },
-      notif
+      notif,
     )
   } else {
     requestRes = await sendRequest(
@@ -261,7 +261,7 @@ export async function apiCategoriesTree(
         tags: tagsIds.toString(),
         categoryType,
       },
-      notif
+      notif,
     )
   }
 
@@ -277,7 +277,7 @@ export async function apiGetSharedCategoriesTree(tagsIds, signal, notif) {
     {
       tags: tagsIds.toString() || null,
     },
-    notif
+    notif,
   )
   return requestRes?.data || []
 }
@@ -291,7 +291,7 @@ export async function apiGetfavoritesCategoriesTree(tagsIds, signal, notif) {
     {
       tags: tagsIds.toString(),
     },
-    notif
+    notif,
   )
   return requestRes?.data || []
 }
@@ -302,15 +302,16 @@ export async function apiCreateOrganizationTag(
   organizationId,
   categoryId,
   name,
+  description,
   color,
   emoji,
-  notif
+  notif,
 ) {
   const requestRes = await sendRequest(
     `${BASE_API}/organizations/${organizationId}/tags`,
     { method: "post" },
-    { name, categoryId, color, emoji, organizationId },
-    notif
+    { name, description, categoryId, color, emoji, organizationId },
+    notif,
   )
   if (requestRes.status == "error") return requestRes
   return requestRes.data
@@ -321,7 +322,7 @@ export async function apiCreateTag(
   name,
   categoryId,
   scope = "organization",
-  notif
+  notif,
 ) {
   if (scope === "organization") {
     const requestRes = await sendRequest(
@@ -331,7 +332,7 @@ export async function apiCreateTag(
         name,
         categoryId,
       },
-      notif
+      notif,
     )
 
     if (requestRes.status == "error") return requestRes
@@ -345,7 +346,7 @@ export async function apiCreateTag(
         name,
         categoryId,
       },
-      notif
+      notif,
     )
 
     if (requestRes.status == "error") return requestRes
@@ -359,7 +360,7 @@ export async function apiUpdateTag(orgaId, tagId, payload, notif) {
     `${BASE_API}/organizations/${orgaId}/tags/${tagId}`,
     { method: "patch" },
     payload,
-    notif
+    notif,
   )
   return requestRes
 }
@@ -369,7 +370,7 @@ export async function apiDeleteTag(orgaId, tagId, notif) {
     `${BASE_API}/organizations/${orgaId}/tags/${tagId}`,
     { method: "delete" },
     {},
-    notif
+    notif,
   )
   return requestRes
 }
@@ -391,7 +392,7 @@ export async function apiSearchTags(
 
   { scope = "organization", possess = false },
   signal,
-  notif
+  notif,
 ) {
   if (scope === "organization") {
     const requestRes = await sendRequest(
@@ -403,7 +404,7 @@ export async function apiSearchTags(
         name,
         categoryType,
       },
-      notif
+      notif,
     )
     return requestRes?.data || []
   } else {
@@ -416,7 +417,7 @@ export async function apiSearchTags(
         categoryType,
         possess,
       },
-      notif
+      notif,
     )
     return requestRes?.data || []
   }
@@ -427,7 +428,7 @@ export async function apiSearchTagsById(
   tagsIds,
   scope = "organization",
   signal,
-  notif
+  notif,
 ) {
   if (!tagsIds || tagsIds.length === 0) return []
 
@@ -439,7 +440,7 @@ export async function apiSearchTagsById(
         type: "info",
         tags: tagsIds.toString(),
       },
-      notif
+      notif,
     )
     return requestRes?.data || []
   } else {
@@ -450,7 +451,7 @@ export async function apiSearchTagsById(
         type: "info",
         tags: tagsIds.toString(),
       },
-      notif
+      notif,
     )
     return requestRes?.data || []
   }

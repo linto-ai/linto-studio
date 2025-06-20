@@ -65,6 +65,7 @@ class TagModel extends MongoModel {
         created: dateTime,
         last_update: dateTime,
         name: payload.name,
+        description: payload.description,
         color: payload.color,
         emoji: payload.emoji,
         categoryId: this.getObjectId(payload.categoryId),

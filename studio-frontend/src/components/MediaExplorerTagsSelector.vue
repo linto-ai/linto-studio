@@ -1,9 +1,9 @@
 <template>
   <div class="media-explorer-tags-selector">
-    <Popover 
-      trigger="click" 
-      :track-mouse="false" 
-      position="bottom" 
+    <Popover
+      trigger="click"
+      :track-mouse="false"
+      position="bottom"
       overlay
       :class="{ 'has-filters': selectedTagIds.length > 0 }"
       width="280px">
@@ -16,28 +16,30 @@
           size="sm"
           title="Filtrer par tags">
           <template v-if="selectedTagIds.length === 0">Filtrer</template>
-          <template v-else class="filter-count">x{{ selectedTagIds.length }}</template>
+          <template v-else class="filter-count"
+            >x{{ selectedTagIds.length }}</template
+          >
         </Button>
       </template>
-      
+
       <template #content>
         <div class="tags-filter-popover">
           <div class="popover-header">
             <h4>Filtrer par tags</h4>
-            <button 
+            <button
               v-if="hasSelectedFilters"
               class="clear-all-link"
               @click="clearAllFilters">
               Tout effacer
             </button>
           </div>
-          
+
           <div class="tags-list">
             <div v-if="availableTags.length === 0" class="no-tags">
               Aucun tag disponible
             </div>
-            
-            <div 
+
+            <div
               v-for="tag in availableTags"
               :key="'tag-selected-' + tag._id"
               class="tag-option"
@@ -52,7 +54,7 @@
                 </span>
                 <span class="tag-name">{{ tag.name }}</span>
               </div>
-              
+
               <div class="tag-count" :data-count="getMediaCountForTag(tag._id)">
                 {{ getMediaCountForTag(tag._id) }}
               </div>
@@ -73,7 +75,9 @@
           class="filter-tag"
           :style="{ backgroundColor: getTagColor(tag) }"
           @click="removeTagFilter(tag._id)">
-          <span v-if="tag.emoji" class="filter-tag__name">{{ displayTagEmoji(tag) }}</span>
+          <span v-if="tag.emoji" class="filter-tag__name">{{
+            displayTagEmoji(tag)
+          }}</span>
           <span class="filter-tag__name">{{ tag.name }}</span>
           <span class="filter-tag__delete">
             <ph-icon
@@ -84,8 +88,8 @@
           </span>
         </span>
       </Tooltip>
-      
-      <button 
+
+      <button
         class="clear-filters-btn"
         @click="clearAllFilters"
         title="Effacer tous les filtres">
@@ -117,7 +121,7 @@ export default {
       allTags: (state) => state.tags,
       selectedTagIds: (state) => state.exploreSelectedTags,
     }),
-    
+
     // Show all available tags, not just those with media
     availableTags() {
       return this.allTags.sort((a, b) => {
@@ -130,7 +134,7 @@ export default {
         return a.name.localeCompare(b.name)
       })
     },
-    
+
     // Computed property to check if there are selected filters
     hasSelectedFilters() {
       return this.selectedTagIds && this.selectedTagIds.length > 0
@@ -143,24 +147,24 @@ export default {
       "setExploreSelectedTags",
     ]),
     getTagById(tagId) {
-      return this.allTags.find(tag => tag._id === tagId)
+      return this.allTags.find((tag) => tag._id === tagId)
     },
-    
+
     getTagTooltip(tag) {
       if (!tag) return ""
       const count = this.getMediaCountForTag(tag._id)
-      return `${tag.name} (${count} média${count > 1 ? 's' : ''})`
+      return `${tag.name} (${count} média${count > 1 ? "s" : ""})`
     },
-    
+
     getTagColor(tag) {
       return tag?.color || "var(--neutral-40)"
     },
-    
+
     displayTagEmoji(tag) {
       if (!tag) return ""
       return this.unifiedToEmoji(tag.emoji) || tag.name.charAt(0).toUpperCase()
     },
-    
+
     unifiedToEmoji(unified) {
       if (!unified) return ""
       return unified
@@ -168,36 +172,37 @@ export default {
         .map((u) => String.fromCodePoint(parseInt(u, 16)))
         .join("")
     },
-    
+
     getMediaCountForTag(tagId) {
-      return this.medias.filter(media => 
-        media.tags && media.tags.includes(tagId)
+      return this.medias.filter(
+        (media) => media.tags && media.tags.includes(tagId),
       ).length
     },
-    
+
     isTagSelected(tagId) {
-      return this.selectedTagIds.some(tag => tag._id === tagId)
+      return this.selectedTagIds.some((tag) => tag._id === tagId)
     },
-    
+
     toggleTagFilter(tagId) {
-      console.log("[TagsSelector] toggleTagFilter", { tagId, selectedTagIds: this.selectedTagIds.map(t=>t._id) })
+      console.log("[TagsSelector] toggleTagFilter", {
+        tagId,
+        selectedTagIds: this.selectedTagIds.map((t) => t._id),
+      })
       if (this.isTagSelected(tagId)) {
         const tagObj = this.getTagById(tagId) || { _id: tagId }
-        console.log("[TagsSelector] remove tag", tagObj)
         this.removeExploreSelectedTag(tagObj)
       } else {
         const tagObj = this.getTagById(tagId) || { _id: tagId }
-        console.log("[TagsSelector] add tag", tagObj)
         this.addExploreSelectedTag(tagObj)
       }
     },
-    
+
     removeTagFilter(tagId) {
       console.log("[TagsSelector] removeTagFilter", tagId)
       const tagObj = this.getTagById(tagId) || { _id: tagId }
       this.removeExploreSelectedTag(tagObj)
     },
-    
+
     clearAllFilters() {
       console.log("[TagsSelector] clearAllFilters")
       this.setExploreSelectedTags([])
@@ -481,7 +486,7 @@ export default {
   .selected-filters {
     max-width: 120px;
   }
-  
+
   .tags-filter-popover {
     width: 260px;
   }

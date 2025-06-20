@@ -35,6 +35,7 @@
           :emoji="tag.emoji"
           :color="getTagColor(tag)"
           :class="{ 'is-loading': loadingTagId === tag._id }"
+          size="xs"
           clickable
           @click="handleTagClick(tag)"
         >

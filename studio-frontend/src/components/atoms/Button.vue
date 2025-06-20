@@ -2,6 +2,7 @@
   <button
     class="btn"
     :class="classes"
+    :style="styles"
     :disabled="disabled || loading"
     v-bind="$attrs"
     :aria-disabled="disabled || loading"
@@ -154,6 +155,10 @@ export default {
           "neutral-hard",
         ].includes(value),
     },
+    borderColor: {
+      type: String,
+      required: false,
+    },
     size: {
       type: String,
       required: false,
@@ -272,6 +277,11 @@ export default {
 
       return classes
     },
+    styles() {
+      return {
+        borderColor: this.borderColor,
+      }
+    },
     iconClasses() {
       const classes = ["icon"]
       classes.push(this.size)
@@ -305,6 +315,12 @@ export default {
     align-items: center;
     flex: 1 1 auto;
     gap: 0.25em;
+  }
+
+  &.icon-only {
+    .btn-prefix-label {
+      gap: 0;
+    }
   }
 }
 </style>

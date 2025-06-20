@@ -45,7 +45,21 @@ const popupManager = new Vue({
         }
       }
 
-      // Close popups that are on top of the clicked one
+      // If the click occurred outside any popup/trigger (topPopupObject is null),
+      // we should only close the top-most popup instead of every popup in the stack.
+      if (!topPopupObject) {
+        const topOfStack = this.stack[this.stack.length - 1]
+        if (
+          topOfStack &&
+          topOfStack.rendererInstance &&
+          topOfStack.rendererInstance.closeOnClickOutside
+        ) {
+          topOfStack.rendererInstance.closeOnClickOutside()
+        }
+        return
+      }
+
+      // Otherwise, close popups that are above the clicked one.
       const stackCopy = [...this.stack]
       for (let i = stackCopy.length - 1; i >= 0; i--) {
         const popup = stackCopy[i]
@@ -53,7 +67,7 @@ const popupManager = new Vue({
           break
         }
 
-        // For tooltips clicked on trigger, always close them
+        // For tooltips clicked on the trigger, always close them.
         if (
           clickedOnTooltipTrigger &&
           popup.props.trigger === "hover" &&
@@ -65,7 +79,16 @@ const popupManager = new Vue({
           ) {
             popup.rendererInstance.closeOnClickOutside()
           }
+          // Skip closing underlying popups that are not tooltips.
+          // When we hit the first non-tooltip popup, stop processing.
           continue
+        }
+
+        // If the click was on a tooltip trigger, we only want to close
+        // the tooltip(s) themselves. Once we encounter a popup that is not
+        // a close-on-click tooltip, exit the loop to avoid closing parent modals.
+        if (clickedOnTooltipTrigger) {
+          break
         }
 
         if (

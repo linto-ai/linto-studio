@@ -1,7 +1,9 @@
 <template>
-  <div class="v2-layout">
+  <div class="v2-layout" :class="{ 'no-sidebar': !showSidebar }">
     <div class="v2-layout__content">
-      <aside class="v2-layout__sidebar">
+      <aside
+        class="v2-layout__sidebar"
+        :class="{ 'v2-layout__sidebar--hidden': !showSidebar }">
         <BurgerMenu :backoffice="backoffice">
           <slot name="sidebar"></slot>
         </BurgerMenu>
@@ -9,6 +11,13 @@
       <main class="v2-layout__main">
         <HeaderBar :hasHeaderBarSlot="hasHeaderBarSlot">
           <template v-if="!hasHeaderBarSlot" v-slot:header-bar-left>
+            <Button
+              icon="sidebar"
+              border-color="transparent"
+              variant="outline"
+              shape="circle"
+              @click="toggleSidebar"
+              class="icon-only" />
             <Breadcrumb />
           </template>
           <template v-if="!hasHeaderBarSlot" v-slot:header-bar-right>
@@ -61,7 +70,7 @@ export default {
   },
   data() {
     return {
-      showBurgerMenu: true,
+      showSidebar: true,
     }
   },
   computed: {
@@ -74,17 +83,8 @@ export default {
   },
   mounted() {},
   methods: {
-    clickOutsideBurgerMenu() {
-      if (
-        this.showBurgerMenu &&
-        window.matchMedia("(max-width: 1100px)").matches
-      ) {
-        this.toggleBurger()
-      }
-    },
-    toggleBurger() {
-      this.showBurgerMenu = !this.showBurgerMenu
-      bus.$emit("toggle-burger", this.showBurgerMenu)
+    toggleSidebar() {
+      this.showSidebar = !this.showSidebar
     },
   },
   components: {
@@ -105,6 +105,12 @@ export default {
   display: flex;
   flex-direction: column;
   flex: 1;
+
+  &.no-sidebar {
+    .v2-layout__content {
+      padding-left: 0;
+    }
+  }
 }
 
 .v2-layout__content {
@@ -116,6 +122,7 @@ export default {
   padding-left: 20.5em;
   flex: 1 1 auto;
   min-height: 0;
+  transition: padding-left 0.3s ease-in-out;
 
   .v2-layout__sidebar {
     background-color: var(--background-secondary);
@@ -129,6 +136,20 @@ export default {
     width: 20em;
     height: 100%;
     overflow: auto;
+    transition: width 0.3s ease-in-out;
+
+    &--hidden {
+      width: 0;
+      border: none;
+
+      .burger-menu {
+        overflow: auto;
+
+        .card-credits {
+          display: none;
+        }
+      }
+    }
   }
 
   .v2-layout__main {

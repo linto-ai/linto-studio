@@ -94,6 +94,7 @@ export default {
           rootGetters["organizations/getCurrentOrganizationScope"],
           getters.getCategoryByName("tags")._id,
           tag.name,
+          tag.description,
           tag.color,
           tag.emoji,
         )
@@ -242,7 +243,7 @@ export default {
       }
     },
     setExploreSelectedTags({ commit }, tags) {
-      commit("setExploreSelectedTags", tags)
+      commit("setExploreSelectedTags", tags.filter((t) => !!t))
     },
     addExploreSelectedTag({ commit, state }, tag) {
       commit("setExploreSelectedTags", [...state.exploreSelectedTags, tag])
@@ -262,6 +263,7 @@ export default {
       window.history.pushState({}, "", url)
     },
     toggleTag({ dispatch, state }, tag) {
+      console.log("[tags] toggleTag", tag)
       if (state.exploreSelectedTags.some((t) => t._id === tag._id)) {
         dispatch("removeExploreSelectedTag", tag)
       } else {

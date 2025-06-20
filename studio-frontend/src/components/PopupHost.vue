@@ -31,11 +31,17 @@ export default {
       return this.stack.some((instance) => instance.props.overlay)
     },
     overlayZIndex() {
-      // The overlay should be just below the lowest modal that has an overlay.
-      const firstOverlayInstance = this.stack.find(
-        (instance) => instance.props.overlay,
+      const overlayInstances = this.stack.filter(
+        (instance) => instance.props && instance.props.overlay,
       )
-      return firstOverlayInstance ? firstOverlayInstance.zIndex - 1 : 0
+
+      if (!overlayInstances.length) {
+        return 0
+      }
+
+      const topOverlayInstance = overlayInstances[overlayInstances.length - 1]
+
+      return topOverlayInstance.zIndex - 1
     },
   },
   created() {

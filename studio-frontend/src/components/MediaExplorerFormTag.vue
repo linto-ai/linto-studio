@@ -1,9 +1,10 @@
 <template>
   <Modal
-    title="Créer un tag"
+    :title="tag ? 'Modifier un tag' : 'Créer un tag'"
     isForm
     @submit="onSubmit"
     :loading="loading"
+    :value="value"
     overlay>
     <template #trigger="{ open }">
       <slot name="trigger" :open="open"></slot>
@@ -25,7 +26,7 @@
                   :avatar-text="selectedEmoji ? selectedEmoji.native : null"
                   :avatar-color="selectedEmoji ? 'primary-soft' : null"
                   variant="outline"
-                  size="sm"
+                  size="md"
                   @mouseenter.prevent
                   @mouseleave.prevent />
               </template>
@@ -44,8 +45,8 @@
                 <Button
                   class="neutral outline icon-only"
                   variant="outline"
-                  size="sm"
-                  :avatar-color="color" />
+                  size="md"
+                  :avatar-color="computedAvatarColor" />
               </template>
               <template #content>
                 <Box class="color-picker p-1">
@@ -53,7 +54,7 @@
                     class="color-picker__color"
                     v-for="color in TAG_COLORS"
                     :key="color"
-                    :style="{ backgroundColor: color }"
+                    :style="{ backgroundColor: `var(--material-${color}-500)` }"
                     @click="handlePickColor(color)"></div>
                 </Box>
               </template>
@@ -64,6 +65,14 @@
               class="input-item__input"
               v-model="name" />
           </span>
+        </div>
+        <div class="input-group">
+          <label for="tag-name">Description du tag</label>
+          <textarea
+            placeholder="Description du tag"
+            v-model="description"
+            rows="3"
+            maxlength="255" />
         </div>
       </div>
     </template>
@@ -76,31 +85,31 @@ import Popover from "@/components/atoms/Popover.vue"
 import { Picker } from "emoji-mart-vue"
 import "emoji-mart-vue/css/emoji-mart.css"
 
+/*
+ * Material color identifiers defined in _material-colors.scss
+ * Only the base name (without the shade number) is stored.
+ * The preview uses shade 500 to give a medium-tone overview.
+ */
 const TAG_COLORS = [
-  "#931F1F",
-  "#933C1F",
-  "#93591F",
-  "#93761F",
-  "#93931F",
-  "#76931F",
-  "#59931F",
-  "#3C931F",
-  "#1F931F",
-  "#1F933C",
-  "#1F9359",
-  "#1F9376",
-  "#1F9393",
-  "#1F7693",
-  "#1F5993",
-  "#1F3C93",
-  "#1F1F93",
-  "#3C1F93",
-  "#591F93",
-  "#761F93",
-  "#931F93",
-  "#931F76",
-  "#931F59",
-  "#931F3C",
+  "red",
+  "pink",
+  "purple",
+  "deep-purple",
+  "indigo",
+  "blue",
+  "light-blue",
+  "cyan",
+  "teal",
+  "green",
+  "light-green",
+  "lime",
+  "yellow",
+  "amber",
+  "orange",
+  "deep-orange",
+  "brown",
+  "grey",
+  "blue-grey",
 ]
 
 export default {
@@ -115,15 +124,36 @@ export default {
       type: Boolean,
       default: false,
     },
+    tag: {
+      type: Object,
+      default: () => ({}),
+    },
+    value: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
       selectedEmoji: null,
       name: "",
-      color: "#11977c",
+      description: "",
+      color: "teal",
       colorPopoverOpen: false,
       TAG_COLORS,
     }
+  },
+  watch: {
+    tag: {
+      handler(tag) {
+        if (!tag) return
+        this.name = tag.name
+        this.description = tag.description
+        this.color = tag.color
+        this.selectedEmoji = tag.emoji
+      },
+      immediate: true,
+    },
   },
   methods: {
     handlePickColor(color) {
@@ -136,9 +166,15 @@ export default {
     onSubmit() {
       this.$emit("submit", {
         name: this.name,
+        description: this.description,
         color: this.color,
         emoji: this.selectedEmoji?.unified || "",
       })
+    },
+  },
+  computed: {
+    computedAvatarColor() {
+      return `var(--material-${this.color}-500)`
     },
   },
 }
@@ -149,7 +185,7 @@ export default {
   display: flex;
   flex-wrap: wrap;
   gap: 0.25em;
-  max-width: 200px;
+  max-width: 240px;
 
   &__color {
     width: 24px;

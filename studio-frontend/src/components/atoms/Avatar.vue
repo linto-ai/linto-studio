@@ -1,8 +1,12 @@
 <template>
   <div
     class="avatar"
-    :class="[size, color, clickable]"
-    :style="{ backgroundColor: color }"
+    :class="[size, color, clickable, circle ? 'circle' : '']"
+    :style="{
+      backgroundColor: computedColor,
+      width: computedSize,
+      height: computedSize,
+    }"
     @click="$emit('click')">
     <img v-if="src" :src="src" :alt="text" />
     <ph-icon
@@ -11,9 +15,20 @@
       class="avatar"
       :size="size"
       :color="colorIcon" />
-    <span v-else-if="text" class="avatar-text" :class="[colorText]" :style="{ color: colorText }">{{
-      text
-    }}</span>
+    <span
+      v-else-if="text"
+      class="avatar-text"
+      :class="[colorText]"
+      :style="{ color: colorText }"
+      >{{ text }}</span
+    >
+    <span
+      v-else-if="emoji"
+      class="avatar-emoji"
+      :class="[colorText]"
+      :style="{ color: colorText }"
+      >{{ unifiedToEmoji }}</span
+    >
     <slot></slot>
   </div>
 </template>
@@ -31,10 +46,23 @@ export default {
       required: false,
       default: "",
     },
+    emoji: {
+      type: String,
+      required: false,
+    },
+    circle: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     color: {
       type: String,
       required: false,
       default: "primary", // primary, secondary, tertiary… or any hex color
+    },
+    materialColor: {
+      type: String,
+      required: false,
     },
     colorIcon: {
       type: String,
@@ -52,7 +80,7 @@ export default {
       default: "",
     },
     size: {
-      type: String,
+      type: [Number, String],
       required: false,
       default: "sm", // xs, sm, md, lg, xl
     },
@@ -60,6 +88,28 @@ export default {
   computed: {
     clickable() {
       return this.$listeners.click ? "clickable" : ""
+    },
+    unifiedToEmoji() {
+      const unified = this.emoji
+      if (!unified) return ""
+
+      console.log("[Avatar] unifiedToEmoji", unified)
+      return unified
+        .split("-")
+        .map((u) => String.fromCodePoint(parseInt(u, 16)))
+        .join("")
+    },
+    computedColor() {
+      if (this.materialColor) {
+        return `var(--material-${this.materialColor}-${this.active ? 500 : 100})`
+      }
+      return this.color
+    },
+    computedSize() {
+      if (typeof this.size === "number") {
+        return this.size + "px"
+      }
+      return this.size
     },
   },
 }
@@ -84,6 +134,10 @@ a:hover .avatar {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+
+  &.circle {
+    border-radius: 50%;
+  }
 
   &.clickable {
     cursor: pointer;

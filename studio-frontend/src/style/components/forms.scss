@@ -53,6 +53,19 @@ textarea {
   font-family: var(--font-family);
   font: inherit;
   height: 6rem;
+  border: var(--border-input);
+  border-radius: 4px;
+  padding: 0.25em 0.5em;
+  background-color: var(--background-primary);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  width: 100%;
+  flex: 1;
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
+  resize: vertical;
 }
 
 .input-group {

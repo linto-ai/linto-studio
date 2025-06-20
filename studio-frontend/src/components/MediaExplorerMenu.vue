@@ -65,14 +65,6 @@
               {{ $t("navigation.tabs.explore_labels") }}
             </span>
           </span>
-          <ModalTagManagement
-            :selected-tags="selectedTags">
-            <template #trigger>
-              <Button icon="plus" size="sm" color="primary">
-                Add tag
-              </Button>
-            </template>
-          </ModalTagManagement>
         </span>
       </MediaExplorerMenuLabels>
     </div>

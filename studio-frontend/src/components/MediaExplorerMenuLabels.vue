@@ -3,28 +3,51 @@
     <nav>
       <ul>
         <li v-for="tag in orderedTags" :key="tag._id">
-            <ChipTag
-              :name="tag.name"
-              :emoji="tag.emoji"
-              :color="tag.color"
-              :count="tag.mediaCount"
-              :active="selectedTags.some((t) => t._id === tag._id)"
-              @click="handleTagClick(tag)"
-            />
+          <ChipTag
+            :name="tag.name"
+            :emoji="tag.emoji"
+            :color="tag.color"
+            :count="tag.mediaCount"
+            :active="selectedTags.some((t) => t._id === tag._id)"
+            size="sm"
+            @click="handleTagClick(tag)" />
         </li>
       </ul>
+
+      <div class="media-explorer-menu-labels__footer">
+        <Button size="sm" color="primary-soft" @click.stop="showAllTags = true">
+          Show all
+        </Button>
+
+        <Button
+          size="sm"
+          color="primary-soft"
+          @click.stop="showModalTagManagement = true">
+          Manage
+        </Button>
+      </div>
     </nav>
+    <ModalTagManagement v-model="showModalTagManagement" />
   </div>
 </template>
 
 <script>
 import { mapGetters } from "vuex"
 import MediaExplorerItemTagBox from "./MediaExplorerItemTagBox.vue"
+import ChipTag from "./atoms/ChipTag.vue"
+import ModalTagManagement from "./ModalTagManagement.vue"
 
 export default {
   name: "MediaExplorerMenuLabels",
   components: {
     MediaExplorerItemTagBox,
+    ModalTagManagement,
+  },
+  data() {
+    return {
+      showModalTagManagement: false,
+      showAllTags: false,
+    }
   },
   computed: {
     ...mapGetters("tags", {
@@ -38,7 +61,11 @@ export default {
       return this.tags.filter((tag) => !this.selectedTags.includes(tag._id))
     },
     orderedTags() {
-      return this.tags.sort((a, b) => a.name.localeCompare(b.name))
+      const limit = this.showAllTags ? this.tags.length : 5
+      return this.tags
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .sort((a, b) => b.mediaCount - a.mediaCount)
+        .slice(0, limit)
     },
   },
   methods: {
@@ -57,7 +84,8 @@ export default {
   display: flex;
 
   nav {
-    padding: .5em 0;
+    padding: 0.5em 0;
+
     ul {
       display: flex;
       flex-direction: column;
@@ -65,6 +93,7 @@ export default {
       list-style: none;
       padding-inline-start: 45px;
     }
+
     li {
       display: flex;
       align-items: center;
@@ -72,9 +101,23 @@ export default {
       padding: 0;
       margin: 0;
 
+      a {
+        padding: 0.2em;
+        gap: 0.1em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+
+        svg {
+          width: 1em;
+          height: 1em;
+          margin-right: 0.2em;
+        }
+      }
+
       & > div {
         display: flex;
-        width: 100%;
 
         .chip-tag__name {
           flex: 1;
@@ -82,6 +125,16 @@ export default {
         }
       }
     }
+  }
+
+  &__footer {
+    margin-top: 0.5em !important;
+    padding: 0.5em;
+    padding-left: 46px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-small);
   }
 }
 </style>
