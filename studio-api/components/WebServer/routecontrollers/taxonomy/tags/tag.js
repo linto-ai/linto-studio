@@ -13,7 +13,9 @@ function checkBody(req, res, next) {
   if (!req.body.categoryId)
     throw new TagUnsupportedMediaType("categoryId is required")
   if (req.body.name && !req.body.name.match(/^[a-zA-Z0-9]{1,255}$/))
-    throw new TagUnsupportedMediaType("name must be alphanumeric and less than 255 characters")
+    throw new TagUnsupportedMediaType(
+      "name must be alphanumeric and less than 255 characters",
+    )
   if (req.body.color) {
     if (!req.body.color.match(/^#([0-9a-fA-F]{6})$/))
       throw new TagUnsupportedMediaType("color must be a valid hex color")
@@ -28,13 +30,12 @@ function checkBody(req, res, next) {
 
 async function getTags(req, res, next) {
   try {
-    if (!req.query.categoryId)
-      throw new TagError("categoryId is required")
+    if (!req.query.categoryId) throw new TagError("categoryId is required")
 
     const tags = await model.tags.getByOrgAndCategoryId(
       req.params.organizationId,
       req.query.categoryId,
-      req.query.withMediaCount
+      req.query.withMediaCount,
     )
     res.status(200).send(tags)
   } catch (err) {
@@ -54,7 +55,7 @@ async function createTag(req, res, next) {
     if (category.length === 0) throw new TagError("categoryId not found")
 
     const result = await model.tags.create({
-      ...req.body
+      ...req.body,
     })
     console.log("result", result)
     if (result.insertedCount !== 1)
@@ -83,10 +84,17 @@ async function updateTag(req, res, next) {
       if (category.length === 0) throw new TagError("categoryId not found")
       tag[0].categoryId = req.body.categoryId
     }
+    if (req.body.description) tag[0].description = req.body.description
+    if (req.body.color) tag[0].color = req.body.color
+    if (req.body.emoji) tag[0].emoji = req.body.emoji
 
     const result = await model.tags.update(tag[0])
     if (result.modifiedCount === 0) res.status(304).send("Nothing to update")
-    else res.status(200).send("Tag updated")
+    else {
+      const tag_updated = await model.tags.getById(req.params.tagId)
+
+      res.status(200).send(tag_updated[0])
+    }
   } catch (err) {
     next(err)
   }

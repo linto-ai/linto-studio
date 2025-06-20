@@ -4,7 +4,7 @@
     isForm
     @submit="onSubmit"
     :loading="loading"
-    :value="value"
+    v-model="isOpen"
     overlay>
     <template #trigger="{ open }">
       <slot name="trigger" :open="open"></slot>
@@ -175,6 +175,14 @@ export default {
   computed: {
     computedAvatarColor() {
       return `var(--material-${this.color}-500)`
+    },
+    isOpen: {
+      get() {
+        return this.value
+      },
+      set(value) {
+        this.$emit("input", value)
+      },
     },
   },
 }

@@ -3,6 +3,7 @@ import {
   apiGetSystemCategories,
   apiCreateOrganizationTag,
   apiDeleteTag,
+  apiUpdateTag,
 } from "@/api/tag"
 import {
   apiAddTagToConversation,
@@ -117,6 +118,36 @@ export default {
           "system/addNotification",
           {
             message: "Error creating tag",
+            type: "error",
+          },
+          { root: true },
+        )
+        throw error
+      } finally {
+        commit("setLoading", false)
+      }
+    },
+    async updateTag({ commit, getters, rootGetters, state }, tag) {
+      commit("setLoading", true)
+      try {
+        await apiUpdateTag(
+          rootGetters["organizations/getCurrentOrganizationScope"],
+          tag._id,
+          {
+            name: tag.name,
+            description: tag.description,
+            color: tag.color,
+            emoji: tag.emoji,
+          },
+        )
+        commit("setTags", state.tags.map((t) => (t._id === tag._id ? tag : t)))
+      } catch (error) {
+        console.error("Error updating tag in store:", error)
+        commit("setError", error)
+        commit(
+          "system/addNotification",
+          {
+            message: "Error updating tag",
             type: "error",
           },
           { root: true },

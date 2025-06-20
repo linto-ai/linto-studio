@@ -53,9 +53,8 @@ export default {
       default: false,
     },
     size: {
-      type: String,
+      type: [Number, String],
       default: "md",
-      validator: (value) => ["sm", "md", "lg"].includes(value),
     },
     count: {
       type: Number,
@@ -117,14 +116,21 @@ export default {
     border-color 0.2s,
     background 0.2s;
 
+  &.xs {
+    font-size: 0.8em;
+    padding: 0.05em 0.25em 0.05em 0.25em;
+  }
   &.sm {
     font-size: 0.9em;
+    padding: 0.1em 0.45em 0.1em 0.45em;
   }
   &.lg {
     font-size: 1.1em;
+    padding: 0.15em 0.65em 0.15em 0.65em;
   }
   &.md {
     font-size: 1em;
+    padding: 0.1em 0.45em 0.1em 0.45em;
   }
 
   &.clickable {

@@ -18,34 +18,17 @@ class TagModel extends MongoModel {
     super("tags") // define name of 'users' collection elsewhere?
   }
 
+  /**
+   * Create default tags for a given organization and category
+   * @param {*} organizationId
+   * @param {*} categoryId
+   * @returns {Promise<Array<Tag>>}
+   *
+   * @todo: add default tags to the database (customizable via config)
+   */
   async createDefaultTags(organizationId, categoryId) {
     try {
-      const tags = [
-        {
-          name: "red",
-          color: "red",
-        },
-        {
-          name: "blue",
-          color: "blue",
-        },
-        {
-          name: "green",
-          color: "green",
-        },
-        {
-          name: "yellow",
-          color: "yellow",
-        },
-        {
-          name: "purple",
-          color: "purple",
-        },
-        {
-          name: "orange",
-          color: "orange",
-        },
-      ].map((tag) => ({
+      const tags = [].map((tag) => ({
         ...tag,
         organizationId: this.getObjectId(organizationId),
         categoryId: this.getObjectId(categoryId),
@@ -127,7 +110,11 @@ class TagModel extends MongoModel {
     }
   }
 
-  async getByOrgAndCategoryId(organizationId, categoryId, withMediaCount = false) {
+  async getByOrgAndCategoryId(
+    organizationId,
+    categoryId,
+    withMediaCount = false,
+  ) {
     try {
       const pipeline = []
 

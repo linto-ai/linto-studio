@@ -14,31 +14,46 @@
     <template #content>
       <div class="tags-list">
         <ul>
-          <li v-for="tag in tags" :key="tag._id">
-            <Avatar
-              :material-color="tag.color"
-              :size="54"
-              :emoji="tag.emoji" />
+          <li v-for="tag in tags" :key="`tags-list-item--${tag._id}`">
+            <Avatar :material-color="tag.color" :size="54" :emoji="tag.emoji" />
             <span class="tags-list__data">
-              <span class="tags-list__name">{{ tag.name }}</span>
-              <span class="tags-list__description">{{ tag.description }}</span>
+              <span class="tags-list__name" :aria-label="tag.name">{{
+                tag.name
+              }}</span>
+              <span
+                class="tags-list__description"
+                :aria-label="tag.description"
+                >{{ tag.description }}</span
+              >
             </span>
             <Button
               variant="outline"
               color="primary"
               icon="trash"
               size="xs"
-              @click="onTagEdit(tag)">
+              @click="openModalTagEdit(tag)">
               Edit
             </Button>
+            <Alert
+              variant="error"
+              icon="trash"
+              size="xs"
+              :title="`Supprimer le tag ${tag.name} ?`"
+              :message="`Vous ne pourrez plus utiliser ce tag dans les médias.`"
+              @confirm="onTagDelete(tag)">
+              <Button variant="outline" color="tertiary" icon="trash" size="xs"
+                >Delete</Button
+              >
+            </Alert>
           </li>
         </ul>
       </div>
       <MediaExplorerFormTag
-        v-model="modalTagEdit"
+        v-model="modalTagEditOpen"
         :tag="modalTagEdit"
         @submit="onTagEdit"
-        @cancel="modalTagEdit = null" />
+        @cancel="modalTagEditOpen = false"
+        @close="modalTagEditOpen = false" />
     </template>
     <template #actions-right>
       <MediaExplorerFormTag @submit="onSubmit" :loading="loading">
@@ -61,6 +76,7 @@
 import { mapState } from "vuex"
 import Modal from "@/components/molecules/Modal.vue"
 import MediaExplorerFormTag from "@/components/MediaExplorerFormTag.vue"
+import Alert from "./atoms/Alert.vue"
 
 export default {
   name: "ModalTagManagement",
@@ -75,14 +91,27 @@ export default {
     ...mapState("tags", {
       tags: (state) => [...state.tags],
     }),
+    isOpen: {
+      get() {
+        return this.value
+      },
+      set(value) {
+        this.$emit("input", value)
+      },
+    },
   },
   data() {
     return {
       loading: false,
+      modalTagEditOpen: false,
       modalTagEdit: null,
     }
   },
   methods: {
+    openModalTagEdit(tag) {
+      this.modalTagEdit = tag
+      this.modalTagEditOpen = true
+    },
     async onSubmit(tag) {
       try {
         this.loading = true
@@ -95,11 +124,23 @@ export default {
       }
     },
     async onTagEdit(tag) {
-      this.modalTagEdit = tag
+      try {
+        this.loading = true
+        await this.$store.dispatch("tags/updateTag", {
+          ...tag,
+          _id: this.modalTagEdit._id,
+        })
+        this.$emit("submit", tag)
+      } catch (error) {
+        console.error("Error updating tag", error)
+      } finally {
+        this.loading = false
+      }
     },
     async onTagDelete(tag) {
       try {
         this.loading = true
+        console.log("Deleting tag", tag)
         await this.$store.dispatch("tags/deleteTag", tag)
         console.log("Tag deleted successfully:", tag.name)
       } catch (error) {
@@ -135,6 +176,7 @@ export default {
 
     li {
       display: flex;
+      align-items: center;
       gap: 0.25em;
       background-color: var(--background-primary);
       border-radius: 4px;
@@ -148,13 +190,22 @@ export default {
       .tags-list__data {
         display: flex;
         flex-direction: column;
-        gap: 0.25em;
+        gap: 0.05em;
         flex: 1;
 
         .tags-list__name {
           font-weight: 600;
           text-transform: uppercase;
           color: var(--text-color);
+        }
+
+        // maximum 2 lines
+        .tags-list__description {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
       }
 
