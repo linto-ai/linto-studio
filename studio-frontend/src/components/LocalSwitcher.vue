@@ -34,7 +34,6 @@
 </template>
 <script>
 import CustomSelect from "@/components/molecules/CustomSelect.vue"
-import PopoverList from "@/components/molecules/PopoverList.vue"
 
 export default {
   props: {
@@ -79,7 +78,6 @@ export default {
   },
   components: {
     CustomSelect,
-    PopoverList,
   },
 }
 </script>

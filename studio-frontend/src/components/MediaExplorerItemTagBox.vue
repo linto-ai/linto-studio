@@ -22,23 +22,20 @@
       <hr />
       <div
         v-if="tagsObjects.length"
-        class="flex row gap-small flex-wrap selected-tags">
-        <span class="tag-box__selected-tags-icon">
-          <ph-icon name="tag" weight="bold" color="primary" />
-        </span>
+        class="selected-tags">
         <ChipTag
           v-for="tag in tagsObjects"
           :key="tag._id"
-          :name="loadingTagId === tag._id ? '' : tag.name"
+          :name="tag.name"
           :emoji="tag.emoji"
-          :color="getTagColor(tag)"
+          :color="tag.color"
+          size="sm"
           :active="selectedTagsIds.includes(tag._id)"
-          :class="{ 'is-loading': loadingTagId === tag._id }"
           @click="onTagClick(tag)">
-          <span
-            v-if="loadingTagId === tag._id"
-            class="chip-tag__spinner"></span>
         </ChipTag>
+      </div>
+      <div>
+        toto
       </div>
     </div>
   </Box>
@@ -164,15 +161,14 @@ export default {
 
 <style lang="scss" scoped>
 .tag-box {
-  width: 320px;
   max-width: 100%;
 
   hr {
     margin: 0.25em 0;
     margin-bottom: 0;
-    background-color: var(--primary-color);
+    background-color: var(--primary-soft);
     border: none;
-    height: 2px;
+    height: 1px;
   }
 
   &__footer {
@@ -191,14 +187,15 @@ export default {
 .tag-box__content {
   .selected-tags {
     padding: 0.25em;
-    flex-direction: row;
+    flex-direction: column;
     display: flex;
     gap: 0.25em;
-    flex-wrap: wrap;
     align-items: flex-start;
     border-bottom: 1px solid var(--primary-color);
     background-color: var(--primary-soft);
     align-items: center;
+    max-height: 200px;
+    overflow-y: auto;
 
     .tag-box__selected-tags-icon {
       display: flex;
@@ -257,7 +254,6 @@ export default {
 .tag-box__search-input {
   flex: 1 1 0;
   min-width: 0;
-  font-size: 0.95em;
   padding: 0.2em 0.5em;
   border-radius: 4px;
   border: 1px solid var(--neutral-30);
@@ -265,6 +261,7 @@ export default {
   color: var(--neutral-100);
   outline: none;
   transition: border-color 0.2s;
+  width: 100%;
 }
 .tag-box__search-input:focus {
   border-color: var(--primary-color);

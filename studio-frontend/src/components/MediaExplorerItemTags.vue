@@ -8,7 +8,7 @@
         :track-mouse="false"
         position="bottom"
         overlay
-        width="280px">
+        width="200px">
         <template #trigger>
           <Button
             class="neutral outline icon-only"
@@ -31,18 +31,12 @@
         v-for="tag in mediatags"
         :text="tag.name">
         <ChipTag
-          :name="loadingTagId === tag._id ? '' : tag.name"
+          :name="tag.name"
           :emoji="tag.emoji"
           :color="getTagColor(tag)"
-          :class="{ 'is-loading': loadingTagId === tag._id }"
-          size="xs"
-          clickable
           @click="handleTagClick(tag)"
-        >
-          <span
-            v-if="loadingTagId === tag._id"
-            class="chip-tag__spinner"></span>
-        </ChipTag>
+          size="xs"
+        />
       </Tooltip>
     </span>
   </span>

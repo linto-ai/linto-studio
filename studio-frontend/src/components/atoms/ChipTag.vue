@@ -76,17 +76,7 @@ export default {
       return `var(--material-${this.color}-${this.active ? 500 : 100})`
     },
     colorText() {
-      const LOW_CONTRAST_COLORS = ["yellow"]
-      console.log(
-        "[ChipTag] colorText",
-        this.color,
-        this.active,
-        LOW_CONTRAST_COLORS.includes(this.color),
-      )
-      if (this.active && !LOW_CONTRAST_COLORS.includes(this.color)) {
-        return "var(--primary-soft)"
-      }
-      return "var(--text-color)"
+      return `var(--material-${this.color}-900)`
     },
   },
   methods: {

@@ -15,8 +15,11 @@
       </ul>
 
       <div class="media-explorer-menu-labels__footer">
-        <Button size="sm" color="primary-soft" @click.stop="showAllTags = true">
-          Show all
+        <Button
+          size="sm"
+          color="primary-soft"
+          @click.stop="showAllTags = !showAllTags">
+          {{ showAllTags ? "Show less" : "Show all" }}
         </Button>
 
         <Button
@@ -92,6 +95,8 @@ export default {
       gap: var(--spacing-small);
       list-style: none;
       padding-inline-start: 45px;
+      max-height: 240px;
+      overflow-y: auto;
     }
 
     li {

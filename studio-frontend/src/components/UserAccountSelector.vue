@@ -30,7 +30,6 @@ import userAvatar from "@/tools/userAvatar"
 import { getColorFromText } from "@/tools/colors"
 
 import UserProfilePicture from "@/components/atoms/UserProfilePicture.vue"
-import PopoverList from "@/components/molecules/PopoverList.vue"
 
 export default {
   mixins: [orgaRoleMixin, platformRoleMixin],
@@ -130,7 +129,6 @@ export default {
   },
   components: {
     UserProfilePicture,
-    PopoverList,
   },
 }
 </script>

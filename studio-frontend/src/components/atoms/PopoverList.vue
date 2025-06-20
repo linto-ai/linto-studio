@@ -7,7 +7,9 @@
     ref="popover">
     <template #trigger="{ open }">
       <slot name="trigger" :open="open">
-        <Button v-bind="$attrs" :icon="open ? 'caret-up' : 'caret-down'" />
+        <Button
+          :icon="open ? 'caret-up' : 'caret-down'"
+          v-bind="$attrs" />
       </slot>
     </template>
     <template #content>
@@ -23,7 +25,8 @@
             :icon-right="item.iconRight"
             @click="handleClickItem(item)"
             :variant="selection ? 'solid' : 'outline'"
-            :size="size">
+            :size="size"
+            v-bind="item">
             {{ item.name || item.text }}
           </Button>
         </div>

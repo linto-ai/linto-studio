@@ -35,6 +35,8 @@
                   @select="onSelectEmoji"
                   :showPreview="false"
                   :showSkinTones="false"
+                  set="twitter"
+                  :sheetSize="32"
                   :title="'Choisir un emoji'"
                   :emoji="selectedEmoji ? selectedEmoji.id : 'smile'"
                   @click.stop />
@@ -128,10 +130,7 @@ export default {
       type: Object,
       default: () => ({}),
     },
-    value: {
-      type: Boolean,
-      default: false,
-    },
+    value: Boolean,
   },
   data() {
     return {
@@ -141,6 +140,7 @@ export default {
       color: "teal",
       colorPopoverOpen: false,
       TAG_COLORS,
+      internalOpen: false,
     }
   },
   watch: {
@@ -170,6 +170,11 @@ export default {
         color: this.color,
         emoji: this.selectedEmoji?.unified || "",
       })
+
+      this.name = ""
+      this.description = ""
+      this.color = "teal"
+      this.selectedEmoji = null
     },
   },
   computed: {
@@ -178,10 +183,28 @@ export default {
     },
     isOpen: {
       get() {
-        return this.value
+        const isControlled =
+          this.$options.propsData &&
+          Object.prototype.hasOwnProperty.call(
+            this.$options.propsData,
+            "value",
+          )
+
+        return isControlled ? this.value : this.internalOpen
       },
-      set(value) {
-        this.$emit("input", value)
+      set(val) {
+        const isControlled =
+          this.$options.propsData &&
+          Object.prototype.hasOwnProperty.call(
+            this.$options.propsData,
+            "value",
+          )
+
+        if (isControlled) {
+          this.$emit("input", val)
+        } else {
+          this.internalOpen = val
+        }
       },
     },
   },

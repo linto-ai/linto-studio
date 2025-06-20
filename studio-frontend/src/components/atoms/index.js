@@ -23,6 +23,7 @@ import Tooltip from './Tooltip.vue';
 import Emoji from './Emoji.vue';
 import Button from './Button.vue';
 import Breadcrumb from './Breadcrumb.vue';
+import PopoverList from './PopoverList.vue';
 
 const components = [
   Avatar,
@@ -50,6 +51,7 @@ const components = [
   Emoji,
   Button,
   Breadcrumb,
+  PopoverList,
 ];
 
 const validateComponents = c => c && typeof c.name === 'string' && c.name.length > 0

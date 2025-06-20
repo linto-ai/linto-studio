@@ -42,7 +42,7 @@ export default {
         },
         borderColor: {
             type: String,
-            default: "neutral-40",
+            default: "primary",
         },
         borderRadius: {
             type: String,

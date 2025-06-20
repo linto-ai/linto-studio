@@ -56,7 +56,6 @@ import CustomSelect from "@/components/molecules/CustomSelect.vue"
 import Checkbox from "@/components/atoms/Checkbox.vue"
 import SwitchInput from "@/components/atoms/SwitchInput.vue"
 import Radio from "@/components/atoms/Radio.vue"
-import PopoverList from "@/components/molecules/PopoverList.vue"
 
 import { transcriberProfileModelMixin } from "@/mixins/transcriberProfileModel.js"
 export default {
@@ -195,7 +194,6 @@ export default {
     CustomSelect,
     SwitchInput,
     Radio,
-    PopoverList,
   },
 }
 </script>
