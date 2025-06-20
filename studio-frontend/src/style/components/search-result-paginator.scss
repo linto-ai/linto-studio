@@ -1,3 +1,4 @@
+@layer base {
 .search-result-paginator {
   background-color: #d3d3d357;
   padding: 2px;
@@ -9,4 +10,5 @@
 
 .search-result-paginator .label {
   text-align: center;
+}
 }

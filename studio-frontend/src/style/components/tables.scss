@@ -1,93 +1,95 @@
-table {
-  border-spacing: 0px;
-  border: var(--border-block);
-  border-radius: 4px;
-  background-color: var(--background-secondary);
-  overflow: auto;
-  width: 100%;
-  th {
-    text-transform: uppercase;
-    background-color: var(--background-primary-soft);
-    text-transform: none;
+@layer base {
+  table {
+    border-spacing: 0px;
+    border: var(--border-block);
+    border-radius: 4px;
+    background-color: var(--background-secondary);
+    overflow: auto;
+    width: 100%;
+    th {
+      text-transform: uppercase;
+      background-color: var(--background-primary-soft);
+      text-transform: none;
 
-    & > button {
-      border: none;
-      padding: 0;
+      & > button {
+        border: none;
+        padding: 0;
 
-      &.active {
-        //text-decoration: underline;
-        font-weight: 800;
+        &.active {
+          //text-decoration: underline;
+          font-weight: 800;
 
-        &.asc::after {
-          content: " ⯅";
-          padding-left: 0.25rem;
-          text-decoration: none !important;
-          vertical-align: top;
-        }
+          &.asc::after {
+            content: " ⯅";
+            padding-left: 0.25rem;
+            text-decoration: none !important;
+            vertical-align: top;
+          }
 
-        &.desc::after {
-          content: " ⯆";
-          padding-left: 0.25rem;
-          text-decoration: none;
+          &.desc::after {
+            content: " ⯆";
+            padding-left: 0.25rem;
+            text-decoration: none;
+          }
         }
       }
     }
+
+    tr td {
+      border-top: 1px solid var(--neutral-20);
+    }
+
+    tr:nth-child(even) td {
+      background-color: var(--neutral-10);
+    }
+
+    th,
+    tr td {
+      padding: 0.5rem;
+    }
+
+    .fit-content {
+      width: fit-content;
+    }
+
+    .no-size {
+      width: auto;
+    }
   }
 
-  tr td {
-    border-top: 1px solid var(--neutral-20);
-  }
+  table.table-grid {
+    display: grid;
+    grid-template-columns: auto 1fr 1fr 1fr 1fr auto; // need to be overwritten in the component depending on the number of columns
+    //gap: 1px;
+    position: relative;
 
-  tr:nth-child(even) td {
-    background-color: var(--neutral-10);
-  }
+    thead,
+    tbody {
+      display: contents;
+    }
 
-  th,
-  tr td {
-    padding: 0.5rem;
-  }
+    tr {
+      display: contents;
+    }
 
-  .fit-content {
-    width: fit-content;
-  }
+    td > a {
+      white-space: wrap;
+    }
 
-  .no-size {
-    width: auto;
-  }
-}
+    td,
+    th {
+      display: flex;
+      align-items: center;
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
 
-table.table-grid {
-  display: grid;
-  grid-template-columns: auto 1fr 1fr 1fr 1fr auto; // need to be overwritten in the component depending on the number of columns
-  //gap: 1px;
-  position: relative;
-
-  thead,
-  tbody {
-    display: contents;
-  }
-
-  tr {
-    display: contents;
-  }
-
-  td > a {
-    white-space: wrap;
-  }
-
-  td,
-  th {
-    display: flex;
-    align-items: center;
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-
-  .table-loader {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: #ffffff82;
-    z-index: 2;
+    .table-loader {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-color: #ffffff82;
+      z-index: 2;
+    }
   }
 }

@@ -4,7 +4,7 @@
       <div class="burger-menu__header">
         <UserAccountSelector />
       </div>
-      <div class="user-account-selector-container">
+      <div class="user-account-selector-container" v-if="!backoffice">
         <ActionConversationCreate />
       </div>
 
@@ -116,7 +116,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 .5em;
+    padding: 0 0.5em;
     background-color: white;
     height: 56px;
     box-shadow: var(--shadow-block);
@@ -170,7 +170,7 @@ export default {
   }
 
   .user-account-selector-container {
-    padding: 0 .5em;
+    padding: 0 0.5em;
     display: flex;
     align-items: center;
     border-top: var(--border-block);

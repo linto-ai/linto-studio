@@ -1,87 +1,89 @@
-.text-primary {
-  color: var(--primary-color);
-}
+@layer base {
+  .text-primary {
+    color: var(--primary-color);
+  }
 
-.text-secondary {
-  color: var(--secondary-color);
-}
+  .text-secondary {
+    color: var(--secondary-color);
+  }
 
-.text-tertiary {
-  color: var(--tertiary-color);
-}
+  .text-tertiary {
+    color: var(--tertiary-color);
+  }
 
-.text-neutral-10 {
-  color: var(--neutral-10);
-}
+  .text-neutral-10 {
+    color: var(--neutral-10);
+  }
 
-.text-neutral-20 {
-  color: var(--neutral-20);
-}
+  .text-neutral-20 {
+    color: var(--neutral-20);
+  }
 
-.text-neutral-40 {
-  color: var(--neutral-40);
-}
+  .text-neutral-40 {
+    color: var(--neutral-40);
+  }
 
-.text-neutral-80 {
-  color: var(--neutral-80);
-}
+  .text-neutral-80 {
+    color: var(--neutral-80);
+  }
 
-.text-neutral-100 {
-  color: var(--neutral-100);
-}
+  .text-neutral-100 {
+    color: var(--neutral-100);
+  }
 
-.text-xs {
-  font-size: var(--text-xs);
-}
+  .text-xs {
+    font-size: var(--text-xs);
+  }
 
-.text-sm {
-  font-size: var(--text-sm);
-}
+  .text-sm {
+    font-size: var(--text-sm);
+  }
 
-.text-md {
-  font-size: var(--text-md);
-}
+  .text-md {
+    font-size: var(--text-md);
+  }
 
-.text-lg {
-  font-size: var(--text-lg);
-}
+  .text-lg {
+    font-size: var(--text-lg);
+  }
 
-.text-xl {
-  font-size: var(--text-xl);
-}
+  .text-xl {
+    font-size: var(--text-xl);
+  }
 
-.text-2xl {
-  font-size: var(--text-2xl);
-}
+  .text-2xl {
+    font-size: var(--text-2xl);
+  }
 
-.text-3xl {
-  font-size: var(--text-3xl);
-}
+  .text-3xl {
+    font-size: var(--text-3xl);
+  }
 
-.text-4xl {
-  font-size: var(--text-4xl);
-}
+  .text-4xl {
+    font-size: var(--text-4xl);
+  }
 
-.text-strong {
-  font-weight: 600;
-}
+  .text-strong {
+    font-weight: 600;
+  }
 
-.text-underline {
-  text-decoration: underline;
-}
+  .text-underline {
+    text-decoration: underline;
+  }
 
-.text-italic {
-  font-style: italic;
-}
+  .text-italic {
+    font-style: italic;
+  }
 
-.text-uppercase {
-  text-transform: uppercase;
-}
+  .text-uppercase {
+    text-transform: uppercase;
+  }
 
-.text-lowercase {
-  text-transform: lowercase;
-}
+  .text-lowercase {
+    text-transform: lowercase;
+  }
 
-.text-capitalize {
-  text-transform: capitalize;
+  .text-capitalize {
+    text-transform: capitalize;
+  }
 }

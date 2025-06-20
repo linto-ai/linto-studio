@@ -1,3 +1,4 @@
+@layer base {
 .select {
   width: 12rem;
   max-width: 100%;
@@ -88,4 +89,5 @@
 
 .select__list__section:last-child {
   border-bottom: none;
+}
 }
