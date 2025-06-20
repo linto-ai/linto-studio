@@ -210,14 +210,14 @@ export default {
           { mediaId, media: newMedia },
           { root: true },
         )
-        commit(
-          "system/addNotification",
-          {
-            message: "Tag added to media successfully",
-            type: "success",
-          },
-          { root: true },
-        )
+        // commit(
+        //   "system/addNotification",
+        //   {
+        //     message: "Tag added to media successfully",
+        //     type: "success",
+        //   },
+        //   { root: true },
+        //)
       } catch (error) {
         console.log("error", error)
         commit("setError", error)
@@ -250,14 +250,14 @@ export default {
           { mediaId, media: newMedia },
           { root: true },
         )
-        commit(
-          "system/addNotification",
-          {
-            message: "Tag removed from media successfully",
-            type: "success",
-          },
-          { root: true },
-        )
+        // commit(
+        //   "system/addNotification",
+        //   {
+        //     message: "Tag removed from media successfully",
+        //     type: "success",
+        //   },
+        //   { root: true },
+        //)
       } catch (error) {
         console.log("error", error)
         commit("setError", error)

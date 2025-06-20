@@ -9,24 +9,26 @@
             :color="tag.color"
             :count="tag.mediaCount"
             :active="selectedTags.some((t) => t._id === tag._id)"
-            size="sm"
+            size="xs"
             @click="handleTagClick(tag)" />
         </li>
       </ul>
 
       <div class="media-explorer-menu-labels__footer">
         <Button
-          size="sm"
+          v-if="tags.length > 5"
+          size="xs"
           color="primary-soft"
           @click.stop="showAllTags = !showAllTags">
           {{ showAllTags ? "Show less" : "Show all" }}
         </Button>
 
         <Button
-          size="sm"
-          color="primary-soft"
+          icon="tag-simple"
+          size="xs"
+          color="secondary"
           @click.stop="showModalTagManagement = true">
-          Manage
+          Tags
         </Button>
       </div>
     </nav>
