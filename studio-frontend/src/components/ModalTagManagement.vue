@@ -2,7 +2,7 @@
   <Modal
     :value="value"
     @input="$emit('input', $event)"
-    size="md"
+    :size="computedSize"
     title="Gestion des tags"
     subtitle="Gérez vos tags"
     :loading="loading"
@@ -98,6 +98,12 @@ export default {
       set(value) {
         this.$emit("input", value)
       },
+    },
+    computedSize() {
+      if (window.innerWidth < 1100) {
+        return "screen"
+      }
+      return "lg"
     },
   },
   data() {

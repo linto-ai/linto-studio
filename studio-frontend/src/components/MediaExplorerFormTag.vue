@@ -5,6 +5,7 @@
     @submit="onSubmit"
     :loading="loading"
     v-model="isOpen"
+    :size="computedSize"
     overlay>
     <template #trigger="{ open }">
       <slot name="trigger" :open="open"></slot>
@@ -207,6 +208,12 @@ export default {
         }
       },
     },
+    computedSize() {
+      if (window.innerWidth < 1100) {
+        return "screen"
+      }
+      return "lg"
+    },
   },
 }
 </script>
@@ -258,5 +265,12 @@ export default {
 }
 .emoji-popover-trigger:hover {
   box-shadow: 0 0 0 2px var(--primary-color, #007bff);
+}
+
+@media (max-width: 1100px) {
+  .emoji-mart {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
 }
 </style>
