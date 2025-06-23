@@ -5,16 +5,19 @@
     ref="wrapper"
     @mouseenter="controller.onContentEnter"
     @mouseleave="controller.onContentLeave"
-    @click="handleClickInside"
-  >
-    <div class="popover-content" :class="[position, contentClass]" ref="content" :style="computedContentStyle">
+    @click="handleClickInside">
+    <div
+      class="popover-content"
+      :class="[position, contentClass]"
+      ref="content"
+      :style="computedContentStyle">
       <VNodeRenderer :nodes="renderedSlots" />
     </div>
   </div>
 </template>
 
 <script>
-import VNodeRenderer from "@/components/atoms/VNodeRenderer.vue";
+import VNodeRenderer from "@/components/atoms/VNodeRenderer.vue"
 
 export default {
   name: "PopoverRenderer",
@@ -50,27 +53,30 @@ export default {
         top: `${this.popoverCoords.top}px`,
         zIndex: this.zIndex,
         width: this.computedWidth,
-      };
+      }
     },
     renderedSlots() {
       // Evaluate the slot function each time to maintain reactivity
-      return typeof this.slots.default === 'function' 
-        ? this.slots.default() 
-        : this.slots.default || [];
+      return typeof this.slots.default === "function"
+        ? this.slots.default()
+        : this.slots.default || []
     },
     computedMaxHeight() {
       // explicit value provided
-      if (this.maxHeight !== 'auto') {
-        return typeof this.maxHeight === 'number' ? `${this.maxHeight}px` : this.maxHeight
+      if (this.maxHeight !== "auto") {
+        return typeof this.maxHeight === "number"
+          ? `${this.maxHeight}px`
+          : this.maxHeight
       }
 
-      const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 800
+      const viewportHeight =
+        typeof window !== "undefined" ? window.innerHeight : 800
       const margin = 12 // space from viewport edges
 
       let available
-      if (this.position === 'bottom') {
+      if (this.position === "bottom") {
         available = viewportHeight - this.popoverCoords.top - margin
-      } else if (this.position === 'top') {
+      } else if (this.position === "top") {
         available = this.popoverCoords.top - margin
       } else {
         // left / right / other positions: default to full viewport minus margin
@@ -84,19 +90,19 @@ export default {
       return {
         width: this.computedWidth,
         maxHeight: this.computedMaxHeight,
-        overflowY: 'auto',
+        overflowY: "auto",
       }
     },
   },
   methods: {
     computeWidth() {
       if (this.width === "auto") {
-        this.computedWidth = "auto";
-        return;
+        this.computedWidth = "auto"
+        return
       }
 
       if (this.width === "ref" && this.widthRef) {
-        this.computedWidth = this.widthRef.offsetWidth + 'px'
+        this.computedWidth = this.widthRef.offsetWidth + "px"
       } else {
         this.computedWidth = this.width
       }
@@ -121,13 +127,13 @@ export default {
     },
     closeOnClickOutside() {
       // Popovers always close on outside click
-      this.controller.closeOnClickOutside();
+      this.controller.closeOnClickOutside()
     },
     closeOnEscape() {
-      this.controller.closeOnEscape();
+      this.controller.closeOnEscape()
     },
   },
-};
+}
 </script>
 
 <style lang="scss">
@@ -138,11 +144,11 @@ export default {
 .popover-content {
   background: var(--neutral-10);
   border: 1px solid var(--primary-color);
-  border-radius: 6px;
+  border-radius: 4px;
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
   min-width: 120px;
   max-width: 90vw;
   max-height: 90vh;
   overflow: auto;
 }
-</style> 
+</style>

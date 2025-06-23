@@ -12,9 +12,9 @@
         @click.stop="toggleSelect">
         <ph-icon
           :name="isSelected ? 'check-circle' : 'circle'"
-          weight="fill"
+          :weight="isSelected ? 'fill' : 'regular'"
           size="20"
-          color="var(--primary-color)" />
+          :color="isSelected ? 'var(--primary-color)' : 'var(--neutral-60)'" />
       </span>
 
       <!-- Media type icon -->
@@ -52,7 +52,7 @@
         <template #trigger="{ open }">
           <Button
             icon="dots-three-vertical"
-            variant="flat"
+            variant="solid"
             size="md"
             :color="open ? 'primary' : 'neutral'"
             class="icon-only" />
@@ -271,7 +271,6 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  padding: 0.5rem;
   border: 1px solid var(--neutral-20);
   border-radius: 4px;
   background: var(--background-primary);
@@ -287,6 +286,8 @@ export default {
     gap: 0.5rem;
     width: 100%;
     overflow: hidden;
+    padding: 0.5rem;
+    box-sizing: border-box;
   }
 
   &__select {
@@ -335,6 +336,8 @@ export default {
     width: 100%;
     overflow-x: auto;
     padding-top: 0.25rem;
+    box-sizing: border-box;
+    opacity: 0.8;
   }
 }
 </style>

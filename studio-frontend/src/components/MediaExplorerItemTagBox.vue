@@ -292,6 +292,7 @@ export default {
   background-color: var(--primary-color);
   color: var(--primary-soft);
   font-size: 0.9em;
+  font-weight: 600;
 }
 
 .tag-box__footer {
@@ -322,9 +323,14 @@ export default {
 }
 .tag-box__search-input {
   width: 100%;
+  max-width: 100%;
   border: none;
   border-bottom: 1px solid var(--primary-color);
   border-radius: 0;
+  box-sizing: border-box;
+  font-size: 0.9em;
+  height: auto;
+  padding: 0.25em;
 }
 .tag-box__search-input:focus {
   border-color: var(--primary-color);

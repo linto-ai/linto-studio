@@ -3,13 +3,15 @@
     :close-on-click-outside="closeOnClickOutside"
     :close-on-escape="closeOnEscape"
     :overlay="overlay"
+    :content-class="isMobile ? 'popover-list__mobile' : ''"
     v-bind="$attrs"
     ref="popover">
     <template #trigger="{ open }">
       <slot name="trigger" :open="open">
         <Button
           :icon="open ? 'caret-up' : 'caret-down'"
-          v-bind="$attrs" />
+          v-bind="$attrs"
+        />
       </slot>
     </template>
     <template #content>
@@ -182,6 +184,31 @@ export default {
       return item.icon
     },
   },
+  computed: {
+    /**
+     * Detect if we are on a narrow viewport (mobile-like) to switch the
+     * popover to a bottom-sheet presentation.
+     */
+    isMobile() {
+      if (typeof window === 'undefined') return false
+      return window.matchMedia('(max-width: 768px)').matches
+    },
+  },
+  mounted() {
+    // Ensure reactivity on viewport resize
+    this.resizeListener = () => {
+      // force Vue to recalculate isMobile computed dependency
+      this.$forceUpdate()
+    }
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', this.resizeListener, { passive: true })
+    }
+  },
+  beforeDestroy() {
+    if (this.resizeListener && typeof window !== 'undefined') {
+      window.removeEventListener('resize', this.resizeListener)
+    }
+  },
 }
 </script>
 
@@ -202,6 +229,25 @@ export default {
     justify-content: flex-start;
     border-radius: 0;
     text-align: left;
+  }
+}
+
+.popover-list__mobile {
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  top: auto !important;
+  border: 1px solid var(--neutral-20);
+  border-radius: 4px 4px 0 0;
+  width: 100vw !important;
+  max-width: 100vw !important;
+  max-height: 80vh !important;
+  box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.25);
+
+  .popover-list__content {
+    padding: 0.5rem;
+    gap: 0.25rem;
   }
 }
 </style>

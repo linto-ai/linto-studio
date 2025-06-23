@@ -97,7 +97,7 @@ export default {
   flex-direction: column;
   padding: 0.1em 0.45em 0.1em 0.45em;
   margin: 0.1em;
-  border-radius: 4px;
+  border-radius: 5px;
   border: 1px solid var(--primary-soft);
   background: var(--background-primary);
   font-size: 0.9em;
@@ -107,12 +107,12 @@ export default {
     background 0.2s;
 
   &.xs {
-    font-size: 0.8em;
-    padding: 0.05em 0.25em 0.05em 0.25em;
+    font-size: 0.75em;
+    padding: 0.05em 0.2em 0.05em 0.2em;
   }
   &.sm {
-    font-size: 0.9em;
-    padding: 0.1em 0.45em 0.1em 0.45em;
+    font-size: 0.85em;
+    padding: 0.1em 0.35em 0.1em 0.35em;
   }
   &.lg {
     font-size: 1.1em;

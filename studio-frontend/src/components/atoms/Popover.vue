@@ -74,6 +74,7 @@ export default {
       mouseInside: false,
       popoverCoords: { top: 0, left: 0 },
       hoverTimeout: null,
+      resizeListener: null,
     }
   },
   watch: {
@@ -93,6 +94,12 @@ export default {
           component: PopoverRenderer,
           props: {
             ...this.$props,
+            contentClass: [
+              this.$props.contentClass,
+              this.isMobileViewport ? 'popover-mobile-sheet' : '',
+            ]
+              .filter(Boolean)
+              .join(' '),
             popoverCoords: this.popoverCoords,
             widthRef: this.triggerElement || this.$refs.trigger,
           },
@@ -135,7 +142,10 @@ export default {
     triggerHandlers() {
       const handlers = {}
       if (this.trigger === "click") {
-        handlers.click = this.handleClick
+        handlers.click = (event) => {
+          event.stopPropagation()
+          this.handleClick(event)
+        }
       } else if (this.trigger === "contextmenu") {
         handlers.contextmenu = this.handleContextmenu
       } else if (this.trigger === "hover") {
@@ -150,6 +160,10 @@ export default {
         borderSize: this.borderSize,
         padding: this.padding,
       }
+    },
+    isMobileViewport() {
+      if (typeof window === 'undefined') return false
+      return window.matchMedia('(max-width: 1100px)').matches
     },
   },
   methods: {
@@ -284,11 +298,32 @@ export default {
       }
     },
   },
+  mounted() {
+    this.resizeListener = () => {
+      if (this.isOpen) {
+        const popup = popupManager.stack.find((p) => p.id === this._uid)
+        if (popup) {
+          popup.props.contentClass = [
+            this.$props.contentClass,
+            this.isMobileViewport ? 'popover-mobile-sheet' : '',
+          ]
+            .filter(Boolean)
+            .join(' ')
+        }
+      }
+    }
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', this.resizeListener, { passive: true })
+    }
+  },
   beforeDestroy() {
     // Clear any pending timeout
     if (this.hoverTimeout) {
       clearTimeout(this.hoverTimeout)
       this.hoverTimeout = null
+    }
+    if (this.resizeListener && typeof window !== 'undefined') {
+      window.removeEventListener('resize', this.resizeListener)
     }
     this.toggle(false)
   },
@@ -323,5 +358,20 @@ export default {
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(0.5px);
+}
+
+.popover-mobile-sheet {
+  box-sizing: border-box;
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  top: auto !important;
+  width: 100vw !important;
+  max-width: 100vw !important;
+  max-height: 80vh !important;
+  border-radius: 4px 4px 0 0;
+  box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.45);
+  overflow-y: auto;
 }
 </style>

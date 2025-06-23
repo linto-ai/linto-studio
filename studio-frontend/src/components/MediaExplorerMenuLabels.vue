@@ -39,7 +39,6 @@
 <script>
 import { mapGetters } from "vuex"
 import MediaExplorerItemTagBox from "./MediaExplorerItemTagBox.vue"
-import ChipTag from "./atoms/ChipTag.vue"
 import ModalTagManagement from "./ModalTagManagement.vue"
 
 export default {
@@ -70,6 +69,9 @@ export default {
       return this.tags
         .sort((a, b) => a.name.localeCompare(b.name))
         .sort((a, b) => b.mediaCount - a.mediaCount)
+        .sort((a, b) => {
+          return this.selectedTagsAsIds.includes(a._id) ? -1 : 1
+        })
         .slice(0, limit)
     },
   },
