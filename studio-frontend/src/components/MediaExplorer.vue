@@ -57,14 +57,20 @@
         </div>
 
         <!-- Media items -->
-        <MediaExplorerItem
-          v-else
-          v-for="(media, index) in filteredMedias"
-          :key="`media-explorer-item-${media._id}-${index}`"
-          :media="media"
-          :ref="'mediaItem' + index"
-          class="media-explorer__body__item" />
-
+        <IsMobile>
+          <MediaExplorerItemMobile
+            v-for="(media, index) in filteredMedias"
+            :key="`media-explorer-item-${media._id}-${index}`"
+            :media="media" />
+          <template #desktop>
+            <MediaExplorerItem
+              v-for="(media, index) in filteredMedias"
+              :key="`media-explorer-item-${media._id}-${index}`"
+              :media="media"
+              :ref="'mediaItem' + index"
+              class="media-explorer__body__item" />
+          </template>
+        </IsMobile>
         <slot name="after" />
       </div>
     </div>
@@ -80,6 +86,7 @@ import { mapGetters } from "vuex"
 
 import MediaExplorerHeader from "@/components/MediaExplorerHeader.vue"
 import MediaExplorerItem from "@/components/MediaExplorerItem.vue"
+import MediaExplorerItemMobile from "@/components-mobile/MediaExplorerItem.vue"
 import MediaExplorerAppUpload from "@/components/MediaExplorerAppUpload.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import Button from "@/components/atoms/Button.vue"
@@ -92,6 +99,7 @@ export default {
   components: {
     MediaExplorerHeader,
     MediaExplorerItem,
+    MediaExplorerItemMobile,
     MediaExplorerAppUpload,
     Modal,
     Button,
@@ -383,5 +391,11 @@ export default {
 .empty-state p {
   margin: 0;
   font-size: 1rem;
+}
+
+@media only screen and (max-width: 1100px) {
+  .media-explorer__body__item {
+    overflow: auto
+  }
 }
 </style>

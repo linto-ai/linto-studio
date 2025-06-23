@@ -8,6 +8,12 @@ const state = {
    * @property {boolean} closable - Whether the notification is closable
    */
   notifications: [],
+
+  /**
+   * Whether the sidebar is open
+   * @property {boolean} sidebarOpen
+   */
+  sidebarOpen: false,
 }
 
 const mutations = {
@@ -30,6 +36,9 @@ const mutations = {
   },
   clearAllNotifications(state) {
     state.notifications = []
+  },
+  toggleSidebar(state) {
+    state.sidebarOpen = !state.sidebarOpen
   },
 }
 
@@ -59,10 +68,14 @@ const actions = {
   showInfo({ commit }, message) {
     commit("addNotification", { message, type: 'info' })
   },
+  toggleSidebar({ commit }) {
+    commit("toggleSidebar")
+  },
 }
 
 const getters = {
   notifications: (state) => state.notifications,
+  sidebarOpen: (state) => state.sidebarOpen,
 }
 
 export default {

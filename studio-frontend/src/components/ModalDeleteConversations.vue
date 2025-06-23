@@ -23,8 +23,6 @@
   </ModalNew> -->
 </template>
 <script>
-import { Fragment } from "vue-fragment"
-import Alert from "./atoms/Alert.vue"
 import { mapActions, mapGetters } from "vuex"
 
 export default {
@@ -81,6 +79,5 @@ export default {
     },
     onCancel() {},
   },
-  components: { Fragment, Alert },
 }
 </script>

@@ -104,6 +104,14 @@ export default {
       type: Boolean,
       default: false,
     },
+    /**
+     * When true, the popover will automatically close after an item click
+     * (ignored in `selection` mode when `multiple` is enabled).
+     */
+    closeOnItemClick: {
+      type: Boolean,
+      default: true,
+    },
   },
   emits: ["click", "update:value", "change"],
   methods: {
@@ -146,8 +154,15 @@ export default {
     handleClickItem(item) {
       if (this.selection) {
         this.toggleSelection(item)
+        // Close when single-select and required
+        if (!this.multiple && this.closeOnItemClick) {
+          this.$refs.popover && this.$refs.popover.close()
+        }
       } else {
         this.$emit("click", item)
+        if (this.closeOnItemClick) {
+          this.$refs.popover && this.$refs.popover.close()
+        }
       }
     },
     /**

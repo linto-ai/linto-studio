@@ -1,23 +1,22 @@
 <template>
-  <div class="v2-layout" :class="{ 'no-sidebar': !showSidebar }">
+  <div class="v2-layout" :class="{ 'no-sidebar': !sidebarOpen }">
     <div class="v2-layout__content">
       <aside
         class="v2-layout__sidebar"
-        :class="{ 'v2-layout__sidebar--hidden': !showSidebar }">
+        :class="{ 'v2-layout__sidebar--hidden': !sidebarOpen }">
         <BurgerMenu :backoffice="backoffice">
           <slot name="sidebar"></slot>
         </BurgerMenu>
       </aside>
-      <main class="v2-layout__main">
+      <main class="v2-layout__main" @click="closeSidebar">
         <HeaderBar :hasHeaderBarSlot="hasHeaderBarSlot">
           <template v-if="!hasHeaderBarSlot" v-slot:header-bar-left>
             <Button
               icon="sidebar"
               border-color="transparent"
-              variant="outline"
-              shape="circle"
-              @click="toggleSidebar"
-              class="icon-only" />
+              color="neutral"
+              @click.stop="toggleSidebar"
+              class="sidebar-toggle icon-only" />
             <Breadcrumb />
           </template>
           <template v-if="!hasHeaderBarSlot" v-slot:header-bar-right>
@@ -50,6 +49,7 @@
 import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 import isAuthenticated from "@/tools/isAuthenticated.js"
+import { mapGetters } from "vuex"
 
 import BurgerMenu from "@/components-mobile/BurgerMenu.vue"
 import OrganizationSidebar from "@/components/OrganizationSidebar.vue"
@@ -70,7 +70,6 @@ export default {
   },
   data() {
     return {
-      showSidebar: true,
     }
   },
   computed: {
@@ -80,11 +79,16 @@ export default {
     hasHeaderBarSlot() {
       return !!this.$slots["header-bar"]
     },
+    ...mapGetters("system", ["sidebarOpen"]),
   },
   mounted() {},
   methods: {
+    closeSidebar() {
+      if (!this.sidebarOpen) return
+      this.$store.dispatch("system/toggleSidebar")
+    },
     toggleSidebar() {
-      this.showSidebar = !this.showSidebar
+      this.$store.dispatch("system/toggleSidebar")
     },
   },
   components: {
@@ -133,10 +137,16 @@ export default {
     top: 0;
     left: 0;
     bottom: 0;
-    width: 20em;
+    width: 100%;
     height: 100%;
     overflow: auto;
     transition: width 0.3s ease-in-out;
+    z-index: 1000;
+
+    nav {
+      width: 100%;
+      overflow: auto;
+    }
 
     &--hidden {
       width: 0;
@@ -194,13 +204,64 @@ export default {
   margin-right: 0.5em;
 }
 
+.sidebar-toggle {
+  height: 54px;
+  width: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+}
+
 @media only screen and (max-width: 1100px) {
   .v2-layout__sidebar {
-    width: 54px;
+    width: 260px !important;
+    max-width: 100% !important;
+    border: none !important;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.65);
+    transition: width 0.3s ease-in-out;
   }
 
   .v2-layout__content {
-    padding-left: 54px;
+    padding-left: 260px !important;
+    transition: padding-left 0.3s ease-in-out;
+    overflow: hidden !important;
+
+    main {
+      width: 100vw !important;
+      max-width: 100vw !important;
+      min-width: 100vw !important;
+
+      &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.2);
+        z-index: 100;
+      }
+    }
+  }
+
+  .v2-layout.no-sidebar {
+    .v2-layout__sidebar {
+      width: 0 !important;
+      border: none !important;
+    }
+
+    .v2-layout__content {
+      padding-left: 0 !important;
+
+      main {
+        min-width: auto !important;
+        &::before {
+          display: none;
+        }
+      }
+    }
   }
 }
 </style>

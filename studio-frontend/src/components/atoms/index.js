@@ -24,6 +24,8 @@ import Emoji from './Emoji.vue';
 import Button from './Button.vue';
 import Breadcrumb from './Breadcrumb.vue';
 import PopoverList from './PopoverList.vue';
+import IsMobile from './IsMobile.vue';
+import IsDesktop from './IsDesktop.vue';
 
 const components = [
   Avatar,
@@ -52,6 +54,8 @@ const components = [
   Button,
   Breadcrumb,
   PopoverList,
+  IsMobile,
+  IsDesktop,
 ];
 
 const validateComponents = c => c && typeof c.name === 'string' && c.name.length > 0

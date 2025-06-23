@@ -209,4 +209,13 @@ export default {
 .tag--add {
   position: relative;
 }
+
+@media only screen and (max-width: 1100px) {
+  .media-explorer-item-tags {
+    &__list {
+      flex-wrap: nowrap;
+      overflow: auto;
+    }
+  }
+}
 </style>

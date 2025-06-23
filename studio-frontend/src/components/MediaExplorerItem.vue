@@ -305,7 +305,6 @@ export default {
   padding: 0.5rem;
   position: relative;
   border-radius: 4px;
-  overflow: hidden;
   transition: all 0.1s ease-in-out;
 
   &:hover {
@@ -624,5 +623,12 @@ export default {
   height: 100%;
   box-shadow: -1px 0 1px 1px var(--primary-color);
   z-index: 3;
+}
+
+@media only screen and (max-width: 1100px) {
+  .media-explorer-item__inline__meta > a,
+  .media-explorer-item__header__title h4 {
+    width: 160px;
+  }
 }
 </style>

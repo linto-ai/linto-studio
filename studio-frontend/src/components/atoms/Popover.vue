@@ -297,7 +297,7 @@ export default {
 
 <style lang="scss">
 .popover-trigger {
-  display: inline-block;
+  display: flex;
 }
 
 .popover-wrapper {
