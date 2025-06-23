@@ -69,8 +69,7 @@ export default {
     },
   },
   data() {
-    return {
-    }
+    return {}
   },
   computed: {
     isAuthenticated() {
@@ -82,14 +81,18 @@ export default {
     ...mapGetters("system", ["sidebarOpen"]),
   },
   mounted() {
-    // Auto-open the sidebar on desktop screens (> 1100px)
-    if (typeof window !== 'undefined' && window.innerWidth > 1100 && !this.sidebarOpen) {
-      this.$store.dispatch("system/toggleSidebar")
+    this.isMobile = true
+
+    if (typeof window !== "undefined" && window.innerWidth > 1100) {
+      this.isMobile = false
+      if (!this.sidebarOpen) {
+        this.$store.dispatch("system/toggleSidebar")
+      }
     }
   },
   methods: {
     closeSidebar() {
-      if (!this.sidebarOpen) return
+      if (!this.isMobile || !this.sidebarOpen) return
       this.$store.dispatch("system/toggleSidebar")
     },
     toggleSidebar() {
