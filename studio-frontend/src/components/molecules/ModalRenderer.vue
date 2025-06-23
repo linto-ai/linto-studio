@@ -35,12 +35,13 @@
       <div class="modal-body flex col flex1">
         <v-node-renderer v-if="defaultNodes.length" :nodes="defaultNodes" />
       </div>
-      <div class="modal-footer flex row gap-small" v-if="withActions || actionsNodes.length">
+      <div
+        class="modal-footer flex row gap-small"
+        v-if="withActions || actionsNodes.length">
         <template>
           <v-node-renderer
             v-if="actionsLeftNodes.length"
-            :nodes="actionsLeftNodes"
-          />
+            :nodes="actionsLeftNodes" />
           <Button
             v-if="withActionDelete"
             variant="tertiary"
@@ -59,8 +60,7 @@
         <div class="button-group">
           <v-node-renderer
             v-if="actionsRightNodes.length"
-            :nodes="actionsRightNodes"
-          />
+            :nodes="actionsRightNodes" />
           <template v-if="withActionCancel">
             <Button
               variant="outline"
@@ -157,13 +157,13 @@ export default {
       return this.slots && this.slots.actions ? this.slots.actions() : []
     },
     actionsLeftNodes() {
-      return this.slots && this.slots['actions-left']
-        ? this.slots['actions-left']()
+      return this.slots && this.slots["actions-left"]
+        ? this.slots["actions-left"]()
         : []
     },
     actionsRightNodes() {
-      return this.slots && this.slots['actions-right']
-        ? this.slots['actions-right']()
+      return this.slots && this.slots["actions-right"]
+        ? this.slots["actions-right"]()
         : []
     },
     modalComponentType() {
@@ -294,6 +294,20 @@ now, let's copy them over.
   &.sm {
     width: 480px;
     max-width: calc(100% - 4rem);
+  }
+
+  &.screen {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+
+    @media (max-width: 1100px) {
+      .modal-body {
+        padding: 1em 0.5em;
+        overflow-y: auto;
+      }
+    }
   }
 }
 

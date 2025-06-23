@@ -4,11 +4,11 @@
     :with-actions="false"
     title="Settings"
     subtitle="Manage your account and preferences"
-    size="lg">
+    :size="computedSize">
     <div class="app-settings">
       <aside>
         <ul>
-          <li>
+          <li class="app-settings__user-info">
             <div class="app-settings__user-info flex align-center gap-small">
               <div class="flex flex1 align-center gap-small">
                 <UserProfilePicture :hover="false" :user="user" />
@@ -99,6 +99,12 @@ export default {
     userName() {
       return this.user.firstname + " " + this.user.lastname
     },
+    computedSize() {
+      if (window.innerWidth < 1100) {
+        return "screen"
+      }
+      return "lg"
+    },
   },
   methods: {
     selectTab(tab) {
@@ -162,6 +168,7 @@ export default {
     box-sizing: border-box;
     padding: 1em;
     display: none;
+    overflow-y: auto;
 
     &.active {
       display: block;
@@ -219,6 +226,34 @@ export default {
       padding: 0.5em;
       border-radius: 4px;
       border: 1px solid var(--neutral-60);
+    }
+  }
+}
+
+@media (max-width: 1100px) {
+  .app-settings {
+    flex-direction: column;
+
+    aside {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 10px;
+      height: auto;
+      flex-basis: auto;
+
+      ul {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        width: 100%;
+        overflow-x: auto;
+
+        li {}
+      }
+    }
+
+    &__user-info {
+      display: none;
     }
   }
 }
