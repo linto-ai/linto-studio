@@ -81,7 +81,12 @@ export default {
     },
     ...mapGetters("system", ["sidebarOpen"]),
   },
-  mounted() {},
+  mounted() {
+    // Auto-open the sidebar on desktop screens (> 1100px)
+    if (typeof window !== 'undefined' && window.innerWidth > 1100 && !this.sidebarOpen) {
+      this.$store.dispatch("system/toggleSidebar")
+    }
+  },
   methods: {
     closeSidebar() {
       if (!this.sidebarOpen) return
@@ -137,7 +142,7 @@ export default {
     top: 0;
     left: 0;
     bottom: 0;
-    width: 100%;
+    width: 280px;
     height: 100%;
     overflow: auto;
     transition: width 0.3s ease-in-out;
