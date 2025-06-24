@@ -12,9 +12,7 @@ import { apiGetQuickSession } from "@/api/session.js"
 import { logout } from "../tools/logout"
 import { customDebug } from "@/tools/customDebug.js"
 
-const defaultComponents = {
-  AppHeader: () => import("@/components/AppHeader.vue"),
-}
+const defaultComponents = {}
 
 const componentsWithoutHeader = {}
 

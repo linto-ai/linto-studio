@@ -1,13 +1,17 @@
 <template>
   <div class="flex align-center header-bar">
-    <slot name="header-bar"></slot>
-
-    <div v-if="!hasHeaderBarSlot" class="flex align-center header-bar__left">
-      <slot name="header-bar-left"></slot>
-    </div>
-    <div v-if="!hasHeaderBarSlot" class="header-bar__right">
-      <slot name="header-bar-right"></slot>
-    </div>
+    <Button
+      icon="sidebar"
+      border-color="transparent"
+      color="neutral"
+      @click.stop="toggleSidebar"
+      class="sidebar-toggle icon-only" />
+    <Breadcrumb class="flex1">
+      <template v-slot:breadcrumb-actions>
+        <slot name="breadcrumb-actions"></slot>
+      </template>
+    </Breadcrumb>
+    <LocalSwitcher class="local-switcher"></LocalSwitcher>
   </div>
 </template>
 <script>
@@ -18,6 +22,7 @@ import CustomSelect from "./molecules/CustomSelect.vue"
 import PhIcon from "./atoms/PhIcon.vue"
 import MediaExplorerStorageSize from "./MediaExplorerStorageSize.vue"
 import LocalSwitcher from "./LocalSwitcher.vue"
+import Breadcrumb from "@/components/atoms/Breadcrumb.vue"
 
 export default {
   props: {},
@@ -68,6 +73,9 @@ export default {
         params: { organizationId: this.currentOrganizationScope },
       })
     },
+    toggleSidebar() {
+      this.$store.dispatch("system/toggleSidebar")
+    },
   },
   components: {
     ActionConversationCreate,
@@ -75,6 +83,7 @@ export default {
     CustomSelect,
     MediaExplorerStorageSize,
     LocalSwitcher,
+    Breadcrumb,
   },
 }
 </script>

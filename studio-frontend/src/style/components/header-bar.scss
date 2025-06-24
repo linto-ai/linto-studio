@@ -8,29 +8,4 @@
     top: 0;
     z-index: 2;
   }
-
-  .header-bar__search {
-    background-image: none;
-    width: 100%;
-    box-sizing: border-box;
-    min-width: auto !important;
-    max-width: 100% !important;
-  }
-
-  .header-bar__left {
-    flex: 1;
-    max-width: 70%;
-  }
-
-  .header-bar__right {
-    flex: 1;
-    max-width: 30%;
-    display: flex;
-    justify-content: flex-end;
-  }
-
-  .header-bar__right {
-    margin-left: auto;
-    padding-left: 1rem;
-  }
 }

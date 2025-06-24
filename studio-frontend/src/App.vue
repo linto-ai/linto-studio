@@ -30,10 +30,12 @@ import { bus } from "@/main"
 
 import { customDebug } from "@/tools/customDebug.js"
 import isAuthenticated from "@/tools/isAuthenticated.js"
+import getCurrentTheme from "@/tools/getCurrentTheme.js"
+import { getEnv } from "@/tools/getEnv"
+
 import AppSettingsModal from "@/components/AppSettingsModal.vue"
 import PopupHost from "@/components/PopupHost.vue"
 import AppNotifications from "@/components/AppNotifications.vue"
-import getCurrentTheme from "@/tools/getCurrentTheme.js"
 
 import "@/style/style.scss"
 
@@ -91,6 +93,11 @@ export default {
         closable: data.cantBeClosed ?? true,
       })
     })
+
+    const enableSession = getEnv("VUE_APP_ENABLE_SESSION") === "true"
+    if (enableSession) {
+      this.$sessionWS.connect()
+    }
   },
   components: {
     AppSettingsModal,

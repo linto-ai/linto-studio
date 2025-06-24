@@ -392,6 +392,7 @@ export default {
   display: flex;
   align-items: center;
   font-size: 0.8rem !important;
+  flex-shrink: 0;
 }
 
 .media-explorer-item__inline__meta.actions {
@@ -621,8 +622,9 @@ export default {
   padding: 0.5rem;
   box-sizing: border-box;
   height: 100%;
-  box-shadow: -1px 0 1px 1px var(--primary-color);
+  border: 1px solid var(--primary-color);
   z-index: 3;
+  border-radius: 0px 4px 4px 0px;
 }
 
 @media only screen and (max-width: 1100px) {

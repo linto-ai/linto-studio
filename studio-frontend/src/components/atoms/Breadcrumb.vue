@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="breadcrumb"
+    class="breadcrumb flex flex1"
     v-if="breadcrumbItems.length > 0"
     aria-label="Breadcrumb">
     <ol class="breadcrumb-list">
@@ -30,7 +30,7 @@
         </span>
       </li>
     </ol>
-    <slot name="breadcrumb-actions"></slot>
+    <slot name="breadcrumb-actions" class="flex1"></slot>
   </nav>
 </template>
 
@@ -155,7 +155,7 @@ export default {
         }
       } catch (error) {
         console.error(`Error fetching ${entityType} name:`, error)
-        label = `${entityType} ${entityId}` // Fallback
+        label = `${entityId}` // Fallback
       }
 
       return label || entityId
@@ -190,8 +190,7 @@ export default {
       if (session?.name) {
         return session.name
       }
-
-      return `Session ${sessionId}`
+      return `${sessionId}`
     },
 
     async getUserName(userId) {

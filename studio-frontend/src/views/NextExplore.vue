@@ -57,8 +57,6 @@ import { bus } from "@/main.js"
 import LayoutV2 from "@/layouts/v2-layout.vue"
 import SidebarFilters from "@/components/SidebarFilters.vue"
 import MediaExplorer from "@/components/MediaExplorer.vue"
-import { debounceMixin } from "@/mixins/debounce"
-import { conversationListOrgaMixin } from "@/mixins/conversationListOrga"
 import { fromConversations } from "@/store/inbox"
 import ActionConversationCreate from "@/components/molecules/ActionConversationCreate.vue"
 import {
@@ -67,6 +65,8 @@ import {
   apiGetConversationsByOrganization,
   apiGetConversationsSharedWith,
 } from "@/api/conversation.js"
+import { orgaRoleMixin } from "@/mixins/orgaRole.js"
+import { convRoleMixin } from "@/mixins/convRole.js"
 
 export default {
   name: "NextExplore",
@@ -76,6 +76,7 @@ export default {
     MediaExplorer,
     ActionConversationCreate,
   },
+  mixins: [orgaRoleMixin, convRoleMixin],
   props: {
     userInfo: { type: Object, required: true },
     currentOrganizationScope: { type: String, required: true },
@@ -104,7 +105,6 @@ export default {
       scrollContainer: null,
     }
   },
-  mixins: [debounceMixin, conversationListOrgaMixin],
   computed: {
     ...mapGetters("tags", ["getExploreSelectedTags"]),
     selectedTags() {

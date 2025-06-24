@@ -4,21 +4,28 @@
       <!-- <OrganizationSidebar v-if="sidebar" :organizationPage="organizationPage">
     </OrganizationSidebar> -->
       <aside class="main-content__sidebar">
-        <BurgerMenu v-if="showBurgerMenu" @close="toggleBurger" v-click-outside="clickOutsideBurgerMenu"
+        <BurgerMenu
+          v-if="showBurgerMenu"
+          @close="toggleBurger"
+          v-click-outside="clickOutsideBurgerMenu"
           :organizationPage="organizationPage">
           <slot name="sidebar"></slot>
         </BurgerMenu>
       </aside>
-      <main class="main-content__main flex col" :class="{ box: box, flex1: flex }">
+      <main
+        class="main-content__main flex col"
+        :class="{ box: box, flex1: flex }">
         <HeaderBar />
-        <div :class="[
-          'flex',
-          'col',
-          'flex1',
-          'main__content',
-          customClass ? customClass : '',
-          'scrollable',
-        ]" :fullwidth="fullwidthContent">
+        <div
+          :class="[
+            'flex',
+            'col',
+            'flex1',
+            'main__content',
+            customClass ? customClass : '',
+            'scrollable',
+          ]"
+          :fullwidth="fullwidthContent">
           <slot></slot>
         </div>
       </main>
@@ -35,7 +42,6 @@ import isAuthenticated from "@/tools/isAuthenticated.js"
 
 import BurgerMenu from "@/components-mobile/BurgerMenu.vue"
 import OrganizationSidebar from "@/components/OrganizationSidebar.vue"
-import Breadcrumb from "@/components/Breadcrumb.vue"
 import HeaderBar from "@/components/HeaderBar.vue"
 
 export default {
@@ -83,7 +89,7 @@ export default {
       return isAuthenticated()
     },
   },
-  mounted() { },
+  mounted() {},
   methods: {
     clickOutsideBurgerMenu() {
       if (
@@ -100,7 +106,6 @@ export default {
   },
   components: {
     Fragment,
-    Breadcrumb,
     OrganizationSidebar,
     BurgerMenu,
     HeaderBar,
@@ -130,7 +135,7 @@ export default {
     background-color: white;
     border-radius: 4px;
     overflow: hidden;
-    box-shadow: inset -.1em 0 0 rgba(0, 0, 0, 0.1);
+    box-shadow: inset -0.1em 0 0 rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(0, 0, 0, 0.1);
     position: absolute;
     top: 0;
@@ -144,7 +149,7 @@ export default {
   .main-content__main {
     background-color: white;
     border-radius: 4px;
-    box-shadow: inset -.1em 0 0 rgba(0, 0, 0, 0.1);
+    box-shadow: inset -0.1em 0 0 rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(0, 0, 0, 0.1);
     flex: 1 1 auto;
     min-width: 0;
@@ -158,7 +163,7 @@ export default {
 .main-content-footer {
   padding: 1em;
   padding-top: 0;
-  font-size: .8em;
+  font-size: 0.8em;
   color: var(--text-secondary);
   display: flex;
   justify-content: flex-end;

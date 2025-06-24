@@ -9,25 +9,9 @@
         </BurgerMenu>
       </aside>
       <main class="v2-layout__main" @click="closeSidebar">
-        <HeaderBar :hasHeaderBarSlot="hasHeaderBarSlot">
-          <template v-if="!hasHeaderBarSlot" v-slot:header-bar-left>
-            <Button
-              icon="sidebar"
-              border-color="transparent"
-              color="neutral"
-              @click.stop="toggleSidebar"
-              class="sidebar-toggle icon-only" />
-            <Breadcrumb />
-          </template>
-          <template v-if="!hasHeaderBarSlot" v-slot:header-bar-right>
-            <LocalSwitcher class="local-switcher"></LocalSwitcher>
-          </template>
-          <template v-slot:breadcrumb>
-            <Breadcrumb>
-              <template v-slot:breadcrumb-actions>
-                <slot name="breadcrumb-actions"></slot>
-              </template>
-            </Breadcrumb>
+        <HeaderBar>
+          <template v-slot:breadcrumb-actions>
+            <slot name="breadcrumb-actions"></slot>
           </template>
         </HeaderBar>
         <div
@@ -75,9 +59,6 @@ export default {
     isAuthenticated() {
       return isAuthenticated()
     },
-    hasHeaderBarSlot() {
-      return !!this.$slots["header-bar"]
-    },
     ...mapGetters("system", ["sidebarOpen"]),
   },
   mounted() {
@@ -92,7 +73,7 @@ export default {
   },
   methods: {
     closeSidebar() {
-      if (!this.isMobile || !this.sidebarOpen) return
+      if (!this.isMobile || !this.sidebarOpen) return
       this.$store.dispatch("system/toggleSidebar")
     },
     toggleSidebar() {
@@ -186,8 +167,6 @@ export default {
       align-items: center;
       justify-content: space-between;
       padding: 0 0.5rem;
-      border-bottom: 1px solid var(--border-color, #e9ecef);
-      background-color: var(--background-breadcrumb, rgba(248, 249, 250, 0.8));
       flex-shrink: 0;
     }
   }
