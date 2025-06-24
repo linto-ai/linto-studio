@@ -31,15 +31,13 @@
 
         <!-- Tags filter selector -->
         <div class="media-explorer-header__filters" v-if="selectedCount === 0">
-          <div class="input-item border-0 background-transparent">
-            <input
-              v-model="search"
-              type="text"
-              id="search"
-              placeholder="Search"
-              class="input-item__input fullwidth"
-              @keyup.enter="handleSearch" />
-          </div>
+          <input
+            v-model="search"
+            type="text"
+            id="search"
+            placeholder="Search"
+            class="input-item__input fullwidth"
+            @keyup.enter="handleSearch" />
         </div>
       </div>
     </div>
@@ -125,6 +123,9 @@ export default {
       if (formattedSearch.length === 0) {
         this.$emit("search", formattedSearch, [])
       } else {
+        /**
+         * Will perform a search on title and text
+         */
         this.$emit("search", formattedSearch, [
           {
             title: "Title filter",
@@ -132,12 +133,12 @@ export default {
             _id: uuid(),
             key: "titleConversation",
           },
-          //   {
-          //     title: "Text filter",
-          //     value: this.search,
-          //     _id: uuid(),
-          //     key: "textConversation",
-          //   },w
+          {
+            title: "Text filter",
+            value: this.search,
+            _id: uuid(),
+            key: "textConversation",
+          },
         ])
       }
     },

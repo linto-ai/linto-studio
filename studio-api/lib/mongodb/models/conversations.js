@@ -473,22 +473,38 @@ class ConvoModel extends MongoModel {
           $all: filter.tags.split(","),
         }
       }
-      if (filter.name) {
-        query.name = {
-          $regex: filter.name,
-          $options: "i",
-        }
-      }
       if (filter.tags && filter.filter !== "notags") {
         query.tags = {
           $all: filter.tags.split(","),
         }
       }
+
+      /**
+       * @update 2025-06
+       * @description
+       * $or is used to search on name AND text
+       */
+      query.$or = []
+
+      if (filter.name) {
+        query.$or.push({
+          name: {
+            $regex: filter.name,
+            $options: "i",
+          },
+        })
+      }
       if (filter.text) {
-        query["text.raw_segment"] = {
-          $regex: filter.text,
-          $options: "i",
-        }
+        query.$or.push({
+          "text.raw_segment": {
+            $regex: filter.text,
+            $options: "i",
+          },
+        })
+      }
+
+      if (query.$or.length === 0) {
+        delete query.$or
       }
 
       if (userRole === ROLES.MEMBER) {
@@ -599,18 +615,33 @@ class ConvoModel extends MongoModel {
         }
       }
 
+      /**
+       * @update 2025-06
+       * @description
+       * $or is used to search on name AND text
+       */
+      query.$or = []
+
       if (filter.text) {
-        query["text.raw_segment"] = {
+        query.$or.push({
+          "text.raw_segment": {
           $regex: filter.text,
           $options: "i",
-        }
+          },
+        })
       }
 
       if (filter.name) {
-        query.name = {
+        query.$or.push({
+          name: {
           $regex: filter.name,
           $options: "i",
-        }
+          },
+        })
+      }
+
+      if (query.$or.length === 0) {
+        delete query.$or
       }
 
       return await this.mongoAggregatePaginate(query, projection, filter)

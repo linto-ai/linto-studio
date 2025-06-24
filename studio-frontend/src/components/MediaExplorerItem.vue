@@ -402,6 +402,7 @@ export default {
   margin-right: 0.5rem;
   background-color: var(--primary-soft);
   height: 24px;
+  min-width: 46px;
 }
 
 .user-profile-picture-container {

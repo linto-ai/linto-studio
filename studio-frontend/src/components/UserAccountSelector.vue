@@ -96,7 +96,7 @@ export default {
       }
 
       if (this.isAtLeastOrganizationInitiator) {
-        settingsItems.push({
+        userMenu.push({
           id: "create",
           icon: "plus",
           text: this.$t("navigation.organisation.create"),
@@ -113,6 +113,8 @@ export default {
         this.openSettingsModal()
       } else if (item.id === "logout") {
         this.logout()
+      } else if (item.id === "backoffice") {
+        this.$router.push("/backoffice")
       }
     },
     closeMenu() {

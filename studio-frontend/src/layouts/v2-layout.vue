@@ -61,15 +61,16 @@ export default {
     },
     ...mapGetters("system", ["sidebarOpen"]),
   },
-  mounted() {
-    this.isMobile = true
+  beforeMount() {
+    this.isMobile =
+      typeof window !== "undefined" && window.innerWidth < 1100
 
-    if (typeof window !== "undefined" && window.innerWidth > 1100) {
-      this.isMobile = false
-      if (!this.sidebarOpen) {
-        this.$store.dispatch("system/toggleSidebar")
-      }
+    if (this.isMobile === false && this.sidebarOpen === undefined) {
+      this.$store.dispatch("system/toggleSidebar", true)
     }
+  },
+  mounted() {
+    this.isMobile = typeof window !== "undefined" && window.innerWidth < 1100
   },
   methods: {
     closeSidebar() {

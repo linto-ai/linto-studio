@@ -12,8 +12,9 @@ const state = {
   /**
    * Whether the sidebar is open
    * @property {boolean} sidebarOpen
+   * @default undefined - undefined means that the sidebar is not initialized yet (see beforeMount in v2-layout.vue)
    */
-  sidebarOpen: false,
+  sidebarOpen: undefined,
 }
 
 const mutations = {
