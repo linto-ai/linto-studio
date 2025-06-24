@@ -1,11 +1,12 @@
 <template>
-  <div id="app" v-if="dataLoaded || noOrganization">
+  <ErrorNotResponsive v-if="dataLoaded && isMobile && !isResponsivePage" />
+  <div id="app" v-else-if="dataLoaded || noOrganization">
     <div id="app-view" class="flex col flex1">
       <!-- HEADER -->
       <keep-alive>
         <router-view
+          v-if="isAuthenticated()"
           name="AppHeader"
-          v-if="!editorView"
           :currentOrganizationScope="currentOrganizationScope"
           :noOrganization="noOrganization"
           :userInfo="userInfo"
@@ -41,11 +42,17 @@
 </template>
 <script>
 import { bus } from "./main.js"
+import { getEnv } from "@/tools/getEnv"
+import { getCookie } from "./tools/getCookie"
+import isAuthenticated from "@/tools/isAuthenticated.js"
+
+import ErrorNotResponsive from "@/components/ErrorNotResponsive.vue"
+import ErrorPage from "@/components/ErrorPage.vue"
+import Loading from "@/components/Loading.vue"
 import LoadingOverlay from "@/components/LoadingOverlay.vue"
-import ErrorView from "./views/Error.vue"
-import Loading from "./components/Loading.vue"
-import PUBLIC_ROUTES from "./const/publicRoutes.js"
-import NoOrganizationComponent from "./views/NoOrganization.vue"
+import ErrorView from "@/views/Error.vue"
+import NoOrganizationComponent from "@/views/NoOrganization.vue"
+
 export default {
   data() {
     return {
@@ -55,12 +62,14 @@ export default {
       currentRoute: {},
       convosLoaded: false,
       error: false,
-      resetKey: 0,
+      resetKey: 1,
       noOrganization: false,
+      isMobile: Math.min(window.innerWidth, window.innerHeight) < 500,
     }
   },
   mounted() {
-    this.appMounted = true
+    const enableSession = getEnv("VUE_APP_ENABLE_SESSION") === "true"
+
     bus.$on("set_organization_scope", async (data) => {
       this.setOrganizationScope(data.organizationId)
       await this.dispatchUserOrganizations()
@@ -75,8 +84,14 @@ export default {
 
     document.documentElement.setAttribute(
       "data-theme",
-      localStorage.getItem("currentTheme") || "light"
+      localStorage.getItem("currentTheme") || "light",
     )
+    this.appMounted = true
+    document.title = this.title
+
+    if (enableSession) {
+      this.$sessionWS.connect()
+    }
   },
   beforeDestroy() {
     bus.$off("set_organization_scope")
@@ -85,38 +100,40 @@ export default {
   },
   watch: {
     $route(to, from) {
-      this.resetKey++
+      this.resetKey = this.resetKey * -1
       this.error = false
+      this.init()
       bus.$emit("navigation", to)
-    },
-    async isPrivateRoute(isPrivate) {
-      if (isPrivate) {
-        await this.getuserInfo()
-        await this.dispatchUserOrganizations()
-      }
     },
   },
   computed: {
+    title() {
+      return getEnv("VUE_APP_NAME")
+    },
     isPrivateRoute() {
-      if (
-        this.$route.name !== null &&
-        !PUBLIC_ROUTES.includes(this.$route.name)
-      ) {
-        return true
-      }
-      return false
+      return !this.$route?.meta?.public
+    },
+    isBackOfficeRoute() {
+      return this.$route?.meta?.backoffice
+    },
+    isResponsivePage() {
+      return this.$route?.meta?.responsive
     },
     userInfo() {
       return this.$store.state.userInfo
     },
     dataLoaded() {
-      if (this.isPrivateRoute) {
+      if (this.isBackOfficeRoute) {
+        return !!this.userInfo && this.appMounted
+      }
+
+      if (this.isPrivateRoute || this.isAuthenticated()) {
         return (
           !!this.userInfo &&
           this.appMounted &&
           this.userOrgasLoaded &&
           this.currentOrganizationScope &&
-          this.currentOrganization._id
+          this.currentOrganization?._id
         )
       }
       return true
@@ -161,9 +178,24 @@ export default {
     },
   },
   methods: {
-    async setOrganizationScope(organizationId) {
+    async init() {
+      if (this.$route.params?.organizationId) {
+        this.setOrganizationScope(this.$route.params.organizationId, false)
+      } else if (this.$route.query?.organizationId) {
+        this.setOrganizationScope(this.$route.query.organizationId)
+      }
+
+      if (this.isAuthenticated()) {
+        await this.getuserInfo()
+        await this.dispatchUserOrganizations()
+      }
+    },
+    isAuthenticated() {
+      return isAuthenticated()
+    },
+    async setOrganizationScope(organizationId, redirect = true) {
       this.$options.filters.setCookie("cm_orga_scope", organizationId, 7)
-      if (!this.listView) {
+      if (!this.listView && redirect) {
         this.$router.push({ name: "inbox" })
       }
     },
@@ -181,7 +213,7 @@ export default {
     async dispatchUserOrganizations() {
       try {
         this.userOrgasLoaded = await this.$options.filters.dispatchStore(
-          "getUserOrganizations"
+          "getUserOrganizations",
         )
         const orgaScopeId = this.$store.getters.getCurrentOrganizationScope()
         await this.$store.dispatch("getCurrentOrganizationById", orgaScopeId)
@@ -195,11 +227,16 @@ export default {
     LoadingOverlay,
     Loading,
     ErrorView,
+    ErrorPage,
     NoOrganizationComponent,
+    ErrorNotResponsive,
   },
-  errorCaptured(error) {},
+  errorCaptured(error) {
+    console.error("errorCaptured: ", error)
+    this.error = true
+  },
 }
 </script>
 <style lang="scss">
-@import "../public/sass/styles.scss";
+@import "./style/style.scss";
 </style>

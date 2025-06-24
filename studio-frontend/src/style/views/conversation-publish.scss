@@ -1,0 +1,107 @@
+.publish-main-container {
+  background-color: #8080802e;
+  overflow: auto;
+  padding: 5px;
+  flex: 1;
+}
+
+.publish__pdf-wrapper {
+  height: 100%;
+  width: 100%;
+  border: 1px solid white;
+  box-shadow: var(--shadow-block);
+  box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.25);
+}
+
+.publish__markdown-wrapper {
+  width: 60rem;
+  max-width: 100%;
+  margin-inline: auto;
+  //font-family: luciole;
+  //flex: 1;
+  //display: flex;
+  // border-radius: 4px;
+
+  border: var(--border-block);
+  box-shadow: var(--shadow-block);
+  background-color: var(--background-primary);
+
+  #markdown-editor-source {
+    //width: 50%;
+    //height: 100%;
+    .cm-editor {
+      height: 100%;
+    }
+    .cm-editor .cm-scroller {
+      overflow: auto;
+    }
+  }
+
+  #markdown-editor-preview {
+    flex: 1;
+
+    border-left: var(--border-block);
+  }
+
+  #markdown-editor-preview__content {
+    padding: 1rem;
+    overflow: auto;
+  }
+
+  #markdown-editor-container {
+    height: 100%;
+  }
+
+  #markdown-editor-preview header,
+  #markdown-editor-source header {
+    text-align: center;
+    border-bottom: var(--border-block);
+    padding: 0.25rem;
+  }
+
+  .tiptap.ProseMirror {
+    width: 100%;
+    overflow: auto;
+    padding: 4rem;
+  }
+}
+
+.publish-main__empty {
+  max-width: 56rem;
+  margin-inline: auto;
+  background-color: var(--background-primary);
+  box-shadow: var(--shadow-block);
+  text-align: center;
+  border-radius: 4px;
+  padding: 2rem;
+  width: 100%;
+}
+
+.publish-main__loading {
+  max-width: 56rem;
+  margin-inline: auto;
+  background-color: var(--background-primary);
+  box-shadow: var(--shadow-block);
+  text-align: center;
+  border-radius: 4px;
+  padding: 2rem;
+}
+
+.publish-main__loading .illustration {
+  margin-bottom: 1rem;
+  width: 25rem;
+}
+
+.publish-turn {
+  font-family: $luciole;
+  margin-bottom: 1rem;
+  text-align: justify;
+}
+
+.publish-turn-speaker {
+  font-weight: bold;
+}
+
+.publish-turn-time {
+  font-style: italic;
+}

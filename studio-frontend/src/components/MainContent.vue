@@ -3,10 +3,20 @@
     <OrganizationSidebar v-if="sidebar" :organizationPage="organizationPage">
       <slot name="sidebar"></slot>
     </OrganizationSidebar>
+    <BurgerMenu
+      @close="toggleBurger"
+      v-click-outside="toggleBurger"
+      v-if="showBurger" />
     <main class="flex col scrollable" :class="{ box: box, flex1: flex }">
       <div
         class="flex row align-center main__breadcrumb-bar"
         v-if="!fullscreen">
+        <button
+          v-if="isAuthenticated"
+          class="transparent only-icon mobile burger-button"
+          @click="toggleBurger">
+          <span class="icon burger"></span>
+        </button>
         <div
           class="flex row align-center flex1 reset-overflows"
           v-if="!noBreadcrumb">
@@ -31,8 +41,11 @@
 <script>
 import { Fragment } from "vue-fragment"
 import { bus } from "../main.js"
-import Breadcrumb from "./Breadcrumb.vue"
-import OrganizationSidebar from "./OrganizationSidebar.vue"
+import isAuthenticated from "@/tools/isAuthenticated.js"
+
+import BurgerMenu from "@/components-mobile/BurgerMenu.vue"
+import OrganizationSidebar from "@/components/OrganizationSidebar.vue"
+import Breadcrumb from "@/components/Breadcrumb.vue"
 
 export default {
   props: {
@@ -70,10 +83,22 @@ export default {
     },
   },
   data() {
-    return {}
+    return {
+      showBurger: false,
+    }
+  },
+  computed: {
+    isAuthenticated() {
+      return isAuthenticated()
+    },
   },
   mounted() {},
-  methods: {},
-  components: { Fragment, Breadcrumb, OrganizationSidebar },
+  methods: {
+    toggleBurger() {
+      this.showBurger = !this.showBurger
+      bus.$emit("toggle-burger", this.showBurger)
+    },
+  },
+  components: { Fragment, Breadcrumb, OrganizationSidebar, BurgerMenu },
 }
 </script>

@@ -13,9 +13,11 @@
     </div>
     <div
       class="tag__value flex align-center"
-      :class="[classTextSize, classBackgroundColor]">
-      <span class="tag__triangle" />
-      <span class="flex1 tag__value__main">{{ value }}</span>
+      :class="[classTextSize, classBackgroundColor, classTextColor]">
+      <!-- <span class="tag__triangle" /> -->
+      <span class="flex1 tag__value__main" :class="{ 'no-value': !value }">{{
+        l_value
+      }}</span>
       <button
         @click="$emit('remove')"
         v-if="removable"
@@ -45,7 +47,7 @@ export default {
     value: { type: String, required: true },
     categoryId: { type: String, required: false },
     categoryName: { type: String, required: false, default: "" },
-    color: { type: String, required: false, default: "white" },
+    color: { type: String, required: false, default: "brown" },
     size: { type: String, required: false, default: "small" },
     removable: { type: Boolean, required: false, default: false }, // add a cross to remove the tag
     deletable: { type: Boolean, required: false, default: false }, // add a trash to delete the tag
@@ -60,10 +62,16 @@ export default {
   },
   computed: {
     classBackgroundColor() {
-      return `background-${this.color}-100`
+      return `background-${this.color}-50`
+    },
+    classTextColor() {
+      return `color-${this.color}-900`
     },
     classCategoryColor() {
       return `color-${this.color}-900`
+    },
+    l_value() {
+      return this.value || this.$t("tags.empty_value")
     },
   },
   mounted() {},

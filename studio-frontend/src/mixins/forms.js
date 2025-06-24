@@ -1,6 +1,10 @@
 export const formsMixin = {
   methods: {
     testFields({ fieldsToTest = this.fields, autoContains = false } = {}) {
+      if (!fieldsToTest) {
+        console.error("No fields to test, this.fields is undefined")
+        return false
+      }
       this.debug("testing fields %o", fieldsToTest)
       return fieldsToTest.every((fieldName) => {
         if (!autoContains) {
@@ -21,7 +25,7 @@ export const formsMixin = {
 
       // maybe check if testField is a function and display warning if not
       if (field.required && !field.value) {
-        field.error = this.$i18n.t("global.this_field_is_required")
+        field.error = this.$i18n.t("error.required")
         return false
       }
 

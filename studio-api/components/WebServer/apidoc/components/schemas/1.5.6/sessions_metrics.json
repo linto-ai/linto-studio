@@ -1,0 +1,24 @@
+{
+  "SessionsMetrics": {
+    "type": "object",
+    "properties": {
+      "watchEntries": {
+        "type": "integer",
+        "description": "The number of individual watch connections recorded for the session"
+      },
+      "watchTimeMs": {
+        "type": "integer",
+        "description": "Total watch time in milliseconds"
+      },
+      "watchTimeSeconds": {
+        "type": "integer",
+        "description": "Total watch time in seconds"
+      }
+    },
+    "example": {
+      "watchEntries": 1,
+      "watchTimeMs": 12486,
+      "watchTimeSeconds": 12
+    }
+  }
+}

@@ -285,7 +285,6 @@ async function generateSubtitle(req, res, next) {
       conv_name: conv.name,
       version: req.body.version,
     }
-
     let result
     if (conv_subtitle.length > 0) {
       subtitles._id = conv_subtitle[0]._id
@@ -314,8 +313,7 @@ async function getSubtitle(req, res, next) {
       if (req.query.type === "srt") {
         const srt = generateSrt(conv_subtitle[0].screens)
         res.status(200).send(srt)
-      }
-      if (req.query.type === "vtt") {
+      } else if (req.query.type === "vtt") {
         const vtt = generateVtt(conv_subtitle[0].screens)
         res.status(200).send(vtt)
       } else {
@@ -351,7 +349,7 @@ async function updateScreen(req, res, next) {
         req.params.screenId,
         req.body,
       )
-      if (result.result && result.result.nModified === 1) res.status(200).send()
+      if (result?.modifiedCount === 1) res.status(200).send()
       else res.status(304).send()
     }
   } catch (err) {
@@ -394,7 +392,7 @@ async function addScreen(req, res, next) {
         req.body,
         position,
       )
-      if (result.result && result.result.nModified === 1)
+      if (result?.modifiedCount === 1)
         res.status(200).json({ _id: req.body.screen_id })
       else res.status(304).send()
     }
@@ -419,7 +417,7 @@ async function deleteScreen(req, res, next) {
         req.params.subtitleId,
         req.params.screenId,
       )
-      if (result.result && result.result.nModified === 1) res.status(200).send()
+      if (result?.modifiedCount === 1) res.status(200).send()
       else res.status(304).send()
     }
   } catch (err) {

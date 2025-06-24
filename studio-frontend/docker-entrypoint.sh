@@ -4,6 +4,57 @@ set -e
 DIR="/usr/src/app/conversation-manager-front/dist/"
 BUILD=false
 
+# Set default UID and GID (defaults to www-data: 33:33 if not specified)
+USER_ID=${USER_ID:-33}
+GROUP_ID=${GROUP_ID:-33}
+
+# Default values for user and group names
+USER_NAME="appuser"
+GROUP_NAME="appgroup"
+
+# Function to create a user/group if needed and adjust permissions
+function setup_user() {
+    echo "Configuring runtime user with UID=$USER_ID and GID=$GROUP_ID"
+
+    # Check if a group with the specified GID already exists
+    if getent group "$GROUP_ID" >/dev/null 2>&1; then
+        GROUP_NAME=$(getent group "$GROUP_ID" | cut -d: -f1)
+        echo "A group with GID=$GROUP_ID already exists: $GROUP_NAME"
+    else
+        # Create the group if it does not exist
+        echo "Creating group with GID=$GROUP_ID"
+        groupadd -g "$GROUP_ID" "$GROUP_NAME"
+    fi
+    #
+    # Check if a user with the specified UID already exists
+    if id -u "$USER_ID" >/dev/null 2>&1; then
+        USER_NAME=$(getent passwd "$USER_ID" | cut -d: -f1)
+        echo "A user with UID=$USER_ID already exists: $USER_NAME"
+    else
+        # Create the user if it does not exist
+        echo "Creating user with UID=$USER_ID and GID=$GROUP_ID"
+        useradd -m -u "$USER_ID" -g "$GROUP_NAME" "$USER_NAME"
+    fi
+
+    # Adjust ownership of the application directories
+    echo "Adjusting ownership of application directories"
+    chown -R "$USER_NAME:$GROUP_NAME" /usr/src/app /usr/share/nginx/html /var/lib/nginx /var/log/nginx /run/nginx.pid
+
+    # Get the user's home directory from the system
+    USER_HOME=$(getent passwd "$USER_NAME" | cut -d: -f6)
+
+    # Ensure the home directory exists
+    if [ ! -d "$USER_HOME" ]; then
+        echo "Ensure home directory exists: $USER_HOME"
+        mkdir -p "$USER_HOME"
+        chown "$USER_NAME:$GROUP_NAME" "$USER_HOME"
+    fi
+
+    # Grant full permissions to the user on their home directory
+    echo "Granting full permissions to $USER_NAME on $USER_HOME"
+    chmod -R u+rwx "$USER_HOME"
+}
+
 if [ ! -d "$DIR" ]; then
   BUILD=true
   # Take action if $DIR exists. #
@@ -12,7 +63,7 @@ if [ ! -d "$DIR" ]; then
   npm run build
   rm -rf /usr/share/nginx/html/*
   cp -r ./dist/* /usr/share/nginx/html
-else 
+else
   echo "Directory ${DIR} exists, skipping build..."
   cp -r ./dist/* /usr/share/nginx/html
 fi
@@ -20,10 +71,10 @@ fi
 while [ "$1" != "" ]; do
   case $1 in
   --build)
-      printenv >.env
-      npm run build
-      rm -rf /usr/share/nginx/html/*
-      cp -r ./dist/* /usr/share/nginx/html
+    printenv >.env
+    npm run build
+    rm -rf /usr/share/nginx/html/*
+    cp -r ./dist/* /usr/share/nginx/html
     ;;
   --skip)
     echo 'Skip startup param'
@@ -36,8 +87,17 @@ while [ "$1" != "" ]; do
   shift
 done
 
-echo "RUNNING : $script"
-cd /usr/src/app/conversation-manager-front
+if [ -z "$WEBSERVER_HTTP_PORT" ]; then
+  echo "WEBSERVER_HTTP_PORT is not set. Defaulting to port 80."
+  WEBSERVER_HTTP_PORT=80
+fi
 
-echo "done"
-nginx
+echo "Nginx port set to: ${WEBSERVER_HTTP_PORT}"
+cp /etc/nginx/nginx.conf /tmp/nginx.conf
+sed -i "s/listen [0-9]\+;/listen ${WEBSERVER_HTTP_PORT};/" /tmp/nginx.conf
+cp /tmp/nginx.conf /etc/nginx/nginx.conf
+
+setup_user
+
+echo "Starting Nginx..."
+gosu "$USER_NAME" nginx

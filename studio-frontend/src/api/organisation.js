@@ -1,13 +1,15 @@
 import { sendRequest } from "../tools/sendRequest"
 
-const BASE_API = process.env.VUE_APP_CONVO_API
+import { getEnv } from "@/tools/getEnv"
+
+const BASE_API = getEnv("VUE_APP_CONVO_API")
 
 export async function apiGetOrganizationById(organizationId, notif) {
   const getOrganization = await sendRequest(
     `${BASE_API}/organizations/${organizationId}`,
     { method: "get" },
     null,
-    notif
+    notif,
   )
   return getOrganization?.data
 }
@@ -22,12 +24,22 @@ export async function apiGetOrganizationById(organizationId, notif) {
 //   return getOrganization?.data
 // }
 
+export async function apiGetOrganizationsFromUser(userId, notif) {
+  const getOrganizations = await sendRequest(
+    `${BASE_API}/organizations`,
+    { method: "get" },
+    { impersonateUser: userId },
+    notif,
+  )
+  return getOrganizations
+}
+
 export async function apiGetUserOrganizations(notif) {
   const getUserOrganizations = await sendRequest(
     `${BASE_API}/organizations`,
     { method: "get" },
     null,
-    notif
+    notif,
   )
   return getUserOrganizations?.data
 }
@@ -35,13 +47,26 @@ export async function apiGetUserOrganizations(notif) {
 export async function apiUpdateOrganisation(
   organizationId,
   organizationObject,
-  notif
+  notif,
 ) {
   return await sendRequest(
     `${BASE_API}/organizations/${organizationId}`,
     { method: "patch" },
     organizationObject,
-    notif
+    notif,
+  )
+}
+
+export async function apiAdminUpdateOrganisation(
+  organizationId,
+  organizationObject,
+  notif,
+) {
+  return await sendRequest(
+    `${BASE_API}/administration/organizations/${organizationId}`,
+    { method: "patch" },
+    organizationObject,
+    notif,
   )
 }
 
@@ -50,7 +75,7 @@ export async function apiLeaveOrganisation(organizationId, notif) {
     `${BASE_API}/organizations/${organizationId}/self`,
     { method: "delete" },
     {},
-    notif
+    notif,
   )
 }
 
@@ -59,7 +84,7 @@ export async function apiDeleteOrganisation(organizationId, notif) {
     `${BASE_API}/organizations/${organizationId}`,
     { method: "delete" },
     {},
-    notif
+    notif,
   )
 }
 
@@ -68,15 +93,15 @@ export async function apiCreateOrganisation(payload, notif) {
     `${BASE_API}/organizations`,
     { method: "post" },
     payload,
-    notif
+    notif,
   )
 }
 
-// export async function apiUpdateOrganisationType(organizationId, type, notif) {
-//   return await sendRequest(
-//     `${process.env.VUE_APP_CONVO_API}/organizations/${organizationId}`,
-//     { method: "patch" },
-//     { type },
-//     notif
-//   )
-// }
+export async function apiInviteUsersMachingEmail(organizationId, notif) {
+  return await sendRequest(
+    `${BASE_API}/administration/organizations/${organizationId}/inviteMatchingMail`,
+    { method: "post" },
+    {},
+    notif,
+  )
+}

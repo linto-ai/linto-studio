@@ -11,7 +11,8 @@
           ? 'active desc'
           : '',
       ]">
-      {{ label }}
+      <slot v-if="hasSlot"></slot>
+      <span class="label" v-else>{{ label }}</span>
     </button>
   </th>
 </template>
@@ -19,7 +20,7 @@
 export default {
   props: {
     eventLabel: { type: String, required: true },
-    label: { type: String, required: true },
+    label: { type: String, required: false },
     sortListKey: { type: String, required: true },
     sortListDirection: { type: String, required: true },
   },
@@ -30,6 +31,11 @@ export default {
     sortBy(event, key) {
       event.preventDefault()
       this.$emit("list_sort_by", key)
+    },
+  },
+  computed: {
+    hasSlot() {
+      return !!this.$slots.default
     },
   },
 }

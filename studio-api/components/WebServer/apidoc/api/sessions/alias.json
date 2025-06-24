@@ -1,0 +1,207 @@
+{
+  "/api/organizations/{organizationId}/sessions/alias": {
+    "get": {
+      "tags": ["sessions alias"],
+      "summary": "List all alias",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an organization"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The list of session alias",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SessionAlias"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "post": {
+      "tags": ["sessions alias"],
+      "summary": "Create an alias",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an organization"
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "sessionId": {
+                  "type": "string"
+                }
+              },
+              "required": []
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Alias created",
+          "name": "alias name",
+          "sessionId": "session id"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "409": {
+          "$ref": "#/components/responses/Conflict"
+        },
+        "415": {
+          "$ref": "#/components/responses/UnsupportedMediaType"
+        }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/sessions/alias/{id}": {
+    "get": {
+      "tags": ["sessions alias"],
+      "summary": "Get the session alias by ID",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an session alias"
+        },
+        {
+          "in": "path",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an organization"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Session alias",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionAlias"
+              }
+            }
+          }
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "delete": {
+      "tags": ["sessions alias"],
+      "summary": "Delete an alias by ID",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an session alias"
+        },
+        {
+          "in": "path",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an organization"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Alias deleted"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "put": {
+      "tags": ["sessions alias"],
+      "summary": "Update an alias by ID",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an session alias"
+        },
+        {
+          "in": "path",
+          "name": "organizationId",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "uuid string identifier for an organization"
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                }
+              },
+              "required": []
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Alias updated"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "409": {
+          "$ref": "#/components/responses/Conflict"
+        }
+      }
+    }
+  }
+}

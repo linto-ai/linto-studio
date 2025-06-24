@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="!noPlayer"
     id="conversation-audio-player"
     class="conversation-audio-player--subtitle">
     <div
@@ -27,15 +28,18 @@
   </div>
 </template>
 <script>
-import { bus } from "../main.js"
-import AppPlayerHeader from "@/components/AppPlayerHeader.vue"
-import Loading from "@/components/Loading.vue"
-import { playerMixin } from "@/mixins/player.js"
+import Vue, { h } from "vue"
 import WaveSurfer from "wavesurfer.js"
 import RegionsPlugin from "../../node_modules/wavesurfer.js/dist/plugins/regions.js"
 import TimelinePlugin from "../../node_modules/wavesurfer.js/dist/plugins/timeline.js"
+
+import { bus } from "../main.js"
+import { playerMixin } from "@/mixins/player.js"
 import { ScreenList } from "../models/screenList"
 import { timeToHMS } from "../tools/timeToHMS"
+
+import AppPlayerHeader from "@/components/AppPlayerHeader.vue"
+import Loading from "@/components/Loading.vue"
 
 export default {
   mixins: [playerMixin],
@@ -62,7 +66,6 @@ export default {
     await this.initAudioPlayer()
     bus.$on("refresh_screen", (data) => {
       let region = this.getRegion(data.screenId)
-      console.log(region)
       this.refreshRegion(region, this.formatScreen(data.changes))
     })
     bus.$on("player_set_time", (data) => {
@@ -81,12 +84,16 @@ export default {
       this.deleteScreen(screenId)
       this.addScreen(target.screen)
     })
+    bus.$on("delete_screen", (data) => {
+      this.deleteScreen(data.screenId)
+    })
   },
   beforeDestroy() {
     bus.$off("refresh_screen")
     bus.$off("player_set_time")
     bus.$off("add_screen")
     bus.$off("merge_screen")
+    bus.$off("delete_screen")
   },
   methods: {
     seekFromBar(e) {
@@ -123,8 +130,12 @@ export default {
       try {
         if (!this.useVideo) {
           await this.getAudioFile()
+          if (!this.audioFile) {
+            this.noPlayer = true
+            throw "Audio is empty"
+          }
         }
-        await this.getAudiowaveform()
+        // await this.getAudiowaveform() audio waveform is now only generated front-end side
         this.player = WaveSurfer.create({
           url: this.useVideo ? undefined : this.audioFile,
           media: this.useVideo ? this.useVideo : undefined,
@@ -134,7 +145,15 @@ export default {
           cursorColor: "red",
           responsive: true,
           normalize: true,
-          plugins: [RegionsPlugin.create(), TimelinePlugin.create()],
+          plugins: [
+            RegionsPlugin.create(),
+            TimelinePlugin.create({
+              formatTimeCallback: (seconds, pxPerSec) => {
+                return timeToHMS(seconds)
+              },
+              primaryLabelInterval: 2,
+            }),
+          ],
           backend: "MediaElement",
           fetchParams: this.fetchController.signal,
         })
@@ -146,6 +165,7 @@ export default {
         this.player.on("ready", () => {
           this.playerReady = true
           this.playerLoading = false
+          this.duration = this.player.getDuration()
         })
         this.player.once("decode", () => {
           this.player.zoom(130)
@@ -222,20 +242,11 @@ export default {
       }
     },
     createRegionContent(time) {
-      let content = document.createElement("div")
-      let startText = document.createElement("div")
-      startText.innerText = this.$t("conversation.subtitles.screens.start")
-      startText.style.fontSize = "0.7rem"
-      let timeContent = document.createElement("div")
-      timeContent.innerText = `${time}`
-
-      content.append(startText)
-      content.append(timeContent)
-      return content
+      // Custom content in each region
     },
     createRegion(screen) {
       let ms = Math.floor((screen.stime - Math.floor(screen.stime)) * 100)
-      let time = timeToHMS(screen.stime, true) + "." + ms
+      let time = timeToHMS(screen.stime, { stripZeros: true }) + "." + ms
       let content = this.createRegionContent(time)
       return {
         id: screen.screen_id,
@@ -264,7 +275,6 @@ export default {
       }
     },
     deleteScreen(screenId) {
-      console.log(screenId)
       let region = this.getRegion(screenId)
       this.blocksSettings.delete(screenId)
       region.remove()
@@ -281,7 +291,7 @@ export default {
         screen[key] = value
       }
       let ms = Math.floor((screen.start - Math.floor(screen.start)) * 100)
-      let time = timeToHMS(screen.start, true) + "." + ms
+      let time = timeToHMS(screen.start, { stripZeros: true }) + "." + ms
       let content = this.createRegionContent(time)
       screen.content = content
       region.setContent(content)
