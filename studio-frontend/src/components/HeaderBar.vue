@@ -6,7 +6,7 @@
       color="neutral"
       @click.stop="toggleSidebar"
       class="sidebar-toggle icon-only" />
-    <Breadcrumb class="flex1">
+    <Breadcrumb class="flex1" :additionalbreadcrumbItems="breadcrumbItems">
       <template v-slot:breadcrumb-actions>
         <slot name="breadcrumb-actions"></slot>
       </template>
@@ -25,7 +25,12 @@ import LocalSwitcher from "./LocalSwitcher.vue"
 import Breadcrumb from "@/components/atoms/Breadcrumb.vue"
 
 export default {
-  props: {},
+  props: {
+    breadcrumbItems: {
+      type: Array,
+      required: false,
+    },
+  },
   data() {
     return {
       simplePopoverOpen: false,

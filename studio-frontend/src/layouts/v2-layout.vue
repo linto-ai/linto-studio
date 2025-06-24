@@ -9,7 +9,7 @@
         </BurgerMenu>
       </aside>
       <main class="v2-layout__main" @click="closeSidebar">
-        <HeaderBar>
+        <HeaderBar :breadcrumbItems="breadcrumbItems">
           <template v-slot:breadcrumb-actions>
             <slot name="breadcrumb-actions"></slot>
           </template>
@@ -51,6 +51,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    breadcrumbItems: {
+      type: Array,
+      required: false,
+    },
   },
   data() {
     return {}
@@ -62,8 +66,7 @@ export default {
     ...mapGetters("system", ["sidebarOpen"]),
   },
   beforeMount() {
-    this.isMobile =
-      typeof window !== "undefined" && window.innerWidth < 1100
+    this.isMobile = typeof window !== "undefined" && window.innerWidth < 1100
 
     if (this.isMobile === false && this.sidebarOpen === undefined) {
       this.$store.dispatch("system/toggleSidebar", true)

@@ -597,7 +597,7 @@ let router = new Router({
         conversationDetailPage: true,
         breadcrumb: {
           label: "",
-          parent: "conversations subtitles",
+          parent: "conversations overview",
           dynamic: true,
           entity: "subtitle",
           showInBreadcrumb: true,

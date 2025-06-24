@@ -1,28 +1,28 @@
 <template>
   <LayoutV2>
-    <template v-slot:header-bar>
+    <template v-slot:breadcrumb-actions>
       <SessionHeader
         :sessionListRoute="sessionListRoute"
         :isAuthenticated="isAuthenticated"
         :sessionLoaded="sessionLoaded"
         :name="name"
         :session="session">
-        <template v-slot:right-button-desktop>
-          <router-link :to="liveRoute" class="btn">
-            <span class="icon text"></span>
-            <span class="label">{{
-              $t("session.detail_page.back_to_live")
-            }}</span>
-          </router-link>
-        </template>
-        <template v-slot:right-button-mobile>
+        <IsMobile>
           <router-link
             :to="liveRoute"
-            class="btn secondary only-icon"
+            class="btn secondary outline only-icon md"
             :aria-label="$t('session.detail_page.back_to_live')">
-            <span class="icon text"></span>
+            <ph-icon name="text-align-left" size="md"></ph-icon>
           </router-link>
-        </template>
+          <template #desktop>
+            <router-link :to="liveRoute" class="btn">
+              <ph-icon name="text-align-left" size="md"></ph-icon>
+              <span class="label">{{
+                $t("session.detail_page.back_to_live")
+              }}</span>
+            </router-link>
+          </template>
+        </IsMobile>
       </SessionHeader>
     </template>
     <div class="flex1 medium-padding" v-if="sessionLoaded">
@@ -143,29 +143,19 @@
         <div class="flex col gap-medium session-settings-right align-center">
           <div class="flex col gap-medium">
             <!-- Delete and save -->
-            <button
-              class="btn flex1 tertiary flex"
+            <Button
               v-if="isStarted && !isActive"
-              @click="stopSession"
-              :title="titleButtonDelete"
-              :disabled="isStoping">
-              <span class="icon stop"></span>
-              <span class="label flex1">{{
-                $t("session.detail_page.stop_button")
-              }}</span>
-            </button>
-            <!-- Force delete and save -->
-            <button
-              class="btn flex1 tertiary flex"
+              icon="stop"
+              :label="$t('session.detail_page.stop_button')"
+              color="tertiary"
+              size="sm"></Button>
+            <Button
               v-if="isActive"
+              icon="stop"
+              :label="$t('session.detail_page.stop_force_button')"
               @click="openModalDeleteSession"
-              :title="titleButtonDelete"
-              :disabled="isStoping">
-              <span class="icon stop"></span>
-              <span class="label flex1">{{
-                $t("session.detail_page.stop_force_button")
-              }}</span>
-            </button>
+              color="tertiary"
+              size="sm"></Button>
           </div>
           <Qrcode :value="publicLink" class="session-settings-qr-code" />
         </div>

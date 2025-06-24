@@ -1,6 +1,11 @@
 <template>
-  <V2Layout v-if="dataLoaded && status == 'done'">
-    <template v-slot:header-bar>
+  <V2Layout
+    v-if="dataLoaded && status == 'done'"
+    :breadcrumbItems="breadcrumbItems">
+    <!-- <template v-slot:header-bar>
+      <slot name="breadcrumb-actions"></slot>
+    </template> -->
+    <template v-slot:breadcrumb-actions>
       <slot name="breadcrumb-actions"></slot>
     </template>
 
@@ -73,9 +78,10 @@ export default {
       type: Boolean,
       default: false,
     },
-  },
-  data() {
-    return {}
+    breadcrumbItems: {
+      type: Array,
+      default: () => [],
+    },
   },
   mounted() {},
   methods: {},

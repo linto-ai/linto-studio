@@ -1,38 +1,47 @@
 <template>
   <LayoutV2>
-    <template v-slot:header-bar>
+    <template v-slot:breadcrumb-actions>
       <SessionHeader
         :sessionListRoute="sessionListRoute"
         :sessionLoaded="sessionLoaded"
         :name="name"
         :session="session">
-        <template v-slot:right-button-desktop>
-          <router-link
-            :to="settingsRoute"
-            class="btn"
-            v-if="isAtLeastMeetingManager">
-            <span class="icon settings"></span>
-            <span class="label">{{
-              $t("session.detail_page.settings_button")
-            }}</span>
-          </router-link>
-        </template>
-        <template v-slot:right-button-mobile>
+        <IsMobile>
           <div class="flex gap-small">
             <router-link
               :to="settingsRoute"
-              class="btn secondary only-icon"
+              class="btn secondary outline only-icon"
               v-if="isAtLeastMeetingManager"
               :aria-label="$t('session.detail_page.settings_button')">
-              <span class="icon settings"></span>
+              <ph-icon name="gear"></ph-icon>
             </router-link>
             <button
-              class="btn secondary only-icon"
+              class="btn secondary outline only-icon"
               @click="showMobileSubtitles">
-              <span class="icon subtitle"></span>
+              <ph-icon name="subtitles"></ph-icon>
             </button>
           </div>
+
+          <template #desktop>
+            <router-link
+              :to="settingsRoute"
+              class="btn"
+              v-if="isAtLeastMeetingManager">
+              <span class="icon settings"></span>
+              <span class="label">{{
+                $t("session.detail_page.settings_button")
+              }}</span>
+            </router-link>
+          </template>
+        </IsMobile>
+        <!-- <template v-slot:right-button-desktop>
+          
         </template>
+        <template v-slot:right-button-mobile>
+          <div class="flex gap-small">
+            
+          </div>
+        </template> -->
       </SessionHeader>
     </template>
 
@@ -109,9 +118,9 @@
         v-bind:selectedTranslation.sync="selectedTranslation" />
 
       <ModalNew
-        noAction
+        :withActions="false"
         title="Setup microphone"
-        v-if="showMicrophoneSetup"
+        v-model="showMicrophoneSetup"
         @on-cancel="cancelRecordSettings">
         <SessionSetupMicrophone
           :applyLabel="$t('session.microphone_apply_button')"

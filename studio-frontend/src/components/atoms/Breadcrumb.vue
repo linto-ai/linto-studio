@@ -3,50 +3,69 @@
     class="breadcrumb flex flex1"
     v-if="breadcrumbItems.length > 0"
     aria-label="Breadcrumb">
-    <ol class="breadcrumb-list">
-      <li
-        v-for="(item, index) in breadcrumbItems"
-        :key="`${item.name}-${index}`"
-        class="breadcrumb-item"
-        :class="{ 'is-active': index === breadcrumbItems.length - 1 }">
-        <router-link
-          v-if="item.to && index !== breadcrumbItems.length - 1"
-          :to="item.to"
-          class="breadcrumb-link"
-          :aria-current="index === breadcrumbItems.length - 1 ? 'page' : null">
-          {{ item.label }}
-        </router-link>
-        <span
-          v-else
-          class="breadcrumb-text"
-          :aria-current="index === breadcrumbItems.length - 1 ? 'page' : null">
-          {{ item.label }}
-        </span>
-        <span
-          v-if="index < breadcrumbItems.length - 1"
-          class="breadcrumb-separator"
-          aria-hidden="true">
-          >
-        </span>
-      </li>
-    </ol>
-    <slot name="breadcrumb-actions" class="flex1"></slot>
+    <IsMobile class="flex flex1">
+      <slot
+        name="breadcrumb-actions"
+        v-if="$slots['breadcrumb-actions']"></slot>
+      <h2 v-else>{{ breadcrumbItems[breadcrumbItems.length - 1].label }}</h2>
+      <template #desktop>
+        <ol class="breadcrumb-list flex flex1">
+          <li
+            v-for="(item, index) in breadcrumbItems"
+            :key="`${item.name}-${index}`"
+            class="breadcrumb-item">
+            <router-link :to="item.to" class="breadcrumb-link">
+              {{ item.label }}
+            </router-link>
+            <span class="breadcrumb-separator" aria-hidden="true"> > </span>
+          </li>
+
+          <li
+            :key="`${lastItem.name}-last`"
+            class="breadcrumb-item flex1 is-active">
+            <span
+              class="breadcrumb-text"
+              aria-current="page"
+              v-if="
+                (additionalbreadcrumbItems &&
+                  additionalbreadcrumbItems.length > 0) ||
+                !$slots['breadcrumb-actions']
+              ">
+              {{ lastItem.label }}
+            </span>
+
+            <slot
+              name="breadcrumb-actions"
+              v-if="$slots['breadcrumb-actions']"></slot>
+          </li>
+        </ol>
+      </template>
+    </IsMobile>
+
+    <!-- <slot name="breadcrumb-actions" class="flex1"></slot> -->
   </nav>
 </template>
 
 <script>
 export default {
   name: "Breadcrumb",
-
+  props: {
+    additionalbreadcrumbItems: {
+      type: Array,
+      default: () => [],
+    },
+  },
   data() {
     return {
-      breadcrumbItems: [
-        {
-          name: "Home",
-          label: "Home",
-          to: "/",
-        },
-      ],
+      l_additionalbreadcrumbItems: structuredClone(
+        this.additionalbreadcrumbItems,
+      ),
+      breadcrumbItems: [],
+      lastItem: {
+        name: "Home",
+        label: "Home",
+        to: "/",
+      },
       entityCache: new Map(),
     }
   },
@@ -77,7 +96,16 @@ export default {
         const items = []
         await this.buildBreadcrumbRecursive(route, items)
 
-        this.breadcrumbItems = items.reverse()
+        if (this.additionalbreadcrumbItems.length > 0) {
+          this.lastItem = this.l_additionalbreadcrumbItems.pop()
+          items.shift() // replace the last item with the additional breadcrumb items
+          this.breadcrumbItems = items
+            .reverse()
+            .concat(this.l_additionalbreadcrumbItems)
+        } else {
+          this.lastItem = items.shift()
+          this.breadcrumbItems = items.reverse()
+        }
       } catch (error) {
         console.error("Error building breadcrumb:", error)
         this.breadcrumbItems = []

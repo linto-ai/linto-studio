@@ -106,7 +106,7 @@ export default class SessionWS {
     this.socket.emit("watch_organization", organizationId)
     // TODO: generalize every this.socket.on(event_name) to bus.$emit(`websocket/${event_name}`)
     this.socket.on(`orga_${organizationId}_session_update`, (value) => {
-      store.dispatch("session/updateSession", value)
+      store.dispatch("sessions/updateSession", value)
       bus.$emit(`websocket/orga_${organizationId}_session_update`, value)
     })
   }

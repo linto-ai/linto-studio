@@ -1,6 +1,6 @@
 <template>
   <V2Layout>
-    <template v-slot:breadcrumb-actions>
+    <!-- <template v-slot:breadcrumb-actions>
       <router-link :to="conversationListRoute" class="btn">
         <span class="icon back"></span>
         <span class="label">{{
@@ -21,7 +21,7 @@
           $t("conversation.status_page.return_to_medias_list_button")
         }}</span>
       </router-link>
-    </template>
+    </template> -->
     <div
       class="flex col flex1 gap-medium align-center conversation-status-error">
       <h2 class="center-text">
