@@ -115,35 +115,16 @@ export default {
     },
   },
   async mounted() {
-    this.options.favorites = this.favorites
-    this.options.shared = this.shared
-    await this.initPageFromUrl()
-    this.setupIntersectionObserver()
-    this.setupScrollListener()
-
-    // Debug: subscribe to store mutations related to tag selection
-    this._unsubscribeTagStore = this.$store.subscribe((mutation, state) => {
-      if (
-        mutation.type === "tags/setExploreSelectedTags" ||
-        mutation.type === "setExploreSelectedTags"
-      ) {
-        this.$nextTick(() => {
-          this.resetSearch()
-        })
-      }
-    })
-
-    bus.$on("medias/delete", this.onMediasDeleted)
+    await this.init()
   },
   beforeDestroy() {
-    if (this.observer) {
-      this.observer.disconnect()
-    }
-    this.cleanupScrollListener()
-    if (this._unsubscribeTagStore) {
-      this._unsubscribeTagStore()
-    }
-    bus.$off("medias/delete", this.onMediasDeleted)
+    this.destroy()
+  },
+  async beforeRouteUpdate(to, from, next) {
+    next()
+    await this.$nextTick()
+    this.destroy()
+    await this.init()
   },
   watch: {
     selectedTags: {
@@ -178,6 +159,36 @@ export default {
       "appendMedias",
       "clearMedias",
     ]),
+    destroy() {
+      if (this.observer) {
+        this.observer.disconnect()
+      }
+      this.cleanupScrollListener()
+      if (this._unsubscribeTagStore) {
+        this._unsubscribeTagStore()
+      }
+      bus.$off("medias/delete", this.onMediasDeleted)
+    },
+    async init() {
+      this.options.favorites = this.favorites
+      this.options.shared = this.shared
+      await this.initPageFromUrl()
+      this.setupIntersectionObserver()
+      this.setupScrollListener()
+
+      // Debug: subscribe to store mutations related to tag selection
+      this._unsubscribeTagStore = this.$store.subscribe((mutation, state) => {
+        if (
+          mutation.type === "tags/setExploreSelectedTags" ||
+          mutation.type === "setExploreSelectedTags"
+        ) {
+          this.$nextTick(() => {
+            this.resetSearch()
+          })
+        }
+      })
+      bus.$on("medias/delete", this.onMediasDeleted)
+    },
     onMediasDeleted(mediaIds) {
       this.conversations = this.conversations.filter(
         (m) => !mediaIds.includes(m._id),
