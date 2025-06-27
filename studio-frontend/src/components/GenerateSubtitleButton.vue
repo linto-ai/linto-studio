@@ -1,7 +1,11 @@
 <template>
   <div>
-    <button
-      id="generate-subtitle-btn"
+    <Button
+      :label="$t('conversation.subtitles.generate_subs')"
+      icon="plus"
+      @click="openGenerateModal"
+      v-if="canEdit"></Button>
+    <!-- <button
       class="btn primary"
       @click="openGenerateModal"
       v-if="canEdit">
@@ -9,7 +13,7 @@
       <span class="label">{{
         $t("conversation.subtitles.generate_subs")
       }}</span>
-    </button>
+    </button> -->
     <ModalGenerateSubtitle
       v-if="generate"
       @on-close="closeGenerateModal"></ModalGenerateSubtitle>

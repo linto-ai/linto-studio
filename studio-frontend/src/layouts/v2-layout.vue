@@ -116,7 +116,7 @@ export default {
   box-sizing: border-box;
   gap: 1em;
   position: relative;
-  padding-left: 20.5em;
+  padding-left: calc(300px + 0.5rem);
   flex: 1 1 auto;
   min-height: 0;
   transition: padding-left 0.3s ease-in-out;
@@ -130,7 +130,7 @@ export default {
     top: 0;
     left: 0;
     bottom: 0;
-    width: 280px;
+    width: 300px;
     height: 100%;
     overflow: auto;
     transition: width 0.3s ease-in-out;

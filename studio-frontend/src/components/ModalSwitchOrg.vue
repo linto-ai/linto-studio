@@ -4,6 +4,7 @@
     :subtitle="$t('modal_switch_org.subtitle')"
     v-model="isOpen"
     :with-actions="false"
+    :style="{ display: isOpen ? 'inline-block' : 'none' }"
     @close="close">
     <div class="modal-switch-org">
       <div class="modal-switch-org__list flex col gap-small">

@@ -1,6 +1,7 @@
 <template>
   <MainContentConversation
     :conversation="conversation"
+    :breadcrumbItems="breadcrumbItems"
     :status="status"
     :dataLoaded="dataLoaded"
     :dataLoadedStatus="dataLoadedStatus"
@@ -44,11 +45,7 @@
 
     <template v-slot:breadcrumb-actions>
       <div class="flex1 flex gap-small reset-overflows align-center">
-        <router-link :to="conversationListRoute" class="btn secondary">
-          <span class="icon close"></span>
-          <span class="label">{{ $t("conversation.close_publish") }}</span>
-        </router-link>
-        <router-link
+        <!-- <router-link
           :to="{
             name: 'conversations transcription',
             params: { conversationId: conversation._id },
@@ -56,14 +53,9 @@
           class="btn">
           <span class="icon back"></span>
           <span class="label">{{ $t("conversation.return_to_editor") }}</span>
-        </router-link>
-
-        <h1
-          class="flex1 center-text text-cut"
-          style="padding-left: 1rem; padding-right: 1rem">
-          {{ conversation.name }}
-        </h1>
+        </router-link> -->
         <CustomSelect
+          style="margin-left: auto"
           :valueText="$t('conversation.export.title')"
           iconType="icon"
           icon="upload"
@@ -283,6 +275,27 @@ export default {
     },
     generationPercentage() {
       return Number(this?.currentJob?.processing || 0)
+    },
+    breadcrumbItems() {
+      return [
+        {
+          label: this.conversation?.name ?? "",
+          to: {
+            name: "conversations overview",
+            params: { conversationId: this.conversationId },
+          },
+        },
+        {
+          label: this.$t("breadcrumb.transcription"),
+          to: {
+            name: "conversations transcription",
+            params: { conversationId: this.conversationId },
+          },
+        },
+        {
+          label: this.$t("breadcrumb.publish"),
+        },
+      ]
     },
   },
   methods: {

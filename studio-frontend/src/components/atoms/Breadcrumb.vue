@@ -1,13 +1,10 @@
 <template>
-  <nav
-    class="breadcrumb flex flex1"
-    v-if="breadcrumbItems.length > 0"
-    aria-label="Breadcrumb">
+  <nav class="breadcrumb flex flex1" aria-label="Breadcrumb">
     <IsMobile class="flex flex1">
       <slot
         name="breadcrumb-actions"
         v-if="$slots['breadcrumb-actions']"></slot>
-      <h2 v-else>{{ breadcrumbItems[breadcrumbItems.length - 1].label }}</h2>
+      <h2 v-else>{{ lastItem.label }}</h2>
       <template #desktop>
         <ol class="breadcrumb-list flex flex1">
           <li
@@ -56,6 +53,7 @@ export default {
     },
   },
   data() {
+    console.log("breadcrumb data")
     return {
       l_additionalbreadcrumbItems: structuredClone(
         this.additionalbreadcrumbItems,
@@ -87,15 +85,16 @@ export default {
 
   methods: {
     async buildBreadcrumb(route) {
+      console.log("buildBreadcrumb", route)
       if (!route.meta?.breadcrumb?.showInBreadcrumb) {
         this.breadcrumbItems = []
         return
       }
-
+      console.log("b1")
       try {
         const items = []
         await this.buildBreadcrumbRecursive(route, items)
-
+        console.log("b2")
         if (this.additionalbreadcrumbItems.length > 0) {
           this.lastItem = this.l_additionalbreadcrumbItems.pop()
           items.shift() // replace the last item with the additional breadcrumb items
@@ -104,8 +103,11 @@ export default {
             .concat(this.l_additionalbreadcrumbItems)
         } else {
           this.lastItem = items.shift()
+          console.log("lastItem", this.lastItem)
+          // reverse the items array to get the correct order for the breadcrumb,
           this.breadcrumbItems = items.reverse()
         }
+        console.log("b3")
       } catch (error) {
         console.error("Error building breadcrumb:", error)
         this.breadcrumbItems = []
@@ -121,9 +123,10 @@ export default {
       if (breadcrumbMeta.dynamic && breadcrumbMeta.entity) {
         label = await this.getDynamicLabel(route, breadcrumbMeta.entity)
       } else if (breadcrumbMeta.label) {
+        // translate the label if it's a translatio
         label = this.$t(breadcrumbMeta.label)
       }
-
+      console.log("breadcrumbMeta.label", label)
       if (label) {
         items.push({
           name: route.name,
@@ -132,6 +135,7 @@ export default {
         })
       }
 
+      console.log("items", JSON.stringify(items))
       if (breadcrumbMeta.parent) {
         const parentRoute = this.findRouteByName(breadcrumbMeta.parent)
         if (parentRoute) {

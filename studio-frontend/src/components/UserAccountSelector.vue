@@ -1,5 +1,23 @@
 <template>
-  <PopoverList
+  <div class="flex gap-small flex1 align-center">
+    <Avatar :src="userAvatar" size="lg" />
+    <div class="flex col flex1 gap-small">
+      <span class="user-name">{{ UserName }}</span>
+      <div class="flex gap-small">
+        <Button
+          @click="openOrganizationSelector"
+          :label="orgaName"
+          size="xs"
+          class="organization-name flex1"></Button>
+        <span class="user-role">{{ roleToString }}</span>
+      </div>
+    </div>
+    <Button icon="gear" variant="transparent" color="neutral"></Button>
+    <ModalSwitchOrg
+      v-model="modalOrganizationSelector"
+      @close="modalOrganizationSelector = false" />
+  </div>
+  <!-- <PopoverList
     :items="navList.userMenu"
     @click="handleClick"
     class="user-account-selector"
@@ -16,7 +34,7 @@
         {{ UserName }}
       </Button>
     </template>
-  </PopoverList>
+  </PopoverList> -->
 </template>
 
 <script>
@@ -28,6 +46,7 @@ import { platformRoleMixin } from "@/mixins/platformRole.js"
 import { userName } from "@/tools/userName"
 import userAvatar from "@/tools/userAvatar"
 import { getColorFromText } from "@/tools/colors"
+import ModalSwitchOrg from "@/components/ModalSwitchOrg.vue"
 
 import UserProfilePicture from "@/components/atoms/UserProfilePicture.vue"
 
@@ -37,17 +56,19 @@ export default {
   data() {
     return {
       active: false,
+      modalOrganizationSelector: false,
     }
   },
-  mounted() {
-    bus.$on("navigation", this.closeMenu)
-  },
-  beforeDestroy() {
-    bus.$off("navigation", this.closeMenu)
-  },
+  mounted() {},
+  beforeDestroy() {},
   computed: {
     ...mapGetters("user", {
       userInfo: "getUserInfos",
+    }),
+    ...mapGetters("organizations", {
+      organizations: "getOrganizations",
+      currentOrganization: "getCurrentOrganization",
+      currentOrganizationScope: "getCurrentOrganizationScope",
     }),
     UserName() {
       return userName(this.userInfo)
@@ -60,84 +81,51 @@ export default {
     userAvatar() {
       return userAvatar(this.userInfo)
     },
-    name() {
-      // if (this.$route.name === "shared with me") {
-      //   return this.$t("navigation.tabs.shared")
-      // } else if (this.$route.name === "favorites") {
-      //   return this.$t("navigation.tabs.favorites")
-      // } else if (this.$route.meta.userPage) {
-      //   return this.$t("navigation.tabs.user_page")
-      // }
-      return `${this.currentOrganization?.name} (${this.roleToString})`
-    },
-    navList() {
-      const userMenu = [
-        {
-          id: "account",
-          text: this.$t("navigation.account.account_link"),
-          icon: "user",
-          badge: this.badgeValue,
-        },
-        {
-          id: "logout",
-          text: this.$t("navigation.account.logout"),
-          icon: "sign-out",
-          iconText: "Logout",
-        },
-      ]
-
-      if (this.isSessionOperator || this.isSystemAdministrator) {
-        userMenu.unshift({
-          id: "backoffice",
-          text: this.$t("navigation.backoffice.link_title"),
-          icon: "gear",
-          iconText: "Backoffice",
-        })
-      }
-
-      if (this.isAtLeastOrganizationInitiator) {
-        userMenu.push({
-          id: "create",
-          icon: "plus",
-          text: this.$t("navigation.organisation.create"),
-        })
-      }
-      return {
-        userMenu,
-      }
+    orgaName() {
+      return this.currentOrganization?.name
     },
   },
   methods: {
-    handleClick(item) {
-      if (item.id === "account") {
-        this.openSettingsModal()
-      } else if (item.id === "logout") {
-        this.logout()
-      } else if (item.id === "backoffice") {
-        this.$router.push("/backoffice")
-      }
+    openOrganizationSelector() {
+      this.modalOrganizationSelector = true
     },
-    closeMenu() {
-      this.navUserAccountVisible = false
-    },
-    openSettingsModal() {
-      this.$store.dispatch("settings/setModalOpen", true)
-    },
-    logout() {
-      this.$store.dispatch("user/logout")
-      this.$router.push("/")
-    },
-    getColorFromText,
   },
   components: {
     UserProfilePicture,
+    ModalSwitchOrg,
   },
 }
 </script>
 
 <style lang="scss">
+.user-name {
+  font-weight: bold;
+}
+
 .user-account-selector {
   position: relative;
   display: block;
+}
+
+.organization-name {
+  max-width: 10rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 0.25rem;
+  text-transform: capitalize;
+
+  .btn-prefix-label {
+    overflow: hidden;
+
+    .label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
+.user-role {
+  color: var(--text-secondary);
 }
 </style>

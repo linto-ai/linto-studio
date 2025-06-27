@@ -1,28 +1,23 @@
 <template>
   <nav class="burger-menu">
     <div>
-      <div class="burger-menu__header">
+      <div class="burger-menu__header flex">
         <UserAccountSelector />
       </div>
-      <div class="user-account-selector-container" v-if="!backoffice">
+      <!-- <div class="user-account-selector-container" v-if="!backoffice">
         <ActionConversationCreate />
-      </div>
+      </div> -->
 
-      <fieldset v-if="!backoffice">
-        <div class="explorer-menu">
-          <MediaExplorerMenu :organizationId="currentOrganization._id" />
-        </div>
-      </fieldset>
+      <MediaExplorerMenu
+        :organizationId="currentOrganization._id"
+        v-if="!backoffice" />
 
-      <fieldset v-if="backoffice">
-        <BackofficeSidebar />
-      </fieldset>
+      <BackofficeSidebar v-if="backoffice" />
+
       <slot></slot>
     </div>
     <div>
-      <is-cloud>
-        <cloud-card-credits />
-      </is-cloud>
+      <cloud-card-credits />
     </div>
   </nav>
 </template>
@@ -118,71 +113,47 @@ export default {
     justify-content: space-between;
     padding: 0 0.5em;
     background-color: white;
-    height: 56px;
+    height: 64px;
     box-shadow: var(--shadow-block);
+    border-bottom: var(--border-block);
 
     & > * {
       flex: 1;
     }
   }
 
-  .burger-menu__header__title {
-    display: flex;
-    align-items: center;
-    gap: 0.5em;
+  // fieldset {
+  //   border: 1px solid #e0e0e0;
+  //   border-radius: 4px;
+  //   margin: 0.5em;
+  //   padding: 0;
+  //   position: relative;
 
-    img {
-      height: 1.5rem !important;
-    }
+  //   &.active {
+  //     border-color: var(--primary-soft);
+  //   }
 
-    h1 {
-      font-size: 1rem !important;
-    }
-  }
-
-  .local-switcher {
-    display: flex;
-    justify-content: flex-end;
-    width: 54px;
-  }
-
-  fieldset {
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
-    margin: 0.5em;
-    padding: 0;
-    position: relative;
-
-    &.active {
-      border-color: var(--primary-soft);
-    }
-
-    legend {
-      position: absolute;
-      font-size: 0.8em;
-      font-weight: 600;
-      left: 1em;
-      top: -10px;
-      background-color: var(--primary-soft);
-      padding: 0 0.5em;
-      border-radius: 1px;
-    }
-  }
+  //   legend {
+  //     position: absolute;
+  //     font-size: 0.8em;
+  //     font-weight: 600;
+  //     left: 1em;
+  //     top: -10px;
+  //     background-color: var(--primary-soft);
+  //     padding: 0 0.5em;
+  //     border-radius: 1px;
+  //   }
+  // }
 
   .user-account-selector-container {
     padding: 0 0.5em;
     display: flex;
     align-items: center;
-    border-top: var(--border-block);
     border-bottom: var(--border-block);
     height: 54px;
     & > * {
       flex: 1;
     }
-  }
-
-  .explorer-menu {
-    padding: 0em;
   }
 
   .org-cloud {

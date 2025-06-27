@@ -1,6 +1,7 @@
 <template>
   <MainContentConversation
     :conversation="conversation"
+    :breadcrumbItems="breadcrumbItems"
     :status="status"
     :dataLoaded="dataLoaded"
     :error="error"
@@ -78,24 +79,14 @@
     </template>
 
     <template v-slot:breadcrumb-actions>
-      <router-link :to="conversationListRoute" class="btn secondary">
-        <span class="icon close"></span>
-        <span class="label">{{ $t("conversation.close_editor") }}</span>
-      </router-link>
-
-      <h1
-        class="flex1 center-text text-cut"
-        style="padding-left: 1rem; padding-right: 1rem">
-        {{ name }}
-      </h1>
-
       <router-link
         :to="{
           name: 'conversations publish',
           params: { conversationId: conversation._id },
         }"
-        class="btn primary">
-        <span class="icon document"></span>
+        class="btn primary"
+        style="margin-left: auto">
+        <ph-icon name="file"></ph-icon>
         <span class="label">{{ $t("conversation.publish_document") }}</span>
       </router-link>
     </template>
@@ -249,6 +240,20 @@ export default {
       return `${this.conversation.name.replace(/\s/g, "_")}_${moment().format(
         "YYYYMMDDHHmmss",
       )}`
+    },
+    breadcrumbItems() {
+      return [
+        {
+          label: this.conversation?.name ?? "",
+          to: {
+            name: "conversations overview",
+            params: { conversationId: this.conversationId },
+          },
+        },
+        {
+          label: this.$t("breadcrumb.transcription"),
+        },
+      ]
     },
   },
   methods: {

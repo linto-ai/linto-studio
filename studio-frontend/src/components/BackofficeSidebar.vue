@@ -52,10 +52,16 @@ export default {
 .backoffice-sidebar {
   a {
     padding: 0.5em 1em;
+    border-left: 2px solid transparent;
   }
 
   a.router-link-exact-active {
     background: var(--primary-soft);
+    border-left: 2px solid var(--primary-color);
+  }
+
+  a.router-link-exact-active svg {
+    color: var(--primary-color) !important;
   }
 }
 </style>

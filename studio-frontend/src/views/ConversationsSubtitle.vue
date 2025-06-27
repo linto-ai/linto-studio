@@ -1,21 +1,12 @@
 <template>
   <MainContentConversation
     :conversation="conversation"
+    :breadcrumbItems="breadcrumbItems"
     :status="status"
     :dataLoaded="conversationLoaded"
     :error="error">
     <template v-slot:breadcrumb-actions>
-      <router-link :to="conversationListRoute" class="btn secondary">
-        <span class="icon close"></span>
-        <span class="label">{{ $t("conversation.close_editor") }}</span>
-      </router-link>
-
-      <h1
-        class="flex1 center-text text-cut"
-        style="padding-left: 1rem; padding-right: 1rem">
-        {{ conversation.name }}
-      </h1>
-      <div class="flex gap-small">
+      <div class="flex gap-small" style="margin-left: auto">
         <CustomSelect
           v-if="conversationLoaded"
           :value="subtitleId"
@@ -126,6 +117,27 @@ export default {
       return {
         action: action,
       }
+    },
+    breadcrumbItems() {
+      return [
+        {
+          label: this.conversation?.name ?? "",
+          to: {
+            name: "conversations overview",
+            params: { conversationId: this.conversationId },
+          },
+        },
+        {
+          label: this.$t("breadcrumb.subtitles"),
+          to: {
+            name: "conversations subtitles",
+            params: { conversationId: this.conversationId },
+          },
+        },
+        {
+          label: this.versionName,
+        },
+      ]
     },
   },
   methods: {
