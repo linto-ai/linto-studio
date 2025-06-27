@@ -7,6 +7,7 @@ const RIGHTS = Object.freeze({
   WRITE: 4,
   DELETE: 8,
   SHARE: 16,
+  OWNER: 32,
 
   hasRightAccess: (userRight, desiredRight) =>
     (userRight & desiredRight) == desiredRight,
