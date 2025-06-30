@@ -26,7 +26,7 @@
               {{ org.name }}
             </div>
             <div
-              v-if="org._id === currentOrganization._id"
+              v-if="currentOrganization && org._id === currentOrganization._id"
               class="modal-switch-org__list__item__name__current">
               {{ $t("modal_switch_org.current") }}
             </div>

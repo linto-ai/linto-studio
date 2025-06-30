@@ -32,6 +32,18 @@
   "app_editor_search": {
     "label": "Search in transcription"
   },
+  "app_settings_modal": {
+    "account_title": "My account",
+    "account_information": "Account information",
+    "billing": "Billing",
+    "organization_information": "Organization information",
+    "organization_members": "Organization members",
+    "preferences": "Preferences",
+    "notifications": "Notifications",
+    "tags": "Subjects",
+    "title": "Settings",
+    "subtitle": "Manage your account and preferences"
+  },
   "backoffice": {
     "title": "Backoffice",
     "navigation": {

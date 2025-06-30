@@ -8,7 +8,7 @@
           @click="openOrganizationSelector"
           :label="orgaName"
           size="xs"
-          class="organization-name flex1"></Button>
+          class="organization-name"></Button>
         <span class="user-role">{{ roleToString }}</span>
       </div>
     </div>
@@ -56,7 +56,12 @@ import UserProfilePicture from "@/components/atoms/UserProfilePicture.vue"
 
 export default {
   mixins: [orgaRoleMixin, platformRoleMixin],
-  props: {},
+  props: {
+    backoffice: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       active: false,
@@ -86,7 +91,7 @@ export default {
       return userAvatar(this.userInfo)
     },
     orgaName() {
-      return this.currentOrganization?.name
+      return this.backoffice ? "Backoffice" : this.currentOrganization?.name
     },
   },
   methods: {

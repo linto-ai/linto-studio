@@ -32,6 +32,19 @@
   "app_editor_search": {
     "label": "Rechercher dans le texte"
   },
+  "app_settings_modal": {
+    "account_title": "Mon compte",
+    "account_information": "Informations du compte",
+    "billing": "Facturation",
+    "preferences": "Préférences",
+    "notifications": "Notifications",
+    "organization_information": "Informations de l'organisation",
+    "organization_members": "Membres de l'organisation",
+    "tags": "Thèmatiques",
+    "title": "Paramètres",
+    "subtitle": "Gérez votre compte et vos préférences ",
+    "logout": "Déconnexion"
+  },
   "backoffice": {
     "title": "Backoffice",
     "navigation": {

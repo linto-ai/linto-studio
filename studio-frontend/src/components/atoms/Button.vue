@@ -36,7 +36,9 @@
     </template>
     <template v-else>
       <span class="btn-prefix-label">
-        <span class="btn-prefix">
+        <span
+          class="btn-prefix"
+          v-if="icon || avatar || avatarColor || avatarText || loading">
           <ph-icon
             v-if="loading"
             name="circle-notch"
