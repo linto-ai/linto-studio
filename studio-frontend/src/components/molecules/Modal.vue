@@ -109,6 +109,32 @@ export default {
       immediate: true,
     },
   },
+  updated() {
+    if (this.isModalOpen) {
+      const popup = popupManager.stack.find((p) => p.id === this._uid)
+      if (popup && popup.rendererInstance) {
+        popup.slots = {
+          default: () =>
+            this.$scopedSlots.content
+              ? this.$scopedSlots.content()
+              : this.$slots.content || this.$slots.default || [],
+          actions: () =>
+            this.$scopedSlots.actions
+              ? this.$scopedSlots.actions()
+              : this.$slots.actions || [],
+          'actions-left': () =>
+            this.$scopedSlots['actions-left']
+              ? this.$scopedSlots['actions-left']()
+              : this.$slots['actions-left'] || [],
+          'actions-right': () =>
+            this.$scopedSlots['actions-right']
+              ? this.$scopedSlots['actions-right']()
+              : this.$slots['actions-right'] || [],
+        }
+        popup.rendererInstance.$forceUpdate()
+      }
+    }
+  },
   methods: {
     openModal(e) {
       if (this.isModalOpen) return

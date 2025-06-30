@@ -17,20 +17,20 @@
             </div>
           </li>
           <li :class="{ active: selectedTab === 'account-information' }">
-            <a href="#" @click="selectTab('account-information')">
+            <a href="#" @click.prevent="selectTab('account-information')">
               <ph-icon name="user"></ph-icon>
               <span>Account information</span>
             </a>
           </li>
           <li :class="{ active: selectedTab === 'preferences' }">
-            <a href="#" @click="selectTab('preferences')">
+            <a href="#" @click.prevent="selectTab('preferences')">
               <ph-icon name="user"></ph-icon>
               <span>Preferences</span>
             </a>
           </li>
           <is-cloud>
             <li :class="{ active: selectedTab === 'billing' }">
-              <a href="#" @click="selectTab('billing')">
+              <a href="#" @click.prevent="selectTab('billing')">
                 <ph-icon name="user"></ph-icon>
                 <span>Billing</span>
               </a>

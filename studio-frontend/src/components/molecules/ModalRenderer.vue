@@ -33,7 +33,7 @@
           color="primary"></ph-icon>
       </div>
       <div class="modal-body flex col flex1">
-        <v-node-renderer v-if="defaultNodes.length" :nodes="defaultNodes" />
+        <v-node-renderer v-if="renderedDefaultSlots.length" :nodes="renderedDefaultSlots" />
       </div>
       <div
         class="modal-footer flex row gap-small"
@@ -168,6 +168,18 @@ export default {
     },
     modalComponentType() {
       return this.isForm ? "form" : "div"
+    },
+    renderedDefaultSlots() {
+      // Force reactivity by accessing the controller's reactive properties
+      // This creates a dependency on the parent component's data
+      if (this.controller && this.controller.$parent) {
+        // Access all reactive data to establish dependencies
+        this.controller.$parent.$data
+        this.controller.$parent.$props
+      }
+      return typeof this.slots.default === "function"
+        ? this.slots.default()
+        : this.slots.default || []
     },
   },
   methods: {
