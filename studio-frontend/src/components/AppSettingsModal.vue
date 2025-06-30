@@ -64,21 +64,24 @@
             </li>
           </ul>
         </is-cloud>
+        {{ selectedTab }}
       </aside>
       <div
-        class="app-settings__section"
-        :class="{ active: selectedTab === 'account-information' }">
+        v-if="selectedTab === 'account-information'"
+        class="app-settings__section">
         <!-- <pre>{{ user }}</pre> -->
         <UserSettingsAvatar :userInfo="user" v-if="isAuthenticated" />
         <UserSettingsPersonal :userInfo="user" v-if="isAuthenticated" />
         <UserSettingsVisibility :userInfo="user" v-if="isAuthenticated" />
         <UserSettingsPassword :userInfo="user" v-if="isAuthenticated" />
+      </div>
+      <div
+        v-if="selectedTab === 'account-notifications'"
+        class="app-settings__section">
         <UserSettingsNotifications :userInfo="user" v-if="isAuthenticated" />
       </div>
       <div
-        class="app-settings__section"
-        :class="{ active: selectedTab === 'preferences' }"></div>
-      <div
+        v-if="selectedTab === 'billing'"
         class="app-settings__section"
         :class="{ active: selectedTab === 'billing' }"></div>
     </div>
@@ -141,6 +144,7 @@ export default {
   },
   methods: {
     selectTab(tab) {
+      console.log("selectTab", tab)
       this.selectedTab = tab
     },
     closeModal() {
@@ -205,12 +209,12 @@ export default {
     border-top-left-radius: 0;
     box-sizing: border-box;
     padding: 1em;
-    display: none;
+    //display: none;
     overflow-y: auto;
 
-    &.active {
-      display: block;
-    }
+    // &.active {
+    //   display: block;
+    // }
 
     h3 {
       margin: 0;
