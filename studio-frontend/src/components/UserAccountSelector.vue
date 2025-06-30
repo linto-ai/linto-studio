@@ -12,7 +12,11 @@
         <span class="user-role">{{ roleToString }}</span>
       </div>
     </div>
-    <Button icon="gear" variant="transparent" color="neutral"></Button>
+    <Button
+      icon="gear"
+      variant="transparent"
+      color="neutral"
+      @click="openSettingsModal"></Button>
     <ModalSwitchOrg
       v-model="modalOrganizationSelector"
       @close="modalOrganizationSelector = false" />
@@ -88,6 +92,9 @@ export default {
   methods: {
     openOrganizationSelector() {
       this.modalOrganizationSelector = true
+    },
+    openSettingsModal() {
+      this.$store.dispatch("settings/setModalOpen", true)
     },
   },
   components: {
