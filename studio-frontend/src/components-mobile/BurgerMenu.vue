@@ -2,7 +2,7 @@
   <nav class="burger-menu">
     <div>
       <div class="burger-menu__header flex">
-        <UserAccountSelector />
+        <UserAccountSelector :backoffice="backoffice" />
       </div>
       <!-- <div class="user-account-selector-container" v-if="!backoffice">
         <ActionConversationCreate />

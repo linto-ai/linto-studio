@@ -2,41 +2,68 @@
   <Modal
     v-model="isModalOpen"
     :with-actions="false"
-    title="Settings"
-    subtitle="Manage your account and preferences"
+    :title="$t('app_settings_modal.title')"
     :size="computedSize">
     <div class="app-settings">
       <aside>
+        <h4>{{ $t("app_settings_modal.account_title") }}</h4>
+        <!-- <div class="app-settings__user-info flex align-center gap-small">
+          <div class="flex flex1 align-center gap-small">
+            <UserProfilePicture :hover="false" :user="user" />
+            <span class="user-account-selector__name">{{ userName }}</span>
+          </div>
+        </div> -->
         <ul>
-          <li class="app-settings__user-info">
-            <div class="app-settings__user-info flex align-center gap-small">
-              <div class="flex flex1 align-center gap-small">
-                <UserProfilePicture :hover="false" :user="user" />
-                <span class="user-account-selector__name">{{ userName }}</span>
-              </div>
-            </div>
-          </li>
           <li :class="{ active: selectedTab === 'account-information' }">
             <a href="#" @click="selectTab('account-information')">
-              <ph-icon name="user"></ph-icon>
-              <span>Account information</span>
+              <ph-icon name="user" weight="bold"></ph-icon>
+              <span>{{ $t("app_settings_modal.account_information") }}</span>
+            </a>
+          </li>
+          <li :class="{ active: selectedTab === 'notifications' }">
+            <a href="#" @click="selectTab('notifications')">
+              <ph-icon name="bell" weight="bold"></ph-icon>
+              <span>{{ $t("app_settings_modal.notifications") }}</span>
             </a>
           </li>
           <li :class="{ active: selectedTab === 'preferences' }">
             <a href="#" @click="selectTab('preferences')">
-              <ph-icon name="user"></ph-icon>
-              <span>Preferences</span>
+              <ph-icon name="wrench" weight="bold"></ph-icon>
+              <span>{{ $t("app_settings_modal.preferences") }}</span>
             </a>
           </li>
-          <is-cloud>
-            <li :class="{ active: selectedTab === 'billing' }">
-              <a href="#" @click="selectTab('billing')">
-                <ph-icon name="user"></ph-icon>
-                <span>Billing</span>
+        </ul>
+        <h4>{{ orgaName }}</h4>
+        <is-cloud>
+          <ul>
+            <li :class="{ active: selectedTab === 'organization-information' }">
+              <a href="#" @click="selectTab('organization-information')">
+                <ph-icon name="info" weight="bold"></ph-icon>
+                <span>{{
+                  $t("app_settings_modal.organization_information")
+                }}</span>
               </a>
             </li>
-          </is-cloud>
-        </ul>
+            <li :class="{ active: selectedTab === 'members' }">
+              <a href="#" @click="selectTab('members')">
+                <ph-icon name="users" weight="bold"></ph-icon>
+                <span>{{ $t("app_settings_modal.organization_members") }}</span>
+              </a>
+            </li>
+            <li :class="{ active: selectedTab === 'billing' }">
+              <a href="#" @click="selectTab('billing')">
+                <ph-icon name="credit-card" weight="bold"></ph-icon>
+                <span>{{ $t("app_settings_modal.billing") }}</span>
+              </a>
+            </li>
+            <li :class="{ active: selectedTab === 'tags' }">
+              <a href="#" @click="selectTab('tags')">
+                <ph-icon name="tag" weight="bold"></ph-icon>
+                <span>{{ $t("app_settings_modal.tags") }}</span>
+              </a>
+            </li>
+          </ul>
+        </is-cloud>
       </aside>
       <div
         class="app-settings__section"
@@ -88,6 +115,9 @@ export default {
       user: "user/getUserInfos",
       isAuthenticated: "user/isAuthenticated",
     }),
+    ...mapGetters("organizations", {
+      currentOrganization: "getCurrentOrganization",
+    }),
     isModalOpen: {
       get() {
         return this.$store.state.settings.isModalOpen
@@ -104,6 +134,9 @@ export default {
         return "screen"
       }
       return "lg"
+    },
+    orgaName() {
+      return this.currentOrganization?.name
     },
   },
   methods: {
@@ -128,6 +161,11 @@ export default {
     flex-basis: 200px;
     border-radius: 10px;
     height: 100%;
+
+    h4 {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
 
     ul {
       list-style: none;
@@ -248,7 +286,8 @@ export default {
         width: 100%;
         overflow-x: auto;
 
-        li {}
+        li {
+        }
       }
     }
 

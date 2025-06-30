@@ -196,7 +196,7 @@ export default {
 }
 
 .sidebar-toggle {
-  height: 54px;
+  height: 64px;
   width: 42px;
   display: flex;
   align-items: center;
