@@ -63,7 +63,6 @@ export default {
       return this.$i18n.locale === "fr-FR" ? "Français" : "English"
     },
     local() {
-      console.log('local', this.$i18n.locale)
       return this.$i18n.locale
     },
   },
@@ -71,7 +70,8 @@ export default {
     setLocale(locale) {
       // The emitted value can be either the full item object or the locale string.
       // Accept both formats to avoid runtime errors.
-      const lang = typeof locale === "object" && locale !== null ? locale.value : locale
+      const lang =
+        typeof locale === "object" && locale !== null ? locale.value : locale
       this.$i18n.locale = lang
       this.$refs.popoverList.$refs.popover.close()
     },

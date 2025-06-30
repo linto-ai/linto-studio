@@ -15,10 +15,6 @@ function loadLocaleMessages() {
   messages["en-US"] = enUS
   messages["fr-FR"] = frFR
 
-  console.log('loading locales', locales)
-  console.log('messages', messages)
-  console.log('messagesFromTheme', messagesFromTheme)
-
   // Merge messages from theme with default messages
   for (const locale of locales) {
     let currentMessages = {}
