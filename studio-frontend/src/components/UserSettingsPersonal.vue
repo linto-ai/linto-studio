@@ -33,8 +33,9 @@
           class="btn secondary sm"
           @click="sendVerificationEmail()"
           style="margin: 0 5px">
-          <span
-            :class="['icon', sendingEmail ? 'loading' : 'send-mail']"></span>
+          <ph-icon name="paper-plane-tilt" size="md" class="icon" />
+          <!-- <span
+            :class="['icon', sendingEmail ? 'loading' : 'send-mail']"></span> -->
           <span class="label">{{
             $t("user_settings.send_verification_link")
           }}</span>

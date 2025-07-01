@@ -686,12 +686,6 @@
     "current": "Actuelle"
   },
   "navigation": {
-    "account": {
-      "account_link": "Mon compte",
-      "avatar_title": "Photo du profil",
-      "logout": "Se déconnecter",
-      "title": "Menu utilisateur"
-    },
     "backoffice": {
       "link_title": "Backoffice",
       "return_link": "Interface utilisateur"
