@@ -649,6 +649,15 @@
       "filter": "Filtrer",
       "clear_all": "Tout effacer",
       "no_tags": "Aucun tag disponible"
+    },
+    "panel": {
+      "overview": "Aperçu du média",
+      "title": "Titre",
+      "description": "Description", 
+      "duration": "Durée",
+      "created": "Créé le",
+      "tags": "Tags",
+      "metadata": "Métadonnées"
     }
   },
   "modal": {

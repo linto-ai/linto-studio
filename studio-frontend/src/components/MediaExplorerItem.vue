@@ -43,10 +43,22 @@
             :text="convOwner.fullName.substring(0, 1)"
             :src="convOwnerAvatar" />
         </Tooltip>
-        <a
-          :href="`/interface/${organizationId}/conversations/${media._id}/transcription`"
-          >{{ title }}</a
-        >
+        <div class="media-title-container">
+          <a
+            :href="`/interface/${organizationId}/conversations/${media._id}/transcription`"
+            >{{ title }}</a
+          >
+          <Button
+            @click.stop="selectForOverview"
+            :title="$t('media_explorer.panel.overview')"
+            icon="eye"
+            size="sm"
+            variant="outline"
+            class="btn-overview"
+            color="primary"
+            :active="isSelectedForOverview"
+            />
+        </div>
         <div class="media-explorer-item__inline__infos">
           <span
             v-if="duration"
@@ -145,6 +157,10 @@ export default {
     media: {
       type: Object,
       required: true,
+    },
+    isSelectedForOverview: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -291,6 +307,10 @@ export default {
     handleDelete() {
       this.showDeleteModal = true
     },
+    
+    selectForOverview() {
+      this.$emit('select-for-overview', this.media)
+    },
   },
 }
 </script>
@@ -398,6 +418,34 @@ export default {
 .media-explorer-item__inline__meta.actions {
   gap: 0;
   border: 1px solid var(--neutral-40);
+}
+
+.media-title-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.btn-overview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.media-explorer-item:hover .btn-overview {
+  opacity: 1;
+}
+
+.media-explorer-item__inline__meta.actions {
   border-radius: 2px;
   margin-right: 0.5rem;
   background-color: var(--primary-soft);

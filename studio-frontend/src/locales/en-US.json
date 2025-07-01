@@ -649,6 +649,15 @@
       "filter": "Filter",
       "clear_all": "Clear all",
       "no_tags": "No tags available"
+    },
+    "panel": {
+      "overview": "Media Overview",
+      "title": "Title",
+      "description": "Description", 
+      "duration": "Duration",
+      "created": "Created",
+      "tags": "Tags",
+      "metadata": "Metadata"
     }
   },
   "modal": {

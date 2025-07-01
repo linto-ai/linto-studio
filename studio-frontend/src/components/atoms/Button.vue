@@ -100,6 +100,11 @@ export default {
       type: String,
       required: false,
     },
+    active: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     avatar: {
       type: String,
       required: false,
@@ -275,6 +280,10 @@ export default {
       // States
       if (this.disabled) {
         classes.push("disabled")
+      }
+
+      if (this.active) {
+        classes.push("active")
       }
 
       return classes

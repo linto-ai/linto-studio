@@ -5,7 +5,7 @@
         <div class="tag-box__header-title">
           <ph-icon name="tag-simple" weight="bold" />
           <span class="tag-box__header-title-text">
-            Media tags
+            {{ $t("navigation.tabs.tags") }}
           </span>
         </div>
       </div>
@@ -14,46 +14,38 @@
           v-model="search"
           type="text"
           class="tag-box__search-input"
-          placeholder="Rechercher un tag..." />
-        <ModalTagManagement>
-          <template #trigger="{ open }">
-            <button
-              v-if="showManageButton"
-              class="tag-box__button outline primary xs with-icon"
-              @click="open">
-              <ph-icon name="tags" weight="bold" />
-              <span class="tag-box__button-text">Manage tags</span>
-            </button>
-          </template>
-        </ModalTagManagement>
+          :placeholder="$t('navigation.searchTag')" />
       </div>
-      <hr />
       <div v-if="tagsObjects.length" class="tags-selection">
-        <div
+        <Tooltip
           v-for="tag in tagsObjects"
           :key="tag._id"
-          class="tags-selection__tag"
-          :class="{ 'tags-selection__tag--selected': selectedTagsIds.includes(tag._id) }"
-          @click="onTagClick(tag)">
-          <span class="tags-selection__tag-meta">
-            <Avatar
-              :name="tag.name"
-              :emoji="tag.emoji"
-              :color="tag.color"
-              size="sm" />
-            <span
-              class="tag-box__selected-tag-name"
-              :style="{ color: `var(--material-${tag.color}-900)` }">
-              {{ tag.name }}
-            </span>
-          </span>
-          <Button
-            class="icon-only"
-            :icon="selectedTagsIds.includes(tag._id) ? 'minus-circle' : 'plus-circle'"
-            variant="outline"
-            :color="selectedTagsIds.includes(tag._id) ? 'tertiary-hard' : 'neutral-hard'"
-            size="xs"/>
-        </div>
+          :text="tag.description || tag.name">
+          <ChipTag
+            :key="tag._id"
+            :name="tag.name"
+            :emoji="tag.emoji"
+            :color="tag.color"
+            :active="selectedTagsIds.includes(tag._id)"
+            size="xs"
+            @click="onTagClick(tag)" />
+        </Tooltip>
+      </div>
+      <div class="tag-box__create-content">
+        <Button
+          variant="outline"
+          color="primary"
+          size="xs"
+          @click="modalTagCreateOpen = true">
+          Create tag <span v-if="search">&laquo; {{ search }} &raquo;</span>
+        </Button>
+        <MediaExplorerFormTag
+          v-model="modalTagCreateOpen"
+          size="xs"
+          :initial-name="search"
+          @submit="onTagCreate"
+          @cancel="modalTagCreateOpen = false"
+          @close="modalTagCreateOpen = false" />
       </div>
     </div>
   </Box>
@@ -62,11 +54,13 @@
 <script>
 import { mapState } from "vuex"
 import ChipTag from "@/components/atoms/ChipTag.vue"
+import MediaExplorerFormTag from "@/components/MediaExplorerFormTag.vue"
 
 export default {
   name: "MediaExplorerItemTagBox",
   components: {
     ChipTag,
+    MediaExplorerFormTag,
   },
   props: {
     mediaId: {
@@ -86,6 +80,7 @@ export default {
     return {
       search: "",
       loadingTagId: null,
+      modalTagCreateOpen: false,
     }
   },
   computed: {
@@ -175,6 +170,11 @@ export default {
         }
       }
     },
+    async onTagCreate(tag) {
+      this.modalTagCreateOpen = false
+
+      await this.$store.dispatch("tags/createTag", tag)
+    },
   },
 }
 </script>
@@ -183,24 +183,16 @@ export default {
 .tag-box {
   max-width: 100%;
 
-  hr {
-    margin: 0.25em 0;
-    margin-bottom: 0;
-    background-color: var(--primary-soft);
-    border: none;
-    height: 1px;
-  }
-
   &__footer {
     padding: 0.25em;
     text-align: right;
   }
 
   &__create-content {
-    text-align: left;
     display: flex;
-    flex-direction: column;
-    gap: 0.25em;
+    padding: 0.5em;
+    justify-items: flex-end;
+    align-items: center;
   }
 }
 
@@ -242,6 +234,7 @@ export default {
   align-items: flex-start;
   max-height: 240px;
   overflow-y: auto;
+  flex-wrap: wrap;
 
   &__tag {
     flex: 1;

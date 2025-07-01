@@ -48,14 +48,12 @@ export default {
       return this.tags.filter((tag) => !this.selectedTags.includes(tag._id))
     },
     orderedTags() {
-      const limit = this.showAllTags ? this.tags.length : 5
       return this.tags
         .sort((a, b) => a.name.localeCompare(b.name))
         .sort((a, b) => b.mediaCount - a.mediaCount)
         .sort((a, b) => {
           return this.selectedTagsAsIds.includes(a._id) ? -1 : 1
         })
-        .slice(0, limit)
     },
   },
   methods: {
