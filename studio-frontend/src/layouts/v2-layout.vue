@@ -135,6 +135,7 @@ export default {
     overflow: auto;
     transition: width 0.3s ease-in-out;
     z-index: 1000;
+    box-sizing: border-box;
 
     nav {
       width: 100%;
@@ -238,6 +239,8 @@ export default {
   }
 
   .v2-layout.no-sidebar {
+    box-sizing: border-box;
+  
     .v2-layout__sidebar {
       width: 0 !important;
       border: none !important;

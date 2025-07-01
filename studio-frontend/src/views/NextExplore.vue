@@ -44,6 +44,20 @@
           <div class="explore-next__empty__text mt-md">
             <h3>No conversations found</h3>
             <p class="text-sm">Create a new conversation to get started</p>
+
+            <div
+              v-if="selectedTagIds.length > 0"
+              class="explore-next__empty__tags">
+              <ChipTag
+                v-for="tag in selectedTags"
+                :key="tag._id"
+                :name="tag.name"
+                :emoji="tag.emoji"
+                :color="tag.color"
+                :active="selectedTags.some((t) => t._id === tag._id)"
+                @click="handleTagClick(tag)"
+                size="sm" />
+            </div>
           </div>
         </div>
       </template>
@@ -550,6 +564,9 @@ export default {
       if (newPage !== this.page) {
         this.page = newPage
       }
+    },
+    handleTagClick(tag) {
+      this.$store.dispatch("tags/toggleTag", tag)
     },
   },
 }

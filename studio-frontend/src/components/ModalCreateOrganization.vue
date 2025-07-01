@@ -1,6 +1,6 @@
 <template>
   <ModalNew
-    value
+    v-model="isOpen"
     @on-cancel="($event) => this.$emit('on-cancel')"
     @on-confirm="createOrganisation"
     small
@@ -26,7 +26,12 @@ import ModalNew from "@/components/molecules/Modal.vue"
 
 export default {
   mixins: [formsMixin],
-  props: {},
+  props: {
+    value: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       fields: ["orgaName"],
@@ -40,7 +45,16 @@ export default {
       state: "idle",
     }
   },
-  mounted() {},
+  computed: {
+    isOpen: {
+      get() {
+        return this.value
+      },
+      set(value) {
+        this.$emit("input", value)
+      },
+    },
+  },
   methods: {
     async createOrganisation(event) {
       event?.preventDefault()

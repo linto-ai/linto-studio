@@ -29,7 +29,7 @@
       <Tooltip
         :key="`${mediaId}-tag-${tag._id}`"
         v-for="tag in mediatags"
-        :text="tag.name">
+        :text="tag.description || tag.name">
         <ChipTag
           :name="tag.name"
           :emoji="tag.emoji"

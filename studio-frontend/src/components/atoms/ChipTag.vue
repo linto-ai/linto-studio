@@ -12,16 +12,21 @@
           {{ unifiedToEmoji(emoji) }}
         </span>
       </span>
-      <span class="chip-tag__name" :style="{ color: colorText }">
+      <span
+        class="chip-tag__name"
+        :class="{ 'with-emoji': emoji }"
+        :style="{
+          textShadow: `0 1px 0 ${colorText}, 0 -1px 0 ${colorText}, 1px 0 0 ${colorText}, -1px 0 0 ${colorText}`,
+        }">
         {{ name }}
       </span>
-      <ph-icon v-if="active" name="trash" :color="colorText" />
+      <ph-icon v-if="active" name="trash" color="var(--neutral-10)" />
       <Avatar
         v-if="count"
         class="chip-tag__count"
         size="xs"
         color="var(--primary-soft)"
-        :color-text="color">
+        color-text="var(--neutral-10)">
         {{ count }}
       </Avatar>
       <slot></slot>
@@ -70,10 +75,10 @@ export default {
       return this.$listeners.click ? "clickable" : ""
     },
     borderColor() {
-      return `var(--material-${this.color}-500)`
+      return `var(--material-${this.color}-700)`
     },
     backgroundColor() {
-      return `var(--material-${this.color}-${this.active ? 400 : 100})`
+      return `var(--material-${this.color}-${this.active ? 800 : 500})`
     },
     colorText() {
       return `var(--material-${this.color}-900)`
@@ -97,9 +102,10 @@ export default {
   flex-direction: column;
   padding: 0.1em 0.45em 0.1em 0.45em;
   margin: 0.1em;
-  border-radius: 5px;
+  border-radius: 8px;
   border: 1px solid var(--primary-soft);
   background: var(--background-primary);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4), inset 0px .2px 0 1px rgba(255, 255, 255, 0.4);
   font-size: 0.9em;
   font-weight: 600;
   transition:
@@ -148,9 +154,8 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 16px;
-    height: 16px;
-    border-radius: 2px;
+    width: 20px;
+    height: 20px;
     font-size: 1em;
     color: #222;
   }
@@ -164,13 +169,18 @@ export default {
   .chip-tag__name {
     display: inline-block;
     font-size: 1em;
-    font-weight: 500;
+    font-weight: 600;
     padding: 0 0.5em;
     max-width: 21ch;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     text-transform: uppercase;
+    color: var(--neutral-10);
+
+    &.with-emoji {
+      padding-left: 0;
+    }
   }
   .chip-tag__count {
     font-size: 0.9em;

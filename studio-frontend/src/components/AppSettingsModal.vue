@@ -64,7 +64,6 @@
             </li>
           </ul>
         </is-cloud>
-        {{ selectedTab }}
       </aside>
       <div
         v-if="selectedTab === 'account-information'"

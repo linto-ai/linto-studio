@@ -643,7 +643,13 @@
       "delete": "Supprimer"
     },
     "delete": "Supprimer",
-    "share": "Partager"
+    "share": "Partager",
+    "tags_selector": {
+      "title": "Filtrer par tags",
+      "filter": "Filtrer",
+      "clear_all": "Tout effacer",
+      "no_tags": "Aucun tag disponible"
+    }
   },
   "modal": {
     "cancel": "Annuler",
@@ -719,7 +725,8 @@
       "manage_tags": "Administrer les tags de médias",
       "sessions": "Transcription en direct",
       "shared": "Partages reçus",
-      "user_page": "Mon compte"
+      "user_page": "Mon compte",
+      "tags": "Thématiques"
     }
   },
   "no_orga": {

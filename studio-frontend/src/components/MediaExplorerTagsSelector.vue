@@ -14,8 +14,10 @@
           icon="funnel"
           icon-position="left"
           size="sm"
-          title="Filtrer par tags">
-          <template v-if="selectedTagIds.length === 0">Filtrer</template>
+          :title="$t('media_explorer.tags_selector.title')">
+          <template v-if="selectedTagIds.length === 0">
+            {{ $t("media_explorer.tags_selector.filter") }}
+          </template>
           <template v-else class="filter-count"
             >x{{ selectedTagIds.length }}</template
           >
@@ -25,18 +27,18 @@
       <template #content>
         <div class="tags-filter-popover">
           <div class="popover-header">
-            <h4>Filtrer par tags</h4>
+            <h4>{{ $t("media_explorer.tags_selector.title") }}</h4>
             <button
               v-if="hasSelectedFilters"
               class="clear-all-link"
               @click="clearAllFilters">
-              Tout effacer
+              {{ $t("media_explorer.tags_selector.clear_all") }}
             </button>
           </div>
 
           <div class="tags-list">
             <div v-if="availableTags.length === 0" class="no-tags">
-              Aucun tag disponible
+              {{ $t("media_explorer.tags_selector.no_tags") }}
             </div>
 
             <div

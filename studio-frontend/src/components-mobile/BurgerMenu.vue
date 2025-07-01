@@ -12,6 +12,8 @@
         :organizationId="currentOrganization._id"
         v-if="!backoffice" />
 
+      <MediaExplorerMenuLabels />
+
       <BackofficeSidebar v-if="backoffice" />
 
       <slot></slot>
@@ -36,6 +38,7 @@ import CloudCardCredits from "@/components-cloud/CardCredits.vue"
 import MediaExplorerMenu from "@/components/MediaExplorerMenu.vue"
 import BackofficeSidebar from "@/components/BackofficeSidebar.vue"
 import ActionConversationCreate from "@/components/molecules/ActionConversationCreate.vue"
+import MediaExplorerMenuLabels from "@/components/MediaExplorerMenuLabels.vue"
 
 export default {
   mixins: [orgaRoleMixin, organizationPermissionsMixin],
@@ -97,6 +100,7 @@ export default {
     MediaExplorerMenu,
     BackofficeSidebar,
     ActionConversationCreate,
+    MediaExplorerMenuLabels,
   },
 }
 </script>

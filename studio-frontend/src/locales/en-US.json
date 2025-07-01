@@ -643,7 +643,13 @@
       "delete": "Delete"
     },
     "delete": "Delete",
-    "share": "Share"
+    "share": "Share",
+    "tags_selector": {
+      "title": "Filter by tags",
+      "filter": "Filter",
+      "clear_all": "Clear all",
+      "no_tags": "No tags available"
+    }
   },
   "modal": {
     "cancel": "Cancel",

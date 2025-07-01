@@ -234,6 +234,9 @@
       color: var(--primary-contrast, #fff);
       &.outline .icon {
         color: var(--primary-contrast, #fff);
+        &:hover {
+          color: var(--primary-contrast, #fff);
+        }
       }
       .icon-svg,
       .ph-icon {
@@ -852,5 +855,41 @@
 
   a.underline {
     text-decoration: underline;
+  }
+}
+
+.btn.outline {
+  &.primary {
+    &:hover {
+      background-color: var(--primary-color);
+      color: var(--primary-contrast, #fff);
+
+      .icon-svg,
+      .ph-icon {
+        color: var(--primary-contrast, #fff);
+      }
+    }
+  }
+  &.secondary {
+    &:hover {
+      background-color: var(--secondary-color);
+      color: var(--primary-contrast, #fff);
+
+      .icon-svg,
+      .ph-icon {
+        color: var(--primary-contrast, #fff);
+      }
+    }
+  }
+  &.tertiary {
+    &:hover {
+      background-color: var(--tertiary-color);
+      color: var(--primary-contrast, #fff);
+
+      .icon-svg,
+      .ph-icon {
+        color: var(--primary-contrast, #fff);
+      }
+    }
   }
 }

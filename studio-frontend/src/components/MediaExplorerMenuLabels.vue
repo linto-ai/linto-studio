@@ -1,5 +1,9 @@
 <template>
   <div class="media-explorer-menu-labels">
+    <hr />
+    <div class="title">
+      {{ $t("navigation.tabs.tags") }}
+    </div>
     <nav>
       <ul>
         <li v-for="tag in orderedTags" :key="tag._id">
@@ -13,39 +17,18 @@
             @click="handleTagClick(tag)" />
         </li>
       </ul>
-
-      <div class="media-explorer-menu-labels__footer">
-        <Button
-          v-if="tags.length > 5"
-          size="xs"
-          color="primary-soft"
-          @click.stop="showAllTags = !showAllTags">
-          {{ showAllTags ? "Show less" : "Show all" }}
-        </Button>
-
-        <Button
-          icon="tag-simple"
-          size="xs"
-          color="secondary"
-          @click.stop="showModalTagManagement = true">
-          Tags
-        </Button>
-      </div>
     </nav>
-    <ModalTagManagement v-model="showModalTagManagement" />
   </div>
 </template>
 
 <script>
 import { mapGetters } from "vuex"
 import MediaExplorerItemTagBox from "./MediaExplorerItemTagBox.vue"
-import ModalTagManagement from "./ModalTagManagement.vue"
 
 export default {
   name: "MediaExplorerMenuLabels",
   components: {
     MediaExplorerItemTagBox,
-    ModalTagManagement,
   },
   data() {
     return {
@@ -89,22 +72,40 @@ export default {
 <style lang="scss">
 .media-explorer-menu-labels {
   display: flex;
+  flex-direction: column;
+  gap: 0em;
+
+  hr {
+    margin: 0;
+    height: 2px;
+    background-color: #ccc;
+    border: none;
+    margin: 0 0.5em;
+    margin-top: 0.5em;
+  }
+
+  .title {
+    font-weight: 600;
+    color: var(--text-secondary);
+    padding: 0.5em;
+    padding-left: 0.5em;
+  }
 
   nav {
-    padding: 0.5em 0;
+    padding: 0;
 
     ul {
       display: flex;
-      flex-direction: column;
-      gap: var(--spacing-small);
+      gap: 0.5em;
       list-style: none;
-      padding-inline-start: 45px;
       max-height: 240px;
       overflow-y: auto;
+      flex-wrap: wrap;
+      padding: 0.5em;
     }
 
     li {
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: var(--spacing-small);
       padding: 0;

@@ -32,7 +32,20 @@
             </div>
           </div>
         </router-link>
+        <div class="modal-switch-org__list__item">
+          <Button
+            :label="$t('modal_switch_org.create_organization')"
+            icon="plus"
+            size="sm"
+            variant="outline"
+            color="primary"
+            @click="isCreateModalOpen = true" />
+        </div>
       </div>
+      {{ isCreateModalOpen }}
+      <ModalCreateOrganization
+        v-model="isCreateModalOpen"
+        @on-cancel="isCreateModalOpen = false" />
     </div>
   </Modal>
 </template>
@@ -40,19 +53,25 @@
 <script>
 import { mapGetters } from "vuex"
 import Modal from "@/components/molecules/Modal.vue"
-import Avatar from "@/components/atoms/Avatar.vue"
+import ModalCreateOrganization from "@/components/ModalCreateOrganization.vue"
+import ChipTag from "./atoms/ChipTag.vue"
 
 export default {
   name: "ModalSwitchOrg",
   components: {
     Modal,
-    Avatar,
+    ModalCreateOrganization,
   },
   props: {
     value: {
       type: Boolean,
       required: true,
     },
+  },
+  data() {
+    return {
+      isCreateModalOpen: false,
+    }
   },
   computed: {
     ...mapGetters("organizations", {
@@ -83,8 +102,15 @@ export default {
       display: flex;
       align-items: center;
       gap: 1em;
-      &__name__current {
-        color: var(--text-secondary);
+
+      &__name {
+        display: flex;
+        align-items: center;
+        gap: 0.5em;
+
+        &__current {
+          color: var(--text-secondary);
+        }
       }
     }
   }
