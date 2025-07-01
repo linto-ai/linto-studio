@@ -36,7 +36,6 @@ import isAuthenticated from "@/tools/isAuthenticated.js"
 import { mapGetters } from "vuex"
 
 import BurgerMenu from "@/components-mobile/BurgerMenu.vue"
-import OrganizationSidebar from "@/components/OrganizationSidebar.vue"
 import Breadcrumb from "@/components/atoms/Breadcrumb.vue"
 import HeaderBar from "@/components/HeaderBar.vue"
 import LocalSwitcher from "@/components/LocalSwitcher.vue"
@@ -87,7 +86,6 @@ export default {
   components: {
     Fragment,
     Breadcrumb,
-    OrganizationSidebar,
     BurgerMenu,
     HeaderBar,
     LocalSwitcher,
@@ -240,7 +238,7 @@ export default {
 
   .v2-layout.no-sidebar {
     box-sizing: border-box;
-  
+
     .v2-layout__sidebar {
       width: 0 !important;
       border: none !important;

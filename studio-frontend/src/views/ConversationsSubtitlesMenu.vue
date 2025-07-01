@@ -45,7 +45,6 @@ import { subtitleMixin } from "@/mixins/subtitle.js"
 import MainContentConversation from "../components/MainContentConversation.vue"
 import SubtitleMenu from "@/components/SubtitleMenu.vue"
 import GenerateSubtitleButton from "@/components/GenerateSubtitleButton.vue"
-import OrganizationSidebar from "../components/OrganizationSidebar.vue"
 import ModalDeleteSubtitle from "../components/ModalDeleteSubtitle.vue"
 import ActionBar from "@/layouts/ActionBar.vue"
 
@@ -99,7 +98,6 @@ export default {
     MainContentConversation,
     SubtitleMenu,
     GenerateSubtitleButton,
-    OrganizationSidebar,
     ModalDeleteSubtitle,
     ActionBar,
   },

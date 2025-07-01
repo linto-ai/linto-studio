@@ -4,66 +4,74 @@
     :with-actions="false"
     :title="$t('app_settings_modal.title')"
     :size="computedSize">
-    <div class="app-settings">
+    <div class="app-settings flex1">
       <aside>
-        <h4>{{ $t("app_settings_modal.account_title") }}</h4>
-        <!-- <div class="app-settings__user-info flex align-center gap-small">
+        <div class="flex1">
+          <h4>{{ $t("app_settings_modal.account_title") }}</h4>
+          <!-- <div class="app-settings__user-info flex align-center gap-small">
           <div class="flex flex1 align-center gap-small">
             <UserProfilePicture :hover="false" :user="user" />
             <span class="user-account-selector__name">{{ userName }}</span>
           </div>
         </div> -->
-        <ul>
-          <li :class="{ active: selectedTab === 'account-information' }">
-            <a href="#" @click="selectTab('account-information')">
-              <ph-icon name="user" weight="bold"></ph-icon>
-              <span>{{ $t("app_settings_modal.account_information") }}</span>
-            </a>
-          </li>
-          <li :class="{ active: selectedTab === 'notifications' }">
-            <a href="#" @click="selectTab('notifications')">
-              <ph-icon name="bell" weight="bold"></ph-icon>
-              <span>{{ $t("app_settings_modal.notifications") }}</span>
-            </a>
-          </li>
-          <li :class="{ active: selectedTab === 'preferences' }">
-            <a href="#" @click="selectTab('preferences')">
-              <ph-icon name="wrench" weight="bold"></ph-icon>
-              <span>{{ $t("app_settings_modal.preferences") }}</span>
-            </a>
-          </li>
-        </ul>
-        <h4>{{ orgaName }}</h4>
-        <is-cloud>
           <ul>
-            <li :class="{ active: selectedTab === 'organization-information' }">
-              <a href="#" @click="selectTab('organization-information')">
-                <ph-icon name="info" weight="bold"></ph-icon>
-                <span>{{
-                  $t("app_settings_modal.organization_information")
-                }}</span>
+            <li :class="{ active: selectedTab === 'account-information' }">
+              <a href="#" @click="selectTab('account-information')">
+                <ph-icon name="user" weight="bold"></ph-icon>
+                <span>{{ $t("app_settings_modal.account_information") }}</span>
               </a>
             </li>
-            <li :class="{ active: selectedTab === 'members' }">
-              <a href="#" @click="selectTab('members')">
-                <ph-icon name="users" weight="bold"></ph-icon>
-                <span>{{ $t("app_settings_modal.organization_members") }}</span>
+            <li :class="{ active: selectedTab === 'notifications' }">
+              <a href="#" @click="selectTab('notifications')">
+                <ph-icon name="bell" weight="bold"></ph-icon>
+                <span>{{ $t("app_settings_modal.notifications") }}</span>
               </a>
             </li>
-            <li :class="{ active: selectedTab === 'billing' }">
-              <a href="#" @click="selectTab('billing')">
-                <ph-icon name="credit-card" weight="bold"></ph-icon>
-                <span>{{ $t("app_settings_modal.billing") }}</span>
-              </a>
-            </li>
-            <li :class="{ active: selectedTab === 'tags' }">
-              <a href="#" @click="selectTab('tags')">
-                <ph-icon name="tag" weight="bold"></ph-icon>
-                <span>{{ $t("app_settings_modal.tags") }}</span>
+            <li :class="{ active: selectedTab === 'preferences' }">
+              <a href="#" @click="selectTab('preferences')">
+                <ph-icon name="wrench" weight="bold"></ph-icon>
+                <span>{{ $t("app_settings_modal.preferences") }}</span>
               </a>
             </li>
           </ul>
-        </is-cloud>
+          <h4>{{ orgaName }}</h4>
+          <is-cloud>
+            <ul>
+              <li
+                :class="{ active: selectedTab === 'organization-information' }">
+                <a href="#" @click="selectTab('organization-information')">
+                  <ph-icon name="info" weight="bold"></ph-icon>
+                  <span>{{
+                    $t("app_settings_modal.organization_information")
+                  }}</span>
+                </a>
+              </li>
+              <li :class="{ active: selectedTab === 'members' }">
+                <a href="#" @click="selectTab('members')">
+                  <ph-icon name="users" weight="bold"></ph-icon>
+                  <span>{{
+                    $t("app_settings_modal.organization_members")
+                  }}</span>
+                </a>
+              </li>
+              <li :class="{ active: selectedTab === 'billing' }">
+                <a href="#" @click="selectTab('billing')">
+                  <ph-icon name="credit-card" weight="bold"></ph-icon>
+                  <span>{{ $t("app_settings_modal.billing") }}</span>
+                </a>
+              </li>
+              <li :class="{ active: selectedTab === 'tags' }">
+                <a href="#" @click="selectTab('tags')">
+                  <ph-icon name="tag" weight="bold"></ph-icon>
+                  <span>{{ $t("app_settings_modal.tags") }}</span>
+                </a>
+              </li>
+            </ul>
+          </is-cloud>
+        </div>
+        <div>
+          <Button :label=""></Button>
+        </div>
       </aside>
       <div
         v-if="selectedTab === 'account-information'"
@@ -74,13 +82,20 @@
         <UserSettingsVisibility :userInfo="user" v-if="isAuthenticated" />
         <UserSettingsPassword :userInfo="user" v-if="isAuthenticated" />
       </div>
-      <div
-        v-if="selectedTab === 'account-notifications'"
-        class="app-settings__section">
+      <div v-if="selectedTab === 'notifications'" class="app-settings__section">
         <UserSettingsNotifications :userInfo="user" v-if="isAuthenticated" />
       </div>
       <div v-if="selectedTab === 'tags'" class="app-settings__section">
         <TagManagement />
+      </div>
+      <div v-if="selectedTab === 'preferences'" class="app-settings__section">
+        <UserSettingsPreferences />
+      </div>
+
+      <div
+        v-if="selectedTab === 'organization-information'"
+        class="app-settings__section">
+        <UpdateOrganizationForm :currentOrganization="currentOrganization" />
       </div>
       <div
         v-if="selectedTab === 'billing'"
@@ -99,8 +114,10 @@ import UserSettingsPassword from "@/components/UserSettingsPassword.vue"
 import UserSettingsNotifications from "@/components/UserSettingsNotifications.vue"
 import UserSettingsVisibility from "@/components/UserSettingsVisibility.vue"
 import UserSettingsAvatar from "@/components/UserSettingsAvatar.vue"
+import UserSettingsPreferences from "@/components/UserSettingsPreferences.vue"
 import TagManagement from "@/components/TagManagement.vue"
-
+import UpdateOrganizationForm from "@/components/UpdateOrganizationForm.vue"
+import UpdateOrganizationUsers from "@/components/UpdateOrganizationUsers.vue"
 export default {
   name: "AppSettingsModal",
   components: {
@@ -111,7 +128,10 @@ export default {
     UserSettingsNotifications,
     UserSettingsVisibility,
     UserSettingsAvatar,
+    UserSettingsPreferences,
     TagManagement,
+    UpdateOrganizationForm,
+    UpdateOrganizationUsers,
   },
   data() {
     return {
@@ -216,6 +236,8 @@ export default {
     padding: 1em;
     //display: none;
     overflow-y: auto;
+    align-self: stretch;
+    height: min(800px, calc(100vh - 10rem));
 
     // &.active {
     //   display: block;
