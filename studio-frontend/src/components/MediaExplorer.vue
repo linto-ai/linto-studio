@@ -41,45 +41,68 @@
       </MediaExplorerHeader>
 
       <!-- Media list body -->
-      <div class="media-explorer__body">
-        <slot name="before" />
-        <Loading v-if="loading && filteredMedias.length === 0" />
-        <!-- Empty state -->
-        <div
-          v-else-if="filteredMedias.length === 0"
-          class="media-explorer__body__empty">
-          <slot name="empty">
-            <div class="empty-state">
-              <p v-if="activeSelectedTagIds.length > 0">
-                Aucun média trouvé avec les tags sélectionnés
-              </p>
-              <p v-else>Aucun média trouvé</p>
-            </div>
-          </slot>
-        </div>
+      <div
+        class="media-explorer__body"
+        :class="{ 'has-right-panel': selectedMediaForOverview }"
+        :style="{ '--right-panel-width': rightPanelWidth + 'px' }">
+        <!-- Main content area -->
+        <div class="media-explorer__body__content">
+          <slot name="before" />
+          <Loading v-if="loading && filteredMedias.length === 0" />
+          <!-- Empty state -->
+          <div
+            v-else-if="filteredMedias.length === 0"
+            class="media-explorer__body__empty">
+            <slot name="empty">
+              <div class="empty-state">
+                <p v-if="activeSelectedTagIds.length > 0">
+                  Aucun média trouvé avec les tags sélectionnés
+                </p>
+                <p v-else>Aucun média trouvé</p>
+              </div>
+            </slot>
+          </div>
 
-        <!-- Media items -->
-        <IsMobile>
-          <MediaExplorerItemMobile
-            v-for="(media, index) in filteredMedias"
-            :key="`media-explorer-item-${media._id}-${index}`"
-            :media="media" />
-          <template #desktop>
-            <MediaExplorerItem
+          <!-- Media items -->
+          <IsMobile>
+            <MediaExplorerItemMobile
               v-for="(media, index) in filteredMedias"
               :key="`media-explorer-item-${media._id}-${index}`"
-              :media="media"
-              :ref="'mediaItem' + index"
-              class="media-explorer__body__item" />
+              :media="media" />
+            <template #desktop>
+              <MediaExplorerItem
+                v-for="(media, index) in filteredMedias"
+                :key="`media-explorer-item-${media._id}-${index}`"
+                :media="media"
+                :ref="'mediaItem' + index"
+                :is-selected-for-overview="
+                  selectedMediaForOverview &&
+                  selectedMediaForOverview._id === media._id
+                "
+                class="media-explorer__body__item"
+                @select-for-overview="selectMediaForOverview" />
+            </template>
+          </IsMobile>
+          <slot name="after" />
+        </div>
+
+        <!-- Right panel for desktop only -->
+        <IsMobile>
+          <template #desktop>
+            <MediaExplorerRightPanel
+              v-if="selectedMediaForOverview"
+              :selected-media="selectedMediaForOverview"
+              @close="closeRightPanel"
+              @resize="handleRightPanelResize" />
           </template>
         </IsMobile>
-        <slot name="after" />
+
+        <ModalDeleteConversations
+          :visible="showDeleteModal"
+          :medias="selectedMedias"
+          @close="showDeleteModal = false" />
       </div>
     </div>
-    <ModalDeleteConversations
-      :visible="showDeleteModal"
-      :medias="selectedMedias"
-      @close="showDeleteModal = false" />
   </div>
 </template>
 
@@ -90,11 +113,13 @@ import MediaExplorerHeader from "@/components/MediaExplorerHeader.vue"
 import MediaExplorerItem from "@/components/MediaExplorerItem.vue"
 import MediaExplorerItemMobile from "@/components-mobile/MediaExplorerItem.vue"
 import MediaExplorerAppUpload from "@/components/MediaExplorerAppUpload.vue"
+import MediaExplorerRightPanel from "@/components/MediaExplorerRightPanel.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import Button from "@/components/atoms/Button.vue"
 import ModalDeleteConversations from "@/components/ModalDeleteConversations.vue"
 import ConversationShareMultiple from "@/components/ConversationShareMultiple.vue"
 import Loading from "@/components/atoms/Loading.vue"
+import IsMobile from "@/components/atoms/IsMobile.vue"
 
 export default {
   name: "MediaExplorer",
@@ -103,11 +128,13 @@ export default {
     MediaExplorerItem,
     MediaExplorerItemMobile,
     MediaExplorerAppUpload,
+    MediaExplorerRightPanel,
     Modal,
     Button,
     ModalDeleteConversations,
     ConversationShareMultiple,
     Loading,
+    IsMobile,
   },
   props: {
     medias: {
@@ -197,6 +224,8 @@ export default {
       observer: null,
       search: "",
       showDeleteModal: false,
+      selectedMediaForOverview: null,
+      rightPanelWidth: 400, // Default width for the right panel
       // Internal state no longer required for tag selection
     }
   },
@@ -331,6 +360,19 @@ export default {
       this.$emit("search", search, filters)
     },
 
+    selectMediaForOverview(media) {
+      this.selectedMediaForOverview = media
+    },
+
+    closeRightPanel() {
+      this.selectedMediaForOverview = null
+      this.rightPanelWidth = 0
+    },
+
+    handleRightPanelResize(width) {
+      this.rightPanelWidth = width
+    },
+
     cleanupObserver() {
       if (this.observer) {
         this.observer.disconnect()
@@ -366,10 +408,33 @@ export default {
 
 .media-explorer__body {
   display: flex;
+  flex-direction: row;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.media-explorer__body__content {
+  display: flex;
   flex-direction: column;
   flex: 1;
   overflow-y: auto;
   padding: 0.25rem 0.5rem;
+  transition: margin-right 0.3s ease;
+}
+
+.media-explorer__body.has-right-panel .media-explorer__body__content {
+  margin-right: var(--right-panel-width, 400px);
+}
+
+.media-explorer__body .media-explorer-right-panel {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 1000;
+  background-color: var(--background-color, #fff);
+  border-left: var(--border-block, 1px solid var(--neutral-30));
 }
 
 .media-explorer__body__empty {
@@ -398,6 +463,14 @@ export default {
 @media only screen and (max-width: 1100px) {
   .media-explorer__body__item {
     overflow: auto;
+  }
+
+  .media-explorer__body {
+    flex-direction: column;
+  }
+
+  .media-explorer__body__content {
+    margin-right: 0 !important;
   }
 }
 </style>

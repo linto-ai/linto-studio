@@ -441,6 +441,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    initialName: {
+      type: String,
+      default: "",
+    },
     tag: {
       type: Object,
       default: () => ({}),
@@ -451,7 +455,7 @@ export default {
     return {
       emojiSearch: "",
       selectedEmoji: null,
-      name: "",
+      name: this.initialName,
       description: "",
       color: "teal",
       colorPopoverOpen: false,
@@ -489,6 +493,13 @@ export default {
         // Auto-select emoji when typing in description field
         if (!this.selectedEmoji) {
           this.autoSelectEmojiFromText()
+        }
+      },
+    },
+    isOpen: {
+      handler(val) {
+        if (val) {
+          this.name = this.initialName
         }
       },
     },

@@ -313,7 +313,7 @@ export async function apiCreateOrganizationTag(
     { name, description, categoryId, color, emoji, organizationId },
     notif,
   )
-  if (requestRes.status == "error") return requestRes
+  if (requestRes.status == "error") throw new Error(requestRes.data)
   return requestRes.data
 }
 

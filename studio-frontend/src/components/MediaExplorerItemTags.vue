@@ -8,7 +8,7 @@
         :track-mouse="false"
         position="bottom"
         overlay
-        width="240px">
+        width="280px">
         <template #trigger>
           <Button
             class="neutral outline icon-only"
