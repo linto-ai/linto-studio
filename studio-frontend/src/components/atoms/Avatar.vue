@@ -93,11 +93,14 @@ export default {
       const unified = this.emoji
       if (!unified) return ""
 
-      console.log("[Avatar] unifiedToEmoji", unified)
-      return unified
-        .split("-")
-        .map((u) => String.fromCodePoint(parseInt(u, 16)))
-        .join("")
+      try {
+        return unified
+          .split("-")
+          .map((u) => String.fromCodePoint(parseInt(u, 16)))
+          .join("")
+      } catch (e) {
+        return unified
+      }
     },
     computedColor() {
       if (this.materialColor) {

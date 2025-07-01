@@ -79,6 +79,9 @@
         class="app-settings__section">
         <UserSettingsNotifications :userInfo="user" v-if="isAuthenticated" />
       </div>
+      <div v-if="selectedTab === 'tags'" class="app-settings__section">
+        <TagManagement />
+      </div>
       <div
         v-if="selectedTab === 'billing'"
         class="app-settings__section"
@@ -96,6 +99,8 @@ import UserSettingsPassword from "@/components/UserSettingsPassword.vue"
 import UserSettingsNotifications from "@/components/UserSettingsNotifications.vue"
 import UserSettingsVisibility from "@/components/UserSettingsVisibility.vue"
 import UserSettingsAvatar from "@/components/UserSettingsAvatar.vue"
+import TagManagement from "@/components/TagManagement.vue"
+
 export default {
   name: "AppSettingsModal",
   components: {
@@ -106,6 +111,7 @@ export default {
     UserSettingsNotifications,
     UserSettingsVisibility,
     UserSettingsAvatar,
+    TagManagement,
   },
   data() {
     return {

@@ -87,10 +87,15 @@ export default {
   methods: {
     unifiedToEmoji(unified) {
       if (!unified) return ""
-      return unified
-        .split("-")
-        .map((u) => String.fromCodePoint(parseInt(u, 16)))
-        .join("")
+
+      try {
+        return unified
+          .split("-")
+          .map((u) => String.fromCodePoint(parseInt(u, 16)))
+          .join("")
+      } catch (e) {
+        return unified
+      }
     },
   },
 }
@@ -105,7 +110,9 @@ export default {
   border-radius: 8px;
   border: 1px solid var(--primary-soft);
   background: var(--background-primary);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4), inset 0px .2px 0 1px rgba(255, 255, 255, 0.4);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.4),
+    inset 0px 0.2px 0 1px rgba(255, 255, 255, 0.4);
   font-size: 0.9em;
   font-weight: 600;
   transition:

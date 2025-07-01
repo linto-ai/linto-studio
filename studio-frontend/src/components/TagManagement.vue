@@ -1,61 +1,6 @@
 <template>
-  <Modal
-    :value="value"
-    @input="$emit('input', $event)"
-    :size="computedSize"
-    title="Gestion des tags"
-    subtitle="Gérez vos tags"
-    :loading="loading"
-    :with-action-apply="false"
-    :with-action-cancel="false">
-    <template #trigger="{ open }">
-      <slot name="trigger" :open="open" />
-    </template>
-    <template #content>
-      <div class="tags-list">
-        <ul>
-          <li v-for="tag in tags" :key="`tags-list-item--${tag._id}`">
-            <Avatar :material-color="tag.color" :size="54" :emoji="tag.emoji" />
-            <span class="tags-list__data">
-              <span class="tags-list__name" :aria-label="tag.name">{{
-                tag.name
-              }}</span>
-              <span
-                class="tags-list__description"
-                :aria-label="tag.description"
-                >{{ tag.description }}</span
-              >
-            </span>
-            <Button
-              variant="outline"
-              color="primary"
-              icon="trash"
-              size="xs"
-              @click="openModalTagEdit(tag)">
-              Edit
-            </Button>
-            <Alert
-              variant="error"
-              icon="trash"
-              size="xs"
-              :title="`Supprimer le tag ${tag.name} ?`"
-              :message="`Vous ne pourrez plus utiliser ce tag dans les médias.`"
-              @confirm="onTagDelete(tag)">
-              <Button variant="outline" color="tertiary" icon="trash" size="xs"
-                >Delete</Button
-              >
-            </Alert>
-          </li>
-        </ul>
-      </div>
-      <MediaExplorerFormTag
-        v-model="modalTagEditOpen"
-        :tag="modalTagEdit"
-        @submit="onTagEdit"
-        @cancel="modalTagEditOpen = false"
-        @close="modalTagEditOpen = false" />
-    </template>
-    <template #actions-right>
+  <div class="tag-management">
+    <div class="tag-management__header">
       <MediaExplorerFormTag @submit="onSubmit" :loading="loading">
         <template #trigger="{ open }">
           <Button
@@ -63,29 +8,68 @@
             color="primary"
             icon="plus"
             icon-position="left"
+            size="sm"
             @click.stop="open">
             Create a new tag
           </Button>
         </template>
       </MediaExplorerFormTag>
-    </template>
-  </Modal>
+    </div>
+    <div class="tags-list">
+      <ul>
+        <li v-for="tag in tags" :key="`tags-list-item--${tag._id}`">
+          <Avatar :material-color="tag.color" :size="54" :emoji="tag.emoji" />
+          <span class="tags-list__data">
+            <span class="tags-list__name" :aria-label="tag.name">{{
+              tag.name
+            }}</span>
+            <span
+              class="tags-list__description"
+              :aria-label="tag.description"
+              >{{ tag.description }}</span
+            >
+          </span>
+          <Button
+            variant="outline"
+            color="primary"
+            icon="trash"
+            size="xs"
+            @click="openModalTagEdit(tag)">
+            Edit
+          </Button>
+          <Alert
+            variant="error"
+            icon="trash"
+            size="xs"
+            :title="`Supprimer le tag ${tag.name} ?`"
+            :message="`Vous ne pourrez plus utiliser ce tag dans les médias.`"
+            @confirm="onTagDelete(tag)">
+            <Button variant="outline" color="tertiary" icon="trash" size="xs"
+              >Delete</Button
+            >
+          </Alert>
+        </li>
+      </ul>
+    </div>
+    <MediaExplorerFormTag
+      v-model="modalTagEditOpen"
+      :tag="modalTagEdit"
+      size="sm"
+      @submit="onTagEdit"
+      @cancel="modalTagEditOpen = false"
+      @close="modalTagEditOpen = false" />
+  </div>
 </template>
 
 <script>
 import { mapState } from "vuex"
-import Modal from "@/components/molecules/Modal.vue"
 import MediaExplorerFormTag from "@/components/MediaExplorerFormTag.vue"
 import Alert from "./atoms/Alert.vue"
 
 export default {
-  name: "ModalTagManagement",
+  name: "TagManagement",
   components: {
-    Modal,
     MediaExplorerFormTag,
-  },
-  props: {
-    value: { type: Boolean, default: false },
   },
   computed: {
     ...mapState("tags", {
@@ -162,6 +146,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.tag-management {
+  &__header {
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+
 .tags-list {
   margin-top: 1em;
   flex-direction: row;

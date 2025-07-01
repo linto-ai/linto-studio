@@ -55,29 +55,17 @@
             size="xs"/>
         </div>
       </div>
-      <div v-if="false" class="tag-box__footer">
-        <ModalTagManagement>
-          <template #trigger="{ open }">
-            <button class="tag-box__button outline primary xs with-icon" @click="open">
-              <ph-icon name="plus" weight="bold" />
-              <span class="tag-box__button-text">Manage tags</span>
-            </button>
-          </template>
-        </ModalTagManagement>
-      </div>
     </div>
   </Box>
 </template>
 
 <script>
 import { mapState } from "vuex"
-import ModalTagManagement from "@/components/ModalTagManagement.vue"
 import ChipTag from "@/components/atoms/ChipTag.vue"
 
 export default {
   name: "MediaExplorerItemTagBox",
   components: {
-    ModalTagManagement,
     ChipTag,
   },
   props: {

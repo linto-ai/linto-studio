@@ -39,10 +39,16 @@ export default {
   },
   methods: {
     unifiedToEmoji(unified) {
-      return unified
-        .split("-")
-        .map((part) => String.fromCodePoint(parseInt(part, 16)))
-        .join("")
+      if (!unified) return ""
+
+      try {
+        return unified
+          .split("-")
+          .map((u) => String.fromCodePoint(parseInt(u, 16)))
+          .join("")
+      } catch (e) {
+        return unified
+      }
     },
   },
 }
