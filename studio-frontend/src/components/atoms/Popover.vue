@@ -96,10 +96,10 @@ export default {
             ...this.$props,
             contentClass: [
               this.$props.contentClass,
-              this.isMobileViewport ? 'popover-mobile-sheet' : '',
+              this.isMobileViewport ? "popover-mobile-sheet" : "",
             ]
               .filter(Boolean)
-              .join(' '),
+              .join(" "),
             popoverCoords: this.popoverCoords,
             widthRef: this.triggerElement || this.$refs.trigger,
           },
@@ -162,8 +162,8 @@ export default {
       }
     },
     isMobileViewport() {
-      if (typeof window === 'undefined') return false
-      return window.matchMedia('(max-width: 1100px)').matches
+      if (typeof window === "undefined") return false
+      return window.matchMedia("(max-width: 1100px)").matches
     },
   },
   methods: {
@@ -305,15 +305,15 @@ export default {
         if (popup) {
           popup.props.contentClass = [
             this.$props.contentClass,
-            this.isMobileViewport ? 'popover-mobile-sheet' : '',
+            this.isMobileViewport ? "popover-mobile-sheet" : "",
           ]
             .filter(Boolean)
-            .join(' ')
+            .join(" ")
         }
       }
     }
-    if (typeof window !== 'undefined') {
-      window.addEventListener('resize', this.resizeListener, { passive: true })
+    if (typeof window !== "undefined") {
+      window.addEventListener("resize", this.resizeListener, { passive: true })
     }
   },
   beforeDestroy() {
@@ -322,8 +322,8 @@ export default {
       clearTimeout(this.hoverTimeout)
       this.hoverTimeout = null
     }
-    if (this.resizeListener && typeof window !== 'undefined') {
-      window.removeEventListener('resize', this.resizeListener)
+    if (this.resizeListener && typeof window !== "undefined") {
+      window.removeEventListener("resize", this.resizeListener)
     }
     this.toggle(false)
   },
@@ -348,6 +348,7 @@ export default {
   max-width: 90vw;
   max-height: 90vh;
   overflow: auto;
+  border-radius: 4px;
 }
 
 .popover-overlay {

@@ -685,7 +685,7 @@
     "subtitle": "Select the organisation you want to switch to",
     "current": "Current"
   },
-  "navigation": {
+  "   ": {
     "account": {
       "account_link": "My account",
       "avatar_title": "User avatar",
@@ -832,6 +832,14 @@
     },
     "visibility_label": "Visibility",
     "visibility_name": "Visibility"
+  },
+  "organization_role": {
+    "member": "Member",
+    "uploader": "Contributor",
+    "quick_meeting": "Privileged contributor",
+    "session_operator": "Full contributor",
+    "maintainer": "Maintainer",
+    "administrator": "Administrator"
   },
   "publish": {
     "error_first_line": {

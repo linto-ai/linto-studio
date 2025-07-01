@@ -828,6 +828,14 @@
     "visibility_label": "Visibilité",
     "visibility_name": "Visibilité"
   },
+  "organization_role": {
+    "member": "Simple membre",
+    "uploader": "Collaborateur",
+    "quick_meeting": "Collaborateur privilégié",
+    "session_operator": "Collaborateur complet",
+    "maintainer": "Gestionnaire",
+    "administrator": "Administrateur"
+  },
   "publish": {
     "error_first_line": {
       "cra": "Erreur lors de la génération du compte rendu analytique",

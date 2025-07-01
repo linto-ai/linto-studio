@@ -1,28 +1,29 @@
 import { mapActions, mapGetters } from "vuex"
+import i18n from "@/i18n"
 
 const ROLES = [
   {
-    name: "Member",
+    name: i18n.t("organization_role.member"),
     value: 1,
   },
   {
-    name: "Uploader",
+    name: i18n.t("organization_role.uploader"),
     value: 2,
   },
   {
-    name: "Quick meeting",
+    name: i18n.t("organization_role.quick_meeting"),
     value: 3,
   },
   {
-    name: "Meeting Manager",
+    name: i18n.t("organization_role.session_operator"),
     value: 4,
   },
   {
-    name: "Maintainer",
+    name: i18n.t("organization_role.maintainer"),
     value: 5,
   },
   {
-    name: "Administrator",
+    name: i18n.t("organization_role.administrator"),
     value: 6,
   },
 ]

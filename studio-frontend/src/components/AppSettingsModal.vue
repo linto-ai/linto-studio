@@ -70,7 +70,12 @@
           </is-cloud>
         </div>
         <div>
-          <Button :label=""></Button>
+          <Button
+            :label="$t('app_settings_modal.logout')"
+            @click="logout"
+            icon="sign-out"
+            color="tertiary"
+            size="sm"></Button>
         </div>
       </aside>
       <div
@@ -96,6 +101,11 @@
         v-if="selectedTab === 'organization-information'"
         class="app-settings__section">
         <UpdateOrganizationForm :currentOrganization="currentOrganization" />
+      </div>
+      <div v-if="selectedTab === 'members'" class="app-settings__section">
+        <UpdateOrganizationUsers
+          :currentOrganization="currentOrganization"
+          :userInfo="user" />
       </div>
       <div
         v-if="selectedTab === 'billing'"
@@ -169,11 +179,15 @@ export default {
   },
   methods: {
     selectTab(tab) {
-      console.log("selectTab", tab)
       this.selectedTab = tab
     },
     closeModal() {
       this.$store.dispatch("settings/setModalOpen", false)
+    },
+    logout() {
+      this.$store.dispatch("user/logout")
+      this.closeModal()
+      document.location.reload()
     },
   },
 }
@@ -189,11 +203,16 @@ export default {
     gap: 10px;
     flex-basis: 200px;
     border-radius: 10px;
-    height: 100%;
+    //height: 100%;
 
     h4 {
       font-size: 14px;
       color: var(--text-secondary);
+      margin-bottom: 0.25rem;
+    }
+
+    ul + h4 {
+      margin-top: 1rem;
     }
 
     ul {

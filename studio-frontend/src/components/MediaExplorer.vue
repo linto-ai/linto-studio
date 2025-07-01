@@ -25,7 +25,9 @@
               icon="share-network"
               variant="outline" /> -->
             <ConversationShareMultiple
-              :selectedConversations="selectedMedias" />
+              :selectedConversations="selectedMedias"
+              :currentOrganizationScope="currentOrganizationScope"
+              :userInfo="userInfo" />
             <Button
               @click="showDeleteModal = true"
               :label="$t('media_explorer.delete')"
@@ -143,10 +145,6 @@ export default {
       type: Boolean,
       default: false,
     },
-    currentOrganizationScope: {
-      type: String,
-      required: false,
-    },
     // Search value from URL
     searchValue: {
       type: String,
@@ -158,6 +156,10 @@ export default {
       return this.$store.state.inbox.selectedMedias
     },
     ...mapGetters("tags", ["getExploreSelectedTags"]),
+    ...mapGetters("user", { userInfo: "getUserInfos" }),
+    ...mapGetters("organizations", {
+      currentOrganizationScope: "getCurrentOrganizationScope",
+    }),
     selectedTagIds() {
       return this.getExploreSelectedTags.map((t) => t._id)
     },
@@ -395,7 +397,7 @@ export default {
 
 @media only screen and (max-width: 1100px) {
   .media-explorer__body__item {
-    overflow: auto
+    overflow: auto;
   }
 }
 </style>

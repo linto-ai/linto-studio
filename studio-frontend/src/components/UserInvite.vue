@@ -1,17 +1,21 @@
 <template>
   <div>
-    <button
-      @click="showList = !showList"
-      :class="showList ? 'active' : ''"
-      class="invite-user-button">
-      <span class="icon plus"></span>
-      <span class="label">{{ $t("invite_user.button") }}</span>
-    </button>
-    <div
+    <!-- <div
       class="select__list invite-user-list"
       v-if="showList"
       v-click-outside="close">
-      <div class="flex col select__list__inner">
+      <div class="flex col select__list__inner"> -->
+    <Popover content-class="invite-user-list" overlay>
+      <template #trigger>
+        <button
+          @click="showList = !showList"
+          :class="showList ? 'active' : ''"
+          class="invite-user-button">
+          <span class="icon plus"></span>
+          <span class="label">{{ $t("invite_user.button") }}</span>
+        </button>
+      </template>
+      <template #content>
         <form
           class="form-field flex col small-padding no-margin"
           @submit="inviteUser">
@@ -34,7 +38,7 @@
                   : $t('invite_user.inscription_disabled')
               "
               :disabled="
-                this.searchMemberValue.valid && enable_inscription ? null : true
+                searchMemberValue.valid && enable_inscription ? null : true
               ">
               <span class="label">{{ $t("invite_user.invite") }}</span>
             </button>
@@ -65,8 +69,10 @@
             </button>
           </SearchUsersListComponent>
         </div>
-      </div>
-    </div>
+      </template>
+    </Popover>
+    <!-- </div>
+    </div> -->
   </div>
 </template>
 <script>
@@ -75,6 +81,7 @@ import { bus } from "@/main.js"
 import EMPTY_FIELD from "../const/emptyField"
 import SearchUsersListComponent from "@/components/SearchUsersList.vue"
 import { testEmail } from "@/tools/fields/testEmail"
+import Popover from "./atoms/Popover.vue"
 export default {
   props: {
     usersEmailPending: {

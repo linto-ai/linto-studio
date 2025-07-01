@@ -137,7 +137,28 @@ export default {
   }
 }
 
+.organization-name:hover + .user-role {
+  animation-name: resize-and-hide;
+  animation-duration: 0.5s;
+  width: 0px;
+  overflow: hidden;
+}
+
 .user-role {
   color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+@keyframes resize-and-hide {
+  from {
+    width: auto;
+    overflow: visible;
+    opacity: 1;
+  }
+  to {
+    width: 0px;
+    overflow: hidden;
+    opacity: 0;
+  }
 }
 </style>

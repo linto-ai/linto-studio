@@ -1,11 +1,5 @@
-const RIGHTS = Object.freeze({
-  UNDEFINED: 0,
-  READ: 1,
-  COMMENT: 2,
-  WRITE: 4,
-  DELETE: 8,
-  SHARE: 16,
-})
+import RIGHTS from "@/const/userRights.js"
+import i18n from "@/i18n"
 
 export const convRoleMixin = {
   methods: {
@@ -31,6 +25,29 @@ export const convRoleMixin = {
     },
     hasFullRight(right) {
       return right === 31
+    },
+    getUserRightTxt(right) {
+      if (this.hasFullRight(right)) {
+        return i18n.t("conversation.members_right_txt.full_rights")
+      }
+
+      if (this.hasShareRight(right)) {
+        return i18n.t("conversation.members_right_txt.share")
+      }
+
+      if (this.hasWriteRight(right)) {
+        return i18n.t("conversation.members_right_txt.write")
+      }
+
+      if (this.hasCommentRight(right)) {
+        return i18n.t("conversation.members_right_txt.comment")
+      }
+
+      if (this.hasReadRight(right)) {
+        return i18n.t("conversation.members_right_txt.read")
+      }
+
+      return i18n.t("conversation.members_right_txt.none")
     },
   },
 }
