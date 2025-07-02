@@ -36,7 +36,12 @@ export async function apiGetUsersByConversationId(conversationId, notif) {
     notif,
   )
 
-  return res?.data?.conversationUsers
+  return (
+    res?.data?.conversationUsers ?? {
+      organization_members: [],
+      external_members: [],
+    }
+  )
 }
 
 export async function apiUpdateUserRightInConversation(
@@ -156,6 +161,17 @@ export async function apiUpdateUserInfo(payload, notif) {
     `${BASE_API}/users/self`,
     { method: "put" },
     payload,
+    notif,
+  )
+}
+
+export async function apiUpdateUserImage(file, notif) {
+  let formData = new FormData()
+  formData.append("file", file)
+  return await sendMultipartFormData(
+    `${BASE_API}/users/self/picture`,
+    "put",
+    formData,
     notif,
   )
 }

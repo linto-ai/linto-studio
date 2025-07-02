@@ -41,7 +41,7 @@ export async function apiGetUserOrganizations(notif) {
     null,
     notif,
   )
-  return getUserOrganizations?.data
+  return getUserOrganizations
 }
 
 export async function apiUpdateOrganisation(

@@ -25,10 +25,10 @@ export default {
       type: String,
       required: true,
     },
-    userOrganizations: {
-      type: Array,
-      required: true,
-    },
+    // userOrganizations: {
+    //   type: Array,
+    //   required: true,
+    // },
   },
   data() {
     return {
@@ -142,15 +142,16 @@ export default {
             audioFileIndex++
 
             const { value: convName, file, uploadType } = this.audioFiles[0]
-
-            bus.$emit("app_notif", {
-              status: "loading",
+            const notifId = Date.now() + Math.random()
+            this.$store.dispatch("system/addNotification", {
+              id: notifId,
+              type: "info",
               message: this.$i18n.t(
                 "conversation.conversation_creation_loading_multiple",
                 { count: audioFileIndex, total: total },
               ),
-              timeout: -1,
-              cantBeClosed: true,
+              timeout: 0,
+              closable: false,
             })
 
             let conversationHasBeenCreated = await apiCreateConversation(
@@ -201,18 +202,23 @@ export default {
               return
             }
             this.audioFiles.shift()
+
+            setTimeout(() => {
+              this.$store.dispatch("system/removeNotificationById", notifId)
+            }, 2000)
           }
 
           if (this.audioFiles.length === 0) {
             this.formState = "success"
-            bus.$emit("set_organization_scope", {
-              organizationId: this.conversationOrganization.value,
-            })
             bus.$emit("app_notif", {
               status: "success",
               message: this.$i18n.t("conversation.creation_success_message"),
               redirect: false,
               cantBeClosed: true,
+            })
+            this.$router.push({
+              name: "explore",
+              params: { organizationId: this.conversationOrganization.value },
             })
           }
         } else {
@@ -257,14 +263,19 @@ export default {
 
           if (conversationHasBeenCreated) {
             this.formState = "success"
-            bus.$emit("set_organization_scope", {
-              organizationId: this.conversationOrganization.value,
-            })
+            // bus.$emit("set_organization_scope", {
+            //   organizationId: this.conversationOrganization.value,
+            // })
+
             bus.$emit("app_notif", {
               status: "success",
               message: this.$i18n.t("conversation.creation_success_message"),
               redirect: false,
               cantBeClosed: true,
+            })
+            this.$router.push({
+              name: "explore",
+              params: { organizationId: this.conversationOrganization.value },
             })
           } else {
             this.emitError(

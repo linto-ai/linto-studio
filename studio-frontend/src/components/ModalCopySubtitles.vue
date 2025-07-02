@@ -1,19 +1,20 @@
 <template>
   <ModalNew
+    value
     :title="$t('conversation.subtitles.copy_label')"
     :actionBtnLabel="$t('conversation.subtitles.copy')"
     :cancelButton="false"
     @on-cancel="() => this.$emit('on-close')"
     @on-confirm="generateSubtitles"
-    small>
+    size="sm">
     <form action="">
       <FormInput :field="versionName" v-model="versionName.value" />
     </form>
   </ModalNew>
 </template>
 <script>
-import ModalNew from "./ModalNew.vue"
-import FormInput from "@/components/FormInput.vue"
+import ModalNew from "@/components/molecules/Modal.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 import { formsMixin } from "@/mixins/forms.js"
 import { testName } from "../tools/fields/testName"
 import { workerSendMessage } from "../tools/worker-message"

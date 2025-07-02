@@ -108,7 +108,7 @@
   padding: 30px 40px;
   background-color: var(--primary-contrast);
   margin: 20px 0;
-  @include borderRadius(3px);
+  border-radius: 3px;
   border: var(--border-block);
 }
 

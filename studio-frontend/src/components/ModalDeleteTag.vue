@@ -1,10 +1,11 @@
 <template>
   <ModalNew
+    value
     @on-cancel="($event) => this.$emit('on-cancel')"
     @on-confirm="deleteTag"
     :title="$t('manage_tags.delete_tag.title', { name: tag.name })"
     :actionBtnLabel="$t('manage_tags.delete_tag.action')"
-    small>
+    size="sm">
     <div class="form-field flex col">
       {{
         $t("manage_tags.delete_tag.description", {
@@ -17,12 +18,12 @@
 <script>
 import { Fragment } from "vue-fragment"
 
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import { apiDeleteTag } from "@/api/tag.js"
 import { formsMixin } from "@/mixins/forms.js"
 import { apiCountConversation } from "@/api/conversation.js"
 
-import ModalNew from "./ModalNew.vue"
+import ModalNew from "@/components/molecules/Modal.vue"
 export default {
   mixins: [formsMixin],
   props: {
@@ -49,7 +50,7 @@ export default {
     async deleteTag() {
       const res = await apiDeleteTag(
         this.currentOrganizationScope,
-        this.tag._id
+        this.tag._id,
       )
       //TODO: handle error
       this.$emit("on-confirm", res)

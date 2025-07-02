@@ -3,20 +3,24 @@
     class="flex col popover-parent"
     ref="conversation-share"
     v-click-outside="close">
-    <button
+    <!-- <button
       @click="showShareList = !showShareList"
       :class="showShareList ? 'active' : ''">
       <span class="icon share"></span>
       <span class="label">{{ $t("share_menu.button") }}</span>
-    </button>
+    </button> -->
+    <Button
+      size="sm"
+      :icon="showShareList ? 'x' : 'share-network'"
+      :label="$t('share_menu.button')"
+      @click="showShareList = !showShareList"></Button>
     <ContextMenu
       name="share-menu"
       class="conversation-share-list"
       first
       v-if="showShareList"
-      overflow
-      getContainerSize>
-      <div v-if="selectedConversations.size == 0">
+      overflow>
+      <div v-if="selectedConversations.length == 0">
         <h3 class="flex row align-center gap-small">
           {{ $t("share_menu.no_conversation_selected_title") }}
         </h3>
@@ -62,7 +66,7 @@
               id="dropdown-search-tags" />
             <button
               type="submit"
-              class="btn green"
+              class="btn primary"
               :title="
                 enable_inscription
                   ? null
@@ -157,7 +161,7 @@
         'col',
         'conversation-share-list',
       ]">
-      <div v-if="selectedConversations.size == 0">
+      <div v-if="selectedConversations.length == 0">
         <h3 class="flex row align-center gap-small">
           {{ $t("share_menu.no_conversation_selected_title") }}
         </h3>
@@ -203,7 +207,7 @@
               id="dropdown-search-tags" />
             <button
               type="submit"
-              class="btn green"
+              class="btn primary"
               :title="
                 enable_inscription
                   ? null
@@ -301,7 +305,7 @@ import {
 } from "../api/conversation.js"
 import { apiUpdateMultipleUsersInMultipleConversations } from "../api/user.js"
 
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import { getUserRightFromConversation } from "@/tools/getUserRightFromConversation.js"
 import { indexConversationRightByUsers } from "@/tools/indexConversationRightByUsers.js"
 
@@ -309,16 +313,17 @@ import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { convRoleMixin } from "@/mixins/convRole.js"
 import { debounceMixin } from "@/mixins/debounce.js"
 
-import UserInfoInline from "./UserInfoInline.vue"
+import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
 import UserList from "./UserList.vue"
 import ConversationShareRightSelector from "./ConversationShareRightSelector.vue"
 import SearchUsersListComponent from "@/components/SearchUsersList.vue"
-import ContextMenu from "@/components/ContextMenu.vue"
+import ContextMenu from "@/components/atoms/ContextMenu.vue"
+import Button from "@/components/atoms/Button.vue"
 
 export default {
   props: {
     userInfo: { type: Object, required: true },
-    selectedConversations: { type: Map, required: true },
+    selectedConversations: { type: Array, required: true },
     currentOrganizationScope: { type: String, required: true },
     // conversation: { type: Object, required: true },
     // conversationId: { type: String, required: true },
@@ -367,7 +372,7 @@ export default {
         this.loading = true
         this.verifyConversationsList()
         if (
-          this.selectedConversations.size > 0 &&
+          this.selectedConversations.length > 0 &&
           this.conversationsInError.length == 0
         ) {
           await this.loadUsersRights()
@@ -403,9 +408,7 @@ export default {
     },
     async inviteUser(event) {
       event.preventDefault()
-      const convIds = Array.from(this.selectedConversations.values()).map(
-        (c) => c._id,
-      )
+      const convIds = this.selectedConversations.map((c) => c._id)
       let res = await apiUpdateMultipleUsersInMultipleConversations(
         convIds,
         [{ email: this.searchMemberValue.value, right: 1 }],
@@ -421,6 +424,8 @@ export default {
       // todo: websocket update (until then, other users will have to reload the page)
       if (this.usersLoading?.[user._id]) return
 
+      const convIds = this.selectedConversations.map((c) => c._id)
+
       this.$set(this.usersLoading, user._id, true)
 
       let newUser
@@ -435,7 +440,7 @@ export default {
       }
 
       let res = await apiUpdateMultipleUsersInMultipleConversations(
-        Array.from(this.selectedConversations.keys()),
+        convIds,
         [newUser],
         this.currentOrganizationScope,
         null,
@@ -455,9 +460,9 @@ export default {
       this.$set(this.usersLoading, user._id, false)
     },
     async loadUsersRights() {
-      const listOfconvRights = await apiGetUsersFromMultipleConversation(
-        Array.from(this.selectedConversations.keys()),
-      )
+      const convIds = this.selectedConversations.map((c) => c._id)
+      const listOfconvRights =
+        await apiGetUsersFromMultipleConversation(convIds)
       this.usersRightsFreezed = Object.freeze(listOfconvRights)
       this.usersRightsIndexed = indexConversationRightByUsers(listOfconvRights)
       this.userRights = {
@@ -492,6 +497,7 @@ export default {
     UserList,
     ConversationShareRightSelector,
     ContextMenu,
+    Button,
   },
 }
 </script>

@@ -1,13 +1,12 @@
 @layer base, theme;
 
 @layer theme {
-  @import "buttons.scss";
+  // Don't import to avoid conflicts
+  // @import "buttons.scss";
   @import "checkbox.scss";
   @import "forms.scss";
-  @import "tabs.scss";
   @import "select.scss";
   @import "text.scss";
-  @import "tables.scss";
   @import "sidebar.scss";
   @import "radio.scss";
   @import "login.scss";
@@ -18,9 +17,12 @@
     --red-chart: #fe346e;
 
     --primary-color: #3860ed;
+    --primary-hard: #3860ed;
+    --primary-soft: #eff2ff;
     --primary-contrast: #fff;
 
     --secondary-color: #ffcb7c;
+    --tertiary-color: var(--red-chart);
 
     --dark-100: #26324b;
     --dark-80: #546fa6;
@@ -30,7 +32,7 @@
     --neutral-80: #cdd5ef;
     --neutral-60: #b9c5e9;
 
-    --background-app: rgb(250, 250, 250);
+    --background-app: var(--primary-color);
 
     --background-primary: #fff;
     --background-primary-with-small-opacity: rgba(255, 255, 255, 0.85);

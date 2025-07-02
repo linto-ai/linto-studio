@@ -42,7 +42,7 @@
   </SessionLiveVisio>
 </template>
 <script>
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import {
   apiGetQuickSessionByOrganization,
@@ -57,7 +57,7 @@ import { capitalizeFirstLetter } from "@/tools/capitalizeFirstLetter.js"
 import SessionSetupMicrophone from "@/components/SessionSetupMicrophone.vue"
 import SessionLiveMicrophone from "@/components/SessionLiveMicrophone.vue"
 import SessionLiveVisio from "@/components/SessionLiveVisio.vue"
-import Loading from "@/components/Loading.vue"
+import Loading from "@/components/atoms/Loading.vue"
 import MainContent from "@/components/MainContent.vue"
 
 export default {

@@ -1,50 +1,30 @@
 <template>
-  <MainContent noBreadcrumb :organizationPage="false" box>
+  <LayoutV2>
     <template v-slot:breadcrumb-actions>
-      <!-- <div class="flex flex1 gap-medium align-center justify-center">
-        <router-link :to="sessionListRoute" class="btn secondary">
-          <span class="icon back"></span>
-          <span class="label">{{
-            $t("session.detail_page.back_to_listing")
-          }}</span>
-        </router-link>
-
-        <!-- title -->
-      <!-- <SessionStatus
-          v-if="sessionLoaded"
-          :session="session"
-          withText
-          class="flex1" />
-
-        
-      </div> -->
-
       <SessionHeader
-        v-if="sessionLoaded"
         :sessionListRoute="sessionListRoute"
         :isAuthenticated="isAuthenticated"
         :sessionLoaded="sessionLoaded"
         :name="name"
         :session="session">
-        <template v-slot:right-button-desktop>
-          <router-link :to="liveRoute" class="btn">
-            <span class="icon text"></span>
-            <span class="label">{{
-              $t("session.detail_page.back_to_live")
-            }}</span>
-          </router-link>
-        </template>
-        <template v-slot:right-button-mobile>
+        <IsMobile>
           <router-link
             :to="liveRoute"
-            class="btn secondary only-icon"
+            class="btn secondary outline only-icon md"
             :aria-label="$t('session.detail_page.back_to_live')">
-            <span class="icon text"></span>
+            <ph-icon name="text-align-left" size="md"></ph-icon>
           </router-link>
-        </template>
+          <template #desktop>
+            <router-link :to="liveRoute" class="btn">
+              <ph-icon name="text-align-left" size="md"></ph-icon>
+              <span class="label">{{
+                $t("session.detail_page.back_to_live")
+              }}</span>
+            </router-link>
+          </template>
+        </IsMobile>
       </SessionHeader>
     </template>
-
     <div class="flex1 medium-padding" v-if="sessionLoaded">
       <h1 class="center-text">{{ name }}</h1>
       <div class="flex wrap">
@@ -67,7 +47,7 @@
                   }}</span>
                 </button>
                 <button class="btn" @click="openModalEditSessionAlias">
-                  <span class="icon edit"></span>
+                  <ph-icon name="pencil"></ph-icon>
                   <span class="label">{{
                     $t("session.settings_page.edit_alias_button")
                   }}</span>
@@ -163,29 +143,19 @@
         <div class="flex col gap-medium session-settings-right align-center">
           <div class="flex col gap-medium">
             <!-- Delete and save -->
-            <button
-              class="btn flex1 red-border flex"
+            <Button
               v-if="isStarted && !isActive"
-              @click="stopSession"
-              :title="titleButtonDelete"
-              :disabled="isStoping">
-              <span class="icon stop"></span>
-              <span class="label flex1">{{
-                $t("session.detail_page.stop_button")
-              }}</span>
-            </button>
-            <!-- Force delete and save -->
-            <button
-              class="btn flex1 red-border flex"
+              icon="stop"
+              :label="$t('session.detail_page.stop_button')"
+              color="tertiary"
+              size="sm"></Button>
+            <Button
               v-if="isActive"
+              icon="stop"
+              :label="$t('session.detail_page.stop_force_button')"
               @click="openModalDeleteSession"
-              :title="titleButtonDelete"
-              :disabled="isStoping">
-              <span class="icon stop"></span>
-              <span class="label flex1">{{
-                $t("session.detail_page.stop_force_button")
-              }}</span>
-            </button>
+              color="tertiary"
+              size="sm"></Button>
           </div>
           <Qrcode :value="publicLink" class="session-settings-qr-code" />
         </div>
@@ -214,8 +184,8 @@
           <span class="label">Reset</span>
         </button>
 
-        <button @click="updateSession" class="btn green">
-          <span class="icon apply"></span>
+        <button @click="updateSession" class="btn primary">
+          <ph-icon name="check" size="md" class="icon" />
           <span class="label">Sauvegarder</span>
         </button>
       </div>
@@ -240,10 +210,10 @@
         :field="fieldWatermarkSettings"
         v-model="fieldWatermarkSettings.value" />
     </div>
-  </MainContent>
+  </LayoutV2>
 </template>
 <script>
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import { sessionMixin } from "@/mixins/session.js"
 
@@ -258,10 +228,10 @@ import { getEnv } from "@/tools/getEnv"
 import { apiUpdateSession } from "@/api/session.js"
 
 import SessionNotStarted from "@/components/SessionNotStarted.vue"
-import LabeledValue from "@/components/LabeledValue.vue"
-import FormInput from "@/components/FormInput.vue"
-import FormCheckbox from "@/components/FormCheckbox.vue"
-import FormRadio from "@/components/FormRadio.vue"
+import LabeledValue from "@/components/atoms/LabeledValue.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
+import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
+import FormRadio from "@/components/molecules/FormRadio.vue"
 
 import SessionChannelsTable from "@/components/SessionChannelsTable.vue"
 import AppointmentSelector from "@/components/AppointmentSelector.vue"
@@ -271,8 +241,10 @@ import SessionStatus from "@/components/SessionStatus.vue"
 import MetadataList from "@/components/MetadataList.vue"
 import SessionHeader from "@/components/SessionHeader.vue"
 import ModalEditSessionAlias from "@/components/ModalEditSessionAlias.vue"
-import Qrcode from "@/components/Qrcode.vue"
+import Qrcode from "@/components/atoms/Qrcode.vue"
 import ModalWatermarkSettings from "@/components/ModalWatermarkSettings.vue"
+import LayoutV2 from "@/layouts/v2-layout.vue"
+
 export default {
   mixins: [sessionMixin, formsMixin],
   props: {},
@@ -604,6 +576,19 @@ export default {
     ModalEditSessionAlias,
     Qrcode,
     ModalWatermarkSettings,
+    LayoutV2,
   },
 }
 </script>
+
+<style lang="scss" scoped>
+.topbar {
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--neutral-20);
+  background-color: var(--background-primary-soft);
+}
+</style>

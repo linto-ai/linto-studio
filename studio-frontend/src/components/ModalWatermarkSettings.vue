@@ -1,10 +1,11 @@
 <template>
   <ModalNew
+    value
     @on-cancel="($event) => this.$emit('on-cancel')"
     @on-confirm="applyWatermarkSettings"
     :title="$t('session.live_page.watermark_settings.title')"
     :actionBtnLabel="$t('session.live_page.watermark_settings.apply_button')"
-    small>
+    size="sm">
     <div class="modal-watermark-settings">
       <FormInput
         inputFullWidth
@@ -23,9 +24,9 @@
 </template>
 <script>
 import { bus } from "@/main.js"
-import ModalNew from "./ModalNew.vue"
+import ModalNew from "@/components/molecules/Modal.vue"
 import EMPTY_FIELD from "@/const/emptyField"
-import FormInput from "@/components/FormInput.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 
 export default {
   props: {

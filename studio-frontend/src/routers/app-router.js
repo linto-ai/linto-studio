@@ -1,40 +1,149 @@
 import Vue from "vue"
 import Router from "vue-router"
-import { getEnv } from "@/tools/getEnv.js"
 
+import { getEnv } from "@/tools/getEnv.js"
+import store from "@/store/index.js"
 import { getCookie } from "@/tools/getCookie"
 import { setCookie } from "@/tools/setCookie"
 import { apiLoginUserMagicLink } from "@/api/user"
 import { apiGetUserRightFromConversation } from "@/api/conversation"
 import PUBLIC_ROUTES from "../const/publicRoutes"
 import { apiGetQuickSession } from "@/api/session.js"
+import { logout } from "../tools/logout"
+import { customDebug } from "@/tools/customDebug.js"
 
-const defaultComponents = {
-  AppHeader: () => import("@/components/AppHeader.vue"),
-  AppNotif: () => import("@/components/AppNotif"),
-}
+const defaultComponents = {}
 
-const componentsWithoutHeader = {
-  AppNotif: () => import("@/components/AppNotif"),
-}
+const componentsWithoutHeader = {}
 
 // it's **not** a boolean do describe if the component is displayed or not
 // it tells if the route params will be passed to the components as props
 const defaultProps = {
   default: true,
   AppHeader: true,
-  AppNotif: true,
 }
 
 Vue.use(Router)
 
-let isAuthenticated = function () {
-  return getCookie("authToken") !== null
+// Helper functions for router guards
+const authGuards = {
+  isAuthenticated: () => {
+    return getCookie("authToken") !== null
+  },
+
+  async handleMagicLinkAuth(to, next) {
+    const conversationId = to?.query?.conversationId
+    const magicId = to?.params?.magicId
+
+    const login = await apiLoginUserMagicLink(magicId)
+    if (login.status === "success") {
+      setCookie("userId", login.data.user_id, 7)
+      setCookie("authToken", login.data.auth_token, 7)
+      setCookie("refreshToken", login.data.refresh_token, 14)
+      setCookie("cm_orga_scope", "")
+
+      let redirect = conversationId
+        ? { path: "/interface/conversations/" + conversationId }
+        : { name: "inbox" }
+
+      return next(redirect)
+    } else {
+      return next({ name: "magic-link-error" })
+    }
+  },
+
+  async checkUserAuth(next, to, from) {
+    const reqUser = await store.dispatch("user/fetchUser")
+    if (reqUser.status === "error") {
+      logout()
+      return next({
+        name: "login",
+        query: { next: from.query.next || to.fullPath },
+      })
+    }
+
+    return reqUser
+  },
+
+  async handleOrganizationScope(to, next) {
+    const defaultOrganizationId =
+      store.getters["organizations/getDefaultOrganizationId"]
+
+    if (!to.meta?.userPage && !to.meta?.backoffice) {
+      if (
+        !to.params.organizationId ||
+        store.getters["organizations/getOrganizationById"](
+          to.params.organizationId,
+        ) === undefined
+      ) {
+        return {
+          redirect: true,
+          nextRoute: {
+            ...to,
+            params: {
+              ...to.params,
+              organizationId: defaultOrganizationId,
+            },
+          },
+        }
+      } else {
+        await store.dispatch(
+          "organizations/setCurrentOrganizationScope",
+          to.params.organizationId,
+        )
+        return { redirect: false }
+      }
+    } else {
+      store.dispatch(
+        "organizations/setCurrentOrganizationScope",
+        defaultOrganizationId,
+      )
+      return { redirect: false }
+    }
+  },
+
+  async checkQuickSession(to) {
+    const enableSession = getEnv("VUE_APP_ENABLE_SESSION") === "true"
+
+    if (enableSession && to.name !== "quick session") {
+      const quickSession = await apiGetQuickSession()
+      if (quickSession) {
+        return {
+          redirect: true,
+          nextRoute: {
+            name: "quick session",
+            params: { organizationId: quickSession.organizationId },
+            query: { recover: "true" },
+          },
+        }
+      }
+    }
+
+    return { redirect: false }
+  },
+
+  async checkConversationAccess(to) {
+    if (to.meta?.conversationDetailPage) {
+      const conversationId = to.params.conversationId
+      const getUserRight = await apiGetUserRightFromConversation(conversationId)
+      const userRight = getUserRight?.right || 0
+
+      if (userRight > 0) {
+        return { hasAccess: true }
+      }
+
+      return { hasAccess: false }
+    }
+
+    return { hasAccess: true }
+  },
 }
 
 let router = new Router({
   mode: "history",
   routes: [
+    { path: "/", redirect: { name: "explore" } },
+    { path: "/interface", redirect: { name: "explore" } },
     // BACKOFFICE ROUTES
     {
       path: "/backoffice",
@@ -44,7 +153,14 @@ let router = new Router({
         ...defaultComponents,
       },
       defaultProps,
-      meta: { backoffice: true },
+      meta: {
+        backoffice: true,
+        breadcrumb: {
+          label: "breadcrumb.backoffice",
+          parent: null,
+          showInBreadcrumb: true,
+        },
+      },
     },
     {
       path: "/backoffice/users",
@@ -54,7 +170,14 @@ let router = new Router({
         ...defaultComponents,
       },
       defaultProps,
-      meta: { backoffice: true },
+      meta: {
+        backoffice: true,
+        breadcrumb: {
+          label: "breadcrumb.users",
+          parent: "backoffice",
+          showInBreadcrumb: true,
+        },
+      },
     },
     {
       path: "/backoffice/users/:userId",
@@ -64,7 +187,16 @@ let router = new Router({
         ...defaultComponents,
       },
       defaultProps,
-      meta: { backoffice: true },
+      meta: {
+        backoffice: true,
+        breadcrumb: {
+          label: "",
+          parent: "backoffice-userList",
+          dynamic: true,
+          entity: "user",
+          showInBreadcrumb: true,
+        },
+      },
     },
     {
       path: "/backoffice/organizations",
@@ -74,7 +206,14 @@ let router = new Router({
         ...defaultComponents,
       },
       defaultProps,
-      meta: { backoffice: true },
+      meta: {
+        backoffice: true,
+        breadcrumb: {
+          label: "breadcrumb.organizations",
+          parent: "backoffice",
+          showInBreadcrumb: true,
+        },
+      },
     },
     {
       path: "/backoffice/organizations/:organizationId",
@@ -84,7 +223,16 @@ let router = new Router({
         ...defaultComponents,
       },
       defaultProps,
-      meta: { backoffice: true },
+      meta: {
+        backoffice: true,
+        breadcrumb: {
+          label: "",
+          parent: "backoffice-organizationList",
+          dynamic: true,
+          entity: "organization",
+          showInBreadcrumb: true,
+        },
+      },
     },
     {
       path: "/backoffice/transcriberProfiles",
@@ -95,7 +243,14 @@ let router = new Router({
         ...defaultComponents,
       },
       defaultProps,
-      meta: { backoffice: true },
+      meta: {
+        backoffice: true,
+        breadcrumb: {
+          label: "breadcrumb.transcriberProfiles",
+          parent: "backoffice",
+          showInBreadcrumb: true,
+        },
+      },
     },
     {
       path: "/backoffice/transcriberProfiles/:transcriberProfileId",
@@ -106,7 +261,16 @@ let router = new Router({
         ...defaultComponents,
       },
       defaultProps,
-      meta: { backoffice: true },
+      meta: {
+        backoffice: true,
+        breadcrumb: {
+          label: "",
+          parent: "backoffice-transcriberProfilesList",
+          dynamic: true,
+          entity: "transcriberProfile",
+          showInBreadcrumb: true,
+        },
+      },
     },
     // PUBLIC ROUTES
     {
@@ -117,7 +281,12 @@ let router = new Router({
         ...defaultComponents,
       },
       defaultProps,
-      meta: { responsive: true },
+      meta: {
+        responsive: true,
+        breadcrumb: {
+          showInBreadcrumb: false,
+        },
+      },
     },
     {
       path: "/login",
@@ -127,7 +296,13 @@ let router = new Router({
         ...componentsWithoutHeader,
       },
       defaultProps,
-      meta: { public: true, authRoute: true },
+      meta: {
+        public: true,
+        authRoute: true,
+        breadcrumb: {
+          showInBreadcrumb: false,
+        },
+      },
     },
     {
       path: "/login/oidc",
@@ -137,7 +312,13 @@ let router = new Router({
         ...componentsWithoutHeader,
       },
       defaultProps,
-      meta: { public: true, authRoute: true },
+      meta: {
+        public: true,
+        authRoute: true,
+        breadcrumb: {
+          showInBreadcrumb: false,
+        },
+      },
     },
     {
       path: "/create-account",
@@ -147,7 +328,13 @@ let router = new Router({
         ...componentsWithoutHeader,
       },
       defaultProps,
-      meta: { public: true, authRoute: true },
+      meta: {
+        public: true,
+        authRoute: true,
+        breadcrumb: {
+          showInBreadcrumb: false,
+        },
+      },
     },
     {
       path: "/reset-password",
@@ -157,13 +344,25 @@ let router = new Router({
         ...componentsWithoutHeader,
       },
       defaultProps,
-      meta: { public: true, authRoute: true },
+      meta: {
+        public: true,
+        authRoute: true,
+        breadcrumb: {
+          showInBreadcrumb: false,
+        },
+      },
     },
     {
       path: "/magiclink-auth/:magicId",
       name: "magic-link-login",
       defaultProps,
-      meta: { public: true, authRoute: true },
+      meta: {
+        public: true,
+        authRoute: true,
+        breadcrumb: {
+          showInBreadcrumb: false,
+        },
+      },
     },
     {
       path: "/magiclink-auth-invalid",
@@ -173,34 +372,121 @@ let router = new Router({
         ...componentsWithoutHeader,
       },
       defaultProps,
-      meta: { public: true, authRoute: true },
+      meta: {
+        public: true,
+        authRoute: true,
+        breadcrumb: {
+          showInBreadcrumb: false,
+        },
+      },
     },
 
     // PRIVATE ROUTES FOR MAIN APP
     {
-      path: "/interface/inbox",
+      path: "/interface/:organizationId?/inbox",
       name: "inbox",
-      redirect: { name: "explore" },
+      redirect: (to) => {
+        return { name: "explore", params: to.params }
+      },
     },
     {
-      path: "/interface/explore",
+      path: "/interface/:organizationId?/explore",
       name: "explore",
       components: {
-        default: () => import("../views/Explore.vue"),
+        default: () => import("../views/NextExplore.vue"),
+        ...defaultComponents,
+        favorites: false,
+      },
+      props: {
+        ...defaultProps,
+      },
+      meta: {
+        mainListingPage: true,
+        breadcrumb: {
+          label: "breadcrumb.explore",
+          parent: null,
+          showInBreadcrumb: true,
+          isRoot: true,
+        },
+      },
+    },
+    {
+      path: "/interface/favorites",
+      name: "explore-favorites",
+      components: {
+        default: () => import("../views/NextExplore.vue"),
+        ...defaultComponents,
+      },
+      props: {
+        ...defaultProps,
+        default: { favorites: true },
+      },
+      meta: {
+        mainListingPage: true,
+        breadcrumb: {
+          label: "breadcrumb.favorites",
+          parent: null,
+          showInBreadcrumb: true,
+          isRoot: true,
+        },
+      },
+    },
+    {
+      path: "/interface/shared",
+      name: "explore-shared",
+      components: {
+        default: () => import("../views/NextExplore.vue"),
+        ...defaultComponents,
+      },
+      props: {
+        ...defaultProps,
+        default: { shared: true },
+      },
+      meta: {
+        mainListingPage: true,
+        breadcrumb: {
+          label: "breadcrumb.shared",
+          parent: null,
+          showInBreadcrumb: true,
+          isRoot: true,
+        },
+      },
+    },
+    {
+      path: "/interface/:organizationId?/old-explore",
+      name: "explore-old",
+      components: {
+        default: () => import("../views/OldExplore.vue"),
         ...defaultComponents,
       },
       props: defaultProps,
-      meta: { mainListingPage: true },
+      meta: {
+        mainListingPage: true,
+        breadcrumb: {
+          label: "breadcrumb.exploreOld",
+          parent: null,
+          showInBreadcrumb: true,
+          isRoot: true,
+        },
+      },
     },
     {
-      path: "/interface/sessionsList",
+      path: "/interface/:organizationId?/sessionsList",
       name: "sessionsList",
       components: {
         default: () => import("../views/SessionsList.vue"),
         ...defaultComponents,
       },
       props: defaultProps,
-      meta: { sessionListingPage: true, sessionPage: true },
+      meta: {
+        sessionListingPage: true,
+        sessionPage: true,
+        breadcrumb: {
+          label: "breadcrumb.sessions",
+          parent: "explore",
+          showInBreadcrumb: true,
+        },
+      },
     },
     {
       path: "/interface/favorites",
@@ -210,116 +496,204 @@ let router = new Router({
         ...defaultComponents,
       },
       props: defaultProps,
-      meta: { userPage: true },
-    },
-    {
-      path: "/interface/shared",
-      name: "shared with me",
-      components: {
-        default: () => import("../views/SharedWith.vue"),
-        ...defaultComponents,
+      meta: {
+        userPage: true,
+        breadcrumb: {
+          label: "breadcrumb.favorites",
+          parent: null,
+          showInBreadcrumb: true,
+          isRoot: true,
+        },
       },
-      props: defaultProps,
-      meta: { userPage: true },
     },
+    // {
+    //   path: "/interface/shared",
+    //   name: "shared with me",
+    //   components: {
+    //     default: () => import("../views/SharedWith.vue"),
+    //     ...defaultComponents,
+    //   },
+    //   props: defaultProps,
+    //   meta: { userPage: true },
+    // },
     {
-      path: "/interface/conversations/create",
+      path: "/interface/:organizationId?/conversations/create",
       name: "conversations create",
       components: {
         default: () => import("../views/ConversationsCreate.vue"),
         ...defaultComponents,
       },
       props: defaultProps,
+      meta: {
+        breadcrumb: {
+          label: "breadcrumb.createConversation",
+          parent: "explore",
+          showInBreadcrumb: true,
+        },
+      },
     },
     {
-      path: "/interface/conversations/:conversationId",
+      path: "/interface/:organizationId?/conversations/:conversationId",
       name: "conversations overview",
       components: {
         default: () => import("../views/ConversationsOverview.vue"),
         ...componentsWithoutHeader,
       },
       props: defaultProps,
-      meta: { conversationDetailPage: true },
+      meta: {
+        conversationDetailPage: true,
+        breadcrumb: {
+          label: "",
+          parent: "explore",
+          dynamic: true,
+          entity: "conversation",
+          showInBreadcrumb: true,
+        },
+      },
     },
     {
-      path: "/interface/conversations/:conversationId/transcription",
+      path: "/interface/:organizationId?/conversations/:conversationId/transcription",
       name: "conversations transcription",
       components: {
         default: () => import("../views/ConversationsTranscription.vue"),
         ...componentsWithoutHeader,
       },
       props: defaultProps,
-      meta: { conversationDetailPage: true },
+      meta: {
+        conversationDetailPage: true,
+        breadcrumb: {
+          label: "breadcrumb.transcription",
+          parent: "conversations overview",
+          showInBreadcrumb: true,
+        },
+      },
     },
     {
-      path: "/interface/conversations/:conversationId/subtitles",
+      path: "/interface/:organizationId?/conversations/:conversationId/subtitles",
       name: "conversations subtitles",
       components: {
         default: () => import("../views/ConversationsSubtitlesMenu.vue"),
         ...defaultComponents,
       },
       props: defaultProps,
-      meta: { conversationDetailPage: true },
+      meta: {
+        conversationDetailPage: true,
+        breadcrumb: {
+          label: "breadcrumb.subtitles",
+          parent: "conversations overview",
+          showInBreadcrumb: true,
+        },
+      },
     },
     {
-      path: "/interface/conversations/:conversationId/subtitles/:subtitleId",
+      path: "/interface/:organizationId?/conversations/:conversationId/subtitles/:subtitleId",
       name: "conversations subtitle",
       components: {
         default: () => import("../views/ConversationsSubtitle.vue"),
         ...componentsWithoutHeader,
       },
       props: defaultProps,
-      meta: { conversationDetailPage: true },
+      meta: {
+        conversationDetailPage: true,
+        breadcrumb: {
+          label: "",
+          parent: "conversations overview",
+          dynamic: true,
+          entity: "subtitle",
+          showInBreadcrumb: true,
+        },
+      },
     },
     {
-      path: "/interface/conversations/:conversationId/publish",
+      path: "/interface/:organizationId?/conversations/:conversationId/publish",
       name: "conversations publish",
       components: {
         default: () => import("../views/ConversationsPublish.vue"),
         ...componentsWithoutHeader,
       },
       props: defaultProps,
-      meta: { conversationDetailPage: true },
+      meta: {
+        conversationDetailPage: true,
+        breadcrumb: {
+          label: "breadcrumb.publish",
+          parent: "conversations overview",
+          showInBreadcrumb: true,
+        },
+      },
     },
     {
-      path: "/interface/sessions/create",
+      path: "/interface/:organizationId?/sessions/create",
       name: "sessions create",
       components: {
         default: () => import("../views/SessionsCreate.vue"),
         ...defaultComponents,
       },
       props: defaultProps,
-      meta: { sessionPage: true },
+      meta: {
+        sessionPage: true,
+        breadcrumb: {
+          label: "breadcrumb.createSession",
+          parent: "sessionsList",
+          showInBreadcrumb: true,
+        },
+      },
     },
     {
-      path: "/interface/:organizationId/sessions/:sessionId",
+      path: "/interface/:organizationId?/sessions/:sessionId",
       name: "sessions live",
       components: {
         default: () => import("../views/SessionLive.vue"),
         ...defaultComponents,
       },
       props: defaultProps,
-      meta: { public: true, sessionPage: true, responsive: true },
+      meta: {
+        public: true,
+        sessionPage: true,
+        responsive: true,
+        breadcrumb: {
+          label: "",
+          parent: "sessionsList",
+          dynamic: true,
+          entity: "session",
+          showInBreadcrumb: true,
+        },
+      },
     },
     {
-      path: "/interface/:organizationId/sessions/:sessionId/settings",
+      path: "/interface/:organizationId?/sessions/:sessionId/settings",
       name: "sessions settings",
       components: {
         default: () => import("../views/SessionSettings.vue"),
         ...defaultComponents,
       },
       props: defaultProps,
-      meta: { public: false, sessionPage: true },
+      meta: {
+        public: false,
+        sessionPage: true,
+        breadcrumb: {
+          label: "breadcrumb.sessionSettings",
+          parent: "sessions live",
+          showInBreadcrumb: true,
+        },
+      },
     },
     {
-      path: "/interface/:organizationId/quick-session",
+      path: "/interface/:organizationId?/quick-session",
       name: "quick session",
       components: {
         default: () => import("../views/QuickSession.vue"),
         ...defaultComponents,
       },
       props: defaultProps,
-      meta: { public: true, sessionPage: true },
+      meta: {
+        public: true,
+        sessionPage: true,
+        breadcrumb: {
+          label: "breadcrumb.quickSession",
+          parent: "explore",
+          showInBreadcrumb: true,
+        },
+      },
     },
     {
       path: "/interface/organizations/create",
@@ -329,6 +703,14 @@ let router = new Router({
         ...defaultComponents,
       },
       props: defaultProps,
+      meta: {
+        userPage: true,
+        breadcrumb: {
+          label: "breadcrumb.createOrganization",
+          parent: "explore",
+          showInBreadcrumb: true,
+        },
+      },
     },
     {
       path: "/interface/organizations/:organizationId",
@@ -338,6 +720,15 @@ let router = new Router({
         ...defaultComponents,
       },
       props: defaultProps,
+      meta: {
+        breadcrumb: {
+          label: "",
+          parent: "explore",
+          dynamic: true,
+          entity: "organization",
+          showInBreadcrumb: true,
+        },
+      },
     },
     {
       path: "/interface/user/settings",
@@ -347,17 +738,24 @@ let router = new Router({
         ...defaultComponents,
       },
       props: defaultProps,
-      meta: { userPage: true },
-    },
-    {
-      path: "/interface/tags/settings",
-      name: "tags settings",
-      components: {
-        default: () => import("../views/ManageTags.vue"),
-        ...defaultComponents,
+      meta: {
+        userPage: true,
+        breadcrumb: {
+          label: "breadcrumb.userSettings",
+          parent: "explore",
+          showInBreadcrumb: true,
+        },
       },
-      props: defaultProps,
     },
+    // {
+    //   path: "/interface/:organizationId?/tags/settings",
+    //   name: "tags settings",
+    //   components: {
+    //     default: () => import("../views/ManageTags.vue"),
+    //     ...defaultComponents,
+    //   },
+    //   props: defaultProps,
+    // },
     {
       path: "*",
       name: "not_found_redirect",
@@ -365,111 +763,132 @@ let router = new Router({
       props: {
         default: false,
         AppHeader: false,
-        AppNotif: false,
+      },
+      meta: {
+        breadcrumb: {
+          showInBreadcrumb: false,
+        },
       },
     },
   ],
 })
 
 router.beforeEach(async (to, from, next) => {
+  const randomId = Math.random().toString(36).substring(7)
+  const routerDebug = customDebug("vue:debug:router:" + randomId)
   const enableSession = getEnv("VUE_APP_ENABLE_SESSION") === "true"
 
+  document.nextRoute = to
+  document.prevRoute = from
+
   try {
+    routerDebug("beforeEach from", from.fullPath, "to", to.fullPath)
+    store.dispatch("inbox/clearSelectedMedias")
+
+    // Redirect to 404 if sessions are disabled but trying to access session page
     if (!enableSession && to.meta?.sessionPage) {
-      next({ name: "not_found" })
+      return next({ name: "not_found" })
     }
-    // Redirections 404
+
+    // Redirect to 404
     if (to.name === "not_found_redirect") {
-      next({ name: "not_found" })
+      return next({ name: "not_found" })
     }
-    /* MAGIC LINK AUTH */
+
+    // Handle magic link authentication
     if (to.name === "magic-link-login") {
-      const conversationId = to?.query?.conversationId
-      const magicId = to?.params?.magicId
+      return await authGuards.handleMagicLinkAuth(to, next)
+    }
 
-      const login = await apiLoginUserMagicLink(magicId)
-      if (login.status === "success") {
-        setCookie("userId", login.data.user_id, 7)
-        setCookie("authToken", login.data.auth_token, 7)
-        setCookie("refreshToken", login.data.refresh_token, 14)
-        setCookie("cm_orga_scope", "")
-        let redirect = {}
-        if (conversationId) {
-          redirect = {
-            path: "/interface/conversations/" + conversationId,
-          }
-        } else {
-          redirect = { name: "inbox" }
-        }
-        next(redirect)
+    // Handle non-authenticated users
+    if (!authGuards.isAuthenticated()) {
+      if (to.meta?.public) {
+        return next()
       } else {
-        next({ name: "magic-link-error" })
+        return next({
+          name: "login",
+          query: { next: from.query.next || to.fullPath },
+        })
       }
     }
-    // CHECK AUTH + REDIRECTIONS
-    else {
-      if (!isAuthenticated()) {
-        if (to.meta?.public) {
-          next()
-        } else {
-          next({ name: "login", query: { next: to.fullPath } })
-        }
-        return
-      }
 
-      // If user is authenticated
-      if (isAuthenticated()) {
-        if (from.query.next && from.query.next !== to.fullPath) {
-          next(from.query.next)
-        }
+    // User is authenticated
 
-        // if quick session is running, redirect to session live
-        if (enableSession && to.name !== "quick session") {
-          const quickSession = await apiGetQuickSession()
-          if (quickSession) {
-            next({
-              name: "quick session",
-              params: { organizationId: quickSession.organizationId },
-              query: { recover: "true" },
-            })
-          }
-        }
-        // If user try to access an auth route > redirect to conversations
-        if (
-          to.fullPath === "/" ||
-          to.fullPath === "/interface" ||
-          to.meta?.authRoute
-        ) {
-          next({ name: "explore" })
-          return
-        }
+    // Fetch user data
+    routerDebug("Fetching user data")
+    await authGuards.checkUserAuth(next, to, from)
+    routerDebug("User fetched")
 
-        // check if user is allowed to access conversation detail pages
-        if (to.meta?.conversationDetailPage) {
-          const conversationId = to.params.conversationId
-          let userRight = 0
+    // Fetch organizations
+    await store.dispatch("organizations/fetchOrganizations")
+    routerDebug("Organizations fetched")
 
-          let getUserRight =
-            await apiGetUserRightFromConversation(conversationId)
-
-          if (getUserRight) {
-            userRight = getUserRight?.right
-          }
-
-          if (userRight > 0) {
-            next()
-          } else {
-            next({ name: "not_found" })
-          }
-        } else if (to.meta?.backoffice) {
-          next()
-        } else {
-          next()
-        }
-      }
+    // Check if user has organizations
+    if (store.getters["organizations/getOrganizationLength"] === 0) {
+      routerDebug("No organization")
+      logout()
+      return next({
+        name: "login",
+        query: { next: from.query.next || to.fullPath },
+      })
     }
+
+    // Handle direct "next" query parameter
+    if (from.query.next && from.query.next !== to.fullPath) {
+      routerDebug("Redirect to next", from.query.next)
+      return next(from.query.next)
+    }
+
+    // Redirect auth routes to main app
+    if (
+      to.fullPath === "/" ||
+      to.fullPath === "/interface" ||
+      to.meta?.authRoute
+    ) {
+      routerDebug("Redirect to explore from auth route or root")
+      return next({ name: "explore" })
+    }
+
+    // Handle organization scope
+    const orgScopeResult = await authGuards.handleOrganizationScope(to, next)
+    if (orgScopeResult.redirect) {
+      routerDebug("Redirect to default organization")
+      return next(orgScopeResult.nextRoute)
+    }
+
+    // Fetch tags
+    await store.dispatch("tags/fetchTags")
+    routerDebug("Tags fetched")
+
+    if (to.name === "explore-favorites") {
+      await store.dispatch("tags/fetchFavoritesTags")
+      routerDebug("Favorites tags fetched")
+    }
+    if (to.name === "explore-shared") {
+      await store.dispatch("tags/fetchSharedTags")
+      routerDebug("Shared tags fetched")
+    }
+
+    // Check for quick session
+    const quickSessionResult = await authGuards.checkQuickSession(to)
+    if (quickSessionResult.redirect) {
+      routerDebug("Quick session found > redirect to quick session")
+      return next(quickSessionResult.nextRoute)
+    }
+
+    // Check conversation access permissions
+    const conversationAccess = await authGuards.checkConversationAccess(to)
+    if (!conversationAccess.hasAccess) {
+      routerDebug("User has no right > redirect to not found")
+      return next({ name: "not_found" })
+    }
+
+    // All checks passed
+    routerDebug("All checks passed > next")
+    return next()
   } catch (error) {
     console.error(error)
+    return next({ name: "not_found" })
   }
 })
 export default router

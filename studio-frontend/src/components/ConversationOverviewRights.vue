@@ -43,7 +43,7 @@ import { userName } from "@/tools/userName"
 import RIGHTS_LIST from "@/const/rigthsList"
 import EMPTY_FIELD from "@/const/emptyField"
 import { apiUpdateConversation } from "@/api/conversation"
-
+import { mapGetters } from "vuex"
 import ConversationShareMultiple from "@/components/ConversationShareMultiple.vue"
 
 export default {
@@ -65,8 +65,11 @@ export default {
     }
   },
   computed: {
+    ...mapGetters("organizations", {
+      currentOrganizationUsers: "getCurrentOrganizationUsers",
+    }),
     convOwner() {
-      const userList = this.$store.state?.currentOrganization?.users ?? []
+      const userList = this.currentOrganizationUsers
       const owner = userList.find((u) => u._id == this.conversation.owner)
       if (owner) {
         return {

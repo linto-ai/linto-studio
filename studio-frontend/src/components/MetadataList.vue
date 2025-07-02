@@ -14,7 +14,7 @@
 </template>
 <script>
 import { bus } from "@/main.js"
-import Tag from "./Tag.vue"
+import Tag from "@/components/molecules/Tag.vue"
 export default {
   props: {
     field: {

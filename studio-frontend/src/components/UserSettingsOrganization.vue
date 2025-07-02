@@ -1,6 +1,6 @@
 <template>
   <section>
-    <h2>{{ $t("usersettings.organizations_section.title") }}</h2>
+    <h2>{{ $t("user_settings.organizations_section.title") }}</h2>
     <OrganizationTable
       v-if="!error"
       @list_sort_by="sortBy"

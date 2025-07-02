@@ -1,26 +1,32 @@
 <template>
   <MainContentConversation
     :conversation="conversation"
+    :breadcrumbItems="breadcrumbItems"
     :status="status"
     :dataLoaded="conversationLoaded"
     :error="error"
     organizationPage
     sidebar>
-    <template v-slot:breadcrumb-actions>
-      <GenerateSubtitleButton :canEdit="canEdit"></GenerateSubtitleButton>
-      <h1
-        class="flex1 center-text text-cut"
-        style="padding-left: 1rem; padding-right: 1rem">
-        {{ conversation.name }}
-      </h1>
-      <button
-        class="btn red-border"
-        v-if="canEdit"
-        @click="() => (deleteModal = true)">
-        <span class="icon trash"></span
-        ><span class="label">Delete versions</span>
-      </button>
-    </template>
+    <ActionBar>
+      <div class="flex flex1 align-center gap-small">
+        <GenerateSubtitleButton :canEdit="canEdit"></GenerateSubtitleButton>
+        <Button
+          size="sm"
+          label="Delete versions"
+          icon="trash"
+          color="tertiary"
+          variant="outline"
+          v-if="canEdit && selectedVersions.length > 0"
+          @click="() => (deleteModal = true)"></Button>
+        <!-- <button
+          class="btn tertiary outline"
+          v-if="canEdit"
+          @click="() => (deleteModal = true)">
+          <span class="icon trash"></span
+          ><span class="label">Delete versions</span>
+        </button> -->
+      </div>
+    </ActionBar>
     <SubtitleMenu
       :conversation="conversation"
       :status="status"
@@ -39,8 +45,8 @@ import { subtitleMixin } from "@/mixins/subtitle.js"
 import MainContentConversation from "../components/MainContentConversation.vue"
 import SubtitleMenu from "@/components/SubtitleMenu.vue"
 import GenerateSubtitleButton from "@/components/GenerateSubtitleButton.vue"
-import OrganizationSidebar from "../components/OrganizationSidebar.vue"
 import ModalDeleteSubtitle from "../components/ModalDeleteSubtitle.vue"
+import ActionBar from "@/layouts/ActionBar.vue"
 
 export default {
   mixins: [subtitleMixin],
@@ -67,13 +73,27 @@ export default {
         this.conversation.subtitleVersions.length != 0
       )
     },
+    breadcrumbItems() {
+      return [
+        {
+          label: this.conversation?.name ?? "",
+          to: {
+            name: "conversations overview",
+            params: { conversationId: this.conversationId },
+          },
+        },
+        {
+          label: this.$t("breadcrumb.subtitles"),
+        },
+      ]
+    },
   },
   components: {
     MainContentConversation,
     SubtitleMenu,
     GenerateSubtitleButton,
-    OrganizationSidebar,
     ModalDeleteSubtitle,
+    ActionBar,
   },
 }
 </script>

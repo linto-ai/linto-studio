@@ -1,45 +1,55 @@
 <template>
-  <MainContent noBreadcrumb :organizationPage="false" fullwidthContent sidebar>
+  <LayoutV2>
     <template v-slot:breadcrumb-actions>
       <SessionHeader
         :sessionListRoute="sessionListRoute"
         :sessionLoaded="sessionLoaded"
         :name="name"
         :session="session">
-        <template v-slot:right-button-desktop>
-          <router-link
-            :to="settingsRoute"
-            class="btn"
-            v-if="isAtLeastMeetingManager">
-            <span class="icon settings"></span>
-            <span class="label">{{
-              $t("session.detail_page.settings_button")
-            }}</span>
-          </router-link>
-        </template>
-        <template v-slot:right-button-mobile>
+        <IsMobile>
           <div class="flex gap-small">
             <router-link
               :to="settingsRoute"
-              class="btn secondary only-icon"
+              class="btn secondary outline only-icon"
               v-if="isAtLeastMeetingManager"
               :aria-label="$t('session.detail_page.settings_button')">
-              <span class="icon settings"></span>
+              <ph-icon name="gear"></ph-icon>
             </router-link>
             <button
-              class="btn secondary only-icon"
+              class="btn secondary outline only-icon"
               @click="showMobileSubtitles">
-              <span class="icon subtitle"></span>
+              <ph-icon name="subtitles"></ph-icon>
             </button>
           </div>
+
+          <template #desktop>
+            <router-link
+              :to="settingsRoute"
+              class="btn"
+              v-if="isAtLeastMeetingManager">
+              <span class="icon settings"></span>
+              <span class="label">{{
+                $t("session.detail_page.settings_button")
+              }}</span>
+            </router-link>
+          </template>
+        </IsMobile>
+        <!-- <template v-slot:right-button-desktop>
+          
         </template>
+        <template v-slot:right-button-mobile>
+          <div class="flex gap-small">
+            
+          </div>
+        </template> -->
       </SessionHeader>
     </template>
 
     <template v-slot:sidebar>
-      <h1 v-if="sessionLoaded" class="center-text session-live__title">
+      <div class="sidebar-divider"></div>
+      <!-- <h1 v-if="sessionLoaded" class="center-text session-live__title">
         {{ name }}
-      </h1>
+      </h1> -->
       <SessionLiveMicrophoneStatus
         v-if="useMicrophone && sessionLoaded"
         @toggle-microphone="toggleMicrophone"
@@ -108,9 +118,9 @@
         v-bind:selectedTranslation.sync="selectedTranslation" />
 
       <ModalNew
-        noAction
+        :withActions="false"
         title="Setup microphone"
-        v-if="showMicrophoneSetup"
+        v-model="showMicrophoneSetup"
         @on-cancel="cancelRecordSettings">
         <SessionSetupMicrophone
           :applyLabel="$t('session.microphone_apply_button')"
@@ -118,7 +128,7 @@
           @trash-session="cancelRecordSettings"></SessionSetupMicrophone>
       </ModalNew>
     </div>
-  </MainContent>
+  </LayoutV2>
 </template>
 <script>
 import { sessionMixin } from "@/mixins/session.js"
@@ -133,15 +143,15 @@ import SessionNotStarted from "@/components/SessionNotStarted.vue"
 import SessionChannelsSelector from "@/components/SessionChannelsSelector.vue"
 import SessionTranslationSelection from "@/components/SessionTranslationSelection.vue"
 import SessionLiveContent from "@/components/SessionLiveContent.vue"
-import Loading from "@/components/Loading.vue"
+import Loading from "@/components/atoms/Loading.vue"
 import SessionEnded from "@/components/SessionEnded.vue"
 import SessionStatus from "@/components/SessionStatus.vue"
 import SessionLiveToolbar from "@/components/SessionLiveToolbar.vue"
-import ModalNew from "@/components/ModalNew.vue"
+import ModalNew from "@/components/molecules/Modal.vue"
 import SessionSetupMicrophone from "@/components/SessionSetupMicrophone.vue"
 import SessionLiveMicrophoneStatus from "@/components/SessionLiveMicrophoneStatus.vue"
 import SessionHeader from "@/components/SessionHeader.vue"
-
+import LayoutV2 from "@/layouts/v2-layout.vue"
 import SessionDropdownChannelSelector from "@/components-mobile/SessionDropdownChannelSelector.vue"
 export default {
   mixins: [
@@ -253,7 +263,7 @@ export default {
     },
   },
   components: {
-    MainContent,
+    LayoutV2,
     SessionNotStarted,
     SessionChannelsSelector,
     SessionTranslationSelection,

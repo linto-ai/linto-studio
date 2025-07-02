@@ -12,12 +12,12 @@
         :field="orgaName"
         inputId="organisation-name"
         required />
-      <button type="submit" class="btn green" v-if="state !== 'sending'">
+      <button type="submit" class="btn primary" v-if="state !== 'sending'">
         <span class="label"> {{ $t("no_orga.can_create.create") }} </span>
-        <span class="icon apply"></span>
+        <ph-icon name="check" size="md" class="icon" />
       </button>
 
-      <button type="submit" class="btn green" disabled v-else>
+      <button type="submit" class="btn primary" disabled v-else>
         <span class="label"> {{ $t("no_orga.can_create.creating") }} </span>
         <span class="icon loading"></span>
       </button>
@@ -32,14 +32,14 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import EMPTY_FIELD from "@/const/emptyField"
 import { testFieldEmpty } from "@/tools/fields/testEmpty.js"
 
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 import { formsMixin } from "@/mixins/forms.js"
 
-import FormInput from "@/components/FormInput.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 import { apiCreateOrganisation } from "@/api/organisation"
 
 export default {

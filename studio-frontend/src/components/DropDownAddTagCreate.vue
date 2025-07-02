@@ -15,7 +15,7 @@
           :color="currentTagcategoryColor" />
       </label>
       <button @click="done" :disabled="selectedCategory == null" class="green">
-        <span class="icon apply"></span>
+        <ph-icon name="check" size="md" class="icon" />
         <span class="label">{{ $t("tags.done_create_tag") }}</span>
       </button>
     </div>
@@ -42,9 +42,9 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import TagCategorySearch from "./TagCategorySearch.vue"
-import Tag from "./Tag.vue"
+import Tag from "@/components/molecules/Tag.vue"
 export default {
   props: {
     tagValue: { type: String, required: true },

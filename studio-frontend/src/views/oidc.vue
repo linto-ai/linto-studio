@@ -2,7 +2,7 @@
   <Loading></Loading>
 </template>
 <script>
-import Loading from "@/components/Loading.vue"
+import Loading from "@/components/atoms/Loading.vue"
 import { getOidcToken } from "@/api/user.js"
 import { setCookie } from "@/tools/setCookie.js"
 

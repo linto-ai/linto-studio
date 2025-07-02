@@ -8,7 +8,7 @@
   </section>
 </template>
 <script>
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import StatCard from "./StatCard.vue"
 
 import { apiCountConversation } from "@/api/conversation.js"

@@ -15,10 +15,10 @@
 
     <button
       type="submit"
-      class="btn green"
+      class="btn primary"
       @click="updateOrganization"
       v-if="isAdmin || isSystemAdministrator">
-      <span class="icon apply"></span>
+      <ph-icon name="check" size="md" class="icon" />
       <span class="label">{{
         $t("organisation.organization_permissions.update_button")
       }}</span>
@@ -37,8 +37,8 @@ import EMPTY_FIELD from "@/const/emptyField"
 
 import { apiAdminUpdateOrganisation } from "@/api/organisation.js"
 
-import FormRadio from "@/components/FormRadio.vue"
-import FormCheckbox from "@/components/FormCheckbox.vue"
+import FormRadio from "@/components/molecules/FormRadio.vue"
+import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 
 export default {
   mixins: [organizationPermissionsMixin, orgaRoleMixin, platformRoleMixin],

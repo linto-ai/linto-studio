@@ -21,9 +21,9 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import ConversationListSearch from "./ConversationListSearch.vue"
-import CustomSelect from "./CustomSelect.vue"
+import CustomSelect from "@/components/molecules/CustomSelect.vue"
 export default {
   props: {
     value: { type: String, required: true },

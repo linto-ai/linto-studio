@@ -1,5 +1,6 @@
 <template>
   <ModalNew
+    value
     @on-cancel="($event) => this.$emit('on-cancel')"
     @on-confirm="deleteTemplate"
     :title="
@@ -8,18 +9,18 @@
       })
     "
     :actionBtnLabel="$t('session.create_page.delete_template_modal.action')"
-    small>
+    size="sm">
     <div class="form-field flex col">
       {{ $t("session.create_page.delete_template_modal.description") }}
     </div>
   </ModalNew>
 </template>
 <script>
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import { formsMixin } from "@/mixins/forms.js"
 import { apiDeleteSessionTemplate } from "@/api/session.js"
-import ModalNew from "./ModalNew.vue"
+import ModalNew from "@/components/molecules/Modal.vue"
 export default {
   mixins: [formsMixin],
   props: {

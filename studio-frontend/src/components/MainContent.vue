@@ -1,51 +1,16 @@
 <template>
-  <div class="flex flex1">
-    <OrganizationSidebar v-if="sidebar" :organizationPage="organizationPage">
-      <slot name="sidebar"></slot>
-    </OrganizationSidebar>
-    <BurgerMenu
-      @close="toggleBurger"
-      v-click-outside="toggleBurger"
-      v-if="showBurger" />
-    <main class="flex col scrollable" :class="{ box: box, flex1: flex }">
-      <div
-        class="flex row align-center main__breadcrumb-bar"
-        v-if="!fullscreen">
-        <button
-          v-if="isAuthenticated"
-          class="transparent only-icon mobile burger-button"
-          @click="toggleBurger">
-          <span class="icon burger"></span>
-        </button>
-        <div
-          class="flex row align-center flex1 reset-overflows"
-          v-if="!noBreadcrumb">
-          <Breadcrumb />
-        </div>
-        <slot name="breadcrumb-actions"></slot>
-      </div>
-      <div
-        :class="[
-          'flex',
-          'col',
-          'flex1',
-          'main__content',
-          customClass ? customClass : '',
-        ]"
-        :fullwidth="fullwidthContent">
-        <slot></slot>
-      </div>
-    </main>
-  </div>
+  <V2Layout>
+    <slot></slot>
+  </V2Layout>
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import isAuthenticated from "@/tools/isAuthenticated.js"
 
 import BurgerMenu from "@/components-mobile/BurgerMenu.vue"
-import OrganizationSidebar from "@/components/OrganizationSidebar.vue"
-import Breadcrumb from "@/components/Breadcrumb.vue"
+import HeaderBar from "@/components/HeaderBar.vue"
+import V2Layout from "@/layouts/v2-layout.vue"
 
 export default {
   props: {
@@ -84,7 +49,7 @@ export default {
   },
   data() {
     return {
-      showBurger: false,
+      showBurgerMenu: true,
     }
   },
   computed: {
@@ -94,11 +59,26 @@ export default {
   },
   mounted() {},
   methods: {
+    clickOutsideBurgerMenu() {
+      if (
+        this.showBurgerMenu &&
+        window.matchMedia("(max-width: 1100px)").matches
+      ) {
+        this.toggleBurger()
+      }
+    },
     toggleBurger() {
-      this.showBurger = !this.showBurger
-      bus.$emit("toggle-burger", this.showBurger)
+      this.showBurgerMenu = !this.showBurgerMenu
+      bus.$emit("toggle-burger", this.showBurgerMenu)
     },
   },
-  components: { Fragment, Breadcrumb, OrganizationSidebar, BurgerMenu },
+  components: {
+    Fragment,
+    BurgerMenu,
+    HeaderBar,
+    V2Layout,
+  },
 }
 </script>
+
+<style lang="scss"></style>

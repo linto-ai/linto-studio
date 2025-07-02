@@ -1,6 +1,7 @@
 <template>
   <MainContentConversation
     :conversation="conversation"
+    :breadcrumbItems="breadcrumbItems"
     :status="status"
     :dataLoaded="dataLoaded"
     :error="error"
@@ -78,24 +79,14 @@
     </template>
 
     <template v-slot:breadcrumb-actions>
-      <router-link :to="conversationListRoute" class="btn secondary">
-        <span class="icon close"></span>
-        <span class="label">{{ $t("conversation.close_editor") }}</span>
-      </router-link>
-
-      <h1
-        class="flex1 center-text text-cut"
-        style="padding-left: 1rem; padding-right: 1rem">
-        {{ name }}
-      </h1>
-
       <router-link
         :to="{
           name: 'conversations publish',
           params: { conversationId: conversation._id },
         }"
-        class="btn green">
-        <span class="icon document"></span>
+        class="btn primary"
+        style="margin-left: auto">
+        <ph-icon name="file"></ph-icon>
         <span class="label">{{ $t("conversation.publish_document") }}</span>
       </router-link>
     </template>
@@ -140,15 +131,15 @@
 import moment from "moment"
 import { nextTick } from "vue"
 
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import { apiPostMetadata, apiUpdateMetadata } from "@/api/metadata.js"
 import findExpressionInWordsList from "@/tools/findExpressionInWordsList.js"
 
 import { conversationMixin } from "@/mixins/conversation.js"
 
-import Loading from "@/components/Loading.vue"
+import Loading from "@/components/atoms/Loading.vue"
 import Modal from "@/components/Modal.vue"
-import UserInfoInline from "@/components/UserInfoInline.vue"
+import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
 import AppEditor from "@/components/AppEditor.vue"
 import MainContentConversation from "@/components/MainContentConversation.vue"
 import HighlightsList from "@/components/HighlightsList.vue"
@@ -249,6 +240,20 @@ export default {
       return `${this.conversation.name.replace(/\s/g, "_")}_${moment().format(
         "YYYYMMDDHHmmss",
       )}`
+    },
+    breadcrumbItems() {
+      return [
+        {
+          label: this.conversation?.name ?? "",
+          to: {
+            name: "conversations overview",
+            params: { conversationId: this.conversationId },
+          },
+        },
+        {
+          label: this.$t("breadcrumb.transcription"),
+        },
+      ]
     },
   },
   methods: {

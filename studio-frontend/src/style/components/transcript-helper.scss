@@ -1,18 +1,20 @@
-#helper-container {
-  background: #fff;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  z-index: 99;
-  overflow: auto;
-  padding: 20px;
-  box-sizing: border-box;
-  border-top: 1px solid var(--text-primary);
-}
+@layer base {
+  #helper-container {
+    background: #fff;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    z-index: 99;
+    overflow: auto;
+    padding: 20px;
+    box-sizing: border-box;
+    border-top: 1px solid var(--text-primary);
+  }
 
-.helper-close {
-  justify-content: flex-end;
+  .helper-close {
+    justify-content: flex-end;
+  }
 }

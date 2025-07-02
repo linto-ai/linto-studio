@@ -39,18 +39,20 @@
       </div>
 
       <button
-        class="btn black"
+        class="btn md only-icon"
         @click="deleteFile"
         v-if="!disabled"
         type="button">
-        <span class="icon trash"></span>
+        <ph-icon name="trash"></ph-icon>
       </button>
       <button
         type="button"
-        class="btn black"
+        class="btn md only-icon"
         @click="playOrStopFile"
         v-if="!disabled">
-        <span :class="`icon ${isPlaying ? 'pause' : 'play'}`"></span>
+        <!-- <span :class="`icon ${isPlaying ? 'pause' : 'play'}`"></span> -->
+        <ph-icon name="play" v-if="!isPlaying"></ph-icon>
+        <ph-icon name="pause" v-else></ph-icon>
       </button>
     </FormInput>
     <progress
@@ -62,9 +64,9 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
-import FormInput from "@/components/FormInput.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 
 export default {
   props: {

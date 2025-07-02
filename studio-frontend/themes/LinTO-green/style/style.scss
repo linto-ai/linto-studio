@@ -1,15 +1,14 @@
-@layer base, theme;
+//@layer base, theme;
 
+// @import "buttons.scss";
+@use "forms.scss" as forms-theme;
+// @use "tabs.scss" as tabs-theme;
+@use "select.scss" as select-theme;
+@use "text.scss" as text-theme;
+@use "login.scss" as login-theme;
+
+@use "mobile/text.scss" as mobile-text-theme;
 @layer theme {
-  @import "buttons.scss";
-  @import "forms.scss";
-  @import "tabs.scss";
-  @import "select.scss";
-  @import "text.scss";
-  @import "login.scss";
-
-  @import "mobile/text.scss";
-
   body {
     --yellow-chart: #feb11d;
     --green-chart: #11977c;
@@ -21,26 +20,20 @@
     --primary-contrast: #fff;
 
     --secondary-color: var(--blue-chart);
-
-    --dark-100: #333;
-    --dark-80: #666;
-    --dark-60: #ccc;
-    --neutral-60: #c2c2c2;
-
-    --background-app: rgb(250, 250, 250);
+    --tertiary-color: var(--red-chart);
 
     --background-primary: #fff;
     --background-primary-with-small-opacity: rgba(255, 255, 255, 0.85);
 
-    --button-background: #fafafa;
-    --button-image-background: linear-gradient(#fcfcfc, #f3f3f3);
+    --button-image-background: linear-gradient(
+      var(--neutral-100),
+      var(--neutral-200)
+    );
     --button-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.08);
-    //--border-button-flat: 1px solid #bdbdbd;
+    //--border-button: 1px solid #bdbdbd;
 
-    --button-background-hover: #f0f0f0;
     --border-button-glass: 1px solid rgba(255, 255, 255, 0.4);
 
-    --input-background: #f7faff;
     //--border-input: 1px solid var(--neutral-60) !important;
 
     --selected-background: rgba(40, 153, 131, 0.0784313725);
@@ -55,7 +48,15 @@
     --dark-100: #ccc;
     --dark-80: #aaa;
     --dark-60: #666;
-    --neutral-60: #686868;
+    --dark-40: #444;
+    --dark-20: #222;
+    --dark-10: #111;
+    --neutral-100: #ccc;
+    --neutral-80: #aaa;
+    --neutral-60: #666;
+    --neutral-40: #444;
+    --neutral-20: #222;
+    --neutral-10: #111;
 
     --background-app: rgb(48, 48, 48);
     --background-primary: #252525;

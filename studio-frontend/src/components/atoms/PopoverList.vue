@@ -1,0 +1,253 @@
+<template>
+  <Popover
+    :close-on-click-outside="closeOnClickOutside"
+    :close-on-escape="closeOnEscape"
+    :overlay="overlay"
+    :content-class="isMobile ? 'popover-list__mobile' : ''"
+    v-bind="$attrs"
+    ref="popover">
+    <template #trigger="{ open }">
+      <slot name="trigger" :open="open">
+        <Button
+          :icon="open ? 'caret-up' : 'caret-down'"
+          v-bind="$attrs"
+        />
+      </slot>
+    </template>
+    <template #content>
+      <div class="popover-list__content">
+        <div v-for="item in items" :key="item.id" class="popover-list__item">
+          <Button
+            :icon="itemIcon(item)"
+            :icon-position="item.iconPosition || 'left'"
+            :icon-weight="item.iconWeight"
+            :avatar="item.avatar"
+            :avatar-text="item.avatarText"
+            :color="itemColor(item)"
+            :icon-right="item.iconRight"
+            @click="handleClickItem(item)"
+            :variant="selection ? 'solid' : 'outline'"
+            :size="size"
+            v-bind="item">
+            {{ item.name || item.text }}
+          </Button>
+        </div>
+      </div>
+    </template>
+  </Popover>
+</template>
+
+<script>
+export default {
+  name: "PopoverList",
+  props: {
+    /**
+     * @type {Array<ListItem>}
+     * @description List of items to display in the popover
+     * @property {string} id - The id of the item
+     * @property {string} name - The name of the item
+     * @property {string} icon? - The icon of the item (optional)
+     * @property {string} iconPosition? - The position of the icon (optional, default: "left")
+     * @property {string} iconWeight? - The weight of the icon (optional, default: "regular")
+     * @property {string} color? - The color of the item (optional, default: "primary")
+     * @property {string} iconRight? - The right icon of the item (optional)
+     */
+    items: {
+      type: Array,
+      required: true,
+    },
+    color: {
+      type: String,
+      default: "primary",
+    },
+    closeOnClickOutside: {
+      type: Boolean,
+      default: true,
+    },
+    closeOnEscape: {
+      type: Boolean,
+      default: true,
+    },
+    overlay: {
+      type: Boolean,
+      default: true,
+    },
+    size: {
+      type: String,
+      default: "sm",
+    },
+    /**
+     * Enables the selection mode where the list behaves like a select component.
+     */
+    selection: {
+      type: Boolean,
+      default: false,
+    },
+    /**
+     * Enables the multi-selection mode where the list behaves like a select component.
+     */
+    multiple: {
+      type: Boolean,
+      default: false,
+    },
+    /**
+     * v-model binding of selected items.
+     * Can be an object, a string, an array of item ids (string) or an array of full item objects.
+     */
+    value: {
+      // Array for multi-select, otherwise single id/object or null
+      type: [Array, String, Object, Number, null],
+      default: () => [],
+    },
+    /**
+     * When true, the component will emit the full item object instead of its id in the v-model.
+     */
+    returnObjects: {
+      type: Boolean,
+      default: false,
+    },
+    /**
+     * When true, the popover will automatically close after an item click
+     * (ignored in `selection` mode when `multiple` is enabled).
+     */
+    closeOnItemClick: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  emits: ["click", "update:value", "change"],
+  methods: {
+    isSame(value, item) {
+      if (typeof value === "object" && value !== null) {
+        return value.id === item.id
+      }
+      return value === item.id
+    },
+    isSelected(item) {
+      if (this.multiple) {
+        const current = Array.isArray(this.modelValue) ? this.modelValue : []
+        return current.some((v) => this.isSame(v, item))
+      }
+      // single select
+      return this.isSame(this.modelValue, item)
+    },
+    toggleSelection(item) {
+      if (this.multiple) {
+        const current = Array.isArray(this.modelValue)
+          ? [...this.modelValue]
+          : []
+        const selected = this.isSelected(item)
+        let updated
+        if (selected) {
+          updated = current.filter((v) => !this.isSame(v, item))
+        } else {
+          updated = [...current, this.returnObjects ? item : item.id]
+        }
+        this.$emit("update:value", updated)
+        this.$emit("change", updated)
+      } else {
+        // single selection: either select or deselect (null)
+        const selected = this.isSelected(item)
+        const updated = selected ? null : this.returnObjects ? item : item.id
+        this.$emit("update:value", updated)
+        this.$emit("change", updated)
+      }
+    },
+    handleClickItem(item) {
+      if (this.selection) {
+        this.toggleSelection(item)
+        // Close when single-select and required
+        if (!this.multiple && this.closeOnItemClick) {
+          this.$refs.popover && this.$refs.popover.close()
+        }
+      } else {
+        this.$emit("click", item)
+        if (this.closeOnItemClick) {
+          this.$refs.popover && this.$refs.popover.close()
+        }
+      }
+    },
+    /**
+     * Returns the computed color for an item based on selection mode.
+     */
+    itemColor(item) {
+      if (!this.selection) return item.color || this.color
+      return this.isSelected(item) ? this.color : this.color + "-soft"
+    },
+    /**
+     * Returns the icon for an item based on selection mode.
+     */
+    itemIcon(item) {
+      if (this.selection) {
+        return this.isSelected(item) ? "check-circle" : undefined
+      }
+      return item.icon
+    },
+  },
+  computed: {
+    /**
+     * Detect if we are on a narrow viewport (mobile-like) to switch the
+     * popover to a bottom-sheet presentation.
+     */
+    isMobile() {
+      if (typeof window === 'undefined') return false
+      return window.matchMedia('(max-width: 768px)').matches
+    },
+  },
+  mounted() {
+    // Ensure reactivity on viewport resize
+    this.resizeListener = () => {
+      // force Vue to recalculate isMobile computed dependency
+      this.$forceUpdate()
+    }
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', this.resizeListener, { passive: true })
+    }
+  },
+  beforeDestroy() {
+    if (this.resizeListener && typeof window !== 'undefined') {
+      window.removeEventListener('resize', this.resizeListener)
+    }
+  },
+}
+</script>
+
+<style lang="scss">
+.popover-list__content {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.popover-list__item {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+
+  .btn {
+    width: 100%;
+    justify-content: flex-start;
+    border-radius: 0;
+    text-align: left;
+  }
+}
+
+.popover-list__mobile {
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  top: auto !important;
+  border: 1px solid var(--neutral-20);
+  border-radius: 4px 4px 0 0;
+  width: 100vw !important;
+  max-width: 100vw !important;
+  max-height: 80vh !important;
+  box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.25);
+
+  .popover-list__content {
+    padding: 0.5rem;
+    gap: 0.25rem;
+  }
+}
+</style>

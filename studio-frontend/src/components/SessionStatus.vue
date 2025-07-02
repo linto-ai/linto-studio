@@ -1,7 +1,7 @@
 <template>
   <div
     @click="onClick"
-    class="flex align-center justify-center session-status gap-small"
+    class="flex align-center session-status gap-small"
     :title="text">
     <span class="session-on-air flex align-center gap-small" v-if="isActive">
       <span v-if="!small">[</span>
@@ -27,13 +27,14 @@
       <!-- <span v-if="!small">Muted</span> -->
       <!-- <span>]</span> -->
     </span>
-
-    <span v-if="withText">{{ text }}</span>
+    <span class="session-status__name" v-if="showName">{{ name }}</span>
+    <span v-if="withText" class="session-status__text">({{ text }})</span>
   </div>
 </template>
 <script>
 import { sessionModelMixin } from "@/mixins/sessionModel.js"
-import StatusLed from "./StatusLed.vue"
+import StatusLed from "@/components/atoms/StatusLed.vue"
+import Badge from "./atoms/Badge.vue"
 
 export default {
   mixins: [sessionModelMixin],
@@ -41,6 +42,7 @@ export default {
     session: { type: Object, required: true },
     small: { type: Boolean, default: false },
     withText: { type: Boolean, default: false },
+    showName: { type: Boolean, default: false },
   },
   data() {
     return {}
@@ -86,6 +88,15 @@ export default {
       this.$emit("click", e)
     },
   },
-  components: { StatusLed },
+  components: { StatusLed, Badge },
 }
 </script>
+
+<style lang="scss" scoped>
+.session-status__name {
+  font-weight: 800;
+}
+.session-status__text {
+  font-style: italic;
+}
+</style>

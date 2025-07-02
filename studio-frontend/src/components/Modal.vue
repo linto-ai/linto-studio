@@ -14,9 +14,9 @@
         <button class="btn secondary" @click="close()" v-if="cancelButton">
           <span class="label">{{ $t("modal.cancel") }}</span>
         </button>
-        <button class="btn green" @click="exec(actionName)">
+        <button class="btn primary" @click="exec(actionName)">
           <span class="label">{{ actionBtnLabel }}</span>
-          <span class="icon apply"></span>
+          <ph-icon name="check" size="md" class="icon" />
         </button>
       </div>
     </div>
@@ -32,7 +32,7 @@ import {
   apiLeaveOrganisation,
 } from "../api/organisation.js"
 import { apiRemoveUserFromOrganisation } from "../api/user.js"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 // Outdated component, use ModalNew instead and put the logic outside of the modal.
 // See Modal**.vue components for examples.
@@ -88,9 +88,9 @@ export default {
         case "delete_multiple_conversation":
           await this.deleteMutipleConversation()
           break
-        case "delete_organization":
-          await this.deleteOrganization()
-          break
+        // case "delete_organization":
+        //   await this.deleteOrganization()
+        //   break
         default:
           this.$emit("apply")
           this.modalShow = false
@@ -153,11 +153,10 @@ export default {
     async deleteMutipleConversation() {},
     // TODO: delete this 3 functions ?
     async dispatchUserOrganizations() {
-      await this.$options.filters.dispatchStore("getUserOrganizations")
+      console.log("dispatchUserOrganizations")
     },
     async dispatchUserRights() {
-      this.userRightsLoaded =
-        await this.$options.filters.dispatchStore("getUserRights")
+      console.log("dispatchUserRights")
     },
   },
 }

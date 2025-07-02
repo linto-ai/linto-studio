@@ -1,15 +1,18 @@
-.conversation-share-list {
-  max-width: 30rem;
-}
+@layer base {
+  .context-menu.conversation-share-list {
+    max-width: 30rem;
+    width: 450px;
+  }
 
-.conversation-share-list__search-form {
-  position: sticky;
-  top: 0;
-  border-bottom: var(--divider);
-}
+  .conversation-share-list__search-form {
+    position: sticky;
+    top: 0;
+    border-bottom: var(--divider);
+  }
 
-.search-member-img {
-  display: inline-block;
-  width: 30px;
-  height: 30px;
+  .search-member-img {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+  }
 }

@@ -31,7 +31,7 @@
   </fieldset>
 </template>
 <script>
-import FormInput from "@/components/FormInput.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 import EMPTY_FIELD from "@/const/emptyField"
 import getFullDate from "@/tools/getFullDate"
 import getTimeFromDate from "@/tools/getTimeFromDate"

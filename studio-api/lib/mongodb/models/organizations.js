@@ -6,6 +6,9 @@ const DEFAULT_PERMISSION = require(
   `${process.cwd()}/lib/dao/organization/permissions`,
 ).getDefaultPermissions()
 const MongoModel = require(`../model`)
+const categoriesModel = require(`./categories`)
+const tagsModel = require(`./tags`)
+
 const moment = require("moment")
 
 const public_projection = { token: 0 }
@@ -23,7 +26,56 @@ class OrganizationModel extends MongoModel {
       payload.last_update = dateTime
       payload.personal = false
 
-      return await this.mongoInsert(payload)
+      const result = await this.mongoInsert(payload)
+
+      const { systemCategory, labelsCategory, tagsCategory } =
+        await this.createOrganizationSystemCategories(
+          result.insertedId.toString(),
+        )
+
+      result.categories = [
+        systemCategory,
+        labelsCategory,
+        tagsCategory,
+      ]
+
+      return result
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async createOrganizationSystemCategories(organizationId) {
+    try {
+      const systemCategory = await categoriesModel.create({
+        color: "#000000",
+        name: "system",
+        organizationId: organizationId,
+        type: "system",
+      })
+
+      const labelsCategory = await categoriesModel.create({
+        color: "#000000",
+        name: "labels",
+        organizationId: organizationId,
+        type: "system",
+        parentId: systemCategory.insertedId,
+      })
+      const tagsCategory = await categoriesModel.create({
+        color: "#000000",
+        name: "tags",
+        organizationId: organizationId,
+        type: "system",
+        parentId: systemCategory.insertedId,
+      })
+
+      await tagsModel.createDefaultTags(
+        organizationId,
+        tagsCategory.insertedId,
+      )
+
+      return { systemCategory, labelsCategory, tagsCategory }
     } catch (error) {
       console.error(error)
       return error
@@ -46,6 +98,20 @@ class OrganizationModel extends MongoModel {
       payload.permissions = DEFAULT_PERMISSION // We don't allow user to set permissions orga permissions
 
       const result = await this.mongoInsert(payload)
+
+      // When a new organization is created, we create the main category "system"
+      const { systemCategory, labelsCategory, tagsCategory } =
+        await this.createOrganizationSystemCategories(
+          result.insertedId.toString(),
+        )
+
+      // We add the default categories to the organization
+      result.categories = [
+        systemCategory,
+        labelsCategory,
+        tagsCategory,
+      ]
+
       return result
     } catch (error) {
       console.error(error)
@@ -167,7 +233,13 @@ class OrganizationModel extends MongoModel {
           },
         },
       }
-      return await this.mongoRequest(query, public_projection)
+      const organizations = await this.mongoRequest(query, public_projection)
+      for (const organization of organizations) {
+        organization.categories = await categoriesModel.getSystemCategories(
+          organization._id.toString(),
+        )
+      }
+      return organizations
     } catch (error) {
       console.error(error)
       return error

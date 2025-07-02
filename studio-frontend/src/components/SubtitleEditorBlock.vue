@@ -28,13 +28,13 @@
     </div>
 
     <button :class="['only-icon', 'black', 'hover-red']" @click="deletescreen">
-      <span class="icon trash"></span>
+      <ph-icon name="trash"></ph-icon>
     </button>
   </div>
 </template>
 <script>
 import CollaborativeField from "@/components/CollaborativeField.vue"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import { timeToHMS } from "../tools/timeToHMS"
 export default {
   props: {

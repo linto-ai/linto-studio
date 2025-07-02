@@ -1,16 +1,18 @@
-.selected-conversation-indicator {
-  //position: sticky;
-  //bottom: 1rem;
-  background-color: var(--background-primary);
-  box-shadow: var(--shadow-block);
-  border-radius: 2rem;
-  border: var(--divider);
-  width: fit-content;
-  //height: 4rem;
-  padding: 1rem 2rem;
-  align-items: center;
-  justify-content: center;
-  display: flex;
-  z-index: 10;
-  font-weight: 500;
+@layer base {
+  .selected-conversation-indicator {
+    //position: sticky;
+    //bottom: 1rem;
+    background-color: var(--background-primary);
+    box-shadow: var(--shadow-block);
+    border-radius: 2rem;
+    border: var(--divider);
+    width: fit-content;
+    //height: 4rem;
+    padding: 1rem 2rem;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    z-index: 10;
+    font-weight: 500;
+  }
 }

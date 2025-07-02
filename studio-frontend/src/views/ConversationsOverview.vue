@@ -1,11 +1,11 @@
 <template>
   <MainContentConversation
-    box
+    :breadcrumbItems="breadcrumbItems"
     :conversation="conversation"
     :status="status"
     :dataLoaded="dataLoaded"
     :error="error">
-    <template v-slot:breadcrumb-actions v-if="conversation">
+    <!-- <template v-slot:breadcrumb-actions v-if="conversation">
       <router-link :to="conversationListRoute" class="btn secondary">
         <span class="icon close"></span>
         <span class="label">{{
@@ -20,7 +20,7 @@
       <div class="flex row conversation-actions gap-small">
         <router-link
           :to="`/interface/conversations/${rootConversation._id}/transcription`"
-          class="btn green"
+          class="btn primary"
           :is="status !== 'done' ? 'span' : 'router-link'"
           :disabled="status !== 'done'">
           <span class="icon conv-list"></span>
@@ -29,44 +29,53 @@
           }}</span>
         </router-link>
       </div>
-    </template>
-    <h1 class="center-text conversation-overview-h1">
-      {{ $t("conversation_overview.title") }}
-    </h1>
-    <div class="flex gap-medium" v-if="conversation">
-      <!-- LEFT COLUMN -->
-      <div class="flex col flex1">
-        <ConversationOverviewMainInfos
-          :conversation="conversation"
-          :rootConversation="rootConversation"
-          :channels="channels"
-          :canEdit="canEdit" />
-        <ConversationOverviewRights
-          :conversation="rootConversation"
-          :currentOrganizationScope="currentOrganizationScope"
-          :userInfo="userInfo" />
+    </template> -->
+    <div
+      style="
+        width: 900px;
+        max-width: 100%;
+        margin: auto;
+        padding: 0 1rem;
+        box-sizing: border-box;
+      ">
+      <h1 class="center-text conversation-overview-h1">
+        {{ $t("conversation_overview.title") }}
+      </h1>
+      <div class="flex gap-medium" v-if="conversation">
+        <!-- LEFT COLUMN -->
+        <div class="flex col flex1">
+          <ConversationOverviewMainInfos
+            :conversation="conversation"
+            :rootConversation="rootConversation"
+            :channels="channels"
+            :canEdit="canEdit" />
+          <ConversationOverviewRights
+            :conversation="rootConversation"
+            :currentOrganizationScope="currentOrganizationScope"
+            :userInfo="userInfo" />
+        </div>
+        <ConversationOverviewLinks
+          :conversation="rootConversation"></ConversationOverviewLinks>
       </div>
-      <ConversationOverviewLinks
-        :conversation="rootConversation"></ConversationOverviewLinks>
-    </div>
 
-    <section v-if="conversation">
-      <h2>{{ $t("conversation_overview.channel.title") }}</h2>
-      <div v-if="tabs.length == 0">
-        {{ $t("conversation_overview.channel.only_one") }}
-      </div>
-      <Tabs :tabs="tabs" v-model="selectedChannel" secondary></Tabs>
-      <div class="tab-container-content" :key="conversation._id">
-        <ConversationOverviewChannel
-          :root="tabs.length == 0"
-          :conversation="conversation"
-          @update_channel_name="updateChannelName" />
-      </div>
-    </section>
+      <section v-if="conversation">
+        <h2>{{ $t("conversation_overview.channel.title") }}</h2>
+        <div v-if="tabs.length == 0">
+          {{ $t("conversation_overview.channel.only_one") }}
+        </div>
+        <Tabs :tabs="tabs" v-model="selectedChannel" secondary></Tabs>
+        <div class="tab-container-content" :key="conversation._id">
+          <ConversationOverviewChannel
+            :root="tabs.length == 0"
+            :conversation="conversation"
+            @update_channel_name="updateChannelName" />
+        </div>
+      </section>
+    </div>
   </MainContentConversation>
 </template>
 <script>
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import { getEnv } from "@/tools/getEnv"
 import RIGHTS_LIST from "@/const/rigthsList.js"
@@ -74,14 +83,14 @@ import { conversationMixin } from "@/mixins/conversation.js"
 import { debounceMixin } from "@/mixins/debounce.js"
 import { timeToHMS } from "@/tools/timeToHMS"
 
-import Loading from "@/components/Loading.vue"
+import Loading from "@/components/atoms/Loading.vue"
 import CollaborativeField from "@/components/CollaborativeField.vue"
 import MainContentConversation from "@/components/MainContentConversation.vue"
 import ConversationOverviewMainInfos from "@/components/ConversationOverviewMainInfos.vue"
 import ConversationOverviewMetadata from "@/components/ConversationOverviewMetadata.vue"
 import ConversationOverviewLinks from "@/components/ConversationOverviewLinks.vue"
 import ConversationOverviewRights from "@/components/ConversationOverviewRights.vue"
-import Tabs from "@/components/Tabs.vue"
+import Tabs from "@/components/molecules/Tabs.vue"
 import ConversationOverviewChannel from "@/components/ConversationOverviewChannel.vue"
 
 export default {
@@ -145,6 +154,17 @@ export default {
     linkToMedia() {
       const BASE_API = getEnv("VUE_APP_CONVO_API")
       return `${BASE_API}/conversations/${this.conversationId}/media`
+    },
+    breadcrumbItems() {
+      return [
+        {
+          label: this.conversation?.name ?? "",
+          to: {
+            name: "conversations overview",
+            params: { conversationId: this.conversationId },
+          },
+        },
+      ]
     },
   },
   methods: {

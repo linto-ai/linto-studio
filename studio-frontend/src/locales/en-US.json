@@ -32,6 +32,19 @@
   "app_editor_search": {
     "label": "Search in transcription"
   },
+  "app_settings_modal": {
+    "account_title": "My account",
+    "account_information": "Account information",
+    "billing": "Billing",
+    "organization_information": "Organization information",
+    "organization_members": "Organization members",
+    "preferences": "Preferences",
+    "notifications": "Notifications",
+    "tags": "Subjects",
+    "title": "Settings",
+    "subtitle": "Manage your account and preferences",
+    "logout": "Logout"
+  },
   "backoffice": {
     "title": "Backoffice",
     "navigation": {
@@ -83,16 +96,30 @@
     }
   },
   "breadcrumb": {
+    "backoffice": "Backoffice",
     "conversations": "Media",
     "create": "Upload media",
+    "createConversation": "Create a conversation",
     "createorganization": "Create an organisation",
-    "favorite": "{name} favorites",
+    "createOrganization": "Create an organisation",
+    "createSession": "Create a session",
+    "explore": "Inbox",
+    "exploreOld": "Explore (legacy)",
+    "favorites": "Favorites",
     "media": "{organization} media",
+    "organizations": "Organizations",
     "overview": "Overview",
+    "publish": "Publish",
+    "quickSession": "Quick session",
+    "sessions": "Sessions",
+    "sessionSettings": "Settings",
     "settings": "{organization} Settings",
-    "shared": "{name} guest media",
+    "shared": "Shared",
+    "subtitles": "Subtitles",
     "tagsSettings": "{organization} tags",
     "transcription": "Transcription",
+    "transcriberProfiles": "Transcriber Profiles",
+    "users": "Users",
     "userSettings": "Profile settings"
   },
   "conversation": {
@@ -347,7 +374,7 @@
       "audio_player_shortcut_list7": "\"SHIFT\" + \"Left  arrow\" (<span class=\"txt-icon key-shift\"></span> + <span class=\"txt-icon key-left-arrow\"></span>) : <i>Move backward 3 seconds</i>",
       "audio_player_shortcut_title": "Audio player / Keyboard shortcuts",
       "edit_speaker_content": "To change the speaker for a given turn, click on the speaker name. This will open a drop-down menu with the following options:",
-      "edit_speaker_content_list": "To change the name for the current turn only, click directly on the desired name or click on “Add a speaker” to add a new speaker. | To change the name for the current turn only, click directly on the desired name.",
+      "edit_speaker_content_list": "To change the name for the current turn only, click directly on the desired name or click on \"Add a speaker\" to add a new speaker. | To change the name for the current turn only, click directly on the desired name.",
       "edit_speaker_title": "Edit speakers",
       "edit_transcript_content": "To edit the transcript, simply click on the word to place your cursor and start typing. | The audio player will automatically jump to the part of the audio in which that word was uttered.",
       "edit_transcript_title": "Edit the transcript",
@@ -498,7 +525,7 @@
     "search_text_label": "Search text",
     "sort_label": "Sort by",
     "subtitle": "Search and discover insights on transcribed media using meaningful semantics",
-    "title": "Explore the organisation’s media"
+    "title": "Explore the organisation's media"
   },
   "favorites": {
     "subtitle": "Your favourite media are here.",
@@ -511,7 +538,7 @@
     "enabled": "enabled",
     "this_field_is_required": "This field is required"
   },
-  "globalError": {
+  "global_error": {
     "auth_magic_link": "The authentication link as expired, please request again for an authentication link",
     "back_to_home": "Back to home",
     "page_not_found": "The page is not found, or you don't have the rights to access it"
@@ -525,7 +552,7 @@
       "last_update": "Last updated",
       "notags": "Without tags"
     },
-    "subtitle": "Your recently uploaded media lands here. Use “Upload media” or {appLink} to feed this.",
+    "subtitle": "Your recently uploaded media lands here. Use \"Upload media\" or {appLink} to feed this.",
     "title": "Inbox"
   },
   "invite_user": {
@@ -576,6 +603,8 @@
     }
   },
   "manage_tags": {
+    "no_tags": "No tags available",
+    "create_tag": "Create a tag",
     "create_category": {
       "name": "Name",
       "save": "Save",
@@ -609,6 +638,31 @@
     "source": "Source",
     "preview": "Preview"
   },
+  "media_explorer": {
+    "line": {
+      "edit_transcription": "Transcription",
+      "edit_subtitles": "Subtitles",
+      "export": "Publish",
+      "delete": "Delete"
+    },
+    "delete": "Delete",
+    "share": "Share",
+    "tags_selector": {
+      "title": "Filter by tags",
+      "filter": "Filter",
+      "clear_all": "Clear all",
+      "no_tags": "No tags available"
+    },
+    "panel": {
+      "overview": "Media Overview",
+      "title": "Title",
+      "description": "Description",
+      "duration": "Duration",
+      "created": "Created",
+      "tags": "Tags",
+      "metadata": "Metadata"
+    }
+  },
   "modal": {
     "cancel": "Cancel",
     "close_title": "Close modal",
@@ -638,6 +692,13 @@
     "loading_notification": "Deleting organisation {count} of {total}.",
     "success_notification": "Organisations successfully deleted"
   },
+  "modal_switch_org": {
+    "title": "Switch organisation",
+    "subtitle": "Select the organisation you want to switch to",
+    "current": "Current",
+    "create_organization": "Create an organisation",
+    "backoffice": "Backoffice"
+  },
   "navigation": {
     "account": {
       "account_link": "My account",
@@ -650,7 +711,7 @@
       "return_link": "User interface"
     },
     "conversation": {
-      "start": "Start",
+      "start": "Transcribe",
       "create": "Upload media",
       "create_no_rights_error": "You don't have the rights to create a media. Please contact your organisation administrator.",
       "list": "Media",
@@ -671,13 +732,15 @@
       "create_no_rights_error": "You don't have the rights to create a media. Please contact your organisation administrator."
     },
     "tabs": {
-      "explore": "Media library",
+      "explore": "Inbox",
+      "explore_labels": "Labels",
       "favorites": "Favorites",
       "inbox": "Homepage",
       "manage_tags": "Manage tags",
       "sessions": "Live transcriptions",
       "shared": "Shared with me",
-      "user_page": "My account"
+      "user_page": "My account",
+      "tags": "Subjects"
     }
   },
   "no_orga": {
@@ -784,6 +847,14 @@
     },
     "visibility_label": "Visibility",
     "visibility_name": "Visibility"
+  },
+  "organization_role": {
+    "member": "Member",
+    "uploader": "Contributor",
+    "quick_meeting": "Privileged contributor",
+    "session_operator": "Full contributor",
+    "maintainer": "Maintainer",
+    "administrator": "Administrator"
   },
   "publish": {
     "error_first_line": {
@@ -1106,11 +1177,15 @@
     "user_not_found": "User not found",
     "user_right_updated": "User rights have been updated"
   },
-  "sharedWithTab": {
+  "shared_with_me": {
     "subtitle": "All media shared with you (from outside the organisation)",
     "title": "Media shared with me",
     "no_media_title": "No media has been shared with you",
     "no_media_subtitle": "Other users can share media with you using the 'share' button in their media library."
+  },
+  "sidebar_filters": {
+    "title": "Filters",
+    "add_criterions_button": "Select tags"
   },
   "tags": {
     "add_tag_to_conversation": "Add tag",
@@ -1146,7 +1221,7 @@
     "select_tag_title": "Select this tag",
     "tags": "Tags"
   },
-  "usersettings": {
+  "user_settings": {
     "change_password_label": "Change password",
     "check_verify_email": "Please check your emails and click on the link we've sent to you in order to verify your email address.",
     "email_label": "Email",
@@ -1183,7 +1258,11 @@
       "label_private": "Private profile",
       "title": "Profile visibility"
     },
-    "profile_image_button": "Choose a file",
+    "profile_avatar": {
+      "profile_image_button": "Choose a file",
+      "update_picture_button": "Update picture"
+    },
+    "profile_image_reset_button": "Reset picture",
     "role_section": {
       "title": "Platform role",
       "submit_button": "Update role",
@@ -1196,19 +1275,19 @@
     "update_email_label": "Update email",
     "update_password_button": "Update password",
     "update_personal_information_button": "Update personal information",
-    "update_picture_button": "Update picture",
+
     "update_pswd_notif": "You recently requested a recovery link for your password. You might think about updating your password.",
     "update_pswd_notif_dismiss_btn": "Dismiss",
     "verify_email_notif": "Please verify your email address"
   },
-  "userCreation": {
+  "user_creation": {
     "title": "New user",
     "confirm_button": "Create user",
     "email_already_exists": "This email is already used",
     "passwords_do_not_match": "Passwords do not match",
     "error_message": "An error occurred while creating the user"
   },
-  "userTable": {
+  "user_table": {
     "header": {
       "id": "ID",
       "email": "Email",
@@ -1222,7 +1301,7 @@
     "edit_button_label": "Edit",
     "delete_button_label": "Delete"
   },
-  "orgaTable": {
+  "orga_table": {
     "header": {
       "creation_date": "Creation date",
       "id": "ID",

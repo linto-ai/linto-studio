@@ -10,9 +10,9 @@
       <FormInput :field="password" v-model="password.value" />
 
       <div class="form-field flex row">
-        <button class="btn green fullwidth" type="submit">
+        <button class="btn primary fullwidth" type="submit">
           <span class="label">{{ $t("login.login_button") }}</span>
-          <span class="icon apply"></span>
+          <ph-icon name="check" size="md" class="icon" />
         </button>
       </div>
       <div class="form-field" v-if="formError !== null">
@@ -58,7 +58,7 @@ import { apiLoginUser, getLoginMethods } from "@/api/user"
 import MainContentPublic from "@/components/MainContentPublic.vue"
 import { testEmail } from "@/tools/fields/testEmail"
 import { testFieldEmpty } from "@/tools/fields/testEmpty"
-import FormInput from "@/components/FormInput.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 import OidcLoginButton from "@/components/OidcLoginButton.vue"
 
 export default {

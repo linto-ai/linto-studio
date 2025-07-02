@@ -33,7 +33,7 @@
         v-if="categories.length == 0"
         class="flex1 flex col align-center justify-center fullwidth center-text">
         <h2>{{ $t("explore.no_categories_modal") }}</h2>
-        <router-link :to="`/interface/inbox`" class="underline">
+        <router-link :to="{ name: 'inbox' }" class="underline">
           <span>{{ $t("explore.link_to_inbox") }}</span>
         </router-link>
       </div>
@@ -79,13 +79,13 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import { apiGetAllCategories } from "@/api/tag.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 
 import MainContent from "@/components/MainContent.vue"
 import TagCategoryBoxEditable from "@/components/TagCategoryBoxEditable.vue"
-import Loading from "@/components/Loading.vue"
+import Loading from "@/components/atoms/Loading.vue"
 import ModalEditCategory from "../components/ModalEditCategory.vue"
 import ModalEditTag from "../components/ModalEditTag.vue"
 import ModalDeleteTag from "../components/ModalDeleteTag.vue"
@@ -184,7 +184,7 @@ export default {
     deleteCategory() {
       this.modalDeleteCategoryIsOpen = false
       this.categories = this.categories.filter(
-        (category) => category._id !== this.editCategoryValue._id
+        (category) => category._id !== this.editCategoryValue._id,
       )
       this.editCategoryValue = null
       //this.queryCategories()

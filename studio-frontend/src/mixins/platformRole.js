@@ -1,3 +1,5 @@
+import { mapActions, mapGetters } from "vuex"
+
 const ROLES = {
   UNDEFINED: 0,
   USER: 1,
@@ -38,6 +40,7 @@ export const platformRoleMixin = {
     },
   },
   computed: {
+    ...mapGetters("user", { platformRole: "getUserPlatformRole" }),
     hasNoRole() {
       return this.platformRole === 0
     },
@@ -68,9 +71,7 @@ export const platformRoleMixin = {
     isBackofficePage() {
       return this.$route.meta.backoffice
     },
-    platformRole() {
-      return this.$store.state.userInfo.role
-    },
+
     roles_dict() {
       return ROLES
     },

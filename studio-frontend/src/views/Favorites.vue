@@ -38,7 +38,7 @@
       <ConversationList
         :conversations="conversations"
         :loading="loading"
-        :currentOrganizationScope="currentOrganizationScope"
+        :userInfo="userInfo"
         :indexedTags="tagsDatabase"
         :error="error"
         @clickOnTag="clickOnTag">
@@ -83,7 +83,7 @@ import { conversationListMixin } from "@/mixins/conversationList"
 import MainContent from "@/components/MainContent.vue"
 import ExploreModalVue from "@/components/ExploreModal.vue"
 import ConversationListSearch from "@/components/ConversationListSearch.vue"
-import Pagination from "@/components/Pagination.vue"
+import Pagination from "@/components/molecules/Pagination.vue"
 import ConversationListHeader from "@/components/ConversationListHeader.vue"
 import Svglogo from "@/svg/Favorite.vue"
 import SidebarFilters from "@/components/SidebarFilters.vue"
@@ -92,8 +92,6 @@ export default {
   mixins: [debounceMixin, conversationListMixin],
   props: {
     userInfo: { type: Object, required: true },
-    currentOrgaPersonal: { type: Boolean, required: true },
-    currentOrganizationScope: { type: String, required: true },
   },
   data() {
     return {

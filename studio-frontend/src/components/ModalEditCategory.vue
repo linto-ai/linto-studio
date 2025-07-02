@@ -1,10 +1,11 @@
 <template>
   <ModalNew
+    value
     @on-cancel="($event) => this.$emit('on-cancel')"
     @on-confirm="updateCategory"
     :title="$t('manage_tags.edit_category.title', { name: category.name })"
     :actionBtnLabel="$t('manage_tags.edit_category.save')"
-    small>
+    size="sm">
     <FormInput :field="name" v-model="name.value" />
     <div class="form-field flex col">
       <label class="form-label" for="editCategoryColor">
@@ -22,15 +23,15 @@
 import { Fragment } from "vue-fragment"
 import { Compact as ColorPicker } from "vue-color"
 
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import EMPTY_FIELD from "../const/emptyField"
 import COLORS_VALUE from "../const/colorsValue"
 import { apiUpdateCategory } from "@/api/tag.js"
 import { testFieldEmpty } from "@/tools/fields/testEmpty.js"
 import { formsMixin } from "@/mixins/forms.js"
 
-import ModalNew from "./ModalNew.vue"
-import FormInput from "./FormInput.vue"
+import ModalNew from "@/components/molecules/Modal.vue"
+import FormInput from "./molecules/FormInput.vue"
 export default {
   mixins: [formsMixin],
   props: {
@@ -94,7 +95,7 @@ export default {
                 ? this.name.value
                 : undefined,
             color: this.paletteToColorName[color],
-          }
+          },
         )
 
         if (res.status == "error") {

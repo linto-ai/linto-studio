@@ -34,7 +34,7 @@ import { customDebug } from "@/tools/customDebug.js"
 import MainContent from "@/components/MainContent.vue"
 import SessionLiveToolbar from "@/components/SessionLiveToolbar.vue"
 import SessionLiveContent from "@/components/SessionLiveContent.vue"
-import StatusLed from "@/components/StatusLed.vue"
+import StatusLed from "@/components/atoms/StatusLed.vue"
 
 export default {
   mixins: [sessionModelMixin],

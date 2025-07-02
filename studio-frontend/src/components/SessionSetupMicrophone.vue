@@ -87,15 +87,15 @@
           $t("quick_session.setup_microphone.bypass")
         }}</span>
       </button> -->
-      <button class="btn green" type="submit" @click="setupSession">
-        <span class="icon apply"></span>
+      <button class="btn primary" type="submit" @click="setupSession">
+        <ph-icon name="check" size="md" class="icon" />
         <span class="label">{{ l_applyLabel }} </span>
       </button>
     </div>
 
     <div class="flex medium-margin-top gap-small" v-else>
       <button class="btn secondary" @click="trashSession">
-        <span class="icon trash"></span>
+        <ph-icon name="trash"></ph-icon>
         <span class="label">
           {{ $t("quick_session.restore.trash_button") }}
         </span>
@@ -108,8 +108,8 @@
       </button>
 
       <div class="flex1"></div>
-      <button class="btn green" @click="setupSession" type="submit">
-        <span class="icon apply"></span>
+      <button class="btn primary" @click="setupSession" type="submit">
+        <ph-icon name="check" size="md" class="icon" />
         <span class="label">
           {{ $t("quick_session.restore.continue_button") }}
         </span>
@@ -118,14 +118,14 @@
   </div>
 </template>
 <script>
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import { customDebug } from "@/tools/customDebug.js"
 
 import { microphoneMixin } from "@/mixins/microphone.js"
 import MainContent from "@/components/MainContent.vue"
-import CustomSelect from "@/components/CustomSelect.vue"
-import StatusLed from "@/components/StatusLed.vue"
+import CustomSelect from "@/components/molecules/CustomSelect.vue"
+import StatusLed from "@/components/atoms/StatusLed.vue"
 export default {
   mixins: [microphoneMixin],
   props: {

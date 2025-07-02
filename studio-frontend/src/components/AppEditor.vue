@@ -44,7 +44,7 @@
   </div>
 </template>
 <script>
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import uuidv4 from "uuid/v4.js"
 
 import { workerSendMessage } from "@/tools/worker-message.js"
@@ -56,7 +56,7 @@ import { debounceMixin } from "../mixins/debounce.js"
 
 import AppEditorTurn from "@/components/AppEditorTurn.vue"
 import AppEditorPlayer from "@/components/AppEditorPlayer.vue"
-import AppEditorPagination from "@/components/Pagination.vue"
+import AppEditorPagination from "@/components/molecules/Pagination.vue"
 import ModalDeleteTagHighlight from "@/components/ModalDeleteTagHighlight.vue"
 
 export default {

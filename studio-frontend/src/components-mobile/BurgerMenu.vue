@@ -1,110 +1,59 @@
 <template>
-  <nav class="burger-menu mobile">
-    <div class="flex align-center burger-menu__header">
-      <button class="transparent only-icon" @click="closeBurger">
-        <span class="icon back"></span>
-      </button>
-      <router-link
-        :title="$t('navigation.home')"
-        to="/interface"
-        class="flex align-center gap-small">
-        <img :src="logo" style="height: 3rem" />
-        <h1>
-          {{ title }}
-        </h1>
-      </router-link>
-    </div>
-    <OrganizationSelector
-      fullwidth
-      :currentOrganizationScope="currentOrganizationScope"
-      :currentOrganization="currentOrganization" />
-    <router-link
-      id="upload-media-button"
-      :title="createTitle"
-      to="/interface/conversations/create"
-      class="btn nav-link green no-shrink"
-      tag="button"
-      v-if="
-        (mainListingPage || sessionListingPage) &&
-        isAtLeastUploader &&
-        (canUploadInCurrentOrganization || canSessionInCurrentOrganization)
-      ">
-      <span class="icon new"></span>
-      <!-- <span class="label">{{ $t("navigation.conversation.create") }}</span> -->
-      <span class="label">{{ $t("navigation.conversation.start") }}</span>
-    </router-link>
-    <div class="tabs col flex1">
-      <!-- <router-link
-        :to="{ name: 'inbox' }"
-        class="flex row align-center gap-medium tab">
-        <span class="icon home"></span>
-        <span class="tab__label">{{ $t("navigation.tabs.inbox") }}</span>
-      </router-link> -->
-      <router-link
-        :to="{ name: 'explore' }"
-        class="flex row align-center gap-medium tab">
-        <span class="icon discover"></span>
-        <span class="tab__label">{{ $t("navigation.tabs.explore") }}</span>
-      </router-link>
-      <router-link
-        v-if="sessionEnable"
-        :to="{ name: 'sessionsList' }"
-        class="flex row align-center gap-medium tab">
-        <span class="icon session"></span>
-        <span class="tab__label">{{ $t("navigation.tabs.sessions") }}</span>
-      </router-link>
-    </div>
-
-    <div class="burger-menu__footer">
-      <div class="flex align-center gap-medium burger-menu__footer__title">
-        <img :src="imgUrl" class="avatar" /> {{ userName }}
+  <nav class="burger-menu">
+    <div>
+      <div class="burger-menu__header flex">
+        <UserAccountSelector :backoffice="backoffice" />
       </div>
+      <!-- <div class="user-account-selector-container" v-if="!backoffice">
+        <ActionConversationCreate />
+      </div> -->
 
-      <div class="tabs col">
-        <router-link
-          :to="{ name: 'shared with me' }"
-          class="flex row align-center gap-medium tab">
-          <span class="icon share"></span>
-          <span class="tab__label">{{ $t("navigation.tabs.shared") }}</span>
-        </router-link>
-        <router-link
-          :to="{ name: 'favorites' }"
-          class="flex row align-center gap-medium tab">
-          <span class="icon star"></span>
-          <span class="tab__label">{{ $t("navigation.tabs.favorites") }}</span>
-        </router-link>
-        <div class="sidebar-divider"></div>
-        <router-link
-          :to="{ name: 'user settings' }"
-          class="flex row align-center gap-medium tab">
-          <span class="icon settings"></span>
-          <span class="tab__label">{{
-            $t("navigation.account.account_link")
-          }}</span>
-        </router-link>
+      <MediaExplorerMenu
+        :organizationId="currentOrganization._id"
+        v-if="!backoffice" />
 
-        <button
-          class="flex row align-center gap-medium tab transparent"
-          @click="logout">
-          <span class="icon logout"></span>
-          <span class="tab__label">{{ $t("navigation.account.logout") }}</span>
-        </button>
-      </div>
+      <MediaExplorerMenuLabels v-if="isInbox" />
+
+      <BackofficeSidebar v-if="backoffice" />
+
+      <slot></slot>
+    </div>
+    <div class="flex col">
+      <ButtonRoller
+        v-if="isAtLeastUploader"
+        @click="startConversation"
+        :label="$t('navigation.conversation.start')"
+        color="primary"
+        class="start-button" />
+      <cloud-card-credits />
     </div>
   </nav>
 </template>
 <script>
-import { bus } from "@/main.js"
+import { mapGetters } from "vuex"
+
 import { getEnv } from "@/tools/getEnv"
-import OrganizationSelector from "@/components/OrganizationSelector.vue"
+import UserAccountSelector from "@/components/UserAccountSelector.vue"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"
 import { userName } from "@/tools/userName.js"
 import { logout } from "@/tools/logout"
 
+import LocalSwitcher from "@/components/LocalSwitcher.vue"
+import CloudCardCredits from "@/components-cloud/CardCredits.vue"
+import MediaExplorerMenu from "@/components/MediaExplorerMenu.vue"
+import BackofficeSidebar from "@/components/BackofficeSidebar.vue"
+import ActionConversationCreate from "@/components/molecules/ActionConversationCreate.vue"
+import MediaExplorerMenuLabels from "@/components/MediaExplorerMenuLabels.vue"
+
 export default {
   mixins: [orgaRoleMixin, organizationPermissionsMixin],
-  props: {},
+  props: {
+    backoffice: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {}
   },
@@ -113,25 +62,34 @@ export default {
     logout() {
       logout()
     },
-    closeBurger() {
-      this.$emit("close")
+    handleOpenOrganization() {
+      this.$router.push({
+        name: "organization",
+        params: { organizationId: this.currentOrganizationScope },
+      })
+    },
+    startConversation() {
+      this.$router.push({
+        name: "conversations create",
+        params: { organizationId: this.currentOrganizationScope },
+      })
     },
   },
   computed: {
+    ...mapGetters("organizations", {
+      organizations: "getOrganizations",
+      currentOrganization: "getCurrentOrganization",
+      currentOrganizationScope: "getCurrentOrganizationScope",
+    }),
+    ...mapGetters("user", { userInfo: "getUserInfos" }),
     logo() {
       return `/img/${getEnv("VUE_APP_LOGO")}`
     },
+    organizationsList() {
+      return Object.values(this.organizations)
+    },
     title() {
       return getEnv("VUE_APP_NAME")
-    },
-    currentOrganization() {
-      return this.$store.state.currentOrganization
-    },
-    userInfo() {
-      return this.$store.state.userInfo
-    },
-    currentOrganizationScope() {
-      return this.currentOrganization._id
     },
     sessionEnable() {
       return getEnv("VUE_APP_ENABLE_SESSION") === "true"
@@ -139,10 +97,17 @@ export default {
     userName() {
       return userName(this.userInfo)
     },
-    imgUrl() {
-      const imageUrl = this.userInfo.img ?? "pictures/default.jpg"
-      return `${process.env.VUE_APP_PUBLIC_MEDIA}/${imageUrl}`
+    isInbox() {
+      const inboxPages = [
+        "inbox",
+        "explore",
+        "explore-favorites",
+        "explore-shared",
+      ]
+
+      return inboxPages.includes(this.$route.name)
     },
+    imgUrl() {},
     mainListingPage() {
       return this.$route.meta?.mainListingPage
     },
@@ -151,7 +116,79 @@ export default {
     },
   },
   components: {
-    OrganizationSelector,
+    UserAccountSelector,
+    LocalSwitcher,
+    CloudCardCredits,
+    MediaExplorerMenu,
+    BackofficeSidebar,
+    ActionConversationCreate,
+    MediaExplorerMenuLabels,
   },
 }
 </script>
+
+<style lang="scss">
+.burger-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+
+  .burger-menu__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0.5em;
+    background-color: white;
+    height: 64px;
+    box-shadow: var(--shadow-block);
+    border-bottom: var(--border-block);
+
+    & > * {
+      flex: 1;
+    }
+  }
+
+  .user-account-selector-container {
+    padding: 0 0.5em;
+    display: flex;
+    align-items: center;
+    border-bottom: var(--border-block);
+    height: 54px;
+    & > * {
+      flex: 1;
+    }
+  }
+
+  .org-cloud {
+    padding: 1em;
+    background-color: #f5f5f5;
+    border-top: 1px solid var(--primary-soft);
+    border-radius: 4px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    font-size: 0.8em;
+    font-weight: 600;
+
+    &__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    &__body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5em;
+      padding: 1em;
+      background-color: #fff;
+      border-radius: 4px;
+      margin-top: 1em;
+    }
+  }
+
+  .start-button {
+    align-self: stretch;
+    margin: 1rem;
+  }
+}
+</style>

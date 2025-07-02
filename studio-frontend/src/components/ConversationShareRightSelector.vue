@@ -14,11 +14,9 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
-
-import { workerSendMessage } from "../tools/worker-message.js"
-
+import { convRoleMixin } from "@/mixins/convRole.js"
 export default {
+  mixins: [convRoleMixin],
   props: {
     value: { type: Number, required: true },
     rightsList: { type: Array, required: true },
@@ -33,9 +31,6 @@ export default {
     onChange(event) {
       const newRight = parseInt(event.target.value)
       this.$emit("updateRight", newRight)
-    },
-    getUserRightTxt(right) {
-      return this.$store.getters.getUserRightTxt(right)
     },
   },
   components: { Fragment },

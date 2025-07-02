@@ -97,17 +97,18 @@
       <div class="turn-actions flex row">
         <button
           v-if="!lastTurn && canEdit"
-          class="centered-inline only-icon small black"
+          class="centered-inline only-icon sm"
           @click="mergeTurn"
           data-info="Fusionner les tours">
-          <span class="icon merge"></span>
+          <ph-icon name="link"></ph-icon>
+          <!-- <span class="icon merge"></span> -->
         </button>
       </div>
     </div>
   </div>
 </template>
 <script>
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import { workerSendMessage } from "../tools/worker-message.js"
 import CollaborativeField from "@/components/CollaborativeField.vue"
 import AppEditorSpkToolbox from "@/components/AppEditorSpkToolbox.vue"

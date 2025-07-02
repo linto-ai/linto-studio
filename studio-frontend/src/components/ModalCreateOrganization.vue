@@ -1,5 +1,6 @@
 <template>
   <ModalNew
+    v-model="isOpen"
     @on-cancel="($event) => this.$emit('on-cancel')"
     @on-confirm="createOrganisation"
     small
@@ -14,18 +15,24 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { mapActions, mapGetters } from "vuex"
+import { bus } from "@/main.js"
 import EMPTY_FIELD from "@/const/emptyField"
 import { testFieldEmpty } from "@/tools/fields/testEmpty.js"
 import { formsMixin } from "@/mixins/forms.js"
 
-import FormInput from "../components/FormInput.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 import { apiCreateOrganisation } from "../api/organisation"
-import ModalNew from "./ModalNew.vue"
+import ModalNew from "@/components/molecules/Modal.vue"
 
 export default {
   mixins: [formsMixin],
-  props: {},
+  props: {
+    value: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       fields: ["orgaName"],
@@ -39,8 +46,18 @@ export default {
       state: "idle",
     }
   },
-  mounted() {},
+  computed: {
+    isOpen: {
+      get() {
+        return this.value
+      },
+      set(value) {
+        this.$emit("input", value)
+      },
+    },
+  },
   methods: {
+    ...mapActions("organizations", ["fetchOrganizations"]),
     async createOrganisation(event) {
       event?.preventDefault()
       if (this.testFields()) {
@@ -50,6 +67,7 @@ export default {
           this.orgaName.error = "Name already exist"
           this.state = "idle"
         } else {
+          await this.fetchOrganizations()
           this.$emit("on-confirm", res)
           this.state = "idle"
         }

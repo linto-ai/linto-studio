@@ -33,10 +33,10 @@
 import { Fragment } from "vue-fragment"
 import uuidv4 from "uuid/v4.js"
 
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import TagCategoryBox from "./TagCategoryBox.vue"
-import SwitchInput from "./SwitchInput.vue"
+import SwitchInput from "@/components/atoms/SwitchInput.vue"
 
 export default {
   props: {

@@ -33,13 +33,13 @@ import WaveSurfer from "wavesurfer.js"
 import RegionsPlugin from "../../node_modules/wavesurfer.js/dist/plugins/regions.js"
 import TimelinePlugin from "../../node_modules/wavesurfer.js/dist/plugins/timeline.js"
 
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import { playerMixin } from "@/mixins/player.js"
 import { ScreenList } from "../models/screenList"
 import { timeToHMS } from "../tools/timeToHMS"
 
 import AppPlayerHeader from "@/components/AppPlayerHeader.vue"
-import Loading from "@/components/Loading.vue"
+import Loading from "@/components/atoms/Loading.vue"
 
 export default {
   mixins: [playerMixin],
