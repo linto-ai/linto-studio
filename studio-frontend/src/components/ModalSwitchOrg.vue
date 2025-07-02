@@ -8,7 +8,12 @@
     @close="close">
     <div class="modal-switch-org">
       <div class="modal-switch-org__list flex col gap-small">
-        <div class="modal-switch-org__list__item">
+        <router-link
+          v-if="isAtLeastSystemAdministrator"
+          :to="{
+            name: 'backoffice',
+          }"
+          class="modal-switch-org__list__item">
           <Avatar
             icon="key"
             size="sm"
@@ -18,7 +23,7 @@
               {{ $t("modal_switch_org.backoffice") }}
             </div>
           </div>
-        </div>
+        </router-link>
         <router-link
           :to="{
             name: 'explore',
