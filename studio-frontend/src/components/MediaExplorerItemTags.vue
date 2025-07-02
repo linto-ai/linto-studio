@@ -1,5 +1,5 @@
 <template>
-  <div class="media-explorer-item-tags" @click.stop>
+  <div class="media-explorer-item-tags">
     <!-- Tags list -->
     <div v-if="mediatags.length > 0" class="media-explorer-item-tags__container">
       <div class="media-explorer-item-tags__list">
@@ -34,8 +34,7 @@
     <!-- Empty state or add button -->
     <div 
       v-else 
-      class="media-explorer-item-tags__empty"
-      :class="{ 'media-explorer-item-tags__empty--hovered': hovered }">
+      class="media-explorer-item-tags__empty">
       <span class="media-explorer-item-tags__empty-text">
         {{ $t('media_explorer.tags.no_tags') }}
       </span>
@@ -214,12 +213,6 @@ export default {
     align-items: center;
     justify-content: flex-end;
     width: 100%;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-
-    &--hovered {
-      opacity: 1;
-    }
 
     &-text {
       font-size: 0.75rem;

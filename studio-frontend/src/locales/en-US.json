@@ -602,6 +602,8 @@
     }
   },
   "manage_tags": {
+    "no_tags": "No tags available",
+    "create_tag": "Create a tag",
     "create_category": {
       "name": "Name",
       "save": "Save",

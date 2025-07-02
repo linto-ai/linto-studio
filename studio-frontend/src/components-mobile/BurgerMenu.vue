@@ -12,7 +12,7 @@
         :organizationId="currentOrganization._id"
         v-if="!backoffice" />
 
-      <MediaExplorerMenuLabels />
+      <MediaExplorerMenuLabels v-if="isInbox" />
 
       <BackofficeSidebar v-if="backoffice" />
 
@@ -84,6 +84,16 @@ export default {
     },
     userName() {
       return userName(this.userInfo)
+    },
+    isInbox() {
+      const inboxPages = [
+        "inbox",
+        "explore",
+        "explore-favorites",
+        "explore-shared",
+      ]
+
+      return inboxPages.includes(this.$route.name)
     },
     imgUrl() {},
     mainListingPage() {

@@ -51,7 +51,7 @@ export default {
     },
     color: {
       type: String,
-      default: "var(--material-teal-500)",
+      default: "teal",
     },
     active: {
       type: Boolean,
@@ -109,7 +109,7 @@ export default {
   margin: 0.1em;
   border-radius: 8px;
   border: 1px solid var(--primary-soft);
-  background: var(--background-primary);
+  background: var(--primary-soft);
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.4),
     inset 0px 0.2px 0 1px rgba(255, 255, 255, 0.4);
@@ -183,7 +183,7 @@ export default {
     text-overflow: ellipsis;
     white-space: nowrap;
     text-transform: uppercase;
-    color: var(--neutral-10);
+    color: var(--neutral-80);
 
     &.with-emoji {
       padding-left: 0;

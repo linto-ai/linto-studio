@@ -36,7 +36,7 @@
           </div>
 
           <!-- Media description -->
-          <div class="media-section" v-if="selectedMedia.description">
+          <div class="media-section">
             <h4 class="section-title">
               {{ $t("media_explorer.panel.description") }}
             </h4>
@@ -65,8 +65,7 @@
 
           <!-- Media tags -->
           <div
-            class="media-section"
-            v-if="selectedMedia.tags && selectedMedia.tags.length > 0">
+            class="media-section">
             <h4 class="section-title">{{ $t("media_explorer.panel.tags") }}</h4>
             <div class="tags-container">
               <ChipTag
@@ -75,6 +74,24 @@
                 :name="tag.name"
                 :color="tag.color"
                 size="sm" />
+            </div>
+            <div class="tags-container">
+              <Popover width="300px">
+                <template #trigger>
+                  <Button
+                    icon="plus"
+                    size="sm"
+                    variant="outline"
+                    color="primary">
+                    {{ $t("media_explorer.tags.add_tag") }}
+                  </Button>
+                </template> 
+                <MediaExplorerItemTagBox
+                  :mediatags="selectedMediaTags"
+                  :media-id="selectedMedia._id"
+                  width="300px"  
+                />
+              </Popover>
             </div>
           </div>
 
@@ -104,12 +121,14 @@ import { mapGetters } from "vuex"
 import Button from "@/components/atoms/Button.vue"
 import Badge from "@/components/atoms/Badge.vue"
 import ChipTag from "./atoms/ChipTag.vue"
+import MediaExplorerItemTagBox from "./MediaExplorerItemTagBox.vue"
 
 export default {
   name: "MediaExplorerRightPanel",
   components: {
     Button,
     Badge,
+    MediaExplorerItemTagBox,
   },
   props: {
     selectedMedia: {
@@ -139,9 +158,14 @@ export default {
   },
   computed: {
     ...mapGetters("tags", ["getTags", "getTagById"]),
+    reactiveSelectedMedia() {
+      if (!this.selectedMedia?._id) return null
+      return this.$store.getters["inbox/getMediaById"](this.selectedMedia._id)
+    },
     selectedMediaTags() {
-      if (!this.selectedMedia.tags) return []
-      const tags = this.selectedMedia.tags
+      const media = this.reactiveSelectedMedia
+      if (!media?.tags) return []
+      const tags = media.tags
         .map((tagId) => this.getTagById(tagId))
         .filter((tag) => !!tag)
 
@@ -278,7 +302,7 @@ export default {
   flex-direction: column;
   height: 100%;
   min-width: 300px;
-  max-width: 600px;
+  max-width: 800px;
 }
 
 .resize-handle {
@@ -312,16 +336,19 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding-left: 8px;
+  padding-left: 0px;
 }
 
 .panel-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem;
-  border-bottom: var(--border-block, 1px solid var(--neutral-30));
-  background-color: var(--background-secondary, #f8f9fa);
+  padding: 0 1rem;
+  border: var(--border-block, 1px solid var(--neutral-30));
+  background-color: var(--primary-soft);
+  margin: 0.5em;
+  height: 50px;
+  border-radius: 4px;
 }
 
 .panel-title {

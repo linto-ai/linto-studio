@@ -14,7 +14,7 @@
           v-model="search"
           type="text"
           class="tag-box__search-input"
-          :placeholder="$t('navigation.searchTag')" />
+          :placeholder="$t('media_explorer.tags.search')" />
       </div>
       <div v-if="tagsObjects.length" class="tags-selection">
         <Tooltip
@@ -37,7 +37,7 @@
           color="primary"
           size="xs"
           @click="modalTagCreateOpen = true">
-          Create tag <span v-if="search">&laquo; {{ search }} &raquo;</span>
+          {{ $t("media_explorer.tags.create_tag") }} <span v-if="search">&laquo; {{ search }} &raquo;</span>
         </Button>
         <MediaExplorerFormTag
           v-model="modalTagCreateOpen"
@@ -173,7 +173,7 @@ export default {
     async onTagCreate(tag) {
       this.modalTagCreateOpen = false
 
-      await this.$store.dispatch("tags/createTag", tag)
+        await this.$store.dispatch("tags/createTag", tag)
     },
   },
 }

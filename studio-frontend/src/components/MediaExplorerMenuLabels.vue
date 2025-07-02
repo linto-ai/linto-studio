@@ -5,6 +5,19 @@
       {{ $t("navigation.tabs.tags") }}
     </div>
     <nav>
+      <div v-if="orderedTags.length === 0" class="no-tags">
+        <p>
+          {{ $t("manage_tags.no_tags") }} -
+          <a @click="showModalTagManagement = true">{{
+            $t("manage_tags.create_tag")
+          }}</a>
+
+          <MediaExplorerFormTag
+            v-model="showModalTagManagement"
+            @submit="handleTagSubmit"
+            @cancel="handleTagCancel" />
+        </p>
+      </div>
       <ul>
         <li v-for="tag in orderedTags" :key="tag._id">
           <ChipTag
@@ -24,11 +37,13 @@
 <script>
 import { mapGetters } from "vuex"
 import MediaExplorerItemTagBox from "./MediaExplorerItemTagBox.vue"
+import MediaExplorerFormTag from "./MediaExplorerFormTag.vue"
 
 export default {
   name: "MediaExplorerMenuLabels",
   components: {
     MediaExplorerItemTagBox,
+    MediaExplorerFormTag,
   },
   data() {
     return {
@@ -62,6 +77,18 @@ export default {
     },
     handleTagClick(tag) {
       this.$store.dispatch("tags/toggleTag", tag)
+    },
+    async handleTagSubmit(tag) {
+      console.log("handleTagSubmit", tag)
+      await this.$store.dispatch("tags/createTag", tag)
+      this.fetchTags()
+      this.showModalTagManagement = false
+    },
+    handleTagCancel() {
+      this.showModalTagManagement = false
+    },
+    fetchTags() {
+      this.$store.dispatch("tags/fetchTags")
     },
   },
 }
@@ -143,6 +170,16 @@ export default {
     justify-content: space-between;
     align-items: center;
     gap: var(--spacing-small);
+  }
+
+  .no-tags {
+    padding: 0.5em;
+    padding-left: 0.5em;
+    color: var(--text-secondary);
+
+    p {
+      margin: 0;
+    }
   }
 }
 </style>

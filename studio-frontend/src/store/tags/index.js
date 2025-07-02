@@ -1,4 +1,6 @@
 import {
+  apiGetSharedCategoriesTree,
+  apiGetfavoritesCategoriesTree,
   apiGetTagsByCategory,
   apiGetSystemCategories,
   apiCreateOrganizationTag,
@@ -15,6 +17,8 @@ export default {
   state: {
     categories: [],
     exploreSelectedTags: [],
+    sharedTags: [],
+    favoritesTags: [],
     tags: [],
     loading: false,
     error: null,
@@ -37,6 +41,12 @@ export default {
     },
     setError(state, error) {
       state.error = error
+    },
+    setSharedTags(state, tags) {
+      state.sharedTags = tags
+    },
+    setFavoritesTags(state, tags) {
+      state.favoritesTags = tags
     },
   },
   getters: {
@@ -87,6 +97,18 @@ export default {
       } finally {
         commit("setLoading", false)
       }
+    },
+    async fetchSharedTags({ commit, getters, rootGetters, state }) {
+      const data = await apiGetSharedCategoriesTree(
+        rootGetters["organizations/getCurrentOrganizationScope"],
+      )
+      commit("setSharedTags", data)
+    },
+    async fetchFavoritesTags({ commit, getters, rootGetters, state }) {
+      const data = await apiGetfavoritesCategoriesTree(
+        rootGetters["organizations/getCurrentOrganizationScope"],
+      )
+      commit("setFavoritesTags", data)
     },
     async createTag({ commit, getters, rootGetters, state }, tag) {
       commit("setLoading", true)

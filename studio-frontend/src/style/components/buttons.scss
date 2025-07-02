@@ -3,32 +3,49 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 0.01rem;
+    border-radius: 4px;
     overflow: hidden;
-    border-radius: 4px !important;
+    isolation: isolate;
 
     & > * {
       border-radius: 0 !important;
-
+      outline: none;
+      box-sizing: border-box;
+      flex-shrink: 0;
+      
+      &:not(:last-child) {
+        border-right: none !important;
+      }
+      
       &:first-child {
         border-top-left-radius: 4px !important;
         border-bottom-left-radius: 4px !important;
       }
+      
       &:last-child {
         border-top-right-radius: 4px !important;
         border-bottom-right-radius: 4px !important;
       }
-      outline: none;
-      box-sizing: border-box;
     }
 
     input {
       border: var(--border-input);
+      
+      &:focus {
+        z-index: 1;
+        position: relative;
+      }
     }
 
     .btn,
     button {
       border: var(--border-button);
+      
+      &:hover,
+      &:focus {
+        z-index: 1;
+        position: relative;
+      }
     }
   }
 
