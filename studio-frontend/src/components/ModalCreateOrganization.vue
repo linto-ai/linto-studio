@@ -15,6 +15,7 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
+import { mapActions, mapGetters } from "vuex"
 import { bus } from "@/main.js"
 import EMPTY_FIELD from "@/const/emptyField"
 import { testFieldEmpty } from "@/tools/fields/testEmpty.js"
@@ -56,6 +57,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions("organizations", ["fetchOrganizations"]),
     async createOrganisation(event) {
       event?.preventDefault()
       if (this.testFields()) {
@@ -65,6 +67,7 @@ export default {
           this.orgaName.error = "Name already exist"
           this.state = "idle"
         } else {
+          await this.fetchOrganizations()
           this.$emit("on-confirm", res)
           this.state = "idle"
         }
