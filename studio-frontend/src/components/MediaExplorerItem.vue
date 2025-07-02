@@ -9,122 +9,110 @@
       'media-explorer-item--selected': isSelected,
       'media-explorer-item--favorite': isFavorite,
     }">
-    <div class="media-explorer-item__inline">
-      <div class="media-explorer-item__inline__meta button-group actions">
-        <span
-          class="media-explorer-item__inline__favorite"
-          :class="{ active: isFavorite }"
-          @click.stop="toggleFavorite">
-          <ph-star animation="pulse" weight="fill" size="16" />
-        </span>
-        <!-- Media type icon: when not hovered-->
-        <div
-          class="media-explorer-item__inline__selection"
-          :class="{ selected: isSelected }">
-          <!-- Selection checkbox: when hovered -->
+    
+    <!-- Main content layout -->
+    <div class="media-explorer-item__content">
+      <!-- Left section: Controls + Info -->
+      <div class="media-explorer-item__left">
+        <!-- Favorite & Checkbox group -->
+        <div class="media-explorer-item__controls">
+          <Button
+            class="media-explorer-item__favorite"
+            :class="{ active: isFavorite }"
+            @click.stop="toggleFavorite"
+            icon="star"
+            :title="$t('media_explorer.favorite')"
+            variant="outline"
+            size="sm"
+            :color="isFavorite ? 'primary' : 'neutral-10'" />
+          
           <div
-            class="media-explorer-item__inline__checkbox"
-            :class="{ active: isSelected }">
-            <input type="checkbox" v-model="isSelected" />
+            class="media-explorer-item__checkbox-container"
+            :class="{ selected: isSelected }">
+            <input 
+              type="checkbox" 
+              v-model="isSelected" 
+              class="media-explorer-item__checkbox"
+              @change="handleSelectionChange" />
           </div>
         </div>
-      </div>
-      <div
-        class="media-explorer-item__inline__meta flex gap-small align-center">
+        
+        <!-- Media type icon -->
         <Avatar
           :icon="isFromSession ? 'microphone' : 'file-audio'"
           color="neutral-10"
           size="md"
-          class="media-explorer-item__inline__infos__avatar">
-        </Avatar>
+          class="media-explorer-item__type-icon" />
+        
+        <!-- Owner avatar -->
         <Tooltip :text="convOwner.fullName" position="bottom">
           <Avatar
             color="#dadada"
             :text="convOwner.fullName.substring(0, 1)"
-            :src="convOwnerAvatar" />
-        </Tooltip>
-        <div class="media-title-container">
-          <a
-            :href="`/interface/${organizationId}/conversations/${media._id}/transcription`"
-            >{{ title }}</a
-          >
-          <Button
-            @click.stop="selectForOverview"
-            :title="$t('media_explorer.panel.overview')"
-            icon="eye"
+            :src="convOwnerAvatar"
             size="sm"
-            variant="outline"
-            class="btn-overview"
-            color="primary"
-            :active="isSelectedForOverview"
-            />
+            class="media-explorer-item__owner" />
+        </Tooltip>
+        
+        <!-- Media title -->
+        <div class="media-explorer-item__title">
+          <a :href="`/interface/${organizationId}/conversations/${media._id}/transcription`">
+            {{ title }}
+          </a>
         </div>
-        <div class="media-explorer-item__inline__infos">
-          <span
-            v-if="duration"
-            class="media-explorer-item__inline__infos__duration">
+        
+        <!-- Show overview button -->
+        <Button
+          @click.stop="selectForOverview"
+          :title="$t('media_explorer.panel.overview')"
+          icon="eye"
+          size="sm"
+          variant="outline"
+          class="media-explorer-item__overview-btn"
+          color="primary"
+          :active="isSelectedForOverview" />
+        
+        <!-- Media metadata -->
+        <div class="media-explorer-item__metadata">
+          <span v-if="duration" class="media-explorer-item__duration">
             <TimeDuration :duration="duration" />
           </span>
-          <span
-            v-if="createdAt"
-            class="media-explorer-item__inline__infos__dates">
+          <span v-if="createdAt" class="media-explorer-item__date">
             {{ createdAt }}
           </span>
         </div>
       </div>
-      <div class="media-explorer-item__inline__tags">
+      
+      <!-- Right section: Tags -->
+      <div class="media-explorer-item__right">
         <MediaExplorerItemTags
-          class="media-explorer-item__inline__tags__tags"
+          class="media-explorer-item__tags"
           :hovered="isHover"
           :mediatags="mediatags"
-          :media-id="media._id" />
+          :media-id="media._id"
+          @click.stop="selectForOverview" />
       </div>
     </div>
-    <!-- Actions: visible only on hover, expand a menu with actions from the right -->
-    <!-- Actions: archive, delete, edit, share -->
-    <div class="media-explorer-item__header__actions">
-      <nav>
-        <ul>
-          <li>
-            <button class="btn xs" @click.stop="handleEdit">
-              <ph-icon name="pencil"></ph-icon>
-              <span class="label">
-                {{ $t("media_explorer.line.edit_transcription") }}
-              </span>
-            </button>
-          </li>
-          <li>
-            <button class="btn xs" @click.stop="handleSubtitles">
-              <ph-icon name="subtitles"></ph-icon>
-              <span class="label">
-                {{ $t("media_explorer.line.edit_subtitles") }}
-              </span>
-            </button>
-          </li>
-          <li>
-            <button class="btn xs" @click.stop="handleExport">
-              <ph-icon name="file"></ph-icon>
-              <span class="label">
-                {{ $t("media_explorer.line.export") }}
-              </span>
-            </button>
-          </li>
-          <li>
-            <button class="btn xs tertiary outline" @click.stop="handleDelete">
-              <ph-icon name="trash"></ph-icon>
-              <span class="label">
-                {{ $t("media_explorer.line.delete") }}
-              </span>
-            </button>
-          </li>
-          <!-- <li>
-            <button class="btn xs" @click.stop="handleShare">Share</button>
-          </li>
-           -->
-        </ul>
-      </nav>
-    </div>
+    
+    <!-- Actions menu using PopoverList -->
+    <PopoverList
+      :items="actionsItems"
+      :close-on-item-click="true"
+      :overlay="false"
+      class="media-explorer-item__actions"
+      @click="handleActionClick">
+      <template #trigger="{ open }">
+        <Button 
+          class="media-explorer-item__actions-trigger"
+          :title="$t('media_explorer.actions')"
+          variant="outline"
+          color="primary"
+          size="xs"
+          icon="dots-three-outline-vertical" />
+      </template>
+    </PopoverList>
 
+    <!-- Delete modal -->
     <ModalDeleteConversations
       :visible="showDeleteModal"
       :medias="[media]"
@@ -143,6 +131,7 @@ import userAvatar from "@/tools/userAvatar"
 
 import { PhStar } from "phosphor-vue"
 import ModalDeleteConversations from "./ModalDeleteConversations.vue"
+import PopoverList from "./atoms/PopoverList.vue"
 
 export default {
   name: "MediaExplorerItem",
@@ -152,6 +141,7 @@ export default {
     TimeDuration,
     MediaExplorerItemTags,
     ModalDeleteConversations,
+    PopoverList,
   },
   props: {
     media: {
@@ -175,6 +165,35 @@ export default {
       currentOrganizationUsers: "getCurrentOrganizationUsers",
       currentOrganization: "getCurrentOrganization",
     }),
+    
+    actionsItems() {
+      return [
+        {
+          id: 'edit',
+          name: this.$t("media_explorer.line.edit_transcription"),
+          icon: 'pencil',
+          color: 'primary'
+        },
+        {
+          id: 'subtitles',
+          name: this.$t("media_explorer.line.edit_subtitles"),
+          icon: 'subtitles',
+          color: 'primary'
+        },
+        {
+          id: 'export',
+          name: this.$t("media_explorer.line.export"),
+          icon: 'file',
+          color: 'primary'
+        },
+        {
+          id: 'delete',
+          name: this.$t("media_explorer.line.delete"),
+          icon: 'trash',
+          color: 'danger'
+        }
+      ]
+    },
     mediatags() {
       return this.media.tags.map((t) =>
         this.$store.getters["tags/getTagById"](t),
@@ -258,22 +277,46 @@ export default {
   },
   methods: {
     ...mapMutations("inbox", ["addSelectedMedia", "removeSelectedMedia"]),
+    
     toggleFavorite() {
       this.$store.dispatch("user/toggleFavoriteConversation", this.media._id)
     },
+    
     hover() {
       this.isHover = true
     },
+    
     leave() {
       this.isHover = false
     },
 
     select() {
       this.isSelected = !this.isSelected
+      this.handleSelectionChange()
+    },
+    
+    handleSelectionChange() {
       if (this.isSelected) {
         this.addSelectedMedia(this.media)
       } else {
         this.removeSelectedMedia(this.media)
+      }
+    },
+    
+    handleActionClick(action) {
+      switch (action.id) {
+        case 'edit':
+          this.handleEdit()
+          break
+        case 'subtitles':
+          this.handleSubtitles()
+          break
+        case 'export':
+          this.handleExport()
+          break
+        case 'delete':
+          this.handleDelete()
+          break
       }
     },
 
@@ -286,6 +329,7 @@ export default {
         },
       })
     },
+    
     handleSubtitles() {
       this.$router.push({
         name: "conversations subtitles",
@@ -295,6 +339,7 @@ export default {
         },
       })
     },
+    
     handleExport() {
       this.$router.push({
         name: "conversations publish",
@@ -304,6 +349,7 @@ export default {
         },
       })
     },
+    
     handleDelete() {
       this.showDeleteModal = true
     },
@@ -316,370 +362,221 @@ export default {
 </script>
 
 <style lang="scss">
+// ===== MAIN CONTAINER =====
 .media-explorer-item {
-  margin: 0.1rem;
-  display: flex;
-  //flex-direction: column;
-  //gap: 1rem;
-  border: 1px solid var(--neutral-10);
-  padding: 0.5rem;
   position: relative;
+  display: flex;
+  margin: 0.1rem;
+  padding: 0.5rem;
+  border: 1px solid var(--neutral-10);
   border-radius: 4px;
   transition: all 0.1s ease-in-out;
+  background-color: var(--background-primary);
 
   &:hover {
     border-color: var(--neutral-40);
     background-color: var(--neutral-10);
   }
-}
 
-.media-explorer-item--selected {
-  border-color: var(--primary-color);
-}
+  &--selected {
+    border-color: var(--primary-color);
+  }
 
-.media-explorer-item__inline {
-  flex: 1;
-  width: 100%;
-  display: flex;
-  box-sizing: border-box;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.media-explorer-item__inline__favorite {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  color: var(--neutral-60);
-  border-radius: 4px;
-  cursor: pointer;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.media-explorer-item__inline__favorite:hover {
-  color: var(--primary-color);
-}
-
-.media-explorer-item__inline__favorite.active:hover {
-  color: var(--neutral-60);
-}
-
-.media-explorer-item__inline__favorite.active {
-  color: var(--primary-color);
-}
-
-.media-explorer-item__inline__selection {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  position: relative;
-  width: 24px;
-  height: 24px;
-  border-radius: 12px;
-  overflow: hidden;
-  flex-shrink: 0;
-
-  .media-explorer-item__inline__checkbox {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    flex-shrink: 0;
+  &--favorite {
+    border-left: 3px solid var(--primary-color);
   }
 }
 
-.media-explorer-item__inline__tags {
+// ===== CONTENT LAYOUT =====
+.media-explorer-item__content {
   display: flex;
-  justify-content: center;
+  width: 100%;
   align-items: center;
-  max-width: 50%;
-  flex-shrink: 0;
+  gap: 0.5rem;
 }
 
-.media-explorer-item__inline__selection.selected {
-  background-color: var(--primary-color);
-}
-
-.media-explorer-item__inline__meta {
-  display: flex;
-  align-items: center;
-  font-size: 0.8rem !important;
-  flex-shrink: 0;
-}
-
-.media-explorer-item__inline__meta.actions {
-  gap: 0;
-  border: 1px solid var(--neutral-40);
-}
-
-.media-title-container {
+.media-explorer-item__left {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   flex: 1;
+  min-width: 0; // Allow shrinking
 }
 
-.btn-overview {
+.media-explorer-item__right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex: 0 0 50%; // Max 50%
+  min-width: 0; // Allow shrinking
+}
+
+// ===== CONTROLS GROUP =====
+.media-explorer-item__controls {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border: none;
-  background: transparent;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--neutral-40);
   border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  background-color: var(--primary-soft);
   flex-shrink: 0;
 }
 
-.media-explorer-item:hover .btn-overview {
-  opacity: 1;
-}
-
-.media-explorer-item__inline__meta.actions {
-  border-radius: 2px;
-  margin-right: 0.5rem;
-  background-color: var(--primary-soft);
-  height: 24px;
-  min-width: 46px;
-}
-
-.user-profile-picture-container {
-  border: 1px solid var(--neutral-10);
-}
-
-.media-explorer-item__inline__meta > a {
-  margin: 0;
-  padding: 0;
-  padding: 0 0.5rem;
-  font-weight: 600;
-  width: 240px;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-  display: inline-block;
-}
-
-.media-explorer-item__inline__infos {
+.media-explorer-item__favorite {
   display: flex;
-  flex-direction: row;
   align-items: center;
-  gap: 1rem;
-  min-width: 200px;
-
-  &__avatar {
-    flex-shrink: 0;
-    position: relative;
-    overflow: visible;
-
-    .media-explorer-item__inline__more__owner__avatar {
-      position: absolute;
-      top: -0.5rem;
-      right: -0.5rem;
-      border: 1px solid var(--background-primary);
-      z-index: 1;
-      box-shadow: 0 0 0 1px var(--neutral-40);
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: transparent;
+  color: var(--neutral-60);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  
+  &:hover {
+    color: var(--primary-color);
+  }
+  
+  &.active {
+    color: var(--primary-color);
+    
+    &:hover {
+      color: var(--neutral-60);
     }
   }
 }
 
-.media-explorer-item__inline__more {
+.media-explorer-item__checkbox-container {
   display: flex;
-  flex-direction: row;
   align-items: center;
-  gap: 1rem;
-  min-width: 200px;
-
-  &__owner {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 0.5rem;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 2px;
+  overflow: hidden;
+  transition: background-color 0.2s ease;
+  
+  &.selected {
+    background-color: var(--primary-color);
   }
 }
 
-.media-explorer-item__inline__infos__duration,
-.media-explorer-item__inline__infos__dates {
-  font-size: 0.75rem !important;
-  display: inline-block;
+.media-explorer-item__checkbox {
+  width: 12px;
+  height: 12px;
+  margin: 0;
+  cursor: pointer;
+}
+
+// ===== MEDIA INFO ELEMENTS =====
+.media-explorer-item__type-icon {
+  flex-shrink: 0;
+}
+
+.media-explorer-item__owner {
+  flex-shrink: 0;
+}
+
+.media-explorer-item__title {
+  flex: 1;
+  min-width: 0;
+  
+  a {
+    display: block;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    
+    &:hover {
+      color: var(--primary-color);
+    }
+  }
+}
+
+.media-explorer-item__overview-btn {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  .media-explorer-item:hover & {
+    opacity: 1;
+  }
+}
+
+.media-explorer-item__metadata {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.media-explorer-item__duration,
+.media-explorer-item__date {
+  font-size: 0.75rem;
+  padding: 0.1rem 0.25rem;
   background-color: var(--neutral-10);
   border: 1px solid var(--neutral-20);
-  padding: 0.1rem 0.25rem;
   border-radius: 4px;
-}
-
-.media-explorer-item__icon {
-  position: relative;
-  color: var(--primary-color);
-  width: 1.5rem;
-  height: 1.5rem;
-  background-color: var(--neutral-10);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.2rem;
-}
-
-.media-explorer-item__checkbox {
-  position: absolute;
-  top: 0;
-  left: 0;
-  color: #fff;
-  width: 1.5rem;
-  height: 1.5rem;
-  background-color: var(--neutral-10);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.2rem;
-  transition: background-color 0.3s ease-in-out;
-}
-
-.media-explorer-item__checkbox.active {
-  background-color: var(--primary-color);
-}
-
-.media-explorer-item__icon span {
-  font-size: 1rem;
-  margin: 0;
-  padding: 0;
-}
-
-.media-explorer-item__header__title__sub {
-  display: flex;
-  padding-top: 0.1rem;
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
-.media-explorer-item__header__title__wrapper {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.media-explorer-item__header__title h4 {
-  margin: 0;
-  padding: 0;
-  font-weight: 600;
-  width: 280px;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.media-explorer-item__header__title__icon {
-  color: var(--primary-color);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.media-explorer-item__header__title p {
-  margin: 0;
-  padding: 0;
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  text-overflow: ellipsis;
-  overflow: hidden;
+  color: var(--text-secondary);
   white-space: nowrap;
 }
 
-.media-explorer-item__header__metadata {
+// ===== TAGS SECTION =====
+.media-explorer-item__tags {
+  width: 100%;
   display: flex;
-  flex-direction: row;
-  gap: 0.5rem;
-  align-items: center;
-  margin-right: 1rem;
-  padding-top: 0.1rem;
+  justify-content: flex-end;
 }
 
-.media-explorer-item__header__metadata > * {
-  font-weight: 600;
-  display: inline-block;
-  border: 1px solid var(--neutral-10);
-  background-color: var(--neutral-30);
-  padding: 0.2rem 0.5rem;
-  border-radius: 0.2rem;
-}
-
-.media-explorer-item__header__tags {
-  display: inline-block;
-  padding: 0.2rem 0.5rem;
-  border-radius: 0.2rem;
-}
-
-.media-explorer-item__header__actions {
-  flex-direction: row;
-  gap: 0.5rem;
+// ===== ACTIONS =====
+.media-explorer-item__actions {
   position: absolute;
-  display: none;
-  top: 0;
-  height: 100%;
-  transition: right 0.1s ease-in-out;
+  top: 50%;
+  right: 0.5rem;
+  transform: translateY(-50%);
+  z-index: 10;
 }
 
-.media-explorer-item__header__actions nav {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: row;
-  padding: 0.5rem;
-  box-sizing: border-box;
-}
-
-.media-explorer-item__header__actions nav ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: row;
-  gap: 0.5rem;
-}
-
-.media-explorer-item__header__actions nav ul li {
-  padding: 0;
-  margin: 0;
-}
-
-.media-explorer-item__header__actions nav ul li a {
-  padding: 0;
-  margin: 0;
-}
-
-.media-explorer-item:hover .media-explorer-item__header__actions {
-  display: flex;
-  position: absolute;
-  align-items: center;
-  right: 0;
-  top: 0;
-  background-color: var(--primary-soft);
-  padding: 0.5rem;
-  box-sizing: border-box;
-  height: 100%;
-  border: 1px solid var(--primary-color);
-  z-index: 3;
-  border-radius: 0px 4px 4px 0px;
-}
-
+// ===== RESPONSIVE DESIGN =====
 @media only screen and (max-width: 1100px) {
-  .media-explorer-item__inline__meta > a,
-  .media-explorer-item__header__title h4 {
-    width: 160px;
+  .media-explorer-item__title {
+    max-width: 160px;
+  }
+  
+  .media-explorer-item__right {
+    flex: 0 0 40%; // Reduce to 40% on smaller screens
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .media-explorer-item {
+    padding: 0.25rem;
+  }
+  
+  .media-explorer-item__left {
+    gap: 0.25rem;
+  }
+  
+  .media-explorer-item__metadata {
+    flex-direction: column;
+    gap: 0.25rem;
+    align-items: flex-start;
+  }
+  
+  .media-explorer-item__right {
+    flex: 0 0 35%;
   }
 }
 </style>

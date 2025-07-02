@@ -1,45 +1,46 @@
 <template>
-  <span
-    class="media-explorer-item-tags"
-    @click.stop>
-    <span class="media-explorer-item-tags__actions">
-      <Popover
-        trigger="click"
-        :track-mouse="false"
-        position="bottom"
-        overlay
-        width="280px">
-        <template #trigger>
-          <Button
-            class="neutral outline icon-only"
-            icon="tag"
-            variant="outline"
-            size="sm"
-            @mouseenter.prevent
-            @mouseleave.prevent />
-        </template>
-        <template #content>
-          <MediaExplorerItemTagBox
-            :media-id="mediaId"
-            :show-manage-button="false" />
-        </template>
-      </Popover>
-    </span>
-    <span v-if="mediatags.length > 0" class="media-explorer-item-tags__list">
-      <Tooltip
-        :key="`${mediaId}-tag-${tag._id}`"
-        v-for="tag in mediatags"
-        :text="tag.description || tag.name">
-        <ChipTag
-          :name="tag.name"
-          :emoji="tag.emoji"
-          :color="getTagColor(tag)"
-          @click="handleTagClick(tag)"
-          size="xs"
-        />
-      </Tooltip>
-    </span>
-  </span>
+  <div class="media-explorer-item-tags" @click.stop>
+    <!-- Tags list -->
+    <div v-if="mediatags.length > 0" class="media-explorer-item-tags__container">
+      <div class="media-explorer-item-tags__list">
+        <Tooltip
+          v-for="tag in visibleTags"
+          :key="`${mediaId}-tag-${tag._id}`"
+          :text="tag.description || tag.name"
+          position="bottom">
+          <ChipTag
+            :name="tag.name"
+            :emoji="tag.emoji"
+            :color="getTagColor(tag)"
+            @click="handleTagClick(tag)"
+            size="xs" />
+        </Tooltip>
+        
+        <!-- +N bubble for hidden tags -->
+        <Tooltip
+          v-if="hiddenCount > 0"
+          :text="hiddenTagsTooltip"
+          position="bottom">
+          <button 
+            class="media-explorer-item-tags__more"
+            @click.stop="toggleShowAll"
+            :title="`${hiddenCount} ${$t('media_explorer.tags.more_tags')}`">
+            +{{ hiddenCount }}
+          </button>
+        </Tooltip>
+      </div>
+    </div>
+    
+    <!-- Empty state or add button -->
+    <div 
+      v-else 
+      class="media-explorer-item-tags__empty"
+      :class="{ 'media-explorer-item-tags__empty--hovered': hovered }">
+      <span class="media-explorer-item-tags__empty-text">
+        {{ $t('media_explorer.tags.no_tags') }}
+      </span>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -130,9 +131,11 @@ export default {
         this.$store.dispatch("tags/addExploreSelectedTag", tag)
       }
     },
-    handleTagMore(event) {
-      event.preventDefault()
-      event.stopPropagation()
+    toggleShowAll(event) {
+      if (event) {
+        event.preventDefault()
+        event.stopPropagation()
+      }
       this.showAllTags = !this.showAllTags
     },
     displayIfEmoji(tag) {
@@ -153,68 +156,104 @@ export default {
 .media-explorer-item-tags {
   display: flex;
   align-items: center;
-  gap: 0.5em;
-  border: 1px solid var(--neutral-20);
-  background: var(--neutral-10);
-  border-radius: 4px;
-  padding: 0.5em 0.25em;
-  overflow: hidden;
-  border: 1px solid transparent;
+  width: 100%;
+  min-width: 0; // Allow shrinking
 
-  &:hover {
-    border-color: var(--neutral-40);
-  }
-
-  &__empty {
-    font-size: 0.9em;
-    color: var(--neutral-60);
-    display: inline-block;
-    padding-right: 0.25em;
+  &__container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
   }
 
   &__list {
     display: flex;
-    gap: 0.5em;
     align-items: center;
-    flex-wrap: wrap;
+    gap: 0.25rem;
+    flex-wrap: nowrap;
+    overflow: hidden;
+    width: 100%;
+    min-width: 0;
 
-    & > *,
-    .popover-trigger {
+    > * {
       flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
   }
 
-  &__actions {
-    box-sizing: border-box;
+  &__more {
     display: flex;
-    gap: 0.5em;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 18px;
+    padding: 0 0.25rem;
+    border: 1px solid var(--neutral-30);
+    background-color: var(--neutral-20);
+    color: var(--text-secondary);
+    border-radius: 9px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    &:hover {
+      background-color: var(--neutral-30);
+      border-color: var(--neutral-40);
+      color: var(--text-primary);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+
+  &__empty {
+    display: flex;
     align-items: center;
     justify-content: flex-end;
-    z-index: 1;
-  }
-
-  &--empty {
-    height: 18px;
-    display: none !important;
+    width: 100%;
+    opacity: 0;
+    transition: opacity 0.2s ease;
 
     &--hovered {
-      display: block !important;
+      opacity: 1;
+    }
+
+    &-text {
+      font-size: 0.75rem;
+      color: var(--neutral-50);
+      font-style: italic;
     }
   }
-}
-
-.tag--add {
-  position: relative;
 }
 
 @media only screen and (max-width: 1100px) {
   .media-explorer-item-tags {
     &__list {
-      flex-wrap: nowrap;
-      overflow: auto;
+      gap: 0.15rem;
+    }
+
+    &__more {
+      min-width: 20px;
+      height: 16px;
+      font-size: 0.65rem;
+    }
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .media-explorer-item-tags {
+    &__list {
+      gap: 0.1rem;
+    }
+
+    &__more {
+      min-width: 18px;
+      height: 14px;
+      font-size: 0.6rem;
+      padding: 0 0.15rem;
     }
   }
 }

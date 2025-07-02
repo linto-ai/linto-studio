@@ -16,9 +16,9 @@
         <h3 class="panel-title">{{ $t("media_explorer.panel.overview") }}</h3>
         <Button
           @click="$emit('close')"
-          icon="close"
+          icon="x"
           size="sm"
-          variant="ghost"
+          variant="outline"
           color="tertiary" />
       </div>
 
