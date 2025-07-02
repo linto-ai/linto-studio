@@ -1,14 +1,5 @@
 <template>
   <LayoutV2 customClass="explore-next">
-    <template v-slot:breadcrumb-actions>
-      <ActionConversationCreate
-        :transcriptionServices="fieldTranscriptionService.list"
-        :loadingServices="fieldTranscriptionService.loading"
-        :currentOrganizationScope="currentOrganizationScope"
-        @upload-complete="handleNewUploadComplete"
-        @success="handleNewUploadSuccess" />
-    </template>
-
     <div class="flex col flex1 medium-margin">
       <Tabs
         v-model="currentTab"

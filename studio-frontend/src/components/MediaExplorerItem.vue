@@ -22,6 +22,7 @@
             @click.stop="toggleFavorite"
             icon="star"
             :title="$t('media_explorer.favorite')"
+            :iconWeight="isFavorite ? 'fill' : 'regular'"
             variant="outline"
             size="sm"
             :color="isFavorite ? 'primary' : 'neutral-10'" />
@@ -388,7 +389,7 @@ export default {
   }
 
   &--favorite {
-    border-left: 3px solid var(--primary-color);
+    //border-left: 3px solid var(--primary-color);
   }
 
   &--overview {
