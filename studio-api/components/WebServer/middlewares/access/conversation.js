@@ -140,7 +140,9 @@ async function batchAccess(
   rightOrga,
   rightException,
 ) {
-  debug(`Batch access for conversations: ${conversations}`)
+  if (!conversations || conversations.length === 0) {
+    return next(new ConversationIdRequire())
+  }
   for (const convId of conversations.split(",")) {
     const conv = (await model.conversations.getById(convId, projection))[0]
     const organization = await model.organizations.getById(
