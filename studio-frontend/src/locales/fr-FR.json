@@ -701,7 +701,9 @@
   "modal_switch_org": {
     "title": "Changer d'organisation",
     "subtitle": "Sélectionnez l'organisation vers laquelle vous souhaitez changer",
-    "current": "Actuelle"
+    "current": "Actuelle",
+    "create_organization": "Créer une nouvelle organisation",
+    "backoffice": "Backoffice"
   },
   "navigation": {
     "backoffice": {

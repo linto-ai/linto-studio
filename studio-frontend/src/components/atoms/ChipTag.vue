@@ -112,7 +112,7 @@ export default {
   padding-left: 0.5em;
   padding-right: 0.5em;
 
-  text-transform: uppercase;
+  text-transform: capitalize;
   border: 1px solid;
   border-radius: 5px;
   font-weight: 600;

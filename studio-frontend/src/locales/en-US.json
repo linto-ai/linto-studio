@@ -695,7 +695,9 @@
   "modal_switch_org": {
     "title": "Switch organisation",
     "subtitle": "Select the organisation you want to switch to",
-    "current": "Current"
+    "current": "Current",
+    "create_organization": "Create an organisation",
+    "backoffice": "Backoffice"
   },
   "navigation": {
     "account": {
