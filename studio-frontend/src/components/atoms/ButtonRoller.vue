@@ -385,6 +385,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
+    margin: auto;
 
     .btn-prefix {
       margin-right: 0.5rem;

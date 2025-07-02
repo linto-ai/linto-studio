@@ -653,7 +653,7 @@
     "panel": {
       "overview": "Aperçu du média",
       "title": "Titre",
-      "description": "Description", 
+      "description": "Description",
       "duration": "Durée",
       "created": "Créé le",
       "tags": "Tags",
@@ -700,7 +700,7 @@
       "return_link": "Interface utilisateur"
     },
     "conversation": {
-      "start": "Démarrer",
+      "start": "Transcrire",
       "create": "Importer un media",
       "create_no_rights_error": "Vous n'avez pas les droits pour créer un média dans cette organisation. Veuillez contacter un administrateur.",
       "list": "Conversations",

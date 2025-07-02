@@ -42,7 +42,8 @@
     "notifications": "Notifications",
     "tags": "Subjects",
     "title": "Settings",
-    "subtitle": "Manage your account and preferences"
+    "subtitle": "Manage your account and preferences",
+    "logout": "Logout"
   },
   "backoffice": {
     "title": "Backoffice",
@@ -653,7 +654,7 @@
     "panel": {
       "overview": "Media Overview",
       "title": "Title",
-      "description": "Description", 
+      "description": "Description",
       "duration": "Duration",
       "created": "Created",
       "tags": "Tags",
@@ -694,7 +695,7 @@
     "subtitle": "Select the organisation you want to switch to",
     "current": "Current"
   },
-  "   ": {
+  "navigation": {
     "account": {
       "account_link": "My account",
       "avatar_title": "User avatar",
@@ -706,7 +707,7 @@
       "return_link": "User interface"
     },
     "conversation": {
-      "start": "Start",
+      "start": "Transcribe",
       "create": "Upload media",
       "create_no_rights_error": "You don't have the rights to create a media. Please contact your organisation administrator.",
       "list": "Media",
@@ -734,7 +735,8 @@
       "manage_tags": "Manage tags",
       "sessions": "Live transcriptions",
       "shared": "Shared with me",
-      "user_page": "My account"
+      "user_page": "My account",
+      "tags": "Subjects"
     }
   },
   "no_orga": {
