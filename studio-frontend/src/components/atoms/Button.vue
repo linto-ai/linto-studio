@@ -146,21 +146,6 @@ export default {
       type: String,
       required: false,
       default: "primary",
-      validator: (value) =>
-        [
-          "primary",
-          "secondary",
-          "tertiary",
-          "neutral",
-          "primary-soft",
-          "primary-hard",
-          "secondary-soft",
-          "secondary-hard",
-          "tertiary-soft",
-          "tertiary-hard",
-          "neutral-soft",
-          "neutral-hard",
-        ].includes(value),
     },
     borderColor: {
       type: String,

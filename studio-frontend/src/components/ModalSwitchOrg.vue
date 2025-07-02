@@ -32,7 +32,7 @@
             </div>
           </div>
         </router-link>
-        <div class="modal-switch-org__list__item">
+        <div class="modal-switch-org__list__item new-org">
           <Button
             :label="$t('modal_switch_org.create_organization')"
             icon="plus"
@@ -42,7 +42,6 @@
             @click="isCreateModalOpen = true" />
         </div>
       </div>
-      {{ isCreateModalOpen }}
       <ModalCreateOrganization
         v-model="isCreateModalOpen"
         @on-cancel="isCreateModalOpen = false" />
@@ -111,6 +110,11 @@ export default {
         &__current {
           color: var(--text-secondary);
         }
+      }
+
+      &.new-org {
+        margin-top: 1em;
+        justify-content: flex-end;
       }
     }
   }

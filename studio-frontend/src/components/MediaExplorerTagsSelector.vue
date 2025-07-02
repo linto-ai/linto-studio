@@ -102,7 +102,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex"
+import { mapState, mapActions, mapGetters } from "vuex"
 
 export default {
   name: "MediaExplorerTagsSelector",
@@ -117,16 +117,30 @@ export default {
       type: Number,
       default: 5,
     },
+    // Type of view to determine which tags to use
+    viewType: {
+      type: String,
+      default: 'default', // 'default', 'favorites', 'shared'
+    },
   },
   computed: {
     ...mapState("tags", {
-      allTags: (state) => state.tags,
       selectedTagIds: (state) => state.exploreSelectedTags,
     }),
+    ...mapGetters("tags", ["getTags", "getSharedTags", "getFavoritesTags"]),
 
-    // Show all available tags, not just those with media
+    // Show all available tags based on view type
     availableTags() {
-      return this.allTags.sort((a, b) => {
+      let tags = []
+      if (this.viewType === 'favorites') {
+        tags = this.getFavoritesTags
+      } else if (this.viewType === 'shared') {
+        tags = this.getSharedTags
+      } else {
+        tags = this.getTags
+      }
+      
+      return tags.sort((a, b) => {
         // Sort by media count (descending) then by name
         const countA = this.getMediaCountForTag(a._id)
         const countB = this.getMediaCountForTag(b._id)
@@ -149,7 +163,7 @@ export default {
       "setExploreSelectedTags",
     ]),
     getTagById(tagId) {
-      return this.allTags.find((tag) => tag._id === tagId)
+      return this.availableTags.find((tag) => tag._id === tagId)
     },
 
     getTagTooltip(tag) {

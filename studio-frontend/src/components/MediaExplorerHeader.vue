@@ -46,13 +46,10 @@
 
 <script>
 import { v4 as uuid } from "uuid"
-import MediaExplorerTagsSelector from "./MediaExplorerTagsSelector.vue"
 
 export default {
   name: "MediaExplorerHeader",
-  components: {
-    MediaExplorerTagsSelector,
-  },
+  components: {},
   props: {
     selectedCount: {
       type: Number,

@@ -120,12 +120,21 @@ export default {
     }
   },
   computed: {
-    ...mapGetters("tags", ["getExploreSelectedTags"]),
+    ...mapGetters("tags", ["getExploreSelectedTags", "getTags", "getSharedTags", "getFavoritesTags"]),
     selectedTags() {
       return this.getExploreSelectedTags
     },
     selectedTagIds() {
       return this.$store.state.tags.exploreSelectedTags.map((t) => t._id)
+    },
+    availableTags() {
+      if (this.favorites) {
+        return this.getFavoritesTags
+      } else if (this.shared) {
+        return this.getSharedTags
+      } else {
+        return this.getTags
+      }
     },
   },
   async mounted() {
@@ -155,14 +164,18 @@ export default {
       if (newVal !== oldVal) {
         this.options.favorites = newVal
         this.options.shared = this.shared
-        this.resetSearch()
+        this.loadTagsForCurrentView().then(() => {
+          this.resetSearch()
+        })
       }
     },
     shared(newVal, oldVal) {
       if (newVal !== oldVal) {
         this.options.shared = newVal
         this.options.favorites = this.favorites
-        this.resetSearch()
+        this.loadTagsForCurrentView().then(() => {
+          this.resetSearch()
+        })
       }
     },
   },
@@ -186,6 +199,13 @@ export default {
     async init() {
       this.options.favorites = this.favorites
       this.options.shared = this.shared
+      
+      // Load appropriate tags based on view type BEFORE initializing from URL
+      await this.loadTagsForCurrentView()
+      
+      // Give a small delay to ensure tags are fully loaded in the store
+      await this.$nextTick()
+      
       await this.initPageFromUrl()
       this.setupIntersectionObserver()
       this.setupScrollListener()
@@ -208,6 +228,22 @@ export default {
         (m) => !mediaIds.includes(m._id),
       )
     },
+    async loadTagsForCurrentView() {
+      try {
+        if (this.favorites) {
+          // Load favorites tags
+          await this.$store.dispatch("tags/fetchFavoritesTags")
+        } else if (this.shared) {
+          // Load shared tags
+          await this.$store.dispatch("tags/fetchSharedTags")
+        } else {
+          // Load regular organization tags
+          await this.$store.dispatch("tags/fetchTags")
+        }
+      } catch (error) {
+        console.error("Error loading tags for current view:", error)
+      }
+    },
     async initPageFromUrl() {
       const urlParams = new URLSearchParams(window.location.search)
       const pageParam = urlParams.get("page")
@@ -217,12 +253,12 @@ export default {
       // Handle tags parameter
       if (tagsParam && tagsParam.trim().length > 0) {
         const tagIds = tagsParam.split(",").filter((id) => id.trim())
-        // Convert tag IDs to tag objects - assuming tags are available in store
+        // Convert tag IDs to tag objects from the appropriate tags collection
         this.$store.dispatch(
           "tags/setExploreSelectedTags",
           tagIds.map((id) => {
-            return this.$store.state.tags.tags.find((t) => t._id === id)
-          }),
+            return this.availableTags.find((t) => t._id === id)
+          }).filter(tag => tag), // Remove undefined tags
         )
       }
 

@@ -544,6 +544,7 @@ export default {
   width: 100%;
   display: flex;
   justify-content: flex-end;
+  padding-right: 3rem;
 }
 
 // ===== ACTIONS =====

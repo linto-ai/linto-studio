@@ -50,6 +50,10 @@ export default {
       state.selectedMedias = selectedMedias
     },
     addSelectedMedia(state, media) {
+      if (state.selectedMedias.some((m) => m._id === media._id)) {
+        return
+      }
+
       state.selectedMedias.push(media)
     },
     removeSelectedMedia(state, media) {
@@ -90,52 +94,6 @@ export default {
   actions: {
     updateMedia({ commit }, { mediaId, media }) {
       commit("updateMedia", { mediaId, media })
-    },
-    async uploadFiles(
-      { commit, dispatch },
-      { files, service, organizationScope },
-    ) {
-      const uploadedMedias = []
-
-      try {
-        for (const file of files) {
-          commit("addToUploadQueue", file)
-          commit("setUploadProgress", { fileId: file.id, progress: 0 })
-
-          // TODO: upload file to linto api
-          // Simulate upload progress
-          for (let progress = 0; progress <= 100; progress += 10) {
-            commit("setUploadProgress", { fileId: file.id, progress })
-            await new Promise((resolve) => setTimeout(resolve, 100))
-          }
-
-          const media = {
-            _id: `media_${file.id}_${Date.now()}`,
-            name: file.name,
-            size: file.size,
-            type: file.type,
-            status: "uploaded",
-            createdAt: new Date().toISOString(),
-            service: service,
-            organizationScope: organizationScope,
-          }
-
-          uploadedMedias.push(media)
-          commit("removeFromUploadQueue", file.id)
-          commit("clearUploadProgress", file.id)
-        }
-
-        commit("appendMedias", uploadedMedias)
-
-        return { success: true, medias: uploadedMedias }
-      } catch (error) {
-        files.forEach((file) => {
-          commit("removeFromUploadQueue", file.id)
-          commit("clearUploadProgress", file.id)
-        })
-
-        throw error
-      }
     },
     clearUploadState({ commit }) {
       commit("clearUploadQueue")

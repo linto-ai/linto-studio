@@ -51,11 +51,34 @@ export default {
       showAllTags: false,
     }
   },
+  watch: {
+    '$route.name'(newRouteName, oldRouteName) {
+      if (newRouteName !== oldRouteName) {
+        this.fetchTags()
+      }
+    }
+  },
+  mounted() {
+    this.fetchTags()
+  },
   computed: {
     ...mapGetters("tags", {
-      tags: "getTags",
+      orgTags: "getTags",
+      sharedTags: "getSharedTags", 
+      favoritesTags: "getFavoritesTags",
       selectedTags: "getExploreSelectedTags",
     }),
+    tags() {
+      const routeName = this.$route?.name || ''
+      
+      if (routeName === 'explore-favorites') {
+        return this.favoritesTags
+      } else if (routeName === 'explore-shared') {
+        return this.sharedTags
+      } else {
+        return this.orgTags
+      }
+    },
     selectedTagsAsIds() {
       return this.selectedTags.map((tag) => tag._id)
     },
@@ -88,7 +111,18 @@ export default {
       this.showModalTagManagement = false
     },
     fetchTags() {
-      this.$store.dispatch("tags/fetchTags")
+      const currentRoute = this.$route?.name || ''
+      console.log('[MediaExplorerMenuLabels] Fetching tags for route:', currentRoute)
+      
+      if (currentRoute === 'explore-favorites' || 
+          (typeof currentRoute === 'string' && currentRoute.includes('favorites'))) {
+        this.$store.dispatch("tags/fetchFavoritesTags")
+      } else if (currentRoute === 'explore-shared' || 
+                 (typeof currentRoute === 'string' && currentRoute.includes('shared'))) {
+        this.$store.dispatch("tags/fetchSharedTags")
+      } else {
+        this.$store.dispatch("tags/fetchTags")
+      }
     },
   },
 }

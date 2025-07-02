@@ -289,7 +289,7 @@ export async function apiGetfavoritesCategoriesTree(tagsIds, signal, notif) {
     `${BASE_API}/users/self/favorites/tags`,
     { method: "get", signal },
     {
-      tags: tagsIds.toString(),
+      tags: tagsIds.toString() || null,
     },
     notif,
   )

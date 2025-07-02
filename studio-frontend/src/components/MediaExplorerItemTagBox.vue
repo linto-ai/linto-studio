@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex"
+import { mapState, mapGetters } from "vuex"
 import ChipTag from "@/components/atoms/ChipTag.vue"
 import MediaExplorerFormTag from "@/components/MediaExplorerFormTag.vue"
 
@@ -86,8 +86,20 @@ export default {
   computed: {
     ...mapState("tags", {
       categories: (state) => state.categories,
-      tags: (state) => state.tags,
     }),
+    ...mapGetters("tags", ["getTags", "getSharedTags", "getFavoritesTags"]),
+    tags() {
+      // Détermine quels tags utiliser selon la route courante
+      const routeName = this.$route?.name || ''
+      
+      if (routeName === 'explore-favorites') {
+        return this.getFavoritesTags
+      } else if (routeName === 'explore-shared') {
+        return this.getSharedTags
+      } else {
+        return this.getTags
+      }
+    },
     media() {
       return this.mediaId
         ? this.$store.getters["inbox/getMediaById"](this.mediaId)

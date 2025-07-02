@@ -21,6 +21,17 @@
           variant="outline"
           color="tertiary" />
       </div>
+      <div class="panel-header-actions button-group">
+        <Button
+          v-for="action in actions"
+          :key="action.id"
+          :label="action.label"
+          :icon="action.icon"
+          size="sm"
+          variant="outline"
+          :color="action.color"
+          @click="handleActionClick(action)" />
+      </div>
 
       <!-- Media overview content -->
       <div class="panel-body">
@@ -44,12 +55,12 @@
           </div>
 
           <!-- Media duration -->
-          <div class="media-section" v-if="selectedMedia.duration">
+          <div class="media-section" v-if="selectedMedia.metadata?.audio?.duration">
             <h4 class="section-title">
               {{ $t("media_explorer.panel.duration") }}
             </h4>
             <p class="section-content">
-              {{ formatDuration(selectedMedia.duration) }}
+              <TimeDuration :duration="selectedMedia.metadata?.audio?.duration" />
             </p>
           </div>
 
@@ -63,9 +74,18 @@
             </p>
           </div>
 
+          <!-- Media duration -->
+          <div class="media-section" v-if="selectedMedia.metadata.au">
+            <h4 class="section-title">
+              {{ $t("media_explorer.panel.duration") }}
+            </h4>
+            <p class="section-content">
+              {{ formatDuration(selectedMedia.duration) }}
+            </p>
+          </div>
+
           <!-- Media tags -->
-          <div
-            class="media-section">
+          <div class="media-section">
             <h4 class="section-title">{{ $t("media_explorer.panel.tags") }}</h4>
             <div class="tags-container">
               <ChipTag
@@ -85,12 +105,11 @@
                     color="primary">
                     {{ $t("media_explorer.tags.add_tag") }}
                   </Button>
-                </template> 
+                </template>
                 <MediaExplorerItemTagBox
                   :mediatags="selectedMediaTags"
                   :media-id="selectedMedia._id"
-                  width="300px"  
-                />
+                  width="300px" />
               </Popover>
             </div>
           </div>
@@ -113,6 +132,11 @@
         </div>
       </div>
     </div>
+
+    <ModalDeleteConversations
+      :visible="showDeleteModal"
+      :medias="[selectedMedia]"
+      @close="showDeleteModal = false" />
   </div>
 </template>
 
@@ -122,6 +146,7 @@ import Button from "@/components/atoms/Button.vue"
 import Badge from "@/components/atoms/Badge.vue"
 import ChipTag from "./atoms/ChipTag.vue"
 import MediaExplorerItemTagBox from "./MediaExplorerItemTagBox.vue"
+import ModalDeleteConversations from "./ModalDeleteConversations.vue"
 
 export default {
   name: "MediaExplorerRightPanel",
@@ -129,6 +154,7 @@ export default {
     Button,
     Badge,
     MediaExplorerItemTagBox,
+    ModalDeleteConversations,
   },
   props: {
     selectedMedia: {
@@ -154,6 +180,30 @@ export default {
       isResizing: false,
       startX: 0,
       startWidth: 0,
+      showDeleteModal: false,
+      actions: [
+        {
+          id: "edit",
+          label: this.$t("media_explorer.line.edit_transcription"),
+          icon: "pencil",
+        },
+        {
+          id: "subtitles",
+          label: this.$t("media_explorer.line.edit_subtitles"),
+          icon: "closed-captioning",
+        },
+        {
+          id: "export",
+          label: this.$t("media_explorer.line.export"),
+          icon: "export",
+        },
+        {
+          id: "delete",
+          label: this.$t("media_explorer.line.delete"),
+          icon: "trash",
+          color: "tertiary",
+        },
+      ],
     }
   },
   computed: {
@@ -201,21 +251,21 @@ export default {
      * Handle the resize of the panel
      * @param event - The event object
      */
-          handleResize(event) {
-        if (!this.isResizing) return
+    handleResize(event) {
+      if (!this.isResizing) return
 
-        const clientX = event.clientX || event.touches[0].clientX
-        const deltaX = this.startX - clientX
-        const newWidth = this.startWidth + deltaX
-        this.panelWidth = Math.max(
-          this.minWidth,
-          Math.min(this.maxWidth, newWidth),
-        )
-        
-        this.$emit('resize', this.panelWidth)
+      const clientX = event.clientX || event.touches[0].clientX
+      const deltaX = this.startX - clientX
+      const newWidth = this.startWidth + deltaX
+      this.panelWidth = Math.max(
+        this.minWidth,
+        Math.min(this.maxWidth, newWidth),
+      )
 
-        event.preventDefault()
-      },
+      this.$emit("resize", this.panelWidth)
+
+      event.preventDefault()
+    },
 
     /**
      * Stop the resize of the panel
@@ -234,8 +284,8 @@ export default {
         "mediaExplorerPanelWidth",
         this.panelWidth.toString(),
       )
-      
-      this.$emit('resize', this.panelWidth)
+
+      this.$emit("resize", this.panelWidth)
     },
 
     /**
@@ -272,19 +322,70 @@ export default {
       const tag = this.getTags.find((t) => t._id === tagId)
       return tag ? tag.name : tagId
     },
-  },
-      mounted() {
-      const savedWidth = localStorage.getItem("mediaExplorerPanelWidth")
-      if (savedWidth) {
-        const width = parseInt(savedWidth)
-        if (width >= this.minWidth && width <= this.maxWidth) {
-          this.panelWidth = width
-        }
+
+    handleActionClick(action) {
+      switch (action.id) {
+        case "edit":
+          this.handleEdit()
+          break
+        case "subtitles":
+          this.handleSubtitles()
+          break
+        case "export":
+          this.handleExport()
+          break
+        case "delete":
+          this.handleDelete()
+          break
       }
-      
-      // Emettre la largeur initiale au parent
-      this.$emit('resize', this.panelWidth)
     },
+
+    handleEdit() {
+      this.$router.push({
+        name: "conversations transcription",
+        params: {
+          conversationId: this.media._id,
+          organizationId: this.organizationId,
+        },
+      })
+    },
+
+    handleSubtitles() {
+      this.$router.push({
+        name: "conversations subtitles",
+        params: {
+          conversationId: this.media._id,
+          organizationId: this.organizationId,
+        },
+      })
+    },
+
+    handleExport() {
+      this.$router.push({
+        name: "conversations publish",
+        params: {
+          conversationId: this.media._id,
+          organizationId: this.organizationId,
+        },
+      })
+    },
+
+    handleDelete() {
+      this.showDeleteModal = true
+    },
+  },
+  mounted() {
+    const savedWidth = localStorage.getItem("mediaExplorerPanelWidth")
+    if (savedWidth) {
+      const width = parseInt(savedWidth)
+      if (width >= this.minWidth && width <= this.maxWidth) {
+        this.panelWidth = width
+      }
+    }
+
+    // Emettre la largeur initiale au parent
+    this.$emit("resize", this.panelWidth)
+  },
   beforeDestroy() {
     if (this.isResizing) {
       this.stopResize()
@@ -349,6 +450,13 @@ export default {
   margin: 0.5em;
   height: 50px;
   border-radius: 4px;
+}
+
+.panel-header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 0.5em;
 }
 
 .panel-title {

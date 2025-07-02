@@ -51,9 +51,6 @@
 
 <script>
 import { mapGetters } from "vuex"
-// import ModalSwitchOrg from "@/components/ModalSwitchOrg.vue"
-// import MediaExplorerMenuLabels from "@/components/MediaExplorerMenuLabels.vue"
-// import ModalTagManagement from "@/components/ModalTagManagement.vue"
 export default {
   name: "MediaExplorerMenu",
   components: {},

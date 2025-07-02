@@ -867,7 +867,6 @@ router.beforeEach(async (to, from, next) => {
     if (to.name === "explore-shared") {
       await store.dispatch("tags/fetchSharedTags")
       routerDebug("Shared tags fetched")
-
     }
 
     // Check for quick session

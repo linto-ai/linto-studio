@@ -51,6 +51,9 @@ export default {
   },
   getters: {
     getTags: (state) => state.tags,
+    getSharedTags: (state) => state.sharedTags,
+    getFavoritesTags: (state) => state.favoritesTags,
+
     getCategoryById: (state) => (id) => {
       return state.categories.find((category) => category._id === id)
     },
@@ -60,7 +63,11 @@ export default {
       )
     },
     getTagById: (state) => (id) => {
-      return state.tags.find((tag) => tag._id === id)
+      return (
+        state.tags.find((tag) => tag._id === id) ||
+        state.sharedTags.find((tag) => tag._id === id) ||
+        state.favoritesTags.find((tag) => tag._id === id)
+      )
     },
     getExploreSelectedTags: (state) => state.exploreSelectedTags,
     isExploreSelectedTag: (state) => (tagId) => {
@@ -76,7 +83,6 @@ export default {
         )
 
         commit("setCategories", data)
-
         const tagsCategory = data.find(
           (category) => category.name.toLowerCase() === "tags",
         )
@@ -87,6 +93,8 @@ export default {
             tagsCategory._id,
           )
           commit("setTags", tags)
+        } else {
+          commit("setTags", [])
         }
 
         return { categories: data, tags: state.tags }
@@ -99,16 +107,22 @@ export default {
       }
     },
     async fetchSharedTags({ commit, getters, rootGetters, state }) {
-      const data = await apiGetSharedCategoriesTree(
-        rootGetters["organizations/getCurrentOrganizationScope"],
-      )
-      commit("setSharedTags", data)
+      const data = await apiGetSharedCategoriesTree()
+      const tags = []
+      data.forEach((org) => {
+        tags.push(...org.tags)
+      })
+
+      commit("setSharedTags", tags)
     },
     async fetchFavoritesTags({ commit, getters, rootGetters, state }) {
-      const data = await apiGetfavoritesCategoriesTree(
-        rootGetters["organizations/getCurrentOrganizationScope"],
-      )
-      commit("setFavoritesTags", data)
+      const data = await apiGetfavoritesCategoriesTree()
+      const tags = []
+      data.forEach((org) => {
+        tags.push(...org.tags)
+      })
+
+      commit("setFavoritesTags", tags)
     },
     async createTag({ commit, getters, rootGetters, state }, tag) {
       commit("setLoading", true)
@@ -162,7 +176,10 @@ export default {
             emoji: tag.emoji,
           },
         )
-        commit("setTags", state.tags.map((t) => (t._id === tag._id ? tag : t)))
+        commit(
+          "setTags",
+          state.tags.map((t) => (t._id === tag._id ? tag : t)),
+        )
       } catch (error) {
         console.error("Error updating tag in store:", error)
         commit("setError", error)
@@ -296,13 +313,19 @@ export default {
       }
     },
     setExploreSelectedTags({ commit }, tags) {
-      commit("setExploreSelectedTags", tags.filter((t) => !!t))
+      commit(
+        "setExploreSelectedTags",
+        tags.filter((t) => !!t),
+      )
     },
     addExploreSelectedTag({ commit, state }, tag) {
       commit("setExploreSelectedTags", [...state.exploreSelectedTags, tag])
 
       const url = new URL(window.location.href)
-      url.searchParams.set("tags", [...state.exploreSelectedTags, tag].map((t) => t._id).join(","))
+      url.searchParams.set(
+        "tags",
+        [...state.exploreSelectedTags, tag].map((t) => t._id).join(","),
+      )
       window.history.pushState({}, "", url)
     },
     removeExploreSelectedTag({ commit, state }, tag) {
@@ -312,7 +335,10 @@ export default {
       )
 
       const url = new URL(window.location.href)
-      url.searchParams.set("tags", state.exploreSelectedTags.map((t) => t._id).join(","))
+      url.searchParams.set(
+        "tags",
+        state.exploreSelectedTags.map((t) => t._id).join(","),
+      )
       window.history.pushState({}, "", url)
     },
     toggleTag({ dispatch, state }, tag) {
