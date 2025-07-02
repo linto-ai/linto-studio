@@ -64,12 +64,6 @@ export default {
     },
   },
   computed: {
-    canEdit() {
-      return this.userRights.hasRightAccess(
-        this.userRight,
-        this.userRights.WRITE,
-      )
-    },
     conversationListRoute() {
       return { name: "inbox", hash: "#previous" }
     },

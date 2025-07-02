@@ -1,3 +1,22 @@
+# 1.5.6
+
+_2025_06_24_
+
+- Live Session
+  - You can now name any session with an alias
+  - Live Transcription is available for mobile devices
+  - QRcodes allow easy access to live sessions
+  - Audio is now saved at the end of a session
+  - Session operators can add a custom watermark during live sessions
+  - Operators can add any metadata to a session
+  - Operators can now connect the local microphone devices to a live session
+  - Quick sessions now support Jitsi and Bigbluebutton video conference subtitles
+- Backoffice
+  - You can manage transcriber profiles and their scope from backoffice
+  - Add an api for session-api metrics (websocket connection and time connection)
+- Automatic mail services are improved
+- Summaries are now available in markdown format
+
 # 1.5.5
 
 _2025_01_15_

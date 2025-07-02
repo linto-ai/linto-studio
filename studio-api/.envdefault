@@ -1,3 +1,5 @@
+APPLICATION_NAME=LinTO Studio
+
 LOG_LEVEL=debug
 LOG_FORMAT=text
 

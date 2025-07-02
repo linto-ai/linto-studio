@@ -1,6 +1,6 @@
 {
   "name": "linto-studio-api",
-  "version": "1.5.5",
+  "version": "1.5.6",
   "description": "Transcription, summarization, annotation interface for recorded audio files ",
   "main": "app.js",
   "repository": {
@@ -44,6 +44,7 @@
     "express-session": "^1.18.0",
     "form-data": "^4.0.0",
     "fs": "0.0.1-security",
+    "handlebars": "^4.7.8",
     "http-proxy-middleware": "^3.0.0",
     "json-to-plain-text": "^1.1.2",
     "jsonschema": "^1.4.1",
@@ -52,6 +53,7 @@
     "libreoffice-convert": "^1.5.1",
     "live-srt-lib": "file:./lib/live-srt-lib",
     "luxon": "^3.4.3",
+    "mjml": "^4.15.3",
     "moment": "^2.29.1",
     "mongodb": "^6.8.0",
     "mqtt": "^4.3.7",

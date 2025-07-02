@@ -298,8 +298,6 @@ export default {
     //     uuid: uuidv4(),
     //   }
     // })
-    this.loading = false
-    this.init()
 
     document.addEventListener("keydown", this.keydown)
   },

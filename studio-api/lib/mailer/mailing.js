@@ -282,15 +282,15 @@ class Mailing {
 
   prepareMail(TYPE, mail_data, payload) {
     const html = htmlBuilder(TYPE, payload)
-    return this.generateMailPayload(mail_data, TYPE.subject, html)
+    return this.generateMailPayload(html, mail_data)
   }
 
-  generateMailPayload(mail_data, subject, html) {
+  generateMailPayload(mailContent, mail_data) {
     return {
-      from: `${TYPE.TITLE_NAME} <${this.no_reply}>`,
+      from: `${process.env.APPLICATION_NAME} <${this.no_reply}>`,
       to: mail_data.email,
-      subject: `${TYPE.TITLE_NAME} - ${subject}`,
-      html: html,
+      subject: mailContent.title,
+      html: mailContent.html,
     }
   }
 }
