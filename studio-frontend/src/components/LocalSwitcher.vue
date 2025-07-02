@@ -52,7 +52,7 @@ export default {
       // Persist the selected locale (string)
       localStorage.setItem("lang", newVal)
       // reload page
-      // location.reload()
+      location.reload()
     },
   },
   computed: {

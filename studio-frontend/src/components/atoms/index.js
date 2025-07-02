@@ -1,32 +1,32 @@
-import Avatar from './Avatar.vue';
-import PhIcon from './PhIcon.vue';
-import TimeDuration from './TimeDuration.vue';
-import SwitchInput from './SwitchInput.vue';
-import UserProfilePicture from './UserProfilePicture.vue';
-import Checkbox from './Checkbox.vue';
-import Chip from './Chip.vue';
-import ContextMenu from './ContextMenu.vue';
-import LabeledValue from './LabeledValue.vue';
-import LabeledValueSmall from './LabeledValueSmall.vue';
-import OrganizationBadge from './OrganizationBadge.vue';
-import Qrcode from './Qrcode.vue';
-import Radio from './Radio.vue';
-import StatusLed from './StatusLed.vue';
-import Badge from './Badge.vue';
-import IsCloud from './IsCloud.vue';
-import Tag from './Tag.vue';
-import Popover from './Popover.vue';
-import Box from './Box.vue';
-import ChipTag from './ChipTag.vue';
-import Alert from './Alert.vue';
-import Tooltip from './Tooltip.vue';
-import Emoji from './Emoji.vue';
-import Button from './Button.vue';
-import Breadcrumb from './Breadcrumb.vue';
-import PopoverList from './PopoverList.vue';
-import IsMobile from './IsMobile.vue';
-import IsDesktop from './IsDesktop.vue';
-
+import Avatar from "./Avatar.vue"
+import PhIcon from "./PhIcon.vue"
+import TimeDuration from "./TimeDuration.vue"
+import SwitchInput from "./SwitchInput.vue"
+import UserProfilePicture from "./UserProfilePicture.vue"
+import Checkbox from "./Checkbox.vue"
+import Chip from "./Chip.vue"
+import ContextMenu from "./ContextMenu.vue"
+import LabeledValue from "./LabeledValue.vue"
+import LabeledValueSmall from "./LabeledValueSmall.vue"
+import OrganizationBadge from "./OrganizationBadge.vue"
+import Qrcode from "./Qrcode.vue"
+import Radio from "./Radio.vue"
+import StatusLed from "./StatusLed.vue"
+import Badge from "./Badge.vue"
+import IsCloud from "./IsCloud.vue"
+import Tag from "./Tag.vue"
+import Popover from "./Popover.vue"
+import Box from "./Box.vue"
+import ChipTag from "./ChipTag.vue"
+import Alert from "./Alert.vue"
+import Tooltip from "./Tooltip.vue"
+import Emoji from "./Emoji.vue"
+import Button from "./Button.vue"
+import Breadcrumb from "./Breadcrumb.vue"
+import PopoverList from "./PopoverList.vue"
+import IsMobile from "./IsMobile.vue"
+import IsDesktop from "./IsDesktop.vue"
+import ButtonRoller from "./ButtonRoller.vue"
 const components = [
   Avatar,
   PhIcon,
@@ -56,19 +56,22 @@ const components = [
   PopoverList,
   IsMobile,
   IsDesktop,
-];
+  ButtonRoller,
+]
 
-const validateComponents = c => c && typeof c.name === 'string' && c.name.length > 0
-
+const validateComponents = (c) =>
+  c && typeof c.name === "string" && c.name.length > 0
 
 export default {
   install(Vue) {
-    components.forEach(component => {
+    components.forEach((component) => {
       if (validateComponents(component)) {
-        Vue.component(component.name, component);
+        Vue.component(component.name, component)
       } else {
-        console.error(`Component ${JSON.stringify(component)} is missing a name property`);
+        console.error(
+          `Component ${JSON.stringify(component)} is missing a name property`,
+        )
       }
-    });
+    })
   },
 }

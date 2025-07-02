@@ -52,11 +52,11 @@ export default {
     }
   },
   watch: {
-    '$route.name'(newRouteName, oldRouteName) {
+    "$route.name"(newRouteName, oldRouteName) {
       if (newRouteName !== oldRouteName) {
         this.fetchTags()
       }
-    }
+    },
   },
   mounted() {
     this.fetchTags()
@@ -64,16 +64,16 @@ export default {
   computed: {
     ...mapGetters("tags", {
       orgTags: "getTags",
-      sharedTags: "getSharedTags", 
+      sharedTags: "getSharedTags",
       favoritesTags: "getFavoritesTags",
       selectedTags: "getExploreSelectedTags",
     }),
     tags() {
-      const routeName = this.$route?.name || ''
-      
-      if (routeName === 'explore-favorites') {
+      const routeName = this.$route?.name || ""
+
+      if (routeName === "explore-favorites") {
         return this.favoritesTags
-      } else if (routeName === 'explore-shared') {
+      } else if (routeName === "explore-shared") {
         return this.sharedTags
       } else {
         return this.orgTags
@@ -111,14 +111,17 @@ export default {
       this.showModalTagManagement = false
     },
     fetchTags() {
-      const currentRoute = this.$route?.name || ''
-      console.log('[MediaExplorerMenuLabels] Fetching tags for route:', currentRoute)
-      
-      if (currentRoute === 'explore-favorites' || 
-          (typeof currentRoute === 'string' && currentRoute.includes('favorites'))) {
+      const currentRoute = this.$route?.name || ""
+
+      if (
+        currentRoute === "explore-favorites" ||
+        (typeof currentRoute === "string" && currentRoute.includes("favorites"))
+      ) {
         this.$store.dispatch("tags/fetchFavoritesTags")
-      } else if (currentRoute === 'explore-shared' || 
-                 (typeof currentRoute === 'string' && currentRoute.includes('shared'))) {
+      } else if (
+        currentRoute === "explore-shared" ||
+        (typeof currentRoute === "string" && currentRoute.includes("shared"))
+      ) {
         this.$store.dispatch("tags/fetchSharedTags")
       } else {
         this.$store.dispatch("tags/fetchTags")

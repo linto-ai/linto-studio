@@ -18,7 +18,13 @@
 
       <slot></slot>
     </div>
-    <div>
+    <div class="flex col">
+      <ButtonRoller
+        v-if="isAtLeastUploader"
+        @click="startConversation"
+        :label="$t('navigation.conversation.start')"
+        color="primary"
+        class="start-button" />
       <cloud-card-credits />
     </div>
   </nav>
@@ -59,6 +65,12 @@ export default {
     handleOpenOrganization() {
       this.$router.push({
         name: "organization",
+        params: { organizationId: this.currentOrganizationScope },
+      })
+    },
+    startConversation() {
+      this.$router.push({
+        name: "conversations create",
         params: { organizationId: this.currentOrganizationScope },
       })
     },
@@ -136,29 +148,6 @@ export default {
     }
   }
 
-  // fieldset {
-  //   border: 1px solid #e0e0e0;
-  //   border-radius: 4px;
-  //   margin: 0.5em;
-  //   padding: 0;
-  //   position: relative;
-
-  //   &.active {
-  //     border-color: var(--primary-soft);
-  //   }
-
-  //   legend {
-  //     position: absolute;
-  //     font-size: 0.8em;
-  //     font-weight: 600;
-  //     left: 1em;
-  //     top: -10px;
-  //     background-color: var(--primary-soft);
-  //     padding: 0 0.5em;
-  //     border-radius: 1px;
-  //   }
-  // }
-
   .user-account-selector-container {
     padding: 0 0.5em;
     display: flex;
@@ -195,6 +184,11 @@ export default {
       border-radius: 4px;
       margin-top: 1em;
     }
+  }
+
+  .start-button {
+    align-self: stretch;
+    margin: 1rem;
   }
 }
 </style>

@@ -120,7 +120,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters("tags", ["getExploreSelectedTags", "getTags", "getSharedTags", "getFavoritesTags"]),
+    ...mapGetters("tags", [
+      "getExploreSelectedTags",
+      "getTags",
+      "getSharedTags",
+      "getFavoritesTags",
+    ]),
     selectedTags() {
       return this.getExploreSelectedTags
     },
@@ -199,18 +204,18 @@ export default {
     async init() {
       this.options.favorites = this.favorites
       this.options.shared = this.shared
-      
+
       // Load appropriate tags based on view type BEFORE initializing from URL
       await this.loadTagsForCurrentView()
-      
+
       // Give a small delay to ensure tags are fully loaded in the store
       await this.$nextTick()
-      
+
       await this.initPageFromUrl()
       this.setupIntersectionObserver()
       this.setupScrollListener()
 
-      // Debug: subscribe to store mutations related to tag selection
+      // Subscribe to store mutations related to tag selection
       this._unsubscribeTagStore = this.$store.subscribe((mutation, state) => {
         if (
           mutation.type === "tags/setExploreSelectedTags" ||
@@ -256,9 +261,11 @@ export default {
         // Convert tag IDs to tag objects from the appropriate tags collection
         this.$store.dispatch(
           "tags/setExploreSelectedTags",
-          tagIds.map((id) => {
-            return this.availableTags.find((t) => t._id === id)
-          }).filter(tag => tag), // Remove undefined tags
+          tagIds
+            .map((id) => {
+              return this.availableTags.find((t) => t._id === id)
+            })
+            .filter((tag) => tag), // Remove undefined tags
         )
       }
 

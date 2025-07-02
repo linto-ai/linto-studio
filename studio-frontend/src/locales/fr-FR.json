@@ -662,7 +662,7 @@
     "panel": {
       "overview": "Aperçu du média",
       "title": "Titre",
-      "description": "Description", 
+      "description": "Description",
       "duration": "Durée",
       "created": "Créé le",
       "tags": "Tags",
@@ -702,7 +702,8 @@
     "title": "Changer d'organisation",
     "subtitle": "Sélectionnez l'organisation vers laquelle vous souhaitez changer",
     "current": "Actuelle",
-    "create_organization": "Créer une organisation"
+    "create_organization": "Créer une nouvelle organisation",
+    "backoffice": "Backoffice"
   },
   "navigation": {
     "backoffice": {
@@ -710,7 +711,7 @@
       "return_link": "Interface utilisateur"
     },
     "conversation": {
-      "start": "Démarrer",
+      "start": "Transcrire",
       "create": "Importer un media",
       "create_no_rights_error": "Vous n'avez pas les droits pour créer un média dans cette organisation. Veuillez contacter un administrateur.",
       "list": "Conversations",

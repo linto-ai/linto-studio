@@ -8,13 +8,24 @@
     @close="close">
     <div class="modal-switch-org">
       <div class="modal-switch-org__list flex col gap-small">
+        <div class="modal-switch-org__list__item">
+          <Avatar
+            icon="key"
+            size="sm"
+            class="modal-switch-org__list__item__avatar" />
+          <div class="modal-switch-org__list__item__name flex flex1">
+            <div class="modal-switch-org__list__item__name__text flex1">
+              {{ $t("modal_switch_org.backoffice") }}
+            </div>
+          </div>
+        </div>
         <router-link
           :to="{
             name: 'explore',
             params: { organizationId: org._id },
           }"
           @click.native="close"
-          v-for="org in organizations"
+          v-for="org in virtualOrganizations"
           :key="org._id"
           class="modal-switch-org__list__item">
           <Avatar
@@ -34,6 +45,7 @@
         </router-link>
         <div class="modal-switch-org__list__item new-org">
           <Button
+            v-if="isOrganizationInitiator"
             :label="$t('modal_switch_org.create_organization')"
             icon="plus"
             size="sm"
@@ -54,13 +66,14 @@ import { mapGetters } from "vuex"
 import Modal from "@/components/molecules/Modal.vue"
 import ModalCreateOrganization from "@/components/ModalCreateOrganization.vue"
 import ChipTag from "./atoms/ChipTag.vue"
-
+import { platformRoleMixin } from "@/mixins/platformRole.js"
 export default {
   name: "ModalSwitchOrg",
   components: {
     Modal,
     ModalCreateOrganization,
   },
+  mixins: [platformRoleMixin],
   props: {
     value: {
       type: Boolean,
@@ -84,6 +97,9 @@ export default {
       set(value) {
         this.$emit("input", value)
       },
+    },
+    virtualOrganizations() {
+      return [...this.organizations]
     },
   },
   methods: {
