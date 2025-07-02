@@ -602,6 +602,8 @@
     }
   },
   "manage_tags": {
+    "no_tags": "Aucun tag disponible",
+    "create_tag": "Créer un tag",
     "create_category": {
       "name": "Nom",
       "save": "Enregistrer",
@@ -649,6 +651,13 @@
       "filter": "Filtrer",
       "clear_all": "Tout effacer",
       "no_tags": "Aucun tag disponible"
+    },
+    "tags": {
+      "search": "Rechercher un tag",
+      "no_tags": "Ajouter un tag",
+      "more_tags": "Voir les {count} tags",
+      "add_tag": "Ajouter un tag",
+      "create_tag": "Créer le tag"
     },
     "panel": {
       "overview": "Aperçu du média",

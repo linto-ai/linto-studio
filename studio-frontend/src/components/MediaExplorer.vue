@@ -91,7 +91,7 @@
           <template #desktop>
             <MediaExplorerRightPanel
               v-if="selectedMediaForOverview"
-              :selected-media="selectedMediaForOverview"
+              :selected-media="reactiveSelectedMediaForOverview"
               @close="closeRightPanel"
               @resize="handleRightPanelResize" />
           </template>
@@ -215,6 +215,11 @@ export default {
           media.tags.includes(tagId),
         )
       })
+    },
+    reactiveSelectedMediaForOverview() {
+      return this.medias.find(
+        (media) => media._id === this.selectedMediaForOverview?._id,
+      )
     },
   },
   data() {
@@ -424,7 +429,7 @@ export default {
 }
 
 .media-explorer__body.has-right-panel .media-explorer__body__content {
-  margin-right: var(--right-panel-width, 400px);
+  margin-right: var(--right-panel-width, 600px);
 }
 
 .media-explorer__body .media-explorer-right-panel {

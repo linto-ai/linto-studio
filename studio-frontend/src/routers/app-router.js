@@ -860,6 +860,16 @@ router.beforeEach(async (to, from, next) => {
     await store.dispatch("tags/fetchTags")
     routerDebug("Tags fetched")
 
+    if (to.name === "explore-favorites") {
+      await store.dispatch("tags/fetchFavoritesTags")
+      routerDebug("Favorites tags fetched")
+    }
+    if (to.name === "explore-shared") {
+      await store.dispatch("tags/fetchSharedTags")
+      routerDebug("Shared tags fetched")
+
+    }
+
     // Check for quick session
     const quickSessionResult = await authGuards.checkQuickSession(to)
     if (quickSessionResult.redirect) {

@@ -53,7 +53,7 @@ export default {
     },
     color: {
       type: String,
-      default: "var(--material-teal-500)",
+      default: "teal",
     },
     active: {
       type: Boolean,
@@ -77,7 +77,7 @@ export default {
       return this.$listeners.click ? "clickable" : ""
     },
     borderColor() {
-      return `var(--material-${this.color}-700)`
+      return `var(--material-${this.color}-500)`
     },
     backgroundColor() {
       return `var(--material-${this.color}-${this.active ? 800 : 100})`
@@ -109,8 +109,8 @@ export default {
   align-items: center;
   justify-content: center;
   height: 20px;
-  padding-left: 3px;
-  padding-right: 3px;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
 
   text-transform: uppercase;
   border: 1px solid;
@@ -127,6 +127,14 @@ export default {
     .chip-tag__count {
       display: none;
     }
+  }
+
+  &:has(.chip-tag__count) {
+    padding-right: 0.25em;
+  }
+
+  &:hover {
+    border-color: currentColor !important;
   }
   .chip-tag__data {
     display: flex;

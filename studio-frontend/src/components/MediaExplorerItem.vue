@@ -6,10 +6,10 @@
     @click="select"
     :class="{
       'media-explorer-item--hover': isHover,
+      'media-explorer-item--overview': isSelectedForOverview,
       'media-explorer-item--selected': isSelected,
       'media-explorer-item--favorite': isFavorite,
     }">
-    
     <!-- Main content layout -->
     <div class="media-explorer-item__content">
       <!-- Left section: Controls + Info -->
@@ -25,25 +25,25 @@
             variant="outline"
             size="sm"
             :color="isFavorite ? 'primary' : 'neutral-10'" />
-          
+
           <div
             class="media-explorer-item__checkbox-container"
             :class="{ selected: isSelected }">
-            <input 
-              type="checkbox" 
-              v-model="isSelected" 
+            <input
+              type="checkbox"
+              v-model="isSelected"
               class="media-explorer-item__checkbox"
               @change="handleSelectionChange" />
           </div>
         </div>
-        
+
         <!-- Media type icon -->
         <Avatar
           :icon="isFromSession ? 'microphone' : 'file-audio'"
           color="neutral-10"
           size="md"
           class="media-explorer-item__type-icon" />
-        
+
         <!-- Owner avatar -->
         <Tooltip :text="convOwner.fullName" position="bottom">
           <Avatar
@@ -53,25 +53,24 @@
             size="sm"
             class="media-explorer-item__owner" />
         </Tooltip>
-        
+
         <!-- Media title -->
         <div class="media-explorer-item__title">
-          <a :href="`/interface/${organizationId}/conversations/${media._id}/transcription`">
+          <span class="media-explorer-item__title-text">
             {{ title }}
-          </a>
+          </span>
         </div>
-        
-        <!-- Show overview button -->
-        <Button
-          @click.stop="selectForOverview"
-          :title="$t('media_explorer.panel.overview')"
-          icon="eye"
-          size="sm"
-          variant="outline"
-          class="media-explorer-item__overview-btn"
-          color="primary"
-          :active="isSelectedForOverview" />
-        
+
+        <!-- Right section: Tags -->
+        <IsDesktop>
+          <div class="media-explorer-item__right">
+            <MediaExplorerItemTags
+              class="media-explorer-item__tags"
+              :mediatags="mediatags"
+              :media-id="media._id" />
+          </div>
+        </IsDesktop>
+
         <!-- Media metadata -->
         <div class="media-explorer-item__metadata">
           <span v-if="duration" class="media-explorer-item__duration">
@@ -82,35 +81,40 @@
           </span>
         </div>
       </div>
-      
-      <!-- Right section: Tags -->
-      <div class="media-explorer-item__right">
-        <MediaExplorerItemTags
-          class="media-explorer-item__tags"
-          :hovered="isHover"
-          :mediatags="mediatags"
-          :media-id="media._id"
-          @click.stop="selectForOverview" />
-      </div>
     </div>
-    
+
     <!-- Actions menu using PopoverList -->
-    <PopoverList
-      :items="actionsItems"
-      :close-on-item-click="true"
-      :overlay="false"
-      class="media-explorer-item__actions"
-      @click="handleActionClick">
-      <template #trigger="{ open }">
-        <Button 
-          class="media-explorer-item__actions-trigger"
-          :title="$t('media_explorer.actions')"
-          variant="outline"
-          color="primary"
-          size="xs"
-          icon="dots-three-outline-vertical" />
+    <isMobile>
+      <template #desktop>
+        <div v-if="isHover" class="media-explorer-item__actions button-group">
+          <Button
+            v-for="action in actionsItems"
+            :key="action.id"
+            :title="action.name"
+            :icon="action.icon"
+            :color="action.color"
+            size="sm"
+            variant="outline"
+            @click.stop="handleActionClick(action)" />
+        </div>
       </template>
-    </PopoverList>
+      <PopoverList
+        :items="actionsItems"
+        :close-on-item-click="true"
+        :overlay="false"
+        class="media-explorer-item__actions"
+        @click="handleActionClick">
+        <template #trigger="{ open }">
+          <Button
+            class="media-explorer-item__actions-trigger"
+            :title="$t('media_explorer.actions')"
+            variant="outline"
+            color="primary"
+            size="xs"
+            icon="dots-three-outline-vertical" />
+        </template>
+      </PopoverList>
+    </isMobile>
 
     <!-- Delete modal -->
     <ModalDeleteConversations
@@ -165,33 +169,33 @@ export default {
       currentOrganizationUsers: "getCurrentOrganizationUsers",
       currentOrganization: "getCurrentOrganization",
     }),
-    
+
     actionsItems() {
       return [
         {
-          id: 'edit',
+          id: "edit",
           name: this.$t("media_explorer.line.edit_transcription"),
-          icon: 'pencil',
-          color: 'primary'
+          icon: "pencil",
+          color: "primary",
         },
         {
-          id: 'subtitles',
+          id: "subtitles",
           name: this.$t("media_explorer.line.edit_subtitles"),
-          icon: 'subtitles',
-          color: 'primary'
+          icon: "closed-captioning",
+          color: "primary",
         },
         {
-          id: 'export',
+          id: "export",
           name: this.$t("media_explorer.line.export"),
-          icon: 'file',
-          color: 'primary'
+          icon: "export",
+          color: "primary",
         },
         {
-          id: 'delete',
+          id: "delete",
           name: this.$t("media_explorer.line.delete"),
-          icon: 'trash',
-          color: 'danger'
-        }
+          icon: "trash",
+          color: "tertiary",
+        },
       ]
     },
     mediatags() {
@@ -277,15 +281,15 @@ export default {
   },
   methods: {
     ...mapMutations("inbox", ["addSelectedMedia", "removeSelectedMedia"]),
-    
+
     toggleFavorite() {
       this.$store.dispatch("user/toggleFavoriteConversation", this.media._id)
     },
-    
+
     hover() {
       this.isHover = true
     },
-    
+
     leave() {
       this.isHover = false
     },
@@ -293,8 +297,9 @@ export default {
     select() {
       this.isSelected = !this.isSelected
       this.handleSelectionChange()
+      this.selectForOverview()
     },
-    
+
     handleSelectionChange() {
       if (this.isSelected) {
         this.addSelectedMedia(this.media)
@@ -302,19 +307,19 @@ export default {
         this.removeSelectedMedia(this.media)
       }
     },
-    
+
     handleActionClick(action) {
       switch (action.id) {
-        case 'edit':
+        case "edit":
           this.handleEdit()
           break
-        case 'subtitles':
+        case "subtitles":
           this.handleSubtitles()
           break
-        case 'export':
+        case "export":
           this.handleExport()
           break
-        case 'delete':
+        case "delete":
           this.handleDelete()
           break
       }
@@ -329,7 +334,7 @@ export default {
         },
       })
     },
-    
+
     handleSubtitles() {
       this.$router.push({
         name: "conversations subtitles",
@@ -339,7 +344,7 @@ export default {
         },
       })
     },
-    
+
     handleExport() {
       this.$router.push({
         name: "conversations publish",
@@ -349,13 +354,13 @@ export default {
         },
       })
     },
-    
+
     handleDelete() {
       this.showDeleteModal = true
     },
-    
+
     selectForOverview() {
-      this.$emit('select-for-overview', this.media)
+      this.$emit("select-for-overview", this.media)
     },
   },
 }
@@ -384,6 +389,11 @@ export default {
 
   &--favorite {
     border-left: 3px solid var(--primary-color);
+  }
+
+  &--overview {
+    border-color: var(--primary-color);
+    background-color: var(--primary-soft);
   }
 }
 
@@ -435,14 +445,14 @@ export default {
   border-radius: 2px;
   cursor: pointer;
   transition: color 0.2s ease;
-  
+
   &:hover {
     color: var(--primary-color);
   }
-  
+
   &.active {
     color: var(--primary-color);
-    
+
     &:hover {
       color: var(--neutral-60);
     }
@@ -458,7 +468,7 @@ export default {
   border-radius: 2px;
   overflow: hidden;
   transition: background-color 0.2s ease;
-  
+
   &.selected {
     background-color: var(--primary-color);
   }
@@ -483,8 +493,8 @@ export default {
 .media-explorer-item__title {
   flex: 1;
   min-width: 0;
-  
-  a {
+
+  &-text {
     display: block;
     font-weight: 600;
     color: var(--text-primary);
@@ -492,10 +502,6 @@ export default {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    
-    &:hover {
-      color: var(--primary-color);
-    }
   }
 }
 
@@ -509,7 +515,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  
+
   .media-explorer-item:hover & {
     opacity: 1;
   }
@@ -547,6 +553,8 @@ export default {
   right: 0.5rem;
   transform: translateY(-50%);
   z-index: 10;
+  background-color: var(--background-primary);
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
 }
 
 // ===== RESPONSIVE DESIGN =====
@@ -554,7 +562,7 @@ export default {
   .media-explorer-item__title {
     max-width: 160px;
   }
-  
+
   .media-explorer-item__right {
     flex: 0 0 40%; // Reduce to 40% on smaller screens
   }
@@ -564,17 +572,17 @@ export default {
   .media-explorer-item {
     padding: 0.25rem;
   }
-  
+
   .media-explorer-item__left {
     gap: 0.25rem;
   }
-  
+
   .media-explorer-item__metadata {
     flex-direction: column;
     gap: 0.25rem;
     align-items: flex-start;
   }
-  
+
   .media-explorer-item__right {
     flex: 0 0 35%;
   }

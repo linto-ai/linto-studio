@@ -90,24 +90,8 @@ const actions = {
     try {
       if (isFavorite) {
         await dispatch("removeFavoriteConversation", id)
-        commit(
-          "system/addNotification",
-          {
-            message: "Conversation removed from favorites successfully",
-            type: "success",
-          },
-          { root: true },
-        )
       } else {
         await dispatch("addFavoriteConversation", id)
-        commit(
-          "system/addNotification",
-          {
-            message: "Conversation added to favorites successfully",
-            type: "success",
-          },
-          { root: true },
-        )
       }
     } catch (error) {
       console.error("Error toggling conversation favorite status", error)

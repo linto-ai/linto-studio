@@ -66,7 +66,7 @@
     </div>
 
     <!-- Second line : tags -->
-    <div class="media-explorer-item-mobile__tags">
+    <div v-if="media.tags && media.tags.length" class="media-explorer-item-mobile__tags">
       <MediaExplorerItemTags :media-id="media._id" />
     </div>
   </div>
