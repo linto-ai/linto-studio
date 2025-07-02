@@ -109,7 +109,7 @@ export default {
     },
     mediatags() {
       return this.media.tags
-        .map((tagId) => this.tags.find((t) => t._id === tagId))
+        .map((tagId) => this.$store.getters["tags/getTagById"](tagId))
         .filter((t) => t !== undefined)
     },
     mediatagsIds() {
