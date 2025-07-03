@@ -660,7 +660,9 @@
       "duration": "Duration",
       "created": "Created",
       "tags": "Tags",
-      "metadata": "Metadata"
+      "metadata": "Metadata",
+      "default_title": "No title",
+      "default_description": "No description"
     }
   },
   "modal": {

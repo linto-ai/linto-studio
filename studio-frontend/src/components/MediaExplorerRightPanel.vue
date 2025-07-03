@@ -42,7 +42,11 @@
               {{ $t("media_explorer.panel.title") }}
             </h4>
             <p class="section-content">
-              {{ selectedMedia.name || selectedMedia.title || "Sans titre" }}
+              {{
+                selectedMedia.name ||
+                selectedMedia.title ||
+                $t("media_explorer.panel.default_title")
+              }}
             </p>
           </div>
 
@@ -51,16 +55,24 @@
             <h4 class="section-title">
               {{ $t("media_explorer.panel.description") }}
             </h4>
-            <p class="section-content">{{ selectedMedia.description }}</p>
+            <p class="section-content">
+              {{
+                selectedMedia.description ||
+                $t("media_explorer.panel.default_description")
+              }}
+            </p>
           </div>
 
           <!-- Media duration -->
-          <div class="media-section" v-if="selectedMedia.metadata?.audio?.duration">
+          <div
+            class="media-section"
+            v-if="selectedMedia.metadata?.audio?.duration">
             <h4 class="section-title">
               {{ $t("media_explorer.panel.duration") }}
             </h4>
             <p class="section-content">
-              <TimeDuration :duration="selectedMedia.metadata?.audio?.duration" />
+              <TimeDuration
+                :duration="selectedMedia.metadata?.audio?.duration" />
             </p>
           </div>
 
@@ -115,7 +127,7 @@
           </div>
 
           <!-- Media metadata -->
-          <div class="media-section" v-if="selectedMedia.metadata">
+          <div v-if="false" class="media-section">
             <h4 class="section-title">
               {{ $t("media_explorer.panel.metadata") }}
             </h4>

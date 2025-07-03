@@ -335,9 +335,17 @@ export default {
   &__tags {
     width: 100%;
     overflow-x: auto;
-    padding-top: 0.25rem;
+    padding: 0.25rem;
+    opacity: 0.75;
     box-sizing: border-box;
-    opacity: 0.8;
+    border-top: 1px solid var(--neutral-20);
+    background-color: var(--primary-soft);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    .media-explorer-item-tags__list {
+      justify-content: flex-end;
+    }
   }
 }
 </style>

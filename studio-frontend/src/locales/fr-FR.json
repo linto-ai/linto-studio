@@ -666,7 +666,9 @@
       "duration": "Durée",
       "created": "Créé le",
       "tags": "Tags",
-      "metadata": "Métadonnées"
+      "metadata": "Métadonnées",
+      "default_title": "Sans titre",
+      "default_description": "Aucune description"
     }
   },
   "modal": {

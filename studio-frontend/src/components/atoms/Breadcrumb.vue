@@ -292,6 +292,12 @@ export default {
   height: 54px;
   padding: 0;
 
+  h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text-primary, #2c3e50);
+  }
+
   li {
     margin: 0;
   }
