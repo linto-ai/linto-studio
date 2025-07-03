@@ -41,7 +41,7 @@ async function getRightsByConversation(req, res, next) {
     )
 
     if (req.payload.data.userId === conversation[0].owner) {
-      data.right = RIGHTS.OWNER
+      data.right = RIGHTS.adminRight()
     }
     res.status(200).send(data)
   } catch (err) {
