@@ -29,22 +29,33 @@
         selection
         multiple
         v-model="selectedTranslations"
-        :items="translationsOptions.channels"
-        />
+        :items="translationsOptions.channels">
+        <template #trigger="{ open }">
+          <Button
+            :icon-right="open ? 'caret-up' : 'caret-down'"
+            variant="outline"
+            color="neutral"
+            size="sm"
+            block>
+            <!-- <div class="flex gap-small">
+              <Chip
+                v-for="translation in displayedTranslations"
+                :key="translation"
+                :value="translation"></Chip>
+            </div> -->
+            {{
+              $tc(
+                "session.profile_selector.n_translations_selected",
+                selectedTranslations.length,
+              )
+            }}
+          </Button>
+        </template>
+      </PopoverList>
       <div v-else class="btn placeholder transparent">
         {{ $t("session.profile_selector.translation_not_available") }}
       </div>
     </td>
-    <!-- <td class="center-text" @click="preventClick">
-      <SwitchInput
-        v-if="profile.config.hasDiarization"
-        v-model="profile.config.diarization"
-        :id="`${profile.id}-diarization`" />
-
-      <div v-else>
-        {{ $t("session.profile_selector.diarization_not_available") }}
-      </div>
-    </td> -->
   </tr>
 </template>
 <script>
@@ -132,6 +143,14 @@ export default {
     },
     sortListKey() {
       return "profileSelector"
+    },
+    displayedTranslations() {
+      let languageNames = new Intl.DisplayNames([this.$i18n.locale], {
+        type: "language",
+      })
+      return this.selectedTranslations.map((translation) => {
+        return languageNames.of(translation)
+      })
     },
   },
   methods: {

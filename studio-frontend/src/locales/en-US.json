@@ -1049,7 +1049,8 @@
       },
       "title": "Selection of transcription profiles",
       "translation_not_available": "No translation available",
-      "diarization_not_available": "No diarization available"
+      "diarization_not_available": "No diarization available",
+      "n_translations_selected": "No translations | One translation | {n} translations"
     },
 
     "settings_page": {

@@ -22,11 +22,28 @@
 
     <!-- Translations -->
     <td v-if="from === 'formCreateSession'">
-      <CustomSelect
+      <PopoverList
         v-if="translationsOptions.channels.length > 0"
-        multipleSelection
+        selection
+        multiple
         v-model="selectedTranslations"
-        :options="translationsOptions" />
+        :items="translationsOptions.channels">
+        <template #trigger="{ open }">
+          <Button
+            :icon-right="open ? 'caret-up' : 'caret-down'"
+            variant="outline"
+            color="neutral"
+            size="sm"
+            block>
+            {{
+              $tc(
+                "session.profile_selector.n_translations_selected",
+                selectedTranslations.length,
+              )
+            }}
+          </Button>
+        </template>
+      </PopoverList>
     </td>
     <td v-else>
       {{ translations }}
@@ -36,7 +53,8 @@
     </td>
     <td class="content-size" v-if="from === 'formCreateSession'">
       <button class="btn tertiary outline" @click="removeChannel" type="button">
-        <span class="icon remove"></span>
+        <!-- <span class="icon remove"></span> -->
+        <ph-icon name="trash"></ph-icon>
         <span class="label">{{ $t("session.channels_list.remove") }}</span>
       </button>
     </td>

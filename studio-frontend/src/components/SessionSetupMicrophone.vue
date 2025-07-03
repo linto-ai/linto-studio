@@ -101,7 +101,7 @@
         </span>
       </button>
       <button class="btn secondary" @click="saveSession">
-        <span class="icon save"></span>
+        <ph-icon name="file"></ph-icon>
         <span class="label">
           {{ $t("quick_session.restore.save_button") }}
         </span>

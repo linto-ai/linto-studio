@@ -8,10 +8,7 @@
     ref="popover">
     <template #trigger="{ open }">
       <slot name="trigger" :open="open">
-        <Button
-          :icon="open ? 'caret-up' : 'caret-down'"
-          v-bind="$attrs"
-        />
+        <Button :icon="open ? 'caret-up' : 'caret-down'" v-bind="$attrs" />
       </slot>
     </template>
     <template #content>
@@ -115,7 +112,7 @@ export default {
       default: true,
     },
   },
-  emits: ["click", "update:value", "change"],
+  emits: ["click", "update:value", "input"],
   methods: {
     isSame(value, item) {
       if (typeof value === "object" && value !== null) {
@@ -125,17 +122,15 @@ export default {
     },
     isSelected(item) {
       if (this.multiple) {
-        const current = Array.isArray(this.modelValue) ? this.modelValue : []
+        const current = Array.isArray(this.value) ? this.value : []
         return current.some((v) => this.isSame(v, item))
       }
       // single select
-      return this.isSame(this.modelValue, item)
+      return this.isSame(this.value, item)
     },
     toggleSelection(item) {
       if (this.multiple) {
-        const current = Array.isArray(this.modelValue)
-          ? [...this.modelValue]
-          : []
+        const current = Array.isArray(this.value) ? [...this.value] : []
         const selected = this.isSelected(item)
         let updated
         if (selected) {
@@ -144,13 +139,13 @@ export default {
           updated = [...current, this.returnObjects ? item : item.id]
         }
         this.$emit("update:value", updated)
-        this.$emit("change", updated)
+        this.$emit("input", updated)
       } else {
         // single selection: either select or deselect (null)
         const selected = this.isSelected(item)
         const updated = selected ? null : this.returnObjects ? item : item.id
         this.$emit("update:value", updated)
-        this.$emit("change", updated)
+        this.$emit("input", updated)
       }
     },
     handleClickItem(item) {
@@ -190,8 +185,8 @@ export default {
      * popover to a bottom-sheet presentation.
      */
     isMobile() {
-      if (typeof window === 'undefined') return false
-      return window.matchMedia('(max-width: 768px)').matches
+      if (typeof window === "undefined") return false
+      return window.matchMedia("(max-width: 768px)").matches
     },
   },
   mounted() {
@@ -200,13 +195,13 @@ export default {
       // force Vue to recalculate isMobile computed dependency
       this.$forceUpdate()
     }
-    if (typeof window !== 'undefined') {
-      window.addEventListener('resize', this.resizeListener, { passive: true })
+    if (typeof window !== "undefined") {
+      window.addEventListener("resize", this.resizeListener, { passive: true })
     }
   },
   beforeDestroy() {
-    if (this.resizeListener && typeof window !== 'undefined') {
-      window.removeEventListener('resize', this.resizeListener)
+    if (this.resizeListener && typeof window !== "undefined") {
+      window.removeEventListener("resize", this.resizeListener)
     }
   },
 }

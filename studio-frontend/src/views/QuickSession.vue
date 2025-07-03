@@ -1,6 +1,9 @@
 <template>
   <Loading v-if="loading" />
-  <MainContent v-else-if="state == 'microphone-selection'" fullscreen box>
+  <V2Layout
+    v-else-if="state == 'microphone-selection'"
+    :fullscreen="recover"
+    box>
     <SessionSetupMicrophone
       ref="sessionSetupMicrophone"
       :recover="recover"
@@ -8,7 +11,7 @@
       @save-session="onSaveSession"
       @start-session="startSession"
       @back="backToStart"></SessionSetupMicrophone>
-  </MainContent>
+  </V2Layout>
   <SessionLiveMicrophone
     v-else-if="state == 'session-live'"
     ref="sessionLiveMicrophone"
@@ -32,7 +35,9 @@
     :currentOrganizationScope="currentOrganizationScope">
     <template v-slot:breadcrumb-actions>
       <div class="flex1 flex gap-small align-center">
-        <div>{{ $t("quick_session.live_visio.status_recording_visio") }}</div>
+        <div style="font-style: italic">
+          {{ $t("quick_session.live_visio.status_recording_visio") }}
+        </div>
         <div class="flex1"></div>
         <button @click="onSaveBotSession" :disabled="isSavingSession">
           <span class="label">{{ $t("quick_session.live.save_button") }}</span>
@@ -59,6 +64,7 @@ import SessionLiveMicrophone from "@/components/SessionLiveMicrophone.vue"
 import SessionLiveVisio from "@/components/SessionLiveVisio.vue"
 import Loading from "@/components/atoms/Loading.vue"
 import MainContent from "@/components/MainContent.vue"
+import V2Layout from "@/layouts/v2-layout.vue"
 
 export default {
   props: {
@@ -174,6 +180,7 @@ export default {
     SessionLiveVisio,
     MainContent,
     Loading,
+    V2Layout,
   },
 }
 </script>

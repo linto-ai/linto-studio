@@ -12,16 +12,16 @@
       outline: none;
       box-sizing: border-box;
       flex-shrink: 0;
-      
+
       &:not(:last-child) {
         border-right: none !important;
       }
-      
+
       &:first-child {
         border-top-left-radius: 4px !important;
         border-bottom-left-radius: 4px !important;
       }
-      
+
       &:last-child {
         border-top-right-radius: 4px !important;
         border-bottom-right-radius: 4px !important;
@@ -30,7 +30,7 @@
 
     input {
       border: var(--border-input);
-      
+
       &:focus {
         z-index: 1;
         position: relative;
@@ -40,7 +40,7 @@
     .btn,
     button {
       border: var(--border-button);
-      
+
       &:hover,
       &:focus {
         z-index: 1;
@@ -383,7 +383,7 @@
     &.neutral {
       background-color: var(--neutral-20);
       border: 1px solid var(--neutral-60);
-      color: var(--neutral-80);
+      color: var(--text-primary);
       .icon {
         background-color: var(--neutral-80);
       }
@@ -628,7 +628,7 @@
       &.neutral {
         background-color: transparent;
         border: 1px solid var(--neutral-60);
-        color: var(--neutral-60);
+        color: var(--text-secondary);
 
         .icon,
         .ph-icon,

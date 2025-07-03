@@ -1,7 +1,8 @@
 <template>
-  <div class="v2-layout" :class="{ 'no-sidebar': !sidebarOpen }">
+  <div class="v2-layout" :class="{ 'no-sidebar': !sidebarOpen || fullscreen }">
     <div class="v2-layout__content">
       <aside
+        v-if="!fullscreen"
         class="v2-layout__sidebar"
         :class="{ 'v2-layout__sidebar--hidden': !sidebarOpen }">
         <BurgerMenu :backoffice="backoffice">
@@ -21,6 +22,7 @@
             'flex1',
             'v2-layout__main-content',
             customClass ? customClass : '',
+            'box' ? 'box' : '',
             'scrollable',
           ]">
           <slot></slot>
@@ -53,6 +55,16 @@ export default {
     breadcrumbItems: {
       type: Array,
       required: false,
+    },
+    // if true, the main content will be wrapped in centered instead of full width
+    box: {
+      type: Boolean,
+      default: false,
+    },
+    // hide the sidebar
+    fullscreen: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -171,6 +183,16 @@ export default {
       justify-content: space-between;
       padding: 0 0.5rem;
       flex-shrink: 0;
+    }
+  }
+
+  .v2-layout__main-content {
+    &.box {
+      width: 900px;
+      max-width: 100%;
+      margin: auto;
+      padding: 0px 1rem;
+      box-sizing: border-box;
     }
   }
 }

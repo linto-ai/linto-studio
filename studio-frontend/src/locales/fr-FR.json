@@ -1053,7 +1053,8 @@
       },
       "title": "Choix des profils de transcription",
       "translation_not_available": "Non disponible",
-      "diarization_not_available": "Non disponible"
+      "diarization_not_available": "Non disponible",
+      "n_translations_selected": "Pas de traductions | Une traduction | {n} traductions"
     },
     "settings_page": {
       "autoStart_label": "Démarrage automatique de la session",
