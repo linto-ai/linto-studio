@@ -22,7 +22,7 @@
             'flex1',
             'v2-layout__main-content',
             customClass ? customClass : '',
-            'box' ? 'box' : '',
+            box ? 'box' : '',
             'scrollable',
           ]">
           <slot></slot>

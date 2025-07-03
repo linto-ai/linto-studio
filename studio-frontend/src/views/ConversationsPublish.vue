@@ -216,7 +216,7 @@ export default {
         return {
           name: format,
           label: description,
-          icon: "text",
+          icon: "file-text",
         }
       })
 
@@ -225,7 +225,7 @@ export default {
           {
             name: "verbatim",
             label: this.$i18n.t(`publish.tabs.verbatim`),
-            icon: "text",
+            icon: "file-text",
           },
           ...res,
         ]
