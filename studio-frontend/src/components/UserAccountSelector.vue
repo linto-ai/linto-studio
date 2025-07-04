@@ -9,7 +9,7 @@
           :label="orgaName"
           size="xs"
           class="organization-name"></Button>
-        <span class="user-role">{{ roleToString }}</span>
+        <span class="user-role">{{ currentRoleToString }}</span>
       </div>
     </div>
     <Button

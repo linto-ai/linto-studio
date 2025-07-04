@@ -45,6 +45,10 @@ export const orgaRoleMixin = {
         "organizations/isAtLeastMaintainerOfOrganization"
       ](organizationId)
     },
+    roleToString(role) {
+      if (role > 6 || role < 1) return this.$t("Unknown")
+      return ROLES_INDEXED_BY_VALUE[role].name
+    },
   },
   computed: {
     ...mapGetters("organizations", {
@@ -90,7 +94,7 @@ export const orgaRoleMixin = {
     userRoles() {
       return ROLES
     },
-    roleToString() {
+    currentRoleToString() {
       if (this.userRole > 6 || this.userRole < 1) return this.$t("Unknown")
       return ROLES_INDEXED_BY_VALUE[this.userRole].name
     },

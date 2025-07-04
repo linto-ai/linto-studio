@@ -701,7 +701,7 @@
     "success_notification": "L'organisation a été supprimée avec succès | {count} organisations ont été supprimées avec succès"
   },
   "modal_switch_org": {
-    "title": "Changer d'organisation",
+    "title": "Choisir une d'organisation",
     "subtitle": "Sélectionnez l'organisation vers laquelle vous souhaitez changer",
     "current": "Actuelle",
     "create_organization": "Créer une nouvelle organisation",
