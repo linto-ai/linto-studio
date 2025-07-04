@@ -28,7 +28,7 @@
       <!-- <span>]</span> -->
     </span>
     <span class="session-status__name" v-if="showName">{{ name }}</span>
-    <span v-if="withText" class="session-status__text">({{ text }})</span>
+    <span v-if="withText" class="session-status__text flex1">({{ text }})</span>
   </div>
 </template>
 <script>
@@ -93,10 +93,52 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.session-status {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  text-decoration: none !important;
+  //container-type: inline-size;
+  //container-name: session-status;
+}
+
+.session-on-air {
+  border-radius: 55px;
+  //background-color: red;
+  color: var(--red-chart);
+  font-weight: bold;
+  font-variant: all-petite-caps;
+  .icon {
+    background-color: white;
+  }
+}
+
+.session-on-air.session-on-air--muted {
+  color: var(--text-primary);
+
+  .icon {
+    background-color: var(--text-primary);
+    margin: 0;
+  }
+}
+
+.session-on-air.session-on-air--off {
+  color: #62111e;
+}
+
 .session-status__name {
   font-weight: 800;
 }
+
 .session-status__text {
   font-style: italic;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@container main (width < 1000px) {
+  .session-status__text {
+    display: none;
+  }
 }
 </style>

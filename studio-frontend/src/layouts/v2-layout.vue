@@ -176,6 +176,8 @@ export default {
     overflow: auto;
     display: flex;
     flex-direction: column;
+    container-type: size;
+    container-name: main;
 
     .breadcrumb {
       display: flex;

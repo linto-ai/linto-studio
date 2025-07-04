@@ -216,36 +216,6 @@
     max-width: 300px;
   }
 
-  .session-status {
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
-    text-decoration: none !important;
-  }
-
-  .session-on-air {
-    border-radius: 55px;
-    //background-color: red;
-    color: var(--red-chart);
-    font-weight: bold;
-    font-variant: all-petite-caps;
-    .icon {
-      background-color: white;
-    }
-  }
-
-  .session-on-air.session-on-air--muted {
-    color: var(--text-primary);
-
-    .icon {
-      background-color: var(--text-primary);
-      margin: 0;
-    }
-  }
-
-  .session-on-air.session-on-air--off {
-    color: #62111e;
-  }
-
   .session-microphone-status {
     padding: 1rem;
     border: var(--border-button);

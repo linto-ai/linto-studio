@@ -1,5 +1,5 @@
 <template>
-  <LayoutV2>
+  <LayoutV2 :fullscreen="isFromPublicLink">
     <template v-slot:breadcrumb-actions>
       <SessionHeader
         :sessionListRoute="sessionListRoute"
@@ -18,7 +18,7 @@
             <button
               class="btn secondary outline only-icon"
               @click="showMobileSubtitles">
-              <ph-icon name="subtitles"></ph-icon>
+              <ph-icon name="closed-captioning"></ph-icon>
             </button>
           </div>
 
@@ -65,21 +65,25 @@
           })
         }}
       </div>
-      <SessionLiveToolbar
-        v-if="sessionLoaded"
-        :channels="channels"
-        :qualifiedForCrossSubtitles="qualifiedForCrossSubtitles"
-        v-bind:selectedTranslation.sync="selectedTranslation"
-        v-bind:displayLiveTranscription.sync="displayLiveTranscription"
-        v-bind:displaySubtitles.sync="displaySubtitles"
-        v-bind:fontSize.sync="fontSize"
-        v-bind:selectedChannel.sync="selectedChannel"
-        :watermarkContent="watermarkContent"
-        :watermarkDuration="watermarkDuration"
-        :watermarkFrequency="watermarkFrequency"
-        :displayWatermark="displayWatermark"
-        :watermarkPinned="watermarkPinned"
-        @updateWatermarkSettings="syncWatermarkSettings" />
+      <IsMobile>
+        <template #desktop>
+          <SessionLiveToolbar
+            v-if="sessionLoaded"
+            :channels="channels"
+            :qualifiedForCrossSubtitles="qualifiedForCrossSubtitles"
+            v-bind:selectedTranslation.sync="selectedTranslation"
+            v-bind:displayLiveTranscription.sync="displayLiveTranscription"
+            v-bind:displaySubtitles.sync="displaySubtitles"
+            v-bind:fontSize.sync="fontSize"
+            v-bind:selectedChannel.sync="selectedChannel"
+            :watermarkContent="watermarkContent"
+            :watermarkDuration="watermarkDuration"
+            :watermarkFrequency="watermarkFrequency"
+            :displayWatermark="displayWatermark"
+            :watermarkPinned="watermarkPinned"
+            @updateWatermarkSettings="syncWatermarkSettings" />
+        </template>
+      </IsMobile>
     </template>
 
     <div class="relative flex flex1 col">
@@ -108,15 +112,14 @@
         :watermarkDuration="watermarkDuration"
         :watermarkContent="watermarkContent"
         :watermarkPinned="watermarkPinned" />
-
-      <SessionDropdownChannelSelector
-        class="mobile"
-        v-if="sessionLoaded"
-        :channels="channels"
-        :qualifiedForCrossSubtitles="qualifiedForCrossSubtitles"
-        v-bind:selectedChannel.sync="selectedChannel"
-        v-bind:selectedTranslation.sync="selectedTranslation" />
-
+      <IsMobile>
+        <SessionDropdownChannelSelector
+          v-if="sessionLoaded"
+          :channels="channels"
+          :qualifiedForCrossSubtitles="qualifiedForCrossSubtitles"
+          v-bind:selectedChannel.sync="selectedChannel"
+          v-bind:selectedTranslation.sync="selectedTranslation" />
+      </IsMobile>
       <ModalNew
         :withActions="false"
         title="Setup microphone"
@@ -153,6 +156,7 @@ import SessionLiveMicrophoneStatus from "@/components/SessionLiveMicrophoneStatu
 import SessionHeader from "@/components/SessionHeader.vue"
 import LayoutV2 from "@/layouts/v2-layout.vue"
 import SessionDropdownChannelSelector from "@/components-mobile/SessionDropdownChannelSelector.vue"
+import IsMobile from "../components/atoms/IsMobile.vue"
 export default {
   mixins: [
     sessionMixin,
