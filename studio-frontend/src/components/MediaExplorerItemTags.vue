@@ -1,7 +1,9 @@
 <template>
   <div class="media-explorer-item-tags">
     <!-- Tags list -->
-    <div v-if="mediatags.length > 0" class="media-explorer-item-tags__container">
+    <div
+      v-if="mediatags.length > 0"
+      class="media-explorer-item-tags__container">
       <div class="media-explorer-item-tags__list">
         <Tooltip
           v-for="tag in visibleTags"
@@ -15,13 +17,13 @@
             @click="handleTagClick(tag)"
             size="xs" />
         </Tooltip>
-        
+
         <!-- +N bubble for hidden tags -->
         <Tooltip
           v-if="hiddenCount > 0"
           :text="hiddenTagsTooltip"
           position="bottom">
-          <button 
+          <button
             class="media-explorer-item-tags__more"
             @click.stop="toggleShowAll"
             :title="`${hiddenCount} ${$t('media_explorer.tags.more_tags')}`">
@@ -30,15 +32,15 @@
         </Tooltip>
       </div>
     </div>
-    
+
     <!-- Empty state or add button -->
-    <div 
+    <!-- <div 
       v-else 
       class="media-explorer-item-tags__empty">
       <span class="media-explorer-item-tags__empty-text">
         {{ $t('media_explorer.tags.no_tags') }}
       </span>
-    </div>
+    </div> -->
   </div>
 </template>
 

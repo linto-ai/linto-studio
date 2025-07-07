@@ -1,5 +1,7 @@
 <template>
-  <button
+  <component
+    :is="to ? 'router-link' : 'button'"
+    :to="to"
     class="btn"
     :class="classes"
     :style="styles"
@@ -88,7 +90,7 @@
         :size="size"
         :class="iconClasses" />
     </template>
-  </button>
+  </component>
 </template>
 
 <script>
@@ -200,6 +202,10 @@ export default {
       type: Boolean,
       required: false,
       default: false,
+    },
+    to: {
+      type: [String, Object],
+      required: false,
     },
   },
   computed: {

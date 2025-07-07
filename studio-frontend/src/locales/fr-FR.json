@@ -630,11 +630,11 @@
       "no_tags": "Aucun tag disponible"
     },
     "tags": {
-      "search": "Rechercher un tag",
-      "no_tags": "Ajouter un tag",
-      "more_tags": "Voir les {count} tags",
-      "add_tag": "Ajouter un tag",
-      "create_tag": "Créer le tag"
+      "search": "Rechercher une thématique",
+      "no_tags": "Ajouter une thématique",
+      "more_tags": "Voir les {count} thématiques",
+      "add_tag": "Ajouter une thématique",
+      "create_tag": "Créer la thématique"
     },
     "panel": {
       "overview": "Aperçu du média",
@@ -642,11 +642,12 @@
       "description": "Description",
       "duration": "Durée",
       "created": "Créé le",
-      "tags": "Tags",
+      "tags": "Thématiques",
       "metadata": "Métadonnées",
       "default_title": "Sans titre",
       "default_description": "Aucune description"
-    }
+    },
+    "favorite": "Favoris"
   },
   "modal": {
     "cancel": "Annuler",
