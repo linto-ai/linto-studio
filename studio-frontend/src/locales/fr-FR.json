@@ -602,36 +602,12 @@
     }
   },
   "manage_tags": {
-    "no_tags": "Aucun tag disponible",
-    "create_tag": "Créer un tag",
-    "create_category": {
-      "name": "Nom",
-      "save": "Enregistrer",
-      "title": "Créer une catégorie"
-    },
-    "create_category_button": "Créer une catégorie",
-    "delete_category": {
-      "action": "Supprimer",
-      "description": "Êtes-vous sûr de vouloir supprimer cette catégorie ?",
-      "title": "Supprimer la catégorie \"{name}\""
-    },
-    "delete_tag": {
-      "action": "Supprimer",
-      "description": "{number} medias vont être dissociés de ce tag.",
-      "title": "Supprimer le tag \"{name}\""
-    },
-    "edit_category": {
-      "category_color": "Couleur",
-      "category_name": "Nom",
-      "save": "Enregistrer",
-      "title": "Modifier la catégorie \"{name}\""
-    },
-    "edit_tag": {
-      "name": "Nom",
-      "save": "Enregistrer",
-      "title": "Modifier le tag \"{name}\""
-    },
-    "subtitle": "Déplacer les tags entre les catégories ou modifiez les."
+    "title": "Thématiques",
+    "no_tags": "Aucune thématiques",
+    "create_tag": "Créer un thématique",
+    "delete_tag": "Supprimer",
+    "edit_tag": "Modifier",
+    "no_description": "Aucune description"
   },
   "markdown_editor": {
     "source": "Source",
