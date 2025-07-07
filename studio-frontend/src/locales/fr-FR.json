@@ -614,6 +614,7 @@
     "preview": "Aperçu"
   },
   "media_explorer": {
+    "favorite": "Favoris",
     "line": {
       "edit_transcription": "Transcription",
       "edit_subtitles": "Sous-titres",
@@ -1314,6 +1315,9 @@
     "no_tags_found": "Aucun tag trouvé",
     "create_tag": "Créer le tag",
     "clear_all": "Tout effacer",
-    "selected_count": "sélectionné(s)"
+    "selected_count": "sélectionné(s)",
+    "search_message": "Appuyer sur [ENTER] pour rechercher \"{keyword}\" dans vos médias",
+    "search_empty_message": "Appuyer sur [ENTER] pour rechercher dans tous vos médias",
+    "search_placeholder": "Rechercher dans vos médias"
   }
 }

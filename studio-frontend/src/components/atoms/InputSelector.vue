@@ -6,6 +6,7 @@
       :class="{
         'input-selector__input-container--focused': isOpen || isFocused,
         'input-selector__input-container--disabled': disabled,
+        'input-selector__input-container--empty': selectedTags.length === 0,
       }"
       @click="handleContainerClick">
       <!-- Selected tags -->
@@ -56,8 +57,22 @@
     <!-- Dropdown content -->
     <transition name="input-selector-dropdown">
       <div v-if="isOpen" class="input-selector__dropdown">
+        <!-- Search mode: Show search message when no tags match -->
+        <div 
+          v-if="mode === 'search' && filteredTags.length === 0"
+          class="input-selector__search-message"
+          @click="handleSearchSubmit">
+          <ph-icon name="magnifying-glass" size="16" />
+          <span v-if="searchQuery.trim()">
+            {{ $t("input_selector.search_message", { keyword: searchQuery }) }}
+          </span>
+          <span v-else>
+            {{ $t("input_selector.search_empty_message") }}
+          </span>
+        </div>
+
         <!-- Filtered tags -->
-        <div v-if="filteredTags.length > 0" class="input-selector__options">
+        <div v-else-if="filteredTags.length > 0" class="input-selector__options">
           <div
             v-for="(tag, index) in filteredTags"
             :key="tag._id || tag.id"
@@ -66,7 +81,7 @@
               'input-selector__option--selected': isTagSelected(tag),
               'input-selector__option--highlighted': index === highlightedIndex,
             }"
-            @click="toggleTag(tag)"
+            @click="handleTagClick(tag)"
             @mouseenter="highlightedIndex = index">
             <div class="input-selector__option-content">
               <span
@@ -85,16 +100,16 @@
           </div>
         </div>
 
-        <!-- No results -->
+        <!-- No results (only in tags mode) -->
         <div
-          v-else-if="searchQuery && filteredTags.length === 0"
+          v-else-if="mode === 'tags' && searchQuery && filteredTags.length === 0"
           class="input-selector__no-results">
           {{ $t("input_selector.no_tags_found") }}
         </div>
 
-        <!-- Create new tag -->
+        <!-- Create new tag (only in tags mode) -->
         <div
-          v-if="allowCreate && searchQuery && !exactMatch"
+          v-if="mode === 'tags' && allowCreate && searchQuery && !exactMatch"
           class="input-selector__create"
           @click="handleCreateTag">
           <ph-icon name="plus" size="16" />
@@ -138,6 +153,11 @@ export default {
       type: String,
       default: "",
     },
+    mode: {
+      type: String,
+      default: "search",
+      validator: (value) => ["search", "tags"].includes(value),
+    },
 
     // Tags props
     tags: {
@@ -179,6 +199,9 @@ export default {
   },
   computed: {
     effectivePlaceholder() {
+      if (this.mode === "search") {
+        return this.$t("input_selector.search_placeholder")
+      }
       if (this.selectedTags.length > 0 && !this.hideSelectedTags) {
         return this.$t("input_selector.search_tags")
       }
@@ -233,7 +256,7 @@ export default {
     isOpen(isOpen) {
       if (!isOpen) {
         this.highlightedIndex = -1
-        this.searchQuery = ""
+        // Don't clear searchQuery to preserve user input
       } else {
         this.$nextTick(() => {
           if (this.$refs.searchInput) {
@@ -241,6 +264,24 @@ export default {
           }
         })
       }
+    },
+
+    // Auto-select the last remaining tag in search mode
+    filteredTags: {
+      handler(newTags, oldTags) {
+        if (
+          this.mode === "search" &&
+          this.searchQuery &&
+          newTags.length === 1 &&
+          oldTags &&
+          oldTags.length > 1 &&
+          !this.isTagSelected(newTags[0])
+        ) {
+          // Automatically highlight the last remaining tag
+          this.highlightedIndex = 0
+        }
+      },
+      immediate: false,
     },
   },
   mounted() {
@@ -270,69 +311,62 @@ export default {
       this.$emit("blur")
     },
 
-    handleInput() {
-      if (!this.isOpen) {
+    handleInput(event) {
+      if (!this.isOpen && !this.disabled && !this.readonly) {
         this.open()
       }
+      // Reset highlight when user types
+      this.highlightedIndex = -1
     },
 
     handleKeydown(event) {
       switch (event.key) {
         case "Escape":
+          event.preventDefault()
           this.close()
+          break
+
+        case "Enter":
+          event.preventDefault()
+          this.handleEnterKey()
           break
 
         case "ArrowDown":
           event.preventDefault()
           this.open()
-          this.$nextTick(() => {
-            if (this.$refs.searchInput) {
-              this.$refs.searchInput.focus()
-            }
-          })
-          break
-
-        case "Tab":
-          this.close()
-          break
-      }
-    },
-
-    handleSearchKeydown(event) {
-      switch (event.key) {
-        case "Escape":
-          this.close()
-          this.$refs.input.focus()
-          break
-
-        case "Enter":
-          event.preventDefault()
-          if (
-            this.highlightedIndex >= 0 &&
-            this.filteredTags[this.highlightedIndex]
-          ) {
-            this.toggleTag(this.filteredTags[this.highlightedIndex])
-          } else if (this.allowCreate && this.searchQuery && !this.exactMatch) {
-            this.handleCreateTag()
+          if (this.filteredTags.length > 0) {
+            this.highlightNext()
           }
-          break
-
-        case "ArrowDown":
-          event.preventDefault()
-          this.highlightNext()
           break
 
         case "ArrowUp":
           event.preventDefault()
-          this.highlightPrev()
+          if (this.isOpen && this.filteredTags.length > 0) {
+            this.highlightPrev()
+          }
           break
 
         case "Tab":
           this.close()
-          this.$refs.input.focus()
           break
       }
     },
+
+    handleEnterKey() {
+      // Priority 1: If we have a highlighted tag, select it
+      if (this.highlightedIndex >= 0 && this.filteredTags[this.highlightedIndex]) {
+        this.handleTagClick(this.filteredTags[this.highlightedIndex])
+        return
+      }
+
+      // Priority 2: If we're in search mode, perform search (even if empty)
+      if (this.mode === "search") {
+        this.handleSearchSubmit()
+        return
+      }
+    },
+
+
 
     handleClickOutside(event) {
       if (!this.$el.contains(event.target)) {
@@ -439,6 +473,29 @@ export default {
         return unified
       }
     },
+
+    handleSearchSubmit() {
+      const trimmedQuery = this.searchQuery.trim()
+      
+      if (this.mode === "search") {
+        this.$emit("search", trimmedQuery) // Allow empty searches
+        this.close() // Close dropdown after search
+      }
+    },
+
+    handleTagClick(tag) {
+      if (this.mode === "tags") {
+        this.toggleTag(tag)
+      } else if (this.mode === "search") {
+        // In search mode, add the tag to selection
+        this.addTag(tag)
+        // Clear search input since we've selected a tag
+        this.searchQuery = ""
+        if (this.closeOnSelect) {
+          this.close()
+        }
+      }
+    },
   },
 }
 </script>
@@ -457,7 +514,7 @@ export default {
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
-    min-height: 2.5rem;
+    min-height: 2rem;
     padding: 0.25rem 0.5rem;
     border: 1px solid #d1d5db;
     border-radius: 0.375rem;
@@ -481,6 +538,16 @@ export default {
 
       .input-selector__input {
         cursor: not-allowed;
+      }
+    }
+
+    &--empty {
+      .input-selector__tags {
+        display: none;
+      }
+
+      .input-selector__input {
+        margin-top: 0;
       }
     }
   }
@@ -563,7 +630,7 @@ export default {
     top: 100%;
     left: 0;
     right: 0;
-    z-index: 1000;
+    z-index: 2000;
     margin-top: 0.25rem;
     max-height: 15rem;
     overflow-y: auto;
@@ -687,6 +754,27 @@ export default {
     font-size: 0.75rem;
     color: #6b7280;
     text-align: center;
+  }
+
+  &__search-message {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border-top: 1px solid #e5e7eb;
+    background: #f9fafb;
+    cursor: pointer;
+    font-size: 0.875rem;
+    color: var(--primary-color);
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background: #f3f4f6;
+    }
+
+    span {
+      font-weight: 500;
+    }
   }
 }
 

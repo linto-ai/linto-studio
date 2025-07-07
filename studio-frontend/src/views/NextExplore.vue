@@ -1,37 +1,21 @@
 <template>
   <LayoutV2 customClass="explore-next">
-    <MediaExplorer
-      :medias="conversations"
-      :loading="loadingConversations"
-      :error="error"
-      :search-value="search"
-      :enable-pagination="false"
-      :selected-tag-ids="selectedTagIds"
-      @search="handleSearch"
+    <MediaExplorer :medias="conversations" :loading="loadingConversations" :error="error" :search-value="search"
+      :enable-pagination="false" :selected-tag-ids="selectedTagIds" @search="handleSearch"
       class="explore-next__media-explorer relative">
       <template v-slot:before>
-        <div
-          v-if="initialPage > 0 && showPreviousButton"
-          class="explore-next__previous-items"
+        <div v-if="initialPage > 0 && showPreviousButton" class="explore-next__previous-items"
           @click="loadPreviousItems">
           <a href="#" class="btn xs outline primary">
-            <span class="label"
-              >Load previous items ({{ initialPage * 12 }})</span
-            >
+            <span class="label">Load previous items ({{ initialPage * 12 }})</span>
           </a>
         </div>
       </template>
       <template v-slot:after>
         <div>
-          <div
-            class="explore-next__infinite-loading"
-            ref="infiniteLoadingTrigger">
-            <span v-if="hasMoreItems && !loadingConversations"
-              >Loading more...</span
-            >
-            <span v-else-if="!hasMoreItems && !loadingConversations"
-              >End of results</span
-            >
+          <div class="explore-next__infinite-loading" ref="infiniteLoadingTrigger">
+            <span v-if="hasMoreItems && !loadingConversations">Loading more...</span>
+            <span v-else-if="!hasMoreItems && !loadingConversations">End of results</span>
             <span v-else>Loading...</span>
           </div>
         </div>
@@ -44,20 +28,6 @@
           <div class="explore-next__empty__text mt-md">
             <h3>No conversations found</h3>
             <p class="text-sm">Create a new conversation to get started</p>
-
-            <div
-              v-if="selectedTagIds.length > 0"
-              class="explore-next__empty__tags">
-              <ChipTag
-                v-for="tag in selectedTags"
-                :key="tag._id"
-                :name="tag.name"
-                :emoji="tag.emoji"
-                :color="tag.color"
-                :active="selectedTags.some((t) => t._id === tag._id)"
-                @click="handleTagClick(tag)"
-                size="sm" />
-            </div>
           </div>
         </div>
       </template>

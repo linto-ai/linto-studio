@@ -30,14 +30,19 @@
         </div>
 
         <!-- Tags filter selector -->
-        <div class="media-explorer-header__filters" v-if="selectedCount === 0">
-          <input
+        <div class="media-explorer-header__filters">
+          <InputSelector
             v-model="search"
-            type="text"
+            :selected-tags="selectedTags"
+            :tags="getTags"
+            :allow-create="false"
             id="search"
-            placeholder="Search"
+            mode="search"
+            :placeholder="$t('input_selector.search_placeholder')"
             class="input-item__input fullwidth"
-            @keyup.enter="handleSearch" />
+            @add="handleAddTag"
+            @remove="handleRemoveTag"
+            @search="handleSearch" />
         </div>
       </div>
     </div>
@@ -46,6 +51,7 @@
 
 <script>
 import { v4 as uuid } from "uuid"
+import { mapGetters } from "vuex"
 
 export default {
   name: "MediaExplorerHeader",
@@ -89,6 +95,26 @@ export default {
       }
       return this.stickyTopOffset
     },
+    getTags() {
+      const currentRoute = this.$route?.name || ""
+
+      if (
+        currentRoute === "explore-favorites" ||
+        (typeof currentRoute === "string" && currentRoute.includes("favorites"))
+      ) {
+        return this.$store.getters["tags/getFavoritesTags"]
+      } else if (
+        currentRoute === "explore-shared" ||
+        (typeof currentRoute === "string" && currentRoute.includes("shared"))
+      ) {
+        return this.$store.getters["tags/getSharedTags"]
+      } else {
+        return this.$store.getters["tags/getTags"]
+      }
+    },
+    selectedTags() {
+      return this.$store.getters["tags/getExploreSelectedTags"]
+    },
   },
   data() {
     return {
@@ -114,8 +140,10 @@ export default {
       this.$emit("select-all")
     },
 
-    handleSearch() {
-      const formattedSearch = this.search.trim()
+    handleSearch(searchQuery = null) {
+      // Use parameter if provided, otherwise use internal search value
+      const formattedSearch =
+        searchQuery !== null ? searchQuery.trim() : this.search.trim()
 
       if (formattedSearch.length === 0) {
         this.$emit("search", formattedSearch, [])
@@ -126,18 +154,29 @@ export default {
         this.$emit("search", formattedSearch, [
           {
             title: "Title filter",
-            value: this.search,
+            value: formattedSearch,
             _id: uuid(),
             key: "titleConversation",
           },
           {
             title: "Text filter",
-            value: this.search,
+            value: formattedSearch,
             _id: uuid(),
             key: "textConversation",
           },
         ])
       }
+
+      // Update local search value to match what was searched
+      this.search = formattedSearch
+    },
+
+    handleAddTag(tag) {
+      this.$store.dispatch("tags/toggleTag", tag)
+    },
+
+    handleRemoveTag(tag) {
+      this.$store.dispatch("tags/toggleTag", tag)
     },
   },
 }
@@ -147,7 +186,7 @@ export default {
 .media-explorer-header {
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 2000; /* over right panel */
   background-color: var(--primary-soft, #f8f9fa);
   border-bottom: var(--border-block, 1px solid #e0e0e0);
   transition: box-shadow 0.2s ease-in-out;
@@ -163,7 +202,6 @@ export default {
   justify-content: space-between;
   padding: 0.5rem 1rem;
   min-height: 54px;
-  max-height: 54px;
   box-sizing: border-box;
   gap: 1rem;
   flex: 1;

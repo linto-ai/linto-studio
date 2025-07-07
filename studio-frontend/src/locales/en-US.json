@@ -1306,5 +1306,15 @@
   "websocket": {
     "connected": "Content updated in real time",
     "disconnected": "Content not updated, check your internet connection"
+  },
+  "input_selector": {
+    "search_tags": "Search tags...",
+    "available_tags": "Available tags",
+    "no_tags_found": "No tags found",
+    "create_tag": "Create tag",
+    "clear_all": "Clear all",
+    "selected_count": "selected",
+    "search_message": "Press [ENTER] to search \"{keyword}\" in your media",
+    "search_empty_message": "Press [ENTER] to search in all your media"
   }
 }

@@ -102,7 +102,6 @@ export default {
       this.$store.dispatch("tags/toggleTag", tag)
     },
     async handleTagSubmit(tag) {
-      console.log("handleTagSubmit", tag)
       await this.$store.dispatch("tags/createTag", tag)
       this.fetchTags()
       this.showModalTagManagement = false
