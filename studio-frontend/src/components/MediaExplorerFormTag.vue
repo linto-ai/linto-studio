@@ -84,14 +84,14 @@
               type="text"
               placeholder="Tag name"
               class="input-item__input"
-              v-model="name" />
+              v-model="tag.name" />
           </span>
         </div>
         <div class="input-group">
           <label for="tag-name">Description du tag</label>
           <textarea
             placeholder="Description du tag"
-            v-model="description"
+            v-model="tag.description"
             rows="3"
             maxlength="255" />
         </div>
@@ -473,6 +473,12 @@ export default {
         this.color = tag.color
         this.selectedEmoji = tag.emoji || null
 
+        console.log("tag", tag)
+        console.log("this.name", this.name)
+        console.log("this.description", this.description)
+        console.log("this.color", this.color)
+        console.log("this.selectedEmoji", this.selectedEmoji)
+
         // Auto-select emoji from name or description if not already set
         if (!this.selectedEmoji) {
           this.autoSelectEmojiFromText()
@@ -546,8 +552,8 @@ export default {
 
     onSubmit() {
       this.$emit("submit", {
-        name: this.name,
-        description: this.description,
+        name: this.tag.name,
+        description: this.tag.description,
         color: this.color,
         emoji: this.selectedEmoji || "",
       })

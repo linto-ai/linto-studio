@@ -54,7 +54,7 @@ class CategoryModel extends MongoModel {
         type: TYPE.SYSTEM,
       }
       if (organizationId) {
-        query.organizationId = organizationId
+        query.scopeId = organizationId
       }
       return await this.mongoRequest(query)
     } catch (error) {
