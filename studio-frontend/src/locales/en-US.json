@@ -624,10 +624,10 @@
     "delete": "Delete",
     "share": "Share",
     "tags_selector": {
-      "title": "Filter by tags",
+      "title": "Filter by subjects",
       "filter": "Filter",
       "clear_all": "Clear all",
-      "no_tags": "No tags available"
+      "no_tags": "No subjects available"
     },
     "panel": {
       "overview": "Media Overview",
@@ -635,11 +635,12 @@
       "description": "Description",
       "duration": "Duration",
       "created": "Created",
-      "tags": "Tags",
+      "tags": "Subjects",
       "metadata": "Metadata",
       "default_title": "No title",
       "default_description": "No description"
-    }
+    },
+    "favorite": "Favorite"
   },
   "modal": {
     "cancel": "Cancel",

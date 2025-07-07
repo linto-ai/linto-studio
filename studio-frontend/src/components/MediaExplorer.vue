@@ -90,8 +90,9 @@
         <IsMobile>
           <template #desktop>
             <MediaExplorerRightPanel
-              v-if="selectedMediaForOverview"
+              v-if="selectedMediaForOverview && currentOrganizationScope"
               :selected-media="reactiveSelectedMediaForOverview"
+              :currentOrganizationScope="currentOrganizationScope"
               @close="closeRightPanel"
               @resize="handleRightPanelResize" />
           </template>

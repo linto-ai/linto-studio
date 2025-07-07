@@ -25,6 +25,7 @@
         <Button
           v-for="action in actions"
           :key="action.id"
+          :to="action.to"
           :label="action.label"
           :icon="action.icon"
           size="sm"
@@ -165,6 +166,10 @@ export default {
       type: Number,
       default: 600,
     },
+    currentOrganizationScope: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
@@ -179,16 +184,37 @@ export default {
           id: "edit",
           label: this.$t("media_explorer.line.edit_transcription"),
           icon: "pencil",
+          to: {
+            name: "conversations transcription",
+            params: {
+              conversationId: this.selectedMedia._id,
+              organizationId: this.currentOrganizationScope,
+            },
+          },
         },
         {
           id: "subtitles",
           label: this.$t("media_explorer.line.edit_subtitles"),
           icon: "closed-captioning",
+          to: {
+            name: "conversations subtitles",
+            params: {
+              conversationId: this.selectedMedia._id,
+              organizationId: this.currentOrganizationScope,
+            },
+          },
         },
         {
           id: "export",
           label: this.$t("media_explorer.line.export"),
           icon: "export",
+          to: {
+            name: "conversations publish",
+            params: {
+              conversationId: this.selectedMedia._id,
+              organizationId: this.currentOrganizationScope,
+            },
+          },
         },
         {
           id: "delete",
@@ -213,8 +239,8 @@ export default {
       }
     }
 
-    if (this.panelWidth < panelActionWidth) {
-      this.panelWidth = panelActionWidth
+    if (this.panelWidth < this.panelActionWidth) {
+      this.panelWidth = this.panelActionWidth
     }
 
     // Emettre la largeur initiale au parent
@@ -375,15 +401,6 @@ export default {
 
     handleActionClick(action) {
       switch (action.id) {
-        case "edit":
-          this.handleEdit()
-          break
-        case "subtitles":
-          this.handleSubtitles()
-          break
-        case "export":
-          this.handleExport()
-          break
         case "delete":
           this.handleDelete()
           break

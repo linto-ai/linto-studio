@@ -94,6 +94,7 @@
             :title="action.name"
             :icon="action.icon"
             :color="action.color"
+            :to="action.to"
             size="sm"
             variant="outline"
             @click.stop="handleActionClick(action)" />
@@ -178,18 +179,39 @@ export default {
           name: this.$t("media_explorer.line.edit_transcription"),
           icon: "pencil",
           color: "primary",
+          to: {
+            name: "conversations transcription",
+            params: {
+              conversationId: this.media._id,
+              organizationId: this.organizationId,
+            },
+          },
         },
         {
           id: "subtitles",
           name: this.$t("media_explorer.line.edit_subtitles"),
           icon: "closed-captioning",
           color: "primary",
+          to: {
+            name: "conversations subtitles",
+            params: {
+              conversationId: this.media._id,
+              organizationId: this.organizationId,
+            },
+          },
         },
         {
           id: "export",
           name: this.$t("media_explorer.line.export"),
           icon: "export",
           color: "primary",
+          to: {
+            name: "conversations publish",
+            params: {
+              conversationId: this.media._id,
+              organizationId: this.organizationId,
+            },
+          },
         },
         {
           id: "delete",
@@ -309,49 +331,10 @@ export default {
 
     handleActionClick(action) {
       switch (action.id) {
-        case "edit":
-          this.handleEdit()
-          break
-        case "subtitles":
-          this.handleSubtitles()
-          break
-        case "export":
-          this.handleExport()
-          break
         case "delete":
           this.handleDelete()
           break
       }
-    },
-
-    handleEdit() {
-      this.$router.push({
-        name: "conversations transcription",
-        params: {
-          conversationId: this.media._id,
-          organizationId: this.organizationId,
-        },
-      })
-    },
-
-    handleSubtitles() {
-      this.$router.push({
-        name: "conversations subtitles",
-        params: {
-          conversationId: this.media._id,
-          organizationId: this.organizationId,
-        },
-      })
-    },
-
-    handleExport() {
-      this.$router.push({
-        name: "conversations publish",
-        params: {
-          conversationId: this.media._id,
-          organizationId: this.organizationId,
-        },
-      })
     },
 
     handleDelete() {
