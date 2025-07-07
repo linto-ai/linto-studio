@@ -21,7 +21,7 @@
           variant="outline"
           color="tertiary" />
       </div>
-      <div class="panel-header-actions button-group">
+      <div class="panel-header-actions button-group" ref="panelActions">
         <Button
           v-for="action in actions"
           :key="action.id"
@@ -101,12 +101,11 @@
             <h4 class="section-title">{{ $t("media_explorer.panel.tags") }}</h4>
             <div class="tags-container">
               <InputSelector
-                :tags="getTags" 
+                :tags="getTags"
                 :selected-tags="selectedMediaTags"
                 @create="handleCreateTag"
                 @remove="handleRemoveTag"
-                @add="handleAddTag"
-              />
+                @add="handleAddTag" />
             </div>
           </div>
 
@@ -170,6 +169,7 @@ export default {
   data() {
     return {
       panelWidth: this.initialWidth,
+      panelActionWidth: 0,
       isResizing: false,
       startX: 0,
       startWidth: 0,
@@ -197,6 +197,32 @@ export default {
           color: "tertiary",
         },
       ],
+    }
+  },
+  mounted() {
+    const savedWidth = localStorage.getItem("mediaExplorerPanelWidth")
+
+    this.panelActionWidth = Array.from(
+      this.$refs.panelActions.childNodes,
+    ).reduce((acc, el) => acc + el.clientWidth, 16)
+
+    if (savedWidth) {
+      const width = parseInt(savedWidth)
+      if (width >= this.minWidth && width <= this.maxWidth) {
+        this.panelWidth = width
+      }
+    }
+
+    if (this.panelWidth < panelActionWidth) {
+      this.panelWidth = panelActionWidth
+    }
+
+    // Emettre la largeur initiale au parent
+    this.$emit("resize", this.panelWidth)
+  },
+  beforeDestroy() {
+    if (this.isResizing) {
+      this.stopResize()
     }
   },
   computed: {
@@ -277,9 +303,13 @@ export default {
       const clientX = event.clientX || event.touches[0].clientX
       const deltaX = this.startX - clientX
       const newWidth = this.startWidth + deltaX
+
+      console.log("newWidth", newWidth)
+      console.log("panelActionWidth", this.panelActionWidth)
       this.panelWidth = Math.max(
         this.minWidth,
         Math.min(this.maxWidth, newWidth),
+        this.panelActionWidth,
       )
 
       this.$emit("resize", this.panelWidth)
@@ -393,23 +423,6 @@ export default {
     handleDelete() {
       this.showDeleteModal = true
     },
-  },
-  mounted() {
-    const savedWidth = localStorage.getItem("mediaExplorerPanelWidth")
-    if (savedWidth) {
-      const width = parseInt(savedWidth)
-      if (width >= this.minWidth && width <= this.maxWidth) {
-        this.panelWidth = width
-      }
-    }
-
-    // Emettre la largeur initiale au parent
-    this.$emit("resize", this.panelWidth)
-  },
-  beforeDestroy() {
-    if (this.isResizing) {
-      this.stopResize()
-    }
   },
 }
 </script>
