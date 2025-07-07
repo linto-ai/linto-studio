@@ -98,7 +98,14 @@ module.exports = {
       const tags = await db
         .collection("tags")
         .find({
-          organizationId: organization._id,
+          $or: [
+            {
+              organizationId: organization._id,
+            },
+            {
+              organizationId: organization._id.toString(),
+            },
+          ],
         })
         .toArray()
       let memCategories = new Map()
