@@ -100,29 +100,13 @@
           <div class="media-section">
             <h4 class="section-title">{{ $t("media_explorer.panel.tags") }}</h4>
             <div class="tags-container">
-              <ChipTag
-                v-for="tag in selectedMediaTags"
-                :key="tag._id"
-                :name="tag.name"
-                :color="tag.color"
-                size="sm" />
-            </div>
-            <div class="tags-container">
-              <Popover width="300px">
-                <template #trigger>
-                  <Button
-                    icon="plus"
-                    size="sm"
-                    variant="outline"
-                    color="primary">
-                    {{ $t("media_explorer.tags.add_tag") }}
-                  </Button>
-                </template>
-                <MediaExplorerItemTagBox
-                  :mediatags="selectedMediaTags"
-                  :media-id="selectedMedia._id"
-                  width="300px" />
-              </Popover>
+              <InputSelector
+                :tags="getTags" 
+                :selected-tags="selectedMediaTags"
+                @create="handleCreateTag"
+                @remove="handleRemoveTag"
+                @add="handleAddTag"
+              />
             </div>
           </div>
 
@@ -156,8 +140,6 @@
 import { mapGetters } from "vuex"
 import Button from "@/components/atoms/Button.vue"
 import Badge from "@/components/atoms/Badge.vue"
-import ChipTag from "./atoms/ChipTag.vue"
-import MediaExplorerItemTagBox from "./MediaExplorerItemTagBox.vue"
 import ModalDeleteConversations from "./ModalDeleteConversations.vue"
 
 export default {
@@ -165,7 +147,6 @@ export default {
   components: {
     Button,
     Badge,
-    MediaExplorerItemTagBox,
     ModalDeleteConversations,
   },
   props: {
@@ -257,6 +238,33 @@ export default {
       document.body.style.userSelect = "none"
 
       event.preventDefault()
+    },
+
+    /**
+     * Handle the creation of a tag
+     * @param tag - The tag to create
+     */
+    async handleCreateTag(tag) {
+      const newTag = await this.$store.dispatch("tags/createTag", tag)
+
+      this.$store.dispatch("tags/addTagToMedia", {
+        mediaId: this.selectedMedia._id,
+        tagId: newTag._id,
+      })
+    },
+
+    handleRemoveTag(tag) {
+      this.$store.dispatch("tags/removeTagFromMedia", {
+        mediaId: this.selectedMedia._id,
+        tagId: tag._id,
+      })
+    },
+
+    handleAddTag(tag) {
+      this.$store.dispatch("tags/addTagToMedia", {
+        mediaId: this.selectedMedia._id,
+        tagId: tag._id,
+      })
     },
 
     /**

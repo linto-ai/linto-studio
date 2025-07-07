@@ -27,6 +27,8 @@ import PopoverList from "./PopoverList.vue"
 import IsMobile from "./IsMobile.vue"
 import IsDesktop from "./IsDesktop.vue"
 import ButtonRoller from "./ButtonRoller.vue"
+import InputSelector from "./InputSelector.vue"
+
 const components = [
   Avatar,
   PhIcon,
@@ -57,6 +59,7 @@ const components = [
   IsMobile,
   IsDesktop,
   ButtonRoller,
+  InputSelector,
 ]
 
 const validateComponents = (c) =>

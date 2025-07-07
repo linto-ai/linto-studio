@@ -1307,5 +1307,13 @@
   "websocket": {
     "connected": "Contenu mis à jour en temps réel",
     "disconnected": "Contenu non mis à jour, vérifiez votre connexion internet"
+  },
+  "input_selector": {
+    "search_tags": "Rechercher des tags...",
+    "available_tags": "Tags disponibles",
+    "no_tags_found": "Aucun tag trouvé",
+    "create_tag": "Créer le tag",
+    "clear_all": "Tout effacer",
+    "selected_count": "sélectionné(s)"
   }
 }

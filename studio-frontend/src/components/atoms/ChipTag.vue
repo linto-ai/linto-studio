@@ -32,6 +32,14 @@
         {{ count }}
       </Avatar>
       <slot></slot>
+      <Button
+        v-if="removable"
+        icon="x"
+        size="xs"
+        color="tertiary"
+        shape="circle"
+        variant="transparent"
+        @click="$emit('remove')" />
     </span>
     <span v-if="description" class="chip-tag__description">
       {{ description }}
@@ -71,6 +79,10 @@ export default {
       type: String,
       default: "",
     },
+    removable: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     clickable() {
@@ -108,7 +120,6 @@ export default {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 20px;
   padding-left: 0.5em;
   padding-right: 0.5em;
 
