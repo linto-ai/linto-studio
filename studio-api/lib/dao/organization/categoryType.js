@@ -1,6 +1,5 @@
 const TYPE = Object.freeze({
   HIGHLIGHT: "highlight",
-  // "LABEL": 'label',
   LABEL: "conversation_metadata",
   SYSTEM: "system",
 

@@ -2,6 +2,8 @@ const debug = require("debug")(
   "linto:conversation-manager:lib:mongodb:models:organization",
 )
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
+const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
+
 const DEFAULT_PERMISSION = require(
   `${process.cwd()}/lib/dao/organization/permissions`,
 ).getDefaultPermissions()
@@ -33,11 +35,7 @@ class OrganizationModel extends MongoModel {
           result.insertedId.toString(),
         )
 
-      result.categories = [
-        systemCategory,
-        labelsCategory,
-        tagsCategory,
-      ]
+      result.categories = [systemCategory, labelsCategory, tagsCategory]
 
       return result
     } catch (error) {
@@ -51,28 +49,28 @@ class OrganizationModel extends MongoModel {
       const systemCategory = await categoriesModel.create({
         color: "#000000",
         name: "system",
-        organizationId: organizationId,
-        type: "system",
+        scopeId: organizationId,
+        type: TYPE.SYSTEM,
       })
 
       const labelsCategory = await categoriesModel.create({
         color: "#000000",
         name: "labels",
-        organizationId: organizationId,
-        type: "system",
-        parentId: systemCategory.insertedId,
+        scopeId: organizationId,
+        type: TYPE.SYSTEM,
+        parentId: systemCategory.insertedId.toString(),
       })
       const tagsCategory = await categoriesModel.create({
         color: "#000000",
         name: "tags",
-        organizationId: organizationId,
-        type: "system",
-        parentId: systemCategory.insertedId,
+        scopeId: organizationId,
+        type: TYPE.SYSTEM,
+        parentId: systemCategory.insertedId.toString(),
       })
 
       await tagsModel.createDefaultTags(
         organizationId,
-        tagsCategory.insertedId,
+        tagsCategory.insertedId.toString(),
       )
 
       return { systemCategory, labelsCategory, tagsCategory }
@@ -106,11 +104,7 @@ class OrganizationModel extends MongoModel {
         )
 
       // We add the default categories to the organization
-      result.categories = [
-        systemCategory,
-        labelsCategory,
-        tagsCategory,
-      ]
+      result.categories = [systemCategory, labelsCategory, tagsCategory]
 
       return result
     } catch (error) {

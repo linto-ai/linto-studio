@@ -33,6 +33,9 @@ class TagModel extends MongoModel {
         organizationId: this.getObjectId(organizationId),
         categoryId: this.getObjectId(categoryId),
       }))
+      if (tags.length === 0) {
+        return
+      }
       return await this.mongoInsertMany(tags)
     } catch (error) {
       console.error(error)
