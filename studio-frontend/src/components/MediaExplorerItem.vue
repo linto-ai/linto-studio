@@ -225,8 +225,8 @@ export default {
         return {
           ...this.media.sharedBy,
           img: this.media.sharedBy.img
-            ? process.env.VUE_APP_PUBLIC_MEDIA + "/" + this.media.sharedBy.img
-            : null,
+            ? this.media.sharedBy.img
+            : "/pictures/default.jpg",
           fullName: `${this.media.sharedBy.firstname} ${this.media.sharedBy.lastname}`,
         }
       }
@@ -236,14 +236,12 @@ export default {
       if (owner) {
         return {
           fullName: userName(owner),
-          img: owner.img
-            ? process.env.VUE_APP_PUBLIC_MEDIA + "/" + owner.img
-            : null,
+          img: owner.img ? owner.img : null,
         }
       } else {
         return {
           fullName: "Private user",
-          img: process.env.VUE_APP_PUBLIC_MEDIA + "/pictures/default.jpg",
+          img: "/pictures/default.jpg",
         }
       }
     },
