@@ -35,39 +35,37 @@
             </li>
           </ul>
           <h4>{{ orgaName }}</h4>
-          <is-cloud>
-            <ul>
-              <li
-                :class="{ active: selectedTab === 'organization-information' }">
-                <a href="#" @click="selectTab('organization-information')">
-                  <ph-icon name="info" weight="bold"></ph-icon>
-                  <span>{{
-                    $t("app_settings_modal.organization_information")
-                  }}</span>
-                </a>
-              </li>
-              <li :class="{ active: selectedTab === 'members' }">
-                <a href="#" @click="selectTab('members')">
-                  <ph-icon name="users" weight="bold"></ph-icon>
-                  <span>{{
-                    $t("app_settings_modal.organization_members")
-                  }}</span>
-                </a>
-              </li>
+
+          <ul>
+            <li :class="{ active: selectedTab === 'organization-information' }">
+              <a href="#" @click="selectTab('organization-information')">
+                <ph-icon name="info" weight="bold"></ph-icon>
+                <span>{{
+                  $t("app_settings_modal.organization_information")
+                }}</span>
+              </a>
+            </li>
+            <li :class="{ active: selectedTab === 'members' }">
+              <a href="#" @click="selectTab('members')">
+                <ph-icon name="users" weight="bold"></ph-icon>
+                <span>{{ $t("app_settings_modal.organization_members") }}</span>
+              </a>
+            </li>
+            <is-cloud>
               <li :class="{ active: selectedTab === 'billing' }">
                 <a href="#" @click="selectTab('billing')">
                   <ph-icon name="credit-card" weight="bold"></ph-icon>
                   <span>{{ $t("app_settings_modal.billing") }}</span>
                 </a>
               </li>
-              <li :class="{ active: selectedTab === 'tags' }">
-                <a href="#" @click="selectTab('tags')">
-                  <ph-icon name="tag" weight="bold"></ph-icon>
-                  <span>{{ $t("app_settings_modal.tags") }}</span>
-                </a>
-              </li>
-            </ul>
-          </is-cloud>
+            </is-cloud>
+            <li :class="{ active: selectedTab === 'tags' }">
+              <a href="#" @click="selectTab('tags')">
+                <ph-icon name="tag" weight="bold"></ph-icon>
+                <span>{{ $t("app_settings_modal.tags") }}</span>
+              </a>
+            </li>
+          </ul>
         </div>
         <div>
           <Button
@@ -419,12 +417,12 @@ export default {
     aside {
       ul {
         grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        
+
         li {
           a {
             padding: 0.5rem 0.25rem;
             font-size: 11px;
-            
+
             ph-icon {
               font-size: 16px;
             }
