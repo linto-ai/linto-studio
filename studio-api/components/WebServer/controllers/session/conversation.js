@@ -82,32 +82,40 @@ async function initCaptionsForConversation(sessionData, name) {
     const captions = []
     name = name || session.name || ""
 
-    for (const channel of session.channels) {
+    for (let channel of session.channels) {
       const audioId = `${session.id}-${channel.id}`
       const audioFormat = channel.compressAudio ? "mp3" : "wav"
+      if (
+        !channel.compressAudio &&
+        channel.keepAudio &&
+        !(channel.meta === undefined || channel.meta === null)
+      ) {
+        try {
+          const caption = initializeCaption(
+            session,
+            channel,
+            name,
+            session.channels.length,
+          )
 
-      if (!channel.compressAudio && channel.keepAudio) {
-        const caption = initializeCaption(
-          session,
-          channel,
-          name,
-          session.channels.length,
-        )
+          caption.metadata.audio = generateAudioMetadata(audioId, audioFormat)
+          const { serviceName, endpoint, lang, config } =
+            channel.meta.transcriptionService
+          caption.metadata.transcription = {
+            serviceName,
+            endpoint,
+            lang,
+            transcriptionConfig: config,
+          }
+          caption.jobs.transcription.state = "waiting"
+          captions.push(caption)
 
-        caption.metadata.audio = generateAudioMetadata(audioId, audioFormat)
-        const { serviceName, endpoint, lang, config } =
-          channel.meta.transcriptionService
-        caption.metadata.transcription = {
-          serviceName,
-          endpoint,
-          lang,
-          transcriptionConfig: config,
-        }
-        caption.jobs.transcription.state = "waiting"
-        captions.push(caption)
-
-        if (!channel.closedCaptions) {
-          continue
+          if (!channel.closedCaptions) {
+            continue
+          }
+        } catch (err) {
+          debug("Error initializing caption for channel with keepAudio:", err)
+          // We still process the channel captions
         }
       }
 
@@ -143,7 +151,6 @@ async function initCaptionsForConversation(sessionData, name) {
           "audio",
         )
       }
-
       captions.push(caption)
     }
     return captions
@@ -490,7 +497,6 @@ async function storeSessionFromStop(req, next) {
     const session = await axios.get(
       process.env.SESSION_API_ENDPOINT + `/sessions/${req.params.id}`,
     )
-
     await storeSession(session, req.query.name)
 
     model.sessionAlias.deleteByOrganizationAndSession(
