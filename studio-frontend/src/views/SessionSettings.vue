@@ -147,6 +147,7 @@
               v-if="isStarted && !isActive"
               icon="stop"
               :label="$t('session.detail_page.stop_button')"
+              @click="stopSession"
               color="tertiary"
               size="sm"></Button>
             <Button

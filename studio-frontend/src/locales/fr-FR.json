@@ -647,7 +647,12 @@
       "default_title": "Sans titre",
       "default_description": "Aucune description"
     },
-    "favorite": "Favoris"
+    "end_of_results": "Fin des résultats",
+    "loading_more": "Chargement en cours...",
+    "load_previous_items": "Charger les éléments précédents",
+    "empty_title": "Pas de médias",
+    "empty_description": "Aucun média n'a été trouvé. Démmarez une transcription pour en ajouter. ",
+    "loading": "Chargement en cours..."
   },
   "modal": {
     "cancel": "Annuler",

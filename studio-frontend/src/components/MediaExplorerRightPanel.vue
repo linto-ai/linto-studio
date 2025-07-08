@@ -164,7 +164,7 @@ export default {
     },
     maxWidth: {
       type: Number,
-      default: 600,
+      default: 700,
     },
     currentOrganizationScope: {
       type: String,
@@ -493,7 +493,7 @@ export default {
 .panel-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   padding: 0 1rem;
   border: var(--border-block, 1px solid var(--neutral-30));
   background-color: var(--primary-soft);

@@ -10,7 +10,7 @@
       <!-- Media list header - sticky positioned -->
       <MediaExplorerHeader
         :selected-count="selectedMedias.length"
-        :total-count="filteredMedias.length"
+        :total-count="count"
         :loading="loading"
         :is-select-all="isSelectAll"
         :sticky-top-offset="stickyTopOffset"
@@ -108,7 +108,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex"
+import { mapGetters, mapActions } from "vuex"
 
 import MediaExplorerHeader from "@/components/MediaExplorerHeader.vue"
 import MediaExplorerItem from "@/components/MediaExplorerItem.vue"
@@ -178,8 +178,15 @@ export default {
       type: String,
       default: "",
     },
+    totalItemsCount: {
+      type: Number,
+      default: null,
+    },
   },
   computed: {
+    count() {
+      return this.totalItemsCount || this.medias.length
+    },
     selectedMedias() {
       return this.$store.state.inbox.selectedMedias
     },
@@ -192,7 +199,7 @@ export default {
       return this.getExploreSelectedTags.map((t) => t._id)
     },
     totalPages() {
-      return Math.ceil(this.filteredMedias.length / this.pageSize)
+      return Math.ceil(this.count / this.pageSize)
     },
     // Replace old selectedTagIds getter with prop-based value
     activeSelectedTagIds() {
@@ -225,7 +232,8 @@ export default {
   },
   data() {
     return {
-      page: 1,
+      page: 0,
+      lastPage: 0,
       isSelectAll: false,
       observer: null,
       search: "",
@@ -261,8 +269,18 @@ export default {
       },
       deep: true,
     },
+    getExploreSelectedTags() {
+      this.reset()
+    },
   },
   methods: {
+    ...mapActions("inbox", ["clearSelectedMedias"]),
+    reset() {
+      this.clearSelectedMedias()
+      this.lastPage = 0
+      this.page = 0
+      this.$emit("reset")
+    },
     // Selection handlers
     handleSelectAll() {
       this.isSelectAll = !this.isSelectAll
@@ -287,20 +305,31 @@ export default {
 
     handleIntersection(entries) {
       entries.forEach((entry) => {
+        // load next page if the last item is visible
         if (entry.isIntersecting) {
-          const index = parseInt(entry.target.getAttribute("data-index"))
-          const currentPage = Math.floor(index / this.pageSize) + 1
-
-          if (currentPage !== this.page && currentPage <= this.totalPages) {
-            this.updateURLPage(currentPage)
+          const index = parseInt(entry.target.getAttribute("data-index")) + 1
+          const currentPage = Math.floor(index / this.pageSize)
+          if (
+            index % this.pageSize === 0 &&
+            currentPage <= this.totalPages - 1 &&
+            currentPage > this.lastPage
+          ) {
+            this.lastPage = currentPage
+            this.$emit("load-more", currentPage)
           }
+        } else {
+          // change url to current page if last item of previous page is not visible
+          // const index = parseInt(entry.target.getAttribute("data-index")) + 1
+          // const currentPage = Math.floor(index / this.pageSize)
+          // if (currentPage === this.page && currentPage <= this.totalPages) {
+          //   this.updateURLPage(currentPage + 1)
+          // }
         }
       })
     },
 
     observeMediaItems() {
       if (!this.observer) return
-
       this.filteredMedias.forEach((_, index) => {
         const itemRef = this.$refs["mediaItem" + index]
         if (itemRef && itemRef[0]?.$el) {
@@ -346,7 +375,6 @@ export default {
 
     updateURLPage(page) {
       const validPage = Math.max(1, Math.min(page, this.totalPages))
-
       if (validPage !== this.page && validPage <= this.totalPages) {
         this.page = validPage
         const url = new URL(window.location)
@@ -363,6 +391,7 @@ export default {
     },
 
     handleSearch(search, filters) {
+      this.reset()
       this.$emit("search", search, filters)
     },
 
@@ -389,7 +418,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .media-explorer {
   display: flex;
   flex-direction: column;
@@ -410,6 +439,7 @@ export default {
   display: flex;
   flex-direction: column;
   flex: 1;
+  height: 100%;
 }
 
 .media-explorer__body {
@@ -430,15 +460,15 @@ export default {
 }
 
 .media-explorer__body.has-right-panel .media-explorer__body__content {
-  margin-right: var(--right-panel-width, 600px);
+  //margin-right: var(--right-panel-width, 600px);
 }
 
 .media-explorer__body .media-explorer-right-panel {
-  position: absolute;
+  /*position: absolute;
   right: 0;
   top: 0;
   bottom: 0;
-  z-index: 1000;
+  z-index: 1000;*/
   background-color: var(--background-color, #fff);
   border-left: var(--border-block, 1px solid var(--neutral-30));
 }

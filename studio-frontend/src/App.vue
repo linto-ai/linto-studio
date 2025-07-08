@@ -12,6 +12,7 @@
       </keep-alive> -->
       <div class="app-view-content flex col flex1">
         <router-view
+          :key="$route.fullPath"
           :userInfo="user"
           :userOrganizations="userOrganizations"
           :currentOrganizationScope="currentOrganizationScope"

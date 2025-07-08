@@ -615,6 +615,7 @@
     "preview": "Preview"
   },
   "media_explorer": {
+    "favorite": "Favorite",
     "line": {
       "edit_transcription": "Transcription",
       "edit_subtitles": "Subtitles",
@@ -640,7 +641,10 @@
       "default_title": "No title",
       "default_description": "No description"
     },
-    "favorite": "Favorite"
+    "end_of_results": "End of results",
+    "loading_more": "Loading more...",
+    "load_previous_items": "Load previous items",
+    "loading": "Loading..."
   },
   "modal": {
     "cancel": "Cancel",

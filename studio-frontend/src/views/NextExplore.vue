@@ -1,22 +1,47 @@
 <template>
   <LayoutV2 customClass="explore-next">
-    <MediaExplorer :medias="conversations" :loading="loadingConversations" :error="error" :search-value="search"
-      :enable-pagination="false" :selected-tag-ids="selectedTagIds" @search="handleSearch"
+    <MediaExplorer
+      ref="mediaExplorer"
+      :medias="conversations"
+      :totalItemsCount="totalItemsCount"
+      :loading="loadingConversations"
+      :pageSize="pageSize"
+      :error="error"
+      :search-value="search"
+      :enable-pagination="true"
+      :selected-tag-ids="selectedTagIds"
+      @load-more="handleLoadMore"
+      @search="handleSearch"
       class="explore-next__media-explorer relative">
       <template v-slot:before>
-        <div v-if="initialPage > 0 && showPreviousButton" class="explore-next__previous-items"
+        <div
+          v-if="initialPage > 0 && showPreviousButton"
+          class="explore-next__previous-items"
           @click="loadPreviousItems">
           <a href="#" class="btn xs outline primary">
-            <span class="label">Load previous items ({{ initialPage * 12 }})</span>
+            <span class="label">
+              {{ $t("media_explorer.load_previous_items") }}
+            </span>
           </a>
         </div>
       </template>
       <template v-slot:after>
         <div>
-          <div class="explore-next__infinite-loading" ref="infiniteLoadingTrigger">
-            <span v-if="hasMoreItems && !loadingConversations">Loading more...</span>
-            <span v-else-if="!hasMoreItems && !loadingConversations">End of results</span>
-            <span v-else>Loading...</span>
+          <div
+            class="explore-next__infinite-loading"
+            ref="infiniteLoadingTrigger">
+            <span v-if="hasMoreItems && !loadingConversations">
+              {{ $t("media_explorer.loading_more") }}
+            </span>
+            <span
+              v-else-if="
+                !hasMoreItems && !loadingConversations && totalItemsCount > 0
+              ">
+              {{ $t("media_explorer.end_of_results") }}
+            </span>
+            <span v-else-if="loadingConversations">
+              {{ $t("media_explorer.loading") }}
+            </span>
           </div>
         </div>
       </template>
@@ -26,8 +51,8 @@
             <ph-icon name="folder" size="lg"></ph-icon>
           </div>
           <div class="explore-next__empty__text mt-md">
-            <h3>No conversations found</h3>
-            <p class="text-sm">Create a new conversation to get started</p>
+            <h3>{{ $t("media_explorer.empty_title") }}</h3>
+            <p class="text-sm">{{ $t("media_explorer.empty_description") }}</p>
           </div>
         </div>
       </template>
@@ -87,6 +112,7 @@ export default {
       search: "",
       filters: [],
       scrollContainer: null,
+      pageSize: 12,
     }
   },
   computed: {
@@ -118,12 +144,14 @@ export default {
   beforeDestroy() {
     this.destroy()
   },
-  async beforeRouteUpdate(to, from, next) {
-    next()
-    await this.$nextTick()
-    this.destroy()
-    await this.init()
-  },
+  // async beforeRouteUpdate(to, from, next) {
+  //   console.log("beforeRouteUpdate", to, from)
+  //   // Call next() to proceed with the navigation
+  //   next()
+  //   await this.$nextTick()
+  //   this.destroy()
+  //   await this.init()
+  // },
   watch: {
     selectedTags: {
       handler() {
@@ -131,27 +159,6 @@ export default {
       },
       deep: true,
       immediate: false,
-    },
-    page(newPage) {
-      this.updatePageUrl(newPage)
-    },
-    favorites(newVal, oldVal) {
-      if (newVal !== oldVal) {
-        this.options.favorites = newVal
-        this.options.shared = this.shared
-        this.loadTagsForCurrentView().then(() => {
-          this.resetSearch()
-        })
-      }
-    },
-    shared(newVal, oldVal) {
-      if (newVal !== oldVal) {
-        this.options.shared = newVal
-        this.options.favorites = this.favorites
-        this.loadTagsForCurrentView().then(() => {
-          this.resetSearch()
-        })
-      }
     },
   },
   methods: {
@@ -162,10 +169,6 @@ export default {
       "clearMedias",
     ]),
     destroy() {
-      if (this.observer) {
-        this.observer.disconnect()
-      }
-      this.cleanupScrollListener()
       if (this._unsubscribeTagStore) {
         this._unsubscribeTagStore()
       }
@@ -174,7 +177,8 @@ export default {
     async init() {
       this.options.favorites = this.favorites
       this.options.shared = this.shared
-
+      this.page = 0
+      this.$refs.mediaExplorer.reset()
       // Load appropriate tags based on view type BEFORE initializing from URL
       await this.loadTagsForCurrentView()
 
@@ -182,20 +186,8 @@ export default {
       await this.$nextTick()
 
       await this.initPageFromUrl()
-      this.setupIntersectionObserver()
-      this.setupScrollListener()
 
-      // Subscribe to store mutations related to tag selection
-      this._unsubscribeTagStore = this.$store.subscribe((mutation, state) => {
-        if (
-          mutation.type === "tags/setExploreSelectedTags" ||
-          mutation.type === "setExploreSelectedTags"
-        ) {
-          this.$nextTick(() => {
-            this.resetSearch()
-          })
-        }
-      })
+      this.resetSearch()
       bus.$on("medias/delete", this.onMediasDeleted)
     },
     onMediasDeleted(mediaIds) {
@@ -380,7 +372,7 @@ export default {
                 this.currentOrganizationScope,
                 page,
                 {
-                  pageSize: 12,
+                  pageSize: this.pageSize,
                   sortField: this.selectedOption,
                 },
               )
@@ -395,6 +387,7 @@ export default {
             page,
             {
               sortField: this.selectedOption,
+              pageSize: this.pageSize,
             },
           )
         }
@@ -407,7 +400,7 @@ export default {
           this.conversations = newConversations
         }
         this.appendMedias(fromConversations(newConversations))
-        this.hasMoreItems = res?.count - 12 * (page + 1) > 0
+        this.hasMoreItems = res?.count - this.pageSize * (page + 1) > 0
       } catch (error) {
         this.error = error
       } finally {
@@ -463,36 +456,6 @@ export default {
       this.resetSearch()
       this.clearSelectedMedias()
     },
-
-    setupIntersectionObserver() {
-      if (!this.$refs.infiniteLoadingTrigger || !window.IntersectionObserver)
-        return
-
-      if (this.observer) {
-        this.observer.disconnect()
-      }
-
-      this.observer = new IntersectionObserver(
-        (entries) => {
-          if (
-            entries[0].isIntersecting &&
-            this.hasMoreItems &&
-            !this.loadingConversations &&
-            !this.isInitialLoad
-          ) {
-            this.handleLoadMore()
-          }
-        },
-        {
-          root: null,
-          rootMargin: "0px",
-          threshold: 0.1,
-        },
-      )
-
-      this.observer.observe(this.$refs.infiniteLoadingTrigger)
-    },
-
     handleSearch(search, filters) {
       this.updateSearchUrl(search)
 
@@ -512,14 +475,16 @@ export default {
       })
     },
 
-    async handleLoadMore() {
+    async handleLoadMore(page) {
       if (this.loadingConversations || !this.hasMoreItems) return
+      if (this.page == page) return
 
-      this.page += 1
+      this.page = page
+
       if (this.mode == "search") {
-        await this.apiSearchConversations(this.page, this.filters, true)
+        await this.apiSearchConversations(page, this.filters, true)
       } else {
-        await this.fetchConversations(this.page, true)
+        await this.fetchConversations(page, true)
       }
     },
 
@@ -529,54 +494,7 @@ export default {
       this.showPreviousButton = false
       this.hasMoreItems = false
       this.isInitialLoad = false
-      return this.apiSearchConversations(0, filters, append).then(() => {
-        this.$nextTick(() => {
-          this.setupIntersectionObserver()
-        })
-      })
-    },
-
-    setupScrollListener() {
-      this.$nextTick(() => {
-        const explorer = this.$refs.mediaExplorer?.$el
-        if (!explorer) return
-
-        const container = explorer.querySelector(".media-explorer__body")
-        if (!container) return
-
-        this.scrollContainer = container
-        this.scrollContainer.addEventListener("scroll", this.onScroll, {
-          passive: true,
-        })
-      })
-    },
-
-    cleanupScrollListener() {
-      if (this.scrollContainer) {
-        this.scrollContainer.removeEventListener("scroll", this.onScroll)
-        this.scrollContainer = null
-      }
-    },
-
-    onScroll() {
-      if (!this.scrollContainer) return
-
-      const items = this.scrollContainer.querySelectorAll(
-        ".media-explorer__body__item",
-      )
-
-      if (items.length === 0) return
-
-      const itemHeight = items[0].offsetHeight || 1
-
-      const firstVisibleIdx = Math.floor(
-        this.scrollContainer.scrollTop / itemHeight,
-      )
-
-      const newPage = Math.floor(firstVisibleIdx / 12)
-      if (newPage !== this.page) {
-        this.page = newPage
-      }
+      return this.apiSearchConversations(0, filters, append)
     },
     handleTagClick(tag) {
       this.$store.dispatch("tags/toggleTag", tag)
