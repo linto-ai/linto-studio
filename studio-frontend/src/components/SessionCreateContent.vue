@@ -472,7 +472,7 @@ export default {
             translations: translations ?? [],
             diarization: this.fieldDiarizationEnabled.value,
             keepAudio: this.fieldKeepAudio.value,
-            compressAudio: !this.fieldKeepAudio.value,
+            compressAudio: true,
           })),
           meta: Object.fromEntries(this.fieldMetadata.value),
           scheduleOn: startDateTime,

@@ -11,6 +11,9 @@ const DEFAULT_MEMBER_RIGHTS = 3
 const DEFAULT_SPEAKER_NAME = "Unknown speaker"
 const DEFAULT_TRANSLATION_NAME = "Automatic Translation"
 const TYPES = require(`${process.cwd()}/lib/dao/conversation/types`)
+const { storeFile } = require(
+  `${process.cwd()}/components/WebServer/controllers/files/store`,
+)
 
 const { SessionError } = require(
   `${process.cwd()}/components/WebServer/error/exception/session`,
@@ -82,32 +85,40 @@ async function initCaptionsForConversation(sessionData, name) {
     const captions = []
     name = name || session.name || ""
 
-    for (const channel of session.channels) {
+    for (let channel of session.channels) {
       const audioId = `${session.id}-${channel.id}`
       const audioFormat = channel.compressAudio ? "mp3" : "wav"
+      if (
+        !channel.compressAudio &&
+        channel.keepAudio &&
+        !(channel.meta === undefined || channel.meta === null)
+      ) {
+        try {
+          const caption = initializeCaption(
+            session,
+            channel,
+            name,
+            session.channels.length,
+          )
 
-      if (!channel.compressAudio && channel.keepAudio) {
-        const caption = initializeCaption(
-          session,
-          channel,
-          name,
-          session.channels.length,
-        )
+          caption.metadata.audio = generateAudioMetadata(audioId, audioFormat)
+          const { serviceName, endpoint, lang, config } =
+            channel.meta.transcriptionService
+          caption.metadata.transcription = {
+            serviceName,
+            endpoint,
+            lang,
+            transcriptionConfig: config,
+          }
+          caption.jobs.transcription.state = "waiting"
+          captions.push(caption)
 
-        caption.metadata.audio = generateAudioMetadata(audioId, audioFormat)
-        const { serviceName, endpoint, lang, config } =
-          channel.meta.transcriptionService
-        caption.metadata.transcription = {
-          serviceName,
-          endpoint,
-          lang,
-          transcriptionConfig: config,
-        }
-        caption.jobs.transcription.state = "waiting"
-        captions.push(caption)
-
-        if (!channel.closedCaptions) {
-          continue
+          if (!channel.closedCaptions) {
+            continue
+          }
+        } catch (err) {
+          debug("Error initializing caption for channel with keepAudio:", err)
+          // We still process the channel captions
         }
       }
 
@@ -137,13 +148,25 @@ async function initCaptionsForConversation(sessionData, name) {
       if (channel.compressAudio && channel.keepAudio)
         caption.metadata.audio = generateAudioMetadata(audioId, audioFormat)
       if (!channel.compressAudio && channel.keepAudio) {
-        caption.metadata.audio = generateAudioMetadata(
-          session.id,
-          "mp3", //we force mp3, it's encoded in studio-api
-          "audio",
-        )
+        if (channel.meta === undefined || channel.meta === null) {
+          const file = {
+            name: `${audioId}.${audioFormat}`,
+            filepath: `${process.env.VOLUME_AUDIO_SESSION_PATH}/${audioId}.${audioFormat}`,
+          }
+          const fileTransform = await storeFile(file, "audio_session")
+          caption.metadata.audio = generateAudioMetadata(
+            fileTransform.filename.split(".")[0],
+            "mp3",
+            "audio",
+          )
+        } else {
+          caption.metadata.audio = generateAudioMetadata(
+            session.id,
+            "mp3", //we force mp3, it's encoded in studio-api
+            "audio",
+          )
+        }
       }
-
       captions.push(caption)
     }
     return captions
@@ -490,7 +513,6 @@ async function storeSessionFromStop(req, next) {
     const session = await axios.get(
       process.env.SESSION_API_ENDPOINT + `/sessions/${req.params.id}`,
     )
-
     await storeSession(session, req.query.name)
 
     model.sessionAlias.deleteByOrganizationAndSession(
