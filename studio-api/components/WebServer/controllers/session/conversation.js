@@ -11,6 +11,9 @@ const DEFAULT_MEMBER_RIGHTS = 3
 const DEFAULT_SPEAKER_NAME = "Unknown speaker"
 const DEFAULT_TRANSLATION_NAME = "Automatic Translation"
 const TYPES = require(`${process.cwd()}/lib/dao/conversation/types`)
+const { storeFile } = require(
+  `${process.cwd()}/components/WebServer/controllers/files/store`,
+)
 
 const { SessionError } = require(
   `${process.cwd()}/components/WebServer/error/exception/session`,
@@ -145,11 +148,24 @@ async function initCaptionsForConversation(sessionData, name) {
       if (channel.compressAudio && channel.keepAudio)
         caption.metadata.audio = generateAudioMetadata(audioId, audioFormat)
       if (!channel.compressAudio && channel.keepAudio) {
-        caption.metadata.audio = generateAudioMetadata(
-          session.id,
-          "mp3", //we force mp3, it's encoded in studio-api
-          "audio",
-        )
+        if (channel.meta === undefined || channel.meta === null) {
+          const file = {
+            name: `${audioId}.${audioFormat}`,
+            filepath: `${process.env.VOLUME_AUDIO_SESSION_PATH}/${audioId}.${audioFormat}`,
+          }
+          const fileTransform = await storeFile(file, "audio_session")
+          caption.metadata.audio = generateAudioMetadata(
+            fileTransform.filename.split(".")[0],
+            "mp3",
+            "audio",
+          )
+        } else {
+          caption.metadata.audio = generateAudioMetadata(
+            session.id,
+            "mp3", //we force mp3, it's encoded in studio-api
+            "audio",
+          )
+        }
       }
       captions.push(caption)
     }
