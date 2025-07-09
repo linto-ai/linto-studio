@@ -345,42 +345,9 @@ export default {
 
       const tagIds = this.selectedTagIds
       try {
-        if (tagIds.length === 0 && filters.length == 0) {
-          if (this.options.favorites) {
-            res = await apiGetFavoritesConversations(
-              tagIds,
-              textFilter,
-              titleFilter,
-              page,
-              {
-                sortField: this.selectedOption,
-              },
-            )
-          } else {
-            if (this.options.shared) {
-              res = await apiGetConversationsSharedWith(
-                tagIds,
-                textFilter,
-                titleFilter,
-                page,
-                {
-                  sortField: this.selectedOption,
-                },
-              )
-            } else {
-              res = await apiGetConversationsByOrganization(
-                this.currentOrganizationScope,
-                page,
-                {
-                  pageSize: this.pageSize,
-                  sortField: this.selectedOption,
-                },
-              )
-            }
-          }
-        } else {
-          res = await apiGetConversationsByTags(
-            this.currentOrganizationScope,
+        // Always respect the context (favorites, shared, organization) regardless of tags/filters
+        if (this.options.favorites) {
+          res = await apiGetFavoritesConversations(
             tagIds,
             textFilter,
             titleFilter,
@@ -390,6 +357,41 @@ export default {
               pageSize: this.pageSize,
             },
           )
+        } else if (this.options.shared) {
+          res = await apiGetConversationsSharedWith(
+            tagIds,
+            textFilter,
+            titleFilter,
+            page,
+            {
+              sortField: this.selectedOption,
+              pageSize: this.pageSize,
+            },
+          )
+        } else {
+          // For organization context, use the appropriate API based on whether we have tags/filters
+          if (tagIds.length === 0 && filters.length == 0) {
+            res = await apiGetConversationsByOrganization(
+              this.currentOrganizationScope,
+              page,
+              {
+                pageSize: this.pageSize,
+                sortField: this.selectedOption,
+              },
+            )
+          } else {
+            res = await apiGetConversationsByTags(
+              this.currentOrganizationScope,
+              tagIds,
+              textFilter,
+              titleFilter,
+              page,
+              {
+                sortField: this.selectedOption,
+                pageSize: this.pageSize,
+              },
+            )
+          }
         }
         this.loadingConversations = false
         this.totalItemsCount = res?.count || 0

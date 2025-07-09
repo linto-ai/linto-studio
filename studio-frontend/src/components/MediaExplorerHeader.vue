@@ -51,7 +51,6 @@
 
 <script>
 import { v4 as uuid } from "uuid"
-import { mapGetters } from "vuex"
 
 export default {
   name: "MediaExplorerHeader",
@@ -295,36 +294,37 @@ export default {
 }
 
 /* Responsive design */
-@media (max-width: 768px) {
+@media (max-width: 1100px) {
   .media-explorer-header__content {
     padding: 0.5rem;
-    flex-direction: column;
-    gap: 0.5rem;
-    align-items: stretch;
   }
 
-  .media-explorer-header__selection,
-  .media-explorer-header__filters,
+  .media-explorer-header__content > .flex.flex-1.row.align-center.gap-medium {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .media-explorer-header__selection {
+    flex: 0 0 auto;
+    order: 1;
+  }
+
   .media-explorer-header__actions {
-    justify-content: center;
+    flex: 0 0 auto;
+    order: 2;
   }
 
   .media-explorer-header__filters {
-    order: -1; /* Put filters before selection on mobile */
+    flex: 1 1 100%;
+    order: 3;
+    width: 100%;
+    min-width: 0;
   }
 }
 
 @media (max-width: 480px) {
   .media-explorer-header__content {
     gap: 0.75rem;
-  }
-
-  .media-explorer-header__selection {
-    order: 1;
-  }
-
-  .media-explorer-header__actions {
-    order: 2;
   }
 }
 </style>

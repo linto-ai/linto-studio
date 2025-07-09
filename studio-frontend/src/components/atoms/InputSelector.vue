@@ -7,12 +7,14 @@
         'input-selector__input-container--focused': isOpen || isFocused,
         'input-selector__input-container--disabled': disabled,
         'input-selector__input-container--empty': selectedTags.length === 0,
+        'input-selector__input-container--inline': shouldDisplayInline,
       }"
       @click="handleContainerClick">
       <!-- Selected tags -->
       <div
         v-if="selectedTags.length > 0 && !hideSelectedTags"
-        class="input-selector__tags">
+        class="input-selector__tags"
+        ref="tagsContainer">
         <Tooltip
           v-for="tag in selectedTags"
           :key="tag._id || tag.id"
@@ -25,6 +27,13 @@
             removable
             @remove="removeTag(tag)" />
         </Tooltip>
+        
+        <!-- Overflow indicator for inline mode -->
+        <div
+          v-if="shouldDisplayInline && selectedTags.length > 2"
+          class="input-selector__overflow-indicator">
+          <ph-icon name="dots-three" size="14" />
+        </div>
       </div>
 
       <!-- Input field -->
@@ -57,22 +66,19 @@
     <!-- Dropdown content -->
     <transition name="input-selector-dropdown">
       <div v-if="isOpen" class="input-selector__dropdown">
-        <!-- Search mode: Show search message when no tags match -->
+        <!-- Search mode: Always show search message first -->
         <div 
-          v-if="mode === 'search' && filteredTags.length === 0"
+          v-if="mode === 'search'"
           class="input-selector__search-message"
-          @click="handleSearchSubmit">
+          :class="{ 'input-selector__search-message--highlighted': highlightedIndex === -1 }"
+          @click="handleSearchSubmit"
+          @mouseenter="highlightedIndex = -1">
           <ph-icon name="magnifying-glass" size="16" />
-          <span v-if="searchQuery.trim()">
-            {{ $t("input_selector.search_message", { keyword: searchQuery }) }}
-          </span>
-          <span v-else>
-            {{ $t("input_selector.search_empty_message") }}
-          </span>
+          <span>{{ $t("input_selector.search_message", { keyword: searchQuery }) }}</span>
         </div>
 
         <!-- Filtered tags -->
-        <div v-else-if="filteredTags.length > 0" class="input-selector__options">
+        <div v-if="filteredTags.length > 0" class="input-selector__options">
           <div
             v-for="(tag, index) in filteredTags"
             :key="tag._id || tag.id"
@@ -198,6 +204,10 @@ export default {
     }
   },
   computed: {
+    shouldDisplayInline() {
+      return this.mode === "search" && this.selectedTags.length <= 5 && this.selectedTags.length > 0
+    },
+
     effectivePlaceholder() {
       if (this.mode === "search") {
         return this.$t("input_selector.search_placeholder")
@@ -375,15 +385,41 @@ export default {
     },
 
     highlightNext() {
-      const maxIndex = this.filteredTags.length - 1
-      this.highlightedIndex =
-        this.highlightedIndex >= maxIndex ? 0 : this.highlightedIndex + 1
+      if (this.mode === "search") {
+        const maxIndex = this.filteredTags.length - 1
+        if (this.highlightedIndex === -1) {
+          // From search message to first tag (if any)
+          this.highlightedIndex = this.filteredTags.length > 0 ? 0 : -1
+        } else if (this.highlightedIndex >= maxIndex) {
+          // From last tag back to search message
+          this.highlightedIndex = -1
+        } else {
+          this.highlightedIndex += 1
+        }
+      } else {
+        const maxIndex = this.filteredTags.length - 1
+        this.highlightedIndex =
+          this.highlightedIndex >= maxIndex ? 0 : this.highlightedIndex + 1
+      }
     },
 
     highlightPrev() {
-      const maxIndex = this.filteredTags.length - 1
-      this.highlightedIndex =
-        this.highlightedIndex <= 0 ? maxIndex : this.highlightedIndex - 1
+      if (this.mode === "search") {
+        const maxIndex = this.filteredTags.length - 1
+        if (this.highlightedIndex === -1) {
+          // From search message to last tag (if any)
+          this.highlightedIndex = this.filteredTags.length > 0 ? maxIndex : -1
+        } else if (this.highlightedIndex <= 0) {
+          // From first tag back to search message
+          this.highlightedIndex = -1
+        } else {
+          this.highlightedIndex -= 1
+        }
+      } else {
+        const maxIndex = this.filteredTags.length - 1
+        this.highlightedIndex =
+          this.highlightedIndex <= 0 ? maxIndex : this.highlightedIndex - 1
+      }
     },
 
     open() {
@@ -522,6 +558,7 @@ export default {
     cursor: text;
     transition: all 0.2s ease;
     flex-direction: column;
+    overflow: hidden;
 
     &:hover {
       border-color: #9ca3af;
@@ -550,6 +587,38 @@ export default {
         margin-top: 0;
       }
     }
+
+    &--inline {
+      flex-direction: row;
+      align-items: center;
+      flex-wrap: nowrap;
+      
+      .input-selector__tags {
+        margin-right: 0.5rem;
+        margin-bottom: 0;
+        width: auto !important;
+        flex: 0 0 auto;
+        max-width: 60%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: none;
+        flex-wrap: nowrap;
+        
+        &::-webkit-scrollbar {
+          display: none;
+        }
+      }
+
+      .input-selector__input-wrapper {
+        width: auto;
+        flex: 1;
+        min-width: 0;
+      }
+
+      .input-selector__input {
+        margin-top: 0;
+      }
+    }
   }
 
   &__tags {
@@ -560,6 +629,21 @@ export default {
     flex: 1;
     box-sizing: border-box;
     width: 100%;
+    max-height: 120px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+
+  &__overflow-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem 0.5rem;
+    background: #f3f4f6;
+    border-radius: 0.375rem;
+    color: #6b7280;
+    font-size: 0.75rem;
+    flex-shrink: 0;
   }
 
   &__input-wrapper {
@@ -761,14 +845,14 @@ export default {
     align-items: center;
     gap: 0.5rem;
     padding: 0.75rem;
-    border-top: 1px solid #e5e7eb;
     background: #f9fafb;
     cursor: pointer;
     font-size: 0.875rem;
     color: var(--primary-color);
     transition: background-color 0.2s ease;
 
-    &:hover {
+    &:hover,
+    &--highlighted {
       background: #f3f4f6;
     }
 
@@ -797,8 +881,59 @@ export default {
       max-height: 12rem;
     }
 
-    &__tag-name {
-      max-width: 5rem;
+    &__tags {
+      max-height: 80px;
+    }
+
+    &__input-container {
+      &--inline {
+        flex-direction: column !important;
+        flex-wrap: nowrap !important;
+        align-items: flex-start !important;
+        padding: 0 !important;
+        
+        .input-selector__tags {
+          max-width: 100% !important;
+          width: auto !important;
+          flex: 0 0 auto !important;
+          flex-wrap: nowrap !important;
+          margin-bottom: 0 !important;
+          overflow-x: auto;
+          overflow-y: hidden;
+          padding: 0.2em !important;
+          
+          :deep(.chip-tag) {
+            flex-shrink: 0;
+            max-width: 120px;
+            
+            .chip-tag__name {
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            }
+          }
+        }
+        
+        .input-selector__input-wrapper {
+          flex: 1 !important;
+          width: 100% !important;
+          min-width: 0;
+          margin-top: 0.1rem !important;
+          padding: 0.5rem !important;
+          box-sizing: border-box !important;
+        }
+        
+        .input-selector__input {
+          margin-top: 0 !important;
+        }
+      }
+    }
+
+    &__option-name {
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
 }
