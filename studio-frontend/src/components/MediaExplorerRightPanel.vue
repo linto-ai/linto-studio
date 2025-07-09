@@ -102,6 +102,7 @@
             <h4 class="section-title">{{ $t("media_explorer.panel.tags") }}</h4>
             <div class="tags-container">
               <InputSelector
+                mode="tags"
                 :tags="getTags"
                 :selected-tags="selectedMediaTags"
                 @create="handleCreateTag"
