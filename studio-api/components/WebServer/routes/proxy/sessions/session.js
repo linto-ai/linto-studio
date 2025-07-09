@@ -10,6 +10,7 @@ const {
   forceQueryParams,
   forwardSessionAlias,
   checkTranscriberProfileAccess,
+  afterProxyAccess,
 } = require(
   `${process.cwd()}/components/WebServer/controllers/session/session.js`,
 )
@@ -143,6 +144,7 @@ module.exports = (webServer) => {
             path: "/organizations/:organizationId/sessions/:id",
             method: ["get"],
             executeBeforeResult: forwardSessionAlias,
+            executeAfterResult: [afterProxyAccess],
             forwardParams: proxyForwardParams,
           },
           {
