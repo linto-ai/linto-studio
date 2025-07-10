@@ -36,7 +36,7 @@
           <!-- Easter egg LinTO logo -->
           <img
             v-if="!isSpinning && isEasterEgg"
-            :src="lintoSvgUrl"
+            src="/img/linto.svg"
             alt="LinTO"
             class="linto-logo" />
 
@@ -205,11 +205,6 @@ export default {
       type: Number,
       required: false,
       default: 5, // Every 5th spin
-    },
-    lintoSvgUrl: {
-      type: String,
-      required: false,
-      default: "https://doc.linto.ai/img/linto.svg",
     },
     spinDuration: {
       type: Number,

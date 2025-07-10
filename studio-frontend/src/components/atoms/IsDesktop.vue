@@ -1,8 +1,8 @@
 <template>
-  <component :is="tag" v-if="isDesktop">
+  <component :is="tag" v-if="isDesktop" style="display: contents">
     <slot />
   </component>
-  <component :is="tag" v-else-if="hasMobileSlot">
+  <component :is="tag" v-else-if="hasMobileSlot" style="display: contents">
     <slot name="mobile" />
   </component>
 </template>

@@ -95,7 +95,7 @@ export default {
   data() {
     return {
       conversations: [],
-      loadingConversations: false,
+      loadingConversations: true,
       page: 0,
       initialPage: 0,
       error: null,

@@ -55,23 +55,22 @@
             class="media-explorer-item__owner" />
         </Tooltip>
 
-        <!-- Media title -->
-        <div class="media-explorer-item__title">
-          <span class="media-explorer-item__title-text">
-            {{ title }}
-          </span>
-        </div>
+        <div class="flex1 flex align-center">
+          <!-- Media title -->
+          <div class="media-explorer-item__title">
+            <span class="media-explorer-item__title-text">
+              {{ title }}
+            </span>
+          </div>
 
-        <!-- Right section: Tags -->
-        <IsDesktop>
-          <div class="media-explorer-item__right">
+          <!-- Right section: Tags -->
+          <IsDesktop>
             <MediaExplorerItemTags
               class="media-explorer-item__tags"
               :mediatags="mediatags"
               :media-id="media._id" />
-          </div>
-        </IsDesktop>
-
+          </IsDesktop>
+        </div>
         <!-- Media metadata -->
         <div class="media-explorer-item__metadata">
           <span v-if="duration" class="media-explorer-item__duration">
@@ -475,7 +474,7 @@ export default {
 .media-explorer-item__title {
   flex: 1;
   min-width: 0;
-
+  min-width: 6rem;
   &-text {
     display: block;
     font-weight: 600;
@@ -522,12 +521,6 @@ export default {
 }
 
 // ===== TAGS SECTION =====
-.media-explorer-item__tags {
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  padding-right: 3rem;
-}
 
 // ===== ACTIONS =====
 .media-explorer-item__actions {
