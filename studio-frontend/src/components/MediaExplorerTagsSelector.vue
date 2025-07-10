@@ -120,7 +120,7 @@ export default {
     // Type of view to determine which tags to use
     viewType: {
       type: String,
-      default: 'default', // 'default', 'favorites', 'shared'
+      default: "default", // 'default', 'favorites', 'shared'
     },
   },
   computed: {
@@ -132,22 +132,22 @@ export default {
     // Show all available tags based on view type
     availableTags() {
       let tags = []
-      if (this.viewType === 'favorites') {
+      if (this.viewType === "favorites") {
         tags = this.getFavoritesTags
-      } else if (this.viewType === 'shared') {
+      } else if (this.viewType === "shared") {
         tags = this.getSharedTags
       } else {
         tags = this.getTags
       }
-      
-      return tags.sort((a, b) => {
+
+      return [...tags].sort((a, b) => {
         // Sort by media count (descending) then by name
         const countA = this.getMediaCountForTag(a._id)
         const countB = this.getMediaCountForTag(b._id)
         if (countA !== countB) {
           return countB - countA
         }
-        return a.name.localeCompare(b.name)
+        return b.name.localeCompare(a.name)
       })
     },
 

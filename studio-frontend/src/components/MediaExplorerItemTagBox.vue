@@ -37,7 +37,8 @@
           color="primary"
           size="xs"
           @click="modalTagCreateOpen = true">
-          {{ $t("media_explorer.tags.create_tag") }} <span v-if="search">&laquo; {{ search }} &raquo;</span>
+          {{ $t("media_explorer.tags.create_tag") }}
+          <span v-if="search">&laquo; {{ search }} &raquo;</span>
         </Button>
         <MediaExplorerFormTag
           v-model="modalTagCreateOpen"
@@ -90,11 +91,11 @@ export default {
     ...mapGetters("tags", ["getTags", "getSharedTags", "getFavoritesTags"]),
     tags() {
       // Détermine quels tags utiliser selon la route courante
-      const routeName = this.$route?.name || ''
-      
-      if (routeName === 'explore-favorites') {
+      const routeName = this.$route?.name || ""
+
+      if (routeName === "explore-favorites") {
         return this.getFavoritesTags
-      } else if (routeName === 'explore-shared') {
+      } else if (routeName === "explore-shared") {
         return this.getSharedTags
       } else {
         return this.getTags
@@ -185,7 +186,7 @@ export default {
     async onTagCreate(tag) {
       this.modalTagCreateOpen = false
 
-        await this.$store.dispatch("tags/createTag", tag)
+      await this.$store.dispatch("tags/createTag", tag)
     },
   },
 }

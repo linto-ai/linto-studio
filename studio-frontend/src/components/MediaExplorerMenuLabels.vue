@@ -86,7 +86,7 @@ export default {
       return this.tags.filter((tag) => !this.selectedTags.includes(tag._id))
     },
     orderedTags() {
-      return this.tags
+      return [...this.tags]
         .sort((a, b) => a.name.localeCompare(b.name))
         .sort((a, b) => b.mediaCount - a.mediaCount)
         .sort((a, b) => {

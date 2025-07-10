@@ -473,12 +473,6 @@ export default {
         this.color = tag.color
         this.selectedEmoji = tag.emoji || null
 
-        console.log("tag", tag)
-        console.log("this.name", this.name)
-        console.log("this.description", this.description)
-        console.log("this.color", this.color)
-        console.log("this.selectedEmoji", this.selectedEmoji)
-
         // Auto-select emoji from name or description if not already set
         if (!this.selectedEmoji) {
           this.autoSelectEmojiFromText()

@@ -2,27 +2,23 @@
   <div class="tag-management">
     <div class="tag-management__header">
       <h2 class="flex1">{{ $t("manage_tags.title") }}</h2>
-      <MediaExplorerFormTag @submit="onSubmit" :loading="loading">
-        <template #trigger="{ open }">
-          <Button
-            variant="outline"
-            color="primary"
-            icon="plus"
-            icon-position="left"
-            size="sm"
-            @click.stop="open">
-            {{ $t("manage_tags.create_tag") }}
-          </Button>
-        </template>
-      </MediaExplorerFormTag>
     </div>
     <div class="tags-list">
       <ul v-if="tags.length">
         <li v-for="tag in tags" :key="`tags-list-item--${tag._id}`">
           <!-- <Avatar :material-color="tag.color" :size="54" :emoji="tag.emoji" /> -->
           <span class="tags-list__data">
-            <div>
-              <ChipTag :name="tag.name" :emoji="tag.emoji" :color="tag.color" />
+            <div class="flex gap-small">
+              <ColorPicker
+                :value="tag.color"
+                @input="onColorChange($event, tag)" />
+              <ChipTag
+                :name="tag.name"
+                @input="onCurrentEditionName($event, tag)"
+                @blur="onTagEdit(tag)"
+                :emoji="tag.emoji"
+                :color="tag.color"
+                editable />
             </div>
             <span
               v-if="tag.description"
@@ -36,14 +32,6 @@
               {{ $t("manage_tags.no_description") }}
             </span>
           </span>
-          <Button
-            variant="outline"
-            color="primary"
-            icon="pencil"
-            size="xs"
-            @click="openModalTagEdit(tag)">
-            {{ $t("manage_tags.edit_tag") }}
-          </Button>
           <Alert
             variant="error"
             icon="trash"
@@ -56,16 +44,27 @@
             </Button>
           </Alert>
         </li>
+        <li>
+          <span class="tags-list__data">
+            <div class="flex gap-small">
+              <ColorPicker
+                :value="newTag.color"
+                @input="newTag.color = $event" />
+              <ChipTag
+                :key="newTagKey"
+                :name="newTag.name"
+                @input="onCurrentEditionName($event, newTag)"
+                @blur="createNewTag()"
+                :emoji="newTag.emoji"
+                :color="newTag.color"
+                editable
+                startEditionEmpty />
+            </div>
+          </span>
+        </li>
       </ul>
       <h3 v-if="tags.length === 0">{{ $t("manage_tags.no_tags") }}</h3>
     </div>
-    <MediaExplorerFormTag
-      v-model="modalTagEditOpen"
-      :tag="modalTagEdit"
-      size="sm"
-      @submit="onTagEdit"
-      @cancel="modalTagEditOpen = false"
-      @close="modalTagEditOpen = false" />
   </div>
 </template>
 
@@ -74,15 +73,17 @@ import { mapState } from "vuex"
 import MediaExplorerFormTag from "@/components/MediaExplorerFormTag.vue"
 import Alert from "./atoms/Alert.vue"
 import ChipTag from "./atoms/ChipTag.vue"
+import ColorPicker from "./molecules/ColorPicker.vue"
 
 export default {
   name: "TagManagement",
   components: {
     MediaExplorerFormTag,
+    ColorPicker,
   },
   computed: {
     ...mapState("tags", {
-      tags: (state) => [...state.tags],
+      tags: (state) => structuredClone(state.tags),
     }),
     isOpen: {
       get() {
@@ -102,16 +103,17 @@ export default {
   data() {
     return {
       loading: false,
-      modalTagEditOpen: false,
       modalTagEdit: null,
+      newTag: {
+        name: "Type your tag name here",
+        color: "blue",
+      },
+      newTagKey: 1,
     }
   },
   methods: {
-    openModalTagEdit(tag) {
-      this.modalTagEdit = tag
-      this.modalTagEditOpen = true
-    },
     async onSubmit(tag) {
+      if (this.loading) return
       try {
         this.loading = true
         await this.$store.dispatch("tags/createTag", tag)
@@ -122,14 +124,35 @@ export default {
         this.loading = false
       }
     },
-    async onTagEdit(tag) {
+    onCurrentEditionName(name, tag) {
+      this.modalTagEdit = {
+        ...tag,
+        name,
+      }
+    },
+    onColorChange(color, tag) {
+      this.modalTagEdit = {
+        ...tag,
+        color,
+      }
+      this.onTagEdit()
+    },
+    createNewTag() {
+      this.onSubmit(this.modalTagEdit)
+      this.newTag = {
+        name: "Type your tag name here",
+        color: "blue",
+      }
+      this.newTagKey = this.newTagKey + 1
+    },
+    async onTagEdit() {
       try {
         this.loading = true
         await this.$store.dispatch("tags/updateTag", {
-          ...tag,
+          ...this.modalTagEdit,
           _id: this.modalTagEdit._id,
         })
-        this.$emit("submit", tag)
+        this.$emit("submit", this.modalTagEdit)
       } catch (error) {
         console.error("Error updating tag", error)
       } finally {
@@ -139,9 +162,7 @@ export default {
     async onTagDelete(tag) {
       try {
         this.loading = true
-        console.log("Deleting tag", tag)
         await this.$store.dispatch("tags/deleteTag", tag)
-        console.log("Tag deleted successfully:", tag.name)
       } catch (error) {
         console.error("Error deleting tag", error)
         // Re-throw the error to prevent the UI from thinking the deletion was successful

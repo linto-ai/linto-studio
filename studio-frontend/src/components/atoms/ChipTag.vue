@@ -18,9 +18,16 @@
       </span>
       <span
         class="chip-tag__name"
+        ref="tagName"
+        :contenteditable="contentEditableProperty"
+        @focus="onTagNameFocus"
+        @input="onTagNameChange"
+        @blur="onTagNameBlur"
+        @keydown.enter.prevent="onTagNameBlur"
+        @keydown.esc.prevent="onTagNameReset"
         :class="{ 'with-emoji': emoji }"
         :style="{ color: colorText }">
-        {{ name }}
+        {{ currentName }}
       </span>
       <ph-icon v-if="active" name="trash" color="var(--neutral-10)" />
       <Avatar
@@ -83,6 +90,24 @@ export default {
       type: Boolean,
       default: false,
     },
+    editable: {
+      type: Boolean,
+      default: false,
+    },
+    startEditionEmpty: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  data() {
+    return {
+      currentName: this.name,
+    }
+  },
+  watch: {
+    name(newName) {
+      this.currentName = newName
+    },
   },
   computed: {
     clickable() {
@@ -96,6 +121,16 @@ export default {
     },
     colorText() {
       return this.active ? "white" : `var(--material-${this.color}-900)`
+    },
+    contentEditableProperty() {
+      // to support old ESR versions (not for a long time, firefox 140 is the last ESR, released on June 24, 2025 )
+      if (navigator.userAgent.indexOf("Firefox") > -1) {
+        const version = navigator.userAgent.split("Firefox/")[1]
+        if (parseInt(version) < 139) {
+          return this.editable ? "true" : "false"
+        }
+      }
+      return this.editable ? "plaintext-only" : "false"
     },
   },
   methods: {
@@ -111,6 +146,47 @@ export default {
         return unified
       }
     },
+    onTagNameFocus() {
+      if (!this.editable) return
+      if (this.startEditionEmpty) {
+        this.currentName = ">"
+        this.$nextTick(() => {
+          this.$refs.tagName.innerText = ">"
+          //move cursor to the end
+          const range = document.createRange()
+          range.selectNodeContents(this.$refs.tagName)
+          range.collapse(false)
+          const sel = window.getSelection()
+          sel.removeAllRanges()
+          sel.addRange(range)
+          this.$refs.tagName.focus()
+        })
+      }
+    },
+    onTagNameChange(e) {
+      let newValue = e.target.innerText
+      // remove new lines
+      //newValue = newValue.replace(/(\r\n|\n|\r)/gm, "")
+      newValue = newValue.replace(">", "")
+      this.$emit("input", newValue)
+    },
+    onTagNameBlur(e) {
+      if (this.$refs.tagName.innerText.trim() === "") {
+        this.onTagNameReset()
+        return
+      }
+      this.$emit("blur")
+      document.activeElement?.blur && document.activeElement.blur()
+    },
+    onTagNameReset(e) {
+      this.currentName = this.name
+      this.$nextTick(() => {
+        this.$refs.tagName.innerText = this.name
+      })
+      document.activeElement?.blur && document.activeElement.blur()
+      e?.stopPropagation()
+      e?.preventDefault()
+    },
   },
 }
 </script>
@@ -120,9 +196,11 @@ export default {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding-left: 0.5em;
-  padding-right: 0.5em;
-
+  // padding-left: 0.5em;
+  // padding-right: 0.5em;
+  padding: 0.25em 0.5em;
+  box-sizing: border-box;
+  height: 25px;
   text-transform: capitalize;
   border: 1px solid;
   border-radius: 5px;
@@ -161,8 +239,17 @@ export default {
     justify-content: center;
   }
 
+  .chip-tag__name:focus {
+    outline: none;
+  }
+
   .chip-tag__count {
     border-radius: 4px;
+  }
+
+  &:has(.chip-tag__name:focus) {
+    background-color: white !important;
+    color: var(--text-color);
   }
 
   &.clickable {
