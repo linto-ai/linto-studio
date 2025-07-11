@@ -39,8 +39,8 @@
             variant="error"
             icon="trash"
             size="xs"
-            :title="`Supprimer le tag ${tag.name} ?`"
-            :message="`Vous ne pourrez plus utiliser ce tag dans les médias.`"
+            :title="$t('modal_delete_tag.title', { name: tag.name })"
+            :message="$t('modal_delete_tag.message')"
             @confirm="onTagDelete(tag)">
             <Button variant="outline" color="tertiary" icon="trash" size="xs">
               {{ $t("manage_tags.delete_tag") }}

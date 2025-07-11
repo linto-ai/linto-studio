@@ -616,6 +616,10 @@
     "error_updating_tag": "Erreur lors de la mise à jour de la thématique",
     "tag_delete_notification": "Thématique supprimée"
   },
+  "modal_delete_tag": {
+    "title": "Supprimer la thématique '{{name}}'",
+    "message": "Êtes-vous sûr de vouloir supprimer cette thématique ?"
+  },
   "markdown_editor": {
     "source": "Source",
     "preview": "Aperçu"

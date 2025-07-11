@@ -617,6 +617,10 @@
     "error_updating_tag": "Error updating subject",
     "tag_delete_notification": "Subject deleted"
   },
+  "modal_delete_tag": {
+    "title": "Delete subject '{name}'",
+    "message": "Are you sure you want to delete this subject ?"
+  },
   "markdown_editor": {
     "source": "Source",
     "preview": "Preview"
