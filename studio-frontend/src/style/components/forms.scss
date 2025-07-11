@@ -51,6 +51,14 @@
       max-width: none;
       box-sizing: border-box;
     }
+
+    &.inline {
+      padding: 0;
+      height: fit-content;
+      border: 0px solid;
+      border-bottom: var(--border-input);
+      border-radius: 0;
+    }
   }
 
   textarea {

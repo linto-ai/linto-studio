@@ -171,7 +171,7 @@ export default {
       this.$emit("input", newValue)
     },
     onTagNameBlur(e) {
-      if (this.$refs.tagName.innerText.trim() === "") {
+      if (this.$refs.tagName.innerText.replace(">", "").trim() === "") {
         this.onTagNameReset()
         return
       }

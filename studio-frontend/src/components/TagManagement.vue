@@ -4,11 +4,11 @@
       <h2 class="flex1">{{ $t("manage_tags.title") }}</h2>
     </div>
     <div class="tags-list">
-      <ul v-if="tags.length">
+      <ul>
         <li v-for="tag in tags" :key="`tags-list-item--${tag._id}`">
           <!-- <Avatar :material-color="tag.color" :size="54" :emoji="tag.emoji" /> -->
           <span class="tags-list__data">
-            <div class="flex gap-small">
+            <div class="flex gap-small align-bottom">
               <ColorPicker
                 :value="tag.color"
                 @input="onColorChange($event, tag)" />
@@ -20,7 +20,10 @@
                 :color="tag.color"
                 editable />
             </div>
-            <span
+            <TagManagementDescriptionLine
+              :description="tag.description"
+              @submit="editDescription($event, tag)" />
+            <!-- <span
               v-if="tag.description"
               class="tags-list__description"
               :aria-label="tag.description"
@@ -30,7 +33,7 @@
               v-else
               class="tags-list__description tags-list__description--empty">
               {{ $t("manage_tags.no_description") }}
-            </span>
+            </span> -->
           </span>
           <Alert
             variant="error"
@@ -63,7 +66,7 @@
           </span>
         </li>
       </ul>
-      <h3 v-if="tags.length === 0">{{ $t("manage_tags.no_tags") }}</h3>
+      <!-- <h3 v-if="tags.length === 0">{{ $t("manage_tags.no_tags") }}</h3> -->
     </div>
   </div>
 </template>
@@ -74,12 +77,14 @@ import MediaExplorerFormTag from "@/components/MediaExplorerFormTag.vue"
 import Alert from "./atoms/Alert.vue"
 import ChipTag from "./atoms/ChipTag.vue"
 import ColorPicker from "./molecules/ColorPicker.vue"
+import TagManagementDescriptionLine from "./TagManagementDescriptionLine.vue"
 
 export default {
   name: "TagManagement",
   components: {
     MediaExplorerFormTag,
     ColorPicker,
+    TagManagementDescriptionLine,
   },
   computed: {
     ...mapState("tags", {
@@ -105,7 +110,7 @@ export default {
       loading: false,
       modalTagEdit: null,
       newTag: {
-        name: "Type your tag name here",
+        name: this.$t("manage_tags.placeholder_new_tag_name"),
         color: "blue",
       },
       newTagKey: 1,
@@ -130,6 +135,13 @@ export default {
         name,
       }
     },
+    editDescription(description, tag) {
+      this.modalTagEdit = {
+        ...tag,
+        description,
+      }
+      this.onTagEdit()
+    },
     onColorChange(color, tag) {
       this.modalTagEdit = {
         ...tag,
@@ -146,6 +158,7 @@ export default {
       this.newTagKey = this.newTagKey + 1
     },
     async onTagEdit() {
+      if (!this.modalTagEdit) return
       try {
         this.loading = true
         await this.$store.dispatch("tags/updateTag", {
@@ -217,7 +230,7 @@ export default {
       .tags-list__data {
         display: flex;
         flex-direction: column;
-        gap: 0.05em;
+        gap: 0.15rem;
         flex: 1;
 
         .tags-list__name {

@@ -608,7 +608,14 @@
     "create_tag": "Create a subject",
     "delete_tag": "Delete",
     "edit_tag": "Edit",
-    "no_description": "No description"
+    "no_description": "No description",
+    "placeholder_new_tag_name": "+ Type a name for your subject",
+    "description_placeholder": "Add a description",
+    "tag_create_notification": "Subject created",
+    "tag_update_notification": "Subject updated",
+    "error_creating_tag": "Error creating subject",
+    "error_updating_tag": "Error updating subject",
+    "tag_delete_notification": "Subject deleted"
   },
   "markdown_editor": {
     "source": "Source",

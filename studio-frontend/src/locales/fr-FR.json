@@ -607,7 +607,14 @@
     "create_tag": "Créer un thématique",
     "delete_tag": "Supprimer",
     "edit_tag": "Modifier",
-    "no_description": "Aucune description"
+    "no_description": "Aucune description",
+    "placeholder_new_tag_name": "+ Entrez un nom pour votre thématique",
+    "description_placeholder": "Ajouter une description",
+    "tag_create_notification": "Thématique créée",
+    "tag_update_notification": "Thématique mise à jour",
+    "error_creating_tag": "Erreur lors de la création de la thématique",
+    "error_updating_tag": "Erreur lors de la mise à jour de la thématique",
+    "tag_delete_notification": "Thématique supprimée"
   },
   "markdown_editor": {
     "source": "Source",

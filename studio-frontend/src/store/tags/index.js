@@ -11,6 +11,7 @@ import {
   apiAddTagToConversation,
   apiDeleteTagFromConversation,
 } from "@/api/conversation"
+import i18n from "@/i18n"
 
 export default {
   namespaced: true,
@@ -139,7 +140,7 @@ export default {
         commit(
           "system/addNotification",
           {
-            message: "Tag created successfully",
+            message: i18n.t("manage_tags.tag_create_notification"),
             type: "success",
           },
           { root: true },
@@ -153,7 +154,7 @@ export default {
         commit(
           "system/addNotification",
           {
-            message: "Error creating tag",
+            message: i18n.t("manage_tags.error_creating_tag"),
             type: "error",
           },
           { root: true },
@@ -180,13 +181,21 @@ export default {
           "setTags",
           state.tags.map((t) => (t._id === tag._id ? tag : t)),
         )
+        commit(
+          "system/addNotification",
+          {
+            message: i18n.t("manage_tags.tag_update_notification"),
+            type: "success",
+          },
+          { root: true },
+        )
       } catch (error) {
         console.error("Error updating tag in store:", error)
         commit("setError", error)
         commit(
           "system/addNotification",
           {
-            message: "Error updating tag",
+            message: i18n.t("manage_tags.error_updating_tag"),
             type: "error",
           },
           { root: true },
@@ -210,7 +219,7 @@ export default {
         commit(
           "system/addNotification",
           {
-            message: "Tag deleted successfully",
+            message: i18n.t("manage_tags.tag_delete_notification"),
             type: "success",
           },
           { root: true },

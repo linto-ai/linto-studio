@@ -13,6 +13,7 @@
         v-if="!textarea"
         :class="{
           fullwidth: inputFullWidth,
+          inline: inline,
           flex1: true,
         }"
         :type="type"
@@ -37,14 +38,22 @@
         v-model="value"
         @change="($event) => $emit('change', $event)"
         @keydown="keydown" />
-      <div v-if="withConfirmation" class="flex gap-small">
-        <button class="transparent inline" @click="cancel" title="cancel">
-          <span class="icon medium close"></span>
-        </button>
-        <button class="transparent inline" @click="apply" title="apply">
-          <span class="icon medium apply"></span>
-        </button>
+      <div v-if="withConfirmation && hasChanged" class="flex gap-small">
+        <Button
+          icon="x"
+          variant="transparent"
+          @click="cancel"
+          title="cancel"
+          size="sm" />
+        <Button
+          icon="check"
+          variant="transparent"
+          @click="apply"
+          title="apply"
+          size="md" />
       </div>
+      <!-- same height as the buttons above -->
+      <div v-else-if="withConfirmation" style="height: 38px"></div>
       <slot name="content-after-input"></slot>
     </div>
     <slot name="content-bottom-input"></slot>
@@ -99,6 +108,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    inline: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -115,6 +128,9 @@ export default {
     },
     placeholder() {
       return this.field?.placeholder || null
+    },
+    hasChanged() {
+      return this.value !== this.field.value
     },
   },
   watch: {
