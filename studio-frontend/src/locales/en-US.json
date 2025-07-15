@@ -657,6 +657,8 @@
     "end_of_results": "End of results",
     "loading_more": "Loading more...",
     "load_previous_items": "Load previous items",
+    "empty_title": "No media",
+    "empty_description": "No media has been found. Start a transcription to add one. ",
     "loading": "Loading..."
   },
   "modal": {
@@ -1333,6 +1335,7 @@
     "clear_all": "Clear all",
     "selected_count": "selected",
     "search_message": "Press [ENTER] to search \"{keyword}\" in your media",
-    "search_empty_message": "Press [ENTER] to search in all your media"
+    "search_empty_message": "Press [ENTER] to search in all your media",
+    "search_placeholder": "Search in your media"
   }
 }
