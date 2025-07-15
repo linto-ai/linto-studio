@@ -26,6 +26,14 @@
         color="primary"
         class="start-button" />
       <cloud-card-credits />
+      <i18n tag="footer" class="main-footer" path="footer">
+        <template v-slot:linto_logo>
+          <img src="/img/linto.svg" alt="LinTO" />
+        </template>
+        <template v-slot:linagora_logo>
+          <img src="/img/linagora.png" alt="Linagora" />
+        </template>
+      </i18n>
     </div>
   </nav>
 </template>
@@ -189,6 +197,23 @@ export default {
   .start-button {
     align-self: stretch;
     margin: 1rem;
+  }
+
+  .main-footer {
+    // display: flex;
+    padding: 0.5rem 1rem;
+    background-color: var(--primary-soft);
+    border-top: 1px solid var(--neutral-40);
+
+    img {
+      height: 1.5em;
+    }
+
+    * {
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 0.25rem;
+    }
   }
 }
 </style>

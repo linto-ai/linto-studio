@@ -532,6 +532,7 @@
     "no_media_title": "Votre collection de médias favoris est vide",
     "no_media_subtitle": "Ajoutez des favoris en cliquant sur l'étoile dans la liste des médias."
   },
+  "footer": "LinTO {linto_logo} par {linagora_logo}",
   "global": {
     "disabled": "Inactif",
     "enabled": "Actif",
