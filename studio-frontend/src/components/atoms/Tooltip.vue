@@ -1,5 +1,5 @@
 <template>
-  <Popover
+  <!-- <Popover
     :position="position"
     content-class="tooltip-popover-container"
     trigger="hover"
@@ -11,29 +11,32 @@
       </span>
     </template>
     <template #content>
-      <div
-        v-if="text && text.trim()"
-        class="tooltip-content"
-        :style="{ borderColor: borderColor }"
-      >
-        <span
-          class="tooltip-content__inner"
-          :style="{ backgroundColor: backgroundColor, color: color }"
-        >
-          <Emoji v-if="emoji" :unified="emoji" size="16" />
-          <ph-icon v-if="icon" :name="icon" size="sm" />
-          <span class="tooltip-content__text">
-            {{ text }}
-          </span>
-        </span>
-      </div>
+      
     </template>
-  </Popover>
+  </Popover> -->
+  <div class="tooltip-container">
+    <slot ref="trigger"></slot>
+    <div
+      v-if="text && text.trim()"
+      class="tooltip-content"
+      :class="[position]"
+      :style="{ borderColor: borderColor }">
+      <span
+        class="tooltip-content__inner"
+        :style="{ backgroundColor: backgroundColor, color: color }">
+        <Emoji v-if="emoji" :unified="emoji" size="16" />
+        <ph-icon v-if="icon" :name="icon" size="sm" />
+        <span class="tooltip-content__text">
+          {{ text }}
+        </span>
+      </span>
+    </div>
+  </div>
 </template>
 
 <script>
-import Popover from "@/components/atoms/Popover.vue";
-import PhIcon from "./PhIcon.vue";
+import Popover from "@/components/atoms/Popover.vue"
+import PhIcon from "./PhIcon.vue"
 
 export default {
   name: "Tooltip",
@@ -61,7 +64,7 @@ export default {
     },
     color: {
       type: String,
-      default: "var(--primary-hard)",
+      default: "var(text-color)",
     },
     borderColor: {
       type: String,
@@ -77,32 +80,18 @@ export default {
       validator: (value) => ["top", "bottom", "left", "right"].includes(value),
     },
   },
-};
+  mounted() {},
+}
 </script>
 
 <style lang="scss" scoped>
-// This makes the popover container transparent to let the tooltip style shine.
-::v-deep .tooltip-popover-container {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  min-width: unset !important;
-  border-radius: 0 !important;
-  // Add a small offset, same as the original component had
-  &.top { margin-top: -8px; }
-  &.bottom { margin-top: 8px; }
-  &.left { margin-left: -8px; }
-  &.right { margin-left: 8px; }
-}
+.tooltip-container {
+  position: relative;
 
-.tooltip-trigger {
-  &.inline {
-    display: inline-flex;
-    align-items: center;
-  }
-  &.block {
-    display: block;
+  &:hover {
+    .tooltip-content {
+      display: block;
+    }
   }
 }
 
@@ -111,6 +100,35 @@ export default {
   white-space: nowrap;
   pointer-events: none;
   padding: 1px;
+  display: none;
+  position: absolute;
+
+  z-index: 50;
+  border: 1px solid;
+}
+
+.tooltip-content.bottom {
+  top: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tooltip-content.top {
+  bottom: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tooltip-content.left {
+  right: calc(100% + 2px);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.tooltip-content.right {
+  left: calc(100% + 2px);
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .tooltip-content__inner {
