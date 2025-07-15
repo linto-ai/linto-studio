@@ -575,6 +575,7 @@
   "login": {
     "create_account_button": "Create an account",
     "email_label": "Email :",
+    "error": "Error while logging in",
     "login_button": "Login",
     "password_label": "Password :",
     "recover_password": "Forgot your password?",

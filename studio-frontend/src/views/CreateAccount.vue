@@ -67,7 +67,7 @@
             :class="[
               picture.error !== null ? 'error' : '',
               picture.valid ? 'valid' : '',
-              'btn black',
+              'btn',
             ]">
             <span class="icon upload"></span>
             <span class="label">{{

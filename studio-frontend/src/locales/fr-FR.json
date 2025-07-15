@@ -574,6 +574,7 @@
   "login": {
     "create_account_button": "Créer un compte",
     "email_label": "Courriel : ",
+    "error": "Les identifiants sont incorrects",
     "login_button": "Se connecter",
     "password_label": "Mot de passe : ",
     "recover_password": "Mot de passe oublié ?",

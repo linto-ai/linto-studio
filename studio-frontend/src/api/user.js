@@ -97,7 +97,7 @@ export async function apiLoginUser(email, password) {
       email,
       password,
     },
-    {},
+    null,
   )
 }
 

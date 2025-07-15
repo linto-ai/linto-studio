@@ -15,9 +15,9 @@
           <ph-icon name="check" size="md" class="icon" />
         </button>
       </div>
-      <div class="form-field" v-if="formError !== null">
+      <!-- <div class="form-field" v-if="formError !== null">
         <span class="form-error">{{ formError }}</span>
-      </div>
+      </div> -->
       <router-link to="/reset-password" class="toggle-login-link underline">{{
         $t("login.recover_password")
       }}</router-link>
@@ -117,7 +117,6 @@ export default {
     async handleForm(event) {
       event?.preventDefault()
       try {
-        this.formError = null
         this.testEmail()
         this.testPasswordEmpty()
 
@@ -142,9 +141,10 @@ export default {
         if (process.env.VUE_APP_DEBUG === "*") {
           console.error(error)
         }
-        this.formError =
-          error?.error?.response?.data?.error?.message ||
-          "An error has occured, please try again later"
+        this.$store.dispatch("system/addNotification", {
+          message: this.$t("login.error"),
+          type: "error",
+        })
       }
       return false
     },
