@@ -42,9 +42,14 @@
             :title="$t('modal_delete_tag.title', { name: tag.name })"
             :message="$t('modal_delete_tag.message')"
             @confirm="onTagDelete(tag)">
-            <Button variant="outline" color="tertiary" icon="trash" size="xs">
-              {{ $t("manage_tags.delete_tag") }}
-            </Button>
+            <Button
+              variant="outline"
+              color="tertiary"
+              icon="trash"
+              size="sm"
+              :title="$t('manage_tags.delete_tag')"
+              :aria-label="$t('manage_tags.delete_tag')"
+              iconOnly />
           </Alert>
         </li>
         <li>

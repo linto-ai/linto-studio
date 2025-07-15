@@ -57,11 +57,19 @@
 
         <div class="flex1 flex align-center">
           <!-- Media title -->
-          <div class="media-explorer-item__title">
-            <span class="media-explorer-item__title-text">
-              {{ title }}
-            </span>
-          </div>
+
+          <router-link
+            :title="title"
+            :to="{
+              name: 'conversations transcription',
+              params: {
+                conversationId: media._id,
+                organizationId: currentOrganization._id,
+              },
+            }"
+            class="media-explorer-item__title">
+            {{ title }}
+          </router-link>
 
           <!-- Right section: Tags -->
           <IsDesktop>
@@ -475,15 +483,12 @@ export default {
   flex: 1;
   min-width: 0;
   min-width: 6rem;
-  &-text {
-    display: block;
-    font-weight: 600;
-    color: var(--text-primary);
-    text-decoration: none;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+  font-weight: 600;
+  color: var(--text-primary);
+  //text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .media-explorer-item__overview-btn {
