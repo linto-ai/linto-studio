@@ -28,14 +28,23 @@ class TagModel extends MongoModel {
    */
   async createDefaultTags(organizationId, categoryId) {
     try {
-      const tags = [].map((tag) => ({
-        ...tag,
+      if (
+        process.env.DEFAULT_TAGS === undefined ||
+        process.env.DEFAULT_TAGS === ""
+      ) {
+        return
+      }
+
+      const tags = process.env.DEFAULT_TAGS.split(",").map((tag) => ({
+        name: tag,
+        description: "",
         organizationId: this.getObjectId(organizationId),
         categoryId: this.getObjectId(categoryId),
       }))
       if (tags.length === 0) {
         return
       }
+
       return await this.mongoInsertMany(tags)
     } catch (error) {
       console.error(error)
