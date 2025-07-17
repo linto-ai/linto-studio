@@ -7,7 +7,9 @@
     overflow: hidden;
     isolation: isolate;
 
-    & > * {
+    & > *,
+    & > * > button,
+    & > * > .btn {
       border-radius: 0 !important;
       outline: none;
       box-sizing: border-box;

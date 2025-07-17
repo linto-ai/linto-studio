@@ -4,7 +4,8 @@
       name="trigger"
       :open="openModal"
       :close="close"
-      :is-open="isModalOpen"></slot>
+      :is-open="isModalOpen"
+      ></slot>
   </div>
 </template>
 

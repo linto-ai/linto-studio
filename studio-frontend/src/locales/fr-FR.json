@@ -658,8 +658,17 @@
       "tags": "Thématiques",
       "metadata": "Métadonnées",
       "default_title": "Sans titre",
-      "default_description": "Aucune description"
+      "default_description": "Aucune description",
+      "selected_count": "{count} médias sélectionnés",
+      "bulk_actions_description": "Effectuez des actions sur plusieurs médias à la fois",
+      "selected_medias": "Médias sélectionnés",
+      "clear_selection": "Tout désélectionner",
+      "bulk_actions": "Actions groupées",
+      "manage_tags": "Gérer les thématiques",
+      "add_tag_to_all": "Ajouter une thématique",
+      "common_tags": "Thématiques communes"
     },
+    "bulk_export": "Exporter la sélection",
     "end_of_results": "Fin des résultats",
     "loading_more": "Chargement en cours...",
     "load_previous_items": "Charger les éléments précédents",

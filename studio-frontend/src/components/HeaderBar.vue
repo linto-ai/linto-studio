@@ -1,7 +1,7 @@
 <template>
   <div class="flex align-center header-bar">
     <Button
-      icon="sidebar"
+      :icon="sidebarOpen ? 'arrow-line-right' : 'arrow-line-left'"
       border-color="transparent"
       color="neutral"
       @click.stop="toggleSidebar"
@@ -60,6 +60,9 @@ export default {
     hasHeaderBarSlot() {
       return !!this.$slots["header-bar"]
     },
+    sidebarOpen() {
+      return this.$store.state.system.sidebarOpen
+    },
   },
   methods: {
     handleSearch(e) {
@@ -92,3 +95,12 @@ export default {
   },
 }
 </script>
+
+<style lang="scss">
+.sidebar-toggle {
+  width: 64px;
+  background-color: var(--primary-soft);
+  border-radius: 0;
+  border-right: 1px solid var(--neutral-40) !important;
+}
+</style>

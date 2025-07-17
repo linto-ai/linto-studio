@@ -20,10 +20,13 @@ const actions = {
   async createOrganization({ commit }, payload) {},
   async updateOrganization({ commit }, id, payload) {},
   async deleteOrganization({ commit }, id) {},
-  async setCurrentOrganizationScope({ commit }, organizationId) {
+  async setCurrentOrganizationScope({ commit, dispatch }, organizationId) {
     let organization = await apiGetOrganizationById(organizationId)
     commit("setCurrentOrganization", organization)
     commit("setCurrentOrganizationScope", organizationId)
+    
+    // Clear selected tags when switching organizations
+    await dispatch("tags/clearExploreSelectedTags", null, { root: true })
   },
 }
 

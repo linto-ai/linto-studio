@@ -1,153 +1,52 @@
 <template>
-  <div
-    class="media-explorer-right-panel"
-    :style="{ width: panelWidth + 'px' }"
-    v-if="selectedMedia">
+  <div class="media-explorer-right-panel" :style="{ width: panelWidth + 'px' }" v-if="shouldShowPanel">
     <!-- Resize handle -->
-    <div
-      class="resize-handle"
-      @mousedown="startResize"
-      @touchstart="startResize"></div>
+    <div class="resize-handle" @mousedown="startResize" @touchstart="startResize"></div>
 
     <!-- Panel content -->
     <div class="panel-content">
       <!-- Header -->
       <div class="panel-header">
-        <h3 class="panel-title">{{ $t("media_explorer.panel.overview") }}</h3>
-        <Button
-          @click="$emit('close')"
-          icon="x"
-          size="sm"
-          variant="outline"
-          color="tertiary" />
-      </div>
-      <div class="panel-header-actions button-group" ref="panelActions">
-        <Button
-          v-for="action in actions"
-          :key="action.id"
-          :to="action.to"
-          :label="action.label"
-          :icon="action.icon"
-          size="sm"
-          variant="outline"
-          :color="action.color"
-          @click="handleActionClick(action)" />
+        <Button @click="$emit('close')" icon="arrow-line-right" size="sm" variant="outline" color="tertiary" />
+        <h3 class="panel-title">
+          {{ isMultiMode ? $t("media_explorer.panel.selected_count", { count: selectedMedias.length }) :
+            $t("media_explorer.panel.overview") }}
+        </h3>
       </div>
 
-      <!-- Media overview content -->
-      <div class="panel-body">
-        <div class="media-overview">
-          <!-- Media title -->
-          <div class="media-section">
-            <h4 class="section-title">
-              {{ $t("media_explorer.panel.title") }}
-            </h4>
-            <p class="section-content">
-              {{
-                selectedMedia.name ||
-                selectedMedia.title ||
-                $t("media_explorer.panel.default_title")
-              }}
-            </p>
-          </div>
-
-          <!-- Media description -->
-          <div class="media-section">
-            <h4 class="section-title">
-              {{ $t("media_explorer.panel.description") }}
-            </h4>
-            <p class="section-content">
-              {{
-                selectedMedia.description ||
-                $t("media_explorer.panel.default_description")
-              }}
-            </p>
-          </div>
-
-          <!-- Media duration -->
-          <div
-            class="media-section"
-            v-if="selectedMedia.metadata?.audio?.duration">
-            <h4 class="section-title">
-              {{ $t("media_explorer.panel.duration") }}
-            </h4>
-            <p class="section-content">
-              <TimeDuration
-                :duration="selectedMedia.metadata?.audio?.duration" />
-            </p>
-          </div>
-
-          <!-- Media creation date -->
-          <div class="media-section" v-if="selectedMedia.created">
-            <h4 class="section-title">
-              {{ $t("media_explorer.panel.created") }}
-            </h4>
-            <p class="section-content">
-              {{ formatDate(selectedMedia.created) }}
-            </p>
-          </div>
-
-          <!-- Media duration -->
-          <div class="media-section" v-if="selectedMedia.metadata.au">
-            <h4 class="section-title">
-              {{ $t("media_explorer.panel.duration") }}
-            </h4>
-            <p class="section-content">
-              {{ formatDuration(selectedMedia.duration) }}
-            </p>
-          </div>
-
-          <!-- Media tags -->
-          <div class="media-section">
-            <h4 class="section-title">{{ $t("media_explorer.panel.tags") }}</h4>
-            <div class="tags-container">
-              <InputSelector
-                mode="tags"
-                :tags="getTags"
-                :selected-tags="selectedMediaTags"
-                @create="handleCreateTag"
-                @remove="handleRemoveTag"
-                @add="handleAddTag" />
-            </div>
-          </div>
-
-          <!-- Media metadata -->
-          <div v-if="false" class="media-section">
-            <h4 class="section-title">
-              {{ $t("media_explorer.panel.metadata") }}
-            </h4>
-            <div class="metadata-grid">
-              <div
-                v-for="(value, key) in selectedMedia.metadata"
-                :key="key"
-                class="metadata-item">
-                <span class="metadata-key">{{ key }}:</span>
-                <span class="metadata-value">{{ value }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
+      <!-- Actions for single media -->
+      <div v-if="!isMultiMode" class="panel-header-actions button-group" ref="panelActions">
+        <Button v-for="action in singleMediaActions" :key="action.id" :to="action.to" :label="action.label"
+          :icon="action.icon" size="sm" variant="outline" :color="action.color" @click="handleActionClick(action)" />
       </div>
+
+      <!-- Multi-selection mode -->
+      <MediaExplorerRightPanelMulti v-if="isMultiMode" :currentOrganizationScope="currentOrganizationScope" />
+
+      <!-- Single media mode -->
+      <MediaExplorerRightPanelItem v-else-if="selectedMediaForOverview" :selectedMedia="selectedMediaForOverview" />
     </div>
 
-    <ModalDeleteConversations
-      :visible="showDeleteModal"
-      :medias="[selectedMedia]"
+    <!-- Delete modal for single media -->
+    <ModalDeleteConversations v-if="!isMultiMode" :visible="showDeleteModal" :medias="[selectedMediaForOverview]"
       @close="showDeleteModal = false" />
   </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex"
 import Button from "@/components/atoms/Button.vue"
-import Badge from "@/components/atoms/Badge.vue"
+import MediaExplorerRightPanelItem from "./MediaExplorerRightPanelItem.vue"
+import MediaExplorerRightPanelMulti from "./MediaExplorerRightPanelMulti.vue"
 import ModalDeleteConversations from "./ModalDeleteConversations.vue"
+import { mediaExplorerRightPanelMixin } from "@/mixins/mediaExplorerRightPanel.js"
 
 export default {
   name: "MediaExplorerRightPanel",
+  mixins: [mediaExplorerRightPanelMixin],
   components: {
     Button,
-    Badge,
+    MediaExplorerRightPanelItem,
+    MediaExplorerRightPanelMulti,
     ModalDeleteConversations,
   },
   props: {
@@ -180,42 +79,50 @@ export default {
       startX: 0,
       startWidth: 0,
       showDeleteModal: false,
-      actions: [
+    }
+  },
+  computed: {
+    selectedMedias() {
+      return this.$store.state.inbox.selectedMedias
+    },
+
+    isMultiMode() {
+      return this.selectedMedias.length > 1
+    },
+
+    shouldShowPanel() {
+      return this.isMultiMode || this.selectedMediaForOverview
+    },
+
+    selectedMediaForOverview() {
+      if (this.isMultiMode) return null
+      return this.selectedMedia
+    },
+
+    singleMediaActions() {
+      if (!this.selectedMediaForOverview) return []
+
+      const mediaId = this.selectedMediaForOverview._id
+      const orgId = this.currentOrganizationScope
+
+      return [
         {
           id: "edit",
           label: this.$t("media_explorer.line.edit_transcription"),
           icon: "pencil",
-          to: {
-            name: "conversations transcription",
-            params: {
-              conversationId: this.selectedMedia._id,
-              organizationId: this.currentOrganizationScope,
-            },
-          },
+          to: { name: "conversations transcription", params: { conversationId: mediaId, organizationId: orgId } },
         },
         {
           id: "subtitles",
           label: this.$t("media_explorer.line.edit_subtitles"),
           icon: "closed-captioning",
-          to: {
-            name: "conversations subtitles",
-            params: {
-              conversationId: this.selectedMedia._id,
-              organizationId: this.currentOrganizationScope,
-            },
-          },
+          to: { name: "conversations subtitles", params: { conversationId: mediaId, organizationId: orgId } },
         },
         {
           id: "export",
           label: this.$t("media_explorer.line.export"),
           icon: "export",
-          to: {
-            name: "conversations publish",
-            params: {
-              conversationId: this.selectedMedia._id,
-              organizationId: this.currentOrganizationScope,
-            },
-          },
+          to: { name: "conversations publish", params: { conversationId: mediaId, organizationId: orgId } },
         },
         {
           id: "delete",
@@ -223,15 +130,17 @@ export default {
           icon: "trash",
           color: "tertiary",
         },
-      ],
-    }
+      ]
+    },
   },
   mounted() {
     const savedWidth = localStorage.getItem("mediaExplorerPanelWidth")
 
-    this.panelActionWidth = Array.from(
-      this.$refs.panelActions.childNodes,
-    ).reduce((acc, el) => acc + el.clientWidth, 16)
+    if (this.$refs.panelActions) {
+      this.panelActionWidth = Array.from(
+        this.$refs.panelActions.childNodes,
+      ).reduce((acc, el) => acc + el.clientWidth, 16)
+    }
 
     if (savedWidth) {
       const width = parseInt(savedWidth)
@@ -244,7 +153,6 @@ export default {
       this.panelWidth = this.panelActionWidth
     }
 
-    // Emettre la largeur initiale au parent
     this.$emit("resize", this.panelWidth)
   },
   beforeDestroy() {
@@ -252,31 +160,7 @@ export default {
       this.stopResize()
     }
   },
-  computed: {
-    ...mapGetters("tags", ["getTags", "getTagById"]),
-    reactiveSelectedMedia() {
-      if (!this.selectedMedia?._id) return null
-      return this.$store.getters["inbox/getMediaById"](this.selectedMedia._id)
-    },
-    selectedMediaTags() {
-      const media = this.reactiveSelectedMedia
-      if (!media?.tags) return []
-      const tags = media.tags
-        .map((tagId) => this.getTagById(tagId))
-        .filter((tag) => !!tag)
-
-      return tags
-    },
-  },
   methods: {
-    getTagColor(tagId) {
-      const tag = this.getTags.find((t) => t._id === tagId)
-      return tag ? tag.color : "gray"
-    },
-    /**
-     * Start the resize of the panel
-     * @param event - The event object
-     */
     startResize(event) {
       this.isResizing = true
       this.startX = event.clientX || event.touches[0].clientX
@@ -293,37 +177,6 @@ export default {
       event.preventDefault()
     },
 
-    /**
-     * Handle the creation of a tag
-     * @param tag - The tag to create
-     */
-    async handleCreateTag(tag) {
-      const newTag = await this.$store.dispatch("tags/createTag", tag)
-
-      this.$store.dispatch("tags/addTagToMedia", {
-        mediaId: this.selectedMedia._id,
-        tagId: newTag._id,
-      })
-    },
-
-    handleRemoveTag(tag) {
-      this.$store.dispatch("tags/removeTagFromMedia", {
-        mediaId: this.selectedMedia._id,
-        tagId: tag._id,
-      })
-    },
-
-    handleAddTag(tag) {
-      this.$store.dispatch("tags/addTagToMedia", {
-        mediaId: this.selectedMedia._id,
-        tagId: tag._id,
-      })
-    },
-
-    /**
-     * Handle the resize of the panel
-     * @param event - The event object
-     */
     handleResize(event) {
       if (!this.isResizing) return
 
@@ -331,8 +184,6 @@ export default {
       const deltaX = this.startX - clientX
       const newWidth = this.startWidth + deltaX
 
-      console.log("newWidth", newWidth)
-      console.log("panelActionWidth", this.panelActionWidth)
       this.panelWidth = Math.max(
         this.minWidth,
         Math.min(this.maxWidth, newWidth),
@@ -340,13 +191,9 @@ export default {
       )
 
       this.$emit("resize", this.panelWidth)
-
       event.preventDefault()
     },
 
-    /**
-     * Stop the resize of the panel
-     */
     stopResize() {
       this.isResizing = false
       document.removeEventListener("mousemove", this.handleResize)
@@ -365,77 +212,12 @@ export default {
       this.$emit("resize", this.panelWidth)
     },
 
-    /**
-     * Format the duration of the media
-     * @param duration - The duration of the media
-     * @returns The formatted duration
-     */
-    formatDuration(duration) {
-      if (!duration) return ""
-      const hours = Math.floor(duration / 3600)
-      const minutes = Math.floor((duration % 3600) / 60)
-      const seconds = Math.floor(duration % 60)
-
-      if (hours > 0) {
-        return `${hours}h ${minutes}m ${seconds}s`
-      } else {
-        return `${minutes}m ${seconds}s`
-      }
-    },
-
-    formatDate(dateString) {
-      if (!dateString) return ""
-      const date = new Date(dateString)
-      return date.toLocaleDateString(this.$i18n.locale, {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-    },
-
-    getTagName(tagId) {
-      const tag = this.getTags.find((t) => t._id === tagId)
-      return tag ? tag.name : tagId
-    },
-
     handleActionClick(action) {
       switch (action.id) {
         case "delete":
           this.handleDelete()
           break
       }
-    },
-
-    handleEdit() {
-      this.$router.push({
-        name: "conversations transcription",
-        params: {
-          conversationId: this.media._id,
-          organizationId: this.organizationId,
-        },
-      })
-    },
-
-    handleSubtitles() {
-      this.$router.push({
-        name: "conversations subtitles",
-        params: {
-          conversationId: this.media._id,
-          organizationId: this.organizationId,
-        },
-      })
-    },
-
-    handleExport() {
-      this.$router.push({
-        name: "conversations publish",
-        params: {
-          conversationId: this.media._id,
-          organizationId: this.organizationId,
-        },
-      })
     },
 
     handleDelete() {
@@ -495,12 +277,16 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 1rem;
+  padding: 0 0.5rem;
   border: var(--border-block, 1px solid var(--neutral-30));
   background-color: var(--primary-soft);
   margin: 0.5em;
   height: 50px;
   border-radius: 4px;
+}
+
+.panel-header h3 {
+  padding-left: 0.5rem;
 }
 
 .panel-header-actions {
@@ -517,73 +303,6 @@ export default {
   color: var(--text-primary, #000);
 }
 
-.panel-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1rem;
-}
-
-.media-overview {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.media-section {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.section-title {
-  margin: 0;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-secondary, #666);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.section-content {
-  margin: 0;
-  font-size: 0.95rem;
-  color: var(--text-primary, #000);
-  line-height: 1.4;
-}
-
-.tags-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.metadata-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.metadata-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  padding: 0.5rem;
-  background-color: var(--background-tertiary, #f0f0f0);
-  border-radius: var(--border-radius-sm, 4px);
-}
-
-.metadata-key {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--text-secondary, #666);
-}
-
-.metadata-value {
-  font-size: 0.9rem;
-  color: var(--text-primary, #000);
-  word-break: break-word;
-}
-
 .media-explorer-right-panel {
   animation: slideIn 0.3s ease-out;
 }
@@ -593,6 +312,7 @@ export default {
     transform: translateX(100%);
     opacity: 0;
   }
+
   to {
     transform: translateX(0);
     opacity: 1;

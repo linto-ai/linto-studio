@@ -28,6 +28,7 @@ import IsMobile from "./IsMobile.vue"
 import IsDesktop from "./IsDesktop.vue"
 import ButtonRoller from "./ButtonRoller.vue"
 import InputSelector from "./InputSelector.vue"
+import LabelInput from "./LabelInput.vue"
 
 const components = [
   Avatar,
@@ -60,6 +61,7 @@ const components = [
   IsDesktop,
   ButtonRoller,
   InputSelector,
+  LabelInput,
 ]
 
 const validateComponents = (c) =>

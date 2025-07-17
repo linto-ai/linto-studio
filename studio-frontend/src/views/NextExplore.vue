@@ -76,6 +76,7 @@ import {
 } from "@/api/conversation.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { convRoleMixin } from "@/mixins/convRole.js"
+import { exploreNavigationMixin } from "@/mixins/exploreNavigation.js"
 
 export default {
   name: "NextExplore",
@@ -85,7 +86,7 @@ export default {
     MediaExplorer,
     ActionConversationCreate,
   },
-  mixins: [orgaRoleMixin, convRoleMixin],
+  mixins: [orgaRoleMixin, convRoleMixin, exploreNavigationMixin],
   props: {
     userInfo: { type: Object, required: true },
     currentOrganizationScope: { type: String, required: true },
@@ -119,23 +120,18 @@ export default {
     ...mapGetters("tags", [
       "getExploreSelectedTags",
       "getTags",
-      "getSharedTags",
+      "getSharedTags", 
       "getFavoritesTags",
     ]),
     selectedTags() {
       return this.getExploreSelectedTags
     },
     selectedTagIds() {
-      return this.$store.state.tags.exploreSelectedTags.map((t) => t._id)
+      return this.getExploreSelectedTags.map((t) => t._id)
     },
     availableTags() {
-      if (this.favorites) {
-        return this.getFavoritesTags
-      } else if (this.shared) {
-        return this.getSharedTags
-      } else {
-        return this.getTags
-      }
+      return this.favorites ? this.getFavoritesTags : 
+             this.shared ? this.getSharedTags : this.getTags
     },
   },
   async mounted() {
@@ -211,122 +207,9 @@ export default {
         console.error("Error loading tags for current view:", error)
       }
     },
-    async initPageFromUrl() {
-      const urlParams = new URLSearchParams(window.location.search)
-      const pageParam = urlParams.get("page")
-      const searchParam = urlParams.get("search")
-      const tagsParam = urlParams.get("tags")
 
-      // Handle tags parameter
-      if (tagsParam && tagsParam.trim().length > 0) {
-        const tagIds = tagsParam.split(",").filter((id) => id.trim())
-        // Convert tag IDs to tag objects from the appropriate tags collection
-        this.$store.dispatch(
-          "tags/setExploreSelectedTags",
-          tagIds
-            .map((id) => {
-              return this.availableTags.find((t) => t._id === id)
-            })
-            .filter((tag) => tag), // Remove undefined tags
-        )
-      }
 
-      // Handle search parameter
-      if (searchParam && searchParam.trim().length > 0) {
-        this.search = searchParam.trim()
-        this.mode = "search"
-        this.filters = [
-          {
-            title: "Title filter",
-            value: this.search,
-            _id: this.generateUuid(),
-            key: "titleConversation",
-          },
-        ]
-      }
 
-      if (pageParam && !isNaN(parseInt(pageParam))) {
-        const targetPage = parseInt(pageParam)
-        this.initialPage = targetPage
-        this.page = targetPage
-
-        if (targetPage > 0) {
-          this.showPreviousButton = true
-          // Load only the target page
-          if (this.mode === "search") {
-            await this.apiSearchConversations(targetPage, this.filters, false)
-          } else {
-            await this.fetchConversations(targetPage, false)
-          }
-        } else {
-          if (this.mode === "search") {
-            await this.apiSearchConversations(0, this.filters, false)
-          } else {
-            await this.fetchConversations(0, false)
-          }
-        }
-      } else {
-        // Default load
-        if (this.mode === "search") {
-          await this.apiSearchConversations(0, this.filters, false)
-        } else {
-          await this.fetchConversations(0, false)
-        }
-      }
-
-      this.isInitialLoad = false
-    },
-
-    updatePageUrl(page) {
-      const url = new URL(window.location)
-      if (page > 0) {
-        url.searchParams.set("page", page)
-      } else {
-        url.searchParams.delete("page")
-      }
-
-      // Keep tags in URL if present
-      if (this.selectedTagIds.length > 0) {
-        const tagIds = this.selectedTagIds.join(",")
-        url.searchParams.set("tags", tagIds)
-      } else {
-        url.searchParams.delete("tags")
-      }
-
-      window.history.replaceState({}, "", url)
-    },
-
-    updateSearchUrl(search) {
-      const url = new URL(window.location)
-      if (search && search.trim().length > 0) {
-        url.searchParams.set("search", search.trim())
-      } else {
-        url.searchParams.delete("search")
-      }
-
-      // Keep tags in URL if present
-      if (this.selectedTagIds.length > 0) {
-        const tagIds = this.selectedTagIds.join(",")
-        url.searchParams.set("tags", tagIds)
-      } else {
-        url.searchParams.delete("tags")
-      }
-
-      // Reset page when searching
-      url.searchParams.delete("page")
-      window.history.replaceState({}, "", url)
-    },
-
-    generateUuid() {
-      return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
-        /[xy]/g,
-        function (c) {
-          var r = (Math.random() * 16) | 0,
-            v = c == "x" ? r : (r & 0x3) | 0x8
-          return v.toString(16)
-        },
-      )
-    },
 
     async apiSearchConversations(
       page = this.page,
@@ -414,13 +297,7 @@ export default {
 
     async fetchConversations(page = 0, append = false) {
       try {
-        // Delegate the full logic to apiSearchConversations.
-        // Passing the append flag prevents the previous page from being overwritten
-        // and avoids adding duplicates to the store.
         const data = await this.apiSearchConversations(page, [], append)
-
-        // apiSearchConversations already updates `this.conversations`, `hasMoreItems`,
-        // and the Vuex store, so we can simply return the list here.
         return data?.list || []
       } catch (error) {
         if (page === 0) {
@@ -434,30 +311,7 @@ export default {
       }
     },
 
-    loadPreviousItems() {
-      this.showPreviousButton = false
-      this.initialPage = 0
-      this.page = 0
-      this.mode = "default"
-      this.search = ""
-      this.filters = []
 
-      // Update URL - keep tags but remove page and search
-      const url = new URL(window.location)
-      url.searchParams.delete("page")
-      url.searchParams.delete("search")
-
-      // Keep tags in URL if present
-      if (this.selectedTagIds.length > 0) {
-        const tagIds = this.selectedTagIds.join(",")
-        url.searchParams.set("tags", tagIds)
-      }
-
-      window.history.replaceState({}, "", url)
-
-      this.resetSearch()
-      this.clearSelectedMedias()
-    },
     handleSearch(search, filters) {
       this.updateSearchUrl(search)
 

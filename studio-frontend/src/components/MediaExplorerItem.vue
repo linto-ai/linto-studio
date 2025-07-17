@@ -306,6 +306,17 @@ export default {
         this.removeSelectedMedia(this.media)
       }
     },
+    // Sync local isSelected state with store
+    '$store.state.inbox.selectedMedias': {
+      handler(selectedMedias) {
+        const isCurrentlySelected = selectedMedias.some(media => media._id === this.media._id)
+        if (this.isSelected !== isCurrentlySelected) {
+          this.isSelected = isCurrentlySelected
+        }
+      },
+      immediate: true,
+      deep: true,
+    },
   },
   methods: {
     ...mapMutations("inbox", ["addSelectedMedia", "removeSelectedMedia"]),

@@ -31,6 +31,9 @@ export default {
     setExploreSelectedTags(state, tags) {
       state.exploreSelectedTags = tags
     },
+    clearExploreSelectedTags(state) {
+      state.exploreSelectedTags = []
+    },
     clearTags(state) {
       state.tags = []
     },
@@ -326,6 +329,13 @@ export default {
         "setExploreSelectedTags",
         tags.filter((t) => !!t),
       )
+    },
+    clearExploreSelectedTags({ commit }) {
+      commit("clearExploreSelectedTags")
+      // Also clear tags from URL
+      const url = new URL(window.location.href)
+      url.searchParams.delete("tags")
+      window.history.pushState({}, "", url)
     },
     addExploreSelectedTag({ commit, state }, tag) {
       commit("setExploreSelectedTags", [...state.exploreSelectedTags, tag])

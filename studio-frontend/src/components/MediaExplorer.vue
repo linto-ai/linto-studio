@@ -19,6 +19,7 @@
         @select-all="handleSelectAll"
         @search="handleSearch">
         <template #actions>
+          <IsMobile>
           <div class="flex gap-small" v-if="selectedMedias.length > 0">
             <!-- <Button
               :label="$t('media_explorer.share')"
@@ -35,8 +36,9 @@
               color="tertiary"
               icon="trash"
               variant="outline" />
-            <slot name="header-actions" />
           </div>
+          </IsMobile>
+          <slot name="header-actions" />
         </template>
       </MediaExplorerHeader>
 
@@ -90,7 +92,7 @@
         <IsMobile>
           <template #desktop>
             <MediaExplorerRightPanel
-              v-if="selectedMediaForOverview && currentOrganizationScope"
+              v-if="(selectedMediaForOverview || selectedMedias.length > 1) && currentOrganizationScope"
               :selected-media="reactiveSelectedMediaForOverview"
               :currentOrganizationScope="currentOrganizationScope"
               @close="closeRightPanel"
@@ -272,6 +274,29 @@ export default {
     getExploreSelectedTags() {
       this.reset()
     },
+    '$store.state.inbox.selectedMedias': {
+      handler(newSelection, oldSelection) {
+        // If we go from multiple selection to empty, close the panel completely
+        if (oldSelection && oldSelection.length > 1 && newSelection.length === 0) {
+          this.selectedMediaForOverview = null
+          this.rightPanelWidth = 0
+        }
+        // If we go from multiple selection to single, switch to single mode
+        else if (oldSelection && oldSelection.length > 1 && newSelection.length === 1) {
+          this.selectedMediaForOverview = newSelection[0]
+        }
+        // If we have exactly one media selected and no overview media, set it for overview
+        else if (newSelection.length === 1 && !this.selectedMediaForOverview) {
+          this.selectedMediaForOverview = newSelection[0]
+        }
+        // If the selected media for overview is no longer in the selection, clear it
+        else if (this.selectedMediaForOverview && !newSelection.find(m => m._id === this.selectedMediaForOverview._id)) {
+          this.selectedMediaForOverview = null
+        }
+      },
+      immediate: false,
+      deep: true,
+    },
   },
   methods: {
     ...mapActions("inbox", ["clearSelectedMedias"]),
@@ -402,6 +427,10 @@ export default {
     closeRightPanel() {
       this.selectedMediaForOverview = null
       this.rightPanelWidth = 0
+      // If we're in multi-selection mode, clear the selection
+      if (this.selectedMedias.length > 1) {
+        this.clearSelectedMedias()
+      }
     },
 
     handleRightPanelResize(width) {
@@ -494,6 +523,16 @@ export default {
 .empty-state p {
   margin: 0;
   font-size: 1rem;
+}
+
+.bulk-actions-hint {
+  font-size: 0.875rem;
+  color: var(--text-secondary, #666);
+  font-style: italic;
+  padding: 0.25rem 0.5rem;
+  background-color: var(--primary-soft, #f8f9fa);
+  border-radius: 4px;
+  border: 1px solid var(--primary-color, #007bff);
 }
 
 @media only screen and (max-width: 1100px) {

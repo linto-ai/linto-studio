@@ -652,8 +652,17 @@
       "tags": "Subjects",
       "metadata": "Metadata",
       "default_title": "No title",
-      "default_description": "No description"
+      "default_description": "No description",
+      "selected_count": "{count} media selected",
+      "bulk_actions_description": "Perform actions on multiple media at once",
+      "selected_medias": "Selected media",
+      "clear_selection": "Clear all",
+      "bulk_actions": "Bulk Actions",
+      "manage_tags": "Manage subjects",
+      "add_tag_to_all": "Add subject to all",
+      "common_tags": "Common subjects"
     },
+    "bulk_export": "Export selection",
     "end_of_results": "End of results",
     "loading_more": "Loading more...",
     "load_previous_items": "Load previous items",

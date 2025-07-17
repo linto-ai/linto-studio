@@ -131,6 +131,17 @@ const TAG_COLORS = [
   "blue-grey",
 ]
 
+/**
+ * Get a random color from the available TAG_COLORS
+ * @returns {string} - Random color name
+ */
+function getRandomColor() {
+  const randomIndex = Math.floor(Math.random() * TAG_COLORS.length)
+  const selectedColor = TAG_COLORS[randomIndex]
+  console.log(`[MediaExplorerFormTag] Random color selected: ${selectedColor}`)
+  return selectedColor
+}
+
 const EMOJI_CATEGORIES = {
   Faces: [
     "😀",
@@ -457,7 +468,7 @@ export default {
       selectedEmoji: null,
       name: this.initialName,
       description: "",
-      color: "teal",
+      color: getRandomColor(), // Random default color using standalone function
       colorPopoverOpen: false,
       TAG_COLORS,
       EMOJI_CATEGORIES,
@@ -470,7 +481,8 @@ export default {
         if (!tag) return
         this.name = tag.name
         this.description = tag.description
-        this.color = tag.color
+        // Use tag color if exists, otherwise keep current color (could be random)
+        this.color = tag.color || this.color
         this.selectedEmoji = tag.emoji || null
 
         // Auto-select emoji from name or description if not already set
@@ -500,11 +512,23 @@ export default {
       handler(val) {
         if (val) {
           this.name = this.initialName
+          // Set random color when opening modal for new tag creation
+          if (!this.tag || !this.tag._id) {
+            this.color = getRandomColor()
+          }
         }
       },
     },
   },
   methods: {
+    /**
+     * Get a random color from the available TAG_COLORS
+     * @returns {string} - Random color name
+     */
+    getRandomColor() {
+      return getRandomColor()
+    },
+
     /**
      * Extract first emoji from a text string
      * @param {string} text - Text to analyze
@@ -545,16 +569,20 @@ export default {
     },
 
     onSubmit() {
+      // Ensure we always have a color (fallback to random if somehow undefined)
+      const finalColor = this.color || getRandomColor()
+      
       this.$emit("submit", {
         name: this.tag.name,
         description: this.tag.description,
-        color: this.color,
+        color: finalColor,
         emoji: this.selectedEmoji || "",
       })
 
+      // Reset form after submission
       this.name = ""
       this.description = ""
-      this.color = "teal"
+      this.color = getRandomColor() // Reset to new random color
       this.selectedEmoji = null
       this.emojiSearch = ""
     },
