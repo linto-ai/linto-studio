@@ -16,6 +16,7 @@ const {
   updateUserFromOrganization,
   deleteUserFromOrganization,
   deleteConversationFromOrganization,
+  updateConversationOwner,
 } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/organizations/maintainer.js`,
 )
@@ -129,6 +130,13 @@ module.exports = (webserver) => {
       requireAuth: true,
       requireOrganizationMaintainerAccess: true,
       controller: deleteConversationFromOrganization,
+    },
+    {
+      path: "/:organizationId/conversations/:conversationId/owner",
+      method: "patch",
+      requireAuth: true,
+      requireOrganizationMaintainerAccess: true,
+      controller: updateConversationOwner,
     },
 
     /* Admin right*/

@@ -86,6 +86,38 @@ module.exports = {
         ConversationShareAccessDenied,
       )
   },
+  asShareBatchAccess: async (req, res, next) => {
+    if (await platformAccess.isSystemAdministrator(req)) next()
+    else {
+      await batchAccess(
+        next,
+        req.body.conversations,
+        req.payload.data.userId,
+        false,
+        CONVERSATION_RIGHTS.SHARE,
+        ORGANIZATION_ROLES.MAINTAINER,
+        ConversationShareAccessDenied,
+      )
+    }
+  },
+  batchAccess: async (
+    req,
+    next,
+    convId,
+    userId,
+    restricted,
+    right,
+    rightException,
+  ) => {
+    return await batchAccess(
+      next,
+      convId,
+      userId,
+      restricted,
+      right,
+      rightException,
+    )
+  },
   access: async (
     req,
     next,
@@ -97,6 +129,60 @@ module.exports = {
   ) => {
     return await access(next, convId, userId, restricted, right, rightException)
   },
+}
+
+async function batchAccess(
+  next,
+  conversations,
+  userId,
+  restricted,
+  rightConvo,
+  rightOrga,
+  rightException,
+) {
+  if (!conversations || conversations.length === 0) {
+    return next(new ConversationIdRequire())
+  }
+  for (const convId of conversations.split(",")) {
+    const conv = (await model.conversations.getById(convId, projection))[0]
+    const organization = await model.organizations.getById(
+      conv.organization.organizationId, //TODO:
+    )
+    const luser = organization[0].users.filter(
+      (user) =>
+        user.userId === userId &&
+        ORGANIZATION_ROLES.hasRoleAccess(user.role, rightOrga),
+    )
+    if (luser.length === 1) {
+      continue
+    } else if (conv.owner === userId) {
+      continue
+    } else if (
+      conv.organization.customRights.length !== 0 ||
+      conv.sharedWithUsers.length !== 0
+    ) {
+      if (conv.sharedWithUsers.length !== 0) {
+        let ushare = conv.sharedWithUsers.filter(
+          (userShare) =>
+            userShare.userId === userId &&
+            CONVERSATION_RIGHTS.hasRightAccess(userShare.right, rightConvo),
+        )
+        if (ushare.length === 1) continue
+      }
+      let customRight = conv.organization.customRights.filter(
+        (orgaCustomRight) => orgaCustomRight.userId === userId,
+      )
+      if (
+        customRight.length === 1 &&
+        CONVERSATION_RIGHTS.hasRightAccess(customRight[0].right, rightConvo)
+      ) {
+        continue
+      } else return next(new rightException())
+    } else {
+      return next(new rightException())
+    }
+  }
+  return next()
 }
 
 async function access(next, convId, userId, restricted, right, rightException) {

@@ -292,6 +292,7 @@ async function recoveryAuth(req, res, next) {
         message: "An email with an authentication link has been sent to you.",
       })
     } else {
+      user[0].accountNotifications = user[0].accountNotifications ?? {}
       user[0].accountNotifications.updatePassword = true
       const updatedUser = await model.users.generateMagicLink(user[0])
       if (updatedUser.modifiedCount === 0) throw new GenerateMagicLinkError()

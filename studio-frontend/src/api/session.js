@@ -103,10 +103,15 @@ export async function apiGetTranscriberProfilesById(transcriberId, notif) {
 }
 
 export async function apiUpdateTranscriberProfile(transcriberId, data, notif) {
+  const dataCopy = structuredClone(data)
+  if (dataCopy.config.key === "Secret key is hidden") {
+    delete dataCopy.config.key
+  }
+
   return await sendRequest(
     `${BASE_API}/transcriber_profiles/${transcriberId}`,
     { method: "put" },
-    data,
+    dataCopy,
     notif,
   )
 }

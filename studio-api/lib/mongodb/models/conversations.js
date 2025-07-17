@@ -115,6 +115,24 @@ class ConvoModel extends MongoModel {
     }
   }
 
+  async getConvsListByIds(convIds, filter) {
+    try {
+      convIds = convIds.map((id) => {
+        if (typeof id === "string") return this.getObjectId(id)
+        else return id
+      })
+      const query = {
+        _id: {
+          $in: convIds,
+        },
+      }
+      return await this.mongoRequest(query, filter)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   // list conversation shared to the user
   async getByShare(idUser, filter = undefined) {
     try {
@@ -512,6 +530,10 @@ class ConvoModel extends MongoModel {
         query["$or"][1]["organization.membersRight"] = {
           $bitsAnySet: desiredAccess,
         }
+      }
+      if (userRole >= ROLES.MAINTAINER) {
+        // A maintainer can see all conversations in the organization
+        delete query["$or"]
       }
 
       return await this.mongoAggregatePaginate(query, projection, filter)
