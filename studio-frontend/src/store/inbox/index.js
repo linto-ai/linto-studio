@@ -41,6 +41,12 @@ export default {
       if (idx !== -1) {
         state.medias.splice(idx, 1, media)
       }
+      
+      // Also update in selectedMedias if present
+      const selectedIdx = state.selectedMedias.findIndex((m) => m._id === mediaId)
+      if (selectedIdx !== -1) {
+        state.selectedMedias.splice(selectedIdx, 1, media)
+      }
     },
     deleteMedias(state, mediaIds) {
       state.medias = state.medias.filter((m) => !mediaIds.includes(m._id))
