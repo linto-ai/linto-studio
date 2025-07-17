@@ -57,19 +57,21 @@
 
         <div class="flex1 flex align-center">
           <!-- Media title -->
-
-          <router-link
-            :title="title"
-            :to="{
-              name: 'conversations transcription',
-              params: {
-                conversationId: media._id,
-                organizationId: currentOrganization._id,
-              },
-            }"
-            class="media-explorer-item__title">
-            {{ title }}
-          </router-link>
+          <div class="media-explorer-item__title">
+            <span @click.stop.prevent="(e) => e.stopPropagation()">
+              <router-link
+                :title="title"
+                :to="{
+                  name: 'conversations transcription',
+                  params: {
+                    conversationId: media._id,
+                    organizationId: currentOrganization._id,
+                  },
+                }">
+                {{ title }}
+              </router-link>
+            </span>
+          </div>
 
           <!-- Right section: Tags -->
           <IsDesktop>
