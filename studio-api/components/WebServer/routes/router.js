@@ -89,6 +89,8 @@ const loadMiddlewares = (route) => {
     middlewares.push(conversation_middlewares.asDeleteAccess)
   if (route.requireConversationShareAccess)
     middlewares.push(conversation_middlewares.asShareAccess)
+  if (route.requireConversationShareBatchAccess)
+    middlewares.push(conversation_middlewares.asShareBatchAccess)
 
   if (route.requireOrganizationAdminAccess)
     middlewares.push(organization_middlewares.asAdminAccess)

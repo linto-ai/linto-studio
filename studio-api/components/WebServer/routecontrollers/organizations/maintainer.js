@@ -307,9 +307,43 @@ async function deleteConversationFromOrganization(req, res, next) {
   }
 }
 
+async function updateConversationOwner(req, res, next) {
+  try {
+    if (!req.params.conversationId) throw new ConversationIdRequire()
+    const conversation = await model.conversations.getById(
+      req.params.conversationId,
+    )
+    if (conversation.length !== 1) throw new ConversationNotFound()
+    if (!req.body.userId) throw new ConversationError("User ID is required")
+    const user = await model.users.getById(req.body.userId)
+    if (user.length !== 1) throw new ConversationError("User not found")
+
+    const organization = await model.organizations.getById(
+      req.params.organizationId,
+    )
+    if (organization.length !== 1)
+      throw new ConversationError("Organization not found")
+    if (!organization[0].users.some((u) => u.userId === req.body.userId)) {
+      throw new ConversationError("User is not part of the organization")
+    }
+
+    const result = await model.conversations.update({
+      _id: req.params.conversationId,
+      owner: req.body.userId,
+    })
+
+    res.status(200).send({
+      message: "Conversation owner updated",
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
 module.exports = {
   addUserInOrganization,
   updateUserFromOrganization,
   deleteUserFromOrganization,
   deleteConversationFromOrganization,
+  updateConversationOwner,
 }

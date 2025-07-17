@@ -39,39 +39,28 @@ async function batchShareConversation(req, res, next) {
       organizationId: req.body.organizationId,
     }
 
-    if (req.body.organizationId) {
-      const organization = await model.organizations.getByIdAndUser(
-        auth_user.organizationId,
-        auth_user.id,
-      )
-      if (organization.length !== 1) throw new OrganizationNotFound()
-
-      organization[0].users.map((user) => {
-        if (user.userId === auth_user.id) auth_user.role = user.role
-      })
-    }
-
-    const conversationsIds = req.body.conversations.split(",")
-    let conversations = await model.conversations.listConvFromAccess(
-      conversationsIds,
-      auth_user.id,
-      auth_user.organizationId,
-      auth_user.role,
-      RIGHTS.READ,
-      { _id: 1, text: 0, tags: 0, speakers: 0, metadata: 0, jobs: 0 },
+    let conversations = await model.conversations.getConvsListByIds(
+      req.body.conversations.split(","),
+      {
+        _id: 1,
+        text: 0,
+        tags: 0,
+        speakers: 0,
+        metadata: 0,
+        jobs: 0,
+      },
     )
 
     const method = req.method
-    //req.body.users is a json string, transform it to an object
     let users_list = JSON.parse(req.body.users)
-
     await usersCheck(users_list, method) // Check and handle user creation if needed
+
     let user_updated = await updateConv(
       conversations,
       method,
       users_list,
       auth_user,
-    ) // Update the conversation with the new users rights
+    )
 
     const sharedBy = await model.users.getById(auth_user.id)
     for (let user of users_list.users) {
@@ -103,6 +92,8 @@ async function batchShareConversation(req, res, next) {
   }
 }
 
+// Update the conversation with the new rights for the users
+// Rights are already checked in the middleware
 async function updateConv(conversations, method, users_list, auth_user) {
   let orgaUser = false
 
@@ -119,20 +110,9 @@ async function updateConv(conversations, method, users_list, auth_user) {
       )
       if (userInOrga.length > 0) {
         orgaUser = true
-
-        if (
-          auth_user.organizationId !== conversation.organization.organizationId
-        )
-          continue // Skip if user is in the organization but not me
-        else if (userInOrga[0].role > auth_user.role)
-          continue // skip if user in the organization has a higher role than me
-        else if (auth_user.role < ROLES.MAINTAINER) continue // skip if i'm not maintainer or admin
-        // TODO: Should store data that user can't modify the user right
       }
 
       if (method === method_delete || user.right === undefined) user.right = 0
-
-      if (RIGHTS.validRight(user.right) === false) continue // skip if the right is not valid
 
       const userRights = {
         userId: user.id.toString(),
