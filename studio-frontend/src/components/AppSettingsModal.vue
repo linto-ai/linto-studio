@@ -99,6 +99,9 @@
         v-if="selectedTab === 'organization-information'"
         class="app-settings__section">
         <UpdateOrganizationForm :currentOrganization="currentOrganization" />
+        <UpdateOrganizationDeletion
+          v-if="isAdmin"
+          :currentOrganization="currentOrganization" />
       </div>
       <div v-if="selectedTab === 'members'" class="app-settings__section">
         <UpdateOrganizationUsers
@@ -115,7 +118,9 @@
 
 <script>
 import { mapGetters } from "vuex"
-import Modal from "./molecules/Modal.vue"
+import { orgaRoleMixin } from "@/mixins/orgaRole.js"
+import { platformRoleMixin } from "@/mixins/platformRole.js"
+
 import UserProfilePicture from "@/components/atoms/UserProfilePicture.vue"
 import UserSettingsPersonal from "@/components/UserSettingsPersonal.vue"
 import UserSettingsPassword from "@/components/UserSettingsPassword.vue"
@@ -126,10 +131,13 @@ import UserSettingsPreferences from "@/components/UserSettingsPreferences.vue"
 import TagManagement from "@/components/TagManagement.vue"
 import UpdateOrganizationForm from "@/components/UpdateOrganizationForm.vue"
 import UpdateOrganizationUsers from "@/components/UpdateOrganizationUsers.vue"
+import UpdateOrganizationDeletion from "./UpdateOrganizationDeletion.vue"
+import Modal from "./molecules/Modal.vue"
+
 export default {
   name: "AppSettingsModal",
+  mixins: [orgaRoleMixin, platformRoleMixin],
   components: {
-    Modal,
     UserProfilePicture,
     UserSettingsPersonal,
     UserSettingsPassword,
@@ -140,6 +148,8 @@ export default {
     TagManagement,
     UpdateOrganizationForm,
     UpdateOrganizationUsers,
+    UpdateOrganizationDeletion,
+    Modal,
   },
   data() {
     return {

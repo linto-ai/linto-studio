@@ -18,6 +18,18 @@ const mutations = {
   setCurrentOrganization(state, organization) {
     state.currentOrganization = organization
   },
+  deleteOrganization(state, id) {
+    delete state.organizations[id]
+    state.rolesInOrganizations.delete(id)
+    const orgasIds = Object.keys(state.organizations)
+    if (orgasIds.length === 0) {
+      state.currentOrganizationScope = null
+      state.currentOrganization = null
+    } else {
+      state.currentOrganizationScope = orgasIds[0]._id
+      state.currentOrganization = state.organizations[orgasIds[0]]
+    }
+  },
 }
 
 export default mutations

@@ -767,6 +767,7 @@
   "organisation": {
     "add_member_description": "Utilisez le champ de recherche pour chercher des utilisateurs par leur prénom, nom ou adresse électronique",
     "add_member_label": "Ajouter un utilisateur",
+    "danger_zone": "Danger zone",
     "create": {
       "error_already_exists": "Une organisation avec ce nom existe déjà",
       "error_message": "Une erreur s'est produite lors de la création de l'organisation",

@@ -774,6 +774,7 @@
       "success_message": "organisation successfully created",
       "title": "Create organisation"
     },
+    "danger_zone": "Danger zone",
     "delete_error_message": "An error occurred while deleting the organisation",
     "delete_modal": {
       "action": "Delete",
