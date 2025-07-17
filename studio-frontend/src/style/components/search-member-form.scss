@@ -1,7 +1,22 @@
 @layer base {
-  .context-menu.conversation-share-list {
+  .conversation-share-list {
+    /* 
+    Reset all styles until Anchor positioning support in mainstream browsers
+    https://stackoverflow.com/questions/78233243/how-to-position-a-popover-in-css 
+    */
+    all: initial;
+
+    font-family: var(--font-family);
+    color: var(--text-primary);
+    accent-color: var(--primary-color);
+    font-size: 14px;
+    font-weight: 400;
     max-width: 30rem;
     width: 450px;
+    background-color: white;
+    border: var(--border-block);
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
+    transform: translateX(-40%);
   }
 
   .conversation-share-list__search-form {

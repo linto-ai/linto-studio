@@ -12,10 +12,13 @@
     <Button
       size="sm"
       :icon="showShareList ? 'x' : 'share-network'"
+      popovertarget="share-menu"
       :label="$t('share_menu.button')"
       @click="showShareList = !showShareList"></Button>
-    <ContextMenu
+    <div
       name="share-menu"
+      popover
+      id="share-menu"
       class="conversation-share-list"
       first
       v-if="showShareList"
@@ -151,7 +154,7 @@
           </UserList>
         </div>
       </div>
-    </ContextMenu>
+    </div>
 
     <div
       v-if="false"
