@@ -41,9 +41,11 @@ export default {
       if (idx !== -1) {
         state.medias.splice(idx, 1, media)
       }
-      
+
       // Also update in selectedMedias if present
-      const selectedIdx = state.selectedMedias.findIndex((m) => m._id === mediaId)
+      const selectedIdx = state.selectedMedias.findIndex(
+        (m) => m._id === mediaId,
+      )
       if (selectedIdx !== -1) {
         state.selectedMedias.splice(selectedIdx, 1, media)
       }
@@ -178,6 +180,12 @@ export const fromConversations = (conversations) => {
       isSelected: false,
       tags: conversation.tags,
       owner: conversation.owner,
+      organization: structuredClone(conversation.organization),
+      customRights: conversation.customRights,
+      sharedWithUsers: structuredClone(conversation.sharedWithUsers),
+      jobs: {
+        transcription: structuredClone(conversation.jobs.transcription),
+      },
     }
   })
 }
