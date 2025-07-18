@@ -14,7 +14,7 @@
 
     <LabeledValue
       :label="$t('session.settings_page.modal_edit_session_alias.link_label')"
-      :value="`Studio.linto.app/6785238f0aee1be21684a9e1/sessions/${nameField.value}`" />
+      :value="publicLink" />
   </ModalNew>
 </template>
 <script>
@@ -63,6 +63,12 @@ export default {
     }
   },
   mounted() {},
+  computed: {
+    publicLink() {
+      const baseUrl = window.location.origin
+      return `${baseUrl}/${this.organizationId}/sessions/${this.nameField.value}`
+    },
+  },
   methods: {
     async confirm(e) {
       e?.preventDefault()
