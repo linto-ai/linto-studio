@@ -251,9 +251,13 @@ export default {
     ) {
       commit("setLoading", true)
       try {
-        console.log("addTagToMedia", mediaId, tagId)
-        const data = await apiAddTagToConversation(mediaId, tagId)
         const media = rootGetters["inbox/getMediaById"](mediaId)
+
+        if (media.tags.includes(tagId)) {
+          throw new Error("Tag already in media")
+        }
+
+        const data = await apiAddTagToConversation(mediaId, tagId)
         const newMedia = { ...media, tags: [...media.tags, tagId] }
         console.log("newMedia", newMedia)
         commit(

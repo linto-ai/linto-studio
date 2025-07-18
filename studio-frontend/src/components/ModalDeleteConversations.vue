@@ -4,7 +4,8 @@
     :title="title"
     :message="content"
     @confirm="onConfirm"
-    @cancel="onCancel"></Alert>
+    @cancel="onCancel"
+    ></Alert>
   <!-- <ModalNew
     :title="title"
     value

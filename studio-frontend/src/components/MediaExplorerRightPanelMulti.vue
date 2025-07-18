@@ -72,10 +72,10 @@
       <div v-if="commonTags.length > 0" class="common-tags">
         <h5 class="common-tags-title">{{ $t("media_explorer.panel.common_tags") }}</h5>
         <div class="tags-container">
-          <Badge
+          <ChipTag
             v-for="tag in commonTags"
             :key="tag._id"
-            :label="tag.name"
+            :name="tag.name"
             :color="tag.color"
             removable
             @remove="handleRemoveTagFromAll(tag)" />
@@ -101,6 +101,7 @@ import InputSelector from "@/components/atoms/InputSelector.vue"
 import ModalDeleteConversations from "./ModalDeleteConversations.vue"
 import ConversationShareMultiple from "./ConversationShareMultiple.vue"
 import { mediaExplorerRightPanelMixin } from "@/mixins/mediaExplorerRightPanel.js"
+import ChipTag from "./atoms/ChipTag.vue"
 
 export default {
   name: "MediaExplorerRightPanelMulti",
@@ -127,17 +128,26 @@ export default {
   computed: {
     ...mapGetters("user", { userInfo: "getUserInfos" }),
     selectedMedias() {
-      return this.$store.state.inbox.selectedMedias
+      // Get the selected media IDs
+      const selectedMediaIds = this.$store.state.inbox.selectedMedias.map(media => media._id)
+      
+      // Return the updated versions from the main media store
+      return selectedMediaIds
+        .map(mediaId => this.$store.getters["inbox/getMediaById"](mediaId))
+        .filter(media => !!media) // Remove any that might not exist anymore
     },
     commonTags() {
       if (this.selectedMedias.length === 0) return []
       
-      const firstMediaTags = this.selectedMedias[0].tags || []
-      const commonTagIds = firstMediaTags.filter(tagId => 
-        this.selectedMedias.every(media => 
-          media.tags && media.tags.includes(tagId)
-        )
-      )
+      // Get tags that are present in ALL selected medias
+      const allMediaTags = this.selectedMedias.map(media => media.tags || [])
+      
+      if (allMediaTags.length === 0) return []
+      
+      // Find intersection of all tag arrays
+      const commonTagIds = allMediaTags.reduce((common, mediaTags) => {
+        return common.filter(tagId => mediaTags.includes(tagId))
+      }, allMediaTags[0])
       
       return commonTagIds
         .map(tagId => this.getTagById(tagId))
@@ -168,14 +178,34 @@ export default {
     },
 
     async handleAddTagToAll(tag) {
-      const promises = this.selectedMedias.map(media =>
+      // Filter medias that don't already have this tag
+      const mediasToUpdate = this.selectedMedias.filter(media => 
+        !media.tags || !media.tags.includes(tag._id)
+      )
+      
+      if (mediasToUpdate.length === 0) {
+        // All selected medias already have this tag
+        return
+      }
+      
+      const promises = mediasToUpdate.map(media =>
         this.addTagToMedia(tag, media._id)
       )
       await Promise.all(promises)
     },
 
     async handleRemoveTagFromAll(tag) {
-      const promises = this.selectedMedias.map(media =>
+      // Filter medias that actually have this tag
+      const mediasToUpdate = this.selectedMedias.filter(media => 
+        media.tags && media.tags.includes(tag._id)
+      )
+      
+      if (mediasToUpdate.length === 0) {
+        // No selected medias have this tag
+        return
+      }
+      
+      const promises = mediasToUpdate.map(media =>
         this.removeTagFromMedia(tag, media._id)
       )
       await Promise.all(promises)
