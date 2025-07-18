@@ -12,6 +12,7 @@
     <Button
       size="sm"
       :icon="showShareList ? 'x' : 'share-network'"
+      variant="outline"
       :label="$t('share_menu.button')"
       @click="showShareList = !showShareList"></Button>
     <ContextMenu
@@ -298,6 +299,7 @@
 <script>
 import RIGHTS_LIST from "@/const/rigthsList.js"
 import EMPTY_FIELD from "@/const/emptyField.js"
+import { mapActions, mapGetters } from "vuex"
 
 import {
   apiGetUsersFromMultipleConversation,
@@ -322,7 +324,6 @@ import Button from "@/components/atoms/Button.vue"
 
 export default {
   props: {
-    userInfo: { type: Object, required: true },
     selectedConversations: { type: Array, required: true },
     currentOrganizationScope: { type: String, required: true },
     // conversation: { type: Object, required: true },
@@ -347,6 +348,7 @@ export default {
   },
   async mounted() {},
   computed: {
+    ...mapGetters("userInfos", { user: "getUserInfos" }),
     rightsList() {
       return RIGHTS_LIST((key) => this.$i18n.t(key))
     },

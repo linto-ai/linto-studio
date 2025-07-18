@@ -1,34 +1,79 @@
 <template>
-  <div class="media-explorer-right-panel" :style="{ width: panelWidth + 'px' }" v-if="shouldShowPanel">
+  <div
+    class="media-explorer-right-panel"
+    :style="{ width: panelWidth + 'px' }"
+    v-if="shouldShowPanel">
     <!-- Resize handle -->
-    <div class="resize-handle" @mousedown="startResize" @touchstart="startResize"></div>
+    <div
+      class="resize-handle"
+      @mousedown="startResize"
+      @touchstart="startResize"></div>
 
     <!-- Panel content -->
     <div class="panel-content">
       <!-- Header -->
       <div class="panel-header">
-        <Button @click="$emit('close')" icon="arrow-line-right" size="sm" color="neutral-40" />
+        <Button
+          @click="$emit('close')"
+          icon="arrow-line-right"
+          size="sm"
+          color="neutral-40" />
         <h3 class="panel-title">
-          {{ isMultiMode ? $t("media_explorer.panel.selected_count", { count: selectedMedias.length }) :
-            $t("media_explorer.panel.overview") }}
+          {{
+            isMultiMode
+              ? $t("media_explorer.panel.selected_count", {
+                  count: selectedMedias.length,
+                })
+              : $t("media_explorer.panel.overview")
+          }}
         </h3>
       </div>
 
-      <!-- Actions for single media -->
-      <div v-if="!isMultiMode" class="panel-header-actions button-group" ref="panelActions">
-        <Button v-for="action in singleMediaActions" :key="action.id" :to="action.to" :label="action.label"
-          :icon="action.icon" size="sm" variant="outline" :color="action.color" @click="handleActionClick(action)" />
+      <div class="flex panel-header-actions">
+        <!-- Actions for single media (edition etc...)-->
+        <div v-if="!isMultiMode" class="button-group" ref="panelActions">
+          <Button
+            v-for="action in singleMediaActions"
+            :key="action.id"
+            :to="action.to"
+            :label="action.label"
+            :icon="action.icon"
+            size="sm"
+            variant="outline"
+            :color="action.color"
+            @click="handleActionClick(action)" />
+        </div>
+        <div v-else></div>
+        <!-- delete and share -->
+        <div class="flex gap-small">
+          <ConversationShareMultiple
+            :selectedConversations="selectedMedias"
+            :currentOrganizationScope="currentOrganizationScope" />
+          <Button
+            @click="handleDelete"
+            :label="$t('media_explorer.delete')"
+            icon="trash"
+            variant="outline"
+            size="sm"
+            color="tertiary" />
+        </div>
       </div>
 
       <!-- Multi-selection mode -->
-      <MediaExplorerRightPanelMulti v-if="isMultiMode" :currentOrganizationScope="currentOrganizationScope" />
+      <MediaExplorerRightPanelMulti
+        v-if="isMultiMode"
+        :currentOrganizationScope="currentOrganizationScope" />
 
       <!-- Single media mode -->
-      <MediaExplorerRightPanelItem v-else-if="selectedMediaForOverview" :selectedMedia="selectedMediaForOverview" />
+      <MediaExplorerRightPanelItem
+        v-else-if="selectedMediaForOverview"
+        :selectedMedia="selectedMediaForOverview" />
     </div>
 
     <!-- Delete modal for single media -->
-    <ModalDeleteConversations v-if="!isMultiMode" :visible="showDeleteModal" :medias="[selectedMediaForOverview]"
+    <ModalDeleteConversations
+      :visible="showDeleteModal"
+      :medias="selectedMedias"
       @close="showDeleteModal = false" />
   </div>
 </template>
@@ -39,6 +84,7 @@ import MediaExplorerRightPanelItem from "./MediaExplorerRightPanelItem.vue"
 import MediaExplorerRightPanelMulti from "./MediaExplorerRightPanelMulti.vue"
 import ModalDeleteConversations from "./ModalDeleteConversations.vue"
 import { mediaExplorerRightPanelMixin } from "@/mixins/mediaExplorerRightPanel.js"
+import ConversationShareMultiple from "./ConversationShareMultiple.vue"
 
 export default {
   name: "MediaExplorerRightPanel",
@@ -48,6 +94,7 @@ export default {
     MediaExplorerRightPanelItem,
     MediaExplorerRightPanelMulti,
     ModalDeleteConversations,
+    ConversationShareMultiple,
   },
   props: {
     selectedMedia: {
@@ -83,7 +130,15 @@ export default {
   },
   computed: {
     selectedMedias() {
-      return this.$store.state.inbox.selectedMedias
+      // Get the selected media IDs
+      const selectedMediaIds = this.$store.state.inbox.selectedMedias.map(
+        (media) => media._id,
+      )
+
+      // Return the updated versions from the main media store
+      return selectedMediaIds
+        .map((mediaId) => this.$store.getters["inbox/getMediaById"](mediaId))
+        .filter((media) => !!media) // Remove any that might not exist anymore
     },
 
     isMultiMode() {
@@ -110,26 +165,35 @@ export default {
           id: "edit",
           label: this.$t("media_explorer.line.edit_transcription"),
           icon: "pencil",
-          to: { name: "conversations transcription", params: { conversationId: mediaId, organizationId: orgId } },
+          to: {
+            name: "conversations transcription",
+            params: { conversationId: mediaId, organizationId: orgId },
+          },
         },
         {
           id: "subtitles",
           label: this.$t("media_explorer.line.edit_subtitles"),
           icon: "closed-captioning",
-          to: { name: "conversations subtitles", params: { conversationId: mediaId, organizationId: orgId } },
+          to: {
+            name: "conversations subtitles",
+            params: { conversationId: mediaId, organizationId: orgId },
+          },
         },
         {
           id: "export",
           label: this.$t("media_explorer.line.export"),
           icon: "export",
-          to: { name: "conversations publish", params: { conversationId: mediaId, organizationId: orgId } },
+          to: {
+            name: "conversations publish",
+            params: { conversationId: mediaId, organizationId: orgId },
+          },
         },
-        {
-          id: "delete",
-          label: this.$t("media_explorer.line.delete"),
-          icon: "trash",
-          color: "tertiary",
-        },
+        // {
+        //   id: "delete",
+        //   label: this.$t("media_explorer.line.delete"),
+        //   icon: "trash",
+        //   color: "tertiary",
+        // },
       ]
     },
   },
@@ -219,7 +283,6 @@ export default {
           break
       }
     },
-
     handleDelete() {
       this.showDeleteModal = true
     },
@@ -227,7 +290,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .media-explorer-right-panel {
   position: relative;
   background-color: var(--background-color, #fff);
@@ -285,15 +348,16 @@ export default {
 }
 
 .panel-header h3 {
+  padding: 0;
   padding-left: 0.5rem;
 }
 
 .panel-header-actions {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   padding: 2px 0.5em;
-  overflow: auto !important;
+  //overflow: auto !important;
 }
 
 .panel-title {

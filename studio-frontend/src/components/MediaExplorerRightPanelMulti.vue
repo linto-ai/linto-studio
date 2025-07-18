@@ -3,14 +3,12 @@
     <!-- Selected medias preview -->
     <div class="selected-medias-preview">
       <div class="preview-header">
-        <h4 class="preview-title">{{ $t("media_explorer.panel.selected_medias") }}</h4>
-        <Button
-          @click="clearSelection"
-          icon="x"
-          size="sm"
-          variant="outline" />
+        <h4 class="preview-title">
+          {{ $t("media_explorer.panel.selected_medias") }}
+        </h4>
+        <Button @click="clearSelection" icon="x" size="sm" variant="outline" />
       </div>
-      
+
       <div class="medias-list">
         <div
           v-for="media in selectedMedias"
@@ -33,31 +31,12 @@
       </div>
     </div>
 
-    <!-- Bulk actions -->
-    <div class="bulk-actions">
-      <h4 class="actions-title">{{ $t("media_explorer.panel.bulk_actions") }}</h4>
-      
-      <div class="button-group">
-        <!-- Share action -->
-          <ConversationShareMultiple
-            :selectedConversations="selectedMedias"
-            :currentOrganizationScope="currentOrganizationScope"
-            :userInfo="userInfo" />
-
-        <!-- Delete action -->
-          <Button
-            @click="handleBulkDelete"
-            :label="$t('media_explorer.delete')"
-            icon="trash"
-            size="sm"
-            color="tertiary" />
-      </div>
-    </div>
-
     <!-- Bulk tag management -->
     <div class="bulk-tag-management">
-      <h4 class="actions-title">{{ $t("media_explorer.panel.manage_tags") }}</h4>
-      
+      <h4 class="actions-title">
+        {{ $t("media_explorer.panel.manage_tags") }}
+      </h4>
+
       <div class="tag-actions">
         <InputSelector
           mode="tags"
@@ -70,7 +49,9 @@
 
       <!-- Common tags -->
       <div v-if="commonTags.length > 0" class="common-tags">
-        <h5 class="common-tags-title">{{ $t("media_explorer.panel.common_tags") }}</h5>
+        <h5 class="common-tags-title">
+          {{ $t("media_explorer.panel.common_tags") }}
+        </h5>
         <div class="tags-container">
           <ChipTag
             v-for="tag in commonTags"
@@ -82,12 +63,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Delete modal -->
-    <ModalDeleteConversations
-      :visible="showDeleteModal"
-      :medias="selectedMedias"
-      @close="showDeleteModal = false" />
   </div>
 </template>
 
@@ -121,37 +96,37 @@ export default {
     },
   },
   data() {
-    return {
-      showDeleteModal: false,
-    }
+    return {}
   },
   computed: {
     ...mapGetters("user", { userInfo: "getUserInfos" }),
     selectedMedias() {
       // Get the selected media IDs
-      const selectedMediaIds = this.$store.state.inbox.selectedMedias.map(media => media._id)
-      
+      const selectedMediaIds = this.$store.state.inbox.selectedMedias.map(
+        (media) => media._id,
+      )
+
       // Return the updated versions from the main media store
       return selectedMediaIds
-        .map(mediaId => this.$store.getters["inbox/getMediaById"](mediaId))
-        .filter(media => !!media) // Remove any that might not exist anymore
+        .map((mediaId) => this.$store.getters["inbox/getMediaById"](mediaId))
+        .filter((media) => !!media) // Remove any that might not exist anymore
     },
     commonTags() {
       if (this.selectedMedias.length === 0) return []
-      
+
       // Get tags that are present in ALL selected medias
-      const allMediaTags = this.selectedMedias.map(media => media.tags || [])
-      
+      const allMediaTags = this.selectedMedias.map((media) => media.tags || [])
+
       if (allMediaTags.length === 0) return []
-      
+
       // Find intersection of all tag arrays
       const commonTagIds = allMediaTags.reduce((common, mediaTags) => {
-        return common.filter(tagId => mediaTags.includes(tagId))
+        return common.filter((tagId) => mediaTags.includes(tagId))
       }, allMediaTags[0])
-      
+
       return commonTagIds
-        .map(tagId => this.getTagById(tagId))
-        .filter(tag => !!tag)
+        .map((tagId) => this.getTagById(tagId))
+        .filter((tag) => !!tag)
     },
   },
   methods: {
@@ -161,10 +136,6 @@ export default {
 
     removeMediaFromSelection(media) {
       this.$store.commit("inbox/removeSelectedMedia", media)
-    },
-
-    handleBulkDelete() {
-      this.showDeleteModal = true
     },
 
     handleBulkExport() {
@@ -179,34 +150,34 @@ export default {
 
     async handleAddTagToAll(tag) {
       // Filter medias that don't already have this tag
-      const mediasToUpdate = this.selectedMedias.filter(media => 
-        !media.tags || !media.tags.includes(tag._id)
+      const mediasToUpdate = this.selectedMedias.filter(
+        (media) => !media.tags || !media.tags.includes(tag._id),
       )
-      
+
       if (mediasToUpdate.length === 0) {
         // All selected medias already have this tag
         return
       }
-      
-      const promises = mediasToUpdate.map(media =>
-        this.addTagToMedia(tag, media._id)
+
+      const promises = mediasToUpdate.map((media) =>
+        this.addTagToMedia(tag, media._id),
       )
       await Promise.all(promises)
     },
 
     async handleRemoveTagFromAll(tag) {
       // Filter medias that actually have this tag
-      const mediasToUpdate = this.selectedMedias.filter(media => 
-        media.tags && media.tags.includes(tag._id)
+      const mediasToUpdate = this.selectedMedias.filter(
+        (media) => media.tags && media.tags.includes(tag._id),
       )
-      
+
       if (mediasToUpdate.length === 0) {
         // No selected medias have this tag
         return
       }
-      
-      const promises = mediasToUpdate.map(media =>
-        this.removeTagFromMedia(tag, media._id)
+
+      const promises = mediasToUpdate.map((media) =>
+        this.removeTagFromMedia(tag, media._id),
       )
       await Promise.all(promises)
     },

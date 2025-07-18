@@ -40,7 +40,7 @@
     "organization_members": "Organization members",
     "preferences": "Preferences",
     "notifications": "Notifications",
-    "tags": "Subjects",
+    "tags": "Topics",
     "title": "Settings",
     "subtitle": "Manage your account and preferences",
     "logout": "Logout"
@@ -605,23 +605,23 @@
     }
   },
   "manage_tags": {
-    "title": "Subjects",
-    "no_tags": "No subjects",
-    "create_tag": "Create a subject",
+    "title": "Topics",
+    "no_tags": "No topics",
+    "create_tag": "Create a topic",
     "delete_tag": "Delete",
     "edit_tag": "Edit",
     "no_description": "No description",
-    "placeholder_new_tag_name": "+ Type a name for your subject",
+    "placeholder_new_tag_name": "+ Type a name for your topic",
     "description_placeholder": "Add a description",
-    "tag_create_notification": "Subject created",
-    "tag_update_notification": "Subject updated",
-    "error_creating_tag": "Error creating subject",
-    "error_updating_tag": "Error updating subject",
-    "tag_delete_notification": "Subject deleted"
+    "tag_create_notification": "Topic created",
+    "tag_update_notification": "Topic updated",
+    "error_creating_tag": "Error creating topic",
+    "error_updating_tag": "Error updating topic",
+    "tag_delete_notification": "Topic deleted"
   },
   "modal_delete_tag": {
-    "title": "Delete subject '{name}'",
-    "message": "Are you sure you want to delete this subject ?"
+    "title": "Delete topic '{name}'",
+    "message": "Are you sure you want to delete this topic ?"
   },
   "markdown_editor": {
     "source": "Source",
@@ -638,10 +638,10 @@
     "delete": "Delete",
     "share": "Share",
     "tags_selector": {
-      "title": "Filter by subjects",
+      "title": "Filter by topics",
       "filter": "Filter",
       "clear_all": "Clear all",
-      "no_tags": "No subjects available"
+      "no_tags": "No topics available"
     },
     "panel": {
       "overview": "Media Overview",
@@ -649,7 +649,7 @@
       "description": "Description",
       "duration": "Duration",
       "created": "Created",
-      "tags": "Subjects",
+      "tags": "Topics",
       "metadata": "Metadata",
       "default_title": "No title",
       "default_description": "No description",
@@ -658,9 +658,9 @@
       "selected_medias": "Selected media",
       "clear_selection": "Clear all",
       "bulk_actions": "Bulk Actions",
-      "manage_tags": "Manage subjects",
-      "add_tag_to_all": "Add subject to all",
-      "common_tags": "Common subjects"
+      "manage_tags": "Manage topics",
+      "add_tag_to_all": "Assign topic",
+      "common_tags": "Common topics"
     },
     "bulk_export": "Export selection",
     "end_of_results": "End of results",
@@ -747,7 +747,7 @@
       "sessions": "Live transcriptions",
       "shared": "Shared with me",
       "user_page": "My account",
-      "tags": "Subjects"
+      "tags": "Topics"
     }
   },
   "no_orga": {
@@ -1338,10 +1338,10 @@
     "disconnected": "Content not updated, check your internet connection"
   },
   "input_selector": {
-    "search_tags": "Search tags...",
-    "available_tags": "Available tags",
-    "no_tags_found": "No tags found",
-    "create_tag": "Create tag",
+    "search_tags": "Search topics...",
+    "available_tags": "Available topics",
+    "no_tags_found": "No topics found",
+    "create_tag": "Create a topic",
     "clear_all": "Clear all",
     "selected_count": "selected",
     "search_message": "Press [ENTER] to search \"{keyword}\" in your media",
