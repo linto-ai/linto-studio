@@ -146,28 +146,31 @@ export default {
         return unified
       }
     },
-    onTagNameFocus() {
+    async onTagNameFocus() {
       if (!this.editable) return
       if (this.startEditionEmpty) {
-        this.currentName = ">"
-        this.$nextTick(() => {
-          this.$refs.tagName.innerText = ">"
-          //move cursor to the end
-          const range = document.createRange()
-          range.selectNodeContents(this.$refs.tagName)
-          range.collapse(false)
-          const sel = window.getSelection()
-          sel.removeAllRanges()
-          sel.addRange(range)
-          this.$refs.tagName.focus()
-        })
+        //this.currentName = ">"
+        this.$refs.tagName.innerText = ">"
+        await this.$nextTick()
+
+        // to fix...
+        await new Promise((r) => setTimeout(r, 100))
+        this.$refs.tagName.focus()
+
+        //move cursor to the end
+        const range = document.createRange()
+        range.selectNodeContents(this.$refs.tagName)
+        range.collapse(false)
+        const sel = window.getSelection()
+        sel.removeAllRanges()
+        sel.addRange(range)
       }
     },
     onTagNameChange(e) {
       let newValue = e.target.innerText
       // remove new lines
       //newValue = newValue.replace(/(\r\n|\n|\r)/gm, "")
-      newValue = newValue.replace(">", "")
+      newValue = newValue.replace(">", "").trim()
       this.$emit("input", newValue)
     },
     onTagNameBlur(e) {
