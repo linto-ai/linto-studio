@@ -8,6 +8,8 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex"
+
 export default {
   name: "IsDesktop",
   /**
@@ -24,44 +26,13 @@ export default {
    * </is-desktop>
    */
   props: {
-    minWidth: {
-      type: Number,
-      default: 1100,
-    },
     tag: {
       type: String,
       default: "div",
     },
   },
-  data() {
-    return {
-      isDesktop: false,
-    }
-  },
-  mounted() {
-    if (typeof window === "undefined") return // SSR guard
-    this._checkIsDesktop()
-    // Throttle resize handler with requestAnimationFrame – lightweight, avoids flood.
-    this._onResize = () => {
-      window.requestAnimationFrame(this._checkIsDesktop)
-    }
-    window.addEventListener("resize", this._onResize, { passive: true })
-  },
-  beforeDestroy() {
-    if (typeof window === "undefined") return
-    window.removeEventListener("resize", this._onResize)
-  },
-  methods: {
-    /**
-     * Updates `isDesktop` depending on current viewport width.
-     */
-    _checkIsDesktop() {
-      this.isDesktop = window.matchMedia(
-        `(min-width: ${this.minWidth}px)`,
-      ).matches
-    },
-  },
   computed: {
+    ...mapGetters("system", ["isDesktop"]),
     /**
      * Returns true if a named slot "mobile" has been provided.
      */

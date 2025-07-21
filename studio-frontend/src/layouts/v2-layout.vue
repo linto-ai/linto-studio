@@ -74,18 +74,14 @@ export default {
     isAuthenticated() {
       return isAuthenticated()
     },
-    ...mapGetters("system", ["sidebarOpen"]),
+    ...mapGetters("system", ["sidebarOpen", "isMobile"]),
   },
   beforeMount() {
-    this.isMobile = typeof window !== "undefined" && window.innerWidth < 1100
-
     if (this.isMobile === false && this.sidebarOpen === undefined) {
       this.$store.dispatch("system/toggleSidebar", true)
     }
   },
-  mounted() {
-    this.isMobile = typeof window !== "undefined" && window.innerWidth < 1100
-  },
+  mounted() {},
   methods: {
     closeSidebar() {
       if (!this.isMobile || !this.sidebarOpen) return

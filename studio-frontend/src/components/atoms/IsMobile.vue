@@ -8,6 +8,8 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex"
+
 export default {
   name: "IsMobile",
   /**
@@ -24,44 +26,13 @@ export default {
    * </is-mobile>
    */
   props: {
-    maxWidth: {
-      type: Number,
-      default: 1100,
-    },
     tag: {
       type: String,
       default: "div",
     },
   },
-  data() {
-    return {
-      isMobile: false,
-    }
-  },
-  mounted() {
-    if (typeof window === "undefined") return // SSR guard
-    this._checkIsMobile()
-    // Throttle resize handler with requestAnimationFrame – lightweight, avoids flood.
-    this._onResize = () => {
-      window.requestAnimationFrame(this._checkIsMobile)
-    }
-    window.addEventListener("resize", this._onResize, { passive: true })
-  },
-  beforeDestroy() {
-    if (typeof window === "undefined") return
-    window.removeEventListener("resize", this._onResize)
-  },
-  methods: {
-    /**
-     * Updates `isMobile` depending on current viewport width.
-     */
-    _checkIsMobile() {
-      this.isMobile = window.matchMedia(
-        `(max-width: ${this.maxWidth}px)`,
-      ).matches
-    },
-  },
   computed: {
+    ...mapGetters("system", ["sidebarOpen", "isMobile"]),
     /**
      * Returns true if a named slot "desktop" has been provided.
      */

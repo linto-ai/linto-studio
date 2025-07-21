@@ -51,6 +51,10 @@ export default {
   methods: {
     ...mapActions("user", ["fetchUser"]),
     ...mapActions("organizations", ["fetchOrganizations"]),
+    ...mapActions("system", ["setIsMobile"]),
+    _checkIsMobile() {
+      this.setIsMobile(window.matchMedia(`(max-width: ${1100}px)`).matches)
+    },
   },
   computed: {
     ...mapGetters("user", { user: "getUserInfos" }),
@@ -84,7 +88,11 @@ export default {
     //   type: "success",
     //   timeout: 5000,
     // })
-
+    this._checkIsMobile()
+    this._onResize = () => {
+      window.requestAnimationFrame(this._checkIsMobile)
+    }
+    window.addEventListener("resize", this._onResize, { passive: true })
     // keep compatibility with old notification system (don't use bus for new notifications)
     bus.$on("app_notif", (data) => {
       this.$store.dispatch("system/addNotification", {

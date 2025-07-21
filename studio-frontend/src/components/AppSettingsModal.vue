@@ -164,6 +164,7 @@ export default {
     ...mapGetters("organizations", {
       currentOrganization: "getCurrentOrganization",
     }),
+    ...mapGetters("system", ["isMobile"]),
     isModalOpen: {
       get() {
         return this.$store.state.settings.isModalOpen
@@ -176,7 +177,7 @@ export default {
       return this.user.firstname + " " + this.user.lastname
     },
     computedSize() {
-      if (window.innerWidth < 1100) {
+      if (this.isMobile) {
         return "screen"
       }
       return "lg"

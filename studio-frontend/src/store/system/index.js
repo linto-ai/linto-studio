@@ -1,3 +1,5 @@
+import IsMobile from "../../components/atoms/IsMobile.vue"
+
 const state = {
   /**
    * Notifications are used to display messages to the user.
@@ -15,6 +17,7 @@ const state = {
    * @default undefined - undefined means that the sidebar is not initialized yet (see beforeMount in v2-layout.vue)
    */
   sidebarOpen: undefined,
+  isMobile: undefined,
 }
 
 const mutations = {
@@ -22,10 +25,10 @@ const mutations = {
     // Add unique ID and default values
     const notificationWithDefaults = {
       id: Date.now() + Math.random(),
-      type: 'info',
+      type: "info",
       timeout: 5000,
       closable: true,
-      ...notification
+      ...notification,
     }
     state.notifications.push(notificationWithDefaults)
   },
@@ -40,6 +43,9 @@ const mutations = {
   },
   toggleSidebar(state) {
     state.sidebarOpen = !state.sidebarOpen
+  },
+  setIsMobile(state, isMobile) {
+    state.isMobile = isMobile
   },
 }
 
@@ -58,25 +64,35 @@ const actions = {
   },
   // Helper actions for different notification types
   showSuccess({ commit }, message) {
-    commit("addNotification", { message, type: 'success' })
+    commit("addNotification", { message, type: "success" })
   },
   showError({ commit }, message) {
-    commit("addNotification", { message, type: 'error', timeout: 0, closable: true })
+    commit("addNotification", {
+      message,
+      type: "error",
+      timeout: 0,
+      closable: true,
+    })
   },
   showWarning({ commit }, message) {
-    commit("addNotification", { message, type: 'warning' })
+    commit("addNotification", { message, type: "warning" })
   },
   showInfo({ commit }, message) {
-    commit("addNotification", { message, type: 'info' })
+    commit("addNotification", { message, type: "info" })
   },
   toggleSidebar({ commit }) {
     commit("toggleSidebar")
+  },
+  setIsMobile({ commit }, isMobile) {
+    commit("setIsMobile", isMobile)
   },
 }
 
 const getters = {
   notifications: (state) => state.notifications,
   sidebarOpen: (state) => state.sidebarOpen,
+  isMobile: (state) => state.isMobile,
+  isDesktop: (state) => !state.isMobile,
 }
 
 export default {
