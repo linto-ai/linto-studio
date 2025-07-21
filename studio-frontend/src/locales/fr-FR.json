@@ -280,7 +280,7 @@
       "change_speaker_button": "Affecter un autre locuteur à ce tour de parole",
       "create_speaker_button": "Créer un nouveau locuteur",
       "create_speaker_label": "Nom du locuteur",
-      "edit_speaker_button": "Modifier le locuteur",
+      "edit_speaker_button": "Renommer le locuteur",
       "edit_speaker_label": "Nom du locuteur",
       "merge_speaker_button": "Fusionner \"{name}\" avec un autre locuteur"
     },

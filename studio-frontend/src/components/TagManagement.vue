@@ -8,7 +8,11 @@
         <li v-for="tag in tags" :key="`tags-list-item--${tag._id}`">
           <!-- <Avatar :material-color="tag.color" :size="54" :emoji="tag.emoji" /> -->
           <span class="tags-list__data">
-            <div class="flex gap-small align-bottom">
+            <div class="flex gap-small align-center">
+              <EmojiPicker
+                :value="tag.emoji"
+                @input="onEmojiChange($event, tag)" />
+
               <ColorPicker
                 :value="tag.color"
                 @input="onColorChange($event, tag)" />
@@ -79,17 +83,18 @@
 <script>
 import { mapState } from "vuex"
 import MediaExplorerFormTag from "@/components/MediaExplorerFormTag.vue"
-import Alert from "./atoms/Alert.vue"
-import ChipTag from "./atoms/ChipTag.vue"
-import ColorPicker from "./molecules/ColorPicker.vue"
-import TagManagementDescriptionLine from "./TagManagementDescriptionLine.vue"
-
+import Alert from "@/components/atoms/Alert.vue"
+import ChipTag from "@/components/atoms/ChipTag.vue"
+import ColorPicker from "@/components/molecules/ColorPicker.vue"
+import TagManagementDescriptionLine from "@/components/TagManagementDescriptionLine.vue"
+import EmojiPicker from "@/components/molecules/EmojiPicker.vue"
 export default {
   name: "TagManagement",
   components: {
     MediaExplorerFormTag,
     ColorPicker,
     TagManagementDescriptionLine,
+    EmojiPicker,
   },
   computed: {
     ...mapState("tags", {
@@ -151,6 +156,13 @@ export default {
       this.modalTagEdit = {
         ...tag,
         color,
+      }
+      this.onTagEdit()
+    },
+    onEmojiChange(emoji, tag) {
+      this.modalTagEdit = {
+        ...tag,
+        emoji,
       }
       this.onTagEdit()
     },

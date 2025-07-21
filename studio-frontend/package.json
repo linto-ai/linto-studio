@@ -43,6 +43,7 @@
   "dependencies": {
     "@codemirror/lang-markdown": "^6.3.2",
     "@codemirror/language-data": "^6.5.1",
+    "@joeattardi/emoji-button": "^4.6.4",
     "@linto-ai/webvoicesdk": "github:linto-ai/WebVoiceSDK",
     "@tiptap/core": "^2.11.5",
     "@tiptap/extension-table": "^2.11.5",
@@ -85,7 +86,6 @@
     "v-click-outside": "^3.2.0",
     "vue": "^2.7.13",
     "vue-color": "^2.8.1",
-    "vue-emoji-picker": "^1.0.3",
     "vue-fragment": "^1.6.0",
     "vue-router": "^3.1.6",
     "vue-template-compiler": "^2.7.13",

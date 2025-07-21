@@ -107,7 +107,7 @@ export default {
     },
     minWidth: {
       type: Number,
-      default: 300,
+      default: 600,
     },
     maxWidth: {
       type: Number,
