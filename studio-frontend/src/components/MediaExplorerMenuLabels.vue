@@ -1,22 +1,22 @@
 <template>
-  <div class="media-explorer-menu-labels">
+  <div class="media-explorer-menu-labels" v-if="orderedTags.length > 0">
     <hr />
     <div class="title">
       {{ $t("navigation.tabs.tags") }}
     </div>
     <nav>
       <div v-if="orderedTags.length === 0" class="no-tags">
-        <p>
-          {{ $t("manage_tags.no_tags") }} -
-          <a @click="showModalTagManagement = true">{{
-            $t("manage_tags.create_tag")
-          }}</a>
-
-          <MediaExplorerFormTag
-            v-model="showModalTagManagement"
-            @submit="handleTagSubmit"
-            @cancel="handleTagCancel" />
-        </p>
+        <!-- <p>
+          {{ $t("manage_tags.no_tags") }}
+        </p> -->
+        <!-- <p>
+          <Button
+            :label="$t('manage_tags.create_tag')"
+            @click="openSettingsModal"
+            size="xs"
+            color="neutral"
+            variant="outline"></Button>
+        </p> -->
       </div>
       <ul>
         <li v-for="tag in orderedTags" :key="tag._id">
@@ -125,6 +125,9 @@ export default {
       } else {
         this.$store.dispatch("tags/fetchTags")
       }
+    },
+    openSettingsModal() {
+      this.$store.dispatch("settings/setModalOpen", true)
     },
   },
 }
