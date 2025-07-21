@@ -1,5 +1,8 @@
 <template>
-  <div class="emoji-picker-container" ref="emojiPicker-container">
+  <div
+    class="emoji-picker-container"
+    ref="emojiPicker-container"
+    v-click-outside="closeEmojiPicker">
     <Button
       class="neutral outline icon-only"
       ref="emojiPicker-button"
@@ -25,9 +28,23 @@ export default {
   data() {
     return {
       picker: null,
+      domElementWithListener: [],
     }
   },
-  mounted() {},
+  mounted() {
+    if (document.getElementsByClassName("modal")) {
+      Array.from(document.getElementsByClassName("modal")).forEach((el) => {
+        el.addEventListener("click", this.closeEmojiPicker)
+        this.domElementWithListener.push(el)
+      })
+    }
+  },
+  beforeDestroy() {
+    this.domElementWithListener.forEach((el) => {
+      el.removeEventListener("click", this.closeEmojiPicker)
+    })
+    if (this.picker) this.picker.destroyPicker()
+  },
   methods: {
     openEmojiPicker(e) {
       if (!this.picker) {
@@ -42,6 +59,11 @@ export default {
 
       this.picker.togglePicker(this.$refs["emojiPicker-button"].$el)
     },
+    closeEmojiPicker(e) {
+      if (e && e.target.closest(".emoji-picker-container")) return
+      if (!this.picker) return
+      this.picker.hidePicker()
+    },
   },
   components: {},
 }
@@ -54,5 +76,12 @@ export default {
 
 .emoji-picker__wrapper {
   z-index: 2;
+}
+
+button.emoji-picker__category-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: unset;
 }
 </style>
