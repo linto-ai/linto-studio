@@ -2,6 +2,7 @@ const debug = require("debug")(
   "linto:conversation-manager:models:mongodb:models:tags",
 )
 const MongoModel = require(`../model`)
+const COLOR = require(`${process.cwd()}/lib/dao/organization/color`)
 
 const moment = require("moment")
 
@@ -37,6 +38,7 @@ class TagModel extends MongoModel {
 
       const tags = process.env.DEFAULT_TAGS.split(",").map((tag) => ({
         name: tag,
+        color: COLOR.getRandomColor(),
         description: "",
         organizationId: this.getObjectId(organizationId),
         categoryId: this.getObjectId(categoryId),

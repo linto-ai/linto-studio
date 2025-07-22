@@ -1,156 +1,90 @@
-const MATERIAL_COLORS = [
-  "deep-purple",
-  "indigo",
-  "blue",
-  "light-blue",
-  "cyan",
-  "teal",
-  "green",
-  "light-green",
-  "lime",
-  "yellow",
-  "amber",
-  "orange",
-  "deep-orange",
-]
+const debug = require("debug")("linto:migration:1.6.0:tags")
+const moment = require("moment")
+const model = require(`${process.cwd()}/lib/mongodb/models`)
+const MongoDriver = require(`${process.cwd()}/lib/mongodb/driver`)
 
-function getRandomColor() {
-  return MATERIAL_COLORS[Math.floor(Math.random() * MATERIAL_COLORS.length)]
+const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
+const COLOR = require(`${process.cwd()}/lib/dao/organization/color`)
+
+function excludeIds(organizations, scopeIds) {
+  const scopeSet = new Set(scopeIds)
+  return organizations.filter((id) => !scopeSet.has(id))
 }
 
 module.exports = {
   async up(db, client) {
-    const organizations = await db
-      .collection("organizations")
-      .find({})
-      .toArray()
-    for (const organization of organizations) {
-      console.log(`Migrating tags for organization ${organization.name}`)
-      const categories = await db
-        .collection("categories")
-        .find({
-          scopeId: organization._id.toString(),
-        })
-        .toArray()
-
-      const systemCategory = categories.find(
-        (category) => category.name === "system" && category.type === "system",
-      )
-      let systemCategoryId = systemCategory?._id
-      if (!systemCategory) {
-        const insertResult = await db.collection("categories").insertOne({
-          name: "system",
-          type: "system",
-          color: getRandomColor(),
-          scopeId: organization._id.toString(),
-          created: new Date(),
-          last_update: new Date(),
-        })
-        systemCategoryId = insertResult.insertedId
-        console.log(
-          `Created system category for organization ${organization.name}`,
-        )
-      } else {
-        console.log(
-          `System category already exists for organization ${organization.name}`,
-        )
-      }
-
-      const tagsCategory = categories.find(
-        (category) => category.name === "tags" && category.type === "system",
-      )
-      let tagsCategoryId = tagsCategory?._id
-      if (!tagsCategory) {
-        const insertResult = await db.collection("categories").insertOne({
-          name: "tags",
-          type: "system",
-          color: getRandomColor(),
-          scopeId: organization._id.toString(),
-          parentId: systemCategoryId,
-          created: new Date(),
-          last_update: new Date(),
-        })
-        tagsCategoryId = insertResult.insertedId
-        console.log(
-          `Created tags category for organization ${organization.name}`,
-        )
-      } else {
-        console.log(
-          `Tags category already exists for organization ${organization.name}`,
-        )
-        // update the tags category to be a system category
-        await db.collection("categories").updateOne(
-          { _id: tagsCategoryId },
-          {
-            $set: {
-              type: "system",
-              scopeId: organization._id.toString(),
-              parentId: systemCategoryId,
-            },
-          },
-        )
-      }
-
-      // For each tags,
-      // set the tags.categoryId to the tagsCategoryId
-      // set random color to tags.color
-      // if a tag was in a previous category, set tags.description = previous category name
-      const tags = await db
-        .collection("tags")
-        .find({
-          $or: [
+    const categories =
+      // We search for categories that have the system tag to remove them from the process list
+      (
+        await db
+          .collection("categories")
+          .aggregate([
             {
-              organizationId: organization._id,
+              $group: {
+                _id: "$scopeId",
+                hasSystemCategory: {
+                  $max: {
+                    $cond: [
+                      {
+                        $and: [
+                          { $eq: ["$name", TYPE.default().name] },
+                          { $eq: ["$type", TYPE.default().type] },
+                        ],
+                      },
+                      1,
+                      0,
+                    ],
+                  },
+                },
+              },
             },
             {
-              organizationId: organization._id.toString(),
+              $match: {
+                hasSystemCategory: 1,
+              },
             },
-          ],
-        })
-        .toArray()
-      let memCategories = new Map()
+          ])
+          .toArray()
+      ).map((categorie) => categorie._id)
 
+    const organizations = (
+      await db.collection("organizations").find({}).toArray()
+    ).map((orga) => orga._id.toString())
+
+    const reduceOrganizations = excludeIds(organizations, categories)
+    const migrationDate = moment().format()
+
+    for (const scopeId of reduceOrganizations) {
+      const insertResult = await db.collection("categories").insertOne({
+        name: "tags",
+        type: TYPE.SYSTEM,
+        color: COLOR.getRandomColor(),
+        scopeId: scopeId,
+        created: migrationDate,
+        last_update: migrationDate,
+      })
+
+      const systemCategoryId = insertResult.insertedId
+
+      const categoriesOrga = await model.categories.getByScope(scopeId)
+      const listCategories = categoriesOrga.map((item) => item._id.toString())
+      const listCategoriesObject = categoriesOrga.map((item) => item._id)
+
+      const combined = [...listCategories, ...listCategoriesObject]
+      const tags = await model.tags.getTagByCategoryList(combined)
+
+      const memCategories = new Map(
+        categoriesOrga.map((category) => [category._id.toString(), category]),
+      )
       for (const tag of tags) {
-        let previousCategory = memCategories.get(tag.categoryId)
-        if (!previousCategory) {
-          previousCategory = await db
-            .collection("categories")
-            .findOne({ _id: tag.categoryId })
-        }
-
-        if (previousCategory) {
-          memCategories.set(tag.categoryId, previousCategory)
-          await db.collection("tags").updateOne(
-            { _id: tag._id },
-            {
-              $set: {
-                description: previousCategory.name,
-                color: getRandomColor(),
-                categoryId: tagsCategoryId,
-              },
-            },
-          )
-          console.log(
-            `Updated tag ${tag.name} for organization ${organization.name}`,
-          )
-          console.log(
-            `Tag ${tag.name} was in category ${previousCategory.name}`,
-          )
-        } else {
-          await db.collection("tags").updateOne(
-            { _id: tag._id },
-            {
-              $set: {
-                description: tag.name,
-                color: getRandomColor(),
-                categoryId: tagsCategoryId,
-              },
-            },
-          )
-          console.log(
-            `Updated tag ${tag.name} for organization ${organization.name}`,
-          )
-        }
+        const cachedCategory = memCategories.get(tag.categoryId.toString())
+        await model.tags.update({
+          _id: tag._id,
+          description: cachedCategory ? cachedCategory.name : "",
+          color: COLOR.getRandomColor(),
+          categoryId: systemCategoryId,
+          organizationId: new MongoDriver.constructor.mongoDb.ObjectId(scopeId),
+        })
       }
     }
   },

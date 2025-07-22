@@ -3,11 +3,13 @@ const debug = require("debug")(
 )
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
+const COLOR = require(`${process.cwd()}/lib/dao/organization/color`)
 
 const DEFAULT_PERMISSION = require(
   `${process.cwd()}/lib/dao/organization/permissions`,
 ).getDefaultPermissions()
 const MongoModel = require(`../model`)
+
 const categoriesModel = require(`./categories`)
 const tagsModel = require(`./tags`)
 
@@ -46,34 +48,21 @@ class OrganizationModel extends MongoModel {
 
   async createOrganizationSystemCategories(organizationId) {
     try {
-      const systemCategory = await categoriesModel.create({
-        color: "#000000",
-        name: "system",
-        scopeId: organizationId,
-        type: TYPE.SYSTEM,
-      })
-
       const labelsCategory = await categoriesModel.create({
-        color: "#000000",
+        color: COLOR.getRandomColor(),
         name: "labels",
         scopeId: organizationId,
         type: TYPE.SYSTEM,
-        parentId: systemCategory.insertedId.toString(),
       })
       const tagsCategory = await categoriesModel.create({
-        color: "#000000",
+        color: COLOR.getRandomColor(),
         name: "tags",
         scopeId: organizationId,
         type: TYPE.SYSTEM,
-        parentId: systemCategory.insertedId.toString(),
       })
+      await tagsModel.createDefaultTags(organizationId, tagsCategory.insertedId)
 
-      await tagsModel.createDefaultTags(
-        organizationId,
-        tagsCategory.insertedId.toString(),
-      )
-
-      return { systemCategory, labelsCategory, tagsCategory }
+      return { labelsCategory, tagsCategory }
     } catch (error) {
       console.error(error)
       return error
@@ -98,13 +87,13 @@ class OrganizationModel extends MongoModel {
       const result = await this.mongoInsert(payload)
 
       // When a new organization is created, we create the main category "system"
-      const { systemCategory, labelsCategory, tagsCategory } =
+      const { labelsCategory, tagsCategory } =
         await this.createOrganizationSystemCategories(
           result.insertedId.toString(),
         )
 
       // We add the default categories to the organization
-      result.categories = [systemCategory, labelsCategory, tagsCategory]
+      result.categories = [labelsCategory, tagsCategory]
 
       return result
     } catch (error) {

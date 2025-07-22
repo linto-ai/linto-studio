@@ -21,6 +21,12 @@ const TYPE = Object.freeze({
         return false
     }
   },
+  default: () => {
+    return {
+      name: "tags",
+      type: TYPE.SYSTEM,
+    }
+  },
 })
 
 module.exports = TYPE
