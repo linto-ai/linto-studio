@@ -68,12 +68,27 @@
           <h4 class="section-title">{{ $t("media_explorer.panel.tags") }}</h4>
           <div class="tags-container">
             <InputSelector
+              v-if="!isTagManagementReadOnly"
               mode="tags"
               :tags="getTags"
               :selected-tags="selectedMediaTags"
               @create="handleCreateTag"
               @remove="handleRemoveTag"
               @add="handleAddTag" />
+            <div
+              v-else
+              class="tags-readonly">
+              <ChipTag
+                v-for="tag in selectedMediaTags"
+                :key="tag._id"
+                :name="tag.name"
+                :color="tag.color" />
+              <span
+                v-if="selectedMediaTags.length === 0"
+                class="no-tags-message">
+                {{ $t("media_explorer.panel.no_tags") }}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -92,6 +107,22 @@
             </div>
           </div>
         </div>
+
+        <!-- Actions section -->
+        <div class="media-section">
+          <h4 class="section-title">{{ $t("actions") }}</h4>
+          <div class="actions-container">
+            <Button
+              @click="handleDownload"
+              :loading="downloadLoading"
+              icon="download"
+              variant="outline"
+              size="sm"
+              class="download-button">
+              {{ downloadLoading ? $t('media_explorer.panel.downloading') : $t('media_explorer.panel.download_media') }}
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -105,6 +136,8 @@
 <script>
 import TimeDuration from "@/components/atoms/TimeDuration.vue"
 import InputSelector from "@/components/atoms/InputSelector.vue"
+import ChipTag from "@/components/atoms/ChipTag.vue"
+import Button from "@/components/atoms/Button.vue"
 import ModalDeleteConversations from "./ModalDeleteConversations.vue"
 import { mediaExplorerRightPanelMixin } from "@/mixins/mediaExplorerRightPanel.js"
 
@@ -114,6 +147,8 @@ export default {
   components: {
     TimeDuration,
     InputSelector,
+    ChipTag,
+    Button,
     ModalDeleteConversations,
   },
   props: {
@@ -125,6 +160,7 @@ export default {
   data() {
     return {
       showDeleteModal: false,
+      downloadLoading: false,
     }
   },
   computed: {
@@ -142,19 +178,54 @@ export default {
   },
   methods: {
     async handleCreateTag(tag) {
+      if (this.isTagManagementReadOnly) return
       await this.createAndAddTag(tag, this.selectedMedia._id)
     },
 
     async handleRemoveTag(tag) {
+      if (this.isTagManagementReadOnly) return
       await this.removeTagFromMedia(tag, this.selectedMedia._id)
     },
 
     async handleAddTag(tag) {
+      if (this.isTagManagementReadOnly) return
       await this.addTagToMedia(tag, this.selectedMedia._id)
     },
 
     handleDelete() {
       this.showDeleteModal = true
+    },
+
+    async handleDownload() {
+      if (this.downloadLoading || !this.selectedMedia) return
+
+      this.downloadLoading = true
+      
+      try {
+        const success = await this.downloadMediaFile(this.selectedMedia)
+        
+        if (success) {
+          // Show success notification
+          this.$store.dispatch('system/addNotification', {
+            type: 'success',
+            message: this.$t('media_explorer.panel.download_success')
+          })
+        } else {
+          // Show error notification
+          this.$store.dispatch('system/addNotification', {
+            type: 'error',
+            message: this.$t('media_explorer.panel.download_error')
+          })
+        }
+      } catch (error) {
+        console.error('Download error:', error)
+        this.$store.dispatch('system/addNotification', {
+          type: 'error',
+          message: this.$t('media_explorer.panel.download_error')
+        })
+      } finally {
+        this.downloadLoading = false
+      }
     },
   },
 }
@@ -207,6 +278,18 @@ export default {
   gap: 0.5rem;
 }
 
+.tags-readonly {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.no-tags-message {
+  font-size: 0.875rem;
+  color: var(--text-secondary, #666);
+  font-style: italic;
+}
+
 .metadata-grid {
   display: flex;
   flex-direction: column;
@@ -232,5 +315,11 @@ export default {
   font-size: 0.9rem;
   color: var(--text-primary, #000);
   word-break: break-word;
+}
+
+.actions-container {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 </style>

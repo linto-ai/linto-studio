@@ -185,7 +185,7 @@ export default {
 .media-explorer-header {
   position: sticky;
   top: 0;
-  z-index: 50; /* over right panel */
+  z-index: 5;
   background-color: var(--primary-soft, #f8f9fa);
   border-bottom: var(--border-block, 1px solid #e0e0e0);
   transition: box-shadow 0.2s ease-in-out;

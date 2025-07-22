@@ -1,4 +1,5 @@
 {
+  "actions": "Actions",
   "accoustic": {
     "standard": "Standard"
   },
@@ -532,7 +533,12 @@
     "no_media_title": "Votre collection de médias favoris est vide",
     "no_media_subtitle": "Ajoutez des favoris en cliquant sur l'étoile dans la liste des médias."
   },
-  "footer": "LinTO {linto_logo} par {linagora_logo}",
+  "footer": {
+    "powered_by": "LinTO {linto_logo} par {linagora_logo}",
+    "contact": "Contact",
+    "legal_notice": "Mentions légales",
+    "privacy_policy": "Politique de confidentialité"
+  },
   "global": {
     "disabled": "Inactif",
     "enabled": "Actif",
@@ -666,7 +672,17 @@
       "bulk_actions": "Actions groupées",
       "manage_tags": "Gérer les thématiques",
       "add_tag_to_all": "Ajouter une thématique",
-      "common_tags": "Thématiques communes"
+      "common_tags": "Thématiques communes",
+      "no_tags": "Aucune thématique",
+      "no_common_tags": "Aucune thématique commune",
+      "download_media": "Télécharger le média",
+      "download_selected": "Télécharger la sélection",
+      "downloading": "Téléchargement en cours...",
+      "download_success": "Téléchargement réussi",
+      "download_error": "Erreur lors du téléchargement",
+      "download_multiple_success": "{count} médias téléchargés avec succès",
+      "download_multiple_partial": "{success} médias téléchargés sur {total}",
+      "download_multiple_error": "Erreur lors du téléchargement des médias"
     },
     "bulk_export": "Exporter la sélection",
     "end_of_results": "Fin des résultats",

@@ -95,6 +95,7 @@
               v-if="(selectedMediaForOverview || selectedMedias.length > 1) && currentOrganizationScope"
               :selected-media="reactiveSelectedMediaForOverview"
               :currentOrganizationScope="currentOrganizationScope"
+              :readonly-tags="readonlyTags"
               @close="closeRightPanel"
               @resize="handleRightPanelResize" />
           </template>
@@ -183,6 +184,11 @@ export default {
     totalItemsCount: {
       type: Number,
       default: null,
+    },
+    // Read-only mode for tags (favorites/shared views)
+    readonlyTags: {
+      type: Boolean,
+      default: false,
     },
   },
   computed: {

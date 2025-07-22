@@ -533,7 +533,12 @@
     "no_media_title": "Your favorite media collection is empty",
     "no_media_subtitle": "Add favorite media by clicking on the star icon on the media card."
   },
-  "footer": "LinTO {linto_logo} by {linagora_logo}",
+  "footer": {
+    "powered_by": "LinTO {linto_logo} by {linagora_logo}",
+    "contact": "Contact",
+    "legal_notice": "Legal notice",
+    "privacy_policy": "Privacy policy"
+  },
   "global": {
     "disabled": "disabled",
     "enabled": "enabled",
@@ -660,7 +665,17 @@
       "bulk_actions": "Bulk Actions",
       "manage_tags": "Manage topics",
       "add_tag_to_all": "Assign topic",
-      "common_tags": "Common topics"
+      "common_tags": "Common topics",
+      "no_tags": "No tags",
+      "no_common_tags": "No common tags",
+      "download_media": "Download media",
+      "download_selected": "Download selection",
+      "downloading": "Downloading...",
+      "download_success": "Download successful",
+      "download_error": "Download error",
+      "download_multiple_success": "{count} medias downloaded successfully",
+      "download_multiple_partial": "{success} medias downloaded out of {total}",
+      "download_multiple_error": "Error downloading medias"
     },
     "bulk_export": "Export selection",
     "end_of_results": "End of results",

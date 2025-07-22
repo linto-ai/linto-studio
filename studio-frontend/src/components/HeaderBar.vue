@@ -1,7 +1,7 @@
 <template>
   <div class="flex align-center header-bar">
     <Button
-      :icon="sidebarOpen ? 'arrow-line-right' : 'arrow-line-left'"
+      :icon="sidebarOpen ? 'arrow-line-left' : 'arrow-line-right'"
       border-color="transparent"
       color="neutral"
       @click.stop="toggleSidebar"

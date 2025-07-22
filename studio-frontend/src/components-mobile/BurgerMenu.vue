@@ -8,9 +8,7 @@
         <ActionConversationCreate />
       </div> -->
 
-      <MediaExplorerMenu
-        :organizationId="currentOrganization._id"
-        v-if="!backoffice" />
+      <MediaExplorerMenu :organizationId="currentOrganization._id" v-if="!backoffice" />
 
       <MediaExplorerMenuLabels v-if="isInbox" />
 
@@ -19,21 +17,34 @@
       <slot></slot>
     </div>
     <div class="flex col">
-      <ButtonRoller
-        v-if="isAtLeastUploader"
-        @click="startConversation"
-        :label="$t('navigation.conversation.start')"
-        color="primary"
-        class="start-button" />
+      <ButtonRoller v-if="isAtLeastUploader" @click="startConversation" :label="$t('navigation.conversation.start')"
+        color="primary" class="start-button" />
       <cloud-card-credits />
-      <i18n tag="footer" class="main-footer" path="footer">
-        <template v-slot:linto_logo>
-          <img src="/img/linto.svg" alt="LinTO" />
-        </template>
-        <template v-slot:linagora_logo>
-          <img src="/img/linagora.png" alt="Linagora" />
-        </template>
-      </i18n>
+      <div class="main-footer-container">
+        <footer class="main-footer">
+          <div class="main-footer__powered-by">
+            <i18n path="footer.powered_by">
+              <template v-slot:linto_logo>
+                <a href="https://linto.ai" target="_blank" rel="noopener noreferrer" class="footer-logo-link">
+                  <img src="/img/linto.svg" alt="LinTO" />
+                </a>
+              </template>
+              <template v-slot:linagora_logo>
+                <a href="https://linagora.com" target="_blank" rel="noopener noreferrer" class="footer-logo-link">
+                  <img src="/img/linagora.png" alt="Linagora" />
+                </a>
+              </template>
+            </i18n>
+          </div>
+          <div class="main-footer__links">
+            <a href="mailto:contact@linto.ai" class="footer-link">{{ $t('footer.contact') }}</a>
+            <a href="https://linto.ai/legal" target="_blank" rel="noopener noreferrer" class="footer-link">{{
+              $t('footer.legal_notice') }}</a>
+            <a href="https://linto.ai/privacy" target="_blank" rel="noopener noreferrer" class="footer-link">{{
+              $t('footer.privacy_policy') }}</a>
+          </div>
+        </footer>
+      </div>
     </div>
   </nav>
 </template>
@@ -65,7 +76,7 @@ export default {
   data() {
     return {}
   },
-  mounted() {},
+  mounted() { },
   methods: {
     logout() {
       logout()
@@ -115,7 +126,7 @@ export default {
 
       return inboxPages.includes(this.$route.name)
     },
-    imgUrl() {},
+    imgUrl() { },
     mainListingPage() {
       return this.$route.meta?.mainListingPage
     },
@@ -151,7 +162,7 @@ export default {
     box-shadow: var(--shadow-block);
     border-bottom: var(--border-block);
 
-    & > * {
+    &>* {
       flex: 1;
     }
   }
@@ -162,7 +173,8 @@ export default {
     align-items: center;
     border-bottom: var(--border-block);
     height: 54px;
-    & > * {
+
+    &>* {
       flex: 1;
     }
   }
@@ -200,19 +212,76 @@ export default {
   }
 
   .main-footer {
-    // display: flex;
-    padding: 0.5rem 1rem;
+    padding: 1rem;
     background-color: var(--primary-soft);
     border-top: 1px solid var(--neutral-40);
+    border-radius: 8px 8px 0 0;
 
-    img {
-      height: 1.5em;
+    &__powered-by {
+      text-align: center;
+      margin-bottom: 0.75rem;
+      font-size: 0.875rem;
+      color: var(--neutral-70);
+
+      * {
+        display: inline-block;
+        vertical-align: middle;
+        margin: 0 0.25rem;
+      }
+
+      img {
+        height: 1.5em;
+        transition: transform 0.2s ease;
+      }
     }
 
-    * {
-      display: inline-block;
-      vertical-align: middle;
-      margin-right: 0.25rem;
+    &__links {
+      display: flex;
+      justify-content: center;
+      gap: .2rem;
+      flex-wrap: wrap;
+    }
+  }
+
+  .footer-logo-link {
+    display: inline-block;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+
+    &:hover {
+      transform: scale(1.1);
+      opacity: 0.8;
+    }
+
+    &:focus {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+  }
+
+  .footer-link {
+    color: var(--neutral-70);
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      color: var(--primary);
+      background-color: rgba(var(--primary-rgb), 0.1);
+      text-decoration: none;
+    }
+
+    &:focus {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+      color: var(--primary);
+    }
+
+    &:active {
+      transform: translateY(1px);
     }
   }
 }

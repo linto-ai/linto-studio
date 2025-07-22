@@ -219,6 +219,7 @@ export default {
       currentIcon: null,
       isEasterEgg: false,
       rollCount: 0,
+      spinTimeout: null,
     }
   },
   computed: {
@@ -295,6 +296,10 @@ export default {
         classes.push("active")
       }
 
+      if (this.isSpinning) {
+        classes.push("spinning")
+      }
+
       return classes
     },
     styles() {
@@ -308,11 +313,17 @@ export default {
   },
   methods: {
     handleMouseEnter() {
+      if (this.isSpinning) return // Prevent multiple spins
       this.isHovered = true
       this.spin()
     },
     handleMouseLeave() {
       this.isHovered = false
+      // Clear any pending timeout
+      if (this.spinTimeout) {
+        clearTimeout(this.spinTimeout)
+        this.spinTimeout = null
+      }
       if (!this.isSpinning) {
         this.showPlus()
       }
@@ -330,7 +341,10 @@ export default {
       await this.$nextTick()
 
       const iconContainer = this.$refs.iconContainer
-      if (!iconContainer) return
+      if (!iconContainer) {
+        this.isSpinning = false
+        return
+      }
 
       const slotHeight = iconContainer.clientHeight
       const loops = 1
@@ -338,7 +352,10 @@ export default {
       const distance = (loops * this.rollerIcons.length + stopAt) * slotHeight
 
       const reel = this.$refs.reel
-      if (!reel) return
+      if (!reel) {
+        this.isSpinning = false
+        return
+      }
 
       // Set initial position
       reel.style.transition = "none"
@@ -351,8 +368,9 @@ export default {
       reel.style.transform = `translateY(-${distance}px)`
 
       // Handle animation end
-      setTimeout(() => {
+      this.spinTimeout = setTimeout(() => {
         this.isSpinning = false
+        this.spinTimeout = null
 
         // Check for easter egg
         const isEaster = this.rollCount % this.easterEggFrequency === 0
@@ -370,6 +388,12 @@ export default {
         }
       }, this.spinDuration)
     },
+  },
+  beforeDestroy() {
+    // Cleanup timeout if component is destroyed
+    if (this.spinTimeout) {
+      clearTimeout(this.spinTimeout)
+    }
   },
 }
 </script>
@@ -422,7 +446,7 @@ export default {
     }
   }
 
-  &:hover .roller-icon {
+  &:hover:not(.spinning) .roller-icon {
     transform: rotate(10deg) scale(1.1);
   }
 

@@ -10,6 +10,7 @@
       :search-value="search"
       :enable-pagination="true"
       :selected-tag-ids="selectedTagIds"
+      :readonly-tags="favorites || shared"
       @load-more="handleLoadMore"
       @search="handleSearch"
       class="explore-next__media-explorer relative">

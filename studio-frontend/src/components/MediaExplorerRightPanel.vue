@@ -62,12 +62,14 @@
       <!-- Multi-selection mode -->
       <MediaExplorerRightPanelMulti
         v-if="isMultiMode"
-        :currentOrganizationScope="currentOrganizationScope" />
+        :currentOrganizationScope="currentOrganizationScope"
+        :readOnlyTags="readonlyTags" />
 
       <!-- Single media mode -->
       <MediaExplorerRightPanelItem
         v-else-if="selectedMediaForOverview"
-        :selectedMedia="selectedMediaForOverview" />
+        :selectedMedia="selectedMediaForOverview"
+        :readOnlyTags="readonlyTags" />
     </div>
 
     <!-- Delete modal for single media -->
@@ -116,6 +118,10 @@ export default {
     currentOrganizationScope: {
       type: String,
       required: true,
+    },
+    readonlyTags: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
