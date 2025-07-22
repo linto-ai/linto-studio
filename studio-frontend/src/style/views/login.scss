@@ -133,3 +133,11 @@
 
 .single-message-error {
 }
+
+// mobile
+
+@media (max-width: 1100px) {
+  .login-page__content {
+    width: 100%;
+  }
+}

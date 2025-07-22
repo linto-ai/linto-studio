@@ -14,7 +14,17 @@
       <slot name="sidebar"></slot>
     </template>
     <slot></slot>
-    <Modal></Modal>
+    <!-- <Modal></Modal> -->
+
+    <Alert
+      type="warning"
+      visible
+      :showCancel="false"
+      :title="$t('conversation.websocket_error_title')"
+      :message="$t('conversation.websocket_error_content')"
+      :iconActionApply="null"
+      v-if="websocketError"
+      :closable="false"></Alert>
   </V2Layout>
   <div
     v-else-if="dataLoaded && status != 'done' && status != 'error'"
@@ -83,7 +93,16 @@ export default {
       default: () => [],
     },
   },
-  mounted() {},
+  data() {
+    return {
+      websocketError: false,
+    }
+  },
+  mounted() {
+    bus.$on("conversation_disconnected", () => {
+      this.websocketError = true
+    })
+  },
   methods: {},
   components: {
     Fragment,

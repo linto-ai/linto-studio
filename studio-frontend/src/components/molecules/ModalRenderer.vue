@@ -33,7 +33,9 @@
           color="primary"></ph-icon>
       </div>
       <div class="modal-body flex col flex1">
-        <v-node-renderer v-if="renderedDefaultSlots.length" :nodes="renderedDefaultSlots" />
+        <v-node-renderer
+          v-if="renderedDefaultSlots.length"
+          :nodes="renderedDefaultSlots" />
       </div>
       <div
         class="modal-footer flex row gap-small"
@@ -296,16 +298,28 @@ now, let's copy them over.
   &.lg {
     width: 940px;
     max-width: calc(100% - 4rem);
+
+    @media (max-width: 1100px) {
+      max-width: calc(100% - 1rem);
+    }
   }
 
   &.md {
     width: 640px;
     max-width: calc(100% - 4rem);
+
+    @media (max-width: 1100px) {
+      max-width: calc(100% - 1rem);
+    }
   }
 
   &.sm {
     width: 480px;
     max-width: calc(100% - 4rem);
+
+    @media (max-width: 1100px) {
+      max-width: calc(100% - 1rem);
+    }
   }
 
   &.screen {

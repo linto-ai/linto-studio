@@ -159,12 +159,7 @@ export const genericConversationMixin = {
             this.error = true
           case "disconnected":
             this.userRight = 0
-            bus.$emit("show_modal", {
-              title: this.$i18n.t("conversation.websocket_error_title"),
-              content: this.$i18n.t("conversation.websocket_error_content"),
-              actionBtnLabel: "ok",
-              cancelButton: false,
-            })
+            bus.$emit("conversation_disconnected")
             break
           case "conversation_loaded":
             this.conversation = event.data.params

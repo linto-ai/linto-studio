@@ -34,7 +34,7 @@
           class="modal-switch-org__list__item">
           <Avatar
             :text="org.name.slice(0, 1)"
-            size="sm"
+            :size="isMobile ? 'md' : 'sm'"
             class="modal-switch-org__list__item__avatar" />
           <div
             class="modal-switch-org__list__item__name flex flex1"
@@ -108,6 +108,7 @@ export default {
     ...mapGetters("user", {
       userInfo: "getUserInfos",
     }),
+    ...mapGetters("system", ["isMobile"]),
     isOpen: {
       get() {
         return this.value
@@ -150,6 +151,13 @@ export default {
         display: flex;
         align-items: center;
         gap: 0.5em;
+
+        text-overflow: ellipsis;
+
+        &__text {
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
 
         &.current {
           font-weight: bold;

@@ -27,7 +27,7 @@
             removable
             @remove="removeTag(tag)" />
         </Tooltip>
-        
+
         <!-- Overflow indicator for inline mode -->
         <div
           v-if="shouldDisplayInline && selectedTags.length > 2"
@@ -67,14 +67,19 @@
     <transition name="input-selector-dropdown">
       <div v-if="isOpen" class="input-selector__dropdown">
         <!-- Search mode: Always show search message first -->
-        <div 
-          v-if="mode === 'search'"
+        <div
+          v-if="mode === 'search' && searchQuery"
           class="input-selector__search-message"
-          :class="{ 'input-selector__search-message--highlighted': highlightedIndex === -1 }"
+          :class="{
+            'input-selector__search-message--highlighted':
+              highlightedIndex === -1,
+          }"
           @click="handleSearchSubmit"
           @mouseenter="highlightedIndex = -1">
           <ph-icon name="magnifying-glass" size="16" />
-          <span>{{ $t("input_selector.search_message", { keyword: searchQuery }) }}</span>
+          <span>{{
+            $t("input_selector.search_message", { keyword: searchQuery })
+          }}</span>
         </div>
 
         <!-- Filtered tags -->
@@ -108,7 +113,9 @@
 
         <!-- No results (only in tags mode) -->
         <div
-          v-else-if="mode === 'tags' && searchQuery && filteredTags.length === 0"
+          v-else-if="
+            mode === 'tags' && searchQuery && filteredTags.length === 0
+          "
           class="input-selector__no-results">
           {{ $t("input_selector.no_tags_found") }}
         </div>
@@ -205,7 +212,11 @@ export default {
   },
   computed: {
     shouldDisplayInline() {
-      return this.mode === "search" && this.selectedTags.length <= 5 && this.selectedTags.length > 0
+      return (
+        this.mode === "search" &&
+        this.selectedTags.length <= 5 &&
+        this.selectedTags.length > 0
+      )
     },
 
     effectivePlaceholder() {
@@ -364,7 +375,10 @@ export default {
 
     handleEnterKey() {
       // Priority 1: If we have a highlighted tag, select it
-      if (this.highlightedIndex >= 0 && this.filteredTags[this.highlightedIndex]) {
+      if (
+        this.highlightedIndex >= 0 &&
+        this.filteredTags[this.highlightedIndex]
+      ) {
         this.handleTagClick(this.filteredTags[this.highlightedIndex])
         return
       }
@@ -375,8 +389,6 @@ export default {
         return
       }
     },
-
-
 
     handleClickOutside(event) {
       if (!this.$el.contains(event.target)) {
@@ -512,7 +524,7 @@ export default {
 
     handleSearchSubmit() {
       const trimmedQuery = this.searchQuery.trim()
-      
+
       if (this.mode === "search") {
         this.$emit("search", trimmedQuery) // Allow empty searches
         this.close() // Close dropdown after search
@@ -592,7 +604,7 @@ export default {
       flex-direction: row;
       align-items: center;
       flex-wrap: nowrap;
-      
+
       .input-selector__tags {
         margin-right: 0.5rem;
         margin-bottom: 0;
@@ -603,7 +615,7 @@ export default {
         overflow-y: hidden;
         scrollbar-width: none;
         flex-wrap: nowrap;
-        
+
         &::-webkit-scrollbar {
           display: none;
         }
@@ -768,7 +780,7 @@ export default {
 
     &:hover,
     &--highlighted {
-      background: #f3f4f6;
+      background: var(--neutral-40);
     }
 
     &--selected {
@@ -853,7 +865,7 @@ export default {
 
     &:hover,
     &--highlighted {
-      background: #f3f4f6;
+      background: var(--neutral-40);
     }
 
     span {
@@ -891,7 +903,7 @@ export default {
         flex-wrap: nowrap !important;
         align-items: flex-start !important;
         padding: 0 !important;
-        
+
         .input-selector__tags {
           max-width: 100% !important;
           width: auto !important;
@@ -901,11 +913,11 @@ export default {
           overflow-x: auto;
           overflow-y: hidden;
           padding: 0.2em !important;
-          
+
           :deep(.chip-tag) {
             flex-shrink: 0;
             max-width: 120px;
-            
+
             .chip-tag__name {
               overflow: hidden;
               text-overflow: ellipsis;
@@ -913,7 +925,7 @@ export default {
             }
           }
         }
-        
+
         .input-selector__input-wrapper {
           flex: 1 !important;
           width: 100% !important;
@@ -922,7 +934,7 @@ export default {
           padding: 0.5rem !important;
           box-sizing: border-box !important;
         }
-        
+
         .input-selector__input {
           margin-top: 0 !important;
         }

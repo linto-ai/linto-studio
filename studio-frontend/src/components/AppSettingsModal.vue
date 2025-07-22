@@ -27,12 +27,12 @@
                 <span>{{ $t("app_settings_modal.notifications") }}</span>
               </a>
             </li>
-            <li :class="{ active: selectedTab === 'preferences' }">
+            <!-- <li :class="{ active: selectedTab === 'preferences' }">
               <a href="#" @click="selectTab('preferences')">
                 <ph-icon name="wrench" weight="bold"></ph-icon>
                 <span>{{ $t("app_settings_modal.preferences") }}</span>
               </a>
-            </li>
+            </li> -->
           </ul>
           <h4>{{ orgaName }}</h4>
 
@@ -412,9 +412,8 @@ export default {
       border-radius: 8px;
       border-top-left-radius: 8px;
       padding: 1rem;
-      height: calc(100vh - 20rem);
-      max-height: 60vh;
-      min-height: 300px;
+      height: auto;
+      overflow: visible;
     }
 
     &__user-info {
@@ -444,8 +443,6 @@ export default {
 
     &__section {
       padding: 0.75rem;
-      height: calc(100vh - 18rem);
-      max-height: 55vh;
     }
   }
 }

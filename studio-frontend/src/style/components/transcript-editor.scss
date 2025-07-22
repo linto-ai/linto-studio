@@ -243,23 +243,23 @@
       box-sizing: border-box;
       position: relative;
       align-self: baseline;
-      &:after {
-        display: none;
-        content: "";
-        width: 16px;
-        height: 16px;
-        position: absolute;
-        top: 4px;
-        right: 5px;
-        //@include maskImage("@/../public/img/triangle.svg");
-      }
+      // &:after {
+      //   display: none;
+      //   content: "";
+      //   width: 16px;
+      //   height: 16px;
+      //   position: absolute;
+      //   top: 4px;
+      //   right: 5px;
+      //   //@include maskImage("@/../public/img/triangle.svg");
+      // }
       &:hover {
         background-color: #e2e2e2;
         cursor: pointer;
-        &:after {
-          display: inline-block;
-          background-color: var(--text-primary);
-        }
+        // &:after {
+        //   display: inline-block;
+        //   background-color: var(--text-primary);
+        // }
       }
       &.active {
         background-color: var(--text-primary);

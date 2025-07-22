@@ -1,13 +1,13 @@
 <template>
-  <div class="flex gap-small flex1 align-center">
+  <div class="flex gap-small flex1 align-center user-account-selector">
     <Avatar :src="userAvatar" size="lg" />
     <div class="flex col flex1 gap-small">
       <span class="user-name">{{ UserName }}</span>
-      <div class="flex gap-small">
+      <div class="flex gap-small align-center">
         <Button
           @click="openOrganizationSelector"
           :label="orgaName"
-          size="xs"
+          :size="isMobile ? 'sm' : 'xs'"
           class="organization-name"></Button>
         <span class="user-role">{{ currentRoleToString }}</span>
       </div>
@@ -42,8 +42,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex"
-import { bus } from "@/main.js"
+import { mapGetters } from "vuex"
 
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
@@ -79,6 +78,7 @@ export default {
       currentOrganization: "getCurrentOrganization",
       currentOrganizationScope: "getCurrentOrganizationScope",
     }),
+    ...mapGetters("system", ["isMobile"]),
     UserName() {
       return userName(this.userInfo)
     },
@@ -110,55 +110,60 @@ export default {
 </script>
 
 <style lang="scss">
-.user-name {
-  font-weight: bold;
-}
-
 .user-account-selector {
-  position: relative;
-  display: block;
-}
+  .user-name {
+    font-weight: bold;
+  }
 
-.organization-name {
-  max-width: 10rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  padding: 0 0.25rem;
-  text-transform: capitalize;
-
-  .btn-prefix-label {
+  .organization-name {
+    max-width: 10rem;
     overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 0 0.25rem;
+    text-transform: capitalize;
 
-    .label {
+    @media (max-width: 1100px) {
+      padding: 0.15rem 0.5rem;
+    }
+
+    .btn-prefix-label {
       overflow: hidden;
-      text-overflow: ellipsis;
+
+      .label {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
   }
-}
 
-.organization-name:hover + .user-role {
-  animation-name: resize-and-hide;
-  animation-duration: 0.5s;
-  width: 0px;
-  overflow: hidden;
-}
-
-.user-role {
-  color: var(--text-secondary);
-  white-space: nowrap;
-}
-
-@keyframes resize-and-hide {
-  from {
-    width: auto;
-    overflow: visible;
-    opacity: 1;
-  }
-  to {
+  .organization-name:hover + .user-role {
+    animation-name: resize-and-hide;
+    animation-duration: 0.5s;
     width: 0px;
     overflow: hidden;
-    opacity: 0;
+  }
+
+  .user-role {
+    color: var(--text-secondary);
+    white-space: nowrap;
+
+    @media (max-width: 1100px) {
+      font-size: 0.9em;
+    }
+  }
+
+  @keyframes resize-and-hide {
+    from {
+      width: auto;
+      overflow: visible;
+      opacity: 1;
+    }
+    to {
+      width: 0px;
+      overflow: hidden;
+      opacity: 0;
+    }
   }
 }
 </style>

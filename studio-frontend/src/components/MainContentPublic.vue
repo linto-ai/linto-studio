@@ -1,6 +1,6 @@
 <template>
   <div class="flex login-page">
-    <div class="login-page__decoration flex col flex1">
+    <div class="login-page__decoration flex col flex1" v-if="!isMobile">
       <div
         class="login-page__decoration__header center-text flex col gap-small align-center">
         <img :src="logo" class="login-page__logo" />
@@ -49,6 +49,7 @@
 <script>
 import LocalSwitcher from "@/components/LocalSwitcher.vue"
 import { getEnv } from "@/tools/getEnv"
+import { mapActions, mapGetters } from "vuex"
 
 export default {
   props: {},
@@ -58,6 +59,7 @@ export default {
   mounted() {},
   methods: {},
   computed: {
+    ...mapGetters("system", ["isMobile"]),
     title() {
       return getEnv("VUE_APP_NAME")
     },

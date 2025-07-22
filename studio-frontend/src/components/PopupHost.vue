@@ -79,7 +79,11 @@ export default {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(1px);
+
+  @media (max-width: 1100px) {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
 }
 </style>

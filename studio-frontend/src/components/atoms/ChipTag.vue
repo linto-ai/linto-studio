@@ -29,7 +29,11 @@
         :style="{ color: colorText }">
         {{ currentName }}
       </span>
-      <ph-icon v-if="active" name="trash" color="var(--neutral-10)" />
+      <ph-icon
+        v-if="deletable"
+        name="trash"
+        color="var(--neutral-10)"
+        @click="$emit('remove')" />
       <Avatar
         v-if="count"
         class="chip-tag__count"
@@ -87,6 +91,10 @@ export default {
       default: "",
     },
     removable: {
+      type: Boolean,
+      default: false,
+    },
+    deletable: {
       type: Boolean,
       default: false,
     },

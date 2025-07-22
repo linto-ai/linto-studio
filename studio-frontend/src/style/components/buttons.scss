@@ -820,6 +820,8 @@
       font-size: inherit;
       position: relative;
       top: var(--text-vertical-center-offset);
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 

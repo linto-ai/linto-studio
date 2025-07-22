@@ -11,17 +11,18 @@
     :value="internalVisible"
     :size="size"
     :customModalClass="`alert-modal alert-${type}`"
-    iconActionApply="trash"
+    :iconActionApply="iconActionApply"
     iconActionCancel="x-circle"
     colorActionApply="tertiary"
     colorActionCancel="primary"
     @input="internalVisible = $event"
     @confirm="onConfirm"
     @close="onCancel"
-    @cancel="onCancel"
-  >
+    @cancel="onCancel">
     <template #trigger="{ open }">
-      <span @click="(event) => handleTriggerClick(event, open)" class="alert-trigger">
+      <span
+        @click="(event) => handleTriggerClick(event, open)"
+        class="alert-trigger">
         <slot></slot>
       </span>
     </template>
@@ -36,25 +37,26 @@
 </template>
 
 <script>
-import Modal from '@/components/molecules/Modal.vue'
+import Modal from "@/components/molecules/Modal.vue"
 
 export default {
-  name: 'Alert',
+  name: "Alert",
   components: { Modal },
   props: {
     visible: { type: Boolean, default: false },
     title: { type: String, required: true },
-    subtitle: { type: String, default: '' },
-    message: { type: String, default: '' },
-    type: { type: String, default: 'info' }, // info, warning, danger, success
-    confirmText: { type: String, default: 'OK' },
-    cancelText: { type: String, default: 'Annuler' },
+    subtitle: { type: String, default: "" },
+    message: { type: String, default: "" },
+    type: { type: String, default: "info" }, // info, warning, danger, success
+    confirmText: { type: String, default: "OK" },
+    cancelText: { type: String, default: "Annuler" },
     showConfirm: { type: Boolean, default: true },
+    iconActionApply: { type: String, default: "trash" },
     showCancel: { type: Boolean, default: true },
     showActions: { type: Boolean, default: true },
     closable: { type: Boolean, default: true },
-    size: { type: String, default: 'sm' },
-    triggerMode: { type: String, default: 'auto' }, // 'auto' for trigger slot, 'controlled' for visible prop
+    size: { type: String, default: "sm" },
+    triggerMode: { type: String, default: "auto" }, // 'auto' for trigger slot, 'controlled' for visible prop
   },
   data() {
     return {
@@ -63,26 +65,26 @@ export default {
   },
   watch: {
     visible(newVal) {
-      this.internalVisible = newVal;
+      this.internalVisible = newVal
     },
     internalVisible(newVal) {
       if (newVal !== this.visible) {
-        this.$emit('update:visible', newVal);
+        this.$emit("update:visible", newVal)
       }
-    }
+    },
   },
   methods: {
     onConfirm(e) {
-      this.$emit('confirm', e)
+      this.$emit("confirm", e)
       this.internalVisible = false
     },
     onCancel(e) {
-      this.$emit('cancel', e)
+      this.$emit("cancel", e)
       this.internalVisible = false
     },
     handleTriggerClick(event, open) {
-      event.stopPropagation();
-      open(event);
+      event.stopPropagation()
+      open(event)
     },
   },
 }
@@ -122,4 +124,4 @@ export default {
   display: inline-block;
   cursor: pointer;
 }
-</style> 
+</style>

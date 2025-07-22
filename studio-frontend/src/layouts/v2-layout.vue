@@ -104,7 +104,7 @@ export default {
 <style lang="scss">
 .v2-layout {
   background-color: var(--background-app);
-  min-height: 100vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -225,19 +225,26 @@ export default {
 }
 
 @media only screen and (max-width: 1100px) {
-  .v2-layout__sidebar {
-    width: 260px !important;
-    max-width: 100% !important;
-    border: none !important;
-    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.65);
-    transition: width 0.3s ease-in-out;
-  }
-
   .v2-layout__content {
-    padding-left: 260px !important;
+    //padding-left: 260px !important;
     transition: padding-left 0.3s ease-in-out;
     overflow: hidden !important;
+    margin: 0;
+    padding-left: 300px;
 
+    .v2-layout__sidebar {
+      //width: 260px !important;
+      max-width: 100% !important;
+      border: none !important;
+      box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.65);
+      border-radius: 0px;
+      transition: width 0.3s ease-in-out;
+    }
+
+    .v2-layout__main {
+      border-radius: 0px;
+      border: none;
+    }
     main {
       width: 100vw !important;
       max-width: 100vw !important;
