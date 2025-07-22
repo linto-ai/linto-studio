@@ -140,5 +140,6 @@ export default {
 .media-explorer-item-tags__tag {
   display: inline-flex;
   margin-left: 0.25rem;
+  margin-bottom: 0.25rem;
 }
 </style>

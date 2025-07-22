@@ -8,7 +8,12 @@
       height: computedSize,
     }"
     @click="$emit('click')">
-    <img v-if="src" :src="src" :alt="text" />
+    <img
+      v-if="src"
+      :src="src"
+      :alt="text"
+      @error="onImgError"
+      ref="avatar-img" />
     <ph-icon
       v-else-if="icon"
       :name="icon"
@@ -34,6 +39,8 @@
 </template>
 
 <script>
+import { getEnv } from "@/tools/getEnv"
+
 export default {
   name: "Avatar",
   props: {
@@ -113,6 +120,12 @@ export default {
         return this.size + "px"
       }
       return this.size
+    },
+  },
+  methods: {
+    onImgError() {
+      const path = getEnv("VUE_APP_PUBLIC_MEDIA") + "/pictures/default.jpg"
+      this.$refs.img.src = path
     },
   },
 }

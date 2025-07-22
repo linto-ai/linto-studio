@@ -2,7 +2,8 @@
   <div
     class="media-explorer-item-mobile"
     :class="{ selected: isSelected }"
-    @click="toggleSelect">
+    @contextmenu="toggleSelect"
+    @click="openEditor">
     <!-- Delete modal -->
     <!-- First line : main infos -->
     <div class="media-explorer-item-mobile__main">
@@ -66,7 +67,9 @@
     </div>
 
     <!-- Second line : tags -->
-    <div v-if="media.tags && media.tags.length" class="media-explorer-item-mobile__tags">
+    <div
+      v-if="media.tags && media.tags.length"
+      class="media-explorer-item-mobile__tags">
       <MediaExplorerItemTags :media-id="media._id" />
     </div>
   </div>
@@ -262,6 +265,13 @@ export default {
     handleDelete() {
       this.showDeleteModal = true
     },
+    openEditor() {
+      if (!this.$store.state.inbox.selectedMedias.length) {
+        this.handleAction({ id: "edit" })
+      } else {
+        this.toggleSelect()
+      }
+    },
   },
 }
 </script>
@@ -285,7 +295,7 @@ export default {
     align-items: center;
     gap: 0.5rem;
     width: 100%;
-    overflow: hidden;
+    //overflow: hidden;
     padding: 0.5rem;
     box-sizing: border-box;
   }
@@ -334,7 +344,6 @@ export default {
 
   &__tags {
     width: 100%;
-    overflow-x: auto;
     padding: 0.25rem;
     opacity: 0.75;
     box-sizing: border-box;
