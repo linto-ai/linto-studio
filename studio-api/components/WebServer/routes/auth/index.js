@@ -54,6 +54,14 @@ module.exports = (webServer) => {
           })
         }
 
+        if (process.env.OIDC_GITHUB_ENABLED === "true") {
+          list.push({
+            path: "oidc/github",
+            from: "github",
+            name: "Github",
+          })
+        }
+
         res.status(200).send(list)
       },
     },

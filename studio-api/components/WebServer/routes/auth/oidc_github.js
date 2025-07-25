@@ -10,17 +10,17 @@ var passport = require("passport")
 module.exports = (webServer) => {
   return [
     {
-      path: "/oidc/google/login",
+      path: "/oidc/github/login",
       method: "get",
       requireAuth: false,
-      controller: [auth_middleware.oidc_google_authenticate],
+      controller: [auth_middleware.oidc_github_authenticate],
     },
     {
-      path: "/oidc/google/cb",
+      path: "/oidc/github/cb",
       method: "get",
       requireAuth: false,
       controller: [
-        passport.authenticate("google", {
+        passport.authenticate("github", {
           failureRedirect: (process.env.FRONTEND_DOMAIN || "") + "/login",
         }),
         function (req, res) {

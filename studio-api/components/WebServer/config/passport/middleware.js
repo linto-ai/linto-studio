@@ -25,9 +25,11 @@ require("./strategies/local")
 if (process.env.OIDC_TYPE === "linagora") require("./strategies/oidc_linagora")
 else if (process.env.OIDC_TYPE === "eu") require("./strategies/oidc_eu")
 
-if (process.env.OIDC_GOOGLE_ENABLED === "true") {
+if (process.env.OIDC_GOOGLE_ENABLED === "true")
   require("./strategies/oidc_google")
-}
+
+if (process.env.OIDC_GITHUB_ENABLED === "true")
+  require("./strategies/oidc_github")
 
 const authenticateUser = (strategy, req, res, next) => {
   if (
@@ -55,30 +57,20 @@ const authenticateUser = (strategy, req, res, next) => {
   })(req, res, next)
 }
 
-const authenticateGoogleUser = (strategy, req, res, next) => {
-  debug(`Authenticating with strategy: ${strategy}`)
-  passport.authenticate(
-    strategy,
-    { scope: ["profile", "email"] },
-    (err, user) => {
-      console.log("Google authentication callback")
-      if (err) {
-        next(err)
-      } else if (!user) {
-        throw new InvalidCredential()
-      } else {
-        // req.session.user = user
-        res.status(200).json({
-          message: "login success",
-          ...user,
-        })
-      }
-    },
-  )(req, res, next)
+const authenticateScopeUser = (strategy, scope, req, res, next) => {
+  passport.authenticate(strategy, { scope: scope }, (err, user) => {
+    if (err) next(err)
+    else if (!user) throw new InvalidCredential()
+    else {
+      res.status(200).json({
+        message: "login success",
+        ...user,
+      })
+    }
+  })(req, res, next)
 }
 
 const extractToken = (req) => {
-  if (req.cookie) debug("cookie", req.cookie)
   if (req.headers.authorization) {
     return req.headers.authorization.split(" ")[1]
   } else if (req?.session?.passport?.user?.auth_token) {
@@ -98,7 +90,10 @@ module.exports = {
     authenticateUser("oidc", req, res, next),
 
   oidc_google_authenticate: (req, res, next) =>
-    authenticateGoogleUser("google", req, res, next),
+    authenticateScopeUser("google", ["profile", "email"], req, res, next),
+
+  oidc_github_authenticate: (req, res, next) =>
+    authenticateScopeUser("github", ["openid", "user:email"], req, res, next),
 
   refresh: async (req, res, next) => {
     try {
