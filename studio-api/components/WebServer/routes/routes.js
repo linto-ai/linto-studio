@@ -61,6 +61,13 @@ module.exports = (webServer) => {
     ]
   }
 
+  if (process.env.OIDC_GOOGLE_ENABLED === "true") {
+    api_routes["/auth"] = [
+      ...api_routes["/auth"],
+      ...require("./auth/oidc_google.js")(webServer),
+    ]
+  }
+
   return {
     api_routes: api_routes,
     proxy_routes: proxy_routes,

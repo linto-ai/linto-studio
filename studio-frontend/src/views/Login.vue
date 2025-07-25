@@ -161,7 +161,11 @@ export default {
       const loginList = await getLoginMethods()
       const indexedByPath = { local: [], oidc: [] }
       for (const login of loginList) {
-        indexedByPath[login.path].push(login)
+        if (login.path.startsWith("oidc")) {
+          indexedByPath["oidc"].push(login)
+        } else {
+          indexedByPath[login.path].push(login)
+        }
       }
       this.loginMethodsIndexedByPath = indexedByPath
     },

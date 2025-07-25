@@ -25,6 +25,10 @@ require("./strategies/local")
 if (process.env.OIDC_TYPE === "linagora") require("./strategies/oidc_linagora")
 else if (process.env.OIDC_TYPE === "eu") require("./strategies/oidc_eu")
 
+if (process.env.OIDC_GOOGLE_ENABLED === "true") {
+  require("./strategies/oidc_google")
+}
+
 const authenticateUser = (strategy, req, res, next) => {
   if (
     process.env.OIDC_TYPE === "eu" &&
@@ -51,6 +55,28 @@ const authenticateUser = (strategy, req, res, next) => {
   })(req, res, next)
 }
 
+const authenticateGoogleUser = (strategy, req, res, next) => {
+  debug(`Authenticating with strategy: ${strategy}`)
+  passport.authenticate(
+    strategy,
+    { scope: ["profile", "email"] },
+    (err, user) => {
+      console.log("Google authentication callback")
+      if (err) {
+        next(err)
+      } else if (!user) {
+        throw new InvalidCredential()
+      } else {
+        // req.session.user = user
+        res.status(200).json({
+          message: "login success",
+          ...user,
+        })
+      }
+    },
+  )(req, res, next)
+}
+
 const extractToken = (req) => {
   if (req.cookie) debug("cookie", req.cookie)
   if (req.headers.authorization) {
@@ -70,6 +96,9 @@ module.exports = {
 
   oidc_authenticate: (req, res, next) =>
     authenticateUser("oidc", req, res, next),
+
+  oidc_google_authenticate: (req, res, next) =>
+    authenticateGoogleUser("google", req, res, next),
 
   refresh: async (req, res, next) => {
     try {

@@ -1,3 +1,5 @@
+const path = require("path")
+
 const debug = require("debug")("linto:conversation-manager:routes:auth")
 
 const { logout, recoveryAuth } = require(
@@ -17,7 +19,9 @@ module.exports = (webServer) => {
       method: "get",
       requireAuth: true,
       controller: async (req, res, next) => {
-        res.status(200).send("Ok")
+        if (req?.session?.passport?.user)
+          res.status(200).json(req.session.passport.user)
+        else res.status(200).send("Ok")
       },
     },
     {
@@ -40,6 +44,13 @@ module.exports = (webServer) => {
             path: "oidc",
             from: process.env.OIDC_TYPE,
             name: process.env.OIDC_TYPE,
+          })
+        }
+        if (process.env.OIDC_GOOGLE_ENABLED === "true") {
+          list.push({
+            path: "oidc/google",
+            from: "google",
+            name: "Google",
           })
         }
 
