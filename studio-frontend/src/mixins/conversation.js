@@ -57,8 +57,6 @@ export const conversationMixin = {
           break
         case "turn_list_updated":
           this.updateConversationTurns(event.data.params)
-          bus.$emit("refresh_turns", {})
-          bus.$emit("refresh_spk_timebox", {})
           break
         case "speaker_list_updated":
           this.conversation.speakers = event.data.params.value
@@ -89,6 +87,7 @@ export const conversationMixin = {
     updateConversationTurns(events) {
       this.conversation.text = events.value
       setTimeout(() => {
+        bus.$emit("refresh_turns", {})
         bus.$emit("refresh_spk_timebox", {})
       }, 200)
     },
