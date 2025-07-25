@@ -6,10 +6,16 @@ export default function userAvatar(userInfos) {
   if (imageUrl.startsWith("http") || imageUrl.startsWith("blob"))
     return imageUrl
 
-  // remove trailing slash
-  if (imageUrl.startsWith("/")) {
-    return `${getEnv("VUE_APP_PUBLIC_MEDIA")}${imageUrl}`
+  const baseUrl = window.location.origin
+  let publicMedia = getEnv("VUE_APP_PUBLIC_MEDIA").trim("/")
+  if (!publicMedia.startsWith("http")) {
+    publicMedia = `${baseUrl}${publicMedia}`
   }
 
-  return `${getEnv("VUE_APP_PUBLIC_MEDIA")}/${imageUrl}`
+  // remove trailing slash
+  if (imageUrl.startsWith("/")) {
+    return `${publicMedia}${imageUrl}`
+  }
+
+  return `${publicMedia}/${imageUrl}`
 }

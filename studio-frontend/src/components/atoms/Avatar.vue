@@ -40,6 +40,7 @@
 
 <script>
 import { getEnv } from "@/tools/getEnv"
+import userAvatar from "@/tools/userAvatar"
 
 export default {
   name: "Avatar",
@@ -92,6 +93,11 @@ export default {
       default: "sm", // xs, sm, md, lg, xl
     },
   },
+  data() {
+    return {
+      onError: false,
+    }
+  },
   computed: {
     clickable() {
       return this.$listeners.click ? "clickable" : ""
@@ -124,8 +130,10 @@ export default {
   },
   methods: {
     onImgError() {
-      const path = getEnv("VUE_APP_PUBLIC_MEDIA") + "/pictures/default.jpg"
-      this.$refs.img.src = path
+      if (this.onError) return
+      this.onError = true
+      const path = userAvatar("/pictures/default.jpg")
+      this.$refs["avatar-img"].src = path
     },
   },
 }

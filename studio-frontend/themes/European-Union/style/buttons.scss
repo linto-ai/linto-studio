@@ -133,12 +133,12 @@ button,
   }
 
   &.black {
-    background-color: var(--text-primary);
+    background-color: none !important;
     background-image: none;
     color: var(--background-primary);
     border: 1px solid var(--text-primary);
     .icon {
-      background-color: var(--background-primary);
+      color: var(--background-primary);
     }
   }
 
