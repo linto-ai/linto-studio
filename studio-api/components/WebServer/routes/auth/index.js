@@ -1,10 +1,9 @@
-const path = require("path")
-
 const debug = require("debug")("linto:conversation-manager:routes:auth")
 
 const { logout, recoveryAuth } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/users/users.js`,
 )
+const PROVIDER = require(`${process.cwd()}/lib/dao/oidc/provider`)
 
 module.exports = (webServer) => {
   return [
@@ -35,34 +34,7 @@ module.exports = (webServer) => {
       method: "get",
       requireAuth: false,
       controller: (req, res, next) => {
-        let list = []
-        if (process.env.LOCAL_AUTH_ENABLED === "true") {
-          list.push({ path: "local", from: "studio", name: "studio" })
-        }
-        if (process.env.OIDC_TYPE !== "") {
-          list.push({
-            path: "oidc",
-            from: process.env.OIDC_TYPE,
-            name: process.env.OIDC_TYPE,
-          })
-        }
-        if (process.env.OIDC_GOOGLE_ENABLED === "true") {
-          list.push({
-            path: "oidc/google",
-            from: "google",
-            name: "Google",
-          })
-        }
-
-        if (process.env.OIDC_GITHUB_ENABLED === "true") {
-          list.push({
-            path: "oidc/github",
-            from: "github",
-            name: "Github",
-          })
-        }
-
-        res.status(200).send(list)
+        res.status(200).send(PROVIDER.getEnabledProviders())
       },
     },
   ]

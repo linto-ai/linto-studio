@@ -9,6 +9,8 @@ const verifyJwt = require("jsonwebtoken")
 const algorithm = process.env.JWT_ALGORITHM || "HS256"
 let { generators } = require("openid-client")
 
+const PROVIDER = require(`${process.cwd()}/lib/dao/oidc/provider`)
+
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const {
   MalformedToken,
@@ -20,16 +22,7 @@ const refreshToken = require("./token/refresh")
 
 const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
 
-require("./strategies/local")
-
-if (process.env.OIDC_TYPE === "linagora") require("./strategies/oidc_linagora")
-else if (process.env.OIDC_TYPE === "eu") require("./strategies/oidc_eu")
-
-if (process.env.OIDC_GOOGLE_ENABLED === "true")
-  require("./strategies/oidc_google")
-
-if (process.env.OIDC_GITHUB_ENABLED === "true")
-  require("./strategies/oidc_github")
+PROVIDER.loadEnabledStrategies()
 
 const authenticateUser = (strategy, req, res, next) => {
   if (

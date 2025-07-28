@@ -31,6 +31,10 @@ async function generateUserToken(email, lastname = "", firstname = "") {
       users = await model.users.getTokenByEmail(email)
       user = users[0]
       populateUserToOrganization(user) // Only on user creation
+
+      if (process.env.DISABLE_DEFAULT_ORGANIZATION_CREATION !== "true") {
+        await model.organizations.createDefault(user._id.toString(), user.email)
+      }
     }
 
     if (!user.fromSSO && !user.emailIsVerified) {
