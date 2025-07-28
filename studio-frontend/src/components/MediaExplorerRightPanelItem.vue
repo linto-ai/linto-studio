@@ -2,19 +2,19 @@
   <div class="media-explorer-right-panel-item">
     <!-- Media overview content -->
     <div class="panel-body">
+
       <div class="media-overview">
         <!-- Media title -->
         <div class="media-section">
           <h4 class="section-title">
             {{ $t("media_explorer.panel.title") }}
           </h4>
-          <p class="section-content">
-            {{
-              selectedMedia.name ||
-              selectedMedia.title ||
-              $t("media_explorer.panel.default_title")
-            }}
-          </p>
+          <FormInput
+            inputFullWidth
+            :field="titleField"
+            v-model="titleField.value"
+            @on-confirm="handleTitleUpdate"
+          />
         </div>
 
         <!-- Media description -->
@@ -22,44 +22,45 @@
           <h4 class="section-title">
             {{ $t("media_explorer.panel.description") }}
           </h4>
-          <p class="section-content">
-            {{
-              selectedMedia.description ||
-              $t("media_explorer.panel.default_description")
-            }}
-          </p>
+          <FormInput
+            inputFullWidth
+            :field="descriptionField"
+            v-model="descriptionField.value"
+            textarea
+            @on-confirm="handleDescriptionUpdate"
+          />
         </div>
 
         <!-- Media duration -->
         <div
           class="media-section"
-          v-if="selectedMedia.metadata?.audio?.duration">
+          v-if="reactiveSelectedMedia?.metadata?.audio?.duration">
           <h4 class="section-title">
             {{ $t("media_explorer.panel.duration") }}
           </h4>
           <p class="section-content">
             <TimeDuration
-              :duration="selectedMedia.metadata?.audio?.duration" />
+              :duration="reactiveSelectedMedia.metadata?.audio?.duration" />
           </p>
         </div>
 
         <!-- Media creation date -->
-        <div class="media-section" v-if="selectedMedia.created">
+        <div class="media-section" v-if="reactiveSelectedMedia?.created">
           <h4 class="section-title">
             {{ $t("media_explorer.panel.created") }}
           </h4>
           <p class="section-content">
-            {{ formatDate(selectedMedia.created, { month: 'long', hour: '2-digit', minute: '2-digit' }) }}
+            {{ formatDate(reactiveSelectedMedia.created, { month: 'long', hour: '2-digit', minute: '2-digit' }) }}
           </p>
         </div>
 
         <!-- Media duration (alternative) -->
-        <div class="media-section" v-if="selectedMedia.metadata?.au">
+        <div class="media-section" v-if="reactiveSelectedMedia?.metadata?.au">
           <h4 class="section-title">
             {{ $t("media_explorer.panel.duration") }}
           </h4>
           <p class="section-content">
-            {{ formatDuration(selectedMedia.duration) }}
+            {{ formatDuration(reactiveSelectedMedia.duration) }}
           </p>
         </div>
 
@@ -99,7 +100,7 @@
           </h4>
           <div class="metadata-grid">
             <div
-              v-for="(value, key) in selectedMedia.metadata"
+              v-for="(value, key) in reactiveSelectedMedia?.metadata"
               :key="key"
               class="metadata-item">
               <span class="metadata-key">{{ key }}:</span>
@@ -128,7 +129,7 @@
 
     <ModalDeleteConversations
       :visible="showDeleteModal"
-      :medias="[selectedMedia]"
+      :medias="[reactiveSelectedMedia || selectedMedia]"
       @close="showDeleteModal = false" />
   </div>
 </template>
@@ -140,6 +141,8 @@ import ChipTag from "@/components/atoms/ChipTag.vue"
 import Button from "@/components/atoms/Button.vue"
 import ModalDeleteConversations from "./ModalDeleteConversations.vue"
 import { mediaExplorerRightPanelMixin } from "@/mixins/mediaExplorerRightPanel.js"
+import FormInput from "@/components/molecules/FormInput.vue"
+import EMPTY_FIELD from "@/const/emptyField"
 
 export default {
   name: "MediaExplorerRightPanelItem",
@@ -150,6 +153,7 @@ export default {
     ChipTag,
     Button,
     ModalDeleteConversations,
+    FormInput,
   },
   props: {
     selectedMedia: {
@@ -161,6 +165,18 @@ export default {
     return {
       showDeleteModal: false,
       downloadLoading: false,
+      titleField: {
+        ...EMPTY_FIELD,
+        value: "",
+        label: this.$t("media_explorer.panel.title"),
+        placeholder: this.$t("media_explorer.panel.default_title"),
+      },
+      descriptionField: {
+        ...EMPTY_FIELD,
+        value: "",
+        label: this.$t("media_explorer.panel.description"),
+        placeholder: this.$t("media_explorer.panel.default_description"),
+      },
     }
   },
   computed: {
@@ -176,7 +192,37 @@ export default {
         .filter((tag) => !!tag)
     },
   },
+  watch: {
+    reactiveSelectedMedia: {
+      immediate: true,
+      deep: true,
+      handler(newMedia, oldMedia) {
+        if (newMedia) {
+          // Only update fields if the media actually changed or if it's the initial load
+          if (!oldMedia || newMedia._id !== oldMedia._id || 
+              newMedia.name !== oldMedia.name || 
+              newMedia.description !== oldMedia.description) {
+            this.titleField.value = newMedia.name || ''
+            this.descriptionField.value = newMedia.description || ''
+          }
+        } else {
+          this.titleField.value = ''
+          this.descriptionField.value = ''
+        }
+      }
+    }
+  },
+  mounted() {
+    this.initFields()
+  },
   methods: {
+    initFields() {
+      if (this.reactiveSelectedMedia) {
+        this.titleField.value = this.reactiveSelectedMedia.title || this.reactiveSelectedMedia.name || ''
+        this.descriptionField.value = this.reactiveSelectedMedia.description || ''
+      }
+    },
+
     async handleCreateTag(tag) {
       if (this.isTagManagementReadOnly) return
       await this.createAndAddTag(tag, this.selectedMedia._id)
@@ -196,13 +242,85 @@ export default {
       this.showDeleteModal = true
     },
 
+    async handleTitleUpdate() {
+      if (!this.selectedMedia?._id) return
+      const trimmedTitle = this.titleField.value?.trim() || ''
+      try {
+        await this.updateMediaProperty(this.selectedMedia._id, 'name', trimmedTitle)
+        
+        // Force update of the title field from the store
+        this.$nextTick(() => {
+          const updatedMedia = this.reactiveSelectedMedia
+          if (updatedMedia) {
+            this.titleField.value = updatedMedia.name || ''
+          }
+        })
+        
+        this.$store.dispatch('system/addNotification', {
+          type: 'success',
+          message: this.$t('media_explorer.panel.title_updated')
+        })
+      } catch (error) {
+        console.error('Title update error:', error)
+        
+        // Revert title field on error
+        this.$nextTick(() => {
+          const currentMedia = this.reactiveSelectedMedia
+          if (currentMedia) {
+            this.titleField.value = currentMedia.name || ''
+          }
+        })
+        
+        this.$store.dispatch('system/addNotification', {
+          type: 'error',
+          message: this.$t('media_explorer.panel.update_error')
+        })
+      }
+    },
+
+    async handleDescriptionUpdate() {
+      if (!this.selectedMedia?._id) return
+      const trimmedDescription = this.descriptionField.value?.trim() || ''
+      try {
+        await this.updateMediaProperty(this.selectedMedia._id, 'description', trimmedDescription)
+        
+        // Force update of the description field from the store
+        this.$nextTick(() => {
+          const updatedMedia = this.reactiveSelectedMedia
+          if (updatedMedia) {
+            this.descriptionField.value = updatedMedia.description || ''
+          }
+        })
+        
+        this.$store.dispatch('system/addNotification', {
+          type: 'success',
+          message: this.$t('media_explorer.panel.description_updated')
+        })
+      } catch (error) {
+        console.error('Description update error:', error)
+        
+        // Revert description field on error
+        this.$nextTick(() => {
+          const currentMedia = this.reactiveSelectedMedia
+          if (currentMedia) {
+            this.descriptionField.value = currentMedia.description || ''
+          }
+        })
+        
+        this.$store.dispatch('system/addNotification', {
+          type: 'error',
+          message: this.$t('media_explorer.panel.update_error')
+        })
+      }
+    },
+
     async handleDownload() {
-      if (this.downloadLoading || !this.selectedMedia) return
+      if (this.downloadLoading || !this.reactiveSelectedMedia) return
 
       this.downloadLoading = true
       
       try {
-        const success = await this.downloadMediaFile(this.selectedMedia)
+        const success = await this.downloadMediaFile(this.reactiveSelectedMedia)
         
         if (success) {
           // Show success notification
@@ -322,4 +440,10 @@ export default {
   gap: 0.5rem;
   flex-wrap: wrap;
 }
+
+.section-content-input {
+  margin: 0;
+}
+
+
 </style>

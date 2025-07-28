@@ -74,7 +74,7 @@
     border-radius: 4px;
     background-color: var(--button-background, transparent);
     color: var(--text-primary);
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
 
     // same as sm
     padding: 0.35rem 0.75rem;
@@ -91,6 +91,16 @@
       & svg {
         margin: 0;
       }
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      &:active {
+        transform: translateY(-1px);
+        transition: all 0.1s ease;
+      }
     }
 
     /* Hover, focus, active states */
@@ -98,6 +108,13 @@
       cursor: pointer;
       background-color: var(--button-background-hover, var(--neutral-10));
       text-decoration: none;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    &:active {
+      transform: translateY(0);
+      transition: all 0.1s ease;
     }
     &:focus,
     &:active {
@@ -418,9 +435,10 @@
     /* Outline variants */
     &.outline {
       background-color: transparent;
-      border: 1px solid transparent;
-      background-color: var(--neutral-20);
+      border: 1px solid var(--neutral-30, #ddd);
+      background-color: var(--background-primary, #fff);
       color: var(--neutral-80);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       .icon,
       .ph-icon,
       .icon-svg {
@@ -779,7 +797,7 @@
     & > .icon,
     & > .ph-icon,
     & > .icon-svg {
-      transition: all 0.2s ease;
+      transition: all 0.3s ease;
       display: inline-block;
       width: 1.25rem;
       height: 1.25rem;
@@ -842,6 +860,13 @@
     white-space: normal;
   }
 
+  .label {
+    display: flex;
+    gap: .25em;
+    align-items: center;
+    justify-content: center;
+  }
+
   a {
     border: none;
     background-color: transparent;
@@ -876,6 +901,11 @@
 
   a.underline {
     text-decoration: underline;
+  }
+
+  a.btn {
+    border: var(--border-button);
+    background-color: var(--button-background, transparent);
   }
 }
 

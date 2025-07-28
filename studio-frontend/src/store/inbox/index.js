@@ -1,4 +1,5 @@
 import $set from "lodash.set"
+import Vue from "vue"
 import { apiDeleteMultipleConversation } from "@/api/conversation.js"
 import i18n from "@/i18n"
 import { bus } from "@/main.js"
@@ -39,7 +40,8 @@ export default {
     updateMedia(state, { mediaId, media }) {
       const idx = state.medias.findIndex((m) => m._id === mediaId)
       if (idx !== -1) {
-        state.medias.splice(idx, 1, media)
+        // Use Vue.set to ensure reactivity
+        Vue.set(state.medias, idx, media)
       }
 
       // Also update in selectedMedias if present
@@ -47,7 +49,7 @@ export default {
         (m) => m._id === mediaId,
       )
       if (selectedIdx !== -1) {
-        state.selectedMedias.splice(selectedIdx, 1, media)
+        Vue.set(state.selectedMedias, selectedIdx, media)
       }
     },
     deleteMedias(state, mediaIds) {

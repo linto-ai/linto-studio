@@ -1,9 +1,24 @@
 <template>
-  <Modal
-    v-model="isModalOpen"
-    :with-actions="false"
-    :title="$t('app_settings_modal.title')"
-    :size="computedSize">
+  <Modal v-model="isModalOpen" :with-actions="false" :title="$t('app_settings_modal.title')" :size="computedSize">
+    <div v-if="user.emailIsVerified === false">
+      <div class="app-settings-verify-email">
+        <p>{{ $t("app_settings_modal.email_not_verified") }}</p>
+
+        <Button
+          color="tertiary"
+          size="sm"
+          @click="sendVerificationEmail()"
+          >
+          <ph-icon name="paper-plane-tilt" size="md" class="icon" />
+          <!-- <span
+            :class="['icon', sendingEmail ? 'loading' : 'send-mail']"></span> -->
+          <span class="label">{{
+            $t("user_settings.send_verification_link")
+          }}</span>
+        </Button>
+      </div>
+    </div>
+
     <div class="app-settings flex1">
       <aside>
         <div class="flex1">
@@ -42,7 +57,7 @@
                 <ph-icon name="info" weight="bold"></ph-icon>
                 <span>{{
                   $t("app_settings_modal.organization_information")
-                }}</span>
+                  }}</span>
               </a>
             </li>
             <li :class="{ active: selectedTab === 'members' }">
@@ -68,17 +83,12 @@
           </ul>
         </div>
         <div>
-          <Button
-            :label="$t('app_settings_modal.logout')"
-            @click="logout"
-            icon="sign-out"
-            color="tertiary"
+          <Button :label="$t('app_settings_modal.logout')" @click="logout" icon="sign-out" color="tertiary"
             size="sm"></Button>
         </div>
       </aside>
-      <div
-        v-if="selectedTab === 'account-information'"
-        class="app-settings__section">
+
+      <div v-if="selectedTab === 'account-information'" class="app-settings__section">
         <!-- <pre>{{ user }}</pre> -->
         <UserSettingsAvatar :userInfo="user" v-if="isAuthenticated" />
         <UserSettingsPersonal :userInfo="user" v-if="isAuthenticated" />
@@ -95,22 +105,14 @@
         <UserSettingsPreferences />
       </div>
 
-      <div
-        v-if="selectedTab === 'organization-information'"
-        class="app-settings__section">
+      <div v-if="selectedTab === 'organization-information'" class="app-settings__section">
         <UpdateOrganizationForm :currentOrganization="currentOrganization" />
-        <UpdateOrganizationDeletion
-          v-if="isAdmin"
-          :currentOrganization="currentOrganization" />
+        <UpdateOrganizationDeletion v-if="isAdmin" :currentOrganization="currentOrganization" />
       </div>
       <div v-if="selectedTab === 'members'" class="app-settings__section">
-        <UpdateOrganizationUsers
-          :currentOrganization="currentOrganization"
-          :userInfo="user" />
+        <UpdateOrganizationUsers :currentOrganization="currentOrganization" :userInfo="user" />
       </div>
-      <div
-        v-if="selectedTab === 'billing'"
-        class="app-settings__section"
+      <div v-if="selectedTab === 'billing'" class="app-settings__section"
         :class="{ active: selectedTab === 'billing' }"></div>
     </div>
   </Modal>
@@ -118,6 +120,7 @@
 
 <script>
 import { mapGetters } from "vuex"
+import { apiSendVerificationLink } from "@/api/user.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 
@@ -198,6 +201,18 @@ export default {
       this.closeModal()
       document.location.reload()
     },
+    async sendVerificationEmail() {
+      this.sendingEmail = true
+      const sendLink = await apiSendVerificationLink({
+        timeout: 3000,
+        redirect: false,
+      })
+
+      if (sendLink.status === "success") {
+        this.sendingEmail = false
+        this.emailSent = true
+      }
+    },
   },
 }
 </script>
@@ -205,6 +220,21 @@ export default {
 <style lang="scss" scoped>
 .app-settings {
   display: flex;
+
+  &-verify-email {
+    background-color: var(--background-primary);
+    border-radius: 4px;
+    padding: .5em;
+    margin-bottom: .5em;
+    border: 1px solid var(--red-chart);
+    color: var(--red-chart);
+    font-size: 14px;
+    font-weight: bold;
+
+    & > p {
+      margin: 0;
+    }
+  }
 
   aside {
     display: flex;
@@ -220,7 +250,7 @@ export default {
       margin-bottom: 0.25rem;
     }
 
-    ul + h4 {
+    ul+h4 {
       margin-top: 1rem;
     }
 
@@ -317,7 +347,7 @@ export default {
     gap: 10px;
     margin: 0.5em;
 
-    & > div {
+    &>div {
       background-color: var(--background-secondary);
       flex: 1;
       padding: 0.5em;
@@ -343,6 +373,7 @@ export default {
         font-size: 12px;
         margin-bottom: 0.5rem;
         margin-top: 0;
+
         &:first-child {
           margin-top: 0;
         }
@@ -401,7 +432,7 @@ export default {
       }
 
       // Logout button repositioning for mobile
-      > div:last-child {
+      >div:last-child {
         margin-top: auto;
         padding-top: 1rem;
         border-top: 1px solid var(--neutral-60);

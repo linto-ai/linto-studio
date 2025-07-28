@@ -36,7 +36,7 @@
         @click="$emit('remove')" />
       <Avatar
         v-if="count"
-        class="chip-tag__count"
+        :class="{ 'chip-tag__count': count }"
         size="xs"
         color="var(--neutral-20)"
         color-text="var(--neutral-10)">
@@ -214,7 +214,7 @@ export default {
   height: 25px;
   text-transform: capitalize;
   border: 1px solid;
-  border-radius: 5px;
+  border-radius: 4px;
   font-weight: 600;
   font-size: 12px;
   text-overflow: ellipsis;
@@ -225,7 +225,8 @@ export default {
   //   inset 0px 0.2px 0 1px rgba(255, 255, 255, 0.4);
   &.active {
     .chip-tag__count {
-      display: none;
+      background-color: var(--neutral-10) !important;
+      color: var(--neutral-100) !important;
     }
   }
 
@@ -240,7 +241,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5em;
+    gap: 0.25em;
     //line-height: 1em;
   }
 

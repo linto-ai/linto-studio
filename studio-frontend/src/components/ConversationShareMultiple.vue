@@ -1,6 +1,5 @@
 <template>
-  <div
-    class="flex col popover-parent"
+  <Fragment
     ref="conversation-share"
     v-click-outside="close">
     <!-- <button
@@ -294,9 +293,10 @@
         </div>
       </div>
     </div>
-  </div>
+  </Fragment>
 </template>
 <script>
+import { Fragment } from "vue-fragment"
 import RIGHTS_LIST from "@/const/rigthsList.js"
 import EMPTY_FIELD from "@/const/emptyField.js"
 import { mapActions, mapGetters } from "vuex"

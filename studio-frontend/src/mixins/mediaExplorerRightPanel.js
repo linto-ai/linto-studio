@@ -1,5 +1,8 @@
 import { mapGetters } from "vuex"
-import { apiGetAudioFileFromConversation } from "@/api/conversation.js"
+import {
+  apiGetAudioFileFromConversation,
+  apiUpdateConversation,
+} from "@/api/conversation.js"
 
 export const mediaExplorerRightPanelMixin = {
   props: {
@@ -10,7 +13,7 @@ export const mediaExplorerRightPanelMixin = {
   },
   computed: {
     ...mapGetters("tags", ["getTags", "getTagById"]),
-    
+
     // Determine if tag management should be read-only
     isTagManagementReadOnly() {
       return this.readOnlyTags
@@ -23,10 +26,13 @@ export const mediaExplorerRightPanelMixin = {
       const date = new Date(dateString)
       const defaultOptions = {
         year: "numeric",
-        month: "short", 
+        month: "short",
         day: "numeric",
       }
-      return date.toLocaleDateString(this.$i18n.locale, { ...defaultOptions, ...options })
+      return date.toLocaleDateString(this.$i18n.locale, {
+        ...defaultOptions,
+        ...options,
+      })
     },
 
     formatDuration(duration) {
@@ -46,17 +52,55 @@ export const mediaExplorerRightPanelMixin = {
       return !!media?.type?.from_session_id
     },
 
+    // Media property update method
+    async updateMediaProperty(mediaId, propertyName, value) {
+      try {
+        const payload = { [propertyName]: value }
+        const response = await apiUpdateConversation(mediaId, payload)
+
+        if (response.status === "success") {
+          // Update the media in the inbox store
+          const currentMedia =
+            this.$store.getters["inbox/getMediaById"](mediaId)
+          if (currentMedia) {
+            const updatedMedia = { ...currentMedia, [propertyName]: value }
+            this.$store.dispatch("inbox/updateMedia", {
+              mediaId,
+              media: updatedMedia,
+            })
+          }
+
+          // Also update in conversations store if it exists
+          const conversationMedia =
+            this.$store.getters["conversations/getConversationById"](mediaId)
+          if (conversationMedia) {
+            this.$store.commit("conversations/updateConversation", {
+              conversationId: mediaId,
+              updates: { [propertyName]: value },
+            })
+          }
+
+          return true
+        } else {
+          throw new Error(response.error || "Update failed")
+        }
+      } catch (error) {
+        console.error("Error updating media property:", error)
+        throw error
+      }
+    },
+
     // Common tag handling methods
     async createAndAddTag(tag, mediaId) {
       const newTag = await this.$store.dispatch("tags/createTag", tag)
-      
+
       if (mediaId) {
         await this.$store.dispatch("tags/addTagToMedia", {
           mediaId,
           tagId: newTag._id,
         })
       }
-      
+
       return newTag
     },
 
@@ -81,20 +125,20 @@ export const mediaExplorerRightPanelMixin = {
       try {
         const fileName = media.name || media.title || `media_${media._id}`
         const fileExtension = this.getMediaFileExtension(media)
-        
+
         const response = await apiGetAudioFileFromConversation(media._id, false)
-        
+
         if (response?.status === "success") {
           const audioBlob = response.data
           const audioUrl = URL.createObjectURL(audioBlob)
-          
+
           const link = document.createElement("a")
           link.href = audioUrl
           link.download = `${fileName}${fileExtension}`
           link.click()
-          
+
           URL.revokeObjectURL(audioUrl)
-          
+
           return true
         }
         return false
@@ -108,22 +152,22 @@ export const mediaExplorerRightPanelMixin = {
       if (!medias || medias.length === 0) return
 
       const results = []
-      
+
       for (const media of medias) {
         try {
           const success = await this.downloadMediaFile(media)
           results.push({ media, success })
-          
+
           // Add a small delay between downloads to avoid overwhelming the server
           if (medias.length > 1) {
-            await new Promise(resolve => setTimeout(resolve, 500))
+            await new Promise((resolve) => setTimeout(resolve, 500))
           }
         } catch (error) {
           console.error(`Error downloading media ${media._id}:`, error)
           results.push({ media, success: false })
         }
       }
-      
+
       return results
     },
 
@@ -131,14 +175,14 @@ export const mediaExplorerRightPanelMixin = {
       // Try to get extension from metadata
       if (media.metadata?.audio?.filename) {
         const filename = media.metadata.audio.filename
-        const lastDot = filename.lastIndexOf('.')
+        const lastDot = filename.lastIndexOf(".")
         if (lastDot > 0) {
           return filename.substring(lastDot)
         }
       }
-      
+
       // Default to mp3 if no extension found
-      return '.mp3'
+      return ".mp3"
     },
   },
-} 
+}

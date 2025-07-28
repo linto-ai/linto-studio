@@ -70,12 +70,14 @@
             <MediaExplorerItemMobile
               v-for="(media, index) in filteredMedias"
               :key="`media-explorer-item-${media._id}-${index}`"
-              :media="media" />
+              :media="media"
+              :search-value="searchValue" />
             <template #desktop>
               <MediaExplorerItem
                 v-for="(media, index) in filteredMedias"
                 :key="`media-explorer-item-${media._id}-${index}`"
                 :media="media"
+                :search-value="searchValue"
                 :ref="'mediaItem' + index"
                 :is-selected-for-overview="
                   selectedMediaForOverview &&
@@ -182,13 +184,18 @@ export default {
       default: "",
     },
     totalItemsCount: {
-      type: Number,
+      type: [Number, null],
       default: null,
     },
     // Read-only mode for tags (favorites/shared views)
     readonlyTags: {
       type: Boolean,
       default: false,
+    },
+    // Selected tag IDs for filtering
+    selectedTagIds: {
+      type: Array,
+      default: () => [],
     },
   },
   computed: {
@@ -203,16 +210,12 @@ export default {
     ...mapGetters("organizations", {
       currentOrganizationScope: "getCurrentOrganizationScope",
     }),
-    selectedTagIds() {
-      return this.getExploreSelectedTags.map((t) => t._id)
-    },
     totalPages() {
       return Math.ceil(this.count / this.pageSize)
     },
-    // Replace old selectedTagIds getter with prop-based value
+    // Use the prop provided by parent as the single source of truth
     activeSelectedTagIds() {
-      // Use the prop provided by parent as the single source of truth
-      return this.selectedTagIds
+      return this.selectedTagIds || []
     },
     filteredMedias() {
       // Filter medias based on selected tags
@@ -422,11 +425,11 @@ export default {
     },
 
     handleSearch(search, filters) {
-      this.reset()
       this.$emit("search", search, filters)
     },
 
     selectMediaForOverview(media) {
+      console.log("selectMediaForOverview", media)
       this.selectedMediaForOverview = media
     },
 

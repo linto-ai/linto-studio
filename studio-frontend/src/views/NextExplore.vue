@@ -13,6 +13,7 @@
       :readonly-tags="favorites || shared"
       @load-more="handleLoadMore"
       @search="handleSearch"
+      @reset="handleReset"
       class="explore-next__media-explorer relative">
       <template v-slot:before>
         <div
@@ -62,19 +63,13 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters } from "vuex"
+import { mapMutations, mapGetters, mapActions } from "vuex"
 import { bus } from "@/main.js"
 import LayoutV2 from "@/layouts/v2-layout.vue"
 import SidebarFilters from "@/components/SidebarFilters.vue"
 import MediaExplorer from "@/components/MediaExplorer.vue"
 import { fromConversations } from "@/store/inbox"
 import ActionConversationCreate from "@/components/molecules/ActionConversationCreate.vue"
-import {
-  apiGetFavoritesConversations,
-  apiGetConversationsByTags,
-  apiGetConversationsByOrganization,
-  apiGetConversationsSharedWith,
-} from "@/api/conversation.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { convRoleMixin } from "@/mixins/convRole.js"
 import { exploreNavigationMixin } from "@/mixins/exploreNavigation.js"
@@ -96,39 +91,61 @@ export default {
   },
   data() {
     return {
-      conversations: [],
-      loadingConversations: true,
-      page: 0,
       initialPage: 0,
-      error: null,
-      observer: null,
-      hasMoreItems: true,
       showPreviousButton: false,
-      isInitialLoad: true,
-      totalItemsCount: 0,
-      options: {
-        favorites: false,
-        shared: false,
-      },
-      mode: "default", // default, search
-      search: "",
-      filters: [],
       scrollContainer: null,
-      pageSize: 12,
+      mode: "default",
+      page: 0,
+      isInitialLoad: true,
     }
   },
   computed: {
+    ...mapGetters("conversations", [
+      "getConversations",
+      "getLoading",
+      "getError", 
+      "getTotalCount",
+      "getHasMoreItems",
+      "getSearch",
+      "getFilters",
+      "getPageSize"
+    ]),
     ...mapGetters("tags", [
       "getExploreSelectedTags",
       "getTags",
       "getSharedTags", 
       "getFavoritesTags",
     ]),
+    conversations() {
+      return this.getConversations || []
+    },
+    loadingConversations() {
+      return this.getLoading || false
+    },
+    error() {
+      return this.getError
+    },
+    totalItemsCount() {
+      return this.getTotalCount
+    },
+    hasMoreItems() {
+      return this.getHasMoreItems || false
+    },
+    search() {
+      return this.getSearch || ""
+    },
+    filters() {
+      return this.getFilters || []
+    },
+    pageSize() {
+      return this.getPageSize || 20
+    },
     selectedTags() {
-      return this.getExploreSelectedTags
+      return this.getExploreSelectedTags || []
     },
     selectedTagIds() {
-      return this.getExploreSelectedTags.map((t) => t._id)
+      const tags = this.getExploreSelectedTags || []
+      return tags.map((t) => t._id)
     },
     availableTags() {
       return this.favorites ? this.getFavoritesTags : 
@@ -141,21 +158,24 @@ export default {
   beforeDestroy() {
     this.destroy()
   },
-  // async beforeRouteUpdate(to, from, next) {
-  //   console.log("beforeRouteUpdate", to, from)
-  //   // Call next() to proceed with the navigation
-  //   next()
-  //   await this.$nextTick()
-  //   this.destroy()
-  //   await this.init()
-  // },
   watch: {
     selectedTags: {
       handler() {
-        this.resetSearch()
+        this.handleTagsChange()
       },
       deep: true,
       immediate: false,
+    },
+    '$route.query': {
+      handler(newQuery, oldQuery) {
+        // React to URL changes if they happen outside of our component
+        if (newQuery.search !== oldQuery.search || 
+            newQuery.page !== oldQuery.page || 
+            newQuery.tags !== oldQuery.tags) {
+          this.initPageFromUrl()
+        }
+      },
+      deep: true,
     },
   },
   methods: {
@@ -165,6 +185,15 @@ export default {
       "appendMedias",
       "clearMedias",
     ]),
+    ...mapActions("conversations", {
+      fetchConversations: "fetchConversations",
+      loadMore: "loadMore", 
+      searchConversations: "search",
+      applyFilters: "applyFilters",
+      setContext: "setContext",
+      reset: "reset",
+      deleteConversations: "deleteConversations"
+    }),
     destroy() {
       if (this._unsubscribeTagStore) {
         this._unsubscribeTagStore()
@@ -172,190 +201,150 @@ export default {
       bus.$off("medias/delete", this.onMediasDeleted)
     },
     async init() {
-      this.options.favorites = this.favorites
-      this.options.shared = this.shared
-      this.page = 0
       this.$refs.mediaExplorer.reset()
-      // Load appropriate tags based on view type BEFORE initializing from URL
+      
       await this.loadTagsForCurrentView()
-
-      // Give a small delay to ensure tags are fully loaded in the store
       await this.$nextTick()
-
+      
+      await this.setContext({
+        organizationScope: this.currentOrganizationScope,
+        favorites: this.favorites,
+        shared: this.shared
+      })
+      
+      // Initialize from URL parameters
       await this.initPageFromUrl()
-
-      this.resetSearch()
+      
+      this.appendMedias(fromConversations(this.conversations))
       bus.$on("medias/delete", this.onMediasDeleted)
     },
     onMediasDeleted(mediaIds) {
-      this.conversations = this.conversations.filter(
-        (m) => !mediaIds.includes(m._id),
-      )
+      this.deleteConversations(mediaIds)
     },
     async loadTagsForCurrentView() {
       try {
         if (this.favorites) {
-          // Load favorites tags
           await this.$store.dispatch("tags/fetchFavoritesTags")
         } else if (this.shared) {
-          // Load shared tags
           await this.$store.dispatch("tags/fetchSharedTags")
         } else {
-          // Load regular organization tags
           await this.$store.dispatch("tags/fetchTags")
         }
       } catch (error) {
         console.error("Error loading tags for current view:", error)
       }
     },
-
-
-
-
-    async apiSearchConversations(
-      page = this.page,
-      filters = [],
-      append = false,
-    ) {
-      let res
-      this.loadingConversations = true
-
-      const textFilter = filters.find(
-        (filter) => filter.key === "textConversation",
-      )?.value
-      const titleFilter = filters.find(
-        (filter) => filter.key === "titleConversation",
-      )?.value
-
-      const tagIds = this.selectedTagIds
-      try {
-        // Always respect the context (favorites, shared, organization) regardless of tags/filters
-        if (this.options.favorites) {
-          res = await apiGetFavoritesConversations(
-            tagIds,
-            textFilter,
-            titleFilter,
-            page,
-            {
-              sortField: this.selectedOption,
-              pageSize: this.pageSize,
-            },
-          )
-        } else if (this.options.shared) {
-          res = await apiGetConversationsSharedWith(
-            tagIds,
-            textFilter,
-            titleFilter,
-            page,
-            {
-              sortField: this.selectedOption,
-              pageSize: this.pageSize,
-            },
-          )
-        } else {
-          // For organization context, use the appropriate API based on whether we have tags/filters
-          if (tagIds.length === 0 && filters.length == 0) {
-            res = await apiGetConversationsByOrganization(
-              this.currentOrganizationScope,
-              page,
-              {
-                pageSize: this.pageSize,
-                sortField: this.selectedOption,
-              },
-            )
-          } else {
-            res = await apiGetConversationsByTags(
-              this.currentOrganizationScope,
-              tagIds,
-              textFilter,
-              titleFilter,
-              page,
-              {
-                sortField: this.selectedOption,
-                pageSize: this.pageSize,
-              },
-            )
-          }
-        }
-        this.loadingConversations = false
-        this.totalItemsCount = res?.count || 0
-        const newConversations = res?.list || []
-        if (append) {
-          this.conversations = [...this.conversations, ...newConversations]
-        } else {
-          this.conversations = newConversations
-        }
-        this.appendMedias(fromConversations(newConversations))
-        this.hasMoreItems = res?.count - this.pageSize * (page + 1) > 0
-      } catch (error) {
-        this.error = error
-      } finally {
-        this.loadingConversations = false
-      }
-
-      return res
-    },
-
-    async fetchConversations(page = 0, append = false) {
-      try {
-        const data = await this.apiSearchConversations(page, [], append)
-        return data?.list || []
-      } catch (error) {
-        if (page === 0) {
-          this.conversations = []
-          this.clearSelectedMedias()
-        }
-        this.loadingConversations = false
-        console.error("request error", error)
-        this.error = error
-        return []
-      }
-    },
-
-
-    handleSearch(search, filters) {
+    async handleSearch(search, filters) {
       this.updateSearchUrl(search)
-
-      if (search.length === 0) {
-        this.mode = "default"
-        this.search = ""
-        this.filters = []
-        this.fetchConversations(0, false)
-        return
-      }
-
-      this.search = search
-      this.filters = filters
-      this.mode = "search"
-      this.$nextTick(() => {
-        this.resetSearch(filters, true)
-      })
+      this.mode = search && search.trim().length > 0 ? "search" : "default"
+      await this.searchConversations({ search, filters })
+      this.appendMedias(fromConversations(this.conversations))
     },
-
     async handleLoadMore(page) {
       if (this.loadingConversations || !this.hasMoreItems) return
-      if (this.page == page) return
-
-      this.page = page
-
-      if (this.mode == "search") {
-        await this.apiSearchConversations(page, this.filters, true)
+      
+      this.updatePageUrl(page)
+      const newConversations = await this.loadMore()
+      this.appendMedias(fromConversations(newConversations || []))
+    },
+    async handleTagsChange() {
+      await this.applyFilters({ tagIds: this.selectedTagIds })
+      this.appendMedias(fromConversations(this.conversations))
+    },
+    async loadDataForMode(page, append) {
+      if (this.mode === "search") {
+        await this.searchConversations({ 
+          search: this.search, 
+          filters: this.filters
+        })
       } else {
-        await this.fetchConversations(page, true)
+        if (page > 0) {
+          await this.loadMore()
+        } else {
+          await this.fetchConversations()
+        }
       }
     },
+    async apiSearchConversations(page, filters, append) {
+      await this.searchConversations({ 
+        search: this.search, 
+        filters
+      })
+    },
+    resetSearch() {
+      this.reset()
+    },
+    async initPageFromUrl() {
+      const urlParams = new URLSearchParams(window.location.search)
+      const pageParam = urlParams.get("page")
+      const searchParam = urlParams.get("search")
+      const tagsParam = urlParams.get("tags")
 
-    resetSearch(filters = [], append = false) {
-      this.page = 0
-      this.conversations = []
-      this.showPreviousButton = false
-      this.hasMoreItems = false
+      // Handle tags parameter
+      if (tagsParam && tagsParam.trim().length > 0) {
+        const tagIds = tagsParam.split(",").filter((id) => id.trim())
+        this.$store.dispatch(
+          "tags/setExploreSelectedTags",
+          tagIds
+            .map((id) => {
+              return this.availableTags.find((t) => t._id === id)
+            })
+            .filter((tag) => tag),
+        )
+      } else {
+        // Clear selected tags if no tags parameter in URL
+        this.$store.dispatch("tags/setExploreSelectedTags", [])
+      }
+
+      // Handle search parameter
+      if (searchParam && searchParam.trim().length > 0) {
+        this.mode = "search"
+        const filters = [
+          {
+            title: "Title filter",
+            value: searchParam.trim(),
+            _id: this.generateUuid(),
+            key: "titleConversation",
+          },
+        ]
+        await this.searchConversations({ 
+          search: searchParam.trim(), 
+          filters 
+        })
+      } else {
+        this.mode = "default"
+        await this.fetchConversations()
+      }
+
+      if (pageParam && !isNaN(parseInt(pageParam))) {
+        const targetPage = parseInt(pageParam)
+        this.initialPage = targetPage
+        this.page = targetPage
+
+        if (targetPage > 0) {
+          this.showPreviousButton = true
+          // Load more items for pagination if needed
+          for (let i = 1; i <= targetPage; i++) {
+            await this.loadMore()
+          }
+        }
+      }
+
       this.isInitialLoad = false
-      return this.apiSearchConversations(0, filters, append)
     },
-    handleTagClick(tag) {
-      this.$store.dispatch("tags/toggleTag", tag)
-    },
+    async handleReset() {
+      this.mode = "default"
+      this.page = 0
+      
+      // Clear URL parameters
+      const url = new URL(window.location)
+      url.searchParams.delete("search")
+      url.searchParams.delete("page")
+      window.history.replaceState({}, "", url)
+      
+      await this.reset()
+      this.appendMedias(fromConversations(this.conversations))
+    }
   },
 }
 </script>

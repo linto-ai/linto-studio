@@ -43,7 +43,8 @@
     "tags": "Topics",
     "title": "Settings",
     "subtitle": "Manage your account and preferences",
-    "logout": "Logout"
+    "logout": "Logout",
+    "email_not_verified": "Your email is not verified. Please verify your email to access all features."
   },
   "backoffice": {
     "title": "Backoffice",
@@ -1293,7 +1294,7 @@
       "notif_success": "Role updated",
       "notif_error": "An error occurred while updating the role"
     },
-    "send_verification_link": "Send validation link",
+    "send_verification_link": "Resend validation link",
     "share_notification_label": "Receive email notification when a media is shared to you",
     "title": "Profile settings",
     "update_email_label": "Update email",

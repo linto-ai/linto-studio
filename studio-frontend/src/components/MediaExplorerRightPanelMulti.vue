@@ -56,28 +56,25 @@
     <!-- Bulk tag management -->
     <div class="bulk-tag-management">
       <h4 class="actions-title">
-        {{ isTagManagementReadOnly ? $t("media_explorer.panel.tags") : $t("media_explorer.panel.manage_tags") }}
+        {{ $t("media_explorer.panel.manage_tags") }}
       </h4>
 
       <!-- Tag management mode -->
-      <div v-if="!isTagManagementReadOnly" class="tag-actions">
-        <InputSelector mode="tags" :tags="getTags" :selected-tags="[]" @create="handleCreateAndAddTag"
-          @add="handleAddTagToAll" :placeholder="$t('media_explorer.panel.add_tag_to_all')" />
-      </div>
-
-      <!-- Common tags -->
-      <div v-if="commonTags.length > 0" class="common-tags">
-        <h5 class="common-tags-title">
-          {{ $t("media_explorer.panel.common_tags") }}
-        </h5>
-        <div class="tags-container">
-          <ChipTag v-for="tag in commonTags" :key="tag._id" :name="tag.name" :color="tag.color"
-            :removable="!isTagManagementReadOnly" @remove="handleRemoveTagFromAll(tag)" />
-        </div>
+      <div class="tag-actions">
+        <InputSelector
+          mode="tags"
+          :tags="getTags"
+          :selected-tags="commonTags"
+          @create="handleCreateAndAddTag"
+          @add="handleAddTagToAll"
+          @remove="handleRemoveTagFromAll"
+          :readonly="isTagManagementReadOnly"
+          :placeholder="$t('media_explorer.panel.add_tag_to_all')"
+        />
       </div>
 
       <!-- Read-only message when no common tags -->
-      <div v-else-if="isTagManagementReadOnly" class="no-common-tags">
+      <div v-if="commonTags.length === 0" class="no-common-tags">
         <span class="no-tags-message">
           {{ $t("media_explorer.panel.no_common_tags") }}
         </span>
@@ -93,6 +90,7 @@ import Button from "@/components/atoms/Button.vue"
 import Badge from "@/components/atoms/Badge.vue"
 import Avatar from "@/components/atoms/Avatar.vue"
 import InputSelector from "@/components/atoms/InputSelector.vue"
+import TextInput from "@/components/atoms/TextInput.vue"
 import Tooltip from "@/components/atoms/Tooltip.vue"
 import ModalDeleteConversations from "./ModalDeleteConversations.vue"
 import ConversationShareMultiple from "./ConversationShareMultiple.vue"
@@ -107,6 +105,7 @@ export default {
     Badge,
     Avatar,
     InputSelector,
+    TextInput,
     Tooltip,
     ModalDeleteConversations,
     ConversationShareMultiple,
@@ -120,6 +119,8 @@ export default {
   data() {
     return {
       downloadLoading: false,
+      bulkTitle: '',
+      bulkDescription: '',
     }
   },
   computed: {
@@ -214,6 +215,52 @@ export default {
       return media.tags
         .map((tagId) => this.getTagById(tagId))
         .filter((tag) => !!tag)
+    },
+
+    async handleBulkTitleChange(newTitle) {
+      if (!newTitle.trim() || this.selectedMedias.length === 0) return
+      
+      try {
+        const promises = this.selectedMedias.map(media => 
+          this.updateMediaProperty(media._id, 'title', newTitle)
+        )
+        await Promise.all(promises)
+        
+        this.$store.dispatch('system/addNotification', {
+          type: 'success',
+          message: this.$t('media_explorer.panel.bulk_title_updated', { count: this.selectedMedias.length })
+        })
+        this.bulkTitle = ''
+      } catch (error) {
+        console.error('Bulk title update error:', error)
+        this.$store.dispatch('system/addNotification', {
+          type: 'error',
+          message: this.$t('media_explorer.panel.bulk_update_error')
+        })
+      }
+    },
+
+    async handleBulkDescriptionChange(newDescription) {
+      if (!newDescription.trim() || this.selectedMedias.length === 0) return
+      
+      try {
+        const promises = this.selectedMedias.map(media => 
+          this.updateMediaProperty(media._id, 'description', newDescription)
+        )
+        await Promise.all(promises)
+        
+        this.$store.dispatch('system/addNotification', {
+          type: 'success',
+          message: this.$t('media_explorer.panel.bulk_description_updated', { count: this.selectedMedias.length })
+        })
+        this.bulkDescription = ''
+      } catch (error) {
+        console.error('Bulk description update error:', error)
+        this.$store.dispatch('system/addNotification', {
+          type: 'error',
+          message: this.$t('media_explorer.panel.bulk_update_error')
+        })
+      }
     },
 
     async handleBulkDownload() {
@@ -438,5 +485,33 @@ export default {
   font-size: 0.875rem;
   color: var(--text-secondary, #666);
   font-style: italic;
+}
+
+.bulk-property-editing {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.property-editors {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.property-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.property-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.bulk-property-input {
+  width: 100%;
 }
 </style>

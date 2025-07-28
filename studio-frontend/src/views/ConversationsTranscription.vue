@@ -173,6 +173,7 @@ export default {
       turnsIndexedByid: {},
       turns: [],
       turnPages: [],
+      pendingSearchFromUrl: null,
     }
   },
   mounted() {
@@ -196,6 +197,9 @@ export default {
     bus.$on("refresh_turns", () => {
       this.setupTurns()
     })
+
+    // Apply search from URL parameter if present
+    this.applySearchFromUrl()
   },
   beforeDestroy() {
     bus.$off("open-metadata-modal")
@@ -219,10 +223,20 @@ export default {
         this.status = this.computeStatus(this.conversation?.jobs?.transcription)
       }
     },
+    status(newVal, oldVal) {
+      if (newVal === 'done' && this.pendingSearchFromUrl) {
+        this.$nextTick(() => {
+          this.transcriptionSearch = this.pendingSearchFromUrl
+          this.pendingSearchFromUrl = null
+        })
+      }
+    },
     transcriptionSearch(newVal, oldVal) {
       if (newVal != oldVal) {
         bus.$emit("player-pause")
-        this.$refs.editor.searchInTranscription(newVal, this.exactMatching)
+        if (this.$refs.editor) {
+          this.$refs.editor.searchInTranscription(newVal, this.exactMatching)
+        }
       }
     },
   },
@@ -422,6 +436,19 @@ export default {
       this.searchedHighlightId = tagId
       this.currentHighlightResult = current
       this.totalHighlightResult = total
+    },
+    applySearchFromUrl() {
+      const urlParams = new URLSearchParams(window.location.search)
+      const searchTerm = urlParams.get("search")
+      if (searchTerm) {
+        if (this.status === 'done') {
+          this.$nextTick(() => {
+            this.transcriptionSearch = searchTerm
+          })
+        } else {
+          this.pendingSearchFromUrl = searchTerm
+        }
+      }
     },
   },
   components: {

@@ -44,7 +44,8 @@
     "tags": "Thématiques",
     "title": "Paramètres",
     "subtitle": "Gérez votre compte et vos préférences ",
-    "logout": "Déconnexion"
+    "logout": "Déconnexion",
+    "email_not_verified": "Votre adresse email n'est pas vérifiée. Veuillez vérifier votre adresse email pour accéder à toutes les fonctionnalités."
   },
   "backoffice": {
     "title": "Backoffice",
@@ -1296,7 +1297,7 @@
       "notif_success": "Les rôles ont été mis à jour",
       "notif_error": "Une erreur s'est produite lors de la mise à jour des rôles"
     },
-    "send_verification_link": "Envoyer un lien de validation",
+    "send_verification_link": "Renvoyer le lien de validation",
     "share_notification_label": "Recevez une notification par e-mail lorsqu'un média vous est partagé",
     "title": "Paramètres utilisateur",
     "update_email_label": "Mettre à jour l'email",

@@ -3,6 +3,7 @@ const debug = require("debug")(
 )
 const MongoModel = require(`../model`)
 const COLOR = require(`${process.cwd()}/lib/dao/organization/color`)
+const DEFAULT_TAGS = require(`${process.cwd()}/config/tags`)
 
 const moment = require("moment")
 
@@ -28,30 +29,25 @@ class TagModel extends MongoModel {
    * @todo: add default tags to the database (customizable via config)
    */
   async createDefaultTags(organizationId, categoryId) {
-    try {
-      if (
-        process.env.DEFAULT_TAGS === undefined ||
-        process.env.DEFAULT_TAGS === ""
-      ) {
-        return
-      }
+    const defaultsTags = [
+      ...DEFAULT_TAGS,
+      ...(process.env.DEFAULT_TAGS ? process.env.DEFAULT_TAGS.split(",") : []),
+    ]
 
-      const tags = process.env.DEFAULT_TAGS.split(",").map((tag) => ({
-        name: tag,
-        color: COLOR.getRandomColor(),
-        description: "",
-        organizationId: this.getObjectId(organizationId),
-        categoryId: this.getObjectId(categoryId),
-      }))
-      if (tags.length === 0) {
-        return
-      }
+    const tags = defaultsTags.map((tag) => ({
+      name: tag.name,
+      color: COLOR.getRandomColor(),
+      description: "",
+      organizationId: this.getObjectId(organizationId),
+      categoryId: this.getObjectId(categoryId),
+      emoji: tag.emoji,
+    }))
 
-      return await this.mongoInsertMany(tags)
-    } catch (error) {
-      console.error(error)
-      return error
+    if (tags.length === 0) {
+      return
     }
+
+    return await this.mongoInsertMany(tags)
   }
 
   async create(payload) {

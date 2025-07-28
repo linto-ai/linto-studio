@@ -105,6 +105,10 @@ export default {
       type: Object,
       required: true,
     },
+    searchValue: {
+      type: String,
+      default: "",
+    },
   },
   data() {
     return {
@@ -237,6 +241,7 @@ export default {
           conversationId: this.media._id,
           organizationId: this.organizationId,
         },
+        query: this.searchValue ? { search: this.searchValue } : {},
       })
     },
     handleSubtitles() {
@@ -246,6 +251,7 @@ export default {
           conversationId: this.media._id,
           organizationId: this.organizationId,
         },
+        query: this.searchValue ? { search: this.searchValue } : {},
       })
     },
     handleExport() {

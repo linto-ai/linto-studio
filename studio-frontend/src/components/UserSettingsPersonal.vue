@@ -17,31 +17,6 @@
         </template>
       </FormInput>
 
-      <div
-        class="flex row align-center"
-        v-if="!userInfo.emailIsVerified || emailSent">
-        <div class="user-settings-notification" v-if="!emailSent">
-          <span class="content">{{
-            $t("user_settings.verify_email_notif")
-          }}</span>
-        </div>
-        <span v-else class="email-verified-notif">{{
-          $t("user_settings.check_verify_email")
-        }}</span>
-        <button
-          v-if="!userInfo.emailIsVerified && !emailSent"
-          class="btn secondary sm"
-          @click="sendVerificationEmail()"
-          style="margin: 0 5px">
-          <ph-icon name="paper-plane-tilt" size="md" class="icon" />
-          <!-- <span
-            :class="['icon', sendingEmail ? 'loading' : 'send-mail']"></span> -->
-          <span class="label">{{
-            $t("user_settings.send_verification_link")
-          }}</span>
-        </button>
-      </div>
-
       <button type="submit" class="btn primary">
         <ph-icon name="check" size="md" class="icon" />
         <span class="label">{{
@@ -155,18 +130,6 @@ export default {
       }
 
       return false
-    },
-    async sendVerificationEmail() {
-      this.sendingEmail = true
-      const sendLink = await apiSendVerificationLink({
-        timeout: 3000,
-        redirect: false,
-      })
-
-      if (sendLink.status === "success") {
-        this.sendingEmail = false
-        this.emailSent = true
-      }
     },
   },
   components: { Fragment, FormInput },

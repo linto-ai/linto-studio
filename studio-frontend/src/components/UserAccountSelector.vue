@@ -1,16 +1,31 @@
 <template>
-  <div class="flex gap-small flex1 align-center user-account-selector">
-    <Avatar :src="userAvatar" size="lg" />
-    <div class="flex col flex1 gap-small">
-      <span class="user-name">{{ UserName }}</span>
-      <div class="flex gap-small align-center">
-        <Button
-          @click="openOrganizationSelector"
-          :label="orgaName"
-          :size="isMobile ? 'sm' : 'xs'"
-          class="organization-name"></Button>
-        <span class="user-role">{{ currentRoleToString }}</span>
-      </div>
+  <div class="user-account-selector flex gap-small flex1 align-center">
+    <div class="avatar-container">
+      <Avatar :src="userAvatar" size="lg" @click="openSettingsModal" />
+      <Tooltip 
+        v-if="!userInfo.emailIsVerified" 
+        :text="$t('app_settings_modal.email_not_verified')"
+        icon="warning"
+        :position="isMobile ? 'left' : 'bottom'"
+        backgroundColor="var(--red-chart)"
+        borderColor="var(--red-chart)"
+        color="white"
+        :maxWidth="isMobile ? 250 : 300"
+        class="email-notification-tooltip">
+        <div class="notification-badge"></div>
+      </Tooltip>
+    </div>
+    <div class="metadata flex col">
+      <span class="user-name">{{ UserName }} <span class="user-role">({{ currentRoleToString }})</span></span>
+      <Button
+        @click="openOrganizationSelector"
+        :label="orgaName"
+        size="xs"
+        variant="flat"
+        icon="swap"
+        icon-position="right"
+        class="organization-name"
+      />
     </div>
     <Button
       icon="gear"
@@ -48,10 +63,8 @@ import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 import { userName } from "@/tools/userName"
 import userAvatar from "@/tools/userAvatar"
-import { getColorFromText } from "@/tools/colors"
 import ModalSwitchOrg from "@/components/ModalSwitchOrg.vue"
-
-import UserProfilePicture from "@/components/atoms/UserProfilePicture.vue"
+import Tooltip from "@/components/atoms/Tooltip.vue"
 
 export default {
   mixins: [orgaRoleMixin, platformRoleMixin],
@@ -103,66 +116,60 @@ export default {
     },
   },
   components: {
-    UserProfilePicture,
     ModalSwitchOrg,
+    Tooltip,
   },
 }
 </script>
 
 <style lang="scss">
 .user-account-selector {
+  .avatar-container {
+    position: relative;
+    display: inline-block;
+    z-index: 100;
+  }
+
+  .notification-badge {
+    width: 12px;
+    height: 12px;
+    background-color: var(--red-chart);
+    border-radius: 50%;
+    border: 2px solid white;
+    cursor: pointer;
+  }
+
+  .email-notification-tooltip {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    z-index: 100;
+  }
+
+  .metadata {
+    gap: 0.05rem;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex: 1;
+  }
+
   .user-name {
     font-weight: bold;
   }
 
   .organization-name {
-    max-width: 10rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    padding: 0 0.25rem;
-    text-transform: capitalize;
-
-    @media (max-width: 1100px) {
-      padding: 0.15rem 0.5rem;
-    }
-
-    .btn-prefix-label {
-      overflow: hidden;
-
-      .label {
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-    }
-  }
-
-  .organization-name:hover + .user-role {
-    animation-name: resize-and-hide;
-    animation-duration: 0.5s;
-    width: 0px;
-    overflow: hidden;
+    align-self: flex-start;
   }
 
   .user-role {
     color: var(--text-secondary);
     white-space: nowrap;
+    font-weight: 400;
+    text-transform: lowercase;
+    font-size: 0.9em;
 
     @media (max-width: 1100px) {
       font-size: 0.9em;
-    }
-  }
-
-  @keyframes resize-and-hide {
-    from {
-      width: auto;
-      overflow: visible;
-      opacity: 1;
-    }
-    to {
-      width: 0px;
-      overflow: hidden;
-      opacity: 0;
     }
   }
 }

@@ -319,18 +319,27 @@ export default {
     },
     handleMouseLeave() {
       this.isHovered = false
-      // Clear any pending timeout
-      if (this.spinTimeout) {
-        clearTimeout(this.spinTimeout)
-        this.spinTimeout = null
-      }
       if (!this.isSpinning) {
         this.showPlus()
       }
     },
     showPlus() {
-      this.currentIcon = null
-      this.isEasterEgg = false
+      const iconContainer = this.$refs.iconContainer
+
+      if (iconContainer) {
+        iconContainer.style.transition = 'opacity 120ms ease-in'
+        iconContainer.style.opacity = '0'
+      }
+
+      setTimeout(() => {
+        this.currentIcon = null
+        this.isEasterEgg = false
+
+        if (iconContainer) {
+          void iconContainer.offsetWidth
+          iconContainer.style.opacity = '1'
+        }
+      }, 120)
     },
     async spin() {
       if (this.isSpinning) return

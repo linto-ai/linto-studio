@@ -93,6 +93,9 @@ export default {
       return this.$store.getters["inbox/getMediaById"](this.mediaId)
     },
     mediatags() {
+      if (!this.media || !this.media.tags) {
+        return []
+      }
       return this.media.tags
         .map((tagId) => this.$store.getters["tags/getTagById"](tagId))
         .filter((t) => t !== undefined)

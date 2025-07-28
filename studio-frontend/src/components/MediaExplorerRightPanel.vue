@@ -17,6 +17,7 @@
           @click="$emit('close')"
           icon="arrow-line-right"
           size="sm"
+          variant="flat"
           color="neutral-40" />
         <h3 class="panel-title">
           {{
@@ -45,7 +46,7 @@
         </div>
         <div v-else></div>
         <!-- delete and share -->
-        <div class="flex gap-small">
+        <div class="button-group">
           <ConversationShareMultiple
             :selectedConversations="selectedMedias"
             :currentOrganizationScope="currentOrganizationScope" />

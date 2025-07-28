@@ -9,9 +9,9 @@
                 With unlimited access to all features
             </div>
             <div class="card-credits__content__button">
-                <button class="xs btn btn-primary btn-radium">
+                <Button href="https://linto.ai/" target="_blank" rel="noopener noreferrer" variant="link" size="xs">
                     Learn more
-                </button>
+                </Button>
             </div>
         </div>
     </div>
@@ -32,7 +32,7 @@ export default {
         logo() {
             return `/img/${getEnv("VUE_APP_LOGO")}`
         }
-    }
+    },
 }
 </script>
 

@@ -151,6 +151,7 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 1em;
+  overflow: visible;
 
   .burger-menu__header {
     display: flex;
@@ -161,6 +162,9 @@ export default {
     height: 64px;
     box-shadow: var(--shadow-block);
     border-bottom: var(--border-block);
+    overflow: visible;
+    position: relative;
+    z-index: 10;
 
     &>* {
       flex: 1;

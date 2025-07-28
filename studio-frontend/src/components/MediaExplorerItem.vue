@@ -67,6 +67,7 @@
                     conversationId: media._id,
                     organizationId: currentOrganization._id,
                   },
+                  query: searchValue ? { search: searchValue } : {},
                 }">
                 {{ title }}
               </router-link>
@@ -167,6 +168,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    searchValue: {
+      type: String,
+      default: "",
+    },
   },
   data() {
     return {
@@ -194,6 +199,7 @@ export default {
               conversationId: this.media._id,
               organizationId: this.organizationId,
             },
+            query: this.searchValue ? { search: this.searchValue } : {},
           },
         },
         {
@@ -207,6 +213,7 @@ export default {
               conversationId: this.media._id,
               organizationId: this.organizationId,
             },
+            query: this.searchValue ? { search: this.searchValue } : {},
           },
         },
         {
@@ -231,12 +238,15 @@ export default {
       ]
     },
     mediatags() {
+      if (!this.media || !this.media.tags) {
+        return []
+      }
       return this.media.tags.map((t) =>
         this.$store.getters["tags/getTagById"](t),
       )
     },
     title() {
-      return this.media.title || this.media.name
+      return this.media.name
     },
     description() {
       return this.media.description

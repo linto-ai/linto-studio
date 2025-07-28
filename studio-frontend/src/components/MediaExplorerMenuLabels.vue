@@ -162,7 +162,6 @@ export default {
       display: flex;
       gap: 0.5em;
       list-style: none;
-      max-height: 240px;
       overflow-y: auto;
       flex-wrap: wrap;
       padding: 0.5em;

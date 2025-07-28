@@ -1,71 +1,31 @@
 <template>
-  <component
-    :is="to ? 'router-link' : 'button'"
-    :to="to"
-    class="btn"
-    :class="classes"
-    :style="styles"
-    :disabled="disabled || loading"
-    v-bind="$attrs"
-    :aria-disabled="disabled || loading"
-    :title="isIconOnly ? $attrs.ariaLabel : ''"
-    v-on="$listeners">
+  <component :is="componentType" :to="to" :href="href" :target="target" :rel="rel" class="btn" :class="classes" :style="styles"
+    :disabled="disabled || loading" v-bind="$attrs" :aria-disabled="disabled || loading"
+    :title="isIconOnly ? $attrs.ariaLabel : ''" v-on="$listeners">
     <template v-if="isIconOnly">
-      <ph-icon
-        v-if="loading"
-        name="circle-notch"
-        :weight="computedIconWeight"
-        :color="computedIconColor"
-        :size="size"
+      <ph-icon v-if="loading" name="circle-notch" :weight="computedIconWeight" :color="computedIconColor" :size="size"
         class="animate-spin" />
 
-      <ph-icon
-        v-else-if="icon"
-        :name="icon"
-        :weight="computedIconWeight"
-        :color="computedIconColor"
-        :size="size"
+      <ph-icon v-else-if="icon" :name="icon" :weight="computedIconWeight" :color="computedIconColor" :size="size"
         :class="iconClasses" />
 
       <!-- Left avatar -->
-      <Avatar
-        v-else-if="avatar || avatarColor || avatarText"
-        class="avatar"
-        :text="avatarText"
-        :color="avatarColor"
-        :src="avatar"
-        :size="avatarSize" />
+      <Avatar v-else-if="avatar || avatarColor || avatarText" class="avatar" :text="avatarText" :color="avatarColor"
+        :src="avatar" :size="avatarSize" />
     </template>
     <template v-else>
       <span class="btn-prefix-label">
-        <span
-          class="btn-prefix"
-          v-if="icon || avatar || avatarColor || avatarText || loading">
-          <ph-icon
-            v-if="loading"
-            name="circle-notch"
-            :weight="computedIconWeight"
-            :color="computedIconColor"
-            :size="size"
-            class="animate-spin" />
+        <span class="btn-prefix" v-if="icon || avatar || avatarColor || avatarText || loading">
+          <ph-icon v-if="loading" name="circle-notch" :weight="computedIconWeight" :color="computedIconColor"
+            :size="size" class="animate-spin" />
 
           <!-- Left icon or avatar -->
-          <ph-icon
-            v-else-if="icon && iconPosition === 'left'"
-            :name="icon"
-            :weight="computedIconWeight"
-            :color="computedIconColor"
-            :size="size"
-            :class="iconClasses" />
+          <ph-icon v-else-if="icon && iconPosition === 'left'" :name="icon" :weight="computedIconWeight"
+            :color="computedIconColor" :size="size" :class="iconClasses" />
 
           <!-- Left avatar -->
-          <Avatar
-            v-else-if="avatar || avatarColor || avatarText"
-            class="avatar"
-            :text="avatarText"
-            :color="avatarColor || color"
-            :src="avatar"
-            :size="avatarSize" />
+          <Avatar v-else-if="avatar || avatarColor || avatarText" class="avatar" :text="avatarText"
+            :color="avatarColor || color" :src="avatar" :size="avatarSize" />
         </span>
 
         <!-- Label/Content -->
@@ -75,20 +35,10 @@
       </span>
 
       <!-- Right icon -->
-      <ph-icon
-        v-if="!loading && iconRight"
-        :name="iconRight"
-        :weight="computedIconWeight"
-        :color="computedIconColor"
-        :size="size"
-        :class="iconClasses" />
-      <ph-icon
-        v-if="!loading && icon && iconPosition === 'right'"
-        :name="icon"
-        :weight="computedIconWeight"
-        :color="computedIconColor"
-        :size="size"
-        :class="iconClasses" />
+      <ph-icon v-if="!loading && iconRight" :name="iconRight" :weight="computedIconWeight" :color="computedIconColor"
+        :size="size" :class="iconClasses" />
+      <ph-icon v-if="!loading && icon && iconPosition === 'right'" :name="icon" :weight="computedIconWeight"
+        :color="computedIconColor" :size="size" :class="iconClasses" />
     </template>
   </component>
 </template>
@@ -171,7 +121,7 @@ export default {
       required: false,
       default: "solid",
       validator: (value) =>
-        ["solid", "outline", "transparent", "text"].includes(value),
+        ["solid", "outline", "transparent", "text", "link", "flat"].includes(value),
     },
     disabled: {
       type: Boolean,
@@ -207,22 +157,56 @@ export default {
       type: [String, Object],
       required: false,
     },
+    href: {
+      type: String,
+      required: false,
+    },
+    target: {
+      type: String,
+      required: false,
+    },
+    rel: {
+      type: String,
+      required: false,
+    },
   },
   computed: {
     computedIconWeight() {
-      if (this.variant === "solid") {
+      if (this.variant === "solid" || this.variant === "flat") {
         return this.iconWeight || "fill"
       }
       return this.iconWeight || "regular"
     },
     computedIconColor() {
-      if (this.variant === "solid") {
-        return "primary-contrast"
+      // For flat and outline variants – no inline color so that CSS (including :hover) can decide
+      if (this.variant === "flat" || this.variant === "outline") {
+        return undefined
       }
-      return this.color || "primary"
+
+      if (this.variant === "solid") {
+        // Contrast color against the filled background
+        return `var(--${this.color}-contrast, #fff)`
+      }
+
+      if (this.variant === "link" || this.variant === "text") {
+        // Link or text buttons inherit the colour of the text
+        return `var(--${this.color}-color, var(--text-primary))`
+      }
+
+      // transparent variants keep the main color
+      return `var(--${this.color}-color, var(--primary-color))`
     },
     isIconOnly() {
       return this.iconOnly || (this.icon && !this.label && !this.$slots.default)
+    },
+    componentType() {
+      if (this.href) {
+        return 'a'
+      }
+      if (this.to) {
+        return 'router-link'
+      }
+      return 'button'
     },
     classes() {
       const classes = []
@@ -248,6 +232,10 @@ export default {
         classes.push("transparent")
       } else if (this.variant === "text") {
         classes.push("text")
+      } else if (this.variant === "link") {
+        classes.push("link")
+      } else if (this.variant === "flat") {
+        classes.push("flat")
       }
 
       // Special variants
@@ -261,7 +249,7 @@ export default {
       }
 
       if (this.isIconOnly) {
-        classes.push("only-icon")
+        classes.push("icon-only")
       }
 
       if (this.wrap) {
@@ -302,13 +290,14 @@ export default {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
 }
 
 .btn {
-  .label + .icon {
+  .label+.icon {
     margin-left: 4px;
   }
 
@@ -324,5 +313,36 @@ export default {
       gap: 0;
     }
   }
+}
+
+.btn.link {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  color: var(--primary-color);
+  text-decoration: none;
+  cursor: pointer;
+
+  /* Keep icon and text aligned */
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25em;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &.secondary {
+    color: var(--secondary-color);
+  }
+
+  &.tertiary {
+    color: var(--tertiary-color);
+  }
+}
+
+/* Gap when a right-side icon is present (after label) */
+.btn .label+.icon {
+  margin-left: 0.25rem;
 }
 </style>
