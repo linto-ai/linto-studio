@@ -29,7 +29,7 @@
         <Avatar
           color="#dadada"
           :text="convOwner.fullName.substring(0, 1)"
-          :src="convOwnerAvatar"
+          :src="convOwner.img"
           size="sm" />
       </Tooltip>
 
@@ -145,18 +145,13 @@ export default {
       if (owner) {
         return {
           fullName: userName(owner),
-          img: owner.img
-            ? process.env.VUE_APP_PUBLIC_MEDIA + "/" + owner.img
-            : null,
+          img: owner.img ? userAvatar(owner.img) : null,
         }
       }
       return {
         fullName: "Private user",
-        img: process.env.VUE_APP_PUBLIC_MEDIA + "/pictures/default.jpg",
+        img: userAvatar("/pictures/default.jpg"),
       }
-    },
-    convOwnerAvatar() {
-      return userAvatar(this.convOwner)
     },
     createdAt() {
       const options = {

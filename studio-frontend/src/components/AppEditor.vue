@@ -230,7 +230,7 @@ export default {
 
     bus.$on("refresh_spk_timebox", () => {
       this.speakersTurnsTimebox = this.getSpkTimebox()
-      bus.$emit("refresh_audio_regions", this.speakersTurnsTimebox)
+      //bus.$emit("refresh_audio_regions", this.speakersTurnsTimebox)
     })
     bus.$on("player-ready", this.playerReady.bind(this))
   },

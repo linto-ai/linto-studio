@@ -186,6 +186,7 @@
 
   .error-field {
     display: inline-block;
+    color: var(--red-chart);
   }
 
   /* input file */
@@ -412,6 +413,8 @@
 
     &[selected="selected"] {
       border-color: var(--primary-color);
+      border-width: 2px;
+      margin: 0px;
     }
   }
 
