@@ -88,6 +88,7 @@ BROKER_PROTOCOL=mqtt
 
 # Token duration settings possible in m, h, d
 TOKEN_DAYS_TIME=7d
+EXTENDED_TOKEN_DAYS_TIME=14d
 REFRESH_TOKEN_DAYS_TIME=14d
 
 # Authentification settings

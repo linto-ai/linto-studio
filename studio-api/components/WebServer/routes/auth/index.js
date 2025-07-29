@@ -1,6 +1,6 @@
 const debug = require("debug")("linto:conversation-manager:routes:auth")
 
-const { logout, recoveryAuth } = require(
+const { logout, recoveryAuth, generateExtendedAuthToken } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/users/users.js`,
 )
 
@@ -19,6 +19,12 @@ module.exports = (webServer) => {
       controller: async (req, res, next) => {
         res.status(200).send("Ok")
       },
+    },
+    {
+      path: "/token",
+      method: "get",
+      requireAuth: true,
+      controller: generateExtendedAuthToken,
     },
     {
       path: "/recovery",
