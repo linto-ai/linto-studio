@@ -1,4 +1,5 @@
 const debug = require("debug")("linto:webserver:routes")
+const PROVIDER = require(`${process.cwd()}/lib/dao/oidc/provider`)
 
 module.exports = (webServer) => {
   let api_routes = {
@@ -47,19 +48,8 @@ module.exports = (webServer) => {
       ...require("./api/administration/alias")(webServer),
     ]
   }
-
-  if (process.env.LOCAL_AUTH_ENABLED === "true") {
-    api_routes["/auth"] = [
-      ...api_routes["/auth"],
-      ...require("./auth/local.js")(webServer),
-    ]
-  }
-  if (process.env.OIDC_TYPE !== "") {
-    api_routes["/auth"] = [
-      ...api_routes["/auth"],
-      ...require("./auth/oidc.js")(webServer),
-    ]
-  }
+  const authProviders = PROVIDER.registerRoutes(webServer)
+  api_routes["/auth"] = [...api_routes["/auth"], ...authProviders["/auth"]]
 
   return {
     api_routes: api_routes,

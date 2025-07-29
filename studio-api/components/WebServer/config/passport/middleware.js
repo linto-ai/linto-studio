@@ -9,6 +9,8 @@ const verifyJwt = require("jsonwebtoken")
 const algorithm = process.env.JWT_ALGORITHM || "HS256"
 let { generators } = require("openid-client")
 
+const PROVIDER = require(`${process.cwd()}/lib/dao/oidc/provider`)
+
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const {
   MalformedToken,
@@ -20,10 +22,7 @@ const refreshToken = require("./token/refresh")
 
 const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
 
-require("./strategies/local")
-
-if (process.env.OIDC_TYPE === "linagora") require("./strategies/oidc_linagora")
-else if (process.env.OIDC_TYPE === "eu") require("./strategies/oidc_eu")
+PROVIDER.loadEnabledStrategies()
 
 const authenticateUser = (strategy, req, res, next) => {
   if (
@@ -51,8 +50,20 @@ const authenticateUser = (strategy, req, res, next) => {
   })(req, res, next)
 }
 
+const authenticateScopeUser = (strategy, scope, req, res, next) => {
+  passport.authenticate(strategy, { scope: scope }, (err, user) => {
+    if (err) next(err)
+    else if (!user) throw new InvalidCredential()
+    else {
+      res.status(200).json({
+        message: "login success",
+        ...user,
+      })
+    }
+  })(req, res, next)
+}
+
 const extractToken = (req) => {
-  if (req.cookie) debug("cookie", req.cookie)
   if (req.headers.authorization) {
     return req.headers.authorization.split(" ")[1]
   } else if (req?.session?.passport?.user?.auth_token) {
@@ -70,6 +81,12 @@ module.exports = {
 
   oidc_authenticate: (req, res, next) =>
     authenticateUser("oidc", req, res, next),
+
+  oidc_google_authenticate: (req, res, next) =>
+    authenticateScopeUser("google", ["profile", "email"], req, res, next),
+
+  oidc_github_authenticate: (req, res, next) =>
+    authenticateScopeUser("github", ["openid", "user:email"], req, res, next),
 
   refresh: async (req, res, next) => {
     try {

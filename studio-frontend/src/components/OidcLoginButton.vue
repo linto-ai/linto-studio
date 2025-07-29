@@ -1,7 +1,7 @@
 <template>
-  <a :href="link" class="btn sso" :class="name">
-    <span class="label">{{ label }}</span>
-    <span class="icon" :class="icon" />
+  <a :href="link" class="sso-btn" :class="name" :title="label">
+    <!-- <span class="label">{{ label }}</span> -->
+    <img :src="icon" class="icon" :alt="name" />
   </a>
 </template>
 <script>
@@ -20,6 +20,7 @@ export default {
     },
   },
   data() {
+    console.log("iodc", this.name)
     return {
       BASE_AUTH: getEnv("VUE_APP_CONVO_AUTH"),
     }
@@ -38,9 +39,15 @@ export default {
     icon() {
       switch (this.name) {
         case "linagora":
-          return "linagora-small"
+          return "/img/logo_linagora.webp"
+        case "Google":
+          return "/img/google.png"
+        case "Github":
+          return "/img/github-mark.svg"
+        case "eu":
+          return "/img/eu-flag.svg"
         default:
-          return "lock-off"
+          return "/img/building.svg"
       }
     },
   },
@@ -49,3 +56,43 @@ export default {
   components: {},
 }
 </script>
+
+<style>
+.sso-btn {
+  border: var(--border-input);
+  height: 3.5rem;
+  width: 3.5rem;
+  border-radius: 100%;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem;
+  box-sizing: border-box;
+}
+
+.sso-btn.Github {
+  padding: 0;
+  border: none;
+}
+
+.sso-btn.linagora {
+  padding: 0;
+  background-color: #c71f45;
+  border: none;
+}
+
+.sso-btn.eu {
+  padding: 0;
+  background-color: #003399;
+  border: none;
+}
+
+.sso-btn.Google {
+  padding: 0;
+}
+
+.sso-btn img {
+  width: 100%;
+  height: 100%;
+}
+</style>

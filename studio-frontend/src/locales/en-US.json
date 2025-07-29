@@ -490,7 +490,7 @@
     "personal_title": "Create an account",
     "picture_selected": "One picture selected",
     "picture_upload_label": "Upload a picture",
-    "signin_button": "Sign in"
+    "signin_button": "Back to login"
   },
   "droparea": {
     "error": {
@@ -579,20 +579,27 @@
     "optimized_en": "Optimize for English"
   },
   "login": {
+    "not_registered": "Not registered yet? ",
     "create_account_button": "Create an account",
+    "or_continue_with": "Or continue with",
     "email_label": "Email :",
     "error": "Error while logging in",
     "login_button": "Login",
     "password_label": "Password :",
     "recover_password": "Forgot your password?",
     "recover_password_btn_label": "Send recovery link",
-    "recover_password_detail": "Please fill in your email address for us to send you a recovery link.",
+    "recover_password_detail": "Please enter your email address to receive a recovery link",
+    "recover_password_sent": "A recovery link has been sent to your email address",
     "title": "Sign in",
     "footer": {
       "description": "Open source innovations powered by LINAGORA on EXAION infrastructures"
     },
     "sso": {
       "linagora": "Sign in with LINAGORA",
+      "Google": "Sign in with Google",
+      "Microsoft": "Sign in with Microsoft",
+      "Github": "Sign in with Github",
+      "eu": "Sign in with EU Login",
       "default": "Single Sign-On (SSO)"
     },
     "teaser": {

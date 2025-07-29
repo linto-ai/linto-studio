@@ -63,6 +63,8 @@
     "openid-client": "^5.7.1",
     "ora": "^3.4.0",
     "passport": "^0.7.0",
+    "passport-github": "^1.1.0",
+    "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
     "passport-oauth2": "^1.8.0",
     "path": "^0.12.7",

@@ -26,7 +26,7 @@ DB_NAME=conversations
 DB_MIGRATION_TARGET=1.5.6
 
 # STT Config
-GATEWAY_SERVICES=https://api.linto.ai
+GATEWAY_SERVICES=https://<domain>
 
 # LLM Config
 LLM_GATEWAY_SERVICES=
@@ -101,5 +101,15 @@ OIDC_ISSUER_URL=
 OIDC_URL=
 OIDC_CLIENT_ID=
 OIDC_CLIENT_SECRET=
-OIDC_CALLBACK_URI=
+OIDC_CALLBACK_URI=https://<domain>/auth/oidc/cb
 OIDC_SCOPE=openid,email,profile
+
+OIDC_GOOGLE_ENABLED=false
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_OIDC_CALLBACK_URI=https://<domain>/auth/oidc/google/cb
+
+OIDC_GITHUB_ENABLED=false
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
+GITHUB_OIDC_CALLBACK_URI=https://<domain>/auth/oidc/github/cb
