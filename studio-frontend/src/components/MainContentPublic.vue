@@ -58,6 +58,8 @@
         <h1 class="center-text login-page__main-title">
           {{ title }}
         </h1>
+        <LocalSwitcher class="local-switcher"></LocalSwitcher>
+
         <slot></slot>
       </div>
     </div>
@@ -97,6 +99,7 @@ export default {
 }
 
 .login-page__container {
+  position: relative;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   width: 1000px;
   max-width: calc(100vw - 2rem);
@@ -104,6 +107,12 @@ export default {
   margin: auto;
   display: flex;
   border-radius: 8px;
+
+  .local-switcher {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+  }
 }
 
 .login-page__container__left {
