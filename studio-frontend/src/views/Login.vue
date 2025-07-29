@@ -36,7 +36,9 @@
       </div>
     </form>
 
-    <div class="oidc-form flex col gap-medium">
+    <div
+      class="oidc-form flex col gap-medium"
+      v-if="oidcList && oidcList.length">
       <div class="flex align-center gap-small">
         <hr class="oidc-form__separator flex1" />
         <div>{{ $t("login.or_continue_with") }}</div>

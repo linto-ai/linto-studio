@@ -1,7 +1,7 @@
 <template>
   <a :href="link" class="sso-btn" :class="name" :title="label">
     <!-- <span class="label">{{ label }}</span> -->
-    <img :src="icon" class="icon" alt="name" />
+    <img :src="icon" class="icon" :alt="name" />
   </a>
 </template>
 <script>
