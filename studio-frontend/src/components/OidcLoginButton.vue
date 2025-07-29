@@ -20,7 +20,6 @@ export default {
     },
   },
   data() {
-    console.log("iodc", this.name)
     return {
       BASE_AUTH: getEnv("VUE_APP_CONVO_AUTH"),
     }
@@ -68,6 +67,15 @@ export default {
   align-items: center;
   padding: 0.5rem;
   box-sizing: border-box;
+
+  &:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition:
+      transform 0.2s ease-in-out,
+      box-shadow 0.2s ease-in-out;
+    opacity: 0.9;
+  }
 }
 
 .sso-btn.Github {
