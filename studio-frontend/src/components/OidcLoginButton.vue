@@ -1,7 +1,7 @@
 <template>
-  <a :href="link" class="sso-btn" :class="name">
+  <a :href="link" class="sso-btn" :class="name" :title="label">
     <!-- <span class="label">{{ label }}</span> -->
-    <img :src="icon" class="icon" />
+    <img :src="icon" class="icon" alt="name" />
   </a>
 </template>
 <script>
@@ -44,8 +44,10 @@ export default {
           return "/img/google.png"
         case "Github":
           return "/img/github-mark.svg"
+        case "eu":
+          return "/img/eu-flag.svg"
         default:
-          return "lock-off"
+          return "/img/building.svg"
       }
     },
   },
@@ -64,7 +66,7 @@ export default {
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  padding: 0rem;
+  padding: 0.5rem;
   box-sizing: border-box;
 }
 
@@ -74,8 +76,19 @@ export default {
 }
 
 .sso-btn.linagora {
+  padding: 0;
   background-color: #c71f45;
   border: none;
+}
+
+.sso-btn.eu {
+  padding: 0;
+  background-color: #003399;
+  border: none;
+}
+
+.sso-btn.Google {
+  padding: 0;
 }
 
 .sso-btn img {

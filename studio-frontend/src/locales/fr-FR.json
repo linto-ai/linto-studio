@@ -595,6 +595,10 @@
     },
     "sso": {
       "linagora": "Se connecter avec LINAGORA",
+      "Google": "Se connecter avec Google",
+      "Microsoft": "Se connecter avec Microsoft",
+      "Github": "Se connecter avec Github",
+      "eu": "Se connecter avec EU Login",
       "default": "Authentification externe (SSO)"
     },
     "teaser": {

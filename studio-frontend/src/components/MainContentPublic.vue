@@ -55,54 +55,12 @@
         </div>
       </div>
       <div class="login-page__container__right">
-        <slot></slot>
-      </div>
-    </div>
-
-    <!-- <div class="login-page__decoration flex col flex1" v-if="!isMobile">
-      <div
-        class="login-page__decoration__header center-text flex col gap-small align-center">
-        <img :src="logo" class="login-page__logo" />
         <h1 class="center-text login-page__main-title">
           {{ title }}
         </h1>
-      </div>
-      <div
-        class="flex flex1 col justify-center align-center gap-medium reset-overflows">
-        <div class="login-page__decoration__slogan">
-          <h3 class="flex align-center gap-small">
-            <span class="icon large record"></span
-            ><span>{{ $t("login.teaser.transcribe.title") }}</span>
-          </h3>
-          <p>{{ $t("login.teaser.transcribe.desc") }}</p>
-        </div>
-        <div class="login-page__decoration__slogan">
-          <h3 class="flex align-center gap-small">
-            <span class="icon large edit"></span
-            ><span>{{ $t("login.teaser.collaborate.title") }}</span>
-          </h3>
-          <p>{{ $t("login.teaser.collaborate.desc") }}</p>
-        </div>
-        <div class="login-page__decoration__slogan">
-          <h3 class="flex align-center gap-small">
-            <span class="icon large subtitle"></span
-            ><span>{{ $t("login.teaser.ia.title") }}</span>
-          </h3>
-          <p>
-            {{ $t("login.teaser.ia.desc") }}
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <div class="login-page__content flex col">
-      <div class="flex col align-center">
-        <LocalSwitcher></LocalSwitcher>
-      </div>
-      <div class="flex col flex1 justify-center align-center reset-overflows">
         <slot></slot>
       </div>
-    </div> -->
+    </div>
   </div>
 </template>
 <script>
@@ -141,6 +99,7 @@ export default {
 .login-page__container {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   width: 1000px;
+  max-width: calc(100vw - 2rem);
   min-height: 500px;
   margin: auto;
   display: flex;
@@ -161,6 +120,10 @@ export default {
   box-sizing: border-box;
   padding: 4rem;
   border-radius: 0 8px 8px 0;
+
+  .login-page__main-title {
+    display: none;
+  }
 }
 
 .login-page__main-title {
@@ -175,6 +138,23 @@ export default {
 
   p {
     margin: 0;
+  }
+}
+
+@media screen and (max-width: 900px) {
+  .login-page__container {
+    //width: fit-content;
+    width: 500px;
+  }
+  .login-page__container__left {
+    display: none;
+  }
+
+  .login-page__container__right {
+    .login-page__main-title {
+      display: block;
+    }
+    width: 100%;
   }
 }
 </style>

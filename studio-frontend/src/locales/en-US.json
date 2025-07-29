@@ -595,6 +595,10 @@
     },
     "sso": {
       "linagora": "Sign in with LINAGORA",
+      "Google": "Sign in with Google",
+      "Microsoft": "Sign in with Microsoft",
+      "Github": "Sign in with Github",
+      "eu": "Sign in with EU Login",
       "default": "Single Sign-On (SSO)"
     },
     "teaser": {
