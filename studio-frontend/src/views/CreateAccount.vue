@@ -14,6 +14,7 @@
           id="firstname"
           type="text"
           v-model="firstname.value"
+          class="fullwidth"
           :class="firstname.error !== null ? 'error' : ''"
           @change="testName(firstname)" />
         <span class="error-field" v-if="firstname.error !== null">
@@ -29,6 +30,7 @@
           id="lastname"
           type="text"
           v-model="lastname.value"
+          class="fullwidth"
           :class="lastname.error !== null ? 'error' : ''"
           @change="testName(lastname)" />
         <span class="error-field" v-if="lastname.error !== null">
@@ -44,6 +46,7 @@
           id="email"
           type="email"
           v-model="email.value"
+          class="fullwidth"
           :class="email.error !== null ? 'error' : ''"
           @change="testEmail(email)" />
         <span class="error-field" v-if="email.error !== null">
@@ -96,6 +99,7 @@
           type="password"
           autocomplete="new-password"
           v-model="password.value"
+          class="fullwidth"
           :class="password.error !== null ? 'error' : ''"
           @change="testPassword(password)" />
         <span class="error-field" v-if="password.error !== null">
@@ -113,6 +117,7 @@
           type="password"
           autocomplete="new-password"
           v-model="passwordConfirm.value"
+          class="fullwidth"
           :class="passwordConfirm.error !== null ? 'error' : ''"
           @change="testPasswordConfirm(passwordConfirm, password)" />
         <span class="error-field" v-if="passwordConfirm.error !== null">
