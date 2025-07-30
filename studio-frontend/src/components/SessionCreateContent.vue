@@ -30,12 +30,13 @@
       <section>
         <h2 class="flex align-center gap-medium">
           <span>{{ $t("session.settings_page.metadata.title") }}</span>
-          <button type="button" class="" @click="startMedatadaEdition">
-            <span class="icon edit" />
-            <span class="label">{{
-              $t("session.settings_page.metadata.button_edition")
-            }}</span>
-          </button>
+          <Button
+            :label="$t('session.settings_page.metadata.button_edition')"
+            color="neutral"
+            variant="outline"
+            size="sm"
+            icon="plus-circle"
+            @click="startMedatadaEdition" />
         </h2>
         <MetadataList :field="fieldMetadata" />
         <!-- <MetadataEditor v-model="fieldMetadata.value" :field="fieldMetadata" /> -->
@@ -57,10 +58,14 @@
             <h2 style="width: auto">
               {{ $t("session.channels_list.title") }}
             </h2>
-            <button class="btn" @click="addChannel" type="button">
-              <span class="icon add"></span>
-              <span class="label">{{ $t("session.channels_list.add") }}</span>
-            </button>
+
+            <Button
+              :label="$t('session.channels_list.add')"
+              color="neutral"
+              variant="outline"
+              size="sm"
+              icon="plus-circle"
+              @click="addChannel" />
           </div>
           <div v-if="channelsError" class="error-field">
             {{ channelsError }}
