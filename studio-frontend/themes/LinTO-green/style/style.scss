@@ -1,7 +1,6 @@
 //@layer base, theme;
 
 @use "text.scss" as text-theme;
-@use "login.scss" as login-theme;
 
 @use "mobile/text.scss" as mobile-text-theme;
 @layer theme {
@@ -19,10 +18,6 @@
     --tertiary-color: var(--red-chart);
 
     --background-primary: #fff;
-
-    //--border-button: 1px solid #bdbdbd;
-
-    //--border-input: 1px solid var(--neutral-60) !important;
 
     --selected-background: rgba(40, 153, 131, 0.0784313725);
   }
