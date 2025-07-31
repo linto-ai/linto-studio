@@ -122,10 +122,10 @@ export default {
       return [
         {
           label: this.conversation?.name ?? "",
-          to: {
-            name: "conversations overview",
-            params: { conversationId: this.conversationId },
-          },
+          // to: {
+          //   name: "conversations overview",
+          //   params: { conversationId: this.conversationId },
+          // },
         },
         {
           label: this.$t("breadcrumb.subtitles"),

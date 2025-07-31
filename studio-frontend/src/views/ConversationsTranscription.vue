@@ -224,7 +224,7 @@ export default {
       }
     },
     status(newVal, oldVal) {
-      if (newVal === 'done' && this.pendingSearchFromUrl) {
+      if (newVal === "done" && this.pendingSearchFromUrl) {
         this.$nextTick(() => {
           this.transcriptionSearch = this.pendingSearchFromUrl
           this.pendingSearchFromUrl = null
@@ -259,10 +259,10 @@ export default {
       return [
         {
           label: this.conversation?.name ?? "",
-          to: {
-            name: "conversations overview",
-            params: { conversationId: this.conversationId },
-          },
+          // to: {
+          //   name: "conversations overview",
+          //   params: { conversationId: this.conversationId },
+          // },
         },
         {
           label: this.$t("breadcrumb.transcription"),
@@ -441,7 +441,7 @@ export default {
       const urlParams = new URLSearchParams(window.location.search)
       const searchTerm = urlParams.get("search")
       if (searchTerm) {
-        if (this.status === 'done') {
+        if (this.status === "done") {
           this.$nextTick(() => {
             this.transcriptionSearch = searchTerm
           })
