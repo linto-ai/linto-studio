@@ -210,7 +210,11 @@ export default {
       this.$emit("on-cancel", e)
     },
     keydown(e) {
-      if (e.key == "Enter" && this.shouldShowConfirmationButtons) {
+      if (
+        e.key == "Enter" &&
+        this.shouldShowConfirmationButtons &&
+        !e.shiftKey
+      ) {
         e.preventDefault()
         this.apply()
       } else if (e.key == "Escape" && this.shouldShowConfirmationButtons) {
