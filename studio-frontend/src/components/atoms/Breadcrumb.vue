@@ -11,9 +11,10 @@
             v-for="(item, index) in breadcrumbItems"
             :key="`${item.name}-${index}`"
             class="breadcrumb-item">
-            <router-link :to="item.to" class="breadcrumb-link">
+            <router-link :to="item.to" class="breadcrumb-link" v-if="item.to">
               {{ item.label }}
             </router-link>
+            <span v-else class="breadcrumb-text">{{ item.label }}</span>
             <span class="breadcrumb-separator" aria-hidden="true"> > </span>
           </li>
 
@@ -328,7 +329,7 @@ export default {
     padding: 0.25rem 0.5rem;
     border-radius: 0.25rem;
     transition: all 0.2s ease;
-
+    text-decoration: underline;
     &:hover {
       color: var(--color-primary, #007bff);
       text-decoration: underline;
