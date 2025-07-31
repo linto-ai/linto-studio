@@ -77,7 +77,7 @@
 
         <!-- Actions section -->
         <div class="media-section">
-          <h4 class="section-title">{{ $t("actions") }}</h4>
+          <h4 class="section-title">{{ $t("media_explorer.panel.actions") }}</h4>
           <div class="actions-container">
             <Button @click="handleDownload" :loading="downloadLoading" icon="download" variant="outline" size="sm"
               class="action-button">
