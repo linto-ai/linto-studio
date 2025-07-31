@@ -30,7 +30,7 @@
 
     <template v-slot:content-after-tag="slotProps">
       <button class="only-icon small transparent" @click="deleteTag(slotProps)">
-        <span class="icon trash"></span>
+        <ph-icon name="trash"></ph-icon>
       </button>
     </template>
     <template v-slot:content-under-tag="slotProps">
@@ -40,7 +40,7 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import TagCategoryBox from "./TagCategoryBox.vue"
 import { workerSendMessage } from "../tools/worker-message.js"
 import ModalDeleteTagHighlight from "./ModalDeleteTagHighlight.vue"

@@ -6,36 +6,52 @@
       v-if="hasLocalLogin">
       <h2 class="login-title">{{ $t("login.title") }}</h2>
 
-      <FormInput :field="email" v-model="email.value" focus />
-      <FormInput :field="password" v-model="password.value" />
+      <FormInput :field="email" v-model="email.value" focus inputFullWidth />
+      <FormInput :field="password" v-model="password.value" inputFullWidth>
+        <template #content-bottom-input>
+          <router-link
+            to="/reset-password"
+            class="toggle-login-link underline"
+            >{{ $t("login.recover_password") }}</router-link
+          >
+        </template>
+      </FormInput>
 
-      <div class="form-field flex row">
-        <button class="btn green fullwidth" type="submit">
-          <span class="label">{{ $t("login.login_button") }}</span>
-          <span class="icon apply"></span>
-        </button>
+      <div class="form-field flex col gap-tiny">
+        <Button
+          type="submit"
+          :label="$t('login.login_button')"
+          block
+          class="login-page__form__submit"></Button>
+        <div class="login-page__form__create-account">
+          <span>{{ $t("login.not_registered") }}</span>
+          <router-link
+            to="/create-account"
+            id="create-account-link"
+            class="underline"
+            v-if="enable_inscription">
+            {{ $t("login.create_account_button") }}
+          </router-link>
+        </div>
       </div>
-      <div class="form-field" v-if="formError !== null">
-        <span class="form-error">{{ formError }}</span>
-      </div>
-      <router-link to="/reset-password" class="toggle-login-link underline">{{
-        $t("login.recover_password")
-      }}</router-link>
-      <router-link
-        to="/create-account"
-        id="create-account-link"
-        class="underline"
-        v-if="enable_inscription">
-        {{ $t("login.create_account_button") }}
-      </router-link>
     </form>
-    <div class="login-separator" v-if="hasLocalLogin"></div>
 
-    <OidcLoginButton
-      v-for="oidcInfo of oidcList"
-      :key="oidcInfo.name"
-      :path="oidcInfo.path"
-      :name="oidcInfo.name"></OidcLoginButton>
+    <div
+      class="oidc-form flex col gap-medium"
+      v-if="oidcList && oidcList.length">
+      <div class="flex align-center gap-small">
+        <hr class="oidc-form__separator flex1" />
+        <div>{{ $t("login.or_continue_with") }}</div>
+        <hr class="oidc-form__separator flex1" />
+      </div>
+      <div class="flex justify-center oidc-form__buttons">
+        <OidcLoginButton
+          v-for="oidcInfo of oidcList"
+          :key="oidcInfo.name"
+          :path="oidcInfo.path"
+          :name="oidcInfo.name"></OidcLoginButton>
+      </div>
+    </div>
   </MainContentPublic>
 
   <!--
@@ -58,7 +74,7 @@ import { apiLoginUser, getLoginMethods } from "@/api/user"
 import MainContentPublic from "@/components/MainContentPublic.vue"
 import { testEmail } from "@/tools/fields/testEmail"
 import { testFieldEmpty } from "@/tools/fields/testEmpty"
-import FormInput from "@/components/FormInput.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 import OidcLoginButton from "@/components/OidcLoginButton.vue"
 
 export default {
@@ -92,7 +108,7 @@ export default {
       return this.email.valid && this.password.valid
     },
     enable_inscription() {
-      return process.env.VUE_APP_DISABLE_USER_CREATION !== "true"
+      return getEnv("VUE_APP_DISABLE_USER_CREATION") !== "true"
     },
     logo() {
       return `/img/${getEnv("VUE_APP_LOGO")}`
@@ -117,7 +133,6 @@ export default {
     async handleForm(event) {
       event?.preventDefault()
       try {
-        this.formError = null
         this.testEmail()
         this.testPasswordEmpty()
 
@@ -142,9 +157,10 @@ export default {
         if (process.env.VUE_APP_DEBUG === "*") {
           console.error(error)
         }
-        this.formError =
-          error?.error?.response?.data?.error?.message ||
-          "An error has occured, please try again later"
+        this.$store.dispatch("system/addNotification", {
+          message: this.$t("login.error"),
+          type: "error",
+        })
       }
       return false
     },
@@ -161,7 +177,11 @@ export default {
       const loginList = await getLoginMethods()
       const indexedByPath = { local: [], oidc: [] }
       for (const login of loginList) {
-        indexedByPath[login.path].push(login)
+        if (login.path.startsWith("oidc")) {
+          indexedByPath["oidc"].push(login)
+        } else {
+          indexedByPath[login.path].push(login)
+        }
       }
       this.loginMethodsIndexedByPath = indexedByPath
     },
@@ -169,3 +189,32 @@ export default {
   components: { LocalSwitcher, MainContentPublic, FormInput, OidcLoginButton },
 }
 </script>
+
+<style lang="scss">
+.login-page__form__submit .label {
+  display: inline-block;
+  text-align: center;
+  width: 100%;
+}
+
+.login-page__form__create-account {
+  text-align: center;
+}
+
+.oidc-form {
+  color: var(--text-secondary);
+  margin-top: 1rem;
+}
+
+.oidc-form__separator {
+  border: 0;
+  border-top: var(--border-block);
+  height: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.oidc-form__buttons {
+  gap: 1.5rem;
+}
+</style>

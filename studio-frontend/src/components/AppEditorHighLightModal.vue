@@ -22,14 +22,14 @@
 
     <div v-else class="flex align-center col center-text">
       <h3>{{ $t("app_editor_highlights_modal.loading_services") }}</h3>
-      <span class="icon loading"></span>
+      <ph-icon name="spinner" size="lg" color="primary" weight="bold" />
     </div>
   </ModalNew>
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
-import ModalNew from "./ModalNew.vue"
+import { bus } from "@/main.js"
+import ModalNew from "@/components/molecules/Modal.vue"
 import ServiceBox from "./ServiceBox.vue"
 import { apiGetNlpService } from "../api/service.js"
 
@@ -57,7 +57,7 @@ export default {
       for (let category of this.hightlightsCategories) {
         if (category.scope) {
           let index = servicesListCopy.findIndex((service) =>
-            service.scope.indexOf(category.scope)
+            service.scope.indexOf(category.scope),
           )
           if (index !== -1) {
             var service = servicesListCopy.splice(index, 1)[0]
@@ -81,7 +81,7 @@ export default {
     },
     done() {
       const services = this.selectedServices.map((name) =>
-        this.servicesListTransformed.find((s) => s.name === name)
+        this.servicesListTransformed.find((s) => s.name === name),
       )
       this.$emit("on-confirm", services)
     },

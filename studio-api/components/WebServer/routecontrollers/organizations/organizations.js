@@ -30,7 +30,10 @@ async function createOrganization(req, res, next) {
     const orga_created = await model.organizations.getById(
       result.insertedId.toString(),
     )
-    return res.status(201).send(orga_created[0])
+
+    const orga = orga_created[0]
+
+    return res.status(201).send(orga)
   } catch (err) {
     next(err)
   }
@@ -57,6 +60,9 @@ async function getOrganization(req, res, next) {
       })
     }
     organization.users = orgaUser
+    organization.categories = await model.categories.getSystemCategories(
+      req.params.organizationId,
+    )
     return res.status(200).send(organization)
   } catch (err) {
     next(err)

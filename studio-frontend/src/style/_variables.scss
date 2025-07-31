@@ -1,77 +1,173 @@
-$montserrat: "Montserrat", "Arial", "Helvetica", "verdana";
-$luciole: "Luciole", "Arial", "Helvetica", "verdana";
-$lato: "Lato", "Arial", "Helvetica", "verdana";
-$rubik: "Rubik", "Arial", "Helvetica", "verdana";
-$ubuntu: "Ubuntu", "Arial", "Helvetica", "verdana";
-$bitter: "BitterPro", "Arial", "Helvetica", "verdana";
-$noto: "Noto Sans", "Arial", "Helvetica", "verdana";
+@use "sass:color";
 
-$mainFont: $noto;
-$inputFocus: #f7faff;
-$yellowChart: #feb11d;
-$greenChart: #11977c;
-$greenLigth: #39d5b6;
-$redChart: #fe346e;
-$blueChart: #1c83d6;
+@layer base {
+  $montserrat: "Montserrat", "Arial", "Helvetica", "verdana";
+  $luciole: "Luciole", "Arial", "Helvetica", "verdana";
+  $lato: "Lato", "Arial", "Helvetica", "verdana";
+  $rubik: "Rubik", "Arial", "Helvetica", "verdana";
+  $ubuntu: "Ubuntu", "Arial", "Helvetica", "verdana";
+  $bitter: "BitterPro", "Arial", "Helvetica", "verdana";
+  $noto: "Noto Sans", "Arial", "Helvetica", "verdana";
 
-$primaryColor: $greenChart;
-$secondaryColor: $blueChart;
-$primaryContrast: #fff;
+  $mainFont: $noto;
+  $inputFocus: #f7faff;
+  $yellowChart: #feb11d;
+  $greenChart: #11977c;
+  $greenLigth: #39d5b6;
+  $redChart: #fe346e;
+  $blueChart: #1c83d6;
 
-body {
-  --background-header: var(--background-primary);
+  $primaryColor: $greenChart;
+  $secondaryColor: $blueChart;
+  $primaryContrast: #fff;
 
-  --text-vertical-center-offset: 0px;
+  @function soft-color($color, $amount: 40%) {
+    @return color.mix(white, $color, $amount);
+  }
 
-  --text-primary: var(--dark-100);
-  --text-secondary: var(--dark-80);
-  --text-disabled: #aaa;
-  --small-contrast: var(--dark-60);
+  @function hard-color($color, $amount: 40%) {
+    @return color.mix(black, $color, $amount);
+  }
 
-  --background-disabled: #f6f6f6;
+  $primarySoft: soft-color($primaryColor, 94%);
+  $primaryHard: hard-color($primaryColor);
+  $secondarySoft: soft-color($secondaryColor);
+  $secondaryHard: hard-color($secondaryColor);
+  $tertiarySoft: soft-color($redChart);
+  $tertiaryHard: hard-color($redChart);
+  $yellowSoft: soft-color($yellowChart);
+  $yellowHard: hard-color($yellowChart);
+  $greenSoft: soft-color($greenChart);
+  $greenHard: hard-color($greenChart);
+  $redSoft: soft-color($redChart);
+  $redHard: hard-color($redChart);
+  $blueSoft: soft-color($blueChart);
+  $blueHard: hard-color($blueChart);
 
-  --background-lock-turn: #e6e6e6;
-  --border-lock-turn: 1px solid #848484;
+  body {
+    --font-family: "Noto Sans", "Arial", "Helvetica", "verdana";
+    --luciole-font-family: "Luciole", "Arial", "Helvetica", "verdana";
+    --background-primary: white;
+    --background-secondary: white;
 
-  --background-inset-section: rgb(249, 249, 249);
-  --box-shadow-inset: 0px 0px 1px 0 rgba(67, 76, 95, 0.44) inset;
+    --background-app: #f5f5f5;
 
-  --border-button: 1px solid var(--dark-80);
-  --border-button-flat: 1px solid var(--neutral-60);
-  --border-input: 1px solid var(--dark-80);
-  --border-block: 1px solid var(--neutral-60);
-  --divider: 1px solid var(--neutral-60);
+    --primary-color: var(--green-chart);
+    --secondary-color: var(--blue-chart);
+    --tertiary-color: var(--red-chart);
 
-  --input-focus: #f7faff;
+    --primary-soft: #{$primarySoft};
+    --primary-hard: #{$primaryHard};
+    --secondary-soft: #{$secondarySoft};
+    --secondary-hard: #{$secondaryHard};
+    --tertiary-soft: #{$tertiarySoft};
+    --tertiary-hard: #{$tertiaryHard};
+    --yellow-soft: #{$yellowSoft};
+    --yellow-hard: #{$yellowHard};
+    --green-soft: #{$greenSoft};
+    --green-hard: #{$greenHard};
+    --red-soft: #{$redSoft};
+    --red-hard: #{$redHard};
+    --blue-soft: #{$blueSoft};
+    --blue-hard: #{$blueHard};
 
-  --bg-highlight: #fff5a4;
+    --green-chart: #{$greenChart};
 
-  --player-region-background: #a4d6ff54;
-  --player-region-background-playing: #39d5b655;
+    --dark-100: #333;
+    --dark-90: #404040;
+    --dark-80: #666;
+    --dark-70: #777;
+    --dark-60: #ccc;
+    --dark-50: #d1d1d1;
+    --dark-40: #e1e1e1;
+    --dark-20: #f5f5f5;
+    --dark-10: #fafafa;
+    --neutral-100: #333;
+    --neutral-90: #404040;
+    --neutral-80: #666;
+    --neutral-70: #808080;
+    --neutral-60: #c2c2c2;
+    --neutral-50: #d1d1d1;
+    --neutral-40: #e1e1e1;
+    --neutral-20: #f5f5f5;
+    --neutral-10: #fafafa;
 
-  --tiny-gap: 0.25rem;
-  --small-gap: 0.5rem;
-  --medium-gap: 1rem;
-  --large-gap: 2rem;
+    --text-primary: var(--dark-100);
+    --text-secondary: var(--dark-80);
+    --text-disabled: #aaa;
+    --small-contrast: var(--dark-60);
 
-  --shadow-block: 0px 0px 8px 0 rgba(67, 76, 95, 0.15);
-  --shadow-block-selected: 0px 0px 20px 0 rgba(67, 76, 95, 0.5);
-  --shadow-block-left: 3px 0px 8px 0 rgba(67, 76, 95, 0.15);
-}
+    --background-disabled: #f6f6f6;
+    --background-primary-soft: var(--primary-soft);
+    --background-primary-hard: var(--primary-hard);
+    --background-secondary-soft: var(--secondary-soft);
+    --background-secondary-hard: var(--secondary-hard);
+    --background-tertiary-soft: var(--tertiary-soft);
+    --background-tertiary-hard: var(--tertiary-hard);
+    --background-yellow-soft: var(--yellow-soft);
+    --background-yellow-hard: var(--yellow-hard);
+    --background-green-soft: var(--green-soft);
 
-// @media (prefers-color-scheme: dark) {}
-html[data-theme="dark"] body {
-  --text-disabled: #666;
-  --background-disabled: #333;
-  --background-inset-section: rgb(51, 51, 51);
+    --background-lock-turn: #e6e6e6;
+    --border-lock-turn: 1px solid #848484;
 
-  --border-button-glass: 1px solid #25252588;
-  --shadow-block: 0px 0px 8px 0 rgb(0, 0, 0, 0.5);
-  --shadow-block-selected: 0px 0px 20px 0 rgb(0, 0, 0, 0.7);
-  --shadow-block-left: 3px 0px 8px 0 rgb(0, 0, 0, 0.5);
+    --background-inset-section: rgb(249, 249, 249);
+    --box-shadow-inset: 0px 0px 1px 0 var(--primary-soft) inset;
 
-  --input-focus: #0c0c0c;
+    --border-button: 1px solid var(--neutral-60);
+    --border-input: 1px solid var(--primary-color);
+    --border-block: 1px solid var(--neutral-40);
+    --divider: 1px solid var(--primary-soft);
+    --button-background: transparent;
+    --button-background-hover: soft-color(var(--primary-soft), 10%);
 
-  --bg-highlight: #484211;
-  --primary-contrast: #000;
+    --input-background: var(--background-secondary);
+    --border-input: 1px solid var(--neutral-50);
+    --input-focus: var(--primary-soft);
+
+    --bg-highlight: #fff5a4;
+
+    --player-region-background: #a4d6ff54;
+    --player-region-background-playing: #39d5b655;
+
+    --tiny-gap: 0.25rem;
+    --small-gap: 0.5rem;
+    --medium-gap: 1rem;
+    --large-gap: 2rem;
+
+    --shadow-block: 0px 0px 8px 0 rgba(67, 76, 95, 0.15);
+    --shadow-block-selected: 0px 0px 20px 0 rgba(67, 76, 95, 0.5);
+    --shadow-block-left: 3px 0px 8px 0 rgba(67, 76, 95, 0.15);
+
+    --xs-gap: 0.25rem;
+    --sm-gap: 0.5rem;
+    --md-gap: 1rem;
+    --lg-gap: 2rem;
+    --xl-gap: 4rem;
+
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-md: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.25rem;
+    --text-2xl: 1.5rem;
+    --text-3xl: 1.875rem;
+  }
+
+  // @media (prefers-color-scheme: dark) {}
+  html[data-theme="dark"] body {
+    --text-disabled: #666;
+    --background-disabled: #333;
+    --background-inset-section: rgb(51, 51, 51);
+
+    --border-button-glass: 1px solid #25252588;
+    --shadow-block: 0px 0px 8px 0 rgb(0, 0, 0, 0.5);
+    --shadow-block-selected: 0px 0px 20px 0 rgb(0, 0, 0, 0.7);
+    --shadow-block-left: 3px 0px 8px 0 rgb(0, 0, 0, 0.5);
+
+    --input-focus: #0c0c0c;
+
+    --bg-highlight: #484211;
+    --primary-contrast: #000;
+  }
 }

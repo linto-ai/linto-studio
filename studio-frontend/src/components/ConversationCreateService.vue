@@ -126,7 +126,7 @@
 import EMPTY_FIELD from "../const/emptyField"
 import ACOUSTIC from "../const/acoustic"
 import AUDIO_QUALITY from "../const/audioQuality"
-import LabeledValue from "./LabeledValue.vue"
+import LabeledValue from "@/components/atoms/LabeledValue.vue"
 import generateServiceConfig from "../tools/generateServiceConfig"
 
 export default {

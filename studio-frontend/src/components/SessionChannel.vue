@@ -6,7 +6,7 @@
       class="session-content__action-bar flex align-center gap-medium"
       v-if="this.selectedTurns.length > 0">
       <button
-        class="red-border session-content__action-bar__reset-btn-desktop"
+        class="tertiary outline session-content__action-bar__reset-btn-desktop"
         @click="clearSelectedTurns">
         <span class="icon close"></span>
         <span class="label">{{
@@ -15,7 +15,7 @@
       </button>
 
       <button
-        class="red-border session-content__action-bar__reset-btn-mobile mobile only-icon"
+        class="tertiary outline session-content__action-bar__reset-btn-mobile mobile only-icon"
         @click="clearSelectedTurns">
         <span class="icon close"></span>
       </button>
@@ -55,29 +55,46 @@
         {{ $t("session.detail_page.live_transcript_disabled.description") }}
       </p>
       <div class="flex gap-medium" v-if="fromMicrophone">
-        <div
+        <Button
+          v-if="isRecording"
+          @click="toggleMicrophone"
+          :title="$t('quick_session.live.pause_button')"
+          :aria-label="$t('quick_session.live.pause_button')"
+          icon="pause"></Button>
+        <!-- <div
           class="btn circle only-icon primary"
           @click="toggleMicrophone"
           :title="$t('quick_session.live.pause_button')"
           :aria-label="$t('quick_session.live.pause_button')"
           v-if="isRecording">
           <span class="icon pause"></span>
-        </div>
-        <div
+        </div> -->
+        <Button
+          v-else
+          @click="toggleMicrophone"
+          :title="$t('quick_session.live.start_button')"
+          :aria-label="$t('quick_session.live.start_button')"
+          icon="play"></Button>
+        <!-- <div
           class="btn circle only-icon"
           @click="toggleMicrophone"
           :title="$t('quick_session.live.start_button')"
           :aria-label="$t('quick_session.live.start_button')"
           v-else>
           <span class="icon play"></span>
-        </div>
-        <div
+        </div> -->
+        <Button
+          @click="onSave"
+          :title="$t('quick_session.live.save_button')"
+          :aria-label="$t('quick_session.live.save_button')"
+          icon="stop"></Button>
+        <!-- <div
           class="btn circle only-icon red"
           @click="onSave"
           :title="$t('quick_session.live.save_button')"
           :aria-label="$t('quick_session.live.save_button')">
           <span class="icon stop"></span>
-        </div>
+        </div> -->
       </div>
     </div>
 
@@ -168,7 +185,7 @@
     <button
       v-if="!isBottom"
       @click="scrollToBottom(true)"
-      class="bottom-session-button bottom-session-button-desktop"
+      class="bottom-session-button bottom-session-button-desktop outline"
       :class="{ has_subtitles: displaySubtitles }">
       <span class="icon bottom-arrow"></span>
       <span class="label">{{
@@ -189,7 +206,7 @@
 import uuidv4 from "uuid/v4.js"
 
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import { sessionChannelModelMixin } from "@/mixins/sessionChannelModel.js"
 import getTextTurnWithTranslation from "@/tools/getTextTurnWithTranslation.js"
@@ -203,7 +220,7 @@ import SessionChannelTurn from "@/components/SessionChannelTurn.vue"
 import SessionChannelTurnPartial from "@/components/SessionChannelTurnPartial.vue"
 import Svglogo from "@/svg/Microphone.vue"
 import SessionSubtitle from "@/components/SessionSubtitle.vue"
-import Loading from "@/components/Loading.vue"
+import Loading from "@/components/atoms/Loading.vue"
 import SubtitleFullscreen from "@/components-mobile/SubtitleFullscreen.vue"
 
 export default {

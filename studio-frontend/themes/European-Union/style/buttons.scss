@@ -40,7 +40,7 @@ button,
     min-height: auto;
   }
 
-  &:hover {
+  &:hover:not([disabled]):not(.disabled) {
     //background-color: var(--button-background-hover);
     background-image: none;
     text-decoration: none;
@@ -75,7 +75,7 @@ button,
       background-color: var(--text-primary);
     }
 
-    &:hover {
+    &:hover:not([disabled]):not(.disabled) {
       background-color: transparent;
       text-decoration: underline;
     }
@@ -84,7 +84,7 @@ button,
       background-color: transparent;
       text-decoration: underline;
       border: none;
-      &:hover {
+      &:hover:not([disabled]):not(.disabled) {
         background-color: transparent;
         text-decoration: underline;
       }
@@ -133,18 +133,18 @@ button,
   }
 
   &.black {
-    background-color: var(--text-primary);
+    background-color: none !important;
     background-image: none;
     color: var(--background-primary);
     border: 1px solid var(--text-primary);
     .icon {
-      background-color: var(--background-primary);
+      color: var(--background-primary);
     }
   }
 
   &[disabled] {
     background-color: var(--background-disabled);
-    border: var(--border-button-flat);
+    border: var(--border-button);
     color: var(--text-secondary);
     .icon {
       background-color: var(--text-secondary);

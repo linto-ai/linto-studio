@@ -14,6 +14,7 @@
           id="firstname"
           type="text"
           v-model="firstname.value"
+          class="fullwidth"
           :class="firstname.error !== null ? 'error' : ''"
           @change="testName(firstname)" />
         <span class="error-field" v-if="firstname.error !== null">
@@ -29,6 +30,7 @@
           id="lastname"
           type="text"
           v-model="lastname.value"
+          class="fullwidth"
           :class="lastname.error !== null ? 'error' : ''"
           @change="testName(lastname)" />
         <span class="error-field" v-if="lastname.error !== null">
@@ -44,6 +46,7 @@
           id="email"
           type="email"
           v-model="email.value"
+          class="fullwidth"
           :class="email.error !== null ? 'error' : ''"
           @change="testEmail(email)" />
         <span class="error-field" v-if="email.error !== null">
@@ -67,7 +70,7 @@
             :class="[
               picture.error !== null ? 'error' : '',
               picture.valid ? 'valid' : '',
-              'btn black',
+              'btn',
             ]">
             <span class="icon upload"></span>
             <span class="label">{{
@@ -96,6 +99,7 @@
           type="password"
           autocomplete="new-password"
           v-model="password.value"
+          class="fullwidth"
           :class="password.error !== null ? 'error' : ''"
           @change="testPassword(password)" />
         <span class="error-field" v-if="password.error !== null">
@@ -113,6 +117,7 @@
           type="password"
           autocomplete="new-password"
           v-model="passwordConfirm.value"
+          class="fullwidth"
           :class="passwordConfirm.error !== null ? 'error' : ''"
           @change="testPasswordConfirm(passwordConfirm, password)" />
         <span class="error-field" v-if="passwordConfirm.error !== null">
@@ -121,11 +126,11 @@
       </div>
 
       <div class="form-field flex row">
-        <button type="submit" class="btn green fullwidth">
+        <button type="submit" class="btn primary fullwidth">
           <span class="label">
             {{ $t("createaccount.personal_button") }}
           </span>
-          <span class="icon apply"></span>
+          <ph-icon name="check" size="md" class="icon" />
         </button>
       </div>
       <div class="form-field" v-if="formError !== null">
@@ -158,15 +163,15 @@
 
       <button
         type="submit"
-        class="btn green fullwidth"
+        class="btn primary fullwidth"
         v-if="state !== 'sending'">
         <span class="label">
           {{ $t("createaccount.create_account_button") }}
         </span>
-        <span class="icon apply"></span>
+        <ph-icon name="check" size="md" class="icon" />
       </button>
 
-      <button type="submit" class="btn green fullwidth" disabled v-else>
+      <button type="submit" class="btn primary fullwidth" disabled v-else>
         <span class="label"> Creating account... </span>
         <span class="icon loading"></span>
       </button>
@@ -190,7 +195,6 @@
 <script>
 import { getEnv } from "@/tools/getEnv"
 
-import AppNotif from "@/components/AppNotif.vue"
 import LocalSwitcher from "@/components/LocalSwitcher.vue"
 import EMPTY_FIELD from "@/const/emptyField.js"
 import { apiCreateUser } from "@/api/user.js"
@@ -298,7 +302,7 @@ export default {
         })
         if (res.message === "User address already use") {
           this.state = "personal-information"
-          this.email.error = this.$t("userCreation.email_already_exists")
+          this.email.error = this.$t("user_creation.email_already_exists")
         } else if (res.status === "success") {
           this.firstname = { ...EMPTY_FIELD }
           this.lastname = { ...EMPTY_FIELD }
@@ -310,7 +314,7 @@ export default {
           this.state = "email-verification"
         } else {
           this.state = "personal-information"
-          this.formError = this.$t("userCreation.error_message")
+          this.formError = this.$t("user_creation.error_message")
         }
       } else {
         console.log("invalid form")
@@ -354,7 +358,6 @@ export default {
     },
   },
   components: {
-    AppNotif,
     LocalSwitcher,
     MainContentPublic,
   },

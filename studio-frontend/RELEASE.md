@@ -1,6 +1,18 @@
-# 1.5.6
+# 1.6
 
-More information on RELEASE file in the main folder
+_2025_06_09_
+
+- This version prepares the solidification of linto-lts, the introduction of linto-cloud with redesigned layout/workflow for simplified UI/UX across cloud, self-hosted, and on-premise deployment modes
+- Frontend architecture improvements to prepare for future technical stack upgrade (Vue 3/React)
+  - Store optimization and enhanced state management
+  - Style system refactoring and atomic composition structure
+  - Technical debt reduction by isolating unnecessary stack sections
+- Taxonomic category system overhaul
+  - Categories are now reserved for technical usage only
+  - Automatic creation of "tags" and "labels" categories under "system" category for each organization
+  - Enhanced tag management with emoji support, custom colors, and single-level hierarchy (future hierarchical support planned)
+  - Media-to-tag relationship: 0 to n tags per media item
+  - Default tags configuration capability for organizations
 
 # 1.5.5
 

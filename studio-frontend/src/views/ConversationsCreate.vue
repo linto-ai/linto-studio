@@ -1,8 +1,6 @@
 <template>
-  <MainContent sidebar box>
-    <template v-slot:breadcrumb-actions> </template>
-
-    <div class="flex col flex1">
+  <LayoutV2 customClass="explore-next">
+    <div class="flex col flex1 medium-margin">
       <Tabs
         v-model="currentTab"
         :tabs="mainTabs"
@@ -63,10 +61,11 @@
           <div v-else class="flex1"></div>
           <button
             type="submit"
-            class="btn green upload-media-button"
+            class="btn primary upload-media-button"
             id="upload-media-button"
             :disabled="formState === 'sending'">
-            <span class="icon apply"></span>
+            <!-- <ph-icon name="check" size="md"  class="icon"/> -->
+            <ph-icon name="check" size="md" class="icon" />
             <span class="label">{{ formSubmitLabel }}</span>
           </button>
         </div>
@@ -90,7 +89,7 @@
         :transcriberProfiles="transcriberProfiles"
         :currentOrganizationScope="currentOrganizationScope" />
     </div>
-  </MainContent>
+  </LayoutV2>
 </template>
 <script>
 import { getEnv } from "@/tools/getEnv.js"
@@ -106,17 +105,19 @@ import {
 } from "@/api/session.js"
 import { testService } from "@/tools/fields/testService.js"
 
+import LayoutV2 from "@/layouts/v2-layout.vue"
 import ConversationCreateAudio from "@/components/ConversationCreateAudio.vue"
 import ConversationCreateServices from "@/components/ConversationCreateServices.vue"
 import MainContent from "@/components/MainContent.vue"
-import Checkbox from "@/components/Checkbox.vue"
-import Tabs from "@/components/Tabs.vue"
+import Checkbox from "@/components/atoms/Checkbox.vue"
+import Tabs from "@/components/molecules/Tabs.vue"
 import SessionCreateContent from "@/components/SessionCreateContent.vue"
 import ConversationCreateLink from "@/components/ConversationCreateLink.vue"
 import QuickSessionCreateContent from "@/components/QuickSessionCreateContent.vue"
 import VisioCreateContent from "@/components/VisioCreateContent.vue"
 import TabsVertical from "@/components/TabsVertical.vue"
 import ConversationCreateFileLine from "@/components/ConversationCreateFileLine.vue"
+import ActionConversationCreate from "@/components/molecules/ActionConversationCreate.vue"
 
 export default {
   mixins: [
@@ -208,14 +209,14 @@ export default {
           res.push({
             name: "live",
             label: this.$t("conversation_creation.tabs.quick_meeting"),
-            icon: loading ? "loading" : "record-live",
+            icon: "microphone",
             disabled:
               this.transcriberProfilesQuickMeeting.length === 0 || loading,
           })
           res.push({
             name: "visio",
             label: this.$t("conversation_creation.tabs.visio"),
-            icon: loading ? "loading" : "visio",
+            icon: "webcam",
             disabled:
               this.transcriberProfilesQuickMeeting.length === 0 || loading,
           })
@@ -224,7 +225,7 @@ export default {
           res.push({
             name: "session",
             label: this.$i18n.t("conversation_creation.tabs.session"),
-            icon: loading ? "loading" : "session",
+            icon: "plugs-connected",
             disabled: this.transcriberProfiles.length === 0 || loading,
           })
         }
@@ -272,8 +273,25 @@ export default {
 
       this.loadingQuickSession = false
     },
+    handleNewUploadComplete(data) {
+      console.log("New upload workflow completed:", data)
+
+      this.$router.push({
+        name: "explore",
+        params: { organizationId: this.currentOrganizationScope },
+      })
+    },
+
+    handleNewUploadSuccess(message) {
+      this.$emit("app_notif", {
+        status: "success",
+        message: message,
+        timeout: 5000,
+      })
+    },
   },
   components: {
+    LayoutV2,
     ConversationCreateAudio,
     ConversationCreateServices,
     ConversationCreateLink,
@@ -285,6 +303,7 @@ export default {
     VisioCreateContent,
     TabsVertical,
     ConversationCreateFileLine,
+    ActionConversationCreate,
   },
 }
 </script>

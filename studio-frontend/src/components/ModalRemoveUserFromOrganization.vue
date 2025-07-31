@@ -1,11 +1,12 @@
 <template>
   <ModalNew
+    value
     @on-cancel="($event) => this.$emit('on-cancel')"
     @on-confirm="deleteUserFromOrganization"
     :title="$t('organisation.remove_user_modal.title')"
     :actionBtnLabel="$t('organisation.remove_user_modal.action')"
     :custom-class-button="{ red: true }"
-    small>
+    size="sm">
     <p>
       {{
         $t("organisation.remove_user_modal.content", {
@@ -18,10 +19,10 @@
 <script>
 import { Fragment } from "vue-fragment"
 
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import { apiRemoveUserFromOrganisation } from "@/api/user.js"
 
-import ModalNew from "./ModalNew.vue"
+import ModalNew from "@/components/molecules/Modal.vue"
 export default {
   props: {
     currentOrganization: {

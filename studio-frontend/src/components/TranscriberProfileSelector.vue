@@ -60,7 +60,7 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import { sortArray } from "@/tools/sortList.js"
 
 import ArrayHeader from "@/components/ArrayHeader.vue"

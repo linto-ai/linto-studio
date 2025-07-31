@@ -44,7 +44,7 @@
 <script>
 import { workerSendMessage } from "../tools/worker-message.js"
 import { calculCursorPos } from "../tools/calculCursorPos.js"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import { Throttle } from "../tools/throttle.js"
 import createMultiLineContent from "../tools/createMultiLineContent.js"
 import formatCollaborativeText from "../tools/formatCollaborativeText.js"

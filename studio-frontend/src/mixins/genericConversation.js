@@ -3,11 +3,14 @@ import {
   apiGetUserRightFromConversation,
   apiGetConversationById,
   apiGetConversationChild,
-} from "../api/conversation.js"
-import { bus } from "../main.js"
-import { getCookie } from "../tools/getCookie.js"
-import { workerDisconnect } from "../tools/worker-message.js"
-import EditorWorker from "../workers/collaboration-worker"
+} from "@/api/conversation.js"
+import { apiGetUsersByConversationId } from "@/api/user.js"
+
+import USER_RIGHTS from "@/const/userRights.js"
+import { bus } from "@/main.js"
+import { getCookie } from "@/tools/getCookie.js"
+import { workerDisconnect } from "@/tools/worker-message.js"
+import EditorWorker from "@/workers/collaboration-worker"
 import { conversationModelMixin } from "./conversationModel.js"
 
 export const genericConversationMixin = {
@@ -23,6 +26,7 @@ export const genericConversationMixin = {
       usersConnected: [],
       focusFields: {},
       conversationUsersLoaded: false,
+      conversationUsers: [],
       conversation: null,
       rootConversation: null,
       canonicalConversation: null,
@@ -53,19 +57,7 @@ export const genericConversationMixin = {
   },
   computed: {
     userRights() {
-      return this.$store.state.userRights
-    },
-    conversationUsers() {
-      if (this.conversationUsersLoaded) {
-        let convUsers = this.$store.state.conversationUsers ?? {
-          organization_members: [],
-          external_members: [],
-        }
-        return (
-          [...convUsers.organization_members, ...convUsers.external_members] ||
-          []
-        )
-      } else return []
+      return USER_RIGHTS
     },
     canEdit() {
       if (!this.userRights || !this.userRight) return false
@@ -167,12 +159,7 @@ export const genericConversationMixin = {
             this.error = true
           case "disconnected":
             this.userRight = 0
-            bus.$emit("show_modal", {
-              title: this.$i18n.t("conversation.websocket_error_title"),
-              content: this.$i18n.t("conversation.websocket_error_content"),
-              actionBtnLabel: "ok",
-              cancelButton: false,
-            })
+            bus.$emit("conversation_disconnected")
             break
           case "conversation_loaded":
             this.conversation = event.data.params
@@ -255,10 +242,13 @@ export const genericConversationMixin = {
       return this.$options.filters.getTimeDiffText(dateVal)
     },
     async dispatchConversationUsers() {
-      this.conversationUsersLoaded = await this.$options.filters.dispatchStore(
-        "getUsersByConversationId",
-        { conversationId: this.conversationId },
-      )
+      this.conversationUsersLoaded = false
+      let convUsers = await apiGetUsersByConversationId(this.conversationId)
+      this.conversationUsers = [
+        ...convUsers.organization_members,
+        ...convUsers.external_members,
+      ]
+      this.conversationUsersLoaded = true
     },
     async getAudioFile() {
       if (this.audioFile === "") {

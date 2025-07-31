@@ -36,10 +36,10 @@
       <div v-else class="flex1"></div>
       <button
         type="submit"
-        class="btn green upload-media-button"
+        class="btn primary upload-media-button"
         id="upload-media-button"
         :disabled="formState === 'sending'">
-        <span class="icon apply"></span>
+        <ph-icon name="check" size="md" class="icon" />
         <span class="label">{{ formSubmitLabel }}</span>
       </button>
     </div>
@@ -53,9 +53,9 @@ import generateServiceConfig from "@/tools/generateServiceConfig"
 
 import { formsMixin } from "@/mixins/forms.js"
 
-import FormRadio from "@/components/FormRadio.vue"
+import FormRadio from "@/components/molecules/FormRadio.vue"
 import TranscriberProfileSelector from "@/components/TranscriberProfileSelector.vue"
-import FormCheckbox from "@/components/FormCheckbox.vue"
+import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import QuickSessionSettings from "@/components/QuickSessionSettings.vue"
 
 import { apiCreateQuickSession } from "@/api/session.js"

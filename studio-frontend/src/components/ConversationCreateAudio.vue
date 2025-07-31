@@ -48,7 +48,7 @@ import { generateFileField } from "@/tools/generateFileField.js"
 import ConversationCreateUpload from "@/components/ConversationCreateUpload.vue"
 import ConversationCreateRecord from "@/components/ConversationCreateRecord.vue"
 import ConversationCreateLink from "@/components/ConversationCreateLink.vue"
-import FormInput from "@/components/FormInput.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 import ConversationCreateFileLine from "@/components/ConversationCreateFileLine.vue"
 import TabsVertical from "@/components/TabsVertical.vue"
 

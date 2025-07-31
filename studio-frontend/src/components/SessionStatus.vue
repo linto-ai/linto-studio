@@ -1,7 +1,7 @@
 <template>
   <div
     @click="onClick"
-    class="flex align-center justify-center session-status gap-small"
+    class="flex align-center session-status gap-small"
     :title="text">
     <span class="session-on-air flex align-center gap-small" v-if="isActive">
       <span v-if="!small">[</span>
@@ -27,13 +27,14 @@
       <!-- <span v-if="!small">Muted</span> -->
       <!-- <span>]</span> -->
     </span>
-
-    <span v-if="withText">{{ text }}</span>
+    <span class="session-status__name" v-if="showName">{{ name }}</span>
+    <span v-if="withText" class="session-status__text flex1">({{ text }})</span>
   </div>
 </template>
 <script>
 import { sessionModelMixin } from "@/mixins/sessionModel.js"
-import StatusLed from "./StatusLed.vue"
+import StatusLed from "@/components/atoms/StatusLed.vue"
+import Badge from "./atoms/Badge.vue"
 
 export default {
   mixins: [sessionModelMixin],
@@ -41,6 +42,7 @@ export default {
     session: { type: Object, required: true },
     small: { type: Boolean, default: false },
     withText: { type: Boolean, default: false },
+    showName: { type: Boolean, default: false },
   },
   data() {
     return {}
@@ -86,6 +88,57 @@ export default {
       this.$emit("click", e)
     },
   },
-  components: { StatusLed },
+  components: { StatusLed, Badge },
 }
 </script>
+
+<style lang="scss" scoped>
+.session-status {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  text-decoration: none !important;
+  //container-type: inline-size;
+  //container-name: session-status;
+}
+
+.session-on-air {
+  border-radius: 55px;
+  //background-color: red;
+  color: var(--red-chart);
+  font-weight: bold;
+  font-variant: all-petite-caps;
+  .icon {
+    background-color: white;
+  }
+}
+
+.session-on-air.session-on-air--muted {
+  color: var(--text-primary);
+
+  .icon {
+    background-color: var(--text-primary);
+    margin: 0;
+  }
+}
+
+.session-on-air.session-on-air--off {
+  color: #62111e;
+}
+
+.session-status__name {
+  font-weight: 800;
+}
+
+.session-status__text {
+  font-style: italic;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@container main (width < 1000px) {
+  .session-status__text {
+    display: none;
+  }
+}
+</style>

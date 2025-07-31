@@ -214,8 +214,10 @@ const createProxyRoutes = (webServer, proxy_routes) => {
                     }
                   } catch (error) {
                     if (error instanceof Unauthorized) {
+                      res.status(401)
                       return error.toString()
                     } else {
+                      res.status(500)
                       return responseBuffer
                     }
                   }

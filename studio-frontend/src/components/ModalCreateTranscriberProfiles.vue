@@ -1,5 +1,6 @@
 <template>
   <ModalNew
+    value
     @on-cancel="($event) => this.$emit('on-cancel')"
     @on-confirm="createTranscriberProfile"
     :actionBtnLabel="$t('modal_create_transcriber_profile.action_btn')"
@@ -13,7 +14,7 @@
   </ModalNew>
 </template>
 <script>
-import ModalNew from "./ModalNew.vue"
+import ModalNew from "@/components/molecules/Modal.vue"
 import TranscriberProfileEditor from "@/components/TranscriberProfileEditor.vue"
 import TRANSCRIBER_PROFILES_TEMPLATES from "@/const/transcriberProfilesTemplates"
 import { apiCreateTranscriberProfile } from "@/api/session.js"

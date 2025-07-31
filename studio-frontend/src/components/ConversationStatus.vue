@@ -1,5 +1,5 @@
 <template>
-  <MainContent noBreadcrumb :organizationPage="false">
+  <V2Layout>
     <template v-slot:breadcrumb-actions>
       <h1
         class="flex1 center-text text-cut"
@@ -44,14 +44,14 @@
         </router-link>
       </div>
     </div>
-  </MainContent>
+  </V2Layout>
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
-import MainContent from "./MainContent.vue"
 import DrawingLogo from "@/svg/Drawing.vue"
+import V2Layout from "@/layouts/v2-layout.vue"
 
 export default {
   props: {
@@ -115,6 +115,6 @@ export default {
     },
   },
   methods: {},
-  components: { Fragment, MainContent, DrawingLogo },
+  components: { Fragment, DrawingLogo, V2Layout },
 }
 </script>

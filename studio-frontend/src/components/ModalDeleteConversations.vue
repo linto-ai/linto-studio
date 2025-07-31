@@ -1,6 +1,14 @@
 <template>
-  <ModalNew
+  <Alert
+    :visible="visible"
     :title="title"
+    :message="content"
+    @confirm="onConfirm"
+    @cancel="onCancel"
+    ></Alert>
+  <!-- <ModalNew
+    :title="title"
+    value
     @on-cancel="($event) => this.$emit('on-cancel')"
     @on-confirm="($event) => this.$emit('on-confirm')"
     :actionBtnLabel="button_label"
@@ -13,93 +21,67 @@
         {{ conv.name }}
       </li>
     </ul>
-  </ModalNew>
+  </ModalNew> -->
 </template>
 <script>
-import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { mapActions, mapGetters } from "vuex"
 
-import ModalNew from "./ModalNew.vue"
 export default {
   props: {
-    conversationsCount: { type: Number, required: true },
-    conversationsInError: { type: Array, required: true },
+    medias: { type: Array, required: true },
+    visible: { type: Boolean, required: true },
   },
   data() {
     return {}
   },
   computed: {
+    conversationsCount() {
+      return this.medias.length
+    },
     title() {
-      if (this.conversationsInError.length > 0) {
-        return this.$i18n.tc(
-          "conversation.delete_modal_multiple_error.title",
-          this.conversationsInError.length
-        )
-      }
-
       if (this.conversationsCount > 0) {
         return this.$i18n.tc(
           "conversation.delete_modal_multiple.title",
-          this.conversationsCount
+          this.conversationsCount,
         )
       }
 
       return this.$i18n.t("conversation.delete_modal_multiple_empty.title")
     },
     content() {
-      if (this.conversationsInError.length > 0) {
-        return this.$i18n.tc(
-          "conversation.delete_modal_multiple_error.content",
-          this.conversationsInError.length
-        )
-      }
-
       if (this.conversationsCount > 0) {
         return this.$i18n.tc(
           "conversation.delete_modal_multiple.content",
-          this.conversationsCount
+          this.conversationsCount,
         )
       }
 
       return this.$i18n.t("conversation.delete_modal_multiple_empty.content")
     },
     button_label() {
-      if (this.conversationsInError.length > 0) {
-        return this.$i18n.tc(
-          "conversation.delete_modal_multiple_error.button",
-          this.conversationsInError.length
-        )
-      }
-
       if (this.conversationsCount > 0) {
         return this.$i18n.tc(
           "conversation.delete_modal_multiple.button",
-          this.conversationsCount
+          this.conversationsCount,
         )
       }
 
       return this.$i18n.t("conversation.delete_modal_multiple_empty.button")
     },
-    customClassButton() {
-      if (this.conversationsInError.length > 0) {
-        return {
-          green: true,
-        }
-      }
-
-      if (this.conversationsCount > 0) {
-        return {
-          red: true,
-        }
-      }
-
-      return {
-        green: true,
-      }
-    },
   },
   mounted() {},
-  methods: {},
-  components: { Fragment, ModalNew },
+  methods: {
+    ...mapActions("inbox", ["deleteMedias"]),
+    onConfirm() {
+      this.deleteMedias(this.medias.map((media) => media._id))
+      this.$emit("confirm")
+    },
+    closeModal() {
+      console.log("closeModal")
+    },
+    onCancel() {
+      this.$emit("cancel")
+    },
+  },
 }
 </script>

@@ -22,11 +22,28 @@
 
     <!-- Translations -->
     <td v-if="from === 'formCreateSession'">
-      <CustomSelect
+      <PopoverList
         v-if="translationsOptions.channels.length > 0"
-        multipleSelection
+        selection
+        multiple
         v-model="selectedTranslations"
-        :options="translationsOptions" />
+        :items="translationsOptions.channels">
+        <template #trigger="{ open }">
+          <Button
+            :icon-right="open ? 'caret-up' : 'caret-down'"
+            variant="outline"
+            color="neutral"
+            size="sm"
+            block>
+            {{
+              $tc(
+                "session.profile_selector.n_translations_selected",
+                selectedTranslations.length,
+              )
+            }}
+          </Button>
+        </template>
+      </PopoverList>
     </td>
     <td v-else>
       {{ translations }}
@@ -35,8 +52,9 @@
       <Checkbox v-model="item.diarization" id="diarizationCheckboxId" />
     </td>
     <td class="content-size" v-if="from === 'formCreateSession'">
-      <button class="btn red-border" @click="removeChannel" type="button">
-        <span class="icon remove"></span>
+      <button class="btn tertiary outline" @click="removeChannel" type="button">
+        <!-- <span class="icon remove"></span> -->
+        <ph-icon name="trash"></ph-icon>
         <span class="label">{{ $t("session.channels_list.remove") }}</span>
       </button>
     </td>
@@ -55,17 +73,17 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import { sessionChannelModelMixin } from "@/mixins/sessionChannelModel.js"
 
 import ArrayHeader from "@/components/ArrayHeader.vue"
-import FormInput from "@/components/FormInput.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 import EMPTY_FIELD from "@/const/emptyField"
-import CustomSelect from "@/components/CustomSelect.vue"
+import CustomSelect from "@/components/molecules/CustomSelect.vue"
 
 import SessionChannelsEndpoints from "@/components/SessionChannelsEndpoints.vue"
-import Checkbox from "@/components/Checkbox.vue"
+import Checkbox from "@/components/atoms/Checkbox.vue"
 import transriberImageFromtype from "@/tools/transriberImageFromtype.js"
 
 export default {

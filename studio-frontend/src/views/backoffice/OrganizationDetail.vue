@@ -16,8 +16,8 @@
     <UpdateOrganizationTranscriberProfiles :organizationId="organizationId" />
     <section>
       <h2 class="medium-margin-bottom">Danger zone</h2>
-      <button @click="openDeleteModal" class="btn red-border">
-        <span class="icon trash"></span>
+      <button @click="openDeleteModal" class="btn tertiary outline">
+        <ph-icon name="trash"></ph-icon>
         <span class="label">{{ $t("organisation.delete_organization") }}</span>
       </button>
     </section>
@@ -63,7 +63,7 @@ export default {
     if (!this.isAtLeastSystemAdministrator) {
       this.$router.push({ name: "not_found" })
     }
-
+    console.log("---prout---")
     bus.$on("user_orga_update", this.fetchOrganization)
     this.fetchOrganization()
   },
@@ -74,6 +74,8 @@ export default {
     async fetchOrganization() {
       this.loading = true
       this.organization = await apiGetOrganizationById(this.organizationId)
+      console.log("---prout---")
+      console.log(this.organization)
       this.loading = false
     },
     closeDeleteModal() {

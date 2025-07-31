@@ -1,4 +1,4 @@
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 export class ScreenList {
   constructor() {
@@ -108,7 +108,7 @@ export class ScreenList {
 
       target.screen.text = target.screen.text.concat(screenToDelete.screen.text)
       target.screen.words = target.screen.words.concat(
-        screenToDelete.screen.words
+        screenToDelete.screen.words,
       )
 
       target.screen.etime = screenToDelete.screen.etime
@@ -117,7 +117,7 @@ export class ScreenList {
 
       target.screen.text = screenToDelete.screen.text.concat(target.screen.text)
       target.screen.words = screenToDelete.screen.words.concat(
-        target.screen.words
+        target.screen.words,
       )
 
       target.screen.stime = screenToDelete.screen.stime

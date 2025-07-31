@@ -1,7 +1,7 @@
 <template>
-  <div class="sidebar__section flex1">
+  <div class="sidebar__section flex1 medium-margin-left medium-margin-right">
     <h3 class="flex align-center">
-      <span class="flex1">Filtres</span>
+      <span class="flex1">{{ $t("sidebar_filters.title") }}</span>
       <button class="only-icon transparent" @click="resetFilters">
         <span class="icon clear-history"></span>
       </button>
@@ -32,14 +32,16 @@
         class="flex align-center only-border fullwidth"
         @click="addSearchCriterion">
         <span class="icon add"></span>
-        <span class="flex1 left-text">Ajouter des tags</span>
+        <span class="flex1 left-text">{{
+          $t("sidebar_filters.add_criterions_button")
+        }}</span>
       </button>
     </div>
   </div>
 </template>
 <script>
 import { bus } from "@/main.js"
-import Tag from "@/components/Tag.vue"
+import Tag from "@/components/molecules/Tag.vue"
 
 export default {
   props: {

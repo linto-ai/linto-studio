@@ -85,6 +85,7 @@ export const sessionMixin = {
       }
 
       this.session = sessionRequest.data
+      this.$store.commit("sessions/addSession", this.session)
       await this.fetchAliases()
       this.sessionLoaded = true
     },

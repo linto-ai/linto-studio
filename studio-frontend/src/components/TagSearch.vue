@@ -46,9 +46,9 @@ import { debounceMixin } from "@/mixins/debounce"
 import { mergeArrayOnId } from "@/tools/mergeArrayOnId"
 import filterTagsOnCategoryList from "@/tools/filterTagsOnCategoryList"
 
-import Loading from "./Loading.vue"
-import SwitchInput from "./SwitchInput.vue"
-import Tag from "./Tag.vue"
+import Loading from "@/components/atoms/Loading.vue"
+import SwitchInput from "@/components/atoms/SwitchInput.vue"
+import Tag from "@/components/molecules/Tag.vue"
 import TagCategoryBoxSelectable from "./TagCategoryBoxSelectable.vue"
 export default {
   props: {

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex col medium-padding gap-medium">
+  <div class="flex col small-padding gap-medium">
     <SessionChannelsSelector
       v-if="channels.length > 1"
       :channels="channels"
@@ -87,8 +87,8 @@ import EMPTY_FIELD from "@/const/emptyField"
 import { getEnv } from "@/tools/getEnv"
 import { orgaRoleMixin } from "@/mixins/orgaRole"
 
-import FormInput from "@/components/FormInput.vue"
-import FormCheckbox from "@/components/FormCheckbox.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
+import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import SessionTranslationSelection from "@/components/SessionTranslationSelection.vue"
 import SessionChannelsSelector from "@/components/SessionChannelsSelector.vue"
 import ModalWatermarkSettings from "@/components/ModalWatermarkSettings.vue"

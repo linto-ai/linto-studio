@@ -2,8 +2,8 @@
   <MainContent sidebar>
     <template v-slot:breadcrumb-actions>
       <div class="flex align-center gap-small">
-        <button class="red-border btn" @click="clickDeleteConvButton">
-          <span class="icon trash"></span>
+        <button class="tertiary outline btn" @click="clickDeleteConvButton">
+          <ph-icon name="trash"></ph-icon>
           <span class="label">{{
             $t("explore.delete_conversation_button")
           }}</span>
@@ -48,6 +48,7 @@
         :conversations="conversations"
         :loading="loading"
         :currentOrganizationScope="currentOrganizationScope"
+        :userInfo="userInfo"
         :error="error"
         :selectable="true"
         :selectedConversations="selectedConversationsList"
@@ -77,7 +78,7 @@ import { debounceMixin } from "@/mixins/debounce"
 
 import ConversationList from "@/components/ConversationList.vue"
 import MainContent from "@/components/MainContent.vue"
-import Pagination from "@/components/Pagination.vue"
+import Pagination from "@/components/molecules/Pagination.vue"
 import ModalDeleteConversations from "@/components/ModalDeleteConversations.vue"
 import ConversationShareMultiple from "@/components/ConversationShareMultiple.vue"
 import { apiGetConversationsWithoutTagsByOrganization } from "@/api/conversation.js"
@@ -90,7 +91,6 @@ export default {
   props: {
     userInfo: { type: Object, required: true },
     currentOrganizationScope: { type: String, required: true },
-    currentOrgaPersonal: { type: Boolean, required: true },
   },
   data() {
     return {
@@ -126,13 +126,13 @@ export default {
       if (this.selectedOption == "notags") {
         return await apiGetConversationsWithoutTagsByOrganization(
           this.currentOrganizationScope,
-          this.currentPageNb
+          this.currentPageNb,
         )
       } else {
         return await apiGetConversationsByOrganization(
           this.currentOrganizationScope,
           this.currentPageNb,
-          { sortField: this.selectedOption }
+          { sortField: this.selectedOption },
         )
       }
     },
@@ -142,7 +142,7 @@ export default {
       try {
         res = await this.debouncedSearch(
           this.apiFetchConversations.bind(this),
-          this.selectedOption
+          this.selectedOption,
         )
       } catch (error) {
         console.error(error)

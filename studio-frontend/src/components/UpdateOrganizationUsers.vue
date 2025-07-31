@@ -82,8 +82,8 @@
                   (isSystemAdministrator && isBackofficePage)
                 "
                 @click="removeFromMembers(user)"
-                class="red-border">
-                <span class="icon remove" />
+                class="tertiary outline">
+                <ph-icon name="trash"></ph-icon>
                 <span class="label">{{
                   $t("organisation.user.remove_button")
                 }}</span>
@@ -110,7 +110,7 @@
   </section>
 </template>
 <script>
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import EMPTY_FIELD from "@/const/emptyField"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
@@ -123,7 +123,7 @@ import {
 } from "@/api/user.js"
 
 import UserInvite from "@/components/UserInvite.vue"
-import UserInfoInline from "@/components/UserInfoInline.vue"
+import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
 import ArrayHeader from "@/components/ArrayHeader.vue"
 import ModalLeaveOrganization from "@/components/ModalLeaveOrganization.vue"
 import ModalRemoveUserFromOrganization from "./ModalRemoveUserFromOrganization.vue"
@@ -165,9 +165,6 @@ export default {
     }
   },
   computed: {
-    userRole() {
-      return this.$store.getters.getUserRoleInOrganization()
-    },
     sortedUsers() {
       return sortArray(
         this.orgaMembers,

@@ -40,7 +40,7 @@ import { apiGetSessionsBetweenDates } from "@/api/session.js"
 
 import WeekSelector from "@/components/WeekSelector.vue"
 import SessionDayLine from "@/components/SessionDayLine.vue"
-import Loading from "@/components/Loading.vue"
+import Loading from "@/components/atoms/Loading.vue"
 import { genericSessionList } from "../mixins/genericSessionList"
 
 export default {

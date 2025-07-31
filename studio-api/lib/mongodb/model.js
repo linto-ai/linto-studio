@@ -104,6 +104,22 @@ class MongoModel {
     }
   }
 
+  // Insert/Create MANY
+  async mongoInsertMany(documents) {
+    try {
+      const collection = MongoDriver.constructor.db.collection(this.collection)
+      const result = await collection.insertMany(documents)
+      return result
+    } catch (error) {
+      console.error("Error in mongoInsertMany:", error)
+      return {
+        success: false,
+        message: "Error inserting documents",
+        error: error,
+      }
+    }
+  }
+
   /**
    * Update function for mongoDB. This function will update an entry based on the "collection", the "query" and the "values" passed in parmaters.
    * @param {Object} query

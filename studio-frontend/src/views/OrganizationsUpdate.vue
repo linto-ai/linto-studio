@@ -1,5 +1,5 @@
 <template>
-  <MainContent sidebar box>
+  <LayoutV2>
     <OrganizationUpdateHelper
       :showHelper="helperVisible"
       @close="closeHelper()"></OrganizationUpdateHelper>
@@ -9,39 +9,39 @@
         <button
           v-if="isAdmin"
           @click="deleteOrganization()"
-          class="btn red-border">
-          <span class="icon trash"></span>
+          class="btn tertiary outline">
+          <ph-icon name="trash"></ph-icon>
           <span class="label">{{
             $t("organisation.delete_organization")
           }}</span>
         </button>
-        <button class="btn" @click="showHelper()" style="min-width: 80px">
+        <!-- <button class="btn" @click="showHelper()" style="min-width: 80px">
           <span class="icon help"></span>
           <span class="label">{{
             $t("conversation.transcription_help.help_button_label")
           }}</span>
-        </button>
+        </button> -->
       </div>
     </template>
 
-    <UpdateOrganizationForm :currentOrganization="currentOrganization" />
+    <div class="medium-margin">
+      <UpdateOrganizationForm :currentOrganization="currentOrganization" />
 
-    <UpdateOrganizationUsers
-      :currentOrganization="currentOrganization"
-      :userInfo="userInfo" />
+      <UpdateOrganizationUsers
+        :currentOrganization="currentOrganization"
+        :userInfo="userInfo" />
 
-    <ModalDeleteOrganization
-      v-if="displayDeleteModal"
-      :currentOrganization="currentOrganization"
-      :currentOrganizationScope="currentOrganizationScope"
-      @on-confirm="closeDeleteModal"
-      @on-cancel="closeDeleteModal" />
-
-    <Modal />
-  </MainContent>
+      <ModalDeleteOrganization
+        v-if="displayDeleteModal"
+        :currentOrganization="currentOrganization"
+        :currentOrganizationScope="currentOrganizationScope"
+        @on-confirm="closeDeleteModal"
+        @on-cancel="closeDeleteModal" />
+    </div>
+  </LayoutV2>
 </template>
 <script>
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 
@@ -52,7 +52,8 @@ import ModalDeleteOrganization from "@/components/ModalDeleteOrganization.vue"
 import MainContent from "@/components/MainContent.vue"
 import Modal from "@/components/Modal.vue"
 import UpdateOrganizationForm from "@/components/UpdateOrganizationForm.vue"
-import UpdateOrganizationUsers from "../components/UpdateOrganizationUsers.vue"
+import UpdateOrganizationUsers from "@/components/UpdateOrganizationUsers.vue"
+import LayoutV2 from "@/layouts/v2-layout.vue"
 
 export default {
   mixins: [orgaRoleMixin],
@@ -118,6 +119,7 @@ export default {
     Modal,
     UpdateOrganizationForm,
     UpdateOrganizationUsers,
+    LayoutV2,
   },
 }
 </script>

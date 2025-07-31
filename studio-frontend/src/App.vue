@@ -1,242 +1,122 @@
 <template>
-  <ErrorNotResponsive v-if="dataLoaded && isMobile && !isResponsivePage" />
-  <div id="app" v-else-if="dataLoaded || noOrganization">
+  <div id="app">
     <div id="app-view" class="flex col flex1">
-      <!-- HEADER -->
-      <keep-alive>
+      <!-- <keep-alive>
         <router-view
-          v-if="isAuthenticated()"
+          v-if="isAuthenticated"
           name="AppHeader"
           :currentOrganizationScope="currentOrganizationScope"
-          :noOrganization="noOrganization"
-          :userInfo="userInfo"
+          :userInfo="user"
           :userOrganizations="userOrganizations"
-          :currentOrganization="currentOrganization"></router-view>
-      </keep-alive>
-      <div class="app-view-content flex col flex1" v-if="!error">
-        <!-- MAIN VIEW -->
-        <!-- <loading-overlay></loading-overlay> -->
+          :currentOrganization="currentOrganization"></router-view> 
+      </keep-alive> -->
+      <div class="app-view-content flex col flex1">
         <router-view
-          v-if="!noOrganization"
-          :userInfo="userInfo"
-          :currentOrganizationScope="currentOrganizationScope"
+          :key="$route.fullPath"
+          :userInfo="user"
           :userOrganizations="userOrganizations"
-          :currentOrgaPersonal="currentOrgaPersonal"
-          :currentOrganization="currentOrganization"
-          :key="resetKey"></router-view>
-
-        <NoOrganizationComponent v-else />
+          :currentOrganizationScope="currentOrganizationScope"
+          :currentOrganization="currentOrganization" />
       </div>
-      <ErrorView v-else />
-
-      <router-view name="AppNotif"></router-view>
-    </div>
-  </div>
-  <div v-else>
-    <div
-      class="flex col flex1 align-center justify-center"
-      style="height: 100vh">
-      <Loading />
+      <AppSettingsModal />
+      <PopupHost />
+      <AppNotifications />
     </div>
   </div>
 </template>
-<script>
-import { bus } from "./main.js"
-import { getEnv } from "@/tools/getEnv"
-import { getCookie } from "./tools/getCookie"
-import isAuthenticated from "@/tools/isAuthenticated.js"
 
-import ErrorNotResponsive from "@/components/ErrorNotResponsive.vue"
-import ErrorPage from "@/components/ErrorPage.vue"
-import Loading from "@/components/Loading.vue"
-import LoadingOverlay from "@/components/LoadingOverlay.vue"
-import ErrorView from "@/views/Error.vue"
-import NoOrganizationComponent from "@/views/NoOrganization.vue"
+<script>
+import { mapActions, mapGetters } from "vuex"
+import { bus } from "@/main"
+
+import { customDebug } from "@/tools/customDebug.js"
+import isAuthenticated from "@/tools/isAuthenticated.js"
+import getCurrentTheme from "@/tools/getCurrentTheme.js"
+import { getEnv } from "@/tools/getEnv"
+
+import AppSettingsModal from "@/components/AppSettingsModal.vue"
+import PopupHost from "@/components/PopupHost.vue"
+import AppNotifications from "@/components/AppNotifications.vue"
+
+import "@/style/style.scss"
 
 export default {
+  props: {},
   data() {
     return {
-      appMounted: false,
-      orgasLoaded: false,
-      userOrgasLoaded: false,
-      currentRoute: {},
-      convosLoaded: false,
-      error: false,
-      resetKey: 1,
+      appDebug: customDebug("vue:debug:app"),
       noOrganization: false,
-      isMobile: Math.min(window.innerWidth, window.innerHeight) < 500,
     }
   },
-  mounted() {
-    const enableSession = getEnv("VUE_APP_ENABLE_SESSION") === "true"
-
-    bus.$on("set_organization_scope", async (data) => {
-      this.setOrganizationScope(data.organizationId)
-      await this.dispatchUserOrganizations()
-    })
-    bus.$on("user_settings_update", async () => {
-      await this.getuserInfo()
-      await this.dispatchUserOrganizations()
-    })
-    bus.$on("user_orga_update", async () => {
-      await this.dispatchUserOrganizations()
-    })
-
-    document.documentElement.setAttribute(
-      "data-theme",
-      localStorage.getItem("currentTheme") || "light",
+  methods: {
+    ...mapActions("user", ["fetchUser"]),
+    ...mapActions("organizations", ["fetchOrganizations"]),
+    ...mapActions("system", ["setIsMobile"]),
+    _checkIsMobile() {
+      this.setIsMobile(window.matchMedia(`(max-width: ${1100}px)`).matches)
+    },
+  },
+  computed: {
+    ...mapGetters("user", { user: "getUserInfos" }),
+    ...mapGetters("organizations", {
+      userOrganizations: "getOrganizationsAsArray",
+      currentOrganization: "getCurrentOrganization",
+    }),
+    currentOrganizationScope: function () {
+      return this.$route.params.organizationId
+    },
+    isPublicPage: function () {
+      return this.$route.meta.public
+    },
+    isAuthenticated: function () {
+      return isAuthenticated()
+    },
+  },
+  beforeCreate() {
+    // Limit the dynamic import context so that webpack only considers SCSS files inside the "themes" directory.
+    // This avoids having it try to parse unrelated files at the project root (Dockerfile, README.md, ...).
+    /* eslint-disable-next-line import/no-dynamic-require */
+    import(
+      /* webpackInclude: /themes\/.*\/style\/style\.scss$/ */
+      `../${getCurrentTheme()["stylePath"]}`
     )
-    this.appMounted = true
-    document.title = this.title
+  },
+  mounted() {
+    // notification usage
+    // this.$store.dispatch("system/addNotification", {
+    //   message: "Hello, world!",
+    //   type: "success",
+    //   timeout: 5000,
+    // })
+    this._checkIsMobile()
+    this._onResize = () => {
+      window.requestAnimationFrame(this._checkIsMobile)
+    }
+    window.addEventListener("resize", this._onResize, { passive: true })
+    // keep compatibility with old notification system (don't use bus for new notifications)
+    bus.$on("app_notif", (data) => {
+      this.$store.dispatch("system/addNotification", {
+        message: data.message,
+        type: data.status,
+        timeout: data.timeout ?? 5000,
+        closable: data.cantBeClosed ?? true,
+      })
+    })
 
+    const enableSession = getEnv("VUE_APP_ENABLE_SESSION") === "true"
     if (enableSession) {
       this.$sessionWS.connect()
     }
   },
-  beforeDestroy() {
-    bus.$off("set_organization_scope")
-    bus.$off("user_settings_update")
-    bus.$off("user_orga_update")
-  },
-  watch: {
-    $route(to, from) {
-      this.resetKey = this.resetKey * -1
-      this.error = false
-      this.init()
-      bus.$emit("navigation", to)
-    },
-  },
-  computed: {
-    title() {
-      return getEnv("VUE_APP_NAME")
-    },
-    isPrivateRoute() {
-      return !this.$route?.meta?.public
-    },
-    isBackOfficeRoute() {
-      return this.$route?.meta?.backoffice
-    },
-    isResponsivePage() {
-      return this.$route?.meta?.responsive
-    },
-    userInfo() {
-      return this.$store.state.userInfo
-    },
-    dataLoaded() {
-      if (this.isBackOfficeRoute) {
-        return !!this.userInfo && this.appMounted
-      }
-
-      if (this.isPrivateRoute || this.isAuthenticated()) {
-        return (
-          !!this.userInfo &&
-          this.appMounted &&
-          this.userOrgasLoaded &&
-          this.currentOrganizationScope &&
-          this.currentOrganization?._id
-        )
-      }
-      return true
-    },
-    userOrganizations() {
-      return this.$store.state.userOrganizations
-    },
-    currentOrganizationScope() {
-      if (this.userOrgasLoaded) {
-        try {
-          const orgaScopeId = this.$store.getters.getCurrentOrganizationScope()
-          return orgaScopeId
-        } catch (error) {
-          console.error("err: ", error)
-          this.noOrganization = true
-          return null
-        }
-      }
-      return null
-    },
-    currentOrganization() {
-      if (this.currentOrganizationScope !== null) {
-        return this.$store.state.currentOrganization
-      }
-      return {}
-    },
-    currentOrgaPersonal() {
-      return false
-    },
-    editorView() {
-      return (
-        [
-          "conversations transcription",
-          "conversations overview",
-          "conversations publish",
-          "conversations subtitle",
-        ].indexOf(this.$route.name) > -1
-      )
-    },
-    listView() {
-      return ["inbox", "explore"].indexOf(this.$route.name) > -1
-    },
-  },
-  methods: {
-    async init() {
-      if (this.$route.params?.organizationId) {
-        this.setOrganizationScope(this.$route.params.organizationId, false)
-      } else if (this.$route.query?.organizationId) {
-        this.setOrganizationScope(this.$route.query.organizationId)
-      }
-
-      if (this.isAuthenticated()) {
-        await this.getuserInfo()
-        await this.dispatchUserOrganizations()
-      }
-    },
-    isAuthenticated() {
-      return isAuthenticated()
-    },
-    async setOrganizationScope(organizationId, redirect = true) {
-      this.$options.filters.setCookie("cm_orga_scope", organizationId, 7)
-      if (!this.listView && redirect) {
-        this.$router.push({ name: "inbox" })
-      }
-    },
-    async getuserInfo() {
-      try {
-        const req = await this.$store.dispatch("getPersonalInfo")
-        if (!req) {
-          this.$options.filters.logout()
-        }
-      } catch (error) {
-        console.error("err: ", error)
-        return
-      }
-    },
-    async dispatchUserOrganizations() {
-      try {
-        this.userOrgasLoaded = await this.$options.filters.dispatchStore(
-          "getUserOrganizations",
-        )
-        const orgaScopeId = this.$store.getters.getCurrentOrganizationScope()
-        await this.$store.dispatch("getCurrentOrganizationById", orgaScopeId)
-      } catch (error) {
-        console.error("err: ", error)
-        return
-      }
-    },
-  },
   components: {
-    LoadingOverlay,
-    Loading,
-    ErrorView,
-    ErrorPage,
-    NoOrganizationComponent,
-    ErrorNotResponsive,
-  },
-  errorCaptured(error) {
-    console.error("errorCaptured: ", error)
-    this.error = true
+    AppSettingsModal,
+    PopupHost,
+    AppNotifications,
   },
 }
 </script>
 <style lang="scss">
-@import "./style/style.scss";
+// @use "@/style/style.scss";
+// TODO: import from env variable instead of hardcoding
+// @use "../themes/LinTO-green/style/style.scss" as style-theme;
 </style>

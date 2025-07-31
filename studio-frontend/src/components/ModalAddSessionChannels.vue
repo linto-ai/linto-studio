@@ -1,6 +1,7 @@
 <template>
   <ModalNew
-    large
+    size="lg"
+    value
     @on-cancel="($event) => this.$emit('on-cancel')"
     @on-confirm="addChannels"
     :title="$t('session.channels_list.modal_add.title')"
@@ -20,13 +21,13 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import { apiGetTranscriberProfiles } from "@/api/session.js"
 
-import ModalNew from "@/components/ModalNew.vue"
+import ModalNew from "@/components/molecules/Modal.vue"
 import TranscriberProfileSelector from "@/components/TranscriberProfileSelector.vue"
-import LoadingComponent from "@/components/Loading.vue"
+import LoadingComponent from "@/components/atoms/Loading.vue"
 export default {
   props: {
     value: {

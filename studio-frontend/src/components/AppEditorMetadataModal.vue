@@ -44,7 +44,7 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 
 import { apiGetNlpService } from "../api/service.js"
 import METADATA_SCHEMAS from "../const/metadataSchemas.js"
@@ -52,9 +52,9 @@ import jsonSchemaToFields from "@/tools/jsonSchemaToFields.js"
 
 import { formsMixin } from "@/mixins/forms.js"
 
-import ModalNew from "./ModalNew.vue"
+import ModalNew from "@/components/molecules/Modal.vue"
 // import ServiceBox from "./ServiceBox.vue"
-import FormInput from "./FormInput.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 
 export default {
   mixins: [formsMixin],

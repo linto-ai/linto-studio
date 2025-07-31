@@ -2,7 +2,7 @@
   <form @submit="update">
     <section>
       <h2>
-        {{ $t("usersettings.personal_information") }}
+        {{ $t("user_settings.personal_information") }}
       </h2>
 
       <FormInput :field="firstName" v-model="firstName.value" />
@@ -17,34 +17,10 @@
         </template>
       </FormInput>
 
-      <div
-        class="flex row align-center"
-        v-if="!userInfo.emailIsVerified || emailSent">
-        <div class="user-settings-notification" v-if="!emailSent">
-          <span class="content">{{
-            $t("usersettings.verify_email_notif")
-          }}</span>
-        </div>
-        <span v-else class="email-verified-notif">{{
-          $t("usersettings.check_verify_email")
-        }}</span>
-        <button
-          v-if="!userInfo.emailIsVerified && !emailSent"
-          class="btn yellow"
-          @click="sendVerificationEmail()"
-          style="margin: 0 5px">
-          <span
-            :class="['icon', sendingEmail ? 'loading' : 'send-mail']"></span>
-          <span class="label">{{
-            $t("usersettings.send_verification_link")
-          }}</span>
-        </button>
-      </div>
-
-      <button type="submit" class="btn">
-        <span class="icon apply"></span>
+      <button type="submit" class="btn primary">
+        <ph-icon name="check" size="md" class="icon" />
         <span class="label">{{
-          $t("usersettings.update_personal_information_button")
+          $t("user_settings.update_personal_information_button")
         }}</span>
       </button>
     </section>
@@ -52,17 +28,18 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
+import { mapActions } from "vuex"
 
 import { formsMixin } from "@/mixins/forms.js"
 
-import { apiUpdateUserInfo, apiSendVerificationLink } from "@/api/user.js"
+import { apiSendVerificationLink } from "@/api/user.js"
 import { apiAdminUpdateUser } from "@/api/admin.js"
 
 import { testName } from "@/tools/fields/testName"
 import { testEmail } from "@/tools/fields/testEmail"
 
-import FormInput from "@/components/FormInput.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 
 export default {
   mixins: [formsMixin],
@@ -82,21 +59,21 @@ export default {
         value: this.userInfo.firstname,
         error: null,
         valid: false,
-        label: this.$t("usersettings.firstname_label"),
+        label: this.$t("user_settings.firstname_label"),
         testField: testName,
       },
       lastName: {
         value: this.userInfo.lastname,
         error: null,
         valid: false,
-        label: this.$t("usersettings.lastname_label"),
+        label: this.$t("user_settings.lastname_label"),
         testField: testName,
       },
       email: {
         value: this.userInfo.email,
         error: null,
         valid: false,
-        label: this.$t("usersettings.email_label"),
+        label: this.$t("user_settings.email_label"),
         testField: testEmail,
       },
       fields: ["firstName", "lastName", "email"],
@@ -111,6 +88,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions("user", ["updateUser"]),
     async update(event) {
       event?.preventDefault()
 
@@ -127,10 +105,7 @@ export default {
         let req = null
 
         if (!this.isAdminPage) {
-          req = await apiUpdateUserInfo(payload, {
-            timeout: 3000,
-            redirect: false,
-          })
+          req = await this.updateUser(payload)
 
           if (req.status === "success") {
             if (this.email.value !== this.userInfo.email) {
@@ -144,29 +119,17 @@ export default {
         if (req.status === "success") {
           bus.$emit("app_notif", {
             status: "success",
-            message: this.$t("usersettings.notif_success"),
+            message: this.$t("user_settings.notif_success"),
           })
         } else {
           bus.$emit("app_notif", {
             status: "error",
-            message: this.$t("usersettings.notif_error"),
+            message: this.$t("user_settings.notif_error"),
           })
         }
       }
 
       return false
-    },
-    async sendVerificationEmail() {
-      this.sendingEmail = true
-      const sendLink = await apiSendVerificationLink({
-        timeout: 3000,
-        redirect: false,
-      })
-
-      if (sendLink.status === "success") {
-        this.sendingEmail = false
-        this.emailSent = true
-      }
     },
   },
   components: { Fragment, FormInput },

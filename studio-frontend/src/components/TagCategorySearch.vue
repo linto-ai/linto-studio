@@ -36,11 +36,11 @@
 <script>
 import uuidv4 from "uuid/v4.js"
 import { Fragment } from "vue-fragment"
-import { bus } from "../main.js"
+import { bus } from "@/main.js"
 import { apiSearchCategories, apiGetAllCategories } from "../api/tag.js"
 import { debounceMixin } from "../mixins/debounce"
 
-import Loading from "./Loading.vue"
+import Loading from "@/components/atoms/Loading.vue"
 
 export default {
   props: {
@@ -87,7 +87,7 @@ export default {
     searchedCategories: {
       handler(newCategories, oldCategories) {
         this.foundExactCategorie = newCategories.find(
-          (category) => category.name === this.search
+          (category) => category.name === this.search,
         )
         if (this.foundExactCategorie) {
           this.selectedCategory = this.foundExactCategorie
@@ -106,7 +106,7 @@ export default {
         search,
         this.categoryType,
         "conversation",
-        signal
+        signal,
       )
     },
     async fetchSearchResult(newSearch) {
@@ -114,7 +114,7 @@ export default {
       if (!newSearch) {
         if (this.categoriesList !== null) {
           this.searchedCategories = this.categoriesList.filter((category) =>
-            category.name.includes(newSearch)
+            category.name.includes(newSearch),
           )
           this.loading = false
           return
@@ -123,12 +123,12 @@ export default {
         this.searchedCategories = await apiGetAllCategories(
           this.conversationId,
           this.categoryType,
-          "conversation"
+          "conversation",
         )
       } else {
         this.searchedCategories = await this.debouncedSearch(
           this.apiSearchCategoriesWithOrga.bind(this),
-          newSearch
+          newSearch,
         )
       }
       this.loading = false

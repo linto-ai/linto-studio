@@ -1,5 +1,5 @@
 <template>
-  <div class="flex gap-medium backoffice-listing-header align-center">
+  <div class="flex gap-medium backoffice-listing-header align-center flex1">
     <div
       class="flex1 flex gap-small backoffice-listing-header__title align-center">
       <h2>{{ title }}</h2>
@@ -19,17 +19,17 @@
     </form>
     <button
       v-if="add_button_label"
-      class="btn green"
+      class="btn primary"
       @click="$emit('on-create')">
       <span class="icon plus"></span>
       <span class="label">{{ add_button_label }}</span>
     </button>
     <button
       v-if="remove_button_label"
-      class="btn red-border"
+      class="btn tertiary outline"
       @click="$emit('on-delete')"
       :disabled="disableDelete">
-      <span class="icon delete"></span>
+      <ph-icon name="trash"></ph-icon>
       <span class="label">{{ remove_button_label }}</span>
     </button>
   </div>

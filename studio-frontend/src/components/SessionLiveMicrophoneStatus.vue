@@ -17,7 +17,7 @@
   </div>
 </template>
 <script>
-import StatusLed from "./StatusLed.vue"
+import StatusLed from "@/components/atoms/StatusLed.vue"
 
 export default {
   props: {

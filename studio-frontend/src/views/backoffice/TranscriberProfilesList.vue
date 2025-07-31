@@ -34,15 +34,14 @@
           </button>
         </template>
       </HeaderTable>
-      <div class="fixed-notif small-margin-bottom" v-if="!showAllProfiles">
-        <div class="app-notif__message">
-          {{ $t("backoffice.transcriber_profile_list.warning_global.line_1") }}
-          <br />
-          {{ $t("backoffice.transcriber_profile_list.warning_global.line_2") }}
-        </div>
-      </div>
     </template>
-
+    <div class="fixed-notif small-margin-bottom" v-if="!showAllProfiles">
+      <div class="app-notif__message">
+        {{ $t("backoffice.transcriber_profile_list.warning_global.line_1") }}
+        <br />
+        {{ $t("backoffice.transcriber_profile_list.warning_global.line_2") }}
+      </div>
+    </div>
     <div class="backoffice-listing-container">
       <TranscriberProfileTable
         @list_sort_by="sortBy"

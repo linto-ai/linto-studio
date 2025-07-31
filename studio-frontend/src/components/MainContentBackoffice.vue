@@ -1,16 +1,19 @@
 <template>
-  <div class="flex flex1">
-    <BackofficeSidebar />
-    <main class="flex1 backoffice-main">
+  <V2Layout backoffice>
+    <ActionBar>
       <slot name="header"></slot>
+    </ActionBar>
+    <div class="flex1 backoffice-main">
       <slot v-if="!loading"></slot>
       <Loading v-else />
-    </main>
-  </div>
+    </div>
+  </V2Layout>
 </template>
 <script>
 import BackofficeSidebar from "@/components/BackofficeSidebar.vue"
-import Loading from "@/components/Loading.vue"
+import Loading from "@/components/atoms/Loading.vue"
+import V2Layout from "@/layouts/v2-layout.vue"
+import ActionBar from "@/layouts/ActionBar.vue"
 
 export default {
   props: {
@@ -25,6 +28,6 @@ export default {
   },
   mounted() {},
   methods: {},
-  components: { BackofficeSidebar, Loading },
+  components: { BackofficeSidebar, Loading, V2Layout, ActionBar },
 }
 </script>

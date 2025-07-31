@@ -1,20 +1,25 @@
+import "dotenv/config"
+
 import Vue from "vue"
 import App from "./App.vue"
 import router from "./routers/app-router.js"
-import store from "./store.js"
+import store from "./store/index.js"
 import i18n from "./i18n"
 import Debug from "debug"
 import vClickOutside from "v-click-outside"
 import Fragment from "vue-fragment"
+import PortalVue from "portal-vue"
 //import { setDefaultEnv } from "./tools/setDefaultEnv.js"
 import SessionWS from "@/models/SessionWS.js"
+import Atoms from "./components/atoms/index.js"
 import "./filters/index.js"
-
 //setDefaultEnv() // doesn't work
 
 export const bus = new Vue()
+Vue.use(PortalVue.default)
 Vue.use(vClickOutside)
 Vue.use(Fragment.Plugin)
+Vue.use(Atoms)
 
 Vue.config.productionTip = false
 Vue.prototype.debug = Debug("Vue")
