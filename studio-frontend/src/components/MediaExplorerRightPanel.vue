@@ -28,7 +28,7 @@
         </div>
         <div v-else></div>
         <!-- delete and share -->
-        <div class="button-group">
+        <div class="button-group-right">
           <ConversationShareMultiple class="header-action-button" :selectedConversations="selectedMedias"
             :currentOrganizationScope="currentOrganizationScope" />
           <Button @click="handleDelete" :label="$t('media_explorer.delete')" icon="trash" variant="outline" size="sm"
@@ -344,6 +344,12 @@ export default {
   height: 100%;
   min-width: 300px;
   max-width: 800px;
+
+  .button-group-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
 }
 
 .resize-handle {

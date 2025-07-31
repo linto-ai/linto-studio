@@ -667,7 +667,9 @@
     "panel": {
       "overview": "Aperçu du média",
       "title": "Titre",
+      "title_updated": "Titre mis à jour",
       "description": "Description",
+      "description_updated": "Description mise à jour",
       "duration": "Durée",
       "created": "Créé le",
       "tags": "Thématiques",

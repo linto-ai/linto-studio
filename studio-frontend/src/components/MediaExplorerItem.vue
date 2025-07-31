@@ -40,7 +40,7 @@
                 <router-link :title="title" :to="{
                   name: 'conversations transcription',
                   params: {
-                    conversationId: media._id,
+                    conversationId: reactiveMedia._id,
                     organizationId: currentOrganization._id,
                   },
                   query: searchValue ? { search: searchValue } : {},
@@ -65,7 +65,7 @@
 
       <!-- Right section: Tags (desktop only) -->
       <IsDesktop>
-        <MediaExplorerItemTags class="media-explorer-item__tags" :mediatags="mediatags" :media-id="media._id"
+        <MediaExplorerItemTags class="media-explorer-item__tags" :mediatags="mediatags" :media-id="reactiveMedia._id"
           :max-visible="maxVisibleTags" :mobile-view="false" />
       </IsDesktop>
 
@@ -80,7 +80,7 @@
     </div>
 
     <!-- Delete modal -->
-    <ModalDeleteConversations :visible="showDeleteModal" :medias="[media]" @close="showDeleteModal = false" />
+    <ModalDeleteConversations :visible="showDeleteModal" :medias="[reactiveMedia]" @close="showDeleteModal = false" />
   </div>
 </template>
 
@@ -141,57 +141,73 @@ export default {
       currentOrganization: "getCurrentOrganization",
     }),
 
-    actionsItems() {
-      return [
-        {
-          id: "edit",
-          name: this.$t("media_explorer.line.edit_transcription"),
-          icon: "pencil",
-          color: "primary",
-          to: {
-            name: "conversations transcription",
-            params: {
-              conversationId: this.media._id,
-              organizationId: this.organizationId,
-            },
-            query: this.searchValue ? { search: this.searchValue } : {},
-          },
-        },
-        {
-          id: "subtitles",
-          name: this.$t("media_explorer.line.edit_subtitles"),
-          icon: "closed-captioning",
-          color: "primary",
-          to: {
-            name: "conversations subtitles",
-            params: {
-              conversationId: this.media._id,
-              organizationId: this.organizationId,
-            },
-            query: this.searchValue ? { search: this.searchValue } : {},
-          },
-        },
-        {
-          id: "export",
-          name: this.$t("media_explorer.line.export"),
-          icon: "export",
-          color: "primary",
-          to: {
-            name: "conversations publish",
-            params: {
-              conversationId: this.media._id,
-              organizationId: this.organizationId,
-            },
-          },
-        },
-        {
-          id: "delete",
-          name: this.$t("media_explorer.line.delete"),
-          icon: "trash",
-          color: "tertiary",
-        },
-      ]
+    // Get reactive media data from store to ensure updates are reflected
+    reactiveMedia() {
+      if (!this.media?._id) return this.media
+      const storeMedia = this.$store.getters["inbox/getMediaById"](this.media._id)
+      
+      // Store now contains all necessary properties, merge with original as fallback
+      if (storeMedia) {
+        return {
+          ...this.media,
+          ...storeMedia
+        }
+      }
+      
+      return this.media
     },
+
+    actionsItems() {
+        return [
+          {
+            id: "edit",
+            name: this.$t("media_explorer.line.edit_transcription"),
+            icon: "pencil",
+            color: "primary",
+            to: {
+              name: "conversations transcription",
+              params: {
+                conversationId: this.reactiveMedia._id,
+                organizationId: this.organizationId,
+              },
+              query: this.searchValue ? { search: this.searchValue } : {},
+            },
+          },
+          {
+            id: "subtitles",
+            name: this.$t("media_explorer.line.edit_subtitles"),
+            icon: "closed-captioning",
+            color: "primary",
+            to: {
+              name: "conversations subtitles",
+              params: {
+                conversationId: this.reactiveMedia._id,
+                organizationId: this.organizationId,
+              },
+              query: this.searchValue ? { search: this.searchValue } : {},
+            },
+          },
+          {
+            id: "export",
+            name: this.$t("media_explorer.line.export"),
+            icon: "export",
+            color: "primary",
+            to: {
+              name: "conversations publish",
+              params: {
+                conversationId: this.reactiveMedia._id,
+                organizationId: this.organizationId,
+              },
+            },
+          },
+          {
+            id: "delete",
+            name: this.$t("media_explorer.line.delete"),
+            icon: "trash",
+            color: "tertiary",
+          },
+        ]
+      },
     mediatags() {
       if (!this.media || !this.media.tags) {
         return []
@@ -250,11 +266,11 @@ export default {
         month: "short",
         day: "numeric",
       }
-      const d = new Date(this.media?.created)
+      const d = new Date(this.reactiveMedia?.created)
       return d.toLocaleDateString(undefined, options)
     },
     isFavorite() {
-      return this.$store.getters["user/isFavoriteConversation"](this.media._id)
+      return this.$store.getters["user/isFavoriteConversation"](this.reactiveMedia._id)
     },
     isSelectAll() {
       return this.$store.state.inbox.autoselectMedias
@@ -268,15 +284,15 @@ export default {
       this.isSelected = value
 
       if (value) {
-        this.addSelectedMedia(this.media)
+        this.addSelectedMedia(this.reactiveMedia)
       } else {
-        this.removeSelectedMedia(this.media)
+        this.removeSelectedMedia(this.reactiveMedia)
       }
     },
     // Sync local isSelected state with store
     '$store.state.inbox.selectedMedias': {
       handler(selectedMedias) {
-        const isCurrentlySelected = selectedMedias.some(media => media._id === this.media._id)
+        const isCurrentlySelected = selectedMedias.some(media => media._id === this.reactiveMedia._id)
         if (this.isSelected !== isCurrentlySelected) {
           this.isSelected = isCurrentlySelected
         }
@@ -289,7 +305,7 @@ export default {
     ...mapMutations("inbox", ["addSelectedMedia", "removeSelectedMedia"]),
 
     toggleFavorite() {
-      this.$store.dispatch("user/toggleFavoriteConversation", this.media._id)
+      this.$store.dispatch("user/toggleFavoriteConversation", this.reactiveMedia._id)
     },
 
     select() {
@@ -300,9 +316,9 @@ export default {
 
     handleSelectionChange() {
       if (this.isSelected) {
-        this.addSelectedMedia(this.media)
+        this.addSelectedMedia(this.reactiveMedia)
       } else {
-        this.removeSelectedMedia(this.media)
+        this.removeSelectedMedia(this.reactiveMedia)
       }
     },
 
@@ -319,7 +335,7 @@ export default {
     },
 
     selectForOverview() {
-      this.$emit("select-for-overview", this.media)
+      this.$emit("select-for-overview", this.reactiveMedia)
     },
   },
 }

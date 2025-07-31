@@ -188,6 +188,11 @@ export const fromConversations = (conversations) => {
     return {
       _id: conversation._id,
       name: conversation.name,
+      description: conversation.description,
+      created: conversation.created,
+      metadata: conversation.metadata ? structuredClone(conversation.metadata) : null,
+      sharedBy: conversation.sharedBy ? structuredClone(conversation.sharedBy) : null,
+      type: conversation.type ? structuredClone(conversation.type) : null,
       isSelected: false,
       tags: conversation.tags,
       owner: conversation.owner,

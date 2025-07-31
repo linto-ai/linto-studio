@@ -659,7 +659,9 @@
     "panel": {
       "overview": "Media Overview",
       "title": "Title",
+      "title_updated": "Title updated",
       "description": "Description",
+      "description_updated": "Description updated",
       "duration": "Duration",
       "created": "Created",
       "tags": "Topics",

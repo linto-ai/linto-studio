@@ -211,10 +211,26 @@ export default {
   },
   computed: {
     count() {
-      return this.totalItemsCount || this.medias.length
+      return this.totalItemsCount || this.reactiveMedias.length
     },
     selectedMedias() {
       return this.$store.state.inbox.selectedMedias
+    },
+    // Get reactive medias from store to ensure updates are reflected
+    reactiveMedias() {
+      return this.medias.map(media => {
+        const storeMedia = this.$store.getters["inbox/getMediaById"](media._id)
+        
+        // Store now contains all necessary properties, merge with original as fallback
+        if (storeMedia) {
+          return {
+            ...media,
+            ...storeMedia
+          }
+        }
+        
+        return media
+      })
     },
     ...mapGetters("tags", ["getExploreSelectedTags"]),
     ...mapGetters("user", { userInfo: "getUserInfos" }),
@@ -228,7 +244,7 @@ export default {
       return this.selectedTagIds || []
     },
     filteredMedias() {
-      const medias = this.medias;
+      const medias = this.reactiveMedias;
       const tagIds = this.activeSelectedTagIds;
       
       // Memoization: check if we can reuse cached result
@@ -256,7 +272,7 @@ export default {
       return result;
     },
     reactiveSelectedMediaForOverview() {
-      return this.medias.find(
+      return this.reactiveMedias.find(
         (media) => media._id === this.selectedMediaForOverview?._id,
       )
     },
@@ -265,7 +281,7 @@ export default {
       return count;
     },
     totalCount() {
-      const count = this.medias.length;
+      const count = this.reactiveMedias.length;
       return count;
     },
   },
@@ -278,7 +294,7 @@ export default {
       search: "",
       showDeleteModal: false,
       selectedMediaForOverview: null,
-      rightPanelWidth: 400,
+      rightPanelWidth: this.calculateDefaultRightPanelWidth(),
       _filteredMediasCache: null,
       _observerSetupPending: false,
       _loadMorePending: false, // Prevent multiple simultaneous load-more calls
@@ -290,9 +306,22 @@ export default {
       this.setupIntersectionObserver()
       this.initializePageFromURL()
     }
+    
+    // Add window resize listener for responsive right panel
+    this.handleWindowResize = this.debounce(() => {
+      if (this.selectedMediaForOverview && this.rightPanelWidth > 0) {
+        this.rightPanelWidth = this.calculateDefaultRightPanelWidth()
+      }
+    }, 250)
+    
+    window.addEventListener('resize', this.handleWindowResize)
   },
   beforeDestroy() {
     this.cleanupObserver()
+    // Clean up window resize listener
+    if (this.handleWindowResize) {
+      window.removeEventListener('resize', this.handleWindowResize)
+    }
   },
   watch: {
     isSelectAll(value) {
@@ -327,9 +356,17 @@ export default {
         }
         else if (oldSelection && oldSelection.length > 1 && newSelection.length === 1) {
           this.selectedMediaForOverview = newSelection[0]
+          // Auto-adjust width when switching from multiple to single selection
+          if (this.rightPanelWidth === 0) {
+            this.rightPanelWidth = this.calculateDefaultRightPanelWidth()
+          }
         }
         else if (newSelection.length === 1 && !this.selectedMediaForOverview) {
           this.selectedMediaForOverview = newSelection[0]
+          // Auto-adjust width when opening panel
+          if (this.rightPanelWidth === 0) {
+            this.rightPanelWidth = this.calculateDefaultRightPanelWidth()
+          }
         }
         else if (this.selectedMediaForOverview && !newSelection.find(m => m._id === this.selectedMediaForOverview._id)) {
           this.selectedMediaForOverview = null
@@ -341,6 +378,28 @@ export default {
   },
   methods: {
     ...mapActions("inbox", ["clearSelectedMedias"]),
+    calculateDefaultRightPanelWidth() {
+      // Calculate responsive right panel width based on screen size
+      const screenWidth = window.innerWidth || 1920;
+      const maxWidth = screenWidth * 0.5; // 50% max viewport width
+      const minWidth = 300; // Minimum 300px
+      
+      let calculatedWidth;
+      
+      if (screenWidth <= 1200) {
+        // For mobile/tablet, the panel will be full width anyway
+        calculatedWidth = Math.min(maxWidth, screenWidth * 0.4); // 40% of screen width
+      } else if (screenWidth <= 1600) {
+        calculatedWidth = screenWidth * 0.32; // 32% of screen width
+      } else if (screenWidth <= 2000) {
+        calculatedWidth = screenWidth * 0.3; // 30% of screen width
+      } else {
+        calculatedWidth = screenWidth * 0.28; // 28% of screen width
+      }
+      
+      // Ensure width is within min/max bounds
+      return Math.max(minWidth, Math.min(maxWidth, calculatedWidth));
+    },
     reset() {
       this.clearSelectedMedias()
       this.lastPage = 0
@@ -470,6 +529,10 @@ export default {
 
     selectMediaForOverview(media) {
       this.selectedMediaForOverview = media
+      // Auto-adjust right panel width when opening
+      if (media && this.rightPanelWidth === 0) {
+        this.rightPanelWidth = this.calculateDefaultRightPanelWidth()
+      }
     },
 
     closeRightPanel() {
@@ -493,6 +556,18 @@ export default {
       if (this.observer) {
         this.observer.disconnect()
         this.observer = null
+      }
+    },
+
+    debounce(func, wait) {
+      let timeout
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout)
+          func(...args)
+        }
+        clearTimeout(timeout)
+        timeout = setTimeout(later, wait)
       }
     },
   },
@@ -542,10 +617,10 @@ export default {
 }
 
 .media-explorer__body.has-right-panel .media-explorer__body__content {
-  //margin-right: var(--right-panel-width, 600px);
-  //max-width: calc(100% - var(--right-panel-width, 400px));
   width: 100%;
-  padding-right: calc(var(--right-panel-width, 400px) + 1rem);
+  padding-right: calc(var(--right-panel-width, 500px) + 1rem);
+  overflow-x: auto;
+  min-width: 0; /* Prevent flex item from overflowing */
 }
 
 .media-explorer__body .media-explorer-right-panel {
@@ -556,11 +631,15 @@ export default {
   z-index: 1000;
   background-color: var(--background-color, #fff);
   border-left: var(--border-block, 1px solid var(--neutral-30));
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.08);
   flex-shrink: 0;
-  width: var(--right-panel-width, 400px);
+  width: var(--right-panel-width, 500px);
+  min-width: 300px; /* Minimum width to prevent too narrow panels */
+  max-width: 50vw; /* Maximum 50% of viewport width */
   height: 100%;
   overflow-y: auto;
-  overflow-x: hidden;
+  overflow-x: auto;
+  transition: width 0.3s ease, box-shadow 0.3s ease;
 }
 
 .media-explorer__body__empty {
@@ -596,7 +675,7 @@ export default {
   border: 1px solid var(--primary-color, #007bff);
 }
 
-@media only screen and (max-width: 1100px) {
+@media only screen and (max-width: 1200px) {
   .media-explorer__body__item {
     overflow: auto;
   }
@@ -607,18 +686,34 @@ export default {
 
   .media-explorer__body__content {
     margin-right: 0 !important;
-    padding-right: 0 !important;
+    padding-right: 0.5rem !important;
+    overflow-x: visible;
   }
 
   .media-explorer__body .media-explorer-right-panel {
     position: relative;
-    width: 100%;
+    width: 100% !important;
+    min-width: unset !important;
+    max-width: unset !important;
     border-left: none;
     border-top: var(--border-block, 1px solid var(--neutral-30));
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
+    max-height: 50vh;
   }
 
   .media-explorer__body.has-right-panel .media-explorer__body__content {
-    padding-right: 0;
+    padding-right: 0.5rem !important;
+  }
+}
+
+/* Amélioration pour les très petits écrans */
+@media only screen and (max-width: 768px) {
+  .media-explorer__body .media-explorer-right-panel {
+    max-height: 60vh;
+  }
+  
+  .media-explorer__body__content {
+    padding: 0.25rem !important;
   }
 }
 </style>
