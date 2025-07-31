@@ -9,19 +9,54 @@
 
     <div class="form-field__input-wrapper">
       <slot></slot>
-      <input v-if="!textarea" :class="inputClasses" :type="type" :disabled="disabled" :id="id"
-        :autocomplete="autocomplete" :placeholder="placeholder" ref="input" v-model="editValue" @change="onInputChange"
-        @keydown="keydown" v-bind="field.customParams" />
-      <textarea v-else :class="textareaClasses" :disabled="disabled" :id="id" ref="input" v-model="editValue"
-        @change="onInputChange" @keydown="keydown" />
+      <input
+        v-if="!textarea"
+        :class="inputClasses"
+        :type="type"
+        :disabled="disabled"
+        :id="id"
+        :autocomplete="autocomplete"
+        :placeholder="placeholder"
+        ref="input"
+        v-model="editValue"
+        @change="onInputChange"
+        @keydown="keydown"
+        v-bind="field.customParams" />
+      <textarea
+        v-else
+        :class="textareaClasses"
+        :disabled="disabled"
+        :id="id"
+        ref="input"
+        v-model="editValue"
+        @change="onInputChange"
+        @keydown="keydown" />
 
       <div v-if="shouldShowConfirmationButtons" class="form-field__actions">
-        <Button type="button" @click="cancel" :title="$t ? $t('cancel') : 'Cancel'" icon="x" iconOnly variant="outline"
-          color="neutral" size="sm" class="form-field__cancel-btn" />
-        <Button type="button" @click="apply" :title="$t ? $t('apply') : 'Apply'" icon="check" iconOnly variant="outline"
-          color="primary" size="sm" class="form-field__apply-btn" />
+        <Button
+          type="button"
+          @click="cancel"
+          :title="$t ? $t('cancel') : 'Cancel'"
+          icon="x"
+          iconOnly
+          variant="outline"
+          color="neutral"
+          size="sm"
+          class="form-field__cancel-btn" />
+        <Button
+          type="button"
+          @click="apply"
+          :title="$t ? $t('apply') : 'Apply'"
+          icon="check"
+          iconOnly
+          variant="outline"
+          color="primary"
+          size="sm"
+          class="form-field__apply-btn" />
       </div>
-      <div v-else-if="withConfirmation" class="form-field__actions form-field__actions--placeholder"></div>
+      <div
+        v-else-if="withConfirmation"
+        class="form-field__actions form-field__actions--placeholder"></div>
 
       <slot name="content-after-input"></slot>
     </div>
@@ -85,8 +120,14 @@ export default {
   data() {
     return {
       id: this.inputId || Math.random().toString(36).substr(2, 9),
-      editValue: this.modelValue !== undefined ? this.modelValue : (this.field.value || ""),
-      originalValue: this.modelValue !== undefined ? this.modelValue : (this.field.value || ""),
+      editValue:
+        this.modelValue !== undefined
+          ? this.modelValue
+          : this.field.value || "",
+      originalValue:
+        this.modelValue !== undefined
+          ? this.modelValue
+          : this.field.value || "",
     }
   },
   computed: {
@@ -103,30 +144,30 @@ export default {
       return this.editValue !== this.originalValue
     },
     shouldShowConfirmationButtons() {
-      return this.withConfirmation &&this.hasChanged
+      return this.withConfirmation && this.hasChanged
     },
     formFieldClasses() {
       return {
-        'form-field--inline': this.inline,
-        'form-field--disabled': this.disabled,
-        'form-field--error': this.field.error !== null,
-        'form-field--with-confirmation': this.withConfirmation,
+        "form-field--inline": this.inline,
+        "form-field--disabled": this.disabled,
+        "form-field--error": this.field.error !== null,
+        "form-field--with-confirmation": this.withConfirmation,
       }
     },
     inputClasses() {
       return {
-        'form-field__input': true,
-        'form-field__input--fullwidth': this.inputFullWidth,
-        'form-field__input--disabled': this.disabled,
-        'form-field__input--error': this.field.error !== null,
+        "form-field__input": true,
+        "form-field__input--fullwidth": this.inputFullWidth,
+        "form-field__input--disabled": this.disabled,
+        "form-field__input--error": this.field.error !== null,
       }
     },
     textareaClasses() {
       return {
-        'form-field__textarea': true,
-        'form-field__input--fullwidth': this.inputFullWidth,
-        'form-field__input--disabled': this.disabled,
-        'form-field__input--error': this.field.error !== null,
+        "form-field__textarea": true,
+        "form-field__input--fullwidth": this.inputFullWidth,
+        "form-field__input--disabled": this.disabled,
+        "form-field__input--error": this.field.error !== null,
       }
     },
   },
@@ -137,7 +178,7 @@ export default {
         this.originalValue = newVal
       }
     },
-    'field.value'(newVal) {
+    "field.value"(newVal) {
       if (this.modelValue === undefined && newVal !== this.editValue) {
         this.editValue = newVal
         this.originalValue = newVal
@@ -153,20 +194,20 @@ export default {
   },
   methods: {
     onInputChange(e) {
-      this.$emit('update:modelValue', this.editValue)
-      this.$emit('input', this.editValue)
+      this.$emit("update:modelValue", this.editValue)
+      this.$emit("input", this.editValue)
     },
     apply(e) {
       e && e.stopPropagation()
       this.originalValue = this.editValue
-      this.$emit('update:modelValue', this.editValue)
-      this.$emit('input', this.editValue)
-      this.$emit('on-confirm', e)
+      this.$emit("update:modelValue", this.editValue)
+      this.$emit("input", this.editValue)
+      this.$emit("on-confirm", e)
     },
     cancel(e) {
       e && e.stopPropagation()
       this.editValue = this.originalValue
-      this.$emit('on-cancel', e)
+      this.$emit("on-cancel", e)
     },
     keydown(e) {
       if (e.key == "Enter" && this.shouldShowConfirmationButtons) {
@@ -247,6 +288,7 @@ export default {
 
     &--fullwidth {
       width: 100%;
+      max-width: none;
     }
 
     &--disabled {
@@ -399,7 +441,6 @@ export default {
 
   /* Improved focus management for confirmation mode */
   &--with-confirmation {
-
     .form-field__input:focus,
     .form-field__textarea:focus {
       border-color: var(--primary-color, #007bff);
@@ -441,7 +482,6 @@ export default {
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
-
   .form-field__input,
   .form-field__textarea {
     border-width: 2px;
@@ -450,7 +490,6 @@ export default {
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
-
   .form-field__input,
   .form-field__textarea,
   .form-field__actions {
