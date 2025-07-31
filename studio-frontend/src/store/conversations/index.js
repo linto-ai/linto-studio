@@ -250,6 +250,74 @@ export default {
       });
     },
 
+    async loadPreviousPages({ commit, dispatch, state }, targetPage) {
+      // Prevent concurrent fetches
+      if (state.loading) return;
+      
+      commit("setLoading", true);
+      commit("setError", null);
+      
+      try {
+        const { context, selectedTagIds, search, sortField, filters } = state.params;
+        const textFilter = filters.find(f => f.key === "textConversation")?.value || null;
+        const titleFilter = filters.find(f => f.key === "titleConversation")?.value || null;
+        
+        // Calculate how many items we need to load (all pages from 0 to targetPage-1)
+        const itemsToLoad = targetPage * state.pageSize;
+        
+        let response;
+        
+        if (context.favorites) {
+          response = await apiGetFavoritesConversations(
+            selectedTagIds,
+            textFilter,
+            titleFilter,
+            0, // Start from page 0
+            { pageSize: itemsToLoad, sortField } // Load all items at once
+          );
+        } else if (context.shared) {
+          response = await apiGetConversationsSharedWith(
+            selectedTagIds,
+            textFilter,
+            titleFilter,
+            0,
+            { pageSize: itemsToLoad, sortField }
+          );
+        } else {
+          if (selectedTagIds.length === 0 && filters.length === 0) {
+            response = await apiGetConversationsByOrganization(
+              context.organizationScope,
+              0,
+              { pageSize: itemsToLoad, sortField }
+            );
+          } else {
+            response = await apiGetConversationsByTags(
+              context.organizationScope,
+              selectedTagIds,
+              textFilter,
+              titleFilter,
+              0,
+              { pageSize: itemsToLoad, sortField }
+            );
+          }
+        }
+        
+        const conversations = response?.list || [];
+        const totalCount = response?.count || 0;
+        
+        commit("setConversations", conversations);
+        commit("setTotalCount", totalCount);
+        commit("setPage", 0); // Reset to page 0
+        commit("setHasMoreItems", totalCount > itemsToLoad);
+        
+      } catch (error) {
+        commit("setError", error.message || "Error loading previous pages");
+        throw error;
+      } finally {
+        commit("setLoading", false);
+      }
+    },
+
     deleteConversations({ commit, state }, conversationIds) {
       const filtered = state.conversations.filter(c => !conversationIds.includes(c._id));
       commit('setConversations', filtered);

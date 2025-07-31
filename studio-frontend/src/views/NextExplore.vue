@@ -3,16 +3,19 @@
     <MediaExplorer ref="mediaExplorer" :medias="conversations" :totalItemsCount="totalItemsCount"
       :loading="loadingConversations" :pageSize="pageSize" :error="error" :search-value="search"
       :enable-pagination="true" :selected-tag-ids="selectedTagIds" :readonly-tags="favorites || shared"
-      @load-more="handleLoadMore" @search="handleSearch" @reset="handleReset" @tags-changed="handleTagsChanged"
+      @load-more="handleLoadMore" @search="handleSearch" @reset="handleReset" @tags-changed="handleTagsChange"
       class="explore-next__media-explorer relative">
       <template v-slot:before>
         <div v-if="initialPage > 0 && showPreviousButton" class="explore-next__previous-items"
           @click="loadPreviousItems">
-          <a href="#" class="btn xs outline primary">
-            <span class="label">
+          <Button :loading="loadingConversations" size="xs" color="primary" variant="outline">
+            <span class="label" v-if="!loadingConversations">
               {{ $t("media_explorer.load_previous_items") }}
             </span>
-          </a>
+            <span class="label" v-else>
+              {{ $t("media_explorer.loading") }}
+            </span>
+          </Button>
         </div>
       </template>
       <template v-slot:after>
@@ -83,6 +86,8 @@ export default {
       page: 0,
       isInitialLoad: true,
       isInitializing: false,
+      isInitialized: false, // Add flag to prevent route watcher during init
+      userTriggeredScroll: false, // Flag to distinguish user scroll from auto-fill
       busMediasDeleteAttached: false,
       _conversationsCache: null,
       _tagsChangeDebounceTimer: null,
@@ -169,6 +174,10 @@ export default {
     await this.init()
   },
   beforeDestroy() {
+    // Reset initialization flags
+    this.isInitialized = false;
+    this.isInitializing = false;
+    
     this.destroy()
     if (this.busMediasDeleteAttached) {
       bus.$off("medias/delete", this.onMediasDeleted);
@@ -184,12 +193,17 @@ export default {
   },
   watch: {
     '$route'(newRoute, oldRoute) {
-      if (newRoute.fullPath !== oldRoute.fullPath) {
-        this.loadFromRoute(newRoute);
+      // Prevent route watcher from triggering during initialization
+      if (!this.isInitialized || newRoute.fullPath === oldRoute.fullPath) {
+        return;
       }
+      this.loadFromRoute(newRoute);
     },
     selectedTags: {
       handler() {
+        // Skip during initialization to prevent duplicate calls
+        if (this.isInitializing || !this.isInitialized) return;
+        
         // Debounce tags change to avoid excessive API calls
         if (this._tagsChangeDebounceTimer) {
           clearTimeout(this._tagsChangeDebounceTimer);
@@ -233,7 +247,8 @@ export default {
       setParams: "setParams",
       loadFromUrl: "loadFromUrl",
       reset: "reset",
-      deleteConversations: "deleteConversations"
+      deleteConversations: "deleteConversations",
+      loadPreviousPages: "loadPreviousPages"
     }),
     destroy() {
       if (this._unsubscribeTagStore) {
@@ -242,24 +257,53 @@ export default {
       bus.$off("medias/delete", this.onMediasDeleted)
     },
     async init() {
-      await this.setContext({
-        organizationScope: this.currentOrganizationScope,
-        favorites: this.favorites,
-        shared: this.shared
-      })
+      this.isInitializing = true;
+      
+      try {
+        await this.setContext({
+          organizationScope: this.currentOrganizationScope,
+          favorites: this.favorites,
+          shared: this.shared
+        })
 
-      await this.loadTagsForCurrentView()
-      await this.loadFromRoute(this.$route)
+        // Load tags and data in parallel to avoid sequential calls
+        await Promise.all([
+          this.loadTagsForCurrentView(),
+          this.loadFromRoute(this.$route)
+        ]);
 
-      // Reset MediaExplorer AFTER data is loaded to avoid conflicts
-      this.$refs.mediaExplorer.reset()
+        // Reset MediaExplorer AFTER data is loaded to avoid conflicts
+        this.$refs.mediaExplorer?.reset()
+        
+        // Setup initial state based on URL
+        this.$nextTick(() => {
+          const urlPage = this.searchParams.page || 0;
+          
+          if (urlPage > 0) {
+            // Set up previous button if we loaded on a page > 0
+            this.initialPage = urlPage;
+            this.showPreviousButton = true;
+            // If we started on page > 0, we're past initial load phase
+            this.isInitialLoad = false;
+          } else {
+            // Starting from page 0, still in initial load phase
+            this.isInitialLoad = true;
+          }
+        });
 
-      if (!this.busMediasDeleteAttached) {
-        bus.$on("medias/delete", this.onMediasDeleted);
-        this.busMediasDeleteAttached = true;
+        if (!this.busMediasDeleteAttached) {
+          bus.$on("medias/delete", this.onMediasDeleted);
+          this.busMediasDeleteAttached = true;
+        }
+      } finally {
+        this.isInitializing = false;
+        this.isInitialized = true;
       }
     },
     async loadFromRoute(route) {
+      // Skip if conversations are already loading
+      if (this.loadingConversations) return;
+      
       const url = new URL(route.fullPath, window.location.origin);
       await this.loadFromUrl(url);
       this.syncTagsFromUrl(url);
@@ -280,6 +324,9 @@ export default {
       this.deleteConversations(mediaIds)
     },
     async loadTagsForCurrentView() {
+      // Skip if tags are already loading
+      if (this.$store.getters["tags/getLoading"]) return;
+      
       try {
         if (this.favorites) {
           await this.$store.dispatch("tags/fetchFavoritesTags")
@@ -293,33 +340,42 @@ export default {
       }
     },
     async handleSearch(search, filters) {
+      if (this.isInitializing) return; // Prevent calls during initialization
+      
       // Reset MediaExplorer pagination before starting new search
-      this.$refs.mediaExplorer.reset()
+      this.$refs.mediaExplorer?.reset()
       await this.searchConversations({ search, filters })
       this.updateUrl()
     },
-    async handleLoadMore(page) {
-      if (this.loadingConversations || !this.hasMoreItems) return
+    async handleLoadMore() {
+      if (this.loadingConversations || !this.hasMoreItems || this.isInitializing) return
 
-      const currentStorePage = this.searchParams.page || 0;
-      const expectedNextPage = currentStorePage + 1;
-
-      if (page !== expectedNextPage) return
-
+      // Check if this is user-triggered scroll (after initial load)
+      const isUserScroll = this.isInitialized && !this.isInitialLoad;
+      
       await this.loadMore()
+      
+      // Only update URL if this was triggered by user scroll, not auto-fill
+      if (isUserScroll) {
+        this.updateUrl();
+      }
+      
+      // Mark that initial load phase is complete after first load-more
+      if (this.isInitialLoad) {
+        this.isInitialLoad = false;
+      }
     },
     async handleTagsChange() {
-      this.$refs.mediaExplorer.reset()
-      await this.applyFilters({ tagIds: this.selectedTagIds })
-      this.updateUrl()
-    },
-    async handleTagsChanged() {
-      this.$refs.mediaExplorer.reset()
+      if (this.isInitializing) return; // Prevent calls during initialization
+      
+      this.$refs.mediaExplorer?.reset()
       await this.applyFilters({ tagIds: this.selectedTagIds })
       this.updateUrl()
     },
     async handleReset() {
-      this.$refs.mediaExplorer.reset()
+      if (this.isInitializing) return; // Prevent calls during initialization
+      
+      this.$refs.mediaExplorer?.reset()
       await this.reset()
       this.$store.dispatch("tags/setExploreSelectedTags", [])
       this.updateUrl()
@@ -348,6 +404,33 @@ export default {
 
       window.history.replaceState({}, '', url)
     },
+    async loadPreviousItems() {
+      if (this.loadingConversations || this.initialPage <= 0) return;
+      
+      try {
+        // Load all previous pages efficiently in one API call
+        await this.loadPreviousPages(this.initialPage);
+        
+        // Hide the previous button after loading
+        this.showPreviousButton = false;
+        this.initialPage = 0;
+        
+        // Reset MediaExplorer pagination to start from 0
+        this.$refs.mediaExplorer?.reset();
+        
+        // Update URL to remove page parameter since we're back to page 0
+        this.updateUrl();
+        
+        // Scroll to top to show the newly loaded items
+        this.$nextTick(() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        
+      } catch (error) {
+        console.error("Error loading previous items:", error);
+      }
+    },
+    
     generateUuid() {
       return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
         const r = Math.random() * 16 | 0
@@ -376,7 +459,11 @@ export default {
   text-align: center;
   padding: 10px;
   cursor: pointer;
-  color: #0066cc;
   font-weight: bold;
+  
+  .btn.loading {
+    opacity: 0.7;
+    cursor: wait;
+  }
 }
 </style>
