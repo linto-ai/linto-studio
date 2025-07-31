@@ -2,8 +2,8 @@
   <div class="user-account-selector flex gap-small flex1 align-center">
     <div class="avatar-container">
       <Avatar :src="userAvatar" size="lg" @click="openSettingsModal" />
-      <Tooltip 
-        v-if="!userInfo.emailIsVerified" 
+      <Tooltip
+        v-if="!userInfo.emailIsVerified"
         :text="$t('app_settings_modal.email_not_verified')"
         icon="warning"
         :position="isMobile ? 'left' : 'bottom'"
@@ -25,8 +25,7 @@
         variant="link"
         color="neutral"
         icon="swap"
-        class="organization-name"
-      />
+        class="organization-name" />
     </div>
     <Button
       icon="gear"
@@ -158,6 +157,21 @@ export default {
 
   .organization-name {
     align-self: flex-start;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .organization-name .btn-prefix-label,
+  .organization-name .label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .organization-name .label {
+    display: inline;
   }
 
   .user-role {
