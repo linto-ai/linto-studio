@@ -8,54 +8,36 @@
     <!-- Main content area -->
     <div class="media-explorer__content">
       <!-- Media list header - sticky positioned -->
-      <MediaExplorerHeader
-        :selected-count="selectedMedias.length"
-        :total-count="count"
-        :loading="loading"
-        :is-select-all="isSelectAll"
-        :sticky-top-offset="stickyTopOffset"
-        :all-medias="medias"
-        :search-value="searchValue"
-        @select-all="handleSelectAll"
-        @search="handleSearch"
+      <MediaExplorerHeader :selected-count="selectedMedias.length" :total-count="count" :loading="loading"
+        :is-select-all="isSelectAll" :sticky-top-offset="stickyTopOffset" :all-medias="medias"
+        :search-value="searchValue" @select-all="handleSelectAll" @search="handleSearch"
         @tags-changed="handleTagsChanged">
         <template #actions>
           <IsMobile>
-          <div class="flex gap-small" v-if="selectedMedias.length > 0">
-            <!-- <Button
+            <div class="flex gap-small" v-if="selectedMedias.length > 0">
+              <!-- <Button
               :label="$t('media_explorer.share')"
               icon="share-network"
               variant="outline" /> -->
-            <ConversationShareMultiple
-              :selectedConversations="selectedMedias"
-              :currentOrganizationScope="currentOrganizationScope"
-              :userInfo="userInfo" />
-            <Button
-              @click="showDeleteModal = true"
-              :label="$t('media_explorer.delete')"
-              size="sm"
-              color="tertiary"
-              icon="trash"
-              variant="outline" />
-          </div>
+              <ConversationShareMultiple :selectedConversations="selectedMedias"
+                :currentOrganizationScope="currentOrganizationScope" :userInfo="userInfo" />
+              <Button @click="showDeleteModal = true" :label="$t('media_explorer.delete')" size="sm" color="tertiary"
+                icon="trash" variant="outline" />
+            </div>
           </IsMobile>
           <slot name="header-actions" />
         </template>
       </MediaExplorerHeader>
 
       <!-- Media list body -->
-      <div
-        class="media-explorer__body"
-        :class="{ 'has-right-panel': selectedMediaForOverview }"
+      <div class="media-explorer__body" :class="{ 'has-right-panel': selectedMediaForOverview }"
         :style="{ '--right-panel-width': rightPanelWidth + 'px' }">
         <!-- Main content area -->
         <div class="media-explorer__body__content">
           <slot name="before" />
           <Loading v-if="loading && filteredMedias.length === 0" />
           <!-- Empty state -->
-          <div
-            v-else-if="filteredMedias.length === 0"
-            class="media-explorer__body__empty">
+          <div v-else-if="filteredMedias.length === 0" class="media-explorer__body__empty">
             <slot name="empty">
               <div class="empty-state">
                 <p v-if="activeSelectedTagIds.length > 0">
@@ -68,24 +50,14 @@
 
           <!-- Media items -->
           <IsMobile>
-            <MediaExplorerItemMobile
-              v-for="(media, index) in filteredMedias"
-              :key="`media-explorer-item-${media._id}-${index}`"
-              :media="media"
-              :search-value="searchValue" />
+            <MediaExplorerItemMobile v-for="(media, index) in filteredMedias"
+              :key="`media-explorer-item-${media._id}-${index}`" :media="media" :search-value="searchValue" />
             <template #desktop>
-              <MediaExplorerItem
-                v-for="(media, index) in filteredMedias"
-                :key="`media-explorer-item-${media._id}-${index}`"
-                :media="media"
-                :search-value="searchValue"
-                :ref="'mediaItem' + index"
-                :is-selected-for-overview="
-                  selectedMediaForOverview &&
+              <MediaExplorerItem v-for="(media, index) in filteredMedias"
+                :key="`media-explorer-item-${media._id}-${index}`" :media="media" :search-value="searchValue"
+                :ref="'mediaItem' + index" :is-selected-for-overview="selectedMediaForOverview &&
                   selectedMediaForOverview._id === media._id
-                "
-                class="media-explorer__body__item"
-                @select-for-overview="selectMediaForOverview" />
+                  " class="media-explorer__body__item" @select-for-overview="selectMediaForOverview" />
             </template>
           </IsMobile>
           <slot name="after" />
@@ -96,17 +68,12 @@
           <template #desktop>
             <MediaExplorerRightPanel
               v-if="(selectedMediaForOverview || selectedMedias.length > 1) && currentOrganizationScope"
-              :selected-media="reactiveSelectedMediaForOverview"
-              :currentOrganizationScope="currentOrganizationScope"
-              :readonly-tags="readonlyTags"
-              @close="closeRightPanel"
-              @resize="handleRightPanelResize" />
+              :selected-media="reactiveSelectedMediaForOverview" :currentOrganizationScope="currentOrganizationScope"
+              :readonly-tags="readonlyTags" @close="closeRightPanel" @resize="handleRightPanelResize" />
           </template>
         </IsMobile>
 
-        <ModalDeleteConversations
-          :visible="showDeleteModal"
-          :medias="selectedMedias"
+        <ModalDeleteConversations :visible="showDeleteModal" :medias="selectedMedias"
           @close="showDeleteModal = false" />
       </div>
     </div>
@@ -220,7 +187,7 @@ export default {
     reactiveMedias() {
       return this.medias.map(media => {
         const storeMedia = this.$store.getters["inbox/getMediaById"](media._id)
-        
+
         // Store now contains all necessary properties, merge with original as fallback
         if (storeMedia) {
           return {
@@ -228,7 +195,7 @@ export default {
             ...storeMedia
           }
         }
-        
+
         return media
       })
     },
@@ -246,16 +213,16 @@ export default {
     filteredMedias() {
       const medias = this.reactiveMedias;
       const tagIds = this.activeSelectedTagIds;
-      
+
       // Memoization: check if we can reuse cached result
-      if (this._filteredMediasCache && 
-          this._filteredMediasCache.medias === medias &&
-          JSON.stringify(this._filteredMediasCache.tagIds) === JSON.stringify(tagIds)) {
+      if (this._filteredMediasCache &&
+        this._filteredMediasCache.medias === medias &&
+        JSON.stringify(this._filteredMediasCache.tagIds) === JSON.stringify(tagIds)) {
         return this._filteredMediasCache.result;
       }
-      
+
       let result;
-      
+
       if (tagIds.length === 0) {
         result = medias;
       } else {
@@ -266,7 +233,7 @@ export default {
           return tagIds.every((tagId) => media.tags.includes(tagId));
         });
       }
-      
+
       // Cache the result
       this._filteredMediasCache = { medias, tagIds, result };
       return result;
@@ -287,8 +254,6 @@ export default {
   },
   data() {
     return {
-      page: 0,
-      lastPage: 0,
       isSelectAll: false,
       observer: null,
       search: "",
@@ -304,16 +269,15 @@ export default {
     // Remove initialization of filters from URL when parent manages tags
     if (this.enablePagination) {
       this.setupIntersectionObserver()
-      this.initializePageFromURL()
     }
-    
+
     // Add window resize listener for responsive right panel
     this.handleWindowResize = this.debounce(() => {
       if (this.selectedMediaForOverview && this.rightPanelWidth > 0) {
         this.rightPanelWidth = this.calculateDefaultRightPanelWidth()
       }
     }, 250)
-    
+
     window.addEventListener('resize', this.handleWindowResize)
   },
   beforeDestroy() {
@@ -330,18 +294,24 @@ export default {
     medias: {
       handler(newMedias, oldMedias) {
         this.updateCounts();
-        
+
         // Only recreate observer if array reference actually changed and pagination is enabled
         if (this.enablePagination && newMedias !== oldMedias) {
           // Debounce observer setup to avoid excessive recreation
           if (this._observerSetupPending) return;
-          
+
           this._observerSetupPending = true;
           this.$nextTick(() => {
             this.cleanupObserver();
             this.setupIntersectionObserver();
             this.observeMediaItems();
             this._observerSetupPending = false;
+
+            // Reset the load-more pending flag when new medias arrive
+            // This allows the observer to trigger again for the new last items
+            setTimeout(() => {
+              this._loadMorePending = false;
+            }, 500);
           });
         }
       },
@@ -383,9 +353,9 @@ export default {
       const screenWidth = window.innerWidth || 1920;
       const maxWidth = screenWidth * 0.5; // 50% max viewport width
       const minWidth = 300; // Minimum 300px
-      
+
       let calculatedWidth;
-      
+
       if (screenWidth <= 1200) {
         // For mobile/tablet, the panel will be full width anyway
         calculatedWidth = Math.min(maxWidth, screenWidth * 0.4); // 40% of screen width
@@ -396,14 +366,12 @@ export default {
       } else {
         calculatedWidth = screenWidth * 0.28; // 28% of screen width
       }
-      
+
       // Ensure width is within min/max bounds
       return Math.max(minWidth, Math.min(maxWidth, calculatedWidth));
     },
     reset() {
       this.clearSelectedMedias()
-      this.lastPage = 0
-      this.page = 0
       this._loadMorePending = false
       // Clear caches
       this._filteredMediasCache = null;
@@ -414,15 +382,15 @@ export default {
     },
     setupIntersectionObserver() {
       if (!this.enablePagination || this.observer) return
-      
+
       const options = {
         root: null,
         rootMargin: "100px", // Increase rootMargin for better UX
         threshold: 0.1, // Reduce threshold for earlier triggering
       }
-      
+
       this.observer = new IntersectionObserver(this.handleIntersection, options)
-      
+
       this.$nextTick(() => {
         this.observeMediaItems()
       })
@@ -430,19 +398,17 @@ export default {
 
     handleIntersection(entries) {
       entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const index = parseInt(entry.target.getAttribute("data-index")) + 1
-          const currentPage = Math.floor(index / this.pageSize)
-          if (
-            index % this.pageSize === 0 &&
-            currentPage <= this.totalPages - 1 &&
-            currentPage > this.lastPage &&
-            !this._loadMorePending // Prevent multiple calls
-          ) {
-            this.lastPage = currentPage
+        if (entry.isIntersecting && !this._loadMorePending) {
+          const index = parseInt(entry.target.getAttribute("data-index"))
+
+          // Trigger load-more when we're near the end of the list
+          // Use a simple threshold: when we see one of the last 3 items
+          const isNearEnd = index >= this.filteredMedias.length - 3;
+
+          if (isNearEnd) {
             this._loadMorePending = true
-            this.$emit("load-more", currentPage)
-            
+            this.$emit("load-more") // Emit without page number - let parent handle page logic
+
             // Reset flag after a delay to allow the parent to process
             setTimeout(() => {
               this._loadMorePending = false
@@ -454,35 +420,16 @@ export default {
 
     observeMediaItems() {
       if (!this.observer || this.filteredMedias.length === 0) return
-      
+
       // Only observe the last few items for pagination trigger
       const itemsToObserve = Math.min(3, this.filteredMedias.length);
       const startIndex = Math.max(0, this.filteredMedias.length - itemsToObserve);
-      
+
       for (let i = startIndex; i < this.filteredMedias.length; i++) {
         const itemRef = this.$refs["mediaItem" + i];
         if (itemRef && itemRef[0]?.$el) {
           itemRef[0].$el.setAttribute("data-index", i);
           this.observer.observe(itemRef[0].$el);
-        }
-      }
-    },
-
-    initializePageFromURL() {
-      const urlParams = new URLSearchParams(window.location.search)
-
-      // Initialize page
-      const pageParam = urlParams.get("page")
-      if (pageParam) {
-        const parsedPage = parseInt(pageParam)
-        if (
-          !isNaN(parsedPage) &&
-          parsedPage > 0 &&
-          parsedPage <= this.totalPages
-        ) {
-          this.page = parsedPage
-        } else {
-          this.updateURLPage(1)
         }
       }
     },
@@ -502,22 +449,7 @@ export default {
       window.history.replaceState({}, "", url)
     },
 
-    updateURLPage(page) {
-      const validPage = Math.max(1, Math.min(page, this.totalPages))
-      if (validPage !== this.page && validPage <= this.totalPages) {
-        this.page = validPage
-        const url = new URL(window.location)
-        url.searchParams.set("page", validPage.toString())
 
-        // Keep filter params in URL
-        if (this.activeSelectedTagIds.length > 0) {
-          url.searchParams.set("tags", this.activeSelectedTagIds.join(","))
-        }
-
-        window.history.replaceState({}, "", url)
-        this.$emit("page-change", validPage)
-      }
-    },
 
     handleSearch(search, filters) {
       this.$emit("search", search, filters)
@@ -620,7 +552,8 @@ export default {
   width: 100%;
   padding-right: calc(var(--right-panel-width, 500px) + 1rem);
   overflow-x: auto;
-  min-width: 0; /* Prevent flex item from overflowing */
+  min-width: 0;
+  /* Prevent flex item from overflowing */
 }
 
 .media-explorer__body .media-explorer-right-panel {
@@ -634,8 +567,10 @@ export default {
   box-shadow: -2px 0 8px rgba(0, 0, 0, 0.08);
   flex-shrink: 0;
   width: var(--right-panel-width, 500px);
-  min-width: 300px; /* Minimum width to prevent too narrow panels */
-  max-width: 50vw; /* Maximum 50% of viewport width */
+  min-width: 300px;
+  /* Minimum width to prevent too narrow panels */
+  max-width: 50vw;
+  /* Maximum 50% of viewport width */
   height: 100%;
   overflow-y: auto;
   overflow-x: auto;
@@ -711,7 +646,7 @@ export default {
   .media-explorer__body .media-explorer-right-panel {
     max-height: 60vh;
   }
-  
+
   .media-explorer__body__content {
     padding: 0.25rem !important;
   }

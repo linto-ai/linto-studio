@@ -57,6 +57,7 @@ export default {
     getTags: (state) => state.tags,
     getSharedTags: (state) => state.sharedTags,
     getFavoritesTags: (state) => state.favoritesTags,
+    getLoading: (state) => state.loading,
 
     getCategoryById: (state) => (id) => {
       return state.categories.find((category) => category._id === id)
@@ -80,6 +81,9 @@ export default {
   },
   actions: {
     async fetchTags({ commit, getters, state, rootGetters }) {
+      // Prevent concurrent fetches
+      if (state.loading) return;
+      
       commit("setLoading", true)
       try {
         const data = await apiGetSystemCategories(
@@ -111,22 +115,46 @@ export default {
       }
     },
     async fetchSharedTags({ commit, getters, rootGetters, state }) {
-      const data = await apiGetSharedCategoriesTree()
-      const tags = []
-      data.forEach((org) => {
-        tags.push(...org.tags)
-      })
+      // Prevent concurrent fetches
+      if (state.loading) return;
+      
+      commit("setLoading", true)
+      try {
+        const data = await apiGetSharedCategoriesTree()
+        const tags = []
+        data.forEach((org) => {
+          tags.push(...org.tags)
+        })
 
-      commit("setSharedTags", tags)
+        commit("setSharedTags", tags)
+      } catch (error) {
+        console.error("Error fetching shared tags:", error)
+        commit("setError", error)
+        throw error
+      } finally {
+        commit("setLoading", false)
+      }
     },
     async fetchFavoritesTags({ commit, getters, rootGetters, state }) {
-      const data = await apiGetfavoritesCategoriesTree()
-      const tags = []
-      data.forEach((org) => {
-        tags.push(...org.tags)
-      })
+      // Prevent concurrent fetches  
+      if (state.loading) return;
+      
+      commit("setLoading", true)
+      try {
+        const data = await apiGetfavoritesCategoriesTree()
+        const tags = []
+        data.forEach((org) => {
+          tags.push(...org.tags)
+        })
 
-      commit("setFavoritesTags", tags)
+        commit("setFavoritesTags", tags)
+      } catch (error) {
+        console.error("Error fetching favorites tags:", error)
+        commit("setError", error)
+        throw error
+      } finally {
+        commit("setLoading", false)
+      }
     },
     async createTag({ commit, getters, rootGetters, state }, tag) {
       commit("setLoading", true)
