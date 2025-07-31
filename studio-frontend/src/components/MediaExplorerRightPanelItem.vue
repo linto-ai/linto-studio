@@ -6,18 +6,12 @@
       <div class="media-overview">
         <!-- Media title -->
         <div class="media-section">
-          <h4 class="section-title">
-            {{ $t("media_explorer.panel.title") }}
-          </h4>
           <FormInput inputFullWidth :field="titleField" v-model="titleField.value" with-confirmation
             @on-confirm="handleTitleUpdate" />
         </div>
 
         <!-- Media description -->
         <div class="media-section">
-          <h4 class="section-title">
-            {{ $t("media_explorer.panel.description") }}
-          </h4>
           <FormInput inputFullWidth :field="descriptionField" v-model="descriptionField.value" textarea
             with-confirmation @on-confirm="handleDescriptionUpdate" />
         </div>
@@ -340,12 +334,12 @@ export default {
 }
 
 .section-title {
-  margin: 0;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-secondary, #666);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  display: block;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--text-primary, #222);
+    line-height: 1.2;
+    margin: 0;
 }
 
 .section-content {

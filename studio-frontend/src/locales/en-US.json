@@ -1376,6 +1376,7 @@
     "selected_count": "selected",
     "search_message": "Press [ENTER] to search \"{keyword}\" in your media",
     "search_empty_message": "Press [ENTER] to search in all your media",
+    "search_back_to_results_message": "Press [ENTER] to return to results",
     "search_placeholder": "Search in your media"
   }
 }

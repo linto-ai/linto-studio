@@ -1379,6 +1379,7 @@
     "selected_count": "sélectionné(s)",
     "search_message": "Appuyer sur [ENTER] pour rechercher \"{keyword}\" dans vos médias",
     "search_empty_message": "Appuyer sur [ENTER] pour rechercher dans tous vos médias",
+    "search_back_to_results_message": "Appuyer sur [ENTER] pour revenir aux résultats",
     "search_placeholder": "Rechercher dans vos médias"
   }
 }

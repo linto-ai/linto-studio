@@ -25,7 +25,7 @@
             @click="handleClickItem(item)"
             :variant="selection ? 'solid' : 'outline'"
             :size="size"
-            v-bind="item">
+            v-bind="itemPropsWithoutTo(item)">
             {{ item.name || item.text }}
           </Button>
         </div>
@@ -163,11 +163,20 @@ export default {
           })
         }
       } else {
-        this.$emit("click", item)
-        if (this.closeOnItemClick) {
+        // Handle navigation items with 'to' property
+        if (item.to && this.closeOnItemClick) {
+          // Close popover first, then navigate
+          this.$refs.popover && this.$refs.popover.close()
           this.$nextTick(() => {
-            this.$refs.popover && this.$refs.popover.close()
+            this.$router.push(item.to)
           })
+        } else {
+          this.$emit("click", item)
+          if (this.closeOnItemClick) {
+            this.$nextTick(() => {
+              this.$refs.popover && this.$refs.popover.close()
+            })
+          }
         }
       }
     },
@@ -186,6 +195,13 @@ export default {
         return this.isSelected(item) ? "check-circle" : undefined
       }
       return item.icon
+    },
+    /**
+     * Returns item props without the 'to' property to prevent automatic navigation.
+     */
+    itemPropsWithoutTo(item) {
+      const { to, ...itemWithoutTo } = item
+      return itemWithoutTo
     },
   },
   computed: {

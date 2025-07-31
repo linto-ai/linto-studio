@@ -82,6 +82,22 @@
           }}</span>
         </div>
 
+        <!-- Back to results message (only in search mode when search was cleared) -->
+        <div
+          v-if="mode === 'search' && !searchQuery && hadActiveSearch"
+          class="input-selector__search-message"
+          :class="{
+            'input-selector__search-message--highlighted':
+              highlightedIndex === -1,
+          }"
+          @click="handleBackToResults"
+          @mouseenter="highlightedIndex = -1">
+          <ph-icon name="arrow-left" size="16" />
+          <span>{{
+            $t("input_selector.search_back_to_results_message")
+          }}</span>
+        </div>
+
         <!-- Filtered tags -->
         <div v-if="filteredTags.length > 0" class="input-selector__options">
           <div
@@ -208,6 +224,7 @@ export default {
       searchQuery: "",
       internalValue: this.value,
       highlightedIndex: -1,
+      hadActiveSearch: false, // Track if we had an active search before
     }
   },
   computed: {
@@ -282,6 +299,15 @@ export default {
 
     internalValue(newVal) {
       this.$emit("input", newVal)
+    },
+
+    searchQuery(newVal, oldVal) {
+      // Track if we had an active search that was cleared
+      if (oldVal && oldVal.trim() && (!newVal || !newVal.trim())) {
+        this.hadActiveSearch = true;
+      } else if (newVal && newVal.trim()) {
+        this.hadActiveSearch = false;
+      }
     },
 
     isOpen(isOpen) {
@@ -398,8 +424,19 @@ export default {
         return
       }
 
-      // Priority 2: If we're in search mode, perform search (even if empty)
+      // Priority 2: If we're in search mode
       if (this.mode === "search") {
+        // If search message is highlighted (-1) and we have a search query, perform search
+        if (this.highlightedIndex === -1 && this.searchQuery) {
+          this.handleSearchSubmit()
+          return
+        }
+        // If back to results message is highlighted (-1) and no search query but had active search, go back to results
+        if (this.highlightedIndex === -1 && !this.searchQuery && this.hadActiveSearch) {
+          this.handleBackToResults()
+          return
+        }
+        // Default: perform search submit (for backward compatibility)
         this.handleSearchSubmit()
         return
       }
@@ -543,6 +580,14 @@ export default {
       if (this.mode === "search") {
         this.$emit("search", trimmedQuery) // Allow empty searches
         this.close() // Close dropdown after search
+      }
+    },
+
+    handleBackToResults() {
+      if (this.mode === "search") {
+        this.hadActiveSearch = false; // Reset the flag
+        this.$emit("search", "") // Emit empty search to return to all results
+        this.close() // Close dropdown after action
       }
     },
 
