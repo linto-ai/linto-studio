@@ -1,7 +1,7 @@
 <template>
   <div
     class="chip-tag"
-    :class="[active ? 'active' : '', clickable, size]"
+    :class="[active ? 'active' : '', clickable, size, { 'mobile-view': mobileView }]"
     :style="{
       borderColor: borderColor,
       backgroundColor: backgroundColor,
@@ -9,7 +9,12 @@
     }"
     @click="$emit('click')">
     <span class="chip-tag__data">
-      <span v-if="emoji" class="chip-tag__icon-wrapper">
+      <!-- Mobile view: colored circle with first letter -->
+      <span v-if="mobileView" class="chip-tag__mobile-icon">
+        {{ firstLetter }}
+      </span>
+      <!-- Desktop view: emoji or normal icon -->
+      <span v-else-if="emoji" class="chip-tag__icon-wrapper">
         <span
           class="chip-tag__icon-emoji"
           :style="{ borderColor: borderColor }">
@@ -25,7 +30,7 @@
         @blur="onTagNameBlur"
         @keydown.enter.prevent="onTagNameBlur"
         @keydown.esc.prevent="onTagNameReset"
-        :class="{ 'with-emoji': emoji }"
+        :class="{ 'with-emoji': emoji && !mobileView }"
         :style="{ color: colorText }">
         {{ currentName }}
       </span>
@@ -106,6 +111,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    mobileView: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -139,6 +148,9 @@ export default {
         }
       }
       return this.editable ? "plaintext-only" : "false"
+    },
+    firstLetter() {
+      return this.name.charAt(0).toUpperCase()
     },
   },
   methods: {
@@ -266,6 +278,37 @@ export default {
 
   &.clickable {
     cursor: pointer;
+  }
+
+  &.mobile-view {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    padding: 0;
+    box-sizing: border-box;
+    
+    .chip-tag__data {
+      gap: 0;
+    }
+    
+    .chip-tag__name {
+      display: none;
+    }
+    
+    .chip-tag__mobile-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      font-weight: bold;
+    }
   }
 }
 </style>

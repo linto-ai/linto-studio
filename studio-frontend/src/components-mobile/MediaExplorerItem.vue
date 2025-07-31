@@ -70,7 +70,9 @@
     <div
       v-if="media.tags && media.tags.length"
       class="media-explorer-item-mobile__tags">
-      <MediaExplorerItemTags :media-id="media._id" />
+      <MediaExplorerItemTags 
+        :media-id="media._id" 
+        :mobile-view="true" />
     </div>
   </div>
 </template>
@@ -345,16 +347,29 @@ export default {
 
   &__tags {
     width: 100%;
-    padding: 0.25rem;
+    padding: 0.25rem 0.5rem;
     opacity: 0.75;
     box-sizing: border-box;
     border-top: 1px solid var(--neutral-20);
     background-color: var(--primary-soft);
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    .media-explorer-item-tags__list {
+    justify-content: flex-end;
+    gap: 0.25rem;
+    flex-wrap: nowrap;
+    overflow: hidden;
+    
+    .media-explorer-item-tags {
+      display: flex;
+      gap: 0.25rem;
+      align-items: center;
       justify-content: flex-end;
+      flex-wrap: nowrap;
+      overflow: hidden;
+    }
+    
+    .media-explorer-item-tags__tag {
+      flex-shrink: 0;
     }
   }
 }

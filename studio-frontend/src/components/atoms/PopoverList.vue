@@ -35,8 +35,13 @@
 </template>
 
 <script>
+import Popover from "./Popover.vue"
+
 export default {
   name: "PopoverList",
+  components: {
+    Popover
+  },
   props: {
     /**
      * @type {Array<ListItem>}
@@ -153,12 +158,16 @@ export default {
         this.toggleSelection(item)
         // Close when single-select and required
         if (!this.multiple && this.closeOnItemClick) {
-          this.$refs.popover && this.$refs.popover.close()
+          this.$nextTick(() => {
+            this.$refs.popover && this.$refs.popover.close()
+          })
         }
       } else {
         this.$emit("click", item)
         if (this.closeOnItemClick) {
-          this.$refs.popover && this.$refs.popover.close()
+          this.$nextTick(() => {
+            this.$refs.popover && this.$refs.popover.close()
+          })
         }
       }
     },

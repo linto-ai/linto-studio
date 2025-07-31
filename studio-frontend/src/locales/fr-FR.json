@@ -645,7 +645,7 @@
     "line": {
       "edit_transcription": "Transcription",
       "edit_subtitles": "Sous-titres",
-      "export": "publication",
+      "export": "Publication",
       "delete": "Supprimer"
     },
     "delete": "Supprimer",
@@ -1199,6 +1199,8 @@
     }
   },
   "share_menu": {
+    "invite_new_user": "Inviter un nouvel utilisateur",
+    "email_placeholder": "Email",
     "button": "Partager",
     "conversation_error_title": "Des conversations ne peuvent pas être partagées",
     "external_members": "Utilisateurs externes",

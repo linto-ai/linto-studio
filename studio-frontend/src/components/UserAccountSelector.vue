@@ -15,8 +15,9 @@
         <div class="notification-badge"></div>
       </Tooltip>
     </div>
-    <div class="metadata flex col">
-      <span class="user-name">{{ UserName }} <span class="user-role">({{ currentRoleToString }})</span></span>
+    <div class="flex-1 metadata">
+      <div class="user-name">{{ UserName }}</div>
+      <div class="user-role">{{ currentRoleToString }}</div>
       <Button
         @click="openOrganizationSelector"
         :label="orgaName"
@@ -147,10 +148,8 @@ export default {
   }
 
   .metadata {
-    gap: 0.05rem;
-    align-items: flex-start;
-    justify-content: flex-start;
-    flex: 1;
+    line-height: normal;
+    font-size: 0.9em;
   }
 
   .user-name {

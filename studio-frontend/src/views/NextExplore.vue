@@ -177,6 +177,18 @@ export default {
       },
       deep: true,
     },
+    // Sync conversations with inbox medias to prevent blink
+    conversations: {
+      handler(newConversations) {
+        if (newConversations && newConversations.length > 0) {
+          this.setMedias(fromConversations(newConversations))
+        } else {
+          this.clearMedias()
+        }
+      },
+      immediate: true,
+      deep: true,
+    },
   },
   methods: {
     ...mapMutations("inbox", [
@@ -215,7 +227,8 @@ export default {
       // Initialize from URL parameters
       await this.initPageFromUrl()
       
-      this.appendMedias(fromConversations(this.conversations))
+      // Don't append medias here as setContext already triggers fetchConversations
+      // which will be handled by the watcher
       bus.$on("medias/delete", this.onMediasDeleted)
     },
     onMediasDeleted(mediaIds) {
@@ -238,18 +251,18 @@ export default {
       this.updateSearchUrl(search)
       this.mode = search && search.trim().length > 0 ? "search" : "default"
       await this.searchConversations({ search, filters })
-      this.appendMedias(fromConversations(this.conversations))
+      // Don't append medias here as searchConversations already updates the store
     },
     async handleLoadMore(page) {
       if (this.loadingConversations || !this.hasMoreItems) return
       
       this.updatePageUrl(page)
-      const newConversations = await this.loadMore()
-      this.appendMedias(fromConversations(newConversations || []))
+      await this.loadMore()
+      // Don't append medias here as loadMore already updates the store
     },
     async handleTagsChange() {
       await this.applyFilters({ tagIds: this.selectedTagIds })
-      this.appendMedias(fromConversations(this.conversations))
+      // Don't append medias here as applyFilters already updates the store
     },
     async loadDataForMode(page, append) {
       if (this.mode === "search") {
@@ -313,7 +326,10 @@ export default {
         })
       } else {
         this.mode = "default"
-        await this.fetchConversations()
+        // Only fetch if not already loaded by setContext
+        if (this.conversations.length === 0) {
+          await this.fetchConversations()
+        }
       }
 
       if (pageParam && !isNaN(parseInt(pageParam))) {
@@ -343,7 +359,15 @@ export default {
       window.history.replaceState({}, "", url)
       
       await this.reset()
-      this.appendMedias(fromConversations(this.conversations))
+      // Don't append medias here as reset already updates the store
+    },
+    
+    generateUuid() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0
+        const v = c == 'x' ? r : (r & 0x3 | 0x8)
+        return v.toString(16)
+      })
     }
   },
 }

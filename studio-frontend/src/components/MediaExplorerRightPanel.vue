@@ -41,13 +41,15 @@
             :icon="action.icon"
             size="sm"
             variant="outline"
-            :color="action.color"
+            :color="action.color || 'primary'"
+            class="header-action-button"
             @click="handleActionClick(action)" />
         </div>
         <div v-else></div>
         <!-- delete and share -->
         <div class="button-group">
           <ConversationShareMultiple
+            class="header-action-button"
             :selectedConversations="selectedMedias"
             :currentOrganizationScope="currentOrganizationScope" />
           <Button
@@ -56,7 +58,8 @@
             icon="trash"
             variant="outline"
             size="sm"
-            color="tertiary" />
+            color="tertiary"
+            class="header-action-button" />
         </div>
       </div>
 
@@ -297,7 +300,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .media-explorer-right-panel {
   position: relative;
   background-color: var(--background-color, #fff);
@@ -388,6 +391,11 @@ export default {
     transform: translateX(0);
     opacity: 1;
   }
+}
+
+.header-action-button {
+  height: 32px;
+  font-size: 0.875rem;
 }
 
 @media only screen and (max-width: 1100px) {

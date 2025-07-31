@@ -211,7 +211,10 @@ export default {
       commit("resetPagination")
       commit("clearConversations")
       
-      return dispatch("fetchConversations")
+      // Only fetch if we have a valid organization scope
+      if (context.organizationScope) {
+        return dispatch("fetchConversations")
+      }
     },
 
     async reset({ commit, dispatch }) {

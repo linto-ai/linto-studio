@@ -365,6 +365,8 @@ export default {
   flex-direction: column;
   gap: 0.5rem;
   max-height: 200px;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding-bottom: 1rem;
 }
 

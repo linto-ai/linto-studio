@@ -1196,6 +1196,8 @@
     }
   },
   "share_menu": {
+    "invite_new_user": "Invite a new user",
+    "email_placeholder": "Email",
     "button": "share",
     "conversation_error_title": "Some conversations cannot be shared",
     "external_members": "External users",

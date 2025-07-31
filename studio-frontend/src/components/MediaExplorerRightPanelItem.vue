@@ -9,12 +9,8 @@
           <h4 class="section-title">
             {{ $t("media_explorer.panel.title") }}
           </h4>
-          <FormInput
-            inputFullWidth
-            :field="titleField"
-            v-model="titleField.value"
-            @on-confirm="handleTitleUpdate"
-          />
+          <FormInput inputFullWidth :field="titleField" v-model="titleField.value" with-confirmation
+            @on-confirm="handleTitleUpdate" />
         </div>
 
         <!-- Media description -->
@@ -22,25 +18,17 @@
           <h4 class="section-title">
             {{ $t("media_explorer.panel.description") }}
           </h4>
-          <FormInput
-            inputFullWidth
-            :field="descriptionField"
-            v-model="descriptionField.value"
-            textarea
-            @on-confirm="handleDescriptionUpdate"
-          />
+          <FormInput inputFullWidth :field="descriptionField" v-model="descriptionField.value" textarea
+            with-confirmation @on-confirm="handleDescriptionUpdate" />
         </div>
 
         <!-- Media duration -->
-        <div
-          class="media-section"
-          v-if="reactiveSelectedMedia?.metadata?.audio?.duration">
+        <div class="media-section" v-if="reactiveSelectedMedia?.metadata?.audio?.duration">
           <h4 class="section-title">
             {{ $t("media_explorer.panel.duration") }}
           </h4>
           <p class="section-content">
-            <TimeDuration
-              :duration="reactiveSelectedMedia.metadata?.audio?.duration" />
+            <TimeDuration :duration="reactiveSelectedMedia.metadata?.audio?.duration" />
           </p>
         </div>
 
@@ -68,25 +56,12 @@
         <div class="media-section">
           <h4 class="section-title">{{ $t("media_explorer.panel.tags") }}</h4>
           <div class="tags-container">
-            <InputSelector
-              v-if="!isTagManagementReadOnly"
-              mode="tags"
-              :tags="getTags"
-              :selected-tags="selectedMediaTags"
-              @create="handleCreateTag"
-              @remove="handleRemoveTag"
+            <InputSelector v-if="!isTagManagementReadOnly" mode="tags" :tags="getTags"
+              :selected-tags="selectedMediaTags" @create="handleCreateTag" @remove="handleRemoveTag"
               @add="handleAddTag" />
-            <div
-              v-else
-              class="tags-readonly">
-              <ChipTag
-                v-for="tag in selectedMediaTags"
-                :key="tag._id"
-                :name="tag.name"
-                :color="tag.color" />
-              <span
-                v-if="selectedMediaTags.length === 0"
-                class="no-tags-message">
+            <div v-else class="tags-readonly">
+              <ChipTag v-for="tag in selectedMediaTags" :key="tag._id" :name="tag.name" :color="tag.color" />
+              <span v-if="selectedMediaTags.length === 0" class="no-tags-message">
                 {{ $t("media_explorer.panel.no_tags") }}
               </span>
             </div>
@@ -99,10 +74,7 @@
             {{ $t("media_explorer.panel.metadata") }}
           </h4>
           <div class="metadata-grid">
-            <div
-              v-for="(value, key) in reactiveSelectedMedia?.metadata"
-              :key="key"
-              class="metadata-item">
+            <div v-for="(value, key) in reactiveSelectedMedia?.metadata" :key="key" class="metadata-item">
               <span class="metadata-key">{{ key }}:</span>
               <span class="metadata-value">{{ value }}</span>
             </div>
@@ -113,13 +85,8 @@
         <div class="media-section">
           <h4 class="section-title">{{ $t("actions") }}</h4>
           <div class="actions-container">
-            <Button
-              @click="handleDownload"
-              :loading="downloadLoading"
-              icon="download"
-              variant="outline"
-              size="sm"
-              class="download-button">
+            <Button @click="handleDownload" :loading="downloadLoading" icon="download" variant="outline" size="sm"
+              class="action-button">
               {{ downloadLoading ? $t('media_explorer.panel.downloading') : $t('media_explorer.panel.download_media') }}
             </Button>
           </div>
@@ -127,9 +94,7 @@
       </div>
     </div>
 
-    <ModalDeleteConversations
-      :visible="showDeleteModal"
-      :medias="[reactiveSelectedMedia || selectedMedia]"
+    <ModalDeleteConversations :visible="showDeleteModal" :medias="[reactiveSelectedMedia || selectedMedia]"
       @close="showDeleteModal = false" />
   </div>
 </template>
@@ -199,9 +164,9 @@ export default {
       handler(newMedia, oldMedia) {
         if (newMedia) {
           // Only update fields if the media actually changed or if it's the initial load
-          if (!oldMedia || newMedia._id !== oldMedia._id || 
-              newMedia.name !== oldMedia.name || 
-              newMedia.description !== oldMedia.description) {
+          if (!oldMedia || newMedia._id !== oldMedia._id ||
+            newMedia.name !== oldMedia.name ||
+            newMedia.description !== oldMedia.description) {
             this.titleField.value = newMedia.name || ''
             this.descriptionField.value = newMedia.description || ''
           }
@@ -247,7 +212,7 @@ export default {
       const trimmedTitle = this.titleField.value?.trim() || ''
       try {
         await this.updateMediaProperty(this.selectedMedia._id, 'name', trimmedTitle)
-        
+
         // Force update of the title field from the store
         this.$nextTick(() => {
           const updatedMedia = this.reactiveSelectedMedia
@@ -255,14 +220,14 @@ export default {
             this.titleField.value = updatedMedia.name || ''
           }
         })
-        
+
         this.$store.dispatch('system/addNotification', {
           type: 'success',
           message: this.$t('media_explorer.panel.title_updated')
         })
       } catch (error) {
         console.error('Title update error:', error)
-        
+
         // Revert title field on error
         this.$nextTick(() => {
           const currentMedia = this.reactiveSelectedMedia
@@ -270,7 +235,7 @@ export default {
             this.titleField.value = currentMedia.name || ''
           }
         })
-        
+
         this.$store.dispatch('system/addNotification', {
           type: 'error',
           message: this.$t('media_explorer.panel.update_error')
@@ -283,7 +248,7 @@ export default {
       const trimmedDescription = this.descriptionField.value?.trim() || ''
       try {
         await this.updateMediaProperty(this.selectedMedia._id, 'description', trimmedDescription)
-        
+
         // Force update of the description field from the store
         this.$nextTick(() => {
           const updatedMedia = this.reactiveSelectedMedia
@@ -291,14 +256,14 @@ export default {
             this.descriptionField.value = updatedMedia.description || ''
           }
         })
-        
+
         this.$store.dispatch('system/addNotification', {
           type: 'success',
           message: this.$t('media_explorer.panel.description_updated')
         })
       } catch (error) {
         console.error('Description update error:', error)
-        
+
         // Revert description field on error
         this.$nextTick(() => {
           const currentMedia = this.reactiveSelectedMedia
@@ -306,7 +271,7 @@ export default {
             this.descriptionField.value = currentMedia.description || ''
           }
         })
-        
+
         this.$store.dispatch('system/addNotification', {
           type: 'error',
           message: this.$t('media_explorer.panel.update_error')
@@ -318,10 +283,10 @@ export default {
       if (this.downloadLoading || !this.reactiveSelectedMedia) return
 
       this.downloadLoading = true
-      
+
       try {
         const success = await this.downloadMediaFile(this.reactiveSelectedMedia)
-        
+
         if (success) {
           // Show success notification
           this.$store.dispatch('system/addNotification', {
@@ -441,9 +406,11 @@ export default {
   flex-wrap: wrap;
 }
 
+.action-button {
+  justify-content: flex-start;
+}
+
 .section-content-input {
   margin: 0;
 }
-
-
 </style>

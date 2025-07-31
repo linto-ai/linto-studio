@@ -103,7 +103,7 @@ export default {
       return this.editValue !== this.originalValue
     },
     shouldShowConfirmationButtons() {
-      return this.hasChanged && (this.withConfirmation || !this.inline)
+      return this.withConfirmation &&this.hasChanged
     },
     formFieldClasses() {
       return {

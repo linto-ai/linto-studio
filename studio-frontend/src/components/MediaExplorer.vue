@@ -494,21 +494,30 @@ export default {
   flex: 1;
   overflow-y: auto;
   padding: 0.25rem 0.5rem;
-  transition: margin-right 0.3s ease;
+  transition: padding-right 0.3s ease;
+  position: relative;
 }
 
 .media-explorer__body.has-right-panel .media-explorer__body__content {
   //margin-right: var(--right-panel-width, 600px);
+  //max-width: calc(100% - var(--right-panel-width, 400px));
+  width: 100%;
+  padding-right: calc(var(--right-panel-width, 400px) + 1rem);
 }
 
 .media-explorer__body .media-explorer-right-panel {
-  /*position: absolute;
+  position: absolute;
   right: 0;
   top: 0;
   bottom: 0;
-  z-index: 1000;*/
+  z-index: 1000;
   background-color: var(--background-color, #fff);
   border-left: var(--border-block, 1px solid var(--neutral-30));
+  flex-shrink: 0;
+  width: var(--right-panel-width, 400px);
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .media-explorer__body__empty {
@@ -555,6 +564,18 @@ export default {
 
   .media-explorer__body__content {
     margin-right: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .media-explorer__body .media-explorer-right-panel {
+    position: relative;
+    width: 100%;
+    border-left: none;
+    border-top: var(--border-block, 1px solid var(--neutral-30));
+  }
+
+  .media-explorer__body.has-right-panel .media-explorer__body__content {
+    padding-right: 0;
   }
 }
 </style>

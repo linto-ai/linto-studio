@@ -1,9 +1,8 @@
 <template>
-  <div class="media-explorer-item-tags">
-    <!-- Tags list -->
-
+  <div class="media-explorer-item-tags" :class="{ 'mobile-view': mobileView }">
+    <!-- Tags list with limited visibility -->
     <Tooltip
-      v-for="tag in mediatags"
+      v-for="tag in visibleTags"
       :key="`${mediaId}-tag-${tag._id}`"
       :text="tag.description || tag.name"
       class="media-explorer-item-tags__tag"
@@ -12,18 +11,21 @@
         :name="tag.name"
         :emoji="tag.emoji"
         :color="getTagColor(tag)"
+        :mobile-view="mobileView"
         @click="handleTagClick(tag)"
         size="xs" />
     </Tooltip>
 
-    <!-- Empty state or add button -->
-    <!-- <div 
-      v-else 
-      class="media-explorer-item-tags__empty">
-      <span class="media-explorer-item-tags__empty-text">
-        {{ $t('media_explorer.tags.no_tags') }}
-      </span>
-    </div> -->
+    <!-- Show "+N" indicator for hidden tags -->
+    <Tooltip
+      v-if="hiddenCount > 0"
+      :text="hiddenTagsTooltip"
+      class="media-explorer-item-tags__more"
+      position="bottom">
+      <div class="media-explorer-item-tags__more-indicator">
+        +{{ hiddenCount }}
+      </div>
+    </Tooltip>
   </div>
 </template>
 
@@ -41,13 +43,17 @@ export default {
   props: {
     maxVisible: {
       type: Number,
-      default: 3,
+      default: 2,
     },
     mediaId: {
       type: String,
       required: true,
     },
     hovered: {
+      type: Boolean,
+      default: false,
+    },
+    mobileView: {
       type: Boolean,
       default: false,
     },
@@ -140,9 +146,45 @@ export default {
 </script>
 
 <style lang="scss">
+.media-explorer-item-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  align-items: center;
+  
+  &.mobile-view {
+    flex-wrap: nowrap;
+    overflow: hidden;
+    gap: 0.25rem;
+  }
+}
+
 .media-explorer-item-tags__tag {
   display: inline-flex;
-  margin-left: 0.25rem;
-  margin-bottom: 0.25rem;
+  flex-shrink: 0;
+}
+
+.media-explorer-item-tags__more {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.media-explorer-item-tags__more-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  font-size: 0.625rem;
+  font-weight: 600;
+  background-color: var(--neutral-20);
+  color: var(--text-secondary);
+  border-radius: 8px;
+  cursor: help;
+  
+  &:hover {
+    background-color: var(--neutral-30);
+  }
 }
 </style>

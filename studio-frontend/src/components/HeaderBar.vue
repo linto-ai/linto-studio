@@ -3,7 +3,6 @@
     <Button
       :icon="sidebarOpen ? 'arrow-line-left' : 'arrow-line-right'"
       border-color="transparent"
-      color="neutral"
       @click.stop="toggleSidebar"
       class="sidebar-toggle icon-only" />
     <Breadcrumb class="flex1" :additionalbreadcrumbItems="breadcrumbItems">

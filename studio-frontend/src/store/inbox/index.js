@@ -17,10 +17,20 @@ export default {
       state.autoselectMedias = autoselectMedias
     },
     setMedias(state, medias) {
-      state.medias = medias
+      // Ensure we don't have duplicates when setting medias
+      const unique = []
+      const seen = new Set()
+
+      for (const media of medias) {
+        if (!seen.has(media._id)) {
+          seen.add(media._id)
+          unique.push(media)
+        }
+      }
+
+      state.medias = unique
     },
     appendMedias(state, medias) {
-      // Merge medias while avoiding duplicates based on the `_id` field.
       const merged = [...state.medias, ...medias]
       const unique = []
       const seen = new Set()
@@ -44,7 +54,6 @@ export default {
         Vue.set(state.medias, idx, media)
       }
 
-      // Also update in selectedMedias if present
       const selectedIdx = state.selectedMedias.findIndex(
         (m) => m._id === mediaId,
       )

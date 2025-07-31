@@ -19,7 +19,6 @@
     <div class="flex col">
       <ButtonRoller v-if="isAtLeastUploader" @click="startConversation" :label="$t('navigation.conversation.start')"
         color="primary" class="start-button" />
-      <cloud-card-credits />
       <div class="main-footer-container">
         <footer class="main-footer">
           <div class="main-footer__powered-by">
@@ -38,10 +37,7 @@
           </div>
           <div class="main-footer__links">
             <a href="mailto:contact@linto.ai" class="footer-link">{{ $t('footer.contact') }}</a>
-            <a href="https://linto.ai/legal" target="_blank" rel="noopener noreferrer" class="footer-link">{{
-              $t('footer.legal_notice') }}</a>
-            <a href="https://linto.ai/privacy" target="_blank" rel="noopener noreferrer" class="footer-link">{{
-              $t('footer.privacy_policy') }}</a>
+            <span class="footer-version">v{{ appVersion }}</span>
           </div>
         </footer>
       </div>
@@ -133,6 +129,9 @@ export default {
     sessionListingPage() {
       return this.$route.meta?.sessionListingPage
     },
+    appVersion() {
+      return "1.6.0" // Version from package.json
+    },
   },
   components: {
     UserAccountSelector,
@@ -217,9 +216,7 @@ export default {
 
   .main-footer {
     padding: 1rem;
-    background-color: var(--primary-soft);
-    border-top: 1px solid var(--neutral-40);
-    border-radius: 8px 8px 0 0;
+    border-top: 1px solid var(--neutral-60);
 
     &__powered-by {
       text-align: center;
@@ -287,6 +284,15 @@ export default {
     &:active {
       transform: translateY(1px);
     }
+  }
+
+  .footer-version {
+    font-size: 0.75rem;
+    font-weight: 400;
+    padding: 0.25rem 0.5rem;
+    display: inline-block;
+    margin-left: 0.5rem;
+    color: var(--neutral-90);
   }
 }
 </style>

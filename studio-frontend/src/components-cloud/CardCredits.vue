@@ -2,11 +2,7 @@
     <div class="card-credits" :class="{ free: isFreePlan, paid: isPaidPlan }">
         <div class="card-credits__content">
             <div class="card-credits__content__label">
-                <img :src="logo" alt="LinTO Studio" class="card-credits__content__label__logo">
-                You enjoy LinTO Cloud BETA
-            </div>
-            <div class="card-credits__content__credits">
-                With unlimited access to all features
+                LinTO Premium
             </div>
             <div class="card-credits__content__button">
                 <Button href="https://linto.ai/" target="_blank" rel="noopener noreferrer" variant="link" size="xs">
