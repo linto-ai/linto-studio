@@ -215,23 +215,25 @@ export default {
   }
 
   .main-footer {
-    padding: 1rem;
+    padding: 0.75rem;
     border-top: 1px solid var(--neutral-60);
+    background-color: var(--neutral-10, #fafafa);
 
     &__powered-by {
       text-align: center;
-      margin-bottom: 0.75rem;
-      font-size: 0.875rem;
-      color: var(--neutral-70);
+      margin-bottom: 0.5rem;
+      font-size: 0.8rem;
+      color: var(--neutral-80);
+      line-height: 1.4;
 
       * {
         display: inline-block;
         vertical-align: middle;
-        margin: 0 0.25rem;
+        margin: 0 0.2rem;
       }
 
       img {
-        height: 1.5em;
+        height: 1.2em;
         transition: transform 0.2s ease;
       }
     }
@@ -239,7 +241,8 @@ export default {
     &__links {
       display: flex;
       justify-content: center;
-      gap: .2rem;
+      align-items: center;
+      gap: 0.5rem;
       flex-wrap: wrap;
     }
   }
@@ -261,38 +264,40 @@ export default {
   }
 
   .footer-link {
-    color: var(--neutral-70);
+    color: var(--neutral-80);
     text-decoration: none;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 500;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
     transition: all 0.2s ease;
 
     &:hover {
       color: var(--primary);
-      background-color: rgba(var(--primary-rgb), 0.1);
+      background-color: rgba(var(--primary-rgb), 0.08);
       text-decoration: none;
     }
 
     &:focus {
       outline: 2px solid var(--primary);
-      outline-offset: 2px;
+      outline-offset: 1px;
       color: var(--primary);
     }
 
     &:active {
-      transform: translateY(1px);
+      transform: translateY(0.5px);
     }
   }
 
   .footer-version {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 400;
-    padding: 0.25rem 0.5rem;
+    padding: 0.2rem 0.4rem;
     display: inline-block;
-    margin-left: 0.5rem;
+    margin-left: 0.25rem;
     color: var(--neutral-90);
+    background-color: rgba(var(--neutral-90), 0.05);
+    border-radius: 2px;
   }
 }
 </style>
