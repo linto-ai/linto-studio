@@ -3,10 +3,10 @@
     <!-- Selected medias preview -->
     <div class="selected-medias-preview">
       <div class="preview-header">
-        <h4 class="preview-title">
+        <h4 class="section-title">
           {{ $t("media_explorer.panel.selected_medias") }}
         </h4>
-        <Button @click="clearSelection" icon="x" size="sm" variant="outline" />
+        <Button @click="clearSelection" icon="minus-circle" size="sm" variant="outline" color="neutral-40" />
       </div>
 
       <div class="medias-list">
@@ -16,61 +16,43 @@
             <span class="media-title">{{ media.title || media.name }}</span>
             <span class="media-date">{{ formatDate(media.created) }}</span>
             <div class="media-tags" v-if="getMediaTags(media).length > 0">
-              <Tooltip
-                v-for="tag in getMediaTags(media)"
-                :key="tag._id"
-                :text="tag.name"
-                position="bottom">
-                <div
-                  class="tag-bullet"
-                  :style="{ backgroundColor: tag.color || '#ccc' }">
+              <Tooltip v-for="tag in getMediaTags(media)" :key="tag._id" :text="tag.name" position="bottom">
+                <div class="tag-bullet" :style="{ backgroundColor: tag.color || '#ccc' }">
                 </div>
               </Tooltip>
             </div>
           </div>
-          <Button @click="removeMediaFromSelection(media)" icon="x" size="xs" variant="outline" />
+          <Button @click="removeMediaFromSelection(media)" icon="minus-circle" size="sm" variant="outline"
+            color="neutral-40" />
         </div>
       </div>
     </div>
 
     <!-- Bulk actions -->
-    <div class="bulk-actions">
-      <h4 class="actions-title">
+    <div class="media-section bulk-actions">
+      <h4 class="section-title">
         {{ $t("media_explorer.panel.bulk_actions") }}
       </h4>
-      
-      <div class="actions-grid">
-        <Button
-          @click="handleBulkDownload"
-          :loading="downloadLoading"
-          :disabled="selectedMedias.length === 0"
-          icon="download"
-          variant="outline"
-          size="sm"
-          class="action-button">
+
+      <div class="actions-container">
+        <Button @click="handleBulkDownload" :loading="downloadLoading" :disabled="selectedMedias.length === 0"
+          icon="download" variant="outline" size="sm" class="action-button">
           {{ downloadLoading ? $t('media_explorer.panel.downloading') : $t('media_explorer.panel.download_selected') }}
         </Button>
       </div>
     </div>
 
     <!-- Bulk tag management -->
-    <div class="bulk-tag-management">
-      <h4 class="actions-title">
+    <div class="media-section bulk-tag-management">
+      <h4 class="section-title">
         {{ $t("media_explorer.panel.manage_tags") }}
       </h4>
 
       <!-- Tag management mode -->
-      <div class="tag-actions">
-        <InputSelector
-          mode="tags"
-          :tags="getTags"
-          :selected-tags="commonTags"
-          @create="handleCreateAndAddTag"
-          @add="handleAddTagToAll"
-          @remove="handleRemoveTagFromAll"
-          :readonly="isTagManagementReadOnly"
-          :placeholder="$t('media_explorer.panel.add_tag_to_all')"
-        />
+      <div class="actions-container">
+        <InputSelector mode="tags" :tags="getTags" :selected-tags="commonTags" @create="handleCreateAndAddTag"
+          @add="handleAddTagToAll" @remove="handleRemoveTagFromAll" :readonly="isTagManagementReadOnly"
+          :placeholder="$t('media_explorer.panel.add_tag_to_all')" />
       </div>
 
       <!-- Read-only message when no common tags -->
@@ -80,6 +62,23 @@
         </span>
       </div>
     </div>
+
+
+
+    <div class="media-section">
+      <h4 class="section-title">{{ $t("media_explorer.panel.danger_zone") }}</h4>
+      <div class="actions-container">
+        <ConversationShareMultiple class="header-action-button"
+          :selectedConversations="selectedMedias"
+          :currentOrganizationScope="currentOrganizationScope" />
+        <Button @click="handleDelete" :label="$t('media_explorer.delete')" icon="trash" variant="outline" size="sm"
+          color="tertiary" class="header-action-button" />
+      </div>
+    </div>
+
+    <!-- Delete modal for multiple medias -->
+    <ModalDeleteConversations :visible="showDeleteModal" :medias="selectedMedias" 
+      @close="handleDeleteModalClose" @confirm="handleDeleteConfirm" @cancel="handleDeleteCancel" />
   </div>
 </template>
 
@@ -111,20 +110,20 @@ export default {
     ConversationShareMultiple,
   },
   props: {
-    currentOrganizationScope: {
-      type: String,
-      required: true,
-    },
   },
   data() {
     return {
       downloadLoading: false,
       bulkTitle: '',
       bulkDescription: '',
+      showDeleteModal: false,
     }
   },
   computed: {
     ...mapGetters("user", { userInfo: "getUserInfos" }),
+    ...mapGetters("organizations", {
+      currentOrganizationScope: "getCurrentOrganizationScope",
+    }),
     selectedMedias() {
       // Get the selected media IDs
       const selectedMediaIds = this.$store.state.inbox.selectedMedias.map(
@@ -219,13 +218,13 @@ export default {
 
     async handleBulkTitleChange(newTitle) {
       if (!newTitle.trim() || this.selectedMedias.length === 0) return
-      
+
       try {
-        const promises = this.selectedMedias.map(media => 
+        const promises = this.selectedMedias.map(media =>
           this.updateMediaProperty(media._id, 'title', newTitle)
         )
         await Promise.all(promises)
-        
+
         this.$store.dispatch('system/addNotification', {
           type: 'success',
           message: this.$t('media_explorer.panel.bulk_title_updated', { count: this.selectedMedias.length })
@@ -242,13 +241,13 @@ export default {
 
     async handleBulkDescriptionChange(newDescription) {
       if (!newDescription.trim() || this.selectedMedias.length === 0) return
-      
+
       try {
-        const promises = this.selectedMedias.map(media => 
+        const promises = this.selectedMedias.map(media =>
           this.updateMediaProperty(media._id, 'description', newDescription)
         )
         await Promise.all(promises)
-        
+
         this.$store.dispatch('system/addNotification', {
           type: 'success',
           message: this.$t('media_explorer.panel.bulk_description_updated', { count: this.selectedMedias.length })
@@ -267,12 +266,12 @@ export default {
       if (this.downloadLoading || this.selectedMedias.length === 0) return
 
       this.downloadLoading = true
-      
+
       try {
         const results = await this.downloadMultipleMediaFiles(this.selectedMedias)
         const successCount = results.filter(r => r.success).length
         const totalCount = results.length
-        
+
         if (successCount === totalCount) {
           // All downloads successful
           this.$store.dispatch('system/addNotification', {
@@ -283,9 +282,9 @@ export default {
           // Partial success
           this.$store.dispatch('system/addNotification', {
             type: 'warning',
-            message: this.$t('media_explorer.panel.download_multiple_partial', { 
-              success: successCount, 
-              total: totalCount 
+            message: this.$t('media_explorer.panel.download_multiple_partial', {
+              success: successCount,
+              total: totalCount
             })
           })
         } else {
@@ -305,6 +304,25 @@ export default {
         this.downloadLoading = false
       }
     },
+
+    handleDelete() {
+      this.showDeleteModal = true
+    },
+
+    handleDeleteModalClose() {
+      this.showDeleteModal = false
+    },
+
+    handleDeleteConfirm() {
+      // The deletion is handled by the modal component
+      this.showDeleteModal = false
+      // Clear selection after deletion
+      this.clearSelection()
+    },
+
+    handleDeleteCancel() {
+      this.showDeleteModal = false
+    },
   },
 }
 </script>
@@ -316,6 +334,34 @@ export default {
   height: 100%;
   padding: 1rem;
   gap: 1.5rem;
+}
+
+.media-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.section-title {
+  display: block;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--text-primary, #222);
+  line-height: 1.2;
+  margin: 0;
+}
+
+.section-content {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text-primary, #000);
+  line-height: 1.4;
+}
+
+.actions-container {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .selection-summary {

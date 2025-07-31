@@ -27,27 +27,15 @@
             class="header-action-button" @click="handleActionClick(action)" />
         </div>
         <div v-else></div>
-        <!-- delete and share -->
-        <div class="button-group-right">
-          <ConversationShareMultiple class="header-action-button" :selectedConversations="selectedMedias"
-            :currentOrganizationScope="currentOrganizationScope" />
-          <Button @click="handleDelete" :label="$t('media_explorer.delete')" icon="trash" variant="outline" size="sm"
-            color="tertiary" class="header-action-button" />
-        </div>
       </div>
 
       <!-- Multi-selection mode -->
-      <MediaExplorerRightPanelMulti v-if="isMultiMode" :currentOrganizationScope="currentOrganizationScope"
-        :readOnlyTags="readonlyTags" />
+      <MediaExplorerRightPanelMulti v-if="isMultiMode" :readOnlyTags="readonlyTags" />
 
       <!-- Single media mode -->
       <MediaExplorerRightPanelItem v-else-if="selectedMediaForOverview" :selectedMedia="selectedMediaForOverview"
         :readOnlyTags="readonlyTags" />
     </div>
-
-    <!-- Delete modal for multiple medias -->
-    <ModalDeleteConversations :visible="showDeleteModal" :medias="selectedMedias" @close="handleDeleteModalClose"
-      @confirm="handleDeleteConfirm" @cancel="handleDeleteCancel" />
   </div>
 </template>
 

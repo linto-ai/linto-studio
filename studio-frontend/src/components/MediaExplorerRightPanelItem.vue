@@ -85,6 +85,16 @@
             </Button>
           </div>
         </div>
+
+        <div class="media-section">
+          <h4 class="section-title">{{ $t("media_explorer.panel.danger_zone") }}</h4>
+          <div class="actions-container">
+            <ConversationShareMultiple class="header-action-button" :selectedConversations="[reactiveSelectedMedia || selectedMedia]"
+              :currentOrganizationScope="currentOrganizationScope" />
+            <Button @click="handleDelete" :label="$t('media_explorer.delete')" icon="trash" variant="outline" size="sm"
+              color="tertiary" class="header-action-button" />
+          </div>
+        </div>
       </div>
     </div>
 
@@ -102,6 +112,8 @@ import ModalDeleteConversations from "./ModalDeleteConversations.vue"
 import { mediaExplorerRightPanelMixin } from "@/mixins/mediaExplorerRightPanel.js"
 import FormInput from "@/components/molecules/FormInput.vue"
 import EMPTY_FIELD from "@/const/emptyField"
+import ConversationShareMultiple from "./ConversationShareMultiple.vue"
+import { mapGetters } from "vuex"
 
 export default {
   name: "MediaExplorerRightPanelItem",
@@ -113,6 +125,7 @@ export default {
     Button,
     ModalDeleteConversations,
     FormInput,
+    ConversationShareMultiple,
   },
   props: {
     selectedMedia: {
@@ -139,6 +152,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters("organizations", {
+      currentOrganizationScope: "getCurrentOrganizationScope",
+    }),
     reactiveSelectedMedia() {
       if (!this.selectedMedia?._id) return null
       return this.$store.getters["inbox/getMediaById"](this.selectedMedia._id)
@@ -335,11 +351,11 @@ export default {
 
 .section-title {
   display: block;
-    font-weight: 600;
-    font-size: 0.875rem;
-    color: var(--text-primary, #222);
-    line-height: 1.2;
-    margin: 0;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--text-primary, #222);
+  line-height: 1.2;
+  margin: 0;
 }
 
 .section-content {

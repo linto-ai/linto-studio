@@ -86,8 +86,8 @@ export default {
       page: 0,
       isInitialLoad: true,
       isInitializing: false,
-      isInitialized: false, // Add flag to prevent route watcher during init
-      userTriggeredScroll: false, // Flag to distinguish user scroll from auto-fill
+      isInitialized: false,
+      userTriggeredScroll: false,
       busMediasDeleteAttached: false,
       _conversationsCache: null,
       _tagsChangeDebounceTimer: null,
@@ -211,14 +211,14 @@ export default {
 
         this._tagsChangeDebounceTimer = setTimeout(() => {
           this.handleTagsChange();
-        }, 150); // 150ms debounce
+        }, 200); // Slightly increased debounce for stability
       },
-      deep: false, // Remove deep watching - selectedTags array reference changes when modified
+      deep: false,
       immediate: false,
     },
     conversations: {
       handler(newConversations, oldConversations) {
-        // Only process if array reference actually changed (performance optimization)
+        // Only process if array reference actually changed
         if (newConversations === oldConversations) return;
 
         if (newConversations && newConversations.length > 0) {
@@ -228,7 +228,7 @@ export default {
         }
       },
       immediate: true,
-      deep: false, // Remove deep watching - we only care about array reference changes
+      deep: false,
     },
   },
   methods: {
@@ -256,41 +256,51 @@ export default {
       }
       bus.$off("medias/delete", this.onMediasDeleted)
     },
+    
+    // Helper method to properly reset pagination state
+    resetPaginationState() {
+      this.initialPage = 0;
+      this.showPreviousButton = false;
+      this.isInitialLoad = true;
+      
+      // Reset MediaExplorer to clear its observer and internal state
+      // This ensures the intersection observer is properly reconfigured
+      this.$refs.mediaExplorer?.reset();
+    },
+    
     async init() {
       this.isInitializing = true;
       
       try {
+        // Set the context for the conversation store
         await this.setContext({
           organizationScope: this.currentOrganizationScope,
           favorites: this.favorites,
           shared: this.shared
         })
 
-        // Load tags and data in parallel to avoid sequential calls
+        // Load tags and route data in parallel for better performance
         await Promise.all([
           this.loadTagsForCurrentView(),
           this.loadFromRoute(this.$route)
         ]);
 
-        // Reset MediaExplorer AFTER data is loaded to avoid conflicts
+        // Reset MediaExplorer after data is loaded to ensure clean state
         this.$refs.mediaExplorer?.reset()
         
-        // Setup initial state based on URL
-        this.$nextTick(() => {
-          const urlPage = this.searchParams.page || 0;
-          
-          if (urlPage > 0) {
-            // Set up previous button if we loaded on a page > 0
-            this.initialPage = urlPage;
-            this.showPreviousButton = true;
-            // If we started on page > 0, we're past initial load phase
-            this.isInitialLoad = false;
-          } else {
-            // Starting from page 0, still in initial load phase
-            this.isInitialLoad = true;
-          }
-        });
+        // Setup initial pagination state based on URL parameters
+        const urlPage = this.searchParams.page || 0;
+        if (urlPage > 0) {
+          // We're starting from a specific page
+          this.initialPage = urlPage;
+          this.showPreviousButton = true;
+          this.isInitialLoad = false;
+        } else {
+          // We're starting from page 0
+          this.isInitialLoad = true;
+        }
 
+        // Setup media deletion listener
         if (!this.busMediasDeleteAttached) {
           bus.$on("medias/delete", this.onMediasDeleted);
           this.busMediasDeleteAttached = true;
@@ -340,44 +350,60 @@ export default {
       }
     },
     async handleSearch(search, filters) {
-      if (this.isInitializing) return; // Prevent calls during initialization
+      if (this.isInitializing) return;
       
-      // Reset MediaExplorer pagination before starting new search
-      this.$refs.mediaExplorer?.reset()
+      // Reset pagination state and MediaExplorer
+      this.resetPaginationState();
+      
+      // Perform the search
       await this.searchConversations({ search, filters })
+      
+      // Update URL to reflect new state
       this.updateUrl()
     },
     async handleLoadMore() {
       if (this.loadingConversations || !this.hasMoreItems || this.isInitializing) return
 
-      // Check if this is user-triggered scroll (after initial load)
-      const isUserScroll = this.isInitialized && !this.isInitialLoad;
-      
+      // Load more data from the store
       await this.loadMore()
       
-      // Only update URL if this was triggered by user scroll, not auto-fill
+      // Check if this is user-triggered scroll (after initial load)
+      // This prevents URL updates during initial page loading
+      const isUserScroll = this.isInitialized && !this.isInitialLoad;
+      
+      // Update URL if this was user-triggered
       if (isUserScroll) {
         this.updateUrl();
       }
       
-      // Mark that initial load phase is complete after first load-more
+      // Mark that initial load phase is complete
       if (this.isInitialLoad) {
         this.isInitialLoad = false;
       }
     },
     async handleTagsChange() {
-      if (this.isInitializing) return; // Prevent calls during initialization
+      if (this.isInitializing) return;
       
-      this.$refs.mediaExplorer?.reset()
+      // Reset pagination state and MediaExplorer
+      this.resetPaginationState();
+      
+      // Apply the tag filters
       await this.applyFilters({ tagIds: this.selectedTagIds })
+      
+      // Update URL to reflect new state
       this.updateUrl()
     },
     async handleReset() {
-      if (this.isInitializing) return; // Prevent calls during initialization
+      if (this.isInitializing) return;
       
-      this.$refs.mediaExplorer?.reset()
+      // Reset pagination state and MediaExplorer
+      this.resetPaginationState();
+      
+      // Reset store state and tags
       await this.reset()
       this.$store.dispatch("tags/setExploreSelectedTags", [])
+      
+      // Update URL to reflect new state
       this.updateUrl()
     },
     updateUrl() {
@@ -408,20 +434,16 @@ export default {
       if (this.loadingConversations || this.initialPage <= 0) return;
       
       try {
-        // Load all previous pages efficiently in one API call
+        // Load all previous pages efficiently
         await this.loadPreviousPages(this.initialPage);
         
-        // Hide the previous button after loading
-        this.showPreviousButton = false;
-        this.initialPage = 0;
+        // Reset pagination state and MediaExplorer
+        this.resetPaginationState();
         
-        // Reset MediaExplorer pagination to start from 0
-        this.$refs.mediaExplorer?.reset();
-        
-        // Update URL to remove page parameter since we're back to page 0
+        // Update URL to remove page parameter
         this.updateUrl();
         
-        // Scroll to top to show the newly loaded items
+        // Scroll to top to show newly loaded items
         this.$nextTick(() => {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         });
