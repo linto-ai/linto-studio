@@ -1,32 +1,54 @@
 <template>
-  <div class="media-explorer-item" @click="select" :class="{
-    'media-explorer-item--overview': isSelectedForOverview,
-    'media-explorer-item--selected': isSelected,
-    'media-explorer-item--favorite': isFavorite,
-  }">
+  <div
+    class="media-explorer-item"
+    @click="select"
+    :class="{
+      'media-explorer-item--overview': isSelectedForOverview,
+      'media-explorer-item--selected': isSelected,
+      'media-explorer-item--favorite': isFavorite,
+    }">
     <!-- Main content layout -->
     <div class="media-explorer-item__content">
       <!-- Left section: Controls + Info -->
       <div class="media-explorer-item__left">
         <!-- Favorite & Checkbox group -->
         <div class="media-explorer-item__controls">
-          <Button class="media-explorer-item__favorite" :class="{ active: isFavorite }" @click.stop="toggleFavorite"
-            icon="star" :title="$t('media_explorer.favorite')" :iconWeight="isFavorite ? 'fill' : 'regular'"
-            variant="outline" size="sm" :color="isFavorite ? 'primary' : 'neutral-10'" />
+          <Button
+            class="media-explorer-item__favorite"
+            :class="{ active: isFavorite }"
+            @click.stop="toggleFavorite"
+            icon="star"
+            :title="$t('media_explorer.favorite')"
+            :iconWeight="isFavorite ? 'fill' : 'regular'"
+            variant="outline"
+            size="sm"
+            :color="isFavorite ? 'primary' : 'neutral-10'" />
 
-          <div class="media-explorer-item__checkbox-container" :class="{ selected: isSelected }">
-            <input type="checkbox" v-model="isSelected" class="media-explorer-item__checkbox"
+          <div
+            class="media-explorer-item__checkbox-container"
+            :class="{ selected: isSelected }">
+            <input
+              type="checkbox"
+              v-model="isSelected"
+              class="media-explorer-item__checkbox"
               @change="handleSelectionChange" />
           </div>
         </div>
 
         <!-- Media type icon -->
-        <Avatar :icon="isFromSession ? 'microphone' : 'file-audio'" color="neutral-10" size="md"
+        <Avatar
+          :icon="isFromSession ? 'microphone' : 'file-audio'"
+          color="neutral-10"
+          size="md"
           class="media-explorer-item__type-icon" />
 
         <!-- Owner avatar -->
         <Tooltip :text="convOwner.fullName" position="bottom">
-          <Avatar color="#dadada" :text="convOwner.fullName.substring(0, 1)" :src="convOwnerAvatar" size="sm"
+          <Avatar
+            color="#dadada"
+            :text="convOwner.fullName.substring(0, 1)"
+            :src="convOwnerAvatar"
+            size="sm"
             class="media-explorer-item__owner" />
         </Tooltip>
 
@@ -37,14 +59,16 @@
             <!-- Media title -->
             <div class="media-explorer-item__title">
               <span @click.stop.prevent="(e) => e.stopPropagation()">
-                <router-link :title="title" :to="{
-                  name: 'conversations transcription',
-                  params: {
-                    conversationId: reactiveMedia._id,
-                    organizationId: currentOrganization._id,
-                  },
-                  query: searchValue ? { search: searchValue } : {},
-                }">
+                <router-link
+                  :title="title"
+                  :to="{
+                    name: 'conversations transcription',
+                    params: {
+                      conversationId: reactiveMedia._id,
+                      organizationId: currentOrganization._id,
+                    },
+                    query: searchValue ? { search: searchValue } : {},
+                  }">
                   {{ title }}
                 </router-link>
               </span>
@@ -65,22 +89,38 @@
 
       <!-- Right section: Tags (desktop only) -->
       <IsDesktop>
-        <MediaExplorerItemTags class="media-explorer-item__tags" :mediatags="mediatags" :media-id="reactiveMedia._id"
-          :max-visible="maxVisibleTags" :mobile-view="false" />
+        <MediaExplorerItemTags
+          class="media-explorer-item__tags"
+          :mediatags="mediatags"
+          :media-id="reactiveMedia._id"
+          :max-visible="maxVisibleTags"
+          :mobile-view="false" />
       </IsDesktop>
 
       <!-- Actions menu using PopoverList -->
-      <PopoverList :items="actionsItems" :close-on-item-click="true" :overlay="false"
-        class="media-explorer-item__actions" @click="handleActionClick">
+      <PopoverList
+        :items="actionsItems"
+        :close-on-item-click="true"
+        :overlay="false"
+        class="media-explorer-item__actions"
+        @click="handleActionClick">
         <template #trigger="{ open }">
-          <Button class="media-explorer-item__actions-trigger" :title="$t('media_explorer.actions')" variant="outline"
-            color="primary" size="sm" icon="dots-three-outline-vertical" />
+          <Button
+            class="media-explorer-item__actions-trigger"
+            :title="$t('media_explorer.actions')"
+            variant="outline"
+            color="primary"
+            size="sm"
+            icon="dots-three-outline-vertical" />
         </template>
       </PopoverList>
     </div>
 
     <!-- Delete modal -->
-    <ModalDeleteConversations :visible="showDeleteModal" :medias="[reactiveMedia]" @close="showDeleteModal = false" />
+    <ModalDeleteConversations
+      :visible="showDeleteModal"
+      :medias="[reactiveMedia]"
+      @close="showDeleteModal = false" />
   </div>
 </template>
 
@@ -144,70 +184,72 @@ export default {
     // Get reactive media data from store to ensure updates are reflected
     reactiveMedia() {
       if (!this.media?._id) return this.media
-      const storeMedia = this.$store.getters["inbox/getMediaById"](this.media._id)
-      
+      const storeMedia = this.$store.getters["inbox/getMediaById"](
+        this.media._id,
+      )
+
       // Store now contains all necessary properties, merge with original as fallback
       if (storeMedia) {
         return {
           ...this.media,
-          ...storeMedia
+          ...storeMedia,
         }
       }
-      
+
       return this.media
     },
 
     actionsItems() {
-        return [
-          {
-            id: "edit",
-            name: this.$t("media_explorer.line.edit_transcription"),
-            icon: "pencil",
-            color: "primary",
-            to: {
-              name: "conversations transcription",
-              params: {
-                conversationId: this.reactiveMedia._id,
-                organizationId: this.organizationId,
-              },
-              query: this.searchValue ? { search: this.searchValue } : {},
+      return [
+        {
+          id: "edit",
+          name: this.$t("media_explorer.line.edit_transcription"),
+          icon: "pencil",
+          color: "primary",
+          to: {
+            name: "conversations transcription",
+            params: {
+              conversationId: this.reactiveMedia._id,
+              organizationId: this.organizationId,
+            },
+            query: this.searchValue ? { search: this.searchValue } : {},
+          },
+        },
+        {
+          id: "subtitles",
+          name: this.$t("media_explorer.line.edit_subtitles"),
+          icon: "closed-captioning",
+          color: "primary",
+          to: {
+            name: "conversations subtitles",
+            params: {
+              conversationId: this.reactiveMedia._id,
+              organizationId: this.organizationId,
+            },
+            query: this.searchValue ? { search: this.searchValue } : {},
+          },
+        },
+        {
+          id: "export",
+          name: this.$t("media_explorer.line.export"),
+          icon: "export",
+          color: "primary",
+          to: {
+            name: "conversations publish",
+            params: {
+              conversationId: this.reactiveMedia._id,
+              organizationId: this.organizationId,
             },
           },
-          {
-            id: "subtitles",
-            name: this.$t("media_explorer.line.edit_subtitles"),
-            icon: "closed-captioning",
-            color: "primary",
-            to: {
-              name: "conversations subtitles",
-              params: {
-                conversationId: this.reactiveMedia._id,
-                organizationId: this.organizationId,
-              },
-              query: this.searchValue ? { search: this.searchValue } : {},
-            },
-          },
-          {
-            id: "export",
-            name: this.$t("media_explorer.line.export"),
-            icon: "export",
-            color: "primary",
-            to: {
-              name: "conversations publish",
-              params: {
-                conversationId: this.reactiveMedia._id,
-                organizationId: this.organizationId,
-              },
-            },
-          },
-          {
-            id: "delete",
-            name: this.$t("media_explorer.line.delete"),
-            icon: "trash",
-            color: "tertiary",
-          },
-        ]
-      },
+        },
+        {
+          id: "delete",
+          name: this.$t("media_explorer.line.delete"),
+          icon: "trash",
+          color: "tertiary",
+        },
+      ]
+    },
     mediatags() {
       if (!this.media || !this.media.tags) {
         return []
@@ -270,7 +312,9 @@ export default {
       return d.toLocaleDateString(undefined, options)
     },
     isFavorite() {
-      return this.$store.getters["user/isFavoriteConversation"](this.reactiveMedia._id)
+      return this.$store.getters["user/isFavoriteConversation"](
+        this.reactiveMedia._id,
+      )
     },
     isSelectAll() {
       return this.$store.state.inbox.autoselectMedias
@@ -290,9 +334,11 @@ export default {
       }
     },
     // Sync local isSelected state with store
-    '$store.state.inbox.selectedMedias': {
+    "$store.state.inbox.selectedMedias": {
       handler(selectedMedias) {
-        const isCurrentlySelected = selectedMedias.some(media => media._id === this.reactiveMedia._id)
+        const isCurrentlySelected = selectedMedias.some(
+          (media) => media._id === this.reactiveMedia._id,
+        )
         if (this.isSelected !== isCurrentlySelected) {
           this.isSelected = isCurrentlySelected
         }
@@ -305,7 +351,10 @@ export default {
     ...mapMutations("inbox", ["addSelectedMedia", "removeSelectedMedia"]),
 
     toggleFavorite() {
-      this.$store.dispatch("user/toggleFavoriteConversation", this.reactiveMedia._id)
+      this.$store.dispatch(
+        "user/toggleFavoriteConversation",
+        this.reactiveMedia._id,
+      )
     },
 
     select() {
@@ -423,9 +472,12 @@ export default {
   border-radius: 2px;
   cursor: pointer;
   transition: color 0.2s ease;
+  box-shadow: none !important;
 
   &:hover {
     color: var(--primary-color);
+    box-shadow: none !important;
+    transform: none;
   }
 
   &.active {
