@@ -309,6 +309,7 @@
     },
     "subtitles": {
       "available": "Sous-titres disponibles",
+      "add_screen": "Ajouter un écran",
       "copy": "Copier",
       "copy_label": "Copier la version des sous-titres",
       "delete": "Supprimer",
@@ -329,6 +330,7 @@
       "max_duration": "Durée maximum d'un écran",
       "max_lines": "Nombre de lignes par écran",
       "max_lines_short": "Lignes par écran",
+      "merge_screens": "Merge screens",
       "not_available": "Aucun sous-titres disponibles",
       "screen_is_empty": "L'écran est vide",
       "screens": {

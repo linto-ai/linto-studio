@@ -309,6 +309,7 @@
     },
     "subtitles": {
       "available": "Available subtitles",
+      "add_screen": "Add a screen",
       "copy": "Copy",
       "copy_label": "Copy subtitles version",
       "delete": "Delete",
@@ -329,6 +330,7 @@
       "max_duration": "Max duration of a screen",
       "max_lines": "Number of lines per screen",
       "max_lines_short": "Lines per screen",
+      "merge_screens": "Merge screens",
       "not_available": "No subtitles available",
       "screen_is_empty": "The screen is empty",
       "screens": {

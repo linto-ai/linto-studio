@@ -27,9 +27,15 @@
       </div>
     </div>
 
-    <button :class="['only-icon', 'black', 'hover-red']" @click="deletescreen">
+    <!-- <button :class="['only-icon', 'black', 'hover-red']" @click="deletescreen">
       <ph-icon name="trash"></ph-icon>
-    </button>
+    </button> -->
+    <Button
+      v-if="canEdit"
+      @click="deletescreen"
+      icon="trash"
+      color="tertiary"
+      variant="outline"></Button>
   </div>
 </template>
 <script>
