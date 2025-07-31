@@ -1,31 +1,74 @@
 <template>
-  <component :is="componentType" :to="to" :href="href" :target="target" :rel="rel" class="btn" :class="classes" :style="styles"
-    :disabled="disabled || loading" v-bind="$attrs" :aria-disabled="disabled || loading"
-    :title="isIconOnly ? $attrs.ariaLabel : ''" v-on="$listeners">
+  <component
+    :is="componentType"
+    :to="to"
+    :href="href"
+    :target="target"
+    :rel="rel"
+    class="btn"
+    :class="classes"
+    :style="styles"
+    :disabled="disabled || loading"
+    v-bind="$attrs"
+    :aria-disabled="disabled || loading"
+    :title="isIconOnly ? $attrs.ariaLabel : ''"
+    v-on="$listeners">
     <template v-if="isIconOnly">
-      <ph-icon v-if="loading" name="circle-notch" :weight="computedIconWeight" :color="computedIconColor" :size="size"
+      <ph-icon
+        v-if="loading"
+        name="circle-notch"
+        :weight="computedIconWeight"
+        :color="computedIconColor"
+        :size="size"
         class="animate-spin" />
 
-      <ph-icon v-else-if="icon" :name="icon" :weight="computedIconWeight" :color="computedIconColor" :size="size"
+      <ph-icon
+        v-else-if="icon"
+        :name="icon"
+        :weight="computedIconWeight"
+        :color="computedIconColor"
+        :size="size"
         :class="iconClasses" />
 
       <!-- Left avatar -->
-      <Avatar v-else-if="avatar || avatarColor || avatarText" class="avatar" :text="avatarText" :color="avatarColor"
-        :src="avatar" :size="avatarSize" />
+      <Avatar
+        v-else-if="avatar || avatarColor || avatarText"
+        class="avatar"
+        :text="avatarText"
+        :color="avatarColor"
+        :src="avatar"
+        :size="avatarSize" />
     </template>
     <template v-else>
       <span class="btn-prefix-label">
-        <span class="btn-prefix" v-if="icon || avatar || avatarColor || avatarText || loading">
-          <ph-icon v-if="loading" name="circle-notch" :weight="computedIconWeight" :color="computedIconColor"
-            :size="size" class="animate-spin" />
+        <span
+          class="btn-prefix"
+          v-if="icon || avatar || avatarColor || avatarText || loading">
+          <ph-icon
+            v-if="loading"
+            name="circle-notch"
+            :weight="computedIconWeight"
+            :color="computedIconColor"
+            :size="size"
+            class="animate-spin" />
 
           <!-- Left icon or avatar -->
-          <ph-icon v-else-if="icon && iconPosition === 'left'" :name="icon" :weight="computedIconWeight"
-            :color="computedIconColor" :size="size" :class="iconClasses" />
+          <ph-icon
+            v-else-if="icon && iconPosition === 'left'"
+            :name="icon"
+            :weight="computedIconWeight"
+            :color="computedIconColor"
+            :size="size"
+            :class="iconClasses" />
 
           <!-- Left avatar -->
-          <Avatar v-else-if="avatar || avatarColor || avatarText" class="avatar" :text="avatarText"
-            :color="avatarColor || color" :src="avatar" :size="avatarSize" />
+          <Avatar
+            v-else-if="avatar || avatarColor || avatarText"
+            class="avatar"
+            :text="avatarText"
+            :color="avatarColor || color"
+            :src="avatar"
+            :size="avatarSize" />
         </span>
 
         <!-- Label/Content -->
@@ -35,10 +78,20 @@
       </span>
 
       <!-- Right icon -->
-      <ph-icon v-if="!loading && iconRight" :name="iconRight" :weight="computedIconWeight" :color="computedIconColor"
-        :size="size" :class="iconClasses" />
-      <ph-icon v-if="!loading && icon && iconPosition === 'right'" :name="icon" :weight="computedIconWeight"
-        :color="computedIconColor" :size="size" :class="iconClasses" />
+      <ph-icon
+        v-if="!loading && iconRight"
+        :name="iconRight"
+        :weight="computedIconWeight"
+        :color="computedIconColor"
+        :size="size"
+        :class="iconClasses" />
+      <ph-icon
+        v-if="!loading && icon && iconPosition === 'right'"
+        :name="icon"
+        :weight="computedIconWeight"
+        :color="computedIconColor"
+        :size="size"
+        :class="iconClasses" />
     </template>
   </component>
 </template>
@@ -121,7 +174,9 @@ export default {
       required: false,
       default: "solid",
       validator: (value) =>
-        ["solid", "outline", "transparent", "text", "link", "flat"].includes(value),
+        ["solid", "outline", "transparent", "text", "link", "flat"].includes(
+          value,
+        ),
     },
     disabled: {
       type: Boolean,
@@ -178,35 +233,20 @@ export default {
       return this.iconWeight || "regular"
     },
     computedIconColor() {
-      // For flat and outline variants – no inline color so that CSS (including :hover) can decide
-      if (this.variant === "flat" || this.variant === "outline") {
-        return undefined
-      }
-
-      if (this.variant === "solid") {
-        // Contrast color against the filled background
-        return `var(--${this.color}-contrast, #fff)`
-      }
-
-      if (this.variant === "link" || this.variant === "text") {
-        // Link or text buttons inherit the colour of the text
-        return `var(--${this.color}-color, var(--text-primary))`
-      }
-
-      // transparent variants keep the main color
-      return `var(--${this.color}-color, var(--primary-color))`
+      // same as text color
+      return undefined
     },
     isIconOnly() {
       return this.iconOnly || (this.icon && !this.label && !this.$slots.default)
     },
     componentType() {
       if (this.href) {
-        return 'a'
+        return "a"
       }
       if (this.to) {
-        return 'router-link'
+        return "router-link"
       }
-      return 'button'
+      return "button"
     },
     classes() {
       const classes = []
@@ -297,7 +337,7 @@ export default {
 }
 
 .btn {
-  .label+.icon {
+  .label + .icon {
     margin-left: 4px;
   }
 
@@ -342,7 +382,7 @@ export default {
 }
 
 /* Gap when a right-side icon is present (after label) */
-.btn .label+.icon {
+.btn .label + .icon {
   margin-left: 0.25rem;
 }
 </style>

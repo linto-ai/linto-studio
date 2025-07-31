@@ -40,7 +40,7 @@ import Popover from "./Popover.vue"
 export default {
   name: "PopoverList",
   components: {
-    Popover
+    Popover,
   },
   props: {
     /**
@@ -249,6 +249,8 @@ export default {
     justify-content: flex-start;
     border-radius: 0;
     text-align: left;
+    transform: none;
+    box-shadow: none;
   }
 }
 

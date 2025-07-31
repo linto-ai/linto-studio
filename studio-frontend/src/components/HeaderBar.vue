@@ -99,7 +99,13 @@ export default {
 .sidebar-toggle {
   width: 64px;
   background-color: var(--primary-soft);
+  color: var(--text-primary);
   border-radius: 0;
   border-right: 1px solid var(--neutral-40) !important;
+
+  &:hover {
+    transform: none;
+    box-shadow: none;
+  }
 }
 </style>

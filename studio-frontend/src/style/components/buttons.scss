@@ -104,14 +104,14 @@
     }
 
     /* Hover, focus, active states */
-    &:hover:not([disabled]):not(.disabled) {
+    &:hover:not([disabled]):not(.disabled):not(.link) {
       cursor: pointer;
       background-color: var(--button-background-hover, var(--neutral-10));
       text-decoration: none;
       transform: translateY(-1px);
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
-    
+
     &:active {
       transform: translateY(0);
       transition: all 0.1s ease;
@@ -136,7 +136,7 @@
         fill: var(--neutral-70) !important;
         color: var(--neutral-70) !important;
       }
-      
+
       &:hover {
         cursor: not-allowed;
         background-color: var(--neutral-10) !important;
@@ -874,7 +874,7 @@
 
   .label {
     display: flex;
-    gap: .25em;
+    gap: 0.25em;
     align-items: center;
     justify-content: center;
   }
