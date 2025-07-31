@@ -74,11 +74,14 @@ export default {
     ...mapActions("inbox", ["deleteMedias"]),
     onConfirm() {
       this.deleteMedias(this.medias.map((media) => media._id))
+      this.$emit("confirm")
     },
     closeModal() {
       console.log("closeModal")
     },
-    onCancel() {},
+    onCancel() {
+      this.$emit("cancel")
+    },
   },
 }
 </script>

@@ -92,7 +92,7 @@
         margin: 0;
       }
 
-      &:hover {
+      &:hover:not([disabled]):not(.disabled) {
         transform: translateY(-2px);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
       }
@@ -104,7 +104,7 @@
     }
 
     /* Hover, focus, active states */
-    &:hover {
+    &:hover:not([disabled]):not(.disabled) {
       cursor: pointer;
       background-color: var(--button-background-hover, var(--neutral-10));
       text-decoration: none;
@@ -128,14 +128,20 @@
       background-color: var(--neutral-10) !important;
       border: 1px solid var(--neutral-40) !important;
       color: var(--neutral-70) !important;
+      transform: none !important;
+      box-shadow: none !important;
 
       .icon,
       svg {
-        fill: var(--neutral-60) !important;
+        fill: var(--neutral-70) !important;
+        color: var(--neutral-70) !important;
       }
+      
       &:hover {
         cursor: not-allowed;
-        background-color: var(--background-disabled);
+        background-color: var(--neutral-10) !important;
+        transform: none !important;
+        box-shadow: none !important;
       }
     }
 
@@ -278,7 +284,7 @@
       .ph-icon {
         color: var(--primary-contrast, #fff);
       }
-      &:hover {
+      &:hover:not([disabled]):not(.disabled) {
         background-color: var(--primary-soft);
         color: var(--primary-color);
         &.outline .icon {
@@ -322,7 +328,7 @@
       .ph-icon {
         color: var(--primary-contrast, #fff);
       }
-      &:hover {
+      &:hover:not([disabled]):not(.disabled) {
         background-color: transparent;
         color: var(--secondary-color);
         &.outline .icon {
@@ -366,7 +372,7 @@
       .ph-icon {
         color: var(--primary-contrast, #fff);
       }
-      &:hover {
+      &:hover:not([disabled]):not(.disabled) {
         background-color: transparent;
         color: var(--tertiary-color);
         &.outline .icon {
@@ -411,6 +417,12 @@
         color: var(--neutral-80);
       }
 
+      &:hover:not([disabled]):not(.disabled) {
+        background-color: var(--neutral-40);
+        border-color: var(--neutral-80);
+        color: var(--text-primary);
+      }
+
       &-soft {
         background-color: var(--neutral-10);
         border: 1px solid var(--neutral-40);
@@ -446,7 +458,7 @@
         color: var(--neutral-80);
       }
 
-      &:hover {
+      &:hover:not([disabled]):not(.disabled) {
         background-color: var(--neutral-20);
         color: var(--neutral-80);
         .icon,
@@ -466,7 +478,7 @@
           background-color: transparent;
           color: var(--primary-color);
         }
-        &:hover {
+        &:hover:not([disabled]):not(.disabled) {
           background-color: var(--primary-color);
           color: var(--primary-contrast, #fff);
           .icon,
@@ -486,7 +498,7 @@
             background-color: transparent;
             color: var(--primary-soft);
           }
-          &:hover {
+          &:hover:not([disabled]):not(.disabled) {
             background-color: var(--primary-soft);
             color: var(--primary-color);
             .icon,
@@ -507,7 +519,7 @@
             background-color: transparent;
             color: var(--primary-hard);
           }
-          &:hover {
+          &:hover:not([disabled]):not(.disabled) {
             background-color: var(--primary-hard);
             color: var(--primary-contrast, #fff);
             .icon,
@@ -529,7 +541,7 @@
           background-color: transparent;
           color: var(--secondary-color);
         }
-        &:hover {
+        &:hover:not([disabled]):not(.disabled) {
           background-color: var(--secondary-color);
           color: var(--primary-contrast, #fff);
           .icon,
@@ -549,7 +561,7 @@
             background-color: transparent;
             color: var(--secondary-soft);
           }
-          &:hover {
+          &:hover:not([disabled]):not(.disabled) {
             background-color: var(--secondary-soft);
             color: var(--secondary-color);
             .icon,
@@ -570,7 +582,7 @@
             background-color: transparent;
             color: var(--secondary-hard);
           }
-          &:hover {
+          &:hover:not([disabled]):not(.disabled) {
             background-color: var(--secondary-hard);
             color: var(--primary-contrast, #fff);
             .icon,
@@ -592,7 +604,7 @@
           background-color: transparent;
           color: var(--tertiary-color);
         }
-        &:hover {
+        &:hover:not([disabled]):not(.disabled) {
           background-color: var(--tertiary-color);
           color: var(--primary-contrast, #fff);
           .icon,
@@ -612,7 +624,7 @@
             background-color: transparent;
             color: var(--tertiary-soft);
           }
-          &:hover {
+          &:hover:not([disabled]):not(.disabled) {
             background-color: var(--tertiary-soft);
             color: var(--tertiary-color);
             .icon,
@@ -633,7 +645,7 @@
             background-color: transparent;
             color: var(--tertiary-hard);
           }
-          &:hover {
+          &:hover:not([disabled]):not(.disabled) {
             background-color: var(--tertiary-hard);
             color: var(--primary-contrast, #fff);
             .icon,
@@ -656,13 +668,13 @@
           background-color: transparent;
           color: var(--neutral-60);
         }
-        &:hover {
-          background-color: var(--neutral-60);
-          color: var(--neutral-10);
+        &:hover:not([disabled]):not(.disabled) {
+          background-color: var(--neutral-20);
+          color: var(--text-primary);
           .icon,
           .ph-icon,
           .icon-svg {
-            color: var(--neutral-10);
+            color: var(--text-primary);
           }
         }
 
@@ -676,7 +688,7 @@
             background-color: transparent;
             color: var(--neutral-soft);
           }
-          &:hover {
+          &:hover:not([disabled]):not(.disabled) {
             background-color: var(--neutral-soft);
             color: var(--neutral-60);
             .icon,
@@ -697,13 +709,13 @@
             background-color: transparent;
             color: var(--neutral-hard);
           }
-          &:hover {
+          &:hover:not([disabled]):not(.disabled) {
             background-color: var(--neutral-hard);
-            color: var(--neutral-10);
+            color: var(--text-primary);
             .icon,
             .ph-icon,
             .icon-svg {
-              color: var(--neutral-10);
+              color: var(--text-primary);
             }
           }
         }
@@ -753,7 +765,7 @@
       background-color: transparent;
       border-color: transparent;
       box-shadow: none;
-      &:hover {
+      &:hover:not([disabled]):not(.disabled) {
         background-color: rgba(0, 0, 0, 0.05);
         text-decoration: none;
       }
@@ -772,7 +784,7 @@
       box-shadow: none;
       text-decoration: underline;
       padding: 0.25rem 0.5rem;
-      &:hover {
+      &:hover:not([disabled]):not(.disabled) {
         background-color: transparent;
         opacity: 0.8;
       }
@@ -790,7 +802,7 @@
     }
 
     /* Icon handling */
-    &:hover > .icon {
+    &:hover:not([disabled]):not(.disabled) > .icon {
       opacity: 0.8;
     }
 
@@ -882,7 +894,7 @@
     font-weight: 500;
     color: var(--text-color);
 
-    &:hover {
+    &:hover:not([disabled]):not(.disabled) {
       text-decoration: underline;
     }
 
@@ -911,7 +923,7 @@
 
 .btn.outline {
   &.primary {
-    &:hover {
+    &:hover:not([disabled]):not(.disabled) {
       background-color: var(--primary-color);
       color: var(--primary-contrast, #fff);
 
@@ -922,7 +934,7 @@
     }
   }
   &.secondary {
-    &:hover {
+    &:hover:not([disabled]):not(.disabled) {
       background-color: var(--secondary-color);
       color: var(--primary-contrast, #fff);
 
@@ -933,7 +945,7 @@
     }
   }
   &.tertiary {
-    &:hover {
+    &:hover:not([disabled]):not(.disabled) {
       background-color: var(--tertiary-color);
       color: var(--primary-contrast, #fff);
 

@@ -1,24 +1,12 @@
 <template>
   <LayoutV2 customClass="explore-next">
-    <MediaExplorer
-      ref="mediaExplorer"
-      :medias="conversations"
-      :totalItemsCount="totalItemsCount"
-      :loading="loadingConversations"
-      :pageSize="pageSize"
-      :error="error"
-      :search-value="search"
-      :enable-pagination="true"
-      :selected-tag-ids="selectedTagIds"
-      :readonly-tags="favorites || shared"
-      @load-more="handleLoadMore"
-      @search="handleSearch"
-      @reset="handleReset"
+    <MediaExplorer ref="mediaExplorer" :medias="conversations" :totalItemsCount="totalItemsCount"
+      :loading="loadingConversations" :pageSize="pageSize" :error="error" :search-value="search"
+      :enable-pagination="true" :selected-tag-ids="selectedTagIds" :readonly-tags="favorites || shared"
+      @load-more="handleLoadMore" @search="handleSearch" @reset="handleReset" @tags-changed="handleTagsChanged"
       class="explore-next__media-explorer relative">
       <template v-slot:before>
-        <div
-          v-if="initialPage > 0 && showPreviousButton"
-          class="explore-next__previous-items"
+        <div v-if="initialPage > 0 && showPreviousButton" class="explore-next__previous-items"
           @click="loadPreviousItems">
           <a href="#" class="btn xs outline primary">
             <span class="label">
@@ -29,16 +17,13 @@
       </template>
       <template v-slot:after>
         <div>
-          <div
-            class="explore-next__infinite-loading"
-            ref="infiniteLoadingTrigger">
+          <div class="explore-next__infinite-loading" ref="infiniteLoadingTrigger">
             <span v-if="hasMoreItems && !loadingConversations">
               {{ $t("media_explorer.loading_more") }}
             </span>
-            <span
-              v-else-if="
-                !hasMoreItems && !loadingConversations && totalItemsCount > 0
-              ">
+            <span v-else-if="
+              !hasMoreItems && !loadingConversations && totalItemsCount > 0
+            ">
               {{ $t("media_explorer.end_of_results") }}
             </span>
             <span v-else-if="loadingConversations">
@@ -97,27 +82,49 @@ export default {
       mode: "default",
       page: 0,
       isInitialLoad: true,
+      isInitializing: false,
+      busMediasDeleteAttached: false,
+      _conversationsCache: null,
+      _tagsChangeDebounceTimer: null,
     }
   },
   computed: {
     ...mapGetters("conversations", [
       "getConversations",
       "getLoading",
-      "getError", 
+      "getError",
       "getTotalCount",
       "getHasMoreItems",
       "getSearch",
       "getFilters",
-      "getPageSize"
+      "getPageSize",
+      "getParams"
     ]),
     ...mapGetters("tags", [
       "getExploreSelectedTags",
       "getTags",
-      "getSharedTags", 
+      "getSharedTags",
       "getFavoritesTags",
     ]),
     conversations() {
-      return this.getConversations || []
+      const conversations = this.getConversations || [];
+
+      // Memoization: only recalculate if conversations array reference changed
+      if (this._conversationsCache && this._conversationsCache.source === conversations) {
+        return this._conversationsCache.result;
+      }
+
+      const seen = new Set();
+      const result = conversations.filter(c => {
+        if (!c || !c._id) return false;
+        if (seen.has(c._id)) return false;
+        seen.add(c._id);
+        return true;
+      });
+
+      // Cache the result
+      this._conversationsCache = { source: conversations, result };
+      return result;
     },
     loadingConversations() {
       return this.getLoading || false
@@ -132,7 +139,8 @@ export default {
       return this.getHasMoreItems || false
     },
     search() {
-      return this.getSearch || ""
+      const searchValue = this.getSearch || "";
+      return searchValue;
     },
     filters() {
       return this.getFilters || []
@@ -140,16 +148,21 @@ export default {
     pageSize() {
       return this.getPageSize || 20
     },
+    searchParams() {
+      return this.getParams || {}
+    },
     selectedTags() {
-      return this.getExploreSelectedTags || []
+      const tags = this.getExploreSelectedTags || [];
+      return tags;
     },
     selectedTagIds() {
-      const tags = this.getExploreSelectedTags || []
-      return tags.map((t) => t._id)
+      const tags = this.getExploreSelectedTags || [];
+      const ids = tags.map((t) => t._id);
+      return ids;
     },
     availableTags() {
-      return this.favorites ? this.getFavoritesTags : 
-             this.shared ? this.getSharedTags : this.getTags
+      return this.favorites ? this.getFavoritesTags :
+        this.shared ? this.getSharedTags : this.getTags
     },
   },
   async mounted() {
@@ -157,29 +170,43 @@ export default {
   },
   beforeDestroy() {
     this.destroy()
+    if (this.busMediasDeleteAttached) {
+      bus.$off("medias/delete", this.onMediasDeleted);
+      this.busMediasDeleteAttached = false;
+    }
+
+    // Cleanup performance optimizations
+    if (this._tagsChangeDebounceTimer) {
+      clearTimeout(this._tagsChangeDebounceTimer);
+      this._tagsChangeDebounceTimer = null;
+    }
+    this._conversationsCache = null;
   },
   watch: {
+    '$route'(newRoute, oldRoute) {
+      if (newRoute.fullPath !== oldRoute.fullPath) {
+        this.loadFromRoute(newRoute);
+      }
+    },
     selectedTags: {
       handler() {
-        this.handleTagsChange()
+        // Debounce tags change to avoid excessive API calls
+        if (this._tagsChangeDebounceTimer) {
+          clearTimeout(this._tagsChangeDebounceTimer);
+        }
+
+        this._tagsChangeDebounceTimer = setTimeout(() => {
+          this.handleTagsChange();
+        }, 150); // 150ms debounce
       },
-      deep: true,
+      deep: false, // Remove deep watching - selectedTags array reference changes when modified
       immediate: false,
     },
-    '$route.query': {
-      handler(newQuery, oldQuery) {
-        // React to URL changes if they happen outside of our component
-        if (newQuery.search !== oldQuery.search || 
-            newQuery.page !== oldQuery.page || 
-            newQuery.tags !== oldQuery.tags) {
-          this.initPageFromUrl()
-        }
-      },
-      deep: true,
-    },
-    // Sync conversations with inbox medias to prevent blink
     conversations: {
-      handler(newConversations) {
+      handler(newConversations, oldConversations) {
+        // Only process if array reference actually changed (performance optimization)
+        if (newConversations === oldConversations) return;
+
         if (newConversations && newConversations.length > 0) {
           this.setMedias(fromConversations(newConversations))
         } else {
@@ -187,7 +214,7 @@ export default {
         }
       },
       immediate: true,
-      deep: true,
+      deep: false, // Remove deep watching - we only care about array reference changes
     },
   },
   methods: {
@@ -198,11 +225,13 @@ export default {
       "clearMedias",
     ]),
     ...mapActions("conversations", {
-      fetchConversations: "fetchConversations",
-      loadMore: "loadMore", 
+      fetchConversations: "fetchWithCurrentParams",
+      loadMore: "loadMore",
       searchConversations: "search",
       applyFilters: "applyFilters",
       setContext: "setContext",
+      setParams: "setParams",
+      loadFromUrl: "loadFromUrl",
       reset: "reset",
       deleteConversations: "deleteConversations"
     }),
@@ -213,23 +242,39 @@ export default {
       bus.$off("medias/delete", this.onMediasDeleted)
     },
     async init() {
-      this.$refs.mediaExplorer.reset()
-      
-      await this.loadTagsForCurrentView()
-      await this.$nextTick()
-      
       await this.setContext({
         organizationScope: this.currentOrganizationScope,
         favorites: this.favorites,
         shared: this.shared
       })
-      
-      // Initialize from URL parameters
-      await this.initPageFromUrl()
-      
-      // Don't append medias here as setContext already triggers fetchConversations
-      // which will be handled by the watcher
-      bus.$on("medias/delete", this.onMediasDeleted)
+
+      await this.loadTagsForCurrentView()
+      await this.loadFromRoute(this.$route)
+
+      // Reset MediaExplorer AFTER data is loaded to avoid conflicts
+      this.$refs.mediaExplorer.reset()
+
+      if (!this.busMediasDeleteAttached) {
+        bus.$on("medias/delete", this.onMediasDeleted);
+        this.busMediasDeleteAttached = true;
+      }
+    },
+    async loadFromRoute(route) {
+      const url = new URL(route.fullPath, window.location.origin);
+      await this.loadFromUrl(url);
+      this.syncTagsFromUrl(url);
+    },
+    syncTagsFromUrl(url) {
+      const urlParams = new URLSearchParams(url.search);
+      const tagsParam = urlParams.get("tags");
+
+      if (tagsParam && tagsParam.trim().length > 0) {
+        const tagIds = tagsParam.split(",").filter((id) => id.trim());
+        const tags = tagIds.map(id => this.availableTags.find(t => t._id === id)).filter(tag => tag);
+        this.$store.dispatch("tags/setExploreSelectedTags", tags);
+      } else {
+        this.$store.dispatch("tags/setExploreSelectedTags", []);
+      }
     },
     onMediasDeleted(mediaIds) {
       this.deleteConversations(mediaIds)
@@ -248,122 +293,63 @@ export default {
       }
     },
     async handleSearch(search, filters) {
-      this.updateSearchUrl(search)
-      this.mode = search && search.trim().length > 0 ? "search" : "default"
+      // Reset MediaExplorer pagination before starting new search
+      this.$refs.mediaExplorer.reset()
       await this.searchConversations({ search, filters })
-      // Don't append medias here as searchConversations already updates the store
+      this.updateUrl()
     },
     async handleLoadMore(page) {
       if (this.loadingConversations || !this.hasMoreItems) return
-      
-      this.updatePageUrl(page)
+
+      const currentStorePage = this.searchParams.page || 0;
+      const expectedNextPage = currentStorePage + 1;
+
+      if (page !== expectedNextPage) return
+
       await this.loadMore()
-      // Don't append medias here as loadMore already updates the store
     },
     async handleTagsChange() {
+      this.$refs.mediaExplorer.reset()
       await this.applyFilters({ tagIds: this.selectedTagIds })
-      // Don't append medias here as applyFilters already updates the store
+      this.updateUrl()
     },
-    async loadDataForMode(page, append) {
-      if (this.mode === "search") {
-        await this.searchConversations({ 
-          search: this.search, 
-          filters: this.filters
-        })
-      } else {
-        if (page > 0) {
-          await this.loadMore()
-        } else {
-          await this.fetchConversations()
-        }
-      }
-    },
-    async apiSearchConversations(page, filters, append) {
-      await this.searchConversations({ 
-        search: this.search, 
-        filters
-      })
-    },
-    resetSearch() {
-      this.reset()
-    },
-    async initPageFromUrl() {
-      const urlParams = new URLSearchParams(window.location.search)
-      const pageParam = urlParams.get("page")
-      const searchParam = urlParams.get("search")
-      const tagsParam = urlParams.get("tags")
-
-      // Handle tags parameter
-      if (tagsParam && tagsParam.trim().length > 0) {
-        const tagIds = tagsParam.split(",").filter((id) => id.trim())
-        this.$store.dispatch(
-          "tags/setExploreSelectedTags",
-          tagIds
-            .map((id) => {
-              return this.availableTags.find((t) => t._id === id)
-            })
-            .filter((tag) => tag),
-        )
-      } else {
-        // Clear selected tags if no tags parameter in URL
-        this.$store.dispatch("tags/setExploreSelectedTags", [])
-      }
-
-      // Handle search parameter
-      if (searchParam && searchParam.trim().length > 0) {
-        this.mode = "search"
-        const filters = [
-          {
-            title: "Title filter",
-            value: searchParam.trim(),
-            _id: this.generateUuid(),
-            key: "titleConversation",
-          },
-        ]
-        await this.searchConversations({ 
-          search: searchParam.trim(), 
-          filters 
-        })
-      } else {
-        this.mode = "default"
-        // Only fetch if not already loaded by setContext
-        if (this.conversations.length === 0) {
-          await this.fetchConversations()
-        }
-      }
-
-      if (pageParam && !isNaN(parseInt(pageParam))) {
-        const targetPage = parseInt(pageParam)
-        this.initialPage = targetPage
-        this.page = targetPage
-
-        if (targetPage > 0) {
-          this.showPreviousButton = true
-          // Load more items for pagination if needed
-          for (let i = 1; i <= targetPage; i++) {
-            await this.loadMore()
-          }
-        }
-      }
-
-      this.isInitialLoad = false
+    async handleTagsChanged() {
+      this.$refs.mediaExplorer.reset()
+      await this.applyFilters({ tagIds: this.selectedTagIds })
+      this.updateUrl()
     },
     async handleReset() {
-      this.mode = "default"
-      this.page = 0
-      
-      // Clear URL parameters
-      const url = new URL(window.location)
-      url.searchParams.delete("search")
-      url.searchParams.delete("page")
-      window.history.replaceState({}, "", url)
-      
+      this.$refs.mediaExplorer.reset()
       await this.reset()
-      // Don't append medias here as reset already updates the store
+      this.$store.dispatch("tags/setExploreSelectedTags", [])
+      this.updateUrl()
     },
-    
+    updateUrl() {
+      const url = new URL(window.location)
+      const params = this.searchParams
+
+      if (params.search) {
+        url.searchParams.set('search', params.search)
+      } else {
+        url.searchParams.delete('search')
+      }
+
+      if (this.selectedTagIds.length > 0) {
+        url.searchParams.set('tags', this.selectedTagIds.join(','))
+      } else {
+        url.searchParams.delete('tags')
+      }
+
+      if (params.page > 0) {
+        url.searchParams.set('page', params.page)
+      } else {
+        url.searchParams.delete('page')
+      }
+
+      window.history.replaceState({}, '', url)
+    },
     generateUuid() {
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
         const r = Math.random() * 16 | 0
         const v = c == 'x' ? r : (r & 0x3 | 0x8)
         return v.toString(16)

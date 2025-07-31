@@ -22,9 +22,11 @@
 
     --neutral-100: #b9c5e9;
     --neutral-80: #cdd5ef;
-    --neutral-60: #e0e5f5;
+    --neutral-60: #f3f5fb;
     --neutral-40: #f3f5fb;
     --neutral-20: #f8f9fd;
+    --neutral-10: #fbfbfb;
+    --neutral-soft: #e0e5f5;
 
     --primary-color: #3860ed;
     --primary-hard: #3860ed;
@@ -41,6 +43,10 @@
     --selected-background: #f3f5fb;
 
     --border-block: 1px solid var(--dark-60);
+
+    // Text colors for better visibility
+    --text-primary: #26324b;
+    --text-secondary: #546fa6;
   }
 
   html[data-theme="dark"] body {
@@ -56,5 +62,9 @@
     --button-background-hover: #333;
 
     --input-background: #1a1a1a;
+
+    // Dark theme text colors
+    --text-primary: #ffffff;
+    --text-secondary: #cccccc;
   }
 }

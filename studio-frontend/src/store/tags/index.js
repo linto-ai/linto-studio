@@ -343,29 +343,11 @@ export default {
     },
     addExploreSelectedTag({ commit, state }, tag) {
       commit("setExploreSelectedTags", [...state.exploreSelectedTags, tag])
-
-      const url = new URL(window.location.href)
-      url.searchParams.set(
-        "tags",
-        [...state.exploreSelectedTags, tag].map((t) => t._id).join(","),
-      )
-      window.history.pushState({}, "", url)
     },
     removeExploreSelectedTag({ commit, state }, tag) {
-      commit(
-        "setExploreSelectedTags",
-        state.exploreSelectedTags.filter((t) => t._id !== tag._id),
-      )
-
-      const url = new URL(window.location.href)
-      url.searchParams.set(
-        "tags",
-        state.exploreSelectedTags.map((t) => t._id).join(","),
-      )
-      window.history.pushState({}, "", url)
+      commit("setExploreSelectedTags", state.exploreSelectedTags.filter((t) => t._id !== tag._id))
     },
     toggleTag({ dispatch, state }, tag) {
-      console.log("[tags] toggleTag", tag)
       if (state.exploreSelectedTags.some((t) => t._id === tag._id)) {
         dispatch("removeExploreSelectedTag", tag)
       } else {

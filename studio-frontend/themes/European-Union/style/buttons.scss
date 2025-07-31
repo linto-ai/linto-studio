@@ -40,7 +40,7 @@ button,
     min-height: auto;
   }
 
-  &:hover {
+  &:hover:not([disabled]):not(.disabled) {
     //background-color: var(--button-background-hover);
     background-image: none;
     text-decoration: none;
@@ -75,7 +75,7 @@ button,
       background-color: var(--text-primary);
     }
 
-    &:hover {
+    &:hover:not([disabled]):not(.disabled) {
       background-color: transparent;
       text-decoration: underline;
     }
@@ -84,7 +84,7 @@ button,
       background-color: transparent;
       text-decoration: underline;
       border: none;
-      &:hover {
+      &:hover:not([disabled]):not(.disabled) {
         background-color: transparent;
         text-decoration: underline;
       }

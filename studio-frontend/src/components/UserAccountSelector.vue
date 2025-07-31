@@ -22,9 +22,9 @@
         @click="openOrganizationSelector"
         :label="orgaName"
         size="xs"
-        variant="flat"
+        variant="link"
+        color="neutral"
         icon="swap"
-        icon-position="right"
         class="organization-name"
       />
     </div>

@@ -564,6 +564,7 @@ export default {
     color: var(--text-primary);
     background-color: var(--background-primary);
     box-sizing: border-box;
+    max-width: 100%;
 
     &:focus {
       outline: none;
@@ -578,6 +579,8 @@ export default {
 
   &__invite-button {
     white-space: nowrap;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
   }
 
   &__right-select {

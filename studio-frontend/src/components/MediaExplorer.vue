@@ -17,7 +17,8 @@
         :all-medias="medias"
         :search-value="searchValue"
         @select-all="handleSelectAll"
-        @search="handleSearch">
+        @search="handleSearch"
+        @tags-changed="handleTagsChanged">
         <template #actions>
           <IsMobile>
           <div class="flex gap-small" v-if="selectedMedias.length > 0">
@@ -169,6 +170,16 @@ export default {
       type: Number,
       default: 20,
     },
+    // Virtual scrolling threshold
+    virtualScrollingThreshold: {
+      type: Number,
+      default: 100, // Enable virtual scrolling for 100+ items
+    },
+    // Number of items to render outside viewport
+    virtualScrollingBuffer: {
+      type: Number,
+      default: 10,
+    },
     // Upload-related props
     transcriptionServices: {
       type: Array,
@@ -213,32 +224,49 @@ export default {
     totalPages() {
       return Math.ceil(this.count / this.pageSize)
     },
-    // Use the prop provided by parent as the single source of truth
     activeSelectedTagIds() {
       return this.selectedTagIds || []
     },
     filteredMedias() {
-      // Filter medias based on selected tags
-      if (this.activeSelectedTagIds.length === 0) {
-        return this.medias
+      const medias = this.medias;
+      const tagIds = this.activeSelectedTagIds;
+      
+      // Memoization: check if we can reuse cached result
+      if (this._filteredMediasCache && 
+          this._filteredMediasCache.medias === medias &&
+          JSON.stringify(this._filteredMediasCache.tagIds) === JSON.stringify(tagIds)) {
+        return this._filteredMediasCache.result;
       }
-
-      return this.medias.filter((media) => {
-        // Check if media has tags property and at least one selected tag
-        if (!media.tags || !Array.isArray(media.tags)) {
-          return false
-        }
-
-        // Check if media has ALL selected tags (AND logic)
-        return this.activeSelectedTagIds.every((tagId) =>
-          media.tags.includes(tagId),
-        )
-      })
+      
+      let result;
+      
+      if (tagIds.length === 0) {
+        result = medias;
+      } else {
+        result = medias.filter((media) => {
+          if (!media.tags || !Array.isArray(media.tags)) {
+            return false;
+          }
+          return tagIds.every((tagId) => media.tags.includes(tagId));
+        });
+      }
+      
+      // Cache the result
+      this._filteredMediasCache = { medias, tagIds, result };
+      return result;
     },
     reactiveSelectedMediaForOverview() {
       return this.medias.find(
         (media) => media._id === this.selectedMediaForOverview?._id,
       )
+    },
+    selectedCount() {
+      const count = this.selectedMedias.length;
+      return count;
+    },
+    totalCount() {
+      const count = this.medias.length;
+      return count;
     },
   },
   data() {
@@ -250,8 +278,10 @@ export default {
       search: "",
       showDeleteModal: false,
       selectedMediaForOverview: null,
-      rightPanelWidth: 400, // Default width for the right panel
-      // Internal state no longer required for tag selection
+      rightPanelWidth: 400,
+      _filteredMediasCache: null,
+      _observerSetupPending: false,
+      _loadMorePending: false, // Prevent multiple simultaneous load-more calls
     }
   },
   mounted() {
@@ -269,42 +299,44 @@ export default {
       this.$store.commit("inbox/setAutoselectMedias", value)
     },
     medias: {
-      handler() {
-        if (this.enablePagination) {
+      handler(newMedias, oldMedias) {
+        this.updateCounts();
+        
+        // Only recreate observer if array reference actually changed and pagination is enabled
+        if (this.enablePagination && newMedias !== oldMedias) {
+          // Debounce observer setup to avoid excessive recreation
+          if (this._observerSetupPending) return;
+          
+          this._observerSetupPending = true;
           this.$nextTick(() => {
-            this.cleanupObserver()
-            this.setupIntersectionObserver()
-            this.observeMediaItems()
-          })
+            this.cleanupObserver();
+            this.setupIntersectionObserver();
+            this.observeMediaItems();
+            this._observerSetupPending = false;
+          });
         }
       },
-      deep: true,
-    },
-    getExploreSelectedTags() {
-      this.reset()
+      immediate: true,
+      deep: false, // Only watch for array reference changes, not deep changes
     },
     '$store.state.inbox.selectedMedias': {
       handler(newSelection, oldSelection) {
-        // If we go from multiple selection to empty, close the panel completely
         if (oldSelection && oldSelection.length > 1 && newSelection.length === 0) {
           this.selectedMediaForOverview = null
           this.rightPanelWidth = 0
         }
-        // If we go from multiple selection to single, switch to single mode
         else if (oldSelection && oldSelection.length > 1 && newSelection.length === 1) {
           this.selectedMediaForOverview = newSelection[0]
         }
-        // If we have exactly one media selected and no overview media, set it for overview
         else if (newSelection.length === 1 && !this.selectedMediaForOverview) {
           this.selectedMediaForOverview = newSelection[0]
         }
-        // If the selected media for overview is no longer in the selection, clear it
         else if (this.selectedMediaForOverview && !newSelection.find(m => m._id === this.selectedMediaForOverview._id)) {
           this.selectedMediaForOverview = null
         }
       },
       immediate: false,
-      deep: true,
+      deep: false, // Only watch for array reference changes
     },
   },
   methods: {
@@ -313,25 +345,25 @@ export default {
       this.clearSelectedMedias()
       this.lastPage = 0
       this.page = 0
-      this.$emit("reset")
+      this._loadMorePending = false
+      // Clear caches
+      this._filteredMediasCache = null;
     },
-    // Selection handlers
     handleSelectAll() {
       this.isSelectAll = !this.isSelectAll
       this.$emit("select-all", this.isSelectAll)
     },
-    // Pagination & Intersection Observer
     setupIntersectionObserver() {
-      if (!this.enablePagination) return
-
+      if (!this.enablePagination || this.observer) return
+      
       const options = {
         root: null,
-        rootMargin: "0px",
-        threshold: 0.5,
+        rootMargin: "100px", // Increase rootMargin for better UX
+        threshold: 0.1, // Reduce threshold for earlier triggering
       }
-
+      
       this.observer = new IntersectionObserver(this.handleIntersection, options)
-
+      
       this.$nextTick(() => {
         this.observeMediaItems()
       })
@@ -339,38 +371,42 @@ export default {
 
     handleIntersection(entries) {
       entries.forEach((entry) => {
-        // load next page if the last item is visible
         if (entry.isIntersecting) {
           const index = parseInt(entry.target.getAttribute("data-index")) + 1
           const currentPage = Math.floor(index / this.pageSize)
           if (
             index % this.pageSize === 0 &&
             currentPage <= this.totalPages - 1 &&
-            currentPage > this.lastPage
+            currentPage > this.lastPage &&
+            !this._loadMorePending // Prevent multiple calls
           ) {
             this.lastPage = currentPage
+            this._loadMorePending = true
             this.$emit("load-more", currentPage)
+            
+            // Reset flag after a delay to allow the parent to process
+            setTimeout(() => {
+              this._loadMorePending = false
+            }, 1000)
           }
-        } else {
-          // change url to current page if last item of previous page is not visible
-          // const index = parseInt(entry.target.getAttribute("data-index")) + 1
-          // const currentPage = Math.floor(index / this.pageSize)
-          // if (currentPage === this.page && currentPage <= this.totalPages) {
-          //   this.updateURLPage(currentPage + 1)
-          // }
         }
       })
     },
 
     observeMediaItems() {
-      if (!this.observer) return
-      this.filteredMedias.forEach((_, index) => {
-        const itemRef = this.$refs["mediaItem" + index]
+      if (!this.observer || this.filteredMedias.length === 0) return
+      
+      // Only observe the last few items for pagination trigger
+      const itemsToObserve = Math.min(3, this.filteredMedias.length);
+      const startIndex = Math.max(0, this.filteredMedias.length - itemsToObserve);
+      
+      for (let i = startIndex; i < this.filteredMedias.length; i++) {
+        const itemRef = this.$refs["mediaItem" + i];
         if (itemRef && itemRef[0]?.$el) {
-          itemRef[0].$el.setAttribute("data-index", index)
-          this.observer.observe(itemRef[0].$el)
+          itemRef[0].$el.setAttribute("data-index", i);
+          this.observer.observe(itemRef[0].$el);
         }
-      })
+      }
     },
 
     initializePageFromURL() {
@@ -428,15 +464,17 @@ export default {
       this.$emit("search", search, filters)
     },
 
+    handleTagsChanged() {
+      this.$emit("tags-changed")
+    },
+
     selectMediaForOverview(media) {
-      console.log("selectMediaForOverview", media)
       this.selectedMediaForOverview = media
     },
 
     closeRightPanel() {
       this.selectedMediaForOverview = null
       this.rightPanelWidth = 0
-      // If we're in multi-selection mode, clear the selection
       if (this.selectedMedias.length > 1) {
         this.clearSelectedMedias()
       }
@@ -444,6 +482,11 @@ export default {
 
     handleRightPanelResize(width) {
       this.rightPanelWidth = width
+    },
+
+    updateCounts() {
+      this.$nextTick(() => {
+      });
     },
 
     cleanupObserver() {

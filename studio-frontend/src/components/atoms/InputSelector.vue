@@ -231,8 +231,14 @@ export default {
 
     filteredTags() {
       const query = this.searchQuery.toLowerCase()
+      const uniq = new Set()
+
       return this.availableTags
         .filter((tag) => {
+          if (uniq.has(tag._id)) {
+            return false
+          }
+          uniq.add(tag._id)
           if (!query.trim()) {
             return true
           }
@@ -267,7 +273,11 @@ export default {
   },
   watch: {
     value(newVal) {
-      this.internalValue = newVal
+      this.internalValue = newVal;
+      // Synchronize searchQuery with external value for display
+      if (newVal !== this.searchQuery) {
+        this.searchQuery = newVal || "";
+      }
     },
 
     internalValue(newVal) {
@@ -306,7 +316,12 @@ export default {
     },
   },
   mounted() {
-    document.addEventListener("click", this.handleClickOutside)
+    document.addEventListener("click", this.handleClickOutside);
+    
+    // Initialize searchQuery with initial value
+    if (this.value && this.value !== this.searchQuery) {
+      this.searchQuery = this.value;
+    }
   },
 
   beforeDestroy() {

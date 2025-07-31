@@ -641,6 +641,7 @@
     "preview": "Aperçu"
   },
   "media_explorer": {
+    "actions": "Actions",
     "favorite": "Favoris",
     "line": {
       "edit_transcription": "Transcription",
@@ -698,7 +699,10 @@
     "load_previous_items": "Charger les éléments précédents",
     "empty_title": "Pas de médias",
     "empty_description": "Aucun média n'a été trouvé. Démmarez une transcription pour en ajouter. ",
-    "loading": "Chargement en cours..."
+    "loading": "Chargement en cours...",
+    "no_medias_selected": "Aucun média sélectionné",
+    "some_medias_cannot_be_deleted": "Certains médias ne peuvent pas être supprimés",
+    "no_permission_to_delete": "Vous n'avez pas la permission de supprimer ces médias"
   },
   "modal": {
     "cancel": "Annuler",

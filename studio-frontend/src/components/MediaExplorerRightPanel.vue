@@ -1,30 +1,19 @@
 <template>
-  <div
-    class="media-explorer-right-panel"
-    :style="{ width: panelWidth + 'px' }"
-    v-if="shouldShowPanel">
+  <div class="media-explorer-right-panel" :style="{ width: panelWidth + 'px' }" v-if="shouldShowPanel">
     <!-- Resize handle -->
-    <div
-      class="resize-handle"
-      @mousedown="startResize"
-      @touchstart="startResize"></div>
+    <div class="resize-handle" @mousedown="startResize" @touchstart="startResize"></div>
 
     <!-- Panel content -->
     <div class="panel-content">
       <!-- Header -->
       <div class="panel-header">
-        <Button
-          @click="$emit('close')"
-          icon="arrow-line-right"
-          size="sm"
-          variant="flat"
-          color="neutral-40" />
+        <Button @click="$emit('close')" icon="arrow-line-right" size="sm" variant="flat" color="neutral-40" />
         <h3 class="panel-title">
           {{
             isMultiMode
               ? $t("media_explorer.panel.selected_count", {
-                  count: selectedMedias.length,
-                })
+                count: selectedMedias.length,
+              })
               : $t("media_explorer.panel.overview")
           }}
         </h3>
@@ -33,54 +22,32 @@
       <div class="flex panel-header-actions">
         <!-- Actions for single media (edition etc...)-->
         <div v-if="!isMultiMode" class="button-group" ref="panelActions">
-          <Button
-            v-for="action in singleMediaActions"
-            :key="action.id"
-            :to="action.to"
-            :label="action.label"
-            :icon="action.icon"
-            size="sm"
-            variant="outline"
-            :color="action.color || 'primary'"
-            class="header-action-button"
-            @click="handleActionClick(action)" />
+          <Button v-for="action in singleMediaActions" :key="action.id" :to="action.to" :label="action.label"
+            :icon="action.icon" size="sm" variant="outline" :color="action.color || 'primary'"
+            class="header-action-button" @click="handleActionClick(action)" />
         </div>
         <div v-else></div>
         <!-- delete and share -->
         <div class="button-group">
-          <ConversationShareMultiple
-            class="header-action-button"
-            :selectedConversations="selectedMedias"
+          <ConversationShareMultiple class="header-action-button" :selectedConversations="selectedMedias"
             :currentOrganizationScope="currentOrganizationScope" />
-          <Button
-            @click="handleDelete"
-            :label="$t('media_explorer.delete')"
-            icon="trash"
-            variant="outline"
-            size="sm"
-            color="tertiary"
-            class="header-action-button" />
+          <Button @click="handleDelete" :label="$t('media_explorer.delete')" icon="trash" variant="outline" size="sm"
+            color="tertiary" class="header-action-button" />
         </div>
       </div>
 
       <!-- Multi-selection mode -->
-      <MediaExplorerRightPanelMulti
-        v-if="isMultiMode"
-        :currentOrganizationScope="currentOrganizationScope"
+      <MediaExplorerRightPanelMulti v-if="isMultiMode" :currentOrganizationScope="currentOrganizationScope"
         :readOnlyTags="readonlyTags" />
 
       <!-- Single media mode -->
-      <MediaExplorerRightPanelItem
-        v-else-if="selectedMediaForOverview"
-        :selectedMedia="selectedMediaForOverview"
+      <MediaExplorerRightPanelItem v-else-if="selectedMediaForOverview" :selectedMedia="selectedMediaForOverview"
         :readOnlyTags="readonlyTags" />
     </div>
 
-    <!-- Delete modal for single media -->
-    <ModalDeleteConversations
-      :visible="showDeleteModal"
-      :medias="selectedMedias"
-      @close="showDeleteModal = false" />
+    <!-- Delete modal for multiple medias -->
+    <ModalDeleteConversations :visible="showDeleteModal" :medias="selectedMedias" @close="handleDeleteModalClose"
+      @confirm="handleDeleteConfirm" @cancel="handleDeleteCancel" />
   </div>
 </template>
 
@@ -136,6 +103,7 @@ export default {
       startX: 0,
       startWidth: 0,
       showDeleteModal: false,
+      isDeleting: false,
     }
   },
   computed: {
@@ -294,7 +262,73 @@ export default {
       }
     },
     handleDelete() {
+      // Validate that we have selected medias to delete
+      if (!this.selectedMedias || this.selectedMedias.length === 0) {
+        this.$store.commit("system/addNotification", {
+          message: this.$t("media_explorer.no_medias_selected"),
+          type: "warning",
+        })
+        return
+      }
+
+      // Check if all selected medias can be deleted
+      const nonDeletableMedias = this.selectedMedias.filter(media => !this.canDeleteMedia(media))
+      if (nonDeletableMedias.length > 0) {
+        this.$store.commit("system/addNotification", {
+          message: this.$t("media_explorer.some_medias_cannot_be_deleted"),
+          type: "error",
+        })
+        return
+      }
+
+      // Show confirmation modal
       this.showDeleteModal = true
+    },
+
+    canDeleteMedia(media) {
+      // Check if media is in a state that allows deletion
+      // For example, don't allow deletion if media is currently being processed
+      if (!media) return false
+
+      // Check if media has a job in progress
+      if (media.job && media.job.state && media.job.state !== "done" && media.job.state !== "error") {
+        return false
+      }
+
+      // Check if media is shared and user doesn't have delete permission
+      if (media.sharedBy && media.sharedBy._id !== this.$store.getters["user/getCurrentUser"]._id) {
+        return false
+      }
+
+      return true
+    },
+
+    handleDeleteModalClose() {
+      this.showDeleteModal = false
+    },
+
+    handleDeleteConfirm() {
+      // Set loading state
+      this.isDeleting = true
+
+      // The ModalDeleteConversations component will handle the actual deletion
+      // via the store action deleteMedias
+      this.showDeleteModal = false
+
+      // Clear selected medias after successful deletion
+      this.$store.commit("inbox/clearSelectedMedias")
+
+      // Emit event to parent to close panel
+      this.$emit("close")
+
+      // Reset loading state after a short delay to allow UI updates
+      setTimeout(() => {
+        this.isDeleting = false
+      }, 1000)
+    },
+
+    handleDeleteCancel() {
+      this.showDeleteModal = false
     },
   },
 }

@@ -95,41 +95,59 @@ export default {
       return this.stickyTopOffset
     },
     getTags() {
-      const currentRoute = this.$route?.name || ""
-
-      if (
-        currentRoute === "explore-favorites" ||
-        (typeof currentRoute === "string" && currentRoute.includes("favorites"))
-      ) {
-        return this.$store.getters["tags/getFavoritesTags"]
-      } else if (
-        currentRoute === "explore-shared" ||
-        (typeof currentRoute === "string" && currentRoute.includes("shared"))
-      ) {
-        return this.$store.getters["tags/getSharedTags"]
-      } else {
-        return this.$store.getters["tags/getTags"]
-      }
+      const tags = this.$store.getters["tags/getTags"];
+      return tags;
     },
     selectedTags() {
-      return this.$store.getters["tags/getExploreSelectedTags"]
+      const selectedTags = this.$store.getters["tags/getExploreSelectedTags"];
+      const uniqueTags = Array.from(new Set(selectedTags.map(tag => tag._id)))
+        .map(id => selectedTags.find(tag => tag._id === id));
+      return uniqueTags;
+    },
+    // Computed property for store search value to watch it properly
+    storeSearchValue() {
+      return this.$store.getters["conversations/getSearch"];
+    },
+    // Use computed property instead of data to ensure reactivity
+    search: {
+      get() {
+        // Priority: local input value > searchValue prop > store value > empty string
+        if (this._localSearch !== undefined && this._localSearch !== null) {
+          return this._localSearch;
+        }
+        
+        const value = this.searchValue || this.storeSearchValue || "";
+        return value;
+      },
+      set(value) {
+        this._localSearch = value;
+      }
     },
   },
   data() {
     return {
-      search: "",
+      _localSearch: null, // Start with null to prioritize external values initially
     }
   },
   mounted() {
-    // Initialize search value from prop (URL)
-    if (this.searchValue) {
-      this.search = this.searchValue
-    }
   },
   watch: {
+    // Watch for external changes and reset local value to allow sync
     searchValue: {
-      handler(newValue) {
-        this.search = newValue || ""
+      handler(newValue, oldValue) {
+        if (newValue !== oldValue && newValue !== this._localSearch) {
+          this._localSearch = newValue;
+        }
+      },
+      immediate: false,
+    },
+    // Watch store search value properly using computed property
+    storeSearchValue: {
+      handler(storeValue) {
+        // Only sync if we don't have local input and store value is different
+        if (this._localSearch === null && storeValue) {
+          this._localSearch = storeValue;
+        }
       },
       immediate: true,
     },
@@ -166,16 +184,16 @@ export default {
         ])
       }
 
-      // Update local search value to match what was searched
-      this.search = formattedSearch
     },
 
     handleAddTag(tag) {
       this.$store.dispatch("tags/toggleTag", tag)
+      this.$emit("tags-changed")
     },
 
     handleRemoveTag(tag) {
       this.$store.dispatch("tags/toggleTag", tag)
+      this.$emit("tags-changed")
     },
   },
 }
