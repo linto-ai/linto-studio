@@ -184,7 +184,8 @@ async function updateUser(req, res, next) {
         req.body.accountNotifications ||
         req.body.emailNotifications ||
         req.body.private !== undefined ||
-        req.body.password
+        req.body.password ||
+        req.body.defaultOrganization
       )
     )
       throw new UserUnsupportedMediaType()
@@ -217,6 +218,8 @@ async function updateUser(req, res, next) {
     if (req.body.lastname) user.lastname = req.body.lastname
     if (req.body.private !== undefined) user.private = req.body.private
     if (req.body.password) user.password = req.body.password
+    if (req.body.defaultOrganization)
+      user.defaultOrganization = req.body.defaultOrganization
 
     if (req.body.accountNotifications) {
       for (let key of Object.keys(req.body.accountNotifications)) {
