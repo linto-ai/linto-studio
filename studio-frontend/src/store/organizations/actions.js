@@ -4,6 +4,8 @@ import {
   apiDeleteOrganisation,
 } from "@/api/organisation"
 import { indexOrganizationsRoles } from "@/tools/indexOrganizationsRoles"
+import store from "@/store/index.js"
+import createMediaModule from "../modules/mediaModuleFactory"
 
 const actions = {
   async fetchOrganizations({ commit, rootGetters }) {
@@ -34,6 +36,14 @@ const actions = {
 
     // Clear selected tags when switching organizations
     await dispatch("tags/clearExploreSelectedTags", null, { root: true })
+
+    const scope = `organizations/${organizationId}/conversations`
+    if (!store.hasModule(`${organizationId}/conversations`)) {
+      store.registerModule(
+        `${organizationId}/conversations`,
+        createMediaModule(scope),
+      )
+    }
   },
 }
 

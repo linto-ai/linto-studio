@@ -9,6 +9,7 @@ import conversations from "./conversations"
 import sessions from "./sessions"
 import settings from "./settings"
 import system from "./system"
+import createMediaModule from "./modules/mediaModuleFactory"
 
 Vue.use(Vuex)
 
@@ -22,5 +23,8 @@ export default new Vuex.Store({
     sessions,
     settings,
     system,
+    "favorites/conversations": createMediaModule("users/self/favorites"),
+    "shared/conversations": createMediaModule("conversations/shared"),
+    // organizations conv are registered programmatically during "setCurrentOrganizationScope"
   },
 })
