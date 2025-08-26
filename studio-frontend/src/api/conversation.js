@@ -14,7 +14,7 @@ export async function apiGetGenericConversationsList(
     tags = [],
     text = "",
     title = "",
-    page = 1,
+    page = 0,
     pageSize = DEFAULT_PAGE_SIZE,
     sortField = "last_update",
     sortOrder = -1,
@@ -27,7 +27,7 @@ export async function apiGetGenericConversationsList(
       method: "get",
     },
     {
-      tags: tag.toString(),
+      tags: tags.toString(),
       text,
       name: title,
       page,

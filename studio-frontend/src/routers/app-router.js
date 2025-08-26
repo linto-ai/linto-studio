@@ -69,6 +69,15 @@ const authGuards = {
     const defaultOrganizationId =
       store.getters["organizations/getDefaultOrganizationId"]
 
+    // handle generic scope
+    if (to.meta.favorites) {
+      store.commit("organizations/setScope", "favorites")
+    } else if (to.meta.shared) {
+      store.commit("organizations/setScope", "shared")
+    } else {
+      store.commit("organizations/setScope", "organization")
+    }
+
     if (!to.meta?.userPage && !to.meta?.backoffice) {
       if (
         !to.params.organizationId ||
@@ -429,6 +438,7 @@ let router = new Router({
           showInBreadcrumb: true,
           isRoot: true,
         },
+        favorites: true,
       },
     },
     {
@@ -450,24 +460,7 @@ let router = new Router({
           showInBreadcrumb: true,
           isRoot: true,
         },
-      },
-    },
-    {
-      path: "/interface/:organizationId?/old-explore",
-      name: "explore-old",
-      components: {
-        default: () => import("../views/OldExplore.vue"),
-        ...defaultComponents,
-      },
-      props: defaultProps,
-      meta: {
-        mainListingPage: true,
-        breadcrumb: {
-          label: "breadcrumb.exploreOld",
-          parent: null,
-          showInBreadcrumb: true,
-          isRoot: true,
-        },
+        shared: true,
       },
     },
     {
@@ -488,34 +481,6 @@ let router = new Router({
         },
       },
     },
-    {
-      path: "/interface/favorites",
-      name: "favorites",
-      components: {
-        default: () => import("../views/Favorites.vue"),
-        ...defaultComponents,
-      },
-      props: defaultProps,
-      meta: {
-        userPage: true,
-        breadcrumb: {
-          label: "breadcrumb.favorites",
-          parent: null,
-          showInBreadcrumb: true,
-          isRoot: true,
-        },
-      },
-    },
-    // {
-    //   path: "/interface/shared",
-    //   name: "shared with me",
-    //   components: {
-    //     default: () => import("../views/SharedWith.vue"),
-    //     ...defaultComponents,
-    //   },
-    //   props: defaultProps,
-    //   meta: { userPage: true },
-    // },
     {
       path: "/interface/:organizationId?/conversations/create",
       name: "conversations create",

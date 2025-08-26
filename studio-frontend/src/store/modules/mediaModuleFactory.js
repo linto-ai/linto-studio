@@ -2,6 +2,8 @@
 
 import { apiGetGenericConversationsList } from "../../api/conversation"
 import i18n from "@/i18n"
+import Vue from "vue"
+import { bus } from "@/main.js"
 
 export default function createMediaModule(scope) {
   return {
@@ -10,9 +12,10 @@ export default function createMediaModule(scope) {
     state: () => ({
       medias: [],
       selectedMedias: [],
+      autoselectMedias: false,
       searchQuery: "",
       selectedTagIds: [],
-      pagination: { page: 1, hasMore: true },
+      pagination: { page: 0, hasMore: true },
       count: 0,
     }),
 
@@ -23,115 +26,148 @@ export default function createMediaModule(scope) {
       hasMore: (s) => s.pagination.hasMore,
       selectedTagIds: (s) => s.selectedTagIds,
       count: (s) => s.count,
+      getMediaById: (s) => (mediaId) => {
+        return s.medias.find((m) => m._id === mediaId)
+      },
     },
 
     mutations: {
-      SET_MEDIAS(state, medias) {
+      setAutoselectMedias(state, autoselectMedias) {
+        state.autoselectMedias = autoselectMedias
+      },
+      setMedias(state, medias) {
         state.medias = medias
       },
-      APPEND_MEDIAS(state, medias) {
+      appendMedias(state, medias) {
         state.medias = [...state.medias, ...medias]
       },
-      SET_SEARCH_QUERY(state, query) {
+      setSearchQuery(state, query) {
         state.searchQuery = query
       },
-      SET_SELECTED_MEDIAS(state, medias) {
+      setSelectedMedias(state, medias) {
         state.selectedMedias = medias
       },
-      TOGGLE_SELECTED_MEDIA(state, media) {
-        if (state.selectedMedias.find((m) => m.id === media.id)) {
+      toggleSelectedMedia(state, media) {
+        if (state.selectedMedias.find((m) => m._id === media._id)) {
           state.selectedMedias = state.selectedMedias.filter(
-            (m) => m.id !== media.id,
+            (m) => m._id !== media._id,
           )
         } else {
           state.selectedMedias.push(media)
         }
       },
-      SET_PAGINATION(state, { page, hasMore }) {
+      removeSelectedMedia(state, media) {
+        state.selectedMedias = state.selectedMedias.filter(
+          (m) => m._id !== media._id,
+        )
+      },
+      clearSelectedMedias(state) {
+        state.selectedMedias = []
+        state.autoselectMedias = false
+      },
+      setPagination(state, { page, hasMore }) {
         state.pagination = { page, hasMore }
       },
-      UPDATE_MEDIA(state, mediaPatch) {
-        const id = mediaPatch.id
-        state.medias = state.medias.map((m) =>
-          m.id === id ? { ...m, ...mediaPatch } : m,
+      updateMedia(state, { mediaId, media }) {
+        const idx = state.medias.findIndex((m) => m._id === mediaId)
+        if (idx !== -1) {
+          // Use Vue.set to ensure reactivity
+          Vue.set(state.medias, idx, media)
+        }
+
+        const selectedIdx = state.selectedMedias.findIndex(
+          (m) => m._id === mediaId,
         )
-        state.selectedMedias = state.selectedMedias.map((m) =>
-          m.id === id ? { ...m, ...mediaPatch } : m,
-        )
+        if (selectedIdx !== -1) {
+          Vue.set(state.selectedMedias, selectedIdx, media)
+        }
       },
-      DELETE_MEDIA(state, ids) {
-        const idSet = new Set(Array.isArray(ids) ? ids : [ids])
-        const filter = (arr) => arr.filter((m) => !idSet.has(m.id))
-        state.medias = filter(state.medias)
-        state.selectedMedias = filter(state.selectedMedias)
+      deleteMedias(state, mediaIds) {
+        state.medias = state.medias.filter((m) => !mediaIds.includes(m._id))
+        bus.$emit("medias/delete", mediaIds)
       },
-      SET_SELECTED_TAG_IDS(state, ids) {
+      setSelectedTagIds(state, ids) {
         state.selectedTagIds = ids
       },
-      TOGGLE_SELECTED_TAG_ID(state, id) {
+      toggleSelectedTagId(state, id) {
         if (state.selectedTagIds.includes(id)) {
           state.selectedTagIds = state.selectedTagIds.filter((t) => t !== id)
         } else {
           state.selectedTagIds.push(id)
         }
       },
-      CLEAR_SELECTED_TAG_IDS(state) {
+      clearSelectedTagIds(state) {
         state.selectedTagIds = []
       },
-      SET_COUNT(state, count) {
+      setCount(state, count) {
         state.count = count
       },
     },
 
     actions: {
-      async load({ commit }, { page = 1, append = false, query = null } = {}) {
+      async load(
+        { commit, dispatch },
+        { page = 0, append = false, query = null } = {},
+      ) {
         try {
           const data = await apiGetGenericConversationsList(scope, {
             page,
           })
 
-          if (append) commit("APPEND_MEDIAS", data.list)
-          else commit("SET_MEDIAS", data.list)
+          if (append) commit("appendMedias", data.list)
+          else commit("setMedias", data.list)
 
-          commit("SET_COUNT", data.count)
+          commit("setCount", data.count)
 
-          commit("SET_PAGINATION", { page, hasMore: data.hasMore })
+          commit("setPagination", { page, hasMore: data.hasMore })
         } catch (error) {
-          commit("system/addNotification", {
-            type: "error",
-            message: "Error fetching conversations",
-          })
+          console.error(error)
+          dispatch(
+            "system/addNotification",
+            {
+              type: "error",
+              message: "Error fetching conversations",
+            },
+            { root: true },
+          )
         }
       },
+      async loadNextPage({ state, dispatch }) {
+        const nextPage = state.pagination.page + 1
+        await dispatch("load", { page: nextPage, append: true })
+      },
       setSearchQuery({ commit }, query) {
-        commit("SET_SEARCH_QUERY", query)
+        commit("setSearchQuery", query)
       },
       toggleMediaSelection({ commit }, media) {
-        commit("TOGGLE_SELECTED_MEDIA", media)
+        commit("toggleSelectedMedia", media)
       },
-      async updateMedia({ commit }, mediaPatch) {
-        // todo api
-        commit("UPDATE_MEDIA", updated)
-        return updated
+      updateMedia({ commit }, { mediaId, media }) {
+        commit("updateMedia", { mediaId, media })
       },
-      async deleteMedia({ commit }, ids) {
+      async deleteMedias({ commit }, ids) {
         // todo api
-        commit("DELETE_MEDIA", ids)
+        commit("deleteMedias", ids)
       },
       async deleteSelected({ state, dispatch }) {
-        const ids = state.selectedMedias.map((m) => m.id)
+        const ids = state.selectedMedias.map((m) => m._id)
         if (ids.length) {
           await dispatch("deleteMedia", ids)
         }
       },
+      addSelectedMedia({ commit, state }, media) {},
+
       setSelectedTagIds({ commit }, ids) {
-        commit("SET_SELECTED_TAG_IDS", ids)
+        commit("setSelectedTagIds", ids)
       },
       toggleSelectedTagId({ commit }, id) {
-        commit("TOGGLE_SELECTED_TAG_ID", id)
+        commit("toggleSelectedTagId", id)
       },
       clearSelectedTagIds({ commit }) {
-        commit("CLEAR_SELECTED_TAG_IDS")
+        commit("clearSelectedTagIds")
+      },
+      clearSelectedMedias({ commit }) {
+        commit("clearSelectedMedias")
       },
     },
   }

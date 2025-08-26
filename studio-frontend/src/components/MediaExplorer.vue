@@ -8,9 +8,16 @@
     <!-- Main content area -->
     <div class="media-explorer__content">
       <!-- Media list header - sticky positioned -->
-      <MediaExplorerHeader :selected-count="selectedMedias.length" :total-count="count" :loading="loading"
-        :is-select-all="isSelectAll" :sticky-top-offset="stickyTopOffset" :all-medias="medias"
-        :search-value="searchValue" @select-all="handleSelectAll" @search="handleSearch"
+      <MediaExplorerHeader
+        :selected-count="selectedMedias.length"
+        :total-count="count"
+        :loading="loading"
+        :is-select-all="isSelectAll"
+        :sticky-top-offset="stickyTopOffset"
+        :all-medias="medias"
+        :search-value="searchValue"
+        @select-all="handleSelectAll"
+        @search="handleSearch"
         @tags-changed="handleTagsChanged">
         <template #actions>
           <IsMobile>
@@ -19,10 +26,17 @@
               :label="$t('media_explorer.share')"
               icon="share-network"
               variant="outline" /> -->
-              <ConversationShareMultiple :selectedConversations="selectedMedias"
-                :currentOrganizationScope="currentOrganizationScope" :userInfo="userInfo" />
-              <Button @click="showDeleteModal = true" :label="$t('media_explorer.delete')" size="sm" color="tertiary"
-                icon="trash" variant="outline" />
+              <ConversationShareMultiple
+                :selectedConversations="selectedMedias"
+                :currentOrganizationScope="currentOrganizationScope"
+                :userInfo="userInfo" />
+              <Button
+                @click="showDeleteModal = true"
+                :label="$t('media_explorer.delete')"
+                size="sm"
+                color="tertiary"
+                icon="trash"
+                variant="outline" />
             </div>
           </IsMobile>
           <slot name="header-actions" />
@@ -30,14 +44,18 @@
       </MediaExplorerHeader>
 
       <!-- Media list body -->
-      <div class="media-explorer__body" :class="{ 'has-right-panel': selectedMediaForOverview }"
+      <div
+        class="media-explorer__body"
+        :class="{ 'has-right-panel': selectedMediaForOverview }"
         :style="{ '--right-panel-width': rightPanelWidth + 'px' }">
         <!-- Main content area -->
         <div class="media-explorer__body__content">
           <slot name="before" />
           <Loading v-if="loading && filteredMedias.length === 0" />
           <!-- Empty state -->
-          <div v-else-if="filteredMedias.length === 0" class="media-explorer__body__empty">
+          <div
+            v-else-if="filteredMedias.length === 0"
+            class="media-explorer__body__empty">
             <slot name="empty">
               <div class="empty-state">
                 <p v-if="activeSelectedTagIds.length > 0">
@@ -50,14 +68,23 @@
 
           <!-- Media items -->
           <IsMobile>
-            <MediaExplorerItemMobile v-for="(media, index) in filteredMedias"
-              :key="`media-explorer-item-${media._id}-${index}`" :media="media" :search-value="searchValue" />
+            <MediaExplorerItemMobile
+              v-for="(media, index) in filteredMedias"
+              :key="`media-explorer-item-${media._id}-${index}`"
+              :media="media"
+              :search-value="searchValue" />
             <template #desktop>
-              <MediaExplorerItem v-for="(media, index) in filteredMedias"
-                :key="`media-explorer-item-${media._id}-${index}`" :media="media" :search-value="searchValue"
-                :ref="'mediaItem' + index" :is-selected-for-overview="selectedMediaForOverview &&
+              <MediaExplorerItem
+                v-for="(media, index) in filteredMedias"
+                :key="`media-explorer-item-${media._id}-${index}`"
+                :media="media"
+                :search-value="searchValue"
+                :ref="'mediaItem' + index"
+                :is-selected-for-overview="
+                  selectedMediaForOverview &&
                   selectedMediaForOverview._id === media._id
-                  " class="media-explorer__body__item" @select-for-overview="selectMediaForOverview" />
+                "
+                class="media-explorer__body__item" />
             </template>
           </IsMobile>
           <slot name="after" />
@@ -67,13 +94,17 @@
         <IsMobile>
           <template #desktop>
             <MediaExplorerRightPanel
-              v-if="(selectedMediaForOverview || selectedMedias.length > 1) && currentOrganizationScope"
-              :selected-media="reactiveSelectedMediaForOverview" :currentOrganizationScope="currentOrganizationScope"
-              :readonly-tags="readonlyTags" @close="closeRightPanel" @resize="handleRightPanelResize" />
+              v-if="selectedMedias.length > 0 && currentOrganizationScope"
+              :currentOrganizationScope="currentOrganizationScope"
+              :readonly-tags="readonlyTags"
+              @close="closeRightPanel"
+              @resize="handleRightPanelResize" />
           </template>
         </IsMobile>
 
-        <ModalDeleteConversations :visible="showDeleteModal" :medias="selectedMedias"
+        <ModalDeleteConversations
+          :visible="showDeleteModal"
+          :medias="selectedMedias"
           @close="showDeleteModal = false" />
       </div>
     </div>
@@ -82,6 +113,8 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex"
+
+import { mediaScopeMixin } from "@/mixins/mediaScope"
 
 import MediaExplorerHeader from "@/components/MediaExplorerHeader.vue"
 import MediaExplorerItem from "@/components/MediaExplorerItem.vue"
@@ -96,6 +129,7 @@ import Loading from "@/components/atoms/Loading.vue"
 import IsMobile from "@/components/atoms/IsMobile.vue"
 
 export default {
+  mixins: [mediaScopeMixin],
   name: "MediaExplorer",
   components: {
     MediaExplorerHeader,
@@ -132,10 +166,6 @@ export default {
     enablePagination: {
       type: Boolean,
       default: true,
-    },
-    pageSize: {
-      type: Number,
-      default: 20,
     },
     // Virtual scrolling threshold
     virtualScrollingThreshold: {
@@ -180,19 +210,17 @@ export default {
     count() {
       return this.totalItemsCount || this.reactiveMedias.length
     },
-    selectedMedias() {
-      return this.$store.state.inbox.selectedMedias
-    },
     // Get reactive medias from store to ensure updates are reflected
     reactiveMedias() {
-      return this.medias.map(media => {
-        const storeMedia = this.$store.getters["inbox/getMediaById"](media._id)
-
+      return this.medias.map((media) => {
+        const storeMedia = this.$store.getters[
+          `${this.storeScope}/getMediaById`
+        ](media._id)
         // Store now contains all necessary properties, merge with original as fallback
         if (storeMedia) {
           return {
             ...media,
-            ...storeMedia
+            ...storeMedia,
           }
         }
 
@@ -204,57 +232,51 @@ export default {
     ...mapGetters("organizations", {
       currentOrganizationScope: "getCurrentOrganizationScope",
     }),
-    totalPages() {
-      return Math.ceil(this.count / this.pageSize)
-    },
     activeSelectedTagIds() {
       return this.selectedTagIds || []
     },
     filteredMedias() {
-      const medias = this.reactiveMedias;
-      const tagIds = this.activeSelectedTagIds;
+      const medias = this.reactiveMedias
+      const tagIds = this.activeSelectedTagIds
 
       // Memoization: check if we can reuse cached result
-      if (this._filteredMediasCache &&
+      if (
+        this._filteredMediasCache &&
         this._filteredMediasCache.medias === medias &&
-        JSON.stringify(this._filteredMediasCache.tagIds) === JSON.stringify(tagIds)) {
-        return this._filteredMediasCache.result;
+        JSON.stringify(this._filteredMediasCache.tagIds) ===
+          JSON.stringify(tagIds)
+      ) {
+        return this._filteredMediasCache.result
       }
 
-      let result;
+      let result
 
       if (tagIds.length === 0) {
-        result = medias;
+        result = medias
       } else {
         result = medias.filter((media) => {
           if (!media.tags || !Array.isArray(media.tags)) {
-            return false;
+            return false
           }
-          return tagIds.every((tagId) => media.tags.includes(tagId));
-        });
+          return tagIds.every((tagId) => media.tags.includes(tagId))
+        })
       }
 
       // Cache the result
-      this._filteredMediasCache = { medias, tagIds, result };
-      return result;
-    },
-    reactiveSelectedMediaForOverview() {
-      return this.reactiveMedias.find(
-        (media) => media._id === this.selectedMediaForOverview?._id,
-      )
+      this._filteredMediasCache = { medias, tagIds, result }
+      return result
     },
     selectedCount() {
-      const count = this.selectedMedias.length;
-      return count;
+      const count = this.selectedMedias.length
+      return count
     },
     totalCount() {
-      const count = this.reactiveMedias.length;
-      return count;
+      const count = this.reactiveMedias.length
+      return count
     },
   },
   data() {
     return {
-      isSelectAll: false,
       observer: null,
       search: "",
       showDeleteModal: false,
@@ -278,67 +300,75 @@ export default {
       }
     }, 250)
 
-    window.addEventListener('resize', this.handleWindowResize)
+    window.addEventListener("resize", this.handleWindowResize)
   },
   beforeDestroy() {
     this.cleanupObserver()
     // Clean up window resize listener
     if (this.handleWindowResize) {
-      window.removeEventListener('resize', this.handleWindowResize)
+      window.removeEventListener("resize", this.handleWindowResize)
     }
   },
   watch: {
-    isSelectAll(value) {
-      this.$store.commit("inbox/setAutoselectMedias", value)
-    },
     medias: {
       handler(newMedias, oldMedias) {
-        this.updateCounts();
+        this.updateCounts()
 
         // Only recreate observer if array reference actually changed and pagination is enabled
         if (this.enablePagination && newMedias !== oldMedias) {
           // Debounce observer setup to avoid excessive recreation
-          if (this._observerSetupPending) return;
+          if (this._observerSetupPending) return
 
-          this._observerSetupPending = true;
+          this._observerSetupPending = true
           this.$nextTick(() => {
-            this.cleanupObserver();
-            this.setupIntersectionObserver();
-            this.observeMediaItems();
-            this._observerSetupPending = false;
+            this.cleanupObserver()
+            this.setupIntersectionObserver()
+            this.observeMediaItems()
+            this._observerSetupPending = false
 
             // Reset the load-more pending flag when new medias arrive
             // This allows the observer to trigger again for the new last items
             setTimeout(() => {
-              this._loadMorePending = false;
-            }, 500);
-          });
+              this._loadMorePending = false
+            }, 500)
+          })
         }
       },
       immediate: true,
       deep: false, // Only watch for array reference changes, not deep changes
     },
-    '$store.state.inbox.selectedMedias': {
+    selectedMedias: {
       handler(newSelection, oldSelection) {
-        if (oldSelection && oldSelection.length > 1 && newSelection.length === 0) {
+        if (
+          oldSelection &&
+          oldSelection.length > 1 &&
+          newSelection.length === 0
+        ) {
           this.selectedMediaForOverview = null
           this.rightPanelWidth = 0
-        }
-        else if (oldSelection && oldSelection.length > 1 && newSelection.length === 1) {
+        } else if (
+          oldSelection &&
+          oldSelection.length > 1 &&
+          newSelection.length === 1
+        ) {
           this.selectedMediaForOverview = newSelection[0]
           // Auto-adjust width when switching from multiple to single selection
           if (this.rightPanelWidth === 0) {
             this.rightPanelWidth = this.calculateDefaultRightPanelWidth()
           }
-        }
-        else if (newSelection.length === 1 && !this.selectedMediaForOverview) {
+        } else if (
+          newSelection.length === 1 &&
+          !this.selectedMediaForOverview
+        ) {
           this.selectedMediaForOverview = newSelection[0]
           // Auto-adjust width when opening panel
           if (this.rightPanelWidth === 0) {
             this.rightPanelWidth = this.calculateDefaultRightPanelWidth()
           }
-        }
-        else if (this.selectedMediaForOverview && !newSelection.find(m => m._id === this.selectedMediaForOverview._id)) {
+        } else if (
+          this.selectedMediaForOverview &&
+          !newSelection.find((m) => m._id === this.selectedMediaForOverview._id)
+        ) {
           this.selectedMediaForOverview = null
         }
       },
@@ -347,38 +377,36 @@ export default {
     },
   },
   methods: {
-    ...mapActions("inbox", ["clearSelectedMedias"]),
     calculateDefaultRightPanelWidth() {
       // Calculate responsive right panel width based on screen size
-      const screenWidth = window.innerWidth || 1920;
-      const maxWidth = screenWidth * 0.5; // 50% max viewport width
-      const minWidth = 300; // Minimum 300px
+      const screenWidth = window.innerWidth || 1920
+      const maxWidth = screenWidth * 0.5 // 50% max viewport width
+      const minWidth = 300 // Minimum 300px
 
-      let calculatedWidth;
+      let calculatedWidth
 
       if (screenWidth <= 1200) {
         // For mobile/tablet, the panel will be full width anyway
-        calculatedWidth = Math.min(maxWidth, screenWidth * 0.4); // 40% of screen width
+        calculatedWidth = Math.min(maxWidth, screenWidth * 0.4) // 40% of screen width
       } else if (screenWidth <= 1600) {
-        calculatedWidth = screenWidth * 0.32; // 32% of screen width
+        calculatedWidth = screenWidth * 0.32 // 32% of screen width
       } else if (screenWidth <= 2000) {
-        calculatedWidth = screenWidth * 0.3; // 30% of screen width
+        calculatedWidth = screenWidth * 0.3 // 30% of screen width
       } else {
-        calculatedWidth = screenWidth * 0.28; // 28% of screen width
+        calculatedWidth = screenWidth * 0.28 // 28% of screen width
       }
 
       // Ensure width is within min/max bounds
-      return Math.max(minWidth, Math.min(maxWidth, calculatedWidth));
+      return Math.max(minWidth, Math.min(maxWidth, calculatedWidth))
     },
     reset() {
       this.clearSelectedMedias()
       this._loadMorePending = false
       // Clear caches
-      this._filteredMediasCache = null;
+      this._filteredMediasCache = null
     },
     handleSelectAll() {
-      this.isSelectAll = !this.isSelectAll
-      this.$emit("select-all", this.isSelectAll)
+      console.log("select all todo")
     },
     setupIntersectionObserver() {
       if (!this.enablePagination || this.observer) return
@@ -403,7 +431,7 @@ export default {
 
           // Trigger load-more when we're near the end of the list
           // Use a simple threshold: when we see one of the last 3 items
-          const isNearEnd = index >= this.filteredMedias.length - 3;
+          const isNearEnd = index >= this.filteredMedias.length - 3
 
           if (isNearEnd) {
             this._loadMorePending = true
@@ -422,14 +450,17 @@ export default {
       if (!this.observer || this.filteredMedias.length === 0) return
 
       // Only observe the last few items for pagination trigger
-      const itemsToObserve = Math.min(3, this.filteredMedias.length);
-      const startIndex = Math.max(0, this.filteredMedias.length - itemsToObserve);
+      const itemsToObserve = Math.min(3, this.filteredMedias.length)
+      const startIndex = Math.max(
+        0,
+        this.filteredMedias.length - itemsToObserve,
+      )
 
       for (let i = startIndex; i < this.filteredMedias.length; i++) {
-        const itemRef = this.$refs["mediaItem" + i];
+        const itemRef = this.$refs["mediaItem" + i]
         if (itemRef && itemRef[0]?.$el) {
-          itemRef[0].$el.setAttribute("data-index", i);
-          this.observer.observe(itemRef[0].$el);
+          itemRef[0].$el.setAttribute("data-index", i)
+          this.observer.observe(itemRef[0].$el)
         }
       }
     },
@@ -449,22 +480,12 @@ export default {
       window.history.replaceState({}, "", url)
     },
 
-
-
     handleSearch(search, filters) {
       this.$emit("search", search, filters)
     },
 
     handleTagsChanged() {
       this.$emit("tags-changed")
-    },
-
-    selectMediaForOverview(media) {
-      this.selectedMediaForOverview = media
-      // Auto-adjust right panel width when opening
-      if (media && this.rightPanelWidth === 0) {
-        this.rightPanelWidth = this.calculateDefaultRightPanelWidth()
-      }
     },
 
     closeRightPanel() {
@@ -480,8 +501,7 @@ export default {
     },
 
     updateCounts() {
-      this.$nextTick(() => {
-      });
+      this.$nextTick(() => {})
     },
 
     cleanupObserver() {
@@ -574,7 +594,9 @@ export default {
   height: 100%;
   overflow-y: auto;
   overflow-x: auto;
-  transition: width 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    width 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .media-explorer__body__empty {

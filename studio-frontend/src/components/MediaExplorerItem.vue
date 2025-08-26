@@ -3,7 +3,6 @@
     class="media-explorer-item"
     @click="select"
     :class="{
-      'media-explorer-item--overview': isSelectedForOverview,
       'media-explorer-item--selected': isSelected,
       'media-explorer-item--favorite': isFavorite,
     }">
@@ -107,7 +106,6 @@
         <template #trigger="{ open }">
           <Button
             class="media-explorer-item__actions-trigger"
-            :title="$t('media_explorer.actions')"
             variant="outline"
             color="primary"
             size="sm"
@@ -126,6 +124,7 @@
 
 <script>
 import { mapMutations, mapGetters } from "vuex"
+import { mediaScopeMixin } from "@/mixins/mediaScope"
 
 import MediaExplorerItemTags from "./MediaExplorerItemTags.vue"
 import UserProfilePicture from "./atoms/UserProfilePicture.vue"
@@ -138,6 +137,7 @@ import ModalDeleteConversations from "./ModalDeleteConversations.vue"
 import PopoverList from "./atoms/PopoverList.vue"
 
 export default {
+  mixins: [mediaScopeMixin],
   name: "MediaExplorerItem",
   components: {
     PhStar,
@@ -151,10 +151,6 @@ export default {
     media: {
       type: Object,
       required: true,
-    },
-    isSelectedForOverview: {
-      type: Boolean,
-      default: false,
     },
     searchValue: {
       type: String,
@@ -181,21 +177,7 @@ export default {
       currentOrganization: "getCurrentOrganization",
     }),
 
-    // Get reactive media data from store to ensure updates are reflected
     reactiveMedia() {
-      if (!this.media?._id) return this.media
-      const storeMedia = this.$store.getters["inbox/getMediaById"](
-        this.media._id,
-      )
-
-      // Store now contains all necessary properties, merge with original as fallback
-      if (storeMedia) {
-        return {
-          ...this.media,
-          ...storeMedia,
-        }
-      }
-
       return this.media
     },
 
@@ -316,25 +298,21 @@ export default {
         this.reactiveMedia._id,
       )
     },
-    isSelectAll() {
-      return this.$store.state.inbox.autoselectMedias
-    },
     isFromSession() {
       return !!this.media?.type?.from_session_id
     },
   },
   watch: {
     isSelectAll(value) {
-      this.isSelected = value
-
-      if (value) {
-        this.addSelectedMedia(this.reactiveMedia)
-      } else {
-        this.removeSelectedMedia(this.reactiveMedia)
-      }
+      // this.isSelected = value
+      // if (value) {
+      //   this.addSelectedMedia(this.reactiveMedia)
+      // } else {
+      //   this.removeSelectedMedia(this.reactiveMedia)
+      // }
     },
     // Sync local isSelected state with store
-    "$store.state.inbox.selectedMedias": {
+    selectedMedias: {
       handler(selectedMedias) {
         const isCurrentlySelected = selectedMedias.some(
           (media) => media._id === this.reactiveMedia._id,
@@ -348,8 +326,6 @@ export default {
     },
   },
   methods: {
-    ...mapMutations("inbox", ["addSelectedMedia", "removeSelectedMedia"]),
-
     toggleFavorite() {
       this.$store.dispatch(
         "user/toggleFavoriteConversation",
@@ -359,17 +335,10 @@ export default {
 
     select() {
       this.isSelected = !this.isSelected
-      this.handleSelectionChange()
-      this.selectForOverview()
+      this.toggleMediaSelection(this.media)
     },
 
-    handleSelectionChange() {
-      if (this.isSelected) {
-        this.addSelectedMedia(this.reactiveMedia)
-      } else {
-        this.removeSelectedMedia(this.reactiveMedia)
-      }
-    },
+    handleSelectionChange() {},
 
     handleActionClick(action) {
       switch (action.id) {
@@ -381,10 +350,6 @@ export default {
 
     handleDelete() {
       this.showDeleteModal = true
-    },
-
-    selectForOverview() {
-      this.$emit("select-for-overview", this.reactiveMedia)
     },
   },
 }
@@ -413,11 +378,6 @@ export default {
 
   &--favorite {
     //border-left: 3px solid var(--primary-color);
-  }
-
-  &--overview {
-    border-color: var(--primary-color);
-    background-color: var(--primary-soft);
   }
 }
 

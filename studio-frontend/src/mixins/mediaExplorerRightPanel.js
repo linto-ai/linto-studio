@@ -61,10 +61,10 @@ export const mediaExplorerRightPanelMixin = {
         if (response.status === "success") {
           // Update the media in the inbox store
           const currentMedia =
-            this.$store.getters["inbox/getMediaById"](mediaId)
+            this.$store.getters[`${this.storeScope}/getMediaById`](mediaId)
           if (currentMedia) {
             const updatedMedia = { ...currentMedia, [propertyName]: value }
-            this.$store.dispatch("inbox/updateMedia", {
+            this.$store.dispatch(`${this.storeScope}/updateMedia`, {
               mediaId,
               media: updatedMedia,
             })

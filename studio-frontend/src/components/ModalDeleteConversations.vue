@@ -4,8 +4,7 @@
     :title="title"
     :message="content"
     @confirm="onConfirm"
-    @cancel="onCancel"
-    ></Alert>
+    @cancel="onCancel"></Alert>
   <!-- <ModalNew
     :title="title"
     value
@@ -24,9 +23,10 @@
   </ModalNew> -->
 </template>
 <script>
-import { mapActions, mapGetters } from "vuex"
+import { mediaScopeMixin } from "@/mixins/mediaScope"
 
 export default {
+  mixins: [mediaScopeMixin],
   props: {
     medias: { type: Array, required: true },
     visible: { type: Boolean, required: true },
@@ -71,7 +71,6 @@ export default {
   },
   mounted() {},
   methods: {
-    ...mapActions("inbox", ["deleteMedias"]),
     onConfirm() {
       this.deleteMedias(this.medias.map((media) => media._id))
       this.$emit("confirm")
