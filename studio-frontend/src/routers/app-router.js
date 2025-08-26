@@ -748,7 +748,6 @@ router.beforeEach(async (to, from, next) => {
 
   try {
     routerDebug("beforeEach from", from.fullPath, "to", to.fullPath)
-    store.dispatch("inbox/clearSelectedMedias")
 
     // Redirect to 404 if sessions are disabled but trying to access session page
     if (!enableSession && to.meta?.sessionPage) {

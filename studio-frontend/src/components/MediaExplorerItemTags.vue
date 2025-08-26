@@ -3,7 +3,7 @@
     <!-- Tags list with limited visibility -->
     <Tooltip
       v-for="tag in visibleTags"
-      :key="`${mediaId}-tag-${tag._id}`"
+      :key="`${media._id}-tag-${tag._id}`"
       :text="tag.description || tag.name"
       class="media-explorer-item-tags__tag"
       position="bottom">
@@ -31,22 +31,17 @@
 
 <script>
 import { mapState } from "vuex"
-import Modal from "./molecules/Modal.vue"
-import MediaExplorerItemTagBox from "./MediaExplorerItemTagBox.vue"
 
 export default {
   name: "MediaExplorerItemTags",
-  components: {
-    Modal,
-    MediaExplorerItemTagBox,
-  },
+  components: {},
   props: {
     maxVisible: {
       type: Number,
       default: 2,
     },
-    mediaId: {
-      type: String,
+    media: {
+      type: Object,
       required: true,
     },
     hovered: {
@@ -92,12 +87,6 @@ export default {
     ...mapState("tags", {
       tags: (state) => state.tags,
     }),
-    medias() {
-      return [...this.$store.state.inbox.medias]
-    },
-    media() {
-      return this.$store.getters["inbox/getMediaById"](this.mediaId)
-    },
     mediatags() {
       if (!this.media || !this.media.tags) {
         return []
@@ -151,7 +140,7 @@ export default {
   flex-wrap: wrap;
   gap: 0.25rem;
   align-items: center;
-  
+
   &.mobile-view {
     flex-wrap: nowrap;
     overflow: hidden;
@@ -182,7 +171,7 @@ export default {
   color: var(--text-secondary);
   border-radius: 8px;
   cursor: help;
-  
+
   &:hover {
     background-color: var(--neutral-30);
   }

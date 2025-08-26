@@ -106,12 +106,14 @@ export default function createMediaModule(scope) {
 
     actions: {
       async load(
-        { commit, dispatch },
-        { page = 0, append = false, query = null } = {},
+        { commit, dispatch, getters },
+        { page = 0, append = false } = {},
       ) {
         try {
           const data = await apiGetGenericConversationsList(scope, {
             page,
+            text: getters.search,
+            title: getters.search,
           })
 
           if (append) commit("appendMedias", data.list)

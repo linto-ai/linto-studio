@@ -4,11 +4,10 @@
       <div class="burger-menu__header flex">
         <UserAccountSelector :backoffice="backoffice" />
       </div>
-      <!-- <div class="user-account-selector-container" v-if="!backoffice">
-        <ActionConversationCreate />
-      </div> -->
 
-      <MediaExplorerMenu :organizationId="currentOrganization._id" v-if="!backoffice" />
+      <MediaExplorerMenu
+        :organizationId="currentOrganization._id"
+        v-if="!backoffice" />
 
       <MediaExplorerMenuLabels v-if="isInbox" />
 
@@ -17,26 +16,40 @@
       <slot></slot>
     </div>
     <div class="flex col">
-      <ButtonRoller v-if="isAtLeastUploader" @click="startConversation" :label="$t('navigation.conversation.start')"
-        color="primary" class="start-button" />
+      <ButtonRoller
+        v-if="isAtLeastUploader"
+        @click="startConversation"
+        :label="$t('navigation.conversation.start')"
+        color="primary"
+        class="start-button" />
       <div class="main-footer-container">
         <footer class="main-footer">
           <div class="main-footer__powered-by">
             <i18n path="footer.powered_by">
               <template v-slot:linto_logo>
-                <a href="https://linto.ai" target="_blank" rel="noopener noreferrer" class="footer-logo-link">
+                <a
+                  href="https://linto.ai"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="footer-logo-link">
                   <img src="/img/linto.svg" alt="LinTO" />
                 </a>
               </template>
               <template v-slot:linagora_logo>
-                <a href="https://linagora.com" target="_blank" rel="noopener noreferrer" class="footer-logo-link">
+                <a
+                  href="https://linagora.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="footer-logo-link">
                   <img src="/img/linagora.png" alt="Linagora" />
                 </a>
               </template>
             </i18n>
           </div>
           <div class="main-footer__links">
-            <a href="mailto:contact@linto.ai" class="footer-link">{{ $t('footer.contact') }}</a>
+            <a href="mailto:contact@linto.ai" class="footer-link">{{
+              $t("footer.contact")
+            }}</a>
             <span class="footer-version">v{{ appVersion }}</span>
           </div>
         </footer>
@@ -58,7 +71,6 @@ import LocalSwitcher from "@/components/LocalSwitcher.vue"
 import CloudCardCredits from "@/components-cloud/CardCredits.vue"
 import MediaExplorerMenu from "@/components/MediaExplorerMenu.vue"
 import BackofficeSidebar from "@/components/BackofficeSidebar.vue"
-import ActionConversationCreate from "@/components/molecules/ActionConversationCreate.vue"
 import MediaExplorerMenuLabels from "@/components/MediaExplorerMenuLabels.vue"
 
 export default {
@@ -72,7 +84,7 @@ export default {
   data() {
     return {}
   },
-  mounted() { },
+  mounted() {},
   methods: {
     logout() {
       logout()
@@ -122,7 +134,7 @@ export default {
 
       return inboxPages.includes(this.$route.name)
     },
-    imgUrl() { },
+    imgUrl() {},
     mainListingPage() {
       return this.$route.meta?.mainListingPage
     },
@@ -139,7 +151,6 @@ export default {
     CloudCardCredits,
     MediaExplorerMenu,
     BackofficeSidebar,
-    ActionConversationCreate,
     MediaExplorerMenuLabels,
   },
 }
@@ -165,7 +176,7 @@ export default {
     position: relative;
     z-index: 10;
 
-    &>* {
+    & > * {
       flex: 1;
     }
   }
@@ -177,7 +188,7 @@ export default {
     border-bottom: var(--border-block);
     height: 54px;
 
-    &>* {
+    & > * {
       flex: 1;
     }
   }
@@ -249,7 +260,9 @@ export default {
 
   .footer-logo-link {
     display: inline-block;
-    transition: transform 0.2s ease, opacity 0.2s ease;
+    transition:
+      transform 0.2s ease,
+      opacity 0.2s ease;
 
     &:hover {
       transform: scale(1.1);

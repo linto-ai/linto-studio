@@ -12,7 +12,6 @@
         :selected-count="selectedMedias.length"
         :total-count="count"
         :loading="loading"
-        :is-select-all="isSelectAll"
         :sticky-top-offset="stickyTopOffset"
         :all-medias="medias"
         :search-value="searchValue"
@@ -119,7 +118,6 @@ import { mediaScopeMixin } from "@/mixins/mediaScope"
 import MediaExplorerHeader from "@/components/MediaExplorerHeader.vue"
 import MediaExplorerItem from "@/components/MediaExplorerItem.vue"
 import MediaExplorerItemMobile from "@/components-mobile/MediaExplorerItem.vue"
-import MediaExplorerAppUpload from "@/components/MediaExplorerAppUpload.vue"
 import MediaExplorerRightPanel from "@/components/MediaExplorerRightPanel.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import Button from "@/components/atoms/Button.vue"
@@ -135,7 +133,6 @@ export default {
     MediaExplorerHeader,
     MediaExplorerItem,
     MediaExplorerItemMobile,
-    MediaExplorerAppUpload,
     MediaExplorerRightPanel,
     Modal,
     Button,

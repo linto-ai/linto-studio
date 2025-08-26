@@ -91,7 +91,7 @@
         <MediaExplorerItemTags
           class="media-explorer-item__tags"
           :mediatags="mediatags"
-          :media-id="reactiveMedia._id"
+          :media="reactiveMedia"
           :max-visible="maxVisibleTags"
           :mobile-view="false" />
       </IsDesktop>

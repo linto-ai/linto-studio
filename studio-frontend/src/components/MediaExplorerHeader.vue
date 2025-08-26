@@ -51,8 +51,10 @@
 
 <script>
 import { v4 as uuid } from "uuid"
+import { mediaScopeMixin } from "@/mixins/mediaScope"
 
 export default {
+  mixins: [mediaScopeMixin],
   name: "MediaExplorerHeader",
   components: {},
   props: {
@@ -65,10 +67,6 @@ export default {
       required: true,
     },
     loading: {
-      type: Boolean,
-      default: false,
-    },
-    isSelectAll: {
       type: Boolean,
       default: false,
     },
@@ -95,33 +93,34 @@ export default {
       return this.stickyTopOffset
     },
     getTags() {
-      const tags = this.$store.getters["tags/getTags"];
-      return tags;
+      const tags = this.$store.getters["tags/getTags"]
+      return tags
     },
     selectedTags() {
-      const selectedTags = this.$store.getters["tags/getExploreSelectedTags"];
-      const uniqueTags = Array.from(new Set(selectedTags.map(tag => tag._id)))
-        .map(id => selectedTags.find(tag => tag._id === id));
-      return uniqueTags;
+      const selectedTags = this.$store.getters["tags/getExploreSelectedTags"]
+      const uniqueTags = Array.from(
+        new Set(selectedTags.map((tag) => tag._id)),
+      ).map((id) => selectedTags.find((tag) => tag._id === id))
+      return uniqueTags
     },
     // Computed property for store search value to watch it properly
     storeSearchValue() {
-      return this.$store.getters["conversations/getSearch"];
+      return this.$store.getters[`${this.storeScope}/search`]
     },
     // Use computed property instead of data to ensure reactivity
     search: {
       get() {
         // Priority: local input value > searchValue prop > store value > empty string
         if (this._localSearch !== undefined && this._localSearch !== null) {
-          return this._localSearch;
+          return this._localSearch
         }
-        
-        const value = this.searchValue || this.storeSearchValue || "";
-        return value;
+
+        const value = this.searchValue || this.storeSearchValue || ""
+        return value
       },
       set(value) {
-        this._localSearch = value;
-      }
+        this._localSearch = value
+      },
     },
   },
   data() {
@@ -129,14 +128,13 @@ export default {
       _localSearch: null, // Start with null to prioritize external values initially
     }
   },
-  mounted() {
-  },
+  mounted() {},
   watch: {
     // Watch for external changes and reset local value to allow sync
     searchValue: {
       handler(newValue, oldValue) {
         if (newValue !== oldValue && newValue !== this._localSearch) {
-          this._localSearch = newValue;
+          this._localSearch = newValue
         }
       },
       immediate: false,
@@ -146,7 +144,7 @@ export default {
       handler(storeValue) {
         // Only sync if we don't have local input and store value is different
         if (this._localSearch === null && storeValue) {
-          this._localSearch = storeValue;
+          this._localSearch = storeValue
         }
       },
       immediate: true,
@@ -162,28 +160,7 @@ export default {
       const formattedSearch =
         searchQuery !== null ? searchQuery.trim() : this.search.trim()
 
-      if (formattedSearch.length === 0) {
-        this.$emit("search", formattedSearch, [])
-      } else {
-        /**
-         * Will perform a search on title and text
-         */
-        this.$emit("search", formattedSearch, [
-          {
-            title: "Title filter",
-            value: formattedSearch,
-            _id: uuid(),
-            key: "titleConversation",
-          },
-          {
-            title: "Text filter",
-            value: formattedSearch,
-            _id: uuid(),
-            key: "textConversation",
-          },
-        ])
-      }
-
+      this.$store.dispatch(`${this.storeScope}/setSearchQuery`, formattedSearch)
     },
 
     handleAddTag(tag) {

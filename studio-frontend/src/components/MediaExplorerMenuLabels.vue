@@ -36,15 +36,10 @@
 
 <script>
 import { mapGetters } from "vuex"
-import MediaExplorerItemTagBox from "./MediaExplorerItemTagBox.vue"
-import MediaExplorerFormTag from "./MediaExplorerFormTag.vue"
 
 export default {
   name: "MediaExplorerMenuLabels",
-  components: {
-    MediaExplorerItemTagBox,
-    MediaExplorerFormTag,
-  },
+  components: {},
   data() {
     return {
       showModalTagManagement: false,

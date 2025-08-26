@@ -117,7 +117,6 @@ import QuickSessionCreateContent from "@/components/QuickSessionCreateContent.vu
 import VisioCreateContent from "@/components/VisioCreateContent.vue"
 import TabsVertical from "@/components/TabsVertical.vue"
 import ConversationCreateFileLine from "@/components/ConversationCreateFileLine.vue"
-import ActionConversationCreate from "@/components/molecules/ActionConversationCreate.vue"
 
 export default {
   mixins: [
@@ -303,7 +302,6 @@ export default {
     VisioCreateContent,
     TabsVertical,
     ConversationCreateFileLine,
-    ActionConversationCreate,
   },
 }
 </script>

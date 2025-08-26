@@ -30,6 +30,11 @@ const mutations = {
       state.currentOrganization = state.organizations[orgasIds[0]]
     }
   },
+  setScope(state, scope) {
+    if (scope === "organization" || scope === "favorites" || scope === "shared")
+      state.currentScope = scope
+    else throw "Invalid scope value"
+  },
 }
 
 export default mutations
