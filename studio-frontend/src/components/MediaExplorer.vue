@@ -45,7 +45,6 @@
       <!-- Media list body -->
       <div
         class="media-explorer__body"
-        :class="{ 'has-right-panel': selectedMediaForOverview }"
         :style="{ '--right-panel-width': rightPanelWidth + 'px' }">
         <!-- Main content area -->
         <div class="media-explorer__body__content">
@@ -102,6 +101,7 @@
         </IsMobile>
 
         <ModalDeleteConversations
+          v-if="showDeleteModal"
           :visible="showDeleteModal"
           :medias="selectedMedias"
           @close="showDeleteModal = false" />
@@ -561,24 +561,15 @@ export default {
   flex: 1;
   overflow-y: auto;
   padding: 0.25rem 0.5rem;
-  transition: padding-right 0.3s ease;
   position: relative;
 }
 
-.media-explorer__body.has-right-panel .media-explorer__body__content {
-  width: 100%;
-  padding-right: calc(var(--right-panel-width, 500px) + 1rem);
-  overflow-x: auto;
-  min-width: 0;
-  /* Prevent flex item from overflowing */
-}
-
 .media-explorer__body .media-explorer-right-panel {
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  z-index: 1000;
+  // position: absolute;
+  // right: 0;
+  // top: 0;
+  // bottom: 0;
+  // z-index: 1000;
   background-color: var(--background-color, #fff);
   border-left: var(--border-block, 1px solid var(--neutral-30));
   box-shadow: -2px 0 8px rgba(0, 0, 0, 0.08);
@@ -591,9 +582,9 @@ export default {
   height: 100%;
   overflow-y: auto;
   overflow-x: auto;
-  transition:
-    width 0.3s ease,
-    box-shadow 0.3s ease;
+  // transition:
+  //   width 0.3s ease,
+  //   box-shadow 0.3s ease;
 }
 
 .media-explorer__body__empty {
@@ -629,11 +620,7 @@ export default {
   border: 1px solid var(--primary-color, #007bff);
 }
 
-@media only screen and (max-width: 1200px) {
-  .media-explorer__body__item {
-    overflow: auto;
-  }
-
+@media only screen and (max-width: 1500px) {
   .media-explorer__body {
     flex-direction: column;
   }
@@ -653,10 +640,6 @@ export default {
     border-top: var(--border-block, 1px solid var(--neutral-30));
     box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
     max-height: 50vh;
-  }
-
-  .media-explorer__body.has-right-panel .media-explorer__body__content {
-    padding-right: 0.5rem !important;
   }
 }
 

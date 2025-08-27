@@ -1,5 +1,5 @@
 <template>
-  <div class="media-explorer-right-panel-multi">
+  <div class="media-explorer-right-panel-multi flex col flex1">
     <!-- Selected medias preview -->
     <div class="selected-medias-preview">
       <div class="preview-header">
@@ -373,9 +373,6 @@ export default {
 
 <style scoped>
 .media-explorer-right-panel-multi {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
   padding: 1rem;
   gap: 1.5rem;
 }

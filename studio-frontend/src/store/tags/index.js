@@ -82,8 +82,8 @@ export default {
   actions: {
     async fetchTags({ commit, getters, state, rootGetters }) {
       // Prevent concurrent fetches
-      if (state.loading) return;
-      
+      if (state.loading) return
+
       commit("setLoading", true)
       try {
         const data = await apiGetSystemCategories(
@@ -116,8 +116,8 @@ export default {
     },
     async fetchSharedTags({ commit, getters, rootGetters, state }) {
       // Prevent concurrent fetches
-      if (state.loading) return;
-      
+      if (state.loading) return
+
       commit("setLoading", true)
       try {
         const data = await apiGetSharedCategoriesTree()
@@ -136,9 +136,9 @@ export default {
       }
     },
     async fetchFavoritesTags({ commit, getters, rootGetters, state }) {
-      // Prevent concurrent fetches  
-      if (state.loading) return;
-      
+      // Prevent concurrent fetches
+      if (state.loading) return
+
       commit("setLoading", true)
       try {
         const data = await apiGetfavoritesCategoriesTree()
@@ -279,20 +279,20 @@ export default {
     ) {
       commit("setLoading", true)
       try {
-        const media = rootGetters["inbox/getMediaById"](mediaId)
+        const media = getMediabyId(rootGetters, mediaId)
 
         if (media.tags.includes(tagId)) {
           throw new Error("Tag already in media")
         }
 
         const data = await apiAddTagToConversation(mediaId, tagId)
+
+        if (data.status == "error") {
+          throw new Error(data.message)
+        }
+
         const newMedia = { ...media, tags: [...media.tags, tagId] }
-        console.log("newMedia", newMedia)
-        commit(
-          "inbox/updateMedia",
-          { mediaId, media: newMedia },
-          { root: true },
-        )
+        updateMedia(rootGetters, commit, newMedia, mediaId)
         // commit(
         //   "system/addNotification",
         //   {
@@ -302,7 +302,7 @@ export default {
         //   { root: true },
         //)
       } catch (error) {
-        console.log("error", error)
+        console.error("error", error)
         commit("setError", error)
         commit(
           "system/addNotification",
@@ -323,16 +323,13 @@ export default {
       commit("setLoading", true)
       try {
         const data = await apiDeleteTagFromConversation(mediaId, tagId)
-        const media = rootGetters["inbox/getMediaById"](mediaId)
+        const media = getMediabyId(rootGetters, mediaId)
         const newMedia = {
           ...media,
           tags: media.tags.filter((t) => t !== tagId),
         }
-        commit(
-          "inbox/updateMedia",
-          { mediaId, media: newMedia },
-          { root: true },
-        )
+
+        updateMedia(rootGetters, commit, newMedia, mediaId)
         // commit(
         //   "system/addNotification",
         //   {
@@ -342,7 +339,7 @@ export default {
         //   { root: true },
         //)
       } catch (error) {
-        console.log("error", error)
+        console.error("error", error)
         commit("setError", error)
         commit(
           "system/addNotification",
@@ -373,7 +370,10 @@ export default {
       commit("setExploreSelectedTags", [...state.exploreSelectedTags, tag])
     },
     removeExploreSelectedTag({ commit, state }, tag) {
-      commit("setExploreSelectedTags", state.exploreSelectedTags.filter((t) => t._id !== tag._id))
+      commit(
+        "setExploreSelectedTags",
+        state.exploreSelectedTags.filter((t) => t._id !== tag._id),
+      )
     },
     toggleTag({ dispatch, state }, tag) {
       if (state.exploreSelectedTags.some((t) => t._id === tag._id)) {
@@ -383,4 +383,23 @@ export default {
       }
     },
   },
+}
+
+function getMediabyId(rootGetters, id) {
+  const scope = rootGetters["organizations/getCurrentScope"]
+  const orgaScope = rootGetters["organizations/getCurrentOrganizationScope"]
+
+  const storePath = scope.replace("organization", orgaScope) + "/conversations"
+
+  return rootGetters[`${storePath}/getMediaById`](id)
+}
+
+function updateMedia(rootGetters, commit, media, mediaId) {
+  const scope = rootGetters["organizations/getCurrentScope"]
+  const orgaScope = rootGetters["organizations/getCurrentOrganizationScope"]
+
+  const storePath = scope.replace("organization", orgaScope) + "/conversations"
+
+  // return rootGetters[`${storePath}/updateMedia`](media, mediaId)
+  commit(`${storePath}/updateMedia`, { media, mediaId }, { root: true })
 }

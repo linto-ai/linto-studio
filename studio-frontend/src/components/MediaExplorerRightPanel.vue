@@ -10,43 +10,45 @@
       @touchstart="startResize"></div>
 
     <!-- Panel content -->
-    <div class="panel-content">
+    <div class="panel-content flex col flex1">
       <!-- Header -->
-      <div class="panel-header">
-        <Button
-          @click="$emit('close')"
-          icon="arrow-line-right"
-          size="sm"
-          variant="flat"
-          color="neutral-40" />
-        <h3 class="panel-title">
-          {{
-            isMultiMode
-              ? $t("media_explorer.panel.selected_count", {
-                  count: selectedMedias.length,
-                })
-              : $t("media_explorer.panel.overview")
-          }}
-        </h3>
-      </div>
 
-      <div class="flex panel-header-actions">
-        <!-- Actions for single media (edition etc...)-->
-        <div v-if="!isMultiMode" class="button-group" ref="panelActions">
-          <Button
-            v-for="action in singleMediaActions"
-            :key="action.id"
-            :to="action.to"
-            :label="action.label"
-            :icon="action.icon"
+      <header class="panel-header">
+        <div class="panel-header-title flex align-center">
+          <!-- <Button
+            @click="$emit('close')"
+            icon="arrow-line-right"
             size="sm"
-            variant="outline"
-            :color="action.color || 'primary'"
-            class="header-action-button"
-            @click="handleActionClick(action)" />
+            variant="flat"
+            color="neutral-40" /> -->
+          <h3 class="panel-title">
+            {{
+              isMultiMode
+                ? $t("media_explorer.panel.selected_count", {
+                    count: selectedMedias.length,
+                  })
+                : $t("media_explorer.panel.overview")
+            }}
+          </h3>
         </div>
-        <div v-else></div>
-      </div>
+
+        <div class="flex panel-header-actions" v-if="!isMultiMode">
+          <!-- Actions for single media (edition etc...)-->
+          <div class="button-group" ref="panelActions">
+            <Button
+              v-for="action in singleMediaActions"
+              :key="action.id"
+              :to="action.to"
+              :label="action.label"
+              :icon="action.icon"
+              size="sm"
+              variant="outline"
+              :color="action.color || 'primary'"
+              class="header-action-button"
+              @click="handleActionClick(action)" />
+          </div>
+        </div>
+      </header>
 
       <!-- Multi-selection mode -->
       <MediaExplorerRightPanelMulti
@@ -350,7 +352,7 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-width: 300px;
+  min-width: 400px;
   max-width: 800px;
 
   .button-group-right {
@@ -387,34 +389,36 @@ export default {
   background: transparent;
 }
 
-.panel-content {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding-left: 0px;
-}
+// .panel-header {
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   padding: 0 0.5rem;
+//   border: var(--border-block, 1px solid var(--neutral-30));
+//   background-color: var(--primary-soft);
+//   margin: 0.5em;
+//   height: 50px;
+// }
 
 .panel-header {
+  border-bottom: var(--border-block);
+  padding: 1rem;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 0.5rem;
-  border: var(--border-block, 1px solid var(--neutral-30));
+  flex-direction: column;
+  gap: 0.5rem;
   background-color: var(--primary-soft);
-  margin: 0.5em;
-  height: 50px;
 }
 
 .panel-header h3 {
   padding: 0;
-  padding-left: 0.5rem;
+  //padding-left: 0.5rem;
 }
 
 .panel-header-actions {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 2px 0.5em;
+  // padding: 2px 0.5em;
   //overflow: auto !important;
 }
 
@@ -444,6 +448,12 @@ export default {
 .header-action-button {
   height: 32px;
   font-size: 0.875rem;
+}
+
+@media only screen and (max-width: 1500px) {
+  .media-explorer-right-panel {
+    animation: none;
+  }
 }
 
 @media only screen and (max-width: 1100px) {

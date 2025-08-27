@@ -1,5 +1,5 @@
 <template>
-  <div class="media-explorer-right-panel-item">
+  <div class="media-explorer-right-panel-item flex col flex1">
     <!-- Media overview content -->
     <div class="panel-body">
       <div class="media-overview">
@@ -396,9 +396,6 @@ export default {
 
 <style scoped>
 .media-explorer-right-panel-item {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
 }
 
 .panel-body {

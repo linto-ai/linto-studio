@@ -150,6 +150,7 @@ export default function createMediaModule(scope) {
       async deleteMedias({ commit }, ids) {
         // todo api
         commit("deleteMedias", ids)
+        commit("clearSelectedMedias")
       },
       async deleteSelected({ state, dispatch }) {
         const ids = state.selectedMedias.map((m) => m._id)
