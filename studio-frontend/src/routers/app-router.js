@@ -738,7 +738,12 @@ let router = new Router({
   ],
 })
 
+router.afterEach((to, from) => {
+  store.dispatch("system/setIsLoading", false)
+})
+
 router.beforeEach(async (to, from, next) => {
+  store.dispatch("system/setIsLoading", true)
   const randomId = Math.random().toString(36).substring(7)
   const routerDebug = customDebug("vue:debug:router:" + randomId)
   const enableSession = getEnv("VUE_APP_ENABLE_SESSION") === "true"
