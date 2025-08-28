@@ -562,6 +562,8 @@ export default {
   overflow-y: auto;
   padding: 0.25rem 0.5rem;
   position: relative;
+  container-type: size;
+  container-name: medias-list;
 }
 
 .media-explorer__body .media-explorer-right-panel {

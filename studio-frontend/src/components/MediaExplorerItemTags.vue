@@ -58,7 +58,7 @@ export default {
   data() {
     return {
       loadingTagId: null,
-      showAllTags: false,
+      showAllTags: true,
     }
   },
   computed: {
