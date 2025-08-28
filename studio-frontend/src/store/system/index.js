@@ -91,7 +91,6 @@ const actions = {
     commit("setIsMobile", isMobile)
   },
   setIsLoading({ commit }, isLoading) {
-    console.log("isloading", isLoading)
     commit("setIsLoading", isLoading)
   },
 }

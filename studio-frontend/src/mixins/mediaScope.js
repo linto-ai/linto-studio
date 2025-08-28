@@ -23,6 +23,9 @@ export const mediaScopeMixin = {
     selectedTagsIds() {
       return this.$store.state[this.storeScope].selectedTagIds
     },
+    searchValue() {
+      return this.$store.getters[`${this.storeScope}/search`]
+    },
   },
   methods: {
     clearSelectedMedias() {

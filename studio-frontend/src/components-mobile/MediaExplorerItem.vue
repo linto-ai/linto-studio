@@ -107,10 +107,6 @@ export default {
       type: Object,
       required: true,
     },
-    searchValue: {
-      type: String,
-      default: "",
-    },
   },
   data() {
     return {

@@ -1,5 +1,5 @@
 <template>
-  <div class="media-explorer-header" :style="{ top: formattedStickyTop }">
+  <div class="media-explorer-header">
     <div class="media-explorer-header__content">
       <div class="flex flex-1 row align-center gap-medium">
         <div class="media-explorer-header__selection">
@@ -70,46 +70,25 @@ export default {
       type: Boolean,
       default: false,
     },
-    stickyTopOffset: {
-      type: [Number, String],
-      default: 0,
-    },
     // All medias for tag filtering (including filtered ones)
     allMedias: {
       type: Array,
       default: () => [],
     },
-    // Initial search value from URL
-    searchValue: {
-      type: String,
-      default: "",
-    },
   },
   computed: {
-    formattedStickyTop() {
-      if (typeof this.stickyTopOffset === "number") {
-        return `${this.stickyTopOffset}px`
-      }
-      return this.stickyTopOffset
-    },
     getTags() {
       const tags = this.$store.getters["tags/getTags"]
       return tags
     },
-    // Computed property for store search value to watch it properly
-    storeSearchValue() {
-      return this.$store.getters[`${this.storeScope}/search`]
-    },
     // Use computed property instead of data to ensure reactivity
     search: {
       get() {
-        // Priority: local input value > searchValue prop > store value > empty string
         if (this._localSearch !== undefined && this._localSearch !== null) {
           return this._localSearch
         }
 
-        const value = this.searchValue || this.storeSearchValue || ""
-        return value
+        return this.searchValue || ""
       },
       set(value) {
         this._localSearch = value
@@ -123,15 +102,6 @@ export default {
   },
   mounted() {},
   watch: {
-    // Watch for external changes and reset local value to allow sync
-    searchValue: {
-      handler(newValue, oldValue) {
-        if (newValue !== oldValue && newValue !== this._localSearch) {
-          this._localSearch = newValue
-        }
-      },
-      immediate: false,
-    },
     // Watch store search value properly using computed property
     storeSearchValue: {
       handler(storeValue) {

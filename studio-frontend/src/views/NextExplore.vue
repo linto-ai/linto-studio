@@ -3,6 +3,7 @@
     <MediaExplorer
       :medias="medias"
       :loading="loading"
+      :loadingNextPage="loadingNextPage"
       enable-pagination
       class="relative"
       @load-more="handleLoadMore" />
@@ -33,6 +34,7 @@ export default {
   data() {
     return {
       loading: true,
+      loadingNextPage: false,
       currentOperation: null,
       observer: null,
     }
@@ -54,19 +56,18 @@ export default {
       this.loading = false
     },
     async handleLoadMore() {
+      this.loadingNextPage = true
       await this.$store.dispatch(`${this.storeScope}/loadNextPage`)
-    },
-    async loadMedias() {
-      return await this.$store.dispatch(`${this.storeScope}/load`, {})
+      this.loadingNextPage = false
     },
   },
   watch: {
-    async search(value) {
+    async search() {
       this.loading = true
       await this.$store.dispatch(`${this.storeScope}/load`, {})
       this.loading = false
     },
-    async selectedTagsIds(value) {
+    async selectedTagsIds(newValue, oldvalue) {
       this.loading = true
       await this.$store.dispatch(`${this.storeScope}/load`, {})
       this.loading = false

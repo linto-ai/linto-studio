@@ -93,11 +93,11 @@ export default {
   props: {
     initialWidth: {
       type: Number,
-      default: 400,
+      default: 500,
     },
     minWidth: {
       type: Number,
-      default: 600,
+      default: 500,
     },
     maxWidth: {
       type: Number,

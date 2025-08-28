@@ -42,7 +42,9 @@ export async function apiGetGenericConversationsList(
     throw getConversations.error
   }
 
-  getConversations.data.hasMore = getConversations.data.length == pageSize
+  getConversations.data.hasMore =
+    getConversations.data.list.length == pageSize &&
+    pageSize * page < getConversations.data.count
   return getConversations.data // {count, list, hasMore}
 }
 

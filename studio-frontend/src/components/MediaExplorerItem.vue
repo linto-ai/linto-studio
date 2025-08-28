@@ -154,10 +154,6 @@ export default {
       type: Object,
       required: true,
     },
-    searchValue: {
-      type: String,
-      default: "",
-    },
     maxVisibleTags: {
       type: Number,
       default: 2,

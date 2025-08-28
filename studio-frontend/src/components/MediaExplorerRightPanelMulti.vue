@@ -83,7 +83,7 @@
         <InputSelector
           mode="tags"
           :tags="getTags"
-          :selectedTagsIds="selectedMediaTags.map((t) => t._id)"
+          :selectedTagsIds="selectedTagsIds"
           @create="handleCreateAndAddTag"
           @add="handleAddTagToAll"
           @remove="handleRemoveTagFromAll"
