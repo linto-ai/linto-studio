@@ -25,7 +25,7 @@
             :emoji="tag.emoji"
             :color="tag.color"
             :count="tag.mediaCount"
-            :active="selectedTags.some((t) => t._id === tag._id)"
+            :active="selectedTagsIds.includes(tag._id)"
             size="xs"
             @click="handleTagClick(tag)" />
         </li>
@@ -36,8 +36,10 @@
 
 <script>
 import { mapGetters } from "vuex"
+import { mediaScopeMixin } from "@/mixins/mediaScope"
 
 export default {
+  mixins: [mediaScopeMixin],
   name: "MediaExplorerMenuLabels",
   components: {},
   data() {
@@ -61,7 +63,6 @@ export default {
       orgTags: "getTags",
       sharedTags: "getSharedTags",
       favoritesTags: "getFavoritesTags",
-      selectedTags: "getExploreSelectedTags",
     }),
     tags() {
       const routeName = this.$route?.name || ""
@@ -74,18 +75,12 @@ export default {
         return this.orgTags
       }
     },
-    selectedTagsAsIds() {
-      return this.selectedTags.map((tag) => tag._id)
-    },
-    filteredTags() {
-      return this.tags.filter((tag) => !this.selectedTags.includes(tag._id))
-    },
     orderedTags() {
       return [...this.tags]
         .sort((a, b) => a.name.localeCompare(b.name))
         .sort((a, b) => b.mediaCount - a.mediaCount)
         .sort((a, b) => {
-          return this.selectedTagsAsIds.includes(a._id) ? -1 : 1
+          return this.selectedTagsIds.includes(a._id) ? -1 : 1
         })
     },
   },
@@ -94,7 +89,7 @@ export default {
       return tag.color
     },
     handleTagClick(tag) {
-      this.$store.dispatch("tags/toggleTag", tag)
+      this.toggleSelectedTag(tag)
     },
     async handleTagSubmit(tag) {
       await this.$store.dispatch("tags/createTag", tag)

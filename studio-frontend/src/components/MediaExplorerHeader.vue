@@ -33,7 +33,7 @@
         <div class="media-explorer-header__filters">
           <InputSelector
             v-model="search"
-            :selected-tags="selectedTags"
+            :selectedTagsIds="selectedTagsIds"
             :tags="getTags"
             :allow-create="false"
             id="search"
@@ -96,13 +96,6 @@ export default {
       const tags = this.$store.getters["tags/getTags"]
       return tags
     },
-    selectedTags() {
-      const selectedTags = this.$store.getters["tags/getExploreSelectedTags"]
-      const uniqueTags = Array.from(
-        new Set(selectedTags.map((tag) => tag._id)),
-      ).map((id) => selectedTags.find((tag) => tag._id === id))
-      return uniqueTags
-    },
     // Computed property for store search value to watch it properly
     storeSearchValue() {
       return this.$store.getters[`${this.storeScope}/search`]
@@ -164,13 +157,11 @@ export default {
     },
 
     handleAddTag(tag) {
-      this.$store.dispatch("tags/toggleTag", tag)
-      this.$emit("tags-changed")
+      this.toggleSelectedTag(tag)
     },
 
     handleRemoveTag(tag) {
-      this.$store.dispatch("tags/toggleTag", tag)
-      this.$emit("tags-changed")
+      this.toggleSelectedTag(tag)
     },
   },
 }

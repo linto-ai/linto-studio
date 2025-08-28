@@ -114,6 +114,7 @@ export default function createMediaModule(scope) {
             page,
             text: getters.search,
             title: getters.search,
+            tags: getters.selectedTagIds,
           })
 
           if (append) commit("appendMedias", data.list)

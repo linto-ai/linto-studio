@@ -10,12 +10,8 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters, mapActions } from "vuex"
-import { bus } from "@/main.js"
 import LayoutV2 from "@/layouts/v2-layout.vue"
-import SidebarFilters from "@/components/SidebarFilters.vue"
 import MediaExplorer from "@/components/MediaExplorer.vue"
-import { fromConversations } from "@/store/inbox"
 
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { convRoleMixin } from "@/mixins/convRole.js"
@@ -25,7 +21,6 @@ export default {
   name: "NextExplore",
   components: {
     LayoutV2,
-    SidebarFilters,
     MediaExplorer,
   },
   mixins: [orgaRoleMixin, convRoleMixin, mediaScopeMixin],
@@ -61,9 +56,17 @@ export default {
     async handleLoadMore() {
       await this.$store.dispatch(`${this.storeScope}/loadNextPage`)
     },
+    async loadMedias() {
+      return await this.$store.dispatch(`${this.storeScope}/load`, {})
+    },
   },
   watch: {
     async search(value) {
+      this.loading = true
+      await this.$store.dispatch(`${this.storeScope}/load`, {})
+      this.loading = false
+    },
+    async selectedTagsIds(value) {
       this.loading = true
       await this.$store.dispatch(`${this.storeScope}/load`, {})
       this.loading = false

@@ -71,7 +71,7 @@
               v-if="!isTagManagementReadOnly"
               mode="tags"
               :tags="getTags"
-              :selected-tags="selectedMediaTags"
+              :selectedTagsIds="selectedMediaTags.map((t) => t._id)"
               @create="handleCreateTag"
               @remove="handleRemoveTag"
               @add="handleAddTag" />

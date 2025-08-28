@@ -20,6 +20,9 @@ export const mediaScopeMixin = {
     isSelectAll() {
       return this.$store.state[this.storeScope].autoselectMedias
     },
+    selectedTagsIds() {
+      return this.$store.state[this.storeScope].selectedTagIds
+    },
   },
   methods: {
     clearSelectedMedias() {
@@ -36,6 +39,12 @@ export const mediaScopeMixin = {
     },
     deleteMedias(ids) {
       return this.$store.dispatch(`${this.storeScope}/deleteMedias`, ids)
+    },
+    toggleSelectedTag(tag) {
+      return this.$store.dispatch(
+        `${this.storeScope}/toggleSelectedTagId`,
+        tag._id,
+      )
     },
   },
 }

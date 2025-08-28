@@ -30,6 +30,12 @@
                 : $t("media_explorer.panel.overview")
             }}
           </h3>
+          <Button
+            icon="x"
+            size="sm"
+            variant="flat"
+            color="neutral-40"
+            @click="close" />
         </div>
 
         <div class="flex panel-header-actions" v-if="!isMultiMode">
@@ -203,6 +209,9 @@ export default {
     }
   },
   methods: {
+    close(e) {
+      this.clearSelectedMedias()
+    },
     startResize(event) {
       this.isResizing = true
       this.startX = event.clientX || event.touches[0].clientX

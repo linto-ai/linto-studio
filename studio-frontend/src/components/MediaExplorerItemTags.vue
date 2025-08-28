@@ -31,8 +31,10 @@
 
 <script>
 import { mapState } from "vuex"
+import { mediaScopeMixin } from "@/mixins/mediaScope"
 
 export default {
+  mixins: [mediaScopeMixin],
   name: "MediaExplorerItemTags",
   components: {},
   props: {
@@ -107,11 +109,7 @@ export default {
       return tag.color || "var(--neutral-20)"
     },
     handleTagClick(tag) {
-      if (this.$store.getters["tags/isExploreSelectedTag"](tag._id)) {
-        this.$store.dispatch("tags/removeExploreSelectedTag", tag)
-      } else {
-        this.$store.dispatch("tags/addExploreSelectedTag", tag)
-      }
+      this.toggleSelectedTag(tag)
     },
     toggleShowAll(event) {
       if (event) {
