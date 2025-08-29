@@ -19,7 +19,7 @@
     min-width: 10rem;
     box-sizing: border-box;
     position: relative;
-    height: 38.5px;
+    height: 40.5px;
     border-radius: 4px;
     font-size: 0.95em;
     padding: 0.2em 0.5em;
@@ -157,7 +157,14 @@
       cursor: pointer;
     }
     color: var(--text-secondary);
-    margin-bottom: 4px;
+    margin-bottom: 0.5rem;
+
+    // display: block;
+    font-weight: 600;
+    font-size: 0.875rem;
+    // color: var(--text-primary, #222);
+    line-height: 1.2;
+    // margin: 0;
   }
 
   .form-field-checkbox .form-label {

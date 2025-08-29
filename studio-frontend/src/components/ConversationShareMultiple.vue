@@ -1,7 +1,5 @@
 <template>
-  <Fragment
-    ref="conversation-share"
-    v-click-outside="close">
+  <Fragment ref="conversation-share" v-click-outside="close">
     <Modal
       v-model="showShareList"
       :title="$t('share_menu.button')"
@@ -20,12 +18,10 @@
           :label="$t('share_menu.button')"
           @click="open"></Button>
       </template>
-      
+
       <template #content>
         <!-- Loading state -->
-        <div
-          v-if="loading"
-          class="conversation-share__loading">
+        <div v-if="loading" class="conversation-share__loading">
           <div class="conversation-share__loading-spinner">
             <span class="icon loading"></span>
           </div>
@@ -78,9 +74,7 @@
             <h4 class="conversation-share__section-title">
               {{ $t("share_menu.invite_new_user") }}
             </h4>
-            <form
-              class="conversation-share__invite-form"
-              @submit="inviteUser">
+            <form class="conversation-share__invite-form" @submit="inviteUser">
               <div class="conversation-share__invite-input-group">
                 <input
                   type="email"
@@ -93,7 +87,11 @@
                   :icon="'plus'"
                   :label="$t('share_menu.invite_user_button')"
                   :disabled="!isValidEmail || !enable_inscription"
-                  :title="enable_inscription ? null : $t('share_menu.inscription_disabled')"
+                  :title="
+                    enable_inscription
+                      ? null
+                      : $t('share_menu.inscription_disabled')
+                  "
                   color="primary"
                   size="md"
                   class="conversation-share__invite-button" />
@@ -104,6 +102,7 @@
           <!-- Search results -->
           <SearchUsersListComponent
             v-if="searchMemberValue.value"
+            onlySlot
             ref="conversation-share-search"
             :searchMemberValue="searchMemberValue.value"
             :currentUser="[
@@ -119,7 +118,13 @@
                 <div class="conversation-share__user-actions">
                   <select
                     :value="slotProps.user.right"
-                    @change="(event) => updateUserRights(slotProps.user, parseInt(event.target.value))"
+                    @change="
+                      (event) =>
+                        updateUserRights(
+                          slotProps.user,
+                          parseInt(event.target.value),
+                        )
+                    "
                     class="conversation-share__right-select">
                     <option
                       v-for="right in getRightsList(slotProps.user._id)"
@@ -162,7 +167,10 @@
                     <select
                       v-else
                       :value="user.right"
-                      @change="(event) => updateUserRights(user, parseInt(event.target.value))"
+                      @change="
+                        (event) =>
+                          updateUserRights(user, parseInt(event.target.value))
+                      "
                       class="conversation-share__right-select">
                       <option
                         v-for="right in getRightsList(user._id)"
@@ -201,7 +209,10 @@
                     <select
                       v-else
                       :value="user.right"
-                      @change="(event) => updateUserRights(user, parseInt(event.target.value))"
+                      @change="
+                        (event) =>
+                          updateUserRights(user, parseInt(event.target.value))
+                      "
                       class="conversation-share__right-select">
                       <option
                         v-for="right in getRightsList(user._id)"
@@ -405,8 +416,10 @@ export default {
       return this.rightsList
     },
     getRightLabel(right) {
-      const rightItem = this.rightsList.find(item => item.value === right)
-      return rightItem ? rightItem.txt : this.$i18n.t("conversation.members_right_txt.mutiple_values")
+      const rightItem = this.rightsList.find((item) => item.value === right)
+      return rightItem
+        ? rightItem.txt
+        : this.$i18n.t("conversation.members_right_txt.mutiple_values")
     },
     canUpdateRights(user) {
       return true // TODO
@@ -556,9 +569,10 @@ export default {
     flex: 1;
     min-width: 0;
     padding: 0.5rem 0.75rem;
-    border: 1px solid var(--neutral-30);
-    border-top-left-radius: var(--border-radius-sm);
-    border-bottom-left-radius: var(--border-radius-sm);
+    // border: 1px solid var(--neutral-30);
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    // border-bottom-left-radius: var(--border-radius-sm);
     border-right: none;
     font-size: 0.875rem;
     color: var(--text-primary);
@@ -585,7 +599,7 @@ export default {
 
   &__right-select {
     padding: 0.5rem;
-    border: 1px solid var(--neutral-30);
+    border: 1px solid var(--neutral-50);
     border-radius: var(--border-radius-sm);
     background-color: var(--background-primary);
     color: var(--text-primary);
@@ -645,12 +659,12 @@ export default {
     padding: 0.75rem;
     background-color: var(--background-secondary);
     border-radius: var(--border-radius-sm);
-    border: 1px solid var(--neutral-20);
+    border: 1px solid var(--neutral-50);
     transition: all 0.2s ease;
 
     &:hover {
-      background-color: var(--background-tertiary);
-      border-color: var(--neutral-30);
+      // background-color: var(--background-tertiary);
+      //border-color: var(--neutral-30);
     }
   }
 
