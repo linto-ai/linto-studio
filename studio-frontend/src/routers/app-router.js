@@ -25,6 +25,16 @@ const defaultProps = {
 
 Vue.use(Router)
 
+function handleGenericScope(to) {
+  if (to.meta.favorites) {
+    store.commit("organizations/setScope", "favorites")
+  } else if (to.meta.shared) {
+    store.commit("organizations/setScope", "shared")
+  } else {
+    store.commit("organizations/setScope", "organization")
+  }
+}
+
 // Helper functions for router guards
 const authGuards = {
   isAuthenticated: () => {
@@ -70,13 +80,6 @@ const authGuards = {
       store.getters["organizations/getDefaultOrganizationId"]
 
     // handle generic scope
-    if (to.meta.favorites) {
-      store.commit("organizations/setScope", "favorites")
-    } else if (to.meta.shared) {
-      store.commit("organizations/setScope", "shared")
-    } else {
-      store.commit("organizations/setScope", "organization")
-    }
 
     if (!to.meta?.userPage && !to.meta?.backoffice) {
       if (
@@ -100,6 +103,7 @@ const authGuards = {
           "organizations/setCurrentOrganizationScope",
           to.params.organizationId,
         )
+        handleGenericScope(to)
         return { redirect: false }
       }
     } else {
@@ -107,6 +111,7 @@ const authGuards = {
         "organizations/setCurrentOrganizationScope",
         defaultOrganizationId,
       )
+      handleGenericScope(to)
       return { redirect: false }
     }
   },

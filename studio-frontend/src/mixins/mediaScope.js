@@ -15,13 +15,13 @@ export const mediaScopeMixin = {
       "getCurrentOrganizationScope",
     ]),
     selectedMedias() {
-      return this.$store.state[this.storeScope].selectedMedias
+      return this.$store.state[this.storeScope].selectedMedias ?? []
     },
     isSelectAll() {
-      return this.$store.state[this.storeScope].autoselectMedias
+      return this.$store.state[this.storeScope].autoselectMedias ?? false
     },
     selectedTagsIds() {
-      return this.$store.state[this.storeScope].selectedTagIds
+      return this.$store.state[this.storeScope].selectedTagIds ?? []
     },
     searchValue() {
       return this.$store.getters[`${this.storeScope}/search`]

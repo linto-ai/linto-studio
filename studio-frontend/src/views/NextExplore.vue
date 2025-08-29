@@ -1,6 +1,7 @@
 <template>
   <LayoutV2 customClass="explore-next">
     <MediaExplorer
+      v-if="medias"
       :medias="medias"
       :loading="loading"
       :loadingNextPage="loadingNextPage"
@@ -11,6 +12,8 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex"
+
 import LayoutV2 from "@/layouts/v2-layout.vue"
 import MediaExplorer from "@/components/MediaExplorer.vue"
 
@@ -46,6 +49,7 @@ export default {
     search() {
       return this.$store.getters[`${this.storeScope}/search`]
     },
+    ...mapGetters("system", { pageIsLoading: "isLoading" }),
   },
   mounted() {
     this.init()
@@ -63,11 +67,13 @@ export default {
   },
   watch: {
     async search() {
+      if (this.pageIsLoading) return
       this.loading = true
       await this.$store.dispatch(`${this.storeScope}/load`, {})
       this.loading = false
     },
     async selectedTagsIds(newValue, oldvalue) {
+      if (this.pageIsLoading) return
       this.loading = true
       await this.$store.dispatch(`${this.storeScope}/load`, {})
       this.loading = false

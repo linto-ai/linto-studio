@@ -31,11 +31,6 @@ const actions = {
   },
   async setCurrentOrganizationScope({ commit, dispatch }, organizationId) {
     let organization = await apiGetOrganizationById(organizationId)
-    commit("setCurrentOrganization", organization)
-    commit("setCurrentOrganizationScope", organizationId)
-
-    // Clear selected tags when switching organizations
-    await dispatch("tags/clearExploreSelectedTags", null, { root: true })
 
     const scope = `organizations/${organizationId}/conversations`
     if (!store.hasModule(`${organizationId}/conversations`)) {
@@ -44,6 +39,12 @@ const actions = {
         createMediaModule(scope),
       )
     }
+
+    commit("setCurrentOrganization", organization)
+    commit("setCurrentOrganizationScope", organizationId)
+
+    // Clear selected tags when switching organizations
+    await dispatch("tags/clearExploreSelectedTags", null, { root: true })
   },
 }
 
