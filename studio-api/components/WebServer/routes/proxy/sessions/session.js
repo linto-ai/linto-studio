@@ -124,8 +124,18 @@ module.exports = (webServer) => {
             executeAfterResult: [
               (jsonString) => {
                 try {
-                  const session = JSON.parse(jsonString)
-                  if (session.visibility === "public") return jsonString
+                  let session = JSON.parse(jsonString)
+
+                  if (session.visibility === "public") {
+                    session.channels.forEach((channel) => {
+                      if (channel.streamEndpoints) {
+                        delete channel.streamEndpoints
+                      }
+                    })
+
+                    return JSON.stringify(session)
+                  }
+
                   throw new Unauthorized()
                 } catch (err) {
                   throw err
