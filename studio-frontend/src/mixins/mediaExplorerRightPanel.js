@@ -5,19 +5,12 @@ import {
 } from "@/api/conversation.js"
 
 export const mediaExplorerRightPanelMixin = {
-  props: {
-    readOnlyTags: {
-      type: Boolean,
-      default: false,
-    },
-  },
+  props: {},
   computed: {
-    ...mapGetters("tags", ["getTags", "getTagById"]),
-
-    // Determine if tag management should be read-only
-    isTagManagementReadOnly() {
-      return this.readOnlyTags
+    readOnly() {
+      return this.selectedMedias.some((m) => this.mediaRight(m._id) < 4)
     },
+    ...mapGetters("tags", ["getTags", "getTagById"]),
   },
 
   methods: {

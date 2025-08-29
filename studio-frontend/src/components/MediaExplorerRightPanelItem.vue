@@ -8,6 +8,7 @@
           <FormInput
             inputFullWidth
             :field="titleField"
+            :readonly="readOnly"
             v-model="titleField.value"
             with-confirmation
             @on-confirm="handleTitleUpdate" />
@@ -18,6 +19,7 @@
           <FormInput
             inputFullWidth
             :field="descriptionField"
+            :readonly="readOnly"
             v-model="descriptionField.value"
             textarea
             with-confirmation
@@ -68,10 +70,11 @@
           <h4 class="section-title">{{ $t("media_explorer.panel.tags") }}</h4>
           <div class="tags-container">
             <InputSelector
-              v-if="!isTagManagementReadOnly"
+              v-if="!readOnly"
               mode="tags"
               :tags="getTags"
               :selectedTagsIds="selectedMediaTags.map((t) => t._id)"
+              :readonly="readOnly"
               @create="handleCreateTag"
               @remove="handleRemoveTag"
               @add="handleAddTag" />
@@ -128,7 +131,7 @@
           </div>
         </div>
 
-        <div class="media-section">
+        <div class="media-section" v-if="!readOnly">
           <h4 class="section-title">
             {{ $t("media_explorer.panel.danger_zone") }}
           </h4>

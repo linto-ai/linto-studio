@@ -87,7 +87,7 @@
           @create="handleCreateAndAddTag"
           @add="handleAddTagToAll"
           @remove="handleRemoveTagFromAll"
-          :readonly="isTagManagementReadOnly"
+          :readonly="readOnly"
           :placeholder="$t('media_explorer.panel.add_tag_to_all')" />
       </div>
 
@@ -99,7 +99,7 @@
       </div>
     </div>
 
-    <div class="media-section">
+    <div class="media-section" v-if="!readOnly">
       <h4 class="section-title">
         {{ $t("media_explorer.panel.danger_zone") }}
       </h4>
@@ -375,6 +375,7 @@ export default {
 .media-explorer-right-panel-multi {
   padding: 1rem;
   gap: 1.5rem;
+  overflow-y: auto;
 }
 
 .media-section {

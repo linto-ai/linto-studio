@@ -83,7 +83,6 @@
             <MediaExplorerRightPanel
               v-if="selectedMedias.length > 0 && currentOrganizationScope"
               :currentOrganizationScope="currentOrganizationScope"
-              :readonly-tags="readonlyTags"
               @resize="handleRightPanelResize" />
           </template>
         </IsMobile>
@@ -145,11 +144,6 @@ export default {
     error: {
       type: [String, null],
       default: null,
-    },
-    // Read-only mode for tags (favorites/shared views)
-    readonlyTags: {
-      type: Boolean,
-      default: false,
     },
   },
   computed: {

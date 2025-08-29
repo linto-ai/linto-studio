@@ -29,6 +29,44 @@ export default function createMediaModule(scope) {
       getMediaById: (s) => (mediaId) => {
         return s.medias.find((m) => m._id === mediaId)
       },
+      getSelfMediaRight(state, getters, rootState, rootGetters) {
+        return (id) => {
+          const conv = getters.getMediaById(id)
+          if (!conv) {
+            return 0
+          }
+
+          const owner = conv.owner
+          const selfId = rootGetters["user/getUserId"]
+
+          if (!selfId) {
+            console.warn("GetMediaRight, userId is undefined")
+            return 0
+          }
+
+          if (owner == selfId) {
+            return 31
+          }
+
+          const customRights = conv?.organization?.customRights
+          if (customRights) {
+            const selfCustomRights = customRights.find(
+              (r) => r.userId === selfId,
+            )
+            if (selfCustomRights) {
+              return selfCustomRights.right
+            }
+          }
+
+          const orgaRole =
+            rootGetters["organizations/getUserRoleInOrganization"]
+          if (orgaRole >= 4) {
+            return 31
+          }
+
+          return conv.organization.membersRight
+        }
+      },
     },
 
     mutations: {
@@ -110,6 +148,7 @@ export default function createMediaModule(scope) {
         { page = 0, append = false } = {},
       ) {
         try {
+          console.log("load conv", scope, "page", page)
           const data = await apiGetGenericConversationsList(scope, {
             page,
             text: getters.search,

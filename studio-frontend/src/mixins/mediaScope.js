@@ -49,5 +49,10 @@ export const mediaScopeMixin = {
         tag._id,
       )
     },
+    mediaRight(mediaId) {
+      const right =
+        this.$store.getters[`${this.storeScope}/getSelfMediaRight`](mediaId)
+      return right
+    },
   },
 }

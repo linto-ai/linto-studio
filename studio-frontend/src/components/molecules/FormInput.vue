@@ -67,7 +67,7 @@
       <span class="form-field__error">{{ field.error }}</span>
     </div>
   </div>
-  <LabeledValue v-else :label="field.label" :value="modelValue" />
+  <LabeledValue v-else :label="field.label" :value="editValue" />
 </template>
 <script>
 import { Fragment } from "vue-fragment"

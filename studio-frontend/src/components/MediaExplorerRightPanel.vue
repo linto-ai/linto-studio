@@ -57,15 +57,12 @@
       </header>
 
       <!-- Multi-selection mode -->
-      <MediaExplorerRightPanelMulti
-        v-if="isMultiMode"
-        :readOnlyTags="readonlyTags" />
+      <MediaExplorerRightPanelMulti v-if="isMultiMode" />
 
       <!-- Single media mode -->
       <MediaExplorerRightPanelItem
         v-else-if="selectedMediaForOverview"
-        :selectedMedia="selectedMediaForOverview"
-        :readOnlyTags="readonlyTags" />
+        :selectedMedia="selectedMediaForOverview" />
     </div>
   </div>
 </template>
