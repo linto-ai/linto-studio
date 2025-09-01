@@ -5,7 +5,13 @@
     visible>
     <h2 v-if="title" class="loadind-overlay__title">{{ title }}</h2>
     <!-- <span class="icon loading loadind-overlay__icon"></span> -->
-    <VueLoading :active="true" height="32" width="32"></VueLoading>
+    <div class="relative loadind-overlay__loader-container">
+      <VueLoading
+        :active="true"
+        :height="32"
+        :width="32"
+        :is-full-page="false"></VueLoading>
+    </div>
   </div>
 </template>
 <script>
@@ -20,3 +26,10 @@ export default {
   },
 }
 </script>
+
+<style>
+.loadind-overlay__loader-container {
+  height: 36px;
+  width: 36px;
+}
+</style>

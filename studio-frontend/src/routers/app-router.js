@@ -744,7 +744,10 @@ let router = new Router({
 })
 
 router.afterEach((to, from) => {
-  store.dispatch("system/setIsLoading", false)
+  if (!to?.meta?.mainListingPage) {
+    // for media listing, loader is stopped by the page when all requests are done
+    store.dispatch("system/setIsLoading", false)
+  }
 })
 
 router.beforeEach(async (to, from, next) => {

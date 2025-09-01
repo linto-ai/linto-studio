@@ -45,10 +45,10 @@
         <!-- Main content area -->
         <div class="media-explorer__body__content">
           <slot name="before" />
-          <Loading v-if="loading" />
+          <Loading v-if="loading && !pageIsLoading" />
           <!-- Empty state -->
           <div
-            v-else-if="medias.length === 0"
+            v-if="medias.length === 0 && !loading"
             class="media-explorer__body__empty">
             <slot name="empty">
               <div class="empty-state">
@@ -154,6 +154,7 @@ export default {
     ...mapGetters("organizations", {
       currentOrganizationScope: "getCurrentOrganizationScope",
     }),
+    ...mapGetters("system", { pageIsLoading: "isLoading" }),
     selectedCount() {
       const count = this.selectedMedias.length
       return count

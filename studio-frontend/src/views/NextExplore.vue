@@ -58,6 +58,7 @@ export default {
     async init() {
       await this.$store.dispatch(`${this.storeScope}/load`, {})
       this.loading = false
+      this.$store.dispatch("system/setIsLoading", false)
     },
     async handleLoadMore() {
       this.loadingNextPage = true
