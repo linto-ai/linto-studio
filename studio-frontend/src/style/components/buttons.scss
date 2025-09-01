@@ -446,7 +446,7 @@
 
     /* Outline variants */
     &.outline {
-      background-color: transparent;
+      // background-color: transparent;
       border: 1px solid var(--neutral-30, #ddd);
       background-color: var(--background-primary, #fff);
       color: var(--neutral-80);
@@ -469,7 +469,6 @@
       }
 
       &.primary {
-        background-color: transparent;
         border: 1px solid var(--primary-color);
         color: var(--primary-color);
         .icon,

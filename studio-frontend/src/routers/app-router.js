@@ -25,6 +25,16 @@ const defaultProps = {
 
 Vue.use(Router)
 
+function handleGenericScope(to) {
+  if (to.meta.favorites) {
+    store.commit("organizations/setScope", "favorites")
+  } else if (to.meta.shared) {
+    store.commit("organizations/setScope", "shared")
+  } else {
+    store.commit("organizations/setScope", "organization")
+  }
+}
+
 // Helper functions for router guards
 const authGuards = {
   isAuthenticated: () => {
@@ -69,6 +79,8 @@ const authGuards = {
     const defaultOrganizationId =
       store.getters["organizations/getDefaultOrganizationId"]
 
+    // handle generic scope
+
     if (!to.meta?.userPage && !to.meta?.backoffice) {
       if (
         !to.params.organizationId ||
@@ -91,6 +103,7 @@ const authGuards = {
           "organizations/setCurrentOrganizationScope",
           to.params.organizationId,
         )
+        handleGenericScope(to)
         return { redirect: false }
       }
     } else {
@@ -98,6 +111,7 @@ const authGuards = {
         "organizations/setCurrentOrganizationScope",
         defaultOrganizationId,
       )
+      handleGenericScope(to)
       return { redirect: false }
     }
   },
@@ -429,6 +443,7 @@ let router = new Router({
           showInBreadcrumb: true,
           isRoot: true,
         },
+        favorites: true,
       },
     },
     {
@@ -450,24 +465,7 @@ let router = new Router({
           showInBreadcrumb: true,
           isRoot: true,
         },
-      },
-    },
-    {
-      path: "/interface/:organizationId?/old-explore",
-      name: "explore-old",
-      components: {
-        default: () => import("../views/OldExplore.vue"),
-        ...defaultComponents,
-      },
-      props: defaultProps,
-      meta: {
-        mainListingPage: true,
-        breadcrumb: {
-          label: "breadcrumb.exploreOld",
-          parent: null,
-          showInBreadcrumb: true,
-          isRoot: true,
-        },
+        shared: true,
       },
     },
     {
@@ -488,34 +486,6 @@ let router = new Router({
         },
       },
     },
-    {
-      path: "/interface/favorites",
-      name: "favorites",
-      components: {
-        default: () => import("../views/Favorites.vue"),
-        ...defaultComponents,
-      },
-      props: defaultProps,
-      meta: {
-        userPage: true,
-        breadcrumb: {
-          label: "breadcrumb.favorites",
-          parent: null,
-          showInBreadcrumb: true,
-          isRoot: true,
-        },
-      },
-    },
-    // {
-    //   path: "/interface/shared",
-    //   name: "shared with me",
-    //   components: {
-    //     default: () => import("../views/SharedWith.vue"),
-    //     ...defaultComponents,
-    //   },
-    //   props: defaultProps,
-    //   meta: { userPage: true },
-    // },
     {
       path: "/interface/:organizationId?/conversations/create",
       name: "conversations create",
@@ -773,7 +743,15 @@ let router = new Router({
   ],
 })
 
+router.afterEach((to, from) => {
+  if (!to?.meta?.mainListingPage) {
+    // for media listing, loader is stopped by the page when all requests are done
+    store.dispatch("system/setIsLoading", false)
+  }
+})
+
 router.beforeEach(async (to, from, next) => {
+  store.dispatch("system/setIsLoading", true)
   const randomId = Math.random().toString(36).substring(7)
   const routerDebug = customDebug("vue:debug:router:" + randomId)
   const enableSession = getEnv("VUE_APP_ENABLE_SESSION") === "true"
@@ -783,7 +761,6 @@ router.beforeEach(async (to, from, next) => {
 
   try {
     routerDebug("beforeEach from", from.fullPath, "to", to.fullPath)
-    store.dispatch("inbox/clearSelectedMedias")
 
     // Redirect to 404 if sessions are disabled but trying to access session page
     if (!enableSession && to.meta?.sessionPage) {

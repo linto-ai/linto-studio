@@ -13,6 +13,10 @@ import PortalVue from "portal-vue"
 import SessionWS from "@/models/SessionWS.js"
 import Atoms from "./components/atoms/index.js"
 import "./filters/index.js"
+
+import Loading from "vue-loading-overlay"
+
+import "vue-loading-overlay/dist/vue-loading.css"
 //setDefaultEnv() // doesn't work
 
 export const bus = new Vue()
@@ -20,6 +24,7 @@ Vue.use(PortalVue.default)
 Vue.use(vClickOutside)
 Vue.use(Fragment.Plugin)
 Vue.use(Atoms)
+Vue.use(Loading)
 
 Vue.config.productionTip = false
 Vue.prototype.debug = Debug("Vue")

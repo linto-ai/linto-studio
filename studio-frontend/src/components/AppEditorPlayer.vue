@@ -55,7 +55,10 @@ export default {
     }
   },
   async mounted() {
-    await this.initAudioPlayer()
+    document.fonts.ready.then(() => {
+      this.initAudioPlayer()
+    })
+
     bus.$on("refresh_audio_regions", (data) => {
       if (!this.instanceDestroyed) {
         this.updateRegions(data)
@@ -95,6 +98,10 @@ export default {
     bus.$off("player_set_time")
     bus.$off("player-play")
     bus.$off("player-pause")
+    console.log("destroy player")
+    window.removeEventListener("load", (event) => {
+      this.initAudioPlayer()
+    })
   },
   computed: {
     currentTurn() {

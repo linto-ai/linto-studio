@@ -6,13 +6,18 @@
     <div v-else-if="searchMemberValue.length > 0" class="">
       <div class="flex col gap-small">
         <user-info-inline
+          v-if="!onlySlot && user._id !== userInfo._id"
           :user="user"
           :userId="user._id"
           v-for="user of availableUsers"
-          v-if="user._id !== userInfo._id"
           :key="user._id">
           <slot v-bind:user="user"></slot>
         </user-info-inline>
+
+        <slot
+          v-bind:user="user"
+          v-for="user of availableUsers"
+          v-if="onlySlot && user._id !== userInfo._id"></slot>
       </div>
     </div>
   </div>
@@ -26,6 +31,7 @@ export default {
   props: {
     searchMemberValue: { required: true },
     currentUser: { required: true },
+    onlySlot: { type: Boolean, default: false },
   },
   mixins: [debounceMixin],
   data() {

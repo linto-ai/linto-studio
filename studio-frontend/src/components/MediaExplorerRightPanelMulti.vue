@@ -1,28 +1,48 @@
 <template>
-  <div class="media-explorer-right-panel-multi">
+  <div class="media-explorer-right-panel-multi flex col flex1">
     <!-- Selected medias preview -->
     <div class="selected-medias-preview">
       <div class="preview-header">
         <h4 class="section-title">
           {{ $t("media_explorer.panel.selected_medias") }}
         </h4>
-        <Button @click="clearSelection" icon="minus-circle" size="sm" variant="outline" color="neutral-40" />
+        <Button
+          @click="clearSelection"
+          icon="minus-circle"
+          size="sm"
+          variant="outline"
+          color="neutral-40" />
       </div>
 
       <div class="medias-list">
-        <div v-for="media in selectedMedias" :key="media._id" class="media-preview-item">
-          <Avatar :icon="isFromSession(media) ? 'microphone' : 'file-audio'" color="neutral-10" size="sm" />
+        <div
+          v-for="media in selectedMedias"
+          :key="media._id"
+          class="media-preview-item">
+          <Avatar
+            :icon="isFromSession(media) ? 'microphone' : 'file-audio'"
+            color="neutral-10"
+            size="sm" />
           <div class="media-info">
             <span class="media-title">{{ media.title || media.name }}</span>
             <span class="media-date">{{ formatDate(media.created) }}</span>
             <div class="media-tags" v-if="getMediaTags(media).length > 0">
-              <Tooltip v-for="tag in getMediaTags(media)" :key="tag._id" :text="tag.name" position="bottom">
-                <div class="tag-bullet" :style="{ backgroundColor: tag.color || '#ccc' }">
-                </div>
+              <Tooltip
+                v-for="tag in getMediaTags(media)"
+                :key="tag._id"
+                :text="tag.name"
+                position="bottom">
+                <div
+                  class="tag-bullet"
+                  :style="{ backgroundColor: tag.color || '#ccc' }"></div>
               </Tooltip>
             </div>
           </div>
-          <Button @click="removeMediaFromSelection(media)" icon="minus-circle" size="sm" variant="outline"
+          <Button
+            @click="removeMediaFromSelection(media)"
+            icon="minus-circle"
+            size="sm"
+            variant="outline"
             color="neutral-40" />
         </div>
       </div>
@@ -35,9 +55,19 @@
       </h4>
 
       <div class="actions-container">
-        <Button @click="handleBulkDownload" :loading="downloadLoading" :disabled="selectedMedias.length === 0"
-          icon="download" variant="outline" size="sm" class="action-button">
-          {{ downloadLoading ? $t('media_explorer.panel.downloading') : $t('media_explorer.panel.download_selected') }}
+        <Button
+          @click="handleBulkDownload"
+          :loading="downloadLoading"
+          :disabled="selectedMedias.length === 0"
+          icon="download"
+          variant="outline"
+          size="sm"
+          class="action-button">
+          {{
+            downloadLoading
+              ? $t("media_explorer.panel.downloading")
+              : $t("media_explorer.panel.download_selected")
+          }}
         </Button>
       </div>
     </div>
@@ -50,8 +80,14 @@
 
       <!-- Tag management mode -->
       <div class="actions-container">
-        <InputSelector mode="tags" :tags="getTags" :selected-tags="commonTags" @create="handleCreateAndAddTag"
-          @add="handleAddTagToAll" @remove="handleRemoveTagFromAll" :readonly="isTagManagementReadOnly"
+        <InputSelector
+          mode="tags"
+          :tags="getTags"
+          :selectedTagsIds="selectedTagsIds"
+          @create="handleCreateAndAddTag"
+          @add="handleAddTagToAll"
+          @remove="handleRemoveTagFromAll"
+          :readonly="readOnly"
           :placeholder="$t('media_explorer.panel.add_tag_to_all')" />
       </div>
 
@@ -63,27 +99,39 @@
       </div>
     </div>
 
-
-
-    <div class="media-section">
-      <h4 class="section-title">{{ $t("media_explorer.panel.danger_zone") }}</h4>
+    <div class="media-section" v-if="!readOnly">
+      <h4 class="section-title">
+        {{ $t("media_explorer.panel.danger_zone") }}
+      </h4>
       <div class="actions-container">
-        <ConversationShareMultiple class="header-action-button"
+        <ConversationShareMultiple
+          class="header-action-button"
           :selectedConversations="selectedMedias"
           :currentOrganizationScope="currentOrganizationScope" />
-        <Button @click="handleDelete" :label="$t('media_explorer.delete')" icon="trash" variant="outline" size="sm"
-          color="tertiary" class="header-action-button" />
+        <Button
+          @click="handleDelete"
+          :label="$t('media_explorer.delete')"
+          icon="trash"
+          variant="outline"
+          size="sm"
+          color="tertiary"
+          class="header-action-button" />
       </div>
     </div>
 
     <!-- Delete modal for multiple medias -->
-    <ModalDeleteConversations :visible="showDeleteModal" :medias="selectedMedias" 
-      @close="handleDeleteModalClose" @confirm="handleDeleteConfirm" @cancel="handleDeleteCancel" />
+    <ModalDeleteConversations
+      :visible="showDeleteModal"
+      :medias="selectedMedias"
+      @close="handleDeleteModalClose"
+      @confirm="handleDeleteConfirm"
+      @cancel="handleDeleteCancel" />
   </div>
 </template>
 
 <script>
 import { mapGetters } from "vuex"
+import { mediaScopeMixin } from "@/mixins/mediaScope"
 
 import Button from "@/components/atoms/Button.vue"
 import Badge from "@/components/atoms/Badge.vue"
@@ -98,7 +146,7 @@ import ChipTag from "./atoms/ChipTag.vue"
 
 export default {
   name: "MediaExplorerRightPanelMulti",
-  mixins: [mediaExplorerRightPanelMixin],
+  mixins: [mediaExplorerRightPanelMixin, mediaScopeMixin],
   components: {
     Button,
     Badge,
@@ -109,13 +157,12 @@ export default {
     ModalDeleteConversations,
     ConversationShareMultiple,
   },
-  props: {
-  },
+  props: {},
   data() {
     return {
       downloadLoading: false,
-      bulkTitle: '',
-      bulkDescription: '',
+      bulkTitle: "",
+      bulkDescription: "",
       showDeleteModal: false,
     }
   },
@@ -124,17 +171,6 @@ export default {
     ...mapGetters("organizations", {
       currentOrganizationScope: "getCurrentOrganizationScope",
     }),
-    selectedMedias() {
-      // Get the selected media IDs
-      const selectedMediaIds = this.$store.state.inbox.selectedMedias.map(
-        (media) => media._id,
-      )
-
-      // Return the updated versions from the main media store
-      return selectedMediaIds
-        .map((mediaId) => this.$store.getters["inbox/getMediaById"](mediaId))
-        .filter((media) => !!media) // Remove any that might not exist anymore
-    },
     commonTags() {
       if (this.selectedMedias.length === 0) return []
 
@@ -155,11 +191,11 @@ export default {
   },
   methods: {
     clearSelection() {
-      this.$store.dispatch("inbox/clearSelectedMedias")
+      this.clearSelectedMedias()
     },
 
     removeMediaFromSelection(media) {
-      this.$store.commit("inbox/removeSelectedMedia", media)
+      this.$store.commit(`${this.storeScope}/removeSelectedMedia`, media)
     },
 
     handleBulkExport() {
@@ -220,21 +256,23 @@ export default {
       if (!newTitle.trim() || this.selectedMedias.length === 0) return
 
       try {
-        const promises = this.selectedMedias.map(media =>
-          this.updateMediaProperty(media._id, 'title', newTitle)
+        const promises = this.selectedMedias.map((media) =>
+          this.updateMediaProperty(media._id, "title", newTitle),
         )
         await Promise.all(promises)
 
-        this.$store.dispatch('system/addNotification', {
-          type: 'success',
-          message: this.$t('media_explorer.panel.bulk_title_updated', { count: this.selectedMedias.length })
+        this.$store.dispatch("system/addNotification", {
+          type: "success",
+          message: this.$t("media_explorer.panel.bulk_title_updated", {
+            count: this.selectedMedias.length,
+          }),
         })
-        this.bulkTitle = ''
+        this.bulkTitle = ""
       } catch (error) {
-        console.error('Bulk title update error:', error)
-        this.$store.dispatch('system/addNotification', {
-          type: 'error',
-          message: this.$t('media_explorer.panel.bulk_update_error')
+        console.error("Bulk title update error:", error)
+        this.$store.dispatch("system/addNotification", {
+          type: "error",
+          message: this.$t("media_explorer.panel.bulk_update_error"),
         })
       }
     },
@@ -243,21 +281,23 @@ export default {
       if (!newDescription.trim() || this.selectedMedias.length === 0) return
 
       try {
-        const promises = this.selectedMedias.map(media =>
-          this.updateMediaProperty(media._id, 'description', newDescription)
+        const promises = this.selectedMedias.map((media) =>
+          this.updateMediaProperty(media._id, "description", newDescription),
         )
         await Promise.all(promises)
 
-        this.$store.dispatch('system/addNotification', {
-          type: 'success',
-          message: this.$t('media_explorer.panel.bulk_description_updated', { count: this.selectedMedias.length })
+        this.$store.dispatch("system/addNotification", {
+          type: "success",
+          message: this.$t("media_explorer.panel.bulk_description_updated", {
+            count: this.selectedMedias.length,
+          }),
         })
-        this.bulkDescription = ''
+        this.bulkDescription = ""
       } catch (error) {
-        console.error('Bulk description update error:', error)
-        this.$store.dispatch('system/addNotification', {
-          type: 'error',
-          message: this.$t('media_explorer.panel.bulk_update_error')
+        console.error("Bulk description update error:", error)
+        this.$store.dispatch("system/addNotification", {
+          type: "error",
+          message: this.$t("media_explorer.panel.bulk_update_error"),
         })
       }
     },
@@ -268,37 +308,41 @@ export default {
       this.downloadLoading = true
 
       try {
-        const results = await this.downloadMultipleMediaFiles(this.selectedMedias)
-        const successCount = results.filter(r => r.success).length
+        const results = await this.downloadMultipleMediaFiles(
+          this.selectedMedias,
+        )
+        const successCount = results.filter((r) => r.success).length
         const totalCount = results.length
 
         if (successCount === totalCount) {
           // All downloads successful
-          this.$store.dispatch('system/addNotification', {
-            type: 'success',
-            message: this.$t('media_explorer.panel.download_multiple_success', { count: successCount })
+          this.$store.dispatch("system/addNotification", {
+            type: "success",
+            message: this.$t("media_explorer.panel.download_multiple_success", {
+              count: successCount,
+            }),
           })
         } else if (successCount > 0) {
           // Partial success
-          this.$store.dispatch('system/addNotification', {
-            type: 'warning',
-            message: this.$t('media_explorer.panel.download_multiple_partial', {
+          this.$store.dispatch("system/addNotification", {
+            type: "warning",
+            message: this.$t("media_explorer.panel.download_multiple_partial", {
               success: successCount,
-              total: totalCount
-            })
+              total: totalCount,
+            }),
           })
         } else {
           // All failed
-          this.$store.dispatch('system/addNotification', {
-            type: 'error',
-            message: this.$t('media_explorer.panel.download_multiple_error')
+          this.$store.dispatch("system/addNotification", {
+            type: "error",
+            message: this.$t("media_explorer.panel.download_multiple_error"),
           })
         }
       } catch (error) {
-        console.error('Bulk download error:', error)
-        this.$store.dispatch('system/addNotification', {
-          type: 'error',
-          message: this.$t('media_explorer.panel.download_multiple_error')
+        console.error("Bulk download error:", error)
+        this.$store.dispatch("system/addNotification", {
+          type: "error",
+          message: this.$t("media_explorer.panel.download_multiple_error"),
         })
       } finally {
         this.downloadLoading = false
@@ -329,11 +373,9 @@ export default {
 
 <style scoped>
 .media-explorer-right-panel-multi {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
   padding: 1rem;
   gap: 1.5rem;
+  overflow-y: auto;
 }
 
 .media-section {

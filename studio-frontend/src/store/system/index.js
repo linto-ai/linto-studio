@@ -18,6 +18,7 @@ const state = {
    */
   sidebarOpen: undefined,
   isMobile: undefined,
+  isLoading: false,
 }
 
 const mutations = {
@@ -46,6 +47,9 @@ const mutations = {
   },
   setIsMobile(state, isMobile) {
     state.isMobile = isMobile
+  },
+  setIsLoading(state, isLoading) {
+    state.isLoading = isLoading
   },
 }
 
@@ -86,6 +90,9 @@ const actions = {
   setIsMobile({ commit }, isMobile) {
     commit("setIsMobile", isMobile)
   },
+  setIsLoading({ commit }, isLoading) {
+    commit("setIsLoading", isLoading)
+  },
 }
 
 const getters = {
@@ -93,6 +100,7 @@ const getters = {
   sidebarOpen: (state) => state.sidebarOpen,
   isMobile: (state) => state.isMobile,
   isDesktop: (state) => !state.isMobile,
+  isLoading: (state) => state.isLoading,
 }
 
 export default {
