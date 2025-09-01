@@ -19,18 +19,6 @@
       </Button>
     </template>
   </PopoverList>
-  <!--<PopoverList
-    :valueText="localTxt"
-    :value="local"
-    :buttonClass="buttonClass"
-    aria-label="Language selector"
-    :options="{
-      lang: [
-        { value: 'fr-FR', text: '🇫🇷' },
-        { value: 'en-US', text: '🇺🇸' },
-      ],
-    }"
-    @input="setLocale" />-->
 </template>
 <script>
 import CustomSelect from "@/components/molecules/CustomSelect.vue"
