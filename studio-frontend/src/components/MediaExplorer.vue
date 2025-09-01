@@ -60,11 +60,13 @@
           <!-- Media items -->
           <IsMobile>
             <MediaExplorerItemMobile
+              v-if="!loading"
               v-for="(media, index) in medias"
               :key="`media-explorer-item-${media._id}-${index}`"
               :media="media" />
             <template #desktop>
               <MediaExplorerItem
+                v-if="!loading"
                 v-for="(media, index) in medias"
                 :key="`media-explorer-item-${media._id}-${index}`"
                 :media="media"

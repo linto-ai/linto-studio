@@ -3,7 +3,7 @@
     <MediaExplorer
       v-if="medias"
       :medias="medias"
-      :loading="loading"
+      :loading="loading || pageIsLoading"
       :loadingNextPage="loadingNextPage"
       enable-pagination
       class="relative"
