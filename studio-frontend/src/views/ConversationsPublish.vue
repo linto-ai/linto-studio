@@ -72,7 +72,6 @@
             <Button
               icon="download"
               iconWeight="fill"
-              :icon-right="open ? 'caret-up' : 'caret-down'"
               variant="outline"
               color="neutral"
               size="sm"

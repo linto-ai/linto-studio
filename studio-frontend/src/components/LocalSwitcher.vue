@@ -8,13 +8,7 @@
     color="neutral"
     ref="popoverList">
     <template #trigger="{ open }">
-      <Button
-        :avatar-text="localIcon"
-        :icon-right="open ? 'caret-up' : 'caret-down'"
-        variant="outline"
-        color="neutral"
-        size="sm"
-        block>
+      <Button variant="outline" color="neutral" size="sm" block>
         {{ localTxt }}
       </Button>
     </template>
@@ -48,7 +42,7 @@ export default {
       return this.$i18n.locale === "fr-FR" ? "🇫🇷" : "🇬🇧"
     },
     localTxt() {
-      return this.$i18n.locale === "fr-FR" ? "Français" : "English"
+      return this.$i18n.locale === "fr-FR" ? "🇫🇷 Français" : "🇬🇧 English"
     },
     local() {
       return this.$i18n.locale
