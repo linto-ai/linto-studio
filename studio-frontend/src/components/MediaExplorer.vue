@@ -9,7 +9,7 @@
     <div class="media-explorer__content">
       <!-- Media list header - sticky positioned -->
       <MediaExplorerHeader
-        :selected-count="selectedMedias.length"
+        :selected-count="selectedCount"
         :total-count="totalCount"
         :loading="loading"
         :all-medias="medias"
@@ -214,7 +214,11 @@ export default {
       this._loadMorePending = false
     },
     handleSelectAll() {
-      console.log("select all todo")
+      if (this.isSelectAll) {
+        this.clearSelectedMedias()
+      } else {
+        this.selectAll()
+      }
     },
     setupIntersectionObserver() {
       if (this.observer) {

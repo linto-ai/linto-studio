@@ -22,6 +22,7 @@ export default function createMediaModule(scope) {
     getters: {
       all: (s) => s.medias,
       selected: (s) => s.selectedMedias,
+      autoselectMedias: (s) => s.autoselectMedias,
       search: (s) => s.searchQuery,
       hasMore: (s) => s.pagination.hasMore,
       selectedTagIds: (s) => s.selectedTagIds,
@@ -148,7 +149,6 @@ export default function createMediaModule(scope) {
         { page = 0, append = false } = {},
       ) {
         try {
-          console.log("load conv", scope, "page", page)
           const data = await apiGetGenericConversationsList(scope, {
             page,
             text: getters.search,
@@ -162,6 +162,10 @@ export default function createMediaModule(scope) {
           commit("setCount", data.count)
 
           commit("setPagination", { page, hasMore: data.hasMore })
+
+          if (getters["autoselectMedias"]) {
+            commit("setSelectedMedias", getters["all"])
+          }
         } catch (error) {
           console.error(error)
           dispatch(
@@ -211,6 +215,10 @@ export default function createMediaModule(scope) {
       },
       clearSelectedMedias({ commit }) {
         commit("clearSelectedMedias")
+      },
+      selectAll({ commit, getters }) {
+        commit("setAutoselectMedias", true)
+        commit("setSelectedMedias", getters["all"])
       },
     },
   }

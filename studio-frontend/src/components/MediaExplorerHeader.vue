@@ -3,10 +3,12 @@
     <div class="media-explorer-header__content">
       <div class="flex flex-1 row align-center gap-medium">
         <div class="media-explorer-header__selection">
-          <div
+          <label
+            for="select-all-checkbox"
             class="select-all-control"
             :class="{ active: isSelectAll && selectedCount > 0 }">
             <input
+              id="select-all-checkbox"
               type="checkbox"
               :checked="isSelectAll"
               :disabled="loading || totalCount === 0"
@@ -21,7 +23,7 @@
             </span>
 
             <span v-else class="no-media"> No media </span>
-          </div>
+          </label>
         </div>
 
         <!-- Actions slot -->
