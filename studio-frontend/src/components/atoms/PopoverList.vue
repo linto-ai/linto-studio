@@ -233,10 +233,15 @@ export default {
 </script>
 
 <style lang="scss">
+.popover-wrapper {
+  border: var(--border-block);
+  border-radius: 4px;
+  display: flex;
+}
 .popover-list__content {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 0px;
 }
 
 .popover-list__item {
@@ -251,6 +256,12 @@ export default {
     text-align: left;
     transform: none;
     box-shadow: none;
+    border: none;
+    color: var(--text-primary);
+
+    &.tertiary {
+      color: var(--tertiary-color);
+    }
   }
 }
 
