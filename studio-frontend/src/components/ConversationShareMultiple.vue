@@ -14,7 +14,6 @@
           size="sm"
           :icon="showShareList ? 'x' : 'share-network'"
           variant="outline"
-          class="header-action-button"
           :label="$t('share_menu.button')"
           @click="open"></Button>
       </template>

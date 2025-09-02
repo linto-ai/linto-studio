@@ -59,7 +59,7 @@
           </Button>
         </template>
         <div class="flex1"></div>
-        <div class="button-group">
+        <div class="flex gap-small">
           <v-node-renderer
             v-if="actionsRightNodes.length"
             :nodes="actionsRightNodes" />

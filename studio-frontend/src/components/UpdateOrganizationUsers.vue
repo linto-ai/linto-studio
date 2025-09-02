@@ -69,25 +69,27 @@
               }}</span>
             </td>
             <td class="content-size">
-              <button
+              <Button
                 v-if="userInfo._id === user._id"
-                @click="leaveOrganization()">
-                {{ $t("organisation.user.leave_button") }}
-              </button>
-              <button
+                size="sm"
+                color="tertiary"
+                variant="outline"
+                :label="$t('organisation.user.leave_button')"
+                @click="leaveOrganization()" />
+
+              <Button
                 v-else-if="
                   (isAtLeastMaintainer &&
                     userRole >= user.role &&
                     userInfo._id !== user._id) ||
                   (isSystemAdministrator && isBackofficePage)
                 "
-                @click="removeFromMembers(user)"
-                class="tertiary outline">
-                <ph-icon name="trash"></ph-icon>
-                <span class="label">{{
-                  $t("organisation.user.remove_button")
-                }}</span>
-              </button>
+                size="sm"
+                icon="trash"
+                color="tertiary"
+                variant="outline"
+                :label="$t('organisation.user.remove_button')"
+                @click="removeFromMembers(user)" />
             </td>
           </tr>
         </tbody>

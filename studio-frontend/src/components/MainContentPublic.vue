@@ -164,6 +164,12 @@ export default {
       display: block;
     }
     width: 100%;
+    padding: 2rem;
+    padding-top: 3rem;
+
+    .login-page__main-title {
+      margin-bottom: 1rem;
+    }
   }
 }
 </style>

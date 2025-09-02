@@ -50,7 +50,6 @@
               size="sm"
               variant="outline"
               :color="action.color || 'primary'"
-              class="header-action-button"
               @click="handleActionClick(action)" />
           </div>
         </div>
@@ -449,11 +448,6 @@ export default {
     transform: translateX(0);
     opacity: 1;
   }
-}
-
-.header-action-button {
-  height: 32px;
-  font-size: 0.875rem;
 }
 
 @media only screen and (max-width: 1500px) {

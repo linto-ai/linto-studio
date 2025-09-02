@@ -113,7 +113,6 @@ import { getLLMService, apiGetMetadataLLMService } from "@/api/service.js"
 import getDescriptionByLanguage from "@/tools/getDescriptionByLanguage.js"
 
 import Loading from "@/components/atoms/Loading.vue"
-import Modal from "@/components/Modal.vue"
 import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
 import AppEditor from "@/components/AppEditor.vue"
 import MainContentConversation from "@/components/MainContentConversation.vue"
@@ -560,7 +559,6 @@ export default {
   components: {
     TranscriptionHelper,
     Loading,
-    Modal,
     UserInfoInline,
     AppEditor,
     MainContentConversation,

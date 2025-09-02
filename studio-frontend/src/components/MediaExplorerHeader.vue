@@ -199,6 +199,7 @@ export default {
   transition: all 0.2s ease-in-out;
   min-height: 32px;
   box-sizing: border-box;
+  margin: 0;
 }
 
 .select-all-control:hover {
@@ -270,6 +271,7 @@ export default {
   .media-explorer-header__actions {
     flex: 0 0 auto;
     order: 2;
+    margin-left: auto;
   }
 
   .media-explorer-header__filters {

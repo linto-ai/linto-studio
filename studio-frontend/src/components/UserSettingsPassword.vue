@@ -40,9 +40,11 @@
         </span>
       </div>
       <div class="flex row">
-        <button type="submit" class="btn primary">
-          {{ $t("user_settings.update_password_button") }}
-        </button>
+        <Button
+          type="submit"
+          color="primary"
+          size="sm"
+          :label="$t('user_settings.update_password_button')" />
       </div>
     </section>
   </form>

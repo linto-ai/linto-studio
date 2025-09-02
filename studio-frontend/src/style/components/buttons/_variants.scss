@@ -1,0 +1,41 @@
+.btn--transparent {
+  --btn-bg: transparent;
+  --btn-border: transparent;
+  --btn-hover-bg: rgba(0, 0, 0, 0.05);
+
+  &:hover:not([disabled]):not(.disabled) {
+    background-color: var(--btn-hover-bg);
+  }
+
+  &[disabled] {
+    background-color: transparent;
+  }
+}
+
+.btn--text {
+  --btn-bg: transparent;
+  --btn-border: transparent;
+  text-decoration: underline;
+  padding: 0.25rem 0.5rem;
+
+  &:hover:not([disabled]):not(.disabled) {
+    opacity: 0.8;
+  }
+}
+
+.btn--inline {
+  display: inline-flex;
+}
+
+.btn--block {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
+.btn--link {
+  --btn-bg: transparent;
+  --btn-border: transparent;
+  --btn-padding: 0px;
+  text-decoration: none;
+}
