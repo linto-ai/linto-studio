@@ -5,11 +5,20 @@
     :href="href"
     :class="classes"
     :style="styles"
-    :disabled="disabled"
-    :aria-disabled="disabled"
+    :disabled="isDisabled"
+    :aria-disabled="isDisabled"
     v-bind="$attrs"
     v-on="$listeners">
-    <ph-icon v-if="icon" :name="icon" :weight="iconWeight" :size="size" />
+    <ph-icon
+      v-if="loading"
+      name="circle-notch"
+      :weight="computedIconWeight"
+      :size="size"
+      class="animate-spin" />
+    <ph-icon v-else-if="icon" :name="icon" :weight="iconWeight" :size="size" />
+    <span v-else-if="avatarText">
+      {{ avatarText }}
+    </span>
     <span class="label" v-if="label">
       <slot>{{ label }}</slot>
     </span>
@@ -34,6 +43,10 @@ export default {
       required: false,
     },
     icon: {
+      type: String,
+      required: false,
+    },
+    avatarText: {
       type: String,
       required: false,
     },
@@ -89,6 +102,16 @@ export default {
       type: String,
       required: false,
     },
+    // fullwidth button
+    block: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    loading: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {}
@@ -96,6 +119,9 @@ export default {
   computed: {
     isIconOnly() {
       return this.iconOnly || (this.icon && !this.label && !this.$slots.default)
+    },
+    isDisabled() {
+      return this.disabled || this.loading
     },
     componentType() {
       if (this.href) {
@@ -112,6 +138,9 @@ export default {
       classes.push(`btn--${this.color}`)
       classes.push(`btn--${this.size}`)
       classes.push(`btn--${this.variant}`)
+      if (this.block) {
+        classes.push("btn--block")
+      }
       return classes
     },
     styles() {
@@ -125,3 +154,18 @@ export default {
   components: {},
 }
 </script>
+<style scoped>
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+</style>

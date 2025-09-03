@@ -45,25 +45,6 @@
 
     <template v-slot:breadcrumb-actions>
       <div class="flex1 flex gap-small reset-overflows align-center">
-        <!-- <router-link
-          :to="{
-            name: 'conversations transcription',
-            params: { conversationId: conversation._id },
-          }"
-          class="btn">
-          <span class="icon back"></span>
-          <span class="label">{{ $t("conversation.return_to_editor") }}</span>
-        </router-link> -->
-        <!-- <CustomSelect
-          style="margin-left: auto"
-          :valueText="$t('conversation.export.title')"
-          iconType="icon"
-          icon="upload"
-          value=""
-          :disabled="currentStatus !== 'complete' || loadingDownload"
-          :options="optionsExport"
-          buttonClass="green"
-          @input="exportConv"></CustomSelect> -->
         <PopoverList
           :items="optionsExport"
           style="margin-left: auto"

@@ -15,7 +15,7 @@
   white-space: nowrap;
   text-decoration: none;
   font-weight: 500;
-  transition: all 0.3s ease;
+  //transition: all 0.3s ease;
   border: var(--btn-border, var(--border-button));
   border-radius: var(--btn-border-radius, 4px);
   padding: var(--btn-padding, 0.5rem 1rem);
@@ -38,10 +38,10 @@
   &[disabled],
   &.disabled {
     cursor: not-allowed;
-    opacity: 0.6;
+    //opacity: 0.6;
     background-color: var(--neutral-10) !important;
     border: 1px solid var(--neutral-40) !important;
-    color: var(--neutral-70) !important;
+    color: var(--dark-80) !important;
     transform: none !important;
     box-shadow: none !important;
   }

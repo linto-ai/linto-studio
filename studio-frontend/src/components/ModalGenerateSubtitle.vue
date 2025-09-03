@@ -79,26 +79,26 @@ export default {
       selectOptions: {
         action: [
           {
-            value: 1,
+            value: "1",
             text: this.$i18n.t(
               "conversation.subtitles.split_selection.no_split",
             ),
           },
           {
-            value: 2,
+            value: "2",
             text: this.$i18n.t(
               "conversation.subtitles.split_selection.split_over_two_lines",
             ),
           },
           {
-            value: 3,
+            value: "3",
             text: this.$i18n.t(
               "conversation.subtitles.split_selection.split_over_three_lines",
             ),
           },
         ],
       },
-      selectedOptionValue: 1,
+      selectedOptionValue: "1",
     }
   },
   computed: {
