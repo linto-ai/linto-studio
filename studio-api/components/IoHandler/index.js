@@ -9,6 +9,9 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 const { diffSessions, groupSessionsByOrg } = require(
   `${process.cwd()}/components/IoHandler/controllers/SessionHandling`,
 )
+const { watchConversation, refreshInterval } = require(
+  `${process.cwd()}/components/IoHandler/controllers/ConversationHandling`,
+)
 
 const auth_middlewares = require(
   `${process.cwd()}/components/WebServer/config/passport/middleware`,
@@ -79,8 +82,10 @@ class IoHandler extends Component {
     this.app = app
     this.rooms = {}
     this.orgas = {}
+    this.medias = {}
     this.sessionsCache = {}
     this.memorySessions = {}
+    this.memoryMedias = {}
 
     this.io = socketIO(this.app.components["WebServer"].httpServer, {
       cors: {
@@ -107,19 +112,32 @@ class IoHandler extends Component {
         model.metrics.endConnection(socket.id)
       })
 
-      socket.on("watch_organization", (orgaId) => {
+      socket.on("watch_organization_session", (orgaId) => {
         appLogger.debug(
           `Client ${socket.id} joins watcher session of orga ${orgaId}`,
         )
-        this.addSocketInOrga(orgaId, socket)
+        this.addSocketInOrga(orgaId, socket, "session")
       })
 
-      socket.on("unwatch_organization", (orgaId) => {
+      socket.on("unwatch_organization_session", (orgaId) => {
         appLogger.debug(
           `Client ${socket.id} leaves watcher session of orga ${orgaId}`,
         )
         this.removeSocketFromOrga(orgaId, socket)
         model.metrics.endConnection(socket.id)
+      })
+
+      socket.on("watch_organization_media", (orgaId) => {
+        appLogger.debug(
+          `Client ${socket.id} joins watcher for conversations status ${orgaId}`,
+        )
+        this.addSocketInMedia(orgaId, socket)
+      })
+      socket.on("unwatch_organization_media", (orgaId) => {
+        appLogger.debug(
+          `Client ${socket.id} leaves watcher for conversations status ${orgaId}`,
+        )
+        this.removeSocketFromMedia(orgaId, socket)
       })
 
       socket.on("disconnect", () => {
@@ -131,6 +149,47 @@ class IoHandler extends Component {
     })
 
     return this.init()
+  }
+
+  async addSocketInMedia(orgaId, socket) {
+    socket.join(orgaId)
+    if (this.medias.hasOwnProperty(orgaId)) {
+      this.medias[orgaId].add(socket.id)
+    } else {
+      this.medias[orgaId] = new Set().add(socket.id)
+    }
+
+    let listProcessingConversations =
+      await model.conversations.listProcessingConversations(orgaId)
+    // Step 2 : if none, do nothing
+    if (listProcessingConversations?.length === 0) {
+      return
+    }
+    this.io
+      .to(orgaId)
+      .emit("conversation_processing", listProcessingConversations)
+
+    if (this.memoryMedias[orgaId] === undefined) {
+      this.memoryMedias[orgaId] = watchConversation(
+        this.io.to(orgaId),
+        listProcessingConversations,
+      )
+    }
+  }
+
+  removeSocketFromMedia(orgaId, socket) {
+    socket.leave(orgaId)
+    if (!this.medias.hasOwnProperty(orgaId)) {
+      return
+    }
+
+    this.medias[orgaId].delete(socket.id)
+    if (this.medias[orgaId].size == 0) {
+      delete this.medias[orgaId]
+
+      this.memoryMedias[orgaId].stop()
+      delete this.memoryMedias[orgaId]
+    }
   }
 
   async addSocketInOrga(orgaId, socket) {
@@ -187,6 +246,12 @@ class IoHandler extends Component {
         this.removeSocketFromRoom(roomId, socket)
       }
     }
+
+    for (const [orgaId, socketIds] of Object.entries(this.medias)) {
+      if (socketIds.has(socket.id)) {
+        this.removeSocketFromMedia(orgaId, socket)
+      }
+    }
   }
 
   removeSocketFromRoom(roomId, socket) {
@@ -221,6 +286,20 @@ class IoHandler extends Component {
       }
     })
     this.sessionsCache = sessions
+  }
+
+  async notify_conversation_created(orgaId, conversation) {
+    if (this.medias.hasOwnProperty(orgaId)) {
+      this.io.to(orgaId).emit(`conversation_created`, conversation)
+
+      let processConv =
+        await model.conversations.listProcessingConversations(orgaId)
+      this.memoryMedias[orgaId] = refreshInterval(
+        this.io.to(orgaId),
+        this.memoryMedias[orgaId],
+        processConv,
+      )
+    }
   }
 
   brokerOk() {

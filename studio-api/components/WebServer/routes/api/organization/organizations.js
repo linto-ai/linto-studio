@@ -83,7 +83,7 @@ module.exports = (webserver) => {
       requireAuth: true,
       requireOrganizationUploaderAccess: true,
       orgaPermissionAccess: PERMISSIONS.UPLOAD,
-      controller: transcribeReq,
+      controller: transcribeReq.bind(webserver),
     },
     {
       path: "/:organizationId/conversations/import",

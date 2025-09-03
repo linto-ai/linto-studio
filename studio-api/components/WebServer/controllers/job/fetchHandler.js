@@ -68,6 +68,7 @@ async function fetchJob(conv_id, conv_job) {
     )
 
     await updateJobConversation(conv_id, conv_job, job_queue)
+    return { conv_id, conv_job, job_queue }
   } catch (err) {
     debug(`Error during job update : ${err}`)
   }
@@ -117,7 +118,6 @@ async function updateJobConversation(conv_id, conv_job, job_queue) {
     }
     delete conv_job[job.type].type
   })
-
   await model.conversations.updateJob(conv_id, conv_job)
 }
 

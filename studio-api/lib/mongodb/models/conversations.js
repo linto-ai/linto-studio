@@ -442,6 +442,28 @@ class ConvoModel extends MongoModel {
     }
   }
 
+  async listProcessingConversations(organizationId) {
+    try {
+      const query = {
+        "organization.organizationId": organizationId.toString(),
+        "jobs.transcription.state": {
+          $in: ["pending", "processing", "queued"],
+        },
+        "type.mode": TYPE.CANONICAL,
+      }
+      const projection = {
+        _id: 1,
+        name: 1,
+        "jobs.transcription": 1,
+      }
+
+      return await this.mongoRequest(query, projection)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   // Default right is 1 (read)
   async listConvFromOrga(
     organizationId,
@@ -450,7 +472,6 @@ class ConvoModel extends MongoModel {
     desiredAccess = 1,
     filter,
   ) {
-
     try {
       let projection = {
         page: 0,
@@ -734,8 +755,12 @@ class ConvoModel extends MongoModel {
       }
 
       const accSearch = []
-      if (filter?.name) accSearch.push({ name: { $regex: filter.name, $options: "i" } })
-      if (filter?.text) accSearch.push({ "text.raw_segment": { $regex: filter.text, $options: "i" } })
+      if (filter?.name)
+        accSearch.push({ name: { $regex: filter.name, $options: "i" } })
+      if (filter?.text)
+        accSearch.push({
+          "text.raw_segment": { $regex: filter.text, $options: "i" },
+        })
       if (accSearch.length > 0) query.$and = [{ $or: accSearch }]
 
       const projectionAcc = {

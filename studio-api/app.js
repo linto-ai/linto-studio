@@ -24,6 +24,13 @@ class App {
             await this.components["MongoMigration"].migrate()
             delete this.components["MongoMigration"]
           }
+
+          if (this.components["IoHandler"] !== undefined) {
+            this.components["WebServer"].loadComponents(
+              "IoHandler",
+              this.components["IoHandler"],
+            )
+          }
         })
     } catch (e) {
       console.error(debug.namespace, e)
