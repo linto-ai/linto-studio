@@ -35,9 +35,17 @@
 
 .btn--link {
   --btn-bg: transparent;
+  --btn-hover-bg: transparent;
   --btn-border: transparent;
   --btn-padding: 0px;
   text-decoration: none;
+  --btn-animate: 0;
+
+  &:hover {
+    transform: none;
+    box-shadow: none;
+    text-decoration: underline;
+  }
 }
 
 .table-header-button:hover {

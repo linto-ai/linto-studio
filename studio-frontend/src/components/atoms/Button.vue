@@ -14,9 +14,14 @@
       name="circle-notch"
       :weight="computedIconWeight"
       :size="size"
-      class="animate-spin" />
-    <ph-icon v-else-if="icon" :name="icon" :weight="iconWeight" :size="size" />
-    <span v-else-if="avatarText">
+      class="animate-spin icon" />
+    <ph-icon
+      v-else-if="icon"
+      :name="icon"
+      :weight="iconWeight"
+      :size="size"
+      class="icon" />
+    <span v-else-if="avatarText" class="icon">
       {{ avatarText }}
     </span>
     <span class="label" v-if="label">

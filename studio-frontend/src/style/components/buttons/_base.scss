@@ -45,4 +45,8 @@
     transform: none !important;
     box-shadow: none !important;
   }
+
+  .icon {
+    flex-shrink: 0;
+  }
 }
