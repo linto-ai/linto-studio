@@ -17,12 +17,11 @@
         </template>
       </FormInput>
 
-      <button type="submit" class="btn primary">
-        <ph-icon name="check" size="md" class="icon" />
-        <span class="label">{{
-          $t("user_settings.update_personal_information_button")
-        }}</span>
-      </button>
+      <Button
+        type="submit"
+        color="primary"
+        size="sm"
+        :label="$t('user_settings.update_personal_information_button')" />
     </section>
   </form>
 </template>

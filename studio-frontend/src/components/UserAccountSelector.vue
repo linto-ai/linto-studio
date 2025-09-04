@@ -161,6 +161,7 @@ export default {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-decoration-color: var(--primary-color);
   }
 
   .organization-name .btn-prefix-label,
@@ -172,6 +173,8 @@ export default {
 
   .organization-name .label {
     display: inline;
+    font-size: 14px;
+    color: var(--primary-color);
   }
 
   .user-role {

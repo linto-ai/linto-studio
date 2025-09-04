@@ -2,69 +2,15 @@
   <button
     class="btn btn-roller"
     :class="classes"
-    :style="styles"
-    :disabled="disabled || loading"
+    :disabled="disabled"
     v-bind="$attrs"
-    :aria-disabled="disabled || loading"
+    :aria-disabled="disabled"
     :title="isIconOnly ? $attrs.ariaLabel : ''"
     v-on="$listeners"
     @mouseenter="handleMouseEnter"
     @mouseleave="handleMouseLeave">
-    <span class="btn-prefix-label">
-      <span class="btn-prefix" v-if="!isIconOnly">
-        <!-- Roller icon container -->
-        <div
-          ref="iconContainer"
-          class="roller-icon"
-          :class="{ spinning: isSpinning }">
-          <!-- Default plus icon -->
-          <ph-icon
-            v-if="!isSpinning && !currentIcon && !isEasterEgg"
-            name="plus"
-            :weight="computedIconWeight"
-            :color="computedIconColor"
-            :size="iconSize" />
-
-          <!-- Current rolled icon -->
-          <ph-icon
-            v-if="!isSpinning && currentIcon && !isEasterEgg"
-            :name="currentIcon"
-            :weight="computedIconWeight"
-            :color="computedIconColor"
-            :size="iconSize" />
-
-          <!-- Easter egg LinTO logo -->
-          <img
-            v-if="!isSpinning && isEasterEgg"
-            src="/img/linto.svg"
-            alt="LinTO"
-            class="linto-logo" />
-
-          <!-- Spinning reel -->
-          <div v-if="isSpinning" ref="reel" class="reel">
-            <div
-              v-for="(icon, index) in reelIcons"
-              :key="index"
-              class="reel-item">
-              <ph-icon
-                :name="icon"
-                :weight="computedIconWeight"
-                :color="computedIconColor"
-                :size="iconSize" />
-            </div>
-          </div>
-        </div>
-      </span>
-
-      <!-- Label/Content -->
-      <span class="label">
-        <slot>{{ label }}</slot>
-      </span>
-    </span>
-
-    <!-- Icon only mode -->
+    <!-- Roller icon container -->
     <div
-      v-if="isIconOnly"
       ref="iconContainer"
       class="roller-icon"
       :class="{ spinning: isSpinning }">
@@ -87,7 +33,7 @@
       <!-- Easter egg LinTO logo -->
       <img
         v-if="!isSpinning && isEasterEgg"
-        :src="lintoSvgUrl"
+        src="/img/linto.svg"
         alt="LinTO"
         class="linto-logo" />
 
@@ -102,6 +48,11 @@
         </div>
       </div>
     </div>
+
+    <!-- Label/Content -->
+    <span class="label">
+      <slot>{{ label }}</slot>
+    </span>
   </button>
 </template>
 
@@ -115,34 +66,12 @@ export default {
       required: false,
     },
     // Button props from original Button component
-    active: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
     color: {
       type: String,
       required: false,
       default: "primary",
       validator: (value) =>
-        [
-          "primary",
-          "secondary",
-          "tertiary",
-          "neutral",
-          "primary-soft",
-          "primary-hard",
-          "secondary-soft",
-          "secondary-hard",
-          "tertiary-soft",
-          "tertiary-hard",
-          "neutral-soft",
-          "neutral-hard",
-        ].includes(value),
-    },
-    borderColor: {
-      type: String,
-      required: false,
+        ["primary", "secondary", "tertiary", "neutral"].includes(value),
     },
     size: {
       type: String,
@@ -154,37 +83,23 @@ export default {
       type: String,
       required: false,
       default: "default",
-      validator: (value) =>
-        ["default", "rounded", "pill", "circle"].includes(value),
+      validator: (value) => ["default", "circle"].includes(value),
     },
     variant: {
       type: String,
       required: false,
       default: "solid",
       validator: (value) =>
-        ["solid", "outline", "transparent", "text"].includes(value),
+        ["solid", "outline", "transparent", "text", "link", "flat"].includes(
+          value,
+        ),
     },
     disabled: {
       type: Boolean,
       required: false,
       default: false,
     },
-    loading: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-    iconOnly: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
     block: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-    wrap: {
       type: Boolean,
       required: false,
       default: false,
@@ -254,37 +169,14 @@ export default {
       // Base classes
       classes.push("btn", "btn-roller")
 
-      // Variant/Color
-      classes.push(this.color)
-
-      // Size
-      classes.push(this.size)
-
-      // Shape
-      if (this.shape !== "default") {
-        classes.push(this.shape)
-      }
-
-      // Appearance
-      if (this.variant === "outline") {
-        classes.push("outline")
-      } else if (this.variant === "transparent") {
-        classes.push("transparent")
-      } else if (this.variant === "text") {
-        classes.push("text")
-      }
+      classes.push("btn")
+      classes.push(`btn--${this.color}`)
+      classes.push(`btn--${this.size}`)
+      classes.push(`btn--${this.variant}`)
 
       // Layout
       if (this.block) {
         classes.push("block")
-      }
-
-      if (this.isIconOnly) {
-        classes.push("only-icon")
-      }
-
-      if (this.wrap) {
-        classes.push("wrap")
       }
 
       // States
@@ -292,20 +184,11 @@ export default {
         classes.push("disabled")
       }
 
-      if (this.active) {
-        classes.push("active")
-      }
-
       if (this.isSpinning) {
         classes.push("spinning")
       }
 
       return classes
-    },
-    styles() {
-      return {
-        borderColor: this.borderColor,
-      }
     },
     reelIcons() {
       return [...this.rollerIcons, ...this.rollerIcons]
@@ -327,8 +210,8 @@ export default {
       const iconContainer = this.$refs.iconContainer
 
       if (iconContainer) {
-        iconContainer.style.transition = 'opacity 120ms ease-in'
-        iconContainer.style.opacity = '0'
+        iconContainer.style.transition = "opacity 120ms ease-in"
+        iconContainer.style.opacity = "0"
       }
 
       setTimeout(() => {
@@ -337,7 +220,7 @@ export default {
 
         if (iconContainer) {
           void iconContainer.offsetWidth
-          iconContainer.style.opacity = '1'
+          iconContainer.style.opacity = "1"
         }
       }, 120)
     },

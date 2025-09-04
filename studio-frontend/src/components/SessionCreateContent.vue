@@ -92,15 +92,14 @@
 
       <!-- Bottom footer-->
       <div class="flex gap-medium align-center conversation-create-footer">
-        <button
+        <Button
           type="button"
-          class="tertiary outline"
+          color="tertiary"
+          variant="outline"
           :disabled="formState === 'sending' || selectedTemplateId == ''"
+          :label="$t('session.create_page.delete_template_button')"
           @click="deleteSelectedTemplate">
-          <span class="label">
-            {{ $t("session.create_page.delete_template_button") }}
-          </span>
-        </button>
+        </Button>
         <div class="error-field flex1" v-if="formError">{{ formError }}</div>
         <div v-else class="flex1"></div>
         <button
@@ -111,7 +110,13 @@
             $t("session.create_page.save_as_template_button")
           }}</span>
         </button>
-        <button
+
+        <Button
+          type="submit"
+          color="primary"
+          :loading="formState === 'sending'"
+          :label="$t('session.create_page.submit_button')" />
+        <!-- <button
           type="submit"
           class="btn primary"
           id="upload-media-button"
@@ -120,7 +125,7 @@
           <span class="label">
             {{ $t("session.create_page.submit_button") }}
           </span>
-        </button>
+        </button> -->
       </div>
     </form>
     <ModalEditMetadata

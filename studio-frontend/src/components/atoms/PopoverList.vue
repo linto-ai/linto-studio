@@ -60,7 +60,7 @@ export default {
     },
     color: {
       type: String,
-      default: "primary",
+      default: "neutral",
     },
     closeOnClickOutside: {
       type: Boolean,
@@ -149,6 +149,7 @@ export default {
         // single selection: either select or deselect (null)
         const selected = this.isSelected(item)
         const updated = selected ? null : this.returnObjects ? item : item.id
+        console.log("wololo", updated)
         this.$emit("update:value", updated)
         this.$emit("input", updated)
       }
@@ -257,10 +258,15 @@ export default {
     transform: none;
     box-shadow: none;
     border: none;
-    color: var(--text-primary);
+    //color: var(--text-primary);
 
     &.tertiary {
       color: var(--tertiary-color);
+    }
+
+    &:hover {
+      background-color: var(--primary-color);
+      color: var(--primary-contrast);
     }
   }
 }

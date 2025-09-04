@@ -137,7 +137,6 @@
           </h4>
           <div class="actions-container">
             <ConversationShareMultiple
-              class="header-action-button"
               :selectedConversations="[reactiveSelectedMedia || selectedMedia]"
               :currentOrganizationScope="currentOrganizationScope" />
             <Button
@@ -146,8 +145,7 @@
               icon="trash"
               variant="outline"
               size="sm"
-              color="tertiary"
-              class="header-action-button" />
+              color="tertiary" />
           </div>
         </div>
       </div>

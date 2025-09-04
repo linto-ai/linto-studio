@@ -126,12 +126,12 @@
       </div>
 
       <div class="form-field flex row">
-        <button type="submit" class="btn primary fullwidth">
-          <span class="label">
-            {{ $t("createaccount.personal_button") }}
-          </span>
-          <ph-icon name="check" size="md" class="icon" />
-        </button>
+        <Button
+          type="submit"
+          color="primary"
+          block
+          :label="$t('createaccount.personal_button')"
+          :loading="state === 'sending'" />
       </div>
       <div class="form-field" v-if="formError !== null">
         <span class="form-error">{{ formError }}</span>
@@ -154,6 +154,7 @@
         <input
           id="organizationName"
           type="text"
+          class="fullwidth"
           v-model="organizationName.value"
           :class="organizationName.error !== null ? 'error' : ''" />
         <span class="error-field" v-if="organizationName.error !== null">
@@ -161,20 +162,12 @@
         </span>
       </div>
 
-      <button
+      <Button
         type="submit"
-        class="btn primary fullwidth"
-        v-if="state !== 'sending'">
-        <span class="label">
-          {{ $t("createaccount.create_account_button") }}
-        </span>
-        <ph-icon name="check" size="md" class="icon" />
-      </button>
-
-      <button type="submit" class="btn primary fullwidth" disabled v-else>
-        <span class="label"> Creating account... </span>
-        <span class="icon loading"></span>
-      </button>
+        color="primary"
+        block
+        :label="$t('createaccount.create_account_button')"
+        :loading="state === 'sending'" />
     </form>
 
     <div

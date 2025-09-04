@@ -182,7 +182,7 @@ export default {
         value: 1,
         list: RIGHTS_LIST((key) => this.$i18n.t(key)),
       },
-      selectedTranslation: this.value.subSource,
+      selectedTranslation: this.value.subSource || "original",
     }
   },
 

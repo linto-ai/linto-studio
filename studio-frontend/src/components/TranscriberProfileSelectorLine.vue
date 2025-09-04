@@ -35,8 +35,7 @@
             :icon-right="open ? 'caret-up' : 'caret-down'"
             variant="outline"
             color="neutral"
-            size="sm"
-            block>
+            size="sm">
             <!-- <div class="flex gap-small">
               <Chip
                 v-for="translation in displayedTranslations"
@@ -52,9 +51,16 @@
           </Button>
         </template>
       </PopoverList>
-      <div v-else class="btn placeholder transparent">
-        {{ $t("session.profile_selector.translation_not_available") }}
-      </div>
+      <Button
+        v-else
+        size="sm"
+        disabled
+        :label="
+          $t('session.profile_selector.translation_not_available')
+        "></Button>
+      <!-- <div v-else class="btn placeholder transparent">
+        {{  }}
+      </div> -->
     </td>
   </tr>
 </template>

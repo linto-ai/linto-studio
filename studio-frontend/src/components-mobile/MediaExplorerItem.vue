@@ -110,7 +110,6 @@ export default {
   },
   data() {
     return {
-      isSelected: false,
       showDeleteModal: false,
     }
   },
@@ -192,6 +191,11 @@ export default {
         },
       ]
     },
+    isSelected() {
+      const findMedia = this.selectedMedias.find((m) => m._id == this.media._id)
+
+      return findMedia
+    },
   },
   watch: {
     isSelectAll(value) {},
@@ -264,7 +268,7 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  border: 1px solid var(--neutral-20);
+  border: 1px solid var(--neutral-40);
   border-radius: 4px;
   background: var(--background-primary);
   margin: 0.25rem 0;

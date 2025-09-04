@@ -29,13 +29,17 @@
       <!-- SELECTION MICRO-->
       <section class="flex col gap-small">
         <div class="form-field flex col medium-margin-top">
-          <label>{{
+          <label for="microphone-selection">{{
             $t("quick_session.setup_microphone.microphone_select_label")
           }}</label>
-          <CustomSelect
-            :options="optionsDeviceList"
+          <select
             v-model="selectedDeviceId"
-            class="fullwidth" />
+            id="microphone-selection"
+            class="fullwidth">
+            <option v-for="d in optionsDeviceList" :value="d.value">
+              {{ d.text }}
+            </option>
+          </select>
         </div>
       </section>
       <!-- TEST MICROPHONE SECTION-->
@@ -142,7 +146,7 @@ export default {
     return {
       waitingPermission: true,
       error: null,
-      optionsDeviceList: {},
+      optionsDeviceList: [],
       selectedDeviceId: "default",
       microphoneWorked: false,
       audioDevices: null,
@@ -157,7 +161,7 @@ export default {
   },
   computed: {
     selectedMicroName() {
-      return this.optionsDeviceList["devices"].find(
+      return this.optionsDeviceList.find(
         (device) => device.value == this.selectedDeviceId,
       ).text
     },
@@ -222,9 +226,7 @@ export default {
           value: "default",
         })
       }
-      this.optionsDeviceList = {
-        devices: [...res],
-      }
+      this.optionsDeviceList = [...res]
     },
     onVadEvent(speaking) {
       this.microphoneWorked = this.microphoneWorked || speaking

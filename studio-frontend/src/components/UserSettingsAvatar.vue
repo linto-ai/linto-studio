@@ -18,19 +18,26 @@
         id="file"
         ref="file"
         v-on:change="handleFileUpload()" />
-      <label for="file" class="btn secondary">
+      <label for="file" class="btn btn--secondary btn--sm">
         <span class="label">{{
           $t("user_settings.profile_avatar.profile_image_button")
         }}</span>
       </label>
-      <button
+      <Button
+        color="primary"
+        size="sm"
+        :label="$t('user_settings.profile_avatar.update_picture_button')"
+        @click="updateProfilPicture"
+        :disabled="!picture.valid">
+      </Button>
+      <!-- <button
         class="btn primary"
         :disabled="!picture.valid"
         @click="updateProfilPicture">
         <span class="label">{{
           $t("user_settings.profile_avatar.update_picture_button")
         }}</span>
-      </button>
+      </button> -->
     </div>
   </section>
 </template>
