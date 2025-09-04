@@ -50,7 +50,6 @@ import { setCookie } from "@/tools/setCookie"
 import OrganizationUpdateHelper from "@/components/OrganizationUpdateHelper.vue"
 import ModalDeleteOrganization from "@/components/ModalDeleteOrganization.vue"
 import MainContent from "@/components/MainContent.vue"
-import Modal from "@/components/Modal.vue"
 import UpdateOrganizationForm from "@/components/UpdateOrganizationForm.vue"
 import UpdateOrganizationUsers from "@/components/UpdateOrganizationUsers.vue"
 import LayoutV2 from "@/layouts/v2-layout.vue"
@@ -116,7 +115,6 @@ export default {
     OrganizationUpdateHelper,
     ModalDeleteOrganization,
     MainContent,
-    Modal,
     UpdateOrganizationForm,
     UpdateOrganizationUsers,
     LayoutV2,

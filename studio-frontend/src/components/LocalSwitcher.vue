@@ -8,29 +8,11 @@
     color="neutral"
     ref="popoverList">
     <template #trigger="{ open }">
-      <Button
-        :avatar-text="localIcon"
-        :icon-right="open ? 'caret-up' : 'caret-down'"
-        variant="outline"
-        color="neutral"
-        size="sm"
-        block>
+      <Button variant="outline" color="neutral" size="sm" block>
         {{ localTxt }}
       </Button>
     </template>
   </PopoverList>
-  <!--<PopoverList
-    :valueText="localTxt"
-    :value="local"
-    :buttonClass="buttonClass"
-    aria-label="Language selector"
-    :options="{
-      lang: [
-        { value: 'fr-FR', text: '🇫🇷' },
-        { value: 'en-US', text: '🇺🇸' },
-      ],
-    }"
-    @input="setLocale" />-->
 </template>
 <script>
 import CustomSelect from "@/components/molecules/CustomSelect.vue"
@@ -60,7 +42,7 @@ export default {
       return this.$i18n.locale === "fr-FR" ? "🇫🇷" : "🇬🇧"
     },
     localTxt() {
-      return this.$i18n.locale === "fr-FR" ? "Français" : "English"
+      return this.$i18n.locale === "fr-FR" ? "🇫🇷 Français" : "🇬🇧 English"
     },
     local() {
       return this.$i18n.locale

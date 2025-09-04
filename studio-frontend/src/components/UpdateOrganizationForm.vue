@@ -21,13 +21,13 @@
         class="form-field flex col"
         :label="$t('organisation.description_label')"
         :value="orgaDescription.value" />
-      <button
+
+      <Button
         type="submit"
-        class="btn primary"
-        v-if="isAdmin || (isSystemAdministrator && isBackofficePage)">
-        <ph-icon name="check" size="md" class="icon" />
-        <span class="label">{{ $t("organisation.update_button") }}</span>
-      </button>
+        color="primary"
+        size="sm"
+        v-if="isAdmin || (isSystemAdministrator && isBackofficePage)"
+        :label="$t('organisation.update_button')" />
     </section>
   </form>
 </template>

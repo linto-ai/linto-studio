@@ -46,6 +46,7 @@ export default {
     return {
       appDebug: customDebug("vue:debug:app"),
       noOrganization: false,
+      loader: null,
     }
   },
   methods: {
@@ -58,6 +59,7 @@ export default {
   },
   computed: {
     ...mapGetters("user", { user: "getUserInfos" }),
+    ...mapGetters("system", { isLoading: "isLoading" }),
     ...mapGetters("organizations", {
       userOrganizations: "getOrganizationsAsArray",
       currentOrganization: "getCurrentOrganization",
@@ -88,6 +90,7 @@ export default {
     //   type: "success",
     //   timeout: 5000,
     // })
+
     this._checkIsMobile()
     this._onResize = () => {
       window.requestAnimationFrame(this._checkIsMobile)
@@ -107,6 +110,21 @@ export default {
     if (enableSession) {
       this.$sessionWS.connect()
     }
+  },
+  watch: {
+    isLoading: {
+      handler(value) {
+        if (value) {
+          this.loader = this.$loading.show({
+            // Optional parameters
+            canCancel: true,
+          })
+        } else {
+          this.loader.hide()
+        }
+      },
+      immediate: true,
+    },
   },
   components: {
     AppSettingsModal,

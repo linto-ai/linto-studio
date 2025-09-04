@@ -5,19 +5,12 @@ import {
 } from "@/api/conversation.js"
 
 export const mediaExplorerRightPanelMixin = {
-  props: {
-    readOnlyTags: {
-      type: Boolean,
-      default: false,
-    },
-  },
+  props: {},
   computed: {
-    ...mapGetters("tags", ["getTags", "getTagById"]),
-
-    // Determine if tag management should be read-only
-    isTagManagementReadOnly() {
-      return this.readOnlyTags
+    readOnly() {
+      return this.selectedMedias.some((m) => this.mediaRight(m._id) < 4)
     },
+    ...mapGetters("tags", ["getTags", "getTagById"]),
   },
 
   methods: {
@@ -61,10 +54,10 @@ export const mediaExplorerRightPanelMixin = {
         if (response.status === "success") {
           // Update the media in the inbox store
           const currentMedia =
-            this.$store.getters["inbox/getMediaById"](mediaId)
+            this.$store.getters[`${this.storeScope}/getMediaById`](mediaId)
           if (currentMedia) {
             const updatedMedia = { ...currentMedia, [propertyName]: value }
-            this.$store.dispatch("inbox/updateMedia", {
+            this.$store.dispatch(`${this.storeScope}/updateMedia`, {
               mediaId,
               media: updatedMedia,
             })

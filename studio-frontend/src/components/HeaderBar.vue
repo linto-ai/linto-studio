@@ -16,7 +16,6 @@
 <script>
 import { mapGetters } from "vuex"
 
-import ActionConversationCreate from "./molecules/ActionConversationCreate.vue"
 import CustomSelect from "./molecules/CustomSelect.vue"
 import PhIcon from "./atoms/PhIcon.vue"
 import MediaExplorerStorageSize from "./MediaExplorerStorageSize.vue"
@@ -85,7 +84,6 @@ export default {
     },
   },
   components: {
-    ActionConversationCreate,
     PhIcon,
     CustomSelect,
     MediaExplorerStorageSize,

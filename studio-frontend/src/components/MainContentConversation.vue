@@ -14,7 +14,6 @@
       <slot name="sidebar"></slot>
     </template>
     <slot></slot>
-    <!-- <Modal></Modal> -->
 
     <Alert
       type="warning"
@@ -51,7 +50,6 @@ import ConversationStatus from "@/components/ConversationStatus.vue"
 import ConversationStatusError from "@/components/ConversationStatusError.vue"
 import Loading from "@/components/atoms/Loading.vue"
 import ErrorView from "@/views/Error.vue"
-import Modal from "@/components/Modal.vue"
 import V2Layout from "@/layouts/v2-layout.vue"
 
 export default {
@@ -111,7 +109,6 @@ export default {
     ConversationStatusError,
     Loading,
     ErrorView,
-    Modal,
     V2Layout,
   },
 }

@@ -6,13 +6,13 @@
       :class="{
         'input-selector__input-container--focused': isOpen || isFocused,
         'input-selector__input-container--disabled': disabled,
-        'input-selector__input-container--empty': selectedTags.length === 0,
+        'input-selector__input-container--empty': selectedTagsIds.length === 0,
         'input-selector__input-container--inline': shouldDisplayInline,
       }"
       @click="handleContainerClick">
       <!-- Selected tags -->
       <div
-        v-if="selectedTags.length > 0 && !hideSelectedTags"
+        v-if="selectedTagsIds.length > 0 && !hideSelectedTags"
         class="input-selector__tags"
         ref="tagsContainer">
         <Tooltip
@@ -25,12 +25,12 @@
             :emoji="tag.emoji"
             :color="tag.color"
             removable
-            @remove="removeTag(tag)" />
+            @click="removeTag(tag)" />
         </Tooltip>
 
         <!-- Overflow indicator for inline mode -->
         <div
-          v-if="shouldDisplayInline && selectedTags.length > 2"
+          v-if="shouldDisplayInline && selectedTagsIds.length > 2"
           class="input-selector__overflow-indicator">
           <ph-icon name="dots-three" size="14" />
         </div>
@@ -93,9 +93,7 @@
           @click="handleBackToResults"
           @mouseenter="highlightedIndex = -1">
           <ph-icon name="arrow-left" size="16" />
-          <span>{{
-            $t("input_selector.search_back_to_results_message")
-          }}</span>
+          <span>{{ $t("input_selector.search_back_to_results_message") }}</span>
         </div>
 
         <!-- Filtered tags -->
@@ -149,8 +147,8 @@
         </div>
 
         <!-- Footer info -->
-        <div v-if="selectedTags.length > 0" class="input-selector__footer">
-          {{ selectedTags.length }} {{ $t("input_selector.selected_count") }}
+        <div v-if="selectedTagsIds.length > 0" class="input-selector__footer">
+          {{ selectedTagsIds.length }} {{ $t("input_selector.selected_count") }}
         </div>
       </div>
     </transition>
@@ -158,6 +156,8 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex"
+
 export default {
   name: "InputSelector",
   components: {},
@@ -194,7 +194,7 @@ export default {
       required: true,
       default: () => [],
     },
-    selectedTags: {
+    selectedTagsIds: {
       type: Array,
       default: () => [],
     },
@@ -231,8 +231,8 @@ export default {
     shouldDisplayInline() {
       return (
         this.mode === "search" &&
-        this.selectedTags.length <= 5 &&
-        this.selectedTags.length > 0
+        this.selectedTagsIds.length <= 5 &&
+        this.selectedTagsIds.length > 0
       )
     },
 
@@ -240,7 +240,7 @@ export default {
       if (this.mode === "search") {
         return this.$t("input_selector.search_placeholder")
       }
-      if (this.selectedTags.length > 0 && !this.hideSelectedTags) {
+      if (this.selectedTagsIds.length > 0 && !this.hideSelectedTags) {
         return this.$t("input_selector.search_tags")
       }
       return this.placeholder || this.$t("input_selector.search_tags")
@@ -287,13 +287,17 @@ export default {
         (tag) => tag.name.toLowerCase() === this.searchQuery.toLowerCase(),
       )
     },
+    selectedTags() {
+      return this.selectedTagsIds.map(this.getTagById)
+    },
+    ...mapGetters("tags", ["getTags", "getTagById"]),
   },
   watch: {
     value(newVal) {
-      this.internalValue = newVal;
+      this.internalValue = newVal
       // Synchronize searchQuery with external value for display
       if (newVal !== this.searchQuery) {
-        this.searchQuery = newVal || "";
+        this.searchQuery = newVal || ""
       }
     },
 
@@ -304,9 +308,9 @@ export default {
     searchQuery(newVal, oldVal) {
       // Track if we had an active search that was cleared
       if (oldVal && oldVal.trim() && (!newVal || !newVal.trim())) {
-        this.hadActiveSearch = true;
+        this.hadActiveSearch = true
       } else if (newVal && newVal.trim()) {
-        this.hadActiveSearch = false;
+        this.hadActiveSearch = false
       }
     },
 
@@ -342,11 +346,11 @@ export default {
     },
   },
   mounted() {
-    document.addEventListener("click", this.handleClickOutside);
-    
+    document.addEventListener("click", this.handleClickOutside)
+
     // Initialize searchQuery with initial value
     if (this.value && this.value !== this.searchQuery) {
-      this.searchQuery = this.value;
+      this.searchQuery = this.value
     }
   },
 
@@ -432,7 +436,11 @@ export default {
           return
         }
         // If back to results message is highlighted (-1) and no search query but had active search, go back to results
-        if (this.highlightedIndex === -1 && !this.searchQuery && this.hadActiveSearch) {
+        if (
+          this.highlightedIndex === -1 &&
+          !this.searchQuery &&
+          this.hadActiveSearch
+        ) {
           this.handleBackToResults()
           return
         }
@@ -497,10 +505,7 @@ export default {
     },
 
     isTagSelected(tag) {
-      return this.selectedTags.some(
-        (selectedTag) =>
-          (selectedTag._id || selectedTag.id) === (tag._id || tag.id),
-      )
+      return this.selectedTagsIds.includes(tag._id)
     },
 
     toggleTag(tag) {
@@ -515,7 +520,7 @@ export default {
       // Check max selections limit
       if (
         this.maxSelections &&
-        this.selectedTags.length >= this.maxSelections
+        this.selectedTagsIds.length >= this.maxSelections
       ) {
         return
       }
@@ -585,7 +590,7 @@ export default {
 
     handleBackToResults() {
       if (this.mode === "search") {
-        this.hadActiveSearch = false; // Reset the flag
+        this.hadActiveSearch = false // Reset the flag
         this.$emit("search", "") // Emit empty search to return to all results
         this.close() // Close dropdown after action
       }

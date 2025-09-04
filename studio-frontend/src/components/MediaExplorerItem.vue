@@ -3,7 +3,6 @@
     class="media-explorer-item"
     @click="select"
     :class="{
-      'media-explorer-item--overview': isSelectedForOverview,
       'media-explorer-item--selected': isSelected,
       'media-explorer-item--favorite': isFavorite,
     }">
@@ -53,49 +52,45 @@
         </Tooltip>
 
         <!-- Main content area with title and metadata -->
-        <div class="media-explorer-item__main-content">
-          <!-- Media title and metadata on same line -->
-          <div class="media-explorer-item__title-row">
-            <!-- Media title -->
-            <div class="media-explorer-item__title">
-              <span @click.stop.prevent="(e) => e.stopPropagation()">
-                <router-link
-                  :title="title"
-                  :to="{
-                    name: 'conversations transcription',
-                    params: {
-                      conversationId: reactiveMedia._id,
-                      organizationId: currentOrganization._id,
-                    },
-                    query: searchValue ? { search: searchValue } : {},
-                  }">
-                  {{ title }}
-                </router-link>
-              </span>
-            </div>
+        <div
+          class="media-explorer-item__main-content flex align-center flex1 gap-tiny">
+          <!-- Media title -->
+          <div class="media-explorer-item__title flex flex1">
+            <router-link
+              :title="title"
+              @click.native.prevent="(e) => e.stopPropagation()"
+              :to="{
+                name: 'conversations transcription',
+                params: {
+                  conversationId: reactiveMedia._id,
+                  organizationId: currentOrganization._id,
+                },
+                query: searchValue ? { search: searchValue } : {},
+              }">
+              {{ title }}
+            </router-link>
+          </div>
 
-            <!-- Media metadata -->
-            <div class="media-explorer-item__metadata">
-              <span v-if="duration" class="media-explorer-item__duration">
-                <TimeDuration :duration="duration" />
-              </span>
-              <span v-if="createdAt" class="media-explorer-item__date">
-                {{ createdAt }}
-              </span>
-            </div>
+          <!-- Media metadata -->
+          <div class="media-explorer-item__metadata">
+            <span v-if="duration" class="media-explorer-item__duration">
+              <TimeDuration :duration="duration" />
+            </span>
+            <span v-if="createdAt" class="media-explorer-item__date">
+              {{ createdAt }}
+            </span>
           </div>
         </div>
       </div>
 
       <!-- Right section: Tags (desktop only) -->
-      <IsDesktop>
-        <MediaExplorerItemTags
-          class="media-explorer-item__tags"
-          :mediatags="mediatags"
-          :media-id="reactiveMedia._id"
-          :max-visible="maxVisibleTags"
-          :mobile-view="false" />
-      </IsDesktop>
+
+      <MediaExplorerItemTags
+        class="media-explorer-item__tags media-explorer-item__tags--right"
+        :mediatags="mediatags"
+        :media="reactiveMedia"
+        :max-visible="maxVisibleTags"
+        :mobile-view="false" />
 
       <!-- Actions menu using PopoverList -->
       <PopoverList
@@ -107,7 +102,6 @@
         <template #trigger="{ open }">
           <Button
             class="media-explorer-item__actions-trigger"
-            :title="$t('media_explorer.actions')"
             variant="outline"
             color="primary"
             size="sm"
@@ -115,9 +109,15 @@
         </template>
       </PopoverList>
     </div>
-
+    <MediaExplorerItemTags
+      class="media-explorer-item__tags media-explorer-item__tags--bottom"
+      :mediatags="mediatags"
+      :media="reactiveMedia"
+      :max-visible="maxVisibleTags"
+      :mobile-view="false" />
     <!-- Delete modal -->
     <ModalDeleteConversations
+      v-if="showDeleteModal"
       :visible="showDeleteModal"
       :medias="[reactiveMedia]"
       @close="showDeleteModal = false" />
@@ -126,6 +126,7 @@
 
 <script>
 import { mapMutations, mapGetters } from "vuex"
+import { mediaScopeMixin } from "@/mixins/mediaScope"
 
 import MediaExplorerItemTags from "./MediaExplorerItemTags.vue"
 import UserProfilePicture from "./atoms/UserProfilePicture.vue"
@@ -138,6 +139,7 @@ import ModalDeleteConversations from "./ModalDeleteConversations.vue"
 import PopoverList from "./atoms/PopoverList.vue"
 
 export default {
+  mixins: [mediaScopeMixin],
   name: "MediaExplorerItem",
   components: {
     PhStar,
@@ -151,14 +153,6 @@ export default {
     media: {
       type: Object,
       required: true,
-    },
-    isSelectedForOverview: {
-      type: Boolean,
-      default: false,
-    },
-    searchValue: {
-      type: String,
-      default: "",
     },
     maxVisibleTags: {
       type: Number,
@@ -181,21 +175,7 @@ export default {
       currentOrganization: "getCurrentOrganization",
     }),
 
-    // Get reactive media data from store to ensure updates are reflected
     reactiveMedia() {
-      if (!this.media?._id) return this.media
-      const storeMedia = this.$store.getters["inbox/getMediaById"](
-        this.media._id,
-      )
-
-      // Store now contains all necessary properties, merge with original as fallback
-      if (storeMedia) {
-        return {
-          ...this.media,
-          ...storeMedia,
-        }
-      }
-
       return this.media
     },
 
@@ -316,25 +296,21 @@ export default {
         this.reactiveMedia._id,
       )
     },
-    isSelectAll() {
-      return this.$store.state.inbox.autoselectMedias
-    },
     isFromSession() {
       return !!this.media?.type?.from_session_id
     },
   },
   watch: {
     isSelectAll(value) {
-      this.isSelected = value
-
-      if (value) {
-        this.addSelectedMedia(this.reactiveMedia)
-      } else {
-        this.removeSelectedMedia(this.reactiveMedia)
-      }
+      // this.isSelected = value
+      // if (value) {
+      //   this.addSelectedMedia(this.reactiveMedia)
+      // } else {
+      //   this.removeSelectedMedia(this.reactiveMedia)
+      // }
     },
     // Sync local isSelected state with store
-    "$store.state.inbox.selectedMedias": {
+    selectedMedias: {
       handler(selectedMedias) {
         const isCurrentlySelected = selectedMedias.some(
           (media) => media._id === this.reactiveMedia._id,
@@ -348,8 +324,6 @@ export default {
     },
   },
   methods: {
-    ...mapMutations("inbox", ["addSelectedMedia", "removeSelectedMedia"]),
-
     toggleFavorite() {
       this.$store.dispatch(
         "user/toggleFavoriteConversation",
@@ -359,17 +333,10 @@ export default {
 
     select() {
       this.isSelected = !this.isSelected
-      this.handleSelectionChange()
-      this.selectForOverview()
+      this.toggleMediaSelection(this.media)
     },
 
-    handleSelectionChange() {
-      if (this.isSelected) {
-        this.addSelectedMedia(this.reactiveMedia)
-      } else {
-        this.removeSelectedMedia(this.reactiveMedia)
-      }
-    },
+    handleSelectionChange() {},
 
     handleActionClick(action) {
       switch (action.id) {
@@ -382,10 +349,6 @@ export default {
     handleDelete() {
       this.showDeleteModal = true
     },
-
-    selectForOverview() {
-      this.$emit("select-for-overview", this.reactiveMedia)
-    },
   },
 }
 </script>
@@ -395,6 +358,7 @@ export default {
 .media-explorer-item {
   position: relative;
   display: flex;
+  flex-direction: column;
   margin: 0.1rem;
   padding: 0.5rem;
   border: 1px solid var(--neutral-10);
@@ -414,11 +378,6 @@ export default {
   &--favorite {
     //border-left: 3px solid var(--primary-color);
   }
-
-  &--overview {
-    border-color: var(--primary-color);
-    background-color: var(--primary-soft);
-  }
 }
 
 // ===== CONTENT LAYOUT =====
@@ -436,7 +395,7 @@ export default {
   align-items: center;
   gap: 0.5rem;
   flex: 1;
-  min-width: 0; // Allow shrinking
+  min-width: 350px; // Allow shrinking
   overflow: hidden; // Prevent horizontal overflow
 }
 
@@ -520,36 +479,20 @@ export default {
   flex-shrink: 0;
 }
 
-.media-explorer-item__main-content {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-width: 0; // Allow shrinking
-  gap: 0.25rem;
-}
-
-.media-explorer-item__title-row {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  min-width: 0;
-  flex: 1;
-  width: 100%;
-  min-width: 300px; // Ensure minimum width for readability
-}
-
 .media-explorer-item__title {
-  flex: 1;
-  min-width: 0;
   font-weight: 600;
   color: var(--text-primary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  // white-space: nowrap;
+  // overflow: hidden;
+  // text-overflow: ellipsis;
 
   a {
+    display: inline !important;
     text-decoration: none;
     color: inherit;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
     &:hover {
       text-decoration: underline;
@@ -602,129 +545,24 @@ export default {
 
 // ===== TAGS SECTION =====
 .media-explorer-item__tags {
-  flex-shrink: 0;
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   gap: 0.25rem;
-  max-width: 200px;
   align-items: center;
-  margin-left: 0.5rem;
   overflow: hidden; // Prevent horizontal overflow
-
-  @media only screen and (max-width: 1400px) {
-    max-width: 150px;
-  }
-
-  @media only screen and (max-width: 1200px) {
-    max-width: 120px;
-  }
 }
 
-// ===== RESPONSIVE DESIGN =====
-@media only screen and (max-width: 1100px) {
-  .media-explorer-item__title-row {
-    min-width: 250px;
-  }
-
-  .media-explorer-item__title {
-    max-width: 160px;
-  }
-
-  .media-explorer-item__tags {
-    max-width: 100px;
-  }
+.media-explorer-item__tags--bottom {
+  display: none;
 }
 
-@media only screen and (max-width: 768px) {
-  .media-explorer-item {
-    padding: 0.25rem;
+@container medias-list (width < 800px) {
+  .media-explorer-item__tags--right {
+    display: none;
   }
 
-  .media-explorer-item__left {
-    gap: 0.25rem;
-  }
-
-  .media-explorer-item__title-row {
-    gap: 0.25rem;
-    flex-direction: row;
-    min-width: 200px;
-  }
-
-  .media-explorer-item__metadata {
-    flex-direction: row;
-    gap: 0.25rem;
-    align-items: center;
-  }
-
-  .media-explorer-item__tags {
-    max-width: 80px;
-  }
-}
-
-@media only screen and (max-width: 600px) {
-  .media-explorer-item__title-row {
-    min-width: 180px;
-  }
-
-  .media-explorer-item__title {
-    max-width: 120px;
-  }
-
-  .media-explorer-item__tags {
-    max-width: 60px;
-  }
-
-  .media-explorer-item__metadata {
-    font-size: 0.625rem;
-  }
-}
-
-@media only screen and (max-width: 480px) {
-  .media-explorer-item__title-row {
-    min-width: 150px;
-  }
-
-  .media-explorer-item__title {
-    max-width: 80px;
-  }
-
-  .media-explorer-item__tags {
-    max-width: 40px;
-  }
-
-  .media-explorer-item__controls {
-    padding: 1px;
-  }
-
-  .media-explorer-item__favorite,
-  .media-explorer-item__checkbox-container {
-    width: 18px;
-    height: 18px;
-  }
-
-  .media-explorer-item__metadata {
-    gap: 0.125rem;
-  }
-
-  .media-explorer-item__duration,
-  .media-explorer-item__date {
-    font-size: 0.625rem;
-    padding: 0.05rem 0.125rem;
-  }
-}
-
-@media only screen and (min-width: 1101px) {
-  .media-explorer-item {
-    min-width: 0;
-  }
-
-  .media-explorer-item__title {
-    min-width: 0;
-    max-width: none;
-  }
-
-  .media-explorer-item__tags {
-    max-width: 250px;
+  .media-explorer-item__tags--bottom {
+    display: flex;
   }
 }
 </style>

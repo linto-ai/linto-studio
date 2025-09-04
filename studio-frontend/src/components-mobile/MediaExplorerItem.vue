@@ -70,15 +70,14 @@
     <div
       v-if="media.tags && media.tags.length"
       class="media-explorer-item-mobile__tags">
-      <MediaExplorerItemTags 
-        :media-id="media._id" 
-        :mobile-view="true" />
+      <MediaExplorerItemTags :media="media" :mobile-view="true" />
     </div>
   </div>
 </template>
 
 <script>
 import { mapMutations, mapGetters } from "vuex"
+import { mediaScopeMixin } from "@/mixins/mediaScope"
 
 import MediaExplorerItemTags from "@/components/MediaExplorerItemTags.vue"
 import TimeDuration from "@/components/atoms/TimeDuration.vue"
@@ -92,6 +91,7 @@ import userAvatar from "@/tools/userAvatar"
 import ModalDeleteConversations from "@/components/ModalDeleteConversations.vue"
 
 export default {
+  mixins: [mediaScopeMixin],
   name: "MediaExplorerItemMobile",
   components: {
     Avatar,
@@ -107,14 +107,9 @@ export default {
       type: Object,
       required: true,
     },
-    searchValue: {
-      type: String,
-      default: "",
-    },
   },
   data() {
     return {
-      isSelected: false,
       showDeleteModal: false,
     }
   },
@@ -168,9 +163,6 @@ export default {
       const d = new Date(this.media?.created)
       return d.toLocaleDateString(undefined, options)
     },
-    isSelectAll() {
-      return this.$store.state.inbox.autoselectMedias
-    },
     isFromSession() {
       return !!this.media?.type?.from_session_id
     },
@@ -199,26 +191,18 @@ export default {
         },
       ]
     },
-  },
-  watch: {
-    isSelectAll(value) {
-      this.isSelected = value
-      if (value) {
-        this.addSelectedMedia(this.media)
-      } else {
-        this.removeSelectedMedia(this.media)
-      }
+    isSelected() {
+      const findMedia = this.selectedMedias.find((m) => m._id == this.media._id)
+
+      return findMedia
     },
   },
+  watch: {
+    isSelectAll(value) {},
+  },
   methods: {
-    ...mapMutations("inbox", ["addSelectedMedia", "removeSelectedMedia"]),
     toggleSelect() {
-      this.isSelected = !this.isSelected
-      if (this.isSelected) {
-        this.addSelectedMedia(this.media)
-      } else {
-        this.removeSelectedMedia(this.media)
-      }
+      this.toggleMediaSelection(this.media)
     },
     handleAction(item) {
       switch (item.id) {
@@ -269,7 +253,7 @@ export default {
       this.showDeleteModal = true
     },
     openEditor() {
-      if (!this.$store.state.inbox.selectedMedias.length) {
+      if (!this.selectedMedias.length) {
         this.handleAction({ id: "edit" })
       } else {
         this.toggleSelect()
@@ -284,7 +268,7 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  border: 1px solid var(--neutral-20);
+  border: 1px solid var(--neutral-40);
   border-radius: 4px;
   background: var(--background-primary);
   margin: 0.25rem 0;
@@ -358,7 +342,7 @@ export default {
     gap: 0.25rem;
     flex-wrap: nowrap;
     overflow: hidden;
-    
+
     .media-explorer-item-tags {
       display: flex;
       gap: 0.25rem;
@@ -367,7 +351,7 @@ export default {
       flex-wrap: nowrap;
       overflow: hidden;
     }
-    
+
     .media-explorer-item-tags__tag {
       flex-shrink: 0;
     }

@@ -61,40 +61,44 @@
               :field="fieldDisplayWatermark"
               v-model="fieldDisplayWatermark.value">
               <template v-slot:content-after-label>
-                <button
-                  class="only-icon transparent"
-                  :aria-label="
-                    $t('session.live_page.watermark_settings.settings_button')
-                  "
-                  :title="
-                    $t('session.live_page.watermark_settings.settings_button')
-                  "
-                  @click="showWatermarkSettings = true">
-                  <span class="icon settings" />
-                </button>
+                <div class="flex gap-small small-margin-left">
+                  <button
+                    class="only-icon transparent"
+                    :aria-label="
+                      $t('session.live_page.watermark_settings.settings_button')
+                    "
+                    :title="
+                      $t('session.live_page.watermark_settings.settings_button')
+                    "
+                    @click="showWatermarkSettings = true">
+                    <span class="icon settings" />
+                  </button>
 
-                <button
-                  class="only-icon transparent"
-                  :aria-label="
-                    $t('session.live_page.watermark_settings.unpin_button')
-                  "
-                  :title="
-                    $t('session.live_page.watermark_settings.unpin_button')
-                  "
-                  @click="togglePin"
-                  v-if="fieldWatermarkPinned.value">
-                  <span class="icon pin-on" />
-                </button>
-                <button
-                  class="only-icon transparent"
-                  :aria-label="
-                    $t('session.live_page.watermark_settings.pin_button')
-                  "
-                  :title="$t('session.live_page.watermark_settings.pin_button')"
-                  @click="togglePin"
-                  v-else>
-                  <span class="icon pin" />
-                </button>
+                  <button
+                    class="only-icon transparent"
+                    :aria-label="
+                      $t('session.live_page.watermark_settings.unpin_button')
+                    "
+                    :title="
+                      $t('session.live_page.watermark_settings.unpin_button')
+                    "
+                    @click="togglePin"
+                    v-if="fieldWatermarkPinned.value">
+                    <span class="icon pin-on" />
+                  </button>
+                  <button
+                    class="only-icon transparent"
+                    :aria-label="
+                      $t('session.live_page.watermark_settings.pin_button')
+                    "
+                    :title="
+                      $t('session.live_page.watermark_settings.pin_button')
+                    "
+                    @click="togglePin"
+                    v-else>
+                    <span class="icon pin" />
+                  </button>
+                </div>
               </template>
             </FormCheckbox>
           </section>

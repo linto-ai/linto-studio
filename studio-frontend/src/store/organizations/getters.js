@@ -40,6 +40,9 @@ const getters = {
     if (!getters.isInOrganization(organizationId)) return false
     return state.rolesInOrganizations.get(organizationId).myrole >= 4
   },
+  getCurrentScope: (state) => {
+    return state.currentScope
+  },
 }
 
 export default getters

@@ -59,15 +59,11 @@
           style="margin-top: 1rem">
           <div class="error-field flex1" v-if="formError">{{ formError }}</div>
           <div v-else class="flex1"></div>
-          <button
+          <Button
             type="submit"
-            class="btn primary upload-media-button"
-            id="upload-media-button"
-            :disabled="formState === 'sending'">
-            <!-- <ph-icon name="check" size="md"  class="icon"/> -->
-            <ph-icon name="check" size="md" class="icon" />
-            <span class="label">{{ formSubmitLabel }}</span>
-          </button>
+            color="primary"
+            :loading="formState === 'sending'"
+            :label="formSubmitLabel"></Button>
         </div>
       </form>
 
@@ -117,7 +113,6 @@ import QuickSessionCreateContent from "@/components/QuickSessionCreateContent.vu
 import VisioCreateContent from "@/components/VisioCreateContent.vue"
 import TabsVertical from "@/components/TabsVertical.vue"
 import ConversationCreateFileLine from "@/components/ConversationCreateFileLine.vue"
-import ActionConversationCreate from "@/components/molecules/ActionConversationCreate.vue"
 
 export default {
   mixins: [
@@ -303,7 +298,6 @@ export default {
     VisioCreateContent,
     TabsVertical,
     ConversationCreateFileLine,
-    ActionConversationCreate,
   },
 }
 </script>

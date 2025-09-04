@@ -6,12 +6,9 @@
     <label for="channel-selector" class="text-cut" v-else>{{
       customLabel
     }}</label>
-    <CustomSelect
-      class="fullwidth"
-      v-model="selectedTranslations"
-      id="translation-selector"
-      :aria-label="$t('session.live_page.translation_selector.label')"
-      :options="translationsList" />
+    <select v-model="selectedTranslations" id="channel-selector">
+      <option v-for="t in translationsList" :value="t.id">{{ t.text }}</option>
+    </select>
   </div>
 </template>
 <script>
@@ -52,41 +49,43 @@ export default {
         type: "language",
       })
 
-      let res = {}
-      res["original"] = [
-        {
-          value: "original",
-          text: this.$i18n.t(
-            "session.live_page.translation_selector.original_language",
-          ),
-        },
-      ]
+      let base = []
+      base.push({
+        value: "original",
+        text: this.$i18n.t(
+          "session.live_page.translation_selector.original_language",
+        ),
+        id: "original",
+      })
 
       if (this.qualifiedForCrossSubtitles) {
-        res["original"].push({
+        base.push({
           value: "crossSubtitles",
           text: this.$i18n.t(
             "session.live_page.translation_selector.cross_translation",
           ),
+          id: "crossSubtitles",
         })
       }
 
-      res["translations"] = this.selectedChannel.translations
+      const translations = this.selectedChannel.translations
         .map((translation) => {
           return {
             value: translation,
             text: languageNames.of(translation),
+            id: translation,
           }
         })
         .sort((t1, t2) => t1.text.localeCompare(t2.text))
 
-      return res
+      return [...base, ...translations]
     },
     selectedTranslations: {
       get() {
         return this.value
       },
       set(value) {
+        console.log(value)
         this.$emit("input", value)
       },
     },

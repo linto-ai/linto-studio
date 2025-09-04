@@ -4,6 +4,8 @@ import {
   apiDeleteOrganisation,
 } from "@/api/organisation"
 import { indexOrganizationsRoles } from "@/tools/indexOrganizationsRoles"
+import store from "@/store/index.js"
+import createMediaModule from "../modules/mediaModuleFactory"
 
 const actions = {
   async fetchOrganizations({ commit, rootGetters }) {
@@ -29,6 +31,15 @@ const actions = {
   },
   async setCurrentOrganizationScope({ commit, dispatch }, organizationId) {
     let organization = await apiGetOrganizationById(organizationId)
+
+    const scope = `organizations/${organizationId}/conversations`
+    if (!store.hasModule(`${organizationId}/conversations`)) {
+      store.registerModule(
+        `${organizationId}/conversations`,
+        createMediaModule(scope),
+      )
+    }
+
     commit("setCurrentOrganization", organization)
     commit("setCurrentOrganizationScope", organizationId)
 
