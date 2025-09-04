@@ -13,8 +13,14 @@ module.exports = function () {
     this.notify_sessions(roomId, "session_update", sessions)
   })
 
+  this.on("new_conversation_from_session", (session) => {
+    this.notify_sessions_created(session.organizationId, session)
+  })
+
   this.on("new_conversation", (conversation) => {
-    const orgaId = conversation.organization.organizationId
-    this.notify_conversation_created(orgaId, conversation)
+    this.notify_conversation_created(
+      conversation.organization.organizationId,
+      conversation,
+    )
   })
 }

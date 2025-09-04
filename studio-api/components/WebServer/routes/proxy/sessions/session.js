@@ -193,7 +193,7 @@ module.exports = (webServer) => {
             path: "/organizations/:organizationId/quickMeeting/:id",
             method: ["delete"],
             forwardParams: proxyForwardParams,
-            executeBeforeResult: storeQuickMeetingFromStop,
+            executeBeforeResult: storeQuickMeetingFromStop.bind(webServer),
           },
           {
             path: "/organizations/:organizationId/bots",
@@ -232,7 +232,7 @@ module.exports = (webServer) => {
             path: "/organizations/:organizationId/sessions/:id",
             method: ["delete"],
             forwardParams: proxyForwardParams,
-            executeBeforeResult: storeSessionFromStop,
+            executeBeforeResult: storeSessionFromStop.bind(webServer),
           },
           {
             path: "/organizations/:organizationId/sessions/:id/stop",

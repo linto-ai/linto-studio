@@ -187,6 +187,7 @@ class IoHandler extends Component {
     if (this.medias[orgaId].size == 0) {
       delete this.medias[orgaId]
 
+      if (this.memoryMedias[orgaId] === undefined) return
       this.memoryMedias[orgaId].stop()
       delete this.memoryMedias[orgaId]
     }
@@ -289,9 +290,8 @@ class IoHandler extends Component {
   }
 
   async notify_conversation_created(orgaId, conversation) {
+    this.io.to(orgaId).emit(`conversation_created`, conversation)
     if (this.medias.hasOwnProperty(orgaId)) {
-      this.io.to(orgaId).emit(`conversation_created`, conversation)
-
       let processConv =
         await model.conversations.listProcessingConversations(orgaId)
       this.memoryMedias[orgaId] = refreshInterval(
@@ -299,6 +299,37 @@ class IoHandler extends Component {
         this.memoryMedias[orgaId],
         processConv,
       )
+    }
+  }
+
+  async notify_sessions_created(orgaId, session) {
+    if (session.insertedId === undefined) {
+      appLogger.error(`Conversation ID is undefined`)
+      return
+    }
+    ;["owner", "sharedWithUsers", "organization"]
+
+    const conversation = await model.conversations.getById(session.insertedId, [
+      "_id",
+      "name",
+      "organization",
+      "jobs",
+    ])
+    this.io.to(orgaId).emit(`conversation_created`, conversation[0])
+
+    if (this.medias.hasOwnProperty(orgaId)) {
+      if (
+        conversation[0]?.type?.child_conversations?.length >= 1 ||
+        conversation[0]?.jobs?.transcription?.state !== "done"
+      ) {
+        let processConv =
+          await model.conversations.listProcessingConversations(orgaId)
+        this.memoryMedias[orgaId] = refreshInterval(
+          this.io.to(orgaId),
+          this.memoryMedias[orgaId],
+          processConv,
+        )
+      }
     }
   }
 
