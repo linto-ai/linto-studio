@@ -41,17 +41,22 @@ class MongoModel {
     const sort = { [sortField]: sortCriteria, _id: sortCriteria }
 
     try {
+      const paginatedResultPipeline = [
+        { $sort: sort },
+        { $skip: size * page },
+        { $limit: size },
+      ]
+
+      if (!projection.skipProjection) {
+        paginatedResultPipeline.push({ $project: projection })
+      }
+
       const aggregationPipeline = [
         { $match: query },
         {
           $facet: {
             totalCount: [{ $count: "count" }],
-            paginatedResult: [
-              { $sort: sort },
-              { $skip: size * page },
-              { $limit: size },
-              { $project: projection }, // Projection for paginated results
-            ],
+            paginatedResult: paginatedResultPipeline,
           },
         },
       ]

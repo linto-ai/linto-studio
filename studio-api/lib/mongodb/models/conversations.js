@@ -456,8 +456,7 @@ class ConvoModel extends MongoModel {
         name: 1,
         "jobs.transcription": 1,
       }
-
-      return await this.mongoRequest(query, projection)
+      return await this.mongoRequest(query)
     } catch (error) {
       console.error(error)
       return error
@@ -531,6 +530,12 @@ class ConvoModel extends MongoModel {
         searchConditions.push({
           "text.raw_segment": { $regex: filter.text, $options: "i" },
         })
+      }
+      if (filter?.processing) {
+        query["jobs.transcription.state"] = {
+          $in: ["pending", "processing", "queued"],
+        }
+        projection.skipProjection = true
       }
 
       if (searchConditions.length > 0) {
