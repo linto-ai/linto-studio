@@ -1,4 +1,4 @@
-import ChannelWS from "@/models/ChannelWS.js"
+import AudioStreamWebSocket from "@/services/websocket/AudioStreamWebSocket.js"
 import { customDebug } from "@/tools/customDebug.js"
 
 const EVENT_TO_LISTEN = "downSamplerFrame"
@@ -6,7 +6,7 @@ const EVENT_TO_LISTEN = "downSamplerFrame"
 export const sessionMicrophoneMixin = {
   data() {
     return {
-      channelAudioWebsocket: new ChannelWS(), // websocket to send audio data
+      channelAudioWebsocket: new AudioStreamWebSocket(), // websocket to send audio data
       isRecording: false,
       debugSessionMicrophone: customDebug("vue:debug:sessionMicrophone"),
     }

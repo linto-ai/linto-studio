@@ -1,10 +1,10 @@
 import Vue from "vue"
-import { customDebug } from "../tools/customDebug"
+import { customDebug } from "../../tools/customDebug"
 
-const debugWS = customDebug("Websocket:Channel:debug")
+const debugWS = customDebug("Websocket:AudioStream:debug")
 
 // Websocket to session transcriber to send audio
-export default class ChannelWS {
+export default class AudioStreamWebSocket {
   constructor() {
     this.state = Vue.observable({
       isConnected: false,

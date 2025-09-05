@@ -11,7 +11,7 @@ const socketioPath = process.env.VUE_APP_SESSION_WS_PATH
 
 const debugWS = customDebug("Websocket:Session:debug")
 
-export default class SessionWS {
+export default class ApiEventWebSocket {
   constructor() {
     this.state = Vue.observable({
       isConnected: false,

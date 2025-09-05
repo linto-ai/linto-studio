@@ -156,6 +156,8 @@ export default function createMediaModule(scope) {
             tags: getters.selectedTagIds,
           })
 
+          commit("clearSelectedMedias")
+
           if (append) commit("appendMedias", data.list)
           else commit("setMedias", data.list)
 
