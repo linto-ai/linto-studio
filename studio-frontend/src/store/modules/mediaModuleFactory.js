@@ -17,6 +17,7 @@ export default function createMediaModule(scope) {
       selectedTagIds: [],
       pagination: { page: 0, hasMore: true },
       count: 0,
+      filterStatus: "done", // done, processing, error
     }),
 
     getters: {
@@ -68,6 +69,7 @@ export default function createMediaModule(scope) {
           return conv.organization.membersRight
         }
       },
+      getFilterStatus: (s) => s.filterStatus,
     },
 
     mutations: {
@@ -141,6 +143,9 @@ export default function createMediaModule(scope) {
       setCount(state, count) {
         state.count = count
       },
+      setFilterStatus(state, value) {
+        state.filterStatus = value
+      },
     },
 
     actions: {
@@ -154,6 +159,7 @@ export default function createMediaModule(scope) {
             text: getters.search,
             title: getters.search,
             tags: getters.selectedTagIds,
+            status: getters.getFilterStatus,
           })
 
           commit("clearSelectedMedias")
@@ -221,6 +227,9 @@ export default function createMediaModule(scope) {
       selectAll({ commit, getters }) {
         commit("setAutoselectMedias", true)
         commit("setSelectedMedias", getters["all"])
+      },
+      setFilterStatus({ commit }, status) {
+        commit("setFilterStatus", status)
       },
     },
   }

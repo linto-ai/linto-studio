@@ -18,6 +18,7 @@ export async function apiGetGenericConversationsList(
     pageSize = DEFAULT_PAGE_SIZE,
     sortField = "last_update",
     sortOrder = -1,
+    status = null,
   } = {},
   notif = null,
 ) {
@@ -34,6 +35,7 @@ export async function apiGetGenericConversationsList(
       size: pageSize,
       sortField,
       sortCriteria: sortOrder,
+      processing: status,
     },
     notif,
   )

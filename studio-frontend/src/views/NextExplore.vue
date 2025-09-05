@@ -7,7 +7,21 @@
       :loadingNextPage="loadingNextPage"
       enable-pagination
       class="relative"
-      @load-more="handleLoadMore" />
+      @load-more="handleLoadMore">
+      <template #header-actions>
+        <div class="flex gap-small">
+          <FilterChip label="Ready" v-model="filterStatus" chipValue="done" />
+          <FilterChip
+            label="Processing"
+            v-model="filterStatus"
+            chipValue="processing" />
+          <FilterChip
+            label="In error"
+            v-model="filterStatus"
+            chipValue="error" />
+        </div>
+      </template>
+    </MediaExplorer>
   </LayoutV2>
 </template>
 
@@ -49,6 +63,14 @@ export default {
     search() {
       return this.$store.getters[`${this.storeScope}/search`]
     },
+    filterStatus: {
+      get() {
+        return this.$store.getters[`${this.storeScope}/getFilterStatus`]
+      },
+      set(value) {
+        this.$store.dispatch(`${this.storeScope}/setFilterStatus`, value)
+      },
+    },
     ...mapGetters("system", { pageIsLoading: "isLoading" }),
   },
   mounted() {
@@ -74,6 +96,12 @@ export default {
       this.loading = false
     },
     async selectedTagsIds(newValue, oldvalue) {
+      if (this.pageIsLoading) return
+      this.loading = true
+      await this.$store.dispatch(`${this.storeScope}/load`, {})
+      this.loading = false
+    },
+    async filterStatus() {
       if (this.pageIsLoading) return
       this.loading = true
       await this.$store.dispatch(`${this.storeScope}/load`, {})

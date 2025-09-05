@@ -120,4 +120,6 @@ export default class ApiEventWebSocket {
       this.socket.off(`orga_${this.currentOrganizationId}_session_update`)
     }
   }
+
+  subscribeMediaUpdate(organizationId) {}
 }
