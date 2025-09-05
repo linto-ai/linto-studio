@@ -319,7 +319,7 @@ export default {
     document.addEventListener("keydown", this.keydown)
   },
   beforeDestroy() {
-    this.$apiEventWS.unSubscribeRoom()
+    this.$apiEventWS.unSubscribeSessionRoom()
     document.removeEventListener("keydown", this.keydown)
   },
   computed: {
@@ -384,7 +384,7 @@ export default {
       }, 1000)
     },
     subscribeToWebsocket() {
-      this.$apiEventWS.subscribeRoom(
+      this.$apiEventWS.subscribeSessionRoom(
         this.sessionId,
         this.channelIndex,
         this.onPartial.bind(this),

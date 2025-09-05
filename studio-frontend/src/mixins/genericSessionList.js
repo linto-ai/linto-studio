@@ -23,12 +23,12 @@ export const genericSessionList = {
     )
   },
   beforeDestroy() {
-    this.$apiEventWS.unSubscribeOrganization()
+    this.$apiEventWS.unSubscribeSessionsUpdate()
     bus.$off(`websocket/orga_${this.currentOrganizationScope}_session_update`)
   },
   methods: {
     subscribeToWebsocket() {
-      this.$apiEventWS.subscribeOrganization(this.currentOrganizationScope)
+      this.$apiEventWS.subscribeSessionsUpdate(this.currentOrganizationScope)
     },
     onSessionUpdateEvent(value) {
       const sessionIndexes = {}

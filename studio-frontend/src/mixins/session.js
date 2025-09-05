@@ -58,7 +58,7 @@ export const sessionMixin = {
     )
   },
   beforeDestroy() {
-    //this.$apiEventWS.unSubscribeOrganization()
+    //this.$apiEventWS.unSubscribeSessionsUpdate()
     bus.$off(`websocket/orga_${this.organizationId}_session_update`)
   },
   methods: {
@@ -155,7 +155,7 @@ export const sessionMixin = {
       this.isDeleting = false
     },
     subscribeToWebsocket() {
-      this.$apiEventWS.subscribeOrganization(this.organizationId)
+      this.$apiEventWS.subscribeSessionsUpdate(this.organizationId)
     },
     onSessionUpdateEvent(value) {
       for (const updatedSession of value.updated) {

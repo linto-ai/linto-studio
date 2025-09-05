@@ -63,10 +63,10 @@ export default class ApiEventWebSocket {
     this.state.isConnected = false
   }
 
-  subscribeRoom(sessionId, channelIndex, onPartial, onFinal) {
+  subscribeSessionRoom(sessionId, channelIndex, onPartial, onFinal) {
     // TODO: rewrite by emitting event via bus
     return new Promise((resolve, reject) => {
-      this.unSubscribeRoom()
+      this.unSubscribeSessionRoom()
 
       const channelId = `${sessionId}/${channelIndex}`
 
@@ -92,7 +92,7 @@ export default class ApiEventWebSocket {
     })
   }
 
-  unSubscribeRoom() {
+  unSubscribeSessionRoom() {
     if (this.currentChannelId) {
       this.socket.emit("leave_room", this.currentChannelId)
     }
@@ -100,10 +100,10 @@ export default class ApiEventWebSocket {
     this.socket.off("final")
   }
 
-  subscribeOrganization(organizationId) {
-    this.unSubscribeOrganization()
+  subscribeSessionsUpdate(organizationId) {
+    this.unSubscribeSessionsUpdate()
     this.currentOrganizationId = organizationId
-    this.socket.emit("watch_organization", organizationId)
+    this.socket.emit("watch_organization_session", organizationId)
     // TODO: generalize every this.socket.on(event_name) to bus.$emit(`websocket/${event_name}`)
     this.socket.on(`orga_${organizationId}_session_update`, (value) => {
       store.dispatch("sessions/updateSession", value)
@@ -111,9 +111,12 @@ export default class ApiEventWebSocket {
     })
   }
 
-  unSubscribeOrganization() {
+  unSubscribeSessionsUpdate() {
     if (this.currentOrganizationId) {
-      this.socket.emit("unwatch_organization", this.currentOrganizationId)
+      this.socket.emit(
+        "unwatch_organization_session",
+        this.currentOrganizationId,
+      )
       this.socket.off(`orga_${this.currentOrganizationId}_session_update`)
     }
   }
