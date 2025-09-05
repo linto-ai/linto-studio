@@ -531,11 +531,16 @@ class ConvoModel extends MongoModel {
           "text.raw_segment": { $regex: filter.text, $options: "i" },
         })
       }
-      if (filter?.processing) {
+
+      if (["pending", "processing", "queued"].includes(filter?.processing)) {
         query["jobs.transcription.state"] = {
           $in: ["pending", "processing", "queued"],
         }
         projection.skipProjection = true
+      } else if (filter?.processing === "done") {
+        query["jobs.transcription.state"] = "done"
+      } else if (filter?.processing === "error") {
+        query["jobs.transcription.state"] = "error"
       }
 
       if (searchConditions.length > 0) {
