@@ -18,6 +18,7 @@ class BrokerClient extends Component {
     this.id = this.constructor.name
     this.deliveryState = CONNECTING
     this.sessionState = CONNECTING
+    this.notify = true
 
     // Combined pub and subs
     this.deliveryPub = "delivery"
@@ -72,11 +73,23 @@ class BrokerClient extends Component {
       uniqueId: "organization-api",
     })
     this.organizationClient.on("ready", () => {
+      this.notify = true
+
       this.organizationState = READY
       this.organizationClient.publishStatus()
     })
     this.organizationClient.on("error", (err) => {
       this.organizationState = ERROR
+
+      if (this.app.components["IoHandler"] === undefined) {
+        console.log("IoHandler not loaded yet")
+        return
+      }
+
+      if (this.notify) {
+        this.app.components["IoHandler"].emit("borker_disconnected")
+        this.notify = false
+      }
     })
 
     this.organizationClient.subscribe(`system/out/sessions/statuses`)

@@ -23,4 +23,9 @@ module.exports = function () {
       conversation,
     )
   })
+
+  // MQTT broker client send this event when the connection is lost
+  this.on("borker_disconnected", () => {
+    this.brokerKo(true)
+  })
 }

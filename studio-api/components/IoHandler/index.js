@@ -80,6 +80,7 @@ class IoHandler extends Component {
     super(app, "WebServer") // Relies on a WebServer component to be registrated
     this.id = this.constructor.name
     this.app = app
+
     this.rooms = {}
     this.orgas = {}
     this.medias = {}
@@ -98,6 +99,10 @@ class IoHandler extends Component {
     // this.io.use(auth_middlewares.isAuthenticateSocket) // Used initialy to require authentication, disabling annonymous sessions
     this.io.on("connection", (socket) => {
       appLogger.debug(`New client connected : ${socket.id}`)
+
+      if (this.app.components["BrokerClient"].deliveryState !== "ready") {
+        socket.emit("broker_ko")
+      }
 
       socket.on("join_room", async (roomId) => {
         if (!(await checkSocketAccess(socket, roomId))) return
@@ -133,6 +138,7 @@ class IoHandler extends Component {
         )
         this.addSocketInMedia(orgaId, socket)
       })
+
       socket.on("unwatch_organization_media", (orgaId) => {
         appLogger.debug(
           `Client ${socket.id} leaves watcher for conversations status ${orgaId}`,
@@ -335,10 +341,14 @@ class IoHandler extends Component {
 
   brokerOk() {
     this.io.emit("broker_ok")
+    appLogger.info("Broker connection established")
   }
 
-  brokerKo() {
-    this.io.emit("broker_ko")
+  brokerKo(notify = false) {
+    if (notify) {
+      this.io.emit("broker_ko")
+    }
+    appLogger.error("Broker connection lost")
   }
 }
 
