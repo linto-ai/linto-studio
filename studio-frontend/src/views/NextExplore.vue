@@ -74,13 +74,29 @@ export default {
     ...mapGetters("system", { pageIsLoading: "isLoading" }),
   },
   mounted() {
+    console.log("mounted")
     this.init()
+  },
+  beforeDestroy() {
+    console.log("destroy")
+    this.$apiEventWS.unSubscribeMediaUdate()
   },
   methods: {
     async init() {
+      if (this.getCurrentScope === "organization") {
+        this.$apiEventWS.subscribeMediaUpdate(this.currentOrganizationScope)
+        this.filterStatus = this.getStatusFromUrl()
+      }
       await this.$store.dispatch(`${this.storeScope}/load`, {})
       this.loading = false
       this.$store.dispatch("system/setIsLoading", false)
+    },
+    getStatusFromUrl() {
+      const status = this.$route.query.status
+      if (!status || ["done", "processing", "error"].indexOf(status) == "-1") {
+        return "done"
+      }
+      return status
     },
     async handleLoadMore() {
       this.loadingNextPage = true

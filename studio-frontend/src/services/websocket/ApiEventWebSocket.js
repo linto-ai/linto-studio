@@ -19,7 +19,7 @@ export default class ApiEventWebSocket {
 
     this.socket = null
     this.currentChannelId = null
-    this.currentOrganizationId = null
+    this.currentSessionOrganizationId = null
     this.test = false
     this.textPartialForTest = ""
     this.retryAfterKO = 0
@@ -102,7 +102,7 @@ export default class ApiEventWebSocket {
 
   subscribeSessionsUpdate(organizationId) {
     this.unSubscribeSessionsUpdate()
-    this.currentOrganizationId = organizationId
+    this.currentSessionOrganizationId = organizationId
     this.socket.emit("watch_organization_session", organizationId)
     // TODO: generalize every this.socket.on(event_name) to bus.$emit(`websocket/${event_name}`)
     this.socket.on(`orga_${organizationId}_session_update`, (value) => {
@@ -112,14 +112,30 @@ export default class ApiEventWebSocket {
   }
 
   unSubscribeSessionsUpdate() {
-    if (this.currentOrganizationId) {
+    if (this.currentSessionOrganizationId) {
       this.socket.emit(
         "unwatch_organization_session",
-        this.currentOrganizationId,
+        this.currentSessionOrganizationId,
       )
-      this.socket.off(`orga_${this.currentOrganizationId}_session_update`)
+      this.socket.off(
+        `orga_${this.currentSessionOrganizationId}_session_update`,
+      )
     }
   }
 
-  subscribeMediaUpdate(organizationId) {}
+  subscribeMediaUpdate(organizationId) {
+    this.unSubscribeMediaUdate()
+    this.currentMediaOrganizationId = organizationId
+    this.socket.emit("watch_organization_media", organizationId)
+    // conversation_processing_done
+    // conversation_processing
+  }
+  unSubscribeMediaUdate() {
+    if (this.currentMediaOrganizationId) {
+      this.socket.emit(
+        "unwatch_organization_media",
+        this.currentMediaOrganizationId,
+      )
+    }
+  }
 }

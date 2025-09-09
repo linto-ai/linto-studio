@@ -41,6 +41,11 @@
           size="md"
           class="media-explorer-item__type-icon" />
 
+        <span
+          class="media-explorer-item__percentage"
+          v-if="status !== 'done' && status !== 'error'"
+          >{{ progressDisplay }}</span
+        >
         <!-- Owner avatar -->
         <Tooltip :text="convOwner.fullName" position="bottom">
           <Avatar
@@ -108,6 +113,11 @@
             icon="dots-three-outline-vertical" />
         </template>
       </PopoverList>
+
+      <progress
+        class="media-explorer-item__progress"
+        :value="progress"
+        max="100"></progress>
     </div>
     <MediaExplorerItemTags
       class="media-explorer-item__tags media-explorer-item__tags--bottom"
@@ -127,19 +137,21 @@
 <script>
 import { mapMutations, mapGetters } from "vuex"
 import { mediaScopeMixin } from "@/mixins/mediaScope"
+import { mediaProgressMixin } from "@/mixins/mediaProgress"
 
 import MediaExplorerItemTags from "./MediaExplorerItemTags.vue"
 import UserProfilePicture from "./atoms/UserProfilePicture.vue"
 import TimeDuration from "./atoms/TimeDuration.vue"
+import ModalDeleteConversations from "./ModalDeleteConversations.vue"
+import PopoverList from "./atoms/PopoverList.vue"
+
 import { userName } from "@/tools/userName"
 import userAvatar from "@/tools/userAvatar"
 
 import { PhStar } from "phosphor-vue"
-import ModalDeleteConversations from "./ModalDeleteConversations.vue"
-import PopoverList from "./atoms/PopoverList.vue"
 
 export default {
-  mixins: [mediaScopeMixin],
+  mixins: [mediaScopeMixin, mediaProgressMixin],
   name: "MediaExplorerItem",
   components: {
     PhStar,
@@ -361,14 +373,14 @@ export default {
   flex-direction: column;
   margin: 0.1rem;
   padding: 0.5rem;
-  border: 1px solid var(--neutral-10);
+  border: 1px solid var(--neutral-40);
   border-radius: 4px;
   transition: all 0.1s ease-in-out;
   background-color: var(--background-primary);
 
   &:hover {
-    border-color: var(--neutral-40);
-    background-color: var(--neutral-10);
+    border-color: var(--neutral-50);
+    background-color: var(--neutral-20);
   }
 
   &--selected {
@@ -473,6 +485,33 @@ export default {
 // ===== MEDIA INFO ELEMENTS =====
 .media-explorer-item__type-icon {
   flex-shrink: 0;
+}
+
+.media-explorer-item__percentage {
+  padding: 0.1rem 0.25rem;
+  // background-color: var(--primary-soft);
+  color: var(--text-secondary);
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  // padding: 0.25em 0.5em;
+  box-sizing: border-box;
+  // height: 19px;
+  // border: var(--border-button);
+  font-weight: bold;
+  font-size: 14px;
+  //border: 1px solid var(--neutral-40);
+}
+
+.media-explorer-item__progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  right: 0;
+  background: transparent;
+  border: none;
 }
 
 .media-explorer-item__owner {
