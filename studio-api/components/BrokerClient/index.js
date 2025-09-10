@@ -56,11 +56,16 @@ class BrokerClient extends Component {
       uniqueId: "session-api",
     })
     this.sessionClient.on("ready", () => {
+      this.notify = true
       this.sessionState = READY
       this.sessionClient.publishStatus()
     })
     this.sessionClient.on("error", (err) => {
       this.sessionState = ERROR
+      if (this.notify) {
+        this.app.components["IoHandler"].emit("borker_disconnected")
+        this.notify = false
+      }
     })
 
     this.organizationPub = `system/out/sessions/statuses`
