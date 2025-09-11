@@ -9,6 +9,7 @@ const { storeSessionFromStop, storeQuickMeetingFromStop } = require(
 const {
   forceQueryParams,
   forwardSessionAlias,
+  forwardSessionAliasPublic,
   checkTranscriberProfileAccess,
   afterProxyAccess,
 } = require(
@@ -120,7 +121,7 @@ module.exports = (webServer) => {
             path: "/sessions/:id/public",
             method: ["get"],
             addParams: [{ "body.visibility": "public" }],
-            executeBeforeResult: forwardSessionAlias,
+            executeBeforeResult: forwardSessionAliasPublic,
             executeAfterResult: [
               (jsonString) => {
                 try {

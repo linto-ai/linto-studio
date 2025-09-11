@@ -1,6 +1,9 @@
 const debug = require("debug")(
   "linto:conversation-manager:components:WebServer:routecontrollers:session:alias",
 )
+
+const crypto = require("crypto")
+
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 const getSlug = require("speakingurl")
@@ -12,17 +15,32 @@ const {
   SessionConflict,
 } = require(`${process.cwd()}/components/WebServer/error/exception/session`)
 
+function hashPassword(password) {
+  const derivedKey = crypto
+    .pbkdf2Sync(password, process.env.SESSION_PSW_SALT, 100000, 64, "sha512")
+    .toString("hex")
+  return derivedKey
+}
+
 async function createSessionAlias(req, res, next) {
   try {
-    let { sessionId, name } = req.body
-    if (!sessionId || !name) throw new SessionUnsupportedMediaType()
-    name = getSlug(name, { lang: "en" })
+    let { sessionId, name, password } = req.body
+    if (!sessionId) throw new SessionUnsupportedMediaType()
 
-    const existingSession = await model.sessionAlias.getByName(name)
-    if (existingSession.length > 0)
-      throw new SessionConflict(
-        `Session alias with the name ${name} already exists`,
+    if (!name && !password) {
+      throw new SessionUnsupportedMediaType(
+        "Either name or password must be provided",
       )
+    }
+    if (name) {
+      name = getSlug(name, { lang: "en" })
+
+      const existingSession = await model.sessionAlias.getByName(name)
+      if (existingSession.length > 0)
+        throw new SessionConflict(
+          `Session alias with the name ${name} already exists`,
+        )
+    }
 
     try {
       await axios.get(
@@ -31,18 +49,22 @@ async function createSessionAlias(req, res, next) {
     } catch (err) {
       throw new SessionNotFound("Session not found")
     }
-
-    await model.sessionAlias.create({
+    const sessionData = {
       sessionId,
-      name,
       organizationId: req.params.organizationId,
-    })
+    }
+    if (name) sessionData.name = name
+    if (password) sessionData.password = hashPassword(password)
 
-    res.status(201).json({
+    await model.sessionAlias.create(sessionData)
+
+    const response = {
       message: "Alias created successfully",
-      name: name,
-      sessionId: sessionId,
-    })
+      sessionId,
+    }
+    if (name) response.name = name
+
+    res.status(201).json(response)
   } catch (err) {
     next(err)
   }
@@ -98,25 +120,33 @@ async function deleteSessionAlias(req, res, next) {
 async function updateSessionAlias(req, res, next) {
   try {
     const { id } = req.params
+    let { name, password } = req.body
+    const updateData = {}
+
     const sessionAlias = await model.sessionAlias.getByOrganizationAndId(
       req.params.organizationId,
       id,
     )
 
     if (sessionAlias.length === 0) throw new SessionNotFound()
-    if (req.body.name === undefined) throw new SessionUnsupportedMediaType()
-    const name = getSlug(req.body.name, { lang: "en" })
+    if (!name && !password) throw new SessionUnsupportedMediaType()
+    if (name !== undefined) {
+      name = getSlug(req.body.name, { lang: "en" })
 
-    const existingSession = await model.sessionAlias.getByName(name)
-    if (existingSession.length > 0)
-      throw new SessionConflict("Alias already exists")
+      const existingSession = await model.sessionAlias.getByName(name)
+      if (existingSession.length > 0)
+        throw new SessionConflict("Alias already exists")
+      updateData.name = name
+    }
+    if (password !== undefined) {
+      updateData.password = hashPassword(password)
+    }
 
-    const updatedSession = await model.sessionAlias.update(id, {
-      name,
-    })
+    await model.sessionAlias.update(id, updateData)
+
     res.status(200).json({
-      message: "Alias name updated",
-      name: name,
+      message: "Session updated",
+      ...(updateData.name ? { name: updateData.name } : {}),
     })
   } catch (err) {
     next(err)

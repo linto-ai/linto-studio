@@ -10,14 +10,17 @@ class SessionAlias extends MongoModel {
 
   async create(payload) {
     try {
-      if (!payload.sessionId || !payload.name || !payload.organizationId) {
-        throw new Error(
-          "Missing required fields: sessionId, name, organizationId",
-        )
+      if (!payload.sessionId || !payload.organizationId) {
+        throw new Error("Missing required fields: sessionId, organizationId")
       }
+
+      if (!payload.name && !payload.password) {
+        throw new Error("Either name or password must be provided")
+      }
+
       return await this.mongoInsert(payload)
     } catch (error) {
-      debug("Error creating session name:", error)
+      debug("Error creating session alias:", error)
       throw error
     }
   }
