@@ -74,11 +74,9 @@ export default {
     ...mapGetters("system", { pageIsLoading: "isLoading" }),
   },
   mounted() {
-    console.log("mounted")
     this.init()
   },
   beforeDestroy() {
-    console.log("destroy")
     this.$apiEventWS.unSubscribeMediaUdate()
   },
   methods: {

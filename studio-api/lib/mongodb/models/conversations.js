@@ -447,7 +447,7 @@ class ConvoModel extends MongoModel {
       const query = {
         "organization.organizationId": organizationId.toString(),
         "jobs.transcription.state": {
-          $in: ["pending", "processing", "queued"],
+          $nin: ["error", "done"],
         },
         "type.mode": TYPE.CANONICAL,
       }
@@ -534,7 +534,7 @@ class ConvoModel extends MongoModel {
 
       if (["pending", "processing", "queued"].includes(filter?.processing)) {
         query["jobs.transcription.state"] = {
-          $in: ["pending", "processing", "queued"],
+          $nin: ["error", "done"],
         }
         projection.skipProjection = true
       } else if (filter?.processing === "done") {

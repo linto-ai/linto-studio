@@ -109,18 +109,20 @@ export default function createMediaModule(scope) {
       setPagination(state, { page, hasMore }) {
         state.pagination = { page, hasMore }
       },
-      updateMedia(state, { mediaId, media }) {
+      updateMedia(state, { mediaId, media, patch = false }) {
         const idx = state.medias.findIndex((m) => m._id === mediaId)
+        const newValue = patch ? { ...state.medias[idx], ...media } : media
+
         if (idx !== -1) {
           // Use Vue.set to ensure reactivity
-          Vue.set(state.medias, idx, media)
+          Vue.set(state.medias, idx, newValue)
         }
 
         const selectedIdx = state.selectedMedias.findIndex(
           (m) => m._id === mediaId,
         )
         if (selectedIdx !== -1) {
-          Vue.set(state.selectedMedias, selectedIdx, media)
+          Vue.set(state.selectedMedias, selectedIdx, newValue)
         }
       },
       deleteMedias(state, mediaIds) {
@@ -196,8 +198,8 @@ export default function createMediaModule(scope) {
       toggleMediaSelection({ commit }, media) {
         commit("toggleSelectedMedia", media)
       },
-      updateMedia({ commit }, { mediaId, media }) {
-        commit("updateMedia", { mediaId, media })
+      updateMedia({ commit }, { mediaId, media, patch = false }) {
+        commit("updateMedia", { mediaId, media, patch })
       },
       async deleteMedias({ commit }, ids) {
         // todo api

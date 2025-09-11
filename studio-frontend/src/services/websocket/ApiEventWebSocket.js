@@ -9,12 +9,13 @@ import store from "@/store/index.js"
 const socketioUrl = process.env.VUE_APP_SESSION_WS
 const socketioPath = process.env.VUE_APP_SESSION_WS_PATH
 
-const debugWS = customDebug("Websocket:Session:debug")
-
+const debugWSSession = customDebug("Websocket:Session:debug")
+const debugWSMedia = customDebug("Websocket:Media:debug")
 export default class ApiEventWebSocket {
   constructor() {
     this.state = Vue.observable({
       isConnected: false,
+      isConnectedToSessionBroker: false,
     })
 
     this.socket = null
@@ -37,22 +38,18 @@ export default class ApiEventWebSocket {
         transports: transports,
       })
       this.socket.on("connect", (msg) => {
-        debugWS("connected to socket.io server", msg)
+        debugWSSession("connected to socket.io server", msg)
         this.state.isConnected = true
         resolve()
 
         this.socket.on("broker_ko", () => {
-          debugWS("broker_ko")
-          this.retryAfterKO += 1
-          if (this.retryAfterKO > 5) {
-            this.close()
-            this.retryAfterKO = 0
-          }
+          this.isConnectedToSessionBroker = false
+          debugWSSession("broker_ko")
         })
 
         this.socket.on("broker_ok", () => {
-          debugWS("broker_ok")
-          this.retryAfterKO = 0
+          debugWSSession("broker_ok")
+          this.isConnectedToSessionBroker = true
         })
       })
     })
@@ -77,7 +74,7 @@ export default class ApiEventWebSocket {
       this.socket.on("final", onFinal)
 
       this.socket.emit("join_room", channelId)
-      debugWS("subscribed to channel", channelId)
+      debugWSSession("subscribed to channel", channelId)
       this.currentChannelId = channelId
 
       // if test mode, send a test message onPartial every 3 seconds
@@ -127,6 +124,31 @@ export default class ApiEventWebSocket {
     this.unSubscribeMediaUdate()
     this.currentMediaOrganizationId = organizationId
     this.socket.emit("watch_organization_media", organizationId)
+
+    this.socket.on("conversation_processing", (value) => {
+      for (const media of value) {
+        debugWSMedia(
+          "Updating media job",
+          structuredClone(media.jobs.transcription),
+        )
+        store.dispatch(
+          `${this.currentMediaOrganizationId}/conversations/updateMedia`,
+          { mediaId: media._id, media: { jobs: media.jobs }, patch: true },
+        )
+      }
+    })
+
+    this.socket.on("conversation_processing_done", (mediaId) => {
+      debugWSMedia("conversation_processing_done", mediaId)
+      store.dispatch(
+        `${this.currentMediaOrganizationId}/conversations/updateMedia`,
+        {
+          mediaId: mediaId,
+          media: { jobs: { transcription: { state: "done" } } },
+          patch: true,
+        },
+      )
+    })
     // conversation_processing_done
     // conversation_processing
   }

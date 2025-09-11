@@ -18,15 +18,14 @@ function watchConversation(io, conversations, attempts = 0, delay = 10000) {
         conversation._id.toString(),
         conversation.jobs,
       )
-      if (
-        ["pending", "processing", "queued"].includes(
-          result?.conv_job?.transcription?.state,
-        )
-      ) {
+
+      if (result?.conv_job?.transcription?.state === "done") {
+        io.emit(`conversation_processing_done`, result.conv_id)
+      } else if (result?.conv_job?.transcription?.state === "error") {
+        io.emit(`conversation_processing_error`, result.conv_id)
+      } else {
         let conv = { ...conversation, jobs: result.conv_job }
         activeConversations.push(conv)
-      } else {
-        io.emit(`conversation_processing_done`, result.conv_id)
       }
     }
 

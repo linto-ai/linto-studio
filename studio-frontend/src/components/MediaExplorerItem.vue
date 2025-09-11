@@ -5,6 +5,10 @@
     :class="{
       'media-explorer-item--selected': isSelected,
       'media-explorer-item--favorite': isFavorite,
+      'media-explorer-item--done':
+        status === 'done' && filterStatus === 'processing',
+      'media-explorer-item--error':
+        status === 'error' && filterStatus === 'processing',
     }">
     <!-- Main content layout -->
     <div class="media-explorer-item__content">
@@ -189,6 +193,9 @@ export default {
 
     reactiveMedia() {
       return this.media
+    },
+    filterStatus() {
+      return this.$store.getters[`${this.storeScope}/getFilterStatus`]
     },
 
     actionsItems() {
@@ -389,6 +396,10 @@ export default {
 
   &--favorite {
     //border-left: 3px solid var(--primary-color);
+  }
+
+  &--done {
+    background-color: var(--primary-soft);
   }
 }
 
