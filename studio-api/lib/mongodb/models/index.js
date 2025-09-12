@@ -6,7 +6,7 @@ module.exports = {
   favorites: require("./favorites.js"),
   metadata: require("./metadata.js"),
   organizations: require("./organizations.js"),
-  sessionAlias: require("./sessionAlias.js"),
+  sessionData: require("./sessionData.js"),
   tags: require("./tags.js"),
   tokens: require("./tokens.js"),
   users: require("./users.js"),

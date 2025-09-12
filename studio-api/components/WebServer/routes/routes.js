@@ -42,10 +42,10 @@ module.exports = (webServer) => {
   if (process.env.SESSION_API_ENDPOINT !== "") {
     proxy_routes.push(require("./proxy/sessions/session.js")(webServer))
     api_routes["/api/organizations/:organizationId/sessions"] =
-      require("./api/sessions/alias.js")(webServer)
+      require("./api/sessions/data.js")(webServer)
     api_routes["/api/administration"] = [
       ...api_routes["/api/administration"],
-      ...require("./api/administration/alias")(webServer),
+      ...require("./api/administration/sessions")(webServer),
     ]
   }
   const authProviders = PROVIDER.registerRoutes(webServer)

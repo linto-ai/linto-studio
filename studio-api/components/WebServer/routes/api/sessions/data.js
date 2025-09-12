@@ -3,13 +3,13 @@ const debug = require("debug")(
 )
 
 const {
-  getSessionAlias,
-  getSessionAliasById,
-  createSessionAlias,
-  deleteSessionAlias,
-  updateSessionAlias,
+  getSessionData,
+  getSessionDataById,
+  createSessionData,
+  deleteSessionData,
+  updateSessionData,
 } = require(
-  `${process.cwd()}/components/WebServer/routecontrollers/session/alias.js`,
+  `${process.cwd()}/components/WebServer/routecontrollers/session/data.js`,
 )
 
 module.exports = (webserver) => {
@@ -18,31 +18,31 @@ module.exports = (webserver) => {
       path: "/alias",
       method: "post",
       requireAuth: true,
-      controller: createSessionAlias,
+      controller: createSessionData,
     },
     {
       path: "/alias/",
       method: "get",
       requireAuth: true,
-      controller: getSessionAlias,
+      controller: getSessionData,
     },
     {
       path: "/alias/:id",
       method: "get",
       requireAuth: true,
-      controller: getSessionAliasById,
+      controller: getSessionDataById,
     },
     {
       path: "/alias/:id",
       method: "delete",
       requireAuth: true,
-      controller: deleteSessionAlias,
+      controller: deleteSessionData,
     },
     {
       path: "/alias/:id",
       method: "put",
       requireAuth: true,
-      controller: updateSessionAlias,
+      controller: updateSessionData,
     },
   ]
 }

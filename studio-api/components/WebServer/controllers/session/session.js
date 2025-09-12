@@ -78,7 +78,7 @@ async function forwardSessionAlias(req, next) {
 
     // User is accessing a session by its ID
     if (uuidV4Pattern.test(req.params.id)) {
-      const existingSession = await model.sessionAlias.getBySessionId(
+      const existingSession = await model.sessionData.getBySessionId(
         req.params.id,
       )
 
@@ -89,7 +89,7 @@ async function forwardSessionAlias(req, next) {
         next()
       }
     } else if (req.params.id) {
-      const existingSession = await model.sessionAlias.getByName(req.params.id)
+      const existingSession = await model.sessionData.getByName(req.params.id)
 
       if (existingSession.length > 0) {
         req.url = req.url.replace(req.params.id, existingSession[0].sessionId)
