@@ -48,6 +48,7 @@ class BrokerClient extends Component {
 
     this.sessionPub = `session/out`
     this.sessionSubs = [`session/in/+/#`]
+
     // Initialize session client
     this.sessionClient = new MqttClient({
       pub: this.sessionPub,
@@ -63,6 +64,10 @@ class BrokerClient extends Component {
     this.sessionClient.on("error", (err) => {
       this.sessionState = ERROR
       if (this.notify) {
+        if (this.app.components["IoHandler"] === undefined) {
+          console.log("IoHandler not loaded yet")
+          return
+        }
         this.app.components["IoHandler"].emit("borker_disconnected")
         this.notify = false
       }
@@ -70,6 +75,7 @@ class BrokerClient extends Component {
 
     this.organizationPub = `system/out/sessions/statuses`
     this.organizationSubs = [`system/out/sessions/statuses`]
+
     // Initialize session client
     this.organizationClient = new MqttClient({
       pub: this.organizationPub,
