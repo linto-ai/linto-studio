@@ -3,6 +3,9 @@
     <span class="filter-chip__label">
       {{ label }}
     </span>
+    <span class="filter-chip__count">
+       {{ count }}
+    </span>
     <input type="radio" v-model="_value" :value="chipValue"></input>
   </label>
   
@@ -24,13 +27,19 @@ export default {
       type: String,
       required: true,
     },
+    count: {
+      type: Number,
+      required: false,
+    }
   },
   data() {
     return {
       // use with v-model, selected or not
     }
   },
-  mounted() {},
+  mounted() {
+    console.log("count", this.count)
+  },
   methods: {
   },
   computed: {
@@ -53,6 +62,7 @@ export default {
   align-items: center;
   justify-content: center;
   padding: 0.25em 0.5em;
+  padding-right: 0;
   box-sizing: border-box;
   height: 25px;
   // text-transform: capitalize;
@@ -71,6 +81,20 @@ export default {
   input[type=radio] {
     display: none;
   }
+}
+
+.filter-chip__count {
+  border-radius: 15px;
+  min-width: 16px;
+  text-align: center;
+  padding: 3px;
+  //border: var(--border-button);
+  margin: 0px;
+  margin-left: 0.25rem;
+  background-color: var(--neutral-40);
+  margin-right: 1px;
+  height: calc(100% - 1px);
+  color: var(--text-secondary);
 }
 
 .filter-chip:has(input[type=radio]:checked) {

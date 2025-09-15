@@ -708,7 +708,8 @@
     "loading": "Chargement en cours...",
     "no_medias_selected": "Aucun média sélectionné",
     "some_medias_cannot_be_deleted": "Certains médias ne peuvent pas être supprimés",
-    "no_permission_to_delete": "Vous n'avez pas la permission de supprimer ces médias"
+    "no_permission_to_delete": "Vous n'avez pas la permission de supprimer ces médias",
+    "processing_error_message": "La transcription automatique du média a rencontré une erreur"
   },
   "modal": {
     "cancel": "Annuler",

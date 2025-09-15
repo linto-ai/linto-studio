@@ -34,7 +34,7 @@
                 variant="outline" />
             </div>
           </IsMobile>
-          <slot name="header-actions" />
+          <slot name="header-actions" v-if="$slots['header-actions']" />
         </template>
       </MediaExplorerHeader>
 

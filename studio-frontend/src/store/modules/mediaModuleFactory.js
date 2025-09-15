@@ -1,6 +1,9 @@
 // store/modules/mediaModuleFactory.js
 
-import { apiGetGenericConversationsList } from "../../api/conversation"
+import {
+  apiGetGenericConversationsList,
+  apiGetGenericConversationsCount,
+} from "@/api/conversation"
 import i18n from "@/i18n"
 import Vue from "vue"
 import { bus } from "@/main.js"
@@ -17,6 +20,9 @@ export default function createMediaModule(scope) {
       selectedTagIds: [],
       pagination: { page: 0, hasMore: true },
       count: 0,
+      countDone: 0,
+      countProcessing: 0,
+      countError: 0,
       filterStatus: "done", // done, processing, error
     }),
 
@@ -28,6 +34,9 @@ export default function createMediaModule(scope) {
       hasMore: (s) => s.pagination.hasMore,
       selectedTagIds: (s) => s.selectedTagIds,
       count: (s) => s.count,
+      countDone: (s) => s.countDone,
+      countProcessing: (s) => s.countProcessing,
+      countError: (s) => s.countError,
       getMediaById: (s) => (mediaId) => {
         return s.medias.find((m) => m._id === mediaId)
       },
@@ -145,6 +154,15 @@ export default function createMediaModule(scope) {
       setCount(state, count) {
         state.count = count
       },
+      setCountDone(state, count) {
+        state.countDone = count
+      },
+      setCountProcessing(state, count) {
+        state.countProcessing = count
+      },
+      setCountError(state, count) {
+        state.countError = count
+      },
       setFilterStatus(state, value) {
         state.filterStatus = value
       },
@@ -187,6 +205,32 @@ export default function createMediaModule(scope) {
             { root: true },
           )
         }
+      },
+      async loadStatusCount({ commit, getters }) {
+        const countDone = await apiGetGenericConversationsCount(scope, {
+          text: getters.search,
+          title: getters.search,
+          tags: getters.selectedTagIds,
+          status: "done",
+        })
+
+        const countProcessing = await apiGetGenericConversationsCount(scope, {
+          text: getters.search,
+          title: getters.search,
+          tags: getters.selectedTagIds,
+          status: "processing",
+        })
+
+        const countError = await apiGetGenericConversationsCount(scope, {
+          text: getters.search,
+          title: getters.search,
+          tags: getters.selectedTagIds,
+          status: "error",
+        })
+
+        commit("setCountDone", countDone)
+        commit("setCountProcessing", countProcessing)
+        commit("setCountError", countError)
       },
       async loadNextPage({ state, dispatch }) {
         const nextPage = state.pagination.page + 1

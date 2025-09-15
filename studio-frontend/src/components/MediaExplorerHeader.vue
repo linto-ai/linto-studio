@@ -27,7 +27,7 @@
         </div>
 
         <!-- Actions slot -->
-        <div class="media-explorer-header__actions" v-if="$slots.actions">
+        <div class="media-explorer-header__actions">
           <slot name="actions" />
         </div>
 

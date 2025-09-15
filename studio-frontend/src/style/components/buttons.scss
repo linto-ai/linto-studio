@@ -46,6 +46,10 @@
         border-top-right-radius: var(--btn-border-radius, 4px) !important;
         border-bottom-right-radius: var(--btn-border-radius, 4px) !important;
       }
+
+      &:hover:not([disabled]):not(.disabled) {
+        transform: none;
+      }
     }
   }
 }

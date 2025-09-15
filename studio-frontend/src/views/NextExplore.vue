@@ -8,17 +8,23 @@
       enable-pagination
       class="relative"
       @load-more="handleLoadMore">
-      <template #header-actions>
+      <template #header-actions v-if="getCurrentScope == 'organization'">
         <div class="flex gap-small">
-          <FilterChip label="Ready" v-model="filterStatus" chipValue="done" />
+          <FilterChip
+            label="Ready"
+            v-model="filterStatus"
+            chipValue="done"
+            :count="countDone" />
           <FilterChip
             label="Processing"
             v-model="filterStatus"
-            chipValue="processing" />
+            chipValue="processing"
+            :count="countProcessing" />
           <FilterChip
             label="In error"
             v-model="filterStatus"
-            chipValue="error" />
+            chipValue="error"
+            :count="countError" />
         </div>
       </template>
     </MediaExplorer>
@@ -34,6 +40,7 @@ import MediaExplorer from "@/components/MediaExplorer.vue"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { convRoleMixin } from "@/mixins/convRole.js"
 import { mediaScopeMixin } from "@/mixins/mediaScope"
+import { getCurrentScope } from "vue"
 
 export default {
   name: "NextExplore",
@@ -63,6 +70,15 @@ export default {
     search() {
       return this.$store.getters[`${this.storeScope}/search`]
     },
+    countDone() {
+      return this.$store.getters[`${this.storeScope}/countDone`]
+    },
+    countError() {
+      return this.$store.getters[`${this.storeScope}/countError`]
+    },
+    countProcessing() {
+      return this.$store.getters[`${this.storeScope}/countProcessing`]
+    },
     filterStatus: {
       get() {
         return this.$store.getters[`${this.storeScope}/getFilterStatus`]
@@ -86,6 +102,7 @@ export default {
         this.filterStatus = this.getStatusFromUrl()
       }
       await this.$store.dispatch(`${this.storeScope}/load`, {})
+      await this.$store.dispatch(`${this.storeScope}/loadStatusCount`)
       this.loading = false
       this.$store.dispatch("system/setIsLoading", false)
     },

@@ -7,6 +7,7 @@
     :style="styles"
     :disabled="isDisabled"
     :aria-disabled="isDisabled"
+    @click="click"
     v-bind="$attrs"
     v-on="$listeners">
     <ph-icon
@@ -133,7 +134,7 @@ export default {
         return "a"
       }
       if (this.to) {
-        return "router-link"
+        return !this.isDisabled ? "router-link" : "div"
       }
       return "button"
     },
@@ -155,7 +156,16 @@ export default {
     },
   },
   mounted() {},
-  methods: {},
+  methods: {
+    click(e) {
+      if (this.isDisabled) {
+        e.preventDefault()
+        return
+      }
+
+      this.$emit("click", e)
+    },
+  },
   components: {},
 }
 </script>

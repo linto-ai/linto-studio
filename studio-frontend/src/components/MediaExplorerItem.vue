@@ -9,6 +9,7 @@
         status === 'done' && filterStatus === 'processing',
       'media-explorer-item--error':
         status === 'error' && filterStatus === 'processing',
+      'media-explorer-item--processing': status != 'done' && status != 'error',
     }">
     <!-- Main content layout -->
     <div class="media-explorer-item__content">
@@ -47,9 +48,20 @@
 
         <span
           class="media-explorer-item__percentage"
-          v-if="status !== 'done' && status !== 'error'"
-          >{{ progressDisplay }}</span
-        >
+          v-if="status !== 'done' && status !== 'error'">
+          {{ progressDisplay }}
+        </span>
+
+        <Tooltip
+          :text="$t('media_explorer.processing_error_message')"
+          position="bottom">
+          <ph-icon
+            name="warning"
+            v-if="status === 'error'"
+            color="tertiary"
+            :title="$t('media_explorer.processing_error_message')" />
+        </Tooltip>
+
         <!-- Owner avatar -->
         <Tooltip :text="convOwner.fullName" position="bottom">
           <Avatar
@@ -65,7 +77,8 @@
           class="media-explorer-item__main-content flex align-center flex1 gap-tiny">
           <!-- Media title -->
           <div class="media-explorer-item__title flex flex1">
-            <router-link
+            <component
+              class="media-explorer-item__title__link"
               :title="title"
               @click.native.prevent="(e) => e.stopPropagation()"
               :to="{
@@ -75,9 +88,11 @@
                   organizationId: currentOrganization._id,
                 },
                 query: searchValue ? { search: searchValue } : {},
-              }">
+              }"
+              :aria-disabled="status !== 'done'"
+              :is="status !== 'done' ? 'span' : 'router-link'">
               {{ title }}
-            </router-link>
+            </component>
           </div>
 
           <!-- Media metadata -->
@@ -119,6 +134,7 @@
       </PopoverList>
 
       <progress
+        v-if="status !== 'done' && status !== 'error'"
         class="media-explorer-item__progress"
         :value="progress"
         max="100"></progress>
@@ -143,11 +159,11 @@ import { mapMutations, mapGetters } from "vuex"
 import { mediaScopeMixin } from "@/mixins/mediaScope"
 import { mediaProgressMixin } from "@/mixins/mediaProgress"
 
-import MediaExplorerItemTags from "./MediaExplorerItemTags.vue"
-import UserProfilePicture from "./atoms/UserProfilePicture.vue"
-import TimeDuration from "./atoms/TimeDuration.vue"
-import ModalDeleteConversations from "./ModalDeleteConversations.vue"
-import PopoverList from "./atoms/PopoverList.vue"
+import MediaExplorerItemTags from "@/components/MediaExplorerItemTags.vue"
+import ModalDeleteConversations from "@/components/ModalDeleteConversations.vue"
+import UserProfilePicture from "@/components/atoms/UserProfilePicture.vue"
+import TimeDuration from "@/components/atoms/TimeDuration.vue"
+import PopoverList from "@/components/atoms/PopoverList.vue"
 
 import { userName } from "@/tools/userName"
 import userAvatar from "@/tools/userAvatar"
@@ -213,6 +229,7 @@ export default {
             },
             query: this.searchValue ? { search: this.searchValue } : {},
           },
+          disabled: this.status !== "done",
         },
         {
           id: "subtitles",
@@ -227,6 +244,7 @@ export default {
             },
             query: this.searchValue ? { search: this.searchValue } : {},
           },
+          disabled: this.status !== "done",
         },
         {
           id: "export",
@@ -240,6 +258,7 @@ export default {
               organizationId: this.organizationId,
             },
           },
+          disabled: this.status !== "done",
         },
         {
           id: "delete",
@@ -536,17 +555,22 @@ export default {
   // overflow: hidden;
   // text-overflow: ellipsis;
 
-  a {
+  .media-explorer-item__title__link {
     display: inline !important;
     text-decoration: none;
     color: inherit;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-weight: 500;
 
-    &:hover {
-      text-decoration: underline;
+    &[aria-disabled] {
+      pointer-events: none;
     }
+  }
+
+  & a:hover {
+    text-decoration: underline;
   }
 }
 
