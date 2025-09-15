@@ -232,6 +232,19 @@ export default function createMediaModule(scope) {
         commit("setCountProcessing", countProcessing)
         commit("setCountError", countError)
       },
+      increaseCountDone({ commit, getters }) {
+        commit("setCountDone", getters.countDone + 1)
+      },
+
+      increaseCountError({ commit, getters }) {
+        commit("setCountError", getters.countError + 1)
+      },
+      setCountProcessing({ commit, getters }, count) {
+        commit("setCountProcessing", count)
+      },
+      decreaseCountProcessing({ commit, getters }) {
+        commit("setCountProcessing", getters.countProcessing - 1)
+      },
       async loadNextPage({ state, dispatch }) {
         const nextPage = state.pagination.page + 1
         await dispatch("load", { page: nextPage, append: true })

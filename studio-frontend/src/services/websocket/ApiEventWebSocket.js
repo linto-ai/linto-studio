@@ -9,6 +9,7 @@ import store from "@/store/index.js"
 const socketioUrl = process.env.VUE_APP_SESSION_WS
 const socketioPath = process.env.VUE_APP_SESSION_WS_PATH
 
+console.log("hey hey WS")
 const debugWSSession = customDebug("Websocket:Session:debug")
 const debugWSMedia = customDebug("Websocket:Media:debug")
 export default class ApiEventWebSocket {
@@ -24,9 +25,12 @@ export default class ApiEventWebSocket {
     this.test = false
     this.textPartialForTest = ""
     this.retryAfterKO = 0
+
+    console.log("--> hey hey WS is buiding")
   }
 
   connect() {
+    console.log("--> hey hey WS is connecting")
     return new Promise((resolve, reject) => {
       const userToken = getCookie("authToken")
       const transports = getEnv("VUE_APP_WEBSOCKET_TRANSPORTS").split(",")
@@ -136,6 +140,11 @@ export default class ApiEventWebSocket {
           { mediaId: media._id, media: { jobs: media.jobs }, patch: true },
         )
       }
+
+      store.dispatch(
+        `${this.currentMediaOrganizationId}/conversations/setCountProcessing`,
+        value.length,
+      )
     })
 
     this.socket.on("conversation_processing_done", (mediaId) => {
@@ -147,6 +156,24 @@ export default class ApiEventWebSocket {
           media: { jobs: { transcription: { state: "done" } } },
           patch: true,
         },
+      )
+      store.dispatch(
+        `${this.currentMediaOrganizationId}/conversations/increaseCountDone`,
+      )
+    })
+
+    this.socket.on("conversation_processing_error", (mediaId) => {
+      debugWSMedia("conversation_processing_error", mediaId)
+      store.dispatch(
+        `${this.currentMediaOrganizationId}/conversations/updateMedia`,
+        {
+          mediaId: mediaId,
+          media: { jobs: { transcription: { state: "error" } } },
+          patch: true,
+        },
+      )
+      store.dispatch(
+        `${this.currentMediaOrganizationId}/conversations/increaseCountError`,
       )
     })
     // conversation_processing_done
