@@ -50,6 +50,34 @@ export async function apiGetGenericConversationsList(
   return getConversations.data // {count, list, hasMore}
 }
 
+export async function apiGetGenericConversationsCount(
+  scope,
+  { tags = [], text = "", title = "", status = null } = {},
+  notif = null,
+) {
+  const getConversations = await sendRequest(
+    `${BASE_API}/${scope}`,
+    {
+      method: "get",
+    },
+    {
+      tags: tags.toString(),
+      text,
+      name: title,
+      page: 0,
+      size: 0,
+      processing: status,
+    },
+    notif,
+  )
+
+  if (getConversations.status == "error") {
+    return 0
+  }
+
+  return getConversations?.data?.count ?? 0
+}
+
 export async function apiDeleteConversation(conversationId, notif) {
   return await sendRequest(
     `${BASE_API}/conversations/${conversationId}`,
