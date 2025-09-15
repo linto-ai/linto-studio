@@ -99,7 +99,9 @@
       </div>
     </div>
 
-    <div class="media-section" v-if="!readOnly">
+    <div
+      class="media-section"
+      v-if="!readOnly && getCurrentScope == 'organization'">
       <h4 class="section-title">
         {{ $t("media_explorer.panel.danger_zone") }}
       </h4>

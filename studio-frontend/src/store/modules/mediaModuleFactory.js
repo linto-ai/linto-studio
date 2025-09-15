@@ -3,6 +3,7 @@
 import {
   apiGetGenericConversationsList,
   apiGetGenericConversationsCount,
+  apiDeleteMultipleConversation,
 } from "@/api/conversation"
 import i18n from "@/i18n"
 import Vue from "vue"
@@ -75,7 +76,7 @@ export default function createMediaModule(scope) {
             return 31
           }
 
-          return conv.organization.membersRight
+          return conv?.organization?.membersRight || 0
         }
       },
       getFilterStatus: (s) => s.filterStatus,
@@ -200,7 +201,7 @@ export default function createMediaModule(scope) {
             "system/addNotification",
             {
               type: "error",
-              message: "Error fetching conversations",
+              message: "Error fetching medias",
             },
             { root: true },
           )
@@ -258,10 +259,25 @@ export default function createMediaModule(scope) {
       updateMedia({ commit }, { mediaId, media, patch = false }) {
         commit("updateMedia", { mediaId, media, patch })
       },
-      async deleteMedias({ commit }, ids) {
+      async deleteMedias({ commit, rootGetters, dispatch }, ids) {
         // todo api
-        commit("deleteMedias", ids)
-        commit("clearSelectedMedias")
+        let res = await apiDeleteMultipleConversation(
+          rootGetters["organizations/getCurrentOrganizationScope"],
+          ids,
+        )
+        if (res.status === "success") {
+          commit("deleteMedias", ids)
+          commit("clearSelectedMedias")
+        } else {
+          dispatch(
+            "system/addNotification",
+            {
+              type: "error",
+              message: "Error deleting medias",
+            },
+            { root: true },
+          )
+        }
       },
       async deleteSelected({ state, dispatch }) {
         const ids = state.selectedMedias.map((m) => m._id)
