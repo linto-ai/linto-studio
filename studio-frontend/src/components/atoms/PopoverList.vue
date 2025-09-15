@@ -268,6 +268,10 @@ export default {
       background-color: var(--primary-color);
       color: var(--primary-contrast);
     }
+
+    .icon {
+      background-color: transparent;
+    }
   }
 }
 
