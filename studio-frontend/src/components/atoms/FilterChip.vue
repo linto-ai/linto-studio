@@ -38,7 +38,6 @@ export default {
     }
   },
   mounted() {
-    console.log("count", this.count)
   },
   methods: {
   },
