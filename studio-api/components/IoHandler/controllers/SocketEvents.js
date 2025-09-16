@@ -24,6 +24,10 @@ module.exports = function () {
     )
   })
 
+  this.on("conversation_deleted", (orgaIds, ids) => {
+    this.notify(orgaIds, "conversation_deleted", ids)
+  })
+
   // MQTT broker client send this event when the connection is lost
   this.on("borker_disconnected", () => {
     this.brokerKo(true)

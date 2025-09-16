@@ -270,7 +270,7 @@ async function deleteConversationFromOrganization(req, res, next) {
           conv._id,
         )
 
-      if (conv[0]?.metadata?.audio) {
+      if (conv?.metadata?.audio) {
         deleteFile(`${getStorageFolder()}/${conv.metadata.audio.filepath}`)
       }
 
@@ -281,6 +281,14 @@ async function deleteConversationFromOrganization(req, res, next) {
       for (const category of categoryList) {
         model.categories.delete(category._id)
         model.tags.deleteAllFromCategory(category._id.toString())
+      }
+
+      if (this?.app?.components?.IoHandler) {
+        this.app.components.IoHandler.emit(
+          "conversation_deleted",
+          conv.organization.organizationId,
+          conv._id,
+        )
       }
     }
 

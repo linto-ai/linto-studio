@@ -129,7 +129,7 @@ module.exports = (webserver) => {
       method: "delete",
       requireAuth: true,
       requireOrganizationMaintainerAccess: true,
-      controller: deleteConversationFromOrganization,
+      controller: deleteConversationFromOrganization.bind(webserver),
     },
     {
       path: "/:organizationId/conversations/:conversationId/owner",
