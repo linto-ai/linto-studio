@@ -71,20 +71,26 @@ export default {
       return this.$store.getters[`${this.storeScope}/search`]
     },
     countDone() {
-      return this.$store.getters[`${this.storeScope}/countDone`]
+      return this.$store.getters[
+        `${this.getCurrentOrganizationScope}/done/conversations/count`
+      ]
     },
     countError() {
-      return this.$store.getters[`${this.storeScope}/countError`]
+      return this.$store.getters[
+        `${this.getCurrentOrganizationScope}/error/conversations/count`
+      ]
     },
     countProcessing() {
-      return this.$store.getters[`${this.storeScope}/countProcessing`]
+      return this.$store.getters[
+        `${this.getCurrentOrganizationScope}/processing/conversations/count`
+      ]
     },
     filterStatus: {
       get() {
-        return this.$store.getters[`${this.storeScope}/getFilterStatus`]
+        return this.$store.getters["organizations/getCurrentFilterStatus"]
       },
       set(value) {
-        this.$store.dispatch(`${this.storeScope}/setFilterStatus`, value)
+        this.$store.dispatch("organizations/setCurrentFilterStatus", value)
       },
     },
     ...mapGetters("system", { pageIsLoading: "isLoading" }),
@@ -98,11 +104,14 @@ export default {
   methods: {
     async init() {
       if (this.getCurrentScope === "organization") {
+        await this.initCounts()
         this.$apiEventWS.subscribeMediaUpdate(this.currentOrganizationScope)
         this.filterStatus = this.getStatusFromUrl()
+        window.history.replaceState({}, "", window.location.pathname)
       }
+
       await this.$store.dispatch(`${this.storeScope}/load`, {})
-      await this.$store.dispatch(`${this.storeScope}/loadStatusCount`)
+
       this.loading = false
       this.$store.dispatch("system/setIsLoading", false)
     },
@@ -117,6 +126,17 @@ export default {
       this.loadingNextPage = true
       await this.$store.dispatch(`${this.storeScope}/loadNextPage`)
       this.loadingNextPage = false
+    },
+    initCounts() {
+      this.$store.dispatch(
+        `${this.getCurrentOrganizationScope}/done/conversations/loadStatusCount`,
+      )
+      this.$store.dispatch(
+        `${this.getCurrentOrganizationScope}/processing/conversations/loadStatusCount`,
+      )
+      this.$store.dispatch(
+        `${this.getCurrentOrganizationScope}/error/conversations/loadStatusCount`,
+      )
     },
   },
   watch: {

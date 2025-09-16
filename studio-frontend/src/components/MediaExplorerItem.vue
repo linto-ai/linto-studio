@@ -339,14 +339,7 @@ export default {
     },
   },
   watch: {
-    isSelectAll(value) {
-      // this.isSelected = value
-      // if (value) {
-      //   this.addSelectedMedia(this.reactiveMedia)
-      // } else {
-      //   this.removeSelectedMedia(this.reactiveMedia)
-      // }
-    },
+    isSelectAll(value) {},
     // Sync local isSelected state with store
     selectedMedias: {
       handler(selectedMedias) {

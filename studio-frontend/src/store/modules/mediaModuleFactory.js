@@ -9,7 +9,7 @@ import i18n from "@/i18n"
 import Vue from "vue"
 import { bus } from "@/main.js"
 
-export default function createMediaModule(scope) {
+export default function createMediaModule(scope, status = "done") {
   return {
     namespaced: true,
 
@@ -24,7 +24,7 @@ export default function createMediaModule(scope) {
       countDone: 0,
       countProcessing: 0,
       countError: 0,
-      filterStatus: "done", // done, processing, error
+      filterStatus: status, // done, processing, error
     }),
 
     getters: {
@@ -91,6 +91,9 @@ export default function createMediaModule(scope) {
       },
       appendMedias(state, medias) {
         state.medias = [...state.medias, ...medias]
+      },
+      prependMedias(state, medias) {
+        state.medias = [...medias, ...state.medias]
       },
       setSearchQuery(state, query) {
         state.searchQuery = query
@@ -165,7 +168,7 @@ export default function createMediaModule(scope) {
         state.countError = count
       },
       setFilterStatus(state, value) {
-        state.filterStatus = value
+        console.warn("filterStatus is readOnly")
       },
     },
 
@@ -208,43 +211,23 @@ export default function createMediaModule(scope) {
         }
       },
       async loadStatusCount({ commit, getters }) {
-        const countDone = await apiGetGenericConversationsCount(scope, {
+        const count = await apiGetGenericConversationsCount(scope, {
           text: getters.search,
           title: getters.search,
           tags: getters.selectedTagIds,
-          status: "done",
+          status: getters.getFilterStatus,
         })
 
-        const countProcessing = await apiGetGenericConversationsCount(scope, {
-          text: getters.search,
-          title: getters.search,
-          tags: getters.selectedTagIds,
-          status: "processing",
-        })
-
-        const countError = await apiGetGenericConversationsCount(scope, {
-          text: getters.search,
-          title: getters.search,
-          tags: getters.selectedTagIds,
-          status: "error",
-        })
-
-        commit("setCountDone", countDone)
-        commit("setCountProcessing", countProcessing)
-        commit("setCountError", countError)
+        commit("setCount", count)
       },
-      increaseCountDone({ commit, getters }) {
-        commit("setCountDone", getters.countDone + 1)
+      increaseCount({ commit, getters }) {
+        commit("setCount", getters.count + 1)
       },
-
-      increaseCountError({ commit, getters }) {
-        commit("setCountError", getters.countError + 1)
+      setCount({ commit, getters }, count) {
+        commit("setCount", count)
       },
-      setCountProcessing({ commit, getters }, count) {
-        commit("setCountProcessing", count)
-      },
-      decreaseCountProcessing({ commit, getters }) {
-        commit("setCountProcessing", getters.countProcessing - 1)
+      decreaseCount({ commit, getters }) {
+        commit("setCount", getters.count - 1)
       },
       async loadNextPage({ state, dispatch }) {
         const nextPage = state.pagination.page + 1
@@ -285,8 +268,6 @@ export default function createMediaModule(scope) {
           await dispatch("deleteMedia", ids)
         }
       },
-      addSelectedMedia({ commit, state }, media) {},
-
       setSelectedTagIds({ commit }, ids) {
         commit("setSelectedTagIds", ids)
       },
@@ -305,6 +286,9 @@ export default function createMediaModule(scope) {
       },
       setFilterStatus({ commit }, status) {
         commit("setFilterStatus", status)
+      },
+      prependMedias({ commit }, medias) {
+        commit("prependMedias", medias)
       },
     },
   }

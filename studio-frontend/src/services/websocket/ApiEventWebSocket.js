@@ -125,6 +125,17 @@ export default class ApiEventWebSocket {
     this.currentMediaOrganizationId = organizationId
     this.socket.emit("watch_organization_media", organizationId)
 
+    this.socket.on("conversation_created", (media) => {
+      debugWSMedia("conversation_created", media)
+      store.dispatch(
+        `${this.currentMediaOrganizationId}/processing/conversations/prependMedias`,
+        [media],
+      )
+      store.dispatch(
+        `${this.currentMediaOrganizationId}/processing/conversations/increaseCount`,
+      )
+    })
+
     this.socket.on("conversation_processing", (value) => {
       for (const media of value) {
         debugWSMedia(
@@ -132,21 +143,16 @@ export default class ApiEventWebSocket {
           structuredClone(media.jobs.transcription),
         )
         store.dispatch(
-          `${this.currentMediaOrganizationId}/conversations/updateMedia`,
+          `${this.currentMediaOrganizationId}/processing/conversations/updateMedia`,
           { mediaId: media._id, media: { jobs: media.jobs }, patch: true },
         )
       }
-
-      store.dispatch(
-        `${this.currentMediaOrganizationId}/conversations/setCountProcessing`,
-        value.length,
-      )
     })
 
     this.socket.on("conversation_processing_done", (mediaId) => {
       debugWSMedia("conversation_processing_done", mediaId)
       store.dispatch(
-        `${this.currentMediaOrganizationId}/conversations/updateMedia`,
+        `${this.currentMediaOrganizationId}/processing/conversations/updateMedia`,
         {
           mediaId: mediaId,
           media: { jobs: { transcription: { state: "done" } } },
@@ -154,17 +160,27 @@ export default class ApiEventWebSocket {
         },
       )
       store.dispatch(
-        `${this.currentMediaOrganizationId}/conversations/increaseCountDone`,
+        `${this.currentMediaOrganizationId}/done/conversations/increaseCount`,
       )
+
       store.dispatch(
-        `${this.currentMediaOrganizationId}/conversations/decreaseCountProcessing`,
+        `${this.currentMediaOrganizationId}/done/conversations/prependMedias`,
+        [
+          store.getters[
+            `${this.currentMediaOrganizationId}/processing/conversations/getMediaById`
+          ](mediaId),
+        ],
+      )
+
+      store.dispatch(
+        `${this.currentMediaOrganizationId}/processing/conversations/decreaseCount`,
       )
     })
 
     this.socket.on("conversation_processing_error", (mediaId) => {
       debugWSMedia("conversation_processing_error", mediaId)
       store.dispatch(
-        `${this.currentMediaOrganizationId}/conversations/updateMedia`,
+        `${this.currentMediaOrganizationId}/processing/conversations/updateMedia`,
         {
           mediaId: mediaId,
           media: { jobs: { transcription: { state: "error" } } },
@@ -172,10 +188,10 @@ export default class ApiEventWebSocket {
         },
       )
       store.dispatch(
-        `${this.currentMediaOrganizationId}/conversations/increaseCountError`,
+        `${this.currentMediaOrganizationId}/error/conversations/increaseCount`,
       )
       store.dispatch(
-        `${this.currentMediaOrganizationId}/conversations/decreaseCountProcessing`,
+        `${this.currentMediaOrganizationId}/processing/conversations/decreaseCount`,
       )
     })
     // conversation_processing_done

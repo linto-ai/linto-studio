@@ -33,10 +33,25 @@ const actions = {
     let organization = await apiGetOrganizationById(organizationId)
 
     const scope = `organizations/${organizationId}/conversations`
-    if (!store.hasModule(`${organizationId}/conversations`)) {
+
+    if (!store.hasModule(`${organizationId}/done/conversations`)) {
       store.registerModule(
-        `${organizationId}/conversations`,
-        createMediaModule(scope),
+        `${organizationId}/done/conversations`,
+        createMediaModule(scope, "done"),
+      )
+    }
+
+    if (!store.hasModule(`${organizationId}/processing/conversations`)) {
+      store.registerModule(
+        `${organizationId}/processing/conversations`,
+        createMediaModule(scope, "processing"),
+      )
+    }
+
+    if (!store.hasModule(`${organizationId}/error/conversations`)) {
+      store.registerModule(
+        `${organizationId}/error/conversations`,
+        createMediaModule(scope, "error"),
       )
     }
 
@@ -45,6 +60,9 @@ const actions = {
 
     // Clear selected tags when switching organizations
     await dispatch("tags/clearExploreSelectedTags", null, { root: true })
+  },
+  async setCurrentFilterStatus({ commit }, status) {
+    commit("setCurrentFilterStatus", status)
   },
 }
 
