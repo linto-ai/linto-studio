@@ -125,6 +125,21 @@ export default class ApiEventWebSocket {
     this.currentMediaOrganizationId = organizationId
     this.socket.emit("watch_organization_media", organizationId)
 
+    this.socket.on("conversation_deleted", (mediaId) => {
+      store.dispatch(
+        `${this.currentMediaOrganizationId}/done/conversations/deleteMedias`,
+        { ids: [mediaId], callApi: false },
+      )
+      store.dispatch(
+        `${this.currentMediaOrganizationId}/processing/conversations/deleteMedias`,
+        { ids: [mediaId], callApi: false },
+      )
+      store.dispatch(
+        `${this.currentMediaOrganizationId}/error/conversations/deleteMedias`,
+        { ids: [mediaId], callApi: false },
+      )
+    })
+
     this.socket.on("conversation_created", (media) => {
       debugWSMedia("conversation_created", media)
       store.dispatch(
@@ -194,8 +209,6 @@ export default class ApiEventWebSocket {
         `${this.currentMediaOrganizationId}/processing/conversations/decreaseCount`,
       )
     })
-    // conversation_processing_done
-    // conversation_processing
   }
   unSubscribeMediaUdate() {
     if (this.currentMediaOrganizationId) {

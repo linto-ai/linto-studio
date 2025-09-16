@@ -242,13 +242,19 @@ export default function createMediaModule(scope, status = "done") {
       updateMedia({ commit }, { mediaId, media, patch = false }) {
         commit("updateMedia", { mediaId, media, patch })
       },
-      async deleteMedias({ commit, rootGetters, dispatch }, ids) {
+      async deleteMedias(
+        { commit, rootGetters, dispatch },
+        { ids, callApi = true } = {},
+      ) {
         // todo api
-        let res = await apiDeleteMultipleConversation(
-          rootGetters["organizations/getCurrentOrganizationScope"],
-          ids,
-        )
-        if (res.status === "success") {
+        let res
+        if (callApi) {
+          res = await apiDeleteMultipleConversation(
+            rootGetters["organizations/getCurrentOrganizationScope"],
+            ids,
+          )
+        }
+        if (!callApi || (res && res.status === "success")) {
           commit("deleteMedias", ids)
           commit("clearSelectedMedias")
         } else {
