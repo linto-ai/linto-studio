@@ -19,7 +19,7 @@
         </p> -->
       </div>
       <ul>
-        <li v-for="tag in orderedTags" :key="tag._id">
+        <li v-for="tag in orderedTags" :key="tag._id" v-if="tag.mediaCount > 0">
           <ChipTag
             :name="tag.name"
             :emoji="tag.emoji"

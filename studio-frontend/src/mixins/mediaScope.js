@@ -43,7 +43,9 @@ export const mediaScopeMixin = {
       )
     },
     deleteMedias(ids) {
-      return this.$store.dispatch(`${this.storeScope}/deleteMedias`, ids)
+      return this.$store.dispatch(`${this.storeScope}/deleteMedias`, {
+        ids: ids,
+      })
     },
     toggleSelectedTag(tag) {
       return this.$store.dispatch(
