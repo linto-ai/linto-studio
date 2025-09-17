@@ -48,7 +48,7 @@ $btn-outline-colors: (
   ),
   tertiary: (
     bg: var(--background-primary),
-    border: 1px solid var(--tertiary-color),
+    border-colo: 1px solid var(--tertiary-color),
     text: var(--tertiary-color),
     hover-bg: var(--tertiary-color),
     hover-text: var(--primary-contrast),
@@ -63,25 +63,26 @@ $btn-outline-colors: (
 );
 
 @layer base {
-  // Génération des couleurs de base
-  @each $color, $values in $btn-colors {
-    .btn--#{$color}:not(.btn--outline) {
-      --btn-bg: #{map-get($values, bg)};
-      --btn-border: #{map-get($values, border)};
-      --btn-text: #{map-get($values, text)};
-      --btn-hover-bg: #{map-get($values, hover-bg)};
-      --btn-hover-text: #{map-get($values, hover-text)};
+  .button--default {
+    .btn--primary {
+      --btn-border-color: var(--primary-color);
+      --btn-bg: var(--primary-color);
+      --btn-text: var(--primary-contrast);
+      --btn-hover-bg: var(--primary-soft);
+      --btn-hover-text: var(--primary-color);
+    }
+
+    .btn--secondary {
+      --btn-border-color: var(--primary-color);
+      --btn-bg: var(--background-primary);
+      --btn-text: var(--primary-color);
+      --btn-hover-bg: var(--primary-color);
+      --btn-hover-text: var(--primary-contrast);
     }
   }
 
-  // Génération des variantes "outline"
-  @each $color, $values in $btn-outline-colors {
-    .btn--#{$color}.btn--outline {
-      --btn-bg: #{map-get($values, bg)};
-      --btn-border: #{map-get($values, border)};
-      --btn-text: #{map-get($values, text)};
-      --btn-hover-bg: #{map-get($values, hover-bg)};
-      --btn-hover-text: #{map-get($values, hover-text)};
+  .button--destructive {
+    .btn--primary {
     }
   }
 }

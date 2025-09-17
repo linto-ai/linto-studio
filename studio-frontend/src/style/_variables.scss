@@ -31,10 +31,6 @@
 
   $primarySoft: soft-color($primaryColor, 94%);
   $primaryHard: hard-color($primaryColor);
-  $secondarySoft: soft-color($secondaryColor);
-  $secondaryHard: hard-color($secondaryColor);
-  $tertiarySoft: soft-color($redChart);
-  $tertiaryHard: hard-color($redChart);
   $yellowSoft: soft-color($yellowChart);
   $yellowHard: hard-color($yellowChart);
   $greenSoft: soft-color($greenChart);
@@ -49,30 +45,30 @@
     --luciole-font-family: "Luciole", "Arial", "Helvetica", "verdana";
     --background-primary: white;
     --background-secondary: white;
-
     --background-app: #f5f5f5;
 
-    --primary-color: var(--green-chart);
-    --primary-contrast: white;
-    --secondary-color: var(--blue-chart);
-    --tertiary-color: var(--red-chart);
-
+    --primary-color: #{$greenChart};
     --primary-soft: #{$primarySoft};
-    --primary-hard: #{$primaryHard};
-    --secondary-soft: #{$secondarySoft};
-    --secondary-hard: #{$secondaryHard};
-    --tertiary-soft: #{$tertiarySoft};
-    --tertiary-hard: #{$tertiaryHard};
-    --yellow-soft: #{$yellowSoft};
-    --yellow-hard: #{$yellowHard};
-    --green-soft: #{$greenSoft};
-    --green-hard: #{$greenHard};
-    --red-soft: #{$redSoft};
-    --red-hard: #{$redHard};
-    --blue-soft: #{$blueSoft};
-    --blue-hard: #{$blueHard};
+    --primary-contrast: white;
+    --danger-color: #{$redChart};
+    --danger-soft: #{$redSoft};
+    --danger-contrast: white;
+    --warning-color: #{$yellowChart};
+    --warning-soft: #{$yellowSoft};
 
-    --green-chart: #{$greenChart};
+    // --primary-hard: #{$primaryHard};
+    // --secondary-soft: #{$secondarySoft};
+    // --secondary-hard: #{$secondaryHard};
+    // --tertiary-soft: #{$tertiarySoft};
+    // --tertiary-hard: #{$tertiaryHard};
+    // --yellow-soft: #{$yellowSoft};
+    // --yellow-hard: #{$yellowHard};
+    // --green-soft: #{$greenSoft};
+    // --green-hard: #{$greenHard};
+    // --red-soft: #{$redSoft};
+    // --red-hard: #{$redHard};
+    // --blue-soft: #{$blueSoft};
+    // --blue-hard: #{$blueHard};
 
     --dark-100: #333;
     --dark-90: #404040;
@@ -83,15 +79,24 @@
     --dark-40: #e1e1e1;
     --dark-20: #f5f5f5;
     --dark-10: #fafafa;
-    --neutral-100: #333;
-    --neutral-90: #404040;
-    --neutral-80: #666;
-    --neutral-70: #808080;
-    --neutral-60: #c2c2c2;
-    --neutral-50: #d1d1d1;
-    --neutral-40: #e1e1e1;
-    --neutral-20: #f5f5f5;
-    --neutral-10: #fafafa;
+
+    --neutral-100: #0d0f0e; /* quasi noir, avec une pointe de vert */
+    --neutral-90: #1a2421;
+    --neutral-80: #2a3a36;
+    --neutral-70: #3d4f4a;
+    --neutral-60: #556660;
+    --neutral-50: #6f7f79;
+    --neutral-40: #8a9994;
+    --neutral-30: #a7b2ae;
+    --neutral-20: #c6d0cc;
+    --neutral-10: #e4ebe8;
+    --neutral-0: #ffffff;
+
+    --shadow-1: 0px 1px 2px rgba(0, 0, 0, 0.05); /* très léger, boutons discrets */
+    --shadow-2: 0px 2px 4px rgba(0, 0, 0, 0.08); /* cartes légères */
+    --shadow-3: 0px 4px 8px rgba(0, 0, 0, 0.1); /* modals, survol de boutons */
+    --shadow-4: 0px 8px 16px rgba(0, 0, 0, 0.12); /* éléments importants, popover */
+    --shadow-5: 0px 16px 32px rgba(0, 0, 0, 0.16); /* overlay / large popups */
 
     --text-primary: var(--dark-100);
     --text-secondary: var(--dark-80);
@@ -109,6 +114,7 @@
     --background-yellow-hard: var(--yellow-hard);
     --background-green-soft: var(--green-soft);
 
+    // outdated variable, to delete (keep now for old code)
     --background-lock-turn: #e6e6e6;
     --border-lock-turn: 1px solid #848484;
 

@@ -7,9 +7,8 @@
     :style="styles"
     :disabled="isDisabled"
     :aria-disabled="isDisabled"
-    @click="click"
     v-bind="$attrs"
-    v-on="$listeners">
+    v-on="isDisabled ? null : $listeners">
     <ph-icon
       v-if="loading"
       name="circle-notch"
@@ -65,10 +64,18 @@ export default {
       required: false,
       default: "fill",
     },
-    color: {
+    variant: {
       type: String,
       required: false,
       default: "primary",
+      validator: (value) =>
+        ["primary", "secondary", "tertiary", "text", "flat"].includes(value),
+    },
+    intent: {
+      type: String,
+      required: false,
+      default: "default",
+      validator: (value) => ["default", "destructive"].includes(value),
     },
     size: {
       type: String,
@@ -82,15 +89,15 @@ export default {
       default: "default",
       validator: (value) => ["default", "circle"].includes(value),
     },
-    variant: {
-      type: String,
-      required: false,
-      default: "solid",
-      validator: (value) =>
-        ["solid", "outline", "transparent", "text", "link", "flat"].includes(
-          value,
-        ),
-    },
+    // variant: {
+    //   type: String,
+    //   required: false,
+    //   default: "solid",
+    //   validator: (value) =>
+    //     ["solid", "outline", "transparent", "text", "link", "flat"].includes(
+    //       value,
+    //     ),
+    // },
     borderColor: {
       type: String,
       required: false,
@@ -141,8 +148,7 @@ export default {
     classes() {
       const classes = []
       classes.push("btn")
-      classes.push(`btn--${this.color}`)
-      classes.push(`btn--${this.size}`)
+      classes.push(`btn--${this.intent}`)
       classes.push(`btn--${this.variant}`)
       if (this.block) {
         classes.push("btn--block")

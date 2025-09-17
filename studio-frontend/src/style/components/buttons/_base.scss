@@ -16,7 +16,7 @@
   text-decoration: none;
   font-weight: 500;
   //transition: all 0.3s ease;
-  border: var(--btn-border, var(--border-button));
+  border: 1px solid var(--btn-border-color, var(--neutral-30));
   border-radius: var(--btn-border-radius, 4px);
   padding: var(--btn-padding, 0.5rem 1rem);
   font-size: var(--btn-font-size, 0.9rem);
