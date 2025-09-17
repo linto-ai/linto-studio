@@ -7,7 +7,6 @@
     :style="styles"
     :disabled="isDisabled"
     :aria-disabled="isDisabled"
-    @click="click"
     v-bind="$attrs"
     v-on="isDisabled ? null : $listeners">
     <ph-icon
@@ -156,16 +155,7 @@ export default {
     },
   },
   mounted() {},
-  methods: {
-    click(e) {
-      if (this.isDisabled) {
-        e.preventDefault()
-        return
-      }
-
-      this.$emit("click", e)
-    },
-  },
+  methods: {},
   components: {},
 }
 </script>
