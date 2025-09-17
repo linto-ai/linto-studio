@@ -535,6 +535,12 @@ export default {
   right: 0;
   background: transparent;
   border: none;
+  width: 100%;
+
+  &::-webkit-progress-bar {
+    background: transparent;
+    width: 100%;
+  }
 }
 
 .media-explorer-item__owner {

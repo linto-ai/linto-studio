@@ -9,7 +9,7 @@
     :aria-disabled="isDisabled"
     @click="click"
     v-bind="$attrs"
-    v-on="$listeners">
+    v-on="isDisabled ? null : $listeners">
     <ph-icon
       v-if="loading"
       name="circle-notch"
