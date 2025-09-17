@@ -257,7 +257,7 @@ export default {
     text-align: left;
     transform: none;
     box-shadow: none;
-    border: none;
+    border: none !important;
     //color: var(--text-primary);
 
     &.tertiary {

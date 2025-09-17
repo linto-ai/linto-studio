@@ -319,7 +319,7 @@ export default {
     document.addEventListener("keydown", this.keydown)
   },
   beforeDestroy() {
-    this.$sessionWS.unSubscribeRoom()
+    this.$apiEventWS.unSubscribeSessionRoom()
     document.removeEventListener("keydown", this.keydown)
   },
   computed: {
@@ -366,7 +366,7 @@ export default {
     displaySubtitles() {
       this.scrollToBottom(true)
     },
-    "$sessionWS.state.isConnected"(newValue, oldValue) {
+    "$apiEventWS.state.isConnected"(newValue, oldValue) {
       if (newValue) {
         this.subscribeToWebsocket()
       }
@@ -376,7 +376,7 @@ export default {
     init() {
       this.partialText = ""
       this.turns = []
-      if (this.$sessionWS.state.isConnected) {
+      if (this.$apiEventWS.state.isConnected) {
         this.subscribeToWebsocket()
       }
       setTimeout(() => {
@@ -384,7 +384,7 @@ export default {
       }, 1000)
     },
     subscribeToWebsocket() {
-      this.$sessionWS.subscribeRoom(
+      this.$apiEventWS.subscribeSessionRoom(
         this.sessionId,
         this.channelIndex,
         this.onPartial.bind(this),

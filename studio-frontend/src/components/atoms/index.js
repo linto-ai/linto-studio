@@ -30,7 +30,7 @@ import ButtonRoller from "./ButtonRoller.vue"
 import InputSelector from "./InputSelector.vue"
 import LabelInput from "./LabelInput.vue"
 import TextInput from "./TextInput.vue"
-
+import FilterChip from "./FilterChip.vue"
 const components = [
   Avatar,
   PhIcon,
@@ -64,6 +64,7 @@ const components = [
   InputSelector,
   LabelInput,
   TextInput,
+  FilterChip,
 ]
 
 const validateComponents = (c) =>

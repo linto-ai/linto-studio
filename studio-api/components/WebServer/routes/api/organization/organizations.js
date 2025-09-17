@@ -83,7 +83,7 @@ module.exports = (webserver) => {
       requireAuth: true,
       requireOrganizationUploaderAccess: true,
       orgaPermissionAccess: PERMISSIONS.UPLOAD,
-      controller: transcribeReq,
+      controller: transcribeReq.bind(webserver),
     },
     {
       path: "/:organizationId/conversations/import",
@@ -129,7 +129,7 @@ module.exports = (webserver) => {
       method: "delete",
       requireAuth: true,
       requireOrganizationMaintainerAccess: true,
-      controller: deleteConversationFromOrganization,
+      controller: deleteConversationFromOrganization.bind(webserver),
     },
     {
       path: "/:organizationId/conversations/:conversationId/owner",

@@ -58,7 +58,7 @@ export const sessionMixin = {
     )
   },
   beforeDestroy() {
-    //this.$sessionWS.unSubscribeOrganization()
+    //this.$apiEventWS.unSubscribeSessionsUpdate()
     bus.$off(`websocket/orga_${this.organizationId}_session_update`)
   },
   methods: {
@@ -155,7 +155,7 @@ export const sessionMixin = {
       this.isDeleting = false
     },
     subscribeToWebsocket() {
-      this.$sessionWS.subscribeOrganization(this.organizationId)
+      this.$apiEventWS.subscribeSessionsUpdate(this.organizationId)
     },
     onSessionUpdateEvent(value) {
       for (const updatedSession of value.updated) {
@@ -243,7 +243,7 @@ export const sessionMixin = {
       }
     },
     readyForWSConnection() {
-      return this.sessionLoaded && this.$sessionWS.state.isConnected
+      return this.sessionLoaded && this.$apiEventWS.state.isConnected
     },
   },
   watch: {

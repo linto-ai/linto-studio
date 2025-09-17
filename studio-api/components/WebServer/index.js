@@ -146,6 +146,10 @@ class WebServer extends Component {
 
     return this.init()
   }
+
+  loadComponents(name, components) {
+    this.app.components[name] = components
+  }
 }
 
 module.exports = (app) => new WebServer(app)

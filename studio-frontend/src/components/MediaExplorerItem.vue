@@ -5,6 +5,11 @@
     :class="{
       'media-explorer-item--selected': isSelected,
       'media-explorer-item--favorite': isFavorite,
+      'media-explorer-item--done':
+        status === 'done' && filterStatus === 'processing',
+      'media-explorer-item--error':
+        status === 'error' && filterStatus === 'processing',
+      'media-explorer-item--processing': status != 'done' && status != 'error',
     }">
     <!-- Main content layout -->
     <div class="media-explorer-item__content">
@@ -41,6 +46,22 @@
           size="md"
           class="media-explorer-item__type-icon" />
 
+        <span
+          class="media-explorer-item__percentage"
+          v-if="status !== 'done' && status !== 'error'">
+          {{ progressDisplay }}
+        </span>
+
+        <Tooltip
+          :text="$t('media_explorer.processing_error_message')"
+          position="bottom">
+          <ph-icon
+            name="warning"
+            v-if="status === 'error'"
+            color="tertiary"
+            :title="$t('media_explorer.processing_error_message')" />
+        </Tooltip>
+
         <!-- Owner avatar -->
         <Tooltip :text="convOwner.fullName" position="bottom">
           <Avatar
@@ -56,7 +77,8 @@
           class="media-explorer-item__main-content flex align-center flex1 gap-tiny">
           <!-- Media title -->
           <div class="media-explorer-item__title flex flex1">
-            <router-link
+            <component
+              class="media-explorer-item__title__link"
               :title="title"
               @click.native.prevent="(e) => e.stopPropagation()"
               :to="{
@@ -66,9 +88,11 @@
                   organizationId: currentOrganization._id,
                 },
                 query: searchValue ? { search: searchValue } : {},
-              }">
+              }"
+              :aria-disabled="status !== 'done'"
+              :is="status !== 'done' ? 'span' : 'router-link'">
               {{ title }}
-            </router-link>
+            </component>
           </div>
 
           <!-- Media metadata -->
@@ -108,6 +132,12 @@
             icon="dots-three-outline-vertical" />
         </template>
       </PopoverList>
+
+      <progress
+        v-if="status !== 'done' && status !== 'error'"
+        class="media-explorer-item__progress"
+        :value="progress"
+        max="100"></progress>
     </div>
     <MediaExplorerItemTags
       class="media-explorer-item__tags media-explorer-item__tags--bottom"
@@ -127,19 +157,21 @@
 <script>
 import { mapMutations, mapGetters } from "vuex"
 import { mediaScopeMixin } from "@/mixins/mediaScope"
+import { mediaProgressMixin } from "@/mixins/mediaProgress"
 
-import MediaExplorerItemTags from "./MediaExplorerItemTags.vue"
-import UserProfilePicture from "./atoms/UserProfilePicture.vue"
-import TimeDuration from "./atoms/TimeDuration.vue"
+import MediaExplorerItemTags from "@/components/MediaExplorerItemTags.vue"
+import ModalDeleteConversations from "@/components/ModalDeleteConversations.vue"
+import UserProfilePicture from "@/components/atoms/UserProfilePicture.vue"
+import TimeDuration from "@/components/atoms/TimeDuration.vue"
+import PopoverList from "@/components/atoms/PopoverList.vue"
+
 import { userName } from "@/tools/userName"
 import userAvatar from "@/tools/userAvatar"
 
 import { PhStar } from "phosphor-vue"
-import ModalDeleteConversations from "./ModalDeleteConversations.vue"
-import PopoverList from "./atoms/PopoverList.vue"
 
 export default {
-  mixins: [mediaScopeMixin],
+  mixins: [mediaScopeMixin, mediaProgressMixin],
   name: "MediaExplorerItem",
   components: {
     PhStar,
@@ -178,6 +210,9 @@ export default {
     reactiveMedia() {
       return this.media
     },
+    filterStatus() {
+      return this.$store.getters[`${this.storeScope}/getFilterStatus`]
+    },
 
     actionsItems() {
       return [
@@ -194,6 +229,7 @@ export default {
             },
             query: this.searchValue ? { search: this.searchValue } : {},
           },
+          disabled: this.status !== "done",
         },
         {
           id: "subtitles",
@@ -208,6 +244,7 @@ export default {
             },
             query: this.searchValue ? { search: this.searchValue } : {},
           },
+          disabled: this.status !== "done",
         },
         {
           id: "export",
@@ -221,6 +258,7 @@ export default {
               organizationId: this.organizationId,
             },
           },
+          disabled: this.status !== "done",
         },
         {
           id: "delete",
@@ -301,14 +339,7 @@ export default {
     },
   },
   watch: {
-    isSelectAll(value) {
-      // this.isSelected = value
-      // if (value) {
-      //   this.addSelectedMedia(this.reactiveMedia)
-      // } else {
-      //   this.removeSelectedMedia(this.reactiveMedia)
-      // }
-    },
+    isSelectAll(value) {},
     // Sync local isSelected state with store
     selectedMedias: {
       handler(selectedMedias) {
@@ -361,14 +392,14 @@ export default {
   flex-direction: column;
   margin: 0.1rem;
   padding: 0.5rem;
-  border: 1px solid var(--neutral-10);
+  border: 1px solid var(--neutral-40);
   border-radius: 4px;
   transition: all 0.1s ease-in-out;
   background-color: var(--background-primary);
 
   &:hover {
-    border-color: var(--neutral-40);
-    background-color: var(--neutral-10);
+    border-color: var(--neutral-50);
+    background-color: var(--neutral-20);
   }
 
   &--selected {
@@ -377,6 +408,10 @@ export default {
 
   &--favorite {
     //border-left: 3px solid var(--primary-color);
+  }
+
+  &--done {
+    background-color: var(--primary-soft);
   }
 }
 
@@ -475,6 +510,33 @@ export default {
   flex-shrink: 0;
 }
 
+.media-explorer-item__percentage {
+  padding: 0.1rem 0.25rem;
+  // background-color: var(--primary-soft);
+  color: var(--text-secondary);
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  // padding: 0.25em 0.5em;
+  box-sizing: border-box;
+  // height: 19px;
+  // border: var(--border-button);
+  font-weight: bold;
+  font-size: 14px;
+  //border: 1px solid var(--neutral-40);
+}
+
+.media-explorer-item__progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  right: 0;
+  background: transparent;
+  border: none;
+}
+
 .media-explorer-item__owner {
   flex-shrink: 0;
 }
@@ -486,17 +548,22 @@ export default {
   // overflow: hidden;
   // text-overflow: ellipsis;
 
-  a {
+  .media-explorer-item__title__link {
     display: inline !important;
     text-decoration: none;
     color: inherit;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-weight: 500;
 
-    &:hover {
-      text-decoration: underline;
+    &[aria-disabled] {
+      pointer-events: none;
     }
+  }
+
+  & a:hover {
+    text-decoration: underline;
   }
 }
 

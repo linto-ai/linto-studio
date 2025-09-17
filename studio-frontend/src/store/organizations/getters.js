@@ -43,6 +43,9 @@ const getters = {
   getCurrentScope: (state) => {
     return state.currentScope
   },
+  getCurrentFilterStatus: (state) => {
+    return state.currentFilterStatus
+  },
 }
 
 export default getters

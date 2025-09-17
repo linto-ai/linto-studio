@@ -33,8 +33,10 @@
                 icon="trash"
                 variant="outline" />
             </div>
+            <template #desktop>
+              <slot name="header-actions" v-if="$slots['header-actions']" />
+            </template>
           </IsMobile>
-          <slot name="header-actions" />
         </template>
       </MediaExplorerHeader>
 
@@ -56,24 +58,25 @@
               </div>
             </slot>
           </div>
-
           <!-- Media items -->
-          <IsMobile>
+          <MediaExplorerItem
+            v-if="!loading"
+            v-for="(media, index) in medias"
+            :key="`media-explorer-item-${media._id}-${index}`"
+            :media="media"
+            :ref="'mediaItem' + index"
+            class="media-explorer__body__item" />
+
+          <!-- <IsMobile>
             <MediaExplorerItemMobile
               v-if="!loading"
               v-for="(media, index) in medias"
               :key="`media-explorer-item-${media._id}-${index}`"
               :media="media" />
             <template #desktop>
-              <MediaExplorerItem
-                v-if="!loading"
-                v-for="(media, index) in medias"
-                :key="`media-explorer-item-${media._id}-${index}`"
-                :media="media"
-                :ref="'mediaItem' + index"
-                class="media-explorer__body__item" />
+              
             </template>
-          </IsMobile>
+          </IsMobile> -->
           <div v-if="loadingNextPage" class="loading-next-page">
             <p>Chargement de la page suivante</p>
           </div>

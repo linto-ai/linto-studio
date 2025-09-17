@@ -35,6 +35,11 @@ const mutations = {
       state.currentScope = scope
     else throw "Invalid scope value"
   },
+  setCurrentFilterStatus(state, status) {
+    if (status === "done" || status === "processing" || status === "error") {
+      state.currentFilterStatus = status
+    } else throw "Invalid filter status value"
+  },
 }
 
 export default mutations

@@ -219,6 +219,7 @@ export default {
             this.$router.push({
               name: "explore",
               params: { organizationId: this.conversationOrganization.value },
+              query: { status: "processing" },
             })
           }
         } else {

@@ -1,6 +1,6 @@
 const debug = require("debug")("linto:components:IoHandler:mqtt-events")
 
-const retryInterval = 1000 // Retry every 5 seconds
+const retryInterval = 10000 // Retry every 10 seconds
 const maxRetries = 5 // Maximum number of retries
 
 // The BrokerClient need to know if the IoHandler is connected to the broker

@@ -6,13 +6,14 @@ export const mediaScopeMixin = {
       return (
         this.getCurrentScope.replace(
           "organization",
-          this.getCurrentOrganizationScope,
+          this.getCurrentOrganizationScope + "/" + this.getCurrentFilterStatus,
         ) + "/conversations"
       )
     },
     ...mapGetters("organizations", [
       "getCurrentScope",
       "getCurrentOrganizationScope",
+      "getCurrentFilterStatus",
     ]),
     selectedMedias() {
       return this.$store.state[this.storeScope].selectedMedias ?? []
@@ -42,7 +43,9 @@ export const mediaScopeMixin = {
       )
     },
     deleteMedias(ids) {
-      return this.$store.dispatch(`${this.storeScope}/deleteMedias`, ids)
+      return this.$store.dispatch(`${this.storeScope}/deleteMedias`, {
+        ids: ids,
+      })
     },
     toggleSelectedTag(tag) {
       return this.$store.dispatch(
