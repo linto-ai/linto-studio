@@ -651,6 +651,11 @@
       "delete": "Delete"
     },
     "delete": "Delete",
+    "filter": {
+      "transcribed": "Transcribed",
+      "processing": "Processing",
+      "error": "Error"
+    },
     "share": "Share",
     "tags_selector": {
       "title": "Filter by topics",

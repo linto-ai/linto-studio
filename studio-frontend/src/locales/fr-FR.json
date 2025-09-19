@@ -652,6 +652,11 @@
       "delete": "Supprimer"
     },
     "delete": "Supprimer",
+    "filter": {
+      "transcribed": "Transcrits",
+      "processing": "En traitement",
+      "error": "Erreur"
+    },
     "share": "Partager",
     "tags_selector": {
       "title": "Filtrer par tags",
