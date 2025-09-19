@@ -22,7 +22,7 @@ function validateToken(token, secret) {
   try {
     return jwt.verify(token, secret, { algorithms: [algorithm] })
   } catch (err) {
-    debug("Token validation error:", err)
+    debug("Token validation error")
     return null
   }
 }

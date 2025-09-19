@@ -290,7 +290,7 @@ const createProxyRoutes = (webServer, proxy_routes) => {
             middlewares,
             (req, res, next) => {
               if (path.executeBeforeResult) {
-                path.executeBeforeResult(req, next)
+                path.executeBeforeResult(req, next, res)
               } else next()
             },
             (req, res, next) => {

@@ -7,6 +7,9 @@ const { SessionError } = require(
 const { Unauthorized } = require(
   `${process.cwd()}/components/WebServer/error/exception/auth`,
 )
+const { authFailLimiter } = require(
+  `${process.cwd()}/components/WebServer/config/express/rateLimiters`,
+)
 
 const PublicToken = require(
   `${process.cwd()}/components/WebServer/config/passport/token/public_generator`,
@@ -15,7 +18,7 @@ const PublicToken = require(
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const crypto = require("crypto")
 
-function verifyPassword(storedHash, inputPassword) {
+function verifyPublicSessionPassword(storedHash, inputPassword) {
   const inputKey = crypto.pbkdf2Sync(
     inputPassword,
     process.env.SESSION_PSW_SALT,
@@ -31,7 +34,9 @@ function ensurePasswordIfNeeded(sessionData, req) {
     if (!req.query.password) {
       throw new Unauthorized("Password is required for this alias")
     }
-    if (!verifyPassword(sessionData.password, req.query.password)) {
+    if (
+      !verifyPublicSessionPassword(sessionData.password, req.query.password)
+    ) {
       throw new Unauthorized("Invalid password")
     }
   }
@@ -67,15 +72,15 @@ async function forceQueryParams(req, next) {
   }
 }
 
-async function forwardSessionAliasPublic(req, next) {
+async function forwardSessionAliasPublic(req, next, res) {
   req.payload = {
     ...req.payload,
     fromPublic: true,
   }
-  forwardSessionAlias(req, next)
+  forwardSessionAlias(req, next, res)
 }
 
-async function forwardSessionAlias(req, next) {
+async function forwardSessionAlias(req, next, res) {
   try {
     const uuidV4Pattern =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -104,7 +109,9 @@ async function forwardSessionAlias(req, next) {
       next()
     }
   } catch (err) {
-    next(err)
+    authFailLimiter(req, res, () => {
+      next(err)
+    })
   }
 }
 
