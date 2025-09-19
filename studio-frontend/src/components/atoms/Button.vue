@@ -162,16 +162,7 @@ export default {
     },
   },
   mounted() {},
-  methods: {
-    click(e) {
-      if (this.isDisabled) {
-        e.preventDefault()
-        return
-      }
-
-      this.$emit("click", e)
-    },
-  },
+  methods: {},
   components: {},
 }
 </script>

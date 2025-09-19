@@ -11,17 +11,20 @@
       <template #header-actions v-if="getCurrentScope == 'organization'">
         <div class="flex gap-small">
           <FilterChip
-            label="Ready"
+            v-if="countProcessing > 0 || countError > 0"
+            :label="$t('media_explorer.filter.transcribed')"
             v-model="filterStatus"
             chipValue="done"
             :count="countDone" />
           <FilterChip
-            label="Processing"
+            v-if="countProcessing > 0"
+            :label="$t('media_explorer.filter.processing')"
             v-model="filterStatus"
             chipValue="processing"
             :count="countProcessing" />
           <FilterChip
-            label="In error"
+            v-if="countError > 0"
+            :label="$t('media_explorer.filter.error')"
             v-model="filterStatus"
             chipValue="error"
             :count="countError" />

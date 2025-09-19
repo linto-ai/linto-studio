@@ -218,6 +218,8 @@ export default class ApiEventWebSocket {
       )
     }
 
+    this.socket.off("conversation_deleted")
+    this.socket.off("conversation_created")
     this.socket.off("conversation_processing_error")
     this.socket.off("conversation_processing_done")
     this.socket.off("conversation_processing")
