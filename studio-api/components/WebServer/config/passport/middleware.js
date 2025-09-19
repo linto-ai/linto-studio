@@ -5,7 +5,9 @@ const passport = require("passport")
 const { expressjwt: jwt } = require("express-jwt")
 const jwtDecode = require("jwt-decode")
 const verifyJwt = require("jsonwebtoken")
-
+const PublicToken = require(
+  `${process.cwd()}/components/WebServer/config/passport/token/public_generator`,
+)
 const algorithm = process.env.JWT_ALGORITHM || "HS256"
 let { generators } = require("openid-client")
 
@@ -157,23 +159,30 @@ module.exports = {
         return next(new Error("Authentication token is missing"))
       }
       const tokenData = jwtDecode(token + "")
-      if (!tokenData?.data?.userId || !tokenData?.data?.tokenId) {
+      if (tokenData?.data?.fromPublic && tokenData?.data?.fromSession) {
+        let isValid = PublicToken.validateToken(
+          token,
+          tokenData.data.fromSession,
+        )
+        if (!isValid) return next(new Error("Invalid or expired token"))
+        next()
+      } else if (!tokenData?.data?.userId || !tokenData?.data?.tokenId) {
         return next(new Error("Malformed token"))
+      } else {
+        const secret = await generateSecretFromHeaders(undefined, {
+          payload: tokenData,
+        })
+
+        verifyJwt.verify(
+          token,
+          secret,
+          { algorithms: [algorithm] },
+          (err, decoded) => {
+            if (err) return next(new Error("Invalid or expired token"))
+            next() // Authentication successful
+          },
+        )
       }
-
-      const secret = await generateSecretFromHeaders(undefined, {
-        payload: tokenData,
-      })
-
-      verifyJwt.verify(
-        token,
-        secret,
-        { algorithms: [algorithm] },
-        (err, decoded) => {
-          if (err) return next(new Error("Invalid or expired token"))
-          next() // Authentication successful
-        },
-      )
     } catch (err) {
       next(new Error("Authentication failed"))
     }

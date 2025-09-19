@@ -33,7 +33,6 @@ async function checkSocketAccess(socket, roomId) {
 
     if (session.visibility === "public") {
       registryMetrics(session, socket)
-
       return true
     } else {
       const { isAuth, userId } = await auth_middlewares.checkSocket(socket)
@@ -90,7 +89,7 @@ class IoHandler extends Component {
       },
     })
 
-    // this.io.use(auth_middlewares.isAuthenticateSocket) // Used initialy to require authentication, disabling annonymous sessions
+    this.io.use(auth_middlewares.isAuthenticateSocket) // Used initialy to require authentication, disabling annonymous sessions
     this.io.on("connection", (socket) => {
       appLogger.debug(`New client connected : ${socket.id}`)
 

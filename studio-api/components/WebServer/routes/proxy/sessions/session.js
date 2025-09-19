@@ -12,6 +12,7 @@ const {
   forwardSessionAliasPublic,
   checkTranscriberProfileAccess,
   afterProxyAccess,
+  generatPublicToken,
 } = require(
   `${process.cwd()}/components/WebServer/controllers/session/session.js`,
 )
@@ -141,6 +142,9 @@ module.exports = (webServer) => {
                 } catch (err) {
                   throw err
                 }
+              },
+              (jsonString, req) => {
+                return generatPublicToken(jsonString, req)
               },
             ],
           },

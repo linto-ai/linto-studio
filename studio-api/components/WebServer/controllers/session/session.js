@@ -8,6 +8,10 @@ const { Unauthorized } = require(
   `${process.cwd()}/components/WebServer/error/exception/auth`,
 )
 
+const PublicToken = require(
+  `${process.cwd()}/components/WebServer/config/passport/token/public_generator`,
+)
+
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const crypto = require("crypto")
 
@@ -23,7 +27,7 @@ function verifyPassword(storedHash, inputPassword) {
 }
 
 function ensurePasswordIfNeeded(sessionData, req) {
-  if (sessionData.password && req.payload.public === true) {
+  if (sessionData.password && req.payload.fromPublic === true) {
     if (!req.query.password) {
       throw new Unauthorized("Password is required for this alias")
     }
@@ -66,7 +70,7 @@ async function forceQueryParams(req, next) {
 async function forwardSessionAliasPublic(req, next) {
   req.payload = {
     ...req.payload,
-    public: true,
+    fromPublic: true,
   }
   forwardSessionAlias(req, next)
 }
@@ -118,10 +122,27 @@ async function checkTranscriberProfileAccess(jsonString, req) {
   }
 }
 
+async function generatPublicToken(jsonString, req) {
+  try {
+    if (!req?.payload?.data?.userId) {
+      let session = JSON.parse(jsonString)
+
+      const token = PublicToken.generateTokens(session.id)
+      session.publicSessionToken = token
+      return JSON.stringify(session)
+    }
+    return jsonString
+  } catch (err) {
+    console.log(err)
+  }
+  return jsonString
+}
+
 module.exports = {
   forceQueryParams,
   forwardSessionAlias,
   forwardSessionAliasPublic,
   checkTranscriberProfileAccess,
   afterProxyAccess,
+  generatPublicToken,
 }
