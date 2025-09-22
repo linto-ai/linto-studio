@@ -8,7 +8,7 @@
       <div class="app-settings-verify-email">
         <p>{{ $t("app_settings_modal.email_not_verified") }}</p>
 
-        <Button color="tertiary" size="sm" @click="sendVerificationEmail()">
+        <Button size="sm" @click="sendVerificationEmail()">
           <ph-icon name="paper-plane-tilt" size="md" class="icon" />
           <!-- <span
             :class="['icon', sendingEmail ? 'loading' : 'send-mail']"></span> -->
@@ -87,7 +87,8 @@
             :label="$t('app_settings_modal.logout')"
             @click="logout"
             icon="sign-out"
-            color="tertiary"
+            variant="secondary"
+            intent="destructive"
             size="sm"></Button>
         </div>
       </aside>

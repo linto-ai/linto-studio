@@ -28,15 +28,18 @@
       </section>
 
       <section>
-        <h2 class="flex align-center gap-medium">
-          <span>{{ $t("session.settings_page.metadata.title") }}</span>
+        <div class="flex row gap-medium align-center">
+          <h2 style="width: auto">
+            {{ $t("session.settings_page.metadata.title") }}
+          </h2>
+
           <Button
             :label="$t('session.settings_page.metadata.button_edition')"
             variant="secondary"
             size="sm"
             icon="plus-circle"
             @click="startMedatadaEdition" />
-        </h2>
+        </div>
         <MetadataList :field="fieldMetadata" />
         <!-- <MetadataEditor v-model="fieldMetadata.value" :field="fieldMetadata" /> -->
       </section>
