@@ -24,9 +24,8 @@
             icon="star"
             :title="$t('media_explorer.favorite')"
             :iconWeight="isFavorite ? 'fill' : 'regular'"
-            variant="outline"
-            size="sm"
-            :color="isFavorite ? 'primary' : 'neutral-10'" />
+            :variant="isFavorite ? 'primary' : 'transparent'"
+            size="sm" />
 
           <div
             class="media-explorer-item__checkbox-container"
@@ -126,9 +125,7 @@
         <template #trigger="{ open }">
           <Button
             class="media-explorer-item__actions-trigger"
-            variant="outline"
-            color="primary"
-            size="sm"
+            variant="transparent"
             icon="dots-three-outline-vertical" />
         </template>
       </PopoverList>
@@ -392,14 +389,14 @@ export default {
   flex-direction: column;
   margin: 0.1rem;
   padding: 0.5rem;
-  border: 1px solid var(--neutral-40);
+  border: 1px solid var(--neutral-20);
   border-radius: 4px;
   transition: all 0.1s ease-in-out;
   background-color: var(--background-primary);
 
   &:hover {
-    border-color: var(--neutral-50);
-    background-color: var(--neutral-20);
+    border-color: var(--neutral-30);
+    background-color: var(--neutral-10);
   }
 
   &--selected {
@@ -450,7 +447,7 @@ export default {
   padding: 2px;
   border: 1px solid var(--neutral-40);
   border-radius: 4px;
-  background-color: var(--primary-soft);
+  background-color: var(--neutral-10);
   flex-shrink: 0;
 }
 

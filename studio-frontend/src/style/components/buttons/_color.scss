@@ -63,8 +63,8 @@ $btn-outline-colors: (
 );
 
 @layer base {
-  .button--default {
-    .btn--primary {
+  .btn--default {
+    &.btn--primary {
       --btn-border-color: var(--primary-color);
       --btn-bg: var(--primary-color);
       --btn-text: var(--primary-contrast);
@@ -72,7 +72,7 @@ $btn-outline-colors: (
       --btn-hover-text: var(--primary-color);
     }
 
-    .btn--secondary {
+    &.btn--secondary {
       --btn-border-color: var(--primary-color);
       --btn-bg: var(--background-primary);
       --btn-text: var(--primary-color);
@@ -81,8 +81,21 @@ $btn-outline-colors: (
     }
   }
 
-  .button--destructive {
-    .btn--primary {
+  .btn--destructive {
+    &.btn--primary {
+      --btn-border-color: var(--danger-color);
+      --btn-bg: var(--danger-color);
+      --btn-text: var(--danger-contrast);
+      --btn-hover-bg: var(--primary-soft);
+      --btn-hover-text: var(--danger-soft);
+    }
+
+    &.btn--secondary {
+      --btn-border-color: var(--danger-color);
+      --btn-bg: var(--background-primary);
+      --btn-text: var(--danger-color);
+      --btn-hover-bg: var(--danger-color);
+      --btn-hover-text: var(--danger-contrast);
     }
   }
 }

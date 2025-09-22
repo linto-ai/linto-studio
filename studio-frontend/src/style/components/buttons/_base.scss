@@ -23,6 +23,8 @@
   background-color: var(--btn-bg, transparent);
   color: var(--btn-text, var(--text-primary));
   gap: 0.25em;
+  max-width: 100%;
+  overflow: auto;
 
   &:hover:not([disabled]):not(.disabled) {
     background-color: var(--btn-hover-bg, var(--button-background-hover));
@@ -48,5 +50,18 @@
 
   .icon {
     flex-shrink: 0;
+  }
+
+  .label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &[multiline] {
+    .label {
+      white-space: normal;
+      text-align: left;
+    }
   }
 }

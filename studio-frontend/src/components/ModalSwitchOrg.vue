@@ -61,7 +61,7 @@
             :label="$t('modal_switch_org.create_organization')"
             icon="plus"
             size="sm"
-            variant="outline"
+            variant="primary"
             color="primary"
             @click="isCreateModalOpen = true" />
         </div>

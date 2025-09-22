@@ -8,19 +8,19 @@
         :name="name"
         :session="session">
         <IsMobile>
-          <router-link
+          <Button
             :to="liveRoute"
-            class="btn secondary outline only-icon md"
-            :aria-label="$t('session.detail_page.back_to_live')">
-            <ph-icon name="text-align-left" size="md"></ph-icon>
-          </router-link>
+            variant="primary"
+            :aria-label="$t('session.detail_page.back_to_live')"
+            :title="$t('session.detail_page.back_to_live')"
+            icon="text-align-left" />
           <template #desktop>
-            <router-link :to="liveRoute" class="btn">
-              <ph-icon name="text-align-left" size="md"></ph-icon>
-              <span class="label">{{
-                $t("session.detail_page.back_to_live")
-              }}</span>
-            </router-link>
+            <Button
+              :to="liveRoute"
+              variant="primary"
+              size="sm"
+              :label="$t('session.detail_page.back_to_live')"
+              icon="text-align-left" />
           </template>
         </IsMobile>
       </SessionHeader>
@@ -36,22 +36,29 @@
             </h2>
             <FormInput :field="fieldPublicLink">
               <template v-slot:content-after-input>
-                <button class="btn" @click="copyPublicLink">
-                  <span class="icon apply" v-if="linkHasBeenCopied"></span>
-                  <span class="icon copy" v-else></span>
-                  <span class="label" v-if="linkHasBeenCopied">{{
-                    $t("session.settings_page.copy_link_button_done")
-                  }}</span>
-                  <span class="label" v-else>{{
-                    $t("session.settings_page.copy_link_button")
-                  }}</span>
-                </button>
-                <button class="btn" @click="openModalEditSessionAlias">
+                <Button
+                  variant="secondary"
+                  @click="copyPublicLink"
+                  size="sm"
+                  :icon="linkHasBeenCopied ? 'check' : 'clipboard'"
+                  :label="
+                    linkHasBeenCopied
+                      ? $t('session.settings_page.copy_link_button_done')
+                      : $t('session.settings_page.copy_link_button')
+                  " />
+
+                <Button
+                  variant="secondary"
+                  @click="openModalEditSessionAlias"
+                  size="sm"
+                  icon="pencil"
+                  :label="$t('session.settings_page.edit_alias_button')" />
+                <!-- <button class="btn" @click="openModalEditSessionAlias">
                   <ph-icon name="pencil"></ph-icon>
                   <span class="label">{{
                     $t("session.settings_page.edit_alias_button")
                   }}</span>
-                </button>
+                </button> -->
               </template>
             </FormInput>
 
@@ -62,31 +69,51 @@
               v-model="fieldDisplayWatermark.value">
               <template v-slot:content-after-label>
                 <div class="flex gap-small small-margin-left">
-                  <button
-                    class="only-icon transparent"
+                  <Button
+                    icon="gear"
+                    variant="transparent"
                     :aria-label="
                       $t('session.live_page.watermark_settings.settings_button')
                     "
                     :title="
                       $t('session.live_page.watermark_settings.settings_button')
                     "
-                    @click="showWatermarkSettings = true">
-                    <span class="icon settings" />
-                  </button>
+                    @click="showWatermarkSettings = true" />
 
-                  <button
-                    class="only-icon transparent"
+                  <Button
+                    icon="push-pin"
+                    variant="transparent"
+                    @click="togglePin"
                     :aria-label="
-                      $t('session.live_page.watermark_settings.unpin_button')
+                      $t('session.live_page.watermark_settings.pin_button')
                     "
                     :title="
                       $t('session.live_page.watermark_settings.unpin_button')
                     "
+                    v-if="fieldWatermarkPinned.value" />
+
+                  <Button
+                    icon="push-pin-slash"
+                    variant="transparent"
+                    @click="togglePin"
+                    :aria-label="
+                      $t('session.live_page.watermark_settings.pin_button')
+                    "
+                    :title="
+                      $t('session.live_page.watermark_settings.pin_button')
+                    "
+                    v-else />
+                  <!-- <button
+                    class="only-icon transparent"
+                    :aria-label="
+                      $t('session.live_page.watermark_settings.unpin_button')
+                    "
+                    
                     @click="togglePin"
                     v-if="fieldWatermarkPinned.value">
                     <span class="icon pin-on" />
-                  </button>
-                  <button
+                  </button> -->
+                  <!-- <button
                     class="only-icon transparent"
                     :aria-label="
                       $t('session.live_page.watermark_settings.pin_button')
@@ -97,7 +124,7 @@
                     @click="togglePin"
                     v-else>
                     <span class="icon pin" />
-                  </button>
+                  </button> -->
                 </div>
               </template>
             </FormCheckbox>
@@ -152,14 +179,16 @@
               icon="stop"
               :label="$t('session.detail_page.stop_button')"
               @click="stopSession"
-              color="tertiary"
+              variant="primary"
+              intent="destructive"
               size="sm"></Button>
             <Button
               v-if="isActive"
               icon="stop"
               :label="$t('session.detail_page.stop_force_button')"
               @click="openModalDeleteSession"
-              color="tertiary"
+              variant="primary"
+              intent="destructive"
               size="sm"></Button>
           </div>
           <Qrcode :value="publicLink" class="session-settings-qr-code" />

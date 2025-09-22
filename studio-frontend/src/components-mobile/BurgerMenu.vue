@@ -20,7 +20,7 @@
         v-if="isAtLeastUploader"
         @click="startConversation"
         :label="$t('navigation.conversation.start')"
-        color="primary"
+        variant="primary"
         class="start-button" />
       <div class="main-footer-container">
         <footer class="main-footer">
@@ -227,8 +227,8 @@ export default {
 
   .main-footer {
     padding: 0.75rem;
-    border-top: 1px solid var(--neutral-60);
-    background-color: var(--neutral-10, #fafafa);
+    border-top: var(--border-block);
+    background-color: var(--primary-soft);
 
     &__powered-by {
       text-align: center;

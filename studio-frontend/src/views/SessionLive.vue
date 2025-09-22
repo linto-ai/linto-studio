@@ -8,30 +8,26 @@
         :session="session">
         <IsMobile>
           <div class="flex gap-small">
-            <router-link
+            <Button
               :to="settingsRoute"
-              class="btn secondary outline only-icon"
-              v-if="isAtLeastMeetingManager"
-              :aria-label="$t('session.detail_page.settings_button')">
-              <ph-icon name="gear"></ph-icon>
-            </router-link>
-            <button
-              class="btn secondary outline only-icon"
-              @click="showMobileSubtitles">
-              <ph-icon name="closed-captioning"></ph-icon>
-            </button>
+              variant="primary"
+              :aria-label="$t('session.detail_page.settings_button')"
+              :title="$t('session.detail_page.settings_button')"
+              icon="gear" />
+
+            <Button
+              @click="showMobileSubtitles"
+              variant="secondary"
+              icon="closed-captioning" />
           </div>
 
           <template #desktop>
-            <router-link
+            <Button
               :to="settingsRoute"
-              class="btn"
-              v-if="isAtLeastMeetingManager">
-              <span class="icon settings"></span>
-              <span class="label">{{
-                $t("session.detail_page.settings_button")
-              }}</span>
-            </router-link>
+              variant="primary"
+              size="sm"
+              :label="$t('session.detail_page.settings_button')"
+              icon="gear" />
           </template>
         </IsMobile>
         <!-- <template v-slot:right-button-desktop>

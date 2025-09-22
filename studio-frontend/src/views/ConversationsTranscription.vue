@@ -79,16 +79,16 @@
     </template>
 
     <template v-slot:breadcrumb-actions>
-      <router-link
+      <Button
+        style="margin-left: auto"
+        :label="$t('conversation.publish_document')"
+        icon="file"
+        variant="primary"
+        size="sm"
         :to="{
           name: 'conversations publish',
           params: { conversationId: conversation._id },
-        }"
-        class="btn primary"
-        style="margin-left: auto">
-        <ph-icon name="file"></ph-icon>
-        <span class="label">{{ $t("conversation.publish_document") }}</span>
-      </router-link>
+        }"></Button>
     </template>
 
     <div class="flex flex1">

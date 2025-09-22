@@ -52,22 +52,19 @@
       <Checkbox v-model="item.diarization" id="diarizationCheckboxId" />
     </td>
     <td class="content-size" v-if="from === 'formCreateSession'">
-      <button class="btn tertiary outline" @click="removeChannel" type="button">
-        <!-- <span class="icon remove"></span> -->
-        <ph-icon name="trash"></ph-icon>
-        <span class="label">{{ $t("session.channels_list.remove") }}</span>
-      </button>
+      <Button
+        icon="trash"
+        :label="$t('session.channels_list.remove')"
+        variant="secondary"
+        intent="destructive" />
     </td>
 
     <td v-if="from === 'sessionSettings'">
-      <button
+      <Button
         @click="$emit('connectMicrophone')"
-        class="only-icon only-border"
         :title="$t('session.channels_list.connect_microphone')"
         :aria-label="$t('session.channels_list.connect_microphone')"
-        type="button">
-        <span class="icon record"></span>
-      </button>
+        icon="microphone" />
     </td>
   </tr>
 </template>

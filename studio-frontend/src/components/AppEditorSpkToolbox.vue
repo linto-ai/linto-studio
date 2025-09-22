@@ -12,29 +12,26 @@
     <!-- -- -- Change speaker -- -- -->
 
     <div class="context-menu__element" v-if="speakersList.length > 0">
-      <button
-        class="transparent flex context-menu__action wrap"
+      <Button
+        block
+        variant="text"
+        icon="user-switch"
+        iconRight="caret-right"
+        multiline
+        :label="$t('conversation.speaker_toolbox.change_speaker_button')"
         :selected="state == STATES.CHANGE_SPEAKER"
-        @click="enterChangeSpeaker">
-        <span class="icon replace"></span>
-        <span class="label flex1">
-          {{ $t("conversation.speaker_toolbox.change_speaker_button") }}
-        </span>
-        <span class="icon right-arrow"></span>
-      </button>
+        @click="enterChangeSpeaker" />
 
       <ContextMenu
         name="change-speaker"
         v-if="state == STATES.CHANGE_SPEAKER"
         class="overflow-vertical-auto">
         <div class="flex col gap-small">
-          <button
+          <Button
             v-for="spk of speakersList"
-            @click="updateSpeaker(spk.speaker_id)"
-            class="only-border">
-            <span class="icon speaker"></span>
-            <span class="label">{{ spk.speaker_name }}</span>
-          </button>
+            icon="user"
+            :label="spk.speaker_name"
+            @click="updateSpeaker(spk.speaker_id)" />
         </div>
       </ContextMenu>
     </div>
@@ -42,40 +39,25 @@
     <!-- -- -- Edit speaker -- -- -->
 
     <div class="context-menu__element">
-      <button
-        class="transparent flex context-menu__action wrap"
-        :selected="state == STATES.EDIT_SPEAKER"
-        @click="enterEditSpeaker">
-        <ph-icon name="pencil"></ph-icon>
-        <span class="label flex1">
-          {{
-            $t("conversation.speaker_toolbox.edit_speaker_button", {
-              current: currentSpeakerName,
-            })
-          }}
-        </span>
-        <span class="icon right-arrow"></span>
-      </button>
+      <Button
+        block
+        variant="text"
+        icon="pencil"
+        iconRight="caret-right"
+        :label="
+          $t('conversation.speaker_toolbox.edit_speaker_button', {
+            current: currentSpeakerName,
+          })
+        "
+        @click="enterEditSpeaker" />
 
       <ContextMenu name="edit-speaker" v-if="state == STATES.EDIT_SPEAKER">
         <form class="flex col gap-small">
-          <FormInput :field="editSpeakerName" v-model="editSpeakerName.value" />
-          <div class="flex row justify-evenly">
-            <!-- type=button so other button is used when enter key -->
-            <button
-              type="button"
-              @click="toggleEditSpeaker"
-              class="speaker-toolbox-input-btn red">
-              <span class="icon close"></span>
-            </button>
-            <button
-              class="speaker-toolbox-input-btn green"
-              type="submit"
-              default
-              @click="editSpeaker">
-              <span class="icon valid"></span>
-            </button>
-          </div>
+          <FormInput
+            :field="editSpeakerName"
+            v-model="editSpeakerName.value"
+            withConfirmation
+            @on-confirm="editSpeaker" />
         </form>
       </ContextMenu>
     </div>
@@ -86,33 +68,29 @@
       class="context-menu__element"
       @click="enterMergeSpeaker"
       v-if="speakersList.length > 0">
-      <button
-        class="transparent flex context-menu__action wrap"
+      <Button
+        block
+        variant="text"
         :selected="state == STATES.MERGE_SPEAKER"
-        @click="enterMergeSpeaker">
-        <span class="icon merge"></span>
-        <span class="label flex1">
-          {{
-            $t("conversation.speaker_toolbox.merge_speaker_button", {
-              name: currentSpeakerName,
-            })
-          }}
-        </span>
-        <span class="icon right-arrow"></span>
-      </button>
+        @click="enterMergeSpeaker"
+        icon="link"
+        iconRight="caret-right"
+        :label="
+          $t('conversation.speaker_toolbox.merge_speaker_button', {
+            name: currentSpeakerName,
+          })
+        "></Button>
 
       <ContextMenu
         name="change-speaker"
         v-if="state == STATES.MERGE_SPEAKER"
         class="overflow-vertical-auto">
         <div class="flex col gap-small">
-          <button
+          <Button
             v-for="spk of speakersList"
-            @click="mergeSpeaker(spk.speaker_id)"
-            class="only-border">
-            <span class="icon speaker"></span>
-            <span class="label">{{ spk.speaker_name }}</span>
-          </button>
+            icon="user"
+            :label="spk.speaker_name"
+            @click="mergeSpeaker(spk.speaker_id)" />
         </div>
       </ContextMenu>
     </div>
@@ -120,36 +98,22 @@
     <!-- -- -- Create speaker -- -- -->
 
     <div class="context-menu__element">
-      <button
-        class="transparent flex context-menu__action wrap"
+      <Button
         :selected="state == STATES.CREATE_SPEAKER"
-        @click="enterCreateSpeaker">
-        <span class="icon add"></span>
-        <span class="label flex1">
-          {{ $t("conversation.speaker_toolbox.create_speaker_button") }}
-        </span>
-        <span class="icon right-arrow"></span>
-      </button>
+        block
+        variant="text"
+        icon="plus"
+        iconRight="caret-right"
+        @click="enterCreateSpeaker"
+        :label="$t('conversation.speaker_toolbox.create_speaker_button')" />
 
       <ContextMenu name="create-speaker" v-if="state == STATES.CREATE_SPEAKER">
         <form class="flex col gap-small">
-          <FormInput :field="addSpeakerName" v-model="addSpeakerName.value" />
-          <div class="flex row justify-evenly">
-            <!-- type=button so other button is used when enter key -->
-            <button
-              type="button"
-              @click="toggleAddSpeaker"
-              class="speaker-toolbox-input-btn red">
-              <span class="icon close"></span>
-            </button>
-            <button
-              class="speaker-toolbox-input-btn green"
-              type="submit"
-              default
-              @click="addSpeaker">
-              <span class="icon valid"></span>
-            </button>
-          </div>
+          <FormInput
+            :field="addSpeakerName"
+            v-model="addSpeakerName.value"
+            withConfirmation
+            @on-confirm="addSpeaker" />
         </form>
       </ContextMenu>
     </div>

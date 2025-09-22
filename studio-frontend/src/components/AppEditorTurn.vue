@@ -53,11 +53,11 @@
           :data-index="index"
           :data-stime="word.stime"
           :data-etime="word.etime">
-          <AppEditorToolbox
+          <!-- <AppEditorToolbox
             v-if="wordsSelected.length > 0 && wordsSelected[0].wid === word.wid"
             :conversationId="conversationId"
             :categoriesList="hightlightsCategories"
-            @selectTag="handleNewHighlight"></AppEditorToolbox>
+            @selectTag="handleNewHighlight"></AppEditorToolbox> -->
           <span class="word_content">{{ word.word }}</span>
           <span class="word_space">
             {{ " " }}
@@ -95,14 +95,12 @@
         </span>
       </div>
       <div class="turn-actions flex row">
-        <button
+        <Button
+          class="centered-inline"
           v-if="!lastTurn && canEdit"
-          class="centered-inline only-icon sm"
           @click="mergeTurn"
-          data-info="Fusionner les tours">
-          <ph-icon name="link"></ph-icon>
-          <!-- <span class="icon merge"></span> -->
-        </button>
+          icon="link"
+          data-info="Fusionner les tours" />
       </div>
     </div>
   </div>
@@ -112,7 +110,7 @@ import { bus } from "@/main.js"
 import { workerSendMessage } from "../tools/worker-message.js"
 import CollaborativeField from "@/components/CollaborativeField.vue"
 import AppEditorSpkToolbox from "@/components/AppEditorSpkToolbox.vue"
-import AppEditorToolbox from "@/components/AppEditorToolbox.vue"
+//import AppEditorToolbox from "@/components/AppEditorToolbox.vue"
 import Vue, { ref, nextTick } from "vue"
 import { segmentIsCoherentWithWords } from "@/tools/segmentIsCoherentWithWords.js"
 
@@ -557,7 +555,7 @@ export default {
   components: {
     CollaborativeField,
     AppEditorSpkToolbox,
-    AppEditorToolbox,
+    //AppEditorToolbox,
     AppEditorMetadataModal,
   },
 }

@@ -90,7 +90,7 @@ export default {
   //border: var(--border-button);
   margin: 0px;
   margin-left: 0.25rem;
-  background-color: var(--neutral-40);
+  background-color: var(--neutral-20);
   margin-right: 1px;
   height: calc(100% - 1px);
   color: var(--text-secondary);

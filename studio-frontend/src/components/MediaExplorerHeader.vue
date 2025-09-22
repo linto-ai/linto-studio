@@ -192,8 +192,8 @@ export default {
   gap: 0.5rem;
   padding: 0.375rem 0.75rem;
   padding-left: 2rem;
-  background-color: var(--neutral-20, #f5f5f5);
-  border: 1px solid var(--neutral-40, #d0d0d0);
+  background-color: var(--neutral-10);
+  border: 1px solid var(--neutral-40);
   border-radius: 0.375rem;
   cursor: pointer;
   transition: all 0.2s ease-in-out;

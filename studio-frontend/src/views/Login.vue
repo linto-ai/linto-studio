@@ -22,6 +22,7 @@
           type="submit"
           :label="$t('login.login_button')"
           block
+          variant="primary"
           class="login-page__form__submit"></Button>
         <div class="login-page__form__create-account">
           <span>{{ $t("login.not_registered") }}</span>

@@ -19,7 +19,6 @@
         v-if="!isSpinning && !currentIcon && !isEasterEgg"
         name="plus"
         :weight="computedIconWeight"
-        :color="computedIconColor"
         :size="iconSize" />
 
       <!-- Current rolled icon -->
@@ -27,7 +26,6 @@
         v-if="!isSpinning && currentIcon && !isEasterEgg"
         :name="currentIcon"
         :weight="computedIconWeight"
-        :color="computedIconColor"
         :size="iconSize" />
 
       <!-- Easter egg LinTO logo -->
@@ -66,12 +64,18 @@ export default {
       required: false,
     },
     // Button props from original Button component
-    color: {
+    variant: {
       type: String,
       required: false,
-      default: "primary",
+      default: "tertiary",
       validator: (value) =>
-        ["primary", "secondary", "tertiary", "neutral"].includes(value),
+        ["primary", "secondary", "tertiary", "text", "flat"].includes(value),
+    },
+    intent: {
+      type: String,
+      required: false,
+      default: "default",
+      validator: (value) => ["default", "destructive"].includes(value),
     },
     size: {
       type: String,
@@ -84,15 +88,6 @@ export default {
       required: false,
       default: "default",
       validator: (value) => ["default", "circle"].includes(value),
-    },
-    variant: {
-      type: String,
-      required: false,
-      default: "solid",
-      validator: (value) =>
-        ["solid", "outline", "transparent", "text", "link", "flat"].includes(
-          value,
-        ),
     },
     disabled: {
       type: Boolean,
@@ -173,6 +168,7 @@ export default {
       classes.push(`btn--${this.color}`)
       classes.push(`btn--${this.size}`)
       classes.push(`btn--${this.variant}`)
+      classes.push(`btn--${this.intent}`)
 
       // Layout
       if (this.block) {

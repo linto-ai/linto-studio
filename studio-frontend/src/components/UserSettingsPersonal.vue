@@ -19,7 +19,7 @@
 
       <Button
         type="submit"
-        color="primary"
+        variant="primary"
         size="sm"
         :label="$t('user_settings.update_personal_information_button')" />
     </section>

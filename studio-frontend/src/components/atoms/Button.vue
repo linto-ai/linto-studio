@@ -7,6 +7,7 @@
     :style="styles"
     :disabled="isDisabled"
     :aria-disabled="isDisabled"
+    multiline
     v-bind="$attrs"
     v-on="isDisabled ? null : $listeners">
     <ph-icon
@@ -24,10 +25,10 @@
     <span v-else-if="avatarText" class="icon">
       {{ avatarText }}
     </span>
-    <span class="label" v-if="label">
+    <span class="label flex1" v-if="label">
       <slot>{{ label }}</slot>
     </span>
-    <span class="label" v-else-if="$slots.default">
+    <span class="label flex1" v-else-if="$slots.default">
       <slot></slot>
     </span>
     <ph-icon
@@ -62,14 +63,21 @@ export default {
     iconWeight: {
       type: String,
       required: false,
-      default: "fill",
+      default: "fill", // thin, light, regular, bold, fill, duotone
     },
     variant: {
       type: String,
       required: false,
-      default: "primary",
+      default: "tertiary",
       validator: (value) =>
-        ["primary", "secondary", "tertiary", "text", "flat"].includes(value),
+        [
+          "primary",
+          "secondary",
+          "tertiary",
+          "text",
+          "transparent",
+          "link",
+        ].includes(value),
     },
     intent: {
       type: String,
@@ -125,6 +133,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    multiline: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {}
@@ -150,6 +162,7 @@ export default {
       classes.push("btn")
       classes.push(`btn--${this.intent}`)
       classes.push(`btn--${this.variant}`)
+      classes.push(`btn--${this.size}`)
       if (this.block) {
         classes.push("btn--block")
       }

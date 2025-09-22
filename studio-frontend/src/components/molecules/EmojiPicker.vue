@@ -4,12 +4,11 @@
     ref="emojiPicker-container"
     v-click-outside="closeEmojiPicker">
     <Button
-      class="neutral outline icon-only"
       ref="emojiPicker-button"
       :icon="value ? null : 'smiley-blank'"
       :avatar-text="value || null"
       :avatar-color="value ? 'primary-soft' : null"
-      variant="outline"
+      iconWeight="regular"
       size="md"
       @mouseenter.prevent
       @mouseleave.prevent

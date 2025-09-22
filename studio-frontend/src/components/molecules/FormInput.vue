@@ -266,7 +266,7 @@ export default {
   &__textarea {
     flex: 1;
     padding: 0.75rem;
-    border: 1px solid var(--neutral-30, #ddd);
+    border: var(--border-input);
     border-radius: var(--border-radius-sm, 6px);
     font-family: inherit;
     font-size: 0.875rem;

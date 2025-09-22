@@ -8,7 +8,7 @@
     color="neutral"
     ref="popoverList">
     <template #trigger="{ open }">
-      <Button variant="outline" color="neutral" size="sm" block>
+      <Button variant="tertiary" size="sm">
         {{ localTxt }}
       </Button>
     </template>

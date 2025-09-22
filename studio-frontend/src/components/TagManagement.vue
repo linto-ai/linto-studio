@@ -47,8 +47,8 @@
             :message="$t('modal_delete_tag.message')"
             @confirm="onTagDelete(tag)">
             <Button
-              variant="outline"
-              color="tertiary"
+              variant="secondary"
+              intent="destructive"
               icon="trash"
               size="sm"
               :title="$t('manage_tags.delete_tag')"

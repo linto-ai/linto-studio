@@ -7,13 +7,18 @@
       <div class="flex col select__list__inner"> -->
     <Popover content-class="invite-user-list" overlay>
       <template #trigger>
-        <button
+        <Button
+          :label="$t('invite_user.button')"
+          variant="secondary"
+          size="sm"
+          @click="showList = !showList" />
+        <!-- <button
           @click="showList = !showList"
           :class="showList ? 'active' : ''"
           class="invite-user-button">
           <span class="icon plus"></span>
           <span class="label">{{ $t("invite_user.button") }}</span>
-        </button>
+        </button> -->
       </template>
       <template #content>
         <form

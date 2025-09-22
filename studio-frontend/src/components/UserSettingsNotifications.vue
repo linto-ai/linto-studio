@@ -34,7 +34,7 @@
 
       <Button
         type="submit"
-        color="primary"
+        variant="primary"
         size="sm"
         :label="$t('user_settings.notifications.submit_button')" />
       <!-- <button type="submit" class="btn small-margin primary">

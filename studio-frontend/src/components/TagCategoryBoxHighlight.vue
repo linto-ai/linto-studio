@@ -14,9 +14,6 @@
     </template>
 
     <template v-slot:content-after-title="slotProps">
-      <!-- <button class="green" @click="generateKeyword" v-if="!loading && empty">
-        <span class="icon plus"></span>
-      </button> -->
       <span class="icon loading" v-if="loading"></span>
       <span
         class="icon show"

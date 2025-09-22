@@ -24,7 +24,7 @@
 
       <Button
         type="submit"
-        color="primary"
+        variant="primary"
         size="sm"
         v-if="isAdmin || (isSystemAdministrator && isBackofficePage)"
         :label="$t('organisation.update_button')" />

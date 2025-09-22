@@ -13,8 +13,8 @@
       "
       @confirm="deleteOrganization">
       <Button
-        variant="outline"
-        color="tertiary"
+        variant="secondary"
+        intent="destructive"
         icon="trash"
         size="sm"
         :label="$t('organisation.delete_organization')" />
