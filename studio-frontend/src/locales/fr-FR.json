@@ -68,25 +68,25 @@
       "remove_organisation_button": "Supprimer l'organisation | Supprimer les {count} organisations"
     },
     "transcriber_profile_detail": {
-      "save_button": "Enregistrer le profile",
+      "save_button": "Enregistrer le profil",
       "reset_button": "Réinitialiser",
-      "delete_button": "Supprimer le profile",
+      "delete_button": "Supprimer le profil",
       "notif_success": "Les informations ont été mises à jour",
       "notif_error": "Une erreur est survenue lors de la mise à jour des informations",
-      "notif_delete_success": "Le profile a été supprimé",
-      "notif_delete_error": "Une erreur est survenue lors de la suppression du profile",
+      "notif_delete_success": "Le profil a été supprimé",
+      "notif_delete_error": "Une erreur est survenue lors de la suppression du profil",
       "type_label": "Type de profil",
       "quick_meeting_label": "Activé pour les quick meetings",
       "warning_global": {
-        "line_1": "Ce profile sera visible dans toutes les organisations.",
+        "line_1": "Ce profil sera visible dans toutes les organisations.",
         "line_2": "Pour gérer les profils de transcription d'une organisation, allez dans l'onglet \"Organisations\" de la barre de navigation."
       }
     },
     "transcriber_profile_list": {
-      "title": "Profiles de transcription",
-      "add_transcriber_profile_button": "Ajouter un profile de transcription",
-      "remove_transcriber_profile_button": "Supprimer le profile | Supprimer les {count} profils",
-      "bulk_remove_loading_notification": "Suppresion du profile {count} sur {total}.",
+      "title": "Profils de transcription",
+      "add_transcriber_profile_button": "Ajouter un profil de transcription",
+      "remove_transcriber_profile_button": "Supprimer le profil | Supprimer les {count} profils",
+      "bulk_remove_loading_notification": "Suppresion du profil {count} sur {total}.",
       "bulk_remove_success_notification": "Les profils ont été supprimés avec succès",
       "bulk_remove_error_notification": "Une erreur est survenue lors de la suppression des profils",
       "warning_global": {
