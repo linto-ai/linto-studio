@@ -1,7 +1,16 @@
 <template>
   <div class="flex align-center header-bar">
+    <!-- <Button
+      v-if="!sidebarOpen"
+      icon="list"
+      border-color="transparent"
+      @click.stop="toggleSidebar"
+      class="sidebar-toggle icon-only" /> -->
+
     <Button
-      :icon="sidebarOpen ? 'arrow-line-left' : 'arrow-line-right'"
+      v-if="!sidebarOpen"
+      icon="sidebar-simple"
+      iconWeight="regular"
       border-color="transparent"
       @click.stop="toggleSidebar"
       class="sidebar-toggle icon-only" />
