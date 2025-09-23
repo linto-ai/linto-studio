@@ -1,14 +1,14 @@
 <template>
-  <Modal v-model="isModalOpen" :with-actions="false" :title="$t('app_settings_modal.title')" :size="computedSize">
+  <Modal
+    v-model="isModalOpen"
+    :with-actions="false"
+    :title="$t('app_settings_modal.title')"
+    :size="computedSize">
     <div v-if="user.emailIsVerified === false">
       <div class="app-settings-verify-email">
         <p>{{ $t("app_settings_modal.email_not_verified") }}</p>
 
-        <Button
-          color="tertiary"
-          size="sm"
-          @click="sendVerificationEmail()"
-          >
+        <Button size="sm" @click="sendVerificationEmail()">
           <ph-icon name="paper-plane-tilt" size="md" class="icon" />
           <!-- <span
             :class="['icon', sendingEmail ? 'loading' : 'send-mail']"></span> -->
@@ -57,7 +57,7 @@
                 <ph-icon name="info" weight="bold"></ph-icon>
                 <span>{{
                   $t("app_settings_modal.organization_information")
-                  }}</span>
+                }}</span>
               </a>
             </li>
             <li :class="{ active: selectedTab === 'members' }">
@@ -83,12 +83,19 @@
           </ul>
         </div>
         <div>
-          <Button :label="$t('app_settings_modal.logout')" @click="logout" icon="sign-out" color="tertiary"
+          <Button
+            :label="$t('app_settings_modal.logout')"
+            @click="logout"
+            icon="sign-out"
+            variant="secondary"
+            intent="destructive"
             size="sm"></Button>
         </div>
       </aside>
 
-      <div v-if="selectedTab === 'account-information'" class="app-settings__section">
+      <div
+        v-if="selectedTab === 'account-information'"
+        class="app-settings__section">
         <!-- <pre>{{ user }}</pre> -->
         <UserSettingsAvatar :userInfo="user" v-if="isAuthenticated" />
         <UserSettingsPersonal :userInfo="user" v-if="isAuthenticated" />
@@ -105,14 +112,22 @@
         <UserSettingsPreferences />
       </div>
 
-      <div v-if="selectedTab === 'organization-information'" class="app-settings__section">
+      <div
+        v-if="selectedTab === 'organization-information'"
+        class="app-settings__section">
         <UpdateOrganizationForm :currentOrganization="currentOrganization" />
-        <UpdateOrganizationDeletion v-if="isAdmin" :currentOrganization="currentOrganization" />
+        <UpdateOrganizationDeletion
+          v-if="isAdmin"
+          :currentOrganization="currentOrganization" />
       </div>
       <div v-if="selectedTab === 'members'" class="app-settings__section">
-        <UpdateOrganizationUsers :currentOrganization="currentOrganization" :userInfo="user" />
+        <UpdateOrganizationUsers
+          :currentOrganization="currentOrganization"
+          :userInfo="user" />
       </div>
-      <div v-if="selectedTab === 'billing'" class="app-settings__section"
+      <div
+        v-if="selectedTab === 'billing'"
+        class="app-settings__section"
         :class="{ active: selectedTab === 'billing' }"></div>
     </div>
   </Modal>
@@ -224,8 +239,8 @@ export default {
   &-verify-email {
     background-color: var(--background-primary);
     border-radius: 4px;
-    padding: .5em;
-    margin-bottom: .5em;
+    padding: 0.5em;
+    margin-bottom: 0.5em;
     border: 1px solid var(--red-chart);
     color: var(--red-chart);
     font-size: 14px;
@@ -250,7 +265,7 @@ export default {
       margin-bottom: 0.25rem;
     }
 
-    ul+h4 {
+    ul + h4 {
       margin-top: 1rem;
     }
 
@@ -295,7 +310,7 @@ export default {
     //display: none;
     overflow-y: auto;
     align-self: stretch;
-    height: min(800px, calc(100vh - 10rem));
+    height: min(800px, calc(100vh - 14rem));
 
     // &.active {
     //   display: block;
@@ -347,7 +362,7 @@ export default {
     gap: 10px;
     margin: 0.5em;
 
-    &>div {
+    & > div {
       background-color: var(--background-secondary);
       flex: 1;
       padding: 0.5em;
@@ -432,7 +447,7 @@ export default {
       }
 
       // Logout button repositioning for mobile
-      >div:last-child {
+      > div:last-child {
         margin-top: auto;
         padding-top: 1rem;
         border-top: 1px solid var(--neutral-60);

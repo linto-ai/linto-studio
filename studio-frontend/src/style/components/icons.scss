@@ -1,5 +1,9 @@
 @use "../mixin.scss";
 @layer base {
+  button .icon {
+    background-color: transparent;
+  }
+
   .icon {
     display: inline-block;
     width: 1.25rem;

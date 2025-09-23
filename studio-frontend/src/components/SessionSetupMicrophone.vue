@@ -86,15 +86,13 @@
         @click="trashSession">
         <span class="label">{{ $t("modal.cancel") }}</span>
       </button>
-      <!-- <button class="secondary" v-if="!microphoneWorked" @click="setupSession">
-        <span class="label">{{
-          $t("quick_session.setup_microphone.bypass")
-        }}</span>
-      </button> -->
-      <button class="btn primary" type="submit" @click="setupSession">
-        <ph-icon name="check" size="md" class="icon" />
-        <span class="label">{{ l_applyLabel }} </span>
-      </button>
+
+      <Button
+        variant="primary"
+        icon="check"
+        :label="l_applyLabel"
+        type="submit"
+        @click="setupSession" />
     </div>
 
     <div class="flex medium-margin-top gap-small" v-else>

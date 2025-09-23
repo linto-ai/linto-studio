@@ -20,10 +20,8 @@
             :icon-weight="item.iconWeight"
             :avatar="item.avatar"
             :avatar-text="item.avatarText"
-            :color="itemColor(item)"
             :icon-right="item.iconRight"
             @click="handleClickItem(item)"
-            :variant="selection ? 'solid' : 'outline'"
             :size="size"
             v-bind="itemPropsWithoutTo(item)">
             {{ item.name || item.text }}

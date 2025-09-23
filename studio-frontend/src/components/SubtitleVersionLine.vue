@@ -32,8 +32,21 @@
         </div>
       </div>
     </div>
-    <div class="actions flex">
-      <button
+    <div class="actions flex gap-small">
+      <Button
+        v-if="canEdit"
+        :title="$t('conversation.subtitles.copy_label')"
+        @click="openCopyModal"
+        icon="copy" />
+
+      <Button
+        v-if="canEdit"
+        variant="secondary"
+        intent="destructive"
+        :title="$t('conversation.subtitles.delete_label')"
+        @click="openDeleteModal"
+        icon="trash" />
+      <!-- <button
         class="btn transparent"
         v-if="canEdit"
         :title="$t('conversation.subtitles.copy_label')"
@@ -46,7 +59,7 @@
         :title="$t('conversation.subtitles.delete_label')"
         @click="openDeleteModal">
         <span class="icon trash subtitle-action"></span>
-      </button>
+      </button> -->
     </div>
 
     <ModalCopySubtitles

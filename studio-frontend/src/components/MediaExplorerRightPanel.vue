@@ -15,12 +15,6 @@
 
       <header class="panel-header">
         <div class="panel-header-title flex align-center">
-          <!-- <Button
-            @click="$emit('close')"
-            icon="arrow-line-right"
-            size="sm"
-            variant="flat"
-            color="neutral-40" /> -->
           <h3 class="panel-title">
             {{
               isMultiMode
@@ -30,12 +24,7 @@
                 : $t("media_explorer.panel.overview")
             }}
           </h3>
-          <Button
-            icon="x"
-            size="sm"
-            variant="flat"
-            color="neutral-40"
-            @click="close" />
+          <Button icon="x" variant="transparent" @click="close" />
         </div>
 
         <div class="flex panel-header-actions" v-if="!isMultiMode">
@@ -48,7 +37,7 @@
               :label="action.label"
               :icon="action.icon"
               size="sm"
-              variant="outline"
+              variant="secondary"
               :disabled="action.disabled"
               :color="action.color || 'primary'"
               @click="handleActionClick(action)" />

@@ -12,25 +12,6 @@
       {{ recording ? $t("conversation.recording") : $t("conversation.record") }}
     </label>
   </div>
-  <!-- <div class="flex col">
-    <div class="flex row">
-      <button
-        @click="recording ? stopRecording() : startRecording()"
-        type="button"
-        :disabled="disabled"
-        class="btn black">
-        <span class="icon record"></span>
-        <span class="label">
-          {{
-            recording ? $t("conversation.recording") : $t("conversation.record")
-          }}
-        </span>
-      </button>
-    </div>
-    <span class="error-field" v-if="audioRecFile.error !== null">
-      {{ audioRecFile.error }}
-    </span>
-  </div> -->
 </template>
 <script>
 import WebVoiceSDK from "@linto-ai/webvoicesdk"

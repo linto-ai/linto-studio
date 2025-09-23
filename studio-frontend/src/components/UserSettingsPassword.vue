@@ -42,7 +42,7 @@
       <div class="flex row">
         <Button
           type="submit"
-          color="primary"
+          variant="primary"
           size="sm"
           :label="$t('user_settings.update_password_button')" />
       </div>

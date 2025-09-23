@@ -36,7 +36,7 @@
       <div v-else class="flex1"></div>
       <Button
         type="submit"
-        color="primary"
+        variant="primary"
         :loading="formState === 'sending'"
         :label="formSubmitLabel"></Button>
       <!-- <button

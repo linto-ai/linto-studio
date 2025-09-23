@@ -35,14 +35,12 @@
       style="margin-top: 1rem">
       <div class="error-field flex1" v-if="formError">{{ formError }}</div>
       <div v-else class="flex1"></div>
-      <button
+
+      <Button
         type="submit"
-        class="btn primary upload-media-button"
-        id="upload-media-button"
-        :disabled="formState === 'sending'">
-        <ph-icon name="check" size="md" class="icon" />
-        <span class="label">{{ formSubmitLabel }}</span>
-      </button>
+        variant="primary"
+        :loading="formState === 'sending'"
+        :label="formSubmitLabel"></Button>
     </div>
   </form>
 </template>

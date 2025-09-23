@@ -16,13 +16,7 @@
           <span class="subtitle" v-if="subtitle">{{ subtitle }}</span>
         </div>
         <template v-if="withClose">
-          <button
-            class="btn outline only-icon sm"
-            :class="[customClassClose, { disabled: disabledClose }]"
-            @click="cancel"
-            type="button">
-            <ph-icon name="x" size="sm"></ph-icon>
-          </button>
+          <Button icon="x" size="sm" @click="cancel" type="button" />
         </template>
       </div>
       <div v-if="loading" class="modal-loading">
@@ -46,11 +40,8 @@
             :nodes="actionsLeftNodes" />
           <Button
             v-if="withActionDelete"
-            variant="tertiary"
-            :class="[
-              customClassActionDelete,
-              { disabled: disabledActionDelete || disabledActions },
-            ]"
+            variant="primary"
+            intent="destructive"
             :disabled="disabledActionDelete || disabledActions"
             :icon="iconActionDelete"
             @click="deleteHandler"
@@ -65,13 +56,7 @@
             :nodes="actionsRightNodes" />
           <template v-if="withActionCancel">
             <Button
-              variant="outline"
-              color="neutral-soft"
-              :class="[
-                customClassActionCancel,
-                colorActionCancel,
-                { disabled: disabledActionCancel || disabledActions },
-              ]"
+              variant="tertiary"
               :disabled="disabledActionCancel || disabledActions"
               :icon="iconActionCancel"
               @click="cancel"
@@ -81,12 +66,7 @@
           </template>
           <template v-if="withActionApply">
             <Button
-              class="btn"
-              :class="[
-                customClassActionApply,
-                colorActionApply,
-                { disabled: disabledActionApply || disabledActions },
-              ]"
+              variant="primary"
               :disabled="disabledActionApply || disabledActions"
               :icon="iconActionApply"
               @click="apply"
@@ -144,7 +124,7 @@ export default {
     disabledActionCancel: { type: Boolean, default: false },
     disabledActionApply: { type: Boolean, default: false },
     disabledClose: { type: Boolean, default: false },
-    iconActionApply: { type: String, default: "check-circle" },
+    iconActionApply: { type: String, default: "check" },
     iconActionCancel: { type: String, default: "x-circle" },
     iconActionDelete: { type: String, default: "trash-circle" },
     colorActionApply: { type: String, default: "primary" },

@@ -13,7 +13,7 @@
     @include button-base.btn-base;
 
     &.btn:not(:has(> .label)) {
-      padding: 0;
+      padding: 0px;
       width: var(--btn-icon-size, 24px);
       height: var(--btn-icon-size, 24px);
 

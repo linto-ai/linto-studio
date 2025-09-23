@@ -5,21 +5,6 @@
 @use "mobile/text.scss" as mobile-text-theme;
 @layer theme {
   body {
-    --yellow-chart: #feb11d;
-    --green-chart: #11977c;
-    --green-ligth: #39d5b6;
-    --red-chart: #fe346e;
-    --blue-chart: #1c83d6;
-
-    --primary-color: var(--green-chart);
-    --primary-contrast: #fff;
-
-    --secondary-color: var(--blue-chart);
-    --tertiary-color: var(--red-chart);
-
-    --background-primary: #fff;
-
-    --selected-background: rgba(40, 153, 131, 0.0784313725);
   }
 
   html[data-theme="dark"] body {

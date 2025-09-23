@@ -303,6 +303,21 @@ let router = new Router({
       },
     },
     {
+      path: "/test",
+      name: "test",
+      components: {
+        default: () => import("../views/test.vue"),
+        ...componentsWithoutHeader,
+      },
+      defaultProps,
+      meta: {
+        public: true,
+        breadcrumb: {
+          showInBreadcrumb: false,
+        },
+      },
+    },
+    {
       path: "/login",
       name: "login",
       components: {

@@ -52,12 +52,9 @@
           <template #trigger="{ open }">
             <Button
               icon="download"
-              iconWeight="fill"
-              variant="outline"
-              color="neutral"
+              variant="primary"
               size="sm"
-              block>
-              {{ $t("conversation.export.title") }}
+              :label="$t('conversation.export.title')">
             </Button>
           </template>
         </PopoverList>

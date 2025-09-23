@@ -72,8 +72,8 @@
               <Button
                 v-if="userInfo._id === user._id"
                 size="sm"
-                color="tertiary"
-                variant="outline"
+                variant="secondary"
+                intent="destructive"
                 :label="$t('organisation.user.leave_button')"
                 @click="leaveOrganization()" />
 
@@ -86,8 +86,8 @@
                 "
                 size="sm"
                 icon="trash"
-                color="tertiary"
-                variant="outline"
+                variant="secondary"
+                intent="destructive"
                 :label="$t('organisation.user.remove_button')"
                 @click="removeFromMembers(user)" />
             </td>

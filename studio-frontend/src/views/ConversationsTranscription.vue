@@ -30,22 +30,21 @@
               type="search"
               id="transcription-search"
               v-model="transcriptionSearch" />
-            <button
+            <Button
               :title="
                 $t('conversation.search_in_transcription.exact_word_match')
               "
-              class="only-icon small only-border"
-              :class="{ 'green-border': exactMatching }"
-              @click="toggleExactMatching">
-              <span class="icon equal"></span>
-            </button>
-            <button
+              :variant="exactMatching ? 'primary' : 'secondary'"
+              @click="toggleExactMatching"
+              icon="equals" />
+
+            <Button
               v-if="transcriptionSearch"
+              variant="secondary"
+              intent="destructive"
               :title="$t('conversation.search_in_transcription.clear_search')"
-              class="only-icon small only-border"
-              @click="resetSearch">
-              <span class="icon close"></span>
-            </button>
+              @click="resetSearch"
+              icon="x" />
           </div>
 
           <SearchResultPaginator
@@ -79,16 +78,16 @@
     </template>
 
     <template v-slot:breadcrumb-actions>
-      <router-link
+      <Button
+        style="margin-left: auto"
+        :label="$t('conversation.publish_document')"
+        icon="file"
+        variant="primary"
+        size="sm"
         :to="{
           name: 'conversations publish',
           params: { conversationId: conversation._id },
-        }"
-        class="btn primary"
-        style="margin-left: auto">
-        <ph-icon name="file"></ph-icon>
-        <span class="label">{{ $t("conversation.publish_document") }}</span>
-      </router-link>
+        }"></Button>
     </template>
 
     <div class="flex flex1">

@@ -10,8 +10,7 @@
           @click="clearSelection"
           icon="minus-circle"
           size="sm"
-          variant="outline"
-          color="neutral-40" />
+          variant="tertiary" />
       </div>
 
       <div class="medias-list">
@@ -42,8 +41,7 @@
             @click="removeMediaFromSelection(media)"
             icon="minus-circle"
             size="sm"
-            variant="outline"
-            color="neutral-40" />
+            variant="tertiary" />
         </div>
       </div>
     </div>
@@ -60,9 +58,8 @@
           :loading="downloadLoading"
           :disabled="selectedMedias.length === 0"
           icon="download"
-          variant="outline"
-          size="sm"
-          class="action-button">
+          variant="secondary"
+          size="sm">
           {{
             downloadLoading
               ? $t("media_explorer.panel.downloading")
@@ -113,9 +110,9 @@
           @click="handleDelete"
           :label="$t('media_explorer.delete')"
           icon="trash"
-          variant="outline"
+          variant="secondary"
           size="sm"
-          color="tertiary" />
+          intent="destructive" />
       </div>
     </div>
 
@@ -133,7 +130,6 @@
 import { mapGetters } from "vuex"
 import { mediaScopeMixin } from "@/mixins/mediaScope"
 
-import Button from "@/components/atoms/Button.vue"
 import Badge from "@/components/atoms/Badge.vue"
 import Avatar from "@/components/atoms/Avatar.vue"
 import InputSelector from "@/components/atoms/InputSelector.vue"
@@ -148,7 +144,6 @@ export default {
   name: "MediaExplorerRightPanelMulti",
   mixins: [mediaExplorerRightPanelMixin, mediaScopeMixin],
   components: {
-    Button,
     Badge,
     Avatar,
     InputSelector,
@@ -529,10 +524,6 @@ export default {
 .action-item {
   display: flex;
   width: 100%;
-}
-
-.action-button {
-  justify-content: flex-start;
 }
 
 .bulk-tag-management {

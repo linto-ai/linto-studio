@@ -28,16 +28,18 @@
       </section>
 
       <section>
-        <h2 class="flex align-center gap-medium">
-          <span>{{ $t("session.settings_page.metadata.title") }}</span>
+        <div class="flex row gap-medium align-center">
+          <h2 style="width: auto">
+            {{ $t("session.settings_page.metadata.title") }}
+          </h2>
+
           <Button
             :label="$t('session.settings_page.metadata.button_edition')"
-            color="neutral"
-            variant="outline"
+            variant="secondary"
             size="sm"
             icon="plus-circle"
             @click="startMedatadaEdition" />
-        </h2>
+        </div>
         <MetadataList :field="fieldMetadata" />
         <!-- <MetadataEditor v-model="fieldMetadata.value" :field="fieldMetadata" /> -->
       </section>
@@ -61,8 +63,7 @@
 
             <Button
               :label="$t('session.channels_list.add')"
-              color="neutral"
-              variant="outline"
+              variant="secondary"
               size="sm"
               icon="plus-circle"
               @click="addChannel" />
@@ -94,38 +95,26 @@
       <div class="flex gap-medium align-center conversation-create-footer">
         <Button
           type="button"
-          color="tertiary"
-          variant="outline"
+          variant="secondary"
+          intent="destructive"
           :disabled="formState === 'sending' || selectedTemplateId == ''"
           :label="$t('session.create_page.delete_template_button')"
           @click="deleteSelectedTemplate">
         </Button>
         <div class="error-field flex1" v-if="formError">{{ formError }}</div>
         <div v-else class="flex1"></div>
-        <button
+        <Button
           type="button"
           :disabled="formState === 'sending'"
-          @click="saveTemplate">
-          <span class="label">{{
-            $t("session.create_page.save_as_template_button")
-          }}</span>
-        </button>
+          variant="secondary"
+          @click="saveTemplate"
+          :label="$t('session.create_page.save_as_template_button')" />
 
         <Button
           type="submit"
-          color="primary"
+          variant="primary"
           :loading="formState === 'sending'"
           :label="$t('session.create_page.submit_button')" />
-        <!-- <button
-          type="submit"
-          class="btn primary"
-          id="upload-media-button"
-          :disabled="formState === 'sending'">
-          <ph-icon name="check" size="md" class="icon" />
-          <span class="label">
-            {{ $t("session.create_page.submit_button") }}
-          </span>
-        </button> -->
       </div>
     </form>
     <ModalEditMetadata

@@ -4,8 +4,7 @@
       name="trigger"
       :open="openModal"
       :close="close"
-      :is-open="isModalOpen"
-      ></slot>
+      :is-open="isModalOpen"></slot>
   </div>
 </template>
 
@@ -42,7 +41,7 @@ export default {
     disabledActionCancel: { type: Boolean, default: false },
     disabledActionApply: { type: Boolean, default: false },
     disabledClose: { type: Boolean, default: false },
-    iconActionApply: { type: String, default: "check-circle" },
+    iconActionApply: { type: String, default: "check" },
     iconActionCancel: { type: String, default: "x-circle" },
     iconActionDelete: { type: String, default: "trash-circle" },
     colorActionApply: { type: String, default: "primary" },
@@ -92,14 +91,14 @@ export default {
                 this.$scopedSlots.actions
                   ? this.$scopedSlots.actions()
                   : this.$slots.actions || [],
-              'actions-left': () =>
-                this.$scopedSlots['actions-left']
-                  ? this.$scopedSlots['actions-left']()
-                  : this.$slots['actions-left'] || [],
-              'actions-right': () =>
-                this.$scopedSlots['actions-right']
-                  ? this.$scopedSlots['actions-right']()
-                  : this.$slots['actions-right'] || [],
+              "actions-left": () =>
+                this.$scopedSlots["actions-left"]
+                  ? this.$scopedSlots["actions-left"]()
+                  : this.$slots["actions-left"] || [],
+              "actions-right": () =>
+                this.$scopedSlots["actions-right"]
+                  ? this.$scopedSlots["actions-right"]()
+                  : this.$slots["actions-right"] || [],
             },
             triggerEl: this.triggerEl,
           })
@@ -123,14 +122,14 @@ export default {
             this.$scopedSlots.actions
               ? this.$scopedSlots.actions()
               : this.$slots.actions || [],
-          'actions-left': () =>
-            this.$scopedSlots['actions-left']
-              ? this.$scopedSlots['actions-left']()
-              : this.$slots['actions-left'] || [],
-          'actions-right': () =>
-            this.$scopedSlots['actions-right']
-              ? this.$scopedSlots['actions-right']()
-              : this.$slots['actions-right'] || [],
+          "actions-left": () =>
+            this.$scopedSlots["actions-left"]
+              ? this.$scopedSlots["actions-left"]()
+              : this.$slots["actions-left"] || [],
+          "actions-right": () =>
+            this.$scopedSlots["actions-right"]
+              ? this.$scopedSlots["actions-right"]()
+              : this.$slots["actions-right"] || [],
         }
         popup.rendererInstance.$forceUpdate()
       }
