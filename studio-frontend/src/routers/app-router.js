@@ -303,10 +303,10 @@ let router = new Router({
       },
     },
     {
-      path: "/test",
-      name: "test",
+      path: "/components",
+      name: "components",
       components: {
-        default: () => import("../views/test.vue"),
+        default: () => import("../views/components.vue"),
         ...componentsWithoutHeader,
       },
       defaultProps,
