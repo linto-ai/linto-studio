@@ -3,6 +3,7 @@
     <Button
       :label="$t('conversation.subtitles.generate_subs')"
       icon="plus"
+      variant="secondary"
       @click="openGenerateModal"
       v-if="canEdit"></Button>
     <!-- <button
