@@ -1,6 +1,8 @@
 const debug = require("debug")("linto:app:webserver:router")
 
 const auth_middlewares = require(`../config/passport/middleware`)
+const { sessionMiddleware } = require(`../config/express/sessionMiddleware`)
+
 const logger_middlewares = require(
   `${process.cwd()}/components/WebServer/middlewares/logger/logger.js`,
 )
@@ -67,6 +69,7 @@ const disableAuthIfDev = (route) => {
 const loadMiddlewares = (route) => {
   const middlewares = []
 
+  if (route.requireSession) middlewares.push(sessionMiddleware)
   if (route.requireAuth) middlewares.push(auth_middlewares.isAuthenticate)
   if (route.requireRefresh) middlewares.push(auth_middlewares.refresh_token)
 
