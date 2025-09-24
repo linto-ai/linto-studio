@@ -645,6 +645,10 @@
   "media_explorer": {
     "actions": "Actions",
     "favorite": "Favoris",
+    "source": {
+      "media": "Source : fichier audio",
+      "live": "Source : transcription en direct"
+    },
     "line": {
       "edit_transcription": "Transcription",
       "edit_subtitles": "Sous-titres",
