@@ -7,6 +7,7 @@
     :style="styles"
     :disabled="isDisabled"
     :aria-disabled="isDisabled"
+    :type="componentType === 'button' ? type : null"
     multiline
     v-bind="$attrs"
     v-on="isDisabled ? null : $listeners">
@@ -136,6 +137,10 @@ export default {
     multiline: {
       type: Boolean,
       default: false,
+    },
+    type: {
+      type: String,
+      default: "button", // button or submit
     },
   },
   data() {

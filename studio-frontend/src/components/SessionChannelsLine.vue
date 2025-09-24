@@ -53,6 +53,7 @@
     </td>
     <td class="content-size" v-if="from === 'formCreateSession'">
       <Button
+        @click="removeChannel"
         icon="trash"
         :label="$t('session.channels_list.remove')"
         variant="secondary"
