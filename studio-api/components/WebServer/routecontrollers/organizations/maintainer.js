@@ -288,6 +288,7 @@ async function deleteConversationFromOrganization(req, res, next) {
           "conversation_deleted",
           conv.organization.organizationId,
           conv._id,
+          conv?.jobs?.transcription?.state,
         )
       }
     }

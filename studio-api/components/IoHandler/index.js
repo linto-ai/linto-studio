@@ -277,9 +277,9 @@ class IoHandler extends Component {
   }
 
   //broadcasts to connected sockets
-  notify(roomId, action, transcription) {
+  notify(roomId, action, message) {
     if (this.io.sockets.adapter.rooms.has(roomId)) {
-      this.io.to(roomId).emit(action, transcription)
+      this.io.to(roomId).emit(action, message)
     }
   }
 
@@ -295,11 +295,14 @@ class IoHandler extends Component {
     this.sessionsCache = sessions
   }
 
-  async notify_conversation_created(orgaId, conversation) {
-    this.io.to(orgaId).emit(`conversation_created`, conversation)
+  async notify_conversation_action(action, orgaId, message) {
+    this.io.to(orgaId).emit(`conversation_${action}`, message)
+
     if (this.medias.hasOwnProperty(orgaId)) {
+      if (action === "deleted") this.memoryMedias[orgaId].stop()
       let processConv =
         await model.conversations.listProcessingConversations(orgaId)
+
       this.memoryMedias[orgaId] = refreshInterval(
         this.io.to(orgaId),
         this.memoryMedias[orgaId],
