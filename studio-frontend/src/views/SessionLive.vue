@@ -1,5 +1,5 @@
 <template>
-  <LayoutV2 :fullscreen="isFromPublicLink">
+  <LayoutV2>
     <template v-slot:breadcrumb-actions>
       <SessionHeader
         :sessionListRoute="sessionListRoute"
@@ -9,6 +9,7 @@
         <IsMobile>
           <div class="flex gap-small">
             <Button
+              v-if="isAtLeastMeetingManager"
               :to="settingsRoute"
               variant="primary"
               :aria-label="$t('session.detail_page.settings_button')"
@@ -23,6 +24,7 @@
 
           <template #desktop>
             <Button
+              v-if="isAtLeastMeetingManager"
               :to="settingsRoute"
               variant="primary"
               size="sm"
