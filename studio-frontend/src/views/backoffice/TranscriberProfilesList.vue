@@ -18,20 +18,24 @@
           )
         ">
         <template v-slot:right-header>
-          <button v-if="showAllProfiles" @click="changeShowAllProfiles">
-            <span class="icon show"></span>
-            <span class="label">
-              {{ $t("backoffice.transcriber_profile_list.all_profiles_shown") }}
-            </span>
-          </button>
-          <button v-else @click="changeShowAllProfiles">
-            <span class="icon hide"></span>
-            <span class="label">
-              {{
-                $t("backoffice.transcriber_profile_list.global_profiles_shown")
-              }}
-            </span>
-          </button>
+          <Button
+            v-if="showAllProfiles"
+            @click="changeShowAllProfiles"
+            variant="secondary"
+            icon="eye"
+            iconWeight="regular"
+            :label="
+              $t('backoffice.transcriber_profile_list.all_profiles_shown')
+            " />
+          <Button
+            v-else
+            @click="changeShowAllProfiles"
+            variant="secondary"
+            icon="eye-slash"
+            iconWeight="regular"
+            :label="
+              $t('backoffice.transcriber_profile_list.global_profiles_shown')
+            " />
         </template>
       </HeaderTable>
     </template>

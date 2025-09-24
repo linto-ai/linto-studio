@@ -186,10 +186,11 @@ export default function createMediaModule(scope, status = "done") {
             status: getters.getFilterStatus,
           })
 
-          commit("clearSelectedMedias")
-
           if (append) commit("appendMedias", data.list)
-          else commit("setMedias", data.list)
+          else {
+            commit("clearSelectedMedias")
+            commit("setMedias", data.list)
+          }
 
           commit("setCount", data.count)
 

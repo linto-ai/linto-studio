@@ -13,21 +13,21 @@
         :value="search"
         @input="updateSearch" />
     </form>
-    <button
+    <Button
       v-if="add_button_label"
-      class="btn primary"
-      @click="$emit('on-create')">
-      <span class="icon plus"></span>
-      <span class="label">{{ add_button_label }}</span>
-    </button>
-    <button
+      variant="primary"
+      icon="plus"
+      @click="$emit('on-create')"
+      :label="add_button_label" />
+
+    <Button
       v-if="remove_button_label"
-      class="btn tertiary outline"
+      variant="secondary"
+      intent="destructive"
+      icon="trash"
       @click="$emit('on-delete')"
-      :disabled="disableDelete">
-      <ph-icon name="trash"></ph-icon>
-      <span class="label">{{ remove_button_label }}</span>
-    </button>
+      :disabled="disableDelete"
+      :label="remove_button_label" />
   </div>
 </template>
 <script>

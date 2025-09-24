@@ -125,18 +125,16 @@ export default class ApiEventWebSocket {
     this.currentMediaOrganizationId = organizationId
     this.socket.emit("watch_organization_media", organizationId)
 
-    this.socket.on("conversation_deleted", (mediaId) => {
+    this.socket.on("conversation_deleted", ({ id: mediaId, status }) => {
+      const statusFormatted =
+        status === "done" || status === "error" ? status : "processing"
+
       store.dispatch(
-        `${this.currentMediaOrganizationId}/done/conversations/deleteMedias`,
+        `${this.currentMediaOrganizationId}/${statusFormatted}/conversations/deleteMedias`,
         { ids: [mediaId], callApi: false },
       )
       store.dispatch(
-        `${this.currentMediaOrganizationId}/processing/conversations/deleteMedias`,
-        { ids: [mediaId], callApi: false },
-      )
-      store.dispatch(
-        `${this.currentMediaOrganizationId}/error/conversations/deleteMedias`,
-        { ids: [mediaId], callApi: false },
+        `${this.currentMediaOrganizationId}/${statusFormatted}/conversations/decreaseCount`,
       )
     })
 

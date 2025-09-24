@@ -39,11 +39,19 @@
         </div>
 
         <!-- Media type icon -->
-        <Avatar
-          :icon="isFromSession ? 'microphone' : 'file-audio'"
-          color="neutral-10"
-          size="md"
-          class="media-explorer-item__type-icon" />
+        <Tooltip
+          :text="
+            isFromSession
+              ? $t('media_explorer.source.live')
+              : $t('media_explorer.source.media')
+          "
+          position="bottom">
+          <Avatar
+            :icon="isFromSession ? 'microphone' : 'file-audio'"
+            color="neutral-10"
+            size="md"
+            class="media-explorer-item__type-icon" />
+        </Tooltip>
 
         <span
           class="media-explorer-item__percentage"

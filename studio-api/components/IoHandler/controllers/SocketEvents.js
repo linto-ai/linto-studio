@@ -18,14 +18,15 @@ module.exports = function () {
   })
 
   this.on("new_conversation", (conversation) => {
-    this.notify_conversation_created(
+    this.notify_conversation_action(
+      "created",
       conversation.organization.organizationId,
       conversation,
     )
   })
 
-  this.on("conversation_deleted", (orgaIds, ids) => {
-    this.notify(orgaIds, "conversation_deleted", ids)
+  this.on("conversation_deleted", (orgaIds, id, status) => {
+    this.notify_conversation_action("deleted", orgaIds, { id, status })
   })
 
   // MQTT broker client send this event when the connection is lost

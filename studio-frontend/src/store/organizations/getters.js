@@ -46,6 +46,16 @@ const getters = {
   getCurrentFilterStatus: (state) => {
     return state.currentFilterStatus
   },
+  getStoreScope: (state) => {
+    const currentScope = state.currentScope
+    const orgaScope = state.currentOrganizationScope
+    const filterStatus = state.currentFilterStatus
+
+    return (
+      currentScope.replace("organization", orgaScope + "/" + filterStatus) +
+      "/conversations"
+    )
+  },
 }
 
 export default getters

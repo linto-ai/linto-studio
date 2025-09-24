@@ -6,25 +6,26 @@
         v-bind:transcriberProfile.sync="transcriberProfile"
         class="flex1" />
       <div class="flex gap-medium transcriber-profile-detail__footer">
-        <button class="tertiary outline" @click="deleteProfile">
-          <ph-icon name="trash"></ph-icon>
-          <span class="label">{{
-            $t("backoffice.transcriber_profile_detail.delete_button")
-          }}</span>
-        </button>
-        <div class="flex1 small-padding-left"></div>
-        <button class="btn secondary" @click="reset">
-          <span class="label">{{
-            $t("backoffice.transcriber_profile_detail.reset_button")
-          }}</span>
-        </button>
+        <Button
+          @click="deleteProfile"
+          variant="secondary"
+          intent="destructive"
+          icon="trash"
+          :label="$t('backoffice.transcriber_profile_detail.delete_button')" />
 
-        <button class="btn primary" :disabled="!hasChanged" @click="save">
-          <ph-icon name="check" size="md" class="icon" />
-          <span class="label">{{
-            $t("backoffice.transcriber_profile_detail.save_button")
-          }}</span>
-        </button>
+        <div class="flex1 small-padding-left"></div>
+
+        <Button
+          variant="secondary"
+          @click="reset"
+          :label="$t('backoffice.transcriber_profile_detail.reset_button')" />
+
+        <Button
+          variant="primary"
+          icon="check"
+          @click="save"
+          :disabled="!hasChanged"
+          :label="$t('backoffice.transcriber_profile_detail.save_button')" />
       </div>
     </div>
   </MainContentBackoffice>
