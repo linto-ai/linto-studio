@@ -10,7 +10,7 @@
         </BurgerMenu>
       </aside>
       <main class="v2-layout__main" @click="closeSidebar">
-        <HeaderBar :breadcrumbItems="breadcrumbItems">
+        <HeaderBar :breadcrumbItems="breadcrumbItems" :fullscreen="fullscreen">
           <template v-slot:breadcrumb-actions>
             <slot name="breadcrumb-actions"></slot>
           </template>

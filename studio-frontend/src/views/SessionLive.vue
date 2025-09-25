@@ -1,5 +1,5 @@
 <template>
-  <LayoutV2>
+  <LayoutV2 :fullscreen="isMobile && !isAuthenticated">
     <template v-slot:breadcrumb-actions>
       <SessionHeader
         :sessionListRoute="sessionListRoute"
@@ -132,6 +132,8 @@
   </LayoutV2>
 </template>
 <script>
+import { mapGetters } from "vuex"
+
 import { sessionMixin } from "@/mixins/session.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole"
 import { microphoneMixin } from "@/mixins/microphone.js"
@@ -263,6 +265,8 @@ export default {
         )
       return res
     },
+    ...mapGetters("system", ["isMobile"]),
+    ...mapGetters("user", ["isAuthenticated"]),
   },
   components: {
     LayoutV2,

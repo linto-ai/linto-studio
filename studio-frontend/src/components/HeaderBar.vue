@@ -8,7 +8,7 @@
       class="sidebar-toggle icon-only" /> -->
 
     <Button
-      v-if="!sidebarOpen"
+      v-if="!sidebarOpen && !fullscreen"
       icon="sidebar-simple"
       iconWeight="regular"
       border-color="transparent"
@@ -36,6 +36,11 @@ export default {
     breadcrumbItems: {
       type: Array,
       required: false,
+    },
+    // sidebar button hidden
+    fullscreen: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
