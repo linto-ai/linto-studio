@@ -301,7 +301,8 @@ class IoHandler extends Component {
     if (this.medias.hasOwnProperty(orgaId)) {
       if (action === "deleted") this.memoryMedias[orgaId].remove(message.id)
       else {
-        await model.conversations.listProcessingConversations(orgaId)
+        let processConv =
+          await model.conversations.listProcessingConversations(orgaId)
 
         this.memoryMedias[orgaId] = refreshInterval(
           this.io.to(orgaId),
