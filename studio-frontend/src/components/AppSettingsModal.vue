@@ -282,7 +282,7 @@ export default {
         border-bottom-right-radius: 0;
 
         &.active {
-          background-color: var(--background-secondary);
+          background-color: var(--background-primary);
 
           a {
             color: var(--primary-hard);
@@ -302,7 +302,7 @@ export default {
 
   &__section {
     flex: 1;
-    background-color: var(--background-secondary);
+    background-color: var(--background-primary);
     border-radius: 4px;
     border-top-left-radius: 0;
     box-sizing: border-box;
@@ -363,7 +363,7 @@ export default {
     margin: 0.5em;
 
     & > div {
-      background-color: var(--background-secondary);
+      background-color: var(--background-primary);
       flex: 1;
       padding: 0.5em;
       border-radius: 4px;

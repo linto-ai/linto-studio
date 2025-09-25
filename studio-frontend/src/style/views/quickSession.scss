@@ -12,12 +12,12 @@
 }
 
 .microphone-sound-detector[microphoneWorked] {
-  border-color: var(--green-chart);
-  color: var(--green-chart);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
 }
 
 .microphone-sound-detector__ok-icon {
-  background-color: var(--green-chart);
+  background-color: var(--primary-color);
 }
 
 .setup-microphone-cancel {

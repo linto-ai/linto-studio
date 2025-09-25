@@ -1,5 +1,6 @@
 <template>
   <div class="v2-layout" :class="{ 'no-sidebar': !sidebarOpen || fullscreen }">
+    <QuickSessionNotif />
     <div class="v2-layout__content">
       <aside
         v-if="!fullscreen"
@@ -41,6 +42,7 @@ import BurgerMenu from "@/components-mobile/BurgerMenu.vue"
 import Breadcrumb from "@/components/atoms/Breadcrumb.vue"
 import HeaderBar from "@/components/HeaderBar.vue"
 import LocalSwitcher from "@/components/LocalSwitcher.vue"
+import QuickSessionNotif from "@/components/QuickSessionNotif.vue"
 
 export default {
   props: {
@@ -97,6 +99,7 @@ export default {
     BurgerMenu,
     HeaderBar,
     LocalSwitcher,
+    QuickSessionNotif,
   },
 }
 </script>
@@ -108,7 +111,8 @@ export default {
   display: flex;
   flex-direction: column;
   flex: 1;
-
+  gap: 0.5rem;
+  padding: 0.5rem;
   &.no-sidebar {
     .v2-layout__content {
       padding-left: 0;
@@ -118,9 +122,7 @@ export default {
 
 .v2-layout__content {
   display: flex;
-  margin: 0.5em;
   box-sizing: border-box;
-  gap: 1em;
   position: relative;
   padding-left: calc(300px + 0.5rem);
   flex: 1 1 auto;
@@ -128,10 +130,10 @@ export default {
   transition: padding-left 0.3s ease-in-out;
 
   .v2-layout__sidebar {
-    background-color: var(--background-secondary);
+    background-color: var(--background-primary);
     border-radius: 4px;
     overflow: hidden;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--neutral-20);
     position: absolute;
     top: 0;
     left: 0;
@@ -163,9 +165,9 @@ export default {
   }
 
   .v2-layout__main {
-    background-color: var(--background-secondary);
+    background-color: var(--background-primary);
     border-radius: 4px;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--neutral-20);
     flex: 1 1 auto;
     min-width: 0;
     min-height: 0;
