@@ -111,7 +111,7 @@
     "organizations": "Organisations",
     "overview": "Synthèse",
     "publish": "Publication",
-    "quickSession": "Session rapide",
+    "quickSession": "Enregistrement rapide",
     "sessions": "Sessions",
     "sessionSettings": "Paramètres",
     "settings": "Paramètres de {organization}",
@@ -1216,6 +1216,13 @@
     "live_visio": {
       "default_name": "Réunion {type} sans titre",
       "status_recording_visio": "Enregistrement de la visio-conférence en cours"
+    },
+    "notif": {
+      "visio": {
+        "title": "Une visio-conference est en cours d'enregistrement",
+        "continue_button": "Afficher la transcription",
+        "stop_button": "Sauvegarder et arrêter l'enregistrement"
+      }
     }
   },
   "share_menu": {

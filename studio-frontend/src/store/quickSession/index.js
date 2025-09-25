@@ -3,11 +3,15 @@ import { apiGetQuickSession } from "@/api/session.js"
 const state = {
   quickSession: null,
   loading: true,
+  saving: false,
+  sessionBot: null,
 }
 
 const getters = {
   quickSession: (state) => state.quickSession,
   loading: (state) => state.loading,
+  saving: (state) => state.saving,
+  sessionBot: (state) => state.sessionBot,
 }
 
 const mutations = {
@@ -20,6 +24,12 @@ const mutations = {
   setLoading(state, value) {
     state.loading = value
   },
+  setSaving(state, value) {
+    state.saving = value
+  },
+  setSessionBot(state, value) {
+    state.sessionBot = value
+  },
 }
 
 const actions = {
@@ -30,6 +40,13 @@ const actions = {
       commit("setQuickSession", quickSession)
     }
     commit("setLoading", false)
+  },
+  async saveQuickSession({ commit }) {
+    commit("setSaving", true)
+    // if bot stop bot
+
+    // then stop session
+    commit("setSaving", false)
   },
 }
 

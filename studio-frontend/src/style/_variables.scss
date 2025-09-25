@@ -9,17 +9,15 @@
   $bitter: "BitterPro", "Arial", "Helvetica", "verdana";
   $noto: "Noto Sans", "Arial", "Helvetica", "verdana";
 
-  $mainFont: $noto;
-  $inputFocus: #f7faff;
-  $yellowChart: #feb11d;
-  $greenChart: #11977c;
-  $greenLigth: #39d5b6;
-  $redChart: #fe346e;
-  $blueChart: #1c83d6;
-
-  $primaryColor: $greenChart;
-  $secondaryColor: $blueChart;
-  $primaryContrast: #fff;
+  // https://oklch.fyi/ to compute soft
+  $yellowHard: #feb11d;
+  $yellowSoft: oklch(0.95 0.041 76.2);
+  $greenHard: #11977c;
+  $greenSoft: rgb(242, 251, 248); // compute from oklch.fyi is too flashy
+  $redHard: oklch(0.517 0.204 10.7);
+  $redSoft: oklch(0.95 0.025 10.7);
+  $blueHard: #1c83d6;
+  $blueSoft: oklch(0.95 0.023 249.1);
 
   @function soft-color($color, $amount: 40%) {
     @return color.mix(white, $color, $amount);
@@ -29,17 +27,6 @@
     @return color.mix(black, $color, $amount);
   }
 
-  $primarySoft: soft-color($primaryColor, 94%);
-  $primaryHard: hard-color($primaryColor);
-  $yellowSoft: soft-color($yellowChart);
-  $yellowHard: hard-color($yellowChart);
-  $greenSoft: soft-color($greenChart);
-  $greenHard: hard-color($greenChart);
-  $redSoft: soft-color($redChart);
-  $redHard: hard-color($redChart);
-  $blueSoft: soft-color($blueChart);
-  $blueHard: hard-color($blueChart);
-
   body {
     --font-family: "Noto Sans", "Arial", "Helvetica", "verdana";
     --font-size: 14px;
@@ -47,14 +34,19 @@
     --background-primary: white;
     --background-app: #f5f5f5;
 
-    --primary-color: #{$greenChart};
-    --primary-soft: #{$primarySoft};
+    --primary-color: #{$greenHard};
+    --primary-soft: #{$greenSoft};
     --primary-contrast: white;
-    --danger-color: #{$redChart};
+    --success-color: #{$greenHard};
+    --success-soft: #{$greenSoft};
+    --danger-color: #{$redHard};
+    --red-chart: #{$redHard}; // use danger-color instead
     --danger-soft: #{$redSoft};
     --danger-contrast: white;
-    --warning-color: #{$yellowChart};
+    --warning-color: #{$yellowHard};
     --warning-soft: #{$yellowSoft};
+    --linkHard: #{$blueHard};
+    --linkSoft: #{$blueSoft};
 
     --dark-100: #333;
     --dark-90: #404040;

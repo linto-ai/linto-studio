@@ -39,9 +39,13 @@
           {{ $t("quick_session.live_visio.status_recording_visio") }}
         </div>
         <div class="flex1"></div>
-        <button @click="onSaveBotSession" :disabled="isSavingSession">
-          <span class="label">{{ $t("quick_session.live.save_button") }}</span>
-        </button>
+        <!-- <Button
+          @click="onSaveBotSession"
+          :disabled="isSavingSession"
+          :label="$t('quick_session.live.save_button')"
+          variant="primary"
+          icon="stop"
+          size="sm" /> -->
       </div>
     </template>
   </SessionLiveVisio>

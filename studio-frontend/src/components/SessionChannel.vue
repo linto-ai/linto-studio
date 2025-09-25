@@ -1,7 +1,7 @@
 <template>
   <Loading v-if="loading" />
   <div class="flex col flex1 reset-overflows" v-else>
-    <!-- copy bar-->
+    <!-- copy bar -->
     <div
       class="session-content__action-bar flex align-center gap-medium"
       v-if="this.selectedTurns.length > 0">
@@ -61,40 +61,17 @@
           :title="$t('quick_session.live.pause_button')"
           :aria-label="$t('quick_session.live.pause_button')"
           icon="pause"></Button>
-        <!-- <div
-          class="btn circle only-icon primary"
-          @click="toggleMicrophone"
-          :title="$t('quick_session.live.pause_button')"
-          :aria-label="$t('quick_session.live.pause_button')"
-          v-if="isRecording">
-          <span class="icon pause"></span>
-        </div> -->
         <Button
           v-else
           @click="toggleMicrophone"
           :title="$t('quick_session.live.start_button')"
           :aria-label="$t('quick_session.live.start_button')"
           icon="play"></Button>
-        <!-- <div
-          class="btn circle only-icon"
-          @click="toggleMicrophone"
-          :title="$t('quick_session.live.start_button')"
-          :aria-label="$t('quick_session.live.start_button')"
-          v-else>
-          <span class="icon play"></span>
-        </div> -->
         <Button
           @click="onSave"
           :title="$t('quick_session.live.save_button')"
           :aria-label="$t('quick_session.live.save_button')"
           icon="stop"></Button>
-        <!-- <div
-          class="btn circle only-icon red"
-          @click="onSave"
-          :title="$t('quick_session.live.save_button')"
-          :aria-label="$t('quick_session.live.save_button')">
-          <span class="icon stop"></span>
-        </div> -->
       </div>
     </div>
 
@@ -168,19 +145,6 @@
       :watermarkPinned="watermarkPinned"
       :displayWatermark="displayWatermark"
       @close="closeSubtitleFullscreen" />
-    <!-- <div
-      class="session-content__subtitle"
-      :style="style"
-      ref="subtitle"
-      v-if="displaySubtitles">
-      <div id="scroller">
-        <div v-for="turn of lastTwoTurns">
-          {{ turn.text }}
-        </div>
-        <div>{{ partialText }}</div>
-        <div ref="subtitle-bottom"></div>
-      </div>
-    </div> -->
 
     <button
       v-if="!isBottom"
