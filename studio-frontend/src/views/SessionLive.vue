@@ -1,5 +1,5 @@
 <template>
-  <LayoutV2 :fullscreen="isFromPublicLink">
+  <LayoutV2 :fullscreen="isMobile && !isAuthenticated">
     <template v-slot:breadcrumb-actions>
       <SessionHeader
         :sessionListRoute="sessionListRoute"
@@ -9,6 +9,7 @@
         <IsMobile>
           <div class="flex gap-small">
             <Button
+              v-if="isAtLeastMeetingManager"
               :to="settingsRoute"
               variant="primary"
               :aria-label="$t('session.detail_page.settings_button')"
@@ -23,6 +24,7 @@
 
           <template #desktop>
             <Button
+              v-if="isAtLeastMeetingManager"
               :to="settingsRoute"
               variant="primary"
               size="sm"
@@ -130,6 +132,8 @@
   </LayoutV2>
 </template>
 <script>
+import { mapGetters } from "vuex"
+
 import { sessionMixin } from "@/mixins/session.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole"
 import { microphoneMixin } from "@/mixins/microphone.js"
@@ -261,6 +265,8 @@ export default {
         )
       return res
     },
+    ...mapGetters("system", ["isMobile"]),
+    ...mapGetters("user", ["isAuthenticated"]),
   },
   components: {
     LayoutV2,

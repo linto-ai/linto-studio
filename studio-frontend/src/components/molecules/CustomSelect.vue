@@ -1,7 +1,9 @@
 <template>
   <div class="flex col">
-    <select :value="value" @input="$emit('input', $event.target.value)">
-      <option v-for="o in planOptions" :value="o.value">{{ o.text }}</option>
+    <select :value="valueKey(value)" @input="input">
+      <option v-for="o in planOptions" :value="valueKey(o.value)">
+        {{ o.text }}
+      </option>
     </select>
   </div>
 </template>
@@ -53,6 +55,17 @@ export default {
       }
 
       return res
+    },
+  },
+  methods: {
+    input(e) {
+      // test if value is number
+      const value = e?.target?.value
+      if (Number(value)) {
+        this.$emit("input", Number(value))
+      } else {
+        this.$emit("input", value)
+      }
     },
   },
   components: { Fragment, Checkbox, Chip, Badge, ContextMenu },

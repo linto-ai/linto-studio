@@ -1,13 +1,13 @@
 <template>
   <nav class="burger-menu">
     <div>
-      <div class="burger-menu__header flex">
+      <div class="burger-menu__header flex" v-if="isAuthenticated">
         <UserAccountSelector :backoffice="backoffice" />
       </div>
 
       <MediaExplorerMenu
-        :organizationId="currentOrganization._id"
-        v-if="!backoffice" />
+        v-if="!backoffice && isAuthenticated"
+        :organizationId="currentOrganization._id" />
 
       <MediaExplorerMenuLabels v-if="isInbox" />
 
@@ -112,7 +112,10 @@ export default {
       currentOrganization: "getCurrentOrganization",
       currentOrganizationScope: "getCurrentOrganizationScope",
     }),
-    ...mapGetters("user", { userInfo: "getUserInfos" }),
+    ...mapGetters("user", {
+      userInfo: "getUserInfos",
+      isAuthenticated: "isAuthenticated",
+    }),
     logo() {
       return getEnv("VUE_APP_LOGO") ? `/img/${getEnv("VUE_APP_LOGO")}` : false
     },

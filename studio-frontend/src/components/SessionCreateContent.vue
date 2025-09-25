@@ -63,6 +63,7 @@
 
             <Button
               :label="$t('session.channels_list.add')"
+              type="button"
               variant="secondary"
               size="sm"
               icon="plus-circle"
@@ -294,7 +295,7 @@ export default {
   computed: {
     selectedTemplate() {
       return this.localSessionTemplates.sessionTemplates.find(
-        (t) => t.id === this.selectedTemplateId,
+        (t) => t.id === Number(this.selectedTemplateId),
       )
     },
     optionsSelectTemplate() {

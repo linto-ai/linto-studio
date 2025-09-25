@@ -52,8 +52,11 @@ export default {
       get() {
         return this.value
       },
-      set(value) {
-        this.$emit("input", value)
+      set(channelId) {
+        this.$emit(
+          "input",
+          this.channels.find((c) => c.id === channelId),
+        )
       },
     },
   },
