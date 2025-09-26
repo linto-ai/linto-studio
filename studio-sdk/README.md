@@ -65,9 +65,12 @@ await linto.uploadFile(yourFile, {
 })
 
 const status = await linto.getStatus() // use by default the last file you upload
+
 await linto.getStatus({ mediaId: "your-media-id" })
 
-if (status === "done") {
+if (status.isDone) {
   const result = linto.getResult()
+} else {
+  console.log(status.plainValue, status.currentStep)
 }
 ```
