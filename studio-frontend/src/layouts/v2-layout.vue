@@ -77,6 +77,7 @@ export default {
       return isAuthenticated()
     },
     ...mapGetters("system", ["sidebarOpen", "isMobile"]),
+    ...mapGetters("quickSession", ["quickSession", "sessionBot"]),
   },
   beforeMount() {
     if (this.isMobile === false && this.sidebarOpen === undefined) {
