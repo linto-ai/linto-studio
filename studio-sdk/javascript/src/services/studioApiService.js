@@ -104,7 +104,11 @@ export class StudioApiService {
         throw new Error(`No ASR services available for lang=${lang}`)
       }
 
-      const serviceConfig = generateServiceConfig(selectedService)
+      const serviceConfig = generateServiceConfig(selectedService, {
+        enablePunctuation: args["enablePunctuation"],
+        enableDiarization: args["enableDiarization"],
+        numberOfSpeaker: args["numberOfSpeaker"],
+      })
 
       args["serviceName"] = args["serviceName"] ?? serviceConfig.serviceName
       args["endpoint"] = args["endpoint"] ?? serviceConfig.endpoint
@@ -186,13 +190,26 @@ function getServiceByQualityAndLang(services, quality, lang) {
 function generateServiceConfig(
   service,
   {
-    punctuationValue = "disabled",
-    diarizationValue = "disabled",
-    speakersNumberValue = 0,
+    enablePunctuation = false,
+    enableDiarization = false,
+    numberOfSpeaker = 0,
     languageValue = service?.language || "*",
   } = {}
 ) {
   const isWhisper = service?.model_type === "whisper"
+  const subServices = service?.sub_services
+
+  const punctuationServiceList = subServices?.punctuation
+  const punctuationService =
+    enablePunctuation && !isWhisper && punctuationServiceList.length > 0
+      ? punctuationServiceList[0].service_name
+      : null
+
+  const diarizationServiceList = subServices?.diarization
+  const diarizationService =
+    enableDiarization && diarizationServiceList.length > 0
+      ? diarizationServiceList[0].service_name
+      : null
 
   return {
     serviceName: service.serviceName,
@@ -201,17 +218,17 @@ function generateServiceConfig(
     config: {
       language: languageValue,
       punctuationConfig: {
-        enablePunctuation: punctuationValue !== "disabled",
-        serviceName: punctuationValue !== "disabled" ? punctuationValue : null,
+        enablePunctuation,
+        serviceName: punctuationService,
       },
       diarizationConfig: {
-        enableDiarization: diarizationValue !== "disabled",
+        enableDiarization: enableDiarization,
         numberOfSpeaker:
-          diarizationValue !== "disabled" && speakersNumberValue > 0
-            ? parseInt(speakersNumberValue)
+          enableDiarization && numberOfSpeaker > 0
+            ? parseInt(numberOfSpeaker)
             : null,
-        maxNumberOfSpeaker: diarizationValue !== "disabled" ? 100 : null,
-        serviceName: diarizationValue !== "disabled" ? diarizationValue : null,
+        maxNumberOfSpeaker: enableDiarization ? 100 : null,
+        serviceName: diarizationService,
       },
       enableNormalization: true,
       modelType: service.model_type,

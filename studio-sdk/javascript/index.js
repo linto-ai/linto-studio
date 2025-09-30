@@ -21,9 +21,9 @@ class studioSDK {
   async transcribe(
     file,
     {
-      quality = "best",
-      speakerDiarization = true,
-      numberOfSpeakers = "0",
+      enableDiarization = true,
+      enablePunctuation = true,
+      numberOfSpeaker = "0",
       language = "*",
     } = {}
   ) {
@@ -32,7 +32,13 @@ class studioSDK {
     //   password: "",
     // })
 
-    const res = await this.apiService.uploadFile({ file })
+    const res = await this.apiService.uploadFile({
+      file,
+      enableDiarization,
+      enablePunctuation,
+      numberOfSpeaker,
+      language,
+    })
     const mediaId = res.conversationId
     return new PollingService(mediaId, this.apiService)
   }
