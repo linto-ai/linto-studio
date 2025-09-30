@@ -32,6 +32,13 @@ export class StudioApiService {
     return conv
   }
 
+  async getMedia({ mediaId }) {
+    const conv = await this.#withToken(this.#fetchMedia)({
+      mediaId,
+    })
+    return conv
+  }
+
   async fetchOrganizations(args) {
     const organizations = await this.#withToken(this.#fetchOrganizations)(args)
     this.organizations = organizations
@@ -218,7 +225,7 @@ function generateServiceConfig(
     config: {
       language: languageValue,
       punctuationConfig: {
-        enablePunctuation,
+        enablePunctuation: enablePunctuation && !isWhisper,
         serviceName: punctuationService,
       },
       diarizationConfig: {

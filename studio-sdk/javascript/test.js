@@ -11,4 +11,16 @@ let linto = new studioSDK({
 })
 
 const file = await fs.openAsBlob(filePath)
-linto.transcribe(file)
+const handle = await linto.transcribe(file)
+
+handle.addEventListener("update", (e) => {
+  console.log("update", e.detail)
+})
+
+handle.addEventListener("done", (e) => {
+  console.log("done", e.detail)
+})
+
+handle.addEventListener("error", (e) => {
+  console.log("error", e.detail)
+})

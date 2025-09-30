@@ -11,13 +11,15 @@ export class PollingService extends EventTarget {
       switch (job?.state) {
         case "done":
           clearInterval(this.pollingInterval)
-          this.dispatchEvent(new Event("done"))
+          const media = await this.apiService.getMedia({ mediaId })
+          this.dispatchEvent(new CustomEvent("done", { detail: media }))
           break
         case "error":
           clearInterval(this.pollingInterval)
           this.dispatchEvent(new Event("error"))
+          break
         default:
-          this.dispatchEvent(new Event("update", job))
+          this.dispatchEvent(new CustomEvent("update", { detail: job }))
           break
       }
     }, 1000)
