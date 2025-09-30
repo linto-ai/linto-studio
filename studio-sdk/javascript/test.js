@@ -10,5 +10,5 @@ let linto = new studioSDK({
   apiPath: "api",
 })
 
-const file = fs.openAsBlob(filePath)
+const file = await fs.openAsBlob(filePath)
 linto.transcribe(file)

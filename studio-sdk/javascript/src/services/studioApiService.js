@@ -1,6 +1,6 @@
 import {
   prepareRequest,
-  sendMultipartFormData,
+  prepareMultipartFormData,
   sendRequest,
 } from "../request.js"
 
@@ -101,7 +101,7 @@ export class StudioApiService {
       args["serviceName"] = args["serviceName"] ?? serviceConfig.serviceName
       args["endpoint"] = args["endpoint"] ?? serviceConfig.endpoint
       args["transcriptionConfig"] =
-        args["transcriptionConfig"] ?? serviceConfig.transcriptionConfig
+        args["transcriptionConfig"] ?? serviceConfig.config
       args["lang"] = lang
       args["file"] = file
       args["segmentCharSize"] = args["segmentCharSize"] ?? 2000
@@ -143,15 +143,14 @@ export class StudioApiService {
     }
 
     let formData = new FormData()
-    formData.append("organizationId", organizationId)
-    formData.append("name", name)
+    formData.append("name", "name")
     formData.append("file", file)
     formData.append("serviceName", serviceName)
-    formData.append("transcriptionConfig", transcriptionConfig)
+    formData.append("transcriptionConfig", JSON.stringify(transcriptionConfig))
     formData.append("segmentCharSize", segmentCharSize)
     formData.append("lang", lang)
     formData.append("endpoint", endpoint)
-    return sendMultipartFormData(
+    const req = prepareMultipartFormData(
       `${this.baseApiUrl}/organizations/${organizationId}/conversations/create`,
       token,
       formData

@@ -22,17 +22,17 @@ export function prepareRequest(url, method, { token, ...args } = {}) {
   return requestObj
 }
 
-export async function sendMultipartFormData(url, token, formData) {
-  console.debug(`Send request POST ${url} in multipart/form-data`)
-  return await fetch(url, {
+export function prepareMultipartFormData(url, token, formData) {
+  const requestObj = new Request(url, {
     method: "POST",
     headers: {
       charset: "utf-8",
-      "Content-Type": "multipart/form-data",
       Authorization: token ? `Bearer ${token}` : null,
     },
     body: formData,
   })
+
+  return requestObj
 }
 
 export async function sendRequest(request) {
