@@ -1,4 +1,5 @@
 import { StudioApiService } from "./src/services/studioApiService.js"
+import { PollingService } from "./src/services/pollingService.js"
 class studioSDK {
   constructor({
     token,
@@ -31,7 +32,9 @@ class studioSDK {
     //   password: "",
     // })
 
-    this.apiService.uploadFile({ file })
+    const res = await this.apiService.uploadFile({ file })
+    const mediaId = res.conversationId
+    return new PollingService(mediaId, this.apiService)
   }
 }
 

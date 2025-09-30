@@ -24,6 +24,14 @@ export class StudioApiService {
     return services?.filter((service) => service.scope.indexOf("asr") > -1)
   }
 
+  async getMediaStatus({ mediaId }) {
+    const conv = await this.#withToken(this.#fetchMedia)({
+      mediaId,
+      key: "job",
+    })
+    return conv
+  }
+
   async fetchOrganizations(args) {
     const organizations = await this.#withToken(this.#fetchOrganizations)(args)
     this.organizations = organizations
@@ -110,6 +118,15 @@ export class StudioApiService {
   }
 
   // -- API calls --
+  async #fetchMedia({ token, mediaId, ...params }) {
+    const req = prepareRequest(
+      `${this.baseApiUrl}/conversations/${mediaId}`,
+      "GET",
+      { token, ...params }
+    )
+
+    return await sendRequest(req)
+  }
 
   async #fetchServices({ token }) {
     const req = prepareRequest(`${this.baseApiUrl}/services`, "GET", {
