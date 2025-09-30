@@ -42,7 +42,7 @@ async function addUserInOrganization(req, res, next) {
     if (!req.params.organizationId || !req.body.email || !req.body.role)
       throw new OrganizationUnsupportedMediaType()
 
-    if (isNaN(req.body.role) && TYPES.checkValue(req.body.role))
+    if (isNaN(req.body.role) && ROLES.checkValue(req.body.role))
       throw new OrganizationUnsupportedMediaType("Role value is not valid")
     if (ROLES.canGiveAccess(req.body.role, req.userRole))
       throw new OrganizationForbidden()
@@ -146,7 +146,7 @@ async function updateUserFromOrganization(req, res, next) {
     if (!req.params.organizationId || !req.body.userId || !req.body.role)
       throw new OrganizationUnsupportedMediaType()
 
-    if (isNaN(req.body.role) && TYPES.checkValue(req.body.role))
+    if (isNaN(req.body.role) && ROLES.checkValue(req.body.role))
       throw new OrganizationUnsupportedMediaType("Role value is not valid")
     if (ROLES.canGiveAccess(req.body.role, req.userRole))
       throw new OrganizationForbidden()

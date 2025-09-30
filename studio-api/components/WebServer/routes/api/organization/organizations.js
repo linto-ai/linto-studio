@@ -25,6 +25,17 @@ const { updateOrganization, deleteOrganization } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/organizations/admin.js`,
 )
 
+const {
+  createM2MUser,
+  listM2M,
+  getM2MTokens,
+  refreshM2MToken,
+  revokeM2MToken,
+  deleteM2Token,
+} = require(
+  `${process.cwd()}/components/WebServer/routecontrollers/organizations/m2m.js`,
+)
+
 const { transcribeReq } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/organizations/uploader/transcriptor.js`,
 )
@@ -153,6 +164,51 @@ module.exports = (webserver) => {
       requireAuth: true,
       requireOrganizationAdminAccess: true,
       controller: deleteOrganization,
+    },
+
+    /* Admin right M2M function*/
+
+    {
+      path: "/:organizationId/tokens",
+      method: "post",
+      requireAuth: true,
+      requireOrganizationAdminAccess: true,
+      controller: createM2MUser,
+    },
+    {
+      path: "/:organizationId/tokens/",
+      method: "get",
+      requireAuth: true,
+      requireOrganizationAdminAccess: true,
+      controller: listM2M,
+    },
+    {
+      path: "/:organizationId/tokens/:tokenId",
+      method: "get",
+      requireAuth: true,
+      requireOrganizationAdminAccess: true,
+      controller: getM2MTokens,
+    },
+    {
+      path: "/:organizationId/tokens/:tokenId/refresh",
+      method: "get",
+      requireAuth: true,
+      requireOrganizationAdminAccess: true,
+      controller: refreshM2MToken,
+    },
+    {
+      path: "/:organizationId/tokens/:tokenId/revoke",
+      method: "delete",
+      requireAuth: true,
+      requireOrganizationAdminAccess: true,
+      controller: revokeM2MToken,
+    },
+    {
+      path: "/:organizationId/tokens/:tokenId",
+      method: "delete",
+      requireAuth: true,
+      requireOrganizationAdminAccess: true,
+      controller: deleteM2Token,
     },
   ]
 }

@@ -11,6 +11,7 @@ const VALIDITY_DATE = require(
 )
 
 const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
+const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
 
 const public_projection = {
   email: 1,
@@ -82,6 +83,7 @@ class UsersModel extends MongoModel {
         created: dateTime,
         last_update: dateTime,
         fromSso: false,
+        type: USER_TYPE.USER,
       }
 
       return await this.mongoInsert(adminPayload)
@@ -104,12 +106,33 @@ class UsersModel extends MongoModel {
         role: ROLE.defaultUserRole(),
         created: dateTime,
         last_update: dateTime,
+        type: USER_TYPE.USER,
       }
 
       // If SMTP is disabled, mark the email as verified
       if (process.env.SMTP_HOST === "") {
         userPayload.emailIsVerified = true
         userPayload.verifiedEmail.push(userPayload.email)
+      }
+
+      return await this.mongoInsert(userPayload)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async createM2MUser(payload) {
+    try {
+      const dateTime = moment().format()
+      const userPayload = {
+        ...payload,
+        created: dateTime,
+        last_update: dateTime,
+        fromSso: false,
+        private: true,
+        role: ROLE.UNDEFINED,
+        type: USER_TYPE.M2M,
       }
 
       return await this.mongoInsert(userPayload)

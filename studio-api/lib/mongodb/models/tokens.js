@@ -35,6 +35,18 @@ class TokenModel extends MongoModel {
     }
   }
 
+  async getTokenByUser(userId) {
+    try {
+      const query = {
+        userId: userId,
+      }
+      return await this.mongoRequest(query)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   async getTokenById(id, userId) {
     try {
       const query = {
@@ -42,6 +54,18 @@ class TokenModel extends MongoModel {
         userId: userId,
       }
       return await this.mongoRequest(query)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async deleteAllUserTokens(userId) {
+    try {
+      const query = {
+        userId: userId,
+      }
+      return await this.mongoDeleteMany(query, true)
     } catch (error) {
       console.error(error)
       return error
