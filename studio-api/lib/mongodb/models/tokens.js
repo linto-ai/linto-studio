@@ -8,13 +8,14 @@ class TokenModel extends MongoModel {
     super("tokens") // define name of 'users' collection elsewhere?
   }
 
-  async insert(user_id, salt) {
+  async insert(user_id, salt, expires_in) {
     try {
       let payload = {
         userId: user_id.toString(),
         salt: salt,
         createdAt: new Date(Date.now()),
       }
+      if (expires_in) payload.expiresIn = expires_in
 
       return await this.mongoInsert(payload)
     } catch (error) {

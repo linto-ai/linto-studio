@@ -24,6 +24,11 @@
                 },
                 "role": {
                   "type": "integer"
+                },
+                "expires_in": {
+                  "type": "string",
+                  "description": "Duration until the token expires (e.g., 30d, 12h)",
+                  "default": "30d"
                 }
               },
               "required": ["role"]
@@ -110,6 +115,23 @@
           "description": "uuid string identifier for the m2m token"
         }
       ],
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "expires_in": {
+                  "type": "string",
+                  "description": "Duration until the token expires (e.g., 30d, 12h)",
+                  "default": "30d"
+                }
+              },
+              "required": ["role"]
+            }
+          }
+        }
+      },
       "responses": {
         "200": {
           "description": "OK",

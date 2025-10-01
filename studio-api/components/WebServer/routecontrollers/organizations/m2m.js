@@ -1,6 +1,8 @@
 const debug = require("debug")(
   "linto:conversation-manager:components:WebServer:routecontrollers:organizations:m2m",
 )
+const ms = require("ms")
+
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const { OrganizationUnsupportedMediaType } = require(
@@ -19,15 +21,35 @@ const { addM2mUserToOrganization } = require(
   `${process.cwd()}/components/WebServer/controllers/organization/utility`,
 )
 
-async function generateM2MToken(userId, token) {
+function getExpiresIn(value, defaultValue = "7d") {
+  if (value === undefined) return process.env.EXTENDED_TOKEN_DAYS_TIME || "7d"
+
+  if (!isNaN(value) && Number(value) > 0) {
+    return Number(value)
+  }
+
+  try {
+    const duration = ms(value)
+    if (typeof duration === "number" && duration > 0) {
+      return value
+    }
+  } catch {}
+  return defaultValue
+}
+
+async function generateM2MToken(
+  userId,
+  token,
+  expires_in = process.env.EXTENDED_TOKEN_DAYS_TIME,
+) {
   try {
     const user = await model.users.getById(userId, true)
     if (user.length !== 1) throw new UserNotFound()
 
-    let token_salt
+    expires_in = getExpiresIn(expires_in)
     if (token === undefined) {
       token_salt = require("randomstring").generate(12)
-      token = await model.tokens.insert(user[0]._id, token_salt)
+      token = await model.tokens.insert(user[0]._id, token_salt, expires_in)
     } else {
       token_salt = token.salt
     }
@@ -40,7 +62,7 @@ async function generateM2MToken(userId, token) {
     }
 
     return TokenGenerator(tokenData, {
-      expires_in: "7d" || process.env.EXTENDED_TOKEN_DAYS_TIME,
+      expires_in: token.expiresIn || expires_in,
     })
   } catch (error) {
     throw error
@@ -108,7 +130,11 @@ async function createM2MUser(req, res, next) {
       role,
     )
 
-    const m2mToken = await generateM2MToken(createdUser.insertedId.toString())
+    const m2mToken = await generateM2MToken(
+      createdUser.insertedId.toString(),
+      undefined,
+      req.body.expires_in,
+    )
     res.status(201).send({
       message: "M2M user has been created and linked to a new organization",
       ...m2mToken,
@@ -125,7 +151,11 @@ async function refreshM2MToken(req, res, next) {
 
     res.status(200).send({
       message: "M2M token has been refreshed",
-      ...(await generateM2MToken(req.params.tokenId)),
+      ...(await generateM2MToken(
+        req.params.tokenId,
+        undefined,
+        req.body.expires_in,
+      )),
     })
   } catch (err) {
     next(err)
