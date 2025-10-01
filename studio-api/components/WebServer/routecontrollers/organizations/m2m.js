@@ -64,11 +64,14 @@ async function checkTokenBelongsToOrganization(params) {
     if (
       organization.length !== 1 ||
       !organization[0].users.find(
-        (u) => u.userId.toString() === user[0]._id.toString(),
+        (u) =>
+          u.userId.toString() === user[0]._id.toString() &&
+          u.type === USER_TYPE.M2M,
       )
     ) {
       throw new UserError("Request M2M id does not belong to the organization")
     }
+
     return {
       user: user[0],
       organization: organization[0],
@@ -124,18 +127,6 @@ async function refreshM2MToken(req, res, next) {
   }
 }
 
-async function revokeM2MToken(req, res, next) {
-  try {
-    await checkTokenBelongsToOrganization(req.params)
-    await model.tokens.deleteAllUserTokens(req.params.tokenId)
-    res.status(200).send({
-      message: "M2M token has been delete",
-    })
-  } catch (err) {
-    next(err)
-  }
-}
-
 async function getM2MTokens(req, res, next) {
   try {
     await checkTokenBelongsToOrganization(req.params)
@@ -173,10 +164,17 @@ async function deleteM2Token(req, res, next) {
     await checkTokenBelongsToOrganization(req.params)
     await model.tokens.deleteAllUserTokens(req.params.tokenId)
 
-    await model.users.delete(req.params.tokenId)
-    res.status(200).send({
-      message: "M2M token has been delete",
-    })
+    if (req.query.revoke === "true") {
+      res.status(200).send({
+        message: "M2M token has been revoked",
+      })
+    } else {
+      await model.tokens.deleteAllUserTokens(req.params.tokenId)
+      await model.users.delete(req.params.tokenId)
+      res.status(200).send({
+        message: "M2M token has been deleted",
+      })
+    }
   } catch (err) {
     next(err)
   }
@@ -188,6 +186,5 @@ module.exports = {
   refreshM2MToken,
   generateM2MToken,
   getM2MTokens,
-  revokeM2MToken,
   deleteM2Token,
 }

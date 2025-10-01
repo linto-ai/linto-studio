@@ -1,0 +1,24 @@
+{
+  "M2MUser": {
+    "type": "object",
+    "properties": {
+      "userId": {
+        "type": "string",
+        "description": "The organization id"
+      },
+      "role": {
+        "type": "integer",
+        "description": "The action that the m2m can perform"
+      },
+      "type": {
+        "type": "string",
+        "description": "User type either machine or user"
+      }
+    },
+    "example": {
+      "userId": "68dba589e9e1da965fa23b5c",
+      "role": 3,
+      "type": "machine"
+    }
+  }
+}

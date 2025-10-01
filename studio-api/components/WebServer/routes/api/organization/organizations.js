@@ -30,7 +30,6 @@ const {
   listM2M,
   getM2MTokens,
   refreshM2MToken,
-  revokeM2MToken,
   deleteM2Token,
 } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/organizations/m2m.js`,
@@ -190,18 +189,11 @@ module.exports = (webserver) => {
       controller: getM2MTokens,
     },
     {
-      path: "/:organizationId/tokens/:tokenId/refresh",
-      method: "get",
+      path: "/:organizationId/tokens/:tokenId",
+      method: "put",
       requireAuth: true,
       requireOrganizationAdminAccess: true,
       controller: refreshM2MToken,
-    },
-    {
-      path: "/:organizationId/tokens/:tokenId/revoke",
-      method: "delete",
-      requireAuth: true,
-      requireOrganizationAdminAccess: true,
-      controller: revokeM2MToken,
     },
     {
       path: "/:organizationId/tokens/:tokenId",
