@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="studio-sdk",
+    name="LinTO",
     version="1.0.0",
     description="LinTO Studio SDK",
     packages=find_packages(),

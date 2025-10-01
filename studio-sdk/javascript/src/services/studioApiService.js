@@ -5,14 +5,9 @@ import {
 } from "../request.js"
 
 export class StudioApiService {
-  constructor({
-    baseUrl = "https://studio.linto.ai",
-    apiPath = "cm-api",
-    authPath = "auth",
-    token = null,
-  }) {
-    this.baseApiUrl = baseUrl + "/" + apiPath
-    this.baseAuthUrl = baseUrl + "/" + authPath
+  constructor({ baseUrl = "https://studio.linto.ai", token = null }) {
+    this.baseApiUrl = baseUrl + "/api"
+    this.baseAuthUrl = baseUrl + "/auth"
     this.token = token
     this.organizations = []
     this.asrServices = []

@@ -36,7 +36,6 @@ export function prepareMultipartFormData(url, token, formData) {
 }
 
 export async function sendRequest(request) {
-  console.debug(`Send request ${request.method} ${request.url}`)
   const res = await fetch(request)
   if (!res.ok) {
     throw new Error(`Request failed with status ${res.status}`)

@@ -7,7 +7,6 @@ const filePath = process.env.FILE_PATH
 let linTO = new LinTO({
   token,
   baseUrl: "http://127.0.0.1:8001",
-  apiPath: "api",
 })
 
 const file = await fs.openAsBlob(filePath)

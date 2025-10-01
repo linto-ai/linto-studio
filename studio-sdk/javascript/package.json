@@ -1,9 +1,17 @@
 {
-  "name": "studio-sdk",
+  "name": "linto",
   "version": "1.0.0",
-  "description": "",
+  "description": "SDK for LinTO Studio, to transcribe audio files",
   "main": "index.js",
   "module": "index.js",
+  "keywords": [
+    "STT",
+    "Whisper",
+    "Speech-to-Text",
+    "Transcript",
+    "Transcriber",
+    "Timestamps"
+  ],
   "scripts": {
     "test": "node test.js"
   },

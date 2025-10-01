@@ -129,7 +129,7 @@ class StudioApiService:
     def __init__(
         self,
         base_url="https://studio.linto.ai",
-        api_path="cm-api",
+        api_path="api",
         auth_path="auth",
         token=None,
     ):

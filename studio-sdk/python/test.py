@@ -1,7 +1,8 @@
 import os
-from studio_sdk import LinTO
 import asyncio
 import logging
+
+from linto import LinTO
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -11,7 +12,7 @@ async def main() -> None:
     token = os.getenv("STUDIO_TOKEN")
     file_path = os.getenv("FILE_PATH")
 
-    linTO = LinTO(token, base_url="http://127.0.0.1:8001", api_path="api")
+    linTO = LinTO(token, base_url="http://127.0.0.1:8001")
 
     with open(file_path, "rb") as f:
         file = f.read()

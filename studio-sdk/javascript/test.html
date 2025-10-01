@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Demo page for LinTO</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+
+  <body>
+    <h1>LinTO SDK test page</h1>
+    <form id="form">
+      <label for="file">Choose an audio file</label>
+      <input type="file" id="file" />
+      <label for="token">Token</label>
+      <input type="text" id="token" />
+      <button type="submit">Transcribe</button>
+    </form>
+
+    <div id="status">No status</div>
+    <pre id="result">No result</pre>
+
+    <script type="module">
+      import LinTO from "./index.js"
+      const form = document.getElementById("form")
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault()
+        const file = document.getElementById("file").files[0]
+        const token = document.getElementById("token").value
+        const linTO = new LinTO({
+          token,
+          baseUrl: "http://127.0.0.1:8001",
+        })
+        const handle = await linTO.transcribe(file)
+
+        function OnUpdate(e) {
+          console.log("update", e.detail)
+          document.getElementById("status").innerHTML =
+            e.detail?.jobs?.transcription?.state
+        }
+
+        function OnDone(e) {
+          console.log("done", e.detail)
+          document.getElementById("status").innerHTML = "Done !"
+          document.getElementById("result").innerHTML = JSON.stringify(
+            e.detail.text,
+            null,
+            2
+          )
+          cleanListener()
+        }
+
+        function OnError(e) {
+          document.getElementById("status").innerHTML = "error !"
+          cleanListener()
+        }
+
+        function cleanListener() {
+          handle.removeEventListener("update", OnUpdate)
+          handle.removeEventListener("done", OnDone)
+          handle.removeEventListener("error", OnError)
+        }
+
+        handle.addEventListener("update", OnUpdate)
+
+        handle.addEventListener("done", OnDone)
+
+        handle.addEventListener("error", OnError)
+      })
+    </script>
+
+    <style>
+      body {
+        width: 100%;
+        max-width: 800px;
+        margin: auto;
+        margin-top: 2rem;
+      }
+
+      #result {
+        padding: 0.5rem;
+        margin-top: 1rem;
+      }
+    </style>
+  </body>
+</html>
