@@ -91,6 +91,11 @@ async function createM2MUser(req, res, next) {
     if (isNaN(role) && ROLES.checkValue(role)) {
       throw new OrganizationUnsupportedMediaType("Role value is not valid")
     }
+    if (role >= ROLES.ADMIN) {
+      throw new OrganizationUnsupportedMediaType(
+        "Cannot assign a role higher than Admin",
+      )
+    }
 
     const createdUser = await model.users.createM2MUser({
       firstname: req.body.name,
