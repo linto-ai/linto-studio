@@ -1,6 +1,9 @@
 import os
 from studio_sdk import LinTO
 import asyncio
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 async def main() -> None:
@@ -14,6 +17,25 @@ async def main() -> None:
         file = f.read()
 
     handle = await linTO.transcribe(file)
+
+    done_event = asyncio.Event()
+
+    def on_update(data):
+        print("update", data)
+
+    def on_done(data):
+        print("done", data)
+        done_event.set()
+
+    def on_error(data):
+        print("error", data)
+        done_event.set()
+
+    handle.on("update", on_update)
+    handle.on("done", on_done)
+    handle.on("error", on_error)
+
+    await done_event.wait()
 
 
 if __name__ == '__main__':

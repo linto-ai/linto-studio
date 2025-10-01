@@ -1,6 +1,7 @@
 
 import aiohttp
 import json
+import logging
 
 
 def get_service_by_quality_and_lang(services, quality, lang):
@@ -225,9 +226,6 @@ class StudioApiService:
         form.add_field("file", file)
         form.add_field("serviceName", kwargs["serviceName"])
 
-        print("conf", str(
-            kwargs["transcriptionConfig"]))
-
         form.add_field("transcriptionConfig", json.dumps(
             kwargs["transcriptionConfig"]))
         form.add_field("segmentCharSize", json.dumps(
@@ -241,9 +239,10 @@ class StudioApiService:
 
     async def _send_request(self, method, url, **kwargs):
         headers = {"Authorization": f"Bearer {kwargs.get('token')}"}
+        logging.debug(f"Sending request {method} {url}")
         async with aiohttp.ClientSession() as session:
-            print(url)
             async with session.request(
                 method, url, headers=headers, json=kwargs.get("json"), data=kwargs.get("data")
             ) as resp:
+                logging.debug(f"Response status: {resp.status}")
                 return await resp.json()

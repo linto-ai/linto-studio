@@ -1,4 +1,5 @@
 from .services.studioApiService import StudioApiService
+from .services.pollingService import PollingService
 
 
 class LinTO:
@@ -15,5 +16,5 @@ class LinTO:
         args["file"] = file
         res = await self.api_service.upload_file(file=file)
         media_id = res["conversationId"]
-        print(media_id)
+        return PollingService(media_id, self.api_service)
         # orgas = await self.api_service.fetch_asr_services()
