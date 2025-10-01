@@ -1,7 +1,7 @@
 {
   "name": "linto",
   "version": "1.0.0",
-  "description": "SDK for LinTO Studio, to transcribe audio files",
+  "description": "LinTO Studio SDK is a library to interact with LinTO Studio API, it provides a simple interface to transcribe audio files.",
   "main": "index.js",
   "module": "index.js",
   "keywords": [

@@ -1,6 +1,8 @@
 # LinTO Studio SDK
 
-LinTO Studio SDK is a library to interact with the LinTO studio API, it provides a simple interface to transcribe audio files and get the transcription result.
+LinTO Studio SDK is a library to interact with LinTO Studio API, it provides a simple interface to transcribe audio files.
+
+It is available in Python and Javascript (NodeJS and web browser).
 
 ## Install
 
@@ -10,66 +12,64 @@ LinTO Studio SDK is a library to interact with the LinTO studio API, it provides
 pip install linto
 ```
 
-**Node.js and compiled front-end project**
+**NodeJS or compiled front-end project**
 
 ```
 npm install linto
 ```
 
-**Plain js in browser**
+**Plain JS in web browser**
 
 ```
 <script src="https://unpkg.com/LinTO@1.0.0/dist/linto.min.js"></script>
 ```
 
-## QuickStart
+## How to use
 
-### NodeJS
+### NodeJS or Web browser
 
 ```javascript
 import LinTO from "LinTO"
-import fs from "fs"
 
 let linTO = new LinTO({
   token: "M2M_token",
 })
 
+// Choose depending on your environment
+
+// NodeJS
+import fs from "fs"
 const file = await fs.openAsBlob("path/to/audio.mp3")
+
+// Browser :
+// From an <input type='file'/>
+const file = document.getElementById("file").files[0]
 
 const handle = await linTO.transcribe(file)
 
 handle.addEventListener("update", (e) => {
-  console.log("update", e.detail)
+  console.log("Audio transcription processing", e.detail)
 })
 
 handle.addEventListener("done", (e) => {
-  console.log("Audio transcription", e.detail.text)
+  console.log("Audio transcription completed", e.detail.text)
 })
 
 handle.addEventListener("error", (e) => {
-  console.log("error", e.detail)
+  console.log("Error while processing the audio", e.detail)
 })
 ```
 
-See complete nodejs test script at [javascript/test.js](javascript/test.js)
+**Full example**
 
-### Browser
-
-Same as nodeJs version except the `fs` use.
-
-Per exemple, get file from an `<input type='file'/>`
-
-```javascript
-const file = document.getElementById("file").files[0]
-```
-
-See example at [javascript/test.html](javascript/test.html)
+- [NodeJS](javascript/test.js)
+- [Browser](javascript/test.html)
 
 ### Python
 
 ```python
-from linto import LinTO
 import os
+from linto import LinTO
 
 linTO = LinTO(token="M2M_token")
 
@@ -79,24 +79,24 @@ with open("path/to/audio.mp3", "rb") as f:
 handle = await linTO.transcribe(file)
 
 def on_update(data):
-    print("update", data)
+    print("Audio transcription processing", data)
 
 def on_done(data):
-    print("done", data)
+    print("Audio transcription completed", data)
 
 def on_error(data):
-    print("error", data)
+    print("Error while processing the audio", data)
 
 handle.on("update", on_update)
 handle.on("done", on_done)
 handle.on("error", on_error)
 ```
 
-See complete python test script at [python/test.js](python/test.py)
+See complete python script at [python/test.js](python/test.py)
 
-## Already implemented
+## Documentation
 
-### LinTO constructor
+### Initialisation
 
 ```javascript
 new LinTO({
