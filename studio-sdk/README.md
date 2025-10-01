@@ -29,7 +29,7 @@ npm install linto
 ### NodeJS or Web browser
 
 ```javascript
-import LinTO from "LinTO"
+import LinTO from "linto"
 
 let linTO = new LinTO({
   token: "M2M_token",
