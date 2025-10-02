@@ -9,10 +9,10 @@ logging.basicConfig(level=logging.DEBUG)
 
 async def main() -> None:
 
-    token = os.getenv("STUDIO_TOKEN")
+    auth_token = os.getenv("STUDIO_TOKEN")
     file_path = os.getenv("FILE_PATH")
 
-    linTO = LinTO(token, base_url="http://127.0.0.1:8001")
+    linTO = LinTO(auth_token, base_url="http://127.0.0.1:8001")
 
     with open(file_path, "rb") as f:
         file = f.read()

@@ -1,10 +1,10 @@
 import { StudioApiService } from "./src/services/studioApiService.js"
 import { PollingService } from "./src/services/pollingService.js"
 class LinTO {
-  constructor({ token, baseUrl = "https://studio.linto.ai/cm-api" } = {}) {
+  constructor({ authToken, baseUrl = "https://studio.linto.ai/cm-api" } = {}) {
     this.baseUrl = baseUrl
     this.apiService = new StudioApiService({
-      token,
+      authToken,
       baseUrl,
     })
   }

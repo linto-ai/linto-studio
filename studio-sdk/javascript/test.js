@@ -1,11 +1,11 @@
 import LinTO from "./index.js"
 import fs from "fs"
 
-const token = process.env.STUDIO_TOKEN
+const authToken = process.env.STUDIO_TOKEN
 const filePath = process.env.FILE_PATH
 
 let linTO = new LinTO({
-  token,
+  authToken,
   baseUrl: "http://127.0.0.1:8001",
 })
 

@@ -3,10 +3,10 @@ from .services.pollingService import PollingService
 
 
 class LinTO:
-    def __init__(self, token, base_url="https://studio.linto.ai/cm-api"):
+    def __init__(self, auth_token, base_url="https://studio.linto.ai/cm-api"):
         self.base_url = base_url
         self.api_service = StudioApiService(
-            base_url=base_url, token=token
+            base_url=base_url, token=auth_token
         )
 
     async def transcribe(self, file, enable_diarization=True, number_of_speaker="0", language="*"):
