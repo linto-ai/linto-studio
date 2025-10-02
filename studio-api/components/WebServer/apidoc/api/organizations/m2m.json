@@ -29,6 +29,10 @@
                   "type": "string",
                   "description": "Duration until the token expires (e.g., 30d, 12h)",
                   "default": "30d"
+                },
+                "metadata": {
+                  "type": "string",
+                  "description": "A JSON string representing metadata associated with the token"
                 }
               },
               "required": ["role"]

@@ -119,9 +119,27 @@ async function createM2MUser(req, res, next) {
       )
     }
 
-    const createdUser = await model.users.createM2MUser({
+    let clientMetadata = {}
+    if (req.body.metadata) {
+      try {
+        const parsed = JSON.parse(req.body.metadata)
+
+        if (typeof parsed === "object" && parsed !== null) {
+          clientMetadata = parsed
+        }
+      } catch {}
+    }
+
+    const metadata = {
+      ...clientMetadata,
+      createdBy: req.payload.data.userId,
+    }
+    const payload = {
       firstname: req.body.name,
-    })
+      metadata,
+    }
+
+    const createdUser = await model.users.createM2MUser(payload)
     if (createdUser.insertedCount !== 1) throw new UserError()
 
     addM2mUserToOrganization(
