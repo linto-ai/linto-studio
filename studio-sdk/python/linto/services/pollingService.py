@@ -3,22 +3,17 @@ import logging
 
 
 class EventEmitter:
-    """Un petit équivalent d'EventTarget en Python."""
-
     def __init__(self):
         self._listeners = {}
 
     def on(self, event, callback):
-        """Ajoute un listener pour un event donné."""
         self._listeners.setdefault(event, []).append(callback)
 
     def off(self, event, callback):
-        """Supprime un listener."""
         if event in self._listeners:
             self._listeners[event].remove(callback)
 
     async def emit(self, event, *args, **kwargs):
-        """Émet un event et appelle tous les listeners."""
         for callback in self._listeners.get(event, []):
             result = callback(*args, **kwargs)
             if asyncio.iscoroutine(result):
@@ -35,12 +30,10 @@ class PollingService(EventEmitter):
         self.start()
 
     def start(self):
-        """Démarre le polling en tâche asyncio."""
         if self._task is None:
             self._task = asyncio.create_task(self._poll_loop())
 
     def stop(self):
-        """Arrête le polling."""
         if self._task:
             self._task.cancel()
             self._task = None

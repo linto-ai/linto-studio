@@ -4,14 +4,19 @@ class LinTO {
   constructor({ authToken, baseUrl = "https://studio.linto.ai/cm-api" } = {}) {
     this.baseUrl = baseUrl
     this.apiService = new StudioApiService({
-      authToken,
+      token: authToken,
       baseUrl,
     })
   }
 
   async transcribe(
     file,
-    { enableDiarization = true, numberOfSpeaker = "0", language = "*" } = {}
+    {
+      enableDiarization = true,
+      numberOfSpeaker = "0",
+      language = "*",
+      enablePunctuation,
+    } = {}
   ) {
     // await this.apiService.login({
     //   email: "",
@@ -21,7 +26,7 @@ class LinTO {
     const res = await this.apiService.uploadFile({
       file,
       enableDiarization,
-      enablePunctuation: true,
+      enablePunctuation: enablePunctuation,
       numberOfSpeaker,
       language,
     })

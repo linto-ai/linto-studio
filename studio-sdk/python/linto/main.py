@@ -9,9 +9,15 @@ class LinTO:
             base_url=base_url, token=auth_token
         )
 
-    async def transcribe(self, file, enable_diarization=True, number_of_speaker="0", language="*"):
+    async def transcribe(self, file, enable_diarization=True, number_of_speaker="0", language="*", enablePunctuation=True):
         args = {}
         args["file"] = file
-        res = await self.api_service.upload_file(file=file)
+        res = await self.api_service.upload_file(
+            file=file,
+            enable_diarization=enable_diarization,
+            number_of_speaker=number_of_speaker,
+            language=language,
+            enablePunctuation=enablePunctuation
+        )
         media_id = res["conversationId"]
         return PollingService(media_id, self.api_service)

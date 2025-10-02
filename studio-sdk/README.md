@@ -1,6 +1,6 @@
 # LinTO Studio SDK
 
-LinTO Studio SDK is a toolkit to connect with LinTO Studio API.
+LinTO Studio SDK is a wrapper around LinTO Studio API. You can generate an auth token from [LinTO Studio](https://studio.linto.ai) in the organization settings.
 
 It is available in Python and Javascript (NodeJS and web browser).
 
@@ -137,7 +137,7 @@ handle.on("done", callback)
 handle.on("error", callback)
 ```
 
-### Options
+#### Options
 
 | Parameter         | required | value                           | description                                                                               | default value |
 | ----------------- | -------- | ------------------------------- | ----------------------------------------------------------------------------------------- | ------------- |
@@ -145,8 +145,9 @@ handle.on("error", callback)
 | enableDiarization | no       | bool                            | Enable speaker diarization                                                                | True          |
 | numberOfSpeaker   | no       | int                             | Number of speaker for diarization, 0 means auto                                           | 0             |
 | language          | no       | 2 letters language code or "\*" | Language the audio should be transcribed. "\*" means auto-detection + multiple languages. | "\*"          |
+| enablePunctuation | no       | bool                            | Enable automatic punctuation recognition                                                  | True          |
 
-### Callback event value
+#### Callbacks event value
 
 Callbacks receive a media object with 3 main properties:
 
