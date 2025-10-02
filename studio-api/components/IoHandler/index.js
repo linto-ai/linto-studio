@@ -299,8 +299,10 @@ class IoHandler extends Component {
     this.io.to(orgaId).emit(`conversation_${action}`, message)
 
     if (this.medias.hasOwnProperty(orgaId)) {
-      if (action === "deleted") this.memoryMedias[orgaId].remove(message.id)
-      else {
+      if (action === "deleted") {
+        if (this.memoryMedias[orgaId] !== undefined)
+          this.memoryMedias[orgaId].remove(message.id)
+      } else {
         let processConv =
           await model.conversations.listProcessingConversations(orgaId)
 
