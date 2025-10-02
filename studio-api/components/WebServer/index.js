@@ -21,7 +21,7 @@ if (process.env.CORS_ENABLED === "true") {
   const whitelistRaw = process.env.CORS_API_WHITELIST || ""
 
   if (whitelistRaw === "*") {
-    corsOptions = { origin: true }
+    corsOptions = { origin: "*" }
   } else if (whitelistRaw.length > 0) {
     const whitelistDomains = whitelistRaw.split(",").map((d) => d.trim())
 
@@ -50,6 +50,12 @@ class WebServer extends Component {
     this.id = this.constructor.name
     this.app = app
     this.express = express()
+
+    if (corsOptions) {
+      this.express.use(CORS(corsOptions))
+      this.express.options("*", CORS(corsOptions)) // allow cors settings to be enable for all routes
+    }
+
     this.express.set("etag", false)
     this.express.set("trust proxy", true)
 
@@ -75,10 +81,6 @@ class WebServer extends Component {
       }),
     )
     this.express.use(cookieParser())
-    if (corsOptions) {
-      this.express.use(CORS(corsOptions))
-      this.express.options("*", CORS(corsOptions)) // allow cors settings to be enable for all routes
-    }
 
     this.express.use(
       fileUpload({
