@@ -77,6 +77,7 @@ class WebServer extends Component {
     this.express.use(cookieParser())
     if (corsOptions) {
       this.express.use(CORS(corsOptions))
+      this.express.options("*", CORS(corsOptions)) // allow cors settings to be enable for all routes
     }
 
     this.express.use(
