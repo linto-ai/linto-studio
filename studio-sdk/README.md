@@ -155,7 +155,7 @@ Callbacks receive a media object with 3 main properties:
 - speakers
 - text
 
-```json
+```jsonc
 {
   "jobs": {
     "transcription": {
