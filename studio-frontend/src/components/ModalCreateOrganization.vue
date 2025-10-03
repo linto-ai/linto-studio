@@ -1,6 +1,7 @@
 <template>
   <ModalNew
     v-model="isOpen"
+    isForm
     @on-cancel="($event) => this.$emit('on-cancel')"
     small
     :title="$t('modal_create_organization.title')"
@@ -11,22 +12,21 @@
       :field="orgaName"
       inputId="organisation-name"
       required />
-    
+
     <template v-slot:actions-right>
       <Button
-        variant="outline"
-        color="neutral-soft"
+        variant="secondary"
         @click="$emit('on-cancel')"
         :disabled="state === 'sending'">
         {{ $t("modal.cancel") }}
       </Button>
       <Button
-        variant="solid"
-        color="primary"
+        variant="primary"
+        type="submit"
         @click="createOrganisation"
         :disabled="state === 'sending'"
         :loading="state === 'sending'">
-        {{ $t('modal_create_organization.action_btn') }}
+        {{ $t("modal_create_organization.action_btn") }}
       </Button>
     </template>
   </ModalNew>
@@ -80,12 +80,14 @@ export default {
     async createOrganisation() {
       // Clear previous errors
       this.orgaName.error = null
-      
+
       if (this.testFields()) {
         this.state = "sending"
         let res = await apiCreateOrganisation({ name: this.orgaName.value })
         if (res.status == "error") {
-          this.orgaName.error = this.$t("organisation.create.error_already_exists")
+          this.orgaName.error = this.$t(
+            "organisation.create.error_already_exists",
+          )
           this.state = "idle"
           // Don't close the modal, just show the error
         } else {
