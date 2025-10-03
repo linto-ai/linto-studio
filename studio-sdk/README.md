@@ -114,8 +114,8 @@ linTO = LinTO(auth_token="auth_token", **options)
 
 | Parameter | required | value  | description         | default value                  |
 | --------- | -------- | ------ | ------------------- | ------------------------------ |
-| authToken | yes      | string | Studio auth token   |                                |
-| baseUrl   | no       | string | Studio API base url | https://studio.linto.ai/cm-api |
+| authToken | yes      | String | Studio auth token   |                                |
+| baseUrl   | no       | String | Studio API base url | https://studio.linto.ai/cm-api |
 
 ### Transcribe
 
@@ -139,13 +139,13 @@ handle.on("error", callback)
 
 #### Options
 
-| Parameter         | required | value                           | description                                                                               | default value |
-| ----------------- | -------- | ------------------------------- | ----------------------------------------------------------------------------------------- | ------------- |
-| file              | yes      | File or Blob                    | Audio file to transcribe                                                                  |               |
-| enableDiarization | no       | bool                            | Enable speaker diarization                                                                | True          |
-| numberOfSpeaker   | no       | int                             | Number of speaker for diarization, 0 means auto                                           | 0             |
-| language          | no       | 2 letters language code or "\*" | Language the audio should be transcribed. "\*" means auto-detection + multiple languages. | "\*"          |
-| enablePunctuation | no       | bool                            | Enable automatic punctuation recognition                                                  | True          |
+| Parameter         | required | value                           | description                                                                              | default value |
+| ----------------- | -------- | ------------------------------- | ---------------------------------------------------------------------------------------- | ------------- |
+| file              | yes      | File or Blob                    | Audio file to transcribe                                                                 |               |
+| enableDiarization | no       | Bool                            | Enable speaker diarization                                                               | True          |
+| numberOfSpeaker   | no       | Int                             | Number of speaker for diarization, 0 means auto                                          | 0             |
+| language          | no       | 2 letters language code or "\*" | Language the audio should be transcribed. "\*" means auto-detection + multiple languages | "\*"          |
+| enablePunctuation | no       | Bool                            | Enable automatic punctuation recognition                                                 | True          |
 
 #### Callbacks event value
 
@@ -205,3 +205,31 @@ Callbacks receive a media object with 3 main properties:
 ```
 
 Full object is described in the [API swagger](https://studio.linto.ai/cm-api/apidoc/#/conversations%20member/get_api_conversations__conversationId__)
+
+## Coming soon 🏗️
+
+### Transcribe video conference
+
+```javascript
+const meeting = await linTO.transcribeVideoConference({ type, url, ...options })
+meeting.addEventListener("connected", callback)
+meeting.addEventListener("meeting_start", callback)
+meeting.addEventListener("people_join", callback)
+meeting.addEventListener("meeting_end", callback)
+meeting.addEventListener("transcription", callback)
+
+handle = await meeting.offlineTranscription({ ...options })
+handle.addEventListener("update", callback)
+handle.addEventListener("done", callback)
+handle.addEventListener("error", callback)
+```
+
+### Live transcription
+
+```javascript
+const live = await linTO.transcribeLive({ ...option })
+live.connectAudio(source)
+live.startTranscription()
+live.stopTranscription()
+live.addEventListener("transcription", callback)
+```
