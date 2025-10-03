@@ -160,9 +160,9 @@ Callbacks receive a media object with 3 main properties:
   "jobs": {
     "transcription": {
       "state": "done"
-      ...
+      // ...
     }
-  }
+  },
   "speakers": [
     // array of speakers
     {
@@ -196,8 +196,8 @@ Callbacks receive a media object with 3 main properties:
           "confidence": 1,
           "highlights": [],
           "keywords": []
-        },
-        ...
+        }
+        // ...
       ]
     }
   ]
