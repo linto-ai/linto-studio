@@ -144,13 +144,14 @@ handle.on("error", callback)
 
 #### Options
 
-| Parameter         | required | value                           | description                                                                              | default value |
-| ----------------- | -------- | ------------------------------- | ---------------------------------------------------------------------------------------- | ------------- |
-| file              | yes      | File or Blob                    | Audio file to transcribe                                                                 |               |
-| enableDiarization | no       | Bool                            | Enable speaker diarization                                                               | True          |
-| numberOfSpeaker   | no       | Int                             | Number of speaker for diarization, 0 means auto                                          | 0             |
-| language          | no       | 2 letters language code or "\*" | Language the audio should be transcribed. "\*" means auto-detection + multiple languages | "\*"          |
-| enablePunctuation | no       | Bool                            | Enable automatic punctuation recognition                                                 | True          |
+| Parameter         | required | value                           | description                                                                              | default value           |
+| ----------------- | -------- | ------------------------------- | ---------------------------------------------------------------------------------------- | ----------------------- |
+| file              | yes      | File or Blob                    | Audio file to transcribe                                                                 |                         |
+| enableDiarization | no       | Bool                            | Enable speaker diarization                                                               | True                    |
+| numberOfSpeaker   | no       | Int                             | Number of speaker for diarization, 0 means auto                                          | 0                       |
+| language          | no       | 2 letters language code or "\*" | Language the audio should be transcribed. "\*" means auto-detection + multiple languages | "\*"                    |
+| enablePunctuation | no       | Bool                            | Enable automatic punctuation recognition                                                 | True                    |
+| name              | no       | String                          | Name of the media in LinTO Studio                                                        | "imported file ${date}" |
 
 #### Callbacks event value
 

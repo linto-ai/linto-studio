@@ -118,6 +118,7 @@ export class StudioApiService {
         args["transcriptionConfig"] ?? serviceConfig.config
       args["lang"] = lang
       args["file"] = file
+      args["name"] = args["name"] ?? `imported file ${new Date().toISOString()}`
       args["segmentCharSize"] = args["segmentCharSize"] ?? 2000
       return await method.bind(this)(args)
     }
@@ -166,7 +167,7 @@ export class StudioApiService {
     }
 
     let formData = new FormData()
-    formData.append("name", "name")
+    formData.append("name", name)
     formData.append("file", file)
     formData.append("serviceName", serviceName)
     formData.append("transcriptionConfig", JSON.stringify(transcriptionConfig))

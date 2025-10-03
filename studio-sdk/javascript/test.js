@@ -11,7 +11,7 @@ let linTO = new LinTO({
 
 const file = await fs.openAsBlob(filePath)
 
-const handle = await linTO.transcribe(file)
+const handle = await linTO.transcribe(file, { name: "test file" })
 
 function waitForTranscription(handle) {
   return new Promise((resolve, reject) => {

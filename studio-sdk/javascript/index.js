@@ -16,6 +16,7 @@ class LinTO {
       numberOfSpeaker = "0",
       language = "*",
       enablePunctuation = true,
+      name = null,
     } = {}
   ) {
     // await this.apiService.login({
@@ -29,6 +30,7 @@ class LinTO {
       enablePunctuation: enablePunctuation,
       numberOfSpeaker,
       language,
+      name,
     })
     const mediaId = res.conversationId
     return new PollingService(mediaId, this.apiService)
