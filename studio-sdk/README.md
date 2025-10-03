@@ -20,7 +20,7 @@ npm install @linto-ai/linto
 
 **Plain JS in web browser**
 
-```
+```html
 <script type="module" src="https://unpkg.com/@linto-ai/linto/index.js"></script>
 ```
 
