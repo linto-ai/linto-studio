@@ -15,7 +15,7 @@ class LinTO {
       enableDiarization = true,
       numberOfSpeaker = "0",
       language = "*",
-      enablePunctuation,
+      enablePunctuation = true,
     } = {}
   ) {
     // await this.apiService.login({
@@ -34,5 +34,9 @@ class LinTO {
     return new PollingService(mediaId, this.apiService)
   }
 }
+
+try {
+  window.LinTO = LinTO
+} catch (error) {}
 
 export default LinTO

@@ -1,7 +1,7 @@
 {
-  "name": "linto",
-  "version": "1.0.0",
-  "description": "LinTO Studio SDK is a library to interact with LinTO Studio API, it provides a simple interface to transcribe audio files.",
+  "name": "@linto-ai/linto",
+  "version": "1.0.2",
+  "description": "Wrapper around LinTO Studio API",
   "main": "index.js",
   "module": "index.js",
   "keywords": [
@@ -13,7 +13,8 @@
     "Timestamps"
   ],
   "scripts": {
-    "test": "node test.js"
+    "test": "node test.js",
+    "prepublishOnly": "cp ../README.md ./README.md"
   },
   "repository": {
     "type": "git",
@@ -24,6 +25,6 @@
   "bugs": {
     "url": "https://github.com/linto-ai/linto-studio/issues"
   },
-  "homepage": "https://github.com/linto-ai/linto-studio#readme",
+  "homepage": "linto.ai",
   "type": "module"
 }

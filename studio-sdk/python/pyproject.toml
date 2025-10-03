@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "linto"
 version = "1.0.0"
-description = "LinTO Studio SDK is a library to interact with LinTO Studio API, it provides a simple interface to transcribe audio files."
+description = "Wrapper around LinTO Studio API"
 readme = "README.md"
 requires-python = ">=3.7"
 license = { text = "AGPL-3.0-or-later" }
@@ -25,6 +25,7 @@ keywords = [
 
 [project.urls]
 Repository = "https://github.com/linto-ai/linto-studio"
+Homepage = "https://linto.ai"
 
 [tool.setuptools.packages.find]
 where = ["."]

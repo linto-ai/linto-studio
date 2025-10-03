@@ -15,13 +15,13 @@ pip install linto
 **NodeJS or compiled front-end project**
 
 ```
-npm install linto
+npm install @linto-ai/linto
 ```
 
 **Plain JS in web browser**
 
 ```
-<script src="https://unpkg.com/LinTO@1.0.0/dist/linto.min.js"></script>
+<script type="module" src="https://unpkg.com/@linto-ai/linto/index.js"></script>
 ```
 
 ## How to use
@@ -29,9 +29,14 @@ npm install linto
 ### NodeJS or Web browser
 
 ```javascript
-import LinTO from "linto"
-
+// NodeJS
+import LinTO from "@linto-ai/linto"
 let linTO = new LinTO({
+  authToken: "authToken",
+})
+
+// Browser
+let linTO = new window.LinTO({
   authToken: "authToken",
 })
 
