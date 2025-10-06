@@ -133,7 +133,14 @@ async function getM2MTokens(req, res, next) {
 
 async function deleteM2Token(req, res, next) {
   try {
-    await checkTokenBelongsToOrganization(req.params)
+    const { organization } = await checkTokenBelongsToOrganization(req.params)
+
+    organization.users = organization.users.filter(
+      (oUser) => oUser.userId !== req.params.tokenId,
+    )
+    const result = await model.organizations.update(organization)
+    if (result.matchedCount === 0) throw new OrganizationError()
+
     const tokens = await TokenHandler.deleteM2Token(
       req.params.tokenId,
       req.query.revoke,
