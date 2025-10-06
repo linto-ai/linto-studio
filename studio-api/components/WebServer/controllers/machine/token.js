@@ -80,7 +80,8 @@ async function createM2MUser(reqPayload, role = PLATFORM_ROLE.UNDEFINED) {
       organizationId: params.organizationId,
     }
     const userPayload = {
-      firstname: body.name,
+      firstname: body.name || "Virtual User",
+      lastname: "",
       metadata,
     }
     const createdUser = await model.users.createM2MUser(userPayload, role)
