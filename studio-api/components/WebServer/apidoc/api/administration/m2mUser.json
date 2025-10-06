@@ -1,16 +1,18 @@
 {
-  "/api/organizations/{organizationId}/tokens/": {
+  "/api/administration/tokens/": {
     "post": {
-      "tags": ["organizations admin m2m"],
-      "summary": "Create a new machine-to-machine token for the organization",
+      "tags": ["administration"],
+      "summary": "Create a new machine-to-machine token for a backoffice user",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
           "required": true,
-          "description": "uuid string identifier for the organization"
+          "description": "Scope of the user, must be 'backoffice'"
         }
       ],
       "requestBody": {
@@ -61,16 +63,18 @@
       }
     },
     "get": {
-      "tags": ["organizations admin m2m"],
+      "tags": ["administration"],
       "summary": "Retrieve all machine-to-machine tokens for the organization",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
           "required": true,
-          "description": "uuid string identifier for the organization"
+          "description": "Scope of the user, must be 'backoffice'"
         }
       ],
       "responses": {
@@ -97,18 +101,20 @@
       }
     }
   },
-  "/api/organizations/{organizationId}/tokens/{tokenId}": {
+  "/api/administration/tokens/{tokenId}": {
     "put": {
-      "tags": ["organizations admin m2m"],
+      "tags": ["administration"],
       "summary": "Regenerate a machine-to-machine token with a new value",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
           "required": true,
-          "description": "uuid string identifier for the organization"
+          "description": "Scope of the user, must be 'backoffice'"
         },
         {
           "in": "path",
@@ -157,16 +163,18 @@
       }
     },
     "get": {
-      "tags": ["organizations admin m2m"],
+      "tags": ["administration"],
       "summary": "Retrieve details of a specific machine-to-machine token",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
           "required": true,
-          "description": "uuid string identifier for the organization"
+          "description": "Scope of the user, must be 'backoffice'"
         },
         {
           "in": "path",
@@ -198,16 +206,18 @@
       }
     },
     "delete": {
-      "tags": ["organizations admin m2m"],
+      "tags": ["administration"],
       "summary": "Delete a machine-to-machine token",
       "parameters": [
         {
-          "in": "path",
-          "name": "organizationId",
-          "type": "string",
-          "format": "uuid",
+          "in": "query",
+          "name": "userScope",
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
           "required": true,
-          "description": "uuid string identifier for the organization"
+          "description": "Scope of the user, must be 'backoffice'"
         },
         {
           "in": "path",

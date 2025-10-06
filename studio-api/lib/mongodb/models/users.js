@@ -122,7 +122,7 @@ class UsersModel extends MongoModel {
     }
   }
 
-  async createM2MUser(payload) {
+  async createM2MUser(payload, role = ROLE.UNDEFINED) {
     try {
       const dateTime = moment().format()
       const userPayload = {
@@ -131,7 +131,7 @@ class UsersModel extends MongoModel {
         last_update: dateTime,
         fromSso: false,
         private: true,
-        role: ROLE.UNDEFINED,
+        role: role,
         type: USER_TYPE.M2M,
       }
 
@@ -245,6 +245,18 @@ class UsersModel extends MongoModel {
           personal_projection,
           filter,
         )
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async listM2MUser() {
+    try {
+      const query = {
+        type: USER_TYPE.M2M,
+      }
+      return await this.mongoRequest(query)
     } catch (error) {
       console.error(error)
       return error

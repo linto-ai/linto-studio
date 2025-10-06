@@ -32,7 +32,7 @@ const {
   refreshM2MToken,
   deleteM2Token,
 } = require(
-  `${process.cwd()}/components/WebServer/routecontrollers/organizations/m2m.js`,
+  `${process.cwd()}/components/WebServer/routecontrollers/organizations/m2mUser.js`,
 )
 
 const { transcribeReq } = require(
