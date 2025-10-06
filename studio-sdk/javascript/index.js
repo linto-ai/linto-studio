@@ -14,26 +14,42 @@ class LinTO {
     {
       enableDiarization = true,
       numberOfSpeaker = "0",
-      language = "*",
       enablePunctuation = true,
+      language = "*",
+      quality = null,
+      modelType = null,
       name = null,
+      serviceName = null,
+      endpointAsr = null,
+      diarizationServiceName = null,
+      punctuationServiceName = null,
     } = {}
   ) {
-    // await this.apiService.login({
-    //   email: "",
-    //   password: "",
-    // })
-
     const res = await this.apiService.uploadFile({
       file,
       enableDiarization,
-      enablePunctuation: enablePunctuation,
       numberOfSpeaker,
+      enablePunctuation: enablePunctuation,
       language,
+      quality,
+      modelType,
       name,
+      serviceName,
+      endpointAsr,
+      diarizationServiceName,
+      punctuationServiceName,
     })
     const mediaId = res.conversationId
     return new PollingService(mediaId, this.apiService)
+  }
+
+  async listServices() {
+    const services = await this.apiService.fetchAsrServices()
+    return services.map((service) => {
+      const s = { ...service, service_name: service.serviceName }
+      delete s.serviceName
+      return s
+    })
   }
 }
 

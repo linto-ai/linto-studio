@@ -1,6 +1,6 @@
 {
   "name": "@linto-ai/linto",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Wrapper around LinTO Studio API",
   "main": "index.js",
   "module": "index.js",

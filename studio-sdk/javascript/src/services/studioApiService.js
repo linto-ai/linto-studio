@@ -16,7 +16,7 @@ export class StudioApiService {
   async fetchAsrServices(args) {
     const services = await this.#withToken(this.#fetchServices)(args)
     this.asrServices = services
-    return services?.filter((service) => service.scope.indexOf("asr") > -1)
+    return services?.filter((service) => service.scope.indexOf("stt") > -1)
   }
 
   async getMediaStatus({ mediaId }) {

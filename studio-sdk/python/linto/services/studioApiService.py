@@ -2,6 +2,7 @@
 import aiohttp
 import json
 import logging
+from datetime import datetime
 
 
 def get_service_by_quality_and_lang(services, quality, lang):
@@ -120,6 +121,8 @@ def with_upload_config(method):
         kwargs.setdefault("transcriptionConfig", service_config["config"])
         kwargs.setdefault("lang", lang)
         kwargs["file"] = file
+        kwargs.setdefault(
+            "name", f"imported file {datetime.now().isoformat()}")
         kwargs.setdefault("segmentCharSize", 2000)
         return await method(self, *args, **kwargs)
     return wrapper
@@ -145,7 +148,7 @@ class StudioApiService:
     async def fetch_asr_services(self, **kwargs):
         services = await self._fetch_services(**kwargs)
         self.asr_services = services
-        return [s for s in services if "asr" in s.get("scope", [])]
+        return [s for s in services if "stt" in s.get("scope", [])]
 
     @with_token
     async def get_media_status(self, mediaId: str, **kwargs):
@@ -164,30 +167,27 @@ class StudioApiService:
     @with_token
     @with_organization_id
     @with_upload_config
-    async def upload_file(
-        self,
-        file,
-        name: str = "name",
-        lang: str = "*",
-        enablePunctuation: bool = False,
-        enableDiarization: bool = False,
-        numberOfSpeaker: int = 0,
-        segmentCharSize: int = 2000,
-        **kwargs,
-    ):
-        """
-        Upload a file for transcription.
-        """
-        return await self._upload_file(
-            file=file,
-            name=name,
-            lang=lang,
-            enablePunctuation=enablePunctuation,
-            enableDiarization=enableDiarization,
-            numberOfSpeaker=numberOfSpeaker,
-            segmentCharSize=segmentCharSize,
-            **kwargs,
-        )
+    async def upload_file(self, **kwargs):
+        file = kwargs.get("file")
+        if not file:
+            raise RuntimeError("File is required")
+
+        org_id = kwargs["organizationId"]
+        url = f"{self.base_api_url}/organizations/{org_id}/conversations/create"
+
+        form = aiohttp.FormData()
+        form.add_field("name", kwargs.get("name", "name"))
+        form.add_field("file", file)
+        form.add_field("serviceName", kwargs["serviceName"])
+
+        form.add_field("transcriptionConfig", json.dumps(
+            kwargs["transcriptionConfig"]))
+        form.add_field("segmentCharSize", json.dumps(
+            kwargs["segmentCharSize"]))
+        form.add_field("lang", kwargs["lang"])
+        form.add_field("endpoint", kwargs["endpoint"])
+
+        return await self._send_request("POST", url, data=form, token=kwargs["token"])
 
     async def login(self, email: str, password: str):
         async with aiohttp.ClientSession() as session:
@@ -212,30 +212,6 @@ class StudioApiService:
     async def _fetch_organizations(self, **kwargs):
         url = f"{self.base_api_url}/organizations"
         return await self._send_request("GET", url, **kwargs)
-
-    async def _upload_file(self, **kwargs):
-        file = kwargs.get("file")
-        if not file:
-            raise RuntimeError("File is required")
-
-        org_id = kwargs["organizationId"]
-        url = f"{self.base_api_url}/organizations/{org_id}/conversations/create"
-
-        form = aiohttp.FormData()
-        form.add_field("name", kwargs.get("name", "name"))
-        form.add_field("file", file)
-        form.add_field("serviceName", kwargs["serviceName"])
-
-        form.add_field("transcriptionConfig", json.dumps(
-            kwargs["transcriptionConfig"]))
-        form.add_field("segmentCharSize", json.dumps(
-            kwargs["segmentCharSize"]))
-        form.add_field("lang", kwargs["lang"])
-        form.add_field("endpoint", kwargs["endpoint"])
-
-        return await self._send_request("POST", url, data=form, token=kwargs["token"])
-
-    # --- Generic request sender ---
 
     async def _send_request(self, method, url, **kwargs):
         headers = {"Authorization": f"Bearer {kwargs.get('token')}"}

@@ -7,6 +7,13 @@ from linto import LinTO
 logging.basicConfig(level=logging.DEBUG)
 
 
+async def test_services() -> None:
+    auth_token = os.getenv("STUDIO_TOKEN")
+    linTO = LinTO(auth_token, base_url="http://127.0.0.1:8001")
+    services = await linTO.api_service.fetch_asr_services()
+    print(services)
+
+
 async def main() -> None:
 
     auth_token = os.getenv("STUDIO_TOKEN")
@@ -40,27 +47,6 @@ async def main() -> None:
 
 
 if __name__ == '__main__':
+    asyncio.run(test_services())
+
     asyncio.run(main())
-
-# def on_update(data):
-#     print("update", data)
-
-
-# def on_done(data):
-#     print("done", data)
-
-
-# def on_error(data):
-#     print("error", data)
-
-
-# handle.add_event_listener("update", on_update)
-# handle.add_event_listener("done", on_done)
-# handle.add_event_listener("error", on_error)
-
-# # Keep the program running to receive events
-# try:
-#     while True:
-#         pass
-# except KeyboardInterrupt:
-#     handle.stop()
