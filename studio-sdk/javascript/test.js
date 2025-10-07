@@ -31,7 +31,7 @@ async function testTranscription() {
       })
 
       handle.addEventListener("done", (e) => {
-        console.log("done", e.detail)
+        console.log("done", e.detail.toFormat())
         resolve(e.detail)
       })
 

@@ -4,6 +4,8 @@ import {
   sendRequest,
 } from "../request.js"
 
+import mediaFactory from "../models/media.js"
+
 export class StudioApiService {
   constructor({ baseUrl = "https://studio.linto.ai", token = null }) {
     this.baseApiUrl = baseUrl + "/api"
@@ -31,7 +33,7 @@ export class StudioApiService {
     const conv = await this.#withToken(this.#fetchMedia)({
       mediaId,
     })
-    return conv
+    return mediaFactory(conv)
   }
 
   async fetchOrganizations(args) {

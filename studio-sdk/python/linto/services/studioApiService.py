@@ -3,74 +3,11 @@ import aiohttp
 import json
 import logging
 from datetime import datetime
-
+from ..models.media import Media
+from ..tools.generate_service_config import generate_service_config
 
 def get_service_by_quality_and_lang(services, quality, lang):
     return next((s for s in services if s.get("language") in ("*", lang)), None)
-
-
-def generate_service_config(
-    service,
-    enable_punctuation=False,
-    enable_diarization=False,
-    number_of_speaker=0,
-    language_value=None,
-):
-    if not service:
-        return None
-
-    language_value = language_value or service.get("language", "*")
-    is_whisper = service.get("model_type") == "whisper"
-    sub_services = service.get("sub_services", {})
-
-    punctuation_list = sub_services.get("punctuation", [])
-    punctuation_service = (
-        punctuation_list[0]["service_name"]
-        if enable_punctuation and not is_whisper and punctuation_list
-        else None
-    )
-
-    diarization_list = sub_services.get("diarization", [])
-    diarization_service = (
-        diarization_list[0]["service_name"]
-        if enable_diarization and diarization_list
-        else None
-    )
-
-    return {
-        "serviceName": service["serviceName"],
-        "endpoint": remove_leading_slash(service["endpoints"][0]["endpoint"]),
-        "lang": language_value,
-        "config": {
-            "language": language_value,
-            "punctuationConfig": {
-                "enablePunctuation": enable_punctuation and not is_whisper,
-                "serviceName": punctuation_service,
-            },
-            "diarizationConfig": {
-                "enableDiarization": enable_diarization,
-                "numberOfSpeaker": (
-                    int(number_of_speaker)
-                    if enable_diarization and number_of_speaker > 0
-                    else None
-                ),
-                "maxNumberOfSpeaker": 100 if enable_diarization else None,
-                "serviceName": diarization_service,
-            },
-            "enableNormalization": True,
-            "modelType": service.get("model_type"),
-            "vadConfig": {
-                "enableVAD": True,
-                "methodName": "WebRTC",
-                "minDuration": 30 if is_whisper else 0,
-            },
-        },
-    }
-
-
-def remove_leading_slash(s: str) -> str:
-    return s.lstrip("/")
-
 
 # --- Decorators ---
 
@@ -156,7 +93,8 @@ class StudioApiService:
 
     @with_token
     async def get_media(self, mediaId: str, **kwargs):
-        return await self._fetch_media(mediaId=mediaId, **kwargs)
+        mediaValue = await self._fetch_media(mediaId=mediaId, **kwargs)
+        return Media(mediaValue)
 
     @with_token
     async def fetch_organizations(self, **kwargs):
@@ -221,4 +159,16 @@ class StudioApiService:
                 method, url, headers=headers, json=kwargs.get("json"), data=kwargs.get("data")
             ) as resp:
                 logging.debug(f"Response status: {resp.status}")
+
+                if not (200 <= resp.status < 300):
+                    try:
+                        content = await resp.text()
+                    except Exception:
+                        content = "<no content>"
+                    raise aiohttp.ClientResponseError(
+                        status=resp.status,
+                        message=f"HTTP request failed: {resp.status}, content: {content}",
+                        request_info=resp.request_info,
+                        history=resp.history,
+                    )
                 return await resp.json()
