@@ -61,7 +61,7 @@ handle.addEventListener("done", (e) => {
   console.log("Full text", e.detail.fullText)
   console.log("Formated output", e.detail.toFormat())
   console.log("Turns list", e.detail.turns)
-  console.log("api response", e.detail.response)
+  console.log("Api response", e.detail.response)
 })
 
 handle.addEventListener("error", () => {
@@ -95,7 +95,7 @@ def on_done(data):
     print("Full text", data.full_text)
     print("Formated output", data.to_format())
     print("Turns list", data.turns)
-    print("api response", data.response)
+    print("Api response", data.response)
 
 def on_error(data):
     print("Error while processing the audio")
