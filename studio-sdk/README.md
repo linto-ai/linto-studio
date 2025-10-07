@@ -58,9 +58,10 @@ handle.addEventListener("update", (e) => {
 
 handle.addEventListener("done", (e) => {
   console.log("Audio transcription completed")
-  console.log("Raw text", e.detail.rawText)
+  console.log("Full text", e.detail.fullText)
   console.log("Formated output", e.detail.toFormat())
   console.log("Turns list", e.detail.turns)
+  console.log("api response", e.detail.response)
 })
 
 handle.addEventListener("error", () => {
@@ -91,9 +92,10 @@ def on_update(data):
 
 def on_done(data):
     print("Audio transcription completed")
-    print("Raw text", data.raw_text)
+    print("Full text", data.full_text)
     print("Formated output", data.to_format())
     print("Turns list", data.turns)
+    print("api response", data.response)
 
 def on_error(data):
     print("Error while processing the audio")
@@ -161,14 +163,14 @@ handle.on("error", callback)
 
 #### toFormat options
 
-| Parameter      | required | value  | description                                          | default value                                  |
-| -------------- | -------- | ------ | ---------------------------------------------------- | ---------------------------------------------- |
-| sep            | no       | String | Separator between metadatas                          | " - "                                          |
-| metaTextSep    | no       | String | Separator between metadata and text                  | " : "                                          |
-| eol            | no       | String | End of line character ("CRLF" or "LF")               | "CRLF"                                         |
-| ensureFinalEOL | no       | Bool   | Whether to ensure final end of line                  | false                                          |
-| include        | no       | Object | Which metadata to include (speaker, lang, timestamp) | { speaker: true, lang: true, timestamp: true } |
-| order          | no       | Array  | Order of metadata in output                          | ["speaker", "lang", "timestamp"]               |
+| Parameter      | required | value  | description                                                                                             | default value                                  |
+| -------------- | -------- | ------ | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| sep            | no       | String | Separator between metadatas                                                                             | " - "                                          |
+| metaTextSep    | no       | String | Separator between metadata and text                                                                     | " : "                                          |
+| eol            | no       | String | End of line character ("CRLF" or "LF" or None). If neither "CRLF" or "LF", no carriage return is added. | "CRLF"                                         |
+| ensureFinalEOL | no       | Bool   | Whether to ensure final end of line                                                                     | false                                          |
+| include        | no       | Object | Which metadata to include (speaker, lang, timestamp)                                                    | { speaker: true, lang: true, timestamp: true } |
+| order          | no       | Array  | Order of metadata in output                                                                             | ["speaker", "lang", "timestamp"]               |
 
 ## Coming soon 🏗️
 

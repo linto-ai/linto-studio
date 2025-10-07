@@ -4,14 +4,17 @@ export default function mediaFactory(media) {
   return new Proxy(media, {
     get(media, prop, receiver) {
       switch (prop) {
-        case "rawText":
-          return media.text.reduce((text, turn) => {
-            return text + turn.segment + "\n"
-          }, "")
+        case "fullText":
+          return formatMedia(media, {
+            include: { speaker: false, lang: false, timestamp: false },
+            eol: null,
+          })
         case "turns":
           return computeTurns(media)
         case "toFormat":
           return (options) => formatMedia(media, options)
+        case "response":
+          return media
         default:
           return Reflect.get(media, prop, receiver)
       }
@@ -54,6 +57,7 @@ function formatMedia(
     order = ["speaker", "lang", "timestamp"],
   } = {}
 ) {
+  const lineReturn = convertLineReturn(eol)
   const lines = computeTurns(media).map((turn) => {
     const parts = []
     order.forEach((item) => {
@@ -65,10 +69,24 @@ function formatMedia(
         parts.push(stime)
       }
     })
-    const line = parts.join(sep) + metaTextSep + turn.text
-    return line + (eol === "CRLF" ? "\r\n" : "\n")
+
+    const line =
+      parts.length > 0 ? parts.join(sep) + metaTextSep + turn.text : turn.text
+    return line
   })
 
-  const result = lines.join("")
-  return ensureFinalEOL ? result + (eol === "CRLF" ? "\r\n" : "\n") : result
+  const result = lines.join(lineReturn)
+  return ensureFinalEOL ? result + lineReturn : result
+}
+
+function convertLineReturn(eol) {
+  switch (eol) {
+    case "CRLF":
+      return "\r\n"
+    case "LF":
+      return "\n"
+    default:
+      return ""
+      break
+  }
 }

@@ -1,7 +1,6 @@
 from typing import Any, Dict, List, Optional
 import logging
 
-
 def time_to_hms(seconds: Optional[float]) -> str:
     """Convertit un temps en secondes en format HH:MM:SS."""
     if seconds is None:
@@ -11,6 +10,14 @@ def time_to_hms(seconds: Optional[float]) -> str:
     s = int(seconds % 60)
     return f"{h:02}:{m:02}:{s:02}"
 
+def convert_line_return(eol):
+  if eol == "CRLF":
+    return "\r\n"
+  elif eol == "LF":
+    return "\n"
+  
+
+  return ""
 
 class Media:
     """Classe représentant un média, avec propriétés calculées dynamiquement."""
@@ -19,15 +26,19 @@ class Media:
         self._media = media
 
     def __getattr__(self, name: str) -> Any:
-        return media.get(name)
+        return self._media.get(name)
     
     def __str__(self):
         return self.raw_text
-
+    
     @property
-    def raw_text(self) -> str:
+    def response(self):
+        return self._media
+    
+    @property
+    def full_text(self) -> str:
         """Concatène tous les segments texte."""
-        return "".join(turn.get("segment", "") + "\n" for turn in self._media.get("text", []))
+        return format_media(self._media, include={"speaker": False, "lang": False, "timestamp": False}, eol=None)
 
     @property
     def turns(self) -> List[Dict[str, Any]]:
@@ -95,7 +106,7 @@ def format_media(
     include = include or {"speaker": True, "lang": True, "timestamp": True}
     order = order or ["speaker", "lang", "timestamp"]
 
-    eol_str = "\r\n" if eol == "CRLF" else "\n"
+    eol_str = convert_line_return(eol)
 
     lines = []
     for turn in compute_turns(media):
@@ -108,7 +119,7 @@ def format_media(
             elif item == "timestamp" and include.get("timestamp") and turn.get("stime") is not None:
                 parts.append(time_to_hms(turn["stime"]))
 
-        line = sep.join(parts) + meta_text_sep + turn.get("text", "")
+        line = sep.join(parts) + meta_text_sep + turn.get("text", "") if len(parts) else turn.get("text", "")
         lines.append(line)
 
     result = eol_str.join(lines)  # EOL entre les lignes seulement
@@ -134,6 +145,7 @@ if __name__ == "__main__":
     }
 
     media = Media(media_example)
-    assert media.raw_text == "Bonjour à tous\n"
+    assert media.full_text == "Bonjour à tous"
     assert media.turns == [{'speaker': 'Alice', 'lang': 'fr', 'text': 'Bonjour à tous', 'stime': 0.0, 'etime': 2.5}]
     assert media.to_format(sep=" | ", eol="LF", ensure_final_eol=False) == "Alice | fr | 00:00:00 : Bonjour à tous"
+    assert media.response == media_example
