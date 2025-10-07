@@ -58,7 +58,7 @@ handle.addEventListener("update", (e) => {
 
 handle.addEventListener("done", (e) => {
   console.log("Audio transcription completed")
-  console.log("Raw text", e.detail.rawText())
+  console.log("Raw text", e.detail.rawText)
   console.log("Formated output", e.detail.toFormat())
   console.log("Turns list", e.detail.turns)
 })
