@@ -57,11 +57,14 @@ handle.addEventListener("update", (e) => {
 })
 
 handle.addEventListener("done", (e) => {
-  console.log("Audio transcription completed", e.detail.text)
+  console.log("Audio transcription completed")
+  console.log("Raw text", e.detail.rawText())
+  console.log("Formated output", e.detail.toFormat())
+  console.log("Turns list", e.detail.turns)
 })
 
-handle.addEventListener("error", (e) => {
-  console.log("Error while processing the audio", e.detail)
+handle.addEventListener("error", () => {
+  console.log("Error while processing the audio")
 })
 ```
 
@@ -87,10 +90,13 @@ def on_update(data):
     print("Audio transcription processing", data)
 
 def on_done(data):
-    print("Audio transcription completed", data)
+    print("Audio transcription completed")
+    print("Raw text", data.raw_text)
+    print("Formated output", data.to_format())
+    print("Turns list", data.turns)
 
 def on_error(data):
-    print("Error while processing the audio", data)
+    print("Error while processing the audio")
 
 handle.on("update", on_update)
 handle.on("done", on_done)
@@ -153,64 +159,16 @@ handle.on("error", callback)
 | enablePunctuation | no       | Bool                            | Enable automatic punctuation recognition                                                 | True                    |
 | name              | no       | String                          | Name of the media in LinTO Studio                                                        | "imported file ${date}" |
 
-#### Callbacks event value
+#### toFormat options
 
-Callbacks receive a media object with 3 main properties:
-
-- jobs
-- speakers
-- text
-
-```jsonc
-{
-  "jobs": {
-    "transcription": {
-      "state": "done"
-      // ...
-    }
-  },
-  "speakers": [
-    // array of speakers
-    {
-      "speaker_id": "60ac8c45-751e-4cf9-8617-833313dd2d12",
-      "speaker_name": "speaker",
-      "stime": 0,
-      "etime": 16.23
-    }
-  ],
-  "text": [
-    // array of segments
-    {
-      "speaker_id": "60ac8c45-751e-4cf9-8617-833313dd2d12",
-      "raw_segment": "bonjour je vais donner quelques chiffres hum deux cinq et je vais en donner encore d' autres huit douze un petit dernier dix mille",
-      "segment": "bonjour je vais donner quelques chiffres hum 2 5 et je vais en donner encore d'autres 8 12 un petit dernier 10000",
-      "words": [
-        {
-          "wid": "0d7ea137-ea70-467e-b3a0-8646a38a7bcb",
-          "stime": 0,
-          "etime": 1.41,
-          "word": "bonjour",
-          "confidence": 1,
-          "highlights": [],
-          "keywords": []
-        },
-        {
-          "wid": "ea7f448d-a89b-4272-b8bb-f5d4d99e0504",
-          "stime": 1.41,
-          "etime": 1.44,
-          "word": "je",
-          "confidence": 1,
-          "highlights": [],
-          "keywords": []
-        }
-        // ...
-      ]
-    }
-  ]
-}
-```
-
-Full object is described in the [API swagger](https://studio.linto.ai/cm-api/apidoc/#/conversations%20member/get_api_conversations__conversationId__)
+| Parameter      | required | value  | description                                          | default value                                  |
+| -------------- | -------- | ------ | ---------------------------------------------------- | ---------------------------------------------- |
+| sep            | no       | String | Separator between metadatas                          | " - "                                          |
+| metaTextSep    | no       | String | Separator between metadata and text                  | " : "                                          |
+| eol            | no       | String | End of line character ("CRLF" or "LF")               | "CRLF"                                         |
+| ensureFinalEOL | no       | Bool   | Whether to ensure final end of line                  | false                                          |
+| include        | no       | Object | Which metadata to include (speaker, lang, timestamp) | { speaker: true, lang: true, timestamp: true } |
+| order          | no       | Array  | Order of metadata in output                          | ["speaker", "lang", "timestamp"]               |
 
 ## Coming soon 🏗️
 

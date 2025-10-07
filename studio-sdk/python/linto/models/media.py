@@ -137,4 +137,3 @@ if __name__ == "__main__":
     assert media.raw_text == "Bonjour à tous\n"
     assert media.turns == [{'speaker': 'Alice', 'lang': 'fr', 'text': 'Bonjour à tous', 'stime': 0.0, 'etime': 2.5}]
     assert media.to_format(sep=" | ", eol="LF", ensure_final_eol=False) == "Alice | fr | 00:00:00 : Bonjour à tous"
-    logging.basicConfig(level=logging.DEBUG)

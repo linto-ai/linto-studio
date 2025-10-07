@@ -32,7 +32,7 @@ async def main() -> None:
         print("update", data)
 
     def on_done(data):
-        print("done", data)
+        print("done", data.to_format())
         done_event.set()
 
     def on_error(data):
